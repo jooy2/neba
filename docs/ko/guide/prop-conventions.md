@@ -74,6 +74,7 @@ export interface ButtonProps
 4. 동작·접근성은 Base UI 프리미티브에 위임
 5. 공용 어휘에서 필요한 축을 가져오고, 없는 개념만 새로 정의
 6. `test/components/{이름}/{Name}.test.tsx` — **같은 커밋에** 포함
-7. `examples/src/App.tsx`에 추가
-8. `docs/ko/components/{이름}.md` 작성
-9. `npm run typecheck && npm test && npm run lint` 통과
+7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성 — 소개 · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
+8. `docs/.vitepress/data/props.ts`에 props 테이블(로케일별 설명), `docs/.vitepress/demos/{이름}/`에 예시 데모 추가
+9. `docs/.vitepress/demos/gallery/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
+10. `npm run typecheck && npm test && npm run lint` 통과

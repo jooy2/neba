@@ -6,11 +6,11 @@ Thumbs.db
 # IDEs
 .idea/
 .vscode/
+.claude/
 
 # Project files
 src/
 test/
-examples/
 docs/
 docs-dist/
 CHANGELOG.md

@@ -25,12 +25,9 @@
     "docs:dev": "npm run build && vitepress dev docs",
     "docs:build": "npm run build && vitepress build docs",
     "docs:serve": "npm run build && npm run docs:build && vitepress serve docs",
-    "demo:dev": "vite dev --config examples/vite.config.ts",
-    "demo:build": "tsc --project examples/tsconfig.json && vite build --config examples/vite.config.ts",
-    "preview": "vite preview --config examples/vite.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --project tsconfig.prod.json --noEmit && tsc --project test/tsconfig.json && tsc --project examples/tsconfig.json"
+    "typecheck": "tsc --project tsconfig.prod.json --noEmit && tsc --project test/tsconfig.json && tsc --project docs/tsconfig.json"
   },
   "engines": {
     "node": ">=18.0.0"

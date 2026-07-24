@@ -1,0 +1,353 @@
+/**
+ * Docs chrome: the frame around a live preview, the props table, and the
+ * component index cards. None of this is library styling — it is the furniture
+ * the documentation puts the components on.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Demo
+ * ------------------------------------------------------------------------- */
+
+.vp-doc .neba-demo {
+  margin: 20px 0 28px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--vp-c-bg);
+}
+
+/*
+ * A translucent, blurred surface has nothing to show over a flat page, so the
+ * canvas puts a little colour and a grid behind the components. Quiet on
+ * purpose: this is documentation, not the demo page — it only has to give the
+ * acrylic something to be in front of.
+ */
+.neba-demo-canvas {
+  position: relative;
+  padding: 32px 24px;
+  background-color: var(--vp-c-bg-soft);
+  background-image:
+    radial-gradient(
+      32rem 20rem at 8% -20%,
+      color-mix(in srgb, var(--neba-primary-accent) 10%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      28rem 18rem at 96% 0%,
+      color-mix(in srgb, var(--neba-info-accent) 9%, transparent),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--neba-fg) 4%, transparent) 0 1px,
+      transparent 1px 2.5rem
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--neba-fg) 4%, transparent) 0 1px,
+      transparent 1px 2.5rem
+    );
+}
+
+.neba-demo-canvas[data-align='center'] .neba-demo-mount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The mount point is where the component tree lands, so it also carries the
+   library's own type and colour defaults — the docs body font is not it. */
+.neba-demo-mount {
+  color: var(--neba-fg);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Before React mounts there is nothing in the box; hold the height so the page
+   does not jump on hydration. */
+.neba-demo-mount:empty {
+  min-height: 40px;
+}
+
+.neba-demo--plain .neba-demo-canvas {
+  padding: 0;
+  background: none;
+}
+
+.vp-doc .neba-demo--plain {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}
+
+.neba-demo-source {
+  border-top: 1px solid var(--vp-c-divider);
+  background-color: var(--vp-c-bg);
+}
+
+.neba-demo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.neba-demo-toggle:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.neba-demo-toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.neba-demo-toggle-icon.is-open {
+  transform: rotate(90deg);
+}
+
+/* VitePress pulls code blocks out to the full page width and rounds them; in
+   here they are one panel of a card that is already rounded and inset. */
+.vp-doc .neba-demo-code div[class*='language-'] {
+  margin: 0;
+  border-radius: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Props table
+ * ------------------------------------------------------------------------- */
+
+.vp-doc .neba-props {
+  display: block;
+  overflow-x: auto;
+  margin: 16px 0 24px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+}
+
+.vp-doc .neba-props table {
+  display: table;
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.vp-doc .neba-props :is(th, td) {
+  padding: 9px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+  text-align: left;
+  vertical-align: top;
+  background: none;
+}
+
+.vp-doc .neba-props th {
+  background-color: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.vp-doc .neba-props tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.vp-doc .neba-props tbody tr:hover {
+  background-color: var(--vp-c-bg-soft);
+}
+
+.neba-props-name {
+  display: inline-block;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  white-space: nowrap;
+}
+
+.neba-props-required {
+  color: var(--vp-c-danger-1, #e5484d);
+}
+
+/* Unions wrap at the pipes because those are spaces. No `word-break` — it would
+   split `'outline'` down the middle, which is worse than a taller row. */
+.vp-doc .neba-props .neba-props-type {
+  min-width: 9rem;
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc .neba-props .neba-props-default {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+
+.vp-doc .neba-props .neba-props-desc {
+  min-width: 14rem;
+  color: var(--vp-c-text-1);
+  line-height: 1.6;
+}
+
+.neba-props-shared {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background-color: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  vertical-align: 1.5px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Page furniture
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The one-line summary under a component's title.
+ *
+ * VitePress gives `h1` no bottom margin of its own, so without a top margin
+ * here the summary sits directly on the title's descenders. The gap is set on
+ * the lede rather than on the heading so it only applies where a summary
+ * actually follows one.
+ */
+.vp-doc .neba-lede {
+  margin: 18px 0 28px;
+  color: var(--vp-c-text-2);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ---------------------------------------------------------------------------
+ * Home
+ *
+ * The hero holds a live composition of the library's components, so the page
+ * has to give them something to be in front of. VitePress already draws a
+ * blurred blob behind the hero image — it is only ever used for a logo's glow,
+ * but it is exactly the backdrop a sheet of acrylic needs, so it is turned up
+ * and tinted with the library's own accents.
+ * ------------------------------------------------------------------------- */
+
+.VPHome {
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--neba-primary-accent) 60%, transparent),
+    color-mix(in srgb, var(--neba-info-accent) 45%, transparent) 50%,
+    color-mix(in srgb, var(--neba-warning-accent) 40%, transparent)
+  );
+  --vp-home-hero-image-filter: blur(56px);
+}
+
+@media (min-width: 640px) {
+  .VPHome {
+    --vp-home-hero-image-filter: blur(68px);
+  }
+}
+
+/* A grid behind the hero, faded out downwards. Same trick as the demo canvas:
+   the acrylic is only legible when there is structure behind it. */
+.VPHome .VPHero {
+  position: relative;
+  isolation: isolate;
+}
+
+.VPHome .VPHero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--neba-fg) 8%, transparent) 0 1px,
+      transparent 1px 3rem
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--neba-fg) 5%, transparent) 0 1px,
+      transparent 1px 3rem
+    );
+  -webkit-mask-image: radial-gradient(120% 90% at 70% 20%, #000, transparent 72%);
+  mask-image: radial-gradient(120% 90% at 70% 20%, #000, transparent 72%);
+}
+
+/* The blob is sized for a logo's glow. The card in front of it is wider than
+   that, and a backdrop that stops at the card's edge is not a backdrop. */
+.VPHome .VPHero .image-bg {
+  width: 340px;
+  height: 340px;
+}
+
+@media (min-width: 640px) {
+  .VPHome .VPHero .image-bg {
+    width: 440px;
+    height: 440px;
+  }
+}
+
+/* The hero image slot is sized for a 320px square logo; the composition inside
+   is a card that would rather have the whole column. */
+.VPHome .VPHero .image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+}
+
+.VPHome .VPHero .image {
+  margin: 0 0 8px;
+}
+
+@media (min-width: 960px) {
+  .VPHome .VPHero .image {
+    margin: 0;
+  }
+}
+
+/* The island is `position: relative` so the floating accents can hang off it;
+   it must not inherit the demo canvas's own layout. */
+.neba-home-hero .neba-demo-mount {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Live bands inside the home page's Markdown body sit in `.vp-doc`-less
+   containers, so they need the frame rules repeated. */
+.VPHome .neba-demo {
+  margin: 20px 0 28px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--vp-c-bg);
+}
+
+.VPHome .neba-home-hero {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}

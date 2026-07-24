@@ -1,0 +1,112 @@
+/**
+ * Scoped Preflight.
+ *
+ * Neba's components are written against Tailwind's base reset — most visibly
+ * `border: 0 solid`, without which every `border` utility resolves to
+ * `border-style: none` and the outline variants lose their hairline. VitePress
+ * pages cannot have the real Preflight: it strips the margins, sizes and list
+ * markers the documentation itself is made of.
+ *
+ * So this is Preflight cut down to what the library actually needs, applied
+ * only inside `.neba-scope` — the element every live preview mounts into.
+ *
+ * Two specificity rules govern this file:
+ *
+ * - Rules that only fight browser defaults use `.neba-scope :where(…)`, which
+ *   keeps them at a single class. They are imported before Tailwind's
+ *   utilities, so a utility of equal specificity wins on order.
+ * - Rules that have to undo `.vp-doc …` (VitePress's documentation typography)
+ *   are prefixed with `.vp-doc`, because a `.vp-doc p` cannot be outranked by
+ *   anything with fewer than two classes.
+ */
+
+.neba-scope,
+.neba-scope :where(*, *::before, *::after) {
+  box-sizing: border-box;
+  border: 0 solid;
+}
+
+.neba-scope :where(button, input, select, optgroup, textarea) {
+  font: inherit;
+  font-feature-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  border-radius: 0;
+  background-color: transparent;
+  opacity: 1;
+}
+
+.neba-scope :where(button, input:where([type='button'], [type='reset'], [type='submit'])) {
+  appearance: button;
+}
+
+/* Not wrapped in `:where()` — a pseudo-element inside it is invalid and drops
+   the whole selector. */
+.neba-scope ::placeholder {
+  opacity: 1;
+}
+
+.neba-scope :where(textarea) {
+  resize: vertical;
+}
+
+.neba-scope :where(img, svg, video, canvas) {
+  display: block;
+  vertical-align: middle;
+}
+
+.neba-scope :where(img, video) {
+  max-width: 100%;
+  height: auto;
+}
+
+.neba-scope :where(ol, ul, menu) {
+  list-style: none;
+}
+
+.neba-scope :where(h1, h2, h3, h4, h5, h6) {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* ---------------------------------------------------------------------------
+ * Undoing `.vp-doc`
+ *
+ * Everything below exists because the preview is rendered inside the rendered
+ * Markdown, so VitePress is already styling these elements. Base UI renders a
+ * `<p>` for a field description and a `<label>` for its label; a card's footer
+ * can hold a link. None of them should pick up article typography.
+ * ------------------------------------------------------------------------- */
+
+.vp-doc .neba-scope :is(p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, figure, dl, dd) {
+  margin: 0;
+  padding: 0;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
+.vp-doc .neba-scope :is(ul, ol) {
+  list-style: none;
+}
+
+.vp-doc .neba-scope a {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+  text-underline-offset: unset;
+}
+
+.vp-doc .neba-scope :is(table, tr, th, td) {
+  display: revert;
+  margin: 0;
+  border: 0 solid;
+  background-color: transparent;
+}
+
+.vp-doc .neba-scope :not(pre) > code {
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  font-size: inherit;
+  color: inherit;
+}

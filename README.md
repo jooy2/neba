@@ -34,15 +34,14 @@ export default function App() {
 }
 ```
 
-Components are styled with Tailwind CSS, so your app needs Tailwind set up and pointed at the package. Add three lines to your CSS entry point:
+Components are styled with Tailwind CSS, so your app needs Tailwind set up. Add two lines to your CSS entry point:
 
 ```css
 @import 'tailwindcss';
 @import 'neba/styles.css';
-@source '../node_modules/neba';
 ```
 
-`neba/styles.css` carries the design tokens; `@source` is what lets Tailwind find the class names Neba uses. Without it, components render unstyled.
+`neba/styles.css` carries the design tokens, and registers the package as a Tailwind source itself — so there is no `@source` line for you to write, and no path that depends on where your CSS file happens to sit.
 
 Full setup instructions, the design language, and the component reference live in the documentation: https://neba.cdget.com
 
@@ -52,11 +51,10 @@ Clone the repository and install dependencies, then:
 
 | Command | What it does |
 | --- | --- |
-| `npm run demo:dev` | Starts the demo page (`examples/`) — every component on one page, with HMR. |
-| `npm run docs:dev` | Starts the documentation site (`docs/`) locally. |
+| `npm run docs:dev` | Starts the documentation site (`docs/`) locally — every component, rendered live, with HMR. |
 | `npm test` | Runs the test suite once. |
 | `npm run test:watch` | Runs the test suite in watch mode. |
-| `npm run typecheck` | Type-checks the library, the tests, and the demo app. |
+| `npm run typecheck` | Type-checks the library, the tests, and the docs. |
 | `npm run build` | Formats, compiles, and minifies the library into `dist/`. |
 | `npm run lint:fix` | Runs ESLint with autofix. |
 | `npm run format:fix` | Runs Prettier over the repository. |
@@ -67,8 +65,7 @@ All commands are run from the repository root.
 
 - `src/` — the library source. Each component lives in `src/components/{name}/` and is re-exported from `src/index.ts`.
 - `test/` — the test suite, mirroring the `src/` tree.
-- `examples/` — a Vite demo app used to develop and eyeball components.
-- `docs/` — the VitePress documentation site for library consumers.
+- `docs/` — the VitePress documentation site for library consumers. It renders the real components, so it is also where components are developed and eyeballed.
 
 ### Tests
 

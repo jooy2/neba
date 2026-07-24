@@ -5,11 +5,10 @@
  *
  *   @import 'tailwindcss';
  *   @import 'neba/styles.css';
- *   @source '../node_modules/neba';
  *
- * Everything here is plain CSS custom properties — no Tailwind directives — so
- * the file also works standalone. Components never hardcode a color; they map a
- * `color` prop onto the `--n-*` local slots and let the cascade resolve the rest.
+ * Two lines, and no `@source` of their own — the `@source` below does that job.
+ * Components never hardcode a color; they map a `color` prop onto the `--n-*`
+ * local slots and let the cascade resolve the rest.
  *
  * Dark mode responds to `prefers-color-scheme`, and can be forced either way
  * with `.dark` / `[data-theme='dark'|'light']` on any ancestor.
@@ -18,6 +17,21 @@
  * slightly translucent fill, a blurred backdrop, and a hairline edge catching
  * the light. Depth is not part of the surface — it is opt-in, via `elevation`.
  */
+
+/*
+ * The components' classes are Tailwind utilities, so Tailwind has to see the
+ * files that spell them out — otherwise every component renders unstyled.
+ *
+ * `@source` resolves relative to the file it is written in, not to whatever
+ * imported it. In a consumer's install that is `node_modules/neba/dist/`, next
+ * to the compiled components; in this repository it is `src/`, next to the
+ * `.tsx`. One line covers both, and an explicitly registered source is scanned
+ * even inside `node_modules`, which automatic detection skips.
+ *
+ * This is why consumers do not need an `@source '../node_modules/neba'` of
+ * their own — a path that would depend on where their CSS file happens to sit.
+ */
+@source '.';
 
 /* ---------------------------------------------------------------------------
  * Light theme (default)
@@ -483,6 +497,25 @@
   --neba-info-line: color-mix(in srgb, var(--neba-info-accent) 22%, transparent);
   --neba-info-line-hover: color-mix(in srgb, var(--neba-info-accent) 40%, transparent);
   --neba-info-ring: color-mix(in srgb, var(--neba-info-accent) 55%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Card title
+ *
+ * A Card's `title` is styled by the element Card renders around it, so a plain
+ * string needs nothing. But a card that belongs in the document outline has to
+ * be given a real heading — `title={<h2>…</h2>}` — and that heading arrives
+ * with the browser's own 1.5em bold and its margins, which would ignore the
+ * type scale the card just set.
+ *
+ * This is in CSS rather than in Tailwind because the selector is the point:
+ * `[&_:where(h1,h2,h3,h4,h5,h6)]:[font:inherit]` is expressible and nobody
+ * would want to read it twice.
+ * ------------------------------------------------------------------------- */
+
+.neba-card-title :where(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
 }
 
 /* ---------------------------------------------------------------------------

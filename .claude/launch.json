@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "demo",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "demo:dev", "--", "--port", "5183", "--strictPort"],
-      "port": 5183,
+      "name": "docs",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vitepress", "dev", "docs", "--port", "5273", "--strictPort"],
+      "port": 5273,
       "autoPort": false
     }
   ]
