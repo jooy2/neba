@@ -30,11 +30,21 @@ Import components from the package root:
 import { Button } from 'neba';
 
 export default function App() {
-  return <Button text="Hello from Neba!" />;
+  return <Button onClick={() => console.log('clicked')}>Hello from Neba!</Button>;
 }
 ```
 
-Because components are styled with Tailwind CSS, your app needs Tailwind set up so that Neba's class names are generated. Full setup instructions and the component reference live in the documentation: https://neba.cdget.com
+Components are styled with Tailwind CSS, so your app needs Tailwind set up and pointed at the package. Add three lines to your CSS entry point:
+
+```css
+@import 'tailwindcss';
+@import 'neba/styles.css';
+@source '../node_modules/neba';
+```
+
+`neba/styles.css` carries the design tokens; `@source` is what lets Tailwind find the class names Neba uses. Without it, components render unstyled.
+
+Full setup instructions, the design language, and the component reference live in the documentation: https://neba.cdget.com
 
 ## Development
 

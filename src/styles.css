@@ -1,0 +1,561 @@
+/**
+ * Neba design tokens.
+ *
+ * Consumers import this once, next to Tailwind:
+ *
+ *   @import 'tailwindcss';
+ *   @import 'neba/styles.css';
+ *   @source '../node_modules/neba';
+ *
+ * Everything here is plain CSS custom properties — no Tailwind directives — so
+ * the file also works standalone. Components never hardcode a color; they map a
+ * `color` prop onto the `--n-*` local slots and let the cascade resolve the rest.
+ *
+ * Dark mode responds to `prefers-color-scheme`, and can be forced either way
+ * with `.dark` / `[data-theme='dark'|'light']` on any ancestor.
+ *
+ * The surface model is a sheet of acrylic, not a moulded plastic key: a
+ * slightly translucent fill, a blurred backdrop, and a hairline edge catching
+ * the light. Depth is not part of the surface — it is opt-in, via `elevation`.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Light theme (default)
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* Neutral surfaces and content */
+  --neba-surface: oklch(100% 0 0);
+  --neba-fg: oklch(24% 0.015 262);
+  --neba-muted-fg: oklch(56% 0.014 262);
+  --neba-border: oklch(91% 0.008 262);
+
+  /* Inactive controls: muted neutral rather than a faded copy of the color.
+     A greyed-out surface reads as "unavailable"; 50% opacity just reads blurry. */
+  --neba-disabled-bg: oklch(94.5% 0.005 262);
+  --neba-disabled-fg: oklch(73% 0.012 262);
+  --neba-disabled-border: oklch(90% 0.008 262);
+
+  /* Acrylic -------------------------------------------------------------- */
+
+  /* How opaque a filled surface is, and how hard the backdrop is blurred.
+     The blur radius is what decides whether anything behind is *legible*: at
+     16px a grid line behind the button smears into flat colour and the surface
+     reads opaque no matter how low the alpha goes. Held at 9px so the backdrop
+     is present but never resolves into something you could read.
+     88% is the floor for 4.5:1 white-on-fill over a white page; fill lightness
+     is picked against this number, not against opaque. */
+  --neba-fill-alpha: 88%;
+  --neba-blur: blur(9px) saturate(1.5);
+
+  /* Frosted, not polished. A single tile of greyscale fractal noise laid over
+     the fill in `overlay` is what separates sandblasted acrylic from a pane of
+     glass — and it is the one thing a flat fill can never fake. Kept at 12% in
+     the tile and blended, so it reads as tooth rather than as dirt.
+     One 120px tile, decoded once, reused by every surface on the page. */
+  --neba-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+
+  /* The hairline that reads as the cut edge of an acrylic sheet, plus the
+     brighter top edge where the light lands. There is deliberately no dark
+     bottom bevel — that is what made the surface read as moulded plastic. */
+  --neba-plate-edge: rgb(255 255 255 / 0.18);
+  --neba-plate-top: rgb(255 255 255 / 0.26);
+  --neba-plate-solid: inset 0 1px 0 var(--neba-plate-top), inset 0 0 0 1px var(--neba-plate-edge);
+  --neba-plate-glass: inset 0 1px 0 var(--neba-plate-top);
+  /* Off-vertical on purpose: light falling across a sheet at an angle, rather
+     than the symmetric top-down gradient every framework ships. */
+  --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0) 52%);
+
+  /* Translucent surface for outline/text variants — the acrylic with no dye. */
+  --neba-glass-bg: rgb(255 255 255 / 0.42);
+
+  /* Pointer spotlight and release afterglow, over a filled surface. Tinted
+     variants use their own accent instead — see the derived block. The flash is
+     only a shade brighter than the spotlight it replaces: the press is carried
+     by the fill going dark, and this is the highlight riding on top of it, not
+     the effect itself. */
+  --neba-glow-on-fill: rgb(255 255 255 / 0.16);
+  --neba-flash-on-fill: rgb(255 255 255 / 0.22);
+
+  /* Elevation ------------------------------------------------------------
+     Neutral, never tinted with the control's own color: a colored glow is the
+     loudest thing a small control can do, and the job here is to place a
+     surface in space, not to advertise it. Level 4 is only reachable by
+     hovering a level-3 surface. */
+  --neba-shadow-ambient: rgb(16 24 40 / 0.13);
+  --neba-shadow-0: 0 0 #0000;
+  --neba-shadow-1: 0 1px 2px -1px var(--neba-shadow-ambient);
+  --neba-shadow-2:
+    0 2px 4px -2px var(--neba-shadow-ambient), 0 5px 12px -7px var(--neba-shadow-ambient);
+  --neba-shadow-3:
+    0 4px 8px -3px var(--neba-shadow-ambient), 0 12px 24px -11px var(--neba-shadow-ambient);
+  --neba-shadow-4:
+    0 6px 12px -4px var(--neba-shadow-ambient), 0 20px 40px -15px var(--neba-shadow-ambient);
+
+  /* Corner radius: ~45% of the control height at every step. Held just short of
+     the 50% that would make it a pill — the flat run along the top and bottom
+     edge is what still reads as a sheet with corners cut off it. */
+  --neba-radius-xs: 0.625rem;
+  --neba-radius-sm: 0.75rem;
+  --neba-radius-md: 0.875rem;
+  --neba-radius-lg: 1.125rem;
+  --neba-radius-xl: 1.375rem;
+
+  /* Motion. Controls answer in color and depth, never by moving: a transform on
+     a control drags its label with it, and text that shifts under the cursor is
+     the thing that reads as cheap. */
+  --neba-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --neba-duration: 160ms;
+  /* Fills settle more slowly than edges and shadows. Pressing overrides this to
+     0ms, so the colour lands on the frame of the click and then takes this long
+     to drain back out — the button itself holds the press, not just the bloom
+     under the cursor. */
+  --neba-duration-fill: 340ms;
+
+  /* Color families ------------------------------------------------------- */
+
+  --neba-primary-solid: oklch(50% 0.15 262);
+  --neba-primary-solid-hover: oklch(45.5% 0.146 262);
+  --neba-primary-solid-active: oklch(38% 0.132 262);
+  --neba-primary-on-solid: oklch(99% 0.004 262);
+  --neba-primary-accent: oklch(47% 0.152 262);
+
+  --neba-secondary-solid: oklch(48% 0.03 262);
+  --neba-secondary-solid-hover: oklch(43.5% 0.028 262);
+  --neba-secondary-solid-active: oklch(36% 0.024 262);
+  --neba-secondary-on-solid: oklch(99% 0.003 262);
+  --neba-secondary-accent: oklch(45% 0.03 262);
+
+  --neba-success-solid: oklch(49% 0.128 152);
+  --neba-success-solid-hover: oklch(44.5% 0.124 152);
+  --neba-success-solid-active: oklch(37% 0.11 152);
+  --neba-success-on-solid: oklch(99% 0.004 152);
+  --neba-success-accent: oklch(46% 0.125 152);
+
+  --neba-warning-solid: oklch(78% 0.13 78);
+  --neba-warning-solid-hover: oklch(73% 0.13 74);
+  --neba-warning-solid-active: oklch(64% 0.12 70);
+  --neba-warning-on-solid: oklch(28% 0.06 70);
+  --neba-warning-accent: oklch(50% 0.11 62);
+
+  --neba-danger-solid: oklch(50% 0.172 30);
+  --neba-danger-solid-hover: oklch(45.5% 0.166 30);
+  --neba-danger-solid-active: oklch(38% 0.15 30);
+  --neba-danger-on-solid: oklch(99% 0.004 30);
+  --neba-danger-accent: oklch(49% 0.17 30);
+
+  --neba-info-solid: oklch(50% 0.098 218);
+  --neba-info-solid-hover: oklch(45.5% 0.096 218);
+  --neba-info-solid-active: oklch(38% 0.086 218);
+  --neba-info-on-solid: oklch(99% 0.004 218);
+  --neba-info-accent: oklch(48% 0.1 218);
+}
+
+/* ---------------------------------------------------------------------------
+ * Dark theme
+ *
+ * Fills stay mid-tone rather than pale, so a filled button on a dark surface
+ * does not glare; the readable-on-surface `accent` is what lightens.
+ * ------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme='light']) {
+    --neba-surface: oklch(19% 0.012 262);
+    --neba-fg: oklch(95% 0.008 262);
+    --neba-muted-fg: oklch(66% 0.014 262);
+    --neba-border: oklch(30% 0.012 262);
+
+    --neba-disabled-bg: oklch(27% 0.012 262);
+    --neba-disabled-fg: oklch(48% 0.012 262);
+    --neba-disabled-border: oklch(32% 0.012 262);
+
+    --neba-fill-alpha: 87%;
+    --neba-blur: blur(9px) saturate(1.3);
+
+    --neba-plate-edge: rgb(255 255 255 / 0.12);
+    --neba-plate-top: rgb(255 255 255 / 0.16);
+    --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
+
+    --neba-glass-bg: rgb(255 255 255 / 0.05);
+
+    --neba-glow-on-fill: rgb(255 255 255 / 0.13);
+    --neba-flash-on-fill: rgb(255 255 255 / 0.18);
+
+    --neba-shadow-ambient: rgb(0 0 0 / 0.55);
+
+    --neba-primary-solid: oklch(57% 0.155 262);
+    --neba-primary-solid-hover: oklch(62% 0.152 262);
+    --neba-primary-solid-active: oklch(48% 0.145 262);
+    --neba-primary-on-solid: oklch(99% 0.004 262);
+    --neba-primary-accent: oklch(78% 0.105 262);
+
+    --neba-secondary-solid: oklch(50% 0.028 262);
+    --neba-secondary-solid-hover: oklch(55% 0.028 262);
+    --neba-secondary-solid-active: oklch(41% 0.024 262);
+    --neba-secondary-on-solid: oklch(99% 0.003 262);
+    --neba-secondary-accent: oklch(78% 0.02 262);
+
+    --neba-success-solid: oklch(54% 0.13 152);
+    --neba-success-solid-hover: oklch(59% 0.13 152);
+    --neba-success-solid-active: oklch(45% 0.118 152);
+    --neba-success-on-solid: oklch(99% 0.004 152);
+    --neba-success-accent: oklch(78% 0.13 152);
+
+    --neba-warning-solid: oklch(76% 0.135 78);
+    --neba-warning-solid-hover: oklch(81% 0.132 80);
+    --neba-warning-solid-active: oklch(66% 0.125 74);
+    --neba-warning-on-solid: oklch(25% 0.06 70);
+    --neba-warning-accent: oklch(82% 0.12 82);
+
+    --neba-danger-solid: oklch(55% 0.18 30);
+    --neba-danger-solid-hover: oklch(60% 0.175 30);
+    --neba-danger-solid-active: oklch(46% 0.165 30);
+    --neba-danger-on-solid: oklch(99% 0.004 30);
+    --neba-danger-accent: oklch(76% 0.13 32);
+
+    --neba-info-solid: oklch(55% 0.1 218);
+    --neba-info-solid-hover: oklch(60% 0.098 218);
+    --neba-info-solid-active: oklch(46% 0.092 218);
+    --neba-info-on-solid: oklch(99% 0.004 218);
+    --neba-info-accent: oklch(79% 0.09 218);
+  }
+}
+
+.dark,
+[data-theme='dark'] {
+  --neba-surface: oklch(19% 0.012 262);
+  --neba-fg: oklch(95% 0.008 262);
+  --neba-muted-fg: oklch(66% 0.014 262);
+  --neba-border: oklch(30% 0.012 262);
+
+  --neba-disabled-bg: oklch(27% 0.012 262);
+  --neba-disabled-fg: oklch(48% 0.012 262);
+  --neba-disabled-border: oklch(32% 0.012 262);
+
+  --neba-fill-alpha: 87%;
+  --neba-blur: blur(9px) saturate(1.3);
+
+  --neba-plate-edge: rgb(255 255 255 / 0.12);
+  --neba-plate-top: rgb(255 255 255 / 0.16);
+  --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
+
+  --neba-glass-bg: rgb(255 255 255 / 0.05);
+
+  --neba-glow-on-fill: rgb(255 255 255 / 0.13);
+  --neba-flash-on-fill: rgb(255 255 255 / 0.18);
+
+  --neba-shadow-ambient: rgb(0 0 0 / 0.55);
+
+  --neba-primary-solid: oklch(57% 0.155 262);
+  --neba-primary-solid-hover: oklch(62% 0.152 262);
+  --neba-primary-solid-active: oklch(48% 0.145 262);
+  --neba-primary-on-solid: oklch(99% 0.004 262);
+  --neba-primary-accent: oklch(78% 0.105 262);
+
+  --neba-secondary-solid: oklch(50% 0.028 262);
+  --neba-secondary-solid-hover: oklch(55% 0.028 262);
+  --neba-secondary-solid-active: oklch(41% 0.024 262);
+  --neba-secondary-on-solid: oklch(99% 0.003 262);
+  --neba-secondary-accent: oklch(78% 0.02 262);
+
+  --neba-success-solid: oklch(54% 0.13 152);
+  --neba-success-solid-hover: oklch(59% 0.13 152);
+  --neba-success-solid-active: oklch(45% 0.118 152);
+  --neba-success-on-solid: oklch(99% 0.004 152);
+  --neba-success-accent: oklch(78% 0.13 152);
+
+  --neba-warning-solid: oklch(76% 0.135 78);
+  --neba-warning-solid-hover: oklch(81% 0.132 80);
+  --neba-warning-solid-active: oklch(66% 0.125 74);
+  --neba-warning-on-solid: oklch(25% 0.06 70);
+  --neba-warning-accent: oklch(82% 0.12 82);
+
+  --neba-danger-solid: oklch(55% 0.18 30);
+  --neba-danger-solid-hover: oklch(60% 0.175 30);
+  --neba-danger-solid-active: oklch(46% 0.165 30);
+  --neba-danger-on-solid: oklch(99% 0.004 30);
+  --neba-danger-accent: oklch(76% 0.13 32);
+
+  --neba-info-solid: oklch(55% 0.1 218);
+  --neba-info-solid-hover: oklch(60% 0.098 218);
+  --neba-info-solid-active: oklch(46% 0.092 218);
+  --neba-info-on-solid: oklch(99% 0.004 218);
+  --neba-info-accent: oklch(79% 0.09 218);
+}
+
+/* ---------------------------------------------------------------------------
+ * Derived tokens
+ *
+ * Fills, tints, hairlines and focus rings are all one base color at different
+ * strengths, so they are computed rather than hand-picked per theme. This block
+ * is repeated for every theme root because a custom property resolves its
+ * `var()`s on the element that declares it — declaring these only on `:root`
+ * would freeze them to the light values inside a `.dark` subtree.
+ * ------------------------------------------------------------------------- */
+
+:root,
+.dark,
+.light,
+[data-theme='dark'],
+[data-theme='light'] {
+  --neba-primary-fill: color-mix(
+    in srgb,
+    var(--neba-primary-solid) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-primary-fill-hover: color-mix(
+    in srgb,
+    var(--neba-primary-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-primary-fill-active: color-mix(
+    in srgb,
+    var(--neba-primary-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-primary-soft: color-mix(in srgb, var(--neba-primary-accent) 10%, transparent);
+  --neba-primary-soft-hover: color-mix(in srgb, var(--neba-primary-accent) 17%, transparent);
+  --neba-primary-soft-press: color-mix(in srgb, var(--neba-primary-accent) 25%, transparent);
+  --neba-primary-panel: color-mix(in srgb, var(--neba-primary-accent) 8%, var(--neba-glass-bg));
+  --neba-primary-panel-hover: color-mix(
+    in srgb,
+    var(--neba-primary-accent) 16%,
+    var(--neba-glass-bg)
+  );
+  --neba-primary-panel-press: color-mix(
+    in srgb,
+    var(--neba-primary-accent) 24%,
+    var(--neba-glass-bg)
+  );
+  --neba-primary-line: color-mix(in srgb, var(--neba-primary-accent) 22%, transparent);
+  --neba-primary-line-hover: color-mix(in srgb, var(--neba-primary-accent) 40%, transparent);
+  --neba-primary-ring: color-mix(in srgb, var(--neba-primary-accent) 55%, transparent);
+
+  --neba-secondary-fill: color-mix(
+    in srgb,
+    var(--neba-secondary-solid) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-secondary-fill-hover: color-mix(
+    in srgb,
+    var(--neba-secondary-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-secondary-fill-active: color-mix(
+    in srgb,
+    var(--neba-secondary-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-secondary-soft: color-mix(in srgb, var(--neba-secondary-accent) 10%, transparent);
+  --neba-secondary-soft-hover: color-mix(in srgb, var(--neba-secondary-accent) 17%, transparent);
+  --neba-secondary-soft-press: color-mix(in srgb, var(--neba-secondary-accent) 25%, transparent);
+  --neba-secondary-panel: color-mix(in srgb, var(--neba-secondary-accent) 8%, var(--neba-glass-bg));
+  --neba-secondary-panel-hover: color-mix(
+    in srgb,
+    var(--neba-secondary-accent) 16%,
+    var(--neba-glass-bg)
+  );
+  --neba-secondary-panel-press: color-mix(
+    in srgb,
+    var(--neba-secondary-accent) 24%,
+    var(--neba-glass-bg)
+  );
+  --neba-secondary-line: color-mix(in srgb, var(--neba-secondary-accent) 22%, transparent);
+  --neba-secondary-line-hover: color-mix(in srgb, var(--neba-secondary-accent) 40%, transparent);
+  --neba-secondary-ring: color-mix(in srgb, var(--neba-secondary-accent) 55%, transparent);
+
+  --neba-success-fill: color-mix(
+    in srgb,
+    var(--neba-success-solid) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-success-fill-hover: color-mix(
+    in srgb,
+    var(--neba-success-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-success-fill-active: color-mix(
+    in srgb,
+    var(--neba-success-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-success-soft: color-mix(in srgb, var(--neba-success-accent) 10%, transparent);
+  --neba-success-soft-hover: color-mix(in srgb, var(--neba-success-accent) 17%, transparent);
+  --neba-success-soft-press: color-mix(in srgb, var(--neba-success-accent) 25%, transparent);
+  --neba-success-panel: color-mix(in srgb, var(--neba-success-accent) 8%, var(--neba-glass-bg));
+  --neba-success-panel-hover: color-mix(
+    in srgb,
+    var(--neba-success-accent) 16%,
+    var(--neba-glass-bg)
+  );
+  --neba-success-panel-press: color-mix(
+    in srgb,
+    var(--neba-success-accent) 24%,
+    var(--neba-glass-bg)
+  );
+  --neba-success-line: color-mix(in srgb, var(--neba-success-accent) 22%, transparent);
+  --neba-success-line-hover: color-mix(in srgb, var(--neba-success-accent) 40%, transparent);
+  --neba-success-ring: color-mix(in srgb, var(--neba-success-accent) 55%, transparent);
+
+  --neba-warning-fill: color-mix(
+    in srgb,
+    var(--neba-warning-solid) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-warning-fill-hover: color-mix(
+    in srgb,
+    var(--neba-warning-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-warning-fill-active: color-mix(
+    in srgb,
+    var(--neba-warning-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-warning-soft: color-mix(in srgb, var(--neba-warning-accent) 12%, transparent);
+  --neba-warning-soft-hover: color-mix(in srgb, var(--neba-warning-accent) 20%, transparent);
+  --neba-warning-soft-press: color-mix(in srgb, var(--neba-warning-accent) 28%, transparent);
+  --neba-warning-panel: color-mix(in srgb, var(--neba-warning-accent) 8%, var(--neba-glass-bg));
+  --neba-warning-panel-hover: color-mix(
+    in srgb,
+    var(--neba-warning-accent) 16%,
+    var(--neba-glass-bg)
+  );
+  --neba-warning-panel-press: color-mix(
+    in srgb,
+    var(--neba-warning-accent) 24%,
+    var(--neba-glass-bg)
+  );
+  --neba-warning-line: color-mix(in srgb, var(--neba-warning-accent) 26%, transparent);
+  --neba-warning-line-hover: color-mix(in srgb, var(--neba-warning-accent) 44%, transparent);
+  --neba-warning-ring: color-mix(in srgb, var(--neba-warning-accent) 55%, transparent);
+
+  --neba-danger-fill: color-mix(
+    in srgb,
+    var(--neba-danger-solid) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-danger-fill-hover: color-mix(
+    in srgb,
+    var(--neba-danger-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-danger-fill-active: color-mix(
+    in srgb,
+    var(--neba-danger-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-danger-soft: color-mix(in srgb, var(--neba-danger-accent) 10%, transparent);
+  --neba-danger-soft-hover: color-mix(in srgb, var(--neba-danger-accent) 17%, transparent);
+  --neba-danger-soft-press: color-mix(in srgb, var(--neba-danger-accent) 25%, transparent);
+  --neba-danger-panel: color-mix(in srgb, var(--neba-danger-accent) 8%, var(--neba-glass-bg));
+  --neba-danger-panel-hover: color-mix(
+    in srgb,
+    var(--neba-danger-accent) 16%,
+    var(--neba-glass-bg)
+  );
+  --neba-danger-panel-press: color-mix(
+    in srgb,
+    var(--neba-danger-accent) 24%,
+    var(--neba-glass-bg)
+  );
+  --neba-danger-line: color-mix(in srgb, var(--neba-danger-accent) 22%, transparent);
+  --neba-danger-line-hover: color-mix(in srgb, var(--neba-danger-accent) 40%, transparent);
+  --neba-danger-ring: color-mix(in srgb, var(--neba-danger-accent) 55%, transparent);
+
+  --neba-info-fill: color-mix(in srgb, var(--neba-info-solid) var(--neba-fill-alpha), transparent);
+  --neba-info-fill-hover: color-mix(
+    in srgb,
+    var(--neba-info-solid-hover) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-info-fill-active: color-mix(
+    in srgb,
+    var(--neba-info-solid-active) var(--neba-fill-alpha),
+    transparent
+  );
+  --neba-info-soft: color-mix(in srgb, var(--neba-info-accent) 10%, transparent);
+  --neba-info-soft-hover: color-mix(in srgb, var(--neba-info-accent) 17%, transparent);
+  --neba-info-soft-press: color-mix(in srgb, var(--neba-info-accent) 25%, transparent);
+  --neba-info-panel: color-mix(in srgb, var(--neba-info-accent) 8%, var(--neba-glass-bg));
+  --neba-info-panel-hover: color-mix(in srgb, var(--neba-info-accent) 16%, var(--neba-glass-bg));
+  --neba-info-panel-press: color-mix(in srgb, var(--neba-info-accent) 24%, var(--neba-glass-bg));
+  --neba-info-line: color-mix(in srgb, var(--neba-info-accent) 22%, transparent);
+  --neba-info-line-hover: color-mix(in srgb, var(--neba-info-accent) 40%, transparent);
+  --neba-info-ring: color-mix(in srgb, var(--neba-info-accent) 55%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Interaction light
+ *
+ * Two stacked layers on an interactive surface, both reading `--n-mx`/`--n-my`
+ * — the pointer position, written straight to the element's inline style on
+ * `pointermove` — and both no-ops until those slots have colour in them.
+ *
+ * This lives in CSS rather than in Tailwind arbitrary variants because the
+ * selectors are pseudo-elements carrying gradients: `[&::before]:[background:
+ * radial-gradient(...)]` is technically expressible and completely unreadable.
+ *
+ * Cost per hovered button: two composited layers and a gradient repaint of one
+ * small box, on frames the pointer already moved in. Nothing reflows, and React
+ * never re-renders — the component writes the two custom properties directly.
+ * ------------------------------------------------------------------------- */
+
+.neba-glow::before,
+.neba-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Pointer spotlight: a soft bloom trailing the cursor across the surface. */
+.neba-glow::before {
+  background: radial-gradient(
+    5.5rem circle at var(--n-mx, 50%) var(--n-my, 50%),
+    var(--n-glow, transparent),
+    transparent 70%
+  );
+  transition: opacity 240ms var(--neba-ease);
+}
+
+@media (hover: hover) {
+  .neba-glow:hover::before {
+    opacity: 1;
+  }
+}
+
+/*
+ * Release afterglow. The asymmetry is the whole trick: 0ms in, ~900ms out, so
+ * the flash lands on the frame of the press and is still visibly draining a
+ * beat after the finger lifts. No JavaScript, no ripple element, no timers.
+ */
+.neba-glow::after {
+  background: radial-gradient(
+    4.5rem circle at var(--n-mx, 50%) var(--n-my, 50%),
+    var(--n-flash, transparent),
+    transparent 72%
+  );
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.neba-glow:active::after {
+  opacity: 1;
+  transition-duration: 0ms;
+}
+
+/* Respect a reduced-motion preference. Both layers track the pointer, so they
+   are motion in the sense that matters here — drop them entirely. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --neba-duration: 0ms;
+    --neba-duration-fill: 0ms;
+  }
+
+  .neba-glow::before,
+  .neba-glow::after {
+    display: none;
+  }
+}

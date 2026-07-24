@@ -19,7 +19,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 | `src/components/{name}/` | One folder per component (lowercase folder name). |
 | `test/` | Test suite (Vitest). Mirrors the `src/` tree. Self-contained: owns its `tsconfig.json`. |
 | `examples/` | Vite demo app — a single page showing every component at a glance. Self-contained: owns its `vite.config.ts` and `tsconfig.json`. Not published. |
-| `docs/` | VitePress site — developer-facing documentation for library consumers. Not published to npm. |
+| `docs/` | VitePress site — developer-facing documentation for library consumers. Holds the design language spec. Not published to npm. |
 | `dist/` | Build output (`tsc` + terser). Generated; never edit by hand, never commit. |
 
 Three TypeScript projects, each with its own config, because their compiler needs genuinely differ (the library emits declarations; the demo and the tests are `noEmit` and need DOM libs):
@@ -71,6 +71,38 @@ Run `npm test` before considering the change done. If a component's shape makes 
 - **Behavior/logic: [Base UI](https://base-ui.com) (`@base-ui/react`)** — use its unstyled primitives for interaction, state, and accessibility, and layer Tailwind classes on top. This is the pattern in `Button.tsx`, which wraps `Button` from `@base-ui/react/button`.
 - **Fallback:** if neither Tailwind nor Base UI can express what a component needs, plain native React/DOM code is acceptable. Prefer the stack above first.
 - `prettier-plugin-tailwindcss` sorts Tailwind class strings — do not hand-order classes; run the formatter.
+
+## The design language
+
+**[docs/ko/design-language](docs/ko/guide/design-language.md) is the source of truth. Read it before styling anything.** The rules below are the ones most easily broken by accident; the document explains why each exists.
+
+The governing idea: **a Neba surface is a sheet of cut acrylic, not a moulded plastic key.** Every rule below follows from that.
+
+- **No `transform` on a control, ever.** Scaling resamples the label, and text that shifts under the cursor is what reads as cheap. State changes are expressed in colour and depth only.
+- **Press is instant, release is slow.** Per-property `transition-duration` with `:active` overriding everything to `0ms`. The same asymmetry drives the afterglow layer. This is the house interaction signature.
+- **`elevation` defaults to `0` and `0` means no shadow at all.** The acrylic edge separates a surface from the page; a drop shadow is opt-in. Shadows are never tinted with the control's own colour.
+- **No dark bottom bevel** (`inset 0 -1px 0 black`). Top light edge plus a full white hairline only.
+- **Translucency is tuned with the blur radius, not just the alpha.** Too much blur smears the backdrop into flat colour and the surface reads opaque again.
+- **`density` changes padding only** — never height, never type scale.
+- **Don't express state with `opacity`.** Each state gets its own axis (saturation, colour family, flatness).
+
+Implementation rules that are easy to get wrong:
+
+- **Branch state in JS, not in stacked Tailwind variants.** Two variants of equal specificity resolve by their order in the generated stylesheet. Use `disabled ? … : readOnly ? … : …`.
+- **Per-colour values go in inline `--n-*` slots, not in generated class names.** Tailwind only sees literal class names, so `[--n-fill:var(--neba-primary-fill)]` per family does not scale. `styleSlots()` in `Button.tsx` is the pattern.
+- **Never `outline-none`.** Tailwind v4 routes outline style through `--tw-outline-style`, which `outline-none` zeroes — killing the focus ring. Use the shorthand: `focus-visible:[outline:2px_solid_var(--n-ring)]`.
+- **Derived tokens are repeated per theme root.** A custom property resolves its `var()`s on the element that declares it, so a derived token declared only on `:root` freezes to light-theme values inside a `.dark` subtree.
+- **Adding a colour family = two edits.** One entry in `NebaColor` and five tokens in `src/styles.css`. Everything else is derived with `color-mix()`.
+
+### Shared prop vocabulary
+
+`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
+
+### The stylesheet ships
+
+`src/styles.css` holds the tokens and the `.neba-glow` layers. `tsc` does not copy it, so `scripts/copy-styles.mjs` runs at the end of `npm run build` and it is exported as `neba/styles.css`. Consumers need `@import 'neba/styles.css'` **and** `@source '../node_modules/neba'` next to their Tailwind import.
+
+Pseudo-element styling (the pointer spotlight, the release afterglow) lives in `styles.css` as real CSS rather than as Tailwind arbitrary variants — `[&::before]:[background:radial-gradient(...)]` is expressible and unreadable. That is the bar for moving something out of Tailwind: not "could this be CSS", but "is the Tailwind form unmaintainable".
 
 ## Commands
 
@@ -134,7 +166,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
   - `@/src` → `examples/src/`
   - So `import { Button } from '@/dist'` in the demo resolves to the live library source — that is why the demo picks up edits without a rebuild.
 - `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
-- ESLint's flat config only targets `**/*.{js,mjs,cjs,ts}` — `.tsx` files are currently not linted, so nothing in `src/components/`, `test/`, or `examples/src/` is covered by lint. `npm run typecheck` is the real gate for those.
+- ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
 - Docs are VitePress with `vitepress-i18n` + `vitepress-sidebar`; the only configured locale is `ko`, with content under `docs/ko/`.
 - CI is [.github/workflows/run-test.yml](.github/workflows/run-test.yml), on PRs to `main`, pushes to `main` touching source/test/config paths, and `workflow_dispatch`. Two jobs:
@@ -153,6 +185,6 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 These are pre-existing and worth being aware of before "fixing" them incidentally:
 
 - `react` / `react-dom` are `devDependencies`, not `peerDependencies` — unusual for a component library.
-- `Button` only accepts a `text` prop; it forwards no `onClick`, `disabled`, or variant props. The test suite is thin for that reason, not because coverage was skipped.
-- `docs/.vitepress/config.ts` still has the template title `'VitePress Sidebar'`.
+- Emitted ESM uses extensionless relative imports (`export * from './types'`), which Node's own ESM resolver rejects. Bundlers handle it; a direct `node` import of `dist/` would not. Pre-existing, and not something to fix incidentally.
 - `examples/README.md` is the stock Vite template readme.
+- The demo page paints a gradient-and-grid background. That is demo chrome, not library styling — a translucent, blurred surface has nothing to show over a flat white page, so the acrylic can only be judged over real content.

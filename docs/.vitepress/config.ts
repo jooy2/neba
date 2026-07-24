@@ -39,14 +39,18 @@ const vitePressI18nConfig: VitePressI18nOptions = {
   rootLocale: defaultLocale,
   searchProvider: 'local',
   description: {
-    ko: ''
+    ko: 'Neba 스타일의 React 컴포넌트 라이브러리'
   },
   themeConfig: {
     ko: {
       nav: [
         {
-          text: '설치',
+          text: '가이드',
           link: '/ko/guide/getting-started'
+        },
+        {
+          text: '컴포넌트',
+          link: '/ko/components/button'
         }
       ]
     }
@@ -55,7 +59,7 @@ const vitePressI18nConfig: VitePressI18nOptions = {
 
 // Ref: https://vitepress.dev/reference/site-config
 const vitePressConfig: UserConfig = {
-  title: 'VitePress Sidebar',
+  title: 'Neba UI',
   lastUpdated: true,
   outDir: '../docs-dist',
   cleanUrls: true,

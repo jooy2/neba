@@ -21,7 +21,7 @@ export default pluginTypeScriptESLint.config(
     '**/*-lock.yaml'
   ]),
   {
-    files: ['**/*.{js,mjs,cjs,ts}'],
+    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

@@ -20,6 +20,7 @@ SECURITY.md
 CONTRIBUTING.md
 
 # For development
+scripts/
 .git*
 .eslintignore
 eslint.config.ts

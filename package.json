@@ -15,7 +15,7 @@
     "url": "https://github.com/jooy2/neba/issues"
   },
   "scripts": {
-    "build": "npm run format:fix && tsc --project tsconfig.prod.json && npm run minify",
+    "build": "npm run format:fix && tsc --project tsconfig.prod.json && npm run minify && node scripts/copy-styles.mjs",
     "lint": "eslint . --ext .js,.ts .",
     "lint:fix": "eslint . --ext .js,.ts --fix .",
     "minify": "terser-glob 'dist/**/*.js' --config-file terser.config.json",
@@ -46,7 +46,8 @@
       "types": "./dist/types.d.ts",
       "module": "./dist/types.js",
       "default": "./dist/types.js"
-    }
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "typesVersions": {
     "*": {
