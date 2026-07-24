@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "esnext",
     "module": "Preserve",
     "moduleDetection": "force",
