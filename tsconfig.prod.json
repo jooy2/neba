@@ -1,6 +1,13 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["test/**/*.test.ts", "docs-dist/*", "docs/.vitepress/*", "eslint.config.ts"],
+  "exclude": [
+    "test",
+    "examples",
+    "docs-dist/*",
+    "docs/.vitepress/*",
+    "eslint.config.ts",
+    "vitest.config.ts"
+  ],
   "compilerOptions": {
     "rootDir": "./src"
   }

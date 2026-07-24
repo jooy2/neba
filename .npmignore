@@ -10,9 +10,11 @@ Thumbs.db
 # Project files
 src/
 test/
+examples/
 docs/
 docs-dist/
 CHANGELOG.md
+CLAUDE.md
 CODE_OF_CONDUCT.md
 SECURITY.md
 CONTRIBUTING.md
@@ -27,3 +29,6 @@ eslint.config.ts
 terser.config.json
 tsconfig.json
 tsconfig.prod.json
+vitest.config.ts
+postcss.config.mjs
+pnpm-workspace.yaml

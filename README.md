@@ -44,15 +44,39 @@ Clone the repository and install dependencies, then:
 | --- | --- |
 | `npm run demo:dev` | Starts the demo page (`examples/`) — every component on one page, with HMR. |
 | `npm run docs:dev` | Starts the documentation site (`docs/`) locally. |
-| `npm run build` | Formats, type-checks, compiles, and minifies the library into `dist/`. |
+| `npm test` | Runs the test suite once. |
+| `npm run test:watch` | Runs the test suite in watch mode. |
+| `npm run typecheck` | Type-checks the library, the tests, and the demo app. |
+| `npm run build` | Formats, compiles, and minifies the library into `dist/`. |
 | `npm run lint:fix` | Runs ESLint with autofix. |
 | `npm run format:fix` | Runs Prettier over the repository. |
+
+All commands are run from the repository root.
 
 ### Project structure
 
 - `src/` — the library source. Each component lives in `src/components/{name}/` and is re-exported from `src/index.ts`.
+- `test/` — the test suite, mirroring the `src/` tree.
 - `examples/` — a Vite demo app used to develop and eyeball components.
 - `docs/` — the VitePress documentation site for library consumers.
+
+### Tests
+
+Tests run with [Vitest](https://vitest.dev) in browser mode, against a real headless browser driven by Playwright — Neba's components sit on top of [Base UI](https://base-ui.com) primitives that expect real browser APIs. Install the browser once before your first run:
+
+```bash
+npx playwright install chromium
+```
+
+`npm test` uses Chromium. To run against another engine, set `VITEST_BROWSER` to `chromium`, `firefox`, or `webkit` (or a comma-separated list), having installed those browsers first:
+
+```bash
+VITEST_BROWSER=firefox npm test
+```
+
+CI runs the suite across Linux, Windows, and macOS in all three browser engines.
+
+Add a test for each component at the path mirroring its source — `src/components/button/Button.tsx` is covered by `test/components/button/Button.test.tsx`.
 
 ## Contributing
 
