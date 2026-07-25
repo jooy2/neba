@@ -1,17 +1,29 @@
 import { useState, type ReactNode } from 'react';
 import {
+  Accordion,
+  AccordionItem,
   Alert,
+  Badge,
   Box,
   Button,
   ButtonGroup,
   Card,
   Checkbox,
   Chip,
+  ContextMenu,
   Dialog,
   DialogClose,
   Divider,
+  FilePicker,
   List,
   ListItem,
+  Menu,
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuItem,
+  MenuSeparator,
+  MenuSubmenu,
+  Pagination,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -20,7 +32,10 @@ import {
   Select,
   Slider,
   Switch,
+  Tab,
   Table,
+  TabPanel,
+  Tabs,
   TextField,
   ToastProvider,
   Tooltip,
@@ -43,6 +58,20 @@ function PlusIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path d="M8 3.5v9M3.5 8h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BellIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M4 6.5a4 4 0 0 1 8 0c0 3 1 4 1 4H3s1-1 1-4Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M6.5 13a1.5 1.5 0 0 0 3 0" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -127,6 +156,8 @@ function ShowcaseBody() {
   const [saved, setSaved] = useState(false);
   const [region, setRegion] = useState<string | number | null>('icn');
   const [tags, setTags] = useState(['react', 'tailwind', 'base-ui']);
+  const [page, setPage] = useState(1);
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -147,7 +178,7 @@ function ShowcaseBody() {
     <div className="flex flex-col gap-8">
       {/* Toolbar — the controls that run a screen, all on one baseline. */}
       <section className="flex flex-col gap-3">
-        <Caption>Button · ButtonGroup · TextField · Select · Tooltip</Caption>
+        <Caption>Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge</Caption>
         <div className="flex flex-wrap items-center gap-2">
           <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
           <Select
@@ -163,11 +194,43 @@ function ShowcaseBody() {
             <Button>Month</Button>
           </ButtonGroup>
           <div className="grow" />
+
+          {/* A badge is the one component that overlaps its neighbour, so the
+              row still measures as if it were not there. */}
+          <Badge content={3} color="danger" label="3 failing builds">
+            <Button size="sm" variant="outline" color="secondary" startIcon={<BellIcon />} />
+          </Badge>
+
           <Tooltip content="Import from a Git provider">
             <Button size="sm" variant="outline" color="secondary">
               Import
             </Button>
           </Tooltip>
+
+          <Menu
+            size="sm"
+            trigger={
+              <Button size="sm" variant="outline" color="secondary">
+                View
+              </Button>
+            }
+          >
+            <MenuGroup label="Columns">
+              <MenuCheckboxItem defaultChecked>Status</MenuCheckboxItem>
+              <MenuCheckboxItem defaultChecked>Duration</MenuCheckboxItem>
+              <MenuCheckboxItem>Commit</MenuCheckboxItem>
+            </MenuGroup>
+            <MenuSeparator />
+            <MenuSubmenu label="Group by">
+              <MenuItem>Environment</MenuItem>
+              <MenuItem>Author</MenuItem>
+            </MenuSubmenu>
+            <MenuSeparator />
+            <MenuItem color="danger" shortcut="⌫">
+              Reset view
+            </MenuItem>
+          </Menu>
+
           <Button size="sm" startIcon={<PlusIcon />}>
             New project
           </Button>
@@ -214,16 +277,53 @@ function ShowcaseBody() {
         </Box>
       </section>
 
-      {/* Data, rendered from a column list rather than written out row by row. */}
+      {/* Data, rendered from a column list rather than written out row by row —
+          inside the tab bar that switches between views of it, with the row of
+          pages under it and a context menu on the whole thing. */}
       <section className="flex flex-col gap-3">
-        <Caption>Table · Chip</Caption>
-        <Table
-          headers={DEPLOY_COLUMNS}
-          items={DEPLOYS}
-          getRowKey={(row) => row.id}
-          size="sm"
-          hoverable
-        />
+        <Caption>Tabs · Table · Chip · ContextMenu · Pagination</Caption>
+        <Tabs defaultValue="deploys" size="sm">
+          <Tab value="deploys" endIcon={<Badge content={DEPLOYS.length} size="xs" />}>
+            Deploys
+          </Tab>
+          <Tab value="builds">Builds</Tab>
+          <Tab value="logs" disabled>
+            Logs
+          </Tab>
+
+          <TabPanel value="deploys">
+            <div className="flex flex-col gap-3">
+              <ContextMenu
+                size="sm"
+                content={
+                  <>
+                    <MenuItem shortcut="⌘R">Redeploy</MenuItem>
+                    <MenuItem>Copy deploy URL</MenuItem>
+                    <MenuSeparator />
+                    <MenuItem color="danger">Cancel deploy</MenuItem>
+                  </>
+                }
+              >
+                <Table
+                  headers={DEPLOY_COLUMNS}
+                  items={DEPLOYS}
+                  getRowKey={(row) => row.id}
+                  size="sm"
+                  hoverable
+                />
+              </ContextMenu>
+
+              <div className="flex items-center justify-between gap-3">
+                <Typography level="caption">Showing 1–3 of 34</Typography>
+                <Pagination size="sm" count={12} page={page} onPageChange={setPage} />
+              </div>
+            </div>
+          </TabPanel>
+
+          <TabPanel value="builds">
+            <Typography level="caption">Nothing building right now.</Typography>
+          </TabPanel>
+        </Tabs>
       </section>
 
       {/* A card holding controls — the composition the library is actually for. */}
@@ -283,6 +383,19 @@ function ShowcaseBody() {
                 ))}
               </div>
               <Checkbox label="Show my email to other members" description="Members only." />
+              <Divider>Files</Divider>
+              <FilePicker
+                multiple
+                size="sm"
+                density="compact"
+                accept="image/*,.pdf"
+                maxSize={5_000_000}
+                maxFiles={3}
+                title="Drop an avatar or a résumé"
+                hint="PNG, JPG or PDF · up to 5 MB · 3 files"
+                value={attachments}
+                onFilesChange={setAttachments}
+              />
             </div>
           </Card>
 
@@ -346,6 +459,17 @@ function ShowcaseBody() {
                   preview
                 </ListItem>
               </List>
+            </Card>
+
+            <Card size="sm" title="Questions" dividers>
+              <Accordion variant="text" size="sm" density="compact">
+                <AccordionItem value="billing" title="How does billing work?">
+                  Charged on the first for the seats held on the last day of the month.
+                </AccordionItem>
+                <AccordionItem value="regions" title="Where do builds run?">
+                  In the region closest to the repository's default branch.
+                </AccordionItem>
+              </Accordion>
             </Card>
 
             <Card

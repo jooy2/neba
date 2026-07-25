@@ -274,6 +274,19 @@ export const focusWithinRingClasses =
 /** Icons track their label rather than carrying a size of their own. */
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 
+/**
+ * Text for a screen reader and nobody else: the sentence behind a bare number
+ * on a Badge, the page number under a Pagination chevron, the file count a
+ * FilePicker reports.
+ *
+ * Not `hidden`, not `display:none` and not `opacity:0` — the first two take the
+ * text off the accessibility tree along with the screen, and the third leaves a
+ * clickable ghost the size of the words. A 1px clipped box is the one form that
+ * is invisible to a sighted reader and present to every other kind.
+ */
+export const srOnlyClasses =
+  'absolute size-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)]';
+
 /* ---------------------------------------------------------------------------
  * Colour slots
  *

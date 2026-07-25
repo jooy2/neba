@@ -30,6 +30,52 @@ export function CloseIcon() {
   );
 }
 
+/**
+ * The disclosure chevron, drawn pointing **down**.
+ *
+ * One drawing for every direction: a Select's trigger, an Accordion's header, a
+ * submenu's arrow and a Pagination's steppers all want the same wedge turned a
+ * different way, and turning it is the one allowance the no-transform rule
+ * makes — a glyph has no text in it to resample.
+ */
+export function ChevronIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="m4.5 6.5 3.5 3.5 3.5-3.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** The tick: a chosen option, a ticked menu item. */
+export function CheckIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="m3.5 8.5 3 3 6-6"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** The filled dot: the chosen one of a set, where a tick would say "and". */
+export function DotIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="3.25" fill="currentColor" />
+    </svg>
+  );
+}
+
 /** The neutral note: a circled `i` without the serif problem an `i` has at 16px. */
 function NoteIcon() {
   return (

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Select as BaseUISelect } from '@base-ui/react/select';
 import { Field } from '@base-ui/react/field';
+import { CheckIcon, ChevronIcon } from '../../internal/icons';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -120,34 +121,6 @@ const itemClasses = [
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
   '[outline:none]'
 ].join(' ');
-
-function ChevronIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="m4.5 6.5 3.5 3.5 3.5-3.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="m3.5 8.5 3 3 6-6"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * One value chosen from a list of them.

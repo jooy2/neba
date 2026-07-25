@@ -46,6 +46,16 @@ export type NebaSide = 'top' | 'right' | 'bottom' | 'left';
 export type NebaAlign = 'start' | 'center' | 'end';
 
 /**
+ * Which corner of a box something is pinned to. Badge reads this.
+ *
+ * Deliberately one word built out of the two the library already has —
+ * `top`/`bottom` from `NebaSide`, `start`/`end` from `NebaAlign` — rather than
+ * a pair of props. A corner is one decision, and splitting it into two would
+ * let a caller spell `{ vertical: 'left' }`.
+ */
+export type NebaCorner = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
+
+/**
  * Visual weight of a component's surface.
  *
  * - `solid` — filled, carries the color. One per view, for the primary action.

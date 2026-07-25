@@ -1882,5 +1882,901 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: { ko: '텍스트', en: 'The text' }
     }
+  ],
+
+  Badge: [
+    ...sharedProps({
+      variant: "'solid'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '표식의 크기. 컨트롤 사다리와 별개입니다 — 배지는 무언가의 모서리에 걸리는 것이라 줄을 맞출 상대가 없습니다',
+        en: 'The size of the mark, on a ladder of its own: a badge hangs off a corner, so it lines up with nothing'
+      },
+      densityDescription: {
+        ko: '숫자 좌우의 여백만 바꿉니다',
+        en: 'The room around the digits, and nothing else'
+      }
+    }),
+    {
+      name: 'content',
+      type: 'ReactNode',
+      description: {
+        ko: '표식이 말하는 것. 보통 숫자, 가끔 단어. 없으면 점이 됩니다',
+        en: 'What the badge says — usually a count. Omit it and the badge draws a dot'
+      }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      default: '99',
+      description: {
+        ko: '숫자 content의 상한. 넘으면 99+가 됩니다. 단어는 자르지 않습니다',
+        en: 'Caps a numeric content and adds a plus. Text is never truncated'
+      }
+    },
+    {
+      name: 'dot',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'content가 있어도 점으로 그립니다. 숫자는 스크린 리더에만 남습니다',
+        en: 'Draws a dot even with content, keeping the count for screen readers only'
+      }
+    },
+    {
+      name: 'showZero',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '0도 보여 줍니다. 기본이 꺼짐인 이유는 읽지 않은 메시지 0개는 소식이 아니기 때문입니다',
+        en: 'Shows a count of zero. Off by default — zero unread messages is not news'
+      }
+    },
+    {
+      name: 'invisible',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '자리는 지킨 채 숨깁니다. 다시 나타나도 주변이 움직이지 않습니다',
+        en: 'Hides the marker without giving up its box, so nothing moves when it returns'
+      }
+    },
+    {
+      name: 'placement',
+      type: "'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'",
+      default: "'top-end'",
+      shared: true,
+      description: {
+        ko: '어느 모서리에 붙을지. start/end라서 쓰기 방향을 따라 뒤집힙니다',
+        en: 'Which corner it sits on. start/end, so the corner flips with the writing direction'
+      }
+    },
+    {
+      name: 'overlap',
+      type: "'square' | 'circle'",
+      default: "'square'",
+      description: {
+        ko: '아래에 있는 것의 모양. 원의 모서리는 사각형보다 중심에서 멀기 때문에 파고드는 깊이가 다릅니다',
+        en: "The shape underneath, which decides how far the mark tucks in — a circle's corner is further out than a square's"
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '스크린 리더가 숫자 대신 읽을 문장. 종 옆의 "3"은 아무 뜻도 없습니다',
+        en: 'What a screen reader hears instead of the raw count — "3" beside a bell means nothing'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '표식이 붙을 대상. 없으면 인라인으로 놓이는 독립 표식이 됩니다',
+        en: 'What the badge is pinned to. Without it, the badge is a standalone marker that lays out inline'
+      }
+    }
+  ],
+
+  Menu: [
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: '메뉴를 여는 요소. Base UI가 연결해 줍니다. 다른 곳에서 여는 controlled 메뉴에는 필요 없습니다',
+        en: 'The element that opens the menu, wired up by Base UI. Not needed for a controlled menu opened elsewhere'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. controlled 메뉴',
+        en: 'Whether it is open, for a controlled menu'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음부터 열려 있음', en: 'Whether it starts open' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when it opens or closes' }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'right' | 'bottom' | 'left'",
+      default: "'bottom'",
+      shared: true,
+      description: {
+        ko: '트리거의 어느 변에 걸릴지. 자리가 없으면 반대편으로 뒤집힙니다',
+        en: 'Which edge of the trigger it hangs off. Flips when there is no room'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'start'",
+      shared: true,
+      description: { ko: '그 변 위에서의 위치', en: 'Where it sits along that edge' }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '6',
+      description: { ko: '트리거와의 거리(px)', en: 'Distance from the trigger, in pixels' }
+    },
+    {
+      name: 'modal',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '열려 있는 동안 뒤 페이지를 가져갈지',
+        en: 'Whether the page behind is taken away while it is open'
+      }
+    },
+    {
+      name: 'openOnHover',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '호버로도 열립니다. 메뉴바처럼 열린 채로 옆 메뉴로 건너가야 할 때',
+        en: 'Opens on hover too. For a menu bar, where crossing the row should walk through the others'
+      }
+    },
+    {
+      name: 'loopFocus',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마지막 항목에서 화살표를 누르면 처음으로 돌아갈지',
+        en: 'Whether the arrow keys wrap from the last row back to the first'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 트리거가 아무것도 열지 않습니다',
+        en: 'Unavailable. The trigger stops opening anything'
+      }
+    },
+    ...scaleProps("'md'"),
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '행의 여백만 바꿉니다. 메뉴는 자기 팝업 폭을 스스로 정하므로 Box보다 좁은 사다리를 씁니다',
+        en: 'The rows’ padding only. A menu is as wide as its longest label, so it runs a tighter ladder than Box'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '행들. MenuItem, MenuGroup, MenuSeparator, MenuSubmenu 등',
+        en: 'The rows — MenuItem, MenuGroup, MenuSeparator, MenuSubmenu and the rest'
+      }
+    }
+  ],
+
+  MenuItem: [
+    {
+      name: 'onClick',
+      type: '(event) => void',
+      description: { ko: '행이 하는 일', en: 'What the row does' }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '넘기면 진짜 a가 됩니다. 링크로 이뤄진 메뉴는 링크여야 새 탭으로 열 수 있습니다',
+        en: 'Passing it renders a real anchor. A menu of links has to be links, or none of them opens in a new tab'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 뒤, shortcut 앞의 내용',
+        en: 'Content after the label, before any shortcut'
+      }
+    },
+    {
+      name: 'shortcut',
+      type: 'ReactNode',
+      description: {
+        ko: '같은 일을 하는 단축키. 행 끝에 흐리게 놓입니다 — 표시만 하고 바인딩하지는 않습니다',
+        en: 'The keystroke that does the same thing, set muted at the end. Shown, never bound'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: { ko: '라벨 아래 한 줄', en: 'A second line under the label' }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '이 행만 다른 색 계열로. 지우는 행에 danger. 기본값은 메뉴의 색입니다',
+        en: "Re-points this row's colour family — danger for the one that deletes. Defaults to the menu's own"
+      }
+    },
+    {
+      name: 'closeOnClick',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '고르면 메뉴가 닫힐지', en: 'Whether picking the row closes the menu' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 목록에는 남고 타이핑 검색에도 걸립니다',
+        en: 'Unavailable. Still listed, and still found by typeahead'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '타이핑 검색이 맞춰 볼 문자열. 라벨이 평범한 문자열이 아닐 때',
+        en: 'What typeahead matches against, when the label is not a plain string'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '라벨', en: 'The label' }
+    }
+  ],
+
+  MenuSubmenu: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: { ko: '서브메뉴를 여는 행의 라벨', en: 'The label on the row that opens it' }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'right' | 'bottom' | 'left'",
+      default: "'right'",
+      shared: true,
+      description: {
+        ko: '부모 행의 어느 쪽으로 열릴지',
+        en: 'Which edge of the parent row it opens against'
+      }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '4',
+      description: { ko: '부모 메뉴와의 거리(px)', en: 'Distance from the parent menu, in pixels' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '사용 불가', en: 'Unavailable' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '중첩된 행들. 그 안에 또 MenuSubmenu를 넣을 수 있고, 깊이 제한은 없습니다',
+        en: 'The nested rows — one of which may be another MenuSubmenu, to any depth'
+      }
+    }
+  ],
+
+  ContextMenu: [
+    {
+      name: 'content',
+      type: 'ReactNode',
+      description: {
+        ko: '행들. Menu 안에 쓰는 것과 똑같이 씁니다',
+        en: 'The rows, written exactly as they are inside a Menu'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '오른쪽 클릭이나 길게 누르기에 반응할 영역',
+        en: 'The area that answers a right-click or a long press'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: { ko: '열림 여부', en: 'Whether it is open' }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음부터 열려 있음', en: 'Whether it starts open' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when it opens or closes' }
+    },
+    ...scaleProps("'md'"),
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '행의 여백만 바꿉니다', en: 'The rows’ padding only' }
+    }
+  ],
+
+  Accordion: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '시트의 반경과 각 섹션의 여백. Box와 같은 뜻입니다',
+        en: "The sheet's radius and each section's padding — the same thing size means on Box"
+      }
+    }),
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '여러 섹션을 동시에 열 수 있는지. 기본이 꺼짐인 이유는 하나를 열 때 하나를 닫는 것이 아코디언이 접이식 목록과 다른 점 전부이기 때문입니다',
+        en: 'Whether more than one section may be open. Off by default: closing the last as you open the next is the whole difference between an accordion and a stack of collapsibles'
+      }
+    },
+    {
+      name: 'value',
+      type: '(string | number)[]',
+      description: {
+        ko: '열려 있는 섹션들. controlled',
+        en: 'Which sections are open, for a controlled accordion'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: '(string | number)[]',
+      description: { ko: '처음 열려 있는 섹션들', en: 'Which start open' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: (string | number)[]) => void',
+      description: { ko: '열린 집합이 바뀔 때', en: 'Called when the open set changes' }
+    },
+    {
+      name: 'dividers',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '섹션 사이를 여백 대신 실선으로 나눕니다. List와 기본값이 반대인 이유는 접히는 카드 더미가 아니라 한 덩어리로 읽혀야 하기 때문입니다',
+        en: 'Separates the sections with a hairline rather than space. The opposite default from List: an accordion of tiles is a stack of cards, not one thing'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 모든 섹션이 접히지 않습니다',
+        en: 'Unavailable. Every section stops answering'
+      }
+    },
+    {
+      name: 'hiddenUntilFound',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 패널을 DOM에 남겨 브라우저의 페이지 검색이 찾아 펼칠 수 있게 합니다. keepMounted보다 우선합니다',
+        en: "Keeps closed panels in the DOM so the browser's own page search can find and open them. Overrides keepMounted"
+      }
+    },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 패널을 DOM에 남깁니다. 만들기 비싼 내용이나 접혀도 살아 있어야 하는 폼 상태',
+        en: 'Keeps closed panels in the DOM. For content that is expensive to build, or form state that should survive being folded away'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'AccordionItem들', en: 'The AccordionItems' }
+    }
+  ],
+
+  AccordionItem: [
+    {
+      name: 'value',
+      type: 'string | number',
+      description: {
+        ko: 'value / defaultValue가 가리키는 식별자. 생략하면 Base UI가 만들어 줍니다',
+        en: 'Identifies the section to value / defaultValue. Base UI generates one when it is left out'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '접히는 부분의 제목', en: 'The heading on the fold' }
+    },
+    {
+      name: 'subtitle',
+      type: 'ReactNode',
+      description: { ko: '제목 아래 한 줄', en: 'A second line under the title' }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '제목 앞의 내용', en: 'Content before the title' }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '헤더 끝에 고정되는 컨트롤. 접는 버튼 바깥에 놓입니다 — 버튼 안의 버튼은 브라우저가 고쳐 씁니다',
+        en: 'A control pinned to the end of the header, outside the folding button — a button inside a button is markup the browser rewrites'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '이 섹션만 접히지 않습니다. 나머지는 그대로 동작합니다',
+        en: 'This section stops folding; the rest keep working'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '펼쳤을 때의 내용', en: 'The body' }
+    }
+  ],
+
+  Tabs: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '패널이 아니라 탭 **바**의 무게. solid는 분절 컨트롤(홈통 안의 타일), outline은 바 가장자리의 선, text는 그 선을 뺀 것',
+        en: 'Weight of the tab **bar**, not of the panels. solid is a segmented control, outline is a rule along the bar, text is the same without it'
+      },
+      sizeDescription: {
+        ko: '탭의 높이와 타입 스케일. Button과 같은 사다리라 툴바에 섞어 놓아도 기준선이 맞습니다',
+        en: "The tabs' height and type scale, on Button's own ladder — so a tab bar keeps its baseline in a toolbar"
+      }
+    }).filter((row) => row.name !== 'elevation'),
+    {
+      name: 'value',
+      type: 'string | number | null',
+      description: { ko: '선택된 탭. controlled', en: 'The chosen tab, for a controlled set' }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number | null',
+      description: { ko: '처음 선택된 탭', en: 'Which starts chosen' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | number | null) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen tab changes' }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '바가 흐르는 방향. vertical이면 탭이 옆으로 서고 화살표 키도 그 축으로 옮겨 갑니다',
+        en: 'Which way the bar runs. vertical stands the tabs down the side and moves the arrow keys onto the other axis'
+      }
+    },
+    {
+      name: 'activateOnFocus',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '화살표로 지나가기만 해도 선택할지. 기본이 꺼짐인 이유는 패널 하나가 데이터를 받아 온다면 탭 넷을 지나가는 것이 요청 네 번이기 때문입니다',
+        en: 'Whether the arrow keys also choose. Off by default: the moment one panel fetches, walking past four tabs fires four requests'
+      }
+    },
+    {
+      name: 'loopFocus',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마지막 탭에서 화살표를 누르면 처음으로 돌아갈지',
+        en: 'Whether the arrow keys wrap from the last tab back to the first'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '탭들이 바의 폭을 똑같이 나눠 갖습니다',
+        en: 'The tabs share the full width of the bar, each taking an equal part'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'Tab과 TabPanel. 둘은 알아서 나뉘어 각자의 자리에 놓이므로 감싸는 래퍼를 쓸 필요가 없습니다',
+        en: 'The Tabs and the TabPanels. They are sorted into their two boxes for you, so there is no list wrapper to remember'
+      }
+    }
+  ],
+
+  Tab: [
+    {
+      name: 'value',
+      type: 'string | number',
+      required: true,
+      description: {
+        ko: '탭의 식별자. 같은 값을 가진 TabPanel을 가리킵니다',
+        en: 'Identifies the tab, and picks out the panel with the same value'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 뒤의 내용 — 개수, Badge, 상태 점',
+        en: 'Content after the label — a count, a Badge, a status dot'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '사용 불가. 목록에는 남습니다', en: 'Unavailable, but still listed' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '탭의 라벨', en: "The tab's label" }
+    }
+  ],
+
+  TabPanel: [
+    {
+      name: 'value',
+      type: 'string | number',
+      required: true,
+      description: { ko: '어느 탭이 이 패널을 보여 줄지', en: 'Which tab shows this panel' }
+    },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '숨겨진 동안에도 DOM에 남깁니다. 만들기 비싼 내용이나 살아 있어야 하는 폼 상태',
+        en: 'Keeps the panel in the DOM while hidden. For content that is expensive to build, or form state that should survive'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '패널의 내용', en: 'The content' }
+    }
+  ],
+
+  FilePicker: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. 셋 다 점선 테두리는 공유합니다 — 라이브러리에서 실선이 아닌 선을 긋는 유일한 곳이고, 장식이 아니라 "여기에 놓을 수 있다"는 관례이기 때문입니다',
+        en: 'Weight of the surface. All three share the dashed edge — the one place the library draws a line that is not solid, because a dashed rectangle is the established sign for a drop target'
+      },
+      sizeDescription: {
+        ko: '상자의 여백과 글자 크기. 상자는 안에 쓰인 글이 아니라 받아 내야 할 제스처에 맞춰 커집니다',
+        en: "The box's padding and type scale. A dropzone is sized by the gesture it has to catch, not by what is written in it"
+      }
+    }),
+    {
+      name: 'accept',
+      type: 'string',
+      description: {
+        ko: "브라우저 파일 창이 보여 줄 종류 — 'image/*,.pdf'. 드롭된 파일도 같은 문자열로 검사합니다. 브라우저는 그렇게 하지 않습니다",
+        en: "Which files the browser's own picker offers — 'image/*,.pdf'. Dropped files are checked against it too, which the attribute alone does not do"
+      }
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '파일을 여러 개 고를 수 있는지',
+        en: 'Whether more than one file may be chosen'
+      }
+    },
+    {
+      name: 'maxSize',
+      type: 'number',
+      description: {
+        ko: '파일 하나의 최대 크기(바이트)',
+        en: 'The largest a single file may be, in bytes'
+      }
+    },
+    {
+      name: 'maxFiles',
+      type: 'number',
+      description: {
+        ko: '한 번에 들고 있을 수 있는 개수. 한 번의 드롭이 아니라 이미 들고 있는 것과 합쳐서 셉니다',
+        en: 'How many files may be held at once — counted against what is already chosen, not against one drop'
+      }
+    },
+    {
+      name: 'value',
+      type: 'readonly File[]',
+      description: {
+        ko: '고른 파일들. controlled',
+        en: 'The chosen files, for a controlled picker'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'readonly File[]',
+      description: { ko: '처음 고른 파일들', en: 'The initially chosen files' }
+    },
+    {
+      name: 'onFilesChange',
+      type: '(files: File[]) => void',
+      description: { ko: '파일 목록이 바뀔 때', en: 'Called when the list of files changes' }
+    },
+    {
+      name: 'onReject',
+      type: '(rejections: FileRejection[]) => void',
+      description: {
+        ko: '되돌려 보낸 파일과 그 이유. 없으면 거부된 파일이 조용히 사라지는데, 드롭존이 하는 가장 나쁜 일입니다',
+        en: 'Called with everything turned away, and why. Without it a rejected file disappears silently, which is the worst thing a dropzone does'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '상자 안의 문장', en: 'The line inside the box' }
+    },
+    {
+      name: 'hint',
+      type: 'ReactNode',
+      description: {
+        ko: '그 아래 줄 — 무엇을, 얼마나 크게, 몇 개까지',
+        en: 'The line under it — what is accepted, how big, how many'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: {
+        ko: '문장 위의 글리프. null을 주면 그림 없는 상자가 됩니다',
+        en: 'The glyph above the title. Pass null for a box with no picture in it'
+      }
+    },
+    {
+      name: 'showList',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '고른 파일들을 상자 아래에 나열하고 각각 지울 방법을 붙입니다',
+        en: 'Lists the chosen files under the box, each with a way to remove it'
+      }
+    },
+    {
+      name: 'removeLabel',
+      type: '(name: string) => string',
+      description: {
+        ko: '파일 삭제 버튼의 접근성 이름',
+        en: "Accessible name of a file's remove button"
+      }
+    },
+    ...fieldProps,
+    ...inertProps,
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '폼 제출 전에 파일이 있어야 하는지',
+        en: 'Whether a file must be chosen before the form is submitted'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 제출 시의 필드 이름',
+        en: 'Identifies the field when a form is submitted'
+      }
+    }
+  ],
+
+  Pagination: [
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      density: "'compact'",
+      variantDescription: {
+        ko: '쉬고 있는 페이지 버튼의 무게. 현재 페이지는 언제나 solid입니다 — 읽지 않고도 보여야 하는 유일한 정보이고, 기본값이 text인 이유도 그것입니다. 채워진 버튼 아홉 개가 한 줄에 있으면 아홉 개 모두가 주된 액션이라는 뜻이 됩니다',
+        en: 'How the pages look at rest. The current page is always solid — the one thing the row has to say without being read, which is also why the default here is text: nine filled buttons in a row say all nine are the primary action'
+      },
+      sizeDescription: {
+        ko: '버튼의 높이와 타입 스케일. 실제로 Button이므로 옆에 놓인 같은 size의 버튼과 줄이 맞습니다',
+        en: 'The buttons’ height and type scale. They are real Buttons, so a lg pagination lines up with a lg button beside it'
+      }
+    }),
+    {
+      name: 'count',
+      type: 'number',
+      required: true,
+      description: {
+        ko: '전체 페이지 수. 둘보다 적으면 아무것도 그리지 않습니다 — 할 일이 없다고 광고하는 컨트롤은 컨트롤이 아닙니다',
+        en: 'How many pages there are. Fewer than two and the whole control renders nothing: a row advertising that it has nothing to do is not a control'
+      }
+    },
+    {
+      name: 'page',
+      type: 'number',
+      description: {
+        ko: '현재 페이지(1부터). controlled',
+        en: 'The current page, 1-based, for a controlled set'
+      }
+    },
+    {
+      name: 'defaultPage',
+      type: 'number',
+      default: '1',
+      description: { ko: '처음 페이지', en: 'Which page starts current' }
+    },
+    {
+      name: 'onPageChange',
+      type: '(page: number) => void',
+      description: { ko: '페이지가 바뀔 때', en: 'Called when the page changes' }
+    },
+    {
+      name: 'siblingCount',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '현재 페이지 양옆에 언제나 보이는 페이지 수',
+        en: 'How many pages are always shown on either side of the current one'
+      }
+    },
+    {
+      name: 'boundaryCount',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '양 끝에 언제나 보이는 페이지 수. 0이면 첫 페이지와 마지막 페이지가 빠지고 창만 남습니다',
+        en: 'How many pages are always shown at each end. 0 drops the first and last page, leaving only the window'
+      }
+    },
+    {
+      name: 'showEdges',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '맨 앞 / 맨 뒤로 건너뛰는 버튼',
+        en: 'Shows the jump-to-first and jump-to-last steppers'
+      }
+    },
+    {
+      name: 'showArrows',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '이전 / 다음 버튼', en: 'Shows the previous and next steppers' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 줄 전체가 반응하지 않습니다',
+        en: 'Unavailable. Every button in the row stops answering'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "'Pagination'",
+      description: { ko: 'nav 랜드마크의 접근성 이름', en: 'Accessible name of the nav landmark' }
+    },
+    {
+      name: 'pageLabel',
+      type: '(page: number) => string',
+      description: {
+        ko: '페이지 버튼의 접근성 이름. 기본값은 `Page ${page}`',
+        en: 'Accessible name of a page button. `Page ${page}` by default'
+      }
+    },
+    {
+      name: 'previousLabel',
+      type: 'string',
+      default: "'Previous page'",
+      description: { ko: '이전 버튼의 접근성 이름', en: 'Accessible name of the previous stepper' }
+    },
+    {
+      name: 'nextLabel',
+      type: 'string',
+      default: "'Next page'",
+      description: { ko: '다음 버튼의 접근성 이름', en: 'Accessible name of the next stepper' }
+    },
+    {
+      name: 'firstLabel',
+      type: 'string',
+      default: "'First page'",
+      description: {
+        ko: '맨 앞 버튼의 접근성 이름',
+        en: 'Accessible name of the first-page stepper'
+      }
+    },
+    {
+      name: 'lastLabel',
+      type: 'string',
+      default: "'Last page'",
+      description: {
+        ko: '맨 뒤 버튼의 접근성 이름',
+        en: 'Accessible name of the last-page stepper'
+      }
+    }
   ]
 };

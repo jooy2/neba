@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import {
+  Accordion,
+  AccordionItem,
   Alert,
+  Badge,
   Box,
   Button,
   ButtonGroup,
@@ -10,8 +13,14 @@ import {
   Dialog,
   DialogClose,
   Divider,
+  FilePicker,
   List,
   ListItem,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  MenuSubmenu,
+  Pagination,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -20,7 +29,10 @@ import {
   Select,
   Slider,
   Switch,
+  Tab,
   Table,
+  TabPanel,
+  Tabs,
   TextField,
   ToastProvider,
   Tooltip,
@@ -171,6 +183,53 @@ const GROUPS: Group[] = [
             <Slider size="sm" aria-label="Volume" defaultValue={65} />
           </div>
         )
+      },
+      {
+        name: 'Menu',
+        summary: {
+          ko: '눌렀을 때 나타나는 액션 목록. 중첩됩니다',
+          en: 'A list of actions that appears when something is pressed'
+        },
+        path: '/components/inputs/menu',
+        preview: (
+          <Menu
+            size="sm"
+            trigger={
+              <Button size="sm" variant="outline" color="secondary">
+                Actions
+              </Button>
+            }
+          >
+            <MenuItem shortcut="⌘E">Rename</MenuItem>
+            <MenuSubmenu label="Move to">
+              <MenuItem>Archive</MenuItem>
+            </MenuSubmenu>
+            <MenuSeparator />
+            <MenuItem color="danger">Delete</MenuItem>
+          </Menu>
+        )
+      },
+      {
+        name: 'FilePicker',
+        summary: {
+          ko: '끌어다 놓거나 눌러서 고르는 점선 상자',
+          en: 'A dashed box you drop files on, or press to browse'
+        },
+        path: '/components/inputs/file-picker',
+        preview: (
+          <div className="w-full max-w-56">
+            <FilePicker size="xs" density="compact" title="Drop files" hint="Up to 5 MB" />
+          </div>
+        )
+      },
+      {
+        name: 'Pagination',
+        summary: {
+          ko: '페이지 번호가 늘어선 줄',
+          en: 'A row of page numbers'
+        },
+        path: '/components/inputs/pagination',
+        preview: <Pagination size="sm" count={9} defaultPage={4} />
       }
     ]
   },
@@ -214,6 +273,42 @@ const GROUPS: Group[] = [
             >
               Ready for real users.
             </Card>
+          </div>
+        )
+      },
+      {
+        name: 'Accordion',
+        summary: {
+          ko: '접었다 펼 수 있는 섹션들의 더미',
+          en: 'A stack of sections that fold'
+        },
+        path: '/components/surfaces/accordion',
+        preview: (
+          <div className="w-full max-w-56">
+            <Accordion size="sm" defaultValue={['a']}>
+              <AccordionItem value="a" title="Billing">
+                Charged on the first.
+              </AccordionItem>
+              <AccordionItem value="b" title="Regions" />
+            </Accordion>
+          </div>
+        )
+      },
+      {
+        name: 'Tabs',
+        summary: {
+          ko: '한 번에 하나만 보이는 패널들',
+          en: 'One set of panels, one of which is shown'
+        },
+        path: '/components/surfaces/tabs',
+        preview: (
+          <div className="w-full max-w-56">
+            <Tabs size="sm" variant="solid" defaultValue="a">
+              <Tab value="a">Overview</Tab>
+              <Tab value="b">Usage</Tab>
+              <TabPanel value="a">All green.</TabPanel>
+              <TabPanel value="b">1,284 minutes.</TabPanel>
+            </Tabs>
           </div>
         )
       }
@@ -309,6 +404,28 @@ const GROUPS: Group[] = [
               </ListItem>
               <ListItem onClick={() => {}}>staging</ListItem>
             </List>
+          </div>
+        )
+      },
+      {
+        name: 'Badge',
+        summary: {
+          ko: '다른 것의 모서리에 걸리는 작은 표식',
+          en: 'A small mark in the corner of something else'
+        },
+        path: '/components/display/badge',
+        preview: (
+          <div className="flex items-center gap-6">
+            <Badge content={4} label="4 unread">
+              <Button size="sm" variant="outline" color="secondary">
+                Inbox
+              </Button>
+            </Badge>
+            <Badge dot color="success" overlap="circle" label="Online">
+              <span className="flex size-8 items-center justify-center rounded-full bg-(--n-soft-press) text-[0.75rem] font-semibold text-(--neba-fg)">
+                JD
+              </span>
+            </Badge>
           </div>
         )
       }
