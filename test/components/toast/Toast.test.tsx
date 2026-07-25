@@ -90,13 +90,30 @@ describe('Toast', () => {
       await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
     });
 
+    // Two things make this one awkward, and both are about the timer rather
+    // than about the toast. Asserting it is on screen first would race the very
+    // timeout under test — a query round trip in Firefox outlasts a short one,
+    // which is how this failed in CI — so the tests above are what cover a
+    // toast appearing, and this one only watches it leave. And Base UI pauses
+    // the timer while the window is blurred, which a test file running in a
+    // sibling frame is free to cause at any moment, so each poll hands the
+    // focus back. Resuming a timer that never paused is a no-op, and a paused
+    // one resumes with the time it had left rather than with a fresh timeout.
     it('dismisses itself once its timeout has run out', async () => {
-      const screen = await render(<Harness options={{ title: 'Saved', timeout: 80 }} />);
+      const screen = await render(<Harness options={{ title: 'Saved', timeout: 200 }} />);
 
       await screen.getByRole('button', { name: 'Raise' }).click();
-      await expect.element(screen.getByText('Saved')).toBeInTheDocument();
 
-      await expect.element(screen.getByText('Saved')).not.toBeInTheDocument();
+      await expect
+        .poll(
+          () => {
+            window.dispatchEvent(new FocusEvent('focus'));
+
+            return screen.getByText('Saved').query();
+          },
+          { timeout: 5000 }
+        )
+        .toBeNull();
     });
 
     it('stays up when its timeout is zero', async () => {

@@ -59,7 +59,11 @@ describe('Menu', () => {
       );
 
       await expect.element(screen.getByRole('menuitem', { name: 'Rename' })).toBeInTheDocument();
-      expect(screen.getByRole('button').query()).toBeNull();
+      // Asked by tag, not by role: an open Base UI popup lays focus guards
+      // around itself, and under WebKit with VoiceOver those guards take
+      // `role="button"` so the virtual cursor trips the focus trap. The
+      // trigger is the only real `<button>` either way.
+      expect(screen.container.querySelector('button')).toBeNull();
     });
 
     it('reflects a changed label on re-render', async () => {

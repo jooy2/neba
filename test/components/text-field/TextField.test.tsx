@@ -131,14 +131,24 @@ describe('TextField', () => {
       expect(shell).not.toHaveClass('h-8');
     });
 
-    it('makes a one-row textarea exactly as tall as the single-line field', async () => {
-      const screen = await render(<TextField size="md" variant="outline" />);
-      const singleLine = screen.getByRole('textbox').element().parentElement!.offsetHeight;
+    // The parity itself is arithmetic in the stylesheet — the multiline padding
+    // is (height - border - line-height) / 2 — and no Tailwind is loaded here,
+    // so measuring the two boxes would only compare the browser's own defaults
+    // for an input against a textarea. WebKit on Windows has those a pixel
+    // apart. What the test run can see is the input to that arithmetic: both
+    // modes take their line height from `size` and never from `density`.
+    it('drives a one-row textarea from the same size as the single-line field', async () => {
+      const screen = await render(<TextField size="md" variant="outline" density="compact" />);
+      const shell = () => screen.getByRole('textbox').element().parentElement!;
 
-      await screen.rerender(<TextField size="md" variant="outline" multiline rows={1} />);
-      const oneRow = screen.getByRole('textbox').element().parentElement!.offsetHeight;
+      expect(shell()).toHaveClass('text-[0.8125rem]/[1.25rem]');
 
-      expect(oneRow).toBe(singleLine);
+      await screen.rerender(
+        <TextField size="md" variant="outline" density="compact" multiline rows={1} />
+      );
+
+      expect(shell()).toHaveClass('text-[0.8125rem]/[1.25rem]');
+      expect(shell()).toHaveClass('py-[5px]');
     });
 
     it('accepts typed text that spans lines', async () => {
