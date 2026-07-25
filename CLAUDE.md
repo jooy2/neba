@@ -98,11 +98,13 @@ Implementation rules that are easy to get wrong:
 
 ### Shared prop vocabulary
 
-`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, `NebaOrientation`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
+`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, `NebaOrientation`, `NebaSide`, `NebaAlign`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
 
-The same rule applies to the values behind those names, which is what `src/internal/styles.ts` is for. Control heights, radii, type scales, the two padding tracks, the frosted surface, the house transition, the focus ring and the `--n-*` slot generators live there once and every component imports them. A component keeps only what genuinely differs: its variant class maps and its layout. If you find yourself writing `h-8` or `rounded-(--neba-radius-md)` into a component, check whether the table already says it.
+The same rule applies to the values behind those names, which is what `src/internal/styles.ts` is for. Control heights, radii, type scales, the two padding tracks, the _sheet_ ladder a Card, an Alert and a Dialog share, the frosted surface, the house transition, the focus ring and the `--n-*` slot generators live there once and every component imports them. A component keeps only what genuinely differs: its variant class maps and its layout. If you find yourself writing `h-8` or `rounded-(--neba-radius-md)` into a component, check whether the table already says it.
 
-`src/internal/button-group.ts` holds the one context in the library: `ButtonGroup` provides it and `Button` reads it as a fallback. It lives in `internal/` so the two components do not import each other.
+`src/internal/button-group.ts` holds the context `ButtonGroup` provides and `Button` reads as a fallback. It lives in `internal/` so the two components do not import each other; `List` has the same arrangement but keeps its context in `List.tsx`, because `List` and `ListItem` are one file.
+
+Two more files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog and Toast all need, and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family.
 
 ### Table cells are the exception to "styling is Tailwind"
 
@@ -139,11 +141,11 @@ docs/.vitepress/
 docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
   components/index.md       # the index grid of every component
-  components/{group}/*.md   # one page per component, grouped (display, inputs, surfaces)
+  components/{group}/*.md   # one page per component, grouped (display, feedback, inputs, surfaces)
   examples/index.md         # every component on one sample screen
 ```
 
-The three groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider), `surfaces` (Box, Card). Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales.
+The groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table, List), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider), `surfaces` (Box, Card). Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales.
 
 Things that will bite:
 

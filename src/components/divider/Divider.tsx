@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Separator } from '@base-ui/react/separator';
 import { metaTextClasses } from '../../internal/styles';
-import type { NebaColor, NebaOrientation, NebaSize } from '../../types';
+import type { NebaAlign, NebaColor, NebaOrientation, NebaSize } from '../../types';
 
 /** Where the label sits along a labelled divider. Ignored without a label. */
-export type DividerTextAlign = 'start' | 'center' | 'end';
+export type DividerTextAlign = NebaAlign;
 
 export interface DividerProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,

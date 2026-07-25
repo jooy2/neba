@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { Box, boxPaddingXClasses, boxPaddingYClasses, type BoxProps } from '../box/Box';
-import type { NebaSize } from '../../types';
+import {
+  hasContent,
+  metaTextClasses,
+  sheetBodyClasses,
+  sheetHeaderGapClasses,
+  sheetSectionGapClasses,
+  sheetTitleClasses
+} from '../../internal/styles';
 
 export interface CardProps extends Omit<BoxProps, 'title' | 'padded'> {
   /**
@@ -34,66 +41,10 @@ export interface CardProps extends Omit<BoxProps, 'title' | 'padded'> {
 }
 
 /**
- * The title sits one step above the body, the subtitle one step below it — the
- * same two ladders Button and TextField use, so a card's header lines up with
- * the controls that end up inside it.
- */
-const titleClasses: Record<NebaSize, string> = {
-  xs: 'text-[0.75rem]/[1rem]',
-  sm: 'text-[0.8125rem]/[1.125rem]',
-  md: 'text-[0.9375rem]/[1.25rem]',
-  lg: 'text-[1.0625rem]/[1.5rem]',
-  xl: 'text-[1.25rem]/[1.75rem]'
-};
-
-const subtitleClasses: Record<NebaSize, string> = {
-  xs: 'text-[0.625rem]',
-  sm: 'text-[0.6875rem]',
-  md: 'text-[0.75rem]',
-  lg: 'text-[0.8125rem]',
-  xl: 'text-[0.875rem]'
-};
-
-/**
- * Body copy, on Button's type scale but with the leading opened up: a label is
- * one line and a card body is a paragraph.
- */
-const bodyClasses: Record<NebaSize, string> = {
-  xs: 'text-[0.6875rem]/[1rem]',
-  sm: 'text-[0.75rem]/[1.125rem]',
-  md: 'text-[0.8125rem]/[1.375rem]',
-  lg: 'text-[0.9375rem]/[1.5rem]',
-  xl: 'text-[1.0625rem]/[1.75rem]'
-};
-
-/** Title to subtitle. Tight — they are one block of text, not two sections. */
-const headerGapClasses: Record<NebaSize, string> = {
-  xs: 'gap-0.5',
-  sm: 'gap-0.5',
-  md: 'gap-1',
-  lg: 'gap-1',
-  xl: 'gap-1.5'
-};
-
-/** Between sections, when there are no dividers to separate them. */
-const sectionGapClasses: Record<NebaSize, string> = {
-  xs: 'gap-1.5',
-  sm: 'gap-2',
-  md: 'gap-3',
-  lg: 'gap-3.5',
-  xl: 'gap-4'
-};
-
-/**
  * The internal hairline is the same `--n-line` as the card's own edge, so it
  * reads as the sheet being scored rather than as a second, unrelated rule.
  */
 const dividerClasses = 'border-t [border-color:var(--n-line)]';
-
-/** `false`, `null`, `undefined` and `''` all mean "this section is not there". */
-function hasContent(node: React.ReactNode): boolean {
-  return node !== undefined && node !== null && node !== false && node !== '';
-}
 
 /**
  * A Box with the parts a card is made of laid out on it: a title, a subtitle,
@@ -134,12 +85,12 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
   const header = (
     <>
       {hasContent(title) || hasContent(subtitle) ? (
-        <div className={`flex min-w-0 flex-1 flex-col ${headerGapClasses[size]}`}>
+        <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
           {hasContent(title) ? (
-            <div className={`neba-card-title font-semibold ${titleClasses[size]}`}>{title}</div>
+            <div className={`neba-title font-semibold ${sheetTitleClasses[size]}`}>{title}</div>
           ) : null}
           {hasContent(subtitle) ? (
-            <div className={`text-(--neba-muted-fg) ${subtitleClasses[size]}`}>{subtitle}</div>
+            <div className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{subtitle}</div>
           ) : null}
         </div>
       ) : null}
@@ -150,12 +101,12 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
   const sections = [
     hasHeader ? { key: 'header', className: 'flex items-start gap-3', content: header } : null,
     hasContent(children)
-      ? { key: 'content', className: bodyClasses[size], content: children }
+      ? { key: 'content', className: sheetBodyClasses[size], content: children }
       : null,
     hasContent(footer)
       ? {
           key: 'footer',
-          className: `flex flex-wrap items-center gap-2 ${bodyClasses[size]}`,
+          className: `flex flex-wrap items-center gap-2 ${sheetBodyClasses[size]}`,
           content: footer
         }
       : null
@@ -169,7 +120,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
       padded={false}
       className={[
         'flex flex-col',
-        dividers ? '' : `${insetY} ${sectionGapClasses[size]}`,
+        dividers ? '' : `${insetY} ${sheetSectionGapClasses[size]}`,
         className ?? ''
       ]
         .filter(Boolean)

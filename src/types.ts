@@ -28,6 +28,24 @@ export type NebaDensity = 'default' | 'compact';
 export type NebaOrientation = 'horizontal' | 'vertical';
 
 /**
+ * Which edge of an anchor something is placed against. Tooltip reads this, and
+ * so does anything else that hangs a popup off an element.
+ *
+ * Logical rather than physical — `start`/`end` would be wrong here, because a
+ * tooltip above a button is above it in every writing direction.
+ */
+export type NebaSide = 'top' | 'right' | 'bottom' | 'left';
+
+/**
+ * Where something sits along the axis it is not placed on: a tooltip against
+ * its trigger, a label set into a divider, the content of a table cell.
+ *
+ * `start`/`end` rather than `left`/`right` because these flip under RTL, which
+ * is the whole reason the library never says `left`.
+ */
+export type NebaAlign = 'start' | 'center' | 'end';
+
+/**
  * Visual weight of a component's surface.
  *
  * - `solid` — filled, carries the color. One per view, for the primary action.

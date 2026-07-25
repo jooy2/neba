@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box';
 import { controlTextLeadingClasses, metaTextClasses, paddingXValues } from '../../internal/styles';
-import type { NebaDensity, NebaSize } from '../../types';
+import type { NebaAlign, NebaDensity, NebaSize } from '../../types';
 
 /** Which edge the text in a column lines up against. */
-export type TableAlign = 'start' | 'center' | 'end';
+export type TableAlign = NebaAlign;
 
 /**
  * A column: its heading, its default width, and how to get a cell out of a row.

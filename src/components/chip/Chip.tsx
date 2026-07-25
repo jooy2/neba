@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { CloseIcon } from '../../internal/icons';
 import {
   controlHeightClasses,
   controlSlots,
@@ -142,19 +143,6 @@ const labelButtonClasses = [
   'flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch rounded-[inherit]',
   focusRingClasses
 ].join(' ');
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="m4.5 4.5 7 7m0-7-7 7"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * A compact token: a tag, a filter, a status, an entity plucked out of a list.

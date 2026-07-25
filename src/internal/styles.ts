@@ -170,6 +170,61 @@ export const stackGapClasses: Record<NebaSize, string> = {
 };
 
 /* ---------------------------------------------------------------------------
+ * Sheet typography
+ *
+ * A control holds one line of text at a fixed height. A *sheet* — a Card, an
+ * Alert, a Dialog, a List row — holds a heading, a paragraph and a footer, all
+ * of which wrap. That is a different problem, and these four tables are its
+ * answer: they are what Card was written with, moved here the moment a second
+ * sheet-shaped component needed the same ladder.
+ *
+ * The subtitle deliberately has no table of its own — it is `metaTextClasses`,
+ * the same step below the body that a field's description sits on.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * A sheet's heading: one step above the body, on the same ladder the controls
+ * use, so a card's title lines up with the buttons that end up inside it.
+ */
+export const sheetTitleClasses: Record<NebaSize, string> = {
+  xs: 'text-[0.75rem]/[1rem]',
+  sm: 'text-[0.8125rem]/[1.125rem]',
+  md: 'text-[0.9375rem]/[1.25rem]',
+  lg: 'text-[1.0625rem]/[1.5rem]',
+  xl: 'text-[1.25rem]/[1.75rem]'
+};
+
+/**
+ * Body copy: the control type scale with the leading opened up, because a
+ * label is one line and a body is a paragraph.
+ */
+export const sheetBodyClasses: Record<NebaSize, string> = {
+  xs: 'text-[0.6875rem]/[1rem]',
+  sm: 'text-[0.75rem]/[1.125rem]',
+  md: 'text-[0.8125rem]/[1.375rem]',
+  lg: 'text-[0.9375rem]/[1.5rem]',
+  xl: 'text-[1.0625rem]/[1.75rem]'
+};
+
+/** Title to subtitle. Tight — they are one block of text, not two sections. */
+export const sheetHeaderGapClasses: Record<NebaSize, string> = {
+  xs: 'gap-0.5',
+  sm: 'gap-0.5',
+  md: 'gap-1',
+  lg: 'gap-1',
+  xl: 'gap-1.5'
+};
+
+/** Between a sheet's sections, when there are no dividers to separate them. */
+export const sheetSectionGapClasses: Record<NebaSize, string> = {
+  xs: 'gap-1.5',
+  sm: 'gap-2',
+  md: 'gap-3',
+  lg: 'gap-3.5',
+  xl: 'gap-4'
+};
+
+/* ---------------------------------------------------------------------------
  * Surface
  * ------------------------------------------------------------------------- */
 

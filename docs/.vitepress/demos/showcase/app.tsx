@@ -1,12 +1,20 @@
 import { useState, type ReactNode } from 'react';
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
   Card,
   Checkbox,
   Chip,
+  Dialog,
+  DialogClose,
   Divider,
+  List,
+  ListItem,
+  ProgressBox,
+  ProgressCircular,
+  ProgressLinear,
   Radio,
   RadioGroup,
   Select,
@@ -14,7 +22,10 @@ import {
   Switch,
   Table,
   TextField,
+  ToastProvider,
+  Tooltip,
   Typography,
+  useToast,
   type TableColumn
 } from 'neba';
 
@@ -99,6 +110,17 @@ function Caption({ children }: { children: ReactNode }) {
 }
 
 export default function Showcase() {
+  // The provider has to be above whatever calls `useToast`, so the screen is
+  // the host and its body is a child.
+  return (
+    <ToastProvider position="bottom-end">
+      <ShowcaseBody />
+    </ToastProvider>
+  );
+}
+
+function ShowcaseBody() {
+  const toast = useToast();
   const [name, setName] = useState('Jane Doe');
   const [email, setEmail] = useState('jane@example.com');
   const [saving, setSaving] = useState(false);
@@ -117,6 +139,7 @@ export default function Showcase() {
     setTimeout(() => {
       setSaving(false);
       setSaved(true);
+      toast.add({ color: 'success', title: 'Profile saved', description: 'Just now' });
     }, 900);
   };
 
@@ -124,7 +147,7 @@ export default function Showcase() {
     <div className="flex flex-col gap-8">
       {/* Toolbar — the controls that run a screen, all on one baseline. */}
       <section className="flex flex-col gap-3">
-        <Caption>Button · ButtonGroup · TextField · Select</Caption>
+        <Caption>Button · ButtonGroup · TextField · Select · Tooltip</Caption>
         <div className="flex flex-wrap items-center gap-2">
           <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
           <Select
@@ -140,9 +163,11 @@ export default function Showcase() {
             <Button>Month</Button>
           </ButtonGroup>
           <div className="grow" />
-          <Button size="sm" variant="outline" color="secondary">
-            Import
-          </Button>
+          <Tooltip content="Import from a Git provider">
+            <Button size="sm" variant="outline" color="secondary">
+              Import
+            </Button>
+          </Tooltip>
           <Button size="sm" startIcon={<PlusIcon />}>
             New project
           </Button>
@@ -162,6 +187,33 @@ export default function Showcase() {
         </div>
       </section>
 
+      {/* What is happening right now, and what just went wrong. */}
+      <section className="flex flex-col gap-3">
+        <Caption>Alert · ProgressLinear · ProgressCircular · ProgressBox</Caption>
+        <Alert
+          color="warning"
+          title="One region is near its quota"
+          action={
+            <Button size="xs" variant="outline" color="warning">
+              Review
+            </Button>
+          }
+          onClose={() => {}}
+        >
+          Frankfurt is at 90% of its build minutes for this billing period.
+        </Alert>
+        <Box variant="solid">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:items-center">
+            <ProgressLinear value={64} label="Uploading assets" showValue />
+            <ProgressCircular label="Indexing" />
+            <div className="flex items-center gap-3">
+              <ProgressBox color="info" />
+              <Typography level="caption">Draining the queue</Typography>
+            </div>
+          </div>
+        </Box>
+      </section>
+
       {/* Data, rendered from a column list rather than written out row by row. */}
       <section className="flex flex-col gap-3">
         <Caption>Table · Chip</Caption>
@@ -176,7 +228,7 @@ export default function Showcase() {
 
       {/* A card holding controls — the composition the library is actually for. */}
       <section className="flex flex-col gap-3">
-        <Caption>Card · TextField · Checkbox · Button</Caption>
+        <Caption>Card · TextField · Checkbox · List · Dialog · Toast</Caption>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
           <Card
             dividers
@@ -265,14 +317,73 @@ export default function Showcase() {
               </div>
             </Card>
 
+            <Card size="sm" title="Environments" dividers>
+              <List variant="text" size="sm" density="compact">
+                <ListItem
+                  onClick={() => {}}
+                  selected
+                  description="4m 02s ago"
+                  action={
+                    <Chip size="xs" variant="text" color="success">
+                      Live
+                    </Chip>
+                  }
+                >
+                  production
+                </ListItem>
+                <ListItem
+                  onClick={() => {}}
+                  description="1m 48s ago"
+                  action={
+                    <Chip size="xs" variant="text" color="info">
+                      Building
+                    </Chip>
+                  }
+                >
+                  staging
+                </ListItem>
+                <ListItem onClick={() => {}} description="Never deployed" disabled>
+                  preview
+                </ListItem>
+              </List>
+            </Card>
+
             <Card
               color="danger"
               size="sm"
               title="Danger zone"
               footer={
-                <Button size="sm" color="danger" variant="outline">
-                  Delete workspace
-                </Button>
+                <Dialog
+                  size="sm"
+                  color="danger"
+                  trigger={
+                    <Button size="sm" color="danger" variant="outline">
+                      Delete workspace
+                    </Button>
+                  }
+                  title="Delete this workspace?"
+                  description="Every project, deploy and log inside it goes with it."
+                  actions={
+                    <>
+                      <DialogClose
+                        render={
+                          <Button size="sm" variant="text" color="secondary">
+                            Cancel
+                          </Button>
+                        }
+                      />
+                      <DialogClose
+                        render={
+                          <Button size="sm" color="danger">
+                            Delete
+                          </Button>
+                        }
+                      />
+                    </>
+                  }
+                >
+                  Members will lose access immediately.
+                </Dialog>
               }
             >
               This cannot be undone.

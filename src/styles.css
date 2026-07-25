@@ -115,6 +115,11 @@
   --neba-glow-on-fill: rgb(255 255 255 / 0.16);
   --neba-flash-on-fill: rgb(255 255 255 / 0.22);
 
+  /* The scrim behind a modal surface. Neutral rather than tinted, and dim
+     rather than opaque: what a dialog needs is for the page to stop being
+     reachable, not for it to stop existing. */
+  --neba-scrim: rgb(16 24 40 / 0.34);
+
   /* Elevation ------------------------------------------------------------
      Neutral, never tinted with the control's own color: a colored glow is the
      loudest thing a small control can do, and the job here is to place a
@@ -238,6 +243,8 @@
     --neba-glow-on-fill: rgb(255 255 255 / 0.13);
     --neba-flash-on-fill: rgb(255 255 255 / 0.18);
 
+    --neba-scrim: rgb(0 0 0 / 0.58);
+
     --neba-shadow-ambient: rgb(0 0 0 / 0.55);
 
     --neba-primary-solid: oklch(57% 0.208 262);
@@ -304,6 +311,8 @@
 
   --neba-glow-on-fill: rgb(255 255 255 / 0.13);
   --neba-flash-on-fill: rgb(255 255 255 / 0.18);
+
+  --neba-scrim: rgb(0 0 0 / 0.58);
 
   --neba-shadow-ambient: rgb(0 0 0 / 0.55);
 
@@ -547,20 +556,20 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Card title
+ * Sheet titles
  *
- * A Card's `title` is styled by the element Card renders around it, so a plain
- * string needs nothing. But a card that belongs in the document outline has to
- * be given a real heading — `title={<h2>…</h2>}` — and that heading arrives
- * with the browser's own 1.5em bold and its margins, which would ignore the
- * type scale the card just set.
+ * A `title` is styled by the element the component renders around it — Card,
+ * Alert and Dialog all do this — so a plain string needs nothing. But a sheet
+ * that belongs in the document outline has to be given a real heading,
+ * `title={<h2>…</h2>}`, and that heading arrives with the browser's own 1.5em
+ * bold and its margins, which would ignore the type scale just set.
  *
  * This is in CSS rather than in Tailwind because the selector is the point:
  * `[&_:where(h1,h2,h3,h4,h5,h6)]:[font:inherit]` is expressible and nobody
  * would want to read it twice.
  * ------------------------------------------------------------------------- */
 
-.neba-card-title :where(h1, h2, h3, h4, h5, h6) {
+.neba-title :where(h1, h2, h3, h4, h5, h6) {
   font: inherit;
   margin: 0;
 }
@@ -626,6 +635,94 @@
   transition-duration: 0ms;
 }
 
+/* ---------------------------------------------------------------------------
+ * Loading
+ *
+ * The progress indicators are the one place in the library where something
+ * moves on its own, and the only place it is allowed to: an indeterminate
+ * indicator that does not move is a decoration.
+ *
+ * The rule against transforms still holds, because none of these moves anything
+ * with text in it. The sweep slides an empty box along a 4px groove, the ring
+ * turns a glyph — the same allowance the Select chevron takes — and the plates
+ * only change colour.
+ *
+ * They are real CSS rather than Tailwind arbitrary variants for the reason
+ * everything else in this file is: keyframes are not a variant, so there is
+ * nothing to express them with.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The indeterminate bar: a short segment crossing the groove.
+ *
+ * `inset-inline-start` rather than a transform, so it runs the other way under
+ * RTL without being told. The cost is a layout pass per frame, confined to a
+ * box a few pixels tall — which is the trade that makes the rule affordable
+ * here rather than an exception to it.
+ */
+@keyframes neba-sweep {
+  from {
+    inset-inline-start: -45%;
+  }
+  to {
+    inset-inline-start: 100%;
+  }
+}
+
+.neba-sweep {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 45%;
+  animation: neba-sweep 1.15s var(--neba-ease) infinite;
+}
+
+@keyframes neba-ring-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.neba-ring-spin {
+  transform-origin: center;
+  animation: neba-ring-spin 900ms linear infinite;
+}
+
+/*
+ * The plates light in sequence, each one held back by its own index. Colour
+ * only — the plates never move, so a row of them reads as a surface being
+ * written to rather than as something bouncing.
+ */
+@keyframes neba-plate-wave {
+  0%,
+  70%,
+  100% {
+    background-color: var(--n-soft);
+    box-shadow: var(--neba-plate-glass);
+  }
+  35% {
+    background-color: var(--n-fill);
+    box-shadow: var(--neba-plate-solid);
+  }
+}
+
+.neba-plate-wave {
+  animation: neba-plate-wave 1.2s var(--neba-ease) infinite;
+  animation-delay: calc(var(--n-i, 0) * 120ms);
+}
+
+/* The reduced-motion stand-in for the sweep: the segment stops travelling and
+   the whole groove pulses instead. Colour, which is the axis every other state
+   in the library already uses. */
+@keyframes neba-progress-pulse {
+  0%,
+  100% {
+    background-color: var(--n-soft-press);
+  }
+  50% {
+    background-color: var(--n-fill);
+  }
+}
+
 /* Respect a reduced-motion preference. Both layers track the pointer, so they
    are motion in the sense that matters here — drop them entirely. */
 @media (prefers-reduced-motion: reduce) {
@@ -637,5 +734,25 @@
   .neba-glow::before,
   .neba-glow::after {
     display: none;
+  }
+
+  /*
+   * The indicators are not switched off, because an indeterminate one that
+   * holds still says the opposite of what it is for. The travelling segment
+   * becomes a colour pulse, and the two that genuinely have to keep turning or
+   * cycling are slowed to where they stop reading as motion.
+   */
+  .neba-sweep {
+    inset-inline-start: 0;
+    inline-size: 100%;
+    animation: neba-progress-pulse 1.8s var(--neba-ease) infinite;
+  }
+
+  .neba-ring-spin {
+    animation-duration: 2.4s;
+  }
+
+  .neba-plate-wave {
+    animation-duration: 2.4s;
   }
 }

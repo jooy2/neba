@@ -182,6 +182,75 @@ function sharedProps(options: SharedOptions): PropRow[] {
   ];
 }
 
+/**
+ * What the three progress indicators share. The same rows, three tables, so a
+ * reader on the ProgressBox page does not have to go and look at the bar's.
+ */
+function progressProps(sizeDescription: Text): PropRow[] {
+  return [
+    {
+      name: 'value',
+      type: 'number | null',
+      default: 'null',
+      description: {
+        ko: 'min과 max 사이의 진행도. null(기본값)은 미정 상태입니다 — 값을 듣지 못한 표시기는 빈 막대를 그리는 대신 모른다고 말해야 합니다',
+        en: 'How far along, between min and max. null — the default — is indeterminate: an indicator that has not been told a value should say so rather than draw an empty bar'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      default: '0',
+      description: { ko: '범위의 시작', en: 'The bottom of the range' }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      default: '100',
+      description: { ko: '범위의 끝', en: 'The top of the range' }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: sizeDescription
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: { ko: '의미론적 색 역할', en: 'Semantic colour role' }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '무엇을 기다리는지. 값과 함께 스크린 리더가 읽습니다',
+        en: 'A name for what is loading. Read out with the value by a screen reader'
+      }
+    },
+    {
+      name: 'showValue',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '도형 옆에 값을 글자로 보여 줍니다. format이 없으면 범위에 대한 백분율입니다',
+        en: 'Shows the value as text beside the shape. Percentage of the range unless format says otherwise'
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '값을 어떻게 쓸지. 없으면 min…max에 대한 백분율 — 설명되지 않은 범위에서 유일하게 성립하는 표기입니다',
+        en: 'How to write the value. Without it the value is a percentage of min…max, the only formatting that holds for a range nobody described'
+      }
+    }
+  ];
+}
+
 export const propTables: Record<string, PropRow[]> = {
   Button: [
     ...sharedProps({
@@ -1101,6 +1170,653 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onRowClick',
       type: '(row, index) => void',
       description: { ko: '행을 누를 수 있게 만듭니다', en: 'Makes the rows activatable' }
+    }
+  ],
+
+  Alert: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      color: "'info'",
+      colorDescription: {
+        ko: '심각도. 표면과 글리프를 함께 정합니다. 기본값이 primary가 아닌 info인 이유는, 심각도를 말하지 않은 알림은 정보 알림이기 때문입니다',
+        en: 'The severity: it picks the surface and the glyph together. The default is info rather than primary — an alert with no severity named is an informational one'
+      },
+      variantDescription: {
+        ko: '표면의 무게. 알림은 색이 입혀지는 대상이므로 시트가 실제로 물듭니다. text는 폼 안에 놓을 때',
+        en: 'Weight of the surface. An alert *is* the thing being coloured, so the sheet takes the tint. Reach for text inside a form'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 알림은 페이지 흐름 안에 있습니다 — 떠 있는 쪽은 Toast입니다',
+        en: 'Drop shadow depth. An alert sits in the flow of the page; the one that floats is a Toast'
+      }
+    }),
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 줄. 있으면 제목+설명 두 단짜리가 되고, 없으면 전체가 한 줄입니다',
+        en: 'The heading line. With it the alert is two-part; without it the whole thing is one line'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      description: {
+        ko: '앞머리 글리프. 기본값은 color에 딸린 그림, false면 생략. 색만으로 심각도를 말하지 않기 위해 계열마다 모양이 다릅니다',
+        en: 'The glyph at the start. Defaults to the one that goes with `color`; `false` drops it. The shapes differ per family so severity is not carried by colour alone'
+      }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '행 끝에 고정되는 내용 — 재시도 버튼, 링크. 본문이 줄바꿈되어도 첫 줄에 남습니다',
+        en: 'Content pinned to the end of the row. Stays on the first line while the message wraps'
+      }
+    },
+    {
+      name: 'onClose',
+      type: '(event) => void',
+      description: {
+        ko: '넘기면 닫기 버튼이 생깁니다',
+        en: 'Passing it is what makes the dismiss button appear'
+      }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      default: "'Dismiss'",
+      description: { ko: '닫기 버튼의 접근성 이름', en: 'Accessible name of the dismiss button' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '메시지', en: 'The message' }
+    }
+  ],
+
+  Dialog: [
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '타입 스케일과 여백, 그리고 시트가 넓어질 수 있는 한계까지 함께 정합니다. maxWidth라는 두 번째 축을 만들지 않은 이유입니다',
+        en: 'The type scale, the padding, and how wide the sheet may get. One axis rather than a second scale spelled maxWidth'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 시트는 물들지 않으므로 가장자리와 포커스 링에만 나타납니다',
+        en: 'Semantic colour role. The sheet is never dyed, so it reaches the edge and the focus ring'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. onOpenChange와 함께 쓰면 제어 컴포넌트가 됩니다',
+        en: 'Whether it is shown. With onOpenChange, a controlled dialog'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '비제어 다이얼로그의 초기 상태',
+        en: 'The initial state of an uncontrolled dialog'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때 호출', en: 'Called when it opens or closes' }
+    },
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: '다이얼로그를 여는 요소. Base UI가 연결합니다. 선택 사항 — 다른 곳에서 여는 제어 다이얼로그에는 필요 없습니다',
+        en: 'The element that opens it, wired up by Base UI. Optional — a controlled dialog opened elsewhere needs none'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '제목. 다이얼로그의 이름이 되는 h2로 렌더링됩니다',
+        en: 'The heading. Rendered as the h2 that names the dialog'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄이자 다이얼로그의 접근성 설명',
+        en: "A line under the title, and the dialog's accessible description"
+      }
+    },
+    {
+      name: 'actions',
+      type: 'ReactNode',
+      description: {
+        ko: '아래쪽 버튼 줄. 끝 정렬됩니다. DialogClose가 그중 하나를 닫기 버튼으로 만듭니다',
+        en: 'The bottom row, end-aligned. DialogClose is what makes one of them dismiss'
+      }
+    },
+    {
+      name: 'dividers',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '구역 사이를 여백 대신 하이라인으로 나눕니다. 본문이 스크롤되는 순간부터 켜는 편이 좋습니다',
+        en: 'Separates the sections with hairlines instead of space. Worth turning on the moment the body scrolls'
+      }
+    },
+    {
+      name: 'showClose',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '모서리의 ×. 라이브러리의 다른 불리언과 달리 기본이 켜짐입니다 — 모달은 답할 때까지 페이지를 가져가므로 나가는 길이 보여야 합니다',
+        en: 'The × in the corner. On by default, unlike most booleans here: a modal takes the page away, and the way out should be visible'
+      }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      default: "'Close'",
+      description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: {
+        ko: 'size가 정한 최대 너비를 대신할 값. 숫자는 픽셀입니다',
+        en: 'A hard cap overriding the one size implies. Numbers are pixels'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'size가 허용하는 너비를 가득 채웁니다. 다른 컴포넌트와 반대로 기본이 켜짐입니다 — 다이얼로그의 컨테이너는 뷰포트입니다',
+        en: 'Takes the full width its size allows. On by default, the other way round from everywhere else: a dialog’s container is the viewport'
+      }
+    },
+    {
+      name: 'fullScreen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '뷰포트를 가장자리까지 채웁니다', en: 'Fills the viewport edge to edge' }
+    },
+    {
+      name: 'modal',
+      type: "boolean | 'trap-focus'",
+      default: 'true',
+      description: {
+        ko: '뒤 페이지를 가져갈지. trap-focus는 스크롤과 클릭은 남기고 포커스만 가둡니다',
+        en: "Whether the page behind is taken away. 'trap-focus' keeps it scrollable and clickable while holding focus inside"
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'Esc와 바깥 클릭으로 닫히는지. 끄려면 답할 수 있는 actions를 반드시 함께 주세요',
+        en: 'Whether Escape and an outside click close it. Turn it off only with actions that answer it'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '본문. 스크롤되는 유일한 구역입니다',
+        en: 'The body — the only part that scrolls'
+      }
+    }
+  ],
+
+  ToastProvider: [
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'outline'",
+      shared: true,
+      description: {
+        ko: '표면의 무게. 토스트 하나가 따로 덮어쓸 수 있습니다',
+        en: 'Weight of the surface. A single toast can override it'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: { ko: '타입 스케일과 여백', en: 'Type scale and padding' }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: { ko: '기본 색 계열', en: 'The default colour family' }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'position',
+      type: '`top-${Align}` | `bottom-${Align}`',
+      default: "'bottom-end'",
+      description: {
+        ko: '스택이 놓이는 자리. 위·아래 두 값과 공용 Align의 조합입니다 — 화면 한복판을 세로로 가르는 스택은 만들 수 없습니다',
+        en: 'Where the stack is pinned: top or bottom, times the shared Align. There is deliberately no way to ask for a column down the middle'
+      }
+    },
+    {
+      name: 'timeout',
+      type: 'number',
+      default: '5000',
+      description: {
+        ko: '기본 유지 시간(ms). 0이면 닫을 때까지 남습니다',
+        en: 'How long a toast lasts by default, in ms. 0 keeps it up until it is closed'
+      }
+    },
+    {
+      name: 'limit',
+      type: 'number',
+      default: '3',
+      description: {
+        ko: '동시에 보이는 개수. 넘친 것은 버려지지 않고 스택이 빠지면 나타납니다',
+        en: 'How many are shown at once. The rest are kept and revealed as the stack drains'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      default: '380',
+      description: { ko: '토스트 하나의 최대 너비', en: 'How wide a toast is allowed to get' }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      default: "'Close'",
+      description: { ko: '× 버튼의 접근성 이름', en: "Accessible name of every toast's × button" }
+    }
+  ],
+
+  'useToast().add': [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '제목', en: 'The headline' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '아래 설명. 이것만 있으면 한 줄짜리 토스트입니다',
+        en: 'The detail under it. A toast with only this is a one-line toast'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '이 토스트만 다른 색 계열로',
+        en: 'Overrides the provider for this toast alone'
+      }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      shared: true,
+      description: {
+        ko: '이 토스트만 다른 표면으로',
+        en: 'Overrides the provider for this toast alone'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      description: {
+        ko: '앞머리 글리프. 기본값은 color에 딸린 그림',
+        en: 'The glyph. Defaults to the one that goes with `color`'
+      }
+    },
+    {
+      name: 'timeout',
+      type: 'number',
+      description: {
+        ko: '이 토스트의 유지 시간(ms). 0은 읽고 나서 조치가 필요한 메시지에 씁니다',
+        en: 'How long this one lasts, in ms. 0 is the right answer for anything the reader has to act on'
+      }
+    },
+    {
+      name: 'priority',
+      type: "'low' | 'high'",
+      default: "'low'",
+      description: {
+        ko: 'high는 스크린 리더의 말을 끊습니다. 오류는 그럴 만하고 저장 완료는 아닙니다',
+        en: 'high interrupts a screen reader. An error is worth interrupting for and a save is not'
+      }
+    },
+    {
+      name: 'actionLabel',
+      type: 'ReactNode',
+      description: {
+        ko: '액션 버튼의 라벨. 넘기면 버튼이 생깁니다',
+        en: 'The label of the action button. Passing it is what makes it appear'
+      }
+    },
+    {
+      name: 'onAction',
+      type: '(event) => void',
+      description: { ko: '액션 버튼을 눌렀을 때', en: 'Called when the action is pressed' }
+    },
+    {
+      name: 'id',
+      type: 'string',
+      description: {
+        ko: '같은 id로 다시 부르면 그 토스트를 제자리에서 갱신하고 타이머를 다시 시작합니다',
+        en: 'Reusing an id updates that toast in place and restarts its timer'
+      }
+    },
+    {
+      name: 'onClose',
+      type: '() => void',
+      description: {
+        ko: '어떤 방식으로든 닫혔을 때',
+        en: 'Called when it closes, however it closed'
+      }
+    },
+    {
+      name: 'onRemove',
+      type: '() => void',
+      description: {
+        ko: '애니메이션이 끝나고 DOM에서 빠졌을 때',
+        en: 'Called once it has left the DOM'
+      }
+    }
+  ],
+
+  Tooltip: [
+    {
+      name: 'content',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '툴팁이 하는 말. 짧은 구절이어야 합니다 — 툴팁은 터치로 닿을 수 없고 안의 무엇도 누를 수 없습니다',
+        en: 'What it says. A short phrase: a tooltip cannot be reached by touch and nothing inside it can be clicked'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactElement',
+      required: true,
+      description: {
+        ko: '툴팁이 매달릴 요소 하나. 트리거가 감싸지 않고 이 요소에 병합되므로 레이아웃에 요소가 늘지 않습니다',
+        en: 'The single element it hangs off. The trigger merges onto it rather than wrapping it, so the layout gains no element'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'sm'",
+      shared: true,
+      description: { ko: '판의 타입 스케일과 여백', en: "The plate's type scale and padding" }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'secondary'",
+      shared: true,
+      description: {
+        ko: '색 계열. 툴팁은 언제나 다른 것에 대한 주석이므로 중립이 기본입니다',
+        en: 'Colour family. A tooltip is always a note about something else, so the neutral family is the honest default'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'right' | 'bottom' | 'left'",
+      default: "'top'",
+      description: {
+        ko: '트리거의 어느 쪽에 뜨는지. 자리가 없으면 반대쪽으로 넘어갑니다',
+        en: 'Which edge of the trigger it appears on. Flips to the opposite side when there is no room'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      description: { ko: '그 변을 따라 놓이는 위치', en: 'Where it sits along that edge' }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '6',
+      description: { ko: '트리거와의 거리(px)', en: 'Distance from the trigger, in pixels' }
+    },
+    {
+      name: 'delay',
+      type: 'number',
+      default: '600',
+      description: {
+        ko: '열리기까지 포인터가 머물러야 하는 시간(ms)',
+        en: 'How long the pointer has to rest before it opens, in ms'
+      }
+    },
+    {
+      name: 'closeDelay',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '포인터가 떠난 뒤 닫히기까지(ms)',
+        en: 'How long it waits before closing, in ms'
+      }
+    },
+    {
+      name: 'arrow',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '트리거를 가리키는 작은 쐐기',
+        en: 'The little wedge pointing at the trigger'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. onOpenChange와 함께',
+        en: 'Whether it is open. With onOpenChange'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '비제어 툴팁의 초기 상태',
+        en: 'The initial state of an uncontrolled tooltip'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때 호출', en: 'Called when it opens or closes' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '트리거는 그대로 두고 툴팁만 열리지 않게 합니다 — 라벨이 잘렸을 때만 뜨는 툴팁 같은 경우',
+        en: 'Stops it opening without disabling the trigger — for the tooltip that only exists while a label is truncated'
+      }
+    }
+  ],
+
+  ProgressLinear: progressProps({
+    ko: '홈의 두께. 막대에서 크기를 가지는 것은 이것뿐입니다',
+    en: 'Thickness of the groove. Nothing else on a bar has a size'
+  }),
+
+  ProgressCircular: progressProps({
+    ko: '고리의 지름. 매 단계에서 컨트롤 사다리 바로 아래에 놓이므로, 버튼이나 필드 안에 넣어도 행이 높아지지 않습니다',
+    en: 'Diameter of the ring. It lands just under the control ladder at every step, so dropping one into a button or a field never makes the row taller'
+  }),
+
+  ProgressBox: [
+    ...progressProps({
+      ko: '판 하나의 크기',
+      en: 'The size of one plate'
+    }),
+    {
+      name: 'count',
+      type: 'number',
+      default: '4',
+      description: {
+        ko: '판의 개수. 넷이면 파도가 파도로 읽히면서도 한눈에 셀 수 있습니다. 기다리는 대상에 실제로 단계가 있다면 그 수를 넣으세요',
+        en: 'How many plates. Four reads as a wave and can still be counted at a glance. Set it to the number of steps when the thing being waited on genuinely has steps'
+      }
+    }
+  ],
+
+  List: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. 담는 쪽이므로 시트는 물들지 않습니다. Card 안에서는 text를 쓰세요 — 카드가 이미 시트입니다',
+        en: 'Weight of the surface. The sheet is never dyed, as on Box. Reach for text inside a Card — the card is already a sheet'
+      },
+      sizeDescription: {
+        ko: '행의 타입 스케일과 여백. 항목이 아니라 목록이 가지는 축입니다',
+        en: "The rows' type scale and padding. An axis of the list, not of any one row"
+      }
+    }),
+    {
+      name: 'dividers',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '행 사이를 여백 대신 하이라인으로 나눕니다. 들리는 것보다 많이 바뀝니다 — 선이 시트 양끝까지 닿아야 하므로 목록은 안쪽 여백을, 행은 둥근 모서리를 내놓습니다',
+        en: 'Separates the rows with a hairline instead of space. It changes more than it sounds like: the rules have to reach both edges, so the list gives up its inner padding and the rows give up their corners'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'ul 대신 다른 것으로 — 순서가 의미를 가지면 render={<ol />}',
+        en: 'Renders something other than a ul — render={<ol />} when the order is the point'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'ListItem들', en: 'The ListItems' }
+    }
+  ],
+
+  ListItem: [
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 앞 내용 — 아이콘, 아바타, 상태 점',
+        en: 'Content before the label — an icon, an avatar, a status dot'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 뒤 내용. 누를 수 있는 영역 안에 있습니다',
+        en: 'Content after the label, inside the pressable area'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: { ko: '라벨 아래 둘째 줄', en: 'A second line under the label' }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '행 끝에 고정되는 컨트롤 — 스위치, 메뉴 버튼. 일부러 누를 수 있는 영역 바깥입니다: 버튼 안의 버튼은 브라우저가 파싱하면서 고쳐 쓰는 마크업입니다',
+        en: 'A control pinned to the end of the row. Deliberately outside the pressable area — a button inside a button is markup the browser rewrites on parse'
+      }
+    },
+    {
+      name: 'onClick',
+      type: '(event) => void',
+      description: {
+        ko: '넘기면 행이 진짜 button이 됩니다',
+        en: 'Passing it is what turns the row into a real button'
+      }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '넘기면 행이 진짜 a가 됩니다',
+        en: 'Passing it is what turns the row into a real link'
+      }
+    },
+    {
+      name: 'selected',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '고른 행 — 열려 있는 페이지, 켜진 필터. 링크에는 aria-current="page"가, 버튼에는 aria-current="true"가 붙습니다',
+        en: 'The chosen row — the open page, the current filter. A link gets aria-current="page" and a button aria-current="true"'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 색 계열을 버리고 중립 회색이 됩니다',
+        en: 'Unavailable. Drops the colour family for neutral grey'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '라벨', en: 'The label' }
     }
   ],
 

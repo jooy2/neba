@@ -1,12 +1,20 @@
 import type { ReactNode } from 'react';
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
   Card,
   Checkbox,
   Chip,
+  Dialog,
+  DialogClose,
   Divider,
+  List,
+  ListItem,
+  ProgressBox,
+  ProgressCircular,
+  ProgressLinear,
   Radio,
   RadioGroup,
   Select,
@@ -14,7 +22,10 @@ import {
   Switch,
   Table,
   TextField,
-  Typography
+  ToastProvider,
+  Tooltip,
+  Typography,
+  useToast
 } from 'neba';
 import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
 
@@ -282,10 +293,150 @@ const GROUPS: Group[] = [
             />
           </div>
         )
+      },
+      {
+        name: 'List',
+        summary: {
+          ko: '반복되는 것을 담는 행의 묶음',
+          en: 'A stack of rows, for anything that repeats'
+        },
+        path: '/components/display/list',
+        preview: (
+          <div className="w-full max-w-56">
+            <List size="sm" dividers>
+              <ListItem onClick={() => {}} selected>
+                production
+              </ListItem>
+              <ListItem onClick={() => {}}>staging</ListItem>
+            </List>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Feedback',
+    note: {
+      ko: '무슨 일이 일어났는지, 또는 일어나는 중인지 말해 주는 것들',
+      en: 'The things that say what happened, or what is still happening'
+    },
+    entries: [
+      {
+        name: 'Alert',
+        summary: {
+          ko: '페이지 안에 놓이는 알림',
+          en: 'A message set into the page it is about'
+        },
+        path: '/components/feedback/alert',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-2">
+            <Alert size="sm" color="success">
+              Deployed
+            </Alert>
+            <Alert size="sm" color="danger" variant="text">
+              Build failed
+            </Alert>
+          </div>
+        )
+      },
+      {
+        name: 'Dialog',
+        summary: {
+          ko: '답할 때까지 페이지를 가져가는 시트',
+          en: 'A sheet that takes the page away'
+        },
+        path: '/components/feedback/dialog',
+        preview: (
+          <Dialog
+            size="sm"
+            trigger={<Button size="sm">Delete workspace</Button>}
+            title="Delete this workspace?"
+            description="This cannot be undone."
+            actions={<DialogClose render={<Button size="sm">Cancel</Button>} />}
+          />
+        )
+      },
+      {
+        name: 'Toast',
+        summary: {
+          ko: '스스로 도착하는 알림',
+          en: 'A message that arrives on its own'
+        },
+        path: '/components/feedback/toast',
+        preview: (
+          <ToastProvider position="bottom-center" width={280}>
+            <ToastButton />
+          </ToastProvider>
+        )
+      },
+      {
+        name: 'Tooltip',
+        summary: {
+          ko: '마우스를 올리면 뜨는 짧은 설명',
+          en: 'A short label on hover'
+        },
+        path: '/components/feedback/tooltip',
+        preview: (
+          <Tooltip content="Copy the deploy URL" delay={0}>
+            <Button size="sm" variant="outline" color="secondary">
+              Hover me
+            </Button>
+          </Tooltip>
+        )
+      },
+      {
+        name: 'ProgressLinear',
+        summary: { ko: '차오르는 막대', en: 'A bar that fills' },
+        path: '/components/feedback/progress-linear',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-4">
+            <ProgressLinear value={64} />
+            <ProgressLinear color="secondary" />
+          </div>
+        )
+      },
+      {
+        name: 'ProgressCircular',
+        summary: { ko: '차오르는 고리', en: 'A ring that fills' },
+        path: '/components/feedback/progress-circular',
+        preview: (
+          <div className="flex items-center gap-4">
+            <ProgressCircular value={72} size="lg" />
+            <ProgressCircular size="lg" color="secondary" />
+          </div>
+        )
+      },
+      {
+        name: 'ProgressBox',
+        summary: {
+          ko: '차례로 불이 들어오는 아크릴 판',
+          en: 'Acrylic plates that light up'
+        },
+        path: '/components/feedback/progress-box',
+        preview: (
+          <div className="flex flex-col items-center gap-4">
+            <ProgressBox size="lg" />
+            <ProgressBox size="lg" value={62} color="info" />
+          </div>
+        )
       }
     ]
   }
 ];
+
+/** The toast card needs a hook, and a hook needs a component of its own. */
+function ToastButton() {
+  const toast = useToast();
+
+  return (
+    <Button
+      size="sm"
+      onClick={() => toast.add({ color: 'success', title: 'Deployed', timeout: 2500 })}
+    >
+      Raise a toast
+    </Button>
+  );
+}
 
 function EntryCard({ entry, locale, base }: { entry: Entry; locale: Locale; base: string }) {
   return (
