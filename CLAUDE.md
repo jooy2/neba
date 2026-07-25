@@ -196,6 +196,14 @@ Conventions, following [test/components/button/Button.test.tsx](test/components/
 - `render()` from `vitest-browser-react` is **async** — always `await` it.
 - Import the component from `'neba'`. That alias points at `src/index.ts` ([vitest.config.ts](vitest.config.ts)), so tests exercise the same public entry point consumers use.
 - Query by role/accessible name. Use `await expect.element(locator)` for assertions that need to retry, and `locator.query()` when asserting absence.
+- `locator.query()` is for something that was never there. **An element that is leaving needs the retrying form** — Base UI keeps a node mounted while an exit transition might still run, so a Tab panel is still in the document, `inert` and marked `data-ending-style`, at the moment the panel replacing it is up.
+- **Before pressing a key, wait for the thing being typed at to hold the focus**, not for its markup. A popup takes focus in an effect after it mounts, and a key pressed in between lands wherever the focus still was. `menuHasFocus` in [Menu.test.tsx](test/components/menu/Menu.test.tsx) is the pattern.
+
+### One file at a time
+
+`fileParallelism` is off. Test files run as frames of one browser, and a browser has a single focus to hand out — a click in one file takes it from whichever file was holding it. Focus is half of what these components do: a toast stops its dismissal timer while the window is blurred, and a keystroke aimed at a menu goes wherever the focus went. Both produced failures that appeared only in a full run and never when the file was run on its own, which is the worst kind. The suite takes about twice as long.
+
+The same asymmetry is worth remembering when writing a test around a timer: a duration short enough to expire during a query round trip has already expired by the time the assertion looks, and Firefox in CI is slower at that round trip than anything local.
 
 ### Choosing browsers
 

@@ -333,14 +333,29 @@ describe('Menu', () => {
   });
 
   describe('the keyboard', () => {
+    /**
+     * A key only reaches the menu once the popup holds focus, and Base UI moves
+     * focus there in an effect after the popup mounts. Pressing before that
+     * lands on whatever the trigger left behind and the menu never sees it —
+     * which is what made these tests flake in WebKit. Every keyboard test waits
+     * for the focus to arrive rather than for the markup.
+     */
+    async function menuHasFocus(screen: Awaited<ReturnType<typeof render>>) {
+      await expect
+        .poll(() => screen.getByRole('menu').query()?.contains(document.activeElement) ?? false)
+        .toBe(true);
+    }
+
     it('walks the rows with the arrow keys', async () => {
       const screen = await render(
-        <Menu defaultOpen>
+        <Menu trigger={<Button>Actions</Button>}>
           <MenuItem>Rename</MenuItem>
           <MenuItem>Duplicate</MenuItem>
         </Menu>
       );
 
+      await screen.getByRole('button', { name: 'Actions' }).click();
+      await menuHasFocus(screen);
       await userEvent.keyboard('{ArrowDown}');
 
       await expect
@@ -367,6 +382,7 @@ describe('Menu', () => {
       // what puts focus inside the popup — a menu that was open before anybody
       // pressed anything has nothing to have moved focus away from.
       await screen.getByRole('button', { name: 'Actions' }).click();
+      await menuHasFocus(screen);
       await userEvent.keyboard('{ArrowDown}');
       await userEvent.keyboard('{Enter}');
 
@@ -381,7 +397,7 @@ describe('Menu', () => {
         </Menu>
       );
 
-      await screen.getByRole('menu').element();
+      await menuHasFocus(screen);
       await userEvent.keyboard('{Escape}');
 
       expect(onOpenChange).toHaveBeenCalledWith(false);

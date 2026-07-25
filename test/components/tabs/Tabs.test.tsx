@@ -97,7 +97,11 @@ describe('Tabs', () => {
       await screen.getByRole('tab', { name: 'Billing' }).click();
 
       await expect.element(screen.getByText('What you owe.')).toBeInTheDocument();
-      expect(screen.getByText('What this project is.').query()).toBeNull();
+      // Retried rather than queried once: the panel being left keeps its node
+      // for as long as Base UI thinks an exit transition might run — it is
+      // already `inert` and marked `data-ending-style` by then — and in WebKit
+      // that outlasts the assertion that the new panel is up.
+      await expect.element(screen.getByText('What this project is.')).not.toBeInTheDocument();
     });
 
     it('reports the chosen value', async () => {

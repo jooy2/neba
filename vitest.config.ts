@@ -48,6 +48,15 @@ export default defineConfig({
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
+    // One file at a time. Test files run as frames of one browser, and a
+    // browser has a single focus to hand out: a click in one file takes it from
+    // whichever file was holding it. That is not a nuisance the assertions can
+    // work around, because focus is half of what these components do — a toast
+    // stops its dismissal timer while the window is blurred, and a keystroke
+    // aimed at a menu goes wherever the focus went. Both showed up as failures
+    // that only ever appeared in a full run and never on their own. The suite
+    // takes about twice as long and stops lying.
+    fileParallelism: false,
     // Components are built on Base UI, which relies on real browser APIs
     // (ResizeObserver, popover, dialog). Run them in a real browser rather
     // than polyfilling a DOM emulator.
