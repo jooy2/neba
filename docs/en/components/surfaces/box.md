@@ -29,6 +29,8 @@ Every native `<div>` attribute passes through, `color` excepted.
 
 `solid` does not flood the surface with colour, for the same reason TextField doesn't. What a box holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. On an accent fill every one of them would need an on-fill treatment, which is the opposite of what a container is for.
 
+The sheet is not dyed at all. What separates `solid` from `outline` is not colour but **how much light the sheet holds** — its opacity — and whether it carries a hairline. See [Colour](../../guide/color#container-surfaces-are-never-dyed) for the whole rule.
+
 <Demo src="box/variants">
 
 <<< @/.vitepress/demos/box/variants.tsx
@@ -38,6 +40,8 @@ Every native `<div>` attribute passes through, `color` excepted.
 `text` has no surface, so `elevation` is ignored rather than drawing a shadow around an invisible rectangle.
 
 ### Colours
+
+The surface is white, so the family reaches **the hairline only**. That is why the example below is `outline`: on a `solid` Box, which has no border, `color` makes no visible difference.
 
 <Demo src="box/colors">
 

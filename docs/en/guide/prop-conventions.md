@@ -1,6 +1,6 @@
 ---
 title: Prop conventions
-order: 3
+order: 4
 ---
 
 # Prop conventions

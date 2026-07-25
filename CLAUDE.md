@@ -17,6 +17,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 | `src/` | **The library itself.** The only code that gets published. |
 | `src/index.ts` | Public entry point. Every exported component must be re-exported from here. |
 | `src/components/{name}/` | One folder per component (lowercase folder name). |
+| `src/internal/` | The library talking to itself. Shipped but never re-exported from `src/index.ts`. |
 | `test/` | Test suite (Vitest). Mirrors the `src/` tree. Self-contained: owns its `tsconfig.json`. |
 | `docs/` | VitePress site — developer-facing documentation for library consumers, and the only place components are rendered during development. Self-contained: owns its `tsconfig.json`. Not published to npm. |
 | `dist/` | Build output (`tsc` + terser). Generated; never edit by hand, never commit. |
@@ -97,7 +98,17 @@ Implementation rules that are easy to get wrong:
 
 ### Shared prop vocabulary
 
-`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
+`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, `NebaOrientation`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
+
+The same rule applies to the values behind those names, which is what `src/internal/styles.ts` is for. Control heights, radii, type scales, the two padding tracks, the frosted surface, the house transition, the focus ring and the `--n-*` slot generators live there once and every component imports them. A component keeps only what genuinely differs: its variant class maps and its layout. If you find yourself writing `h-8` or `rounded-(--neba-radius-md)` into a component, check whether the table already says it.
+
+`src/internal/button-group.ts` holds the one context in the library: `ButtonGroup` provides it and `Button` reads it as a fallback. It lives in `internal/` so the two components do not import each other.
+
+### Table cells are the exception to "styling is Tailwind"
+
+`Table` writes its cell padding, alignment, backgrounds and row rules as **inline styles**, not utilities. This is not a shortcut. `<td>` and `<th>` are among the very few tags a host stylesheet still styles by name — VitePress's `.vp-doc td`, Tailwind Typography's `.prose td`, every CSS framework — always at two-class specificity that a one-class utility cannot outrank. Every one of those declarations silently lost before the styling moved inline.
+
+The row's own background stays a utility, because it has a hover state and inline styles have no `:hover`. It reads a `--n-row` slot that classes then set: a custom property is invisible to a host stylesheet, so a variant wins there without a fight. `paddingXValues` in `internal/styles.ts` is `paddingXClasses` as raw lengths for exactly this; keep the two in step.
 
 ### The stylesheet ships
 
@@ -117,6 +128,7 @@ docs/.vitepress/
   data/props.ts             # the props tables, as data — both locales per row
   data/i18n.ts              # the few strings the docs' own components render
   demos/{component}/*.tsx   # one file per example — real, runnable React
+                            # folder name matches the component's own, lowercased
   demos/home/hero.tsx       # the home page's hero object
   theme/
     components/Layout.vue   # the default layout + the live home hero
@@ -127,9 +139,11 @@ docs/.vitepress/
 docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
   components/index.md       # the index grid of every component
-  components/{group}/*.md   # one page per component, grouped (inputs, surfaces)
+  components/{group}/*.md   # one page per component, grouped (display, inputs, surfaces)
   examples/index.md         # every component on one sample screen
 ```
+
+The three groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider), `surfaces` (Box, Card). Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales.
 
 Things that will bite:
 
@@ -139,7 +153,8 @@ Things that will bite:
 - **Demos are written in English and shared by every locale** — they are code samples, and the repo writes code in English. Only the two that are documentation rather than sample code (`gallery/all.tsx`, and anything like it) take the `locale` prop `Demo.vue` passes in and localise themselves. Prose belongs in the Markdown around the preview.
 - **A props row carries both languages.** `data/props.ts` keys every description by locale, so a Korean and an English table cannot drift into listing different props.
 - **Tailwind ships without Preflight here.** Preflight resets `h1`…`p`, links and lists globally, which would flatten VitePress's own typography. `scope.css` re-applies only the parts the library depends on (above all `border: 0 solid`) inside `.neba-scope`. Utilities are imported _unlayered_ on purpose: VitePress's theme is unlayered, and a layered rule loses to an unlayered one no matter how specific.
-- **`.vp-doc` is already styling the preview.** Base UI renders a `<p>` for a field description; a card footer can hold an `<a>`. Rules that undo `.vp-doc` need two classes to outrank it — that is why half of `scope.css` is prefixed `.vp-doc .neba-scope`.
+- **`.vp-doc` is already styling the preview.** Base UI renders a `<p>` for a field description; a card footer can hold an `<a>`. Rules that undo `.vp-doc` need two classes to outrank it — that is why half of `scope.css` is prefixed `.vp-doc .neba-scope`. Where the component itself has to win against `.vp-doc` rather than merely survive it — table cells — the fix belongs in the component, inline, not here; there is no specificity that both beats `.vp-doc td` and loses to a utility.
+- **A portalled popup leaves `.neba-scope`.** Select's popup renders at the end of `<body>`, outside the element the preview mounted into. Its positioner carries `neba-portal`, which `scope.css` hangs the same reset off. The library treats that class as a hook, not a style; a consumer with real Preflight needs nothing.
 - **Dark mode is free.** VitePress puts `.dark` on `<html>`, which `src/styles.css` already answers to.
 - The docs' `<Demo>` is client-only, so an SSR build renders an empty box and fills it on hydration.
 

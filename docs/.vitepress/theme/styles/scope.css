@@ -20,10 +20,34 @@
  *   anything with fewer than two classes.
  */
 
+/*
+ * `.neba-portal` is the second entry point.
+ *
+ * A Select's popup renders through a portal, at the end of `<body>` — outside
+ * the `.neba-scope` element the preview mounted into, and therefore outside
+ * every rule in this file. Base UI's positioner carries that class for exactly
+ * this case: the library treats it as a hook rather than as a style, and a host
+ * that scopes its reset hangs the same reset off it.
+ *
+ * An app with Tailwind's real Preflight applied globally needs none of this.
+ */
 .neba-scope,
-.neba-scope :where(*, *::before, *::after) {
+.neba-portal,
+.neba-scope :where(*, *::before, *::after),
+.neba-portal :where(*, *::before, *::after) {
   box-sizing: border-box;
   border: 0 solid;
+}
+
+.neba-portal :where(img, svg, video, canvas) {
+  display: block;
+  vertical-align: middle;
+}
+
+.neba-portal :where(p, ul, ol, li) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .neba-scope :where(button, input, select, optgroup, textarea) {

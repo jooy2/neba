@@ -1,6 +1,6 @@
 ---
 title: Prop 규약
-order: 3
+order: 4
 ---
 
 # Prop 규약

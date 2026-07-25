@@ -14,9 +14,11 @@ aside: false
 
 | Block | Components used | Worth noticing |
 | --- | --- | --- |
-| Toolbar | `Button` `TextField` | At the same `size` a button and a field are the same height, so the row keeps its baseline |
-| Stats | `Box` | Even `solid` is not flooded with colour — the text on it stays readable |
-| Profile form | `Card` `TextField` `Button` | Save turns on `loading`; a bad address puts an `error` on the field |
+| Toolbar | `Button` `ButtonGroup` `TextField` `Select` | At the same `size` a button, a field and a select are the same height, so the row keeps its baseline |
+| Stats | `Box` `Typography` | Even `solid` is not flooded with colour — the text on it stays readable |
+| Deploys | `Table` `Chip` | The table is rendered from a column list, so the headings and the cells cannot drift apart |
+| Profile form | `Card` `TextField` `Divider` `Chip` `Checkbox` `Button` | Save turns on `loading`; a bad address puts an `error` on the field |
+| Sidebar | `Card` `RadioGroup` `Switch` `Slider` | A settings list puts its labels in a column and lines the switches up on the right |
 | Cards in a box | `Box` `Card` | The box groups, the cards structure |
 
 Per-component props and examples are under [Components](../components/).

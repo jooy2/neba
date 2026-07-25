@@ -1,5 +1,21 @@
 import type { ReactNode } from 'react';
-import { Box, Button, Card, TextField } from 'neba';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Checkbox,
+  Chip,
+  Divider,
+  Radio,
+  RadioGroup,
+  Select,
+  Slider,
+  Switch,
+  Table,
+  TextField,
+  Typography
+} from 'neba';
 import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
 
 /**
@@ -53,6 +69,21 @@ const GROUPS: Group[] = [
         )
       },
       {
+        name: 'ButtonGroup',
+        summary: {
+          ko: '서로 붙어 있는 버튼들',
+          en: 'A row of buttons that belong together'
+        },
+        path: '/components/inputs/button-group',
+        preview: (
+          <ButtonGroup size="sm" variant="outline" color="secondary">
+            <Button>Day</Button>
+            <Button>Week</Button>
+            <Button>Month</Button>
+          </ButtonGroup>
+        )
+      },
+      {
         name: 'TextField',
         summary: {
           ko: '한 줄 또는 여러 줄 텍스트 입력',
@@ -62,6 +93,71 @@ const GROUPS: Group[] = [
         preview: (
           <div className="w-full max-w-52">
             <TextField size="sm" label="Email" placeholder="jane@example.com" fullWidth />
+          </div>
+        )
+      },
+      {
+        name: 'Select',
+        summary: {
+          ko: '목록에서 값 하나를 고르기',
+          en: 'One value chosen from a list'
+        },
+        path: '/components/inputs/select',
+        preview: (
+          <div className="w-full max-w-52">
+            <Select
+              size="sm"
+              label="Region"
+              fullWidth
+              defaultValue="icn"
+              items={[
+                { value: 'icn', label: 'Seoul' },
+                { value: 'nrt', label: 'Tokyo' }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'Checkbox',
+        summary: { ko: '하나의 예/아니오', en: 'A single yes/no' },
+        path: '/components/inputs/checkbox',
+        preview: (
+          <div className="flex flex-col gap-2">
+            <Checkbox size="sm" label="Remember me" defaultChecked />
+            <Checkbox size="sm" label="Send updates" />
+          </div>
+        )
+      },
+      {
+        name: 'RadioGroup',
+        summary: { ko: '여럿 중 정확히 하나', en: 'Exactly one of a set' },
+        path: '/components/inputs/radio-group',
+        preview: (
+          <RadioGroup size="sm" defaultValue="team">
+            <Radio value="starter" label="Starter" />
+            <Radio value="team" label="Team" />
+          </RadioGroup>
+        )
+      },
+      {
+        name: 'Switch',
+        summary: { ko: '즉시 켜고 끄기', en: 'An immediate on/off' },
+        path: '/components/inputs/switch',
+        preview: (
+          <div className="flex flex-col gap-2">
+            <Switch size="sm" label="Email alerts" defaultChecked />
+            <Switch size="sm" label="Previews" />
+          </div>
+        )
+      },
+      {
+        name: 'Slider',
+        summary: { ko: '범위 위에서 값 고르기', en: 'A value along a range' },
+        path: '/components/inputs/slider',
+        preview: (
+          <div className="w-full max-w-52">
+            <Slider size="sm" aria-label="Volume" defaultValue={65} />
           </div>
         )
       }
@@ -107,6 +203,83 @@ const GROUPS: Group[] = [
             >
               Ready for real users.
             </Card>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Display',
+    note: {
+      ko: '데이터를 읽히는 형태로 내놓는 것들',
+      en: 'The things that put data in front of a reader'
+    },
+    entries: [
+      {
+        name: 'Typography',
+        summary: {
+          ko: '라이브러리의 타입 스케일',
+          en: "The library's type scale, on its own"
+        },
+        path: '/components/display/typography',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-1">
+            <Typography level="overline">Changelog</Typography>
+            <Typography level="h4">Cut acrylic</Typography>
+            <Typography level="caption">Updated 2 minutes ago</Typography>
+          </div>
+        )
+      },
+      {
+        name: 'Divider',
+        summary: { ko: '두 가지 사이의 선', en: 'A rule between two things' },
+        path: '/components/display/divider',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-3">
+            <Divider />
+            <Divider>OR</Divider>
+          </div>
+        )
+      },
+      {
+        name: 'Chip',
+        summary: {
+          ko: '태그·필터·상태를 담는 작은 토큰',
+          en: 'A compact token: tag, filter, status'
+        },
+        path: '/components/display/chip',
+        preview: (
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Chip size="sm">design-system</Chip>
+            <Chip size="sm" variant="solid" color="success">
+              Live
+            </Chip>
+            <Chip size="sm" color="danger" count={12}>
+              Errors
+            </Chip>
+          </div>
+        )
+      },
+      {
+        name: 'Table',
+        summary: {
+          ko: '열과 행 데이터로 그려지는 표',
+          en: 'A grid rendered from columns and rows'
+        },
+        path: '/components/display/table',
+        preview: (
+          <div className="w-full max-w-56">
+            <Table
+              size="xs"
+              headers={[
+                { key: 'env', label: 'Env' },
+                { key: 'time', label: 'Time', align: 'end' }
+              ]}
+              items={[
+                { env: 'production', time: '4m' },
+                { env: 'staging', time: '2m' }
+              ]}
+            />
           </div>
         )
       }

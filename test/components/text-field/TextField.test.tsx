@@ -160,6 +160,22 @@ describe('TextField', () => {
       expect(root.style.getPropertyValue('--n-ring')).toBe('var(--neba-success-ring)');
     });
 
+    it('leaves the surface undyed whatever the color is', async () => {
+      const screen = await render(<TextField color="success" />);
+      const root = screen.getByRole('textbox').element().closest('div') as HTMLElement;
+
+      // What a field holds is user data, so the three panel steps are the
+      // neutral ladder — the family reaches the edge, the ring and the caret.
+      expect(root.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
+      expect(root.style.getPropertyValue('--n-panel-hover')).toBe('var(--neba-panel-hover)');
+      expect(root.style.getPropertyValue('--n-panel-press')).toBe('var(--neba-panel-press)');
+
+      await screen.rerender(<TextField color="danger" />);
+
+      expect(root.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
+      expect(root.style.getPropertyValue('--n-ring')).toBe('var(--neba-danger-ring)');
+    });
+
     it('defaults to the primary color', async () => {
       const screen = await render(<TextField />);
       const root = screen.getByRole('textbox').element().closest('div') as HTMLElement;

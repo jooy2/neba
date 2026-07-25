@@ -1,5 +1,22 @@
 import { useState, type ReactNode } from 'react';
-import { Box, Button, Card, TextField } from 'neba';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Checkbox,
+  Chip,
+  Divider,
+  Radio,
+  RadioGroup,
+  Select,
+  Slider,
+  Switch,
+  Table,
+  TextField,
+  Typography,
+  type TableColumn
+} from 'neba';
 
 /**
  * One sample screen rather than a grid of specimens: every component in the
@@ -34,6 +51,45 @@ const STATS = [
   { label: 'Failing', value: '2', color: 'danger' as const }
 ];
 
+const REGIONS = [
+  { value: 'icn', label: 'Seoul' },
+  { value: 'nrt', label: 'Tokyo' },
+  { value: 'fra', label: 'Frankfurt' },
+  { value: 'iad', label: 'Washington DC' }
+];
+
+interface Deploy {
+  id: string;
+  environment: string;
+  status: 'Live' | 'Building' | 'Failed';
+  duration: string;
+}
+
+const DEPLOYS: Deploy[] = [
+  { id: '1', environment: 'production', status: 'Live', duration: '4m 02s' },
+  { id: '2', environment: 'staging', status: 'Building', duration: '1m 48s' },
+  { id: '3', environment: 'preview/1284', status: 'Failed', duration: '0m 51s' }
+];
+
+const DEPLOY_COLUMNS: TableColumn<Deploy>[] = [
+  { key: 'environment', label: 'Environment', width: 200 },
+  {
+    key: 'status',
+    label: 'Status',
+    width: 130,
+    render: (row) => (
+      <Chip
+        size="xs"
+        variant="text"
+        color={row.status === 'Live' ? 'success' : row.status === 'Failed' ? 'danger' : 'info'}
+      >
+        {row.status}
+      </Chip>
+    )
+  },
+  { key: 'duration', label: 'Duration', align: 'end' }
+];
+
 function Caption({ children }: { children: ReactNode }) {
   return (
     <div className="text-[0.6875rem] tracking-wide text-[var(--neba-muted-fg)] uppercase">
@@ -47,6 +103,8 @@ export default function Showcase() {
   const [email, setEmail] = useState('jane@example.com');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [region, setRegion] = useState<string | number | null>('icn');
+  const [tags, setTags] = useState(['react', 'tailwind', 'base-ui']);
 
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -64,14 +122,23 @@ export default function Showcase() {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Toolbar — Button in every weight it comes in. */}
+      {/* Toolbar — the controls that run a screen, all on one baseline. */}
       <section className="flex flex-col gap-3">
-        <Caption>Button · TextField</Caption>
+        <Caption>Button · ButtonGroup · TextField · Select</Caption>
         <div className="flex flex-wrap items-center gap-2">
           <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
-          <Button size="sm" variant="text" color="secondary">
-            Filter
-          </Button>
+          <Select
+            size="sm"
+            items={REGIONS}
+            value={region}
+            onValueChange={setRegion}
+            placeholder="Region"
+          />
+          <ButtonGroup size="sm" variant="outline" color="secondary">
+            <Button>Day</Button>
+            <Button>Week</Button>
+            <Button>Month</Button>
+          </ButtonGroup>
           <div className="grow" />
           <Button size="sm" variant="outline" color="secondary">
             Import
@@ -84,20 +151,32 @@ export default function Showcase() {
 
       {/* Boxes as the plainest surface there is: they group, and nothing else. */}
       <section className="flex flex-col gap-3">
-        <Caption>Box</Caption>
+        <Caption>Box · Typography</Caption>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {STATS.map((stat) => (
             <Box key={stat.label} variant="solid" color={stat.color}>
-              <div className="text-[1.5rem] leading-none font-semibold">{stat.value}</div>
-              <div className="mt-1 text-[0.75rem] text-[var(--neba-muted-fg)]">{stat.label}</div>
+              <Typography level="h3">{stat.value}</Typography>
+              <Typography level="caption">{stat.label}</Typography>
             </Box>
           ))}
         </div>
       </section>
 
+      {/* Data, rendered from a column list rather than written out row by row. */}
+      <section className="flex flex-col gap-3">
+        <Caption>Table · Chip</Caption>
+        <Table
+          headers={DEPLOY_COLUMNS}
+          items={DEPLOYS}
+          getRowKey={(row) => row.id}
+          size="sm"
+          hoverable
+        />
+      </section>
+
       {/* A card holding controls — the composition the library is actually for. */}
       <section className="flex flex-col gap-3">
-        <Caption>Card · TextField · Button</Caption>
+        <Caption>Card · TextField · Checkbox · Button</Caption>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
           <Card
             dividers
@@ -136,6 +215,22 @@ export default function Showcase() {
                 description="Markdown is not supported."
                 fullWidth
               />
+              <Divider>Tags</Divider>
+              <div className="flex flex-wrap items-center gap-2">
+                {tags.map((tag) => (
+                  <Chip
+                    key={tag}
+                    size="sm"
+                    variant="text"
+                    color="secondary"
+                    onDelete={() => setTags(tags.filter((item) => item !== tag))}
+                    deleteLabel={`Remove ${tag}`}
+                  >
+                    {tag}
+                  </Chip>
+                ))}
+              </div>
+              <Checkbox label="Show my email to other members" description="Members only." />
             </div>
           </Card>
 
@@ -146,9 +241,9 @@ export default function Showcase() {
               title="Team"
               subtitle="Up to twelve seats"
               headerAction={
-                <Button size="xs" variant="outline" color="secondary">
+                <Chip size="xs" variant="outline" color="secondary">
                   Current plan
-                </Button>
+                </Chip>
               }
               footer={
                 <Button size="sm" fullWidth variant="outline" color="secondary">
@@ -156,7 +251,18 @@ export default function Showcase() {
                 </Button>
               }
             >
-              Shared environments, review apps and a seat for everyone.
+              <RadioGroup size="sm" defaultValue="team" label="Billing">
+                <Radio value="monthly" label="Monthly" />
+                <Radio value="team" label="Yearly" description="Two months free." />
+              </RadioGroup>
+            </Card>
+
+            <Card size="sm" title="Notifications">
+              <div className="flex flex-col gap-3">
+                <Switch size="sm" labelPlacement="start" label="Email alerts" defaultChecked />
+                <Switch size="sm" labelPlacement="start" label="Deploy failures" defaultChecked />
+                <Slider size="sm" label="Quiet hours" defaultValue={[22, 7]} max={24} showValue />
+              </div>
             </Card>
 
             <Card

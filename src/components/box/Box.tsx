@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import {
+  radiusClasses,
+  surfaceClasses,
+  surfaceSlots,
+  transitionClasses
+} from '../../internal/styles';
+import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
 
 export interface BoxProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -35,13 +41,7 @@ export interface BoxProps
  * the same paragraph render at two sizes depending on what it was wrapped in.
  * So `size` on a Box means the size of the *sheet*: its radius and its padding.
  */
-const sizeClasses: Record<NebaSize, string> = {
-  xs: 'rounded-(--neba-radius-xs)',
-  sm: 'rounded-(--neba-radius-sm)',
-  md: 'rounded-(--neba-radius-md)',
-  lg: 'rounded-(--neba-radius-lg)',
-  xl: 'rounded-(--neba-radius-xl)'
-};
+const sizeClasses: Record<NebaSize, string> = radiusClasses;
 
 /**
  * The same two density tracks as Button, applied on both axes rather than
@@ -72,14 +72,8 @@ const baseClasses = [
   // The same property list and durations as the controls, so a box whose color
   // or elevation changes settles at the house pace. There is no `:active`
   // override because a box is not pressed — it holds things that are.
-  '[transition-property:background-color,border-color,box-shadow,color]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]'
+  transitionClasses
 ].join(' ');
-
-/** The frosted surface, identical to Button's — see the comment there. */
-const surfaceClasses =
-  '[background-image:var(--neba-grain),var(--neba-sheen)] [background-blend-mode:overlay,normal] [backdrop-filter:var(--neba-blur)]';
 
 /**
  * The variants say the same three things they say on Button — filled, hairline,
@@ -89,8 +83,12 @@ const surfaceClasses =
  * What a box holds is other people's content, and it arrives with its own
  * colors: body text, links, buttons, fields. On an accent fill every one of
  * them would need an on-fill treatment of its own, which is the opposite of
- * what a container is for. So `solid` here is the acrylic sheet dyed a few
- * steps past `outline`, and the color family shows up as the tint and the edge.
+ * what a container is for.
+ *
+ * So the sheet is not dyed at all — `--n-panel` is the *undyed* acrylic, and
+ * `solid` is that same sheet at a higher opacity rather than a stronger tint.
+ * What separates the two variants is how much light the sheet holds and whether
+ * it carries a hairline; the color family stays in the edge.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   solid: [
@@ -111,30 +109,16 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
 };
 
 /**
- * Maps `color` and `elevation` onto the local slots, for the same reason as on
- * Button: Tailwind only sees literal class names, so a per-family class would
- * have to be hardcoded once per color.
- *
- * There is no hover or press level here. A box does not rise under the cursor
- * and cannot be pressed.
- */
-function styleSlots(color: NebaColor, elevation: NebaElevation): React.CSSProperties {
-  return {
-    '--n-accent': `var(--neba-${color}-accent)`,
-    '--n-soft': `var(--neba-${color}-soft)`,
-    '--n-panel': `var(--neba-${color}-panel)`,
-    '--n-panel-hover': `var(--neba-${color}-panel-hover)`,
-    '--n-line': `var(--neba-${color}-line)`,
-    '--n-elev': `var(--neba-shadow-${elevation})`
-  } as React.CSSProperties;
-}
-
-/**
  * A sheet of acrylic with content on it. The plainest surface in the library:
  * it groups things, and that is all it does.
  *
  * Everything structural — a title, a footer, dividers — belongs to Card, which
  * is a Box with those sections laid out on it.
+ *
+ * `surfaceSlots` is the undyed slot set: the panel ladder points at the neutral
+ * `--neba-panel*` steps rather than at the family's own, which is what keeps a
+ * container's surface white. `color` reaches the hairline and the accent, and
+ * stops there.
  */
 export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
   {
@@ -167,7 +151,7 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
     ref,
     props: {
       className: classNames,
-      style: { ...styleSlots(color, elevation), ...style },
+      style: { ...surfaceSlots(color, elevation), ...style },
       children,
       ...props
     }

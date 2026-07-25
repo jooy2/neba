@@ -1,6 +1,6 @@
 ---
 title: TextField
-order: 2
+order: 3
 ---
 
 # TextField
@@ -26,6 +26,8 @@ import { TextField } from 'neba';
 ### 변형
 
 `solid`도 색으로 채우지 않습니다. 필드가 담는 것은 사용자 데이터이고, 캐럿·선택 영역·플레이스홀더가 강조색 채움 위에서는 읽히지 않기 때문입니다. 색 계열은 가장자리와 포커스 링, 캐럿에 나타납니다.
+
+시트 자체는 흰색이고, `outline` → `solid` → hover → 포커스로 갈수록 **불투명해질 뿐** 색이 진해지지는 않습니다. [색](../../guide/color#컨테이너-표면은-염색하지-않습니다)에 전체 규칙이 있습니다.
 
 <Demo src="text-field/variants">
 

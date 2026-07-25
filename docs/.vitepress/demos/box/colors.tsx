@@ -6,7 +6,7 @@ export default function BoxColors() {
   return (
     <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
       {COLORS.map((color) => (
-        <Box key={color} color={color} variant="solid">
+        <Box key={color} color={color} variant="outline">
           {color}
         </Box>
       ))}

@@ -1,6 +1,23 @@
 import * as React from 'react';
 import { Button as BaseUIButton } from '@base-ui/react/button';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import { ButtonGroupContext } from '../../internal/button-group';
+import {
+  controlHeightClasses,
+  controlSlots,
+  controlSquareClasses,
+  controlTextClasses,
+  disabledClasses,
+  focusRingClasses,
+  gapClasses,
+  iconClasses,
+  paddingXClasses,
+  pressTransitionClasses,
+  radiusClasses,
+  readOnlyFilterClasses,
+  surfaceClasses,
+  transitionClasses
+} from '../../internal/styles';
+import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
 
 export interface ButtonProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> {
@@ -27,71 +44,36 @@ export interface ButtonProps
 }
 
 /**
- * Height and type scale. The steps are deliberately uneven: `md` (32px) is the
- * desktop workhorse, `xs`/`sm` are for dense toolbars and table rows, and
- * `lg`/`xl` are for the one action a screen is actually about — so the gaps
- * widen at both ends rather than marching up in equal 4px increments.
- *
- * Density never touches these, so two buttons of the same `size` always share a
- * height and rows of mixed-density controls stay aligned.
+ * The scales all come from `internal/styles` — a button's height *is* the
+ * library's control height, and the same numbers have to hold on a TextField,
+ * a Select and a Chip for a mixed row to keep its baseline.
  */
 const sizeClasses: Record<NebaSize, string> = {
-  xs: 'h-5.5 gap-1 rounded-(--neba-radius-xs) text-[0.6875rem]',
-  sm: 'h-6.5 gap-1.5 rounded-(--neba-radius-sm) text-[0.75rem]',
-  md: 'h-8 gap-1.5 rounded-(--neba-radius-md) text-[0.8125rem]',
-  lg: 'h-10 gap-2 rounded-(--neba-radius-lg) text-[0.9375rem]',
-  xl: 'h-12 gap-2.5 rounded-(--neba-radius-xl) text-[1.0625rem]'
-};
-
-/**
- * Density is horizontal padding, and only horizontal padding. The two tracks
- * are roughly 2:1 so the difference is legible at a glance rather than a
- * two-pixel nudge.
- */
-const paddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
-  default: { xs: 'px-2.5', sm: 'px-3', md: 'px-4', lg: 'px-5', xl: 'px-6' },
-  compact: { xs: 'px-1.5', sm: 'px-2', md: 'px-2.5', lg: 'px-3', xl: 'px-4' }
+  xs: `${controlHeightClasses.xs} ${gapClasses.xs} ${radiusClasses.xs} ${controlTextClasses.xs}`,
+  sm: `${controlHeightClasses.sm} ${gapClasses.sm} ${radiusClasses.sm} ${controlTextClasses.sm}`,
+  md: `${controlHeightClasses.md} ${gapClasses.md} ${radiusClasses.md} ${controlTextClasses.md}`,
+  lg: `${controlHeightClasses.lg} ${gapClasses.lg} ${radiusClasses.lg} ${controlTextClasses.lg}`,
+  xl: `${controlHeightClasses.xl} ${gapClasses.xl} ${radiusClasses.xl} ${controlTextClasses.xl}`
 };
 
 /** With no label there is nothing to pad against, so the button goes square. */
 const iconOnlyClasses: Record<NebaSize, string> = {
-  xs: 'w-5.5 px-0',
-  sm: 'w-6.5 px-0',
-  md: 'w-8 px-0',
-  lg: 'w-10 px-0',
-  xl: 'w-12 px-0'
+  xs: `${controlSquareClasses.xs} px-0`,
+  sm: `${controlSquareClasses.sm} px-0`,
+  md: `${controlSquareClasses.md} px-0`,
+  lg: `${controlSquareClasses.lg} px-0`,
+  xl: `${controlSquareClasses.xl} px-0`
 };
 
 const baseClasses = [
   'relative inline-flex shrink-0 select-none items-center justify-center',
   'whitespace-nowrap align-middle font-medium leading-none',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  // No `transform` in the list, and none anywhere below: scaling a control
-  // resamples its label, and a label that shimmers under the cursor undoes
-  // every other bit of restraint in the design.
-  // Per-property durations, in the order the property list declares them: the
-  // fill drains back slowly while edges and shadows keep up with the pointer.
-  // Pressing zeroes all four, so the whole button lands on the frame of the
-  // click and then decays — the same asymmetry the afterglow layer uses.
-  '[transition-property:background-color,border-color,box-shadow,color]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]',
-  'active:[transition-duration:0ms]',
-  // One `outline` shorthand rather than Tailwind's `outline-2` + colour pair:
-  // the utilities route the style through `--tw-outline-style`, which any
-  // `outline-none` on the element (ours or a consumer's) would zero out.
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-  '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0'
+  transitionClasses,
+  pressTransitionClasses,
+  focusRingClasses,
+  iconClasses
 ].join(' ');
-
-/**
- * The frosted surface: a translucent fill over a blurred backdrop, a tile of
- * noise blended into it for tooth, an angled sheen, and a hairline edge. The
- * blur makes it a sheet of something; the noise makes that something acrylic
- * rather than glass.
- */
-const surfaceClasses =
-  '[background-image:var(--neba-grain),var(--neba-sheen)] [background-blend-mode:overlay,normal] [backdrop-filter:var(--neba-blur)]';
 
 const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   solid: [
@@ -135,77 +117,23 @@ const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
 
 /**
  * Read-only keeps the shape and the edge but goes flat, loses its sheen, drains
- * most of the saturation, and stops reacting. It reads as a label that happens
- * to be button-shaped, which is what a read-only action is.
- *
- * The desaturation is doing the work now that `elevation` defaults to 0: with
- * no drop shadow on a normal button either, "flat" alone says nothing.
+ * most of the saturation, and stops reacting.
  */
 const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   solid: [
     surfaceClasses,
+    readOnlyFilterClasses,
     'cursor-default text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--neba-plate-solid)] [filter:saturate(0.55)]'
+    '[box-shadow:var(--neba-plate-solid)]'
   ].join(' '),
   outline: [
     surfaceClasses,
+    readOnlyFilterClasses,
     'cursor-default border text-(--n-accent) bg-(--n-panel)',
-    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]'
+    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'cursor-default text-(--n-accent) bg-transparent [filter:saturate(0.55)]'
+  text: `${readOnlyFilterClasses} cursor-default text-(--n-accent) bg-transparent`
 };
-
-/**
- * Disabled drops the color family entirely. Fading the colored surface would
- * still read as "this is the primary action", only blurrier.
- */
-const disabledClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: 'cursor-not-allowed bg-(--neba-disabled-bg) text-(--neba-disabled-fg) shadow-none',
-  outline:
-    'cursor-not-allowed border bg-transparent text-(--neba-disabled-fg) [border-color:var(--neba-disabled-border)] shadow-none',
-  text: 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg) shadow-none'
-};
-
-/**
- * Maps `color` and `elevation` onto the local slots the classes above read from.
- *
- * These are inline styles rather than Tailwind arbitrary properties on purpose:
- * Tailwind only sees class names that appear literally in the source, so the
- * alternative is nine hardcoded `[--n-fill:var(--neba-primary-fill)]` classes
- * per color family. Generating the slots keeps adding a color family down to one
- * entry in `NebaColor` plus its tokens in `styles.css`.
- */
-function styleSlots(
-  color: NebaColor,
-  elevation: NebaElevation,
-  variant: NonNullable<NebaStyleProps['variant']>
-): React.CSSProperties {
-  // Light thrown onto a filled surface is white; onto a tinted or bare one it
-  // has to be the accent, or it would wash the surface out to grey.
-  const onFill = variant === 'solid';
-
-  return {
-    '--n-fill': `var(--neba-${color}-fill)`,
-    '--n-fill-hover': `var(--neba-${color}-fill-hover)`,
-    '--n-fill-active': `var(--neba-${color}-fill-active)`,
-    '--n-on-solid': `var(--neba-${color}-on-solid)`,
-    '--n-accent': `var(--neba-${color}-accent)`,
-    '--n-soft': `var(--neba-${color}-soft)`,
-    '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
-    '--n-soft-press': `var(--neba-${color}-soft-press)`,
-    '--n-panel': `var(--neba-${color}-panel)`,
-    '--n-panel-hover': `var(--neba-${color}-panel-hover)`,
-    '--n-panel-press': `var(--neba-${color}-panel-press)`,
-    '--n-line': `var(--neba-${color}-line)`,
-    '--n-line-hover': `var(--neba-${color}-line-hover)`,
-    '--n-ring': `var(--neba-${color}-ring)`,
-    '--n-glow': onFill ? 'var(--neba-glow-on-fill)' : `var(--neba-${color}-soft)`,
-    '--n-flash': onFill ? 'var(--neba-flash-on-fill)' : `var(--neba-${color}-soft-press)`,
-    '--n-elev': `var(--neba-shadow-${elevation})`,
-    '--n-elev-hover': `var(--neba-shadow-${Math.min(elevation + 1, 4)})`,
-    '--n-elev-press': `var(--neba-shadow-${Math.max(elevation - 1, 0)})`
-  } as React.CSSProperties;
-}
 
 function Spinner() {
   return (
@@ -223,17 +151,17 @@ function Spinner() {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
-    variant = 'solid',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
+    variant: variantProp,
+    size: sizeProp,
+    color: colorProp,
+    density: densityProp,
+    elevation: elevationProp,
     startIcon,
     endIcon,
     loading = false,
     readOnly = false,
     fullWidth = false,
-    disabled = false,
+    disabled: disabledProp,
     className,
     style,
     children,
@@ -243,6 +171,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   },
   ref
 ) {
+  // A ButtonGroup sets these once for the whole set. The button's own prop still
+  // wins — a group of secondary actions with one danger button in it is a real
+  // thing — and with no group around it the defaults are what they always were.
+  const group = React.useContext(ButtonGroupContext);
+  const variant = variantProp ?? group?.variant ?? 'solid';
+  const size = sizeProp ?? group?.size ?? 'md';
+  const color = colorProp ?? group?.color ?? 'primary';
+  const density = densityProp ?? group?.density ?? 'default';
+  const elevation = elevationProp ?? group?.elevation ?? 0;
+  const disabled = disabledProp ?? group?.disabled ?? false;
+
   const iconOnly = children === undefined || children === null || children === false;
   // `disabled` and `readOnly` change how the button looks; `loading` only stops
   // it from firing.
@@ -251,7 +190,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   const classNames = [
     baseClasses,
     sizeClasses[size],
-    iconOnly ? iconOnlyClasses[size] : paddingClasses[density][size],
+    iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
     // Deliberately an if/else rather than stacked `data-*` variants: two
     // Tailwind variants of equal specificity resolve by their order in the
     // generated stylesheet, which is not something a component should depend on.
@@ -273,7 +212,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       ref={ref}
       disabled={disabled}
       className={classNames}
-      style={{ ...styleSlots(color, elevation, variant), ...style }}
+      style={{ ...controlSlots(color, elevation, variant), ...style }}
       aria-disabled={inert || undefined}
       aria-busy={loading || undefined}
       data-loading={loading || undefined}

@@ -1,6 +1,6 @@
 ---
 title: TextField
-order: 2
+order: 3
 ---
 
 # TextField
@@ -26,6 +26,8 @@ Every native `<input>` attribute passes straight through. `color` and `size` are
 ### Variants
 
 Even `solid` is not flooded with the accent colour. What a field holds is user data, and a caret, a text selection and a placeholder all have to stay legible on top of it. The colour family shows up in the edge, the focus ring and the caret instead.
+
+The sheet itself is white, and going `outline` → `solid` → hover → focus makes it **more opaque**, not more coloured. [Colour](../../guide/color#container-surfaces-are-never-dyed) has the whole rule.
 
 <Demo src="text-field/variants">
 

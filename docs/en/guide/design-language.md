@@ -32,6 +32,24 @@ Lowering the alpha does not by itself make glass. **The blur radius is what deci
 
 88% is the floor for 4.5:1 white-on-fill over a white page. **Fill lightness was picked against that number, not against opaque.** Lower the alpha and the lightness has to come down with it.
 
+### The undyed sheet (`--neba-glass-bg`) is the exception
+
+That rule is about a **dyed** fill. `--neba-glass-bg` — the base under the outline and text variants, and the default surface of Card, Box and TextField — has no colour in it, so alpha is the only axis there is. Here alpha does not decide whether the backdrop is legible; it decides **whether the sheet reads as white**.
+
+In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%** — the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went 5% → 7% for the same reason.
+
+### Container surfaces are never dyed
+
+Box, Card and TextField draw their surface from `--neba-panel` / `-hover` / `-press` — **three strengths of an undyed white sheet**, not from the family's own `--neba-{color}-panel`.
+
+What a container holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. Tinting the sheet underneath puts every one of them on a background they were not chosen against. So **the family stops at the hairline, the focus ring and the caret, and the sheet stays white.**
+
+Controls are the opposite case and keep the tinted `--neba-{color}-panel`, because a Button's surface _is_ the thing being coloured.
+
+It is also why the ladder is **opacity** rather than lightness: as a surface is engaged it holds more light, instead of turning grey.
+
+> **One consequence.** On a `solid` Box or Card, which has no border, `color` has nothing left to reach and makes no visible difference. On a container, `color` is effectively the prop that picks the edge.
+
 ### The grain is what makes it acrylic
 
 Translucency plus blur alone gives you polished glass. Noise is what makes it sandblasted acrylic. One 120px `feTurbulence` tile (fractalNoise, three octaves) goes in as a data URI and sits over the fill in `background-blend-mode: overlay`. The tile is 12% alpha, decoded once, and reused by every surface on the page.
@@ -47,6 +65,8 @@ Translucency plus blur alone gives you polished glass. Noise is what makes it sa
 ---
 
 ## 2. Colour
+
+This section is the _why_. For what the tokens actually resolve to and how to override them, see [Colour](./color).
 
 The base colour is `#4072cd`; everything else comes off its palette.
 
@@ -72,6 +92,14 @@ Every colour is defined in `oklch()`, because its lightness axis matches percept
 ```
 
 The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color-mix()` in the derived block. **Adding a colour family is two edits** — one entry in the `NebaColor` union and five lines in `styles.css`.
+
+### Chroma goes to the gamut edge; lightness goes as far as contrast allows
+
+When a family looks muddy, the cause is usually not its lightness but its **chroma**. The `oklch()` chroma ceiling in sRGB differs per hue and per lightness, and a colour sitting well under that ceiling reads as grey at the very same brightness. Neba's chroma is held at roughly **90% of the maximum** for each family's lightness — vivid, with enough margin that the browser never has to clip.
+
+Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, holding 4.5:1 over a white page pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink** — which is exactly what `warning`, the one family that does it, is doing. Every step is checked against this, hover and active included.
+
+> **Moving the hue a few degrees is also an option.** `success` went 152 → 148 and `info` 218 → 223. Both sit where sRGB is unusually narrow at mid lightness, and a few degrees to the side buys chroma that no amount of tuning at the original hue could.
 
 > **The derived block is repeated per theme root.** A custom property resolves its `var()`s **on the element that declares it**. Declared only on `:root`, the derived tokens would freeze to their light-theme values inside a `.dark` subtree. That is why the selector is `:root, .dark, .light, [data-theme='dark'], [data-theme='light']`.
 

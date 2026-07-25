@@ -154,9 +154,11 @@ describe('Card', () => {
       );
       const root = screen.getByTestId('card').element() as HTMLElement;
 
-      expect(root.style.getPropertyValue('--n-panel-hover')).toBe('var(--neba-danger-panel-hover)');
+      expect(root.style.getPropertyValue('--n-line')).toBe('var(--neba-danger-line)');
       expect(root.style.getPropertyValue('--n-elev')).toBe('var(--neba-shadow-2)');
       expect(root).not.toHaveClass('border');
+      // The sheet a Card is drawn on is undyed, exactly as Box's is.
+      expect(root.style.getPropertyValue('--n-panel-hover')).toBe('var(--neba-panel-hover)');
     });
 
     it('is an outline sheet by default', async () => {

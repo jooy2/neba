@@ -1,7 +1,23 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import {
+  controlHeightClasses,
+  controlTextLeadingClasses,
+  disabledClasses,
+  fieldReadOnlyClasses,
+  fieldRestClasses,
+  focusWithinRingClasses,
+  gapClasses,
+  iconClasses,
+  metaTextClasses,
+  paddingXClasses,
+  radiusClasses,
+  stackGapClasses,
+  surfaceSlots,
+  transitionClasses
+} from '../../internal/styles';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
 
 /** How the multiline control may be resized by the user. Ignored when single line. */
 export type TextFieldResize = 'none' | 'vertical' | 'horizontal' | 'both';
@@ -75,20 +91,11 @@ export interface TextFieldProps extends NebaStyleProps, NativeControlProps {
  * heights below or a one-row textarea would not line up with an input.
  */
 const sizeClasses: Record<NebaSize, string> = {
-  xs: 'gap-1 rounded-(--neba-radius-xs) text-[0.6875rem]/[0.875rem]',
-  sm: 'gap-1.5 rounded-(--neba-radius-sm) text-[0.75rem]/[1rem]',
-  md: 'gap-1.5 rounded-(--neba-radius-md) text-[0.8125rem]/[1.25rem]',
-  lg: 'gap-2 rounded-(--neba-radius-lg) text-[0.9375rem]/[1.375rem]',
-  xl: 'gap-2.5 rounded-(--neba-radius-xl) text-[1.0625rem]/[1.625rem]'
-};
-
-/** The same heights as Button, so a field and a button share a row's baseline. */
-const singleLineClasses: Record<NebaSize, string> = {
-  xs: 'h-5.5',
-  sm: 'h-6.5',
-  md: 'h-8',
-  lg: 'h-10',
-  xl: 'h-12'
+  xs: `${gapClasses.xs} ${radiusClasses.xs} ${controlTextLeadingClasses.xs}`,
+  sm: `${gapClasses.sm} ${radiusClasses.sm} ${controlTextLeadingClasses.sm}`,
+  md: `${gapClasses.md} ${radiusClasses.md} ${controlTextLeadingClasses.md}`,
+  lg: `${gapClasses.lg} ${radiusClasses.lg} ${controlTextLeadingClasses.lg}`,
+  xl: `${gapClasses.xl} ${radiusClasses.xl} ${controlTextLeadingClasses.xl}`
 };
 
 /**
@@ -109,30 +116,6 @@ const multilineClasses: Record<NebaSize, string> = {
   xl: 'min-h-12 py-[10px]'
 };
 
-/** Horizontal padding, on the same two tracks as Button. */
-const paddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
-  default: { xs: 'px-2.5', sm: 'px-3', md: 'px-4', lg: 'px-5', xl: 'px-6' },
-  compact: { xs: 'px-1.5', sm: 'px-2', md: 'px-2.5', lg: 'px-3', xl: 'px-4' }
-};
-
-/** Label, description and error sit one step below the control's own text. */
-const metaClasses: Record<NebaSize, string> = {
-  xs: 'text-[0.625rem]',
-  sm: 'text-[0.6875rem]',
-  md: 'text-[0.75rem]',
-  lg: 'text-[0.8125rem]',
-  xl: 'text-[0.875rem]'
-};
-
-/** Gap between the label, the control and the text under it. */
-const stackClasses: Record<NebaSize, string> = {
-  xs: 'gap-1',
-  sm: 'gap-1',
-  md: 'gap-1.5',
-  lg: 'gap-1.5',
-  xl: 'gap-2'
-};
-
 const resizeClasses: Record<TextFieldResize, string> = {
   none: 'resize-none',
   vertical: 'resize-y',
@@ -145,112 +128,25 @@ const shellBaseClasses = [
   // because the whole shell behaves as the field, padding included.
   'group relative flex w-full cursor-text',
   '[-webkit-tap-highlight-color:transparent]',
-  // Same property list and the same durations as Button. There is no `:active`
-  // override because a field is not pressed — but the asymmetry still applies:
-  // focus lands on the frame of the click and drains back out over 340ms once
-  // the variant stops matching.
-  '[transition-property:background-color,border-color,box-shadow,color]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]',
+  // Same property list and durations as Button. There is no `:active` override
+  // because a field is not pressed — but the asymmetry still applies: focus
+  // lands on the frame of the click and drains back out over 340ms once the
+  // variant stops matching.
+  transitionClasses,
   'focus-within:[transition-duration:0ms]',
   // The ring belongs to the shell, not to the control inside it, so it traces
-  // the acrylic edge rather than a rectangle floating inside it. Written as the
-  // `outline` shorthand for the same reason as on Button: Tailwind's utilities
-  // route the style through `--tw-outline-style`, which any `outline-none` on
-  // the element would zero.
-  'has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[:focus-visible]:outline-offset-2',
-  '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0'
+  // the acrylic edge rather than a rectangle floating inside it.
+  focusWithinRingClasses,
+  iconClasses
 ].join(' ');
 
-/** The frosted surface, identical to Button's — see the comment there. */
-const surfaceClasses =
-  '[background-image:var(--neba-grain),var(--neba-sheen)] [background-blend-mode:overlay,normal] [backdrop-filter:var(--neba-blur)]';
-
 /**
- * The variants say the same three things they say on Button — filled, hairline,
- * bare — with one deliberate difference: `solid` does not flood the control with
- * `--n-fill`. What a field holds is user data, and a caret, a text selection and
- * a placeholder all have to stay legible on top of it, which they are not on an
- * accent fill. So `solid` here is the acrylic sheet dyed a few steps further
- * than `outline`, and the colour family shows up in the edge, the ring and the
- * caret instead.
+ * The shell, the read-only treatment and the disabled treatment are the ones
+ * `internal/styles` defines for every field-shaped control — a Select's trigger
+ * is drawn on exactly the same box, and the two have to be indistinguishable.
  */
-const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
-    'hover:bg-(--n-panel-press)',
-    'focus-within:bg-(--n-panel-press)'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
-    'focus-within:bg-(--n-panel-hover) focus-within:[border-color:var(--n-ring)]'
-  ].join(' '),
-  // No surface until it is wanted — the field in a table cell that only looks
-  // like a field once you go near it.
-  text: [
-    'text-(--neba-fg) bg-transparent',
-    'hover:bg-(--n-soft)',
-    'focus-within:bg-(--n-soft-hover)'
-  ].join(' ')
-};
-
-/**
- * Read-only keeps the colour and the edge, goes flat, and drains most of the
- * saturation — the same axis Button uses. The caret and text selection stay,
- * because a read-only field is still something you copy out of.
- */
-const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--neba-plate-solid)] [filter:saturate(0.55)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]'
-  ].join(' '),
-  text: 'text-(--neba-fg) bg-transparent [filter:saturate(0.55)]'
-};
-
-/** Disabled drops the colour family entirely, exactly as on Button. */
-const disabledClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: 'cursor-not-allowed bg-(--neba-disabled-bg) text-(--neba-disabled-fg) shadow-none',
-  outline:
-    'cursor-not-allowed border bg-transparent text-(--neba-disabled-fg) [border-color:var(--neba-disabled-border)] shadow-none',
-  text: 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg) shadow-none'
-};
-
-/**
- * Maps `color` and `elevation` onto the local slots, for the same reason as on
- * Button: Tailwind only sees literal class names, so a per-family class would
- * have to be hardcoded once per colour.
- *
- * There is no `--n-elev-hover` / `--n-elev-press` here. A field does not rise
- * under the cursor and cannot be pressed — its states are carried by the edge,
- * the tint and the ring.
- */
-function styleSlots(color: NebaColor, elevation: NebaElevation): React.CSSProperties {
-  return {
-    '--n-accent': `var(--neba-${color}-accent)`,
-    '--n-soft': `var(--neba-${color}-soft)`,
-    '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
-    '--n-soft-press': `var(--neba-${color}-soft-press)`,
-    '--n-panel': `var(--neba-${color}-panel)`,
-    '--n-panel-hover': `var(--neba-${color}-panel-hover)`,
-    '--n-panel-press': `var(--neba-${color}-panel-press)`,
-    '--n-line': `var(--neba-${color}-line)`,
-    '--n-line-hover': `var(--neba-${color}-line-hover)`,
-    '--n-ring': `var(--neba-${color}-ring)`,
-    '--n-elev': `var(--neba-shadow-${elevation})`
-  } as React.CSSProperties;
-}
+const restClasses = fieldRestClasses;
+const readOnlyClasses = fieldReadOnlyClasses;
 
 /** Mirrors Button's spinner so the two read as the same object in motion. */
 function Spinner() {
@@ -320,8 +216,8 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       sizeClasses[size],
       multiline
         ? `${multilineClasses[size]} items-start`
-        : `${singleLineClasses[size]} items-center`,
-      paddingClasses[density][size],
+        : `${controlHeightClasses[size]} items-center`,
+      paddingXClasses[density][size],
       // An if/else rather than stacked `data-*` variants: two Tailwind variants
       // of equal specificity resolve by their order in the generated stylesheet.
       disabled
@@ -356,18 +252,18 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         invalid={isInvalid}
         className={[
           'flex-col align-top',
-          stackClasses[size],
+          stackGapClasses[size],
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
         ]
           .filter(Boolean)
           .join(' ')}
-        style={{ ...styleSlots(family, elevation), ...style }}
+        style={{ ...surfaceSlots(family, elevation), ...style }}
       >
         {label ? (
           <Field.Label
             className={[
-              metaClasses[size],
+              metaTextClasses[size],
               'font-medium',
               disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
             ].join(' ')}
@@ -412,13 +308,15 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         </span>
 
         {description ? (
-          <Field.Description className={[metaClasses[size], 'text-(--neba-muted-fg)'].join(' ')}>
+          <Field.Description
+            className={[metaTextClasses[size], 'text-(--neba-muted-fg)'].join(' ')}
+          >
             {description}
           </Field.Description>
         ) : null}
 
         {hasError ? (
-          <Field.Error match className={[metaClasses[size], 'text-(--n-accent)'].join(' ')}>
+          <Field.Error match className={[metaTextClasses[size], 'text-(--n-accent)'].join(' ')}>
             {error}
           </Field.Error>
         ) : null}

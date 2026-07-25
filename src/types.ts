@@ -21,6 +21,13 @@ export type NebaColor = 'primary' | 'secondary' | 'success' | 'warning' | 'dange
 export type NebaDensity = 'default' | 'compact';
 
 /**
+ * Which way a component runs. `horizontal` everywhere it is offered, because a
+ * vertical control is the exception and an exception should have to be asked
+ * for. Divider, ButtonGroup, RadioGroup and Slider all read this.
+ */
+export type NebaOrientation = 'horizontal' | 'vertical';
+
+/**
  * Visual weight of a component's surface.
  *
  * - `solid` — filled, carries the color. One per view, for the primary action.

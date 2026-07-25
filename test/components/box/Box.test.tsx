@@ -59,15 +59,31 @@ describe('Box', () => {
       const screen = await render(<Box color="success">content</Box>);
       const element = screen.getByText('content').element() as HTMLElement;
 
-      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-success-panel)');
+      expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-success-accent)');
       expect(element.style.getPropertyValue('--n-line')).toBe('var(--neba-success-line)');
+    });
+
+    it('leaves the surface undyed whatever the color is', async () => {
+      const screen = await render(<Box color="success">content</Box>);
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      // A container holds other people's content, so the family stops at the
+      // hairline: the two panel slots are the neutral ladder, not the family's.
+      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
+      expect(element.style.getPropertyValue('--n-panel-hover')).toBe('var(--neba-panel-hover)');
+
+      await screen.rerender(<Box color="danger">content</Box>);
+
+      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
+      expect(element.style.getPropertyValue('--n-line')).toBe('var(--neba-danger-line)');
     });
 
     it('defaults to the primary color', async () => {
       const screen = await render(<Box>content</Box>);
       const element = screen.getByText('content').element() as HTMLElement;
 
-      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-primary-panel)');
+      expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-primary-accent)');
+      expect(element.style.getPropertyValue('--n-line')).toBe('var(--neba-primary-line)');
     });
 
     it('is flat by default and maps elevation onto the shadow scale', async () => {
@@ -86,7 +102,7 @@ describe('Box', () => {
       const element = screen.getByText('content').element() as HTMLElement;
 
       expect(element.style.width).toBe('10rem');
-      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-primary-panel)');
+      expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
     });
 
     it('changes the radius with size, and nothing else', async () => {

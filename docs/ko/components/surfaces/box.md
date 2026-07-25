@@ -29,6 +29,8 @@ import { Box } from 'neba';
 
 `solid`가 색으로 채우지 않는 것은 TextField와 같은 이유입니다. 박스가 담는 것은 본문, 링크, 버튼, 필드 — 저마다 색을 가진 남의 콘텐츠입니다. 강조색으로 채우면 그 전부에 채움 위 대비 처리가 필요해지는데, 그건 컨테이너가 할 일의 반대입니다.
 
+시트는 아예 염색하지 않습니다. `solid`와 `outline`을 가르는 것은 색이 아니라 **시트가 머금은 빛의 양**(불투명도)과 하이라인의 유무입니다. 자세한 것은 [색](../../guide/color#컨테이너-표면은-염색하지-않습니다)을 보세요.
+
 <Demo src="box/variants">
 
 <<< @/.vitepress/demos/box/variants.tsx
@@ -38,6 +40,8 @@ import { Box } from 'neba';
 `text`는 표면이 없으므로 `elevation`도 무시됩니다. 보이지 않는 사각형 둘레에 그림자를 그리는 대신입니다.
 
 ### 색
+
+표면이 흰색이므로 색 계열은 **하이라인에만** 나타납니다. 그래서 아래 예시는 `outline`입니다 — 테두리가 없는 `solid` Box에서는 `color`가 보이는 변화를 만들지 않습니다.
 
 <Demo src="box/colors">
 
