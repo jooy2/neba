@@ -2,11 +2,40 @@
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jooy2/neba/blob/main/LICENSE) ![Programming Language Usage](https://img.shields.io/github/languages/top/jooy2/neba) ![Commit Count](https://img.shields.io/github/commit-activity/y/jooy2/neba) [![npm downloads](https://img.shields.io/npm/dm/neba.svg)](https://www.npmjs.com/package/neba) [![npm latest package](https://img.shields.io/npm/v/neba/latest.svg)](https://www.npmjs.com/package/neba) ![npm bundle size](https://img.shields.io/bundlephobia/min/neba) [![Followers](https://img.shields.io/github/followers/jooy2?style=social)](https://github.com/jooy2) ![Stars](https://img.shields.io/github/stars/jooy2/neba?style=social)
 
-Neba UI is a React component library that provides Neba-styled, ready-to-use UI components for your websites and apps. Components are built on [Base UI](https://base-ui.com) primitives for behavior and accessibility, and styled with [Tailwind CSS](https://tailwindcss.com).
+### 📘 [**neba.cdget.com**](https://neba.cdget.com)
 
-- **ESM only**, with TypeScript declarations bundled.
-- **Tree-shakeable** — each component is compiled to its own module.
-- **React 19** and Node.js 18 or later.
+[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/components/)
+
+Live previews and full props for every component. This README is just the quick start.
+
+---
+
+**Neba UI is a React component library for building application interfaces.** It gives you the pieces a real product needs — buttons and form fields, menus and dialogs, tables and tabs, progress and notifications — already styled, already accessible, and already agreeing with each other.
+
+You install one package, add two lines to your CSS, and import components. There is nothing to configure, no theme object to assemble, and no per-component styling decisions to make before you can ship a screen.
+
+- **A broad component set, still growing** — enough to build a whole screen without reaching elsewhere.
+- **One shared vocabulary** — `size`, `color`, `variant`, `density`, `elevation`. An `md` is the same height on every control; `primary` is the same colour everywhere.
+- **Accessible by construction** — real roles, labels, focus management and keyboard support, not `div`s with click handlers.
+- **Dark mode with no work** — follows the system, and can be forced either way per subtree.
+- **A design language, not a theme file** — a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
+- **ESM only**, TypeScript declarations included, tree-shakeable — every component compiles to its own module.
+- **One runtime dependency.** React 19, Node.js 18 or later.
+
+## Documentation
+
+Everything is documented at **[neba.cdget.com](https://neba.cdget.com)**, where the previews are not screenshots — they are the components, running in the page.
+
+| Page | What you will find |
+| --- | --- |
+| [**Getting started**](https://neba.cdget.com/guide/getting-started) | Install and setup, end to end. |
+| [**All components**](https://neba.cdget.com/components/) | Every component, one page each: live previews and the full props table. |
+| [**Examples**](https://neba.cdget.com/examples/) | A whole sample screen, explained block by block. |
+| [**Design language**](https://neba.cdget.com/guide/design-language) | Why a Neba surface looks and behaves the way it does. |
+| [**Prop conventions**](https://neba.cdget.com/guide/prop-conventions) | The shared vocabulary every component draws from. |
+| [**Color**](https://neba.cdget.com/guide/color) | The token families, and how to theme them. |
+
+Also available in Korean / 한국어 문서: **[neba.cdget.com/ko/](https://neba.cdget.com/ko/)**
 
 ## Installation
 
@@ -20,28 +49,84 @@ pnpm add neba
 
 Neba expects `react` and `react-dom` to be available in your project.
 
-## Usage
+### Setup
 
-Import components from the package root:
-
-```tsx
-import { Button } from 'neba';
-
-export default function App() {
-  return <Button onClick={() => console.log('clicked')}>Hello from Neba!</Button>;
-}
-```
-
-Components are styled with Tailwind CSS, so your app needs Tailwind set up. Add two lines to your CSS entry point:
+Add two lines to your app's CSS entry point:
 
 ```css
 @import 'tailwindcss';
 @import 'neba/styles.css';
 ```
 
-`neba/styles.css` carries the design tokens, and registers the package as a Tailwind source itself — so there is no `@source` line for you to write, and no path that depends on where your CSS file happens to sit.
+`neba/styles.css` carries the design tokens and registers the package as a style source itself — so there is no `@source` line for you to write, and no path that depends on where your CSS file happens to sit. Utility classes come from [Tailwind CSS](https://tailwindcss.com) v4, which is the only build-side requirement Neba has.
 
-Full setup instructions, the design language, and the component reference live in the documentation: https://neba.cdget.com
+That is the whole setup. No provider is required at the root, no theme object, no config file.
+
+## Usage
+
+Import components from the package root:
+
+```tsx
+import { Button, Card, TextField } from 'neba';
+
+export default function SignIn() {
+  return (
+    <Card>
+      <TextField label="Email" type="email" />
+      <Button onClick={submit}>Sign in</Button>
+    </Card>
+  );
+}
+```
+
+A few components provide context and are mounted once, near the root, only if you use them — `ToastProvider` (paired with the `useToast()` hook) and `TooltipProvider`.
+
+### The shared prop vocabulary
+
+The reason a Neba screen looks composed rather than assembled is that the props mean one thing across the library. They live in [`src/types.ts`](src/types.ts) and every component draws from the same list:
+
+| Prop | Values | What it changes |
+| --- | --- | --- |
+| `size` | `xs` `sm` `md` `lg` `xl` | The control's scale. `md` is the desktop default. |
+| `color` | `primary` `secondary` `success` `warning` `danger` `info` | The semantic colour family. |
+| `variant` | `solid` `outline` `text` | How much visual weight the surface carries. |
+| `density` | `default` `compact` | Padding only — never the height, never the type scale, so a compact control still lines up with a default one. |
+| `elevation` | `0` `1` `2` `3` | How far a surface floats off the page. `0` is the default and means no shadow at all. |
+
+Placement props are logical, not physical — `start`/`end` rather than `left`/`right` — so layouts flip correctly under RTL. The full rules are in [**Prop conventions**](https://neba.cdget.com/guide/prop-conventions).
+
+```tsx
+<Button size="sm" color="danger" variant="outline">Delete</Button>
+<Chip size="sm" color="danger" variant="outline">Overdue</Chip>
+```
+
+### Components
+
+**Inputs** — Button, ButtonGroup, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination
+
+**Surfaces** — Box, Card, Accordion, Tabs
+
+**Display** — Typography, Divider, Chip, Badge, List, Table
+
+**Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox
+
+Recent additions: **Combobox** (a select you can type into and filter, single or multiple), **NumberField** (a numeric input with steppers, `min`/`max` clamping and a `step`), and **Overlay** (a sheet that takes the page — dim, frosted, opaque, or invisible but still blocking).
+
+Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
+
+### Theming and dark mode
+
+Colours, radii, and surface strengths are CSS custom properties declared in the stylesheet you imported. Override any of them in your own CSS and the whole library follows:
+
+```css
+:root {
+  --neba-primary-fill: oklch(0.62 0.19 265);
+}
+```
+
+Dark mode responds to `prefers-color-scheme` on its own. To force it, put `.dark` or `[data-theme='dark']` (or `'light'`) on any ancestor — it applies to that subtree, so a dark panel on a light page is one attribute.
+
+Adding a whole new colour family is two edits: an entry in `NebaColor` and five tokens; everything else derives from them.
 
 ## Development
 
@@ -62,12 +147,15 @@ All commands are run from the repository root.
 ### Project structure
 
 - `src/` — the library source. Each component lives in `src/components/{name}/` and is re-exported from `src/index.ts`.
+- `src/internal/` — what the library shares with itself: the size and spacing tables, the surface and focus-ring generators, the icons more than one component draws. Shipped, but not part of the public API.
 - `test/` — the test suite, mirroring the `src/` tree.
-- `docs/` — the VitePress documentation site for library consumers. It renders the real components, so it is also where components are developed and eyeballed.
+- `docs/` — the VitePress documentation site, in English and Korean. It renders the real components from `src/`, so it is also where components are developed and eyeballed.
+
+There is no separate demo app: `npm run docs:dev` is the develop-and-eyeball loop.
 
 ### Tests
 
-Tests run with [Vitest](https://vitest.dev) in browser mode, against a real headless browser driven by Playwright — Neba's components sit on top of [Base UI](https://base-ui.com) primitives that expect real browser APIs. Install the browser once before your first run:
+Tests run with [Vitest](https://vitest.dev) in browser mode, against a real headless browser driven by Playwright — the components depend on browser APIs (`ResizeObserver`, the popover API, `dialog.showModal()`) that jsdom does not implement. Install the browser once before your first run:
 
 ```bash
 npx playwright install chromium
@@ -81,7 +169,7 @@ VITEST_BROWSER=firefox npm test
 
 CI runs the suite across Linux, Windows, and macOS in all three browser engines.
 
-Add a test for each component at the path mirroring its source — `src/components/button/Button.tsx` is covered by `test/components/button/Button.test.tsx`.
+Tests ship with the component they cover, in the same commit. Add a test at the path mirroring its source — `src/components/button/Button.tsx` is covered by `test/components/button/Button.test.tsx`.
 
 ## Contributing
 

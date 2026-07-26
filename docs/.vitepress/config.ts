@@ -59,8 +59,8 @@ const vitePressI18nConfig: VitePressI18nOptions = {
   rootLocale: defaultLocale,
   searchProvider: 'local',
   description: {
-    ko: 'Neba 스타일의 React 컴포넌트 라이브러리',
-    en: 'The Neba-styled React component library'
+    ko: '버튼, 입력란, 메뉴, 대화상자, 테이블 등 다양한 요소를 아우르는 포괄적인 React UI 컴포넌트 라이브러리입니다. 접근성이 뛰어나고 테마 적용이 가능하며, 하나의 프로프 어휘와 반투명한 아크릴 디자인 언어를 공유합니다. ESM 전용이며, 타입 정의가 포함되어 있고 다크 모드가 기본으로 지원됩니다.',
+    en: 'A comprehensive React UI component library — buttons, fields, menus, dialogs, tables and much more — accessible and themeable, sharing one prop vocabulary and a translucent acrylic design language. ESM only, types included, dark mode built in.'
   },
   themeConfig: {
     ko: { nav: navFor('ko', ['가이드', '컴포넌트', '예제']) },
