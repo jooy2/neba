@@ -1,6 +1,4 @@
-<p align="center">
-  <img src=".github/128x128.png" alt="Neba UI" width="128" height="128" />
-</p>
+<img src=".github/128x128.png" alt="Neba UI" width="128" height="128" />
 
 # Neba UI
 
@@ -8,7 +6,7 @@
 
 ### 📘 [**neba.cdget.com**](https://neba.cdget.com)
 
-[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/components/)
+[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/examples/)
 
 Live previews and full props for every component. This README is just the quick start.
 
