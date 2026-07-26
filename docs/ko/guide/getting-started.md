@@ -7,8 +7,6 @@ order: 1
 
 Neba는 React 컴포넌트 라이브러리입니다. 동작과 접근성은 [Base UI](https://base-ui.com) 프리미티브가, 스타일은 [Tailwind CSS](https://tailwindcss.com) v4가 담당합니다.
 
-> **주의** — 현재 1.0 이전이며 프로덕션 사용을 권장하지 않습니다.
-
 ## 설치
 
 ```bash

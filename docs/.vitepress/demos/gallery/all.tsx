@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Accordion,
   AccordionItem,
@@ -10,6 +10,7 @@ import {
   Card,
   Checkbox,
   Chip,
+  Combobox,
   Dialog,
   DialogClose,
   Divider,
@@ -20,6 +21,8 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  NumberField,
+  Overlay,
   Pagination,
   ProgressBox,
   ProgressCircular,
@@ -230,6 +233,42 @@ const GROUPS: Group[] = [
         },
         path: '/components/inputs/pagination',
         preview: <Pagination size="sm" count={9} defaultPage={4} />
+      },
+      {
+        name: 'Combobox',
+        summary: {
+          ko: '직접 입력할 수도, 목록에서 고를 수도 있는 필드',
+          en: 'A field you can type into and also choose from'
+        },
+        path: '/components/inputs/combobox',
+        preview: (
+          <div className="w-full max-w-52">
+            <Combobox
+              multiple
+              fullWidth
+              size="sm"
+              items={[
+                { value: 'bug', label: 'bug' },
+                { value: 'docs', label: 'documentation' }
+              ]}
+              defaultValue={['bug']}
+              placeholder="Add a label"
+            />
+          </div>
+        )
+      },
+      {
+        name: 'NumberField',
+        summary: {
+          ko: '숫자만 담는 필드',
+          en: 'A field that only holds a number'
+        },
+        path: '/components/inputs/number-field',
+        preview: (
+          <div className="w-full max-w-40">
+            <NumberField size="sm" fullWidth defaultValue={3} min={1} max={20} />
+          </div>
+        )
       }
     ]
   },
@@ -474,6 +513,15 @@ const GROUPS: Group[] = [
         )
       },
       {
+        name: 'Overlay',
+        summary: {
+          ko: '페이지를 쓰지 못하게 덮는 한 겹',
+          en: 'A sheet over the page that stops it being used'
+        },
+        path: '/components/feedback/overlay',
+        preview: <OverlayButton />
+      },
+      {
         name: 'Toast',
         summary: {
           ko: '스스로 도착하는 알림',
@@ -540,6 +588,27 @@ const GROUPS: Group[] = [
     ]
   }
 ];
+
+/** An overlay has no trigger of its own, so the card holds the state instead. */
+function OverlayButton() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+        Block the page
+      </Button>
+      <Overlay open={open} onOpenChange={setOpen} dismissible tone="blur" label="Working">
+        <div className="flex flex-col items-center gap-3">
+          <ProgressCircular size="lg" />
+          <Button size="sm" onClick={() => setOpen(false)}>
+            Done
+          </Button>
+        </div>
+      </Overlay>
+    </>
+  );
+}
 
 /** The toast card needs a hook, and a hook needs a component of its own. */
 function ToastButton() {

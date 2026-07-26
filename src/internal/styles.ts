@@ -449,6 +449,29 @@ export const fieldReadOnlyClasses: Record<NebaVariant, string> = {
  */
 export const readOnlyFilterClasses = '[filter:saturate(0.55)]';
 
+/**
+ * The × that removes a chip.
+ *
+ * Written once because two components draw it: Chip's own `onDelete`, and the
+ * chips a multi-select Combobox puts inside its field. The second one is a Base
+ * UI `Combobox.ChipRemove` rather than a plain button, so what is shared is the
+ * class string and not the element — which is exactly the split the rest of
+ * this file makes.
+ *
+ * Sized in `em` so it tracks the chip's label at every step of the scale, and
+ * it is the one place in the library where `opacity` carries a state: this is
+ * not a control changing what it is, it is an affordance that stays out of the
+ * way of the word beside it until the pointer is on it.
+ */
+export const chipRemoveClasses = [
+  'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full',
+  'size-[1.15em] cursor-pointer opacity-70',
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
+  'hover:opacity-100 focus-visible:opacity-100',
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
+  'disabled:cursor-not-allowed'
+].join(' ');
+
 /** `false`, `null`, `undefined` and `''` all mean "this slot is not filled". */
 export function hasContent(node: React.ReactNode): boolean {
   return node !== undefined && node !== null && node !== false && node !== '';

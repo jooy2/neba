@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { CloseIcon } from '../../internal/icons';
 import {
+  chipRemoveClasses,
   controlHeightClasses,
   controlSlots,
   controlTextClasses,
@@ -257,14 +258,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
           type="button"
           aria-label={deleteLabel}
           disabled={disabled}
-          className={[
-            'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full',
-            'size-[1.15em] cursor-pointer opacity-70',
-            '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-            'hover:opacity-100 focus-visible:opacity-100',
-            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-            'disabled:cursor-not-allowed'
-          ].join(' ')}
+          className={chipRemoveClasses}
           onClick={onDelete}
         >
           <CloseIcon />

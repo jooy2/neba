@@ -10,6 +10,7 @@ import {
   Card,
   Checkbox,
   Chip,
+  Combobox,
   ContextMenu,
   Dialog,
   DialogClose,
@@ -23,6 +24,8 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  NumberField,
+  Overlay,
   Pagination,
   ProgressBox,
   ProgressCircular,
@@ -111,6 +114,14 @@ const DEPLOYS: Deploy[] = [
   { id: '3', environment: 'preview/1284', status: 'Failed', duration: '0m 51s' }
 ];
 
+const TAG_OPTIONS = [
+  { value: 'react', label: 'react' },
+  { value: 'tailwind', label: 'tailwind' },
+  { value: 'base-ui', label: 'base-ui' },
+  { value: 'typescript', label: 'typescript' },
+  { value: 'vite', label: 'vite' }
+];
+
 const DEPLOY_COLUMNS: TableColumn<Deploy>[] = [
   { key: 'environment', label: 'Environment', width: 200 },
   {
@@ -155,9 +166,11 @@ function ShowcaseBody() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [region, setRegion] = useState<string | number | null>('icn');
-  const [tags, setTags] = useState(['react', 'tailwind', 'base-ui']);
+  const [tags, setTags] = useState<(string | number)[]>(['react', 'tailwind', 'base-ui']);
+  const [seats, setSeats] = useState<number | null>(8);
   const [page, setPage] = useState(1);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [rebuilding, setRebuilding] = useState(false);
 
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -174,11 +187,31 @@ function ShowcaseBody() {
     }, 900);
   };
 
+  const rebuild = () => {
+    setRebuilding(true);
+    setTimeout(() => {
+      setRebuilding(false);
+      toast.add({ color: 'success', title: 'Rebuilt', description: 'All three environments' });
+    }, 1600);
+  };
+
   return (
     <div className="flex flex-col gap-8">
+      {/* An overlay is the one component with nowhere to sit on the page: it
+          takes the whole page, so it lives at the top of the tree and is turned
+          on from wherever the work started. */}
+      <Overlay open={rebuilding} tone="blur" label="Rebuilding">
+        <div className="flex flex-col items-center gap-3 text-(--neba-fg)">
+          <ProgressCircular size="lg" />
+          <p className="m-0 text-sm">Rebuilding every environment…</p>
+        </div>
+      </Overlay>
+
       {/* Toolbar — the controls that run a screen, all on one baseline. */}
       <section className="flex flex-col gap-3">
-        <Caption>Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge</Caption>
+        <Caption>
+          Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge · Overlay
+        </Caption>
         <div className="flex flex-wrap items-center gap-2">
           <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
           <Select
@@ -230,6 +263,10 @@ function ShowcaseBody() {
               Reset view
             </MenuItem>
           </Menu>
+
+          <Button size="sm" variant="outline" color="secondary" onClick={rebuild}>
+            Rebuild
+          </Button>
 
           <Button size="sm" startIcon={<PlusIcon />}>
             New project
@@ -328,7 +365,9 @@ function ShowcaseBody() {
 
       {/* A card holding controls — the composition the library is actually for. */}
       <section className="flex flex-col gap-3">
-        <Caption>Card · TextField · Checkbox · List · Dialog · Toast</Caption>
+        <Caption>
+          Card · TextField · Combobox · NumberField · Checkbox · List · Dialog · Toast
+        </Caption>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
           <Card
             dividers
@@ -367,21 +406,16 @@ function ShowcaseBody() {
                 description="Markdown is not supported."
                 fullWidth
               />
-              <Divider>Tags</Divider>
-              <div className="flex flex-wrap items-center gap-2">
-                {tags.map((tag) => (
-                  <Chip
-                    key={tag}
-                    size="sm"
-                    variant="text"
-                    color="secondary"
-                    onDelete={() => setTags(tags.filter((item) => item !== tag))}
-                    deleteLabel={`Remove ${tag}`}
-                  >
-                    {tag}
-                  </Chip>
-                ))}
-              </div>
+              <Combobox
+                multiple
+                fullWidth
+                label="Tags"
+                placeholder="Add a tag"
+                description="Anything the list does not have is offered as the last row."
+                items={TAG_OPTIONS}
+                value={tags}
+                onValueChange={setTags}
+              />
               <Checkbox label="Show my email to other members" description="Members only." />
               <Divider>Files</Divider>
               <FilePicker
@@ -416,10 +450,22 @@ function ShowcaseBody() {
                 </Button>
               }
             >
-              <RadioGroup size="sm" defaultValue="team" label="Billing">
-                <Radio value="monthly" label="Monthly" />
-                <Radio value="team" label="Yearly" description="Two months free." />
-              </RadioGroup>
+              <div className="flex flex-col gap-3">
+                <RadioGroup size="sm" defaultValue="team" label="Billing">
+                  <Radio value="monthly" label="Monthly" />
+                  <Radio value="team" label="Yearly" description="Two months free." />
+                </RadioGroup>
+                <NumberField
+                  size="sm"
+                  fullWidth
+                  color="secondary"
+                  label="Seats"
+                  min={1}
+                  max={12}
+                  value={seats}
+                  onValueChange={setSeats}
+                />
+              </div>
             </Card>
 
             <Card size="sm" title="Notifications">

@@ -4,7 +4,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 
 ## What this project is
 
-**Neba** is a React design-component library published to npm as [`neba`](https://www.npmjs.com/package/neba). It provides Neba-styled UI components meant to be consumed by other websites and apps. It is currently pre-1.0 and explicitly not recommended for production.
+**Neba** is a React design-component library published to npm as [`neba`](https://www.npmjs.com/package/neba). It provides Neba-styled UI components meant to be consumed by other websites and apps.
 
 - Ships as **ESM only**, type declarations included.
 - Compiled with plain `tsc` (no bundler) and then minified — the output mirrors the `src/` folder layout.

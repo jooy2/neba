@@ -2778,5 +2778,417 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Accessible name of the last-page stepper'
       }
     }
+  ],
+
+  Combobox: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. TextField와 같은 셸이므로 폼 안에서 두 컨트롤이 구분되지 않습니다',
+        en: 'Weight of the surface. The same shell as a TextField, so the two are indistinguishable in a form'
+      },
+      sizeDescription: {
+        ko: '높이와 타입 스케일. multiple에서는 칩이 줄바꿈하는 만큼 자라므로 최소 높이가 됩니다',
+        en: 'Height and type scale. With multiple it becomes a minimum, because the field grows as the chips wrap'
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 표면은 흰색이므로 가장자리·포커스 링·칩에 나타납니다',
+        en: 'Semantic colour role. The surface is white, so it reaches the edge, the focus ring and the chips'
+      },
+      elevationDescription: {
+        ko: '필드의 그림자 깊이. 팝업은 자기 그림자를 따로 가집니다',
+        en: 'Drop shadow depth of the field. The popup carries its own'
+      }
+    }),
+    {
+      name: 'items',
+      type: 'readonly ComboboxOption[]',
+      required: true,
+      description: {
+        ko: '옵션 목록. { value, label?, disabled? } 배열이고, label은 ReactNode가 아니라 string입니다',
+        en: 'The options, as an array of { value, label?, disabled? } — label is a string, not a ReactNode'
+      }
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '값을 여러 개 들 수 있는지. 고른 값은 필드 안의 칩이 됩니다',
+        en: 'Whether more than one value may be held. The chosen ones become chips inside the field'
+      }
+    },
+    {
+      name: 'value',
+      type: 'string | number | (string | number)[] | null',
+      description: {
+        ko: '선택된 값. multiple이면 배열입니다. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The chosen value — an array when multiple. Use with onValueChange for a controlled combobox'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number | (string | number)[] | null',
+      description: { ko: '초기 선택 값', en: 'The initial value, for an uncontrolled combobox' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen value changes' }
+    },
+    {
+      name: 'onInputValueChange',
+      type: '(inputValue: string) => void',
+      description: {
+        ko: '입력란의 글자가 바뀔 때. 값이 아니라 필터 질의입니다',
+        en: 'Called as the text in the input changes — the filter query, not the value'
+      }
+    },
+    {
+      name: 'allowCustom',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '목록에 없는 값을 확정할 수 있는지. 입력한 글자가 목록 맨 끝에 자기 행으로 제안됩니다 — 검색되는 select와 combobox를 가르는 지점입니다',
+        en: 'Whether a value the list does not contain may be committed. The typed text is offered as its own row at the end of the list — what separates this from a searchable select'
+      }
+    },
+    {
+      name: 'customLabel',
+      type: '(query: string) => ReactNode',
+      default: 'Add “…”',
+      description: { ko: '그 행이 하는 말', en: 'What that row says' }
+    },
+    {
+      name: 'clearable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '필드를 비우는 ×. 한 번에 비워지는 필드는 실수로도 비워지는 필드입니다',
+        en: 'Shows a × that empties the field. A field that can be cleared in one click can be emptied by accident'
+      }
+    },
+    {
+      name: 'emptyMessage',
+      type: 'ReactNode',
+      default: "'No matches'",
+      description: {
+        ko: '일치하는 것이 없고 값을 추가할 수도 없을 때 팝업이 하는 말',
+        en: 'Shown in the popup when nothing matches and no value may be added'
+      }
+    },
+    {
+      name: 'limit',
+      type: 'number',
+      default: '-1',
+      description: {
+        ko: '한 번에 보여 줄 최대 행 수. -1은 전부',
+        en: 'The most rows the list will show at once. -1 is all of them'
+      }
+    },
+    {
+      name: 'placeholder',
+      type: 'string',
+      description: {
+        ko: '아무것도 입력하지 않았을 때 보이는 내용',
+        en: 'Shown in the input while nothing is typed'
+      }
+    },
+    ...fieldProps,
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '입력란 앞에 놓이는 내용', en: 'Content before the input' }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
+    },
+    {
+      name: 'removeLabel',
+      type: '(label: string) => string',
+      default: 'Remove …',
+      description: {
+        ko: '칩 제거 버튼의 접근성 이름. 칩의 라벨을 받습니다',
+        en: "Accessible name of a chip's remove button. Receives the chip's label"
+      }
+    },
+    {
+      name: 'clearLabel',
+      type: 'string',
+      default: "'Clear'",
+      description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the clear button' }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 제출 시의 필드 이름',
+        en: 'Identifies the field when a form is submitted'
+      }
+    },
+    ...inertProps
+  ],
+
+  NumberField: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. TextField와 같은 셸입니다',
+        en: "Weight of the surface. A TextField's shell, to the pixel"
+      },
+      sizeDescription: {
+        ko: '높이와 타입 스케일. 스테퍼는 em이므로 숫자를 따라갑니다',
+        en: 'Height and type scale. The steppers are sized in em, so they track the number'
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 표면은 흰색이므로 가장자리·포커스 링·캐럿·스테퍼의 호버에 나타납니다',
+        en: 'Semantic colour role. The surface is white, so it reaches the edge, the ring, the caret and the steppers on hover'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'number | null',
+      description: {
+        ko: '값. null이 비어 있음입니다 — 파싱해야 하는 문자열이 아닙니다',
+        en: 'The number. null means empty — never a string you have to parse'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'number',
+      description: { ko: '초기 값', en: 'The initial number, for an uncontrolled field' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: number | null) => void',
+      description: {
+        ko: '값이 바뀔 때마다 — 타이핑, 스테핑, 휠',
+        en: 'Called on every change — typing, stepping, the wheel'
+      }
+    },
+    {
+      name: 'onValueCommitted',
+      type: '(value: number | null) => void',
+      description: {
+        ko: '값이 자리를 잡을 때. 타이핑 후 blur, 누르기를 뗄 때',
+        en: 'Called when the value settles: on blur after typing, on pointer release after a press'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      description: { ko: '범위의 시작. 스테핑은 여기서 멈춥니다', en: 'The bottom of the range' }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      description: { ko: '범위의 끝', en: 'The top of the range' }
+    },
+    {
+      name: 'step',
+      type: "number | 'any'",
+      default: '1',
+      description: {
+        ko: '한 걸음의 크기. any는 step 검증을 끕니다',
+        en: "How far one step goes. 'any' turns step validation off"
+      }
+    },
+    {
+      name: 'largeStep',
+      type: 'number',
+      default: '10',
+      description: { ko: 'Shift를 누른 채의 한 걸음', en: 'The step taken while Shift is held' }
+    },
+    {
+      name: 'smallStep',
+      type: 'number',
+      default: '0.1',
+      description: { ko: 'Alt를 누른 채의 한 걸음', en: 'The step taken while Alt is held' }
+    },
+    {
+      name: 'snapOnStep',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '스테핑이 step의 배수에 붙는지',
+        en: 'Whether stepping snaps to multiples of the step'
+      }
+    },
+    {
+      name: 'allowWheelScrub',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '포커스된 채 호버 중일 때 휠이 값을 바꾸는지. 포인터 아래에서 스크롤되는 페이지와 바뀌는 필드는 같은 제스처이고, 의도된 것은 하나뿐입니다',
+        en: 'Whether the wheel changes the value while focused and hovered. A page that scrolls under the pointer and a field that changes under it are the same gesture, and only one was meant'
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '숫자를 어떻게 쓸지 — 통화, 백분율, 소수 자릿수. 필드는 $1,240을 보여 주고 값으로는 1240을 보고합니다',
+        en: 'How the number is written — currency, percent, decimal places. The field shows $1,240 and still reports 1240'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'Intl.LocalesArgument',
+      description: {
+        ko: '어느 로케일로 쓰고 읽을지. 기본은 런타임의 것',
+        en: "Which locale the number is written and parsed in. Defaults to the runtime's"
+      }
+    },
+    {
+      name: 'steppers',
+      type: "'end' | 'split' | 'none'",
+      default: "'end'",
+      description: {
+        ko: '스테퍼가 앉는 자리. split은 숫자 양옆, none은 버튼 없음',
+        en: 'Where the steppers sit. split puts them on either side of the number; none drops them'
+      }
+    },
+    ...fieldProps,
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '숫자 앞에 놓이는 내용 — 통화 기호, 단위',
+        en: 'Content before the number — a currency mark, a unit'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '숫자 뒤, 스테퍼 앞에 놓이는 내용',
+        en: 'Content after the number, before the steppers'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
+    },
+    {
+      name: 'incrementLabel',
+      type: 'string',
+      default: "'Increase'",
+      description: { ko: '증가 버튼의 접근성 이름', en: 'Accessible name of the increment button' }
+    },
+    {
+      name: 'decrementLabel',
+      type: 'string',
+      default: "'Decrease'",
+      description: { ko: '감소 버튼의 접근성 이름', en: 'Accessible name of the decrement button' }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 제출 시의 필드 이름',
+        en: 'Identifies the field when a form is submitted'
+      }
+    },
+    ...inertProps
+  ],
+
+  Overlay: [
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '오버레이가 보입니다. onOpenChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The overlay is shown. Use with onOpenChange for a controlled overlay'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음부터 보일지', en: 'Whether the overlay starts shown' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when the overlay opens or closes' }
+    },
+    {
+      name: 'tone',
+      type: "'scrim' | 'blur' | 'solid' | 'clear'",
+      default: "'scrim'",
+      description: {
+        ko: '뒤 페이지를 얼마나 가져가는지. 하나의 축 위의 네 단계이고, 알파만큼이나 블러 반경으로 조율되어 있습니다',
+        en: 'How much of the page is taken away. Four steps on one axis, tuned with the blur radius as much as with the alpha'
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '클릭이나 Escape로 닫히는지. Dialog와 반대로 꺼져 있습니다 — 오버레이는 묻지 않고 기다리라고 말하며, 빗나간 클릭으로 사라지는 저장은 끝났다고 믿게 되는 저장입니다',
+        en: 'Whether a click or Escape closes it. Off, the other way round from Dialog: an overlay is not asking anything, and a save dismissed by a stray click is a save the user will believe finished'
+      }
+    },
+    {
+      name: 'modal',
+      type: "boolean | 'trap-focus'",
+      default: 'true',
+      description: {
+        ko: '뒤 페이지를 키보드에서도 가져가는지. trap-focus는 페이지를 스크롤·클릭할 수 있게 두고 포커스만 붙잡습니다',
+        en: "Whether the page behind is taken away for the keyboard too. 'trap-focus' leaves it scrollable and clickable while still holding focus inside"
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      shared: true,
+      description: {
+        ko: '내용이 화면 세로에서 앉는 자리',
+        en: 'Where the content sits down the viewport'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: { ko: '내용 둘레 여백의 스케일', en: 'Scale of the padding around the content' }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 포커스 링과, 내용이 읽어 가는 슬롯에 닿습니다',
+        en: 'Semantic colour role. Reaches the focus ring and whatever the content reads'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "'Overlay'",
+      description: {
+        ko: '오버레이의 접근성 이름. 읽을 것이 없는 오버레이도 자기가 무엇인지는 말해야 하므로 선택이 아니라 기본값입니다',
+        en: 'The accessible name. It has a default rather than being optional: an overlay that holds nothing readable still has to say what it is'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '스크림 위에 앉는 것 — 스피너, 한 줄, 작은 카드',
+        en: 'What sits on top of the scrim — a spinner, a line of text, a small card'
+      }
+    }
   ]
 };

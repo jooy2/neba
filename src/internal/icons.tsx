@@ -67,6 +67,29 @@ export function CheckIcon() {
   );
 }
 
+/**
+ * The two steppers, and the `+` that offers a value the list does not have.
+ *
+ * They are a pair and stay one: a minus drawn to a different weight from the
+ * plus beside it reads as two toolkits in one control. NumberField draws both;
+ * Combobox draws the plus on its "add this" row.
+ */
+export function MinusIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3.5 8h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function PlusIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 3.5v9M3.5 8h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

@@ -7,8 +7,6 @@ order: 1
 
 Neba is a React component library. Behaviour and accessibility come from [Base UI](https://base-ui.com) primitives; styling comes from [Tailwind CSS](https://tailwindcss.com) v4.
 
-> **Note** — this is pre-1.0 and is not recommended for production.
-
 ## Install
 
 ```bash
