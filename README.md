@@ -104,7 +104,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 ### Components
 
-**Inputs** — Button, IconButton, ButtonGroup, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination
+**Inputs** — Button, IconButton, ButtonGroup, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, DatePicker, TimePicker, DateTimePicker, DateRangePicker
 
 **Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill
 
@@ -112,7 +112,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox
 
-Recent additions: **Icon** (a glyph at a known size and colour — the glyph is a prop, not children), **IconButton** (that glyph as a round button, with a required accessible name), **Statistic** (a figure, its name, and how far it has moved against a `previousValue`), **Carousel** (a scroll-snap strip of slides — swipeable, RTL-correct, nothing transformed), **Pill** (a floating lozenge for live information, growing into a second half), and **Toolbar** (a header or action bar with `start` / `end` slots, stickable and fixable).
+Recent additions: the four pickers — **DatePicker**, **TimePicker**, **DateTimePicker** and **DateRangePicker** — which take and return a plain `Date`, read every month and weekday name out of `Intl`, and add no date library to your bundle; **Icon** (a glyph at a known size and colour — the glyph is a prop, not children), **IconButton** (that glyph as a round button, with a required accessible name), **Statistic** (a figure, its name, and how far it has moved against a `previousValue`), **Carousel** (a scroll-snap strip of slides — swipeable, RTL-correct, nothing transformed), **Pill** (a floating lozenge for live information, growing into a second half), and **Toolbar** (a header or action bar with `start` / `end` slots, stickable and fixable).
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

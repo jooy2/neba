@@ -70,6 +70,18 @@ export type NebaPosition = 'static' | 'sticky' | 'fixed';
 export type NebaCorner = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
 
 /**
+ * Which day a week starts on, counted the way `Date.prototype.getDay` counts it:
+ * Sunday is `0`, Saturday is `6`.
+ *
+ * A number rather than `'sunday' | 'monday' | …`, and for once not because the
+ * number is shorter. Every date API in the platform already speaks this
+ * encoding, so a caller computing the value rather than typing it in — from a
+ * user setting, from `Intl`, from a row in a database — has nothing to translate.
+ * The pickers default it from the locale, so it is rarely written down at all.
+ */
+export type NebaWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+/**
  * The viewport widths the layout components branch on, smallest first.
  *
  * Deliberately the same five names as `NebaSize`, and deliberately *not* the

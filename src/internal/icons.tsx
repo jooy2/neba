@@ -143,6 +143,73 @@ export function TrendDownIcon() {
   );
 }
 
+/**
+ * The two glyphs a picker's trigger wears.
+ *
+ * They are a pair in the same sense the steppers are: a DateTimePicker draws
+ * only the calendar, because a control cannot say two things at once and the
+ * date is the part you scan for. Drawn on the same 16×16 grid at the same
+ * weight, so a row of a DatePicker and a TimePicker does not look like two
+ * icon sets pushed together.
+ */
+export function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect
+        x="2"
+        y="3.25"
+        width="12"
+        height="10.75"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M2 6.75h12" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M5.25 1.75v2.5M10.75 1.75v2.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ClockIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M8 4.5V8l2.4 1.6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The arrow between the two ends of a range.
+ *
+ * Drawn pointing right and turned under RTL by the component, for the same
+ * reason the chevron is: it is a glyph, and there is no text in it to resample.
+ */
+export function ArrowRightIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M3 8h10m-3.5-3.5L13 8l-3.5 3.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

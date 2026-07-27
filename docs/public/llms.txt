@@ -45,6 +45,10 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Combobox](https://neba.cdget.com/components/inputs/combobox): A field you can type into and also choose from; the text filters the list and can become the value itself.
 - [NumberField](https://neba.cdget.com/components/inputs/number-field): A field that only holds a number — a TextField's shell plus stepping, clamping and formatting.
 - [IconButton](https://neba.cdget.com/components/inputs/icon-button): A round button with a glyph in it and nothing else. Everything else is Button's, and `label` is required rather than optional.
+- [DatePicker](https://neba.cdget.com/components/inputs/date-picker): One day, chosen from a calendar. The month name and the year are each a button that opens a grid of its own, so any month is two clicks away and any year is three.
+- [TimePicker](https://neba.cdget.com/components/inputs/time-picker): A time of day, chosen from columns. Bounds are checked against the span a row stands for, which is what keeps half past nine reachable when the minimum is 09:30.
+- [DateTimePicker](https://neba.cdget.com/components/inputs/date-time-picker): A day and a time in one popup, with the calendar and the clock at the same height and `minDate` read at full precision.
+- [DateRangePicker](https://neba.cdget.com/components/inputs/date-range-picker): A span between two days. Two months side by side, a band drawn as the pointer moves, and named presets beside them.
 
 ### Display
 

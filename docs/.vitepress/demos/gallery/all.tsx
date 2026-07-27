@@ -13,6 +13,9 @@ import {
   Chip,
   Combobox,
   Container,
+  DatePicker,
+  DateRangePicker,
+  DateTimePicker,
   Dialog,
   DialogClose,
   Divider,
@@ -45,6 +48,7 @@ import {
   TabPanel,
   Tabs,
   TextField,
+  TimePicker,
   ToastProvider,
   Toolbar,
   Tooltip,
@@ -110,6 +114,12 @@ function GalleryDotIcon() {
     </svg>
   );
 }
+
+/* Fixed dates, so a card looks the same in every screenshot and every locale.
+   The pickers themselves default to today when they are handed nothing. */
+const GALLERY_DAY = new Date(2026, 6, 27);
+const GALLERY_DAY_LATER = new Date(2026, 7, 3);
+const GALLERY_MOMENT = new Date(2026, 6, 27, 9, 30);
 
 interface Entry {
   name: string;
@@ -342,6 +352,63 @@ const GROUPS: Group[] = [
               size="sm"
               variant="text"
               color="secondary"
+            />
+          </div>
+        )
+      },
+      {
+        name: 'DatePicker',
+        summary: { ko: '달력에서 하루 고르기', en: 'One day, chosen from a calendar' },
+        path: '/components/inputs/date-picker',
+        preview: (
+          <div className="w-full max-w-52">
+            <DatePicker size="sm" label="Ships on" fullWidth defaultValue={GALLERY_DAY} />
+          </div>
+        )
+      },
+      {
+        name: 'TimePicker',
+        summary: { ko: '열에서 시각 고르기', en: 'A time of day, chosen from columns' },
+        path: '/components/inputs/time-picker',
+        preview: (
+          <div className="w-full max-w-52">
+            <TimePicker
+              size="sm"
+              label="Starts at"
+              fullWidth
+              minuteStep={15}
+              defaultValue={GALLERY_MOMENT}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'DateTimePicker',
+        summary: { ko: '한 팝업 안의 날과 시각', en: 'A day and a time, in one popup' },
+        path: '/components/inputs/date-time-picker',
+        preview: (
+          <div className="w-full max-w-56">
+            <DateTimePicker
+              size="sm"
+              label="Publish at"
+              fullWidth
+              minuteStep={15}
+              defaultValue={GALLERY_MOMENT}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'DateRangePicker',
+        summary: { ko: '두 날 사이의 구간', en: 'A span between two days' },
+        path: '/components/inputs/date-range-picker',
+        preview: (
+          <div className="w-full max-w-56">
+            <DateRangePicker
+              size="sm"
+              label="Stay"
+              fullWidth
+              defaultValue={{ start: GALLERY_DAY, end: GALLERY_DAY_LATER }}
             />
           </div>
         )

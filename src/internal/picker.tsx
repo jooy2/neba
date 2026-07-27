@@ -1,0 +1,374 @@
+import * as React from 'react';
+import { Field } from '@base-ui/react/field';
+import { Popover } from '@base-ui/react/popover';
+import { CloseIcon } from './icons';
+import {
+  chipRemoveClasses,
+  controlHeightClasses,
+  controlTextLeadingClasses,
+  cx,
+  disabledClasses,
+  fieldReadOnlyClasses,
+  fieldRestClasses,
+  focusWithinRingClasses,
+  gapClasses,
+  iconClasses,
+  metaTextClasses,
+  paddingXClasses,
+  radiusClasses,
+  stackGapClasses,
+  surfaceClasses,
+  surfaceSlots,
+  transitionClasses
+} from './styles';
+import type { PickerLabels } from './calendar';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types';
+
+/**
+ * The shell all four pickers wear: a field-shaped trigger with a popup hanging
+ * off it.
+ *
+ * It is here rather than in one of the components for the reason the calendar
+ * is: four components need it, and none of them should have to import another.
+ * What it draws is deliberately not new — the trigger is `fieldRestClasses`,
+ * which is the same box a TextField and a Select's trigger are drawn on, to the
+ * pixel. A form where the date field is a different height, radius or colour
+ * from the text field beside it is a form that looks assembled rather than
+ * designed.
+ *
+ * The one thing the pickers do *not* offer is typing a date into the trigger.
+ * Parsing a date out of free text is locale-dependent in a way that cannot be
+ * done honestly without a date library, and a field that understands `27/7/26`
+ * in one browser and not the next is worse than one that never claimed to. So
+ * the trigger is a button, exactly as a Select's is, and the calendar is where
+ * the answer comes from.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Colour
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The popup's slots: a container's undyed sheet with the *control* fill added
+ * back on top.
+ *
+ * Neither generator in `internal/styles` says this on its own, and the reason is
+ * that a picker's popup is both things at once. It is a container — it holds a
+ * grid of forty-two days, and dyeing the sheet under them would put every one of
+ * them on a background it was not chosen against — and it also holds the one
+ * filled token in the library that has to be legible without being read, which
+ * is the day you picked. So the sheet stays white and the family arrives in the
+ * four fill slots the chosen cell reads.
+ */
+export function popupSlots(color: NebaColor, elevation: NebaElevation): React.CSSProperties {
+  return {
+    ...surfaceSlots(color, elevation),
+    '--n-fill': `var(--neba-${color}-fill)`,
+    '--n-fill-hover': `var(--neba-${color}-fill-hover)`,
+    '--n-fill-active': `var(--neba-${color}-fill-active)`,
+    '--n-on-solid': `var(--neba-${color}-on-solid)`
+  } as React.CSSProperties;
+}
+
+/* ---------------------------------------------------------------------------
+ * Surfaces
+ * ------------------------------------------------------------------------- */
+
+/** The trigger's box. A TextField's shell, unchanged. */
+const triggerShellClasses = [
+  'group relative flex w-full items-center select-none',
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
+  transitionClasses,
+  'focus-within:[transition-duration:0ms]',
+  focusWithinRingClasses,
+  iconClasses
+].join(' ');
+
+/**
+ * The popup. Like every floating surface in the library it carries a shadow by
+ * default, at level 3 — as far as the scale goes without hovering — because it
+ * is genuinely off the page rather than merely on top of it.
+ */
+export const pickerPopupClasses = [
+  surfaceClasses,
+  'border bg-(--n-panel-press)',
+  '[border-color:var(--n-line)]',
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
+  '[outline:none]',
+  // Opacity only. A calendar that slid into place would move the cell the
+  // pointer was already reaching for.
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
+  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+].join(' ');
+
+/** The popup's own padding, one track tighter than a control's. */
+export const popupPaddingClasses: Record<NebaSize, string> = {
+  xs: 'p-1.5',
+  sm: 'p-2',
+  md: 'p-2.5',
+  lg: 'p-3',
+  xl: 'p-3.5'
+};
+
+/* ---------------------------------------------------------------------------
+ * The shell
+ * ------------------------------------------------------------------------- */
+
+export interface PickerShellProps extends NebaStyleProps {
+  elevation?: NebaElevation;
+  /** Label above the trigger. */
+  label?: React.ReactNode;
+  /** Helper text below it. */
+  description?: React.ReactNode;
+  /** Error message below. Its presence also turns the control invalid. */
+  error?: React.ReactNode;
+  invalid?: boolean;
+  /** The glyph before the value — a calendar or a clock. */
+  startIcon?: React.ReactNode;
+  fullWidth?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  id?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface InternalShellProps extends PickerShellProps {
+  /** What the trigger reads. A placeholder when `empty`. */
+  display: React.ReactNode;
+  /** Nothing has been chosen yet, so the display is muted. */
+  empty: boolean;
+  /** Offers the × that empties the control. */
+  clearable?: boolean;
+  onClear: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  labels: PickerLabels;
+  /** `<input type="hidden">` rows, so the control submits with a form. */
+  hiddenValues?: Array<{ name: string; value: string }>;
+  /** How far off the trigger the popup sits. */
+  sideOffset?: number;
+  children: React.ReactNode;
+  triggerRef?: React.Ref<HTMLButtonElement>;
+}
+
+/**
+ * A trigger, a label, the two lines of text under it, and a popup.
+ *
+ * Everything about it that is visible is a decision already made elsewhere: the
+ * shell classes, the read-only and disabled treatments, the label's type scale
+ * and the way `invalid` re-points the whole colour family at `danger` so the
+ * edge, the ring and the message turn over together.
+ */
+export function PickerShell({
+  variant = 'outline',
+  size = 'md',
+  color = 'primary',
+  density = 'default',
+  elevation = 0,
+  label,
+  description,
+  error,
+  invalid,
+  startIcon,
+  fullWidth = false,
+  disabled = false,
+  readOnly = false,
+  required = false,
+  id,
+  className,
+  style,
+  display,
+  empty,
+  clearable = false,
+  onClear,
+  open,
+  onOpenChange,
+  labels,
+  hiddenValues,
+  sideOffset = 6,
+  children,
+  triggerRef
+}: InternalShellProps) {
+  const generatedId = React.useId();
+  const triggerId = id ?? `${generatedId}-trigger`;
+  const labelId = `${generatedId}-label`;
+  const descriptionId = `${generatedId}-description`;
+  const errorId = `${generatedId}-error`;
+
+  const hasError = error !== undefined && error !== null && error !== false && error !== '';
+  const isInvalid = invalid ?? hasError;
+  const family: NebaColor = isInvalid ? 'danger' : color;
+  const inert = disabled || readOnly;
+
+  const describedBy =
+    [description ? descriptionId : null, hasError ? errorId : null].filter(Boolean).join(' ') ||
+    undefined;
+
+  return (
+    <Field.Root
+      disabled={disabled}
+      invalid={isInvalid}
+      className={cx(
+        'flex-col align-top',
+        stackGapClasses[size],
+        fullWidth ? 'flex w-full' : 'inline-flex',
+        className
+      )}
+      style={{ ...surfaceSlots(family, elevation), ...style }}
+    >
+      {label ? (
+        <Field.Label
+          id={labelId}
+          htmlFor={triggerId}
+          className={cx(
+            metaTextClasses[size],
+            'font-medium',
+            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
+          )}
+        >
+          {label}
+        </Field.Label>
+      ) : null}
+
+      <Popover.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
+        <span
+          className={cx(
+            triggerShellClasses,
+            controlHeightClasses[size],
+            controlTextLeadingClasses[size],
+            radiusClasses[size],
+            gapClasses[size],
+            paddingXClasses[density][size],
+            // An if/else rather than stacked variants: two Tailwind classes of
+            // equal specificity resolve by their order in the generated sheet.
+            disabled
+              ? disabledClasses[variant]
+              : readOnly
+                ? fieldReadOnlyClasses[variant]
+                : fieldRestClasses[variant]
+          )}
+        >
+          <Popover.Trigger
+            id={triggerId}
+            ref={triggerRef}
+            disabled={disabled}
+            aria-labelledby={label ? labelId : undefined}
+            aria-describedby={describedBy}
+            aria-required={required || undefined}
+            aria-invalid={isInvalid || undefined}
+            className={cx(
+              'flex min-w-0 flex-1 items-center bg-transparent text-start [font:inherit] text-inherit',
+              gapClasses[size],
+              '[outline:none]',
+              inert ? 'cursor-default' : 'cursor-pointer'
+            )}
+          >
+            {startIcon ? (
+              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg) transition-[color] duration-(--neba-duration) group-focus-within:text-(--n-accent)">
+                {startIcon}
+              </span>
+            ) : null}
+            <span
+              className={cx(
+                'min-w-0 flex-1 truncate',
+                empty ? 'text-(--neba-muted-fg)' : 'text-(--neba-fg)'
+              )}
+            >
+              {display}
+            </span>
+          </Popover.Trigger>
+
+          {clearable && !empty && !inert ? (
+            <button
+              type="button"
+              aria-label={labels.clear}
+              className={cx(chipRemoveClasses, 'text-(--neba-muted-fg)')}
+              onClick={(event) => {
+                event.stopPropagation();
+                onClear();
+              }}
+            >
+              <CloseIcon />
+            </button>
+          ) : null}
+        </span>
+
+        <Popover.Portal>
+          {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
+              subtree a host may have scoped its CSS reset to. */}
+          <Popover.Positioner
+            className="neba-portal z-50 [outline:none]"
+            sideOffset={sideOffset}
+            align="start"
+          >
+            <Popover.Popup
+              // Base UI is told to leave the focus alone so the calendar can
+              // take it into the grid itself. Its own move would land on the
+              // popup element and run *after* the grid's, undoing it.
+              initialFocus={false}
+              className={cx(
+                pickerPopupClasses,
+                radiusClasses[size],
+                popupPaddingClasses[size],
+                controlTextLeadingClasses[size]
+              )}
+              style={popupSlots(family, 3)}
+            >
+              {children}
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+
+      {description ? (
+        <Field.Description
+          id={descriptionId}
+          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}
+        >
+          {description}
+        </Field.Description>
+      ) : null}
+
+      {hasError ? (
+        <Field.Error id={errorId} match className={cx(metaTextClasses[size], 'text-(--n-accent)')}>
+          {error}
+        </Field.Error>
+      ) : null}
+
+      {hiddenValues?.map((entry, index) => (
+        <input key={index} type="hidden" name={entry.name} value={entry.value} />
+      ))}
+    </Field.Root>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+ * The footer
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The row of shortcuts under a picker's panel.
+ *
+ * A hairline above it rather than a gap, because the actions act on the panel
+ * and a gap would read as a second popup stacked under the first.
+ */
+export function PickerFooter({ size, children }: { size: NebaSize; children: React.ReactNode }) {
+  return (
+    <div
+      className={cx(
+        'flex items-center justify-end border-t pt-1.5',
+        '[border-color:var(--n-line)]',
+        gapClasses[size]
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** The vertical hairline between a calendar and the clock beside it. */
+export function PickerDivider() {
+  return <div aria-hidden="true" className="w-px self-stretch bg-(--n-line)" />;
+}

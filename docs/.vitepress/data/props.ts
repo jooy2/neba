@@ -293,6 +293,198 @@ function progressProps(sizeDescription: Text): PropRow[] {
   ];
 }
 
+const WEEKDAY = '0 | 1 | 2 | 3 | 4 | 5 | 6';
+
+/**
+ * The rows the four pickers share.
+ *
+ * They are one control in four shapes, and the whole point of writing them once
+ * is that a reader who has learned DatePicker's table has learned the other
+ * three. Only the defaults and a couple of descriptions genuinely differ, which
+ * is what the options are for.
+ */
+interface PickerOptions {
+  /** What the popup closing after a choice means for this one. */
+  closeOnSelect: string;
+  closeOnSelectDescription: Text;
+  /** How the hidden input spells the value. */
+  submitted: Text;
+  /** Left out by DateRangePicker, which has one placeholder per end. */
+  placeholder?: boolean;
+}
+
+function pickerProps(options: PickerOptions): PropRow[] {
+  return [
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열려 있는지. onOpenChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the popup is open. Use with onOpenChange for a controlled one'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음에 열린 채로 시작', en: 'Whether it starts open' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when the popup opens or closes' }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 월·요일 이름, 헤더의 연/월 버튼 순서, 트리거의 표기를 정합니다. 기본값은 브라우저의 로케일',
+        en: "BCP 47 tag deciding the month and weekday names, the order of the header's two buttons, and how the trigger writes the value. Defaults to the browser's"
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.DateTimeFormatOptions',
+      description: {
+        ko: '트리거가 값을 쓰는 방식. Intl에 그대로 넘어갑니다',
+        en: 'How the trigger writes the value. Passed straight to Intl'
+      }
+    },
+    ...(options.placeholder === false
+      ? []
+      : [
+          {
+            name: 'placeholder',
+            type: 'ReactNode',
+            description: {
+              ko: '아무것도 고르지 않았을 때 트리거에 보이는 내용',
+              en: 'Shown in the trigger while nothing is chosen'
+            }
+          } satisfies PropRow
+        ]),
+    {
+      name: 'clearable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '값을 비우는 ×를 트리거에 답니다',
+        en: 'Offers the × that empties the control'
+      }
+    },
+    {
+      name: 'closeOnSelect',
+      type: 'boolean',
+      default: options.closeOnSelect,
+      description: options.closeOnSelectDescription
+    },
+    {
+      name: 'labels',
+      type: 'Partial<PickerLabels>',
+      description: {
+        ko: '스크린 리더가 듣는 문자열들. 열여덟 개가 한 벌이라 프롭 하나로 받습니다 — 날짜 이름은 여기 없고 Intl이 만듭니다',
+        en: 'The strings a screen reader hears. One object rather than eighteen props, because they are a set — the date names are not among them, those come from Intl'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: options.submitted
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
+    },
+    ...fieldProps,
+    ...inertProps
+  ];
+}
+
+/** The three rows every calendar-bearing picker offers, plus its bounds. */
+function calendarProps(minMax: Text): PropRow[] {
+  return [
+    {
+      name: 'defaultMonth',
+      type: 'Date',
+      description: {
+        ko: '값이 없을 때 달력이 열리는 달. 기본값은 이번 달',
+        en: 'Which month the calendar opens on when there is no value. Defaults to this one'
+      }
+    },
+    { name: 'minDate', type: 'Date | null', description: minMax },
+    {
+      name: 'maxDate',
+      type: 'Date | null',
+      description: {
+        ko: 'minDate의 반대쪽 끝',
+        en: 'The other end of the same span'
+      }
+    },
+    {
+      name: 'shouldDisableDate',
+      type: '(date: Date) => boolean',
+      description: {
+        ko: '범위 안이지만 고를 수 없는 날 — 주말, 공휴일, 이미 예약된 방. 셀은 목록에 남은 채 비활성이 됩니다',
+        en: 'Blocks individual days inside the range — weekends, holidays, a room already booked. The cell stays in the grid, unavailable'
+      }
+    },
+    {
+      name: 'weekStartsOn',
+      type: WEEKDAY,
+      shared: true,
+      description: {
+        ko: '주가 시작하는 요일. 일요일이 0입니다. 기본값은 로케일이 말하는 것',
+        en: 'Which day the week starts on, Sunday being 0. Defaults to whatever the locale says'
+      }
+    }
+  ];
+}
+
+/** And the six the clock offers. */
+const clockProps: PropRow[] = [
+  {
+    name: 'hour12',
+    type: 'boolean',
+    description: {
+      ko: '12시간 다이얼과 오전/오후 열. 기본값은 로케일이 하는 대로',
+      en: 'A 12-hour dial with an AM/PM column. Defaults to whatever the locale does'
+    }
+  },
+  {
+    name: 'showSeconds',
+    type: 'boolean',
+    default: 'false',
+    description: { ko: '초 열을 추가합니다', en: 'Adds the seconds column' }
+  },
+  {
+    name: 'hourStep',
+    type: 'number',
+    default: '1',
+    description: { ko: '시 열의 간격', en: 'How far apart the rows of the hour column are' }
+  },
+  {
+    name: 'minuteStep',
+    type: 'number',
+    default: '1',
+    description: { ko: '분 열의 간격', en: 'The same, for minutes' }
+  },
+  {
+    name: 'secondStep',
+    type: 'number',
+    default: '1',
+    description: { ko: '초 열의 간격', en: 'The same, for seconds' }
+  },
+  {
+    name: 'shouldDisableTime',
+    type: "(value: Date, unit: 'hour' | 'minute' | 'second' | 'meridiem') => boolean",
+    description: {
+      ko: '개별 행을 막습니다. 열마다 행마다 한 번씩, 그 행이 만들 순간과 어느 열인지를 받습니다',
+      en: 'Blocks individual rows. Called once per row per column with the instant that row would produce and the column it is in'
+    }
+  }
+];
+
 export const propTables: Record<string, PropRow[]> = {
   Button: [
     ...sharedProps({
@@ -1065,6 +1257,257 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...inertProps
+  ],
+
+  DatePicker: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. TextField·Select와 같은 셸입니다',
+        en: 'Weight of the surface. The same shell as a TextField and a Select'
+      },
+      sizeDescription: {
+        ko: '높이와 타입 스케일. 달력의 한 칸도 같은 사다리를 씁니다 — md는 32px',
+        en: 'Height and type scale. A day cell is on the same ladder — 32px at md'
+      },
+      elevationDescription: {
+        ko: '트리거의 그림자 깊이. 팝업은 자기 그림자를 따로 가집니다',
+        en: 'Drop shadow depth of the trigger. The popup carries its own'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'Date | null',
+      description: {
+        ko: '선택된 날. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The chosen day. Use with onValueChange for a controlled picker'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'Date | null',
+      description: { ko: '초기 값', en: 'The initial value, for an uncontrolled picker' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: Date | null) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen day changes' }
+    },
+    ...calendarProps({
+      ko: '고를 수 있는 가장 이른 날. 날짜 단위로만 비교하므로 시각은 무시됩니다',
+      en: 'The earliest day that may be chosen. Day-granular — the time of day is ignored'
+    }),
+    {
+      name: 'showTodayButton',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '푸터에 오늘로 가는 단축 버튼',
+        en: 'Offers the shortcut to today in the footer'
+      }
+    },
+    ...pickerProps({
+      closeOnSelect: 'true',
+      closeOnSelectDescription: {
+        ko: '날을 고르는 즉시 팝업을 닫습니다. 물어본 것이 하나뿐이므로 기본값이 true입니다',
+        en: 'Closes the popup as soon as a day is chosen. True by default, because only one thing was asked'
+      },
+      submitted: {
+        ko: '폼 제출 시의 필드 이름. 값은 YYYY-MM-DD로, UTC가 아니라 로컬 기준입니다',
+        en: 'Identifies the field when a form is submitted, as YYYY-MM-DD — local, not UTC'
+      }
+    })
+  ],
+
+  TimePicker: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '높이와 타입 스케일. 시계 열의 행 높이도 같습니다',
+        en: 'Height and type scale. A row of the clock is the same height'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'Date | null',
+      description: {
+        ko: '선택된 시각. Date이므로 날짜도 함께 지닙니다 — referenceDate를 보세요',
+        en: 'The chosen time. A Date, so it carries a day as well — see referenceDate'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'Date | null',
+      description: { ko: '초기 값', en: 'The initial value, for an uncontrolled picker' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: Date | null) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen time changes' }
+    },
+    {
+      name: 'referenceDate',
+      type: 'Date',
+      default: 'today',
+      description: {
+        ko: '값이 아직 없을 때 고른 시각이 얹히는 날',
+        en: 'The day a chosen time is written onto while there is no value yet'
+      }
+    },
+    {
+      name: 'minTime',
+      type: 'Date | null',
+      description: {
+        ko: '고를 수 있는 가장 이른 시각. 날짜는 무시하고 시계만 읽습니다. 열이 그리는 범위 단위로 비교하므로 09:30이면 9시는 남고 그 앞의 분들이 빠집니다',
+        en: 'The earliest time of day that may be chosen — only the clock is read. Compared against the span a row stands for, so 09:30 keeps the hour 9 and greys out the minutes before it'
+      }
+    },
+    {
+      name: 'maxTime',
+      type: 'Date | null',
+      description: { ko: '같은 범위의 반대쪽 끝', en: 'The other end of the same span' }
+    },
+    ...clockProps,
+    {
+      name: 'showNowButton',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '푸터에 지금으로 가는 단축 버튼',
+        en: 'Offers the shortcut to the current time in the footer'
+      }
+    },
+    ...pickerProps({
+      closeOnSelect: 'false',
+      closeOnSelectDescription: {
+        ko: '열을 건드리는 즉시 닫습니다. DatePicker와 달리 기본값이 false입니다 — 시각은 답이 둘이라, 첫 번째에서 닫으면 9시 30분을 고르는 데 팝업을 두 번 열어야 합니다',
+        en: 'Closes the popup as soon as a column is touched. False by default, unlike DatePicker: a time is two answers, and closing after the first would make choosing 9:30 a matter of opening the popup twice'
+      },
+      submitted: {
+        ko: '폼 제출 시의 필드 이름. 값은 HH:MM (초를 보이면 HH:MM:SS)',
+        en: 'Identifies the field when a form is submitted, as HH:MM (HH:MM:SS with seconds shown)'
+      }
+    })
+  ],
+
+  DateTimePicker: [
+    ...sharedProps({ variant: "'outline'", size: "'md'" }),
+    {
+      name: 'value',
+      type: 'Date | null',
+      description: {
+        ko: '선택된 순간. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The chosen moment. Use with onValueChange for a controlled picker'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'Date | null',
+      description: { ko: '초기 값', en: 'The initial value, for an uncontrolled picker' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: Date | null) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen moment changes' }
+    },
+    ...calendarProps({
+      ko: '고를 수 있는 가장 이른 순간. DatePicker와 달리 시각까지 읽습니다 — 그 날은 달력에 남고, 시계에서 그 앞 시간들이 빠집니다',
+      en: "The earliest moment that may be chosen. Unlike DatePicker's this is read at full precision: the day stays selectable in the calendar and the clock blocks the hours before it"
+    }),
+    ...clockProps,
+    {
+      name: 'showNowButton',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '푸터에 지금으로 가는 단축 버튼',
+        en: 'Offers the shortcut to this moment in the footer'
+      }
+    },
+    ...pickerProps({
+      closeOnSelect: 'false',
+      closeOnSelectDescription: {
+        ko: '날을 고르는 즉시 닫습니다. 순간은 날 *그리고* 시각이므로, 둘 중 첫 번째에서 닫으면 두 번째를 묻지 못한 채 끝납니다',
+        en: 'Closes the popup as soon as a day is chosen. A moment is a day *and* a time, so closing on the first of the two would leave the second unanswered'
+      },
+      submitted: {
+        ko: '폼 제출 시의 필드 이름. 값은 YYYY-MM-DDTHH:MM, 로컬 기준입니다',
+        en: 'Identifies the field when a form is submitted, as YYYY-MM-DDTHH:MM — local, not UTC'
+      }
+    })
+  ],
+
+  DateRangePicker: [
+    ...sharedProps({ variant: "'outline'", size: "'md'" }),
+    {
+      name: 'value',
+      type: 'DateRange | null',
+      description: {
+        ko: '선택된 범위. { start, end }이고 각각 null일 수 있습니다',
+        en: 'The chosen range, as { start, end } with either end possibly null'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'DateRange | null',
+      description: { ko: '초기 범위', en: 'The initial range, for an uncontrolled picker' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: DateRange) => void',
+      description: {
+        ko: '항상 객체로 불립니다. 비워진 범위는 { start: null, end: null }',
+        en: 'Always called with an object. A cleared range is { start: null, end: null }'
+      }
+    },
+    ...calendarProps({
+      ko: '고를 수 있는 가장 이른 날. 두 패널 모두에 적용됩니다',
+      en: 'The earliest day that may be chosen, in both panels'
+    }),
+    {
+      name: 'monthCount',
+      type: '1 | 2',
+      default: '2',
+      description: {
+        ko: '한 번에 보이는 달의 수. 달을 넘는 범위가 예외가 아니라 보통이라 2가 기본값입니다',
+        en: 'How many months are on screen at once. Two by default, because a range that crosses a month boundary is the ordinary case'
+      }
+    },
+    {
+      name: 'startPlaceholder',
+      type: 'ReactNode',
+      description: {
+        ko: '시작이 비었을 때 트리거의 왼쪽 절반에 보이는 내용',
+        en: 'Shown in the first half of the trigger while the start is unchosen'
+      }
+    },
+    {
+      name: 'endPlaceholder',
+      type: 'ReactNode',
+      description: { ko: '끝이 비었을 때의 같은 것', en: 'The same, for the end' }
+    },
+    {
+      name: 'presets',
+      type: 'readonly DateRangePreset[]',
+      description: {
+        ko: '달력 옆에 놓이는 단축 범위들 — "최근 7일", "이번 달". value가 함수면 눌린 시점에 계산됩니다',
+        en: 'Shortcuts listed beside the calendars — "Last 7 days", "This month". A function value is computed when it is pressed'
+      }
+    },
+    ...pickerProps({
+      placeholder: false,
+      closeOnSelect: 'true',
+      closeOnSelectDescription: {
+        ko: '두 끝이 다 정해지면 팝업을 닫습니다',
+        en: 'Closes the popup once both ends are chosen'
+      },
+      submitted: {
+        ko: '폼 제출 시의 필드 이름. 같은 이름의 hidden input 두 개가 나가므로 FormData.getAll로 받습니다',
+        en: 'Identifies the field when a form is submitted. Two hidden inputs of the same name, so the ends arrive as FormData.getAll(name)'
+      }
+    })
   ],
 
   Slider: [

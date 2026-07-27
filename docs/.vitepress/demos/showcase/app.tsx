@@ -14,6 +14,9 @@ import {
   Combobox,
   Container,
   ContextMenu,
+  DatePicker,
+  DateRangePicker,
+  DateTimePicker,
   Dialog,
   DialogClose,
   Divider,
@@ -48,11 +51,13 @@ import {
   TabPanel,
   Tabs,
   TextField,
+  TimePicker,
   ToastProvider,
   Toolbar,
   Tooltip,
   Typography,
   useToast,
+  type DateRange,
   type TableColumn
 } from 'neba';
 
@@ -181,6 +186,30 @@ const DEPLOY_COLUMNS: TableColumn<Deploy>[] = [
   { key: 'duration', label: 'Duration', align: 'end' }
 ];
 
+/** Midnight today, so a preset never carries the time the page happened to load. */
+function today() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+function shift(from: Date, days: number) {
+  return new Date(from.getFullYear(), from.getMonth(), from.getDate() + days);
+}
+
+/** The two range presets. Functions, so they are computed when they are pressed. */
+function nextDays(count: number): DateRange {
+  const start = today();
+  return { start, end: shift(start, count - 1) };
+}
+
+function nextWeekend(): DateRange {
+  const start = today();
+  // Saturday is 6; a Saturday today still means *next* Saturday.
+  const untilSaturday = (6 - start.getDay() + 7) % 7 || 7;
+  const saturday = shift(start, untilSaturday);
+  return { start: saturday, end: shift(saturday, 1) };
+}
+
 function Caption({ children }: { children: ReactNode }) {
   return (
     <div className="text-[0.6875rem] tracking-wide text-[var(--neba-muted-fg)] uppercase">
@@ -211,6 +240,7 @@ function ShowcaseBody() {
   const [page, setPage] = useState(1);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [rebuilding, setRebuilding] = useState(false);
+  const [stay, setStay] = useState<DateRange>({ start: null, end: null });
 
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -652,6 +682,50 @@ function ShowcaseBody() {
               </Card>
             </div>
           </div>
+        </section>
+
+        {/* The four pickers, in the form they are actually used in: a booking
+            row where every field is a different question about the same trip. */}
+        <section className="flex flex-col gap-3">
+          <Caption>DatePicker · TimePicker · DateTimePicker · DateRangePicker</Caption>
+          <Card title={<h3>Schedule</h3>} subtitle="Every field is a Date.">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <DateRangePicker
+                fullWidth
+                label="Stay"
+                startPlaceholder="Check in"
+                endPlaceholder="Check out"
+                value={stay}
+                onValueChange={setStay}
+                clearable
+                presets={[
+                  { label: 'Next weekend', value: () => nextWeekend() },
+                  { label: 'Next 7 days', value: () => nextDays(7) }
+                ]}
+              />
+              <DatePicker
+                fullWidth
+                label="Ships on"
+                placeholder="Pick a day"
+                minDate={new Date()}
+                clearable
+              />
+              <TimePicker
+                fullWidth
+                label="Arrival"
+                placeholder="Pick a time"
+                minuteStep={15}
+                clearable
+              />
+              <DateTimePicker
+                fullWidth
+                label="Reminder"
+                placeholder="Pick a moment"
+                minuteStep={15}
+                clearable
+              />
+            </div>
+          </Card>
         </section>
 
         {/* A box grouping cards: the box groups, the cards structure. */}

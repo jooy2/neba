@@ -1,0 +1,378 @@
+import * as React from 'react';
+import { Button } from '../button/Button';
+import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar';
+import { ArrowRightIcon, CalendarIcon } from '../../internal/icons';
+import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
+import {
+  addMonths,
+  compareDay,
+  formatDate,
+  isValidDate,
+  localeWeekStart,
+  startOfDay,
+  startOfMonth,
+  toISODate,
+  today
+} from '../../internal/date';
+import { cx, gapClasses, metaTextClasses } from '../../internal/styles';
+import type { NebaWeekday } from '../../types';
+
+/**
+ * Two ends, either of which may be missing.
+ *
+ * An object rather than a `[Date, Date]` tuple, and rather than two props. A
+ * range is one value — it is chosen in one gesture, cleared in one gesture and
+ * validated as a whole — and the two names are what stop a caller writing the
+ * end into the start. Half a range is a real state: it is what the picker holds
+ * between the first click and the second.
+ */
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+/** A named range offered as a shortcut beside the calendars. */
+export interface DateRangePreset {
+  label: React.ReactNode;
+  /**
+   * The range it stands for. A function when it depends on today, which is
+   * almost always — "the last 7 days" computed at render time is a range that
+   * would be wrong for anyone who left the tab open overnight.
+   */
+  value: DateRange | (() => DateRange);
+}
+
+const EMPTY: DateRange = { start: null, end: null };
+
+export interface DateRangePickerProps extends PickerShellProps {
+  /** The chosen range. Use with `onValueChange` for a controlled picker. */
+  value?: DateRange | null;
+  defaultValue?: DateRange | null;
+  /** Always called with an object. A cleared range is `{ start: null, end: null }`. */
+  onValueChange?: (value: DateRange) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Which month the left calendar opens on when there is no value. */
+  defaultMonth?: Date;
+  minDate?: Date | null;
+  maxDate?: Date | null;
+  shouldDisableDate?: (date: Date) => boolean;
+  locale?: string;
+  weekStartsOn?: NebaWeekday;
+  /** @default { dateStyle: 'medium' } */
+  format?: Intl.DateTimeFormatOptions;
+  /**
+   * How many months are on screen at once. Two is the default because a range
+   * that crosses a month boundary is the ordinary case, not the exception.
+   * @default 2
+   */
+  monthCount?: 1 | 2;
+  /** Shown in each half of the trigger while that end is unchosen. */
+  startPlaceholder?: React.ReactNode;
+  endPlaceholder?: React.ReactNode;
+  /** Shortcuts listed beside the calendars — "Last 7 days", "This month". */
+  presets?: readonly DateRangePreset[];
+  clearable?: boolean;
+  /** Closes the popup once both ends are chosen. @default true */
+  closeOnSelect?: boolean;
+  labels?: Partial<PickerLabels>;
+  /**
+   * Identifies the field when a form is submitted. Two hidden inputs of the same
+   * name, so the two ends arrive as `FormData.getAll(name)`.
+   */
+  name?: string;
+}
+
+/**
+ * A span between two days.
+ *
+ * Two months side by side, because a range that crosses a month boundary is the
+ * ordinary case and a one-month picker makes it a two-step navigation problem.
+ * The two panels are one calendar in two halves: the left one has no forward
+ * stepper, the right one has no back stepper, and either header's month and year
+ * buttons move both.
+ *
+ * The band between the ends is drawn as the pointer moves, before the second
+ * click lands. That preview is the whole affordance — without it the first click
+ * has no visible consequence and the control looks broken for the second or so
+ * between the two.
+ */
+export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps>(
+  function DateRangePicker(
+    {
+      value: valueProp,
+      defaultValue,
+      onValueChange,
+      open: openProp,
+      defaultOpen,
+      onOpenChange,
+      defaultMonth,
+      minDate,
+      maxDate,
+      shouldDisableDate,
+      locale,
+      weekStartsOn,
+      format = { dateStyle: 'medium' },
+      monthCount = 2,
+      startPlaceholder,
+      endPlaceholder,
+      presets,
+      clearable = false,
+      closeOnSelect = true,
+      labels: labelOverrides,
+      name,
+      size = 'md',
+      color = 'primary',
+      readOnly = false,
+      disabled = false,
+      startIcon,
+      ...shell
+    },
+    ref
+  ) {
+    const labels = usePickerLabels(labelOverrides);
+    const firstDay = weekStartsOn ?? localeWeekStart(locale);
+
+    const [uncontrolledValue, setUncontrolledValue] = React.useState<DateRange>(
+      defaultValue ?? EMPTY
+    );
+    const value = valueProp !== undefined ? (valueProp ?? EMPTY) : uncontrolledValue;
+    const start = isValidDate(value.start) ? value.start : null;
+    const end = isValidDate(value.end) ? value.end : null;
+
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
+    const open = openProp ?? uncontrolledOpen;
+
+    // The first of the two clicks. Held here rather than in `value` so a
+    // controlled caller is never handed a range with only one end — half a
+    // selection is this component's business, not the form's.
+    const [anchor, setAnchor] = React.useState<Date | null>(null);
+    const [preview, setPreview] = React.useState<Date | null>(null);
+
+    const [month, setMonth] = React.useState(() => startOfMonth(start ?? defaultMonth ?? today()));
+
+    React.useEffect(() => {
+      if (open) {
+        setMonth(startOfMonth(start ?? defaultMonth ?? today()));
+      } else {
+        // An abandoned half-selection does not survive the popup closing.
+        setAnchor(null);
+        setPreview(null);
+      }
+    }, [open]);
+
+    const setOpen = (next: boolean) => {
+      if (next && (readOnly || disabled)) {
+        return;
+      }
+      if (openProp === undefined) {
+        setUncontrolledOpen(next);
+      }
+      onOpenChange?.(next);
+    };
+
+    const commit = (next: DateRange) => {
+      if (valueProp === undefined) {
+        setUncontrolledValue(next);
+      }
+      onValueChange?.(next);
+    };
+
+    const select = (date: Date) => {
+      const day = startOfDay(date);
+
+      // The first click of a new selection — either there is no anchor, or the
+      // range is already complete and this click starts over.
+      if (anchor === null) {
+        setAnchor(day);
+        setPreview(day);
+        commit({ start: day, end: null });
+        return;
+      }
+
+      // The second. Clicking backwards is not a mistake to be rejected, it is
+      // the same range typed in the other order.
+      const [from, to] = compareDay(day, anchor) < 0 ? [day, anchor] : [anchor, day];
+      setAnchor(null);
+      setPreview(null);
+      commit({ start: from, end: to });
+
+      if (closeOnSelect) {
+        setOpen(false);
+      }
+    };
+
+    const applyPreset = (preset: DateRangePreset) => {
+      const range = typeof preset.value === 'function' ? preset.value() : preset.value;
+      setAnchor(null);
+      setPreview(null);
+      commit(range);
+      if (isValidDate(range.start)) {
+        setMonth(startOfMonth(range.start));
+      }
+      if (closeOnSelect) {
+        setOpen(false);
+      }
+    };
+
+    // What the band is drawn between: the finished range, or the anchor and
+    // whatever the pointer is currently over.
+    const bandStart = anchor ?? start;
+    const bandEnd = anchor !== null ? preview : end;
+
+    const write = (date: Date | null, fallback: React.ReactNode) =>
+      isValidDate(date) ? (
+        formatDate(date, locale, format)
+      ) : (
+        <span className="text-(--neba-muted-fg)">{fallback ?? ''}</span>
+      );
+
+    const secondMonth = addMonths(month, 1);
+    const twoUp = monthCount === 2;
+
+    // Which end the next click will fill. The trigger says the same thing with
+    // its two halves, but the trigger is behind the popup while the popup is up,
+    // so the footer is the only place that can say it where it will be read.
+    const hint = anchor !== null ? labels.end : start === null ? labels.start : null;
+
+    const calendarProps = {
+      size,
+      color,
+      locale,
+      weekStartsOn: firstDay,
+      selected: [start, end, anchor],
+      rangeStart: bandStart,
+      rangeEnd: bandEnd,
+      onSelect: select,
+      onPreviewChange: (date: Date | null) => {
+        if (anchor !== null) {
+          setPreview(date ?? anchor);
+        }
+      },
+      minDate,
+      maxDate,
+      shouldDisableDate,
+      // With both panels showing six full weeks, the 1st of August is a
+      // trailing day of the July panel *and* the first day of the August one.
+      // Two cells with the same name in one popup is ambiguous to a pointer and
+      // outright broken to a screen reader.
+      showOutsideDays: false,
+      labels
+    };
+
+    return (
+      <PickerShell
+        {...shell}
+        size={size}
+        color={color}
+        readOnly={readOnly}
+        disabled={disabled}
+        triggerRef={ref}
+        startIcon={startIcon ?? <CalendarIcon />}
+        display={
+          // Neither half is `flex-1`. Two equal halves would size the trigger
+          // to twice the *shorter* of the two, which truncates a date next to a
+          // word like "Check out"; letting each take its own width sizes the
+          // control to what it actually has to say.
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate">{write(start, startPlaceholder)}</span>
+            <span
+              aria-hidden="true"
+              className="flex shrink-0 items-center text-(--neba-muted-fg) rtl:rotate-180"
+            >
+              <ArrowRightIcon />
+            </span>
+            <span className="truncate">{write(end, endPlaceholder)}</span>
+          </span>
+        }
+        empty={start === null && end === null}
+        clearable={clearable}
+        onClear={() => commit(EMPTY)}
+        open={open}
+        onOpenChange={setOpen}
+        labels={labels}
+        hiddenValues={
+          name
+            ? [
+                { name, value: start ? toISODate(start) : '' },
+                { name, value: end ? toISODate(end) : '' }
+              ]
+            : undefined
+        }
+      >
+        <div className="flex flex-col gap-1.5">
+          <div className={cx('flex items-stretch', gapClasses[size])}>
+            {presets && presets.length > 0 ? (
+              <div
+                className={cx(
+                  'flex max-h-[calc(var(--n-cell,2rem)*8)] flex-col overflow-y-auto border-e pe-1.5',
+                  '[border-color:var(--n-line)]'
+                )}
+              >
+                {presets.map((preset, index) => (
+                  <Button
+                    key={index}
+                    variant="text"
+                    size={size}
+                    color={color}
+                    density="compact"
+                    className="justify-start whitespace-nowrap"
+                    onClick={() => applyPreset(preset)}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+            ) : null}
+
+            <Calendar
+              {...calendarProps}
+              month={month}
+              onMonthChange={setMonth}
+              showNextButton={!twoUp}
+              autoFocus
+            />
+
+            {twoUp ? (
+              <Calendar
+                {...calendarProps}
+                month={secondMonth}
+                // The right panel is a month ahead, so moving it means moving
+                // the pair. Both headers drive one number.
+                onMonthChange={(next) => setMonth(addMonths(next, -1))}
+                showPreviousButton={false}
+              />
+            ) : null}
+          </div>
+
+          {clearable || hint !== null ? (
+            <PickerFooter size={size}>
+              {hint !== null ? (
+                <span className={cx('me-auto text-(--neba-muted-fg)', metaTextClasses[size])}>
+                  {hint}
+                </span>
+              ) : null}
+              {clearable ? (
+                <Button
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  onClick={() => {
+                    setAnchor(null);
+                    setPreview(null);
+                    commit(EMPTY);
+                    setOpen(false);
+                  }}
+                >
+                  {labels.clear}
+                </Button>
+              ) : null}
+            </PickerFooter>
+          ) : null}
+        </div>
+      </PickerShell>
+    );
+  }
+);
