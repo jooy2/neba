@@ -33,6 +33,7 @@ const VARIANT = "'solid' | 'outline' | 'text'";
 const DENSITY = "'default' | 'compact'";
 const ELEVATION = '0 | 1 | 2 | 3';
 const ORIENTATION = "'horizontal' | 'vertical'";
+const POSITION = "'static' | 'sticky' | 'fixed'";
 const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
 const JUSTIFY_CONTENT =
   "'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly' | 'stretch'";
@@ -3384,6 +3385,487 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '스크림 위에 앉는 것 — 스피너, 한 줄, 작은 카드',
         en: 'What sits on top of the scrim — a spinner, a line of text, a small card'
+      }
+    }
+  ],
+
+  Icon: [
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '그릴 글리프. svg, img, 아이콘 세트의 컴포넌트, 문자 — children이 아니라 prop인 이유는 남이 그린 요소에서 정작 바꾸고 싶은 두 가지(크기와 색)가 자식으로 들어간 뒤에는 손이 닿지 않기 때문입니다',
+        en: 'The glyph — an svg, an img, a component from an icon set, a character. A prop and not children because the two things you always want to change about an icon somebody else drew are the two you cannot reach once it is a child'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '글리프가 그려지는 상자: 14 / 16 / 20 / 24 / 28px. 컨트롤 높이가 아니라 자체 사다리입니다 — 아이콘은 컨트롤이 아니고, 32px짜리 md 글리프는 자기가 들어앉을 버튼만 해집니다',
+        en: 'The box the glyph is drawn in: 14 / 16 / 20 / 24 / 28px. Its own ladder rather than the control heights — an icon is not a control, and a 32px md glyph would be the size of the button it sits in'
+      }
+    },
+    {
+      name: 'color',
+      type: `${COLOR} | 'inherit'`,
+      default: "'inherit'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할, 또는 감싼 것의 색을 그대로 받는 inherit. 라이브러리에서 기본값이 primary가 아닌 유일한 color입니다 — 아이콘은 콘텐츠이고, 대부분은 이미 색을 정한 무언가 안에 들어갑니다',
+        en: 'Semantic colour role, or `inherit` to take the colour of whatever it sits in. The one `color` in the library that does not default to `primary`: an icon is content, and it nearly always sits inside something that has already decided'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '아이콘이 하는 말. 없으면 접근성 트리에서 완전히 숨깁니다 — 대부분의 아이콘 옆에는 같은 말을 하는 단어가 이미 있고, 둘 다 읽는 것은 하나만 읽는 것보다 나쁩니다',
+        en: 'What the icon says. Without it the icon is hidden from the accessibility tree entirely — most icons sit next to a word that already says the same thing, and reading both out loud is worse than reading one'
+      }
+    }
+  ],
+
+  IconButton: [
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '글리프. 그냥 넘기면 버튼에 대해 em으로 잡히고, 따로 크기가 필요하면 Icon으로 감싸세요',
+        en: 'The glyph. Passed bare it is sized in em against the button; wrap it in an Icon when it needs a size of its own'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '버튼이 하는 일을 말로. 여기서 유일한 필수 prop입니다 — 라벨이 그림뿐인 버튼은 접근 가능한 이름이 아예 없고, 그것이 컴포넌트 라이브러리가 가장 흔히 내보내는 접근성 결함입니다',
+        en: 'What the button does, in words. The one required prop here: a button whose whole label is a drawing has no accessible name at all, and that is the single most common accessibility defect a component library ships'
+      }
+    },
+    ...sharedProps({
+      variant: "'solid'",
+      size: "'md'",
+      sizeDescription: {
+        ko: 'Button과 같은 높이 사다리. 원반 하나가 버튼 줄에 끼어도 기준선이 흐트러지지 않습니다',
+        en: "Button's own height ladder, so a disc drops into a row of buttons without the row losing its baseline"
+      },
+      densityDescription: {
+        ko: '전달은 되지만 눈에 보이지 않습니다 — 아이콘 전용 컨트롤은 정사각형이라 가로 여백이 0입니다',
+        en: 'Passed through but invisible: an icon-only control is square, so its horizontal padding is zero'
+      }
+    }),
+    {
+      name: 'loading',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '글리프 자리에 스피너를 놓고 동작을 막습니다. 포커스는 그대로',
+        en: 'Puts a spinner in the glyph’s place and stops the button activating, while keeping it focusable'
+      }
+    },
+    {
+      name: 'readOnly',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '흐려지지 않은 채 반응만 멈춤 — 액션은 존재하지만 여기서는 쓸 수 없습니다',
+        en: 'Inert but not dimmed — the action exists, it just is not available here'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 색 계열을 버리고 중립 회색이 됩니다',
+        en: 'Unavailable. Drops the colour family for neutral grey'
+      }
+    }
+  ],
+
+  Statistic: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '숫자의 이름. Card가 title이라 부르는 자리지만, 여기 있는 것은 *값*의 이름이고 그것은 라이브러리가 이미 label이라 쓰고 있는 것입니다',
+        en: 'The name of the number. Card calls the same slot `title`, but what this names is a *value* — which is the thing the library already spells `label` on every field it has'
+      }
+    },
+    {
+      name: 'value',
+      type: 'number | string',
+      required: true,
+      description: {
+        ko: '수치. 숫자는 형식이 적용되고, 문자열은 그대로 찍힙니다 — 숫자가 아닌 값("3h 42m", "A+")을 위해서',
+        en: 'The figure. A number is formatted; a string is printed exactly as given, for the values that are not numbers at all — "3h 42m", "A+"'
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '숫자를 어떻게 쓸지. 진행 표시기가 받는 것과 같은 prop이고, 없으면 읽는 사람의 로케일대로 자릿수만 끊습니다',
+        en: 'How to write a numeric value — the same prop the progress indicators take. Without it a number is grouped by the reader’s own locale and otherwise left alone'
+      }
+    },
+    {
+      name: 'prefix',
+      type: 'ReactNode',
+      description: { ko: '수치 앞 — 통화 기호', en: 'Set before the figure — a currency sign' }
+    },
+    {
+      name: 'unit',
+      type: 'ReactNode',
+      description: {
+        ko: '수치 뒤 — %, MB, 명. prefix와 따로인 이유는 둘이 조판상 다른 것이기 때문입니다: 통화 기호는 숫자 앞에 서고 단위는 뒤에 섭니다',
+        en: 'Set after the figure — %, MB, 명. A second slot rather than one adornment with a side, because a currency symbol leads its number and a unit follows it'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 글리프', en: 'A glyph before the label' }
+    },
+    {
+      name: 'previousValue',
+      type: 'number',
+      description: {
+        ko: '비교 대상이 되는 수치 — 지난달 값, 목표치. 이 값을 주는 것이 차이 표시를 켜는 스위치입니다',
+        en: 'The figure this one is compared against — last month’s, the target. Passing it is what makes the delta appear'
+      }
+    },
+    {
+      name: 'delta',
+      type: "'percent' | 'absolute' | 'both' | 'none'",
+      default: "'percent'",
+      description: {
+        ko: '차이를 어떻게 쓸지. 기본이 백분율인 이유는 보고서가 대개 "몇 개 늘었나"가 아니라 "얼마나 움직였나"를 묻기 때문입니다. previousValue가 0이면 나눌 것이 없으므로 차이 자체로 내려앉습니다',
+        en: 'How the difference is written. Percentage by default, because a report is nearly always asking how much a figure has moved rather than by how many. With a previousValue of 0 there is nothing to divide by, so it falls back to the difference itself'
+      }
+    },
+    {
+      name: 'betterWhen',
+      type: "'up' | 'down'",
+      default: "'up'",
+      description: {
+        ko: '어느 쪽이 좋은 방향인지, 그래서 차이를 어느 색으로 칠할지. 매출은 up, 이탈률·오류율·페이지 용량은 down. 장식이 아닙니다 — 이탈률이 올랐는데 초록이면 보고서가 뜻과 반대로 말하고, 하필 훑어보는 독자에게 그렇게 말합니다',
+        en: 'Which direction counts as good, and so which way the delta is coloured. `up` for revenue, `down` for churn and error rate and page weight. Not decoration: green-for-larger on a bounce rate says the opposite of what the report means, and says it to exactly the reader who is skimming'
+      }
+    },
+    {
+      name: 'caption',
+      type: 'ReactNode',
+      description: {
+        ko: '수치 아래 한 줄 — "지난달 대비"',
+        en: 'A line under the figure — "vs. last month"'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'start'",
+      shared: true,
+      description: {
+        ko: '카드 안에서 블록이 앉는 자리. 한 줄로 늘어놓는 타일이면 center',
+        en: 'Where the block sits in the card. `center` for a row of tiles that read as one band'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. Box의 것 그대로 — Statistic은 배치가 얹힌 Box입니다',
+        en: 'Weight of the surface — Box’s own, because a Statistic is a Box with an arrangement on it'
+      },
+      sizeDescription: {
+        ko: '수치의 타입 스케일과 시트의 여백·모서리',
+        en: 'The figure’s type scale, and the sheet’s padding and radius'
+      }
+    }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'caption 아래 무엇이든 — 스파크라인, 목표 대비 ProgressLinear',
+        en: 'Anything below the caption: a sparkline, a ProgressLinear against a target'
+      }
+    }
+  ],
+
+  Carousel: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '프레임의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 캐러셀은 남의 사진을 담습니다. 사진에 이미 테두리가 있으면 text',
+        en: 'Weight of the frame, said the way a container says it — the sheet is never dyed, because a carousel holds other people’s pictures. `text` when they have edges of their own'
+      },
+      sizeDescription: {
+        ko: '프레임의 모서리, 화살표의 크기와 안쪽 여백, 점의 크기',
+        en: 'The frame’s radius, the arrows and how far they sit in, and the size of the dots'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'number',
+      description: { ko: '보이는 슬라이드. 0부터', en: 'Which slide is showing, counted from 0' }
+    },
+    {
+      name: 'defaultValue',
+      type: 'number',
+      default: '0',
+      description: { ko: '처음 보이는 슬라이드', en: 'Which starts showing' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(index: number) => void',
+      description: {
+        ko: '슬라이드가 바뀔 때. 손가락으로 밀어서 바뀐 경우에도 불립니다',
+        en: 'Called when the slide changes — including when it changed because somebody swiped'
+      }
+    },
+    {
+      name: 'loop',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '끝에서 처음으로 돌아갈지. 끄면 양 끝에서 화살표가 죽습니다 — 시작과 끝이 있는 묶음에는 그쪽이 정직합니다',
+        en: 'Whether the arrows wrap from the last slide back to the first. With it off they go inert at the ends instead, which is the honest thing for a set that has a beginning and an end'
+      }
+    },
+    {
+      name: 'autoPlay',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '스스로 넘어갑니다. 기본이 꺼짐인 이유는 읽는 중에 움직이는 캐러셀이 웹에서 가장 많은 불평을 듣는 패턴이기 때문입니다. 켜도 hover·포커스·백그라운드 탭에서 멈추고, 모션을 줄여 달라고 한 독자에게는 아예 시작하지 않습니다',
+        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab — and does not start at all for a reader who asked for reduced motion'
+      }
+    },
+    {
+      name: 'interval',
+      type: 'number',
+      default: '5000',
+      description: {
+        ko: '슬라이드 한 장을 붙잡는 시간(ms)',
+        en: 'How long each slide is held, in milliseconds'
+      }
+    },
+    {
+      name: 'arrows',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '이전/다음 버튼', en: 'The previous/next buttons' }
+    },
+    {
+      name: 'indicators',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '프레임 아래 위치 점들', en: 'The row of position dots under the frame' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "'Carousel'",
+      description: {
+        ko: '캐러셀의 접근성 이름. 선택이 아니라 기본값입니다 — 이름 없는 region은 건너뛸 수도 없습니다',
+        en: 'The accessible name. It has a default rather than being optional: a region with no name is a region nobody can skip'
+      }
+    },
+    {
+      name: 'previousLabel',
+      type: 'string',
+      default: "'Previous slide'",
+      description: { ko: '이전 버튼의 이름', en: 'The previous button’s name' }
+    },
+    {
+      name: 'nextLabel',
+      type: 'string',
+      default: "'Next slide'",
+      description: { ko: '다음 버튼의 이름', en: 'The next button’s name' }
+    },
+    {
+      name: 'slideLabel',
+      type: '(index: number, count: number) => string',
+      description: {
+        ko: '슬라이드 하나를 스크린 리더에게 어떻게 부를지, 그리고 그 점의 라벨. 기본값은 `Slide ${index} of ${count}`',
+        en: 'How one slide is named to a screen reader, and how its dot is labelled. `Slide ${index} of ${count}` by default'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '슬라이드들. 최상위 자식 하나가 슬라이드 하나가 됩니다 — 스냅 지점, 폭, role을 감싸는 쪽이 붙이므로 사진 한 장에 그것들을 붙일 일이 없습니다',
+        en: 'The slides. Every top-level child becomes one — the wrapper carries the snap point, the width and the roles, none of which anybody should have to put on a photograph'
+      }
+    }
+  ],
+
+  Pill: [
+    ...sharedProps({
+      variant: "'solid'",
+      size: "'md'",
+      color: "'secondary'",
+      elevation: '2',
+      variantDescription: {
+        ko: '표면의 무게. *컨트롤*의 방식대로 표면 자체가 색을 받습니다 — Button, Chip과 같습니다',
+        en: 'Weight of the surface, said the way a *control* says it: the surface takes the tint, as on Button and Chip'
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 여기서만 기본이 secondary입니다 — 이 모양이 흉내 내는 물건이 거의 중립인 검정이기 때문입니다',
+        en: 'Semantic colour role. `secondary` here rather than `primary`, because the object this shape is borrowed from is very nearly neutral black'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 다른 모든 것이 0인데 여기만 2인 것은 일관성이 깨진 것이 아닙니다 — Pill은 페이지의 일부가 아닌 것으로 정의되고, 자기가 떠 있는 내용 위에 납작하게 붙은 로젠지는 실수처럼 보입니다',
+        en: 'Drop shadow depth. `2` against the `0` everything else defaults to, and not an inconsistency: a Pill is defined by not being part of the page, and a lozenge floating flat on the content it floats over reads as a mistake'
+      }
+    }),
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '앞자리 — 글리프, 아바타, 상태 점, 작은 이미지',
+        en: 'The leading slot — a glyph, an avatar, a status dot, a small image'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '뒷자리. 눌리는 영역 바깥이라 그 자체가 컨트롤이어도 됩니다',
+        en: 'The trailing slot. Outside the pressable area, so it can be a control of its own'
+      }
+    },
+    {
+      name: 'details',
+      type: 'ReactNode',
+      description: {
+        ko: 'expanded일 때 드러나는 나머지 절반. 다른 모양으로 바뀌는 것이 아니라 아래로 자랍니다 — 하나의 물건이 더 말하는 것, 여기서 빌려 온 것이 그것입니다',
+        en: 'The second half, revealed when `expanded`. The pill grows downward into it rather than swapping to a different shape: one object saying more, which is the whole idea being borrowed'
+      }
+    },
+    {
+      name: 'expanded',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: 'details가 보이는지', en: 'Whether `details` is showing' }
+    },
+    {
+      name: 'position',
+      type: POSITION,
+      default: "'static'",
+      shared: true,
+      description: {
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. fixed는 뷰포트에 고정하고 가로로 가운데에 둡니다 — 이 모양이 존재하는 이유가 그 배치입니다',
+        en: 'How it sits in the page’s scroll. `fixed` pins it against the viewport and centres it horizontally, which is the arrangement this shape exists for'
+      }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'bottom'",
+      default: "'top'",
+      shared: true,
+      description: {
+        ko: 'static이 아닐 때 어느 가장자리에 붙는지',
+        en: 'Which edge it is held against when `position` is not `static`'
+      }
+    },
+    {
+      name: 'onClick',
+      type: 'MouseEventHandler',
+      description: {
+        ko: '주면 가운데 줄이 진짜 button이 됩니다. endIcon은 그 바깥에 남습니다 — button 안의 button은 브라우저가 파싱 때 풀어 버리는 마크업입니다',
+        en: 'Passing it makes the row a real button. `endIcon` stays outside it: a `<button>` inside a `<button>` is markup the browser rewrites on parse'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '가운데 — 한 줄, 작은 읽을거리 한둘',
+        en: 'The middle: a line of text, a pair of small readouts'
+      }
+    }
+  ],
+
+  Toolbar: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 툴바는 남의 컨트롤을 담고, 그 컨트롤들은 자기 색을 가지고 옵니다',
+        en: 'Weight of the bar, said the way a container says it — the sheet is never dyed, because a toolbar holds other people’s controls and those arrive with colours of their own'
+      },
+      sizeDescription: {
+        ko: '여백과 모서리의 스케일. 높이는 아닙니다 — 툴바는 안에 든 컨트롤 높이에 여백을 더한 만큼 높습니다',
+        en: 'The scale of the padding and the radius. Not a height: a toolbar is as tall as the controls in it plus its padding'
+      },
+      densityDescription: {
+        ko: '여백만 바꿉니다. 별도의 dense prop이 없는 이유가 이것입니다',
+        en: 'Padding only — which is why there is no separate `dense` prop meaning the same thing'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 고정된 바에서도 기본이 0입니다 — 헤더 밑의 그림자는 "아래에 내용이 있다"는 말이고, 그것은 페이지를 스크롤한 뒤에야 참입니다',
+        en: 'Drop shadow depth. `0` even when the bar is pinned: a shadow under a header says "there is content beneath this", and that is only true once the page has been scrolled'
+      }
+    }),
+    {
+      name: 'position',
+      type: POSITION,
+      default: "'static'",
+      shared: true,
+      description: {
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. sticky는 자기 자리를 차지한 채 가장자리에서 멈추므로 아래 내용에 여백을 줄 필요가 없고, fixed는 흐름에서 완전히 빠지므로 페이지가 스스로 여백을 마련해야 합니다',
+        en: 'How the bar sits in the page’s scroll. `sticky` takes up its own space and stops at the edge, so nothing underneath has to be padded around it; `fixed` leaves the flow entirely, so the page needs padding of its own'
+      }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'bottom'",
+      default: "'top'",
+      shared: true,
+      description: {
+        ko: 'static이 아닐 때 어느 가장자리에 붙는지',
+        en: 'Which edge it is held against when `position` is not `static`'
+      }
+    },
+    {
+      name: 'divider',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '내용을 마주 보는 쪽 가장자리에 헤어라인을 긋습니다 — top 바는 아래, bottom 바는 위',
+        en: 'Draws a hairline along the edge that faces the content — under a `top` bar, over a `bottom` one'
+      }
+    },
+    {
+      name: 'start',
+      type: 'ReactNode',
+      description: {
+        ko: '바의 앞쪽에 고정 — 로고, 제목, 뒤로 가기',
+        en: 'Pinned to the start of the bar: a logo, a title, a back button'
+      }
+    },
+    {
+      name: 'end',
+      type: 'ReactNode',
+      description: { ko: '뒤쪽에 고정 — 액션들', en: 'Pinned to the end: the actions' }
+    },
+    renderProp('render={<header />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '가운데. start와 end가 남긴 폭을 전부 가져갑니다',
+        en: 'The middle. Takes whatever width `start` and `end` leave'
       }
     }
   ]

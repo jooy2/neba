@@ -104,15 +104,15 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 ### Components
 
-**Inputs** — Button, ButtonGroup, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination
+**Inputs** — Button, IconButton, ButtonGroup, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination
 
-**Surfaces** — Box, Card, Accordion, Tabs
+**Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill
 
-**Display** — Typography, Divider, Chip, Badge, List, Table
+**Display** — Typography, Divider, Chip, Badge, Icon, Statistic, List, Table
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox
 
-Recent additions: **Combobox** (a select you can type into and filter, single or multiple), **NumberField** (a numeric input with steppers, `min`/`max` clamping and a `step`), and **Overlay** (a sheet that takes the page — dim, frosted, opaque, or invisible but still blocking).
+Recent additions: **Icon** (a glyph at a known size and colour — the glyph is a prop, not children), **IconButton** (that glyph as a round button, with a required accessible name), **Statistic** (a figure, its name, and how far it has moved against a `previousValue`), **Carousel** (a scroll-snap strip of slides — swipeable, RTL-correct, nothing transformed), **Pill** (a floating lozenge for live information, growing into a second half), and **Toolbar** (a header or action bar with `start` / `end` slots, stickable and fixable).
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

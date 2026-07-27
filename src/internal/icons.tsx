@@ -90,6 +90,59 @@ export function PlusIcon() {
   );
 }
 
+/**
+ * The two trend arrows a comparison draws.
+ *
+ * A pair, and they stay one: an arrow that rises at a different angle from the
+ * one that falls beside it reads as two toolkits in one report. Statistic draws
+ * both, and reaches for `MinusIcon` above when a figure has not moved — the
+ * third state of a comparison is genuinely the absence of an arrow.
+ *
+ * The shape carries the meaning for the same reason the severity set does: a
+ * delta that says "down" only in red says it only to some readers.
+ */
+export function TrendUpIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M3 11 6.5 7.5 9 10l4-4"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 6h3.5v3.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function TrendDownIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M3 5 6.5 8.5 9 6l4 4"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 10h3.5V6.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

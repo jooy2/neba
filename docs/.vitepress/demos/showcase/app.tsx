@@ -8,6 +8,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Carousel,
   Checkbox,
   Chip,
   Combobox,
@@ -19,6 +20,8 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  Icon,
+  IconButton,
   List,
   ListItem,
   Menu,
@@ -30,6 +33,7 @@ import {
   NumberField,
   Overlay,
   Pagination,
+  Pill,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -37,6 +41,7 @@ import {
   RadioGroup,
   Select,
   Slider,
+  Statistic,
   Switch,
   Tab,
   Table,
@@ -44,6 +49,7 @@ import {
   Tabs,
   TextField,
   ToastProvider,
+  Toolbar,
   Tooltip,
   Typography,
   useToast,
@@ -91,10 +97,41 @@ function SearchIcon() {
   );
 }
 
+function LogoIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect
+        x="2.5"
+        y="2.5"
+        width="11"
+        height="11"
+        rx="3.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M5.5 10.5v-5l5 5v-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function DotIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="4" fill="currentColor" />
+    </svg>
+  );
+}
+
 const STATS = [
-  { label: 'Deploys', value: '128', color: 'primary' as const },
-  { label: 'Review apps', value: '9', color: 'info' as const },
-  { label: 'Failing', value: '2', color: 'danger' as const }
+  { label: 'Deploys this month', value: 128, previousValue: 104, betterWhen: 'up' as const },
+  { label: 'Review apps', value: 9, previousValue: 9, betterWhen: 'up' as const },
+  { label: 'Failing builds', value: 2, previousValue: 5, betterWhen: 'down' as const }
+];
+
+const HIGHLIGHTS = [
+  { title: 'Instant rollbacks', body: 'Every deploy keeps its predecessor warm for an hour.' },
+  { title: 'Preview per branch', body: 'A URL that exists exactly as long as the branch does.' },
+  { title: 'Regional builds', body: 'Built where it is served, not where it was pushed.' }
 ];
 
 const REGIONS = [
@@ -213,11 +250,44 @@ function ShowcaseBody() {
           </div>
         </Overlay>
 
-        {/* Toolbar — the controls that run a screen, all on one baseline. */}
+        {/* The application's own header: a real `<header>` landmark, the bar's
+          rule facing the content, and the one live readout on the screen sitting
+          in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
-          <Caption>
-            Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge · Overlay
-          </Caption>
+          <Caption>Toolbar · Icon · IconButton · Pill</Caption>
+          <Toolbar
+            render={<header />}
+            variant="solid"
+            density="compact"
+            divider
+            start={
+              <>
+                <Icon icon={<LogoIcon />} size="lg" color="primary" label="Neba Cloud" />
+                <Typography level="h6">Neba Cloud</Typography>
+              </>
+            }
+            end={
+              <>
+                <Pill size="sm" color="info" startIcon={<DotIcon />}>
+                  Building — 2 of 7
+                </Pill>
+                <Badge content={3} color="danger" label="3 failing builds">
+                  <IconButton
+                    icon={<BellIcon />}
+                    label="Notifications"
+                    size="sm"
+                    variant="text"
+                    color="secondary"
+                  />
+                </Badge>
+              </>
+            }
+          />
+        </section>
+
+        {/* The controls that run a screen, all on one baseline. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Button · ButtonGroup · TextField · Select · Tooltip · Menu · Overlay</Caption>
           <div className="flex flex-wrap items-center gap-2">
             <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
             <Select
@@ -233,12 +303,6 @@ function ShowcaseBody() {
               <Button>Month</Button>
             </ButtonGroup>
             <div className="grow" />
-
-            {/* A badge is the one component that overlaps its neighbour, so the
-              row still measures as if it were not there. */}
-            <Badge content={3} color="danger" label="3 failing builds">
-              <Button size="sm" variant="outline" color="secondary" startIcon={<BellIcon />} />
-            </Badge>
 
             <Tooltip content="Import from a Git provider">
               <Button size="sm" variant="outline" color="secondary">
@@ -280,20 +344,39 @@ function ShowcaseBody() {
           </div>
         </section>
 
-        {/* Boxes as the plainest surface there is: they group, and nothing else —
-          laid out on the grid, which arranges them and draws nothing. */}
+        {/* The numbers a report opens with, laid out on the grid — which
+          arranges them and draws nothing itself. `betterWhen` is what makes the
+          third card red for a figure that fell. */}
         <section className="flex flex-col gap-3">
-          <Caption>GridContainer · Grid · Box · Typography</Caption>
+          <Caption>GridContainer · Grid · Statistic</Caption>
           <GridContainer spacing={3} padded={false}>
             {STATS.map((stat) => (
               <Grid key={stat.label} span={{ xs: 12, sm: 4 }}>
-                <Box variant="solid" color={stat.color} className="h-full">
-                  <Typography level="h3">{stat.value}</Typography>
-                  <Typography level="caption">{stat.label}</Typography>
-                </Box>
+                <Statistic
+                  label={stat.label}
+                  value={stat.value}
+                  previousValue={stat.previousValue}
+                  betterWhen={stat.betterWhen}
+                  caption="vs. last month"
+                  className="h-full"
+                />
               </Grid>
             ))}
           </GridContainer>
+        </section>
+
+        {/* One thing at a time, scrolled rather than slid — so it swipes on a
+          phone and runs the other way under RTL without being told. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Carousel</Caption>
+          <Carousel label="What's new" variant="solid" size="sm">
+            {HIGHLIGHTS.map((highlight) => (
+              <div key={highlight.title} className="flex flex-col gap-1 px-14 py-6">
+                <Typography level="h5">{highlight.title}</Typography>
+                <Typography level="caption">{highlight.body}</Typography>
+              </div>
+            ))}
+          </Carousel>
         </section>
 
         {/* What is happening right now, and what just went wrong. */}

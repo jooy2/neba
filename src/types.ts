@@ -46,6 +46,20 @@ export type NebaSide = 'top' | 'right' | 'bottom' | 'left';
 export type NebaAlign = 'start' | 'center' | 'end';
 
 /**
+ * How a bar sits in the page's scroll.
+ *
+ * The three CSS `position` values that mean something for a bar, spelled the
+ * way CSS spells them — this is one of the few ideas where inventing a nicer
+ * word (`pinned`, `floating`) would only make a reader look up which CSS it
+ * maps to. Toolbar and Pill both read it.
+ *
+ * - `static` — in the flow, scrolling away with the content.
+ * - `sticky` — in the flow until the edge, then held there.
+ * - `fixed` — out of the flow entirely, against the viewport.
+ */
+export type NebaPosition = 'static' | 'sticky' | 'fixed';
+
+/**
  * Which corner of a box something is pinned to. Badge reads this.
  *
  * Deliberately one word built out of the two the library already has —

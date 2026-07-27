@@ -8,6 +8,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Carousel,
   Checkbox,
   Chip,
   Combobox,
@@ -18,6 +19,8 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  Icon,
+  IconButton,
   List,
   ListItem,
   Menu,
@@ -27,6 +30,7 @@ import {
   NumberField,
   Overlay,
   Pagination,
+  Pill,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -34,6 +38,7 @@ import {
   RadioGroup,
   Select,
   Slider,
+  Statistic,
   Switch,
   Tab,
   Table,
@@ -41,6 +46,7 @@ import {
   Tabs,
   TextField,
   ToastProvider,
+  Toolbar,
   Tooltip,
   Typography,
   useToast
@@ -58,6 +64,52 @@ import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
  */
 
 type Text = Record<Locale, string>;
+
+/* The few glyphs the icon-shaped cards need. Neba ships no icon set, so the
+   demos draw their own — which is also the honest way to show what Icon does. */
+
+function GalleryPlusIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <path d="M8 3.5v9M3.5 8h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function GalleryStarIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <path
+        d="m8 2 1.8 3.9 4.2.5-3.1 2.9.8 4.2L8 11.4 4.3 13.5l.8-4.2L2 6.4l4.2-.5L8 2Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function GalleryBellIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <path
+        d="M4 6.5a4 4 0 0 1 8 0c0 3 1 4 1 4H3s1-1 1-4Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M6.5 13a1.5 1.5 0 0 0 3 0" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function GalleryDotIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="4" fill="currentColor" />
+    </svg>
+  );
+}
 
 interface Entry {
   name: string;
@@ -272,6 +324,27 @@ const GROUPS: Group[] = [
             <NumberField size="sm" fullWidth defaultValue={3} min={1} max={20} />
           </div>
         )
+      },
+      {
+        name: 'IconButton',
+        summary: {
+          ko: '글리프 하나만 든 동그란 버튼',
+          en: 'A round button with a glyph in it and nothing else'
+        },
+        path: '/components/inputs/icon-button',
+        preview: (
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <IconButton icon={<GalleryPlusIcon />} label="Add" size="sm" />
+            <IconButton icon={<GalleryStarIcon />} label="Star" size="sm" variant="outline" />
+            <IconButton
+              icon={<GalleryBellIcon />}
+              label="Notifications"
+              size="sm"
+              variant="text"
+              color="secondary"
+            />
+          </div>
+        )
       }
     ]
   },
@@ -425,6 +498,60 @@ const GROUPS: Group[] = [
             </Tabs>
           </div>
         )
+      },
+      {
+        name: 'Carousel',
+        summary: {
+          ko: '한 장씩 보이는 슬라이드 띠',
+          en: 'A strip of slides, one of which is in view'
+        },
+        path: '/components/surfaces/carousel',
+        preview: (
+          <div className="w-full max-w-56">
+            <Carousel size="sm" label="Gallery">
+              {['One', 'Two', 'Three'].map((slide) => (
+                <div key={slide} className="flex h-16 items-center justify-center">
+                  {slide}
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        )
+      },
+      {
+        name: 'Pill',
+        summary: {
+          ko: '정보 한 줌을 담고 떠 있는 로젠지',
+          en: 'A floating lozenge holding a little live information'
+        },
+        path: '/components/surfaces/pill',
+        preview: (
+          <Pill size="sm" color="danger" startIcon={<GalleryDotIcon />}>
+            Recording
+          </Pill>
+        )
+      },
+      {
+        name: 'Toolbar',
+        summary: {
+          ko: '헤더나 액션 줄로 쓰는 컨트롤 바',
+          en: 'A bar of controls — a header, an action row'
+        },
+        path: '/components/surfaces/toolbar',
+        preview: (
+          <div className="w-full max-w-56">
+            <Toolbar
+              size="sm"
+              density="compact"
+              start={<Typography level="h6">Files</Typography>}
+              end={
+                <Button size="xs" variant="text">
+                  New
+                </Button>
+              }
+            />
+          </div>
+        )
       }
     ]
   },
@@ -540,6 +667,40 @@ const GROUPS: Group[] = [
                 JD
               </span>
             </Badge>
+          </div>
+        )
+      },
+      {
+        name: 'Icon',
+        summary: {
+          ko: '정해진 크기와 색으로 그려지는 글리프',
+          en: 'A glyph at a known size, in a known colour'
+        },
+        path: '/components/display/icon',
+        preview: (
+          <div className="flex items-end gap-4">
+            <Icon icon={<GalleryStarIcon />} size="sm" color="warning" label="Small" />
+            <Icon icon={<GalleryStarIcon />} size="lg" color="warning" label="Large" />
+            <Icon icon={<GalleryBellIcon />} size="lg" color="info" label="Notifications" />
+          </div>
+        )
+      },
+      {
+        name: 'Statistic',
+        summary: {
+          ko: '이름이 붙은 숫자와, 그것이 얼마나 움직였는지',
+          en: 'A number with its name on it, and how far it moved'
+        },
+        path: '/components/display/statistic',
+        preview: (
+          <div className="w-full max-w-56">
+            <Statistic
+              size="sm"
+              label="Active users"
+              value={1284}
+              previousValue={1102}
+              caption="vs. last month"
+            />
           </div>
         )
       }

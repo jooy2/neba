@@ -106,6 +106,27 @@ export const paddingXClasses: Record<NebaDensity, Record<NebaSize, string>> = {
 };
 
 /**
+ * A glyph standing on its own, rather than one riding on a label.
+ *
+ * `iconClasses` below sizes an icon *inside* a control at `1.2em`, which is
+ * right when there is a word next to it to be measured against. An `Icon` on its
+ * own has no word, so it needs a box — and the box is its own ladder rather than
+ * a step off `controlHeightClasses`, because an icon is not a control: at 32px a
+ * `md` glyph would be the size of the button it usually sits in.
+ *
+ * The steps are the sizes icon sets are actually drawn at — 14, 16, 20, 24, 28 —
+ * so a Neba `Icon` lands on the same grid as whatever library the glyph came
+ * from and never has to be resampled.
+ */
+export const iconSizeClasses: Record<NebaSize, string> = {
+  xs: 'size-3.5',
+  sm: 'size-4',
+  md: 'size-5',
+  lg: 'size-6',
+  xl: 'size-7'
+};
+
+/**
  * A tick box: the square a Checkbox draws and the circle a Radio draws.
  *
  * Its own ladder rather than a step off `controlHeightClasses`, because a tick

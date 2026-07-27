@@ -44,6 +44,7 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Pagination](https://neba.cdget.com/components/inputs/pagination): A row of page numbers, every one of them a real Button.
 - [Combobox](https://neba.cdget.com/components/inputs/combobox): A field you can type into and also choose from; the text filters the list and can become the value itself.
 - [NumberField](https://neba.cdget.com/components/inputs/number-field): A field that only holds a number — a TextField's shell plus stepping, clamping and formatting.
+- [IconButton](https://neba.cdget.com/components/inputs/icon-button): A round button with a glyph in it and nothing else. Everything else is Button's, and `label` is required rather than optional.
 
 ### Display
 
@@ -53,6 +54,8 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Table](https://neba.cdget.com/components/display/table): A grid of data rendered from a column list and a row list; there are no `<tr>`s to write.
 - [List](https://neba.cdget.com/components/display/list): A stack of rows — navigation, settings, results, anything that repeats.
 - [Badge](https://neba.cdget.com/components/display/badge): A small mark in the corner of something else: unread mail, a status dot, a count on a tab.
+- [Icon](https://neba.cdget.com/components/display/icon): A glyph at a known size, in a known colour. Neba ships no icon set; the glyph is a prop rather than children, and `color` defaults to `inherit`.
+- [Statistic](https://neba.cdget.com/components/display/statistic): A number with its name on it, and — given a `previousValue` — how far it has moved. `betterWhen` decides which direction is coloured as good.
 
 ### Feedback
 
@@ -76,6 +79,9 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Card](https://neba.cdget.com/components/surfaces/card): A Box with the parts a card is made of — title, subtitle, body, footer. Every Box prop passes through.
 - [Accordion](https://neba.cdget.com/components/surfaces/accordion): A stack of sections that fold. Opening one closes the last.
 - [Tabs](https://neba.cdget.com/components/surfaces/tabs): One set of panels, one of which is shown. Horizontal or vertical.
+- [Carousel](https://neba.cdget.com/components/surfaces/carousel): A strip of slides, one of which is in view. A scroll-snap container, so it swipes, runs the other way under RTL, and transforms nothing.
+- [Pill](https://neba.cdget.com/components/surfaces/pill): A floating lozenge holding a small amount of live information, optionally growing into a second half. The one fully round shape in the library.
+- [Toolbar](https://neba.cdget.com/components/surfaces/toolbar): A bar of controls — an application header, a page's action row. `start`, `children` and `end` are the three slots; `position` pins it.
 
 ## Examples
 
