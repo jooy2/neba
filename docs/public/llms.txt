@@ -1,0 +1,88 @@
+# Neba
+
+> Neba is a React UI component library published to npm as `neba`. Behaviour and accessibility come from [Base UI](https://base-ui.com) primitives; styling comes from [Tailwind CSS](https://tailwindcss.com) v4. It ships as ESM only with type declarations included, has one runtime dependency (`@base-ui/react`), and supports dark mode out of the box.
+
+The design language: **a Neba surface is a sheet of cut acrylic, not a moulded plastic key.** A control never moves — there is no `transform` on press — it answers in colour and depth instead. Press is instant and release is slow. `elevation` defaults to `0`, and `0` means no shadow at all; the acrylic edge is what separates a surface from the page.
+
+Every component draws from one shared prop vocabulary, so `size="md"` means the same thing everywhere:
+
+```ts
+type NebaSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type NebaColor = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
+type NebaDensity = 'default' | 'compact';
+type NebaVariant = 'solid' | 'outline' | 'text';
+type NebaElevation = 0 | 1 | 2 | 3;
+```
+
+`color` is one of six semantic families, never an arbitrary value like `#4072cd`. Setup is `npm install neba`, then two lines in the app's CSS entry point — `@import 'tailwindcss';` and `@import 'neba/styles.css';`. The package registers itself as a Tailwind source, so consumers never write an `@source` of their own.
+
+Documentation is available in English (served from `/`) and Korean (served from `/ko/`). The links below are the English pages; prefix any path with `/ko` for the Korean version.
+
+## Guide
+
+- [Getting started](https://neba.cdget.com/guide/getting-started): Install, wiring up Tailwind with the two-line CSS setup, first component, dark mode via `data-theme` or a class, browser support.
+- [Design language](https://neba.cdget.com/guide/design-language): The cut-acrylic rule and everything that follows from it — the four surface layers, the no-transform rule, instant press and slow release, the elevation ladder, translucency and blur.
+- [Colour](https://neba.cdget.com/guide/color): The six semantic families, the five hand-picked tokens per family, and how everything else is derived with `color-mix()`. Includes a live palette table read back from the browser.
+- [Prop conventions](https://neba.cdget.com/guide/prop-conventions): What the shared props mean, which components take which axes, and the rule against inventing a second spelling for an idea that already has one.
+
+## Components
+
+- [All components](https://neba.cdget.com/components/): Every released component on one page, each card a running preview rather than a picture.
+
+### Inputs
+
+- [Button](https://neba.cdget.com/components/inputs/button): A control that runs an action. Base UI's Button primitive with Neba's acrylic surface on top.
+- [ButtonGroup](https://neba.cdget.com/components/inputs/button-group): A row of buttons that belong together; corners facing a neighbour are squared off and shared props are set once for the whole set.
+- [TextField](https://neba.cdget.com/components/inputs/text-field): Single- or multi-line text input. Label, description and error are one component, wired together by Base UI's Field.
+- [Select](https://neba.cdget.com/components/inputs/select): One value chosen from a list. The trigger is a TextField's shell wearing a chevron.
+- [Checkbox](https://neba.cdget.com/components/inputs/checkbox): A single yes/no, or one member of a set.
+- [RadioGroup](https://neba.cdget.com/components/inputs/radio-group): A set of options where exactly one is chosen.
+- [Switch](https://neba.cdget.com/components/inputs/switch): An immediate on/off. The difference from a Checkbox is temporal, not visual.
+- [Slider](https://neba.cdget.com/components/inputs/slider): A value chosen along a range. Pass an array and it becomes a range slider.
+- [Menu](https://neba.cdget.com/components/inputs/menu): A list of actions that appears when something is pressed. Nests, holds state, fully keyboard-driven.
+- [FilePicker](https://neba.cdget.com/components/inputs/file-picker): A dashed box you drop files on, or press to open the file dialog.
+- [Pagination](https://neba.cdget.com/components/inputs/pagination): A row of page numbers, every one of them a real Button.
+- [Combobox](https://neba.cdget.com/components/inputs/combobox): A field you can type into and also choose from; the text filters the list and can become the value itself.
+- [NumberField](https://neba.cdget.com/components/inputs/number-field): A field that only holds a number — a TextField's shell plus stepping, clamping and formatting.
+
+### Display
+
+- [Typography](https://neba.cdget.com/components/display/typography): The library's type scale on its own.
+- [Divider](https://neba.cdget.com/components/display/divider): A rule between two things. Not a surface — no acrylic, no light, no shadow.
+- [Chip](https://neba.cdget.com/components/display/chip): A compact token — a tag, a filter, a status, an entity plucked out of a list.
+- [Table](https://neba.cdget.com/components/display/table): A grid of data rendered from a column list and a row list; there are no `<tr>`s to write.
+- [List](https://neba.cdget.com/components/display/list): A stack of rows — navigation, settings, results, anything that repeats.
+- [Badge](https://neba.cdget.com/components/display/badge): A small mark in the corner of something else: unread mail, a status dot, a count on a tab.
+
+### Feedback
+
+- [Alert](https://neba.cdget.com/components/feedback/alert): A message about something that happened, set into the page it is about.
+- [Dialog](https://neba.cdget.com/components/feedback/dialog): A sheet that takes the page away until it is answered.
+- [Toast](https://neba.cdget.com/components/feedback/toast): A message that arrives on its own, over whatever is already on the page.
+- [Tooltip](https://neba.cdget.com/components/feedback/tooltip): A short label that appears when the pointer rests on something.
+- [ProgressLinear](https://neba.cdget.com/components/feedback/progress-linear): A bar that fills. The workhorse of the three progress indicators.
+- [ProgressCircular](https://neba.cdget.com/components/feedback/progress-circular): A ring that fills, for where there is no room for a bar.
+- [ProgressBox](https://neba.cdget.com/components/feedback/progress-box): A row of acrylic plates that light up.
+- [Overlay](https://neba.cdget.com/components/feedback/overlay): A sheet over the whole page that stops it being used — the scrim on its own.
+
+### Layout
+
+- [Container](https://neba.cdget.com/components/layout/container): Horizontal breathing room around whatever it wraps; keeps a page's content off the edge of the window.
+- [Grid](https://neba.cdget.com/components/layout/grid): A responsive layout on twelve columns. Every grid is wrapped in a GridContainer and each cell is a Grid.
+
+### Surfaces
+
+- [Box](https://neba.cdget.com/components/surfaces/box): A sheet of acrylic with content on it. The plainest surface in the library.
+- [Card](https://neba.cdget.com/components/surfaces/card): A Box with the parts a card is made of — title, subtitle, body, footer. Every Box prop passes through.
+- [Accordion](https://neba.cdget.com/components/surfaces/accordion): A stack of sections that fold. Opening one closes the last.
+- [Tabs](https://neba.cdget.com/components/surfaces/tabs): One set of panels, one of which is shown. Horizontal or vertical.
+
+## Examples
+
+- [Examples](https://neba.cdget.com/examples/): Every component in the library on a single product-shaped screen, with a block-by-block breakdown of which components each part uses.
+
+## Optional
+
+- [Korean documentation](https://neba.cdget.com/ko/): The same site in Korean. Every path above works with a `/ko` prefix.
+- [GitHub repository](https://github.com/jooy2/neba): Source, issues and contribution guide.
+- [npm package](https://www.npmjs.com/package/neba): Published releases and version history.
