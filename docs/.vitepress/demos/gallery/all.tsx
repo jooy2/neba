@@ -11,10 +11,13 @@ import {
   Checkbox,
   Chip,
   Combobox,
+  Container,
   Dialog,
   DialogClose,
   Divider,
   FilePicker,
+  Grid,
+  GridContainer,
   List,
   ListItem,
   Menu,
@@ -268,6 +271,78 @@ const GROUPS: Group[] = [
           <div className="w-full max-w-40">
             <NumberField size="sm" fullWidth defaultValue={3} min={1} max={20} />
           </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Layout',
+    note: {
+      ko: '아무것도 그리지 않고 나머지를 배치하는 것들',
+      en: 'The pieces that arrange everything else and draw nothing themselves'
+    },
+    entries: [
+      {
+        name: 'Container',
+        summary: {
+          ko: '좌우 여백, 그리고 원한다면 본문 폭',
+          en: 'A gutter, and a measure if you want one'
+        },
+        path: '/components/layout/container',
+        preview: (
+          <div className="w-full max-w-56 rounded-lg bg-[var(--neba-primary-soft-press)]">
+            <Container size="sm">
+              <Box size="sm" className="text-center">
+                Container
+              </Box>
+            </Container>
+          </div>
+        )
+      },
+      {
+        name: 'GridContainer',
+        summary: {
+          ko: '칸 수와 거터를 정하는 그리드의 부모',
+          en: 'The grid parent: how many columns, and how wide the gutters'
+        },
+        path: '/components/layout/grid',
+        preview: (
+          <GridContainer spacing={1} padded={false} className="w-full max-w-56">
+            {[0, 1, 2, 3].map((cell) => (
+              <Grid key={cell} span={3}>
+                <Box size="xs" variant="solid" className="text-center">
+                  3
+                </Box>
+              </Grid>
+            ))}
+          </GridContainer>
+        )
+      },
+      {
+        name: 'Grid',
+        summary: {
+          ko: '칸 하나. 너비일 뿐 표면이 아닙니다',
+          en: 'One cell — a width, and no surface'
+        },
+        path: '/components/layout/grid',
+        preview: (
+          <GridContainer spacing={1} padded={false} className="w-full max-w-56">
+            <Grid span={8}>
+              <Box size="xs" className="text-center">
+                span 8
+              </Box>
+            </Grid>
+            <Grid span={4}>
+              <Box size="xs" className="text-center">
+                4
+              </Box>
+            </Grid>
+            <Grid span={4} offset={4}>
+              <Box size="xs" className="text-center">
+                offset 4
+              </Box>
+            </Grid>
+          </GridContainer>
         )
       }
     ]

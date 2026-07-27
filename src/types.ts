@@ -56,6 +56,53 @@ export type NebaAlign = 'start' | 'center' | 'end';
 export type NebaCorner = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
 
 /**
+ * The viewport widths the layout components branch on, smallest first.
+ *
+ * Deliberately the same five names as `NebaSize`, and deliberately *not* the
+ * same idea: a `size` of `md` is how big a control is, a breakpoint of `md` is
+ * how wide the window is. They share a spelling because a caller who has
+ * learned one ladder should not have to learn a second set of words for the
+ * other, and because every CSS framework worth copying already spells them this
+ * way.
+ *
+ * The widths are Tailwind's own defaults — `sm` 40rem, `md` 48rem, `lg` 64rem,
+ * `xl` 80rem — so a Neba grid and a `md:` utility change at the same moment.
+ * `xs` is 0: it is the value with no media query around it.
+ */
+export type NebaBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+/**
+ * A value that may differ per breakpoint.
+ *
+ * A bare value applies from `xs` up; a partial map applies each entry from its
+ * own breakpoint up, so `{ xs: 12, md: 6 }` is full width until 48rem and half
+ * from there on. There is no `NebaBreakpoint` that means "only at this width" —
+ * every entry is a floor, which is what makes a two-entry map enough to
+ * describe most layouts.
+ */
+export type NebaResponsive<T> = T | Partial<Record<NebaBreakpoint, T>>;
+
+/**
+ * How a row distributes the space it has left over along its main axis.
+ *
+ * The three positional values are `NebaAlign`'s — logical, so they flip under
+ * RTL — and the three distribution values keep their CSS spelling, because
+ * `space-between` is what the property is called and inventing `between` would
+ * be a second name for something that already has one.
+ */
+export type NebaJustifyContent =
+  NebaAlign | 'space-between' | 'space-around' | 'space-evenly' | 'stretch';
+
+/**
+ * How items sit across the axis they are laid out on. `stretch` is the default
+ * everywhere it is offered: a row of cards is a row of cards of one height.
+ */
+export type NebaAlignItems = NebaAlign | 'stretch' | 'baseline';
+
+/** The same, for one item overriding the row around it. */
+export type NebaAlignSelf = NebaAlignItems | 'auto';
+
+/**
  * Visual weight of a component's surface.
  *
  * - `solid` — filled, carries the color. One per view, for the primary action.

@@ -1,0 +1,79 @@
+import * as React from 'react';
+import { useRender } from '@base-ui/react/use-render';
+import { alignSelfClasses, offsetValue, responsiveSlots, spanValue } from '../../internal/grid';
+import type { NebaAlignSelf, NebaResponsive } from '../../types';
+
+export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
+  /**
+   * How many of the container's columns the item takes. Read against the
+   * container's `columns`, so `span={6}` is a half of the default twelve and a
+   * quarter of `columns={24}`.
+   *
+   * Responsive: `span={{ xs: 12, md: 6, lg: 4 }}` is full width on a phone,
+   * half from 48rem and a third from 64rem. Every entry applies from its own
+   * breakpoint up, so two of them usually describe a whole layout.
+   *
+   * A span wider than the row is clamped to the row rather than overflowing.
+   * @default the container's full width
+   */
+  span?: NebaResponsive<number>;
+  /**
+   * Columns left empty *before* the item — space pushed in ahead of it, not an
+   * absolute position in the row. First in a twelve-column row, `offset={4}`
+   * with `span={4}` is the middle third; after an item that already took four
+   * columns, the same offset skips four more and lands on the last third.
+   *
+   * Responsive in the same way `span` is.
+   * @default 0
+   */
+  offset?: NebaResponsive<number>;
+  /** Overrides the row's `alignItems` for this item alone. */
+  alignSelf?: NebaAlignSelf;
+  /**
+   * Renders something other than a `<div>`: `render={<li />}`,
+   * `render={<article />}`. Base UI's own escape hatch.
+   */
+  render?: useRender.RenderProp;
+  children?: React.ReactNode;
+}
+
+/**
+ * One cell of a `GridContainer`.
+ *
+ * It is a width and nothing else — no surface, no padding, no typography. What
+ * goes inside brings its own, which is the whole reason a grid cell and a Box
+ * are two components: wrapping something in a layout should not change how it
+ * looks, and a cell that drew a sheet would make `span` a visual decision.
+ *
+ * The column count it divides by is inherited from the container as a custom
+ * property, so a `<Grid>` with no `<GridContainer>` above it falls back to
+ * twelve rather than breaking — but it will be a plain block in a plain parent,
+ * which is not a layout. Always wrap.
+ */
+export const Grid = React.forwardRef<HTMLDivElement, GridProps>(function Grid(
+  { span, offset, alignSelf, render, className, style, children, ...props },
+  ref
+) {
+  const classNames = [
+    'neba-grid-item',
+    alignSelf ? alignSelfClasses[alignSelf] : '',
+    className ?? ''
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return useRender({
+    render,
+    ref,
+    props: {
+      className: classNames,
+      style: {
+        ...responsiveSlots('span', span, spanValue),
+        ...responsiveSlots('offset', offset, offsetValue),
+        ...style
+      },
+      children,
+      ...props
+    }
+  });
+});

@@ -11,11 +11,14 @@ import {
   Checkbox,
   Chip,
   Combobox,
+  Container,
   ContextMenu,
   Dialog,
   DialogClose,
   Divider,
   FilePicker,
+  Grid,
+  GridContainer,
   List,
   ListItem,
   Menu,
@@ -196,385 +199,400 @@ function ShowcaseBody() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* An overlay is the one component with nowhere to sit on the page: it
+    // The outermost thing on the screen, and so the one thing that draws
+    // nothing: a gutter and a measure, on a real `<main>`.
+    <Container maxWidth="lg" render={<main />}>
+      <div className="flex flex-col gap-8">
+        {/* An overlay is the one component with nowhere to sit on the page: it
           takes the whole page, so it lives at the top of the tree and is turned
           on from wherever the work started. */}
-      <Overlay open={rebuilding} tone="blur" label="Rebuilding">
-        <div className="flex flex-col items-center gap-3 text-(--neba-fg)">
-          <ProgressCircular size="lg" />
-          <p className="m-0 text-sm">Rebuilding every environment…</p>
-        </div>
-      </Overlay>
-
-      {/* Toolbar — the controls that run a screen, all on one baseline. */}
-      <section className="flex flex-col gap-3">
-        <Caption>
-          Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge · Overlay
-        </Caption>
-        <div className="flex flex-wrap items-center gap-2">
-          <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
-          <Select
-            size="sm"
-            items={REGIONS}
-            value={region}
-            onValueChange={setRegion}
-            placeholder="Region"
-          />
-          <ButtonGroup size="sm" variant="outline" color="secondary">
-            <Button>Day</Button>
-            <Button>Week</Button>
-            <Button>Month</Button>
-          </ButtonGroup>
-          <div className="grow" />
-
-          {/* A badge is the one component that overlaps its neighbour, so the
-              row still measures as if it were not there. */}
-          <Badge content={3} color="danger" label="3 failing builds">
-            <Button size="sm" variant="outline" color="secondary" startIcon={<BellIcon />} />
-          </Badge>
-
-          <Tooltip content="Import from a Git provider">
-            <Button size="sm" variant="outline" color="secondary">
-              Import
-            </Button>
-          </Tooltip>
-
-          <Menu
-            size="sm"
-            trigger={
-              <Button size="sm" variant="outline" color="secondary">
-                View
-              </Button>
-            }
-          >
-            <MenuGroup label="Columns">
-              <MenuCheckboxItem defaultChecked>Status</MenuCheckboxItem>
-              <MenuCheckboxItem defaultChecked>Duration</MenuCheckboxItem>
-              <MenuCheckboxItem>Commit</MenuCheckboxItem>
-            </MenuGroup>
-            <MenuSeparator />
-            <MenuSubmenu label="Group by">
-              <MenuItem>Environment</MenuItem>
-              <MenuItem>Author</MenuItem>
-            </MenuSubmenu>
-            <MenuSeparator />
-            <MenuItem color="danger" shortcut="⌫">
-              Reset view
-            </MenuItem>
-          </Menu>
-
-          <Button size="sm" variant="outline" color="secondary" onClick={rebuild}>
-            Rebuild
-          </Button>
-
-          <Button size="sm" startIcon={<PlusIcon />}>
-            New project
-          </Button>
-        </div>
-      </section>
-
-      {/* Boxes as the plainest surface there is: they group, and nothing else. */}
-      <section className="flex flex-col gap-3">
-        <Caption>Box · Typography</Caption>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {STATS.map((stat) => (
-            <Box key={stat.label} variant="solid" color={stat.color}>
-              <Typography level="h3">{stat.value}</Typography>
-              <Typography level="caption">{stat.label}</Typography>
-            </Box>
-          ))}
-        </div>
-      </section>
-
-      {/* What is happening right now, and what just went wrong. */}
-      <section className="flex flex-col gap-3">
-        <Caption>Alert · ProgressLinear · ProgressCircular · ProgressBox</Caption>
-        <Alert
-          color="warning"
-          title="One region is near its quota"
-          action={
-            <Button size="xs" variant="outline" color="warning">
-              Review
-            </Button>
-          }
-          onClose={() => {}}
-        >
-          Frankfurt is at 90% of its build minutes for this billing period.
-        </Alert>
-        <Box variant="solid">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:items-center">
-            <ProgressLinear value={64} label="Uploading assets" showValue />
-            <ProgressCircular label="Indexing" />
-            <div className="flex items-center gap-3">
-              <ProgressBox color="info" />
-              <Typography level="caption">Draining the queue</Typography>
-            </div>
+        <Overlay open={rebuilding} tone="blur" label="Rebuilding">
+          <div className="flex flex-col items-center gap-3 text-(--neba-fg)">
+            <ProgressCircular size="lg" />
+            <p className="m-0 text-sm">Rebuilding every environment…</p>
           </div>
-        </Box>
-      </section>
+        </Overlay>
 
-      {/* Data, rendered from a column list rather than written out row by row —
-          inside the tab bar that switches between views of it, with the row of
-          pages under it and a context menu on the whole thing. */}
-      <section className="flex flex-col gap-3">
-        <Caption>Tabs · Table · Chip · ContextMenu · Pagination</Caption>
-        <Tabs defaultValue="deploys" size="sm">
-          <Tab value="deploys" endIcon={<Badge content={DEPLOYS.length} size="xs" />}>
-            Deploys
-          </Tab>
-          <Tab value="builds">Builds</Tab>
-          <Tab value="logs" disabled>
-            Logs
-          </Tab>
+        {/* Toolbar — the controls that run a screen, all on one baseline. */}
+        <section className="flex flex-col gap-3">
+          <Caption>
+            Button · ButtonGroup · TextField · Select · Tooltip · Menu · Badge · Overlay
+          </Caption>
+          <div className="flex flex-wrap items-center gap-2">
+            <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
+            <Select
+              size="sm"
+              items={REGIONS}
+              value={region}
+              onValueChange={setRegion}
+              placeholder="Region"
+            />
+            <ButtonGroup size="sm" variant="outline" color="secondary">
+              <Button>Day</Button>
+              <Button>Week</Button>
+              <Button>Month</Button>
+            </ButtonGroup>
+            <div className="grow" />
 
-          <TabPanel value="deploys">
-            <div className="flex flex-col gap-3">
-              <ContextMenu
-                size="sm"
-                content={
-                  <>
-                    <MenuItem shortcut="⌘R">Redeploy</MenuItem>
-                    <MenuItem>Copy deploy URL</MenuItem>
-                    <MenuSeparator />
-                    <MenuItem color="danger">Cancel deploy</MenuItem>
-                  </>
-                }
-              >
-                <Table
-                  headers={DEPLOY_COLUMNS}
-                  items={DEPLOYS}
-                  getRowKey={(row) => row.id}
-                  size="sm"
-                  hoverable
-                />
-              </ContextMenu>
+            {/* A badge is the one component that overlaps its neighbour, so the
+              row still measures as if it were not there. */}
+            <Badge content={3} color="danger" label="3 failing builds">
+              <Button size="sm" variant="outline" color="secondary" startIcon={<BellIcon />} />
+            </Badge>
 
-              <div className="flex items-center justify-between gap-3">
-                <Typography level="caption">Showing 1–3 of 34</Typography>
-                <Pagination size="sm" count={12} page={page} onPageChange={setPage} />
-              </div>
-            </div>
-          </TabPanel>
+            <Tooltip content="Import from a Git provider">
+              <Button size="sm" variant="outline" color="secondary">
+                Import
+              </Button>
+            </Tooltip>
 
-          <TabPanel value="builds">
-            <Typography level="caption">Nothing building right now.</Typography>
-          </TabPanel>
-        </Tabs>
-      </section>
-
-      {/* A card holding controls — the composition the library is actually for. */}
-      <section className="flex flex-col gap-3">
-        <Caption>
-          Card · TextField · Combobox · NumberField · Checkbox · List · Dialog · Toast
-        </Caption>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
-          <Card
-            dividers
-            title={<h3>Profile</h3>}
-            subtitle="Shown on your public profile."
-            footer={
-              <>
-                <Button variant="text" color="secondary">
-                  Revert
-                </Button>
-                <Button className="ml-auto" loading={saving} onClick={save}>
-                  {saved ? 'Saved' : 'Save changes'}
-                </Button>
-              </>
-            }
-          >
-            <div className="flex flex-col gap-3">
-              <TextField
-                label="Name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="Email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                error={emailValid ? undefined : 'Enter a valid address.'}
-                fullWidth
-              />
-              <TextField
-                multiline
-                rows={3}
-                label="About"
-                placeholder="A sentence or two."
-                description="Markdown is not supported."
-                fullWidth
-              />
-              <Combobox
-                multiple
-                fullWidth
-                label="Tags"
-                placeholder="Add a tag"
-                description="Anything the list does not have is offered as the last row."
-                items={TAG_OPTIONS}
-                value={tags}
-                onValueChange={setTags}
-              />
-              <Checkbox label="Show my email to other members" description="Members only." />
-              <Divider>Files</Divider>
-              <FilePicker
-                multiple
-                size="sm"
-                density="compact"
-                accept="image/*,.pdf"
-                maxSize={5_000_000}
-                maxFiles={3}
-                title="Drop an avatar or a résumé"
-                hint="PNG, JPG or PDF · up to 5 MB · 3 files"
-                value={attachments}
-                onFilesChange={setAttachments}
-              />
-            </div>
-          </Card>
-
-          <div className="flex flex-col gap-4">
-            <Card
-              variant="solid"
-              color="secondary"
-              title="Team"
-              subtitle="Up to twelve seats"
-              headerAction={
-                <Chip size="xs" variant="outline" color="secondary">
-                  Current plan
-                </Chip>
-              }
-              footer={
-                <Button size="sm" fullWidth variant="outline" color="secondary">
-                  Change plan
+            <Menu
+              size="sm"
+              trigger={
+                <Button size="sm" variant="outline" color="secondary">
+                  View
                 </Button>
               }
             >
-              <div className="flex flex-col gap-3">
-                <RadioGroup size="sm" defaultValue="team" label="Billing">
-                  <Radio value="monthly" label="Monthly" />
-                  <Radio value="team" label="Yearly" description="Two months free." />
-                </RadioGroup>
-                <NumberField
-                  size="sm"
-                  fullWidth
-                  color="secondary"
-                  label="Seats"
-                  min={1}
-                  max={12}
-                  value={seats}
-                  onValueChange={setSeats}
-                />
+              <MenuGroup label="Columns">
+                <MenuCheckboxItem defaultChecked>Status</MenuCheckboxItem>
+                <MenuCheckboxItem defaultChecked>Duration</MenuCheckboxItem>
+                <MenuCheckboxItem>Commit</MenuCheckboxItem>
+              </MenuGroup>
+              <MenuSeparator />
+              <MenuSubmenu label="Group by">
+                <MenuItem>Environment</MenuItem>
+                <MenuItem>Author</MenuItem>
+              </MenuSubmenu>
+              <MenuSeparator />
+              <MenuItem color="danger" shortcut="⌫">
+                Reset view
+              </MenuItem>
+            </Menu>
+
+            <Button size="sm" variant="outline" color="secondary" onClick={rebuild}>
+              Rebuild
+            </Button>
+
+            <Button size="sm" startIcon={<PlusIcon />}>
+              New project
+            </Button>
+          </div>
+        </section>
+
+        {/* Boxes as the plainest surface there is: they group, and nothing else —
+          laid out on the grid, which arranges them and draws nothing. */}
+        <section className="flex flex-col gap-3">
+          <Caption>GridContainer · Grid · Box · Typography</Caption>
+          <GridContainer spacing={3} padded={false}>
+            {STATS.map((stat) => (
+              <Grid key={stat.label} span={{ xs: 12, sm: 4 }}>
+                <Box variant="solid" color={stat.color} className="h-full">
+                  <Typography level="h3">{stat.value}</Typography>
+                  <Typography level="caption">{stat.label}</Typography>
+                </Box>
+              </Grid>
+            ))}
+          </GridContainer>
+        </section>
+
+        {/* What is happening right now, and what just went wrong. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Alert · ProgressLinear · ProgressCircular · ProgressBox</Caption>
+          <Alert
+            color="warning"
+            title="One region is near its quota"
+            action={
+              <Button size="xs" variant="outline" color="warning">
+                Review
+              </Button>
+            }
+            onClose={() => {}}
+          >
+            Frankfurt is at 90% of its build minutes for this billing period.
+          </Alert>
+          <Box variant="solid">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:items-center">
+              <ProgressLinear value={64} label="Uploading assets" showValue />
+              <ProgressCircular label="Indexing" />
+              <div className="flex items-center gap-3">
+                <ProgressBox color="info" />
+                <Typography level="caption">Draining the queue</Typography>
               </div>
-            </Card>
+            </div>
+          </Box>
+        </section>
 
-            <Card size="sm" title="Notifications">
+        {/* Data, rendered from a column list rather than written out row by row —
+          inside the tab bar that switches between views of it, with the row of
+          pages under it and a context menu on the whole thing. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Tabs · Table · Chip · ContextMenu · Pagination</Caption>
+          <Tabs defaultValue="deploys" size="sm">
+            <Tab value="deploys" endIcon={<Badge content={DEPLOYS.length} size="xs" />}>
+              Deploys
+            </Tab>
+            <Tab value="builds">Builds</Tab>
+            <Tab value="logs" disabled>
+              Logs
+            </Tab>
+
+            <TabPanel value="deploys">
               <div className="flex flex-col gap-3">
-                <Switch size="sm" labelPlacement="start" label="Email alerts" defaultChecked />
-                <Switch size="sm" labelPlacement="start" label="Deploy failures" defaultChecked />
-                <Slider size="sm" label="Quiet hours" defaultValue={[22, 7]} max={24} showValue />
-              </div>
-            </Card>
-
-            <Card size="sm" title="Environments" dividers>
-              <List variant="text" size="sm" density="compact">
-                <ListItem
-                  onClick={() => {}}
-                  selected
-                  description="4m 02s ago"
-                  action={
-                    <Chip size="xs" variant="text" color="success">
-                      Live
-                    </Chip>
-                  }
-                >
-                  production
-                </ListItem>
-                <ListItem
-                  onClick={() => {}}
-                  description="1m 48s ago"
-                  action={
-                    <Chip size="xs" variant="text" color="info">
-                      Building
-                    </Chip>
-                  }
-                >
-                  staging
-                </ListItem>
-                <ListItem onClick={() => {}} description="Never deployed" disabled>
-                  preview
-                </ListItem>
-              </List>
-            </Card>
-
-            <Card size="sm" title="Questions" dividers>
-              <Accordion variant="text" size="sm" density="compact">
-                <AccordionItem value="billing" title="How does billing work?">
-                  Charged on the first for the seats held on the last day of the month.
-                </AccordionItem>
-                <AccordionItem value="regions" title="Where do builds run?">
-                  In the region closest to the repository's default branch.
-                </AccordionItem>
-              </Accordion>
-            </Card>
-
-            <Card
-              color="danger"
-              size="sm"
-              title="Danger zone"
-              footer={
-                <Dialog
+                <ContextMenu
                   size="sm"
-                  color="danger"
-                  trigger={
-                    <Button size="sm" color="danger" variant="outline">
-                      Delete workspace
-                    </Button>
-                  }
-                  title="Delete this workspace?"
-                  description="Every project, deploy and log inside it goes with it."
-                  actions={
+                  content={
                     <>
-                      <DialogClose
-                        render={
-                          <Button size="sm" variant="text" color="secondary">
-                            Cancel
-                          </Button>
-                        }
-                      />
-                      <DialogClose
-                        render={
-                          <Button size="sm" color="danger">
-                            Delete
-                          </Button>
-                        }
-                      />
+                      <MenuItem shortcut="⌘R">Redeploy</MenuItem>
+                      <MenuItem>Copy deploy URL</MenuItem>
+                      <MenuSeparator />
+                      <MenuItem color="danger">Cancel deploy</MenuItem>
                     </>
                   }
                 >
-                  Members will lose access immediately.
-                </Dialog>
+                  <Table
+                    headers={DEPLOY_COLUMNS}
+                    items={DEPLOYS}
+                    getRowKey={(row) => row.id}
+                    size="sm"
+                    hoverable
+                  />
+                </ContextMenu>
+
+                <div className="flex items-center justify-between gap-3">
+                  <Typography level="caption">Showing 1–3 of 34</Typography>
+                  <Pagination size="sm" count={12} page={page} onPageChange={setPage} />
+                </div>
+              </div>
+            </TabPanel>
+
+            <TabPanel value="builds">
+              <Typography level="caption">Nothing building right now.</Typography>
+            </TabPanel>
+          </Tabs>
+        </section>
+
+        {/* A card holding controls — the composition the library is actually for. */}
+        <section className="flex flex-col gap-3">
+          <Caption>
+            Card · TextField · Combobox · NumberField · Checkbox · List · Dialog · Toast
+          </Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+            <Card
+              dividers
+              title={<h3>Profile</h3>}
+              subtitle="Shown on your public profile."
+              footer={
+                <>
+                  <Button variant="text" color="secondary">
+                    Revert
+                  </Button>
+                  <Button className="ml-auto" loading={saving} onClick={save}>
+                    {saved ? 'Saved' : 'Save changes'}
+                  </Button>
+                </>
               }
             >
-              This cannot be undone.
+              <div className="flex flex-col gap-3">
+                <TextField
+                  label="Name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  fullWidth
+                />
+                <TextField
+                  label="Email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  error={emailValid ? undefined : 'Enter a valid address.'}
+                  fullWidth
+                />
+                <TextField
+                  multiline
+                  rows={3}
+                  label="About"
+                  placeholder="A sentence or two."
+                  description="Markdown is not supported."
+                  fullWidth
+                />
+                <Combobox
+                  multiple
+                  fullWidth
+                  label="Tags"
+                  placeholder="Add a tag"
+                  description="Anything the list does not have is offered as the last row."
+                  items={TAG_OPTIONS}
+                  value={tags}
+                  onValueChange={setTags}
+                />
+                <Checkbox label="Show my email to other members" description="Members only." />
+                <Divider>Files</Divider>
+                <FilePicker
+                  multiple
+                  size="sm"
+                  density="compact"
+                  accept="image/*,.pdf"
+                  maxSize={5_000_000}
+                  maxFiles={3}
+                  title="Drop an avatar or a résumé"
+                  hint="PNG, JPG or PDF · up to 5 MB · 3 files"
+                  value={attachments}
+                  onFilesChange={setAttachments}
+                />
+              </div>
             </Card>
-          </div>
-        </div>
-      </section>
 
-      {/* A box grouping cards: the box groups, the cards structure. */}
-      <section className="flex flex-col gap-3">
-        <Caption>Box + Card</Caption>
-        <Box variant="text" padded={false}>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {(['primary', 'success', 'info'] as const).map((color) => (
-              <Card key={color} size="sm" color={color} title={color} subtitle="A card in a box">
-                Grouped by the box around them.
+            <div className="flex flex-col gap-4">
+              <Card
+                variant="solid"
+                color="secondary"
+                title="Team"
+                subtitle="Up to twelve seats"
+                headerAction={
+                  <Chip size="xs" variant="outline" color="secondary">
+                    Current plan
+                  </Chip>
+                }
+                footer={
+                  <Button size="sm" fullWidth variant="outline" color="secondary">
+                    Change plan
+                  </Button>
+                }
+              >
+                <div className="flex flex-col gap-3">
+                  <RadioGroup size="sm" defaultValue="team" label="Billing">
+                    <Radio value="monthly" label="Monthly" />
+                    <Radio value="team" label="Yearly" description="Two months free." />
+                  </RadioGroup>
+                  <NumberField
+                    size="sm"
+                    fullWidth
+                    color="secondary"
+                    label="Seats"
+                    min={1}
+                    max={12}
+                    value={seats}
+                    onValueChange={setSeats}
+                  />
+                </div>
               </Card>
-            ))}
+
+              <Card size="sm" title="Notifications">
+                <div className="flex flex-col gap-3">
+                  <Switch size="sm" labelPlacement="start" label="Email alerts" defaultChecked />
+                  <Switch size="sm" labelPlacement="start" label="Deploy failures" defaultChecked />
+                  <Slider size="sm" label="Quiet hours" defaultValue={[22, 7]} max={24} showValue />
+                </div>
+              </Card>
+
+              <Card size="sm" title="Environments" dividers>
+                <List variant="text" size="sm" density="compact">
+                  <ListItem
+                    onClick={() => {}}
+                    selected
+                    description="4m 02s ago"
+                    action={
+                      <Chip size="xs" variant="text" color="success">
+                        Live
+                      </Chip>
+                    }
+                  >
+                    production
+                  </ListItem>
+                  <ListItem
+                    onClick={() => {}}
+                    description="1m 48s ago"
+                    action={
+                      <Chip size="xs" variant="text" color="info">
+                        Building
+                      </Chip>
+                    }
+                  >
+                    staging
+                  </ListItem>
+                  <ListItem onClick={() => {}} description="Never deployed" disabled>
+                    preview
+                  </ListItem>
+                </List>
+              </Card>
+
+              <Card size="sm" title="Questions" dividers>
+                <Accordion variant="text" size="sm" density="compact">
+                  <AccordionItem value="billing" title="How does billing work?">
+                    Charged on the first for the seats held on the last day of the month.
+                  </AccordionItem>
+                  <AccordionItem value="regions" title="Where do builds run?">
+                    In the region closest to the repository's default branch.
+                  </AccordionItem>
+                </Accordion>
+              </Card>
+
+              <Card
+                color="danger"
+                size="sm"
+                title="Danger zone"
+                footer={
+                  <Dialog
+                    size="sm"
+                    color="danger"
+                    trigger={
+                      <Button size="sm" color="danger" variant="outline">
+                        Delete workspace
+                      </Button>
+                    }
+                    title="Delete this workspace?"
+                    description="Every project, deploy and log inside it goes with it."
+                    actions={
+                      <>
+                        <DialogClose
+                          render={
+                            <Button size="sm" variant="text" color="secondary">
+                              Cancel
+                            </Button>
+                          }
+                        />
+                        <DialogClose
+                          render={
+                            <Button size="sm" color="danger">
+                              Delete
+                            </Button>
+                          }
+                        />
+                      </>
+                    }
+                  >
+                    Members will lose access immediately.
+                  </Dialog>
+                }
+              >
+                This cannot be undone.
+              </Card>
+            </div>
           </div>
-        </Box>
-      </section>
-    </div>
+        </section>
+
+        {/* A box grouping cards: the box groups, the cards structure. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Box + Card, on the grid</Caption>
+          <Box variant="text" padded={false}>
+            <GridContainer spacing={3} padded={false}>
+              {(['primary', 'success', 'info'] as const).map((color) => (
+                <Grid key={color} span={{ xs: 12, sm: 4 }}>
+                  <Card
+                    size="sm"
+                    color={color}
+                    title={color}
+                    subtitle="A card in a box"
+                    className="h-full"
+                  >
+                    Grouped by the box around them.
+                  </Card>
+                </Grid>
+              ))}
+            </GridContainer>
+          </Box>
+        </section>
+      </div>
+    </Container>
   );
 }

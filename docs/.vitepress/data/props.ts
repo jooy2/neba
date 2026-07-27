@@ -33,6 +33,47 @@ const VARIANT = "'solid' | 'outline' | 'text'";
 const DENSITY = "'default' | 'compact'";
 const ELEVATION = '0 | 1 | 2 | 3';
 const ORIENTATION = "'horizontal' | 'vertical'";
+const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
+const JUSTIFY_CONTENT =
+  "'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly' | 'stretch'";
+const ALIGN_ITEMS = "'start' | 'center' | 'end' | 'stretch' | 'baseline'";
+const ALIGN_SELF = "'auto' | 'start' | 'center' | 'end' | 'stretch' | 'baseline'";
+
+/** The padding pair the three layout components share. */
+const layoutPaddingProps: PropRow[] = [
+  {
+    name: 'size',
+    type: SIZE,
+    default: "'md'",
+    shared: true,
+    description: {
+      ko: '여백의 크기. Box에서와 같이 높이도 타입 스케일도 건드리지 않으며, 거터를 정하는 spacing과는 별개입니다',
+      en: "The padding's scale. As on Box it never touches a height or the type scale, and it is not the gutter — that is spacing"
+    }
+  },
+  {
+    name: 'density',
+    type: DENSITY,
+    default: "'default'",
+    shared: true,
+    description: {
+      ko: '여백만 바꿉니다',
+      en: 'Padding only'
+    }
+  }
+];
+
+/** The escape hatch every layout component offers, spelled the same way. */
+function renderProp(example: string): PropRow {
+  return {
+    name: 'render',
+    type: 'useRender.RenderProp',
+    description: {
+      ko: `div 대신 다른 요소로 렌더링합니다 (${example}). Base UI의 render prop 그대로`,
+      en: `Renders something other than a div (${example}). Base UI's own escape hatch`
+    }
+  };
+}
 
 /** `size` and `color` alone, for the controls that have no surface to weigh. */
 function scaleProps(size: string, color = "'primary'", colorDescription?: Text): PropRow[] {
@@ -480,6 +521,161 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '박스에 담기는 내용', en: 'What the box holds' }
+    }
+  ],
+
+  Container: [
+    {
+      name: 'maxWidth',
+      type: `${SIZE} | 'none'`,
+      default: "'none'",
+      description: {
+        ko: '내용이 넓어질 수 있는 한계. 브레이크포인트와 같은 사다리입니다 — xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem. 기본값 none은 제한 없음',
+        en: 'How wide the content may get, on the breakpoint ladder — xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem. The default, none, is no limit'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '좌우 여백. 끄면 가운데 정렬과 최대 너비는 그대로 두고 여백만 사라집니다',
+        en: 'The gutter. Turning it off keeps the centring and the measure and drops only the padding'
+      }
+    },
+    ...layoutPaddingProps,
+    {
+      name: 'centered',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'maxWidth가 페이지보다 좁을 때 가운데로 놓습니다. maxWidth가 none이면 남는 공간이 없으므로 아무 일도 하지 않습니다',
+        en: 'Centres the content once maxWidth is narrower than the page. No effect while maxWidth is none — there is nothing left over to centre in'
+      }
+    },
+    renderProp('<main />'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '여백을 두를 내용', en: 'What the gutter goes around' }
+    }
+  ],
+
+  GridContainer: [
+    {
+      name: 'columns',
+      type: RESPONSIVE,
+      default: '12',
+      description: {
+        ko: '한 줄이 몇 칸으로 나뉘는지. 안쪽의 모든 span과 offset이 이 수를 기준으로 계산됩니다',
+        en: 'How many columns a row divides into. Every span and offset inside is read against this number'
+      }
+    },
+    {
+      name: 'spacing',
+      type: RESPONSIVE,
+      default: '2',
+      description: {
+        ko: '항목 사이의 거터. Tailwind 간격 스케일이라 4는 1rem이며, 소수점도 받습니다 (1.5 → 0.375rem)',
+        en: "The gutter between items, on Tailwind's spacing scale — 4 is 1rem. Fractions are allowed: 1.5 is 0.375rem"
+      }
+    },
+    {
+      name: 'rowSpacing',
+      type: RESPONSIVE,
+      default: 'spacing',
+      description: { ko: '행 사이의 거터만', en: 'The gutter between rows only' }
+    },
+    {
+      name: 'columnSpacing',
+      type: RESPONSIVE,
+      default: 'spacing',
+      description: { ko: '열 사이의 거터만', en: 'The gutter between columns only' }
+    },
+    {
+      name: 'justifyContent',
+      type: JUSTIFY_CONTENT,
+      description: {
+        ko: '한 줄이 쓰고 남은 공간을 어떻게 나눌지. prop으로 직접 받습니다 — sx도 className도 필요 없습니다',
+        en: 'How a row distributes the space its items did not use. A prop of its own, not something to reach for sx or className for'
+      }
+    },
+    {
+      name: 'alignItems',
+      type: ALIGN_ITEMS,
+      default: "'stretch'",
+      description: {
+        ko: '항목들이 줄을 가로질러 어디에 놓일지. 기본값은 늘리기라서 한 줄의 카드들은 높이가 같아집니다',
+        en: 'How items sit across the row. The default stretches, so a row of cards is a row of one height'
+      }
+    },
+    {
+      name: 'alignContent',
+      type: JUSTIFY_CONTENT,
+      description: {
+        ko: '그리드가 담긴 상자보다 짧을 때 행들이 어디에 놓일지. 높이를 가진 컨테이너에서만 보입니다',
+        en: 'Where the rows sit when the grid is shorter than the box holding it. Only visible on a container with a height of its own'
+      }
+    },
+    {
+      name: 'wrap',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '칸이 모자란 줄이 다음 줄로 이어지는지. 끄면 넘치는 한 줄이 되며, 가로 스크롤 스트립이 원하는 모습입니다',
+        en: 'Whether a row that runs out of columns continues on the next one. Off gives one overflowing row, which is what a scrolling strip wants'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '안쪽 여백. 이미 여백을 가진 것 안에 있다면 끄세요 — Container, Card, 또 다른 그리드',
+        en: 'Inner padding. Turn it off when the grid already sits inside something that pads — a Container, a Card, another grid'
+      }
+    },
+    ...layoutPaddingProps,
+    renderProp('<section />'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'Grid 항목들', en: 'The Grid items' }
+    }
+  ],
+
+  Grid: [
+    {
+      name: 'span',
+      type: RESPONSIVE,
+      default: 'a full row',
+      description: {
+        ko: '컨테이너의 칸을 몇 개 차지할지. 브레이크포인트마다 다르게 줄 수 있습니다 — { xs: 12, md: 6 }. 줄보다 넓은 span은 넘치지 않고 줄에 맞춰 잘립니다',
+        en: "How many of the container's columns the item takes. Per-breakpoint as { xs: 12, md: 6 }. A span wider than the row is clamped to the row rather than overflowing"
+      }
+    },
+    {
+      name: 'offset',
+      type: RESPONSIVE,
+      default: '0',
+      description: {
+        ko: '항목 앞에 밀어 넣는 빈 칸 수. 줄의 시작에서 센 절대 위치가 아니라 항목 앞에 들어가는 공간입니다',
+        en: 'Columns left empty ahead of the item — space pushed in before it, not an absolute position counted from the start of the row'
+      }
+    },
+    {
+      name: 'alignSelf',
+      type: ALIGN_SELF,
+      description: {
+        ko: '이 항목만 줄의 alignItems를 따르지 않게 합니다',
+        en: "Overrides the row's alignItems for this item alone"
+      }
+    },
+    renderProp('<li />'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '칸에 담기는 내용', en: 'What the cell holds' }
     }
   ],
 

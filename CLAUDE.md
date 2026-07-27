@@ -145,7 +145,7 @@ docs/{ko,en}/
   examples/index.md         # every component on one sample screen
 ```
 
-The groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table, List, Badge), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination), `surfaces` (Box, Card, Accordion, Tabs). Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales, so a new one goes on the end unless it genuinely belongs in the middle.
+The groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table, List, Badge), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination), `layout` (Container, Grid + GridContainer), `surfaces` (Box, Card, Accordion, Tabs). `layout` is separate from `surfaces` because nothing in it draws a sheet: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page. Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales, so a new one goes on the end unless it genuinely belongs in the middle.
 
 Things that will bite:
 

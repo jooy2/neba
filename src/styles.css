@@ -575,6 +575,128 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Grid
+ *
+ * A column is `(100% + gap) * span / columns - gap` wide, and an offset shifts
+ * it by `(100% + gap) * offset / columns`. Both are exact rather than
+ * approximate: the `+ gap` is what pays for the gutter the item does not have
+ * on its trailing edge, so twelve `span={1}` items and one `span={12}` end on
+ * the same pixel.
+ *
+ * This is here rather than in Tailwind for the reason the rest of this file is:
+ * `columns` is a number a caller picks and `span` changes at four widths, so
+ * the class name would have to be assembled at runtime — and a class name that
+ * is assembled at runtime is a class name Tailwind never sees. The per-instance
+ * numbers arrive as inline `--n-*` slots, exactly as colours do, and the
+ * arithmetic lives here once.
+ *
+ * `min(span, columns)` is the clamp: a `span={99}` fills its row instead of
+ * overflowing the page, which is what the caller meant.
+ *
+ * Every slot cascades upward — each breakpoint falls back through the ones
+ * below it — so `span={{ md: 6 }}` sets one custom property and not five. The
+ * chains get long at `xl`; that is the cost of keeping the DOM lean, and it is
+ * paid once here rather than on every grid item in a consumer's app.
+ *
+ * The widths are Tailwind's own breakpoints, so a Neba grid and a `md:` utility
+ * change at the same moment.
+ * ------------------------------------------------------------------------- */
+
+.neba-grid {
+  --n-cols: var(--n-cols-xs, 12);
+  --n-gap-x: var(--n-gap-x-xs, 0px);
+  --n-gap-y: var(--n-gap-y-xs, 0px);
+}
+
+.neba-grid-item {
+  --n-span: var(--n-span-xs, var(--n-cols, 12));
+  --n-offset: var(--n-offset-xs, 0);
+
+  /* One column plus one gutter. `--n-cols` and `--n-gap-x` are inherited from
+     the container, so this re-resolves on its own at every breakpoint. */
+  --n-track: calc((100% + var(--n-gap-x, 0px)) / var(--n-cols, 12));
+
+  /* Inseparable from the width above it: `flex` stops the row from resizing
+     the item, `min-width` stops a long unbroken word from doing the same, and
+     `box-sizing` is what makes the percentage mean the whole item. */
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 0;
+  width: calc(var(--n-track) * min(var(--n-span), var(--n-cols, 12)) - var(--n-gap-x, 0px));
+  margin-inline-start: calc(var(--n-track) * min(var(--n-offset), var(--n-cols, 12)));
+}
+
+@media (width >= 40rem) {
+  .neba-grid {
+    --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
+    --n-gap-x: var(--n-gap-x-sm, var(--n-gap-x-xs, 0px));
+    --n-gap-y: var(--n-gap-y-sm, var(--n-gap-y-xs, 0px));
+  }
+
+  .neba-grid-item {
+    --n-span: var(--n-span-sm, var(--n-span-xs, var(--n-cols, 12)));
+    --n-offset: var(--n-offset-sm, var(--n-offset-xs, 0));
+  }
+}
+
+@media (width >= 48rem) {
+  .neba-grid {
+    --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
+    --n-gap-x: var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px)));
+    --n-gap-y: var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px)));
+  }
+
+  .neba-grid-item {
+    --n-span: var(--n-span-md, var(--n-span-sm, var(--n-span-xs, var(--n-cols, 12))));
+    --n-offset: var(--n-offset-md, var(--n-offset-sm, var(--n-offset-xs, 0)));
+  }
+}
+
+@media (width >= 64rem) {
+  .neba-grid {
+    --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
+    --n-gap-x: var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))));
+    --n-gap-y: var(--n-gap-y-lg, var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px))));
+  }
+
+  .neba-grid-item {
+    --n-span: var(
+      --n-span-lg,
+      var(--n-span-md, var(--n-span-sm, var(--n-span-xs, var(--n-cols, 12))))
+    );
+    --n-offset: var(--n-offset-lg, var(--n-offset-md, var(--n-offset-sm, var(--n-offset-xs, 0))));
+  }
+}
+
+@media (width >= 80rem) {
+  .neba-grid {
+    --n-cols: var(
+      --n-cols-xl,
+      var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))))
+    );
+    --n-gap-x: var(
+      --n-gap-x-xl,
+      var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))))
+    );
+    --n-gap-y: var(
+      --n-gap-y-xl,
+      var(--n-gap-y-lg, var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px))))
+    );
+  }
+
+  .neba-grid-item {
+    --n-span: var(
+      --n-span-xl,
+      var(--n-span-lg, var(--n-span-md, var(--n-span-sm, var(--n-span-xs, var(--n-cols, 12)))))
+    );
+    --n-offset: var(
+      --n-offset-xl,
+      var(--n-offset-lg, var(--n-offset-md, var(--n-offset-sm, var(--n-offset-xs, 0))))
+    );
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Interaction light
  *
  * Two stacked layers on an interactive surface, both reading `--n-mx`/`--n-my`
