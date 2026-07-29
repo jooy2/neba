@@ -5,7 +5,7 @@ order: 3
 
 # Chip
 
-<p class="neba-lede">A compact token: a tag, a filter, a status, an entity plucked out of a list.</p>
+<p class="neba-lede">A compact token holding one short value — a tag, a filter, a status. It can also be made clickable or deletable.</p>
 
 <Demo src="chip/hero" />
 
@@ -21,9 +21,11 @@ import { Chip } from 'neba';
 
 <PropsTable name="Chip" />
 
+Chip's `size` sits one step below the control heights: an `md` Chip is 26px, the same height as a `sm` [Button](../inputs/button). That separates a token placed inside content from a control the row lines up against.
+
 ## Examples
 
-### Variants and colours
+### variant and color
 
 <Demo src="chip/variants">
 
@@ -31,9 +33,9 @@ import { Chip } from 'neba';
 
 </Demo>
 
-### Icons and counts
+### startIcon · endIcon · count
 
-A `count` gets its own small plate, so "Errors 12" reads as one token with a number on it rather than as two words. On a filled chip the plate is a hole punched in the fill; on a tinted or bare one it is the accent showing through.
+`startIcon` and `endIcon` are nodes placed before and after the label. `count` gets its own plate, so "Errors 12" reads as one token with a number on it rather than as two words.
 
 <Demo src="chip/content">
 
@@ -41,9 +43,9 @@ A `count` gets its own small plate, so "Errors 12" reads as one token with a num
 
 </Demo>
 
-### Clickable and deletable
+### onClick · onDelete · selected
 
-`selected` deepens the surface one step rather than changing the colour family — a filter that is on is still the same filter.
+`onClick` makes the whole chip a pressable control. `onDelete` adds a delete button after the label. `selected` marks the chip as on by deepening the surface one step rather than changing the colour family.
 
 <Demo src="chip/interactive">
 
@@ -51,7 +53,7 @@ A `count` gets its own small plate, so "Errors 12" reads as one token with a num
 
 </Demo>
 
-### Sizes
+### size
 
 <Demo src="chip/sizes">
 
@@ -59,16 +61,7 @@ A `count` gets its own small plate, so "Errors 12" reads as one token with a num
 
 </Demo>
 
-## A chip is one step down the ladder
-
-A `md` chip is a `sm` control — 26px, not 32px. That is the whole visual difference between a Chip and a Button, and it is deliberate: a chip is a token _inside_ a row of content, not a control the row lines up against. At full control height an outline chip and an outline button are the same object, and a screen full of them says nothing about which one can be pressed.
-
-Every other library reaches for a pill radius to make that distinction, which this one cannot — the flat run along a sheet's top and bottom edge is the point of the whole [design language](../../guide/design-language).
-
 ## Accessibility
 
-The shell is always a `<span>`. What changes is what is inside it: a plain run of content, or — when `onClick` is given — a real `<button>` wrapping that content, plus a second button for `onDelete`.
-
-Both are reachable by keyboard and neither is nested inside the other. An inert `<span>` carrying a click handler is the most common way a component library loses its keyboard users; a `<button>` inside a `<button>` is the most common way it invents markup the browser silently rewrites. This shape avoids both.
-
-Give the delete button a `deleteLabel` naming what is being removed when there is more than one chip on screen.
+- The shell is always a `<span>`. `onClick` adds a `<button>` around the content; `onDelete` adds a second `<button>` beside it. Neither is nested inside the other, so both are reachable by keyboard.
+- With more than one chip on screen, give the delete button a `deleteLabel` naming what is being removed — the default label leaves them indistinguishable.

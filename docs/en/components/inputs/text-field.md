@@ -5,7 +5,7 @@ order: 3
 
 # TextField
 
-<p class="neba-lede">Single- or multi-line text input. The label, the description and the error are one component, wired together by Base UI's Field.</p>
+<p class="neba-lede">Takes single- or multi-line text input. The label, the description and the error message are one component.</p>
 
 <Demo src="text-field/hero" />
 
@@ -23,11 +23,9 @@ Every native `<input>` attribute passes straight through. `color` and `size` are
 
 ## Examples
 
-### Variants
+### variant
 
-Even `solid` is not flooded with the accent colour. What a field holds is user data, and a caret, a text selection and a placeholder all have to stay legible on top of it. The colour family shows up in the edge, the focus ring and the caret instead.
-
-The sheet itself is white, and going `outline` → `solid` → hover → focus makes it **more opaque**, not more coloured. [Colour](../../guide/color#container-surfaces-are-never-dyed) has the whole rule.
+None of the three weights flood the sheet with colour. What a field holds is text the user typed, and the caret, the selection and the placeholder all have to stay legible on top of it. `color` shows up in the border, the focus ring and the caret instead.
 
 <Demo src="text-field/variants">
 
@@ -35,9 +33,9 @@ The sheet itself is white, and going `outline` → `solid` → hover → focus m
 
 </Demo>
 
-### Sizes
+### size
 
-The same heights as Button, so a field and a button in one row share a baseline.
+The same heights as [Button](./button), so a field and a button in one row share a baseline.
 
 <Demo src="text-field/sizes">
 
@@ -45,9 +43,9 @@ The same heights as Button, so a field and a button in one row share a baseline.
 
 </Demo>
 
-### Multiline
+### multiline · rows · resize
 
-`multiline` renders a `<textarea>` and changes nothing else. `rows={1}` is exactly as tall as the single-line field. Horizontal resizing breaks a form's column, so only the vertical axis is on by default.
+`multiline` renders a `<textarea>` and leaves every other axis alone. `rows={1}` is exactly as tall as the single-line field. `resize` defaults to the vertical axis only — horizontal resizing breaks a form's column alignment.
 
 <Demo src="text-field/multiline">
 
@@ -55,9 +53,9 @@ The same heights as Button, so a field and a button in one row share a baseline.
 
 </Demo>
 
-### Icons and progress
+### startIcon · endIcon · loading
 
-`loading` puts a spinner in the `endIcon` slot and marks the field busy, but typing is deliberately still allowed — a field is usually loading _because of_ what was typed into it.
+`loading` puts a spinner in the `endIcon` slot and marks the field busy, but typing is still allowed — a field is usually loading because of what was just typed into it.
 
 <Demo src="text-field/icons">
 
@@ -65,9 +63,9 @@ The same heights as Button, so a field and a button in one row share a baseline.
 
 </Demo>
 
-### States
+### error · invalid · disabled · readOnly
 
-Give `error` any content and the whole field re-points at the `danger` family — edge, focus ring, caret and message all turn over together. To mark it invalid without a message, pass `invalid` directly.
+Give `error` a message and the field also turns invalid, re-pointing the whole field at the `danger` family. To mark it invalid without a message, pass `invalid` directly.
 
 <Demo src="text-field/states">
 
@@ -75,9 +73,9 @@ Give `error` any content and the whole field re-points at the `danger` family �
 
 </Demo>
 
-### Controlled
+### value and onChange
 
-`value` and `onChange` are the native ones.
+Identical to the native `<input>`.
 
 <Demo src="text-field/controlled">
 
@@ -87,7 +85,7 @@ Give `error` any content and the whole field re-points at the `danger` family �
 
 ## Accessibility
 
-- Base UI's Field connects the label, description and error to the control with `id` and `aria-describedby`.
-- There is no floating-label variant on purpose: floating labels need a `transform`, and controls in this library never transform.
-- The focus ring belongs to the shell rather than the control inside it, so it traces the acrylic edge.
-- Clicking the shell's own padding puts the caret in the field, the way a native `<input>` behaves.
+- `label`, `description` and `error` are connected to the control with `id` and `aria-describedby`.
+- There is no floating-label variant.
+- The focus ring belongs to the shell rather than the `<input>` inside it, so it traces the border.
+- Clicking the shell's own padding puts the caret in the field.

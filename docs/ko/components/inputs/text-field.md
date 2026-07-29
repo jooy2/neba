@@ -5,7 +5,7 @@ order: 3
 
 # TextField
 
-<p class="neba-lede">한 줄 또는 여러 줄 텍스트 입력. 라벨·설명·오류가 하나의 컴포넌트로 묶여 있고, 연결은 Base UI의 Field가 맡습니다.</p>
+<p class="neba-lede">한 줄 또는 여러 줄 텍스트를 입력받습니다. 라벨과 설명, 오류 메시지가 하나의 컴포넌트로 묶여 있습니다.</p>
 
 <Demo src="text-field/hero" />
 
@@ -19,15 +19,13 @@ import { TextField } from 'neba';
 
 <PropsTable name="TextField" />
 
-`<input>`의 네이티브 속성은 그대로 전달됩니다. `color`와 `size`는 위 표의 것과 이름이 겹쳐 제외되며, `onChange`는 `multiline`일 때 `<textarea>`도 받도록 넓혀져 있습니다.
+`<input>`의 native 속성은 그대로 전달됩니다. `color`와 `size`는 위 표의 것과 이름이 겹쳐 제외되며, `onChange`는 `multiline`일 때 `<textarea>` 이벤트도 받도록 넓혀져 있습니다.
 
 ## 예시
 
-### 변형
+### variant
 
-`solid`도 색으로 채우지 않습니다. 필드가 담는 것은 사용자 데이터이고, 캐럿·선택 영역·플레이스홀더가 강조색 채움 위에서는 읽히지 않기 때문입니다. 색 계열은 가장자리와 포커스 링, 캐럿에 나타납니다.
-
-시트 자체는 흰색이고, `outline` → `solid` → hover → 포커스로 갈수록 **불투명해질 뿐** 색이 진해지지는 않습니다. [색](../../guide/color#컨테이너-표면은-염색하지-않습니다)에 전체 규칙이 있습니다.
+세 가지 무게 모두 sheet를 색으로 채우지 않습니다. 필드가 담는 것은 사용자가 입력한 텍스트이고, caret과 선택 영역, placeholder가 강조색 채움 위에서는 읽히지 않기 때문입니다. `color`는 테두리와 focus ring, caret에 나타납니다.
 
 <Demo src="text-field/variants">
 
@@ -35,9 +33,9 @@ import { TextField } from 'neba';
 
 </Demo>
 
-### 크기
+### size
 
-Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기준선이 맞습니다.
+[Button](./button)과 높이가 같으므로 툴바처럼 한 줄에 섞어 놓아도 기준선이 맞습니다.
 
 <Demo src="text-field/sizes">
 
@@ -45,9 +43,9 @@ Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기�
 
 </Demo>
 
-### 여러 줄
+### multiline · rows · resize
 
-`multiline`은 `<textarea>`로 바꿔 렌더링할 뿐, 나머지 축은 그대로입니다. `rows={1}`은 한 줄짜리 필드와 정확히 같은 높이입니다. 가로 리사이즈는 폼의 열을 깨뜨리므로 기본값이 세로뿐입니다.
+`multiline`은 `<textarea>`로 렌더링하고 나머지 축은 그대로 유지합니다. `rows={1}`은 한 줄 필드와 정확히 같은 높이입니다. `resize`의 기본값은 세로 방향만 허용합니다 — 가로 리사이즈는 폼의 열 정렬을 깨뜨립니다.
 
 <Demo src="text-field/multiline">
 
@@ -55,9 +53,9 @@ Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기�
 
 </Demo>
 
-### 아이콘과 진행 상태
+### startIcon · endIcon · loading
 
-`loading`은 `endIcon` 자리에 스피너를 놓고 `aria-busy`를 붙이지만, 입력은 막지 않습니다. 필드는 대개 방금 입력된 값 _때문에_ 로딩 중이기 때문입니다.
+`loading`은 `endIcon` 자리에 spinner를 놓고 `aria-busy`를 붙이지만 입력은 막지 않습니다. 대개 방금 입력한 값 때문에 로딩 중이기 때문입니다.
 
 <Demo src="text-field/icons">
 
@@ -65,9 +63,9 @@ Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기�
 
 </Demo>
 
-### 상태
+### error · invalid · disabled · readOnly
 
-`error`에 내용이 있으면 필드 전체가 `danger` 계열로 넘어갑니다 — 가장자리, 포커스 링, 캐럿, 메시지가 한꺼번에 바뀝니다. 메시지 없이 무효 상태만 켜려면 `invalid`를 직접 주세요.
+`error`에 메시지를 주면 invalid 상태가 함께 켜지고 필드 전체가 `danger` 계열로 옮겨갑니다. 메시지 없이 invalid 상태만 표시하려면 `invalid`를 직접 주세요.
 
 <Demo src="text-field/states">
 
@@ -75,9 +73,9 @@ Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기�
 
 </Demo>
 
-### 제어 컴포넌트
+### value와 onChange
 
-`value`와 `onChange`는 네이티브 그대로입니다.
+native `<input>`과 동일하게 동작합니다.
 
 <Demo src="text-field/controlled">
 
@@ -87,7 +85,7 @@ Button과 높이가 같습니다. 툴바처럼 한 줄에 섞어 놓아도 기�
 
 ## 접근성
 
-- 라벨·설명·오류는 Base UI의 Field가 `id`와 `aria-describedby`로 컨트롤에 연결합니다.
-- 떠오르는 라벨(floating label)은 제공하지 않습니다. `transform`이 필요한데, 이 라이브러리의 컨트롤은 움직이지 않습니다.
-- 포커스 링은 컨트롤이 아니라 껍데기에 그려지므로, 아크릴 가장자리를 그대로 따라갑니다.
-- 껍데기의 여백을 클릭해도 캐럿이 들어갑니다. 네이티브 `<input>`과 같은 동작입니다.
+- `label` · `description` · `error`가 `id`와 `aria-describedby`로 컨트롤에 연결됩니다.
+- floating label은 제공하지 않습니다.
+- focus ring은 `<input>`이 아니라 감싸는 shell에 그려지므로 테두리를 그대로 따라갑니다.
+- shell의 여백을 클릭해도 caret이 들어갑니다.

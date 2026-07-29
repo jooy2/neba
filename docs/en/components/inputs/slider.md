@@ -5,7 +5,7 @@ order: 8
 
 # Slider
 
-<p class="neba-lede">A value chosen along a range. Pass an array and it becomes a range slider — there is no separate prop for that, because the shape of the value already says which one this is.</p>
+<p class="neba-lede">Picks a value by dragging along a range. Use it where the relative magnitude matters more than the exact number.</p>
 
 <Demo src="slider/hero" />
 
@@ -19,11 +19,15 @@ import { Slider } from 'neba';
 
 <PropsTable name="Slider" />
 
-`onValueChange` fires throughout the drag; `onValueCommitted` fires once, when the value settles. Put the network request on the second one.
+`onValueChange` fires throughout the drag; `onValueCommitted` fires once, when the value settles. Put the network request on the latter.
+
+When an exact number has to be typed, use [NumberField](./number-field).
 
 ## Examples
 
-### Range
+### An array value makes it a range
+
+Pass an array of numbers as the `value` and you get that many thumbs — a range slider. There is no separate prop for it.
 
 <Demo src="slider/range">
 
@@ -31,9 +35,13 @@ import { Slider } from 'neba';
 
 </Demo>
 
-### Sizes
+### min · max · step
 
-The thumb is deliberately far larger than the track. It is the only part of the control you can actually hit, and a thumb sized to match a 6px rail is a thumb nobody catches on a touchscreen.
+`step` is the interval the thumb settles on. `showValue` prints the current value beside the label.
+
+### size
+
+The thumb is drawn larger than the track — it is the part you actually hit, so it needs a real touch target.
 
 <Demo src="slider/sizes">
 
@@ -41,9 +49,9 @@ The thumb is deliberately far larger than the track. It is the only part of the 
 
 </Demo>
 
-### Vertical
+### orientation
 
-A vertical slider has no length of its own — give it a height. The default is a starting point, not a rule.
+A `vertical` slider has no length of its own; give it a height.
 
 <Demo src="slider/vertical">
 
@@ -51,14 +59,9 @@ A vertical slider has no length of its own — give it a height. The default is 
 
 </Demo>
 
-## The thumb does not grow
-
-Hovering and dragging put a ring _around_ the thumb rather than scaling it. That is the same no-transform rule the rest of the library follows, and it is not relaxed just because this particular part carries no label: a control whose parts change size under the cursor is the thing that reads as cheap.
-
-The rail and the indicator are pills for the same reason a [Switch](./switch)'s track is — this is a groove something travels along, not a sheet.
-
 ## Accessibility
 
-- Each thumb is a real `<input type="range">`, so the arrow keys, Home/End and Page Up/Down all work without any code here.
+- Each thumb is a real `<input type="range">`, so the arrow keys, Home/End and Page Up/Down all work as they should.
 - `label` becomes the accessible name. Without one, give the slider an `aria-label`.
 - `showValue` renders an `<output>`, which is announced as the value changes.
+- Hovering and dragging draw a ring around the thumb rather than changing its size.

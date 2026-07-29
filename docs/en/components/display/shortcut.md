@@ -5,7 +5,7 @@ order: 10
 
 # Shortcut
 
-<p class="neba-lede">A keyboard key, or a combination of them. A component whose label is harder than its box.</p>
+<p class="neba-lede">Renders a keyboard shortcut as key caps. Modifier keys are spelled to match the reader's platform.</p>
 
 <Demo src="shortcut/hero" />
 
@@ -21,41 +21,17 @@ import { Shortcut } from 'neba';
 
 <PropsTable name="Shortcut" />
 
-## Why not `Kbd`
-
-`<kbd>` is the name of an HTML element, not the name of an idea. Every component name in this library is a noun that says what the thing **is** — Button, Chip, Badge, Divider, Pill — and not one of them is an abbreviation. `Shortcut` is also a word the library already uses: [MenuItem](../inputs/menu)'s `shortcut` prop is the slot this was written for.
+[MenuItem](../inputs/menu)'s `shortcut` prop is the slot this component was written for.
 
 ```tsx
 <MenuItem shortcut={<Shortcut keys="Mod+E" />}>Rename</MenuItem>
 ```
 
-## Two things that make it more than a styled `<kbd>`
-
-Both are about the **label** rather than the box around it.
-
-### `Mod`
-
-A shortcut written as `Ctrl+K` is wrong for every Mac reader, and one written as `⌘K` is wrong for everybody else. So the token that means "the modifier shortcuts are built on" resolves per platform: Command on a Mac, Control everywhere else.
-
-`os` is `auto` by default, which asks the browser. `mac`, `windows` and `linux` are for documentation that has to name a platform rather than the reader's own — a support page describing the Windows build, a table comparing the two.
-
-`Mod` is the only token whose **meaning** changes rather than just its spelling. `Meta` is the same key only on a Mac; it is Win on Windows and Super on Linux.
-
-<Demo src="shortcut/platforms">
-
-<<< @/.vitepress/demos/shortcut/platforms.tsx
-
-</Demo>
-
-### `⌘` is not a word
-
-A screen reader announces `⌘` as "place of interest sign", which is not a key anybody has on their keyboard. So every key drawn as a glyph carries its name beside it, in the same clipped box [Badge](./badge) uses, invisible to a sighted reader. What is announced is "Command K", which is what the shortcut is called.
-
 ## Examples
 
-### Keys
+### keys
 
-A string is split on `+`; the array form is only needed for a shortcut whose key is itself a plus. A single-character token is capitalised — that is what is printed on the cap — and an unknown one is drawn exactly as it was written.
+A string is split on `+`. The array form is only needed when a key is itself a plus. Single-character tokens are capitalised to match what is printed on the cap, and an unrecognised token is drawn exactly as written.
 
 <Demo src="shortcut/keys">
 
@@ -63,13 +39,23 @@ A string is split on `+`; the array form is only needed for a shortcut whose key
 
 </Demo>
 
-### The separator
+### os and `Mod`
 
-macOS writes a shortcut as a run of symbols: `⇧⌘P`, never `⇧+⌘+P`. The other two join theirs with a `+`. Omit `separator` and the platform's own convention is used; pass one and it is yours.
+`Mod` is the token for "the platform's primary modifier": Command (`⌘`) on macOS, Control everywhere else. Unlike the other tokens, which only change spelling, `Mod` changes which key it names.
 
-### Weight and size
+`os` defaults to `auto`, which asks the browser for the current platform. Name `mac`, `windows` or `linux` for documentation that describes a specific platform.
 
-A key cap sits one step down the control ladder, for the reason a [Chip](./chip) does — it is a token _inside_ a line of text, not a control the line lines up against. It is also set in a monospaced face, which is the signal that tells a cap and a chip apart at a glance.
+<Demo src="shortcut/platforms">
+
+<<< @/.vitepress/demos/shortcut/platforms.tsx
+
+</Demo>
+
+### separator and variant
+
+Omit `separator` and the platform convention is used: macOS runs the symbols together (`⇧⌘P`), the others join with `+`. Pass one and that character is used instead.
+
+Key caps sit one step below the control heights, like a [Chip](./chip), and are set in a monospaced face.
 
 <Demo src="shortcut/variants">
 
@@ -79,6 +65,8 @@ A key cap sits one step down the control ladder, for the reason a [Chip](./chip)
 
 ## Server rendering
 
-`os="auto"` asks the browser, and a server has no browser. That is what `useSyncExternalStore` is for: it is the one API that hydrates with the server's answer and then re-renders with the browser's, which is exactly the sequence a Mac reader sees — `Ctrl` for one frame, then `⌘`. Reading `navigator` during render would instead be a hydration mismatch, and React throws the markup away for one of those.
+`os="auto"` depends on the browser, so under SSR the first frame renders the default and switches to the real platform's spelling after hydration — a Mac reader sees `Ctrl` briefly, then `⌘`. Name the `os` on screens where that transition matters.
 
-If that moment matters on a given screen, name the `os`.
+## Accessibility
+
+- A screen reader cannot read a symbol like `⌘` as a key name. Every key drawn as a glyph carries a visually hidden name alongside it, so the shortcut is announced as "Command K".

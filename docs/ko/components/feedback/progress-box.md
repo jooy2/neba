@@ -5,7 +5,7 @@ order: 7
 
 # ProgressBox
 
-<p class="neba-lede">차례로 불이 들어오는 아크릴 판의 줄.</p>
+<p class="neba-lede">진행 상태를 여러 개의 판이 차례로 채워지는 형태로 표시합니다. Neba 표면 위의 로딩 상태에 어울리는 형태입니다.</p>
 
 <Demo src="progress-box/hero" align="center" />
 
@@ -20,9 +20,13 @@ import { ProgressBox } from 'neba';
 
 <PropsTable name="ProgressBox" />
 
+`value` · `min` · `max` · `format` · `showValue`는 [ProgressLinear](./progress-linear)와 동일하게 동작합니다. `value`가 `null`이면 판이 순서대로 밝아지는 indeterminate 상태입니다.
+
 ## 예시
 
-### 판의 개수
+### count
+
+판의 개수입니다. 값이 있을 때 판은 왼쪽부터 채워지고, 진행 중인 판은 부분적으로 채워집니다 — 판 단위로만 채워지면 판 4개로는 0 · 25 · 50 · 75 · 100만 표현할 수 있기 때문입니다.
 
 <Demo src="progress-box/counts">
 
@@ -30,9 +34,9 @@ import { ProgressBox } from 'neba';
 
 </Demo>
 
-### 정말로 단계가 있을 때
+### 단계 표시로 쓰기
 
-`count`에 단계 수를 주면 판은 장식이기를 그만둡니다. 판 하나가 단계 하나가 되고, 진행 중인 단계가 앞머리 판을 채웁니다.
+`count`를 실제 단계 수에 맞추면 판 하나가 단계 하나가 됩니다. 진행 중인 단계의 판이 채워지는 중으로 표시됩니다.
 
 <Demo src="progress-box/steps">
 
@@ -40,16 +44,11 @@ import { ProgressBox } from 'neba';
 
 </Demo>
 
-## 세 번째 모양이 왜 필요한가
+## 모션 줄이기
 
-막대와 고리는 둘 다 "이만큼 끝났다"고 말합니다. 양에 대한 이야기입니다. 판의 줄은 이 라이브러리 자신의 어휘로 "지금 동작 중"이라고 말합니다 — 같은 잘린 시트, 같은 하이라인, 같은 채움. Neba 표면 안의 로딩 상태에서, 남의 회색 스피너가 빌려온 물건처럼 보이는 자리에 이것이 맞는 이유입니다.
-
-값이 있으면 값에도 답합니다. 판은 왼쪽부터 차오르고 앞머리 판은 부분적으로 채워집니다. 판이 전부 아니면 전무라면 네 개로는 0·25·50·75·100밖에 말할 수 없고, 30%는 4분의 1로 반올림되어 사라질 테니까요.
-
-## 움직임이 아니라 색
-
-판은 움직이지 않습니다. 파도는 채움과 빛 가장자리만 애니메이션하고, 각 판은 자기 인덱스만큼 늦게 시작합니다. 그래서 한 줄이 튀어 오르는 무언가가 아니라 무언가가 쓰이고 있는 표면으로 읽힙니다. `prefers-reduced-motion`에서는 주기가 움직임으로 읽히지 않을 만큼 느려질 뿐입니다.
+판은 위치가 움직이지 않고 채움과 빛 가장자리만 애니메이션합니다. `prefers-reduced-motion`에서는 주기가 느려집니다.
 
 ## 접근성
 
-나머지 둘과 같습니다. `role="progressbar"`와 값 속성은 Base UI의 Progress가 가지고, `label`이 접근성 이름이 되며, 미정인 줄은 0이 아니라 미정이라고 스스로 밝힙니다.
+- `role="progressbar"`와 값 속성이 적용되고, `label`이 accessible name이 됩니다.
+- indeterminate 상태는 `0`이 아니라 미정으로 보고됩니다.

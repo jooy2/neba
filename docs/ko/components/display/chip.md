@@ -5,7 +5,7 @@ order: 3
 
 # Chip
 
-<p class="neba-lede">작은 토큰입니다. 태그, 필터, 상태, 목록에서 뽑아낸 항목 하나.</p>
+<p class="neba-lede">태그, 필터, 상태처럼 짧은 값 하나를 담는 작은 토큰입니다. 누르거나 지울 수 있게 만들 수도 있습니다.</p>
 
 <Demo src="chip/hero" />
 
@@ -21,9 +21,11 @@ import { Chip } from 'neba';
 
 <PropsTable name="Chip" />
 
+Chip의 `size`는 컨트롤 높이보다 한 단계 아래입니다. `md` Chip은 26px로, [Button](../inputs/button)의 `sm`과 같은 높이입니다. 콘텐츠 안에 놓이는 토큰과 행의 기준이 되는 컨트롤을 구분하기 위한 것입니다.
+
 ## 예시
 
-### Variant와 색
+### variant와 color
 
 <Demo src="chip/variants">
 
@@ -31,9 +33,9 @@ import { Chip } from 'neba';
 
 </Demo>
 
-### 아이콘과 숫자
+### startIcon · endIcon · count
 
-`count`는 자기 판 위에 그려지므로 "오류 12"가 두 단어가 아니라 숫자가 붙은 토큰 하나로 읽힙니다. 채워진 칩에서 그 판은 채움에 뚫린 구멍이고, 옅게 물든 칩이나 맨 칩에서는 accent가 비쳐 나오는 것입니다.
+`startIcon`과 `endIcon`은 라벨 앞뒤에 놓이는 node입니다. `count`는 별도의 plate 위에 그려져서, "오류 12"가 두 단어가 아니라 숫자가 붙은 토큰 하나로 읽힙니다.
 
 <Demo src="chip/content">
 
@@ -41,9 +43,9 @@ import { Chip } from 'neba';
 
 </Demo>
 
-### 누를 수 있는 칩, 지울 수 있는 칩
+### onClick · onDelete · selected
 
-`selected`는 색 계열을 바꾸는 대신 표면을 한 단계 깊게 만듭니다 — 켜진 필터도 여전히 같은 필터입니다.
+`onClick`을 주면 Chip 전체가 누를 수 있는 컨트롤이 됩니다. `onDelete`는 라벨 뒤에 삭제 버튼을 붙입니다. `selected`는 색 계열을 바꾸지 않고 표면을 한 단계 깊게 만들어 선택 상태를 표시합니다.
 
 <Demo src="chip/interactive">
 
@@ -51,7 +53,7 @@ import { Chip } from 'neba';
 
 </Demo>
 
-### 크기
+### size
 
 <Demo src="chip/sizes">
 
@@ -59,16 +61,7 @@ import { Chip } from 'neba';
 
 </Demo>
 
-## 칩은 사다리에서 한 칸 아래입니다
-
-`md` 칩은 `sm` 컨트롤입니다 — 32px이 아니라 26px. 이것이 Chip과 Button의 시각적 차이 전부이고, 의도된 것입니다. 칩은 행이 기준으로 삼는 컨트롤이 아니라 콘텐츠 행 **안에** 놓인 토큰입니다. 컨트롤과 같은 높이가 되면 outline 칩과 outline 버튼은 같은 물건이 되고, 그런 화면은 어느 쪽을 누를 수 있는지 아무것도 말해 주지 않습니다.
-
-다른 라이브러리들은 이 구분을 알약 반경으로 만들지만 이 라이브러리는 그럴 수 없습니다. 시트 위아래 가장자리의 평평한 구간이야말로 [디자인 언어](../../guide/design-language) 전체의 요점이기 때문입니다.
-
 ## 접근성
 
-셸은 언제나 `<span>`입니다. 바뀌는 것은 그 안입니다. 그냥 내용이 들어가거나, `onClick`이 주어지면 그 내용을 감싼 진짜 `<button>`이 들어가고, `onDelete`가 있으면 두 번째 버튼이 나란히 놓입니다.
-
-둘 다 키보드로 닿을 수 있고, 어느 쪽도 다른 쪽 안에 중첩되지 않습니다. 클릭 핸들러만 달린 `<span>`은 컴포넌트 라이브러리가 키보드 사용자를 잃는 가장 흔한 방법이고, `<button>` 안의 `<button>`은 브라우저가 조용히 고쳐 쓰는 마크업을 만들어 내는 가장 흔한 방법입니다. 이 구조는 둘 다 피합니다.
-
-화면에 칩이 여러 개라면 삭제 버튼에 무엇을 지우는지 밝히는 `deleteLabel`을 주세요.
+- 겉은 항상 `<span>`입니다. `onClick`을 주면 내용을 감싸는 `<button>`이 생기고, `onDelete`를 주면 그 옆에 두 번째 `<button>`이 놓입니다. 두 버튼은 중첩되지 않으므로 각각 키보드로 닿을 수 있습니다.
+- 화면에 Chip이 여러 개일 때는 `deleteLabel`로 무엇을 지우는지 밝혀 주세요. 기본 라벨만으로는 삭제 버튼들이 서로 구분되지 않습니다.

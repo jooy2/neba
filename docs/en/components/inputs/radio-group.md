@@ -5,7 +5,7 @@ order: 6
 
 # RadioGroup
 
-<p class="neba-lede">A set of options where exactly one is chosen. Base UI owns the roving tab index and the arrow keys; this owns the surface they wear.</p>
+<p class="neba-lede">A set of options where exactly one is chosen. Use it when each option needs a sentence of its own, or when every option should be visible at once.</p>
 
 <Demo src="radio-group/hero" />
 
@@ -24,17 +24,21 @@ import { Radio, RadioGroup } from 'neba';
 
 <PropsTable name="RadioGroup" />
 
+`value` with `onValueChange` makes it controlled; `defaultValue` makes it uncontrolled.
+
 ### Radio
 
 <PropsTable name="Radio" />
 
-A `Radio` has no `size` and no `color` of its own. Both come from the group, which is the only place they can be set once and mean the same thing for every option in the set — a radio button is meaningless alone, it only says anything relative to its siblings.
+A `Radio` has no `size` and no `color` of its own — set them on `RadioGroup` and they reach every option.
+
+With many options to fit into little space, use [Select](./select); to join two or three into one control, use [SegmentedButton](./segmented-button).
 
 ## Examples
 
-### Descriptions
+### description
 
-An option that needs a sentence gets one. The dot stays centred on the first line of the label whatever the description does under it.
+Each option can carry a sentence. However many lines the description takes, the dot stays aligned to the first line of the label.
 
 <Demo src="radio-group/descriptions">
 
@@ -42,9 +46,9 @@ An option that needs a sentence gets one. The dot stays centred on the first lin
 
 </Demo>
 
-### Orientation
+### orientation
 
-Vertical by default. A row of options is fine right up until one label is longer than expected, and then it silently stops being readable.
+`vertical` by default. Use `horizontal` only with short labels — one long label makes the row hard to read.
 
 <Demo src="radio-group/orientation">
 
@@ -52,9 +56,9 @@ Vertical by default. A row of options is fine right up until one label is longer
 
 </Demo>
 
-### States
+### disabled · readOnly
 
-`disabled` and `readOnly` can be set on the group or on one option. On the group, `readOnly` reaches every member.
+Both can be set on the group or on an individual `Radio`. On the group, they reach every option.
 
 <Demo src="radio-group/states">
 
@@ -62,12 +66,8 @@ Vertical by default. A row of options is fine right up until one label is longer
 
 </Demo>
 
-## Why this one is round
-
-Roundness is what tells a reader "one of these" rather than "any of these", and it is the one convention old enough that breaking it would cost more than it bought. Everything else about the dot — the acrylic, the hairline, the fill on selection — is the same as a [Checkbox](./checkbox).
-
 ## Accessibility
 
-- The set takes **one** tab stop; the arrow keys move within it. That is the whole reason this is a component rather than a `<div>` full of inputs.
+- The set takes **one** tab stop and the arrow keys move within it (a roving tab index).
 - The group's `label` becomes its accessible name.
-- Each `Radio` is wired to its label by Base UI's Field, so clicking the text selects it.
+- Each `Radio` is wired to its label, so clicking the text selects it.

@@ -31,11 +31,11 @@ Neba는 CSS 파일을 하나만 배포합니다. 앱의 CSS 진입점에 두 줄
 
 이게 전부입니다 — `@source`를 직접 쓸 필요가 없습니다.
 
-컴포넌트가 쓰는 클래스는 Tailwind 유틸리티이므로 Tailwind가 패키지의 컴파일된 파일을 읽기는 해야 합니다. 그 일은 `neba/styles.css`가 자기 안에 `@source '.'`를 선언해서 처리합니다. `@source`는 **그 줄이 쓰인 파일** 기준으로 경로를 해석하는데, 그 파일이 바로 대상 파일들 옆에 있는 `node_modules/neba/dist/`이기 때문입니다. 명시적으로 등록된 소스는 자동 탐지가 건너뛰는 `node_modules` 안에서도 스캔됩니다.
+컴포넌트가 쓰는 클래스는 Tailwind 유틸리티이므로, Tailwind가 패키지의 컴파일된 파일까지 읽어야 합니다. 그 일은 `neba/styles.css`가 자기 안에 `@source '.'`를 선언해서 처리합니다. `@source`는 **그 줄이 쓰인 파일**을 기준으로 경로를 해석하고, 그 파일이 대상 파일들과 같은 `node_modules/neba/dist/`에 있기 때문입니다. 명시적으로 등록된 소스는 자동 탐지가 건너뛰는 `node_modules` 안에서도 스캔됩니다.
 
-덕분에 **여러분의 CSS 파일이 어디에 있든 상관없습니다.** 예전 문서에서 `@source '../node_modules/neba'`를 보셨다면 지워도 됩니다 — 그 경로는 CSS 파일이 정확히 한 단계 깊이에 있을 때만 맞았습니다.
+덕분에 **CSS 파일을 프로젝트 어디에 두어도 됩니다.** 직접 쓴 `@source '../node_modules/neba'`가 남아 있다면 지우세요. 그 경로는 CSS 파일이 정확히 한 단계 깊이에 있을 때만 맞습니다.
 
-`neba/styles.css`는 그 외에는 순수 CSS 커스텀 프로퍼티라서, 토큰만 필요하면 Tailwind 없이 단독으로 import 해도 됩니다. `@source`는 브라우저가 무시하는 at-rule일 뿐입니다.
+`neba/styles.css`의 나머지 내용은 순수 CSS 커스텀 프로퍼티이므로, 토큰만 필요하다면 Tailwind 없이 단독으로 import 해도 됩니다. `@source`는 브라우저가 무시하는 at-rule일 뿐입니다.
 
 ## 사용
 

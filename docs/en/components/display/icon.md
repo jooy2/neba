@@ -5,7 +5,7 @@ order: 7
 
 # Icon
 
-<p class="neba-lede">A glyph at a known size, in a known colour. Neba ships no icon set — it gives whatever set you chose the same two axes everything else here has.</p>
+<p class="neba-lede">A wrapper that gives an icon glyph the library's size and colour axes. Neba ships no icon set, so the glyph comes from whichever set you chose.</p>
 
 <Demo src="icon/hero" />
 
@@ -15,21 +15,19 @@ import { Icon } from 'neba';
 <Icon icon={<BoltIcon />} size="lg" color="warning" label="Fast" />;
 ```
 
-An icon set is a decision about how an application looks, and a component library has no business making it. What is missing without one is smaller and duller: every icon arrives at whatever size its author drew it at, carrying whatever colour it was given, and both have to be undone at the call site.
-
-**The glyph is a prop, not `children`.** That is the whole design. An icon set hands you an element you did not draw, and the two things you always want to change about it — how big it is and what colour it is — are the two things you cannot reach once it is a child of something. As a prop it is content the Icon _sizes_, rather than content the Icon merely wraps.
-
 ## Props
 
 <PropsTable name="Icon" />
+
+The glyph is passed as the `icon` prop rather than as `children`, which is what lets Icon set the size and colour of an element it did not draw: `<Icon icon={<BoltIcon />} />`.
 
 Every native `<span>` attribute passes through.
 
 ## Examples
 
-### Sizes
+### size
 
-Its own ladder, not the control heights: 14, 16, 20, 24 and 28px. An icon is not a control, and a `md` glyph at the 32px a `md` button is would be the size of the button it usually sits in. The steps are the sizes icon sets are actually drawn at, so a glyph lands on its own grid and never has to be resampled.
+Its own steps rather than the control heights: 14 · 16 · 20 · 24 · 28px. These are the sizes icon sets are actually drawn at, so a glyph lands on the pixel grid and is never resampled.
 
 <Demo src="icon/sizes">
 
@@ -37,9 +35,9 @@ Its own ladder, not the control heights: 14, 16, 20, 24 and 28px. An icon is not
 
 </Demo>
 
-### Colour, and inheriting it
+### color
 
-`color` is the one colour prop in the library that does not default to `primary`. An icon is content, and the overwhelmingly common case is an icon inside something that has already decided what colour its content is — a Button's label, a muted caption, an Alert's own family. An Icon that arrived pre-dyed blue would have to be turned off again at every one of those.
+`color` defaults to `inherit` — the one colour prop in the library that does not default to `primary`. Placed somewhere that has already decided its content colour, like a button label or inside an [Alert](../feedback/alert), the icon takes that colour. Name a role colour explicitly to override it.
 
 <Demo src="icon/colors">
 
@@ -47,26 +45,16 @@ Its own ladder, not the control heights: 14, 16, 20, 24 and 28px. An icon is not
 
 </Demo>
 
-### Saying something, or saying nothing
+### label
 
-Without `label` the icon is hidden from the accessibility tree entirely, and that is the right default: most icons sit next to a word that already says the same thing, and reading both out loud is worse than reading one. Pass `label` only when the glyph is carrying the meaning by itself.
+Without `label` the icon is `aria-hidden` and leaves the accessibility tree. That is the default because most icons sit beside text that already says the same thing. Pass `label` only when the glyph carries the meaning on its own.
 
 ```tsx
-// The word next to it already says "Delete".
+// The text next to it already says "Delete".
 <Button startIcon={<Icon icon={<TrashIcon />} />}>Delete</Button>
 
-// Nothing else says it, so the icon has to.
+// There is nothing but the glyph, so it needs a name.
 <Icon icon={<TrashIcon />} label="Delete" />
 ```
 
-For a glyph that is the _whole_ control, reach for [IconButton](../inputs/icon-button) instead — it makes the name required rather than optional.
-
-## Coming from Material UI
-
-| MUI | Neba |
-| --- | --- |
-| `<Icon>star</Icon>` | Not offered. Neba ships no font-based icon set; pass an element |
-| `<SvgIcon>…</SvgIcon>` | `icon={<svg …/>}` |
-| `fontSize="small"` | `size="sm"` — the same five-step ladder as everything else |
-| `color="error"` | `color="danger"`, and the default is `inherit` rather than a family |
-| <code v-pre>sx={{ fontSize: 34 }}</code> | Not offered. Sizes are steps on a ladder, not arbitrary numbers |
+For a glyph that is the whole control, use [IconButton](../inputs/icon-button) instead — there `label` is required.

@@ -5,7 +5,7 @@ order: 13
 
 # NumberField
 
-<p class="neba-lede">A field that only holds a number. The shell is a TextField's, to the pixel; what is added is stepping, clamping and formatting.</p>
+<p class="neba-lede">A field that only takes a number, with steppers to nudge the value, range clamping and formatted display.</p>
 
 <Demo src="number-field/hero" />
 
@@ -19,18 +19,15 @@ import { NumberField } from 'neba';
 
 <PropsTable name="NumberField" />
 
-### Not `<input type="number">`
+`value` is a `number | null`, where `null` means empty. It is never a string you have to parse.
 
-The native number input rounds the corners off in different places in every browser, ignores the locale, offers a wheel gesture that fights the page's scroll, and hands you a `string` that is empty when the field holds nonsense. This one keeps the pieces worth keeping and answers each of those:
-
-- `value` is a `number | null`, and `null` means empty. It is never a string you have to parse.
-- `format` is `Intl.NumberFormatOptions`, so the field shows `$1,240` or `7.5%` and still reports `1240` and `0.075`.
-- The arrow keys step by `step`, Shift by `largeStep` and Alt by `smallStep`.
-- The wheel does nothing unless `allowWheelScrub` says otherwise. A page that scrolls under the pointer and a field that changes under it are the same gesture, and only one of them was meant.
+The shell is identical to [TextField](./text-field)'s, so a field of the same `size` lines up beside it.
 
 ## Examples
 
-### Steppers
+### steppers
+
+`end` groups the increment and decrement buttons at the right of the field. `split` puts the minus and the plus on either side of the number, for a quantity that is nudged rather than typed. `none` drops the buttons and leaves keyboard input.
 
 <Demo src="number-field/steppers">
 
@@ -38,13 +35,15 @@ The native number input rounds the corners off in different places in every brow
 
 </Demo>
 
-`end` is the spinner everyone has seen. `split` puts the minus and the plus on either side of the number, for a quantity that is nudged rather than typed. `none` drops the buttons and keeps everything else.
+### step · largeStep · smallStep
 
-There is deliberately no stacked pair of half-height chevrons. At `xs` each arrow would be under three pixels tall, and a target that small is a target nobody hits.
+The arrow keys move by `step`, Shift by `largeStep` and Alt by `smallStep`. `snapOnStep` rounds the result to a multiple of `step`.
 
-### Formatting
+`allowWheelScrub` is off by default. Turning it on lets the wheel change the value, at the cost of sharing a gesture with the page's scroll.
 
-`value` stays a plain number whatever the field is showing.
+### format and locale
+
+`format` is `Intl.NumberFormatOptions`. The field can show `$1,240` or `7.5%` while `value` stays `1240` and `0.075`.
 
 <Demo src="number-field/format">
 
@@ -52,7 +51,7 @@ There is deliberately no stacked pair of half-height chevrons. At `xs` each arro
 
 </Demo>
 
-### Variants
+### variant
 
 <Demo src="number-field/variants">
 
@@ -60,9 +59,9 @@ There is deliberately no stacked pair of half-height chevrons. At `xs` each arro
 
 </Demo>
 
-### Sizes
+### size
 
-The steppers are sized in `em`, so they track the number rather than carrying a ladder of their own — and the field lines up with a Button, a TextField and a Select of the same `size`.
+The steppers are sized in `em`, so they track the number. The field lines up with a [Button](./button), [TextField](./text-field) or [Select](./select) of the same `size`.
 
 <Demo src="number-field/sizes">
 
@@ -70,9 +69,9 @@ The steppers are sized in `em`, so they track the number rather than carrying a 
 
 </Demo>
 
-### States
+### disabled · readOnly · error
 
-Read-only takes the steppers away rather than disabling them: a button that is visible and refuses every press is worse than no button. The number stays selectable, because a read-only field is still something you copy out of.
+`readOnly` removes the steppers rather than leaving them disabled. The number stays selectable so it can be copied out.
 
 <Demo src="number-field/states">
 
@@ -82,7 +81,7 @@ Read-only takes the steppers away rather than disabling them: a button that is v
 
 ## Accessibility
 
-- Base UI owns the parsing, the clamping, and the press-and-hold repeat on the steppers.
-- What you see is a text input carrying `inputmode="numeric"` and an `aria-roledescription` of _Number field_, not `<input type="number">`. Beside it sits a hidden `<input type="number">` holding `min`, `max` and `step` — that is the one a form submits and the browser validates, and keeping the two apart is what lets the visible field show `$1,240` without the browser refusing to parse it.
-- `label` becomes the accessible name; the steppers are named by `incrementLabel` and `decrementLabel` and stay out of the tab order, because the arrow keys on the field itself already do their job.
-- A stepper that has run into `min` or `max` is `disabled` — it changes colour family, the way every other inert control in the library does, rather than fading.
+- The visible control is a text input with `inputmode="numeric"` and an `aria-roledescription`; beside it a hidden `<input type="number">` holds `min`, `max` and `step` and handles form submission and browser validation. Keeping the two apart is what lets the visible field show `$1,240`.
+- `label` becomes the accessible name; the steppers are named by `incrementLabel` and `decrementLabel`.
+- The steppers stay out of the tab order, because the arrow keys on the field do the same job.
+- A stepper that has reached `min` or `max` becomes `disabled`.

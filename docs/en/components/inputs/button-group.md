@@ -5,7 +5,7 @@ order: 2
 
 # ButtonGroup
 
-<p class="neba-lede">A row of buttons that belong together. The corners that face a neighbour are squared off, and the shared props are set once for the whole set.</p>
+<p class="neba-lede">Joins several Buttons into one set. The corners that face a neighbour are squared off, and shared props are set once on the group.</p>
 
 <Demo src="button-group/hero" />
 
@@ -29,9 +29,7 @@ Every native `<div>` attribute passes straight through, minus `color`.
 
 ### Shared props
 
-Two things are happening here, and only one of them is visual. The corners are the look; the other half is that `variant`, `size`, `color`, `density`, `elevation` and `disabled` are stated once rather than repeated on every button. A group where one button is a size out is the failure this exists to prevent.
-
-A button's own prop still wins — a row of secondary actions with one `danger` button in it is a real thing.
+`variant` · `size` · `color` · `density` · `elevation` · `disabled` set on the group reach every child [Button](./button). A value set on a button overrides the group's, so one `danger` button can sit in a row of secondary actions.
 
 <Demo src="button-group/shared">
 
@@ -39,7 +37,9 @@ A button's own prop still wins — a row of secondary actions with one `danger` 
 
 </Demo>
 
-### Orientation
+### orientation
+
+`vertical` stacks the buttons and squares off the top and bottom corners instead.
 
 <Demo src="button-group/orientation">
 
@@ -47,7 +47,9 @@ A button's own prop still wins — a row of secondary actions with one `danger` 
 
 </Demo>
 
-### Full width
+### fullWidth
+
+Stretches the group to the container width, with the buttons sharing the space equally.
 
 <Demo src="button-group/full-width">
 
@@ -55,14 +57,8 @@ A button's own prop still wins — a row of secondary actions with one `danger` 
 
 </Demo>
 
-## How the seam works
-
-Only the `outline` group pulls its buttons together by a pixel. Two hairline borders meeting would otherwise draw a seam twice as heavy as every other edge on the page, so the second button is shifted back to share a single line.
-
-A `solid` group must not do that. Its seam _is_ the plate edge — the white inset hairline every filled surface carries — and overlapping would put one button's fill over the neighbour's edge and merge the run into one blob.
-
 ## Accessibility
 
-- Renders `role="group"`. Give it an `aria-label` when the buttons alone do not say what the set is for.
-- This is **not** a segmented control and it does not manage selection. For one-of-a-set, use a [RadioGroup](./radio-group) — that is what that actually is.
+- Renders `role="group"`. Give it an `aria-label` when the button labels alone do not say what the set is for.
+- It does not manage selection. For one-of-a-set, use [SegmentedButton](./segmented-button) or [RadioGroup](./radio-group).
 - The hovered or focused button is raised above its neighbours so its focus ring is never clipped.

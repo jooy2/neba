@@ -5,7 +5,7 @@ order: 1
 
 # Button
 
-<p class="neba-lede">액션을 실행하는 컨트롤입니다. Base UI의 Button 프리미티브 위에 Neba의 아크릴 표면을 올렸습니다.</p>
+<p class="neba-lede">액션을 실행하는 컨트롤입니다. 폼 제출, 저장, 삭제처럼 사용자가 의도적으로 일으키는 동작에 씁니다.</p>
 
 <Demo src="button/hero" />
 
@@ -19,15 +19,15 @@ import { Button } from 'neba';
 
 <PropsTable name="Button" />
 
-`<button>`의 네이티브 속성은 그대로 전달됩니다. `color`만 예외로, 위 표의 `color`와 이름이 겹쳐 제외되어 있습니다.
+`<button>`의 native 속성은 그대로 전달됩니다. `color`만 위 표의 `color`와 이름이 겹쳐 제외됩니다.
 
-공통 축(`variant` `size` `color` `density` `elevation`)이 컴포넌트 전반에서 뜻하는 바는 [Prop 규약](../../guide/prop-conventions)에 있습니다.
+공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../guide/prop-conventions)에 있습니다.
 
 ## 예시
 
-### 변형
+### variant
 
-한 화면에 `solid`는 하나만 두세요. 주 액션이 둘이면 어느 쪽도 주 액션이 아닙니다.
+`solid`는 주 액션, `outline`은 보조 액션, `text`는 목록이나 툴바에 놓이는 낮은 무게의 액션입니다. 한 화면에 `solid`는 하나만 두세요.
 
 <Demo src="button/variants">
 
@@ -35,9 +35,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 색
+### color
 
-여섯 가지 역할이 전부입니다. 임의의 색상값은 받지 않습니다 — 색은 값이 아니라 역할입니다.
+여섯 가지 역할 색만 받습니다. 임의의 색상값은 지정할 수 없습니다.
 
 <Demo src="button/colors">
 
@@ -45,9 +45,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 크기
+### size
 
-`md`(32px)가 데스크톱 기본입니다. `xs` `sm`은 툴바와 표 안쪽에, `lg` `xl`은 그 화면이 실제로 요구하는 하나의 액션에 씁니다.
+높이와 타입 스케일을 함께 정합니다. `xs` 22px · `sm` 26px · `md` 32px · `lg` 40px · `xl` 48px이며, 데스크톱 기본은 `md`입니다.
 
 <Demo src="button/sizes">
 
@@ -55,9 +55,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 밀도
+### density
 
-`density`는 좌우 여백만 바꿉니다. 같은 `size`라면 밀도가 달라도 높이가 같아서, 섞어 놓아도 기준선이 흐트러지지 않습니다.
+`density`는 좌우 padding만 바꿉니다. 같은 `size`라면 높이가 동일하므로 한 줄에 섞어 놓아도 기준선이 맞습니다.
 
 <Demo src="button/density">
 
@@ -65,9 +65,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 아이콘
+### startIcon과 endIcon
 
-아이콘은 `1.2em`으로 그려져 라벨 크기를 따라갑니다. 크기를 따로 줄 필요가 없습니다. 라벨 없이 아이콘만 넘기면 정사각형이 되며, 이때는 `aria-label`이 필요합니다.
+아이콘은 `1.2em`으로 그려져 라벨 크기를 따라갑니다. 크기를 따로 지정할 필요가 없습니다. `children` 없이 아이콘만 주면 정사각형 버튼이 되며, 이때는 `aria-label`이 필요합니다 — 아이콘 전용 컨트롤이라면 [IconButton](./icon-button)이 `label`을 필수로 요구합니다.
 
 <Demo src="button/icons">
 
@@ -75,7 +75,15 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 상태
+### loading · readOnly · disabled
+
+| prop       | 겉모습                             | focus | native `disabled` |
+| ---------- | ---------------------------------- | ----- | ----------------- |
+| `loading`  | 그대로. `startIcon` 자리에 spinner | 유지  | 아니오            |
+| `readOnly` | 색은 유지, 평평해지고 채도가 빠짐  | 유지  | 아니오            |
+| `disabled` | 색 계열을 버리고 중립 회색         | 빠짐  | 예                |
+
+세 상태 모두 클릭이 부모로 전파되지 않습니다.
 
 <Demo src="button/states">
 
@@ -83,17 +91,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-| 상태       | 겉모습                                   | 포커스 | 네이티브 `disabled` |
-| ---------- | ---------------------------------------- | ------ | ------------------- |
-| `loading`  | 그대로. 스피너가 `startIcon` 자리를 대신 | 유지   | 아니오              |
-| `readOnly` | 색은 유지, 평평해지고 채도가 빠짐        | 유지   | 아니오              |
-| `disabled` | 색 계열을 버리고 중립 회색               | 빠짐   | 예                  |
+### elevation
 
-세 상태 모두 클릭이 부모로 전파되지 않습니다.
-
-### Elevation
-
-기본값 `0`은 그림자가 전혀 없다는 뜻입니다. 표면을 배경에서 떼어 놓는 것은 아크릴 가장자리입니다. 호버하면 한 단계 오르고 누르면 한 단계 내려가므로, 평평한 버튼도 움직이지 않고 눌린 것을 표현합니다.
+그림자 깊이입니다. 기본값 `0`은 그림자가 전혀 없다는 뜻입니다. hover하면 한 단계 올라가고 누르면 한 단계 내려가므로, `0`인 버튼도 눌린 것이 표현됩니다.
 
 <Demo src="button/elevation">
 
@@ -101,7 +101,9 @@ import { Button } from 'neba';
 
 </Demo>
 
-### 전체 너비
+### fullWidth
+
+컨테이너 너비만큼 확장합니다.
 
 <Demo src="button/full-width">
 
@@ -111,8 +113,8 @@ import { Button } from 'neba';
 
 ## 접근성
 
-- 항상 네이티브 `<button>`으로 렌더링됩니다. `type`도 그대로 전달되므로 폼 안에서 `type="submit"`이 동작합니다.
-- 아이콘 전용 버튼에는 `aria-label`을 주세요.
-- 포커스 링은 `:focus-visible`에서만 나타납니다. 마우스 클릭에는 보이지 않습니다.
-- `loading`과 `readOnly`는 포커스를 유지합니다. 포커스 순서에서 사라지면 키보드 사용자가 페이지 구조를 잃기 때문입니다.
-- 모든 색 조합이 채움 위 글자 4.5:1을 만족합니다.
+- 항상 native `<button>`으로 렌더링됩니다. `type`도 그대로 전달되므로 폼 안에서 `type="submit"`이 동작합니다.
+- 아이콘만 있는 버튼에는 `aria-label`을 주세요.
+- focus ring은 `:focus-visible`에서만 나타나므로 마우스 클릭에는 보이지 않습니다.
+- `loading`과 `readOnly`는 focus를 유지합니다. tab 순서에서 사라지면 키보드 사용자가 페이지 구조를 잃기 때문입니다.
+- 모든 색 조합이 채움 위 글자 대비 4.5:1을 만족합니다.

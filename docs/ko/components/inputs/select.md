@@ -5,7 +5,7 @@ order: 4
 
 # Select
 
-<p class="neba-lede">목록에서 값 하나를 고릅니다. 트리거는 TextField의 셸에 셰브런을 얹은 것이고, 이것은 의도된 것입니다.</p>
+<p class="neba-lede">정해진 목록에서 값 하나를 고릅니다. trigger는 TextField와 같은 shell에 chevron을 얹은 형태입니다.</p>
 
 <Demo src="select/hero" />
 
@@ -26,9 +26,11 @@ import { Select } from 'neba';
 
 <PropsTable name="Select" />
 
-### 옵션은 데이터입니다
+선택지를 검색해서 찾아야 한다면 [Combobox](./combobox)를, 선택지가 두세 개뿐이라면 [RadioGroup](./radio-group)이나 [SegmentedButton](./segmented-button)을 쓰세요.
 
-조합할 `<Select.Option>`은 없습니다. 호출하는 쪽이 가진 것은 거의 항상 이미 배열이고, 목록은 팝업이 한 번도 열리기 **전에** 트리거가 읽을 수 있어야 합니다 — `value="icn"`에 대해 첫 페인트부터 `서울`이 보이는 것은 그래서입니다.
+### items
+
+선택지는 컴포넌트를 조합하는 대신 배열로 넘깁니다.
 
 ```ts
 interface SelectOption {
@@ -38,13 +40,13 @@ interface SelectOption {
 }
 ```
 
-값은 문자열과 숫자이고, 임의의 객체가 아닙니다. select는 폼 컨트롤이고 그 값은 제출되는 것입니다. 식별자만 여기 두고 객체는 반대편에서 찾으세요.
+`value`는 문자열이나 숫자입니다. 폼과 함께 제출되는 값이므로 객체는 받지 않습니다 — 식별자만 넘기고 객체는 호출부에서 찾으세요.
 
 ## 예시
 
-### Variant
+### variant
 
-[TextField](./text-field)와 같은 세 가지 무게를, 같은 셸 위에 그립니다. select만 주변 필드와 높이·반경·색이 다른 폼은 디자인된 것이 아니라 조립된 것처럼 보입니다.
+[TextField](./text-field)와 같은 세 가지 무게를 같은 shell 위에 그립니다. 한 폼 안에서 필드와 select의 높이와 테두리가 어긋나지 않습니다.
 
 <Demo src="select/variants">
 
@@ -52,7 +54,7 @@ interface SelectOption {
 
 </Demo>
 
-### 크기
+### size
 
 <Demo src="select/sizes">
 
@@ -60,7 +62,7 @@ interface SelectOption {
 
 </Demo>
 
-### 상태
+### disabled · readOnly · error
 
 <Demo src="select/states">
 
@@ -70,12 +72,10 @@ interface SelectOption {
 
 ## 팝업
 
-팝업은 이 라이브러리에서 유일하게 정말로 떠 있어야 하는 표면이므로, 다른 모든 것과 달리 요청하지 않아도 그림자를 답니다. 호버 없이 도달할 수 있는 최대치인 3단계입니다.
-
-팝업은 포털을 통해 `<body>` 끝에 렌더링되며, 그 말은 앱이 CSS 리셋을 한정해 둔 서브트리를 벗어난다는 뜻입니다. positioner에 `neba-portal` 클래스가 붙는 것은 정확히 그 경우를 위한 것으로, 스타일이 아니라 리셋을 걸어 둘 고리입니다. Tailwind Preflight를 전역으로 적용한 앱이라면 아무것도 하지 않아도 됩니다.
+팝업은 portal을 통해 `<body>` 끝에 렌더링되므로, CSS reset을 특정 subtree에만 적용한 앱에서는 그 범위를 벗어납니다. positioner에 `neba-portal` 클래스가 붙어 있으니 그 경우 reset을 이 클래스에 걸어 주세요. Tailwind Preflight를 전역으로 적용했다면 아무것도 하지 않아도 됩니다.
 
 ## 접근성
 
-- 팝업의 위치 계산과 뒤집힘, 포커스 트랩, 타이프어헤드, 폼 제출을 가능하게 하는 숨은 input은 모두 Base UI가 담당합니다.
-- `label`이 접근성 이름이 되고, 트리거는 `combobox`입니다.
-- 비활성 옵션은 목록에 남은 채 `aria-disabled`로 보고됩니다 — 옵션은 존재하고, 다만 고를 수 없을 뿐입니다.
+- trigger는 `combobox` role을 갖고, `label`이 accessible name이 됩니다.
+- 팝업 위치 계산과 화면 경계에서의 뒤집힘, focus 처리, typeahead, 폼 제출용 hidden input이 모두 처리됩니다.
+- `disabled` 선택지는 목록에 남은 채 `aria-disabled`로 보고됩니다.

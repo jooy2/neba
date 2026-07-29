@@ -5,7 +5,7 @@ order: 1
 
 # Typography
 
-<p class="neba-lede">라이브러리의 타입 스케일 그 자체입니다. 지금까지 이 사다리는 그것이 필요했던 컴포넌트 안에만 있었습니다 — Card의 제목, TextField의 라벨.</p>
+<p class="neba-lede">라이브러리의 타입 스케일에 맞춰 텍스트를 렌더링합니다. 제목과 본문, 캡션이 모두 같은 크기 체계를 씁니다.</p>
 
 <Demo src="typography/hero" />
 
@@ -20,17 +20,13 @@ import { Typography } from 'neba';
 
 <PropsTable name="Typography" />
 
-### 의도적인 두 가지 예외
-
-**`variant`가 아니라 `level`입니다.** 이 라이브러리에서 `variant`는 **표면**의 무게 — `solid` / `outline` / `text` — 를 뜻하고, 같은 단어에 두 번째 뜻을 붙이는 것이야말로 [Prop 규약](../../guide/prop-conventions)이 금지하는 일입니다.
-
-**`color`에는 기본값이 없습니다.** 다른 모든 컴포넌트는 `primary`가 기본입니다. 여기서 그러면 본문 글자가 전부 파랗게 됩니다. 문단의 일반적인 경우는 주변 문단과 같아 보이는 것이므로, `color`를 지정하지 않으면 "페이지의 색을 물려받는다"는 뜻이 됩니다.
+다른 컴포넌트와 두 가지가 다릅니다. 타입 스케일을 고르는 prop은 `variant`가 아니라 `level`입니다 — `variant`는 라이브러리 전체에서 표면의 무게를 뜻하기 때문입니다. 그리고 `color`에 기본값이 없어서, 지정하지 않으면 주변 텍스트 색을 물려받습니다.
 
 ## 예시
 
-### 스케일
+### level
 
-`body`는 `md` 크기 Card의 본문 사다리 위에 있습니다. 카드 안의 문단과 바깥의 문단이 같은 글자인 이유입니다. 제목들은 거기서 위로 올라가고, 커질수록 행간 비율은 좁아집니다 — 30px 줄은 13px 줄과 같은 비율을 원하지 않습니다.
+`level`은 타입 스케일과 렌더링할 요소를 함께 정합니다. `body`는 `md` 크기 [Card](../surfaces/card)의 본문과 같은 단계이므로, Card 안팎의 문단이 같은 크기로 보입니다. 제목 단계는 커질수록 행간 비율이 좁아집니다.
 
 <Demo src="typography/scale">
 
@@ -38,7 +34,7 @@ import { Typography } from 'neba';
 
 </Demo>
 
-### 색
+### color
 
 <Demo src="typography/colors">
 
@@ -46,9 +42,9 @@ import { Typography } from 'neba';
 
 </Demo>
 
-### 줄 자르기
+### lines
 
-한 줄이면 말줄임표가 붙는 자르기이고, 두 줄 이상이면 줄 수 제한입니다. 둘 다 `lines`입니다.
+`lines={1}`은 말줄임표를 붙여 한 줄로 자릅니다. `2` 이상은 그 줄 수까지만 보이는 line clamp입니다.
 
 <Demo src="typography/clamp">
 
@@ -56,9 +52,9 @@ import { Typography } from 'neba';
 
 </Demo>
 
-### 요소는 두고 스케일만
+### render
 
-`level`은 타입 스케일과 요소를 함께 정하고, 대부분은 그것이 맞습니다. 둘이 달라져야 할 때 — 문서 개요에 들어가면 안 되는 소제목, 또는 `h3`처럼 보여야 하는 `<p>` — 는 `render`가 결정합니다.
+`level`이 정하는 요소와 실제로 필요한 요소가 다를 때 `render`로 요소만 바꿉니다. 문서 개요에 들어가면 안 되는 소제목, 또는 제목처럼 보여야 하는 `<p>`가 그런 경우입니다.
 
 ```tsx
 <Typography level="h3" render={<p />}>
@@ -66,6 +62,6 @@ import { Typography } from 'neba';
 </Typography>
 ```
 
-## 기본적으로 여백이 없습니다
+### gutter
 
-`gutter`는 꺼져 있습니다. 스스로 여백을 만드는 라이브러리 컴포넌트는 레이아웃이 싸워야 할 대상입니다. 이어지는 산문에는 켜고, 이미 간격을 관리하는 flex 열 안에서는 꺼 두세요.
+`gutter`는 기본적으로 꺼져 있어 위아래 여백이 없습니다. 이어지는 산문에는 켜고, 간격을 이미 관리하는 flex 컨테이너 안에서는 끈 채로 두세요.

@@ -5,7 +5,7 @@ order: 9
 
 # Blockquote
 
-<p class="neba-lede">Somebody else's words, set apart from your own. A component about markup before it is about surface.</p>
+<p class="neba-lede">Presents a quotation set apart from your own prose. Given an attribution, it wraps the quote and its source in the correct semantic markup.</p>
 
 <Demo src="blockquote/hero" />
 
@@ -23,11 +23,7 @@ import { Blockquote } from 'neba';
 
 <PropsTable name="Blockquote" />
 
-## The markup
-
-A quote has no state, no keyboard contract and nothing to interact with. What it has is **markup that is easy to get wrong**, and getting it right is most of what this component is.
-
-With no attribution it is a `<blockquote>` and nothing else. With one, the whole thing becomes:
+With no attribution it renders a single `<blockquote>`. Given either `author` or `source`, it wraps that in a `<figure>` and puts the attribution in a `<figcaption>`.
 
 ```html
 <figure>
@@ -36,15 +32,13 @@ With no attribution it is a `<blockquote>` and nothing else. With one, the whole
 </figure>
 ```
 
-The HTML spec is explicit that the attribution goes **outside** the blockquote: a name inside it claims the speaker said their own name. And `<cite>` is the element for the title of a work rather than for the name of a person, so `author` sits outside it.
-
-The `cite` prop is the URL of the document the quote came from, and lands on the `<blockquote>`'s own `cite` attribute. Nothing but a machine reads it; `source` is the part a reader sees.
+`author` sits outside the `<cite>`, since `<cite>` is the element for the title of a work.
 
 ## Examples
 
-### Weight
+### variant
 
-`text` is the default, and a quote in running prose really is a rule in the margin and nothing else — that is what a quote looked like long before there were surfaces to put one on. The other two are for a quote that is the point of the section rather than an aside inside it.
+`text` is the default: a single rule in the margin, sized to sit inside running prose. `outline` and `solid` draw a sheet, for a quote that is the point of the section.
 
 <Demo src="blockquote/variants">
 
@@ -52,9 +46,9 @@ The `cite` prop is the URL of the document the quote came from, and lands on the
 
 </Demo>
 
-### Attribution
+### author and source
 
-`author` on its own, `source` on its own, or both. Either one is enough to make it a `<figure>`.
+Pass `author` on its own, `source` on its own, or both. `cite` is the URL of the document the quote came from and lands on the `<blockquote>`'s `cite` attribute — it never appears on screen, only machines read it.
 
 <Demo src="blockquote/attribution">
 
@@ -62,9 +56,9 @@ The `cite` prop is the URL of the document the quote came from, and lands on the
 
 </Demo>
 
-### Colour
+### color
 
-The sheet is never dyed, for the reason [Box](../surfaces/box) and [List](./list) are not: a quote holds somebody else's words, and those words should not land on a background nobody chose them against. The family shows up in the rule and the mark.
+The quote's background is never dyed. `color` applies to the margin rule and the quotation mark only.
 
 <Demo src="blockquote/colors">
 
@@ -72,16 +66,12 @@ The sheet is never dyed, for the reason [Box](../surfaces/box) and [List](./list
 
 </Demo>
 
-## The quotation mark is drawn
+### icon
 
-The default mark is a drawing rather than a typographic `“`. A real quote character is set in whatever face the page uses, so its shape, its weight and its baseline all change with it — and at 2em it is the largest single glyph in the component, so it changing is the most visible thing that could.
+`icon` behaves three ways: omit it for the default quotation glyph, pass a node to replace it, pass `false` to draw none.
 
-`icon` says three things with one prop: omit it for the house glyph, pass a node to replace it, pass `false` to take it away. [Alert](../feedback/alert) spells the same idea the same way.
-
-## Nothing is drawn on the `<blockquote>`
-
-The surface, the rule and the padding all belong to the element around it. That is not tidiness — it is specificity.
-
-`blockquote` is one of the handful of tags a host stylesheet still styles by name. On this documentation site alone, VitePress's `.vp-doc blockquote` sets a grey `border-left`, a `padding-left` and a `color`, all at a specificity a one-class utility cannot outrank; a rule drawn on the quote itself would silently come out grey and a pixel too thin. Moving the drawing onto a wrapper is what lets the docs' `scope.css` undo VitePress's version without also undoing ours.
-
-It is the same problem [Table](./table) solves by writing its cell styling inline, with the opposite answer. A table cell has to **beat** the host, so it went inline; a quote can **step out of** the argument, so it did.
+```tsx
+<Blockquote>Default quotation mark</Blockquote>
+<Blockquote icon={<QuoteIcon />}>A glyph of your own</Blockquote>
+<Blockquote icon={false}>No glyph</Blockquote>
+```

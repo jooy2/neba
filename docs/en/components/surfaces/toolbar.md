@@ -5,7 +5,7 @@ order: 7
 
 # Toolbar
 
-<p class="neba-lede">A bar of controls: an application header, a page's action row, the strip along the bottom of an editor.</p>
+<p class="neba-lede">Lays controls out in a bar. Use it for an application header, a page's action row, or the status strip under an editor.</p>
 
 <Demo src="toolbar/hero" />
 
@@ -17,19 +17,19 @@ import { Toolbar } from 'neba';
 </Toolbar>;
 ```
 
-Three slots and a row. `start` and `end` are pinned to their ends and `children` takes what is left, which is the arrangement every toolbar has ever had — so it is laid out here rather than left to a caller and a spacer `<div>` they have to remember.
-
 ## Props
 
 <PropsTable name="Toolbar" />
 
 Every native `<div>` attribute passes through.
 
+There are three slots: `start` and `end` are pinned to their ends and `children` takes what is left, so no spacer element is needed to push things apart.
+
 ## Examples
 
-### Density
+### size and density
 
-A Toolbar has no height of its own. It is as tall as the controls in it plus its padding, and that padding is the `size` / `density` pair every other surface uses — so `density="compact"` gives you the dense bar without a second prop meaning the same thing, and without the type scale moving.
+A Toolbar has no height of its own. It is as tall as the controls in it plus its padding, and `size` and `density` set that padding. `density="compact"` gives a dense bar without moving the type scale.
 
 <Demo src="toolbar/density">
 
@@ -37,14 +37,14 @@ A Toolbar has no height of its own. It is as tall as the controls in it plus its
 
 </Demo>
 
-### Pinned
+### position and side
 
 `position` is CSS's own three values, spelled the way CSS spells them.
 
-- `sticky` is what an application header usually wants: it takes up its own space, so nothing underneath has to be padded around it.
-- `fixed` leaves the flow entirely, so the page needs padding of its own or the first screenful sits behind the bar.
+- `sticky` — what an application header usually wants. It takes up its own space, so nothing underneath needs padding around it.
+- `fixed` — leaves the flow, so the page needs padding of its own or the first screenful sits behind the bar.
 
-A pinned bar drops its radius, because a rounded corner against the edge of the screen is a gap with nothing behind it. `divider` gives it the hairline that says there is content beneath.
+`side` is the edge the bar pins to. A pinned bar drops its radius, because a rounded corner against the edge of the screen is a gap with nothing behind it.
 
 <Demo src="toolbar/sticky">
 
@@ -52,21 +52,16 @@ A pinned bar drops its radius, because a rounded corner against the edge of the 
 
 </Demo>
 
-`elevation` stays `0` even when the bar is pinned. A shadow under a header is a way of saying "there is content beneath this", and that is only true once the page has been scrolled — so raise it yourself on scroll, or leave it flat and turn on `divider`.
+### divider and elevation
 
-## Why there is no `role="toolbar"`
+`divider` rules under the bar to show there is content beneath. `elevation` stays `0` even when the bar is pinned, so either raise it yourself on scroll or leave it flat and turn on `divider`.
 
-That role is a promise about keyboard behaviour: one tab stop for the whole bar, arrow keys between the controls in it. A bar that claims it without implementing it is worse for a keyboard reader than one that never claimed anything.
+### color
 
-What a page header wants is `render={<header />}` — a real landmark, which is the thing a screen reader user will actually navigate by. What a genuine roving-focus toolbar wants is a [ButtonGroup](../inputs/button-group), which is one.
+`color` reaches the rule and the focus ring. A bar that holds other people's controls does not fill its own sheet.
 
-## Coming from Material UI
+## Accessibility
 
-| MUI | Neba |
-| --- | --- |
-| `<AppBar><Toolbar>…</Toolbar></AppBar>` | One component. `position` is on it directly |
-| `position="sticky"` | The same. `'static'`, `'sticky'`, `'fixed'` |
-| `variant="dense"` | `density="compact"` — padding, which is all `density` is ever allowed to change |
-| `color="primary"` | `color` reaches the hairline and the focus ring. A bar that holds other people's controls does not dye its own sheet |
-| `elevation={4}` | `elevation` is `0`–`3`, and `0` means no shadow at all |
-| <code v-pre>&lt;Box sx={{ flexGrow: 1 }} /&gt;</code> as a spacer | Not needed. `start`, `children` and `end` are the three slots |
+- It does not set `role="toolbar"`. That role promises one tab stop for the bar with arrow keys inside it, and claiming it without implementing it is worse for a keyboard user than not claiming it.
+- For a page header, pass `render={<header />}`: a real landmark, which is what a screen reader user navigates by.
+- For a group of controls navigated with the arrow keys, use [ButtonGroup](../inputs/button-group).

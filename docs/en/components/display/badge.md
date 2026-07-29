@@ -5,7 +5,7 @@ order: 6
 
 # Badge
 
-<p class="neba-lede">A small mark in the corner of something else: unread mail on an inbox icon, a status dot on an avatar, a count on a tab.</p>
+<p class="neba-lede">A small marker overlaid on the corner of another element. Use it to report an unread count or a current status without covering what it sits on.</p>
 
 <Demo src="badge/hero" />
 
@@ -25,9 +25,15 @@ import { Badge, Button } from 'neba';
 
 <PropsTable name="Badge" />
 
+Given `children`, the wrapping `<span>` becomes the positioning context and the marker pins to its corner. Without `children` the marker lays out inline on its own, which is what a status marker in a table cell is.
+
+The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../guide/prop-conventions).
+
 ## Examples
 
-### Variants and colours
+### variant and color
+
+`solid` is a filled marker, `outline` a border over a faint panel, `text` a tinted mark with no edge. `color` picks one of the six role colours.
 
 <Demo src="badge/variants">
 
@@ -35,11 +41,11 @@ import { Badge, Button } from 'neba';
 
 </Demo>
 
-### What it says
+### content and max
 
-A number past `max` becomes `99+` rather than growing. Text is never truncated — a badge cannot know how to shorten a word.
+`content` is what the marker says. A number past `max` (default `99`) renders as `99+`; a string is never truncated.
 
-A `content` of `0` draws nothing by default. Zero unread messages is not news, and a badge that never goes away stops meaning anything. When there is nothing to count but something to report, that is what `dot` is.
+A `content` of `0` draws nothing by default — turn it on with `showZero`. When there is nothing to count but something to report, use `dot`; `invisible` hides the marker while keeping the layout intact.
 
 <Demo src="badge/content">
 
@@ -47,11 +53,11 @@ A `content` of `0` draws nothing by default. Zero unread messages is not news, a
 
 </Demo>
 
-### Which corner, and how far in
+### placement and overlap
 
-`placement` is one word built out of two the library already has — `top`/`bottom` from `NebaSide`, `start`/`end` from `NebaAlign`. A corner is one decision, and splitting it into two props would let a caller write `{ vertical: 'left' }`. Because it says `start`/`end`, the corner flips with the writing direction.
+`placement` is the corner the marker pins to: one of four values built from `top`/`bottom` and `start`/`end`. Because it uses `start`/`end`, the corner flips automatically in RTL.
 
-`overlap` is the shape of the thing underneath. A circle's corner is further from its centre than a square's, so a badge that looks right on an icon button hangs off an avatar.
+`overlap` is the shape of the element underneath. `circle` tucks the marker further in, by the amount a circle's corner sits inside its bounding box, so the marker does not float off an avatar.
 
 <Demo src="badge/placement">
 
@@ -59,7 +65,9 @@ A `content` of `0` draws nothing by default. Zero unread messages is not news, a
 
 </Demo>
 
-### Sizes
+### size
+
+Badge has its own size steps rather than a step off the control heights. `md` is 18px, the smallest at which a two-digit number stays legible.
 
 <Demo src="badge/sizes">
 
@@ -67,21 +75,9 @@ A `content` of `0` draws nothing by default. Zero unread messages is not news, a
 
 </Demo>
 
-## A badge is the one thing allowed to be a pill
-
-At 18px tall, `--neba-radius-xs` (10px) is already past the halfway point that would make a shape a pill. So Badge is the only component in the library that reaches for `rounded-full`.
-
-That is not a hole in the [design language](../../guide/design-language), it is the exception the language names. The flat run along a sheet's top and bottom edge is what says "this is a cut surface". A badge is not a surface. It is a mark laid **on** one, and a mark has no edge to cut — which is also why it is the only component that overlaps its neighbour.
-
-## No transform
-
-Every other library positions a corner badge with `translate(50%, -50%)`. This one uses a negative margin of half the marker's own height. It costs two more lines, and the [rule against `transform`](../../guide/design-language) is absolute and worth more than those two lines.
-
-The side effect is not bad either. Vertically the overhang is exactly half; horizontally the pull is half the _height_ rather than half the width, so a wide `99+` tucks in a little further than half — which is what you want anyway.
-
 ## Accessibility
 
-`content={3}` beside a bell is just "3" to a screen reader. `label` replaces it with the sentence.
+- `content={3}` on its own is just "3" to a screen reader. A sentence in `label` becomes the marker's accessible name instead.
 
 ```tsx
 <Badge content={3} label="3 unread notifications">
@@ -89,4 +85,5 @@ The side effect is not bad either. Vertically the overhang is exactly half; hori
 </Badge>
 ```
 
-Under a `dot` the count stays in the DOM — clipped rather than removed — because a quiet corner should not be a silent one. When the marker is `invisible`, or when there is no content to show, nothing is left behind at all: a mark that is not there has nothing to say, and text left in a clipped box is text a find-on-page still turns up.
+- Under `dot` the `content` stays in the DOM, clipped rather than removed, so what the dot means is still readable.
+- When the badge is `invisible` or has nothing to show, it leaves the DOM entirely, so find-on-page does not turn up text that is not on screen.

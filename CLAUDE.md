@@ -162,6 +162,29 @@ Things that will bite:
 
 Adding a component means five docs edits: a page under `components/{group}/` **in every locale**, its rows in `data/props.ts`, its demo files under `demos/`, a card in `demos/gallery/all.tsx`, and a place on the sample screen in `demos/showcase/app.tsx`. Only the first is per-locale; the demos and the props data are shared.
 
+### How a component page is written
+
+A component page is reference material for someone deciding whether this component solves their problem and then wiring it up. It is not a design essay and not a gallery. Every page follows the same skeleton, in this order:
+
+1. `# Name` — the exported symbol.
+2. **A lede** (`<p class="neba-lede">`) — one or two sentences, at most three: what the component _is_ and what it is _for_. Written as prose, not as a fragment. A reader who knows nothing about the library should be able to tell from the lede alone whether to keep reading.
+3. **The hero preview** — `<Demo src="{component}/hero" />`, with **no explanatory prose attached to it**, followed by the minimal `import` + usage snippet.
+4. `## Props` — `<PropsTable name="…" />`, one for each exported part. Directly under it, only the mechanical facts: which native attributes pass through, what is excluded, and a link to [prop conventions](docs/ko/guide/prop-conventions.md) for the shared axes.
+5. `## Examples` — one `###` per prop or capability worth showing. Each has a **short, concrete heading** and one to three sentences that say what the prop controls, which values it takes, and how to use it.
+6. `## Accessibility` — optional, a bullet list. Only real obligations on the caller and real guarantees of the component.
+
+Rules that hold across every page:
+
+- **No design rationale, no "why we did it this way", no internals.** Anything shaped like _"the reason X is a prop and not a sub-component is…"_, _"a shadow would make it read as moulded plastic"_, or _"Base UI handles the roving tab index"_ belongs in [design-language](docs/ko/guide/design-language.md) or in the source, not on a component page. State the behaviour; drop the justification.
+- **No comparisons to other libraries and no migration tables.** Material UI, Ant Design, Chakra — a "Coming from …" section is out of scope. Mention Base UI or Tailwind only where a caller must act on it (a `render` prop's contract, a class name they have to register); never as provenance or credit.
+- **Example headings name the prop and its effect** — `### variant`, `### Multi-select`, `### Bounding the range`. Never a sentence, a claim, or a slogan (`### 배지는 알약이어도 되는 유일한 것입니다` is exactly wrong).
+- **Concise but complete.** Short sentences, concrete nouns, no abstraction for its own sake. A developer should finish the page knowing how to call the component and what it will do — nothing on the page exists to show the design off.
+- **Use the real vocabulary of UI work.** `trigger`, `popup`, `controlled`, `roving tab index`, `scrim`, `elevation`, `breakpoint`, `gutter` — the precise term, not a paraphrase of it.
+- **Component names stay in English, everywhere, in every locale** — `Button`, not `버튼`. Link to the component's own page on the first mention when a page other than its own refers to it.
+- **The lede is raw HTML, so no Markdown works inside it.** `<p class="neba-lede">` opens an HTML block, and a `[Button](./button)` written in there renders as literal brackets — this is why no lede carries a link. Component names in a lede stay plain text; put the link on the first mention in the body instead. `<code>` tags are fine, since that is HTML too.
+- **In non-English locales, technical terms stay in English.** `prop`, `variant`, `controlled`, `breakpoint`, `focus`, `hover`, `portal` are written as-is; do not invent Korean calques for them. The surrounding prose is idiomatic Korean — natural enough that it does not read as a translation.
+- **The locales are structural mirrors.** Same headings in the same order, same demos, same number of examples. Only the prose language differs.
+
 ## Commands
 
 All scripts run from the repository root, even the ones whose config lives in a subdirectory.

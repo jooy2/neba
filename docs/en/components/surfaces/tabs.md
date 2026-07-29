@@ -5,7 +5,7 @@ order: 4
 
 # Tabs
 
-<p class="neba-lede">One set of panels, one of which is shown. Horizontal or vertical.</p>
+<p class="neba-lede">Shows one of several panels in the same place. Use it where content is switched between rather than laid out side by side.</p>
 
 <Demo src="tabs/hero" />
 
@@ -21,7 +21,7 @@ import { Tab, TabPanel, Tabs } from 'neba';
 </Tabs>;
 ```
 
-There is no `<TabList>` wrapper. Everything written between the tags is either a tab or a panel, the two go in different boxes, and the component sorts them — rather than adding a wrapper you have to remember.
+There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and the component sorts them into the bar and the panel area.
 
 ## Props
 
@@ -39,13 +39,13 @@ There is no `<TabList>` wrapper. Everything written between the tags is either a
 
 ## Examples
 
-### Variants
+### variant
 
-`variant` here is the weight of the tab **bar**, not of the panels under it.
+`variant` is the weight of the tab **bar**, not of the panels under it.
 
-- `solid` — a segmented control. The bar is a frosted trough and the indicator is a filled tile that slides between the tabs.
-- `outline` — the classic. A rule along the edge of the bar, with the indicator riding on it.
-- `text` — the same bar with the rule taken away. For tabs inside a [Card](./card) that already has an edge of its own.
+- `solid` — a filled tile moves between the tabs inside a trough.
+- `outline` — the indicator rides on a rule along the edge of the bar.
+- `text` — the indicator with no rule, for tabs inside a [Card](./card) that already has an edge.
 
 <Demo src="tabs/variants">
 
@@ -53,9 +53,9 @@ There is no `<TabList>` wrapper. Everything written between the tags is either a
 
 </Demo>
 
-### Orientation
+### orientation
 
-A vertical bar is not a horizontal one turned on its side. Base UI moves the arrow keys onto the other axis with it, which is the part that makes a vertical tab bar reachable at all.
+`vertical` puts the bar down the left side. The arrow keys move onto the vertical axis with it.
 
 <Demo src="tabs/orientation">
 
@@ -63,7 +63,9 @@ A vertical bar is not a horizontal one turned on its side. Base UI moves the arr
 
 </Demo>
 
-### Icons and counts
+### startIcon and endIcon
+
+Put an icon or a count before or after the label.
 
 <Demo src="tabs/icons">
 
@@ -71,24 +73,21 @@ A vertical bar is not a horizontal one turned on its side. Base UI moves the arr
 
 </Demo>
 
-## The indicator moves its box
+### size
 
-Base UI measures the chosen tab and writes the result onto `--active-tab-left`, `--active-tab-width` and their siblings. The indicator animates `left`/`top` and `width`/`height` from those.
+The same control heights as [Button](../inputs/button): a `md` tab and a `md` button are both 32px, so a tab bar can sit in a toolbar beside one.
 
-That is a layout animation on an empty box, not a transform on a label — nothing with text in it moves, which is the line the [no-transform rule](../../guide/design-language) actually draws.
+### activateOnFocus
 
-It is also the one place in the library that reaches for a physical property (`left`) instead of a logical one, on purpose. `--active-tab-left` is a **measurement**: the distance in pixels from the list's left edge to the chosen tab's, and it stays a distance from the left under RTL. Pairing a physical measurement with a logical property is what would break the direction, not what would fix it. The edge the bar sits on _is_ logical, because that one genuinely flips.
+Off by default: walking the arrow keys along the bar does not change the panel, and Enter or Space activates. That keeps a panel that fetches from firing a request per tab passed.
 
-## Why `activateOnFocus` is off by default
+### keepMounted
 
-Automatic activation is only kind when every panel is already on the page. The moment one of them fetches, walking past four tabs with the arrow keys fires four requests.
-
-## Tabs are on the control ladder
-
-A `md` tab and a `md` [Button](../inputs/button) are the same 32px. That is what lets a tab bar sit in a toolbar next to a button without the row losing its baseline.
+Set on a `TabPanel`, it keeps an unselected panel's React tree alive.
 
 ## Accessibility
 
-Base UI owns everything that makes a tab bar a tab bar rather than a row of buttons: roving focus so the whole bar is one tab stop, the arrow keys on whichever axis the bar runs, Home and End, the `tab` / `tabpanel` roles and the `aria-controls` wiring between them, and the measurement that puts the indicator under the chosen tab.
-
-A panel with nothing focusable inside it takes focus itself, so the content is reachable by keyboard — and when it does, it gets the house focus ring rather than the browser's outline.
+- The whole bar is one tab stop, with the arrow keys and Home/End moving within it (a roving tab index).
+- The `tab` / `tabpanel` roles and the `aria-controls` between them are wired up.
+- A panel with nothing focusable inside it takes focus itself, so the content stays reachable by keyboard.
+- The indicator moves via `left` / `top` and `width` / `height`, so no label is resampled.

@@ -5,7 +5,7 @@ order: 17
 
 # DateTimePicker
 
-<p class="neba-lede">A day and a time, in one popup. The calendar and the clock sit side by side at exactly the same height, so the popup is one rectangle rather than two of different sizes pushed together.</p>
+<p class="neba-lede">Chooses a day and a time in one popup. Use it where the two together make a single moment — a scheduled send, a publish time.</p>
 
 <Demo src="date-time-picker/hero" />
 
@@ -19,13 +19,19 @@ import { DateTimePicker } from 'neba';
 
 <PropsTable name="DateTimePicker" />
 
-Everything else it does is [DatePicker](./date-picker)'s and [TimePicker](./time-picker)'s, unchanged: the same three calendar views, the same column behaviour, the same `Date` value. What is worth reading here is the part that is genuinely different.
+The calendar props behave as they do on [DatePicker](./date-picker) and the clock props as they do on [TimePicker](./time-picker). The calendar and the clock sit side by side at the same height.
 
-### The bounds are read at full precision
+`closeOnSelect` defaults to `false` and the footer carries a Done button, since two answers have to be given before the popup can close.
 
-This is where a DateTimePicker earns being its own component rather than two fields in a row.
+Choosing a day leaves the time alone, and choosing a time leaves the day alone, so the two can be picked in either order.
 
-`minDate` on a [DatePicker](./date-picker) is day-granular — the 27th either exists or it does not. Here it is not, because the ordinary rule a scheduling form needs is "not before **now**", and now is a time as well as a day. So a `minDate` of 09:30 on the 27th leaves the 27th selectable in the calendar and greys out the morning in the clock.
+## Examples
+
+### minDate · maxDate
+
+The bounds are read at **full precision**, not just to the day. A `minDate` of 09:30 on the 27th leaves the 27th selectable in the calendar and greys out only the times before 09:30 in the clock; on any later day nothing is blocked.
+
+That is what a rule like "no earlier than now" needs.
 
 <Demo src="date-time-picker/bounds">
 
@@ -33,18 +39,11 @@ This is where a DateTimePicker earns being its own component rather than two fie
 
 </Demo>
 
-The clock's own check is the span test [TimePicker](./time-picker) makes, moved onto the absolute timeline so it knows which day the columns are writing into. On the boundary day the hours before the minimum are blocked; on any later day none of them are.
+### What the trigger shows
 
-### One value, two halves, no order
-
-Choosing a day changes the day and leaves the clock alone. Choosing an hour changes the clock and leaves the day alone. A picker that reset the time to midnight every time the date was corrected would make choosing a moment an ordered task, and nobody reads a popup in the order it was written.
-
-That is also why `closeOnSelect` defaults to `false` and the footer carries **Done**: a moment is a day _and_ a time, so closing on the first of the two would leave the second unanswered.
-
-### One glyph, not two
-
-The trigger wears the calendar and not the clock. A control cannot say two things at once, and the date is the part a reader scans for.
+The trigger wears the calendar glyph and not the clock. The value is written as one string with `Intl`, combining the date and the time.
 
 ## Accessibility
 
-The calendar is a `role="grid"` and the clock is a set of `role="listbox"` columns, exactly as they are in the two components this one is made of — see [DatePicker](./date-picker#accessibility) and [TimePicker](./time-picker#accessibility). The trigger writes both halves into one string with `Intl`, so what a screen reader reads out is one sentence rather than two fields it has to join up.
+- The calendar is a `role="grid"` and the clock a set of `role="listbox"` columns. See [DatePicker](./date-picker#accessibility) and [TimePicker](./time-picker#accessibility) for the details.
+- The trigger's accessible name reads as one sentence covering both halves.

@@ -5,7 +5,7 @@ order: 5
 
 # ProgressLinear
 
-<p class="neba-lede">차오르는 막대. 셋 중 가장 많이 쓰이는 것.</p>
+<p class="neba-lede">진행률을 가로 막대로 표시합니다. 세 가지 progress 컴포넌트 중 가장 널리 쓰이는 형태입니다.</p>
 
 <Demo src="progress-linear/hero" />
 
@@ -20,9 +20,11 @@ import { ProgressLinear } from 'neba';
 
 <PropsTable name="ProgressLinear" />
 
+`value`의 기본값은 `null`이며, 진행률을 알 수 없는 indeterminate 상태를 뜻합니다. 짧은 조각이 막대 위를 반복해 지나갑니다. `0`을 주면 "아직 아무것도 진행되지 않음"이라는 다른 의미가 되므로 구분해서 쓰세요.
+
 ## 예시
 
-### 크기
+### size
 
 <Demo src="progress-linear/sizes">
 
@@ -30,9 +32,9 @@ import { ProgressLinear } from 'neba';
 
 </Demo>
 
-### 0–100이 아닌 범위
+### min · max · format
 
-표시되는 값은 100에 대한 비율이 아니라 `min`…`max`에 대한 백분율입니다. 4단계 중 3단계를 "3%"라고 말하는 것은 아무 말도 하지 않느니만 못합니다. 숫자 자체가 독자에게 의미가 있다면 — 바이트, 파일 수, 금액 — `format`을 넘기세요.
+표시되는 백분율은 100이 아니라 `min`…`max` 구간에 대한 비율입니다. `showValue`로 값을 옆에 띄우고, `format`에 `Intl.NumberFormat` 옵션을 주면 바이트나 파일 수, 금액처럼 숫자 자체를 보여 줄 수 있습니다.
 
 <Demo src="progress-linear/values">
 
@@ -40,20 +42,11 @@ import { ProgressLinear } from 'neba';
 
 </Demo>
 
-## 기본값은 미정입니다
-
-`value`의 기본값은 `null`이고, `null`은 "무언가 진행 중인데 얼마나 남았는지는 아무도 모른다"는 뜻입니다. 의도된 기본값입니다. 값을 듣지 못한 표시기는 빈 막대를 그리는 대신 모른다고 말해야 합니다. 빈 막대는 "아무 진척도 없다"는 주장이니까요.
-
-미정 막대는 transform이 아니라 `inset-inline-start`로 짧은 조각을 홈 위에서 움직입니다. RTL에서 알아서 반대로 흐르는 이유이자, 표면을 움직이지 않는다는 이 집의 규칙을 깨지 않는 이유입니다. 대가는 프레임마다 한 번의 레이아웃이고, 그 범위는 높이 4픽셀짜리 상자 안입니다.
-
-## 완전히 둥근 것은 의도입니다
-
-알약 모양을 금지하는 규칙이 적용되지 않는 유일한 자리입니다. 높이가 4픽셀이면 지켜야 할 평평한 구간 자체가 없고, 끝이 각진 막대는 잘린 모서리가 아니라 렌더링 버그로 읽힙니다. 그 규칙이 다른 곳에서 무엇을 지키는지는 [디자인 언어](../../guide/design-language)에 있습니다.
-
 ## 모션 줄이기
 
-`prefers-reduced-motion`에서도 애니메이션을 끄지는 않습니다. 가만히 있는 미정 표시기는 자기 존재 이유와 반대되는 말을 합니다. 대신 지나가던 조각이 사라지고 홈 전체가 색으로 맥동합니다. 이 라이브러리가 다른 모든 상태에 이미 쓰고 있는 축입니다.
+`prefers-reduced-motion`에서도 indeterminate 애니메이션이 멈추지는 않습니다. 대신 지나가던 조각이 사라지고 막대 전체가 색으로 맥동합니다.
 
 ## 접근성
 
-의미론은 Base UI의 Progress가 가집니다. `role="progressbar"`, 값과 범위 속성, 그리고 미정일 때 `aria-valuenow`를 아예 빼는 처리까지. `label`이 접근성 이름이 되고, `aria-valuetext`는 막대 옆에 적힌 것과 똑같은 말을 합니다.
+- `role="progressbar"`와 값·범위 속성이 적용되고, indeterminate일 때는 `aria-valuenow`가 빠집니다.
+- `label`이 accessible name이 되고, `aria-valuetext`는 화면에 표시된 값과 같은 내용을 전달합니다.

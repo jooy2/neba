@@ -5,7 +5,7 @@ order: 1
 
 # Box
 
-<p class="neba-lede">A sheet of acrylic with content on it. The plainest surface in the library: it groups things, and that is all it does.</p>
+<p class="neba-lede">The basic surface to put content on. It is the plainest sheet in the library: it groups content and lifts it off the page background.</p>
 
 <Demo src="box/hero" />
 
@@ -15,21 +15,21 @@ import { Box } from 'neba';
 <Box>Content</Box>;
 ```
 
-Anything structural — a title, a footer, dividers — belongs to [Card](./card), which is a Box with those sections laid out on it.
-
 ## Props
 
 <PropsTable name="Box" />
 
 Every native `<div>` attribute passes through, `color` excepted.
 
+When structure is needed — a title, a footer, dividers — use [Card](./card), which is a Box with those sections laid out on it.
+
 ## Examples
 
-### Variants
+### variant
 
-`solid` does not flood the surface with colour, for the same reason TextField doesn't. What a box holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. On an accent fill every one of them would need an on-fill treatment, which is the opposite of what a container is for.
+None of the three weights flood the sheet with colour, because what a Box holds is content that arrives with colours of its own. What separates `solid` from `outline` is the sheet's opacity and whether it carries a border. See [Colour](../../guide/color#container-surfaces-are-never-dyed) for the whole rule.
 
-The sheet is not dyed at all. What separates `solid` from `outline` is not colour but **how much light the sheet holds** — its opacity — and whether it carries a hairline. See [Colour](../../guide/color#container-surfaces-are-never-dyed) for the whole rule.
+`text` has no surface, so `elevation` is ignored.
 
 <Demo src="box/variants">
 
@@ -37,11 +37,9 @@ The sheet is not dyed at all. What separates `solid` from `outline` is not colou
 
 </Demo>
 
-`text` has no surface, so `elevation` is ignored rather than drawing a shadow around an invisible rectangle.
+### color
 
-### Colours
-
-The surface is white, so the family reaches **the hairline only**. That is why the example below is `outline`: on a `solid` Box, which has no border, `color` makes no visible difference.
+The surface is white, so `color` reaches **the border only**. That is why the example below is `outline`: on a `solid` Box, which has no border, `color` makes no visible difference.
 
 <Demo src="box/colors">
 
@@ -49,9 +47,9 @@ The surface is white, so the family reaches **the hairline only**. That is why t
 
 </Demo>
 
-### Sizes
+### size
 
-Unlike every other component, `size` on a Box sets neither a height nor a type scale. A box is as tall as what it holds, and its children bring their own typography — a container that reset the type scale would render the same paragraph at two sizes depending on what it was wrapped in. So here `size` means the size of the _sheet_: its radius and its padding.
+On a Box, `size` sets neither a height nor a type scale but the size of the **sheet** — its radius and its padding. A Box is as tall as what it holds, and its children bring their own typography.
 
 <Demo src="box/sizes">
 
@@ -59,7 +57,7 @@ Unlike every other component, `size` on a Box sets neither a height nor a type s
 
 </Demo>
 
-### Elevation
+### elevation
 
 <Demo src="box/elevation">
 
@@ -67,9 +65,9 @@ Unlike every other component, `size` on a Box sets neither a height nor a type s
 
 </Demo>
 
-### Unpadded, and as another element
+### padded and render
 
-`padded={false}` is for full-bleed content — an image, a table, a list that draws its own rows. `render` is Base UI's own escape hatch, so a box can be any element.
+`padded={false}` is for full-bleed content — an image, a table, a list that draws its own rows. `render` renders the Box as an element other than a `<div>`.
 
 <Demo src="box/unpadded">
 

@@ -5,7 +5,7 @@ order: 5
 
 # ProgressLinear
 
-<p class="neba-lede">A bar that fills. The workhorse of the three.</p>
+<p class="neba-lede">Shows progress as a horizontal bar. It is the most widely used of the three progress components.</p>
 
 <Demo src="progress-linear/hero" />
 
@@ -20,9 +20,11 @@ import { ProgressLinear } from 'neba';
 
 <PropsTable name="ProgressLinear" />
 
+`value` defaults to `null`, the indeterminate state: a short segment travels along the groove. A `value` of `0` means something different — "nothing has progressed yet" — so keep the two apart.
+
 ## Examples
 
-### Sizes
+### size
 
 <Demo src="progress-linear/sizes">
 
@@ -30,9 +32,9 @@ import { ProgressLinear } from 'neba';
 
 </Demo>
 
-### Ranges that are not 0–100
+### min · max · format
 
-The value shown is a percentage of `min`…`max`, not of 100 — "3%" for step 3 of 4 is worse than saying nothing. Pass `format` when the number means something the reader would rather see: bytes, files, currency.
+The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself — bytes, files, currency.
 
 <Demo src="progress-linear/values">
 
@@ -40,20 +42,11 @@ The value shown is a percentage of `min`…`max`, not of 100 — "3%" for step 3
 
 </Demo>
 
-## Indeterminate is the default
-
-`value` defaults to `null`, and `null` means "something is happening and nobody knows how much of it is left". That is the default on purpose. An indicator that has not been told a value should say so, rather than draw an empty bar — which is a claim that no progress has been made.
-
-The indeterminate bar moves a short segment along the groove with `inset-inline-start` rather than with a transform, which is both why it runs the other way under RTL without being told and why it does not break the house rule about moving surfaces. The cost is a layout pass per frame, confined to a box four pixels tall.
-
-## Fully rounded, on purpose
-
-This is the one place the rule against pills does not apply. At four pixels tall there is no flat run left to preserve, and a square-ended bar reads as a rendering bug rather than as a cut edge. See the [design language](../../guide/design-language) for what the rule is protecting everywhere else.
-
 ## Reduced motion
 
-`prefers-reduced-motion` does not switch the animation off — an indeterminate indicator that holds still says the opposite of what it is for. The travelling segment becomes a colour pulse across the whole groove instead, which is the axis every other state in this library already uses.
+`prefers-reduced-motion` does not stop the indeterminate animation. The travelling segment is replaced by a colour pulse across the whole groove.
 
 ## Accessibility
 
-Base UI's Progress owns the semantics: `role="progressbar"`, the value and range attributes, and dropping `aria-valuenow` entirely when the bar is indeterminate. `label` becomes the accessible name, and `aria-valuetext` says exactly what the number beside the bar says.
+- Carries `role="progressbar"` with the value and range attributes; `aria-valuenow` is dropped while indeterminate.
+- `label` becomes the accessible name, and `aria-valuetext` says the same thing as the printed value.

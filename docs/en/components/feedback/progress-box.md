@@ -5,7 +5,7 @@ order: 7
 
 # ProgressBox
 
-<p class="neba-lede">A row of acrylic plates that light up.</p>
+<p class="neba-lede">Shows progress as a row of plates that fill in turn. It is the shape that fits a loading state on a Neba surface.</p>
 
 <Demo src="progress-box/hero" align="center" />
 
@@ -20,9 +20,13 @@ import { ProgressBox } from 'neba';
 
 <PropsTable name="ProgressBox" />
 
+`value`, `min`, `max`, `format` and `showValue` behave as they do on [ProgressLinear](./progress-linear). A `value` of `null` gives the indeterminate state, where the plates light in sequence.
+
 ## Examples
 
-### How many plates
+### count
+
+How many plates to draw. With a value, they fill left to right and the leading plate fills partially — all-or-nothing plates could only ever show 0, 25, 50, 75 or 100 at a count of four.
 
 <Demo src="progress-box/counts">
 
@@ -30,9 +34,9 @@ import { ProgressBox } from 'neba';
 
 </Demo>
 
-### When the thing really has steps
+### Using it as a step indicator
 
-Give `count` the number of steps and the plates stop being a decoration: each one is a step, and the leading plate fills as that step runs.
+Match `count` to the real number of steps and each plate becomes one step, with the running step's plate shown mid-fill.
 
 <Demo src="progress-box/steps">
 
@@ -40,16 +44,11 @@ Give `count` the number of steps and the plates stop being a decoration: each on
 
 </Demo>
 
-## Why a third shape
+## Reduced motion
 
-A bar and a ring both say "this much of it is done" — they are about the quantity. A row of plates says "this is working" in the library's own vocabulary: the same cut sheet, the same hairline, the same fill. That is what makes it the right one for a loading state inside a Neba surface, where a foreign grey spinner looks borrowed.
-
-It still answers a value when it has one. The plates fill left to right and the leading one fills partially, because four all-or-nothing plates could only ever show 0, 25, 50, 75 or 100 — and a value of 30% would round away to a quarter.
-
-## Colour, not motion
-
-The plates never move. The wave animates the fill and the light edge and nothing else, each plate held back by its own index, so a row of them reads as a surface being written to rather than as something bouncing. Under `prefers-reduced-motion` the cycle simply slows to where it stops reading as motion at all.
+The plates never move; only the fill and the light edge animate. Under `prefers-reduced-motion` the cycle slows down.
 
 ## Accessibility
 
-Same as the other two: Base UI's Progress owns `role="progressbar"` and the value attributes, `label` is the accessible name, and an indeterminate row reports itself as indeterminate rather than as zero.
+- Carries `role="progressbar"` with the value attributes, and `label` becomes the accessible name.
+- The indeterminate state reports itself as indeterminate rather than as zero.

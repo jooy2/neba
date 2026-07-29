@@ -5,7 +5,7 @@ order: 5
 
 # Checkbox
 
-<p class="neba-lede">A single yes/no, or one member of a set of them. Base UI's Checkbox with an acrylic tick on top of it.</p>
+<p class="neba-lede">A single item that can be ticked. Use it for a boolean submitted with a form, or for a list where several items can be chosen at once.</p>
 
 <Demo src="checkbox/hero" />
 
@@ -19,11 +19,19 @@ import { Checkbox } from 'neba';
 
 <PropsTable name="Checkbox" />
 
-`label`, `description` and `error` are props rather than children, for the same reason they are on [TextField](./text-field): the arrangement is fixed, and what a caller wants to decide is what goes in each slot. `children` is not accepted at all — anything a checkbox has to say belongs in one of the three.
+`label`, `description` and `error` are props rather than `children`; `children` is not accepted.
+
+For a setting that takes effect immediately, use [Switch](./switch). A Checkbox is a value submitted alongside a Save button.
 
 ## Examples
 
-### States
+### checked and onCheckedChange
+
+`checked` with `onCheckedChange` makes it controlled; `defaultChecked` makes it uncontrolled.
+
+### disabled · readOnly · error
+
+An `error` message also turns the checkbox invalid and re-points the colour family at `danger` — the tick, the focus ring and the message all turn over together.
 
 <Demo src="checkbox/states">
 
@@ -31,11 +39,9 @@ import { Checkbox } from 'neba';
 
 </Demo>
 
-An `error` also turns the checkbox invalid, which re-points the whole colour family at `danger` — the tick, the focus ring and the message all turn over together.
+### indeterminate
 
-### Mixed
-
-A parent whose children disagree is neither ticked nor unticked. `indeterminate` is a third appearance, not a third value: the checkbox is still either on or off underneath.
+A third appearance for a parent checkbox whose children disagree. The value underneath is still on or off; `indeterminate` only affects what is drawn.
 
 <Demo src="checkbox/indeterminate">
 
@@ -43,7 +49,7 @@ A parent whose children disagree is neither ticked nor unticked. `indeterminate`
 
 </Demo>
 
-### Sizes
+### size
 
 <Demo src="checkbox/sizes">
 
@@ -51,13 +57,9 @@ A parent whose children disagree is neither ticked nor unticked. `indeterminate`
 
 </Demo>
 
-## Why the tick is not round
-
-The corner radius on a checkbox is ~30% of its box, not the ~45% the control ladder uses. `--neba-radius-md` is 14px, which on an 18px box is a circle — and a checkbox that is round is a radio button. The intent is the same as everywhere else in the library: a sheet with the corners cut off, never a pill.
-
 ## Accessibility
 
-- Renders a real `role="checkbox"` with a hidden `<input>` beside it, so it submits with a form.
-- The label is wired to the control by Base UI's Field: clicking the text toggles the box.
+- Renders `role="checkbox"` with a hidden `<input>` beside it, so giving it a `name` submits it with a form.
+- The label is wired to the control, so clicking the text toggles the box.
 - Without a `label`, give it an `aria-label`.
 - `indeterminate` reports `aria-checked="mixed"`.

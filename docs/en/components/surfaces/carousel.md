@@ -5,7 +5,7 @@ order: 5
 
 # Carousel
 
-<p class="neba-lede">A strip of slides, one of which is in view. Swipeable, keyboard-scrollable, and right under RTL — because the mechanism underneath it is the browser's own scrolling.</p>
+<p class="neba-lede">Steps through slides one at a time. Swiping, keyboard navigation and RTL are all supported.</p>
 
 <Demo src="carousel/hero" />
 
@@ -18,9 +18,7 @@ import { Carousel } from 'neba';
 </Carousel>;
 ```
 
-**Slides are not a sub-component.** Every top-level child becomes one, so `<Carousel><img /><img /></Carousel>` is the whole API. The wrapper is what carries the snap point, the width and the `role="group"` / `aria-roledescription="slide"` pair a screen reader needs — none of which anybody should have to remember to put on a photograph.
-
-The arrows are drawn **over** the frame, which is right for a photograph and wrong for a paragraph. A slide with words near its edges should pad far enough in to clear them — roughly the control height plus the inset, so about 3.5rem at `size="md"`.
+Every top-level child becomes one slide. There is no slide sub-component: the snap point, the width and the `role="group"` / `aria-roledescription="slide"` pair are added for you.
 
 ## Props
 
@@ -28,11 +26,15 @@ The arrows are drawn **over** the frame, which is right for a photograph and wro
 
 Every native `<div>` attribute passes through.
 
+Underneath it is a scroll container with CSS scroll snapping. That is what makes swiping the browser's own behaviour, flips the direction automatically under RTL, and puts the transition on `scroll-behavior: smooth` — which becomes an instant cut under `prefers-reduced-motion` through the same code path.
+
 ## Examples
 
-### Loop, chrome, autoplay
+### loop · arrows · indicators
 
-The chrome is optional and the ends are a choice. Without `loop` the arrows go inert at the ends rather than wrapping, which is the honest thing for a set that has a first and a last.
+Without `loop`, the arrows go inert at the ends, which suits a set that has a first and a last. `arrows` and `indicators` draw the side arrows and the dots beneath.
+
+The arrows are drawn **over** the frame, so a slide with text near its edges should pad far enough in to clear them — about 3.5rem at `size="md"`.
 
 <Demo src="carousel/options">
 
@@ -40,9 +42,9 @@ The chrome is optional and the ends are a choice. Without `loop` the arrows go i
 
 </Demo>
 
-### Controlled
+### value and onValueChange
 
-`value` / `onValueChange` are the usual pair, so the strip can be driven by something else on the page — a wizard's step buttons, a router, a keyboard shortcut. `onValueChange` also fires when the slide changed because somebody swiped.
+Controlled, the strip can be driven by something else on the page. `onValueChange` also fires when the slide changed because somebody swiped.
 
 <Demo src="carousel/controlled">
 
@@ -50,34 +52,19 @@ The chrome is optional and the ends are a choice. Without `loop` the arrows go i
 
 </Demo>
 
-## Why it scrolls rather than slides
+### autoPlay and interval
 
-The strip is a scroll container with CSS scroll snapping, and everything good about this component follows from that one choice.
+`autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, and in a background tab, and it does not start at all under `prefers-reduced-motion`. The live region announcing the current slide stays silent while it runs.
 
-- **Swiping works**, on a phone and on a trackpad, because it is the browser's own scrolling and not a gesture handler pretending to be it.
-- **It runs the other way under RTL** without being told, because scrolling is directional and `translate` is not.
-- **Nothing is transformed.** The [house rule](../../guide/design-language) against moving a surface holds here for free, where a translated track would have had to argue for an exception.
-- **The motion is `scroll-behavior: smooth`**, so a reader who has asked for reduced motion gets an instant cut out of the same code path rather than out of a second one written to remember them.
+If every slide has to be read, consider [Tabs](./tabs) or a plain vertical stack instead.
 
-## Autoplay, and why it is off
+## Accessibility
 
-A carousel that moves while it is being read is the most complained-about pattern on the web. `autoPlay` is off by default, and when it is on it pauses on hover, on focus anywhere inside it, and in a background tab — and it does not start at all for a reader who has asked for reduced motion. The live region that announces the current slide goes silent while it is running, because one that says a new name every five seconds is what makes a screen reader unusable on a page that has one.
-
-If a set of slides is important enough that every one of them should be read, it is important enough not to be a carousel. [Tabs](./tabs) or a plain stack will serve it better.
+- `label` becomes the carousel's accessible name. `previousLabel` · `nextLabel` · `slideLabel` name the controls.
+- Each slide carries `role="group"` and `aria-roledescription="slide"`.
 
 ## What is not offered
 
-- **More than one slide in view.** A peek carousel needs per-breakpoint width arithmetic, and the honest version of that is [Grid](../layout/grid) with `overflow-x-auto` on it.
-- **Vertical.** A vertical carousel is a scrolling list, which the page already is.
-- **Fade.** The mechanism is scrolling, and a scroll that fades is two mechanisms.
-
-## Coming from other libraries
-
-| Elsewhere                  | Neba                                                           |
-| -------------------------- | -------------------------------------------------------------- |
-| `<Carousel.Item>`          | Not needed. Every top-level child is a slide                   |
-| `activeIndex` / `onSelect` | `value` / `onValueChange` — the pair every Neba component uses |
-| `interval={null}` to stop  | `autoPlay={false}`, which is already the default               |
-| `wrap`                     | `loop`                                                         |
-| `indicators` / `controls`  | `indicators` / `arrows`                                        |
-| `slidesPerView`            | Not offered — see above                                        |
+- **More than one slide in view** — use [Grid](../layout/grid) with `overflow-x-auto`.
+- **Vertical** — a scrolling list already does that.
+- **Fade** — it cannot be combined with a scroll-based implementation.

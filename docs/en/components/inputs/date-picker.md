@@ -5,7 +5,7 @@ order: 15
 
 # DatePicker
 
-<p class="neba-lede">One day, chosen from a calendar. The month name and the year are each a button that opens a grid of its own, so any month is two clicks away and any year is three.</p>
+<p class="neba-lede">Chooses one day from a calendar popup. The month name and the year each open a grid of their own, so distant dates stay a few clicks away.</p>
 
 <Demo src="date-picker/hero" />
 
@@ -19,28 +19,24 @@ import { DatePicker } from 'neba';
 
 <PropsTable name="DatePicker" />
 
-### The value is a `Date`
+`value` is a `Date | null`. There is no date library underneath.
 
-Not a string, not a timestamp, and not a wrapper object. `Date` is what the platform already has, it is what `Intl` formats, and it is what every other library a caller might be using can be converted from in one line.
+Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local `YYYY-MM-DD` string too, so nothing shifts by a day the way `toISOString()` would.
 
-There is no date library underneath, on purpose. Neba's one runtime dependency is Base UI, and a component library that quietly adds `date-fns` — or worse, picks a side in the dayjs/luxon/Temporal argument on its consumer's behalf — has made a decision that was not its to make. The arithmetic here is a dozen lines and the naming is `Intl`, which knows more about month names in more languages than any bundled table ever will.
+### Three views
 
-Everything is compared on the **local** calendar day, never on the underlying timestamp. A calendar day is a thing a person is looking at on a wall, not an instant on a line — so a picker in Seoul and a picker in São Paulo both light up the cell that says 27. For the same reason the hidden input a form submits writes `2026-07-27` in local time: `toISOString()` on that same value would report `2026-07-26`, which is the single most expensive bug a date picker can ship.
+The two buttons in the header each open a different grid.
 
-### Three views, not one
+- **The month name** — a grid of twelve months.
+- **The year** — a grid of twelve years, with the steppers moving a page at a time.
 
-A picker that only steps a month at a time puts a birthday thirty years back a hundred and eighty clicks away. So the header carries two buttons rather than a label:
-
-- **the month name** opens a grid of twelve months,
-- **the year** opens a grid of twelve years, with the steppers moving a page at a time.
-
-Choosing a year hands over to the month grid rather than all the way back to days: having just said which year, the next question is which month. The two buttons are printed in the order the locale writes them — `July 2026` in English, `2026년 7월` in Korean — and the three views are the same width _and_ the same height, so switching between them never resizes the popup under the pointer that opened it.
+Choosing a year hands over to the month view. The two buttons are printed in the order the locale writes them. All three views are the same width and height, so switching between them never resizes the popup.
 
 ## Examples
 
-### Variants
+### variant
 
-The same three weights as [TextField](./text-field), on the same shell. A form where the date field is a different height, radius or colour from the fields around it is a form that looks assembled rather than designed.
+The same three weights as [TextField](./text-field), drawn on the same shell.
 
 <Demo src="date-picker/variants">
 
@@ -48,9 +44,9 @@ The same three weights as [TextField](./text-field), on the same shell. A form w
 
 </Demo>
 
-### Sizes
+### size
 
-A day cell is on the control ladder: 32px at `md`, which is a `md` Button and a `md` TextField. A calendar dropped beside a form is on the form's grid.
+A day cell uses the control heights — 32px at `md`, the same as a [Button](./button) or [TextField](./text-field) of that `size`.
 
 <Demo src="date-picker/sizes">
 
@@ -58,11 +54,11 @@ A day cell is on the control ladder: 32px at `md`, which is a `md` Button and a 
 
 </Demo>
 
-### Bounds
+### minDate · maxDate · shouldDisableDate
 
-`minDate` and `maxDate` are compared at day granularity, so a maximum of the 27th at 09:00 still leaves the 27th pickable. `shouldDisableDate` blocks the days that are inside the range but still not available.
+`minDate` and `maxDate` are compared at day granularity, so a maximum of the 27th at 09:00 still leaves the 27th pickable. Use `shouldDisableDate` for days inside the range that still cannot be chosen.
 
-A blocked cell keeps its place in the grid and reports itself with `aria-disabled` rather than the `disabled` attribute — a disabled button leaves the tab order and the grid's arrow-key path with it, so a reader would fall into a hole at every blocked day.
+A blocked cell keeps its place in the grid and is marked with `aria-disabled` rather than the `disabled` attribute, so it stays on the arrow-key path.
 
 <Demo src="date-picker/bounds">
 
@@ -70,7 +66,7 @@ A blocked cell keeps its place in the grid and reports itself with `aria-disable
 
 </Demo>
 
-### States
+### disabled · readOnly · error
 
 <Demo src="date-picker/states">
 
@@ -78,27 +74,27 @@ A blocked cell keeps its place in the grid and reports itself with `aria-disable
 
 </Demo>
 
-## Why the trigger cannot be typed into
+### showTodayButton and clearable
 
-The trigger is a button, exactly as a [Select](./select)'s is, and not a text input.
-
-Parsing a date out of free text is locale-dependent in a way that cannot be done honestly without a date library. A field that understands `27/7/26` in one browser and not in the next — or that reads it as the 7th of December for half its readers — is worse than one that never claimed to. The calendar is where the answer comes from, and the three views are what make that fast enough not to miss the keyboard.
+`showTodayButton` adds a button in the popup footer that jumps to today; `clearable` adds a button on the trigger that empties the value.
 
 ## Keyboard
 
-| Key                   | What it does                                                   |
-| --------------------- | -------------------------------------------------------------- |
-| `Space` / `Enter`     | Opens the calendar; the grid takes the focus on the chosen day |
-| `←` `→` `↑` `↓`       | Moves by a day or a week, stepping the month at the edges      |
-| `Home` / `End`        | To the start or the end of the week                            |
-| `PageUp` / `PageDown` | By a month — with `Shift`, by a year                           |
-| `Escape`              | Closes without choosing                                        |
+The trigger is a button rather than a text input — the date comes from the calendar.
 
-The grid has a single roving tab stop, so `Tab` leaves it rather than walking forty-two cells.
+| Key                   | What it does                                              |
+| --------------------- | --------------------------------------------------------- |
+| `Space` / `Enter`     | Opens the calendar and focuses the chosen day             |
+| `←` `→` `↑` `↓`       | Moves by a day or a week, stepping the month at the edges |
+| `Home` / `End`        | To the start or the end of the week                       |
+| `PageUp` / `PageDown` | By a month — with `Shift`, by a year                      |
+| `Escape`              | Closes without choosing                                   |
+
+The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
 
 ## Accessibility
 
-- The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number — `Monday, July 27, 2026`, not `27`.
-- The chosen day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number, because a colour on its own says it only to some readers.
-- `label` names the trigger, and `description` and `error` are wired to it with `aria-describedby`.
-- The popup is portalled to the end of `<body>`; its positioner carries `neba-portal` as a hook for an app that has scoped its CSS reset to a subtree.
+- The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
+- The chosen day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number.
+- `label` becomes the trigger's accessible name, and `description` and `error` are wired to it with `aria-describedby`.
+- The popup is portalled to the end of `<body>`, with `neba-portal` on the positioner.

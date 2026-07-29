@@ -5,7 +5,7 @@ order: 5
 
 # Checkbox
 
-<p class="neba-lede">하나의 예/아니오, 또는 여러 개 중 하나입니다. Base UI의 Checkbox 위에 아크릴 체크 표시를 얹었습니다.</p>
+<p class="neba-lede">켜고 끌 수 있는 하나의 항목입니다. 폼과 함께 제출되는 boolean 값이나, 여러 개를 동시에 고르는 목록에 씁니다.</p>
 
 <Demo src="checkbox/hero" />
 
@@ -19,11 +19,19 @@ import { Checkbox } from 'neba';
 
 <PropsTable name="Checkbox" />
 
-`label`·`description`·`error`가 children이 아니라 prop인 이유는 [TextField](./text-field)와 같습니다. 배치는 이미 정해져 있고, 호출하는 쪽이 정하고 싶은 것은 각 자리에 무엇이 들어가는가입니다. `children`은 아예 받지 않습니다 — 체크박스가 해야 할 말은 셋 중 하나에 들어갑니다.
+`label` · `description` · `error`는 `children`이 아니라 prop입니다. `children`은 받지 않습니다.
+
+즉시 효력이 생기는 설정이라면 [Switch](./switch)를 쓰세요. Checkbox는 저장 버튼과 함께 제출되는 값입니다.
 
 ## 예시
 
-### 상태
+### checked와 onCheckedChange
+
+`checked`와 `onCheckedChange`로 controlled, `defaultChecked`로 uncontrolled 컴포넌트가 됩니다.
+
+### disabled · readOnly · error
+
+`error`에 메시지를 주면 invalid 상태가 함께 켜지고 색 계열이 `danger`로 옮겨갑니다 — 체크 표시와 focus ring, 메시지가 한꺼번에 바뀝니다.
 
 <Demo src="checkbox/states">
 
@@ -31,11 +39,9 @@ import { Checkbox } from 'neba';
 
 </Demo>
 
-`error`는 invalid 상태도 함께 켜고, 색 계열 전체를 `danger`로 옮깁니다 — 체크 표시와 포커스 링, 메시지가 한꺼번에 넘어갑니다.
+### indeterminate
 
-### 중간 상태
-
-하위 항목이 서로 다르면 부모는 켜진 것도 꺼진 것도 아닙니다. `indeterminate`는 세 번째 값이 아니라 세 번째 겉모습입니다. 그 아래에서 체크박스는 여전히 켜짐 아니면 꺼짐입니다.
+하위 항목의 상태가 서로 다를 때 부모 Checkbox에 쓰는 세 번째 겉모습입니다. 값 자체는 여전히 켜짐 또는 꺼짐이며, `indeterminate`는 표시에만 관여합니다.
 
 <Demo src="checkbox/indeterminate">
 
@@ -43,7 +49,7 @@ import { Checkbox } from 'neba';
 
 </Demo>
 
-### 크기
+### size
 
 <Demo src="checkbox/sizes">
 
@@ -51,13 +57,9 @@ import { Checkbox } from 'neba';
 
 </Demo>
 
-## 체크박스가 둥글지 않은 이유
-
-체크박스의 모서리 반경은 상자의 약 30%입니다. 컨트롤이 쓰는 약 45%가 아닙니다. `--neba-radius-md`는 14px이고, 18px 상자에서 그것은 곧 원입니다 — 그리고 둥근 체크박스는 라디오 버튼입니다. 의도는 라이브러리의 다른 곳과 같습니다. 모서리를 잘라낸 시트이지, 알약이 아닙니다.
-
 ## 접근성
 
-- 진짜 `role="checkbox"`와 그 옆의 숨은 `<input>`으로 렌더링되므로 폼과 함께 제출됩니다.
-- 라벨은 Base UI Field가 컨트롤과 묶어 줍니다. 글자를 눌러도 토글됩니다.
-- `label`이 없다면 `aria-label`을 주세요.
+- `role="checkbox"`와 함께 숨은 `<input>`이 렌더링되므로 `name`을 주면 폼과 함께 제출됩니다.
+- 라벨이 컨트롤과 연결되어 있어 글자를 눌러도 토글됩니다.
+- `label`을 쓰지 않는다면 `aria-label`을 주세요.
 - `indeterminate`는 `aria-checked="mixed"`로 보고됩니다.

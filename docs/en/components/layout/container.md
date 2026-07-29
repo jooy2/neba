@@ -5,7 +5,7 @@ order: 1
 
 # Container
 
-<p class="neba-lede">Horizontal breathing room around whatever it wraps. Nothing to do with the grid — its one job is to keep a page's content off the edge of the window.</p>
+<p class="neba-lede">Puts horizontal gutters around a page's content and centres it. Keeping content off the edge of the window is its only job.</p>
 
 <Demo src="container/hero" />
 
@@ -15,23 +15,23 @@ import { Container } from 'neba';
 <Container>Content</Container>;
 ```
 
-It is often used next to [Grid](./grid), but the two are separate. A Container holds a grid as happily as it holds a single paragraph, and a [GridContainer](./grid) is complete without one. The questions are separate: how far the content sits from the edge of the window, and how the content divides itself up.
-
-It draws no surface for the same reason. The outermost element on a page is the one thing that must not decide what the page looks like. Put a [Box](../surfaces/box) or a [Card](../surfaces/card) inside when a sheet is wanted.
-
 ## Props
 
 <PropsTable name="Container" />
 
 Every native `<div>` attribute passes through.
 
+It draws no surface, so there is no `variant`, `color` or `elevation`. Put a [Box](../surfaces/box) or a [Card](../surfaces/card) inside when a sheet is wanted.
+
+It is often used with [Grid](./grid), but the two are separate: a Container decides how far the content sits from the edge of the window, a [GridContainer](./grid) how the content divides itself up.
+
 ## Examples
 
-### Measure
+### maxWidth
 
-The default is `none` — a gutter and no width limit. A Container's job is the gutter, and a measure is a second decision that a page should have to ask for.
+The default is `none` — gutters with no width limit.
 
-Given a value, it uses [the same ladder the breakpoints use](./grid#breakpoints). `lg` is 64rem, the same number a `lg:` utility changes at. That is why it is not Tailwind's named `max-w-*` scale: two ladders called `lg` on one page is how a layout drifts by a few pixels for no reason anybody can find later.
+Given a value, it uses [the same steps as Grid's breakpoints](./grid#breakpoints). `lg` is 64rem, the same width Tailwind's `lg:` utilities apply at.
 
 <Demo src="container/max-width">
 
@@ -39,9 +39,9 @@ Given a value, it uses [the same ladder the breakpoints use](./grid#breakpoints)
 
 </Demo>
 
-### No gutter, no centring, another element
+### padded · centered · render
 
-The three switches are independent. `padded={false}` keeps the centring and the measure and drops only the padding; `centered={false}` does the opposite. `render` is Base UI's render prop, so a Container can be a page's real `<main>`.
+The three are independent. `padded={false}` keeps the centring and the width limit and drops only the gutters; `centered={false}` does the opposite. `render` changes the element, so a Container can be a page's real `<main>`.
 
 <Demo src="container/plain">
 
@@ -49,9 +49,13 @@ The three switches are independent. `padded={false}` keeps the centring and the 
 
 </Demo>
 
+### size and density
+
+These set how wide the gutters are. It uses [Box](../surfaces/box)'s steps, and touches neither a height nor the type scale.
+
 ### With a grid
 
-The usual pairing. The gutter and the measure outside, the columns inside — and the inner grid is `padded={false}`, because it already sits in something that pads.
+The gutters and the width limit outside, the columns inside. The inner grid is `padded={false}`, because it already sits in something that pads.
 
 ```tsx
 <Container maxWidth="lg">
@@ -61,12 +65,3 @@ The usual pairing. The gutter and the measure outside, the columns inside — an
   </GridContainer>
 </Container>
 ```
-
-## Coming from Material UI
-
-| MUI | Neba |
-| --- | --- |
-| `maxWidth="lg"` | The same, except the default is `'none'` rather than `'lg'` |
-| `disableGutters` | `padded={false}` — the name the whole library uses |
-| `fixed` | Not offered. Use `maxWidth` |
-| <code v-pre>sx={{ px: 3 }}</code> | `size` / `density`. Padding is a step on a ladder, not an arbitrary number |

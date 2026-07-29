@@ -5,7 +5,7 @@ order: 3
 
 # Toast
 
-<p class="neba-lede">스스로 도착해서, 이미 화면에 있는 것 위에 뜨는 메시지.</p>
+<p class="neba-lede">화면 한쪽에 잠깐 떠올랐다 사라지는 알림입니다. 사용자의 흐름을 끊지 않고 작업 결과를 전달할 때 씁니다.</p>
 
 <Demo src="toast/hero" align="center" />
 
@@ -20,21 +20,25 @@ const toast = useToast();
 toast.add({ color: 'success', title: '배포 완료', description: 'production · 4분 02초' });
 ```
 
-## ToastProvider
+Toast는 컴포넌트가 아니라 hook으로 띄웁니다. 겉모습은 `ToastProvider`에서 한 번 정하고, 호출부에서는 내용만 넘깁니다.
+
+## Props
+
+### ToastProvider
 
 <PropsTable name="ToastProvider" />
 
-## useToast().add(options)
+### useToast().add(options)
 
 <PropsTable name="useToast().add" />
 
-`add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })`, `toasts`를 함께 돌려줍니다.
+hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })`, `toasts`를 함께 돌려줍니다.
 
 ## 예시
 
-### 스택이 놓이는 자리
+### position
 
-`position`이 `side`와 `align`의 조합이 아니라 두 단어인 이유는, 이 둘이 서로 독립적이지 않기 때문입니다. 토스트 스택은 위나 아래에 붙지 옆에 붙지 않습니다. 뒷부분은 [`NebaAlign`](../../guide/prop-conventions), 다른 모든 컴포넌트가 쓰는 그 단어입니다.
+스택이 붙을 자리입니다. 세로 방향(`top`/`bottom`)과 [`NebaAlign`](../../guide/prop-conventions)을 조합한 한 단어로 지정합니다.
 
 <Demo src="toast/positions">
 
@@ -42,9 +46,9 @@ toast.add({ color: 'success', title: '배포 완료', description: 'production �
 
 </Demo>
 
-### 액션, 그리고 promise 따라가기
+### timeout · actionLabel · onAction
 
-읽고 나서 조치가 필요한 토스트는 읽히기 전에 사라지면 안 되므로 `timeout: 0`을 주세요. `promise`는 같은 생각의 나머지 절반입니다. 세 개가 쌓이는 대신 하나가 마음을 바꿉니다.
+`timeout`은 자동으로 닫히기까지의 시간입니다. 사용자가 조치를 취해야 하는 Toast에는 `timeout: 0`을 주어 자동으로 닫히지 않게 하세요. `actionLabel`과 `onAction`은 Toast 안에 버튼 하나를 붙입니다.
 
 <Demo src="toast/action">
 
@@ -52,11 +56,9 @@ toast.add({ color: 'success', title: '배포 완료', description: 'production �
 
 </Demo>
 
-## 컴포넌트가 아니라 훅입니다
+### update와 promise
 
-토스트가 필요해지는 순간 호출자가 손에 쥐고 있는 것은 클릭 핸들러지 트리 안의 자리가 아닙니다. 계속 마운트해 둬야 하는 `<Toast open={…}/>`, 그리고 메시지마다 하나씩 생기는 상태 — 이 컴포넌트는 바로 그 모양을 피하려고 존재합니다.
-
-토스트가 **어떻게 보일지**는 provider에서 한 번에 정합니다. 스택의 자리, 너비, 표면, 유지 시간. 호출부에는 마땅히 남아야 할 것 하나만 남습니다 — 무슨 일이 일어났는지.
+`add`가 돌려준 `id`로 `update`를 부르면 그 Toast를 제자리에서 갱신하고 타이머를 다시 시작합니다. "업로드 중 → 업로드 완료"처럼 하나의 Toast가 상태를 바꾸는 경우에 씁니다.
 
 ```tsx
 const toast = useToast();
@@ -70,16 +72,15 @@ const id = toast.add({
 toast.update(id, { color: 'success', title: '복구됨' });
 ```
 
-같은 `id`로 다시 부르면 그 토스트를 제자리에서 갱신하고 타이머를 다시 시작합니다. "업로드 중… / 업로드 완료"가 원하는 동작입니다.
+`promise`는 같은 흐름을 Promise 하나로 처리합니다. 대기 · 성공 · 실패 메시지를 넘기면 Toast 하나가 상태에 따라 바뀝니다.
 
-## Toast인가 Alert인가?
+## Toast인가 Alert인가
 
-[Alert](./alert)는 그 일이 벌어진 페이지에 속하고 그 자리에 남습니다. 토스트는 방금 다른 곳에서 일어난 일에 대한 것이고, 떠납니다. 1분 뒤에도 여전히 참인 메시지라면 그것은 Alert입니다.
+[Alert](./alert)는 해당 페이지에 속하며 그 자리에 남습니다. Toast는 방금 일어난 일을 알리고 사라집니다. 1분 뒤에도 여전히 유효한 메시지라면 Alert를 쓰세요.
 
 ## 접근성
 
-잘 동작할 때 보이지 않는 부분은 전부 Base UI가 가집니다. 난데없이 나타난 메시지를 스크린 리더에 닿게 하는 live region, 호버와 창 비활성화에서 멈추는 타이머, 개수 제한, 스와이프, 스택으로 포커스를 옮기는 F6까지.
-
-`priority: 'high'`는 스크린 리더의 말을 끊고, 기본값은 말이 끊길 때까지 기다립니다. 오류는 끊을 만하고 저장 완료는 그렇지 않습니다.
-
-×는 스택이 호버되거나 포커스를 받기 전까지 일부러 접근성 트리에서 빠져 있습니다. 토스트가 "메시지 + 버튼"이 아니라 하나의 메시지로 읽히게 하기 위해서입니다.
+- live region으로 전달되므로 갑자기 나타난 메시지도 screen reader에 읽힙니다.
+- `priority: 'high'`는 screen reader가 읽던 내용을 끊고, 기본값은 끊기지 않고 기다립니다.
+- 타이머는 hover 중이거나 창이 비활성일 때 멈춥니다. F6으로 스택에 focus를 옮길 수 있습니다.
+- 닫기 버튼은 스택이 hover되거나 focus를 받기 전까지 접근성 트리에서 빠져 있어, Toast가 "메시지 + 버튼"이 아니라 하나의 메시지로 읽힙니다.

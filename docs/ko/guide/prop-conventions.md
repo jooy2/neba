@@ -17,7 +17,7 @@ type NebaVariant = 'solid' | 'outline' | 'text';
 type NebaElevation = 0 | 1 | 2 | 3;
 ```
 
-`NebaStyleProps`는 이 중 대부분의 컴포넌트가 공유하는 네 가지를 묶은 것입니다.
+`NebaStyleProps`는 그중 대부분의 컴포넌트가 함께 쓰는 네 가지를 묶어 둔 것입니다.
 
 ```ts
 interface NebaStyleProps {
@@ -41,13 +41,13 @@ export interface ButtonProps
 
 ## 각 축의 의미
 
-| Prop        | 규칙                                                                        |
-| ----------- | --------------------------------------------------------------------------- |
-| `variant`   | 표면의 무게. `solid`는 화면당 하나(주 액션), `outline`은 보조, `text`는 3차 |
-| `size`      | 컨트롤의 높이와 타입 스케일. [디자인 언어](./design-language) 참고          |
-| `color`     | 의미론적 역할. 임의 색상값을 받지 않습니다                                  |
-| `density`   | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않습니다                   |
-| `elevation` | 그림자 깊이. 기본 0(그림자 없음)                                            |
+| Prop | 규칙 |
+| --- | --- |
+| `variant` | 표면의 무게. `solid`는 화면당 하나(주 액션), `outline`은 보조 액션, `text`는 가장 낮은 무게 |
+| `size` | 컨트롤의 높이와 타입 스케일. [디자인 언어](./design-language) 참고 |
+| `color` | 의미론적 역할. 임의 색상값을 받지 않습니다 |
+| `density` | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않습니다 |
+| `elevation` | 그림자 깊이. 기본 0(그림자 없음) |
 
 ## 상태 prop
 
@@ -74,7 +74,7 @@ export interface ButtonProps
 4. 동작·접근성은 Base UI 프리미티브에 위임
 5. 공용 어휘에서 필요한 축을 가져오고, 없는 개념만 새로 정의
 6. `test/components/{이름}/{Name}.test.tsx` — **같은 커밋에** 포함
-7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성 — 소개 · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
+7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성 — 제목 · lede · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
 8. `docs/.vitepress/data/props.ts`에 props 테이블(로케일별 설명), `docs/.vitepress/demos/{이름}/`에 예시 데모 추가
 9. `docs/.vitepress/demos/gallery/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
 10. `npm run typecheck && npm test && npm run lint` 통과

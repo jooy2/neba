@@ -5,7 +5,7 @@ order: 4
 
 # Select
 
-<p class="neba-lede">One value chosen from a list. The trigger is a TextField's shell wearing a chevron — on purpose.</p>
+<p class="neba-lede">Chooses one value from a fixed list. The trigger is the same shell as TextField, wearing a chevron.</p>
 
 <Demo src="select/hero" />
 
@@ -26,9 +26,11 @@ import { Select } from 'neba';
 
 <PropsTable name="Select" />
 
-### Options are data
+When the options have to be searched, use [Combobox](./combobox); with only two or three, use [RadioGroup](./radio-group) or [SegmentedButton](./segmented-button).
 
-There is no `<Select.Option>` to compose. What a caller has is almost always an array already, and the list has to be available to the trigger _before_ the popup has ever been opened — that is how `Seoul` shows up for `value="icn"` on first paint.
+### items
+
+Options are passed as an array rather than composed from components.
 
 ```ts
 interface SelectOption {
@@ -38,13 +40,13 @@ interface SelectOption {
 }
 ```
 
-Values are strings and numbers, not arbitrary objects. A select is a form control and its value is what gets submitted; keep the identifier here and look the object up on the other side.
+`value` is a string or a number. It is what gets submitted with a form, so objects are not accepted — keep the identifier here and look the object up at the call site.
 
 ## Examples
 
-### Variants
+### variant
 
-The same three weights a [TextField](./text-field) has, drawn on the same shell. A form where the select is a different height, radius or colour from the fields around it is a form that looks assembled rather than designed.
+The same three weights a [TextField](./text-field) has, drawn on the same shell, so a select and the fields around it never disagree about height or border.
 
 <Demo src="select/variants">
 
@@ -52,7 +54,7 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell.
 
 </Demo>
 
-### Sizes
+### size
 
 <Demo src="select/sizes">
 
@@ -60,7 +62,7 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell.
 
 </Demo>
 
-### States
+### disabled · readOnly · error
 
 <Demo src="select/states">
 
@@ -70,12 +72,10 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell.
 
 ## The popup
 
-The popup is the one surface in the library that is _supposed_ to float, so unlike everything else it carries a shadow without being asked — at level 3, which is as far as the scale goes without hovering.
-
-It renders in a portal, at the end of `<body>`, which means it leaves any subtree your app scoped a CSS reset to. The positioner carries a `neba-portal` class for exactly that case: it is a hook to hang the reset off, not a style of its own. An app with Tailwind's Preflight applied globally needs nothing.
+The popup renders in a portal at the end of `<body>`, so it leaves any subtree your app scoped a CSS reset to. The positioner carries a `neba-portal` class to hang that reset off. An app with Tailwind's Preflight applied globally needs nothing.
 
 ## Accessibility
 
-- Base UI owns the popup's positioning and flipping, the focus trap, typeahead and the hidden input that makes the select submit with a form.
-- `label` becomes the accessible name; the trigger is a `combobox`.
-- A disabled option stays in the list and reports `aria-disabled` — the option exists, it just cannot be picked.
+- The trigger has the `combobox` role, and `label` becomes its accessible name.
+- The popup's positioning and flipping at the window edge, focus handling, typeahead and the hidden input for form submission are all handled.
+- A `disabled` option stays in the list and reports `aria-disabled`.

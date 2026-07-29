@@ -5,7 +5,7 @@ order: 3
 
 # Toast
 
-<p class="neba-lede">A message that arrives on its own, over whatever is already on the page.</p>
+<p class="neba-lede">A notice that appears briefly at the edge of the screen and leaves. Use it to report the result of an action without interrupting what the user is doing.</p>
 
 <Demo src="toast/hero" align="center" />
 
@@ -20,11 +20,15 @@ const toast = useToast();
 toast.add({ color: 'success', title: 'Deployed', description: 'production · 4m 02s' });
 ```
 
-## ToastProvider
+Toasts are raised from a hook rather than rendered as a component. The appearance is decided once on `ToastProvider`; the call site passes only the content.
+
+## Props
+
+### ToastProvider
 
 <PropsTable name="ToastProvider" />
 
-## useToast().add(options)
+### useToast().add(options)
 
 <PropsTable name="useToast().add" />
 
@@ -32,9 +36,9 @@ Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(pr
 
 ## Examples
 
-### Where the stack sits
+### position
 
-`position` is two words rather than a `side` plus an `align`, because the two are not independent: a toast stack is pinned to the top or the bottom and never to a side. The second half is [`NebaAlign`](../../guide/prop-conventions), the same word every other component uses.
+Where the stack is pinned, given as one word combining the vertical edge (`top`/`bottom`) with [`NebaAlign`](../../guide/prop-conventions).
 
 <Demo src="toast/positions">
 
@@ -42,9 +46,9 @@ Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(pr
 
 </Demo>
 
-### Actions, and following a promise
+### timeout · actionLabel · onAction
 
-A toast the reader has to act on should not leave before it is read, so give it `timeout: 0`. `promise` is the other half of the same idea: one toast that changes its mind rather than three stacked on each other.
+`timeout` is how long before the toast closes itself. Give a toast the reader has to act on `timeout: 0` so it does not leave on its own. `actionLabel` and `onAction` add a single button to it.
 
 <Demo src="toast/action">
 
@@ -52,11 +56,9 @@ A toast the reader has to act on should not leave before it is read, so give it 
 
 </Demo>
 
-## A hook, not a component
+### update and promise
 
-What a caller has at the moment a toast is warranted is a click handler, not a place in the tree. A `<Toast open={…}/>` they would have to keep mounted — with a piece of state per message — is the shape this component exists to avoid.
-
-Everything about how a toast _looks_ is decided once, on the provider: where the stack sits, how wide it is, which surface it wears, how long it lasts. The call site stays the one thing it should be — what happened.
+Calling `update` with the `id` that `add` returned refreshes that toast in place and restarts its timer — for a single toast that changes state, like "uploading → uploaded".
 
 ```tsx
 const toast = useToast();
@@ -70,16 +72,15 @@ const id = toast.add({
 toast.update(id, { color: 'success', title: 'Restored' });
 ```
 
-Reusing an `id` updates that toast in place and restarts its timer, which is what "uploading… / uploaded" wants.
+`promise` runs the same flow from a single Promise: pass the loading, success and error messages and one toast moves between them.
 
-## Toast or Alert?
+## Toast or Alert
 
-An [Alert](./alert) belongs to the page it is about and stays there. A toast is about something that just happened somewhere else, and it leaves. If the message is still true a minute from now, it is an Alert.
+An [Alert](./alert) belongs to its page and stays there. A toast reports something that just happened and leaves. If the message is still true a minute from now, use an Alert.
 
 ## Accessibility
 
-Base UI owns the parts that are invisible when they work: the live region that makes a message which appeared out of nowhere reach a screen reader, timers that pause on hover and on window blur, the limit, the swipe, and F6 to move focus into the stack.
-
-`priority: 'high'` interrupts a screen reader; the default waits for a pause. An error is worth interrupting for and a save confirmation is not.
-
-The × is deliberately kept out of the accessibility tree until the stack is hovered or focused, so a toast is announced as one message rather than as a message and a button.
+- Toasts are announced through a live region, so a message that appeared out of nowhere still reaches a screen reader.
+- `priority: 'high'` interrupts what a screen reader is saying; the default waits for a pause.
+- Timers pause on hover and while the window is blurred. F6 moves focus into the stack.
+- The close button stays out of the accessibility tree until the stack is hovered or focused, so a toast is announced as one message rather than as a message and a button.

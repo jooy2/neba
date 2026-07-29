@@ -43,7 +43,7 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 
 | Prop | The rule |
 | --- | --- |
-| `variant` | Weight of the surface. One `solid` per screen (the primary action), `outline` secondary, `text` tertiary |
+| `variant` | Weight of the surface. One `solid` per screen (the primary action), `outline` for secondary actions, `text` for the lowest weight |
 | `size` | The control's height and type scale. See the [design language](./design-language) |
 | `color` | A semantic role. Arbitrary colour values are not accepted |
 | `density` | **Padding only.** Never the height, never the type scale |
@@ -74,7 +74,7 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 4. Delegate behaviour and accessibility to a Base UI primitive
 5. Take the axes you need from the shared vocabulary; define only what genuinely has no name yet
 6. `test/components/{name}/{Name}.test.tsx` — **in the same commit**
-7. Write `docs/{locale}/components/{group}/{name}.md` — intro, preview, props, examples. One page **per locale**
+7. Write `docs/{locale}/components/{group}/{name}.md` — title, lede, preview, props, examples. One page **per locale**
 8. Add its rows to `docs/.vitepress/data/props.ts` and its demos to `docs/.vitepress/demos/{name}/`
 9. Give it a card in `demos/gallery/all.tsx` and a place on `demos/showcase/app.tsx`
 10. `npm run typecheck && npm test && npm run lint` all pass

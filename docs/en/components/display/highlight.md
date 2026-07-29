@@ -5,7 +5,7 @@ order: 11
 
 # Highlight
 
-<p class="neba-lede">Marks the words a reader is looking for, inside text they were already reading.</p>
+<p class="neba-lede">Marks the parts of a text that match a search query. Use it to show what matched in a list of search results or a filtered list.</p>
 
 <Demo src="highlight/hero" />
 
@@ -21,19 +21,17 @@ import { Highlight } from 'neba';
 
 <PropsTable name="Highlight" />
 
-## It is the search, not the styling
+Pass whatever the search box holds straight into `query` — a string, an array of strings, or a regular expression. There is no need to pre-compute match offsets. The component holds no state, so the marks update when `children` or `query` changes.
 
-`query` is what a search box holds, and everything about **how** the matching is done — case, whole words, a regular expression — is a prop rather than something a caller has to pre-compute into a list of offsets. Nothing here is stateful and nothing measures, so the whole component is a pure function of `children` and `query`: it re-marks on its own the moment the search box changes.
-
-There is no `size`, and that is not an omission. A mark sits inside running text and has to be the size of the text it is inside; a `size` prop would only offer ways to be wrong.
+There is no `size`: a mark sits inside running text and takes the surrounding type size.
 
 ## Examples
 
-### What the mark looks like
+### variant · underline · weight
 
-`variant` means the weight of a surface here exactly as it does everywhere else: `solid` is the highlighter pen, `outline` a hairline box around the word, `text` the colour alone. `underline` and `weight` are separate axes that combine with all three.
+`variant` is the weight of the mark. `solid` fills it like a highlighter pen, `outline` draws a hairline around the word, `text` changes the colour alone. `underline` and `weight` are separate axes that combine with all three.
 
-`color` defaults to `warning` and not arbitrarily. It is the one family whose fill is light with dark ink on it — the [colour page](../../guide/color) shows why — so a solid `warning` mark reads as a yellow highlighter over black text. Every other family is a white word on a block of colour.
+`color` defaults to `warning`, the one family whose fill is light with dark ink on it, so `solid` reads as a yellow highlighter. Any other family becomes white text on a block of colour.
 
 <Demo src="highlight/variants">
 
@@ -41,7 +39,11 @@ There is no `size`, and that is not an omission. A mark sits inside running text
 
 </Demo>
 
-### What counts as a match
+### caseSensitive and wholeWord
+
+`caseSensitive` respects case; `wholeWord` matches only at word boundaries. A word here is a run of letters, digits and underscores, so it does very little for Korean or Japanese, where phrases are not delimited by spaces — which is why it is off by default.
+
+An array of strings is tried **longest first**: matching `['data', 'database']` shortest-first would mark `data` and leave `base` outside the mark.
 
 <Demo src="highlight/matching">
 
@@ -49,13 +51,9 @@ There is no `size`, and that is not an omission. A mark sits inside running text
 
 </Demo>
 
-An array is tried **longest first**. Alternation in a regular expression is first-match-wins, so without it `['data', 'database']` would mark `data` and leave `base` outside the mark.
+### Text inside nested elements
 
-For `wholeWord`, a word is a run of letters, digits and underscores in any script. It does the right thing for `café` and `naïve`, and it means very little for Korean or Japanese, where a phrase is not delimited by spaces at all. That is a property of the writing system rather than of this prop, and is why it is off by default.
-
-### Text inside elements
-
-Most libraries require `children` to be a string, and that breaks on the first search result with a `<strong>` in it. Here the tree is walked into: the text is marked and everything else is left exactly as it was.
+`children` does not have to be a string. The React tree is walked into: text nodes are marked and every other element is left exactly as it was.
 
 <Demo src="highlight/nested">
 
@@ -65,6 +63,5 @@ Most libraries require `children` to be a string, and that breaks on the first s
 
 ## Accessibility
 
-The mark is a real `<mark>`, which is the element for "text of relevance to the reader" and is announced as such. That has one consequence worth knowing: marking eleven words in a paragraph tells a screen reader that eleven things are important, which is a way of saying nothing. A highlight is for a handful of matches.
-
-A `<mark>` also arrives from the browser's own stylesheet with a yellow background and black ink. That is why `variant="text"` still sets its background to `transparent` **explicitly** — "no surface" has to be said out loud, or it turns into the browser's surface.
+- Marks render as real `<mark>` elements, which carry the meaning "text of relevance to the reader". Marking too many words in one paragraph dilutes that meaning.
+- A `<mark>` arrives from the browser's own stylesheet with a yellow background, which is why `variant="text"` sets `background` to `transparent` explicitly.

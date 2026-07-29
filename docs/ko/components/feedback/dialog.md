@@ -5,7 +5,7 @@ order: 2
 
 # Dialog
 
-<p class="neba-lede">답할 때까지 페이지를 가져가는 시트.</p>
+<p class="neba-lede">답할 때까지 페이지를 가리는 modal sheet입니다. 확인이 필요한 작업이나 흐름을 끊고 처리해야 하는 입력에 씁니다.</p>
 
 <Demo src="dialog/hero" align="center" />
 
@@ -26,9 +26,13 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 <PropsTable name="Dialog" />
 
+`variant`와 `elevation`은 없습니다. modal은 항상 3단계 그림자를 답니다.
+
 ## 예시
 
-### size가 곧 너비입니다
+### size와 width
+
+`size`는 타입 스케일과 여백은 물론 sheet의 최대 너비까지 함께 정합니다. 작은 글씨로 넓은 표나 diff를 보여 줘야 하는 경우처럼 그 조합에서 벗어나야 할 때는 `width`에 길이를 직접 지정하세요.
 
 <Demo src="dialog/sizes">
 
@@ -36,9 +40,9 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 </Demo>
 
-### 스크롤되는 본문
+### dividers
 
-스크롤되는 것은 본문뿐이고 제목과 액션은 제자리에 남습니다. 여기서 `dividers`가 진짜로 하는 일이 그것입니다 — 헤더가 움직이지 않았다고 말해 주는 것이 그 하이라인입니다.
+본문이 길면 본문만 스크롤되고 제목과 액션은 제자리에 남습니다. `dividers`는 그 경계에 선을 그어, 헤더가 함께 스크롤되지 않았음을 보여 줍니다.
 
 <Demo src="dialog/scrolling">
 
@@ -46,9 +50,9 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 </Demo>
 
-### 반드시 답해야 하는 다이얼로그
+### dismissible
 
-`dismissible={false}`는 Esc와 바깥 클릭을 함께 끕니다. 답할 수 있는 액션이 있을 때만 끄세요. 그 외에는 나갈 방법이 없습니다.
+`dismissible={false}`는 Esc와 바깥 클릭을 함께 막습니다. `actions`에 답할 수 있는 버튼이 있을 때만 끄세요 — 그 외에는 나갈 방법이 없습니다.
 
 <Demo src="dialog/controlled">
 
@@ -56,9 +60,9 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 </Demo>
 
-## 상태를 들지 않고 닫기
+### DialogClose
 
-비제어 다이얼로그에는 Cancel 버튼이 호출할 `setOpen`이 없고, 그렇다고 모든 다이얼로그를 제어형으로 만들면 버튼 하나에 답하기 위한 상태가 다이얼로그마다 하나씩 생깁니다. `DialogClose`가 그 출구입니다. Base UI의 close 파트 그대로이므로 `render`로 진짜 Neba 버튼을 안에 넣을 수 있습니다.
+`open` 상태를 직접 들지 않고도 버튼으로 Dialog를 닫을 수 있습니다. `render`로 원하는 컨트롤을 넣으세요.
 
 ```tsx
 actions={
@@ -69,20 +73,8 @@ actions={
 }
 ```
 
-## 크기 축은 하나입니다
-
-MUI는 이것을 `size`와 `maxWidth`로 나눕니다. 여기서는 하나입니다. `size`가 타입 스케일과 여백은 물론 **시트가 넓어질 수 있는 한계까지** 정합니다. 다섯 값짜리 스케일을 하나 더 만드는 것은 이미 이름이 있는 개념에 두 번째 철자를 만드는 일입니다 — [Prop 규약](../../guide/prop-conventions)을 보세요.
-
-다만 그 분리가 존재하는 이유 자체는 실제 상황입니다. 표나 diff를 담는, 작은 글씨에 넓은 시트. 그것이 `width`이고, 스케일이 아니라 그냥 숫자이므로 무엇과도 보조를 맞출 필요가 없습니다.
-
-## 없는 것
-
-`variant`가 없습니다. 세 가지 무게는 "이 표면이 주변 페이지에 대해 얼마나 자기를 주장하는가"에 답하는 축인데, 모달은 이미 페이지를 통째로 가져갔습니다.
-
-`elevation`도 없습니다. 팝업은 라이브러리에서 **떠 있어야 마땅한** 두 표면 중 하나이므로 언제나 3단계 그림자를 답니다. 평평하게 두라고 시킬 수 있는 다이얼로그는 다이얼로그이기를 그만두라고 시킬 수 있는 다이얼로그입니다.
-
 ## 접근성
 
-어려운 부분은 전부 Base UI가 가집니다 — 포커스 트랩, 스크롤 잠금, 뒤 페이지 비활성화, 닫을 때 트리거로 포커스 되돌리기, 그리고 `title`과 `description`을 `aria-labelledby`·`aria-describedby`로 잇는 일. 제목은 진짜 `<h2>`이므로 다이얼로그가 문서 개요에 제대로 나타납니다.
-
-`showClose`는 이 라이브러리의 다른 불리언과 달리 기본이 켜짐입니다. 모달은 답할 때까지 페이지를 가져가고, 나가는 길은 기억해 내야 하는 것이 아니라 보여야 합니다. 터치 스크린 리더가 팝업에서 빠져나오는 통로이기도 합니다.
+- `title`과 `description`은 각각 `aria-labelledby`, `aria-describedby`로 연결됩니다. `title`은 실제 `<h2>`로 렌더링됩니다.
+- focus trap, scroll lock, 뒤 페이지 inert 처리, 닫을 때 trigger로 focus 복귀가 모두 적용됩니다.
+- `showClose`는 기본값이 켜짐입니다. modal에서 나가는 길은 항상 보여야 하고, 터치 screen reader가 팝업을 빠져나오는 통로이기도 합니다.

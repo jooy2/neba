@@ -5,7 +5,7 @@ order: 2
 
 # Card
 
-<p class="neba-lede">A Box with the parts a card is made of laid out on it: a title, a subtitle, a body and a footer. Every Box prop passes straight through, so a card is styled on exactly the same axes as the box it is.</p>
+<p class="neba-lede">A Box with slots laid out on it for a title, a subtitle, a body and a footer. Use it for content of the same shape shown repeatedly.</p>
 
 <Demo src="card/hero" />
 
@@ -21,13 +21,13 @@ import { Card } from 'neba';
 
 <PropsTable name="Card" />
 
-Takes every [Box](./box) prop. The one exception is `padded`, which is omitted because a card redistributes that padding section by section.
+Takes every [Box](./box) prop. The one exception is `padded`, omitted because a Card redistributes that padding section by section.
 
 ## Examples
 
-### Sections
+### title · subtitle · headerAction · footer
 
-The sections are props rather than compound sub-components. The arrangement is fixed, and what a caller wants to decide is what goes in each slot, not what order the slots come in. A slot you do not pass is not rendered.
+The sections are props rather than sub-components, and a slot you do not pass is not rendered. `headerAction` is the control slot at the far end of the title row.
 
 <Demo src="card/sections">
 
@@ -35,9 +35,9 @@ The sections are props rather than compound sub-components. The arrangement is f
 
 </Demo>
 
-### Dividers
+### dividers
 
-Turn `dividers` on and the sections are separated by a hairline instead of by space. The lines have to reach both edges, so the padding moves from the sheet onto each section.
+Separates the sections with a rule instead of space. The lines have to reach both edges of the sheet, so the padding moves from the Card onto each section.
 
 <Demo src="card/dividers">
 
@@ -45,9 +45,9 @@ Turn `dividers` on and the sections are separated by a hairline instead of by sp
 
 </Demo>
 
-### Sizes
+### size
 
-`size` sets the sheet's radius and padding together with the type scale of the header and the body. The title sits one step above the body, the subtitle one step below it.
+Sets the sheet's radius and padding together with the type scale of the header and the body. The title sits one step above the body, the subtitle one step below it.
 
 <Demo src="card/sizes">
 
@@ -57,7 +57,7 @@ Turn `dividers` on and the sections are separated by a hairline instead of by sp
 
 ### Holding controls
 
-A card is a box, so the controls inside it sit on glass. When the title belongs in the document outline, pass a real heading — `title={<h2>…</h2>}`. It inherits the card's type scale rather than the browser's.
+Pass a real heading as `title` to put it in the document outline — `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
 
 <Demo src="card/form">
 

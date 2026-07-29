@@ -5,7 +5,7 @@ order: 1
 
 # Button
 
-<p class="neba-lede">A control that runs an action. Base UI's Button primitive with Neba's acrylic surface on top of it.</p>
+<p class="neba-lede">A control that runs an action. Use it for anything the user deliberately triggers — submitting a form, saving, deleting.</p>
 
 <Demo src="button/hero" />
 
@@ -19,15 +19,15 @@ import { Button } from 'neba';
 
 <PropsTable name="Button" />
 
-Every native `<button>` attribute passes straight through. The one exception is `color`, which is omitted because it collides with the `color` in the table above.
+Every native `<button>` attribute passes straight through. The one exception is `color`, omitted because it collides with the `color` in the table above.
 
-What the shared axes (`variant` `size` `color` `density` `elevation`) mean across the library is in [Prop conventions](../../guide/prop-conventions).
+What the shared axes (`variant` `size` `color` `density` `elevation`) mean across the library is in [prop conventions](../../guide/prop-conventions).
 
 ## Examples
 
-### Variants
+### variant
 
-Keep one `solid` per screen. If there are two primary actions, neither of them is the primary action.
+`solid` is the primary action, `outline` a secondary one, `text` a low-weight action for a list or a toolbar. Keep one `solid` per screen.
 
 <Demo src="button/variants">
 
@@ -35,9 +35,9 @@ Keep one `solid` per screen. If there are two primary actions, neither of them i
 
 </Demo>
 
-### Colours
+### color
 
-Six roles, and that is all. Arbitrary colour values are not accepted — a colour is a role, not a value.
+Six role colours only; arbitrary colour values are not accepted.
 
 <Demo src="button/colors">
 
@@ -45,9 +45,9 @@ Six roles, and that is all. Arbitrary colour values are not accepted — a colou
 
 </Demo>
 
-### Sizes
+### size
 
-`md` (32px) is the desktop default. `xs` and `sm` are for toolbars and table rows; `lg` and `xl` are for the one action a screen is actually about.
+Sets the height and the type scale together: `xs` 22px · `sm` 26px · `md` 32px · `lg` 40px · `xl` 48px. `md` is the desktop default.
 
 <Demo src="button/sizes">
 
@@ -55,7 +55,7 @@ Six roles, and that is all. Arbitrary colour values are not accepted — a colou
 
 </Demo>
 
-### Density
+### density
 
 `density` changes horizontal padding and nothing else. Two buttons of the same `size` are the same height whatever their density, so a mixed row keeps its baseline.
 
@@ -65,9 +65,9 @@ Six roles, and that is all. Arbitrary colour values are not accepted — a colou
 
 </Demo>
 
-### Icons
+### startIcon and endIcon
 
-Icons are drawn at `1.2em`, so they track the label and never need a size of their own. Pass no label and the button goes square — which is when it needs an `aria-label`.
+Icons are drawn at `1.2em`, so they track the label and never need a size of their own. With icons but no `children` the button goes square, and then it needs an `aria-label` — for an icon-only control, [IconButton](./icon-button) requires `label` instead.
 
 <Demo src="button/icons">
 
@@ -75,15 +75,9 @@ Icons are drawn at `1.2em`, so they track the label and never need a size of the
 
 </Demo>
 
-### States
+### loading · readOnly · disabled
 
-<Demo src="button/states">
-
-<<< @/.vitepress/demos/button/states.tsx
-
-</Demo>
-
-| State      | Appearance                                      | Focus | Native `disabled` |
+| prop       | Appearance                                      | Focus | Native `disabled` |
 | ---------- | ----------------------------------------------- | ----- | ----------------- |
 | `loading`  | Unchanged; a spinner takes the `startIcon` slot | Kept  | No                |
 | `readOnly` | Keeps its colour, goes flat, drains saturation  | Kept  | No                |
@@ -91,9 +85,15 @@ Icons are drawn at `1.2em`, so they track the label and never need a size of the
 
 None of the three let a click reach the parent.
 
-### Elevation
+<Demo src="button/states">
 
-The default `0` means no shadow at all — what separates the surface from the page is the acrylic edge. Hovering adds a level and pressing removes one, so a flat button answers a press without moving.
+<<< @/.vitepress/demos/button/states.tsx
+
+</Demo>
+
+### elevation
+
+Drop shadow depth. The default `0` means no shadow at all. Hovering adds a level and pressing removes one, so even a `0` button answers a press.
 
 <Demo src="button/elevation">
 
@@ -101,7 +101,9 @@ The default `0` means no shadow at all — what separates the surface from the p
 
 </Demo>
 
-### Full width
+### fullWidth
+
+Stretches to the width of the container.
 
 <Demo src="button/full-width">
 
@@ -114,5 +116,5 @@ The default `0` means no shadow at all — what separates the surface from the p
 - Always renders a native `<button>`. `type` passes through, so `type="submit"` works inside a form.
 - Give icon-only buttons an `aria-label`.
 - The focus ring only appears on `:focus-visible`, so a mouse click never draws one.
-- `loading` and `readOnly` keep focus: dropping out of the focus order costs keyboard users their sense of the page.
+- `loading` and `readOnly` keep focus: dropping out of the tab order costs keyboard users their sense of the page.
 - Every colour combination meets 4.5:1 for text on the fill.

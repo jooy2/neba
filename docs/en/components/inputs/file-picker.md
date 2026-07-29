@@ -5,7 +5,7 @@ order: 10
 
 # FilePicker
 
-<p class="neba-lede">A dashed box you drop files on, or press to open the file dialog.</p>
+<p class="neba-lede">A dropzone you drag files onto, or press to open the file dialog. It checks size, type and count, and reports back what it turned away.</p>
 
 <Demo src="file-picker/hero" />
 
@@ -29,9 +29,9 @@ import { FilePicker } from 'neba';
 
 ## Examples
 
-### Variants
+### variant
 
-All three share the dashed edge. It is the one place in the library that draws a line which is not solid, and it is not decoration — a dashed rectangle is the established sign for "this area accepts a drop", and a dropzone that looks like a card is a card nobody tries to drop on.
+All three weights share the dashed edge, which is the established sign that an area accepts a drop.
 
 <Demo src="file-picker/variants">
 
@@ -39,7 +39,15 @@ All three share the dashed edge. It is the one place in the library that draws a
 
 </Demo>
 
-### What it turns away
+### accept · maxSize · maxFiles
+
+The browser's `accept` attribute only governs its own file dialog and never a file that arrived by drag, so this component runs the same string itself. All three forms are supported: `.ext`, `type/subtype` and `type/*`.
+
+`maxFiles` is not how many may be dropped at once but **how many may be held in total**. Dropping three files on a `maxFiles={3}` picker that already holds two accepts exactly one.
+
+### onReject
+
+Reports the files that were turned away and why. Without this handler a rejected file disappears with no feedback, so always pass it.
 
 <Demo src="file-picker/rejection">
 
@@ -47,7 +55,7 @@ All three share the dashed edge. It is the one place in the library that draws a
 
 </Demo>
 
-### States
+### disabled · readOnly · error
 
 <Demo src="file-picker/states">
 
@@ -55,30 +63,12 @@ All three share the dashed edge. It is the one place in the library that draws a
 
 </Demo>
 
-## The browser does not apply `accept` to a dropped file
+### title · hint · icon · showList
 
-The `accept` attribute governs the browser's **own file dialog** and nothing else. A file that arrived by drag has never been checked against that string. A dropzone that only sets the attribute accepts anything the moment a file comes in by drop.
-
-This component runs the check itself, against the same string, in the three forms the attribute takes: `.ext`, `type/subtype`, and `type/*`.
-
-## A drag state that does not flicker
-
-`dragenter` and `dragleave` fire for every **child** of the zone the pointer crosses. A dropzone that toggles a boolean therefore flickers the entire time a file is being dragged over its own contents. Counting the events is the fix, and the only thing that survives a zone with content in it.
-
-## `maxFiles` is not "you may drop this many"
-
-It is "you may end up with this many". It is checked against what is already held, so dropping three files on a `maxFiles={3}` picker that holds two accepts exactly one of them.
-
-## Why there is no Base UI primitive
-
-A dropzone is a `<div>` listening for four drag events and an `<input type="file">` it clicks for you. There is no popup to position, no focus to trap and no roving anything. The fallback the [design language](../../guide/design-language) allows — plain React and DOM — is the right one here.
-
-What is left is the part hand-rolled dropzones usually get wrong, which is the three sections above.
+`title` and `hint` are the copy inside the dropzone and `icon` the glyph above it. `showList` renders the chosen files under the zone, and `removeLabel` names each remove button.
 
 ## Accessibility
 
-The shell is a `<div>` and the pressable area inside it is a real `<button>`. The file list sits **outside** that button, because the remove buttons cannot be nested inside the browse button — the same shape [Chip](../display/chip) and [ListItem](../display/list) use.
-
-The real `<input type="file">` is moved off-screen rather than hidden. `display: none` and `visibility: hidden` both make an input unfocusable in some browsers, and this one still has to be reachable to a form and to a `required` validation message.
-
-Pass `onReject`. Without it a rejected file disappears without a word.
+- The shell is a `<div>` and the pressable area inside it is a real `<button>`. The file list sits outside that button, so the remove buttons are never nested inside the browse button.
+- The `<input type="file">` is moved off-screen rather than set to `display: none`, which makes an input unfocusable in some browsers and would block `required` validation messages.
+- The drag state is tracked by counting events, so it does not flicker as the pointer crosses children of the dropzone.

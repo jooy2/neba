@@ -56,7 +56,7 @@ A family is a set of `--neba-{family}-{role}` tokens.
 
 ## Container surfaces are never dyed
 
-Only **controls** let a family flood their surface. Box, Card and TextField read a neutral, undyed ladder rather than the family's own `--neba-{color}-panel`.
+Only **controls** let a family flood their surface. Box, Card and TextField read a neutral, undyed set of three steps rather than the family's own `--neba-{color}-panel`.
 
 ```css
 --neba-panel        /* white 66% (dark 7%) */
@@ -72,7 +72,7 @@ What a container holds is other people's content, and it arrives with its own co
 
 </Demo>
 
-It is also why the ladder is **opacity** rather than lightness: an engaged surface holds more light instead of turning grey.
+It is also why the three steps rise in **opacity** rather than lightness: an engaged surface holds more light instead of turning grey.
 
 > **One consequence.** On a `solid` Box or Card, which has no border, `color` has nothing left to reach and makes no visible difference. On a container, `color` is effectively the prop that picks the edge.
 

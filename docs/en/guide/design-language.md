@@ -7,11 +7,10 @@ order: 2
 
 A Neba surface is **a sheet of cut acrylic, not a moulded plastic key**. That one sentence is the reason for every rule below. When a new component leaves you unsure, come back to it.
 
-It borrows the depth of Fluent UI, the elegance of Liquid Glass and the order of Material — and deliberately drops what each of them overdoes.
+What that sentence takes, and what it leaves out:
 
-- **Taken** from Fluent: light catching the top edge of a surface. **Dropped**: the dark bevel underneath.
-- **Taken** from Liquid Glass: translucency and a blurred backdrop. **Dropped**: gloss and refraction.
-- **Taken** from Material: a clear elevation scale. **Dropped**: the bulk, and shadows that are always on.
+- **Taken**: light catching the top edge of a surface, translucency over a blurred backdrop, an elevation scale with distinct steps.
+- **Dropped**: the dark bevel underneath, gloss and refraction, bulk, and shadows that are always on.
 
 ---
 
@@ -46,7 +45,7 @@ What a container holds is other people's content, and it arrives with its own co
 
 Controls are the opposite case and keep the tinted `--neba-{color}-panel`, because a Button's surface _is_ the thing being coloured.
 
-It is also why the ladder is **opacity** rather than lightness: as a surface is engaged it holds more light, instead of turning grey.
+It is also why the three steps rise in **opacity** rather than lightness: as a surface is engaged it holds more light, instead of turning grey.
 
 > **One consequence.** On a `solid` Box or Card, which has no border, `color` has nothing left to reach and makes no visible difference. On a container, `color` is effectively the prop that picks the edge.
 
@@ -60,7 +59,7 @@ Translucency plus blur alone gives you polished glass. Noise is what makes it sa
 
 ### The sheen is off-vertical
 
-`linear-gradient(148deg, …)`. The symmetric top-down gradient is what every framework ships, and it was the single biggest reason Neba used to look like Bootstrap.
+`linear-gradient(148deg, …)`. A symmetric gradient falling straight down says nothing about where the light is coming from, which leaves the surface looking painted rather than cut. Tilting it a few degrees reads as light arriving from one side.
 
 ---
 
@@ -105,7 +104,7 @@ Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, hold
 
 ### Do not lighten the fill in dark mode
 
-The Material approach — pastel fills with dark text — hurts on a dark screen. Neba keeps fills mid-tone in dark mode and keeps the text white. The only thing that lightens is `accent`, the colour that has to read on a surface.
+Pastel fills with dark text on them are a common dark-theme approach, but on a dark screen the fill itself becomes the light source and it hurts to look at. Neba keeps fills mid-tone in dark mode and keeps the text white. The only thing that lightens is `accent`, the colour that has to read on a surface.
 
 ### `warning` has dark text
 
@@ -208,14 +207,13 @@ The light effects are **the highlight riding on top of the press, not the press 
 
 ## 6. States
 
-The four states have to say four different things.
+The three states each have to speak on their own axis, and each has to be distinguishable from the default at a glance.
 
 | State | How it is expressed | Why |
 | --- | --- | --- |
 | `disabled` | Drops the colour family entirely for neutral grey | A faded colour still reads as "this is the primary action, only blurrier" |
 | `loading` | Unchanged, with a spinner in the `startIcon` slot | It is in progress, not unavailable |
 | `readOnly` | Keeps the colour, goes flat, `saturate(0.55)` | A label that happens to be button-shaped |
-| default | — | — |
 
 Only `disabled` uses the native `disabled` attribute. `loading` and `readOnly` are marked with `aria-disabled`, keep focus, and stop activation in the handler.
 

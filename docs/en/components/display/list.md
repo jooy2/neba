@@ -5,7 +5,7 @@ order: 5
 
 # List
 
-<p class="neba-lede">A stack of rows: navigation, settings, results, anything that repeats.</p>
+<p class="neba-lede">Stacks rows of the same shape vertically. Use it for navigation, settings, search results — anything that repeats.</p>
 
 <Demo src="list/hero" />
 
@@ -22,19 +22,23 @@ import { List, ListItem } from 'neba';
 </List>;
 ```
 
-## List
+## Props
+
+### List
 
 <PropsTable name="List" />
 
-## ListItem
+`size` and `density` are set on `List` only. They reach every `ListItem` through a context, so there is no need to repeat them per row.
+
+### ListItem
 
 <PropsTable name="ListItem" />
 
 ## Examples
 
-### Tiles or rules
+### dividers
 
-`dividers` changes more than it sounds like. With the rules on, the lines have to reach both edges of the sheet, so the list gives up its inner padding and the rows give up their rounded corners: a row cannot be a floating tile and a ruled line at the same time.
+`dividers` draws a rule between rows. The rules have to reach both edges of the sheet, so the list's inner padding and the rows' rounded corners go with them: rows become ruled lines rather than floating tiles.
 
 <Demo src="list/dividers">
 
@@ -42,9 +46,9 @@ import { List, ListItem } from 'neba';
 
 </Demo>
 
-### Inside a Card
+### variant
 
-`variant="text"` is the one to reach for there. The card is already a sheet, and a second bordered rectangle inside it is a rectangle too many.
+Use `variant="text"` inside a [Card](../surfaces/card). The card is already a sheet, so the borders do not double up.
 
 <Demo src="list/variants">
 
@@ -52,9 +56,9 @@ import { List, ListItem } from 'neba';
 
 </Demo>
 
-### A row with a control on it
+### onClick · href · action
 
-`action` sits outside the pressable area on purpose. A row that both navigates and holds a switch has two things to press, and one of them cannot be nested inside the other — a `<button>` inside a `<button>` is markup the browser rewrites on parse.
+`onClick` or `href` makes the whole row a `<button>` or an `<a>` respectively. `action` is a separate control slot **outside** that pressable area — for a row that navigates when pressed but also carries a switch of its own.
 
 <Demo src="list/interactive">
 
@@ -62,20 +66,8 @@ import { List, ListItem } from 'neba';
 
 </Demo>
 
-## Two components, one axis each
-
-`size` and `density` are properties of the stack, not of any one line in it, so they live on `List` and reach the rows through a context. Setting them per row would be two chances per row to get one wrong, and the failure is silent: a list where item four is a size bigger than the rest.
-
-A context rather than `React.Children.map` with `cloneElement`, for the same reason [ButtonGroup](../inputs/button-group) uses one — the moment a caller `.map()`s their data or wraps a row in a [Tooltip](../feedback/tooltip), cloning stops reaching the item.
-
-## No primitive underneath
-
-There is no Base UI component under this, on purpose. A list is not a composite widget: it has no roving focus, no selection model, no keyboard contract of its own. Reaching for a menu or a listbox primitive to get one would hand every consumer's plain list of links the semantics of a menu, which is one of the most common ways a component library breaks a screen reader.
-
 ## Accessibility
 
-The shell is always an `<li>`. What changes is what is inside it: a plain run of content, or — when `onClick` or `href` is given — a real `<button>` or `<a>` wrapping it.
-
-`selected` puts `aria-current="page"` on a link and `aria-current="true"` on a button. Not `aria-pressed`, which would be a third thing: a toggle. A selected row is not a toggle.
-
-The list says `role="list"` out loud, because Tailwind's reset takes the bullets off every `<ul>` and Safari takes the list semantics off with them.
+- `List` sets `role="list"` explicitly, because Tailwind's reset removes the bullets from `<ul>` and Safari drops the list semantics with them.
+- A `ListItem` shell is always an `<li>`, with a `<button>` or an `<a>` inside it depending on `onClick` and `href`.
+- `selected` puts `aria-current="page"` on a link and `aria-current="true"` on a button. Not `aria-pressed` — a selected row is not a toggle.

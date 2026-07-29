@@ -5,7 +5,7 @@ order: 7
 
 # Switch
 
-<p class="neba-lede">An immediate on/off. The difference from a Checkbox is not visual, it is temporal.</p>
+<p class="neba-lede">Turns a setting on or off immediately. Use it where the change takes effect the moment it is made.</p>
 
 <Demo src="switch/hero" />
 
@@ -19,13 +19,15 @@ import { Switch } from 'neba';
 
 <PropsTable name="Switch" />
 
-## Switch or checkbox?
-
-A checkbox is a value that gets submitted with a form. A switch takes effect the moment it moves. If there is a Save button underneath it, it should have been a checkbox.
+If there is a Save button underneath and the value is submitted with a form, use [Checkbox](./checkbox) instead. That is what separates the two.
 
 ## Examples
 
-### States
+### checked and onCheckedChange
+
+`checked` with `onCheckedChange` makes it controlled; `defaultChecked` makes it uncontrolled.
+
+### disabled · readOnly
 
 <Demo src="switch/states">
 
@@ -33,9 +35,9 @@ A checkbox is a value that gets submitted with a form. A switch takes effect the
 
 </Demo>
 
-### Label placement
+### labelPlacement
 
-`end` reads as a caption for the control. `start` is for a settings list, where the labels form a column and every switch lines up on the right.
+`end` (the default) puts the label after the control, so it reads as a caption. `start` suits a settings list, where the labels form a left column and the switches line up on the right.
 
 <Demo src="switch/placement">
 
@@ -43,7 +45,7 @@ A checkbox is a value that gets submitted with a form. A switch takes effect the
 
 </Demo>
 
-### Sizes
+### size
 
 <Demo src="switch/sizes">
 
@@ -51,14 +53,9 @@ A checkbox is a value that gets submitted with a form. A switch takes effect the
 
 </Demo>
 
-## The two rules it bends
-
-**It is a pill.** Everywhere else the radius stops short of 50%, because the flat run along the top and bottom edge is what reads as a sheet with its corners cut off. A switch is not a sheet — it is a track something runs along, and a track with corners is a track the thumb would have to climb out of.
-
-**Something moves.** This is the only component in the library where anything travels, and it travels on `left`, not on a `transform`. The no-transform rule exists because scaling a control resamples its label; the thumb carries no text, and its movement _is_ the control. Under `prefers-reduced-motion` the travel drops to 0ms with everything else.
-
 ## Accessibility
 
-- Renders a real `role="switch"` with a hidden `<input>` beside it.
-- The label is wired to the control by Base UI's Field: clicking the text flips it.
+- Renders `role="switch"` with a hidden `<input>` beside it.
+- The label is wired to the control, so clicking the text flips it.
 - Without a `label`, give it an `aria-label`.
+- The thumb's travel becomes instant under `prefers-reduced-motion`.

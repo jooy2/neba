@@ -5,7 +5,7 @@ order: 8
 
 # Slider
 
-<p class="neba-lede">범위 위에서 값을 고릅니다. 배열을 넘기면 범위 슬라이더가 됩니다 — 그것을 위한 별도 prop은 없습니다. 값의 모양이 이미 어느 쪽인지 말해 주기 때문입니다.</p>
+<p class="neba-lede">정해진 범위 안에서 값을 끌어서 고릅니다. 정확한 숫자보다 상대적인 크기가 중요한 값에 씁니다.</p>
 
 <Demo src="slider/hero" />
 
@@ -19,11 +19,15 @@ import { Slider } from 'neba';
 
 <PropsTable name="Slider" />
 
-`onValueChange`는 끄는 동안 계속 호출되고, `onValueCommitted`는 값이 확정될 때 한 번만 호출됩니다. 네트워크 요청은 두 번째에 거세요.
+`onValueChange`는 끄는 동안 계속 호출되고, `onValueCommitted`는 값이 확정될 때 한 번만 호출됩니다. 네트워크 요청은 후자에 거세요.
+
+정확한 숫자를 입력받아야 한다면 [NumberField](./number-field)를 쓰세요.
 
 ## 예시
 
-### 범위
+### value 배열로 범위 지정
+
+`value`에 숫자 배열을 주면 thumb이 그만큼 생기는 range slider가 됩니다. 별도의 prop은 없습니다.
 
 <Demo src="slider/range">
 
@@ -31,9 +35,13 @@ import { Slider } from 'neba';
 
 </Demo>
 
-### 크기
+### min · max · step
 
-thumb은 트랙보다 의도적으로 훨씬 큽니다. 실제로 손이 닿는 곳은 여기뿐이고, 6px 레일에 맞춘 thumb은 터치스크린에서 아무도 잡지 못하는 thumb입니다.
+`step`은 thumb이 멈추는 간격입니다. `showValue`는 현재 값을 라벨 옆에 표시합니다.
+
+### size
+
+thumb은 트랙보다 크게 그려집니다. 실제로 손이 닿는 부분이므로 터치 대상 크기를 확보하기 위한 것입니다.
 
 <Demo src="slider/sizes">
 
@@ -41,9 +49,9 @@ thumb은 트랙보다 의도적으로 훨씬 큽니다. 실제로 손이 닿는 
 
 </Demo>
 
-### 세로
+### orientation
 
-세로 슬라이더에는 자기 길이가 없습니다. 높이를 직접 주세요. 기본값은 규칙이 아니라 출발점입니다.
+`vertical`은 자기 길이를 갖지 않으므로 높이를 직접 지정하세요.
 
 <Demo src="slider/vertical">
 
@@ -51,14 +59,9 @@ thumb은 트랙보다 의도적으로 훨씬 큽니다. 실제로 손이 닿는 
 
 </Demo>
 
-## thumb은 커지지 않습니다
-
-호버와 드래그는 thumb을 확대하는 대신 그 **둘레에** 링을 그립니다. 라이브러리의 나머지가 따르는 transform 금지 규칙과 같은 것이고, 이 부품에 글자가 없다는 이유로 느슨해지지 않습니다. 커서 아래에서 부품 크기가 변하는 컨트롤이야말로 싸구려로 읽히는 그것입니다.
-
-레일과 인디케이터가 알약 모양인 이유는 [Switch](./switch)의 트랙과 같습니다 — 이것은 무언가가 지나가는 홈이지 시트가 아닙니다.
-
 ## 접근성
 
-- 각 thumb은 진짜 `<input type="range">`이므로 방향키, Home/End, PageUp/PageDown이 여기 코드 없이 그대로 동작합니다.
-- `label`이 접근성 이름이 됩니다. 없다면 `aria-label`을 주세요.
+- 각 thumb이 실제 `<input type="range">`이므로 방향키, Home/End, PageUp/PageDown이 그대로 동작합니다.
+- `label`이 accessible name이 됩니다. 없으면 `aria-label`을 주세요.
 - `showValue`는 `<output>`으로 렌더링되어 값이 바뀔 때 읽힙니다.
+- hover와 drag에서 thumb 크기는 변하지 않고 둘레에 ring이 그려집니다.
