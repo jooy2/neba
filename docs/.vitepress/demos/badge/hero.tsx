@@ -1,4 +1,4 @@
-import { Badge, Button, Chip } from 'neba';
+import { Avatar, Badge, Button, Chip } from 'neba';
 
 function BellIcon() {
   return (
@@ -28,9 +28,7 @@ export default function BadgeHero() {
       </Badge>
 
       <Badge dot color="success" label="Online" overlap="circle">
-        <span className="flex size-9 items-center justify-center rounded-full bg-(--n-soft-press) text-[0.8125rem] font-semibold text-(--neba-fg)">
-          JD
-        </span>
+        <Avatar name="Jane Doe" size="lg" />
       </Badge>
 
       <Badge content="NEW" size="sm" color="warning" placement="top-start">

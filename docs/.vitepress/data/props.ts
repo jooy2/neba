@@ -2541,6 +2541,103 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Avatar: [
+    {
+      name: 'src',
+      type: 'string',
+      description: {
+        ko: '그림. 로딩되기 전까지, 그리고 실패하면 계속 fallback이 그려집니다',
+        en: 'The picture. Until it loads — and forever, if it fails — the fallback is what is drawn'
+      }
+    },
+    {
+      name: 'srcSet',
+      type: 'string',
+      description: {
+        ko: '다른 해상도의 후보 이미지. img의 srcSet 그대로',
+        en: 'Candidate images at other resolutions, as on any img'
+      }
+    },
+    {
+      name: 'alt',
+      type: 'string',
+      default: 'name',
+      description: {
+        ko: '그림의 대체 텍스트. 이름 옆에 놓인 아바타는 장식이므로 name도 없으면 빈 문자열이 됩니다',
+        en: "The picture's alt text. Falls back to name, and to an empty string when there is neither"
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '누구 또는 무엇인지. 그림의 이름이 되고, initials가 여기서 파생되며, screen reader는 이 문장을 대신 읽습니다',
+        en: 'Who or what this is. It names the picture, the initials are derived from it, and a screen reader hears it instead of them'
+      }
+    },
+    {
+      name: 'initials',
+      type: 'string',
+      description: {
+        ko: '이니셜을 직접 씁니다. 첫 단어와 마지막 단어의 첫 글자라는 규칙이 맞지 않는 이름일 때',
+        en: 'The initials, written out, for when the first-and-last-word rule derives the wrong ones'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'circle' | 'square'",
+      default: "'circle'",
+      description: {
+        ko: '크롭 모양. square는 모서리를 상자의 약 28%만큼 잘라 냅니다',
+        en: 'The crop. square cuts the corners off instead, at roughly 28% of the box'
+      }
+    },
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      variantDescription: {
+        ko: 'fallback 뒤 표면의 무게. 그림이 로딩되면 가장자리만 남고 보이지 않습니다',
+        en: 'Weight of the surface behind the fallback. Invisible once a picture has loaded, apart from the edge it keeps'
+      },
+      sizeDescription: {
+        ko: '그림이 그려지는 상자. 컨트롤 높이 사다리라서 옆에 놓인 Button과 높이가 맞습니다',
+        en: 'The box the picture is drawn in — the control heights, so an avatar and the button beside it are the same height'
+      }
+    }).filter((row) => row.name !== 'density'),
+    {
+      name: 'delay',
+      type: 'number',
+      description: {
+        ko: 'fallback을 그리기까지 기다리는 시간(ms). 캐시된 그림 앞에서 이니셜이 번쩍이는 것을 막습니다',
+        en: 'How long to wait before drawing the fallback, in milliseconds. Stops the initials flashing up in front of a cached picture'
+      }
+    },
+    {
+      name: 'imageProps',
+      type: "Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'srcSet' | 'alt'>",
+      description: {
+        ko: 'img에 필요한 나머지 속성 — loading, crossOrigin, referrerPolicy',
+        en: 'Anything else the img needs — loading, crossOrigin, referrerPolicy'
+      }
+    },
+    {
+      name: 'onLoadingStatusChange',
+      type: "(status: 'idle' | 'loading' | 'loaded' | 'error') => void",
+      description: {
+        ko: '그림의 로딩 상태가 바뀔 때 호출됩니다',
+        en: 'Called as the picture moves between its four loading states'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '이니셜 대신 그릴 fallback. 아이콘, 로고, 이모지 하나',
+        en: 'The fallback, drawn instead of the initials. An icon, a logo, a single emoji'
+      }
+    }
+  ],
+
   Badge: [
     ...sharedProps({
       variant: "'solid'",

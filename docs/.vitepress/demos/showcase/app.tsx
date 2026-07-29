@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  Avatar,
   Badge,
   Blockquote,
   Box,
@@ -163,14 +164,21 @@ const REGIONS = [
 interface Deploy {
   id: string;
   environment: string;
+  author: string;
   status: 'Live' | 'Building' | 'Failed';
   duration: string;
 }
 
 const DEPLOYS: Deploy[] = [
-  { id: '1', environment: 'production', status: 'Live', duration: '4m 02s' },
-  { id: '2', environment: 'staging', status: 'Building', duration: '1m 48s' },
-  { id: '3', environment: 'preview/1284', status: 'Failed', duration: '0m 51s' }
+  { id: '1', environment: 'production', author: 'Jane Doe', status: 'Live', duration: '4m 02s' },
+  { id: '2', environment: 'staging', author: '홍길동', status: 'Building', duration: '1m 48s' },
+  {
+    id: '3',
+    environment: 'preview/1284',
+    author: 'Sam Park',
+    status: 'Failed',
+    duration: '0m 51s'
+  }
 ];
 
 const TAG_OPTIONS = [
@@ -183,6 +191,17 @@ const TAG_OPTIONS = [
 
 const DEPLOY_COLUMNS: TableColumn<Deploy>[] = [
   { key: 'environment', label: 'Environment', width: 200 },
+  {
+    key: 'author',
+    label: 'Author',
+    width: 160,
+    render: (row) => (
+      <span className="flex items-center gap-2">
+        <Avatar size="xs" name={row.author} color="secondary" />
+        {row.author}
+      </span>
+    )
+  },
   {
     key: 'status',
     label: 'Status',
@@ -305,7 +324,7 @@ function ShowcaseBody() {
           rule facing the content, and the one live readout on the screen sitting
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
-          <Caption>Toolbar · Icon · IconButton · Pill · Breadcrumb</Caption>
+          <Caption>Toolbar · Icon · IconButton · Pill · Avatar · Breadcrumb</Caption>
           <Toolbar
             render={<header />}
             variant="solid"
@@ -328,6 +347,9 @@ function ShowcaseBody() {
                     variant="text"
                     color="secondary"
                   />
+                </Badge>
+                <Badge dot color="success" overlap="circle" label="Online">
+                  <Avatar size="sm" name="Jane Doe" />
                 </Badge>
               </>
             }
@@ -474,7 +496,7 @@ function ShowcaseBody() {
           inside the tab bar that switches between views of it, with the row of
           pages under it and a context menu on the whole thing. */}
         <section className="flex flex-col gap-3">
-          <Caption>Tabs · Table · Chip · ContextMenu · Pagination</Caption>
+          <Caption>Tabs · Table · Chip · Avatar · ContextMenu · Pagination</Caption>
           <Tabs defaultValue="deploys" size="sm">
             <Tab value="deploys" endIcon={<Badge content={DEPLOYS.length} size="xs" />}>
               Deploys

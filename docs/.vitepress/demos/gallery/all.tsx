@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  Avatar,
   Badge,
   Blockquote,
   Box,
@@ -788,10 +789,24 @@ const GROUPS: Group[] = [
               </Button>
             </Badge>
             <Badge dot color="success" overlap="circle" label="Online">
-              <span className="flex size-8 items-center justify-center rounded-full bg-(--n-soft-press) text-[0.75rem] font-semibold text-(--neba-fg)">
-                JD
-              </span>
+              <Avatar name="Jane Doe" />
             </Badge>
+          </div>
+        )
+      },
+      {
+        name: 'Avatar',
+        summary: {
+          ko: '사람이나 사물의 그림. 없으면 이니셜이 대신 섭니다',
+          en: 'A picture of a person or a thing, with initials standing in'
+        },
+        path: '/components/display/avatar',
+        preview: (
+          <div className="flex items-center gap-3">
+            <Avatar name="Jane Doe" size="lg" />
+            <Avatar name="Sam Park" size="lg" variant="solid" color="success" />
+            <Avatar name="홍길동" size="lg" variant="outline" color="info" />
+            <Avatar size="lg" shape="square" color="secondary" />
           </div>
         )
       },
