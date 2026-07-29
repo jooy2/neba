@@ -45,10 +45,9 @@ features:
 npm install neba
 ```
 
-앱의 CSS 진입점에 두 줄을 더하면 끝입니다. `@source`는 패키지가 스스로 등록하므로 직접 쓸 필요가 없습니다.
+앱의 CSS 진입점에 한 줄을 더하면 끝입니다. 스타일시트가 컴파일된 채로 배포되므로 Tailwind를 설치할 일도, 설정할 것도 없습니다.
 
 ```css
-@import 'tailwindcss';
 @import 'neba/styles.css';
 ```
 

@@ -14,7 +14,7 @@ Live previews and full props for every component. This README is just the quick 
 
 **Neba UI is a React component library for building application interfaces.** It gives you the pieces a real product needs — buttons and form fields, menus and dialogs, tables and tabs, progress and notifications — already styled, already accessible, and already agreeing with each other.
 
-You install one package, add two lines to your CSS, and import components. There is nothing to configure, no theme object to assemble, and no per-component styling decisions to make before you can ship a screen.
+You install one package, add one line to your CSS, and import components. There is nothing to configure, no theme object to assemble, and no per-component styling decisions to make before you can ship a screen.
 
 - **A broad component set, still growing** — enough to build a whole screen without reaching elsewhere.
 - **One shared vocabulary** — `size`, `color`, `variant`, `density`, `elevation`. An `md` is the same height on every control; `primary` is the same colour everywhere.
@@ -22,7 +22,7 @@ You install one package, add two lines to your CSS, and import components. There
 - **Dark mode with no work** — follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file** — a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
 - **ESM only**, TypeScript declarations included, tree-shakeable — every component compiles to its own module.
-- **One runtime dependency.** React 19, Node.js 18 or later.
+- **One runtime dependency.** React 18 or 19, Node.js 18 or later.
 
 ## Documentation
 
@@ -49,20 +49,26 @@ npm install neba
 pnpm add neba
 ```
 
-Neba expects `react` and `react-dom` to be available in your project.
+`react` and `react-dom` are peer dependencies — React 18 or 19. Neba uses the copy your project already has, and npm 7 and later will install them alongside it if it has none.
 
 ### Setup
 
-Add two lines to your app's CSS entry point:
+Add one line to your app's CSS entry point:
 
 ```css
-@import 'tailwindcss';
 @import 'neba/styles.css';
 ```
 
-`neba/styles.css` carries the design tokens and registers the package as a style source itself — so there is no `@source` line for you to write, and no path that depends on where your CSS file happens to sit. Utility classes come from [Tailwind CSS](https://tailwindcss.com) v4, which is the only build-side requirement Neba has.
+`neba/styles.css` is finished CSS — the design tokens, the compiled rules for every utility class the components use, and a small reset whose every rule is specificity 0 so your own styles always win. [Tailwind CSS](https://tailwindcss.com) v4 builds this package; it does not have to be installed in yours.
 
 That is the whole setup. No provider is required at the root, no theme object, no config file.
+
+If your project already runs Tailwind v4, import `neba/tailwind.css` instead — the token sheet, which registers the package as a style source so your own build generates the utilities in the same pass as your app's:
+
+```css
+@import 'tailwindcss';
+@import 'neba/tailwind.css';
+```
 
 ## Usage
 

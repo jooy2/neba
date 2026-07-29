@@ -116,9 +116,20 @@ The row's own background stays a utility, because it has a hover state and inlin
 
 ### The stylesheet ships
 
-`src/styles.css` holds the tokens, the `.neba-glow` layers, and — importantly — its own `@source '.'`. `tsc` does not copy it, so `scripts/copy-styles.mjs` runs at the end of `npm run build` and it is exported as `neba/styles.css`.
+`tsc` emits JavaScript and nothing else, so every `.css` under `src/` reaches `dist/` through `scripts/build-styles.mjs`, which runs last in `npm run build`. It writes **two** files, and their names cross over:
 
-**The `@source` is what makes the consumer setup two lines rather than three.** `@source` resolves relative to the file it is written in, not to whatever imported it, so the same line means `node_modules/neba/dist/` for a consumer and `src/` in this repository — and an explicitly registered source is scanned even inside `node_modules`, which automatic detection skips. Consumers therefore write only `@import 'tailwindcss'` and `@import 'neba/styles.css'`; never tell them to add an `@source` of their own, since that path would depend on where their CSS file sits. The docs rely on the same mechanism: `theme/styles/index.css` registers only the docs' own directories.
+| Source | Output | Exported as | For |
+| --- | --- | --- | --- |
+| `src/standalone.css` | `dist/styles.css` | `neba/styles.css` | a project with no Tailwind — compiled, ~13 kB gzipped |
+| `src/styles.css` | `dist/tailwind.css` | `neba/tailwind.css` | a project that runs Tailwind v4 itself |
+
+`src/styles.css` is the token sheet: the custom properties, the `.neba-glow` layers, and its own `@source '.'`. `src/standalone.css` is a four-line build entry that puts `src/reset.css`, Tailwind's theme and utilities, and that token sheet in order; Tailwind compiles it here so the consumer never runs Tailwind at all. `tailwindcss` is and stays a devDependency.
+
+**Do not fold the two into one.** A precompiled sheet cannot take part in a consumer's own Tailwind build, so a `className` they pass to a component would no longer sort against the component's own classes — and a `@source` left in a precompiled file would make their build generate every utility a second time.
+
+**The `@source` is what keeps the setup one line — or, on the Tailwind path, two rather than three.** `@source` resolves relative to the file it is written in, not to whatever imported it, so one declaration serves three contexts: `node_modules/neba/dist/` for a consumer who runs Tailwind, `src/` for the standalone build and for this repository's own docs. An explicitly registered source is scanned even inside `node_modules`, which automatic detection skips. Never tell a consumer to add an `@source` of their own, since that path would depend on where their CSS file sits. The docs rely on the same mechanism: `theme/styles/index.css` registers only the docs' own directories.
+
+`src/reset.css` is Preflight cut down to what the components actually need and de-escalated: every selector is wrapped in `:where()`, so a consumer's `p { margin: 1rem }` outranks it without `!important`, a layer, or a particular import order. It is reachable only through `src/standalone.css` — a project with Preflight already has all of it. The docs' `theme/styles/scope.css` is the same idea solved the other way, scoped to `.neba-scope` because a VitePress page cannot lose its own typography; the two are separate on purpose and the specificity hazard scope.css documents does not exist in `reset.css`.
 
 Pseudo-element styling (the pointer spotlight, the release afterglow) lives in `styles.css` as real CSS rather than as Tailwind arbitrary variants — `[&::before]:[background:radial-gradient(...)]` is expressible and unreadable. That is the bar for moving something out of Tailwind: not "could this be CSS", but "is the Tailwind form unmaintainable".
 
@@ -211,7 +222,7 @@ npm run test:watch    # Vitest in watch mode
 npm run typecheck     # tsc --noEmit over all three TS projects
 npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (builds and copies the changelog first)
 npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
-npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify → dist/
+npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
 npm run lint          # ESLint
 npm run lint:fix      # ESLint with --fix
 npm run format:fix    # Prettier write
@@ -229,7 +240,9 @@ Why a real browser rather than jsdom: every component wraps a Base UI primitive,
 - props map to the rendered output, including on re-render (`screen.rerender(...)`);
 - React-level behavior — state updates, controlled inputs reflecting typed text, handlers firing.
 
-**What not to test.** Base UI's own internals (focus trapping, positioning, keyboard navigation) — that's covered upstream. Visual/styling regressions are also out of scope for now; nothing loads Tailwind into the test run.
+**What not to test.** Base UI's own internals (focus trapping, positioning, keyboard navigation) — that's covered upstream. Visual/styling regressions are also out of scope; no component test loads CSS.
+
+The one exception is [test/styles/standalone.test.tsx](test/styles/standalone.test.tsx), and it is not a styling test — it is a test of the _package_. `neba/styles.css` promises that installing one package and importing one file gives you styled components, and that promise is made of three parts that each fail silently: the reset, the compiled utilities, and the tokens the utilities read. It loads `src/standalone.css` through Vite with `?inline` — the same entry the build compiles, so no build has to have run — injects it, and asserts only that each layer arrived and that they compose. Never assert a design value there (a radius, a shade, a height from the size ladder): those move with the design language, and a test that pins them turns every deliberate change into a failure. `border-radius` that is _not_ `0px`, a background that is _not_ transparent.
 
 Conventions, following [test/components/button/Button.test.tsx](test/components/button/Button.test.tsx):
 
@@ -285,6 +298,6 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 
 These are pre-existing and worth being aware of before "fixing" them incidentally:
 
-- `react` / `react-dom` are `devDependencies`, not `peerDependencies` — unusual for a component library.
+- `react` / `react-dom` are declared **twice**, and both are correct: `peerDependencies` at `^18.0.0 || ^19.0.0`, because the consumer's copy is the one that must be used, and `devDependencies` at the version this repository builds and tests against. Widen the peer range only for a version the suite has actually run on — a peer range is a claim, and npm enforces it as one. `@types/react` is an optional peer, since a JavaScript consumer needs nothing from it.
 - Emitted ESM uses extensionless relative imports (`export * from './types'`), which Node's own ESM resolver rejects. Bundlers handle it; a direct `node` import of `dist/` would not. Pre-existing, and not something to fix incidentally.
 - The docs paint a gradient-and-grid background behind every preview. That is docs chrome, not library styling — a translucent, blurred surface has nothing to show over a flat white page, so the acrylic can only be judged over real content.

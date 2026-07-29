@@ -1,12 +1,20 @@
 /**
  * Neba design tokens.
  *
- * Consumers import this once, next to Tailwind:
+ * This file ships as `neba/tailwind.css`, for a project that runs Tailwind
+ * itself and wants the components' utilities generated in the same pass as its
+ * own:
  *
  *   @import 'tailwindcss';
- *   @import 'neba/styles.css';
+ *   @import 'neba/tailwind.css';
  *
  * Two lines, and no `@source` of their own — the `@source` below does that job.
+ *
+ * A project with no Tailwind imports `neba/styles.css` instead, which is this
+ * file plus a reset plus the compiled utilities, built by
+ * `scripts/build-styles.mjs` from `src/standalone.css`. The tokens below are
+ * the same in both.
+ *
  * Components never hardcode a color; they map a `color` prop onto the `--n-*`
  * local slots and let the cascade resolve the rest.
  *
@@ -30,6 +38,10 @@
  *
  * This is why consumers do not need an `@source '../node_modules/neba'` of
  * their own — a path that would depend on where their CSS file happens to sit.
+ *
+ * The same line is what the standalone build scans: `src/standalone.css` pulls
+ * this file in from `src/`, so `.` means the components' `.tsx` there. One
+ * declaration, three contexts.
  */
 @source '.';
 

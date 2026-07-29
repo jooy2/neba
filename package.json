@@ -1,6 +1,6 @@
 {
   "name": "neba",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A comprehensive React UI component library — buttons, fields, menus, dialogs, tables and much more — accessible and themeable, sharing one prop vocabulary and a translucent acrylic design language. ESM only, types included, dark mode built in.",
   "type": "module",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "url": "https://github.com/jooy2/neba/issues"
   },
   "scripts": {
-    "build": "npm run format:fix && tsc --project tsconfig.prod.json && npm run minify && node scripts/copy-styles.mjs",
+    "build": "npm run format:fix && tsc --project tsconfig.prod.json && npm run minify && node scripts/build-styles.mjs",
     "lint": "eslint . --ext .js,.ts .",
     "lint:fix": "eslint . --ext .js,.ts --fix .",
     "minify": "terser-glob 'dist/**/*.js' --config-file terser.config.json",
@@ -45,7 +45,8 @@
       "module": "./dist/types.js",
       "default": "./dist/types.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./tailwind.css": "./dist/tailwind.css"
   },
   "typesVersions": {
     "*": {
@@ -112,6 +113,7 @@
     "globals": "^17.7.0",
     "jiti": "^2.7.0",
     "playwright": "^1.61.1",
+    "postcss": "^8.5.6",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "react": "^19.2.8",
@@ -130,5 +132,15 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^18.0.0 || ^19.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

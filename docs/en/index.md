@@ -45,10 +45,9 @@ features:
 npm install neba
 ```
 
-Two lines in your app's CSS entry point are the whole setup — the package registers itself as a Tailwind source, so there is no `@source` for you to write.
+One line in your app's CSS entry point is the whole setup. The stylesheet ships compiled, so there is no Tailwind to install and nothing to configure.
 
 ```css
-@import 'tailwindcss';
 @import 'neba/styles.css';
 ```
 
