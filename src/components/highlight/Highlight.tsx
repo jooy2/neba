@@ -1,0 +1,311 @@
+import * as React from 'react';
+import type { TypographyWeight } from '../typography/Typography';
+import { transitionClasses } from '../../internal/styles';
+import type { NebaColor, NebaVariant } from '../../types';
+
+export interface HighlightProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
+  /**
+   * What to find.
+   *
+   * A string is one term, an array is several — the longest is tried first, so
+   * `['data', 'database']` marks the whole word rather than the first four
+   * letters of it. A `RegExp` is used as written, with the global flag forced
+   * on; `caseSensitive` and `wholeWord` are ignored for it, because a regular
+   * expression already says both of those things itself.
+   */
+  query: string | string[] | RegExp;
+  /**
+   * Weight of the mark.
+   *
+   * - `solid` — filled, the highlighter pen. The default.
+   * - `outline` — a hairline box around the word, for a page where a filled run
+   *   would be too much.
+   * - `text` — the accent colour and nothing else, for marking a word inside a
+   *   heading that is already loud.
+   * @default 'solid'
+   */
+  variant?: NebaVariant;
+  /**
+   * Semantic colour role. `warning` by default, and not arbitrarily: it is the
+   * one family whose fill is light with dark ink on it, so a solid `warning`
+   * mark is a yellow highlighter over black text rather than a white word on a
+   * block of colour.
+   * @default 'warning'
+   */
+  color?: NebaColor;
+  /**
+   * Whether `a` and `A` are different letters.
+   * @default false
+   */
+  caseSensitive?: boolean;
+  /**
+   * Whether a term has to be a word on its own — `cat` marking "cat" but not
+   * "concatenate".
+   *
+   * A word here is a run of letters, digits and underscores in any script, so it
+   * means what it should for `café` and `naïve`. It means very little for Korean
+   * or Japanese, where a phrase is not delimited by spaces at all; that is a
+   * property of the writing system rather than of this prop, and is the reason
+   * it is off by default.
+   * @default false
+   */
+  wholeWord?: boolean;
+  /** Underlines the mark as well. Combines with every variant. */
+  underline?: boolean;
+  /**
+   * Sets the mark's weight. Omit it and the mark is the weight of the text
+   * around it — the surface is already saying "this one", and a bolded word
+   * inside a sentence changes the rhythm of the whole line.
+   */
+  weight?: TypographyWeight;
+  /**
+   * The text to search. Elements are walked into and left otherwise untouched,
+   * so a match inside a `<strong>` is still marked and the `<strong>` survives.
+   */
+  children?: React.ReactNode;
+}
+
+/**
+ * There is no `size` here on purpose, and it is the one prop a reader will look
+ * for. A mark sits inside running text and has to be the size of the text it is
+ * inside; a `size` prop would only offer ways to be wrong.
+ */
+const variantClasses: Record<NebaVariant, string> = {
+  solid: 'bg-(--n-fill) text-(--n-on-solid)',
+  outline: 'border bg-(--n-panel) text-(--n-accent) [border-color:var(--n-line)]',
+  // Both properties are still set. A `<mark>` arrives from the browser's own
+  // stylesheet with a yellow background and black ink, and "no surface" has to
+  // be said out loud or it turns into the UA's surface.
+  text: 'bg-transparent text-(--n-accent)'
+};
+
+const weightClasses: Record<TypographyWeight, string> = {
+  regular: 'font-normal',
+  medium: 'font-medium',
+  semibold: 'font-semibold',
+  bold: 'font-bold'
+};
+
+/** Letters, digits and underscores in any script — what `wholeWord` counts. */
+const wordCharacter = /[\p{L}\p{N}_]/u;
+
+/** The characters a regular expression treats as syntax. */
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Turns the `query` prop into one expression, or `null` when there is nothing to
+ * look for — an empty search box should leave the text exactly as it was, not
+ * mark every character in it.
+ *
+ * Terms are sorted longest first because alternation in a regular expression is
+ * first-match-wins: without it `['data', 'database']` would mark `data` and stop,
+ * leaving `base` outside the mark.
+ */
+function buildPattern(query: string | string[] | RegExp, caseSensitive: boolean): RegExp | null {
+  if (query instanceof RegExp) {
+    return query.global ? query : new RegExp(query.source, `${query.flags}g`);
+  }
+
+  const terms = (Array.isArray(query) ? query : [query])
+    .map((term) => term.trim())
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  if (terms.length === 0) {
+    return null;
+  }
+
+  return new RegExp(terms.map(escapeRegExp).join('|'), caseSensitive ? 'gu' : 'giu');
+}
+
+/**
+ * Whether a match is a whole word.
+ *
+ * Checked here rather than with a lookbehind in the pattern, because lookbehind
+ * is the one regular-expression feature this library would have to think about
+ * shipping — Safari only grew it in 16.4. Two character tests cost nothing and
+ * work everywhere.
+ */
+function isWholeWord(text: string, start: number, end: number): boolean {
+  const before = start > 0 ? text[start - 1] : '';
+  const after = end < text.length ? text[end] : '';
+  return !wordCharacter.test(before) && !wordCharacter.test(after);
+}
+
+/**
+ * Splits one string into plain runs and marked ones.
+ *
+ * Returns the string itself when nothing matched, so an unmatched text node
+ * stays a text node rather than becoming an array of one.
+ */
+function markString(
+  text: string,
+  pattern: RegExp,
+  wholeWord: boolean,
+  mark: (matched: string, key: string) => React.ReactNode
+): React.ReactNode {
+  pattern.lastIndex = 0;
+
+  const parts: React.ReactNode[] = [];
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    // A pattern that can match nothing — `/x*/` — would otherwise never advance.
+    if (match[0] === '') {
+      pattern.lastIndex += 1;
+      continue;
+    }
+
+    const start = match.index;
+    const end = start + match[0].length;
+
+    if (wholeWord && !isWholeWord(text, start, end)) {
+      continue;
+    }
+
+    if (start > cursor) {
+      parts.push(text.slice(cursor, start));
+    }
+    parts.push(mark(match[0], `${start}`));
+    cursor = end;
+  }
+
+  if (parts.length === 0) {
+    return text;
+  }
+
+  if (cursor < text.length) {
+    parts.push(text.slice(cursor));
+  }
+
+  return parts;
+}
+
+/**
+ * Walks the tree, marking the text in it and leaving everything else alone.
+ *
+ * The alternative — requiring `children` to be a string — is what most libraries
+ * do, and it fails on the first search result that has a `<strong>` in it. An
+ * element is cloned with its children marked, which keeps its type, its props
+ * and its key; anything that is not a string, a number, an array or an element
+ * with children is returned untouched.
+ */
+function markNode(
+  node: React.ReactNode,
+  pattern: RegExp,
+  wholeWord: boolean,
+  mark: (matched: string, key: string) => React.ReactNode
+): React.ReactNode {
+  if (typeof node === 'string') {
+    return markString(node, pattern, wholeWord, mark);
+  }
+
+  if (typeof node === 'number') {
+    return markString(String(node), pattern, wholeWord, mark);
+  }
+
+  if (Array.isArray(node)) {
+    return React.Children.map(node, (child) => markNode(child, pattern, wholeWord, mark));
+  }
+
+  if (React.isValidElement(node)) {
+    const children = (node.props as { children?: React.ReactNode }).children;
+    // A component whose children are a render prop, and every void element:
+    // there is no text in either, and cloning one with a `children` it never
+    // declared is how a `<input>` ends up with a child.
+    if (children === undefined || typeof children === 'function') {
+      return node;
+    }
+    return React.cloneElement(node, undefined, markNode(children, pattern, wholeWord, mark));
+  }
+
+  return node;
+}
+
+/**
+ * Marks the words a reader is looking for, inside text they were already
+ * reading.
+ *
+ * The component is the search, not just the styling: `query` is what a search
+ * box holds, and everything about *how* the matching is done — case, whole
+ * words, a regular expression — is a prop rather than something a caller has to
+ * pre-compute into a list of offsets.
+ *
+ * The mark is a real `<mark>`, which is the element for "text of relevance to
+ * the reader" and is announced as such. That has one consequence worth knowing:
+ * marking eleven words in a paragraph tells a screen reader that eleven things
+ * are important, which is a way of saying nothing. A highlight is for a handful
+ * of matches.
+ *
+ * Nothing here is stateful and nothing measures — the whole component is a pure
+ * function of `children` and `query`, so it re-marks on its own the moment the
+ * search box changes.
+ */
+export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(function Highlight(
+  {
+    query,
+    variant = 'solid',
+    color = 'warning',
+    caseSensitive = false,
+    wholeWord = false,
+    underline = false,
+    weight,
+    className,
+    style,
+    children,
+    ...props
+  },
+  ref
+) {
+  const pattern = React.useMemo(() => buildPattern(query, caseSensitive), [query, caseSensitive]);
+
+  const markClasses = [
+    // A hair of padding so the surface does not sit flush against the letters,
+    // and the same hair back out as a negative margin so the marked line is the
+    // same length as it was before. A mark must not move the text around it.
+    'rounded-[0.25rem] px-0.5 -mx-0.5',
+    // A mark that wraps across two lines gets its corners on both fragments
+    // rather than one long box with two square ends.
+    'box-decoration-clone',
+    variantClasses[variant],
+    // `decoration-2` and the offset so the rule sits under the descenders rather
+    // than through them, which is the whole difference between an underline and
+    // a strikethrough that missed.
+    underline ? 'underline decoration-2 underline-offset-2' : '',
+    weight ? weightClasses[weight] : '',
+    transitionClasses
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const marked = pattern
+    ? markNode(children, pattern, wholeWord, (matched, key) => (
+        <mark key={key} className={markClasses}>
+          {matched}
+        </mark>
+      ))
+    : children;
+
+  return (
+    <span
+      ref={ref}
+      className={className}
+      style={
+        {
+          '--n-fill': `var(--neba-${color}-fill)`,
+          '--n-on-solid': `var(--neba-${color}-on-solid)`,
+          '--n-accent': `var(--neba-${color}-accent)`,
+          '--n-panel': `var(--neba-${color}-panel)`,
+          '--n-line': `var(--neba-${color}-line)`,
+          ...style
+        } as React.CSSProperties
+      }
+      {...props}
+    >
+      {marked}
+    </span>
+  );
+});

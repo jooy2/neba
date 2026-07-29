@@ -4,6 +4,7 @@ import {
   AccordionItem,
   Alert,
   Badge,
+  Blockquote,
   Box,
   Button,
   ButtonGroup,
@@ -22,6 +23,7 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  Highlight,
   Icon,
   IconButton,
   List,
@@ -39,7 +41,10 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  Segment,
+  SegmentedButton,
   Select,
+  Shortcut,
   Slider,
   Statistic,
   Switch,
@@ -49,6 +54,8 @@ import {
   Tabs,
   TextField,
   TimePicker,
+  Timeline,
+  TimelineItem,
   ToastProvider,
   Toolbar,
   Tooltip,
@@ -298,6 +305,21 @@ const GROUPS: Group[] = [
         },
         path: '/components/inputs/pagination',
         preview: <Pagination size="sm" count={9} defaultPage={4} />
+      },
+      {
+        name: 'SegmentedButton',
+        summary: {
+          ko: '한 알약 안에서 정확히 하나',
+          en: 'Exactly one, from inside one pill'
+        },
+        path: '/components/inputs/segmented-button',
+        preview: (
+          <SegmentedButton size="sm" aria-label="Range" defaultValue="week">
+            <Segment value="day">Day</Segment>
+            <Segment value="week">Week</Segment>
+            <Segment value="month">Month</Segment>
+          </SegmentedButton>
+        )
       },
       {
         name: 'Combobox',
@@ -768,6 +790,67 @@ const GROUPS: Group[] = [
               previousValue={1102}
               caption="vs. last month"
             />
+          </div>
+        )
+      },
+      {
+        name: 'Blockquote',
+        summary: {
+          ko: '내 말과 구분해 놓은 남의 말',
+          en: "Somebody else's words, set apart from your own"
+        },
+        path: '/components/display/blockquote',
+        preview: (
+          <div className="w-full max-w-64">
+            <Blockquote size="xs" author="Saint-Exupéry">
+              Perfection is achieved when there is nothing left to take away.
+            </Blockquote>
+          </div>
+        )
+      },
+      {
+        name: 'Shortcut',
+        summary: {
+          ko: '키보드 키, 또는 키 조합',
+          en: 'A keyboard key, or a combination of them'
+        },
+        path: '/components/display/shortcut',
+        preview: (
+          <div className="flex flex-col items-center gap-2">
+            <Shortcut size="sm" keys="Mod+K" />
+            <Shortcut size="sm" keys="Mod+Shift+P" />
+          </div>
+        )
+      },
+      {
+        name: 'Highlight',
+        summary: {
+          ko: '찾고 있던 단어에 표시하기',
+          en: 'Marks the words a reader is looking for'
+        },
+        path: '/components/display/highlight',
+        preview: (
+          <div className="max-w-56 text-center text-[0.75rem]/[1.6]">
+            <Highlight query="acrylic">
+              A sheet of cut acrylic, not a moulded plastic key.
+            </Highlight>
+          </div>
+        )
+      },
+      {
+        name: 'Timeline',
+        summary: {
+          ko: '일어나는 순서대로 놓인 단계들',
+          en: 'A sequence of steps, in the order they happen'
+        },
+        path: '/components/display/timeline',
+        preview: (
+          <div className="w-full max-w-56">
+            <Timeline size="sm" active={1}>
+              <TimelineItem title="Packed" meta="Mon" />
+              <TimelineItem title="In transit" meta="Tue" />
+              <TimelineItem title="Delivered" />
+            </Timeline>
           </div>
         )
       }

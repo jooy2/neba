@@ -4311,5 +4311,405 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The middle. Takes whatever width `start` and `end` leave'
       }
     }
+  ],
+
+  Blockquote: [
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      variantDescription: {
+        ko: '인용을 얹을 시트의 무게. text가 기본이며 여백의 선 하나뿐입니다 — 표면이 생기기 훨씬 전부터 인용은 그렇게 생겼습니다. 어느 쪽이든 강조선은 그대로 남습니다',
+        en: 'Weight of the sheet under the quote. `text` is the default and is a rule in the margin and nothing else. The accent rule stays in all three'
+      },
+      sizeDescription: {
+        ko: '인용문의 타입 스케일과 시트의 여백. 본문보다 한 단계 위이고 행간은 문단이 필요한 만큼 열려 있습니다',
+        en: "The quote's type scale and the sheet's padding. One step above body copy, with the leading a paragraph needs"
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 시트에는 물들지 않습니다 — 색은 여백의 선과 인용부호에만 나타납니다',
+        en: 'Semantic colour role. The sheet is never dyed; the family shows up in the rule and the mark'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 인용은 페이지 위에 떠 있는 것이 아니라 페이지 안에 놓이는 것이라 거의 올리지 않습니다',
+        en: 'Drop shadow depth. A quote is set into a page rather than floating over it, so this is rarely raised'
+      }
+    }),
+    {
+      name: 'author',
+      type: 'ReactNode',
+      description: {
+        ko: '말한 사람. 이 값이 있으면 전체가 figure + figcaption이 됩니다 — 출처는 인용문 **바깥**에 있어야 한다는 것이 명세의 요구입니다',
+        en: 'Who said it. Its presence turns the whole thing into a figure with a figcaption, because the spec puts the attribution outside the quote'
+      }
+    },
+    {
+      name: 'source',
+      type: 'ReactNode',
+      description: {
+        ko: '어디서 나온 말인지 — 책, 강연, 문서. cite 요소로 렌더링됩니다. cite는 작품의 제목을 위한 것이지 사람 이름을 위한 것이 아닙니다',
+        en: 'Where it is from — a book, a talk, a page. Rendered in a `<cite>`, which is for the title of a work and never for a person'
+      }
+    },
+    {
+      name: 'cite',
+      type: 'string',
+      description: {
+        ko: '인용 출처의 URL. blockquote의 cite 속성으로 들어가며 기계만 읽습니다. 사람이 볼 것은 source입니다',
+        en: "The source document's URL. Lands on the blockquote's own `cite` attribute, which is machine-readable and shown to nobody"
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      description: {
+        ko: '인용문 앞의 표식. 생략하면 기본 글리프, 노드를 넘기면 교체, false면 없앱니다',
+        en: 'The mark before the quote. Omit for the house glyph, pass a node to replace it, pass false to take it away'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '인용된 말', en: 'What was said' }
+    }
+  ],
+
+  Shortcut: [
+    {
+      name: 'keys',
+      type: 'string | string[]',
+      required: true,
+      description: {
+        ko: "키들. 문자열은 +로 나뉩니다('Mod+Shift+P'). 키 자체가 +인 경우에만 배열형을 씁니다",
+        en: "The keys. A string is split on `+` — 'Mod+Shift+P'. The array form is for a shortcut whose key is itself a plus"
+      }
+    },
+    {
+      name: 'os',
+      type: "'auto' | 'mac' | 'windows' | 'linux'",
+      default: "'auto'",
+      description: {
+        ko: '어느 키보드로 읽을지. auto는 브라우저에 묻습니다. 나머지 셋은 읽는 사람의 플랫폼이 아니라 특정 플랫폼을 설명해야 하는 문서를 위한 것입니다',
+        en: "Which keyboard to name the modifiers for. `auto` asks the browser; the three explicit values are for pages that have to name a platform rather than the reader's"
+      }
+    },
+    {
+      name: 'separator',
+      type: 'ReactNode',
+      description: {
+        ko: '키 사이에 오는 것. 생략하면 플랫폼의 관례를 따릅니다 — Windows/Linux는 +, macOS는 아무것도 없이 ⇧⌘P',
+        en: "What goes between two keys. Omit it for the platform's own convention: a `+` off a Mac, and nothing at all on one"
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      color: "'secondary'",
+      variantDescription: {
+        ko: '키캡의 무게. outline이 기본입니다 — 지금까지 인쇄된 모든 설명서에서 키캡은 얇은 선의 상자였습니다',
+        en: 'Weight of the key cap. `outline` is the default: a key cap is a hairline box, which is what it has looked like in every manual ever printed'
+      },
+      sizeDescription: {
+        ko: '키캡의 높이와 타입 스케일. Chip처럼 컨트롤 사다리에서 한 단계 아래입니다 — md 키캡은 sm 컨트롤입니다',
+        en: 'Height and type scale of the caps. One step below the control of the same size, exactly as a Chip is'
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 키캡은 액션이 아니라 화면의 부속이라 secondary가 기본입니다',
+        en: 'Semantic colour role. `secondary` by default, because a key cap is chrome rather than an action'
+      },
+      density: "'compact'",
+      densityDescription: {
+        ko: '키캡의 좌우 여백만 바꿉니다. 기본이 compact인 이유는 키캡이 글줄 안에 들어앉기 때문입니다',
+        en: 'Horizontal padding of the caps only. `compact` by default, because a cap sits inside a line of text'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 이것은 키가 아니라 키의 그림이므로 올리고 싶은 마음이 드는 것이 함정입니다',
+        en: 'Drop shadow depth. This is a picture of a key, not a key — which is exactly why raising it is tempting and wrong'
+      }
+    })
+  ],
+
+  Highlight: [
+    {
+      name: 'query',
+      type: 'string | string[] | RegExp',
+      required: true,
+      description: {
+        ko: '무엇을 찾을지. 배열은 긴 것부터 시도하므로 database가 data보다 먼저 잡힙니다. RegExp는 그대로 쓰이며 global 플래그만 강제됩니다 — 이때 caseSensitive와 wholeWord는 무시됩니다',
+        en: 'What to find. An array tries the longest term first, so `database` wins over `data`. A RegExp is used as written with the global flag forced on, and then caseSensitive and wholeWord are ignored'
+      }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'solid'",
+      shared: true,
+      description: {
+        ko: '표식의 무게. solid는 형광펜, outline은 단어를 두르는 얇은 선, text는 색만',
+        en: 'Weight of the mark: `solid` is the highlighter pen, `outline` a hairline box around the word, `text` the colour alone'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'warning'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. warning이 기본인 것은 임의가 아닙니다 — 채움이 밝고 잉크가 어두운 유일한 계열이라, solid warning 표식이 실제로 노란 형광펜처럼 보입니다',
+        en: 'Semantic colour role. `warning` by default and not arbitrarily: it is the one family whose fill is light with dark ink, so a solid mark is a yellow highlighter over black text'
+      }
+    },
+    {
+      name: 'caseSensitive',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'a와 A를 다른 글자로 볼지',
+        en: 'Whether `a` and `A` are different letters'
+      }
+    },
+    {
+      name: 'wholeWord',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '단어 전체일 때만 잡을지 — cat이 "cat"은 잡고 "concatenate"는 잡지 않습니다. 여기서 단어는 어떤 문자 체계든 글자·숫자·밑줄의 연속이므로 한국어처럼 띄어쓰기로 구획되지 않는 글에서는 의미가 거의 없습니다',
+        en: 'Whether a term has to be a word on its own — `cat` marking "cat" but not "concatenate". A word is a run of letters, digits and underscores in any script, which means very little for text that is not delimited by spaces'
+      }
+    },
+    {
+      name: 'underline',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '표식에 밑줄도 긋습니다. 모든 variant와 겹쳐 쓸 수 있습니다',
+        en: 'Underlines the mark as well. Combines with every variant'
+      }
+    },
+    {
+      name: 'weight',
+      type: "'regular' | 'medium' | 'semibold' | 'bold'",
+      description: {
+        ko: '표식의 굵기. 생략하면 주변 글과 같습니다 — 표면이 이미 "이것"이라고 말하고 있고, 문장 안에서 한 단어만 굵어지면 줄 전체의 리듬이 바뀝니다',
+        en: 'Weight of the mark. Omit it and it is the weight of the text around it: the surface already says "this one", and a bolded word changes the rhythm of the whole line'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '검색 대상 텍스트. 요소 안까지 들어가므로 strong 안의 일치도 잡히고 strong도 그대로 남습니다',
+        en: 'The text to search. Elements are walked into, so a match inside a `<strong>` is marked and the `<strong>` survives'
+      }
+    }
+  ],
+
+  SegmentedButton: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '세그먼트가 놓이는 홈통의 무게. solid는 서리 낀 홈통에 채워진 타일, outline은 같은 홈통에 얇은 선과 밝아진 타일, text는 홈통 없이 선택된 것에만 표면',
+        en: 'Weight of the trough. `solid` is a frosted trough with a filled tile, `outline` the same with a hairline and a lit tile, `text` no trough at all'
+      },
+      sizeDescription: {
+        ko: '세그먼트의 높이와 타입 스케일. Button과 같은 사다리입니다',
+        en: "The segments' height and type scale, on Button's own ladder"
+      },
+      elevationDescription: {
+        ko: '홈통의 그림자 깊이. 0이 기본입니다',
+        en: 'Drop shadow depth of the trough. `0` is the default'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'string | number | null',
+      description: {
+        ko: '선택된 세그먼트. controlled',
+        en: 'The chosen segment, for a controlled set'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number | null',
+      default: 'null',
+      description: { ko: '처음 선택된 세그먼트', en: 'Which starts chosen' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | number | null) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the chosen segment changes' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '전체를 한 번에 사용 불가로', en: 'Disables every segment at once' }
+    },
+    {
+      name: 'readOnly',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '무엇이 선택되었는지는 보이되 바꿀 수는 없습니다',
+        en: 'Shows which one is chosen but does not let it be changed'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 전송 시의 필드 이름',
+        en: 'Identifies the value when a form is submitted'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '세그먼트들이 폭을 똑같이 나눠 갖습니다',
+        en: 'The segments share the full width, each taking an equal part'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'Segment들', en: 'The Segments' }
+    }
+  ],
+
+  Segment: [
+    {
+      name: 'value',
+      type: 'string | number',
+      required: true,
+      description: {
+        ko: '세그먼트의 식별자. onValueChange가 보고하는 값입니다',
+        en: 'Identifies the segment. What onValueChange reports'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 뒤의 내용 — 개수, 상태 점',
+        en: 'Content after the label — a count, a status dot'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 집합에는 남습니다',
+        en: 'Unavailable, but still part of the set'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '세그먼트의 라벨', en: "The segment's label" }
+    }
+  ],
+
+  Timeline: [
+    {
+      name: 'active',
+      type: 'number',
+      description: {
+        ko: '지금 진행 중인 항목의 인덱스. 그 앞은 전부 complete, 뒤는 전부 upcoming이 됩니다. 값이 아니라 인덱스인 이유는 타임라인에 선택이 없기 때문입니다 — 아무것도 고르는 것이 없고, 물어볼 것은 어디까지 왔는가뿐입니다. 생략하면 전부 upcoming, 항목 수를 넘기면 전부 complete',
+        en: 'The index of the item being worked on now: everything before it is complete, everything after it is still to come. An index rather than a value, because a timeline has no selection. Omit it and every item is upcoming; pass the item count to mark the whole sequence done'
+      }
+    },
+    ...scaleProps("'md'"),
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '항목 사이의 간격만 바꿉니다. 타입 스케일도 불릿도 그대로입니다',
+        en: 'The space between items only. Never the type scale, never the bullet'
+      }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'vertical'",
+      shared: true,
+      description: {
+        ko: '진행 방향. vertical이 기본이며 단계 수와 설명 길이에 제한이 없습니다. horizontal은 결제 화면 위쪽의 스테퍼로, 라벨이 짧을 때만 정직합니다',
+        en: 'Which way the sequence runs. `vertical` is the default and takes any number of steps with anything to say about each; `horizontal` is the stepper across the top of a checkout, and is only honest while every label is short'
+      }
+    },
+    renderProp('render={<ul />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'TimelineItem들. 인덱스는 여기서 매겨지므로 중간에 하나를 끼워 넣어도 뒤의 것을 다시 번호 매길 필요가 없습니다',
+        en: 'The TimelineItems. They are numbered here, so inserting one in the middle does not mean renumbering the ones after it'
+      }
+    }
+  ],
+
+  TimelineItem: [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '이 단계의 제목', en: 'The heading of this step' }
+    },
+    {
+      name: 'meta',
+      type: 'ReactNode',
+      description: {
+        ko: '언제 일어났는지 — 날짜, 소요 시간, 이름',
+        en: 'When it happened — a date, a duration, a name'
+      }
+    },
+    {
+      name: 'bullet',
+      type: 'ReactNode',
+      description: {
+        ko: '불릿 안에 들어가는 것 — 번호, 아이콘, 아바타. 생략하면 그냥 원입니다',
+        en: 'What goes inside the bullet: a number, an icon, an avatar. Omit it and the bullet is a plain disc'
+      }
+    },
+    {
+      name: 'status',
+      type: "'complete' | 'current' | 'upcoming'",
+      description: {
+        ko: '타임라인의 active가 계산한 값을 이 항목에 한해 덮어씁니다 — 실패해서 멈춘 단계, 건너뛴 단계',
+        en: "Overrides what the timeline's `active` computed for this item — a step that failed and stopped the sequence, a step that was skipped"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '이 항목에 한해 색 계열을 덮어씁니다',
+        en: "Overrides the timeline's colour family for this item alone"
+      }
+    },
+    {
+      name: 'connector',
+      type: "'solid' | 'dashed' | 'dotted' | 'none'",
+      default: "'solid'",
+      description: {
+        ko: '다음 항목으로 이어지는 선을 어떻게 그릴지. 선은 도착점이 아니라 출발한 단계의 것이므로, 그 단계에 도달했는지에 따라 색이 정해집니다',
+        en: 'How the line to the next item is drawn. The line belongs to the step it leaves, so it is coloured by whether that step has been reached'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '단계의 본문', en: 'The body of the step' }
+    }
   ]
 };

@@ -49,6 +49,7 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [TimePicker](https://neba.cdget.com/components/inputs/time-picker): A time of day, chosen from columns. Bounds are checked against the span a row stands for, which is what keeps half past nine reachable when the minimum is 09:30.
 - [DateTimePicker](https://neba.cdget.com/components/inputs/date-time-picker): A day and a time in one popup, with the calendar and the clock at the same height and `minDate` read at full precision.
 - [DateRangePicker](https://neba.cdget.com/components/inputs/date-range-picker): A span between two days. Two months side by side, a band drawn as the pointer moves, and named presets beside them.
+- [SegmentedButton](https://neba.cdget.com/components/inputs/segmented-button): Two or more choices in one pill, exactly one of them taken. A radio group underneath, with a tile that slides between the segments and transforms nothing.
 
 ### Display
 
@@ -60,6 +61,10 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Badge](https://neba.cdget.com/components/display/badge): A small mark in the corner of something else: unread mail, a status dot, a count on a tab.
 - [Icon](https://neba.cdget.com/components/display/icon): A glyph at a known size, in a known colour. Neba ships no icon set; the glyph is a prop rather than children, and `color` defaults to `inherit`.
 - [Statistic](https://neba.cdget.com/components/display/statistic): A number with its name on it, and — given a `previousValue` — how far it has moved. `betterWhen` decides which direction is coloured as good.
+- [Blockquote](https://neba.cdget.com/components/display/blockquote): Somebody else's words, set apart from your own. An attribution turns it into the `figure`/`blockquote`/`figcaption` markup the HTML spec asks for.
+- [Shortcut](https://neba.cdget.com/components/display/shortcut): A keyboard key or a combination of them. `Mod` resolves to Command on a Mac and Control everywhere else, and every glyph key carries its name for a screen reader.
+- [Highlight](https://neba.cdget.com/components/display/highlight): Marks the words a reader is looking for inside text they were already reading. Case, whole words and regular expressions are props; elements in the children are walked into rather than rejected.
+- [Timeline](https://neba.cdget.com/components/display/timeline): A sequence of steps in the order they happen. An `<ol>`, because the order is the content; `active` is an index rather than a value, because nothing here is chosen.
 
 ### Feedback
 

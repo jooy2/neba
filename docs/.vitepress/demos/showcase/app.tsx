@@ -4,6 +4,7 @@ import {
   AccordionItem,
   Alert,
   Badge,
+  Blockquote,
   Box,
   Button,
   ButtonGroup,
@@ -23,6 +24,7 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  Highlight,
   Icon,
   IconButton,
   List,
@@ -42,7 +44,10 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  Segment,
+  SegmentedButton,
   Select,
+  Shortcut,
   Slider,
   Statistic,
   Switch,
@@ -52,6 +57,8 @@ import {
   Tabs,
   TextField,
   TimePicker,
+  Timeline,
+  TimelineItem,
   ToastProvider,
   Toolbar,
   Tooltip,
@@ -317,7 +324,9 @@ function ShowcaseBody() {
 
         {/* The controls that run a screen, all on one baseline. */}
         <section className="flex flex-col gap-3">
-          <Caption>Button · ButtonGroup · TextField · Select · Tooltip · Menu · Overlay</Caption>
+          <Caption>
+            Button · ButtonGroup · SegmentedButton · TextField · Select · Tooltip · Menu · Overlay
+          </Caption>
           <div className="flex flex-wrap items-center gap-2">
             <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
             <Select
@@ -332,6 +341,10 @@ function ShowcaseBody() {
               <Button>Week</Button>
               <Button>Month</Button>
             </ButtonGroup>
+            <SegmentedButton size="sm" aria-label="View" defaultValue="overview">
+              <Segment value="overview">Overview</Segment>
+              <Segment value="activity">Activity</Segment>
+            </SegmentedButton>
             <div className="grow" />
 
             <Tooltip content="Import from a Git provider">
@@ -726,6 +739,39 @@ function ShowcaseBody() {
               />
             </div>
           </Card>
+        </section>
+
+        {/* What a release page is made of: the run that produced it, the note
+            that came with it, and the keys that drive the screen. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Timeline · Blockquote · Highlight · Shortcut</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card size="sm" title={<h3>Deploy 8f2c1a</h3>} subtitle="production · 4m 02s ago">
+              <Timeline size="sm" density="compact" active={3} color="success">
+                <TimelineItem title="Queued" meta="09:31" />
+                <TimelineItem title="Built" meta="09:33" />
+                <TimelineItem title="Tested" meta="09:36" />
+                <TimelineItem title="Live" meta="09:37" />
+              </Timeline>
+            </Card>
+
+            <div className="flex flex-col gap-4">
+              <Blockquote size="sm" variant="outline" author="Release notes">
+                <Highlight query={['cache', 'cold start']}>
+                  Cold start is down by a third; the cache is now warmed before the first request
+                  rather than on it.
+                </Highlight>
+              </Blockquote>
+
+              <Card size="sm" title="Keyboard">
+                <List variant="text" size="sm" density="compact">
+                  <ListItem action={<Shortcut size="xs" keys="Mod+K" />}>Command palette</ListItem>
+                  <ListItem action={<Shortcut size="xs" keys="Mod+Shift+R" />}>Redeploy</ListItem>
+                  <ListItem action={<Shortcut size="xs" keys="Escape" />}>Close</ListItem>
+                </List>
+              </Card>
+            </div>
+          </div>
         </section>
 
         {/* A box grouping cards: the box groups, the cards structure. */}

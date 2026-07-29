@@ -120,6 +120,17 @@
   text-underline-offset: unset;
 }
 
+/*
+ * `.vp-doc blockquote` draws a grey rule down the left edge and greys the text
+ * inside it. Blockquote draws neither on the quote itself — the wrapper around
+ * it carries the surface and the accent rule, precisely so this reset can take
+ * VitePress's version away without also taking ours.
+ */
+.vp-doc .neba-scope blockquote {
+  border: 0 solid;
+  color: inherit;
+}
+
 .vp-doc .neba-scope :is(table, tr, th, td) {
   display: revert;
   margin: 0;
