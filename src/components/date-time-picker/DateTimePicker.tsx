@@ -9,6 +9,7 @@ import {
   type PickerShellProps
 } from '../../internal/picker';
 import {
+  displaySamples,
   formatDate,
   isDayOutside,
   isHour12,
@@ -20,6 +21,7 @@ import {
   timeUnitSpan,
   toISODateTime,
   today,
+  withPlaceholder,
   withTime,
   type TimeUnit
 } from '../../internal/date';
@@ -208,6 +210,10 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       (shouldDisableDate?.(nowValue) ?? false) ||
       isTimeBlocked(nowValue, 'second');
 
+    // Holds the trigger open at the width of the longest moment it could
+    // show, so choosing an earlier one does not shrink the field.
+    const samples = withPlaceholder(displaySamples(locale, format), placeholder);
+
     return (
       <PickerShell
         {...shell}
@@ -221,6 +227,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
         // once, and the date is the part a reader scans for.
         startIcon={startIcon ?? <CalendarIcon />}
         display={isValidDate(value) ? formatDate(value, locale, format) : (placeholder ?? '')}
+        samples={samples}
         empty={!isValidDate(value)}
         clearable={clearable}
         onClear={() => commit(null)}

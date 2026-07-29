@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Select as BaseUISelect } from '@base-ui/react/select';
 import { Field } from '@base-ui/react/field';
 import { CheckIcon, ChevronIcon } from '../../internal/icons';
+import { WidthSizer } from '../../internal/sizer';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -10,6 +11,7 @@ import {
   fieldRestClasses,
   focusWithinRingClasses,
   gapClasses,
+  hasContent,
   iconClasses,
   metaTextClasses,
   paddingXClasses,
@@ -100,6 +102,14 @@ const triggerBaseClasses = [
  * The popup is the one surface in the library that is *supposed* to float, so
  * unlike everything else it carries a shadow by default — at level 3, which is
  * as far as the scale goes without hovering.
+ *
+ * Every `--n-*` it reads is set on the popup itself rather than inherited from
+ * the Field around it. A portalled popup renders at the end of `<body>`, so it
+ * is outside the element the slots were declared on, and a `var()` with nothing
+ * to resolve to is not a fallback — `border-color` collapses to `currentColor`
+ * (a black hairline) and `background-color` to transparent. The highlight was
+ * the worst of it: `--n-soft-hover` resolved to nothing, so hovering a row did
+ * not light it at all.
  */
 const popupClasses = [
   surfaceClasses,
@@ -116,7 +126,7 @@ const itemClasses = [
   transitionClasses,
   // `data-highlighted` rather than `:hover`: it is also what the arrow keys
   // move, so the mouse and the keyboard light the same row.
-  'data-[highlighted]:bg-(--n-soft-hover)',
+  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-accent)',
   'data-[selected]:text-(--n-accent) data-[selected]:font-medium',
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
   '[outline:none]'
@@ -173,6 +183,17 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
   const baseItems = React.useMemo(
     () => items.map((item) => ({ label: item.label ?? String(item.value), value: item.value })),
     [items]
+  );
+
+  // Holds the trigger open at the width of the longest thing it could say, so
+  // choosing a shorter option does not shrink the field out from under the
+  // pointer that chose it.
+  const sizerSamples = React.useMemo(
+    () => [
+      ...items.map((item) => item.label ?? String(item.value)),
+      ...(hasContent(placeholder) ? [placeholder] : [])
+    ],
+    [items, placeholder]
   );
 
   return (
@@ -236,15 +257,21 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
             </span>
           ) : null}
 
-          <BaseUISelect.Value
-            className={[
-              'min-w-0 flex-1 truncate text-start',
-              // The placeholder is muted the same way a TextField's is, so an
-              // empty select and an empty field read as equally empty.
-              'data-[placeholder]:text-(--neba-muted-fg)'
-            ].join(' ')}
-            placeholder={placeholder}
-          />
+          {/* The value, and under it every label it could hold. `min-w-0` on the
+              column is what keeps the whole thing shrinkable when a narrow
+              container asks it to be. */}
+          <span className="flex min-w-0 flex-1 flex-col">
+            <BaseUISelect.Value
+              className={[
+                'w-full truncate text-start',
+                // The placeholder is muted the same way a TextField's is, so an
+                // empty select and an empty field read as equally empty.
+                'data-[placeholder]:text-(--neba-muted-fg)'
+              ].join(' ')}
+              placeholder={placeholder}
+            />
+            <WidthSizer samples={sizerSamples} />
+          </span>
 
           <BaseUISelect.Icon
             className={[
@@ -270,6 +297,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
           >
             <BaseUISelect.Popup
               className={`${popupClasses} ${radiusClasses[size]} ${controlTextLeadingClasses[size]}`}
+              style={surfaceSlots(family, 3)}
             >
               {items.map((item) => (
                 <BaseUISelect.Item

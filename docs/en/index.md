@@ -29,11 +29,11 @@ features:
     linkText: Browse
   - title: An acrylic surface
     details: A translucent fill, a blurred backdrop, and a hairline edge catching the light. A drop shadow is opt-in, not a default.
-    link: /guide/design-language
+    link: /design/design-language
     linkText: Design language
   - title: One shared vocabulary
     details: size, color, variant, density, elevation. An md means the same thing on every component.
-    link: /guide/prop-conventions
+    link: /design/prop-conventions
     linkText: Prop conventions
   - title: ESM, types included
     details: One dependency, @base-ui/react. Compiled with plain tsc and published mirroring the source tree.

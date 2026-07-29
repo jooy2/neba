@@ -1,6 +1,6 @@
 ---
 title: 디자인 언어
-order: 2
+order: 1
 ---
 
 # 디자인 언어
@@ -56,6 +56,12 @@ Box·Card·TextField의 표면은 `--neba-panel` / `-hover` / `-press`, 즉 **�
 ### 가장자리에 어두운 베벨을 넣지 마세요
 
 `inset 0 -1px 0 black`은 표면을 즉시 사출성형 플라스틱으로 만듭니다. 위쪽 밝은 선(`--neba-plate-top`)과 전체를 두르는 흰 hairline(`--neba-plate-edge`)만 씁니다.
+
+### tick에는 plate를 넣지 않습니다
+
+plate는 1px짜리 선이므로, 그것이 표면에서 차지하는 비중은 표면의 크기에 달려 있습니다. 32px 버튼에서는 잘린 모서리에 걸린 빛이지만, 18px 체크박스나 18px 라디오, 20px 스위치 트랙에서는 물체의 15분의 1 두께로 그린 베벨이 됩니다. 그렇게 작은 것에 그만한 베벨이 붙으면 2008년의 툴바 아이콘처럼 보입니다.
+
+그래서 `Checkbox`, `Radio`, `Switch`는 아크릴만 유지하고 — 상자를 무언가의 판으로 보이게 하는 것은 grain과 sheen, backdrop blur입니다 — `--neba-plate-glass`와 `--neba-plate-solid`는 아예 쓰지 않습니다. 라이브러리에서 plate를 두르지 않는 컨트롤은 이 셋뿐입니다.
 
 ### sheen은 비대칭입니다
 

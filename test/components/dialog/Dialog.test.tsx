@@ -162,6 +162,37 @@ describe('Dialog', () => {
       await expect.element(screen.getByRole('dialog')).toHaveClass('rounded-none');
     });
 
+    /**
+     * The body is a scroll container and a scroll container clips at its padding
+     * box, so a field flush against the top or bottom of it had its focus ring —
+     * drawn 4px outside the control — sliced off. The padding is room for the
+     * ring and the negative margin hands the space straight back.
+     */
+    it('leaves room for a focus ring at the edges of the scrolling body', async () => {
+      const screen = await render(
+        <Dialog defaultOpen title="Delete">
+          <input aria-label="Name" />
+        </Dialog>
+      );
+      const body = screen.getByLabelText('Name').element().parentElement as HTMLElement;
+
+      expect(body).toHaveClass('overflow-y-auto');
+      expect(body).toHaveClass('py-1');
+      expect(body).toHaveClass('-my-1');
+    });
+
+    it('does not pull the body up when dividers already give it room', async () => {
+      const screen = await render(
+        <Dialog defaultOpen dividers title="Delete">
+          <input aria-label="Name" />
+        </Dialog>
+      );
+      const body = screen.getByLabelText('Name').element().parentElement as HTMLElement;
+
+      expect(body).not.toHaveClass('-my-1');
+      expect(body).toHaveClass('border-t');
+    });
+
     it('keeps the sheet undyed while colouring the edge', async () => {
       const screen = await render(<Dialog defaultOpen color="danger" title="Delete" />);
       const element = screen.getByRole('dialog').element() as HTMLElement;

@@ -167,6 +167,50 @@ describe('Pagination', () => {
         .element(screen.getByRole('button', { name: 'Page 4' }))
         .toHaveAttribute('aria-current', 'page');
     });
+
+    /**
+     * The window recentres on whichever page was chosen, so almost every number
+     * moves one place along. Keyed by page number, React would move the DOM
+     * nodes to match and the button under the pointer would become a different
+     * element from the one that was pressed — its hover bloom fading out while a
+     * freshly mounted neighbour's faded in from a centre it has no pointer
+     * position for. That reads as a flicker. Keying by position keeps every node
+     * where it is and changes only its label.
+     */
+    it('reuses the button in each slot rather than moving it', async () => {
+      const screen = await render(<Pagination count={24} page={7} />);
+      const slots = () => [...screen.container.querySelectorAll('nav ul > li')];
+      const before = slots();
+
+      expect(before.map((slot) => slot.textContent)).toEqual([
+        '',
+        '1',
+        '…',
+        '6',
+        '7',
+        '8',
+        '…',
+        '24',
+        ''
+      ]);
+
+      await screen.rerender(<Pagination count={24} page={6} />);
+      const after = slots();
+
+      expect(after.map((slot) => slot.textContent)).toEqual([
+        '',
+        '1',
+        '…',
+        '5',
+        '6',
+        '7',
+        '…',
+        '24',
+        ''
+      ]);
+      // Same nodes, in the same places, holding different numbers.
+      after.forEach((slot, index) => expect(slot).toBe(before[index]));
+    });
   });
 
   describe('the steppers', () => {

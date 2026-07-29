@@ -369,4 +369,70 @@ describe('DatePicker', () => {
         .toHaveTextContent('August');
     });
   });
+
+  /**
+   * A picker that is not `fullWidth` is sized by what it currently says, and
+   * `Jul 1, 2026` is fourteen pixels narrower than `Sep 28, 2026` — so the field
+   * jumped every time a date was chosen, taking the row beside it along. The
+   * trigger holds every date it could show, laid out and shown to nobody.
+   *
+   * Nothing here measures a width: no stylesheet is loaded in this run, so the
+   * assertions are about the markup that does the reserving.
+   */
+  describe('width', () => {
+    const sizerOf = (root: HTMLElement) =>
+      root.querySelector('[aria-hidden="true"].invisible') as HTMLElement;
+
+    const samplesOf = (root: HTMLElement) =>
+      [...sizerOf(root).children].map((child) => child.getAttribute('data-sample'));
+
+    it('reserves room for every month name and a two-digit day', async () => {
+      const screen = await render(<DatePicker locale={LOCALE} label="Ships on" />);
+      const samples = samplesOf(
+        screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement
+      );
+
+      for (const month of ['Jan', 'Feb', 'Sep', 'Nov', 'Dec']) {
+        expect(samples.some((sample) => sample?.startsWith(month))).toBe(true);
+      }
+      expect(samples.every((sample) => /\d{2},/.test(sample ?? ''))).toBe(true);
+    });
+
+    it('reserves room for the placeholder too', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} label="Ships on" placeholder="Pick a departure date" />
+      );
+
+      expect(
+        samplesOf(screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement)
+      ).toContain('Pick a departure date');
+    });
+
+    /**
+     * Generated content off a data attribute rather than text nodes: it lays out
+     * identically, so it reserves the same width — and it leaves nothing for a
+     * `getByText` or a find-in-page to trip over, which is what would otherwise
+     * make every query for the chosen date ambiguous.
+     */
+    it('reserves the width without putting the dates in the document', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} label="Ships on" defaultValue={new Date(2026, 6, 30)} />
+      );
+      const trigger = screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement;
+
+      expect(trigger.textContent).toBe('Jul 30, 2026');
+      expect([...sizerOf(trigger).children].every((child) => child.textContent === '')).toBe(true);
+    });
+
+    it('keeps the sizer out of the accessible name', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} label="Ships on" defaultValue={new Date(2026, 6, 30)} />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Ships on' })).toBeInTheDocument();
+      expect(
+        sizerOf(screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement)
+      ).toHaveAttribute('aria-hidden', 'true');
+    });
+  });
 });

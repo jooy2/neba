@@ -27,7 +27,7 @@ import { Badge, Button } from 'neba';
 
 Given `children`, the wrapping `<span>` becomes the positioning context and the marker pins to its corner. Without `children` the marker lays out inline on its own, which is what a status marker in a table cell is.
 
-The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../guide/prop-conventions).
+The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 

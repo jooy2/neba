@@ -21,16 +21,18 @@ function LinkIcon() {
 
 export default function TooltipHero() {
   return (
+    // `delay={0}` so the preview answers the first hover. A real page wants the
+    // default wait — see the delay example below.
     <div className="flex flex-wrap items-center gap-3">
-      <Tooltip content="Copy the deploy URL">
+      <Tooltip content="Copy the deploy URL" delay={0}>
         <Button variant="outline" startIcon={<LinkIcon />} />
       </Tooltip>
-      <Tooltip content="Every commit on main deploys here">
+      <Tooltip content="Every commit on main deploys here" delay={0}>
         <Chip variant="text" color="success">
           production
         </Chip>
       </Tooltip>
-      <Tooltip content="Deleting a workspace cannot be undone" color="danger">
+      <Tooltip content="Deleting a workspace cannot be undone" color="danger" delay={0}>
         <Button color="danger" variant="outline">
           Delete
         </Button>

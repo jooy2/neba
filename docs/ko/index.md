@@ -29,11 +29,11 @@ features:
     linkText: 훑어보기
   - title: 아크릴 표면
     details: 반투명한 채움, 흐려진 배경, 빛을 받는 하이라인 가장자리. 그림자는 기본값이 아니라 선택입니다.
-    link: /ko/guide/design-language
+    link: /ko/design/design-language
     linkText: 디자인 언어
   - title: 하나의 공용 어휘
     details: size, color, variant, density, elevation. md는 어느 컴포넌트에서든 같은 것을 뜻합니다.
-    link: /ko/guide/prop-conventions
+    link: /ko/design/prop-conventions
     linkText: Prop 규약
   - title: ESM · 타입 포함
     details: 의존성은 @base-ui/react 하나. 번들러 없이 tsc로 컴파일해 폴더 구조 그대로 배포합니다.

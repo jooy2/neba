@@ -25,6 +25,16 @@ import { Divider } from 'neba';
 
 ## 예시
 
+### length와 thickness
+
+`length`는 선이 뻗는 길이입니다 — 가로 divider에서는 너비, 세로 divider에서는 높이입니다. `thickness`는 선의 두께입니다. 둘 다 숫자(px) 또는 임의의 CSS 길이 문자열을 받습니다. 생략하면 가로 선은 컨테이너를 가득 채우고, 세로 선은 자신이 놓인 flex 행의 높이에 맞춰 늘어납니다.
+
+<Demo src="divider/size">
+
+<<< @/.vitepress/demos/divider/size.tsx
+
+</Demo>
+
 ### textAlign
 
 `children`으로 라벨을 넣으면 선이 라벨을 비켜 갑니다. `center`는 선을 절반으로 나누고, `start`와 `end`는 가까운 쪽에 짧은 선만 남겨 라벨이 선 안에 놓인 것처럼 보이게 합니다.

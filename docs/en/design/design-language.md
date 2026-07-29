@@ -1,6 +1,6 @@
 ---
 title: Design language
-order: 2
+order: 1
 ---
 
 # Design language
@@ -56,6 +56,12 @@ Translucency plus blur alone gives you polished glass. Noise is what makes it sa
 ### No dark bevel on the edge
 
 `inset 0 -1px 0 black` turns a surface into injection-moulded plastic immediately. Use only the bright top line (`--neba-plate-top`) and the white hairline around the whole plate (`--neba-plate-edge`).
+
+### A tick wears no plate at all
+
+The plate is a 1px line, so how much of a surface it is depends on how big that surface is. On a 32px button it is light catching a cut edge. On an 18px checkbox, an 18px radio or a 20px switch track it is a bevel drawn at a fifteenth of the object, and a bevel that heavy on something that small reads as a toolbar icon from 2008.
+
+So `Checkbox`, `Radio` and `Switch` keep the acrylic — the grain, the sheen and the backdrop blur are what make the box a sheet of something — and drop `--neba-plate-glass` and `--neba-plate-solid` entirely. They are the only controls in the library that do.
 
 ### The sheen is off-vertical
 

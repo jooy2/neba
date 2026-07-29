@@ -3,16 +3,19 @@ import { Button } from '../button/Button';
 import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar';
 import { ArrowRightIcon, CalendarIcon } from '../../internal/icons';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
+import { WidthSizer } from '../../internal/sizer';
 import {
   addMonths,
   compareDay,
+  displaySamples,
   formatDate,
   isValidDate,
   localeWeekStart,
   startOfDay,
   startOfMonth,
   toISODate,
-  today
+  today,
+  withPlaceholder
 } from '../../internal/date';
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles';
 import type { NebaWeekday } from '../../types';
@@ -231,6 +234,10 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     const secondMonth = addMonths(month, 1);
     const twoUp = monthCount === 2;
 
+    // Every date either half could show, so neither end of the trigger changes
+    // width as the range is filled in.
+    const dateSamples = displaySamples(locale, format);
+
     // Which end the next click will fill. The trigger says the same thing with
     // its two halves, but the trigger is behind the popup while the popup is up,
     // so the footer is the only place that can say it where it will be read.
@@ -275,15 +282,26 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
           // to twice the *shorter* of the two, which truncates a date next to a
           // word like "Check out"; letting each take its own width sizes the
           // control to what it actually has to say.
+          //
+          // Each half carries its own sizer for the same reason it carries its
+          // own width: one sizer across both would reserve the widest of the two
+          // twice over, and the trigger would sit wider than anything it can
+          // actually hold.
           <span className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate">{write(start, startPlaceholder)}</span>
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate">{write(start, startPlaceholder)}</span>
+              <WidthSizer samples={withPlaceholder(dateSamples, startPlaceholder)} />
+            </span>
             <span
               aria-hidden="true"
               className="flex shrink-0 items-center text-(--neba-muted-fg) rtl:rotate-180"
             >
               <ArrowRightIcon />
             </span>
-            <span className="truncate">{write(end, endPlaceholder)}</span>
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate">{write(end, endPlaceholder)}</span>
+              <WidthSizer samples={withPlaceholder(dateSamples, endPlaceholder)} />
+            </span>
           </span>
         }
         empty={start === null && end === null}

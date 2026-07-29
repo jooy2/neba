@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Popover } from '@base-ui/react/popover';
 import { CloseIcon } from './icons';
+import { WidthSizer } from './sizer';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -137,6 +138,12 @@ export interface PickerShellProps extends NebaStyleProps {
 interface InternalShellProps extends PickerShellProps {
   /** What the trigger reads. A placeholder when `empty`. */
   display: React.ReactNode;
+  /**
+   * Every string the display could hold, so the trigger stops changing width
+   * with its value. `displaySamples` in `internal/date` produces them and
+   * `WidthSizer` is what lays them out.
+   */
+  samples?: string[];
   /** Nothing has been chosen yet, so the display is muted. */
   empty: boolean;
   /** Offers the × that empties the control. */
@@ -180,6 +187,7 @@ export function PickerShell({
   className,
   style,
   display,
+  samples,
   empty,
   clearable = false,
   onClear,
@@ -270,13 +278,17 @@ export function PickerShell({
                 {startIcon}
               </span>
             ) : null}
-            <span
-              className={cx(
-                'min-w-0 flex-1 truncate',
-                empty ? 'text-(--neba-muted-fg)' : 'text-(--neba-fg)'
-              )}
-            >
-              {display}
+            {/* The value and, under it, every value it could be. */}
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span
+                className={cx(
+                  'w-full truncate',
+                  empty ? 'text-(--neba-muted-fg)' : 'text-(--neba-fg)'
+                )}
+              >
+                {display}
+              </span>
+              <WidthSizer samples={samples ?? []} />
             </span>
           </Popover.Trigger>
 

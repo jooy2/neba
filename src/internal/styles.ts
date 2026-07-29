@@ -156,6 +156,33 @@ export const tickRadiusClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * The dot inside a checked Radio.
+ *
+ * Whole pixels at every step rather than a percentage of the ring around it.
+ * `38%` of an 18px box is 6.08px, and a circle whose diameter lands between two
+ * device pixels is antialiased unevenly on its four sides — which is exactly
+ * what reads as "the dot is not centred" even when the box says it is.
+ */
+export const tickDotClasses: Record<NebaSize, string> = {
+  xs: 'size-[0.3125rem]',
+  sm: 'size-1.5',
+  md: 'size-[0.4375rem]',
+  lg: 'size-2',
+  xl: 'size-[0.5625rem]'
+};
+
+/**
+ * The line box a tick and its label share.
+ *
+ * Both the tick's wrapper and the label are measured against it: the wrapper is
+ * `h-[1lh]` so the box centres on the label's *first* line rather than on the
+ * whole block, and that only lines up if the two agree on what a line is. Left
+ * to inherit, `1lh` picks up whatever leading the host page happens to set and
+ * the tick drifts a pixel or two off the text beside it.
+ */
+export const tickRowLeadingClasses = 'leading-[1.4]';
+
+/**
  * The same two tracks again, as raw lengths.
  *
  * These exist for one element: a table cell. `<td>` and `<th>` are among the

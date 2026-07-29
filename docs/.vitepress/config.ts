@@ -21,7 +21,6 @@ const localeBase = (lang: string) => (lang === defaultLocale ? '/' : `/${lang}/`
 const commonSidebarConfig: VitePressSidebarOptions = {
   debugPrint: true,
   manualSortFileNameByPriority: ['introduction.md'],
-  excludeByGlobPattern: ['changelog.md'],
   collapsed: false,
   capitalizeFirst: true,
   useTitleFromFileHeading: true,
@@ -31,8 +30,21 @@ const commonSidebarConfig: VitePressSidebarOptions = {
   // becomes a sidebar label that goes nowhere, and the components group stops
   // linking to the index page that lists them all.
   useFolderLinkFromIndexFile: true,
-  frontmatterOrderDefaultValue: 9, // For 'CHANGELOG.md'
+  frontmatterOrderDefaultValue: 9,
   sortMenusByFrontmatterOrder: true
+};
+
+/**
+ * The two sidebar groups the folder tree cannot name.
+ *
+ * `design/` has no `index.md` and the changelog is a loose page, so neither can
+ * take its heading from a page the way every other group does. Left to the
+ * generator, `design/` would be capitalised to "Design" over Korean pages and
+ * the changelog would sit at the root with no heading over it at all.
+ */
+const groupLabels: Record<string, { overview: string; design: string; more: string }> = {
+  en: { overview: 'All components', design: 'Design', more: 'Discover more' },
+  ko: { overview: '모든 컴포넌트', design: '디자인', more: '더 알아보기' }
 };
 
 const vitePressSidebarConfig = [
@@ -155,6 +167,7 @@ const vitePressConfig: UserConfig = {
  * ------------------------------------------------------------------------- */
 
 interface GeneratedSidebarItem {
+  text?: string;
   link?: string;
   items?: GeneratedSidebarItem[];
   collapsed?: boolean;
@@ -192,27 +205,91 @@ function firstLink(item: GeneratedSidebarItem): string | undefined {
 const startsWith = (prefix: string) => (item: GeneratedSidebarItem) =>
   firstLink(item)?.startsWith(prefix) ?? false;
 
+/** Every page in a subtree, with the folder headings above them dropped. */
+function flattenItems<T extends GeneratedSidebarItem>(items: T[]): T[] {
+  return items.flatMap((item) => (item.items?.length ? flattenItems(item.items as T[]) : [item]));
+}
+
+/** By label, so a flat list of fifty components can be scanned for a name. */
+function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
+  return (a.text ?? '').localeCompare(b.text ?? '');
+}
+
 /**
- * Guide first, then Components — with the Examples page as the first entry
- * inside it.
+ * Guide, Components, Design, Discover more — with the component groups kept as
+ * headings inside Components.
  *
- * Examples keeps its own top-level URL (`/examples/`), so the folder tree
- * cannot express this: a page nested in the menu but not in the filesystem is
- * exactly the case a generated sidebar has no way to state.
+ * Most of that cannot be stated by the folder tree, which is what this function
+ * is for:
+ *
+ * - **The index page is an entry rather than the heading's link.** Left to the
+ *   generator, `/components/` is only reachable by clicking the word
+ *   "Components" above the menu, which does not look like a link and is easy to
+ *   miss. It becomes a row of its own — the same shape Examples has — and the
+ *   heading above it stops being clickable. `groupLabels` names it, because the
+ *   page's own title is "Components" and a row reading the same word as the
+ *   heading directly above it says nothing.
+ * - **Examples** keeps its own top-level URL (`/examples/`) but reads as part of
+ *   Components. A page nested in the menu and not in the filesystem is exactly
+ *   the case a generated sidebar has no way to state.
+ * - **The component groups stay.** They are what say that a Combobox is an
+ *   input and a Card is a surface, and fifty component pages in one list say
+ *   nothing at all. What is flattened is only what is *inside* a group: the
+ *   generator would otherwise nest a page one level deeper than the group it is
+ *   in whenever a folder gains a subfolder.
+ * - **Design and Discover more** are named here rather than by an `index.md`,
+ *   for the reason `groupLabels` explains.
+ *
+ * Inside a group the pages are sorted by name rather than by their `order`
+ * frontmatter. A group holds up to nineteen components and nobody remembers
+ * where Slider sits in a curated order.
  */
-function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[]): T[] {
+function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string): T[] {
+  const labels = groupLabels[lang] ?? groupLabels[defaultLocale];
+
   const guide = items.find(startsWith('guide/'));
   const components = items.find(startsWith('components/'));
   const examples = items.find(startsWith('examples/'));
+  const design = items.find(startsWith('design/'));
+  const changelog = items.find(startsWith('changelog'));
 
-  if (examples && components) {
-    components.items = [examples, ...(components.items ?? [])];
+  if (components) {
+    // A child with children of its own is a group folder; a child with only a
+    // link is a page sitting loose in `components/`, which stays where it is.
+    const children = components.items ?? [];
+    const groups = children.filter((item) => item.items?.length) as T[];
+    const loose = children.filter((item) => !item.items?.length) as T[];
+
+    for (const group of groups) {
+      group.items = flattenItems(group.items ?? []).sort(byText);
+    }
+    groups.sort(byText);
+
+    const overview = components.link
+      ? ({ text: labels.overview, link: components.link } as unknown as T)
+      : undefined;
+    delete components.link;
+
+    components.items = [
+      ...([overview].filter(Boolean) as T[]),
+      ...(examples ? [examples as T] : []),
+      ...loose,
+      ...groups
+    ];
   }
 
-  const moved = new Set([guide, components, examples].filter(Boolean));
+  if (design) {
+    design.text = labels.design;
+  }
+
+  // A loose page has no group of its own, so it is given one — the place
+  // anything that is neither a guide nor a component ends up.
+  const more = changelog ? ({ text: labels.more, items: [changelog] } as unknown as T) : undefined;
+
+  const moved = new Set([guide, components, examples, design, changelog].filter(Boolean));
 
   return [
-    ...([guide, components].filter(Boolean) as T[]),
+    ...([guide, components, design, more].filter(Boolean) as T[]),
     ...items.filter((item) => !moved.has(item))
   ];
 }
@@ -224,10 +301,14 @@ const sidebar = config.themeConfig?.sidebar as
 
 if (sidebar) {
   for (const [path, group] of Object.entries(sidebar)) {
+    // `/` is the default locale and `/{lang}/` is every other one — the same
+    // mapping `localeBase` makes, read back the other way.
+    const lang = path === '/' ? defaultLocale : path.replaceAll('/', '');
+
     if (Array.isArray(group)) {
-      sidebar[path] = arrangeSidebar(cleanUpItems(group));
+      sidebar[path] = arrangeSidebar(cleanUpItems(group), lang);
     } else if (group?.items) {
-      group.items = arrangeSidebar(cleanUpItems(group.items));
+      group.items = arrangeSidebar(cleanUpItems(group.items), lang);
     }
   }
 }

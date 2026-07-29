@@ -145,16 +145,22 @@ const bulletGapClasses: Record<NebaSize, string> = {
  * How far apart two items sit, and the one thing `density` is allowed to touch
  * here — a compact timeline is the same type at the same bullet size with less
  * air between the steps.
+ *
+ * The floor is set by the item with nothing in it. A step that is only a title
+ * and a time is one line tall, so the gap is the *whole* of what separates it
+ * from the next one — where a step with a paragraph under it has the paragraph's
+ * own leading working for it as well. Tuned against that case, which is why even
+ * `compact` keeps more air than a list of one-liners would otherwise suggest.
  */
 const itemGapClasses: Record<NebaDensity, Record<NebaSize, string>> = {
-  default: { xs: 'pb-4', sm: 'pb-5', md: 'pb-6', lg: 'pb-7', xl: 'pb-8' },
-  compact: { xs: 'pb-2', sm: 'pb-2.5', md: 'pb-3', lg: 'pb-3.5', xl: 'pb-4' }
+  default: { xs: 'pb-5', sm: 'pb-6', md: 'pb-7', lg: 'pb-8', xl: 'pb-10' },
+  compact: { xs: 'pb-3', sm: 'pb-3.5', md: 'pb-4', lg: 'pb-5', xl: 'pb-6' }
 };
 
 /** The same ladder across, for the horizontal form. */
 const itemGapXClasses: Record<NebaDensity, Record<NebaSize, string>> = {
-  default: { xs: 'pe-4', sm: 'pe-5', md: 'pe-6', lg: 'pe-7', xl: 'pe-8' },
-  compact: { xs: 'pe-2', sm: 'pe-2.5', md: 'pe-3', lg: 'pe-3.5', xl: 'pe-4' }
+  default: { xs: 'pe-5', sm: 'pe-6', md: 'pe-7', lg: 'pe-8', xl: 'pe-10' },
+  compact: { xs: 'pe-3', sm: 'pe-3.5', md: 'pe-4', lg: 'pe-5', xl: 'pe-6' }
 };
 
 const borderStyleClasses: Record<TimelineConnector, string> = {

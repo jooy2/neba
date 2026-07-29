@@ -614,11 +614,7 @@ const GROUPS: Group[] = [
           en: 'A floating lozenge holding a little live information'
         },
         path: '/components/surfaces/pill',
-        preview: (
-          <Pill size="sm" color="danger" startIcon={<GalleryDotIcon />}>
-            Recording
-          </Pill>
-        )
+        preview: <Pill size="sm" color="danger" startIcon={<GalleryDotIcon />} title="Recording" />
       },
       {
         name: 'Toolbar',

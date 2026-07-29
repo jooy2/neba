@@ -595,7 +595,14 @@ export function Calendar({
       return;
     }
     pendingFocus.current = false;
-    rootRef.current?.querySelector<HTMLElement>('[data-focus-target="true"]')?.focus();
+    // `preventScroll`, because on the very first pass this runs before the
+    // popup has been positioned — it is still at the top-left of the page, and
+    // the browser's own "scroll the focused element into view" would drag the
+    // document up there with it. The cell is inside a popup that is about to be
+    // placed against the trigger, so there is nothing to scroll to anyway.
+    rootRef.current
+      ?.querySelector<HTMLElement>('[data-focus-target="true"]')
+      ?.focus({ preventScroll: true });
   });
 
   const isDisabled = React.useCallback(
@@ -1044,6 +1051,36 @@ export interface TimeGridProps {
 }
 
 /**
+ * Brings a row into view *inside its own column*, and nowhere else.
+ *
+ * `scrollIntoView` walks every scrollable ancestor up to the document, and the
+ * popup this runs in has not been positioned yet when the effect fires — it is
+ * still at the top-left of the page. So the browser dutifully scrolled the whole
+ * document to the top to reveal a row that was about to move anyway, which is
+ * the "clicking a picker jumps the page" bug. Setting `scrollTop` on the column
+ * cannot touch anything above it.
+ */
+function revealInColumn(row: HTMLElement) {
+  const column = row.parentElement;
+  if (!column) {
+    return;
+  }
+
+  // Measured rather than read off `offsetTop`, which is relative to whichever
+  // ancestor happens to be positioned and not necessarily to the column.
+  const rowBox = row.getBoundingClientRect();
+  const columnBox = column.getBoundingClientRect();
+  const top = rowBox.top - columnBox.top - column.clientTop + column.scrollTop;
+  const bottom = top + rowBox.height;
+
+  if (top < column.scrollTop) {
+    column.scrollTop = top;
+  } else if (bottom > column.scrollTop + column.clientHeight) {
+    column.scrollTop = bottom - column.clientHeight;
+  }
+}
+
+/**
  * Hours, minutes and — when asked for — seconds, as columns you scroll rather
  * than as a dial you drag.
  *
@@ -1079,18 +1116,14 @@ export function TimeGrid({
 
   React.useEffect(() => {
     const root = rootRef.current;
-    root?.querySelectorAll<HTMLElement>('[data-chosen="true"]').forEach((row) => {
-      // `nearest` rather than `center`: a column already showing the row should
-      // not jump just because the popup opened.
-      row.scrollIntoView({ block: 'nearest' });
-    });
+    root?.querySelectorAll<HTMLElement>('[data-chosen="true"]').forEach(revealInColumn);
 
     if (autoFocus) {
       const first = root?.querySelector<HTMLElement>('[role="listbox"]');
       (
         first?.querySelector<HTMLElement>('[data-chosen="true"]') ??
         first?.querySelector<HTMLElement>('[role="option"]')
-      )?.focus();
+      )?.focus({ preventScroll: true });
     }
     // Once, on open. Re-running it on every change would drag a column back
     // under the pointer that is scrolling it.

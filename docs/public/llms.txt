@@ -21,9 +21,9 @@ Documentation is available in English (served from `/`) and Korean (served from 
 ## Guide
 
 - [Getting started](https://neba.cdget.com/guide/getting-started): Install, wiring up Tailwind with the two-line CSS setup, first component, dark mode via `data-theme` or a class, browser support.
-- [Design language](https://neba.cdget.com/guide/design-language): The cut-acrylic rule and everything that follows from it — the four surface layers, the no-transform rule, instant press and slow release, the elevation ladder, translucency and blur.
-- [Colour](https://neba.cdget.com/guide/color): The six semantic families, the five hand-picked tokens per family, and how everything else is derived with `color-mix()`. Includes a live palette table read back from the browser.
-- [Prop conventions](https://neba.cdget.com/guide/prop-conventions): What the shared props mean, which components take which axes, and the rule against inventing a second spelling for an idea that already has one.
+- [Design language](https://neba.cdget.com/design/design-language): The cut-acrylic rule and everything that follows from it — the four surface layers, the no-transform rule, instant press and slow release, the elevation ladder, translucency and blur.
+- [Colour](https://neba.cdget.com/design/color): The six semantic families, the five hand-picked tokens per family, and how everything else is derived with `color-mix()`. Includes a live palette table read back from the browser.
+- [Prop conventions](https://neba.cdget.com/design/prop-conventions): What the shared props mean, which components take which axes, and the rule against inventing a second spelling for an idea that already has one.
 
 ## Components
 

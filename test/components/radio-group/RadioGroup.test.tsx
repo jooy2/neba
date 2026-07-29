@@ -148,4 +148,43 @@ describe('RadioGroup', () => {
       );
     });
   });
+
+  describe('the dot', () => {
+    /**
+     * Whole pixels rather than a percentage of the ring around it: 38% of an
+     * 18px box is 6.08px, and a circle whose diameter falls between two device
+     * pixels is antialiased unevenly on its four sides — which is what reads as
+     * "the dot is not centred" even when the box says it is.
+     */
+    it('is sized in whole pixels, and scales with the group', async () => {
+      const screen = await render(<Plans label="Plan" defaultValue="team" />);
+      const dot = screen.getByRole('radio', { name: 'Team' }).element()
+        .firstElementChild as HTMLElement;
+
+      expect(dot).toHaveClass('size-[0.4375rem]');
+      expect(dot.className).not.toContain('%');
+
+      await screen.rerender(<Plans label="Plan" defaultValue="team" size="xl" />);
+
+      expect(screen.getByRole('radio', { name: 'Team' }).element().firstElementChild).toHaveClass(
+        'size-[0.5625rem]'
+      );
+    });
+
+    it('wears no plate, chosen or not', async () => {
+      const screen = await render(<Plans label="Plan" defaultValue="team" />);
+
+      expect(screen.getByRole('radio', { name: 'Team' }).element().className).not.toContain(
+        'neba-plate'
+      );
+    });
+
+    it('measures against the label’s own line, not the page’s', async () => {
+      const screen = await render(<Plans label="Plan" />);
+      const row = screen.getByRole('radio', { name: 'Starter' }).element().parentElement
+        ?.parentElement as HTMLElement;
+
+      expect(row).toHaveClass('leading-[1.4]');
+    });
+  });
 });

@@ -27,17 +27,17 @@ export default function PillExpandable() {
       <Pill
         startIcon={<PlaneIcon />}
         color="info"
+        title="KE081 → ICN"
+        description="Boards in 25 minutes"
         expanded={expanded}
         onClick={() => setExpanded(!expanded)}
         details={
           <div className="flex flex-col gap-1">
-            <Typography level="caption">Gate B14 · boards in 25 minutes</Typography>
-            <Typography level="caption">Seat 12A · on time</Typography>
+            <Typography level="caption">Gate B14 · seat 12A</Typography>
+            <Typography level="caption">On time</Typography>
           </div>
         }
-      >
-        KE081 → ICN
-      </Pill>
+      />
 
       <Typography level="caption">Press the pill.</Typography>
     </div>

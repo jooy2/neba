@@ -76,14 +76,14 @@ Run `npm test` before considering the change done. If a component's shape makes 
 
 ## The design language
 
-**[docs/ko/design-language](docs/ko/guide/design-language.md) is the source of truth. Read it before styling anything.** The rules below are the ones most easily broken by accident; the document explains why each exists.
+**[docs/ko/design-language](docs/ko/design/design-language.md) is the source of truth. Read it before styling anything.** The rules below are the ones most easily broken by accident; the document explains why each exists.
 
 The governing idea: **a Neba surface is a sheet of cut acrylic, not a moulded plastic key.** Every rule below follows from that.
 
 - **No `transform` on a control, ever.** Scaling resamples the label, and text that shifts under the cursor is what reads as cheap. State changes are expressed in colour and depth only.
 - **Press is instant, release is slow.** Per-property `transition-duration` with `:active` overriding everything to `0ms`. The same asymmetry drives the afterglow layer. This is the house interaction signature.
 - **`elevation` defaults to `0` and `0` means no shadow at all.** The acrylic edge separates a surface from the page; a drop shadow is opt-in. Shadows are never tinted with the control's own colour.
-- **No dark bottom bevel** (`inset 0 -1px 0 black`). Top light edge plus a full white hairline only.
+- **No dark bottom bevel** (`inset 0 -1px 0 black`). Top light edge plus a full white hairline only — and no plate at all on a Checkbox, a Radio or a Switch, where a 1px line is a fifteenth of the object rather than light on an edge.
 - **Translucency is tuned with the blur radius, not just the alpha.** Too much blur smears the backdrop into flat colour and the surface reads opaque again.
 - **`density` changes padding only** — never height, never type scale.
 - **Don't express state with `opacity`.** Each state gets its own axis (saturation, colour family, flatness).
@@ -98,13 +98,15 @@ Implementation rules that are easy to get wrong:
 
 ### Shared prop vocabulary
 
-`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, `NebaOrientation`, `NebaSide`, `NebaAlign`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/guide/prop-conventions.md](docs/ko/guide/prop-conventions.md).
+`src/types.ts` holds the vocabulary every component draws from: `NebaSize`, `NebaColor`, `NebaDensity`, `NebaVariant`, `NebaElevation`, `NebaOrientation`, `NebaSide`, `NebaAlign`, and the `NebaStyleProps` bundle. A `size` of `md` must mean the same thing on every component. **Do not invent a second spelling for an idea that already has one** — see [docs/ko/design/prop-conventions.md](docs/ko/design/prop-conventions.md).
 
 The same rule applies to the values behind those names, which is what `src/internal/styles.ts` is for. Control heights, radii, type scales, the two padding tracks, the _sheet_ ladder a Card, an Alert and a Dialog share, the frosted surface, the house transition, the focus ring and the `--n-*` slot generators live there once and every component imports them. A component keeps only what genuinely differs: its variant class maps and its layout. If you find yourself writing `h-8` or `rounded-(--neba-radius-md)` into a component, check whether the table already says it.
 
 `src/internal/button-group.ts` holds the context `ButtonGroup` provides and `Button` reads as a fallback. It lives in `internal/` so the two components do not import each other; `List`, `Accordion` and `Tabs` have the same arrangement but keep their context in their own file, because each is a parent and its rows in one file. `src/internal/menu.ts` is the exception that proves the rule: `Menu`, `ContextMenu` and every row read the same context, and a submenu is a menu inside a menu, so three components need it and none of them should have to import the others.
 
-Two more files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog, Toast and FilePicker all need; the chevron, drawn pointing **down** once and turned by whoever needs it — Select's trigger, Accordion's header, a submenu's arrow, Pagination's steppers — because rotating a glyph is the one allowance the no-transform rule makes; the tick and the dot that Select and the menu's checkable rows share; and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family.
+`src/internal/sizer.tsx` is `WidthSizer`, and it is in `internal/` because Select, the picker shell and DateRangePicker all need it. A control that is not `fullWidth` is sized by what it is _currently_ saying, so a Select showing `Seoul` is narrower than the same Select showing `Washington DC` and a DatePicker on the 1st is narrower than the same picker on the 28th — the field moves under the pointer that just used it. The sizer lays out every alternative in a clipped, zero-height, `aria-hidden` box, which pins the intrinsic width to the widest of them. A **string** sample is drawn as generated content off a `data-sample` attribute rather than as a text node: it lays out identically so it reserves the same width, and it leaves nothing for a `getByText` or a find-in-page to match, which is what would otherwise make every query for a chosen value ambiguous in a consumer's tests. Only a sample that is not a string — a Select option whose label is a node — is rendered for real.
+
+Three more files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog, Toast and FilePicker all need; the chevron, drawn pointing **down** once and turned by whoever needs it — Select's trigger, Accordion's header, a submenu's arrow, Pagination's steppers — because rotating a glyph is the one allowance the no-transform rule makes; the tick and the dot that Select and the menu's checkable rows share; and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family.
 
 ### Table cells are the exception to "styling is Tailwind"
 
@@ -140,12 +142,25 @@ docs/.vitepress/
     styles/scope.css        # Preflight, cut down and scoped to `.neba-scope`
 docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
+  guide/getting-started.md  # install and set up — the only page in Guide
   components/index.md       # the index grid of every component
   components/{group}/*.md   # one page per component, grouped (display, feedback, inputs, surfaces)
   examples/index.md         # every component on one sample screen
+  design/*.md               # design language, colour, prop conventions
+  changelog.md              # generated from the root CHANGELOG.md; git-ignored
 ```
 
-The groups are folders, and the sidebar orders them alphabetically — `display` (Typography, Divider, Chip, Table, List, Badge), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination), `layout` (Container, Grid + GridContainer), `surfaces` (Box, Card, Accordion, Tabs). `layout` is separate from `surfaces` because nothing in it draws a sheet: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page. Within a group the `order` in a page's frontmatter decides; inserting a component means renumbering the ones after it in **both** locales, so a new one goes on the end unless it genuinely belongs in the middle.
+**The sidebar is four sections: Guide, Components, Design, Discover more** — with the component groups kept as headings inside Components. Almost none of that can be stated by the folder tree, so `arrangeSidebar` in `config.ts` reshapes the generated menu once per locale:
+
+- **The index page is an entry, not the heading's link.** Left to the generator, `/components/` is only reachable by clicking the word "Components" above the menu, which does not look like a link. It becomes a row of its own — the same shape Examples has — and the heading stops being clickable. `groupLabels.overview` names it ("All components" / "모든 컴포넌트"), because the page's own title is "Components" and a row repeating the heading directly above it says nothing.
+- **Examples** keeps its own top-level URL but reads as part of Components. A page nested in the menu and not in the filesystem is exactly the case a generated sidebar has no way to state.
+- **The component groups stay** — they are what say that a Combobox is an input and a Card is a surface, and fifty pages in one list say nothing. What is flattened is only what is _inside_ a group, so a folder that gains a subfolder does not push its pages a level deeper.
+- **Inside a group the pages are sorted by name**, not by their `order` frontmatter. A group holds up to nineteen components and nobody remembers where Slider sits in a curated order. `order` still decides inside Design.
+- **Design and Discover more are named in `groupLabels`**, because neither has an `index.md` to take a heading from and the generated fallback would put an English word over Korean pages. The component groups take their heading from the folder name and stay English in every locale.
+
+The groups are folders: `display` (Typography, Divider, Chip, Table, List, Badge), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination), `layout` (Container, Grid + GridContainer), `surfaces` (Box, Card, Accordion, Tabs). `layout` is separate from `surfaces` because nothing in it draws a sheet: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page.
+
+**The changelog is generated, not written.** There is one `CHANGELOG.md` and it lives at the repository root, where npm and anyone browsing the repo expects it. `scripts/copy-changelog.mjs` writes it into `docs/{locale}/changelog.md` with the frontmatter the sidebar needs, and `npm run docs:dev` / `docs:build` run it first. The copies are git-ignored; never edit them.
 
 Things that will bite:
 
@@ -156,6 +171,7 @@ Things that will bite:
 - **A props row carries both languages.** `data/props.ts` keys every description by locale, so a Korean and an English table cannot drift into listing different props.
 - **Tailwind ships without Preflight here.** Preflight resets `h1`…`p`, links and lists globally, which would flatten VitePress's own typography. `scope.css` re-applies only the parts the library depends on (above all `border: 0 solid`) inside `.neba-scope`. Utilities are imported _unlayered_ on purpose: VitePress's theme is unlayered, and a layered rule loses to an unlayered one no matter how specific.
 - **`.vp-doc` is already styling the preview.** Base UI renders a `<p>` for a field description; a card footer can hold an `<a>`. Rules that undo `.vp-doc` need two classes to outrank it — that is why half of `scope.css` is prefixed `.vp-doc .neba-scope`. Where the component itself has to win against `.vp-doc` rather than merely survive it — table cells — the fix belongs in the component, inline, not here; there is no specificity that both beats `.vp-doc td` and loses to a utility.
+- **Every tag that reset names is a tag whose padding a component can no longer set.** `.vp-doc .neba-scope` is two classes and a padding utility is one, so the `padding: 0` list in `scope.css` is kept to exactly what something actually pads: `ul`, `ol` and `blockquote`. It once included `li` and `figure`, and a Timeline's `pb-6` between steps and a Blockquote's whole inset silently came out as zero. `[role="list"]` is excluded for the same reason — it is what List, Timeline and Pagination put on their root, so it marks the lists whose padding belongs to the component.
 - **A portalled popup leaves `.neba-scope`.** Select's popup renders at the end of `<body>`, outside the element the preview mounted into. Its positioner carries `neba-portal`, which `scope.css` hangs the same reset off. The library treats that class as a hook, not a style; a consumer with real Preflight needs nothing.
 - **Dark mode is free.** VitePress puts `.dark` on `<html>`, which `src/styles.css` already answers to.
 - The docs' `<Demo>` is client-only, so an SSR build renders an empty box and fills it on hydration.
@@ -169,13 +185,13 @@ A component page is reference material for someone deciding whether this compone
 1. `# Name` — the exported symbol.
 2. **A lede** (`<p class="neba-lede">`) — one or two sentences, at most three: what the component _is_ and what it is _for_. Written as prose, not as a fragment. A reader who knows nothing about the library should be able to tell from the lede alone whether to keep reading.
 3. **The hero preview** — `<Demo src="{component}/hero" />`, with **no explanatory prose attached to it**, followed by the minimal `import` + usage snippet.
-4. `## Props` — `<PropsTable name="…" />`, one for each exported part. Directly under it, only the mechanical facts: which native attributes pass through, what is excluded, and a link to [prop conventions](docs/ko/guide/prop-conventions.md) for the shared axes.
+4. `## Props` — `<PropsTable name="…" />`, one for each exported part. Directly under it, only the mechanical facts: which native attributes pass through, what is excluded, and a link to [prop conventions](docs/ko/design/prop-conventions.md) for the shared axes.
 5. `## Examples` — one `###` per prop or capability worth showing. Each has a **short, concrete heading** and one to three sentences that say what the prop controls, which values it takes, and how to use it.
 6. `## Accessibility` — optional, a bullet list. Only real obligations on the caller and real guarantees of the component.
 
 Rules that hold across every page:
 
-- **No design rationale, no "why we did it this way", no internals.** Anything shaped like _"the reason X is a prop and not a sub-component is…"_, _"a shadow would make it read as moulded plastic"_, or _"Base UI handles the roving tab index"_ belongs in [design-language](docs/ko/guide/design-language.md) or in the source, not on a component page. State the behaviour; drop the justification.
+- **No design rationale, no "why we did it this way", no internals.** Anything shaped like _"the reason X is a prop and not a sub-component is…"_, _"a shadow would make it read as moulded plastic"_, or _"Base UI handles the roving tab index"_ belongs in [design-language](docs/ko/design/design-language.md) or in the source, not on a component page. State the behaviour; drop the justification.
 - **No comparisons to other libraries and no migration tables.** Material UI, Ant Design, Chakra — a "Coming from …" section is out of scope. Mention Base UI or Tailwind only where a caller must act on it (a `render` prop's contract, a class name they have to register); never as provenance or credit.
 - **Example headings name the prop and its effect** — `### variant`, `### Multi-select`, `### Bounding the range`. Never a sentence, a claim, or a slogan (`### 배지는 알약이어도 되는 유일한 것입니다` is exactly wrong).
 - **Concise but complete.** Short sentences, concrete nouns, no abstraction for its own sake. A developer should finish the page knowing how to call the component and what it will do — nothing on the page exists to show the design off.
@@ -193,7 +209,8 @@ All scripts run from the repository root, even the ones whose config lives in a 
 npm test              # Vitest, single run (headless Chromium)
 npm run test:watch    # Vitest in watch mode
 npm run typecheck     # tsc --noEmit over all three TS projects
-npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (runs a build first)
+npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (builds and copies the changelog first)
+npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
 npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify → dist/
 npm run lint          # ESLint
 npm run lint:fix      # ESLint with --fix

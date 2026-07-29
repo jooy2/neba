@@ -1,6 +1,6 @@
 ---
 title: Colour
-order: 3
+order: 2
 ---
 
 # Colour

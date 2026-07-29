@@ -21,7 +21,7 @@ import { Button } from 'neba';
 
 `<button>`의 native 속성은 그대로 전달됩니다. `color`만 위 표의 `color`와 이름이 겹쳐 제외됩니다.
 
-공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../guide/prop-conventions)에 있습니다.
+공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 

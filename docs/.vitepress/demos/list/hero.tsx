@@ -1,14 +1,38 @@
-import { Chip, List, ListItem } from 'neba';
+import { List, ListItem } from 'neba';
 
-function GlobeIcon() {
+function FolderIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
       <path
-        d="M2 8h12M8 1.75c1.6 1.7 2.4 3.8 2.4 6.25S9.6 12.55 8 14.25c-1.6-1.7-2.4-3.8-2.4-6.25S6.4 3.45 8 1.75Z"
+        d="M1.75 4.25A1.5 1.5 0 0 1 3.25 2.75h2.4l1.2 1.5h5.9a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H3.25a1.5 1.5 0 0 1-1.5-1.5v-7.5Z"
         stroke="currentColor"
         strokeWidth="1.5"
+        strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function ImageIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="6" cy="6.5" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m3 11.5 3-2.5 3 2 2-1.5 2 2" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M4 2.75h5L12.5 6v7.25H4V2.75Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M9 2.75V6h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -17,38 +41,14 @@ export default function ListHero() {
   return (
     <div className="w-full max-w-96">
       <List>
-        <ListItem
-          startIcon={<GlobeIcon />}
-          description="Deployed 4 minutes ago"
-          action={
-            <Chip size="xs" variant="text" color="success">
-              Live
-            </Chip>
-          }
-          onClick={() => {}}
-          selected
-        >
-          production
+        <ListItem startIcon={<FolderIcon />} description="12 items">
+          Documents
         </ListItem>
-        <ListItem
-          startIcon={<GlobeIcon />}
-          description="Deployed 2 hours ago"
-          action={
-            <Chip size="xs" variant="text" color="info">
-              Building
-            </Chip>
-          }
-          onClick={() => {}}
-        >
-          staging
+        <ListItem startIcon={<ImageIcon />} description="248 items">
+          Pictures
         </ListItem>
-        <ListItem
-          startIcon={<GlobeIcon />}
-          description="Never deployed"
-          onClick={() => {}}
-          disabled
-        >
-          preview
+        <ListItem startIcon={<FileIcon />} description="Edited yesterday">
+          Notes.md
         </ListItem>
       </List>
     </div>

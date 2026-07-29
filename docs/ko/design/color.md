@@ -1,6 +1,6 @@
 ---
 title: 색
-order: 3
+order: 2
 ---
 
 # 색

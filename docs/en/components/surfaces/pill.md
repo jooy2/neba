@@ -12,20 +12,40 @@ order: 6
 ```tsx
 import { Pill } from 'neba';
 
-<Pill startIcon={<DotIcon />} color="danger">
-  Recording
-</Pill>;
+<Pill startIcon={<DotIcon />} color="danger" title="Recording" />;
 ```
 
 ## Props
 
 <PropsTable name="Pill" />
 
-Every native `<div>` attribute passes through. There are three slots: `startIcon`, `children` and `endIcon`.
+Every native `<div>` attribute passes through except `title`, which here is the pill's headline rather than the browser's tooltip.
+
+The row has three parts: `startIcon` on the leading edge, `endIcon` on the trailing one, and the middle — `title`, `description` and anything in `children` — centred between them with generous padding either side.
 
 `color` defaults to `secondary` and `elevation` to `2` — it is meant to float, so the shadow is on by default.
 
 ## Examples
+
+### title and description
+
+`title` is the line the pill is about and `description` is the line under it. Both are optional: a title on its own keeps the row one line tall and the shape a true stadium, and adding a description grows it into a rounded rectangle with the same corner.
+
+<Demo src="pill/text">
+
+<<< @/.vitepress/demos/pill/text.tsx
+
+</Demo>
+
+### startIcon and endIcon
+
+The leading slot is a square box clipped to a circle, so an `<img>` fills and crops it the way an avatar should. The trailing slot sits outside the pressable area, so it can hold a readout or a control of its own.
+
+<Demo src="pill/slots">
+
+<<< @/.vitepress/demos/pill/slots.tsx
+
+</Demo>
 
 ### details and expanded
 
@@ -54,9 +74,13 @@ As far as colour goes a Pill is a control rather than a container — like a [Bu
 The same vocabulary [Toolbar](./toolbar) uses. `fixed` pins it against the viewport and centres it horizontally with auto margins, so it stays centred under RTL.
 
 ```tsx
-<Pill position="fixed" side="top" startIcon={<BuildIcon />} color="info">
-  Building — 2 of 7
-</Pill>
+<Pill
+  position="fixed"
+  side="top"
+  startIcon={<BuildIcon />}
+  color="info"
+  title="Building — 2 of 7"
+/>
 ```
 
 ## When to use something else

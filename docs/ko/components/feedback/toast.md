@@ -38,7 +38,7 @@ hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { lo
 
 ### position
 
-스택이 붙을 자리입니다. 세로 방향(`top`/`bottom`)과 [`NebaAlign`](../../guide/prop-conventions)을 조합한 한 단어로 지정합니다.
+스택이 붙을 자리입니다. 세로 방향(`top`/`bottom`)과 [`NebaAlign`](../../design/prop-conventions)을 조합한 한 단어로 지정합니다.
 
 <Demo src="toast/positions">
 

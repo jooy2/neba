@@ -12,20 +12,40 @@ order: 6
 ```tsx
 import { Pill } from 'neba';
 
-<Pill startIcon={<DotIcon />} color="danger">
-  녹음 중
-</Pill>;
+<Pill startIcon={<DotIcon />} color="danger" title="녹음 중" />;
 ```
 
 ## Props
 
 <PropsTable name="Pill" />
 
-`<div>`의 native 속성은 그대로 전달됩니다. 자리는 셋입니다 — `startIcon`, `children`, `endIcon`.
+`<div>`의 native 속성은 그대로 전달됩니다. 예외는 `title` 하나로, 여기서는 브라우저의 tooltip이 아니라 pill의 제목입니다.
+
+줄은 세 부분으로 나뉩니다. 앞쪽 가장자리의 `startIcon`, 뒤쪽의 `endIcon`, 그리고 그 사이의 가운데 영역입니다. 가운데에는 `title`, `description`, `children`이 들어가며 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다.
 
 `color`의 기본값은 `secondary`이고 `elevation`의 기본값은 `2`입니다. 화면 위에 떠 있는 것이 전제이므로 그림자가 기본으로 붙습니다.
 
 ## 예시
+
+### title과 description
+
+`title`은 이 pill이 무엇에 관한 것인지를 말하는 줄이고, `description`은 그 아래 줄입니다. 둘 다 선택입니다. 제목만 있으면 줄은 한 줄 높이를 유지해 온전한 stadium 모양이 되고, description을 더하면 같은 모서리를 가진 둥근 사각형으로 자랍니다.
+
+<Demo src="pill/text">
+
+<<< @/.vitepress/demos/pill/text.tsx
+
+</Demo>
+
+### startIcon과 endIcon
+
+앞자리는 원형으로 잘린 정사각형 상자입니다. `<img>`를 넣으면 아바타처럼 상자를 채우고 잘립니다. 뒷자리는 눌리는 영역 바깥에 있으므로 수치 표시나 컨트롤 자체를 넣을 수 있습니다.
+
+<Demo src="pill/slots">
+
+<<< @/.vitepress/demos/pill/slots.tsx
+
+</Demo>
 
 ### details와 expanded
 
@@ -54,9 +74,13 @@ import { Pill } from 'neba';
 [Toolbar](./toolbar)와 같은 어휘를 씁니다. `fixed`는 viewport에 고정하고 가로로 가운데 정렬합니다. auto margin으로 정렬하므로 RTL에서도 가운데에 놓입니다.
 
 ```tsx
-<Pill position="fixed" side="top" startIcon={<BuildIcon />} color="info">
-  빌드 중 — 7개 중 2개
-</Pill>
+<Pill
+  position="fixed"
+  side="top"
+  startIcon={<BuildIcon />}
+  color="info"
+  title="빌드 중 — 7개 중 2개"
+/>
 ```
 
 ## 이럴 때는 다른 컴포넌트를

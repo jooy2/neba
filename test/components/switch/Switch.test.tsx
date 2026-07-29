@@ -133,6 +133,15 @@ describe('Switch', () => {
       expect(track).toHaveClass('w-13');
     });
 
+    /** The same flattening a Checkbox's tick and a Radio's dot take. */
+    it('wears no plate on the track, on or off', async () => {
+      const screen = await render(<Switch label="Alerts" defaultChecked />);
+      const track = screen.getByRole('switch').element();
+
+      expect(track.className).not.toContain('neba-plate');
+      expect(track.className).toContain('backdrop-filter');
+    });
+
     it('moves the thumb with left rather than a transform', async () => {
       const screen = await render(<Switch label="Alerts" checked onCheckedChange={() => {}} />);
       const thumb = screen.getByRole('switch').element().firstElementChild as HTMLElement;

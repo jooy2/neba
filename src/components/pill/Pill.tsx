@@ -1,22 +1,36 @@
 import * as React from 'react';
 import {
-  controlHeightClasses,
   controlSlots,
   controlTextClasses,
   focusRingClasses,
   gapClasses,
   hasContent,
   iconClasses,
+  iconSizeClasses,
+  metaTextClasses,
   paddingXClasses,
   pressTransitionClasses,
   sheetBodyClasses,
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaElevation, NebaPosition, NebaSize, NebaStyleProps } from '../../types';
+import type {
+  NebaDensity,
+  NebaElevation,
+  NebaPosition,
+  NebaSize,
+  NebaStyleProps
+} from '../../types';
 
 export interface PillProps
-  extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'onClick'> {
+  extends
+    NebaStyleProps,
+    Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      // `title` is the tooltip attribute on every element; here it is the pill's
+      // headline, and a `ReactNode` rather than a string.
+      'color' | 'onClick' | 'title'
+    > {
   /**
    * Drop shadow depth. `2` here, against the `0` everything else defaults to.
    *
@@ -28,10 +42,28 @@ export interface PillProps
    * @default 2
    */
   elevation?: NebaElevation;
-  /** The leading slot — a glyph, an avatar, a status dot, a small image. */
+  /**
+   * The leading slot — a glyph, an avatar, a status dot, a photo.
+   *
+   * It is given a square box of its own and clipped to a circle, so an `<img>`
+   * lands in it as readily as an icon does: the image fills the box and is
+   * cropped rather than letterboxed, which is what a 20px avatar wants.
+   */
   startIcon?: React.ReactNode;
   /** The trailing slot. Outside the pressable area, so it can be a control. */
   endIcon?: React.ReactNode;
+  /**
+   * The headline in the middle — what the pill is currently about.
+   *
+   * A prop rather than something to compose, for the reason Card's title is one:
+   * the arrangement is fixed and what a caller wants to decide is what goes in
+   * each slot. Almost every pill is a line of text and an optional second line
+   * under it, and spelling that as children means every caller inventing their
+   * own centring and type scale.
+   */
+  title?: React.ReactNode;
+  /** The second line, under the title. One step down and lighter. */
+  description?: React.ReactNode;
   /**
    * The second half, revealed when `expanded`.
    *
@@ -51,7 +83,11 @@ export interface PillProps
   side?: 'top' | 'bottom';
   /** Passing it makes the row a real button. */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  /** The middle: a line of text, a marquee, a pair of small readouts. */
+  /**
+   * Anything the middle needs that `title` and `description` cannot say — a
+   * marquee, a pair of small readouts, a live counter. Rendered under them, in
+   * the same centred column.
+   */
   children?: React.ReactNode;
 }
 
@@ -83,15 +119,30 @@ const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
 };
 
 /**
- * Exactly half the row's height at every step — 22, 26, 32, 40 and 48px — so a
- * collapsed pill is a true stadium.
+ * The row's floor, as a minimum rather than as a height.
+ *
+ * The numbers are `controlHeightClasses`' — a collapsed pill lines up with a
+ * Button of the same `size` beside it — but a pill carrying a description is
+ * two lines tall and a fixed height would clip the second.
+ */
+const rowMinHeightClasses: Record<NebaSize, string> = {
+  xs: 'min-h-5.5',
+  sm: 'min-h-6.5',
+  md: 'min-h-8',
+  lg: 'min-h-10',
+  xl: 'min-h-12'
+};
+
+/**
+ * Exactly half the row's minimum height at every step — 22, 26, 32, 40 and 48px
+ * — so a collapsed pill is a true stadium.
  *
  * Written as a length rather than as `rounded-full`, and the difference only
- * shows once `details` opens: `rounded-full` on a box that has grown to 80px
- * tall is a 40px corner, and a 40px corner eats the first two words of every
- * line. Pinning the radius to the *row* is what lets the lozenge grow into a
- * rounded rectangle with the same corner it always had, which is the morph this
- * shape is borrowed from.
+ * shows once the pill grows: `rounded-full` on a box that has taken a second
+ * line, or opened its `details`, is a corner half its new height, and a corner
+ * that big eats the first two words of every line. Pinning the radius to the
+ * *row* is what lets the lozenge grow into a rounded rectangle with the same
+ * corner it always had, which is the morph this shape is borrowed from.
  */
 const pillRadiusClasses: Record<NebaSize, string> = {
   xs: 'rounded-[0.6875rem]',
@@ -100,6 +151,42 @@ const pillRadiusClasses: Record<NebaSize, string> = {
   lg: 'rounded-[1.25rem]',
   xl: 'rounded-[1.5rem]'
 };
+
+/**
+ * The air either side of the middle, and the thing that makes this shape read
+ * as the lozenge it is borrowed from rather than as a wide Chip.
+ *
+ * Roughly double the control padding at every step. The leading glyph and the
+ * trailing slot are the pill's furniture; what it is *about* is the column
+ * between them, and giving that column noticeably more room than either
+ * neighbour is what puts the eye there first. `density` halves it, exactly as
+ * it does everywhere else.
+ */
+const centerPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: { xs: 'px-3', sm: 'px-4', md: 'px-5', lg: 'px-6', xl: 'px-8' },
+  compact: { xs: 'px-1.5', sm: 'px-2', md: 'px-2.5', lg: 'px-3', xl: 'px-4' }
+};
+
+/**
+ * The leading box: a square the size of a standalone glyph, clipped round.
+ *
+ * `iconSizeClasses` rather than a ladder of its own, because that table already
+ * answers the same question — how big is a glyph that is not riding on a label —
+ * and the leading slot of a Pill is exactly that.
+ */
+const mediaClasses =
+  'flex shrink-0 items-center justify-center overflow-hidden rounded-full [&_img]:size-full [&_img]:object-cover';
+
+/**
+ * The description under the title.
+ *
+ * Mixed toward transparent rather than pointed at `--neba-muted-fg`: the middle
+ * of a pill sits on the colour family's own fill as often as on a bare surface,
+ * and a fixed grey that reads as secondary on white reads as dirt on `primary`.
+ * Taking the ink that is already there and letting some of the surface through
+ * is the one form of "one step quieter" that holds on all three variants.
+ */
+const descriptionClasses = '[color:color-mix(in_oklab,currentColor_72%,transparent)]';
 
 /** Where a pinned pill hangs, and how far in from the edge. */
 const positionClasses: Record<NebaPosition, Record<'top' | 'bottom', string>> = {
@@ -141,6 +228,8 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
     elevation = 2,
     startIcon,
     endIcon,
+    title,
+    description,
     details,
     expanded = false,
     position = 'static',
@@ -177,9 +266,30 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
   const row = (
     <>
       {hasContent(startIcon) ? (
-        <span className="flex h-[1lh] shrink-0 items-center">{startIcon}</span>
+        <span className={`${mediaClasses} ${iconSizeClasses[size]}`}>{startIcon}</span>
       ) : null}
-      {hasContent(children) ? <span className="min-w-0 truncate">{children}</span> : null}
+
+      {/* The middle. Centred in its own column rather than run on from the
+          glyph, and padded well clear of both neighbours — the pill is a frame
+          and this is what is in it. */}
+      {hasContent(title) || hasContent(description) || hasContent(children) ? (
+        <span
+          className={[
+            'flex min-w-0 flex-1 flex-col items-center justify-center text-center',
+            centerPaddingClasses[density][size]
+          ].join(' ')}
+        >
+          {hasContent(title) ? <span className="max-w-full truncate">{title}</span> : null}
+          {hasContent(description) ? (
+            <span
+              className={`max-w-full truncate font-normal ${metaTextClasses[size]} ${descriptionClasses}`}
+            >
+              {description}
+            </span>
+          ) : null}
+          {children}
+        </span>
+      ) : null}
     </>
   );
 
@@ -206,8 +316,13 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
     >
       <div
         className={[
-          'flex shrink-0 items-center',
-          controlHeightClasses[size],
+          // `min-h` rather than a fixed height: one line keeps the stadium the
+          // radius ladder is cut for, and a title with a description under it
+          // grows into a rounded rectangle instead of being clipped. `py-1`
+          // costs nothing in the one-line case — the minimum is taller than the
+          // line plus the padding — and is what keeps two lines off the edges.
+          'flex shrink-0 items-center py-1',
+          rowMinHeightClasses[size],
           gapClasses[size],
           // With a pressable middle the padding belongs to the button, so its hit
           // area covers the whole row rather than just the words.

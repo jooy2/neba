@@ -25,6 +25,16 @@ There is no `variant` and no `elevation`. The rule is drawn as a single border e
 
 ## Examples
 
+### length and thickness
+
+`length` is how far the rule runs — the width of a horizontal divider, the height of a vertical one — and `thickness` is how heavy it is. Both take a number of pixels or any CSS length. Left out, a horizontal rule fills its container and a vertical one stretches to the flex row it is in.
+
+<Demo src="divider/size">
+
+<<< @/.vitepress/demos/divider/size.tsx
+
+</Demo>
+
 ### textAlign
 
 A label in `children` splits the rule around it. `center` halves the line; `start` and `end` leave a short stub on the near side, so the label reads as set into the rule rather than floating above it.

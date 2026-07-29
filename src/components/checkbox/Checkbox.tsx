@@ -6,6 +6,7 @@ import {
   metaTextClasses,
   surfaceClasses,
   tickRadiusClasses,
+  tickRowLeadingClasses,
   tickSizeClasses,
   transitionClasses
 } from '../../internal/styles';
@@ -59,16 +60,27 @@ const tickBaseClasses = [
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
 ].join(' ');
 
+/**
+ * No plate on a tick, and that is the one place this library deliberately does
+ * without one.
+ *
+ * `--neba-plate-glass` is a 1px white line along the top edge and
+ * `--neba-plate-solid` adds a full white hairline around the box. On a 32px
+ * button that reads as light catching a cut edge; on an 18px square it is a
+ * bevel drawn at a quarter of the object's size, and a bevel that big on
+ * something that small reads as a 2008 toolbar icon rather than as acrylic.
+ *
+ * The surface stays — the grain, the sheen and the backdrop blur are what make
+ * the box a sheet of something. It is only the highlight that goes.
+ */
 const restClasses = [
   surfaceClasses,
   'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)]',
   'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
   // `data-checked` rather than `:checked`: the visible tick is a `<span>`, and
   // the real input is hidden beside it.
   'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
   'data-[checked]:[border-color:transparent]',
-  'data-[checked]:[box-shadow:var(--neba-plate-solid)]',
   'data-[checked]:hover:bg-(--n-fill-hover)',
   'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid)',
   'data-[indeterminate]:[border-color:transparent]'
@@ -77,7 +89,7 @@ const restClasses = [
 const readOnlyClasses = [
   surfaceClasses,
   'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]',
+  '[filter:saturate(0.55)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
   'data-[checked]:[border-color:transparent]'
 ].join(' ');
@@ -175,9 +187,13 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
         .join(' ')}
       style={{ ...slots, ...style }}
     >
-      <div className={`flex items-start gap-2 ${controlTextClasses[size]}`}>
+      <div
+        className={`flex items-start gap-2 ${controlTextClasses[size]} ${tickRowLeadingClasses}`}
+      >
         {/* `1lh` centres the tick on the first line of the label rather than on
-            the whole block, so it stays put when the label wraps to three. */}
+            the whole block, so it stays put when the label wraps to three. The
+            leading is pinned on the row above so `1lh` and the label's own line
+            box are the same number. */}
         <span className="flex h-[1lh] shrink-0 items-center">
           <BaseUICheckbox.Root
             ref={ref}

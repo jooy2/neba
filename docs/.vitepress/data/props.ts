@@ -1625,6 +1625,23 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'length',
+      type: 'number | string',
+      description: {
+        ko: '선이 뻗는 길이 — 가로 divider의 너비, 세로 divider의 높이. 숫자는 px, 문자열은 임의의 CSS 길이입니다. 생략하면 가로는 컨테이너의 100%, 세로는 flex 행 높이만큼 늘어납니다',
+        en: 'How far the rule runs — the width of a horizontal divider, the height of a vertical one. A number is pixels, a string is any CSS length. Left out, a horizontal rule is the full width of its container and a vertical one stretches to its flex row'
+      }
+    },
+    {
+      name: 'thickness',
+      type: 'number | string',
+      default: '1',
+      description: {
+        ko: '선의 두께. 숫자는 px, 문자열은 임의의 CSS 길이입니다',
+        en: 'How thick the rule is. A number is pixels, a string is any CSS length'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {
@@ -4175,8 +4192,24 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '앞자리 — 글리프, 아바타, 상태 점, 작은 이미지',
-        en: 'The leading slot — a glyph, an avatar, a status dot, a small image'
+        ko: '앞자리 — 글리프, 아바타, 상태 점, 사진. 정사각형 상자를 받아 원형으로 잘리므로 img도 icon과 똑같이 들어갑니다',
+        en: 'The leading slot — a glyph, an avatar, a status dot, a photo. It is given a square box of its own and clipped to a circle, so an `<img>` lands in it as readily as an icon does'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '가운데의 제목 — 지금 이 pill이 무엇에 관한 것인지. 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다',
+        en: 'The headline in the middle — what the pill is currently about. Centred, with generous room either side of it'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 두 번째 줄. 한 단계 작고 한 단계 옅습니다',
+        en: 'The second line, under the title. One step down and one step lighter'
       }
     },
     {

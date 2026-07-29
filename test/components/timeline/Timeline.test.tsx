@@ -254,13 +254,13 @@ describe('Timeline', () => {
       const screen = await render(<Basic size="md" />);
       const item = screen.container.querySelector('li') as HTMLElement;
 
-      expect(item).toHaveClass('pb-6');
+      expect(item).toHaveClass('pb-7');
       expect(item.style.getPropertyValue('--n-bullet')).toBe('1.25rem');
 
       await screen.rerender(<Basic size="md" density="compact" />);
 
       const compact = screen.container.querySelector('li') as HTMLElement;
-      expect(compact).toHaveClass('pb-3');
+      expect(compact).toHaveClass('pb-4');
       expect(compact.style.getPropertyValue('--n-bullet')).toBe('1.25rem');
     });
 

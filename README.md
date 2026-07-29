@@ -33,9 +33,9 @@ Everything is documented at **[neba.cdget.com](https://neba.cdget.com)**, where 
 | [**Getting started**](https://neba.cdget.com/guide/getting-started) | Install and setup, end to end. |
 | [**All components**](https://neba.cdget.com/components/) | Every component, one page each: live previews and the full props table. |
 | [**Examples**](https://neba.cdget.com/examples/) | A whole sample screen, explained block by block. |
-| [**Design language**](https://neba.cdget.com/guide/design-language) | Why a Neba surface looks and behaves the way it does. |
-| [**Prop conventions**](https://neba.cdget.com/guide/prop-conventions) | The shared vocabulary every component draws from. |
-| [**Color**](https://neba.cdget.com/guide/color) | The token families, and how to theme them. |
+| [**Design language**](https://neba.cdget.com/design/design-language) | Why a Neba surface looks and behaves the way it does. |
+| [**Prop conventions**](https://neba.cdget.com/design/prop-conventions) | The shared vocabulary every component draws from. |
+| [**Color**](https://neba.cdget.com/design/color) | The token families, and how to theme them. |
 
 Also available in Korean / 한국어 문서: **[neba.cdget.com/ko/](https://neba.cdget.com/ko/)**
 
@@ -95,7 +95,7 @@ The reason a Neba screen looks composed rather than assembled is that the props 
 | `density` | `default` `compact` | Padding only — never the height, never the type scale, so a compact control still lines up with a default one. |
 | `elevation` | `0` `1` `2` `3` | How far a surface floats off the page. `0` is the default and means no shadow at all. |
 
-Placement props are logical, not physical — `start`/`end` rather than `left`/`right` — so layouts flip correctly under RTL. The full rules are in [**Prop conventions**](https://neba.cdget.com/guide/prop-conventions).
+Placement props are logical, not physical — `start`/`end` rather than `left`/`right` — so layouts flip correctly under RTL. The full rules are in [**Prop conventions**](https://neba.cdget.com/design/prop-conventions).
 
 ```tsx
 <Button size="sm" color="danger" variant="outline">Delete</Button>

@@ -47,6 +47,77 @@ describe('Divider', () => {
     });
   });
 
+  describe('length and thickness', () => {
+    it('stretches to its flex parent when no length is given', async () => {
+      const screen = await render(<Divider orientation="vertical" />);
+      const element = screen.getByRole('separator').element() as HTMLElement;
+
+      expect(element).toHaveClass('self-stretch');
+      expect(element.style.height).toBe('');
+    });
+
+    it('takes a number of pixels as its length', async () => {
+      const screen = await render(<Divider length={120} />);
+      const element = screen.getByRole('separator').element() as HTMLElement;
+
+      expect(element.style.width).toBe('120px');
+    });
+
+    it('takes any CSS length as its length', async () => {
+      const screen = await render(<Divider length="50%" />);
+
+      expect((screen.getByRole('separator').element() as HTMLElement).style.width).toBe('50%');
+    });
+
+    it('sets the height rather than the width when vertical, and stops stretching', async () => {
+      const screen = await render(<Divider orientation="vertical" length={48} />);
+      const element = screen.getByRole('separator').element() as HTMLElement;
+
+      expect(element.style.height).toBe('48px');
+      expect(element.style.width).toBe('');
+      expect(element).not.toHaveClass('self-stretch');
+    });
+
+    it('is a 1px rule by default', async () => {
+      const screen = await render(<Divider />);
+
+      expect(
+        (screen.getByRole('separator').element() as HTMLElement).style.getPropertyValue('--n-rule')
+      ).toBe('1px');
+    });
+
+    it('maps thickness onto the rule slot, in both spellings', async () => {
+      const screen = await render(<Divider thickness={4} />);
+      const element = screen.getByRole('separator').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-rule')).toBe('4px');
+
+      await screen.rerender(<Divider thickness="0.25rem" />);
+
+      expect(element.style.getPropertyValue('--n-rule')).toBe('0.25rem');
+    });
+
+    it('gives the label variant the same rule on both stubs', async () => {
+      const screen = await render(
+        <Divider thickness={3} data-testid="divider">
+          OR
+        </Divider>
+      );
+      const element = screen.getByTestId('divider').element() as HTMLElement;
+      const children = [...element.children];
+
+      expect(element.style.getPropertyValue('--n-rule')).toBe('3px');
+      expect(children[0]).toHaveClass('[border-top-width:var(--n-rule)]');
+      expect(children[2]).toHaveClass('[border-top-width:var(--n-rule)]');
+    });
+
+    it('sizes the label variant too', async () => {
+      const screen = await render(<Divider length={200}>OR</Divider>);
+
+      expect((screen.getByRole('separator').element() as HTMLElement).style.width).toBe('200px');
+    });
+  });
+
   describe('with a label', () => {
     it('renders the label and names the separator with it', async () => {
       const screen = await render(<Divider>OR</Divider>);

@@ -155,6 +155,29 @@ describe('Checkbox', () => {
       expect(screen.getByRole('checkbox').element()).toHaveClass('size-6');
     });
 
+    /**
+     * The white plate is light catching a cut edge at 32px and a bevel at 18px.
+     * A tick keeps the acrylic surface and drops the highlight.
+     */
+    it('wears no plate, checked or not', async () => {
+      const screen = await render(<Checkbox label="Tick" defaultChecked />);
+      const tick = screen.getByRole('checkbox').element();
+
+      expect(tick.className).not.toContain('neba-plate');
+      // The surface itself stays — it is the highlight that goes, not the sheet.
+      expect(tick.className).toContain('backdrop-filter');
+    });
+
+    it('measures the tick against the label’s own line, not the page’s', async () => {
+      const screen = await render(<Checkbox label="Tick" />);
+      const row = screen.getByRole('checkbox').element().parentElement
+        ?.parentElement as HTMLElement;
+
+      // `1lh` on the tick's wrapper only lines up with the label if the row
+      // pins the leading both of them read.
+      expect(row).toHaveClass('leading-[1.4]');
+    });
+
     it('never applies a transform', async () => {
       const screen = await render(
         <Checkbox label="Tick" description="Note" error="Bad" indeterminate />

@@ -21,7 +21,7 @@ import { Button } from 'neba';
 
 Every native `<button>` attribute passes straight through. The one exception is `color`, omitted because it collides with the `color` in the table above.
 
-What the shared axes (`variant` `size` `color` `density` `elevation`) mean across the library is in [prop conventions](../../guide/prop-conventions).
+What the shared axes (`variant` `size` `color` `density` `elevation`) mean across the library is in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 

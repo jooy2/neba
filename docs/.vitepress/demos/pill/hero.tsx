@@ -27,13 +27,20 @@ function NoteIcon() {
 export default function PillHero() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Pill startIcon={<DotIcon />} color="danger" endIcon={<span className="pe-2">02:14</span>}>
-        Recording
-      </Pill>
+      <Pill
+        startIcon={<DotIcon />}
+        color="danger"
+        title="Recording"
+        endIcon={<span className="pe-2 tabular-nums">02:14</span>}
+      />
 
-      <Pill startIcon={<NoteIcon />} variant="outline" color="primary">
-        Neba — Acrylic
-      </Pill>
+      <Pill
+        startIcon={<NoteIcon />}
+        variant="outline"
+        color="primary"
+        title="Neba — Acrylic"
+        description="Now playing"
+      />
     </div>
   );
 }

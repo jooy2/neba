@@ -184,6 +184,11 @@ const chipsInsetClasses: Record<NebaSize, string> = {
  * float, so unlike everything else it carries a shadow by default — at level 3,
  * which is as far as the scale goes without hovering. Identical to Select's,
  * because a combobox's list and a select's list are the same list.
+ *
+ * Its `--n-*` slots are set on the popup itself, exactly as Select's are: it is
+ * portalled to the end of `<body>`, so nothing declared on the Field reaches it
+ * and every `var()` in here would otherwise resolve to nothing — a
+ * `currentColor` border and a highlight that does not light.
  */
 const popupClasses = [
   surfaceClasses,
@@ -200,7 +205,7 @@ const itemClasses = [
   transitionClasses,
   // `data-highlighted` rather than `:hover`: it is also what the arrow keys
   // move, so the mouse and the keyboard light the same row.
-  'data-[highlighted]:bg-(--n-soft-hover)',
+  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-accent)',
   'data-[selected]:text-(--n-accent) data-[selected]:font-medium',
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
   '[outline:none]'
@@ -376,6 +381,11 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   ].join(' ');
 
   const inputClasses = [
+    // `self-stretch` and no height of its own, in both modes. An input centres
+    // its own text in its box, so letting the box be the full height of the row
+    // it sits on — the field in single mode, the chip line in multiple — is what
+    // puts the placeholder on the same baseline as the chips beside it. A fixed
+    // `1lh` here left it sitting a pixel or two high.
     'min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
     // Not `outline-none`: that utility zeroes `--tw-outline-style`, and the
     // shell's focus ring is drawn from the same variable family.
@@ -385,11 +395,22 @@ export function Combobox<Multiple extends boolean | undefined = false>({
     'disabled:cursor-not-allowed'
   ].join(' ');
 
-  const input = (
+  /**
+   * `afterChips` is the space between the last chip and where typing starts.
+   *
+   * The row's own `gap-1` is the distance between two chips, which is the right
+   * amount between two things of the same kind and too little between a chip and
+   * a caret — the query reads as another chip's label rather than as the field's
+   * own text. It is only added when there is a chip to be clear of, so an empty
+   * multi-select lines its placeholder up with every other field in the form.
+   */
+  const renderInput = (afterChips: boolean) => (
     <BaseUICombobox.Input
       ref={inputRef}
       placeholder={placeholder}
-      className={isMultiple ? `${inputClasses} min-w-16 h-[1lh]` : inputClasses}
+      className={
+        isMultiple ? `${inputClasses} min-w-16 ${afterChips ? 'ms-1.5' : ''}` : inputClasses
+      }
     />
   );
 
@@ -491,13 +512,13 @@ export function Combobox<Multiple extends boolean | undefined = false>({
                         {entry.label}
                       </BaseUICombobox.Chip>
                     ))}
-                    {input}
+                    {renderInput(chosen.length > 0)}
                   </React.Fragment>
                 )}
               </BaseUICombobox.Value>
             </BaseUICombobox.Chips>
           ) : (
-            input
+            renderInput(false)
           )}
 
           {clearable && !readOnly ? (
@@ -530,6 +551,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
           <BaseUICombobox.Positioner className="neba-portal z-50 [outline:none]" sideOffset={6}>
             <BaseUICombobox.Popup
               className={`${popupClasses} ${radiusClasses[size]} ${controlTextLeadingClasses[size]}`}
+              style={surfaceSlots(family, 3)}
             >
               <BaseUICombobox.Empty className="px-2 py-1.5 text-(--neba-muted-fg) empty:hidden">
                 {emptyMessage}

@@ -6,6 +6,8 @@ import {
   controlTextClasses,
   metaTextClasses,
   surfaceClasses,
+  tickDotClasses,
+  tickRowLeadingClasses,
   tickSizeClasses,
   transitionClasses
 } from '../../internal/styles';
@@ -84,21 +86,24 @@ const dotBaseClasses = [
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
 ].join(' ');
 
+/**
+ * No plate, for the reason Checkbox's tick has none: a 1px white hairline is
+ * light on a cut edge at 32px and a bevel at 18px. The acrylic surface stays;
+ * only the highlight goes.
+ */
 const restDotClasses = [
   surfaceClasses,
   'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)]',
   'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
   'data-[checked]:[border-color:transparent]',
-  'data-[checked]:[box-shadow:var(--neba-plate-solid)]',
   'data-[checked]:hover:bg-(--n-fill-hover)'
 ].join(' ');
 
 const readOnlyDotClasses = [
   surfaceClasses,
   'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]',
+  '[filter:saturate(0.55)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
   'data-[checked]:[border-color:transparent]'
 ].join(' ');
@@ -109,7 +114,7 @@ const disabledDotClasses = [
 ].join(' ');
 
 /** The inner dot: `currentColor`, so it inherits the on-fill ink. */
-const indicatorClasses = 'size-[38%] rounded-full bg-current';
+const indicatorClasses = 'rounded-full bg-current';
 
 /**
  * One option in a RadioGroup.
@@ -131,8 +136,12 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
       className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
       style={style}
     >
-      <div className={`flex items-start gap-2 ${controlTextClasses[group.size]}`}>
-        {/* `1lh` centres the dot on the first line of the label. */}
+      <div
+        className={`flex items-start gap-2 ${controlTextClasses[group.size]} ${tickRowLeadingClasses}`}
+      >
+        {/* `1lh` centres the dot on the first line of the label, and the row
+            pins the leading so `1lh` is the label's line box and not the host
+            page's. */}
         <span className="flex h-[1lh] shrink-0 items-center">
           <BaseUIRadio.Root
             ref={ref}
@@ -144,7 +153,9 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
             disabled={disabled}
             {...props}
           >
-            <BaseUIRadio.Indicator className={indicatorClasses} />
+            <BaseUIRadio.Indicator
+              className={`${indicatorClasses} ${tickDotClasses[group.size]}`}
+            />
           </BaseUIRadio.Root>
         </span>
 

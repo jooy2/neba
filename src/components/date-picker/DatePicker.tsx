@@ -4,6 +4,7 @@ import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/cal
 import { CalendarIcon } from '../../internal/icons';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
 import {
+  displaySamples,
   formatDate,
   isDayOutside,
   isValidDate,
@@ -12,7 +13,8 @@ import {
   startOfDay,
   startOfMonth,
   toISODate,
-  today
+  today,
+  withPlaceholder
 } from '../../internal/date';
 import { cx } from '../../internal/styles';
 import type { NebaWeekday } from '../../types';
@@ -181,6 +183,13 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
   const todayBlocked = isDayOutside(now, minDate, maxDate) || (shouldDisableDate?.(now) ?? false);
   const hasFooter = showTodayButton || clearable;
 
+  // Holds the trigger open at the width of the longest date it could show, so
+  // choosing the 1st after the 28th does not shrink the field.
+  const samples = React.useMemo(
+    () => withPlaceholder(displaySamples(locale, format), placeholder),
+    [locale, format, placeholder]
+  );
+
   return (
     <PickerShell
       {...shell}
@@ -191,6 +200,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
       triggerRef={ref}
       startIcon={startIcon ?? <CalendarIcon />}
       display={isValidDate(value) ? formatDate(value, locale, format) : (placeholder ?? '')}
+      samples={samples}
       empty={!isValidDate(value)}
       clearable={clearable}
       onClear={() => commit(null)}

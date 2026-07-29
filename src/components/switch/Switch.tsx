@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { Switch as BaseUISwitch } from '@base-ui/react/switch';
 import { Field } from '@base-ui/react/field';
-import { controlTextClasses, metaTextClasses, surfaceClasses } from '../../internal/styles';
+import {
+  controlTextClasses,
+  metaTextClasses,
+  surfaceClasses,
+  tickRowLeadingClasses
+} from '../../internal/styles';
 import type { NebaColor, NebaSize } from '../../types';
 
 /** Which side of the track the label sits on. */
@@ -83,20 +88,24 @@ const trackBaseClasses = [
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
 ].join(' ');
 
+/**
+ * No plate on the track, for the reason a Checkbox's tick has none: a 1px white
+ * hairline around a 20px groove is a bevel rather than light on a cut edge, and
+ * a bevelled groove with a domed thumb in it is the skeuomorphic switch this
+ * design language is not. The acrylic surface stays; only the highlight goes.
+ */
 const restTrackClasses = [
   surfaceClasses,
   'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)]',
   'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]',
-  'data-[checked]:[box-shadow:var(--neba-plate-solid)]',
   'data-[checked]:hover:bg-(--n-fill-hover)'
 ].join(' ');
 
 const readOnlyTrackClasses = [
   surfaceClasses,
   'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]',
+  '[filter:saturate(0.55)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]'
 ].join(' ');
 
@@ -212,7 +221,9 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
         .join(' ')}
       style={{ ...slots, ...style }}
     >
-      <div className={`flex items-start gap-2.5 ${controlTextClasses[size]}`}>
+      <div
+        className={`flex items-start gap-2.5 ${controlTextClasses[size]} ${tickRowLeadingClasses}`}
+      >
         {labelPlacement === 'start' ? (
           <>
             {text}

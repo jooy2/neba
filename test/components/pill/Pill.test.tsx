@@ -149,23 +149,87 @@ describe('Pill', () => {
     });
 
     it('changes height with size but not with density', async () => {
-      const screen = await render(
-        <Pill size="lg" data-testid="pill">
-          Recording
-        </Pill>
-      );
-      const row = screen.getByText('Recording').element().parentElement as HTMLElement;
+      const screen = await render(<Pill size="lg" title="Recording" data-testid="pill" />);
+      const row = screen.getByTestId('pill').element().firstElementChild as HTMLElement;
 
-      expect(row).toHaveClass('h-10');
+      expect(row).toHaveClass('min-h-10');
 
       await screen.rerender(
-        <Pill size="lg" density="compact" data-testid="pill">
-          Recording
+        <Pill size="lg" density="compact" title="Recording" data-testid="pill" />
+      );
+
+      expect(row).toHaveClass('min-h-10');
+      expect(row).toHaveClass('px-3');
+    });
+  });
+
+  describe('title and description', () => {
+    it('renders both, title first', async () => {
+      const screen = await render(
+        <Pill title="Recording" description="02:14 elapsed" data-testid="pill" />
+      );
+
+      expect(screen.getByTestId('pill').element().textContent).toBe('Recording02:14 elapsed');
+    });
+
+    it('renders either one on its own', async () => {
+      const screen = await render(<Pill title="Recording" data-testid="pill" />);
+
+      expect(screen.getByTestId('pill').element().textContent).toBe('Recording');
+
+      await screen.rerender(<Pill description="02:14 elapsed" data-testid="pill" />);
+
+      expect(screen.getByTestId('pill').element().textContent).toBe('02:14 elapsed');
+    });
+
+    it('reflects a changed title on re-render', async () => {
+      const screen = await render(<Pill title="Before" />);
+
+      await screen.rerender(<Pill title="After" />);
+
+      await expect.element(screen.getByText('After')).toBeInTheDocument();
+      expect(screen.getByText('Before').query()).toBeNull();
+    });
+
+    it('centres them between the two slots, well clear of both', async () => {
+      const screen = await render(
+        <Pill startIcon={<span>[</span>} endIcon={<span>]</span>} title="Recording" />
+      );
+      const middle = screen.getByText('Recording').element().parentElement as HTMLElement;
+
+      expect(middle).toHaveClass('items-center');
+      expect(middle).toHaveClass('text-center');
+      // Roughly double the control padding, so the middle is the thing the eye
+      // lands on rather than a word wedged between two glyphs.
+      expect(middle).toHaveClass('px-5');
+    });
+
+    it('keeps `title` out of the DOM attribute of the same name', async () => {
+      const screen = await render(<Pill title="Recording" data-testid="pill" />);
+
+      expect(screen.getByTestId('pill').element()).not.toHaveAttribute('title');
+    });
+
+    it('puts children in the same centred column, after both', async () => {
+      const screen = await render(
+        <Pill title="Recording" description="02:14" data-testid="pill">
+          <span>live</span>
         </Pill>
       );
 
-      expect(row).toHaveClass('h-10');
-      expect(row).toHaveClass('px-3');
+      expect(screen.getByTestId('pill').element().textContent).toBe('Recording02:14live');
+      expect(screen.getByText('live').element().parentElement).toBe(
+        screen.getByText('Recording').element().parentElement
+      );
+    });
+
+    it('gives the leading slot a round box of its own, so an image can fill it', async () => {
+      const screen = await render(<Pill startIcon={<span>[</span>} title="Recording" />);
+      const media = screen.getByText('[').element().parentElement as HTMLElement;
+
+      expect(media).toHaveClass('rounded-full');
+      expect(media).toHaveClass('overflow-hidden');
+      expect(media).toHaveClass('size-5');
     });
   });
 });

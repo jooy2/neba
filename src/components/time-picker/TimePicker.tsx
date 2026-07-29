@@ -9,12 +9,14 @@ import {
 import { ClockIcon } from '../../internal/icons';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
 import {
+  displaySamples,
   formatDate,
   isHour12,
   isValidDate,
   secondsOfDay,
   timeUnitSpan,
   toISOTime,
+  withPlaceholder,
   withTime
 } from '../../internal/date';
 import { cx } from '../../internal/styles';
@@ -188,6 +190,12 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
   });
   const hasFooter = showNowButton || clearable || !closeOnSelect;
 
+  // Holds the trigger open at the width of the longest time it could show.
+  const samples = React.useMemo(
+    () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
+    [locale, displayFormat, placeholder]
+  );
+
   return (
     <PickerShell
       {...shell}
@@ -199,6 +207,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
       triggerRef={ref}
       startIcon={startIcon ?? <ClockIcon />}
       display={isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')}
+      samples={samples}
       empty={!isValidDate(value)}
       clearable={clearable}
       onClear={() => commit(null)}

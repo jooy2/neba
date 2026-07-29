@@ -325,6 +325,40 @@ describe('Combobox', () => {
       expect(screen.getByRole('combobox').element().parentElement).toHaveClass('h-10');
     });
 
+    /** The same portal problem Select has, and the same fix. */
+    it('carries its own colour slots, because the popup renders outside the field', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" color="info" />);
+
+      await screen.getByRole('combobox').click();
+      await expect.element(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const popup = screen.getByRole('listbox').element().closest('[style]') as HTMLElement;
+
+      expect(popup.style.getPropertyValue('--n-line')).toBe('var(--neba-info-line)');
+      expect(popup.style.getPropertyValue('--n-soft-hover')).toBe('var(--neba-info-soft-hover)');
+      expect(popup.style.getPropertyValue('--n-panel-press')).toBe('var(--neba-panel-press)');
+    });
+
+    it('separates the query from the chips it follows, and only then', async () => {
+      const screen = await render(
+        <Combobox multiple items={FRAMEWORKS} label="Framework" placeholder="Add one" />
+      );
+
+      expect(screen.getByRole('combobox').element()).not.toHaveClass('ms-1.5');
+
+      await screen.rerender(
+        <Combobox
+          multiple
+          items={FRAMEWORKS}
+          label="Framework"
+          placeholder="Add one"
+          value={['react']}
+        />
+      );
+
+      expect(screen.getByRole('combobox').element()).toHaveClass('ms-1.5');
+    });
+
     it('keeps the sheet undyed while colouring the edge', async () => {
       const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" color="info" />);
       const root = screen.getByText('Framework').element().closest('[style]') as HTMLElement;

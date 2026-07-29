@@ -20,27 +20,31 @@ export default function PillVariants() {
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-3">
         {VARIANTS.map((variant) => (
-          <Pill key={variant} variant={variant} color="primary" startIcon={<DotIcon />}>
-            {variant}
-          </Pill>
+          <Pill
+            key={variant}
+            variant={variant}
+            color="primary"
+            startIcon={<DotIcon />}
+            title={variant}
+          />
         ))}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         {SIZES.map((size) => (
-          <Pill key={size} size={size} color="success" startIcon={<DotIcon />}>
-            size {size}
-          </Pill>
+          <Pill
+            key={size}
+            size={size}
+            color="success"
+            startIcon={<DotIcon />}
+            title={`size ${size}`}
+          />
         ))}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Pill density="compact" color="secondary" startIcon={<DotIcon />}>
-          compact
-        </Pill>
-        <Pill elevation={0} color="secondary" startIcon={<DotIcon />}>
-          elevation 0
-        </Pill>
+        <Pill density="compact" color="secondary" startIcon={<DotIcon />} title="compact" />
+        <Pill elevation={0} color="secondary" startIcon={<DotIcon />} title="elevation 0" />
         <Typography level="caption">Density is padding; elevation is how far it floats.</Typography>
       </div>
     </div>

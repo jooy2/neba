@@ -217,9 +217,16 @@ function nextWeekend(): DateRange {
   return { start: saturday, end: shift(saturday, 1) };
 }
 
+/**
+ * The line naming which components a block is made of.
+ *
+ * Set in the components' own case rather than upcased: these are exported
+ * symbols, and `IconButton` upcased to `ICONBUTTON` stops being the name of
+ * anything you could import.
+ */
 function Caption({ children }: { children: ReactNode }) {
   return (
-    <div className="text-[0.6875rem] tracking-wide text-[var(--neba-muted-fg)] uppercase">
+    <div className="text-[0.6875rem] font-medium tracking-wide text-[var(--neba-muted-fg)]">
       {children}
     </div>
   );
@@ -305,9 +312,7 @@ function ShowcaseBody() {
             }
             end={
               <>
-                <Pill size="sm" color="info" startIcon={<DotIcon />}>
-                  Building — 2 of 7
-                </Pill>
+                <Pill size="sm" color="info" startIcon={<DotIcon />} title="Building — 2 of 7" />
                 <Badge content={3} color="danger" label="3 failing builds">
                   <IconButton
                     icon={<BellIcon />}

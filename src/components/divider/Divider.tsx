@@ -26,6 +26,25 @@ export interface DividerProps extends Omit<
   color?: NebaColor;
   /** Type scale of the label. Nothing else on a divider has a size. */
   size?: NebaSize;
+  /**
+   * How far the rule runs — the width of a horizontal divider, the height of a
+   * vertical one. A number is pixels; a string is any CSS length, so `'50%'`
+   * and `'12rem'` both work.
+   *
+   * `length` rather than `width`, because a divider is the one component whose
+   * long axis turns with `orientation`: a `width` that meant height half the
+   * time would be a worse name than a longer one.
+   *
+   * Left out, a horizontal divider is the full width of its container and a
+   * vertical one stretches to the height of the flex row it is in — which is
+   * what a rule between two things should do by default.
+   */
+  length?: number | string;
+  /**
+   * How thick the rule is. A number is pixels; a string is any CSS length.
+   * @default 1
+   */
+  thickness?: number | string;
   /** A label set into the line — "OR" between two sign-in options. */
   children?: React.ReactNode;
   /**
@@ -41,8 +60,18 @@ export interface DividerProps extends Omit<
  * The hairline itself. A border rather than a filled 1px box, so it lands on
  * the device pixel grid the same way every other edge in the library does — and
  * so it is literally the same declaration Card uses between its sections.
+ *
+ * Its thickness is read from a slot rather than from a `border-2`-style utility
+ * because a labelled divider draws the rule three times — the root and the two
+ * stubs either side of the label — and one custom property set on the root is
+ * what keeps all three the same without threading a value through each.
  */
 const lineClasses = '[border-color:var(--n-line)]';
+
+/** Turns `2` into `2px` and leaves `'0.5rem'` alone. */
+function toLength(value: number | string | undefined): string | undefined {
+  return typeof value === 'number' ? `${value}px` : value;
+}
 
 /**
  * How the line is split around an off-centre label: `[before, after]`. The short
@@ -92,6 +121,8 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
     orientation = 'horizontal',
     color = 'primary',
     size = 'md',
+    length,
+    thickness,
     textAlign = 'center',
     className,
     style,
@@ -103,7 +134,19 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
   const vertical = orientation === 'vertical';
   const hasLabel =
     children !== undefined && children !== null && children !== false && children !== '';
-  const slots = { '--n-line': `var(--neba-${color}-line)` } as React.CSSProperties;
+
+  const slots = {
+    '--n-line': `var(--neba-${color}-line)`,
+    '--n-rule': toLength(thickness) ?? '1px'
+  } as React.CSSProperties;
+
+  // The long axis, and only when it was asked for: left alone, a horizontal
+  // divider is `w-full` and a vertical one stretches to its flex row, which are
+  // the two things a rule between two things should already do.
+  const span = toLength(length);
+  const sizing = span === undefined ? null : vertical ? { height: span } : { width: span };
+
+  const rootStyle = { ...slots, ...sizing, ...style };
 
   if (!hasLabel) {
     return (
@@ -113,20 +156,24 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
         className={[
           // The line is a single border edge; the box itself has no thickness,
           // so a divider never adds a pixel of layout beyond the rule.
-          vertical ? 'w-0 self-stretch border-l' : 'h-0 w-full border-t',
+          vertical
+            ? `w-0 border-l [border-left-width:var(--n-rule)] ${span === undefined ? 'self-stretch' : ''}`
+            : 'h-0 w-full border-t [border-top-width:var(--n-rule)]',
           lineClasses,
           className ?? ''
         ]
           .filter(Boolean)
           .join(' ')}
-        style={{ ...slots, ...style }}
+        style={rootStyle}
         {...props}
       />
     );
   }
 
   const [before, after] = stubClasses[orientation][textAlign];
-  const edgeClasses = vertical ? 'w-0 border-l' : 'h-0 border-t';
+  const edgeClasses = vertical
+    ? 'w-0 border-l [border-left-width:var(--n-rule)]'
+    : 'h-0 border-t [border-top-width:var(--n-rule)]';
 
   return (
     <Separator
@@ -135,13 +182,13 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
       aria-label={typeof children === 'string' ? children : undefined}
       className={[
         'flex items-center',
-        vertical ? 'w-auto flex-col self-stretch' : 'w-full',
+        vertical ? `w-auto flex-col ${span === undefined ? 'self-stretch' : ''}` : 'w-full',
         labelGapClasses[size],
         className ?? ''
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ ...slots, ...style }}
+      style={rootStyle}
       {...props}
     >
       <span aria-hidden="true" className={`${edgeClasses} ${before} ${lineClasses}`} />

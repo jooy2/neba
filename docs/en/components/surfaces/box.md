@@ -27,7 +27,7 @@ When structure is needed — a title, a footer, dividers — use [Card](./card),
 
 ### variant
 
-None of the three weights flood the sheet with colour, because what a Box holds is content that arrives with colours of its own. What separates `solid` from `outline` is the sheet's opacity and whether it carries a border. See [Colour](../../guide/color#container-surfaces-are-never-dyed) for the whole rule.
+None of the three weights flood the sheet with colour, because what a Box holds is content that arrives with colours of its own. What separates `solid` from `outline` is the sheet's opacity and whether it carries a border. See [Colour](../../design/color#container-surfaces-are-never-dyed) for the whole rule.
 
 `text` has no surface, so `elevation` is ignored.
 

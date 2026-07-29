@@ -273,9 +273,19 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
             )
           : null}
 
+        {/* Keyed by *slot*, never by page number.
+            The window recentres on the page that was just chosen, so almost
+            every number moves one place along — and with the number as the key,
+            React moves the DOM nodes to match. The button under the pointer is
+            then a different element from the one that was pressed: its hover
+            bloom fades out while a freshly mounted neighbour's fades in from the
+            centre it has no pointer position for, and the release afterglow
+            drains somewhere the cursor is not. That reads as a flicker.
+            Keying by position keeps every node where it is and changes only its
+            label and variant, which is what the row is actually doing. */}
         {slots.map((slot, index) =>
           typeof slot === 'number' ? (
-            <li key={slot} className="flex">
+            <li key={`slot-${index}`} className="flex">
               <Button
                 // The current page is always filled, whatever the row's resting
                 // variant is: it is the one thing here that has to be legible
@@ -296,7 +306,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
             </li>
           ) : (
             <li
-              key={`${slot}-${index}`}
+              key={`slot-${index}`}
               aria-hidden="true"
               className={[
                 'flex select-none items-center justify-center',

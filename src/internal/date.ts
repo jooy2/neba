@@ -307,6 +307,53 @@ export function formatDate(
 }
 
 /**
+ * Twenty-four instants that between them exercise everything a picker's display
+ * can vary by: all twelve month names, all seven weekday names, a two-digit day,
+ * every hour of the clock and a two-digit minute and second.
+ *
+ * They exist to be measured, not read. A picker's trigger is sized by its
+ * content, so `Jul 1, 2026` and `Sep 28, 2026` are different widths and the
+ * field jumped every time a date was chosen — with the whole row of controls
+ * beside it shuffling along. Rendering all of these invisibly pins the trigger
+ * to the widest thing it could ever say.
+ *
+ * Both cycles are prime to twelve in the right way — `i % 12` walks the months
+ * and `i % 7` walks the days 21…27 — so every name appears without the two being
+ * multiplied out into eighty-four samples.
+ */
+const DISPLAY_SAMPLES: Date[] = Array.from(
+  { length: 24 },
+  (_, index) => new Date(2027, index % 12, 21 + (index % 7), index, 58, 58)
+);
+
+/**
+ * Every distinct string those instants format to. Deduplicated, because a
+ * date-only format collapses twenty-four of them into a handful.
+ */
+export function displaySamples(
+  locale: string | undefined,
+  options: Intl.DateTimeFormatOptions
+): string[] {
+  const formatter = dateFormatter(locale, options);
+  return [...new Set(DISPLAY_SAMPLES.map((date) => formatter.format(date)))];
+}
+
+/**
+ * The samples plus the placeholder, when the placeholder is a string.
+ *
+ * An empty picker shows the placeholder, which can easily be longer than any
+ * date — "Pick a departure date" against "3 Aug 2026" — and a trigger that
+ * shrinks the moment the first date is chosen is the same jump from the other
+ * direction. A `ReactNode` placeholder is left out: there is nothing to measure
+ * without rendering it twice.
+ */
+export function withPlaceholder(samples: string[], placeholder: unknown): string[] {
+  return typeof placeholder === 'string' && placeholder !== ''
+    ? [...samples, placeholder]
+    : samples;
+}
+
+/**
  * The three machine-readable spellings, for the hidden input that makes a picker
  * submit with a form.
  *

@@ -38,7 +38,7 @@ Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(pr
 
 ### position
 
-Where the stack is pinned, given as one word combining the vertical edge (`top`/`bottom`) with [`NebaAlign`](../../guide/prop-conventions).
+Where the stack is pinned, given as one word combining the vertical edge (`top`/`bottom`) with [`NebaAlign`](../../design/prop-conventions).
 
 <Demo src="toast/positions">
 

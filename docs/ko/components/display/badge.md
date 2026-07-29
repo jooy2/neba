@@ -27,7 +27,7 @@ import { Badge, Button } from 'neba';
 
 `children`을 주면 그것을 감싸는 `<span>`이 positioning context가 되고 표식은 그 모서리에 붙습니다. `children` 없이 쓰면 표식 자체가 inline 요소로 놓이므로, 표 안의 상태 표시처럼 단독으로도 쓸 수 있습니다.
 
-공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../guide/prop-conventions)에 있습니다.
+공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 

@@ -104,9 +104,30 @@
 
 .vp-doc .neba-scope :is(p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, figure, dl, dd) {
   margin: 0;
-  padding: 0;
   line-height: inherit;
   letter-spacing: inherit;
+}
+
+/*
+ * Padding is reset separately, and only on the three tags that are actually
+ * padded by something — `.vp-doc ul` / `.vp-doc ol` add `padding-left: 1.25rem`
+ * and `.vp-doc blockquote` adds `padding-left: 16px`. Nothing pads a `p`, an
+ * `li`, a `figure` or a `dd`.
+ *
+ * The distinction is not tidiness. `.vp-doc .neba-scope` is two classes and a
+ * padding utility is one, so every tag named here is a tag whose padding a
+ * component can no longer set. With `li` and `figure` in the list, a Timeline's
+ * `pb-6` between steps and a Blockquote's whole inset silently came out as zero
+ * — the first read as steps stacked on top of each other, the second as a quote
+ * pressed against its own rule.
+ *
+ * `[role="list"]` is the exception for the same reason: it is what List,
+ * Timeline and Pagination put on their root, so it marks the lists whose padding
+ * belongs to the component rather than to the page's typography.
+ */
+.vp-doc .neba-scope :is(ul, ol):not([role='list']),
+.vp-doc .neba-scope blockquote {
+  padding: 0;
 }
 
 .vp-doc .neba-scope :is(ul, ol) {
