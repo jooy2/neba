@@ -210,6 +210,24 @@ export function ArrowRightIcon() {
   );
 }
 
+/**
+ * The three dots that stand for what has been left out.
+ *
+ * Drawn rather than typed: `…` is a single glyph whose dots are spaced by
+ * whatever font the page happens to load, and it sits on the baseline rather
+ * than in the middle of the row it is standing in for. Breadcrumb draws it on
+ * the button that opens the collapsed middle of a trail.
+ */
+export function EllipsisIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="3.5" cy="8" r="1.15" fill="currentColor" />
+      <circle cx="8" cy="8" r="1.15" fill="currentColor" />
+      <circle cx="12.5" cy="8" r="1.15" fill="currentColor" />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

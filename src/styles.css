@@ -709,6 +709,61 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Tree guides
+ *
+ * The rail down a level of a TreeView, and — in `folder` — the elbow from that
+ * rail into every row on it.
+ *
+ * Both are drawn on the `<li>` rather than on the row inside it, and that is the
+ * whole trick: an `<li>` in a tree contains its own branch, so a rail that runs
+ * its full height keeps running past an expanded subtree and reaches the next
+ * sibling, exactly as a file manager draws it. The rail under a *last* child
+ * stops at that row's middle, which is the only thing telling the eye a branch
+ * has ended.
+ *
+ * `--n-tree-indent` and `--n-tree-row` are set inline by TreeView from its
+ * `size`. The rail sits half an indent outside the row, in the column the
+ * group's own padding opened up.
+ *
+ * This is CSS rather than Tailwind for the reason the grid is: the geometry is
+ * arithmetic on two per-instance custom properties, and the last child's rail is
+ * a different height from every other one. `[&:last-child::before]:[block-size:
+ * calc(var(--n-tree-row)/2)]` is expressible and unreadable.
+ *
+ * Everything is logical — `inset-inline-start`, `border-inline-start` — so the
+ * whole drawing mirrors under RTL without a second rule.
+ * ------------------------------------------------------------------------- */
+
+.neba-tree-simple :where(ul[role='group']) > li::before,
+.neba-tree-folder :where(ul[role='group']) > li::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc(var(--n-tree-indent, 1.25rem) / -2);
+  block-size: 100%;
+  inline-size: 0;
+  border-inline-start: 1px solid var(--neba-border);
+  pointer-events: none;
+}
+
+.neba-tree-folder :where(ul[role='group']) > li:last-child::before {
+  block-size: calc(var(--n-tree-row, 2rem) / 2);
+}
+
+/* The elbow. It stops 2px short of the row so the corner reads as a turn rather
+   than as a line running into the label. */
+.neba-tree-folder :where(ul[role='group']) > li::after {
+  content: '';
+  position: absolute;
+  inset-block-start: calc(var(--n-tree-row, 2rem) / 2);
+  inset-inline-start: calc(var(--n-tree-indent, 1.25rem) / -2);
+  block-size: 0;
+  inline-size: calc(var(--n-tree-indent, 1.25rem) / 2 - 2px);
+  border-block-start: 1px solid var(--neba-border);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
  * Interaction light
  *
  * Two stacked layers on an interactive surface, both reading `--n-mx`/`--n-my`

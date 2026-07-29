@@ -6,6 +6,8 @@ import {
   Badge,
   Blockquote,
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   ButtonGroup,
   Card,
@@ -33,8 +35,11 @@ import {
   MenuSeparator,
   MenuSubmenu,
   NumberField,
+  OtpField,
   Overlay,
   Pagination,
+  Pane,
+  Panes,
   Pill,
   ProgressBox,
   ProgressCircular,
@@ -59,6 +64,8 @@ import {
   ToastProvider,
   Toolbar,
   Tooltip,
+  TreeItem,
+  TreeView,
   Typography,
   useToast
 } from 'neba';
@@ -434,6 +441,15 @@ const GROUPS: Group[] = [
             />
           </div>
         )
+      },
+      {
+        name: 'OtpField',
+        summary: {
+          ko: '한 글자씩 들어가는 짧은 코드 입력란',
+          en: 'A row of one-character slots for a short code'
+        },
+        path: '/components/inputs/otp-field',
+        preview: <OtpField size="xs" length={6} groupSize={3} defaultValue="4417" />
       }
     ]
   },
@@ -505,6 +521,30 @@ const GROUPS: Group[] = [
               </Box>
             </Grid>
           </GridContainer>
+        )
+      },
+      {
+        name: 'Panes',
+        summary: {
+          ko: '끌어서 비율을 바꾸는 영역들',
+          en: 'Regions whose proportions are dragged'
+        },
+        path: '/components/layout/panes',
+        preview: (
+          <div className="h-20 w-full max-w-56">
+            <Panes size="sm">
+              <Pane defaultSize={35} className="p-1.5">
+                <Typography level="caption" color="secondary">
+                  Files
+                </Typography>
+              </Pane>
+              <Pane className="p-1.5">
+                <Typography level="caption" color="secondary">
+                  Editor
+                </Typography>
+              </Pane>
+            </Panes>
+          </div>
         )
       }
     ]
@@ -848,6 +888,40 @@ const GROUPS: Group[] = [
               <TimelineItem title="Delivered" />
             </Timeline>
           </div>
+        )
+      },
+      {
+        name: 'TreeView',
+        summary: {
+          ko: '접었다 펼 수 있는 계층 목록',
+          en: 'A hierarchy of rows that open and shut'
+        },
+        path: '/components/display/tree-view',
+        preview: (
+          <div className="w-full max-w-56">
+            <TreeView size="sm" lines="folder" defaultExpanded={['src']} label="Files">
+              <TreeItem value="src" label="src">
+                <TreeItem value="index" label="index.ts" />
+                <TreeItem value="types" label="types.ts" />
+              </TreeItem>
+              <TreeItem value="readme" label="README.md" />
+            </TreeView>
+          </div>
+        )
+      },
+      {
+        name: 'Breadcrumb',
+        summary: {
+          ko: '지금 페이지 위쪽의 경로',
+          en: 'The trail of pages above this one'
+        },
+        path: '/components/display/breadcrumb',
+        preview: (
+          <Breadcrumb size="sm">
+            <BreadcrumbItem href="#home">Home</BreadcrumbItem>
+            <BreadcrumbItem href="#projects">Projects</BreadcrumbItem>
+            <BreadcrumbItem>Neba</BreadcrumbItem>
+          </Breadcrumb>
         )
       }
     ]

@@ -6,6 +6,8 @@ import {
   Badge,
   Blockquote,
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   ButtonGroup,
   Card,
@@ -36,8 +38,11 @@ import {
   MenuSeparator,
   MenuSubmenu,
   NumberField,
+  OtpField,
   Overlay,
   Pagination,
+  Pane,
+  Panes,
   Pill,
   ProgressBox,
   ProgressCircular,
@@ -59,6 +64,8 @@ import {
   TimePicker,
   Timeline,
   TimelineItem,
+  TreeItem,
+  TreeView,
   ToastProvider,
   Toolbar,
   Tooltip,
@@ -298,7 +305,7 @@ function ShowcaseBody() {
           rule facing the content, and the one live readout on the screen sitting
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
-          <Caption>Toolbar · Icon · IconButton · Pill</Caption>
+          <Caption>Toolbar · Icon · IconButton · Pill · Breadcrumb</Caption>
           <Toolbar
             render={<header />}
             variant="solid"
@@ -325,6 +332,15 @@ function ShowcaseBody() {
               </>
             }
           />
+
+          {/* The trail sits under the bar, where a page says where it is. */}
+          <Breadcrumb size="sm" maxItems={4}>
+            <BreadcrumbItem href="#home">Home</BreadcrumbItem>
+            <BreadcrumbItem href="#org">Acme</BreadcrumbItem>
+            <BreadcrumbItem href="#team">Platform</BreadcrumbItem>
+            <BreadcrumbItem href="#repo">neba</BreadcrumbItem>
+            <BreadcrumbItem>Deployments</BreadcrumbItem>
+          </Breadcrumb>
         </section>
 
         {/* The controls that run a screen, all on one baseline. */}
@@ -744,6 +760,53 @@ function ShowcaseBody() {
               />
             </div>
           </Card>
+        </section>
+
+        {/* A workspace: the split is the layout, the tree is what is in the
+            left half, and the code field is the one thing on the screen that
+            has to be typed in from somewhere else. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Panes · Pane · TreeView · OtpField</Caption>
+          <div className="h-72">
+            <Panes>
+              <Pane defaultSize="220px" minSize="160px" maxSize="45%">
+                <TreeView
+                  variant="text"
+                  size="sm"
+                  density="compact"
+                  lines="folder"
+                  label="Repository"
+                  defaultExpanded={['src', 'components']}
+                  defaultSelected={['button']}
+                >
+                  <TreeItem value="src" label="src">
+                    <TreeItem value="components" label="components">
+                      <TreeItem value="button" label="Button.tsx" />
+                      <TreeItem value="card" label="Card.tsx" />
+                    </TreeItem>
+                    <TreeItem value="index" label="index.ts" />
+                  </TreeItem>
+                  <TreeItem value="package" label="package.json" />
+                </TreeView>
+              </Pane>
+
+              <Pane className="p-4">
+                <Card
+                  size="sm"
+                  title={<h3>Confirm the deploy</h3>}
+                  subtitle="Production needs a second factor."
+                >
+                  <OtpField
+                    size="sm"
+                    label="Authenticator code"
+                    description="Six digits from your authenticator app."
+                    length={6}
+                    groupSize={3}
+                  />
+                </Card>
+              </Pane>
+            </Panes>
+          </div>
         </section>
 
         {/* What a release page is made of: the run that produced it, the note

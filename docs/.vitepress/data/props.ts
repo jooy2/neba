@@ -4744,5 +4744,526 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: { ko: '단계의 본문', en: 'The body of the step' }
     }
+  ],
+
+  TreeView: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '행 높이, 타입 스케일, 시트의 반경, 그리고 한 단계 들여쓰는 폭',
+        en: "The row height, the type scale, the sheet's radius, and how far one level is set in"
+      },
+      densityDescription: {
+        ko: '행의 좌우 여백만 바꿉니다. 행 높이도 들여쓰기도 그대로입니다',
+        en: "A row's horizontal padding only. Never the row height, never the indentation"
+      }
+    }),
+    {
+      name: 'lines',
+      type: "'none' | 'simple' | 'folder'",
+      default: "'simple'",
+      description: {
+        ko: '계층을 어떻게 그릴지. none은 들여쓰기만, simple은 레벨마다 세로선 하나, folder는 거기에 각 행으로 꺾여 들어가는 선까지 — 마지막 자식의 세로선은 그 행에서 끊깁니다',
+        en: 'How the hierarchy is drawn. `none` is indentation alone, `simple` is one rail per level, and `folder` adds an elbow into every row and stops the rail under a last child'
+      }
+    },
+    {
+      name: 'expanded',
+      type: '(string | number)[]',
+      description: {
+        ko: '열려 있는 가지들. onExpandedChange와 함께 쓰면 controlled가 됩니다',
+        en: 'Which branches are open. Use with onExpandedChange for a controlled tree'
+      }
+    },
+    {
+      name: 'defaultExpanded',
+      type: '(string | number)[]',
+      description: { ko: '처음에 열려 있을 가지들', en: 'Which start open' }
+    },
+    {
+      name: 'onExpandedChange',
+      type: '(expanded: (string | number)[]) => void',
+      description: { ko: '열림 상태가 바뀔 때', en: 'Fires when a branch opens or shuts' }
+    },
+    {
+      name: 'selected',
+      type: '(string | number)[]',
+      description: {
+        ko: '선택된 행들. multiple이 꺼져 있어도 배열입니다 — Accordion의 value와 같은 모양이라, multiple을 켜도 값의 타입은 바뀌지 않습니다',
+        en: "Which rows are chosen. An array even with multiple off — the same shape Accordion's value takes, so turning multiple on does not change the type of the value"
+      }
+    },
+    {
+      name: 'defaultSelected',
+      type: '(string | number)[]',
+      description: { ko: '처음에 선택되어 있을 행들', en: 'Which start chosen' }
+    },
+    {
+      name: 'onSelectedChange',
+      type: '(selected: (string | number)[]) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Fires when the selection changes' }
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '여러 행을 동시에 선택할 수 있는지. 켜면 aria-multiselectable도 함께 붙습니다',
+        en: 'Whether more than one row may be chosen at a time. Also sets aria-multiselectable'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 모든 행이 반응하지 않습니다',
+        en: 'Unavailable. Every row stops answering'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '트리가 읽히는 이름. tree에 aria-label로 붙습니다',
+        en: 'The name the tree is announced by, as aria-label on the tree'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '최상위 TreeItem들', en: 'The top-level TreeItems' }
+    }
+  ],
+
+  TreeItem: [
+    {
+      name: 'value',
+      type: 'string | number',
+      description: {
+        ko: 'expanded와 selected에서 이 행을 가리키는 식별자. 생략하면 하나가 생성되므로, 코드로 다룰 일이 없는 트리라면 없어도 됩니다',
+        en: 'Identifies the row to expanded and selected. One is generated when it is left out, which is fine for a tree nobody drives from code'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '행의 텍스트. children이 아닌 별도 prop인 이유는, 트리에서 children은 그 아래 행들이기 때문입니다',
+        en: "The row's text. Its own prop rather than children, because in a tree the children are the rows underneath it"
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 앞의 내용 — 폴더 글리프, 파일 종류, 상태 점',
+        en: 'Content before the label — a folder glyph, a file type, a status dot'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 뒤의 내용 — 개수, 배지',
+        en: 'Content after the label — a count, a badge'
+      }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '행 끝에 고정되는 컨트롤. 누를 수 있는 영역 바깥에 놓입니다 — 열리기도 하고 메뉴 버튼도 가진 행은 누를 것이 두 개입니다',
+        en: 'A control pinned to the end of the row, outside the pressable area: a row that both opens and holds a menu button has two things to press'
+      }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '행을 링크로 렌더링합니다. 트리가 내비게이션일 때',
+        en: 'Renders the row as a link, for a tree that is navigation'
+      }
+    },
+    {
+      name: 'onClick',
+      type: 'MouseEventHandler<HTMLElement>',
+      description: {
+        ko: '행을 누를 때, 열리거나 선택되기 전에 호출됩니다. preventDefault를 부르면 둘 다 일어나지 않습니다',
+        en: 'Fires when the row is pressed, before it opens or is chosen. Calling preventDefault stops both'
+      }
+    },
+    {
+      name: 'expandable',
+      type: 'boolean',
+      description: {
+        ko: '아직 children이 없는 행에도 펼침 화살표를 그립니다 — 처음 열 때 가져오는 가지',
+        en: 'Forces the disclosure arrow onto a row with no children yet — the branch fetched the first time it is opened'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 열려 있는 가지는 계속 동작합니다',
+        en: 'Unavailable. Its branch, if open, keeps working'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '이 행 아래의 TreeItem들', en: 'The TreeItems underneath this one' }
+    }
+  ],
+
+  OtpField: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '한 칸의 크기와 그 안의 타입 스케일. 컨트롤 사다리와 별개인 이유는, 칸은 줄 안의 컨트롤이 아니라 혼자 서 있는 글자 하나이기 때문입니다',
+        en: "A slot's box and the type scale inside it. Its own ladder, because a slot is not a control in a row of controls but a single character standing on its own"
+      },
+      densityDescription: { ko: '칸 사이의 간격만 바꿉니다', en: 'The space between slots only' }
+    }),
+    {
+      name: 'length',
+      type: 'number',
+      default: '6',
+      description: {
+        ko: '코드의 자리수. 2–12로 잘립니다 — 한 칸짜리는 TextField이고, 열두 칸을 넘기면 휴대폰 화면에 들어가지 않습니다',
+        en: 'How many characters the code has. Clamped to 2–12: a single box is a TextField, and past twelve the row stops fitting a phone'
+      }
+    },
+    {
+      name: 'charset',
+      type: "'numeric' | 'alpha' | 'alphanumeric' | 'any'",
+      default: "'numeric'",
+      description: {
+        ko: '입력할 수 있는 문자. 거부된 문자는 표시되지 않고 버려지며 onValueInvalid로 알려집니다. numeric이 기본인 이유는 문자로 오는 코드가 그렇기도 하고, 휴대폰에 숫자 키패드를 띄우기 때문입니다',
+        en: 'What may be typed. Rejected characters are dropped rather than shown, and reported through onValueInvalid. numeric is the default because that is what a texted code is, and because it puts a number pad in front of a phone'
+      }
+    },
+    {
+      name: 'mask',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '입력한 문자를 가립니다',
+        en: 'Hides the characters, the way a password field does'
+      }
+    },
+    {
+      name: 'groupSize',
+      type: 'number',
+      description: {
+        ko: '몇 칸마다 구분자를 넣을지. 여섯 자리에 3이면 익숙한 3+3이 됩니다',
+        en: 'Splits the row every groupSize slots. 3 on a six digit code gives the familiar two blocks of three'
+      }
+    },
+    {
+      name: 'separator',
+      type: 'ReactNode',
+      default: "'–'",
+      description: { ko: '두 그룹 사이에 그려지는 것', en: 'What is drawn between two groups' }
+    },
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: '코드. onValueChange와 함께 쓰면 controlled가 됩니다',
+        en: 'The code. Use with onValueChange for a controlled field'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string',
+      description: { ko: '처음 값', en: 'What it starts as' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string) => void',
+      description: { ko: '값이 바뀔 때', en: 'Fires when the value changes' }
+    },
+    {
+      name: 'onComplete',
+      type: '(value: string) => void',
+      description: {
+        ko: '모든 칸이 찼을 때. 코드를 검증할 시점입니다',
+        en: 'Fires once every slot is filled — the moment to verify the code'
+      }
+    },
+    {
+      name: 'onValueInvalid',
+      type: '(value: string) => void',
+      description: {
+        ko: '입력되거나 붙여넣어진 글자에 charset이 거부하는 문자가 있었을 때',
+        en: 'Fires when typed or pasted text held characters the charset rejects'
+      }
+    },
+    {
+      name: 'autoSubmit',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '코드가 완성되면 폼을 제출합니다',
+        en: 'Submits the owning form as soon as the code is complete'
+      }
+    },
+    ...fieldProps,
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼이 제출될 때 이 필드를 가리키는 이름. 값 전체를 담은 숨겨진 input에 붙습니다',
+        en: 'Identifies the field when a form is submitted. It lands on the clipped input carrying the whole value'
+      }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제출 전에 코드가 완성되어 있어야 합니다',
+        en: 'The form must have a complete code before it submits'
+      }
+    },
+    ...inertProps,
+    {
+      name: 'autoFocus',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '마운트되면 첫 칸에 커서를 둡니다',
+        en: 'Puts the caret in the first slot on mount'
+      }
+    }
+  ],
+
+  Panes: [
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: 'pane들이 놓이는 방향. horizontal은 좌우로 늘어놓고 그 사이에 세로 바를, vertical은 위아래로 쌓고 가로 바를 둡니다',
+        en: 'Which way the panes run. horizontal puts them side by side with upright handles between them; vertical stacks them'
+      }
+    },
+    {
+      name: 'resizable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'pane 사이의 바를 끌 수 있는지. 컨트롤이 아니라 레이아웃으로 쓸 분할이라면 끕니다',
+        en: 'Whether the handles can be dragged. Turn it off for a split that is a layout rather than a control'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '바의 두께이자 포인터가 맞춰야 할 과녁의 폭. 보이는 것은 1px 선이지만 잡을 수 있는 폭은 그보다 넓습니다',
+        en: "A handle's thickness, which is the width of the target the pointer has to hit. What is drawn is a hairline; what can be grabbed is wider"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '바가 켜질 때의 색 계열. Panes는 시트를 그리지 않으므로 색은 선과 포커스 링에만 나타납니다',
+        en: 'The family the handles light up in. A Panes draws no sheet, so the colour only shows in the hairline and the focus ring'
+      }
+    },
+    {
+      name: 'onResize',
+      type: '(sizes: number[]) => void',
+      description: {
+        ko: '끄는 동안 모든 pane의 비율(%)을 알려줍니다',
+        en: "Fires with every pane's share, in percent, while a handle is dragged"
+      }
+    },
+    {
+      name: 'onResizeEnd',
+      type: '(sizes: number[]) => void',
+      description: {
+        ko: '바를 놓았을 때 같은 모양으로 한 번',
+        en: 'Fires once, with the same shape, when the handle is let go'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'Pane들. 크기 제약은 자식의 props에서 읽으므로 직접 자식이 Pane이어야 합니다 — 무언가로 감싼 Pane은 최소 크기가 없는 pane이 됩니다',
+        en: 'The Panes. The constraints are read off the children’s props, so the direct children have to be Panes: a Pane wrapped in something else is a pane with no minimum'
+      }
+    }
+  ],
+
+  Pane: [
+    {
+      name: 'defaultSize',
+      type: 'number | string',
+      description: {
+        ko: '처음 차지할 몫. 숫자는 퍼센트, 문자열은 길이(240px, 15rem, 20%)입니다. 값을 주지 않은 pane들은 남은 자리를 똑같이 나눠 갖습니다',
+        en: 'The share this pane starts with. A number is a percentage; a string is a length (240px, 15rem, 20%). Panes with no defaultSize split what is left equally'
+      }
+    },
+    {
+      name: 'minSize',
+      type: 'number | string',
+      default: '0',
+      description: {
+        ko: '얼마까지 줄일 수 있는지. 이웃 pane의 최대치이기도 합니다',
+        en: "How small it may be dragged, which is also its neighbour's ceiling"
+      }
+    },
+    {
+      name: 'maxSize',
+      type: 'number | string',
+      description: {
+        ko: '얼마까지 키울 수 있는지. 생략하면 제한이 없습니다',
+        en: 'How large it may be dragged. Unbounded when left out'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'pane 안에 들어가는 것. Pane 자체는 시트를 그리지 않으므로, 표면이 필요하면 안에 Box나 Card를 넣습니다',
+        en: 'What is inside the pane. A Pane carries no surface of its own, so put a Box or a Card in it when one is wanted'
+      }
+    }
+  ],
+
+  Breadcrumb: [
+    ...scaleProps("'md'"),
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '단계 사이의 간격만 바꿉니다', en: 'The space between steps only' }
+    },
+    {
+      name: 'separator',
+      type: "'chevron' | 'arrow' | 'slash' | 'dot' | ReactNode",
+      default: "'chevron'",
+      description: {
+        ko: '두 단계 사이에 그려지는 표시. 네 가지 이름 중 하나이거나 아무 노드나 됩니다. chevron과 arrow는 "그다음"을, slash는 "경로"를, dot은 "한 가지의 동급들"을 말합니다',
+        en: 'What is drawn between two steps: one of the four names, or any node. chevron and arrow say "and then", slash says "path", dot says "peers of one thing"'
+      }
+    },
+    {
+      name: 'maxItems',
+      type: 'number',
+      description: {
+        ko: '이 수를 넘으면 가운데를 …로 접습니다. 생략하면 아무리 길어도 전부 보여줍니다',
+        en: 'How many steps to show before the middle is folded away behind a `…`. Left out, the whole trail is shown however long it gets'
+      }
+    },
+    {
+      name: 'itemsBeforeCollapse',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '접힌 트레일 앞쪽에 남길 단계 수',
+        en: 'How many steps stay at the front of a folded trail'
+      }
+    },
+    {
+      name: 'itemsAfterCollapse',
+      type: 'number',
+      default: '1',
+      description: { ko: '뒤쪽에 남길 단계 수', en: 'How many stay at the end' }
+    },
+    {
+      name: 'expandable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '…를 누르면 그 자리에서 펼쳐지는지. 끄면 접힘 표시로만 남습니다',
+        en: 'Whether pressing the `…` unfolds the trail in place. Turn it off to leave the fold as a plain mark'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "'Breadcrumb'",
+      description: {
+        ko: '트레일이 읽히는 이름. nav의 aria-label입니다',
+        en: "The name the trail is announced by, as the nav's aria-label"
+      }
+    },
+    {
+      name: 'expandLabel',
+      type: 'string',
+      default: "'Show hidden steps'",
+      description: { ko: '…가 읽히는 이름', en: 'What the `…` is announced as' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'BreadcrumbItem들', en: 'The BreadcrumbItems' }
+    }
+  ],
+
+  BreadcrumbItem: [
+    {
+      name: 'href',
+      type: 'string',
+      description: { ko: '단계를 링크로 렌더링합니다', en: 'Renders the step as a link' }
+    },
+    {
+      name: 'onClick',
+      type: 'MouseEventHandler<HTMLElement>',
+      description: {
+        ko: '단계를 누를 때. href가 없으면 버튼으로 렌더링됩니다',
+        en: 'Fires when the step is pressed. Renders it as a button when there is no href'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 앞의 내용 — 홈 글리프, 저장소 아바타',
+        en: 'Content before the label — a home glyph, a repository avatar'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 뒤의 내용', en: 'Content after the label' }
+    },
+    {
+      name: 'current',
+      type: 'boolean',
+      description: {
+        ko: '지금 보고 있는 페이지로 표시하고 링크를 걷어냅니다. 마지막 단계는 그냥 두어도 현재이므로, 트레일이 독자가 있는 곳에서 끝나지 않을 때만 필요합니다 — 어디든 한 번 지정하면 마지막 단계에서 표시가 걷힙니다. 한 트레일에 현재는 하나뿐이기 때문입니다',
+        en: 'Marks this step as the page you are on, which stops it being a link. The last step is the current one on its own, so this is only needed for a trail that ends somewhere the reader is not — and setting it anywhere takes the mark off the last step, because only one step in a trail can be it'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 트레일에는 그대로 남습니다',
+        en: 'Unavailable. Keeps its place in the trail'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '단계의 라벨', en: "The step's label" }
+    }
   ]
 };

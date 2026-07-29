@@ -122,10 +122,13 @@
  * pressed against its own rule.
  *
  * `[role="list"]` is the exception for the same reason: it is what List,
- * Timeline and Pagination put on their root, so it marks the lists whose padding
- * belongs to the component rather than to the page's typography.
+ * Timeline, Pagination and Breadcrumb put on their root, so it marks the lists
+ * whose padding belongs to the component rather than to the page's typography.
+ * `[role="tree"]` and `[role="group"]` are the same exception for TreeView,
+ * where the padding on a group *is* the indentation of a level — zeroing it
+ * would flatten the whole tree into one column.
  */
-.vp-doc .neba-scope :is(ul, ol):not([role='list']),
+.vp-doc .neba-scope :is(ul, ol):not([role='list'], [role='tree'], [role='group']),
 .vp-doc .neba-scope blockquote {
   padding: 0;
 }
