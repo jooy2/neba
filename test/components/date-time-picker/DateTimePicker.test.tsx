@@ -19,7 +19,13 @@ describe('DateTimePicker', () => {
         <DateTimePicker locale={LOCALE} label="Runs at" defaultValue={JULY_27_1430} />
       );
 
-      await expect.element(screen.getByText('Jul 27, 2026, 2:30 PM')).toBeInTheDocument();
+      // Matched loosely because what joins the two halves is not ours to pin:
+      // `Intl` takes it from the runtime's CLDR data, and en-US glues a medium
+      // date to a short time with `, ` in the ICU that Chromium, Firefox and
+      // Playwright's Linux and Windows WebKit builds carry, but with ` at ` in
+      // the system ICU that WebKit on macOS reads. Both are correct. The claim
+      // this test makes is that the day and the time land in one text node.
+      await expect.element(screen.getByText(/Jul 27, 2026.+2:30 PM/)).toBeInTheDocument();
     });
 
     it('opens a calendar and a clock in the same popup', async () => {

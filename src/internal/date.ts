@@ -286,7 +286,7 @@ export function dateFormatter(
   locale: string | undefined,
   options: Intl.DateTimeFormatOptions
 ): Intl.DateTimeFormat {
-  const key = `${locale ?? ''} ${JSON.stringify(options)}`;
+  const key = `${locale ?? ''}\u0000${JSON.stringify(options)}`;
   let formatter = formatterCache.get(key);
 
   if (!formatter) {
