@@ -6,8 +6,8 @@ titleTemplate: React 컴포넌트 라이브러리
 
 hero:
   name: Neba
-  text: 잘라낸 아크릴 한 장
-  tagline: 동작과 접근성은 Base UI, 스타일은 Tailwind CSS v4. 컨트롤은 절대 움직이지 않고, 색과 깊이로만 답합니다.
+  text: 웹과 앱 어디에도 어울리는 React 컴포넌트 라이브러리
+  tagline: 설치 한 줄로 시작하는 50여 개의 컴포넌트. 다크 모드도, 접근성도, 타입도 이미 들어 있습니다.
   actions:
     - theme: brand
       text: 시작하기
@@ -23,44 +23,53 @@ hero:
     alt: Neba
 
 features:
-  - title: 모든 컴포넌트
-    details: 배포된 컴포넌트를 한 페이지에서. 문서의 미리보기는 그림이 아니라 전부 실제로 동작하는 컴포넌트입니다.
+  - title: 50여 개의 컴포넌트
+    details: 버튼과 입력부터 Dialog, Table, DatePicker, Toast까지. 화면 하나를 끝까지 만들 수 있는 만큼 들어 있습니다.
     link: /ko/components/
     linkText: 훑어보기
-  - title: 아크릴 표면
-    details: 반투명한 채움, 흐려진 배경, 빛을 받는 하이라인 가장자리. 그림자는 기본값이 아니라 선택입니다.
-    link: /ko/design/design-language
-    linkText: 디자인 언어
+  - title: TypeScript 우선
+    details: 타입 선언이 패키지에 함께 배포됩니다. prop 이름도, 받을 수 있는 값도 에디터가 먼저 알려 줍니다.
+  - title: 다크 모드 기본
+    details: 상위 요소의 class 하나면 모든 컴포넌트가 함께 넘어갑니다. 테마를 따로 만들 필요도, 색을 다시 지정할 일도 없습니다.
   - title: 하나의 공용 어휘
     details: size, color, variant, density, elevation. md는 어느 컴포넌트에서든 같은 것을 뜻합니다.
     link: /ko/design/prop-conventions
     linkText: Prop 규약
-  - title: ESM · 타입 포함
-    details: 의존성은 @base-ui/react 하나. 번들러 없이 tsc로 컴파일해 폴더 구조 그대로 배포합니다.
 ---
 
-## 설치
+## Neba를 사용해야 하는 이유
 
-```bash
-npm install neba
-```
+<div class="neba-why">
+  <div class="neba-why-card">
+    <h3>검증된 안정성</h3>
+    <p>모든 컴포넌트가 자기 테스트를 함께 가지고 갑니다. 실제 브라우저에서, 세 가지 OS와 세 가지 엔진 조합으로 변경마다 확인합니다.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>접근성이 기본값</h3>
+    <p>role과 label, 키보드 조작, focus 관리가 컴포넌트 안에 들어 있습니다. 나중에 얹는 작업이 아닙니다.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>SEO에 유리한 마크업</h3>
+    <p>시맨틱 태그로 렌더링되고 SSR에서도 같은 결과를 냅니다. 크롤러가 보는 것과 사용자가 보는 것이 같습니다.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>플랫폼을 가리지 않습니다</h3>
+    <p>웹, 하이브리드 앱, Electron. 어떤 React 환경에서도 같은 코드가 같은 화면을 그립니다.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>모던한 프론트엔드에 맞춰</h3>
+    <p>ESM으로 배포되고 tree shaking이 되므로, import한 것만 번들에 들어갑니다.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>에이전틱 코딩에 적합</h3>
+    <p>prop 이름이 컴포넌트마다 일관되고 문서가 구조적으로 정리되어 있어, AI 에이전트가 추측할 일이 적습니다.</p>
+  </div>
+</div>
 
-앱의 CSS 진입점에 한 줄을 더하면 끝입니다. 스타일시트가 컴파일된 채로 배포되므로 Tailwind를 설치할 일도, 설정할 것도 없습니다.
-
-```css
-@import 'neba/styles.css';
-```
-
-```tsx
-import { Button } from 'neba';
-
-<Button onClick={save}>저장</Button>;
-```
-
-## 한 화면에서
+## 컴포넌트 미리보기
 
 아래는 문서 페이지 안에서 실제로 돌아가고 있는 컴포넌트입니다. 입력해 보고, 저장을 눌러 보세요.
 
 <Demo src="showcase/app" />
 
-컴포넌트별 prop과 예시는 [컴포넌트](./components/) 문서에, 같은 화면의 전체 설명은 [예제](./examples/)에 있습니다.
+컴포넌트별 prop과 예시는 [컴포넌트](./components/) 문서에, 같은 화면의 전체 설명은 [예제](./examples/)에 있습니다. 설치와 설정은 [시작하기](./guide/getting-started)에서 한 페이지로 끝납니다.

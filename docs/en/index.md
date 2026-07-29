@@ -6,8 +6,8 @@ titleTemplate: The React component library
 
 hero:
   name: Neba
-  text: A sheet of cut acrylic
-  tagline: Behaviour and accessibility from Base UI, styling from Tailwind CSS v4. Controls never move — they answer in colour and depth.
+  text: A React component library at home on the web and in your app
+  tagline: Fifty-odd components, one line to install. Dark mode, accessibility and types are already in the box.
   actions:
     - theme: brand
       text: Get started
@@ -23,44 +23,53 @@ hero:
     alt: Neba
 
 features:
-  - title: All components
-    details: Every released component on one page. The previews in these docs are not pictures — they are the components, running.
+  - title: Fifty-odd components
+    details: Buttons and inputs through Dialog, Table, DatePicker and Toast. Enough to build a whole screen without leaving.
     link: /components/
     linkText: Browse
-  - title: An acrylic surface
-    details: A translucent fill, a blurred backdrop, and a hairline edge catching the light. A drop shadow is opt-in, not a default.
-    link: /design/design-language
-    linkText: Design language
+  - title: TypeScript first
+    details: Declarations ship with the package. Your editor knows the prop names and the values they take before you do.
+  - title: Dark mode built in
+    details: One class on an ancestor and every component follows. No second theme to write, no colours to redeclare.
   - title: One shared vocabulary
     details: size, color, variant, density, elevation. An md means the same thing on every component.
     link: /design/prop-conventions
     linkText: Prop conventions
-  - title: ESM, types included
-    details: One dependency, @base-ui/react. Compiled with plain tsc and published mirroring the source tree.
 ---
 
-## Install
+## Why Neba
 
-```bash
-npm install neba
-```
+<div class="neba-why">
+  <div class="neba-why-card">
+    <h3>Tested, not asserted</h3>
+    <p>Every component carries its own tests, run in a real browser across three operating systems and three engines on every change.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>Accessible by default</h3>
+    <p>Roles, labels, keyboard operation and focus management live inside the components rather than being bolted on later.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>Markup crawlers can read</h3>
+    <p>Semantic elements, and the same output under SSR. What the crawler sees is what the user sees.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>Platform agnostic</h3>
+    <p>Web, hybrid apps, Electron. The same code draws the same screen in any React environment.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>Built for a modern front end</h3>
+    <p>Published as ESM and tree-shakeable, so only what you import ends up in the bundle.</p>
+  </div>
+  <div class="neba-why-card">
+    <h3>Ready for coding agents</h3>
+    <p>Prop names are consistent across components and the documentation is structured, so an agent has little left to guess.</p>
+  </div>
+</div>
 
-One line in your app's CSS entry point is the whole setup. The stylesheet ships compiled, so there is no Tailwind to install and nothing to configure.
-
-```css
-@import 'neba/styles.css';
-```
-
-```tsx
-import { Button } from 'neba';
-
-<Button onClick={save}>Save</Button>;
-```
-
-## On one screen
+## Component preview
 
 What follows is running inside this page. Type into it, and press save.
 
 <Demo src="showcase/app" />
 
-Per-component props and examples are under [Components](./components/); the same screen is explained block by block under [Examples](./examples/).
+Per-component props and examples are under [Components](./components/); the same screen is explained block by block under [Examples](./examples/). Installing and wiring it up is one page: [Getting started](./guide/getting-started).

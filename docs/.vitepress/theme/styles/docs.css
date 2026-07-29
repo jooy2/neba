@@ -65,11 +65,9 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Before React mounts there is nothing in the box; hold the height so the page
-   does not jump on hydration. */
-.neba-demo-mount:empty {
-  min-height: 40px;
-}
+/* The height a preview holds while it is empty is `Demo.vue`'s `minHeight`, set
+   inline — it has to be per-preview, and it stays applied once the components
+   are there so that reserving the space does not itself become a second jump. */
 
 .neba-demo--plain .neba-demo-canvas {
   padding: 0;
@@ -350,4 +348,64 @@
   border-radius: 0;
   background: none;
   overflow: visible;
+}
+
+/*
+ * The reasons-to-use grid on the home page.
+ *
+ * Written as raw HTML in the Markdown rather than as components: the home page
+ * is Vue, the cards hold no state, and the feature grid VitePress already draws
+ * above them is the shape they have to match. These are that shape one section
+ * down — same soft fill, same radius, same hairline.
+ *
+ * The heading inside a card is an `h3`, so the `.vp-doc h3` rules for margin,
+ * size and the anchor gutter all have to be undone; a heading in a card is a
+ * card's title, not a place in the page's outline.
+ */
+.VPHome .neba-why {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 24px 0 8px;
+}
+
+@media (min-width: 640px) {
+  .VPHome .neba-why {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .VPHome .neba-why {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.VPHome .neba-why-card {
+  padding: 20px 22px 22px;
+  border: 1px solid var(--vp-c-bg-soft);
+  border-radius: 12px;
+  background-color: var(--vp-c-bg-soft);
+  transition: border-color 0.25s;
+}
+
+.VPHome .neba-why-card:hover {
+  border-color: var(--vp-c-brand-1);
+}
+
+.VPHome .neba-why-card h3 {
+  margin: 0 0 8px;
+  padding-top: 0;
+  border-top: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: normal;
+}
+
+.VPHome .neba-why-card p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 1.65;
 }

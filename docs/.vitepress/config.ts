@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withSidebar } from 'vitepress-sidebar';
@@ -14,6 +15,38 @@ const rootDir = resolve(vitePressDir, '../..');
 const defaultLocale: string = 'en';
 const supportLocales: string[] = [defaultLocale, 'ko'];
 const editLinkPattern = `${packageJson.repository.url}/edit/main/docs/:path`;
+
+/** A glob Vite can read on either platform — `resolve` gives Windows backslashes. */
+const glob = (pattern: string) => resolve(rootDir, pattern).replaceAll('\\', '/');
+
+/**
+ * Every `@base-ui/react` subpath the library imports, read out of `src/`.
+ *
+ * These are reached only from a demo, which is reached only from a dynamic
+ * import — so the dev server discovers them one at a time as previews mount,
+ * and each discovery re-runs the dependency optimizer and reloads the page
+ * underneath whoever is reading it. Listing them up front makes that one
+ * pre-bundle at startup instead. Derived rather than written out, so a
+ * component that starts using a new primitive is not a second edit here.
+ */
+function baseUiEntries(): string[] {
+  const srcDir = resolve(rootDir, 'src');
+  const entries = new Set<string>();
+
+  for (const file of readdirSync(srcDir, { recursive: true, encoding: 'utf8' })) {
+    if (!/\.tsx?$/.test(file)) {
+      continue;
+    }
+
+    for (const [, entry] of readFileSync(resolve(srcDir, file), 'utf8').matchAll(
+      /from '(@base-ui\/react\/[a-z-]+)'/g
+    )) {
+      entries.add(entry);
+    }
+  }
+
+  return [...entries].sort();
+}
 
 /** `/` for whichever locale is the default, `/{lang}/` for every other one. */
 const localeBase = (lang: string) => (lang === defaultLocale ? '/' : `/${lang}/`);
@@ -136,9 +169,27 @@ const vitePressConfig: UserConfig = {
       postcss: rootDir
     },
     optimizeDeps: {
-      // Both are only ever reached through a dynamic import inside a demo, so
-      // Vite would otherwise discover them mid-session and force a reload.
-      include: ['react', 'react-dom/client']
+      // Every one of these is only ever reached through a dynamic import inside
+      // a demo, so Vite would otherwise discover them mid-session and force a
+      // reload. `react/jsx-dev-runtime` is what the demos' JSX compiles to.
+      include: [
+        'react',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        ...baseUiEntries()
+      ]
+    },
+    server: {
+      warmup: {
+        // The library is behind a dynamic import too, so the dev server would
+        // not transform a single file of it until the first preview asks — and
+        // then it asks for all hundred and ten at once, through the barrel.
+        // The demos are left out on purpose: there are two hundred of them and
+        // a session touches a handful, whereas `src/` is what every one of them
+        // pulls in.
+        clientFiles: [glob('src/**/*.{ts,tsx}')]
+      }
     }
   },
   themeConfig: {
