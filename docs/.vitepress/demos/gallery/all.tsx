@@ -13,6 +13,7 @@ import {
   ButtonGroup,
   Card,
   Carousel,
+  ChatBubble,
   Checkbox,
   Chip,
   Combobox,
@@ -52,6 +53,7 @@ import {
   Select,
   Shortcut,
   Slider,
+  Spoiler,
   Statistic,
   Switch,
   Tab,
@@ -59,6 +61,7 @@ import {
   TabPanel,
   Tabs,
   TextField,
+  TextLink,
   TimePicker,
   Timeline,
   TimelineItem,
@@ -678,6 +681,39 @@ const GROUPS: Group[] = [
             />
           </div>
         )
+      },
+      {
+        name: 'ChatBubble',
+        summary: {
+          ko: '대화 속 메시지 하나',
+          en: 'One message in a conversation'
+        },
+        path: '/components/surfaces/chat-bubble',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-2">
+            <ChatBubble size="sm" avatar={<Avatar name="Jane Doe" size="xs" />}>
+              Still on for 3?
+            </ChatBubble>
+            <ChatBubble size="sm" side="end" variant="solid" status="read">
+              Yes
+            </ChatBubble>
+          </div>
+        )
+      },
+      {
+        name: 'Spoiler',
+        summary: {
+          ko: '요청하기 전까지 덮여 있는 내용',
+          en: 'Content that stays covered until it is asked for'
+        },
+        path: '/components/surfaces/spoiler',
+        preview: (
+          <div className="w-full max-w-56">
+            <Spoiler size="sm" description={false}>
+              <Typography level="caption">The butler did it</Typography>
+            </Spoiler>
+          </div>
+        )
       }
     ]
   },
@@ -937,6 +973,24 @@ const GROUPS: Group[] = [
             <BreadcrumbItem href="#projects">Projects</BreadcrumbItem>
             <BreadcrumbItem>Neba</BreadcrumbItem>
           </Breadcrumb>
+        )
+      },
+      {
+        name: 'TextLink',
+        summary: {
+          ko: '문장 안에서든 혼자서든 쓰는 링크',
+          en: 'A link, in a sentence or on its own'
+        },
+        path: '/components/display/text-link',
+        preview: (
+          <div className="flex flex-col items-center gap-2">
+            <TextLink href="#components" size="sm">
+              Components
+            </TextLink>
+            <TextLink href="#getting-started" size="sm" newTab color="primary">
+              Getting started
+            </TextLink>
+          </div>
         )
       }
     ]

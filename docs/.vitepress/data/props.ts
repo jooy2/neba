@@ -5362,5 +5362,308 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: { ko: '단계의 라벨', en: "The step's label" }
     }
+  ],
+
+  TextLink: [
+    {
+      name: 'href',
+      type: 'string',
+      required: true,
+      description: { ko: '링크가 가리키는 곳', en: 'Where the link goes' }
+    },
+    {
+      name: 'underline',
+      type: "'always' | 'hover' | 'none'",
+      default: "'always'",
+      description: {
+        ko: '밑줄을 언제 그릴지. color가 기본적으로 없으므로 always가 기본값입니다 — 선이 없으면 문장 속에서 링크를 구분할 단서가 남지 않습니다',
+        en: 'When the underline is drawn. always is the default because color is not: with no line there is nothing telling a link from the sentence around it'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 기본값이 없습니다 — 문단 안의 링크는 대개 그 문단의 색을 그대로 씁니다',
+        en: 'Semantic colour role. No default — a link in a paragraph is usually the paragraph’s own colour'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      shared: true,
+      description: {
+        ko: '타입 스케일. 이것도 기본값이 없습니다. 문장 속 링크는 그 문장의 크기입니다',
+        en: 'The type scale. Also no default: a link inside a sentence is the size of the sentence'
+      }
+    },
+    {
+      name: 'newTab',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '새 탭에서 엽니다. rel로 window.opener를 끊고, icon을 켜며, screen reader용 문장을 덧붙입니다',
+        en: 'Opens in a new tab, with the rel that closes window.opener. Turns icon on and adds a line for a screen reader'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | boolean',
+      default: 'newTab',
+      description: {
+        ko: '라벨 뒤의 표식. true는 newTab이면 상자를 벗어나는 화살표를, 아니면 사슬을 그립니다. 노드를 주면 그 글리프로 바뀝니다',
+        en: 'The mark after the label. true draws the arrow leaving its box when newTab is on and the chain otherwise; a node replaces the glyph'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: 'screen reader용 문장의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the line for a screen reader is written in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'a 대신 다른 요소로 렌더링합니다 — 대개 router가 주는 Link. href는 그대로 전달되므로 한 번만 쓰면 됩니다',
+        en: 'Renders something other than an a — the Link a router brings, most of the time. href still goes through, so it is written once'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '링크의 라벨', en: 'The label' }
+    }
+  ],
+
+  ChatBubble: [
+    {
+      name: 'side',
+      type: "'start' | 'end'",
+      default: "'start'",
+      description: {
+        ko: '누구의 메시지인지. 줄이 어느 방향으로 흐르고 어느 모서리를 짧게 자를지를 정합니다',
+        en: 'Whose message this is. Decides which way the row runs and which corner of the sheet is cut short'
+      }
+    },
+    {
+      name: 'name',
+      type: 'ReactNode',
+      description: { ko: '보낸 사람. 말풍선 위에 놓입니다', en: 'Who sent it, above the bubble' }
+    },
+    {
+      name: 'time',
+      type: 'ReactNode',
+      description: { ko: '보낸 시각. 이름 옆에 놓입니다', en: 'When it was sent, beside the name' }
+    },
+    {
+      name: 'avatar',
+      type: 'ReactNode',
+      description: {
+        ko: '보낸 사람의 그림 — 보통 Avatar. 없으면 말풍선이 줄 전체를 씁니다',
+        en: 'The sender’s picture — an Avatar. Left out, the bubble takes the whole row'
+      }
+    },
+    {
+      name: 'status',
+      type: "'sending' | 'sent' | 'delivered' | 'read' | 'failed'",
+      description: {
+        ko: '전달 상태. 말풍선 아래에 표식으로 그려집니다. 없으면 아무것도 그리지 않습니다',
+        en: 'How far the message has got, drawn as a mark under the bubble. Left out, nothing is drawn'
+      }
+    },
+    {
+      name: 'statusLabel',
+      type: 'string',
+      description: {
+        ko: '표식을 읽어 줄 단어를 직접 씁니다',
+        en: 'Overrides the word the mark is read out as'
+      }
+    },
+    {
+      name: 'typing',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '메시지 대신 점 세 개를 그립니다. children은 그대로 두므로 같은 말풍선이 다시 돌아올 수 있습니다',
+        en: 'Draws the three dots instead of the message. children is left alone, so the same bubble can go back to it'
+      }
+    },
+    {
+      name: 'media',
+      type: 'ReactNode',
+      description: {
+        ko: '사진·영상·지도. 텍스트 위에 가장자리까지 채워 그려지고 말풍선의 모서리가 잘라 냅니다',
+        en: 'A picture, a video, a map — drawn edge to edge above the text, cropped by the bubble’s corners'
+      }
+    },
+    {
+      name: 'preview',
+      type: 'ChatBubbleLinkPreview',
+      description: {
+        ko: '메시지 안의 링크를 카드로 펼칩니다. url · title · description · image · site · newTab',
+        en: 'A link in the message, unfurled into a card: url · title · description · image · site · newTab'
+      }
+    },
+    {
+      name: 'actions',
+      type: 'ReactNode',
+      description: {
+        ko: '메시지의 액션 — 보통 Menu의 trigger. 말풍선 옆에 놓이고, 줄에 hover나 focus가 오기 전까지는 비켜서 있습니다',
+        en: 'The message’s own actions — usually a Menu trigger. Sits beside the bubble and stays out of the way until the row is hovered or focused'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '표식을 읽어 주는 언어. BCP 47 태그. 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the marks are read out in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '말풍선 표면의 무게. 내 메시지를 구분하는 보통의 방법이 solid입니다. side가 이것을 정하지 않는 것은 의도한 것입니다',
+        en: 'Weight of the bubble’s surface. solid is the usual way to tell your own messages apart; side deliberately does not decide it'
+      },
+      densityDescription: {
+        ko: '말풍선 안쪽 여백만 바꿉니다',
+        en: 'Padding inside the bubble, and nothing else'
+      }
+    }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '메시지', en: 'The message' }
+    }
+  ],
+
+  Spoiler: [
+    {
+      name: 'revealed',
+      type: 'boolean',
+      description: {
+        ko: '내용이 열려 있는지. 직접 제어할 때 씁니다',
+        en: 'Whether the content is uncovered. Pass it to drive the Spoiler yourself'
+      }
+    },
+    {
+      name: 'defaultRevealed',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제어하지 않을 때의 시작 상태',
+        en: 'Where an uncontrolled Spoiler starts'
+      }
+    },
+    {
+      name: 'onRevealedChange',
+      type: '(revealed: boolean) => void',
+      description: {
+        ko: '열기 또는 닫기 버튼을 눌렀을 때',
+        en: 'Called when the reveal or hide button is pressed'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '기본 라벨과 안내 문구의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the default label and notice are written in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '열기 버튼의 라벨. 기본값은 locale이 정합니다',
+        en: 'The reveal button’s label. Defaults to the locale’s word for it'
+      }
+    },
+    {
+      name: 'hideLabel',
+      type: 'ReactNode',
+      description: {
+        ko: 'reversible일 때 닫기 버튼의 라벨',
+        en: 'The hide button’s label, when reversible is on'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode | false',
+      description: {
+        ko: '버튼 위의 안내 문구. 기본값은 locale이 정하고, false면 아무것도 쓰지 않습니다',
+        en: 'The line above the button. Defaults to the locale’s wording; false writes nothing at all'
+      }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '기본 열기 버튼을 통째로 바꿉니다. 이 경우 revealed와 onRevealedChange로 직접 제어해야 합니다',
+        en: 'Replaces the default reveal button entirely. The replacement is yours to wire up through revealed and onRevealedChange'
+      }
+    },
+    {
+      name: 'reversible',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '열고 난 뒤 다시 닫을 수 있게 아래에 닫기 버튼을 둡니다',
+        en: 'Keeps the content coverable: once revealed, a hide button appears under it'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '가려진 상자의 높이를 제한합니다. CSS 길이 또는 픽셀 수. 열면 풀립니다',
+        en: 'Clamps the covered box to this height — a CSS length, or a number in pixels. Revealing releases it'
+      }
+    },
+    {
+      name: 'blur',
+      type: 'number',
+      default: '10',
+      description: { ko: '흐림의 세기(px)', en: 'How hard the content is blurred, in pixels' }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '내용 주변의 여백. 사진이나 영상처럼 가장자리까지 채워야 할 때 끕니다',
+        en: 'Inner padding around the content. Turn it off for something that should reach the edges'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '상자 표면의 무게. text는 상자를 그리지 않습니다',
+        en: 'Weight of the box’s surface. text draws no box at all'
+      },
+      sizeDescription: {
+        ko: '시트의 반경과 그 위 버튼의 크기',
+        en: 'The sheet’s radius, and the size of the button on it'
+      },
+      densityDescription: {
+        ko: '덮개의 문구와 버튼 주위 여백만 바꿉니다',
+        en: 'Padding around the cover’s own text and button, and nothing else'
+      }
+    }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '가려지는 내용', en: 'What is being covered' }
+    }
   ]
 };

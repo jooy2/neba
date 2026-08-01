@@ -587,6 +587,40 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Links
+ *
+ * `<a>` is, with `<td>`, one of the two tags a host stylesheet still styles by
+ * name — Tailwind Typography's `.prose a`, VitePress's own `.vp-doc a`, every
+ * CSS framework ever written — and always as a class plus a type, which is a
+ * specificity a one-class utility cannot reach. Table answered this by moving
+ * its cell padding inline. A link cannot: half of what it draws only exists on
+ * `:hover`, and inline styles have no `:hover`.
+ *
+ * So the selector is doubled instead. `.neba-link.neba-link` is two classes and
+ * matches nothing extra, which puts these declarations above a host's `a` rule
+ * and still below anything a caller writes with two classes of their own. Only
+ * the invariants are here — the parts of a TextLink that no prop changes. The
+ * colour and whether the line is drawn at all stay in the component, written
+ * through the same doubled class.
+ *
+ * The thickness has a `max()` floor because a hairline that lands between two
+ * device pixels is antialiased into a grey smudge: 0.055em is a real line from
+ * about 18px up, and 1px below that.
+ * ------------------------------------------------------------------------- */
+
+.neba-link.neba-link {
+  font-weight: inherit;
+  text-decoration-thickness: max(1px, 0.055em);
+  text-underline-offset: 0.2em;
+  text-underline-position: from-font;
+  text-decoration-color: var(--n-underline);
+}
+
+.neba-link.neba-link:hover {
+  text-decoration-color: var(--n-underline-hover);
+}
+
+/* ---------------------------------------------------------------------------
  * Grid
  *
  * A column is `(100% + gap) * span / columns - gap` wide, and an offset shifts
@@ -899,6 +933,35 @@
   animation-delay: calc(var(--n-i, 0) * 120ms);
 }
 
+/*
+ * The three dots under a message somebody is still typing.
+ *
+ * The same idea as the plates and held to the same rule: colour only, delayed
+ * per dot by its own index. Dots that bounce are what every other chat UI does,
+ * and a thread is read while this is running — something jumping in the corner
+ * of the page you are reading is the one kind of motion the design language has
+ * no time for.
+ *
+ * `currentColor` rather than a token, because a bubble's ink is white on
+ * `solid` and the page's own on the other two.
+ */
+@keyframes neba-typing {
+  0%,
+  60%,
+  100% {
+    background-color: color-mix(in oklab, currentColor 28%, transparent);
+  }
+  30% {
+    background-color: currentColor;
+  }
+}
+
+.neba-typing-dot {
+  background-color: color-mix(in oklab, currentColor 28%, transparent);
+  animation: neba-typing 1.25s var(--neba-ease) infinite;
+  animation-delay: calc(var(--n-i, 0) * 160ms);
+}
+
 /* The reduced-motion stand-in for the sweep: the segment stops travelling and
    the whole groove pulses instead. Colour, which is the axis every other state
    in the library already uses. */
@@ -943,5 +1006,12 @@
 
   .neba-plate-wave {
     animation-duration: 2.4s;
+  }
+
+  /* Slowed rather than stopped, for the reason the indicators are: three dots
+     holding still say the message has stalled, which is the opposite of what
+     they are there for. */
+  .neba-typing-dot {
+    animation-duration: 2.6s;
   }
 }

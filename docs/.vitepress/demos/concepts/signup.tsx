@@ -146,11 +146,8 @@ const HEARD_FROM = [
   { value: 'other', label: 'Somewhere else' }
 ];
 
-const PERKS = [
-  '14 days of the Team plan, then Free forever',
-  'Unlimited projects while you are trying it',
-  'Delete the workspace and everything in it with one click'
-];
+/** Short on purpose: a `ListItem` truncates rather than wrapping. */
+const PERKS = ['14 days of Team, then Free', 'Unlimited projects', 'Delete it all in one click'];
 
 /** Roughly how strong a password is, on the four rules worth checking. */
 function strengthOf(password: string): {

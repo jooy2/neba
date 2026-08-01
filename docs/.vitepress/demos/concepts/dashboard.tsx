@@ -302,6 +302,9 @@ const STATUS_COLOR: Record<OrderStatus, 'success' | 'info' | 'primary' | 'danger
   Refunded: 'danger'
 };
 
+/** "1 order", "3 orders" — a count in a sentence still has to read as one. */
+const orders = (count: number) => `${count} ${count === 1 ? 'order' : 'orders'}`;
+
 const LOW_STOCK = [
   { name: 'Field Notebook, A5', left: 4, of: 60 },
   { name: 'Enamel Mug, 350ml', left: 9, of: 120 },
@@ -389,11 +392,11 @@ function DashboardBody() {
         />
       )
     },
-    { key: 'reference', label: 'Order', width: 110 },
+    { key: 'reference', label: 'Order', width: 96 },
     {
       key: 'customer',
       label: 'Customer',
-      width: 190,
+      width: 160,
       render: (row) => (
         <span className="flex items-center gap-2">
           <Avatar size="xs" name={row.customer} color="secondary" />
@@ -401,7 +404,7 @@ function DashboardBody() {
         </span>
       )
     },
-    { key: 'channel', label: 'Channel', width: 150 },
+    { key: 'channel', label: 'Channel', width: 130 },
     {
       key: 'status',
       label: 'Status',
@@ -412,12 +415,12 @@ function DashboardBody() {
         </Chip>
       )
     },
-    { key: 'total', label: 'Total', align: 'end', width: 110 },
+    { key: 'total', label: 'Total', align: 'end', width: 96 },
     {
       key: 'actions',
       label: '',
       align: 'end',
-      width: 56,
+      width: 48,
       render: (row) => (
         <Menu
           size="sm"
@@ -567,10 +570,12 @@ function DashboardBody() {
               Stock levels were last synced 14 minutes ago.
             </Alert>
 
-            {/* The numbers this screen opens with. */}
+            {/* The numbers this screen opens with — two per row at every width,
+              because the work area is narrower than the viewport the
+              breakpoints are measured against. */}
             <GridContainer spacing={3} padded={false}>
               {STATS.map((stat) => (
-                <Grid key={stat.label} span={{ xs: 6, lg: 3 }}>
+                <Grid key={stat.label} span={6}>
                   <Statistic
                     label={stat.label}
                     value={stat.value}
@@ -630,7 +635,7 @@ function DashboardBody() {
                       toast.add({
                         color: 'success',
                         title: 'Marked as fulfilled',
-                        description: `${selected.length} orders`
+                        description: orders(selected.length)
                       });
                       setSelected([]);
                     }}
@@ -645,7 +650,7 @@ function DashboardBody() {
                         Cancel orders
                       </Button>
                     }
-                    title={`Cancel ${selected.length} orders?`}
+                    title={`Cancel ${orders(selected.length)}?`}
                     description="Payment is released back to the customer straight away."
                     actions={
                       <>
@@ -731,7 +736,7 @@ function DashboardBody() {
 
             {/* The bottom row: what is running, what happened, what is set. */}
             <GridContainer spacing={3} padded={false}>
-              <Grid span={{ xs: 12, lg: 4 }}>
+              <Grid span={{ xs: 12, md: 4 }}>
                 <Card
                   size="sm"
                   className="h-full"
@@ -754,7 +759,7 @@ function DashboardBody() {
                 </Card>
               </Grid>
 
-              <Grid span={{ xs: 12, lg: 4 }}>
+              <Grid span={{ xs: 12, md: 4 }}>
                 <Card size="sm" className="h-full" title="Today" subtitle="Warehouse activity">
                   <Timeline size="sm" density="compact" active={2} color="primary">
                     <TimelineItem title="Picking started" meta="08:10">
@@ -770,7 +775,7 @@ function DashboardBody() {
                 </Card>
               </Grid>
 
-              <Grid span={{ xs: 12, lg: 4 }}>
+              <Grid span={{ xs: 12, md: 4 }}>
                 <Card
                   size="sm"
                   className="h-full"

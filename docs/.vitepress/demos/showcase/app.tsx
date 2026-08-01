@@ -13,6 +13,7 @@ import {
   ButtonGroup,
   Card,
   Carousel,
+  ChatBubble,
   Checkbox,
   Chip,
   Combobox,
@@ -55,6 +56,7 @@ import {
   Select,
   Shortcut,
   Slider,
+  Spoiler,
   Statistic,
   Switch,
   Tab,
@@ -62,6 +64,7 @@ import {
   TabPanel,
   Tabs,
   TextField,
+  TextLink,
   TimePicker,
   Timeline,
   TimelineItem,
@@ -861,6 +864,62 @@ function ShowcaseBody() {
                 </List>
               </Card>
             </div>
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <Caption>ChatBubble · Spoiler · TextLink</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card size="sm" title="Support" subtitle="Thread 4192 · open">
+              <div className="flex flex-col gap-3">
+                <ChatBubble
+                  size="sm"
+                  avatar={<Avatar size="xs" name="Jane Doe" />}
+                  name="Jane"
+                  time="09:41"
+                >
+                  The deploy went out but the cache never warmed.
+                </ChatBubble>
+                <ChatBubble
+                  size="sm"
+                  side="end"
+                  variant="solid"
+                  time="09:43"
+                  status="read"
+                  preview={{
+                    url: '#runbook',
+                    site: 'docs.internal',
+                    title: 'Runbook · Warming the cache'
+                  }}
+                >
+                  Found it — the hook ran before the build finished.
+                </ChatBubble>
+                <ChatBubble size="sm" avatar={<Avatar size="xs" name="Jane Doe" />} typing />
+              </div>
+            </Card>
+
+            <Card size="sm" title="Release notes" subtitle="8f2c1a">
+              <div className="flex flex-col gap-3">
+                <Typography level="body">
+                  The full write-up is in the{' '}
+                  <TextLink href="#runbook" color="primary">
+                    runbook
+                  </TextLink>
+                  , and the incident is filed under{' '}
+                  <TextLink href="#incidents" newTab>
+                    incidents
+                  </TextLink>
+                  .
+                </Typography>
+
+                <Spoiler size="sm" description="Contains the incident timeline" maxHeight={72}>
+                  <Typography level="caption">
+                    09:31 queued · 09:33 built · 09:36 the hook fired against a half-built bundle ·
+                    09:37 live, cold · 09:44 warmed by hand.
+                  </Typography>
+                </Spoiler>
+              </div>
+            </Card>
           </div>
         </section>
 

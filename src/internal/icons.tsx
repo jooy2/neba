@@ -211,6 +211,57 @@ export function ArrowRightIcon() {
 }
 
 /**
+ * The two marks a link wears.
+ *
+ * A pair for the same reason the steppers are: they answer the same question —
+ * "where does this go" — and a chain drawn at one weight beside an arrow drawn
+ * at another reads as two icon sets in one paragraph. The chain says "this is a
+ * link", the arrow leaving its box says "and it leaves this page", which is the
+ * one thing about a link that is invisible until it has already happened.
+ *
+ * TextLink draws whichever one matches its `newTab`; a ChatBubble's link
+ * preview draws the chain beside the site it points at.
+ */
+export function LinkIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M6.5 9.5a2.75 2.75 0 0 0 4 .25l1.75-1.75a2.75 2.75 0 0 0-3.9-3.9L7.75 5.2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.5 6.5a2.75 2.75 0 0 0-4-.25L3.75 8a2.75 2.75 0 0 0 3.9 3.9l.6-.6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M12.75 9.25v2.5a1.5 1.5 0 0 1-1.5 1.5h-7a1.5 1.5 0 0 1-1.5-1.5v-7a1.5 1.5 0 0 1 1.5-1.5h2.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.5 2.75h3.75V6.5M7.25 8.75l5.75-5.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
  * The three dots that stand for what has been left out.
  *
  * Drawn rather than typed: `…` is a single glyph whose dots are spaced by
