@@ -19,10 +19,17 @@ const REGIONS = [
  * Two rows rather than one card, because one card only shows the half of the
  * library that takes input. The settings panel is the screen almost every app
  * ends up with; the band under it is what the same page reports back.
+ *
+ * The two grids inside reflow on `@container` and not on `sm:`, because a
+ * viewport breakpoint answers the wrong question here. The hero's image slot is
+ * whatever is left after a 592px column of type, so between 960px and about
+ * 1180px the viewport is wide while this column is 240px — and a `sm:`
+ * two-column grid would hold a min-content width the column cannot give it and
+ * lay the panel over the heading. Sized against the container, it stacks.
  */
 export default function HomeHero() {
   return (
-    <div className="flex w-full max-w-[32rem] flex-col gap-3">
+    <div className="@container flex w-full max-w-[32rem] flex-col gap-3">
       <Card
         dividers
         elevation={3}
@@ -31,7 +38,7 @@ export default function HomeHero() {
         footer={<Button fullWidth>Save changes</Button>}
       >
         <div className="flex flex-col gap-3">
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 @md:grid-cols-2">
             <TextField label="Project name" defaultValue="Acme Web" fullWidth />
             <Select items={REGIONS} label="Region" defaultValue="icn" fullWidth />
           </div>
@@ -39,7 +46,7 @@ export default function HomeHero() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid gap-3 @xs:grid-cols-3">
         <Statistic size="sm" elevation={2} label="Deploys" value={128} previousValue={112} />
         <Statistic size="sm" elevation={2} label="p95" value="84ms" />
         <Statistic

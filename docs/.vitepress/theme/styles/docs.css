@@ -345,12 +345,25 @@
 }
 
 /*
- * Below 960px the hero stacks, and the default order puts the image above the
- * text. That is right for a logo and wrong for a panel this tall: a visitor
- * would land on somebody else's settings form with the name of the library a
- * full screen below it. The heading goes first and the composition follows.
+ * The hero goes side by side at 1152px, not at the theme's 960px.
+ *
+ * The image slot is whatever is left over after a 592px column of type, so at
+ * 960px it is 240px wide — a panel narrower than one of its own fields, standing
+ * beside a 56px heading. 1152px is the hero container's own maximum and the
+ * first width where the slot is worth splitting off: 432px, about two thirds of
+ * the heading beside it. Below that the hero stacks, which is the arrangement
+ * the theme already falls back to on a phone.
+ *
+ * The order is reversed while it is stacked: the default puts the image first,
+ * which is right for a logo and wrong for a panel this tall — a visitor would
+ * land on somebody else's settings form with the name of the library a screen
+ * below it.
  */
-@media (max-width: 959px) {
+@media (max-width: 1151px) {
+  .VPHome .VPHero .container {
+    flex-direction: column;
+  }
+
   .VPHome .VPHero .main {
     order: 1;
   }
@@ -361,9 +374,32 @@
   }
 }
 
+/*
+ * From 960px the theme nudges the slot up and left by 32px, which is optical
+ * centring for a logo inside a round glow. A card is centred by its own box, so
+ * the offset only ever takes it out of line — with the heading's left edge while
+ * the hero is stacked, and with the layout's right gutter once it is not.
+ */
 @media (min-width: 960px) {
+  .VPHome .VPHero .image-container {
+    transform: none;
+  }
+}
+
+/*
+ * Side by side, the composition is centred against the column of text rather
+ * than hung from the top of it. The slot's height is `auto` above, which is
+ * right while the hero is stacked and is what makes `align-items: center` a
+ * no-op — a box the height of its own contents has no spare room to centre them
+ * in.
+ */
+@media (min-width: 1152px) {
   .VPHome .VPHero .image {
     margin: 0;
+  }
+
+  .VPHome .VPHero .image-container {
+    height: 100%;
   }
 }
 
@@ -389,6 +425,20 @@
 .neba-home-hero .neba-demo-mount {
   display: flex;
   justify-content: center;
+}
+
+/*
+ * Between 960px and the point where the hero splits into two columns, the theme
+ * has already stopped centring the heading but the composition is still stacked
+ * under it — so it lines up with the heading's left edge rather than with the
+ * middle of a page whose text is not centred. This has to sit after the rule
+ * above rather than up with the rest of the hero: same specificity, and the
+ * later one wins.
+ */
+@media (min-width: 960px) and (max-width: 1151px) {
+  .neba-home-hero .neba-demo-mount {
+    justify-content: flex-start;
+  }
 }
 
 /* Live bands inside the home page's Markdown body sit in `.vp-doc`-less
