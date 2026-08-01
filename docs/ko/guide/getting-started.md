@@ -80,7 +80,7 @@ export default function App() {
 ## 다음으로
 
 - [모든 컴포넌트](../components/) — 배포된 컴포넌트를 한 페이지에서
-- [예제](../examples/) — 한 화면 안에서 함께 쓰인 모습
+- [예제](../examples/overview) — 한 화면 안에서 함께 쓰인 모습
 - [Prop 규약](../design/prop-conventions) — 모든 컴포넌트가 공유하는 prop의 의미
 - [디자인 언어](../design/design-language) — 표면·색·모션이 왜 이렇게 생겼는지
 

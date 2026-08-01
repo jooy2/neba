@@ -145,6 +145,7 @@ docs/.vitepress/
   demos/{component}/*.tsx   # one file per example — real, runnable React
                             # folder name matches the component's own, lowercased
   demos/home/hero.tsx       # the home page's hero object
+  demos/concepts/*.tsx      # one whole fictional screen per file, for Examples
   theme/
     components/Layout.vue   # the default layout + the live home hero
     components/Demo.vue     # the React island + the show-code toggle
@@ -156,15 +157,16 @@ docs/{ko,en}/
   guide/getting-started.md  # install and set up — the only page in Guide
   components/index.md       # the index grid of every component
   components/{group}/*.md   # one page per component, grouped (display, feedback, inputs, surfaces)
-  examples/index.md         # every component on one sample screen
+  examples/overview.md      # every component on one sample screen
+  examples/concept-*.md     # one fictional screen per page (landing, dashboard, signup)
   design/*.md               # design language, colour, prop conventions
   changelog.md              # generated from the root CHANGELOG.md; git-ignored
 ```
 
 **The sidebar is four sections: Guide, Components, Design, Discover more** — with the component groups kept as headings inside Components. Almost none of that can be stated by the folder tree, so `arrangeSidebar` in `config.ts` reshapes the generated menu once per locale:
 
-- **The index page is an entry, not the heading's link.** Left to the generator, `/components/` is only reachable by clicking the word "Components" above the menu, which does not look like a link. It becomes a row of its own — the same shape Examples has — and the heading stops being clickable. `groupLabels.overview` names it ("All components" / "모든 컴포넌트"), because the page's own title is "Components" and a row repeating the heading directly above it says nothing.
-- **Examples** keeps its own top-level URL but reads as part of Components. A page nested in the menu and not in the filesystem is exactly the case a generated sidebar has no way to state.
+- **The index page is an entry, not the heading's link.** Left to the generator, `/components/` is only reachable by clicking the word "Components" above the menu, which does not look like a link. It becomes a row of its own and the heading stops being clickable. `groupLabels.overview` names it ("All components" / "모든 컴포넌트"), because the page's own title is "Components" and a row repeating the heading directly above it says nothing.
+- **Examples** keeps its own top-level URLs but reads as part of Components. A group nested in the menu and not in the filesystem is exactly the case a generated sidebar has no way to state. It has **no `index.md` on purpose** — `/examples/` is four pages, one whole screen each, and an index listing only those four would be a row of links standing where the heading already is. `groupLabels.examples` names it, and the nav points at `examples/overview`. It is also the one subgroup inside Components that is not flattened.
 - **The component groups stay** — they are what say that a Combobox is an input and a Card is a surface, and fifty pages in one list say nothing. What is flattened is only what is _inside_ a group, so a folder that gains a subfolder does not push its pages a level deeper.
 - **Inside a group the pages are sorted by name**, not by their `order` frontmatter. A group holds up to nineteen components and nobody remembers where Slider sits in a curated order. `order` still decides inside Design.
 - **Design and Discover more are named in `groupLabels`**, because neither has an `index.md` to take a heading from and the generated fallback would put an English word over Korean pages. The component groups take their heading from the folder name and stay English in every locale.

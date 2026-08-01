@@ -80,7 +80,7 @@ For light, use `data-theme="light"` or `class="light"`. `.dark` is supported alo
 ## Next
 
 - [All components](../components/) — everything released, on one page
-- [Examples](../examples/) — the components together on a single screen
+- [Examples](../examples/overview) — the components together on a single screen
 - [Prop conventions](../design/prop-conventions) — what the shared props mean
 - [Design language](../design/design-language) — why the surfaces, colours and motion look like this
 

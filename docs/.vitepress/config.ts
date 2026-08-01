@@ -59,25 +59,38 @@ const commonSidebarConfig: VitePressSidebarOptions = {
   useTitleFromFileHeading: true,
   useTitleFromFrontmatter: true,
   useFolderTitleFromIndexFile: true,
-  // Without this a folder whose only child is its `index.md` — `examples/` —
-  // becomes a sidebar label that goes nowhere, and the components group stops
-  // linking to the index page that lists them all.
+  // Without this the components group stops linking to the index page that
+  // lists them all. `examples/` deliberately has no `index.md`, so it stays a
+  // heading with its pages under it — see `groupLabels`.
   useFolderLinkFromIndexFile: true,
   frontmatterOrderDefaultValue: 9,
   sortMenusByFrontmatterOrder: true
 };
 
 /**
- * The two sidebar groups the folder tree cannot name.
+ * The sidebar groups the folder tree cannot name.
  *
- * `design/` has no `index.md` and the changelog is a loose page, so neither can
- * take its heading from a page the way every other group does. Left to the
- * generator, `design/` would be capitalised to "Design" over Korean pages and
- * the changelog would sit at the root with no heading over it at all.
+ * `design/` and `examples/` have no `index.md` and the changelog is a loose
+ * page, so none of them can take its heading from a page the way every other
+ * group does. Left to the generator, `design/` would be capitalised to "Design"
+ * over Korean pages and the changelog would sit at the root with no heading
+ * over it at all.
+ *
+ * `examples/` has no index on purpose: `/examples/` is not a page, it is four
+ * of them — one screen each — and an index that only listed the four would be a
+ * row of links standing where the heading already is.
  */
-const groupLabels: Record<string, { overview: string; design: string; more: string }> = {
-  en: { overview: 'All components', design: 'Design', more: 'Discover more' },
-  ko: { overview: '모든 컴포넌트', design: '디자인', more: '더 알아보기' }
+const groupLabels: Record<
+  string,
+  { overview: string; examples: string; design: string; more: string }
+> = {
+  en: {
+    overview: 'All components',
+    examples: 'Examples',
+    design: 'Design',
+    more: 'Discover more'
+  },
+  ko: { overview: '모든 컴포넌트', examples: '예제', design: '디자인', more: '더 알아보기' }
 };
 
 const vitePressSidebarConfig = [
@@ -95,7 +108,9 @@ const vitePressSidebarConfig = [
 const navFor = (lang: string, labels: [string, string, string]) => [
   { text: labels[0], link: `${localeBase(lang)}guide/getting-started` },
   { text: labels[1], link: `${localeBase(lang)}components/` },
-  { text: labels[2], link: `${localeBase(lang)}examples/` }
+  // `/examples/` is a group heading rather than a page, so the nav points at
+  // the one page inside it that shows everything at once.
+  { text: labels[2], link: `${localeBase(lang)}examples/overview` }
 ];
 
 const vitePressI18nConfig: VitePressI18nOptions = {
@@ -276,13 +291,15 @@ function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
  * - **The index page is an entry rather than the heading's link.** Left to the
  *   generator, `/components/` is only reachable by clicking the word
  *   "Components" above the menu, which does not look like a link and is easy to
- *   miss. It becomes a row of its own — the same shape Examples has — and the
- *   heading above it stops being clickable. `groupLabels` names it, because the
+ *   miss. It becomes a row of its own and the heading above it stops being
+ *   clickable. `groupLabels` names it, because the
  *   page's own title is "Components" and a row reading the same word as the
  *   heading directly above it says nothing.
- * - **Examples** keeps its own top-level URL (`/examples/`) but reads as part of
- *   Components. A page nested in the menu and not in the filesystem is exactly
- *   the case a generated sidebar has no way to state.
+ * - **Examples** keeps its own top-level URLs (`/examples/*`) but reads as part
+ *   of Components. A group nested in the menu and not in the filesystem is
+ *   exactly the case a generated sidebar has no way to state. It is the one
+ *   subgroup that is *not* flattened, since its pages are whole screens rather
+ *   than components and there are only four of them.
  * - **The component groups stay.** They are what say that a Combobox is an
  *   input and a Card is a surface, and fifty component pages in one list say
  *   nothing at all. What is flattened is only what is *inside* a group: the
@@ -327,6 +344,10 @@ function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string
       ...loose,
       ...groups
     ];
+  }
+
+  if (examples) {
+    examples.text = labels.examples;
   }
 
   if (design) {

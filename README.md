@@ -6,7 +6,7 @@
 
 ### 📘 [**neba.cdget.com**](https://neba.cdget.com)
 
-[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/examples/)
+[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/examples/overview)
 
 Live previews and full props for every component. This README is just the quick start.
 
@@ -32,7 +32,7 @@ Everything is documented at **[neba.cdget.com](https://neba.cdget.com)**, where 
 | --- | --- |
 | [**Getting started**](https://neba.cdget.com/guide/getting-started) | Install and setup, end to end. |
 | [**All components**](https://neba.cdget.com/components/) | Every component, one page each: live previews and the full props table. |
-| [**Examples**](https://neba.cdget.com/examples/) | A whole sample screen, explained block by block. |
+| [**Examples**](https://neba.cdget.com/examples/overview) | A whole sample screen explained block by block, plus three concept screens — a landing page, an admin dashboard and a sign-up flow. |
 | [**Design language**](https://neba.cdget.com/design/design-language) | Why a Neba surface looks and behaves the way it does. |
 | [**Prop conventions**](https://neba.cdget.com/design/prop-conventions) | The shared vocabulary every component draws from. |
 | [**Color**](https://neba.cdget.com/design/color) | The token families, and how to theme them. |

@@ -17,7 +17,7 @@ hero:
       link: /components/
     - theme: alt
       text: Examples
-      link: /examples/
+      link: /examples/overview
   image:
     src: /logo-32.png
     alt: Neba
@@ -72,4 +72,4 @@ What follows is running inside this page. Type into it, and press save.
 
 <Demo src="showcase/app" />
 
-Per-component props and examples are under [Components](./components/); the same screen is explained block by block under [Examples](./examples/). Installing and wiring it up is one page: [Getting started](./guide/getting-started).
+Per-component props and examples are under [Components](./components/); the same screen is explained block by block under [Examples](./examples/overview). Installing and wiring it up is one page: [Getting started](./guide/getting-started).

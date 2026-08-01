@@ -12,6 +12,6 @@ aside: false
 
 ## Next
 
-- See them together on one screen under [Examples](../examples/).
+- See them together on one screen under [Examples](../examples/overview).
 - What the shared props mean is in [Prop conventions](../design/prop-conventions).
 - Why the surfaces, colours and motion look like this is in the [Design language](../design/design-language).

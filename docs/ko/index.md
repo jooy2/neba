@@ -17,7 +17,7 @@ hero:
       link: /ko/components/
     - theme: alt
       text: 예제
-      link: /ko/examples/
+      link: /ko/examples/overview
   image:
     src: /logo-32.png
     alt: Neba
@@ -72,4 +72,4 @@ features:
 
 <Demo src="showcase/app" />
 
-컴포넌트별 prop과 예시는 [컴포넌트](./components/) 문서에, 같은 화면의 전체 설명은 [예제](./examples/)에 있습니다. 설치와 설정은 [시작하기](./guide/getting-started)에서 한 페이지로 끝납니다.
+컴포넌트별 prop과 예시는 [컴포넌트](./components/) 문서에, 같은 화면의 전체 설명은 [예제](./examples/overview)에 있습니다. 설치와 설정은 [시작하기](./guide/getting-started)에서 한 페이지로 끝납니다.
