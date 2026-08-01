@@ -151,11 +151,14 @@ docs/.vitepress/
   demos/home/hero.tsx       # the home page's hero object
   demos/concepts/*.tsx      # one whole fictional screen per file, for Examples
   theme/
-    components/Layout.vue   # the default layout + the live home hero
+    components/Layout.vue   # the default layout + the home page's mark and live hero
     components/Demo.vue     # the React island + the show-code toggle
     components/PropsTable.vue
     styles/index.css        # Tailwind (no Preflight) + tokens + docs chrome
     styles/scope.css        # Preflight, cut down and scoped to `.neba-scope`
+    styles/docs.css         # the docs' own furniture: Demo frame, props table, home
+    custom.css              # the default theme's shell: sidebar, article and outline widths
+docs/public/                # served at `/` — the mark, the icons, llms.txt
 docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
   guide/getting-started.md  # install and set up — the only page in Guide
@@ -175,7 +178,15 @@ docs/{ko,en}/
 - **Inside a group the pages are sorted by name**, not by their `order` frontmatter. A group holds up to nineteen components and nobody remembers where Slider sits in a curated order. `order` still decides inside Design.
 - **Design and Discover more are named in `groupLabels`**, because neither has an `index.md` to take a heading from and the generated fallback would put an English word over Korean pages. The component groups take their heading from the folder name and stay English in every locale.
 
-The groups are folders: `display` (Typography, Divider, Chip, Table, List, Badge), `feedback` (Alert, Dialog, Toast, Tooltip, ProgressLinear, ProgressCircular, ProgressBox), `inputs` (Button, ButtonGroup, TextField, Select, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination), `layout` (Container, Grid + GridContainer), `surfaces` (Box, Card, Accordion, Tabs). `layout` is separate from `surfaces` because nothing in it draws a sheet: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page.
+The groups are folders, and which one a component belongs in is decided by what it does rather than by what it looks like:
+
+- **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination, DatePicker, TimePicker, DateTimePicker, DateRangePicker.
+- **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, Statistic, List, Table, Timeline, Breadcrumb, TreeView.
+- **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox.
+- **`surfaces`** — it draws a sheet and holds other things on it. Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble.
+- **`layout`** — it decides where things go and draws nothing. Container, Grid + GridContainer, Panes.
+
+`layout` is separate from `surfaces` for that last reason: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page.
 
 **The changelog is generated, not written.** There is one `CHANGELOG.md` and it lives at the repository root, where npm and anyone browsing the repo expects it. `scripts/copy-changelog.mjs` writes it into `docs/{locale}/changelog.md` with the frontmatter the sidebar needs, and `npm run docs:dev` / `docs:build` run it first. The copies are git-ignored; never edit them.
 
@@ -194,8 +205,12 @@ Things that will bite:
 - The docs' `<Demo>` is client-only, so an SSR build renders an empty box and fills it on hydration.
 - **A preview mounts when it is on screen, not when the page loads.** A component page holds a dozen of them and mounting all at once put the one being read behind chunks for previews far below the fold. What is already visible is measured in `onMounted` and mounts straight away — an `IntersectionObserver` reports its first entry a task later, and the preview at the top of the page is what that task would delay — and everything else waits for the observer. React and its DOM renderer are fetched when `Demo.vue` is _evaluated_ rather than inside a lifecycle hook, so the largest download on the page starts during hydration instead of after it. The empty box holds `minHeight` (40px by default, a `<Demo>` prop), and it keeps holding it once the components are there, because a reserve that is dropped on arrival is the same jump twice.
 - **`optimizeDeps.include` is derived from `src/`, not written out.** Every `@base-ui/react` subpath is reached only through a demo, which is reached only through a dynamic import, so the dev server would discover them one preview at a time and re-optimize — reloading the page under whoever is reading it. `server.warmup` pre-transforms `src/**` for the same reason: the first preview otherwise asks for all hundred and ten modules at once, through the barrel. The demos are deliberately not warmed; there are two hundred of them.
+- **The lede is also the page's `<meta name="description">`.** `transformPageData` reads it out of the source, because VitePress otherwise gives every page the site's own description and a hundred and thirty-five pages ship one sentence between them. A page with no lede falls back to its first prose paragraph, which is why the guide and the design notes still get one. Write the lede as a sentence that stands alone in a search result and both jobs are done at once. Everything else a crawler reads — the canonical URL, the `hreflang` pair, Open Graph, the home page's JSON-LD — is assembled in `transformHead`, which runs **only in a build**: check it by reading a file under `docs-dist/`, never in the dev server. `robots.txt` is written there too, from `package.json`'s `homepage`, so the sitemap it names cannot drift from the sitemap that exists.
+- **The shell's own widths are in `theme/custom.css`.** The sidebar, the article and the outline are sized against each other, and the outline runs to `h3` — a component page is one `h2` with a dozen prop names under it. Every rule in that file overrides a Vue scoped style, so each selector deliberately carries one class more than it needs: a scoped rule compiles with a `[data-v-…]` on it, and an equally specific override would be decided by stylesheet order.
 
-Adding a component means five docs edits: a page under `components/{group}/` **in every locale**, its rows in `data/props.ts`, its demo files under `demos/`, a card in `demos/gallery/all.tsx`, and a place on the sample screen in `demos/showcase/app.tsx`. Only the first is per-locale; the demos and the props data are shared.
+Adding a component means seven edits: a page under `components/{group}/` **in every locale**, its rows in `data/props.ts`, its demo files under `demos/`, a card in `demos/gallery/all.tsx`, a place on the sample screen in `demos/showcase/app.tsx`, a line in `docs/public/llms.txt`, and its name in the right group under **Components** in [README.md](README.md). Only the first is per-locale; the demos and the props data are shared.
+
+The last two are the two that get forgotten, because nothing renders them and no build fails without them. Both are lists of every component the library has, read by someone — or something — deciding whether to use it at all: `llms.txt` is the whole site flattened for an agent, so a component missing from it does not exist as far as that reader is concerned. Neither has a generator; check them against `src/index.ts` when a release is being cut.
 
 ### How a component page is written
 

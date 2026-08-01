@@ -1,9 +1,10 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withSidebar } from 'vitepress-sidebar';
 import packageJson from '../../package.json' with { type: 'json' };
-import { defineConfig, UserConfig } from 'vitepress';
+import { defineConfig, HeadConfig, SiteData, TransformContext, UserConfig } from 'vitepress';
 import { withI18n } from 'vitepress-i18n';
 import ReactPlugin from '@vitejs/plugin-react-swc';
 import type { VitePressI18nOptions } from 'vitepress-i18n/types';
@@ -11,10 +12,18 @@ import type { VitePressSidebarOptions } from 'vitepress-sidebar/types';
 
 const vitePressDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(vitePressDir, '../..');
+const srcDir = resolve(rootDir, 'docs');
 
 const defaultLocale: string = 'en';
 const supportLocales: string[] = [defaultLocale, 'ko'];
 const editLinkPattern = `${packageJson.repository.url}/edit/main/docs/:path`;
+
+const siteUrl = packageJson.homepage.replace(/\/+$/, '');
+const repoUrl = packageJson.repository.url.replace(/\.git$/, '');
+const npmUrl = `https://www.npmjs.com/package/${packageJson.name}`;
+
+/** The card image. A square mark, which is why the Twitter card is `summary`. */
+const socialImage = `${siteUrl}/256x256.png`;
 
 /** A glob Vite can read on either platform — `resolve` gives Windows backslashes. */
 const glob = (pattern: string) => resolve(rootDir, pattern).replaceAll('\\', '/');
@@ -128,6 +137,209 @@ const vitePressI18nConfig: VitePressI18nOptions = {
   }
 };
 
+/* ---------------------------------------------------------------------------
+ * Search engines
+ *
+ * Two things a documentation site gets wrong by default, and both of them are
+ * per page rather than per site:
+ *
+ * - **Every page ships the same description.** VitePress falls back to the
+ *   site's own whenever a page declares none, so two hundred pages carry one
+ *   sentence between them and not one of them says what it is about. There is
+ *   already a better sentence on nearly every page — the lede under the title,
+ *   which is written to be exactly this — so it is read out of the source.
+ * - **Nothing says the two locales are the same page.** Without `hreflang` a
+ *   crawler has no reason to connect `/components/inputs/button` to its Korean
+ *   counterpart, and treats them as two documents competing for one query.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The BCP-47 tag the site itself declares for a locale — `en` → `en-US`.
+ *
+ * Read back off the resolved config rather than written out again, because
+ * VitePress's own sitemap already emits `hreflang` from exactly these values.
+ * Two spellings of the same locale across the two files is the one thing a
+ * crawler reads as a contradiction, and a hand-kept copy would be the way to
+ * get one.
+ */
+function langTagOf(siteData: SiteData, lang: string): string {
+  return siteData.locales[lang === defaultLocale ? 'root' : lang]?.lang ?? lang;
+}
+
+/** `en/components/inputs/button.md` → `/components/inputs/button`. */
+function pathOf(filePath: string): string {
+  const [lang, ...rest] = filePath.split('/');
+  const page = rest
+    .join('/')
+    .replace(/(^|\/)index\.md$/, '$1')
+    .replace(/\.md$/, '');
+
+  return `${localeBase(lang)}${page}`;
+}
+
+/** Everything below the locale folder — the part two locales have in common. */
+function pageOf(filePath: string): string {
+  return filePath.split('/').slice(1).join('/');
+}
+
+/** Inline Markdown and HTML dropped: a `<meta>` carries text and nothing else. */
+function plainText(source: string): string {
+  return source
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)]\([^)]*\)/g, '$1')
+    .replace(/[`*_]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Cut at a word boundary, to about what a result page will show whole. */
+function clamp(text: string, limit = 160): string {
+  if (text.length <= limit) {
+    return text;
+  }
+
+  const cut = text.slice(0, limit);
+
+  return `${cut.slice(0, cut.lastIndexOf(' ')).trimEnd()}…`;
+}
+
+/**
+ * A page's own one-line summary.
+ *
+ * The lede is what a component page opens with, and it already says what the
+ * component is and what it is for in one or two sentences. The pages that have
+ * none — the guide, the design notes — open with the same thing written as
+ * prose, so their first paragraph stands in.
+ */
+function summaryOf(filePath: string): string | undefined {
+  const file = resolve(srcDir, filePath);
+
+  if (!existsSync(file)) {
+    return undefined;
+  }
+
+  const source = readFileSync(file, 'utf8');
+  const lede = source.match(/<p class="neba-lede">([\s\S]*?)<\/p>/);
+
+  if (lede) {
+    return clamp(plainText(lede[1]));
+  }
+
+  // Frontmatter off, then the first block that is prose: not the title, not a
+  // fenced example, not one of the Vue components a page is built out of.
+  for (const block of source.replace(/^---\r?\n[\s\S]*?\r?\n---/, '').split(/\n\s*\n/)) {
+    const trimmed = block.trim();
+
+    if (!trimmed || /^[#<`:|>-]/.test(trimmed)) {
+      continue;
+    }
+
+    const text = plainText(trimmed);
+
+    if (text) {
+      return clamp(text);
+    }
+  }
+
+  return undefined;
+}
+
+/** The locales that actually have this page — a mirror is not a guarantee. */
+function localesWith(filePath: string): string[] {
+  const page = pageOf(filePath);
+
+  return supportLocales.filter((lang) => existsSync(resolve(srcDir, lang, page)));
+}
+
+/** What the package is, for the one page in each locale that is about it. */
+function structuredData(description: string, url: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    name: 'Neba',
+    description,
+    url,
+    codeRepository: repoUrl,
+    programmingLanguage: 'TypeScript',
+    runtimePlatform: 'React',
+    license: 'https://opensource.org/licenses/MIT',
+    author: { '@type': 'Organization', name: 'CDGet', url: 'https://cdget.com' },
+    sameAs: [repoUrl, npmUrl]
+  };
+}
+
+/**
+ * The half of the metadata that is different on every page.
+ *
+ * Only runs at build time — `transformPageData` is what the dev server sees —
+ * so the tags below are checked by reading a built page, not the preview.
+ */
+function transformHead({ pageData, siteData, title, description }: TransformContext): HeadConfig[] {
+  const { filePath } = pageData;
+
+  // A dynamic route, or the built-in 404: no source file, so no canonical URL
+  // and nothing to point an alternate at.
+  if (!filePath) {
+    return [];
+  }
+
+  const lang = filePath.split('/')[0];
+  const url = `${siteUrl}${pathOf(filePath)}`;
+  const translations = localesWith(filePath);
+
+  // Open Graph writes a BCP-47 tag with an underscore in it, and nothing else.
+  const ogLocale = (of: string) => langTagOf(siteData, of).replace('-', '_');
+
+  const head: HeadConfig[] = [
+    ['link', { rel: 'canonical', href: url }],
+    ['meta', { property: 'og:url', content: url }],
+    ['meta', { property: 'og:title', content: title }],
+    ['meta', { property: 'og:description', content: description }],
+    ['meta', { property: 'og:locale', content: ogLocale(lang) }],
+    ['meta', { name: 'twitter:title', content: title }],
+    ['meta', { name: 'twitter:description', content: description }]
+  ];
+
+  for (const other of translations) {
+    head.push([
+      'link',
+      {
+        rel: 'alternate',
+        hreflang: langTagOf(siteData, other),
+        href: `${siteUrl}${pathOf(`${other}/${pageOf(filePath)}`)}`
+      }
+    ]);
+
+    if (other !== lang) {
+      head.push(['meta', { property: 'og:locale:alternate', content: ogLocale(other) }]);
+    }
+  }
+
+  // Which one a crawler should serve to a reader it cannot place. The default
+  // locale is the one that is served from `/`.
+  if (translations.includes(defaultLocale)) {
+    head.push([
+      'link',
+      {
+        rel: 'alternate',
+        hreflang: 'x-default',
+        href: `${siteUrl}${pathOf(`${defaultLocale}/${pageOf(filePath)}`)}`
+      }
+    ]);
+  }
+
+  if (pageData.frontmatter.layout === 'home') {
+    head.push([
+      'script',
+      { type: 'application/ld+json' },
+      JSON.stringify(structuredData(description, url))
+    ]);
+  }
+
+  return head;
+}
+
 // Ref: https://vitepress.dev/reference/site-config
 const vitePressConfig: UserConfig = {
   title: 'Neba UI',
@@ -151,11 +363,57 @@ const vitePressConfig: UserConfig = {
   head: [
     ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/logo-32.png' }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/logo-16.png' }],
-    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }]
+    ['link', { rel: 'icon', type: 'image/png', sizes: '256x256', href: '/256x256.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/256x256.png' }],
+    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
+    // `--neba-primary-solid`, as a literal: a `<meta>` cannot read a custom
+    // property, and this is the one place in the site that has to repeat one.
+    ['meta', { name: 'theme-color', content: '#1a58d1' }],
+    // The half of the metadata that is the same on every page. The other half —
+    // the canonical URL, the title, the description, the locale alternates — is
+    // per page and lives in `transformHead`.
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'Neba UI' }],
+    ['meta', { property: 'og:image', content: socialImage }],
+    ['meta', { property: 'og:image:width', content: '256' }],
+    ['meta', { property: 'og:image:height', content: '256' }],
+    ['meta', { property: 'og:image:alt', content: 'Neba' }],
+    // `summary` and not `summary_large_image`: the image is a square mark, and
+    // a wide card would letterbox it into a strip of background.
+    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { name: 'twitter:image', content: socialImage }]
   ],
   sitemap: {
     hostname: packageJson.homepage
   },
+  /**
+   * `robots.txt`, written rather than committed.
+   *
+   * It exists to name the sitemap, and the sitemap's own URL is already derived
+   * from `package.json`. A copy of that host sitting in `public/` would be one
+   * more place to forget when the site moves — and a robots file pointing at a
+   * sitemap that is not there is worse than no robots file.
+   */
+  async buildEnd({ outDir }) {
+    await writeFile(
+      resolve(outDir, 'robots.txt'),
+      `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`
+    );
+  },
+  /**
+   * A description that is about this page rather than about the library.
+   *
+   * Runs in the dev server as well as in the build, which is what makes it the
+   * right place for the description — `transformHead` would have to repeat the
+   * fallback chain VitePress already applies to `pageData.description`, and
+   * would only be right in a production build.
+   */
+  transformPageData(pageData) {
+    if (!pageData.description && pageData.filePath) {
+      pageData.description = summaryOf(pageData.filePath) ?? '';
+    }
+  },
+  transformHead,
   /**
    * The docs render the real components, and the components are React. Every
    * live preview is a React island mounted by `theme/components/Demo.vue`, so
@@ -209,6 +467,19 @@ const vitePressConfig: UserConfig = {
   },
   themeConfig: {
     logo: { src: '/logo-32.png', width: 24, height: 24 },
+    /**
+     * `h2` and `h3`, nested.
+     *
+     * A component page is one `h2` — Examples — with a dozen `h3`s under it,
+     * one per prop. At the default depth the outline lists four words for a
+     * page that is forty screens long, and the thing a reader came for, the
+     * prop they are looking up, is never in it.
+     *
+     * Only `level` is set: `vitepress-i18n` puts the localised `label` on each
+     * locale's own `themeConfig`, and its merge is deep, so the two survive
+     * together.
+     */
+    outline: { level: [2, 3] },
     editLink: {
       pattern: editLinkPattern
     },

@@ -290,8 +290,38 @@
   mask-image: radial-gradient(120% 90% at 70% 20%, #000, transparent 72%);
 }
 
-/* The blob is sized for a logo's glow. The card in front of it is wider than
-   that, and a backdrop that stops at the card's edge is not a backdrop. */
+/*
+ * The mark, above the hero's title.
+ *
+ * A logo is the one thing on this page that is not a component, so it is the
+ * one thing that says whose components these are — and the hero already had
+ * nothing in the top-left corner but text. Drawn from the 256px source at a
+ * third of that, which is what keeps the diagonal crisp on a retina screen.
+ *
+ * `inline-block` rather than a block with `margin: 0 auto`: the hero centres
+ * its column below 960px and left-aligns it above, and an inline box follows
+ * that on its own instead of needing the same breakpoint written again.
+ */
+.VPHome .neba-home-logo {
+  display: inline-block;
+  width: 76px;
+  height: 76px;
+  margin: 0 0 18px;
+  /* A filter and not a `box-shadow`: the mark is not a rectangle, and a glow
+     that ignores its silhouette reads as a card sitting behind it. */
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--neba-primary-accent) 34%, transparent));
+}
+
+@media (min-width: 960px) {
+  .VPHome .neba-home-logo {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 22px;
+  }
+}
+
+/* The blob is sized for a logo's glow. The composition in front of it is two
+   rows tall, and a backdrop that stops at the card's edge is not a backdrop. */
 .VPHome .VPHero .image-bg {
   width: 340px;
   height: 340px;
@@ -299,8 +329,8 @@
 
 @media (min-width: 640px) {
   .VPHome .VPHero .image-bg {
-    width: 440px;
-    height: 440px;
+    width: 480px;
+    height: 480px;
   }
 }
 
@@ -314,8 +344,21 @@
   height: auto;
 }
 
-.VPHome .VPHero .image {
-  margin: 0 0 8px;
+/*
+ * Below 960px the hero stacks, and the default order puts the image above the
+ * text. That is right for a logo and wrong for a panel this tall: a visitor
+ * would land on somebody else's settings form with the name of the library a
+ * full screen below it. The heading goes first and the composition follows.
+ */
+@media (max-width: 959px) {
+  .VPHome .VPHero .main {
+    order: 1;
+  }
+
+  .VPHome .VPHero .image {
+    order: 2;
+    margin: 32px 0 0;
+  }
 }
 
 @media (min-width: 960px) {
@@ -324,12 +367,28 @@
   }
 }
 
-/* The island is `position: relative` so the floating accents can hang off it;
-   it must not inherit the demo canvas's own layout. */
+/* The hero centres its column on a narrow screen, which is right for the
+   heading and wrong for what is under it — a field's label belongs over the
+   left edge of its own input, not over the middle of the card. */
+.VPHome .neba-home-hero {
+  text-align: start;
+}
+
+/*
+ * The island is a flex item of the hero's image slot, so with a width of `auto`
+ * it is sized by its contents — which makes the `w-full` inside it resolve
+ * against nothing and the whole composition collapse to its max-content width,
+ * a good 150px short of the column it is sitting in. Both halves of the chain
+ * have to be told to fill.
+ */
+.VPHome .neba-home-hero,
+.neba-home-hero .neba-demo-mount {
+  width: 100%;
+}
+
 .neba-home-hero .neba-demo-mount {
   display: flex;
   justify-content: center;
-  width: 100%;
 }
 
 /* Live bands inside the home page's Markdown body sit in `.vp-doc`-less

@@ -1,4 +1,4 @@
-import { Box, Button, Card, Chip, Select, Switch, TextField } from 'neba';
+import { Button, Card, Select, Statistic, Switch, TextField } from 'neba';
 
 const REGIONS = [
   { value: 'icn', label: 'Seoul' },
@@ -10,28 +10,19 @@ const REGIONS = [
 /**
  * The home page's hero object.
  *
- * Not a screenshot and not a logo — a settings panel, the screen almost every
- * app ends up with, assembled out of the components the library ships and
- * floating over the blurred blob VitePress puts behind the hero image. That
- * blob is the point: acrylic has nothing to show over a flat page, and this is
- * the first surface a visitor sees.
+ * Not a screenshot and not a logo — two rows of a real product screen,
+ * assembled out of the components the library ships and floating over the
+ * blurred blob VitePress puts behind the hero image. That blob is the point:
+ * acrylic has nothing to show over a flat page, and this is the first surface a
+ * visitor sees.
  *
- * The two accents are absolutely positioned and hidden below `sm`, where the
- * hero image area is a fixed square and they would collide with the card.
+ * Two rows rather than one card, because one card only shows the half of the
+ * library that takes input. The settings panel is the screen almost every app
+ * ends up with; the band under it is what the same page reports back.
  */
 export default function HomeHero() {
   return (
-    <div className="relative w-full max-w-[21rem]">
-      <Box
-        className="absolute -top-7 -left-10 z-10 hidden sm:block"
-        size="sm"
-        variant="solid"
-        color="success"
-        elevation={2}
-      >
-        <div className="text-[0.6875rem] leading-none font-medium">All changes saved</div>
-      </Box>
-
+    <div className="flex w-full max-w-[32rem] flex-col gap-3">
       <Card
         dividers
         elevation={3}
@@ -40,17 +31,26 @@ export default function HomeHero() {
         footer={<Button fullWidth>Save changes</Button>}
       >
         <div className="flex flex-col gap-3">
-          <TextField label="Project name" defaultValue="Acme Web" fullWidth />
-          <Select items={REGIONS} label="Region" defaultValue="icn" fullWidth />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <TextField label="Project name" defaultValue="Acme Web" fullWidth />
+            <Select items={REGIONS} label="Region" defaultValue="icn" fullWidth />
+          </div>
           <Switch label="Email alerts" defaultChecked />
         </div>
       </Card>
 
-      <div className="absolute -right-8 -bottom-6 z-10 hidden gap-2 sm:flex">
-        <Chip variant="solid" color="primary" elevation={2}>
-          Production
-        </Chip>
-        <Chip elevation={2}>Staging</Chip>
+      <div className="grid grid-cols-3 gap-3">
+        <Statistic size="sm" elevation={2} label="Deploys" value={128} previousValue={112} />
+        <Statistic size="sm" elevation={2} label="p95" value="84ms" />
+        <Statistic
+          size="sm"
+          elevation={2}
+          label="Error rate"
+          value={0.0021}
+          format={{ style: 'percent', maximumFractionDigits: 2 }}
+          previousValue={0.0034}
+          betterWhen="down"
+        />
       </div>
     </div>
   );

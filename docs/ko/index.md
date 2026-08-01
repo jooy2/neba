@@ -3,6 +3,7 @@ layout: home
 
 title: Neba
 titleTemplate: React 컴포넌트 라이브러리
+description: 50여 개의 React 컴포넌트를 담은 UI 라이브러리. 접근성과 다크 모드, TypeScript 타입, 그리고 하나의 공용 prop 어휘가 설치 한 줄에 함께 들어옵니다.
 
 hero:
   name: Neba

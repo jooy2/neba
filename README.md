@@ -36,6 +36,7 @@ Everything is documented at **[neba.cdget.com](https://neba.cdget.com)**, where 
 | [**Design language**](https://neba.cdget.com/design/design-language) | Why a Neba surface looks and behaves the way it does. |
 | [**Prop conventions**](https://neba.cdget.com/design/prop-conventions) | The shared vocabulary every component draws from. |
 | [**Color**](https://neba.cdget.com/design/color) | The token families, and how to theme them. |
+| [**Changelog**](https://neba.cdget.com/changelog) | What changed in each release, and the setup changes worth acting on. |
 
 Also available in Korean / 한국어 문서: **[neba.cdget.com/ko/](https://neba.cdget.com/ko/)**
 
@@ -110,15 +111,17 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 ### Components
 
-**Inputs** — Button, IconButton, ButtonGroup, SegmentedButton, TextField, NumberField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, DatePicker, TimePicker, DateTimePicker, DateRangePicker
+**Inputs** — Button, IconButton, ButtonGroup, SegmentedButton, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, DatePicker, TimePicker, DateTimePicker, DateRangePicker
 
-**Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill
+**Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble
 
-**Display** — Typography, Blockquote, Highlight, Divider, Chip, Badge, Icon, Shortcut, Statistic, List, Table, Timeline
+**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, Statistic, List, Table, Timeline, Breadcrumb, TreeView
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox
 
-Recent additions: **Blockquote** (somebody else's words, with the `figure`/`figcaption` markup the spec actually asks for), **Shortcut** (a keyboard key or combination, where `Mod` resolves to Command on a Mac and Control everywhere else, and every glyph carries its name for a screen reader), **Highlight** (marks the words a reader searched for, walking into elements rather than demanding a plain string), **SegmentedButton** (exactly one of a set, in one pill, with a tile that slides between the choices and transforms nothing), and **Timeline** (a sequence of steps in the order they happen, vertical or as a horizontal stepper); before those, the four pickers — **DatePicker**, **TimePicker**, **DateTimePicker** and **DateRangePicker** — which take and return a plain `Date` and add no date library to your bundle.
+**Layout** — Container, Grid (with GridContainer), Panes
+
+Recent additions: **ChatBubble** (one message in a conversation, where the avatar, the time, the delivery mark, the media and the link card are each drawn only when given something), **Spoiler** (content covered by a blur rather than hidden, so a reader can see there is something there without reading it by accident), **TextLink** (a link with no surface of its own, and a mark for the ones that take over the window), **Avatar** (falls back to initials, a glyph or a silhouette, so it is never an empty box), **TreeView**, **Breadcrumb**, **Panes** (regions with a draggable bar between each pair) and **OtpField**; before those, **Blockquote**, **Shortcut**, **Highlight**, **SegmentedButton** and **Timeline**, and the four pickers — **DatePicker**, **TimePicker**, **DateTimePicker** and **DateRangePicker** — which take and return a plain `Date` and add no date library to your bundle.
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

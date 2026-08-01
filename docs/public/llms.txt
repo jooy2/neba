@@ -50,6 +50,7 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [DateTimePicker](https://neba.cdget.com/components/inputs/date-time-picker): A day and a time in one popup, with the calendar and the clock at the same height and `minDate` read at full precision.
 - [DateRangePicker](https://neba.cdget.com/components/inputs/date-range-picker): A span between two days. Two months side by side, a band drawn as the pointer moves, and named presets beside them.
 - [SegmentedButton](https://neba.cdget.com/components/inputs/segmented-button): Two or more choices in one pill, exactly one of them taken. A radio group underneath, with a tile that slides between the segments and transforms nothing.
+- [OtpField](https://neba.cdget.com/components/inputs/otp-field): A row of one-character slots for a short code typed in from somewhere else — a PIN, a texted verification code, an invite key. `charset` decides what is accepted, `groupSize` where the gaps fall.
 
 ### Display
 
@@ -65,6 +66,10 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Shortcut](https://neba.cdget.com/components/display/shortcut): A keyboard key or a combination of them. `Mod` resolves to Command on a Mac and Control everywhere else, and every glyph key carries its name for a screen reader.
 - [Highlight](https://neba.cdget.com/components/display/highlight): Marks the words a reader is looking for inside text they were already reading. Case, whole words and regular expressions are props; elements in the children are walked into rather than rejected.
 - [Timeline](https://neba.cdget.com/components/display/timeline): A sequence of steps in the order they happen. An `<ol>`, because the order is the content; `active` is an index rather than a value, because nothing here is chosen.
+- [Avatar](https://neba.cdget.com/components/display/avatar): A picture of a person or a thing, at a known size. Falls back to initials, a glyph or a silhouette when there is no image, so it is never an empty box.
+- [Breadcrumb](https://neba.cdget.com/components/display/breadcrumb): The trail of pages above the one being read. `maxItems` collapses the middle of a long trail, and the last item is the current page rather than a link.
+- [TextLink](https://neba.cdget.com/components/display/text-link): A link, in a sentence or on its own. No surface and no height of its own — what it has is the line under it, and a mark for the links that take over the window.
+- [TreeView](https://neba.cdget.com/components/display/tree-view): Rows that belong to one another and open and shut — a folder listing, a navigation sidebar, any grouped list a reader needs to fold away. A row can select or can be an `href`.
 
 ### Feedback
 
@@ -81,6 +86,7 @@ Documentation is available in English (served from `/`) and Korean (served from 
 
 - [Container](https://neba.cdget.com/components/layout/container): Horizontal breathing room around whatever it wraps; keeps a page's content off the edge of the window.
 - [Grid](https://neba.cdget.com/components/layout/grid): A responsive layout on twelve columns. Every grid is wrapped in a GridContainer and each cell is a Grid.
+- [Panes](https://neba.cdget.com/components/layout/panes): A box divided into regions with a draggable bar between each pair — an editor beside a file list, a preview beside a form. Panes nest, and a Pane can opt out of being resizable.
 
 ### Surfaces
 
@@ -91,13 +97,19 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Carousel](https://neba.cdget.com/components/surfaces/carousel): A strip of slides, one of which is in view. A scroll-snap container, so it swipes, runs the other way under RTL, and transforms nothing.
 - [Pill](https://neba.cdget.com/components/surfaces/pill): A floating lozenge holding a small amount of live information, optionally growing into a second half. The one fully round shape in the library.
 - [Toolbar](https://neba.cdget.com/components/surfaces/toolbar): A bar of controls — an application header, a page's action row. `start`, `children` and `end` are the three slots; `position` pins it.
+- [ChatBubble](https://neba.cdget.com/components/surfaces/chat-bubble): One message in a conversation. The avatar, the sender, the time, the delivery mark, the media above the text and the link card below it are each drawn only when they are given something.
+- [Spoiler](https://neba.cdget.com/components/surfaces/spoiler): Content that stays covered until somebody asks for it. The cover is a blur rather than a hidden box, so a reader can see that there is something there and how much of it.
 
 ## Examples
 
-- [Examples](https://neba.cdget.com/examples/): Every component in the library on a single product-shaped screen, with a block-by-block breakdown of which components each part uses.
+- [Overview](https://neba.cdget.com/examples/overview): Every component in the library on a single product-shaped screen, with a block-by-block breakdown of which components each part uses.
+- [Landing page](https://neba.cdget.com/examples/concept-landing): A marketing page built only from these components — mostly type, space and one call to action repeated.
+- [Admin dashboard](https://neba.cdget.com/examples/concept-dashboard): A nav rail, a filter row, four figures, a table with an action on every row and a drawer of settings, all at the same size.
+- [Sign-up page](https://neba.cdget.com/examples/concept-signup): Registration in three steps — every kind of answer a form can ask for, and the states around them.
 
 ## Optional
 
+- [Changelog](https://neba.cdget.com/changelog): What changed in each release, including the setup changes a consumer has to act on.
 - [Korean documentation](https://neba.cdget.com/ko/): The same site in Korean. Every path above works with a `/ko` prefix.
 - [GitHub repository](https://github.com/jooy2/neba): Source, issues and contribution guide.
 - [npm package](https://www.npmjs.com/package/neba): Published releases and version history.
