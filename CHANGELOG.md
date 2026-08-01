@@ -1,5 +1,38 @@
 # Changelog
 
+## 1.2.0 (2026-08-01)
+
+### Added
+
+- Eight components, bringing the library to fifty-seven: `Avatar`, `Breadcrumb` (with `BreadcrumbItem`), `ChatBubble`, `OtpField`, `Panes` (with `Pane`), `Spoiler`, `TextLink` and `TreeView` (with `TreeItem`). `Panes` opens a fifth group, **Layout**, alongside `Container` and `Grid`.
+- **The library speaks nineteen languages on its own behalf.** Almost nothing in Neba writes text a reader sees — a Button says whatever it was handed — but a few components have to invent a string because there is nowhere else for it to come from: the sentence read out after a link that opens a new tab, the label on the button that uncovers a `Spoiler`, the word under a chat message that says it was read. Those are now one table rather than eight English defaults. `TextLink`, `Spoiler` and `ChatBubble` take a `locale`, and every string still has an override prop of its own, so an unsupported language is never a dead end. A tag resolves by script, then by region, then by language (`zh-Hant-TW` → `zh-hant`, `pt-BR` → `pt`), and a translation that fills in part of the table falls back to English one namespace at a time rather than leaving blanks.
+- `Avatar` — an image that falls back to initials, to a glyph, or to a silhouette, so the slot is never an empty box. `shape` is `circle` or `square`, `delay` holds the fallback back long enough for a cached image not to flash it, and `onLoadingStatusChange` reports `idle` / `loading` / `loaded` / `error`.
+- `Breadcrumb` — a trail that collapses in the middle when it is too long: `maxItems`, `itemsBeforeCollapse` and `itemsAfterCollapse` decide where, and `expandable` makes the ellipsis a button that opens the rest in place. `separator` takes `chevron`, `arrow`, `slash`, `dot` or a node of your own.
+- `ChatBubble` — one message in a conversation. The avatar, the name, the time, the delivery mark, the media and the link card are each drawn only when given something, so the same component is a bare bubble or a full row. `status` runs `sending` → `sent` → `delivered` → `read`, plus `failed`; `typing` draws three dots that change colour rather than bounce.
+- `OtpField` — a one-time code as one field per character. `length`, `charset` (`numeric`, `alpha`, `alphanumeric`, `any`), `mask`, and `groupSize` with a `separator` for codes written in blocks. `onComplete` fires when the last box is filled, `autoSubmit` submits the form it is in, and `onValueInvalid` reports what was rejected.
+- `Panes` — regions with a draggable bar between each pair, horizontal or vertical. Each `Pane` takes `defaultSize`, `minSize` and `maxSize` as a number of pixels or any CSS length; `resizable` turns the bars off, and `onResize` / `onResizeEnd` report the split.
+- `Spoiler` — content covered by a blur rather than removed, so a reader can see that something is there without reading it by accident. Controlled with `revealed` / `defaultRevealed` / `onRevealedChange`; `reversible` allows covering it again, `maxHeight` clamps it to a fade-out instead, and `blur` is the radius.
+- `TextLink` — a link with no surface of its own. `underline` is `always`, `hover` or `none`, `newTab` adds the mark and the sentence a screen reader needs, `icon` overrides or drops that mark, and `render` swaps in a router's own link component.
+- `TreeView` — a tree with roving focus, controlled `expanded` and `selected`, and `multiple` for checkbox-style selection. `lines` draws the guides as `none`, `simple` or `folder` — the rail runs past an expanded subtree to the next sibling and stops halfway down the last child, the way a file manager draws it, and mirrors under RTL without a second rule.
+
+### Changed
+
+- **The Examples section is four pages, not one.** `/examples/` no longer resolves to a page — the overview moved to [`/examples/overview`](https://neba.cdget.com/examples/overview) and three concept screens joined it. Any link you have to `/examples/` needs updating.
+- The stylesheet carries a `.neba-link` rule, written as `.neba-link.neba-link` so that a host's `.prose a` or `.vp-doc a` cannot outrank the link's underline thickness, offset and colour. Like `neba-portal`, the class is a hook you can exempt from your own typography rules.
+
+### Fixed
+
+- The date formatter cache joined a locale and its options with a space, which is a character both halves of the key can contain. Two different requests could land on one entry and the second would be formatted with the first's options. The separator is now one that cannot appear in either.
+
+### Documentation
+
+- **Three concept screens**, each a whole fictional product page built only out of the library: a [landing page](https://neba.cdget.com/examples/concept-landing), an [admin dashboard](https://neba.cdget.com/examples/concept-dashboard) and a [sign-up flow](https://neba.cdget.com/examples/concept-signup).
+- The home page now says what the library is rather than how it is drawn — what ships, what is tested, and what an install actually gets you.
+- **Every page carries its own description.** A page's lede is read out of the source and becomes its `<meta name="description">`, so pages no longer share one sentence between them. Canonical URLs, an `hreflang` pair per locale with an `x-default`, Open Graph and Twitter cards, JSON-LD on the home page, and a `robots.txt` naming the sitemap are generated in the build.
+- **A preview mounts when it is scrolled into view**, not when the page loads. A component page holds a dozen of them, and mounting all at once put the one being read behind chunks for previews far below the fold. The empty box reserves its height before and after, so nothing jumps.
+- New icons and social image at 128 and 256 px, an `apple-touch-icon`, and a `theme-color`.
+- Pages for the eight new components in both locales, their props rows, their demos, and their entries in `llms.txt`.
+
 ## 1.1.0 (2026-07-29)
 
 ### Setup
