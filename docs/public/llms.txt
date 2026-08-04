@@ -81,12 +81,14 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [ProgressCircular](https://neba.cdget.com/components/feedback/progress-circular): A ring that fills, for where there is no room for a bar.
 - [ProgressBox](https://neba.cdget.com/components/feedback/progress-box): A row of acrylic plates that light up.
 - [Overlay](https://neba.cdget.com/components/feedback/overlay): A sheet over the whole page that stops it being used — the scrim on its own.
+- [Skeleton](https://neba.cdget.com/components/feedback/skeleton): The shape of something that has not loaded yet, in a line, a block or a circle. It reserves the space the real thing will take, so nothing on the page moves when the content arrives.
 
 ### Layout
 
 - [Container](https://neba.cdget.com/components/layout/container): Horizontal breathing room around whatever it wraps; keeps a page's content off the edge of the window.
 - [Grid](https://neba.cdget.com/components/layout/grid): A responsive layout on twelve columns. Every grid is wrapped in a GridContainer and each cell is a Grid.
 - [Panes](https://neba.cdget.com/components/layout/panes): A box divided into regions with a draggable bar between each pair — an editor beside a file list, a preview beside a form. Panes nest, and a Pane can opt out of being resizable.
+- [AspectRatio](https://neba.cdget.com/components/layout/aspect-ratio): A box that keeps a proportion whatever width it is given. `ratio` is CSS's own `aspect-ratio`, and `fit` stretches a single piece of media to the box and fits it.
 
 ### Surfaces
 
@@ -98,6 +100,8 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Pill](https://neba.cdget.com/components/surfaces/pill): A floating lozenge holding a small amount of live information, optionally growing into a second half. The one fully round shape in the library.
 - [Toolbar](https://neba.cdget.com/components/surfaces/toolbar): A bar of controls — an application header, a page's action row. `start`, `children` and `end` are the three slots; `position` pins it.
 - [ChatBubble](https://neba.cdget.com/components/surfaces/chat-bubble): One message in a conversation. The avatar, the sender, the time, the delivery mark, the media above the text and the link card below it are each drawn only when they are given something.
+- [Drawer](https://neba.cdget.com/components/surfaces/drawer): A panel attached to one edge of the window. `mode="overlay"` floats it over the page on a scrim; `mode="inline"` puts the same panel in the layout as a fixed sidebar. The corners on the free edge are cut and the ones against the window stay square.
+- [Popover](https://neba.cdget.com/components/surfaces/popover): A sheet that opens beside the control that opened it. Unlike a Tooltip it stays up and can be reached, so a form, a filter panel or a picker belongs in it; unlike a Dialog it does not take the page.
 - [Spoiler](https://neba.cdget.com/components/surfaces/spoiler): Content that stays covered until somebody asks for it. The cover is a blur rather than a hidden box, so a reader can see that there is something there and how much of it.
 
 ## Examples

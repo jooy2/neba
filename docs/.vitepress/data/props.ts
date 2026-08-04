@@ -33,6 +33,7 @@ const VARIANT = "'solid' | 'outline' | 'text'";
 const DENSITY = "'default' | 'compact'";
 const ELEVATION = '0 | 1 | 2 | 3';
 const ORIENTATION = "'horizontal' | 'vertical'";
+const SIDE = "'top' | 'right' | 'bottom' | 'left'";
 const POSITION = "'static' | 'sticky' | 'fixed'";
 const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
 const JUSTIFY_CONTENT =
@@ -5664,6 +5665,449 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '가려지는 내용', en: 'What is being covered' }
+    }
+  ],
+
+  Drawer: [
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'left'",
+      description: {
+        ko: '패널이 붙는 창의 변. NebaSide가 어디서나 그렇듯 물리적입니다 — 창 위쪽의 drawer는 어떤 쓰기 방향에서도 위쪽입니다',
+        en: 'Which edge of the window the panel is attached to. Physical, as NebaSide is everywhere'
+      }
+    },
+    {
+      name: 'mode',
+      type: "'overlay' | 'inline'",
+      default: "'overlay'",
+      description: {
+        ko: 'overlay는 스크림 위에 뜨고 focus를 가두며 닫을 수 있습니다. inline은 레이아웃의 일부이며 스크림도, portal도, 닫을 것도 없습니다',
+        en: 'overlay floats on a scrim, holds focus and is dismissed. inline is part of the layout — no scrim, no portal, nothing to dismiss'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '타입 스케일과 여백, 그리고 옆면 패널의 기본 너비까지 함께 정합니다',
+        en: "The type scale, the padding, and a side panel's default width"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 시트는 물들지 않으므로 가장자리와 포커스 링에만 나타납니다',
+        en: 'Semantic colour role. The sheet is never dyed, so it reaches the edge and the focus ring'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. onOpenChange와 함께 쓰면 제어 컴포넌트가 됩니다. inline에서는 패널이 레이아웃에 있는지를 뜻합니다',
+        en: 'Whether it is shown. With onOpenChange, a controlled drawer. In inline mode it is whether the panel is in the layout'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      description: {
+        ko: '비제어 drawer의 초기 상태. overlay에서는 false, inline에서는 true가 기본입니다 — 열어야 나타나는 고정 사이드바는 고정 사이드바가 아니기 때문입니다',
+        en: 'The initial state of an uncontrolled drawer. false in overlay mode, true in inline mode: a fixed sidebar that had to be opened would not be fixed'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때 호출', en: 'Called when it opens or closes' }
+    },
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: 'drawer를 여는 요소. Base UI가 연결합니다. overlay 전용 — inline drawer는 열 것이 없으므로 렌더링되지 않습니다',
+        en: 'The element that opens it, wired up by Base UI. overlay only — an inline drawer has nothing to open, so it is not rendered'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '제목. drawer의 이름이 되는 heading으로 렌더링됩니다',
+        en: 'The heading. Rendered as the element that names the drawer'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄이자 drawer의 접근성 설명',
+        en: "A line under the title, and the drawer's accessible description"
+      }
+    },
+    {
+      name: 'actions',
+      type: 'ReactNode',
+      description: {
+        ko: '패널 바닥에 고정되는 버튼 줄. 끝 정렬됩니다. DrawerClose가 그중 하나를 닫기 버튼으로 만듭니다',
+        en: 'The bottom row, held against the foot of the panel and end-aligned. DrawerClose is what makes one of them dismiss'
+      }
+    },
+    {
+      name: 'dividers',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '구역 사이를 여백 대신 하이라인으로 나눕니다. 본문이 스크롤되는 순간부터 켜는 편이 좋습니다',
+        en: 'Separates the sections with hairlines instead of space. Worth turning on the moment the body scrolls'
+      }
+    },
+    {
+      name: 'showClose',
+      type: 'boolean',
+      description: {
+        ko: '모서리의 ×. overlay에서는 켜짐, inline에서는 꺼짐이 기본입니다 — 다시 열 방법 없이 고정 사이드바를 닫는 ×는 되돌릴 수 없는 문입니다',
+        en: 'The × in the corner. On in overlay mode, off in inline mode: a × that closes a fixed sidebar with nothing to reopen it is a one-way door'
+      }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      default: "'Close'",
+      description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
+    },
+    {
+      name: 'extent',
+      type: 'number | string',
+      description: {
+        ko: '패널이 자기 변에서 얼마나 들어오는지 — left/right에서는 너비, top/bottom에서는 높이입니다. 숫자는 픽셀입니다',
+        en: 'How far the panel reaches in from its edge: a width for left and right, a height for top and bottom. Numbers are pixels'
+      }
+    },
+    {
+      name: 'rounded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '페이지를 향한 변의 두 모서리만 깎습니다. 창 가장자리에 닿은 모서리는 언제나 각집니다',
+        en: 'Cuts the two corners on the edge that faces the page. The corners against the window edge are always square'
+      }
+    },
+    {
+      name: 'modal',
+      type: "boolean | 'trap-focus'",
+      default: 'true',
+      description: {
+        ko: '뒤 페이지를 가져갈지. trap-focus는 스크롤과 클릭은 남기고 focus만 가둡니다. overlay 전용',
+        en: 'Whether the page behind is taken away. trap-focus keeps it scrollable and clickable while holding focus inside. overlay only'
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'Escape나 스크림 클릭으로 닫히는지. overlay 전용',
+        en: 'Whether Escape or a click on the scrim closes it. overlay only'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '본문. 스크롤되는 유일한 부분입니다',
+        en: 'The body — the only part that scrolls'
+      }
+    }
+  ],
+
+  Popover: [
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: 'popup이 매달리고 또 popup을 여는 요소. ref를 받고 props를 펼치는 요소 하나여야 합니다 — 모든 Neba 컴포넌트가 그렇습니다',
+        en: 'The element the popup hangs off and that opens it. One element that accepts a ref and spreads props — every Neba component does'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '타입 스케일과 여백, 그리고 popup이 넓어질 수 있는 한계까지 함께 정합니다',
+        en: 'The type scale, the padding, and how wide the popup may get'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 시트는 물들지 않으므로 가장자리와 포커스 링에만 나타납니다',
+        en: 'Semantic colour role. The sheet is never dyed, so it reaches the edge and the focus ring'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '제목. popup의 이름이 되는 요소로 렌더링됩니다',
+        en: 'The heading. Rendered as the element that names the popup'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄이자 popup의 접근성 설명',
+        en: "A line under the title, and the popup's accessible description"
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '본문', en: 'The body' }
+    },
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'bottom'",
+      description: {
+        ko: '트리거의 어느 쪽에 뜨는지. 자리가 없으면 반대쪽으로 넘어갑니다',
+        en: 'Which edge of the trigger it appears on. Flips to the opposite side when there is no room'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      description: { ko: '그 변을 따라 놓이는 위치', en: 'Where it sits along that edge' }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '6',
+      description: { ko: '트리거와의 거리(px)', en: 'Distance from the trigger, in pixels' }
+    },
+    {
+      name: 'alignOffset',
+      type: 'number',
+      default: '0',
+      description: { ko: '그 변을 따라 밀어내는 거리(px)', en: 'Shift along that edge, in pixels' }
+    },
+    {
+      name: 'arrow',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '트리거를 가리키는 작은 쐐기. Tooltip과 달리 기본이 꺼짐입니다 — 이 표면은 반투명이고, popup의 상자 밖으로 튀어나온 쐐기는 그 backdrop을 함께 가져갈 수 없습니다',
+        en: 'The little wedge pointing at the trigger. Off by default, unlike Tooltip: this surface is translucent, and a wedge outside the popup cannot carry that backdrop with it'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. onOpenChange와 함께',
+        en: 'Whether it is open. With onOpenChange'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '비제어 popover의 초기 상태',
+        en: 'The initial state of an uncontrolled popover'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때 호출', en: 'Called when it opens or closes' }
+    },
+    {
+      name: 'modal',
+      type: "boolean | 'trap-focus'",
+      default: 'false',
+      description: {
+        ko: '뒤 페이지를 가져갈지. 기본이 꺼짐인 것이 popover와 Dialog를 가릅니다 — popover는 페이지 대신이 아니라 페이지 옆의 한 부분입니다',
+        en: 'Whether the page behind is taken away. Off by default, and that is what separates a popover from a Dialog: it sits beside the page, not instead of it'
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'Escape나 바깥 클릭으로 닫히는지. 꺼도 PopoverClose는 통과하므로 갇히지 않습니다',
+        en: 'Whether Escape or a click outside closes it. A PopoverClose still gets through when it is off, so it is never a trap'
+      }
+    },
+    {
+      name: 'showClose',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '모서리의 ×', en: 'The × in the corner' }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      default: "'Close'",
+      description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: {
+        ko: 'size가 정한 최대 너비를 대신할 값. 숫자는 픽셀입니다',
+        en: 'A hard cap overriding the one size implies. Numbers are pixels'
+      }
+    }
+  ],
+
+  Skeleton: [
+    {
+      name: 'shape',
+      type: "'line' | 'rect' | 'circle'",
+      default: "'line'",
+      description: {
+        ko: '무엇을 대신하는지 — 글줄, 블록(이미지·차트·카드), 원형(avatar)',
+        en: 'What it stands in for: a run of text, a block (image, chart, card), or something round (an avatar)'
+      }
+    },
+    {
+      name: 'lines',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: 'shape="line"에서 그릴 줄 수. 마지막 줄은 문단의 마지막 줄처럼 짧게 그려집니다. 다른 shape에서는 무시됩니다',
+        en: 'How many lines to draw, for shape="line". The last is drawn short, the way the last line of a paragraph is. Ignored by the other shapes'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '대신하는 것의 크기 — line은 타입 스케일, circle은 지름, rect는 기본 블록 높이',
+        en: 'The scale of the thing being stood in for: the type scale for a line, the diameter for a circle, the default block height for a rect'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'secondary'",
+      shared: true,
+      description: {
+        ko: '색 계열. 그대로 두는 편이 좋습니다 — 아직 도착하지 않은 내용에 대해 의미론적 색을 입히는 것은 없는 것을 말하는 셈입니다',
+        en: 'Colour family. Worth leaving alone: a placeholder carrying a semantic colour is saying something about content that has not arrived'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: {
+        ko: '명시적 너비. 숫자는 픽셀입니다',
+        en: 'An explicit width. Numbers are pixels'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '명시적 높이. 숫자는 픽셀입니다',
+        en: 'An explicit height. Numbers are pixels'
+      }
+    },
+    {
+      name: 'animated',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '지나가는 하이라이트. 축소된 모션 설정은 묻지 않고도 색 맥동으로 바꾸므로, 이것은 접근성 스위치가 아닙니다',
+        en: 'The travelling highlight. A reduced-motion preference already swaps it for a colour pulse, so this is not the accessibility switch'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '스크린 리더가 듣는 말. 비워 두면 aria-hidden입니다 — 상자 열둘이 저마다 자기를 알리는 것보다 침묵이 낫기 때문입니다. 한 영역을 대표하는 하나에만 붙이면 그것이 status가 됩니다',
+        en: 'What a screen reader is told. Unset it is aria-hidden, because a dozen boxes each announcing themselves is worse than silence. Give it to the one that stands for a whole region and it becomes a status'
+      }
+    },
+    renderProp('render={<span />}')
+  ],
+
+  AspectRatio: [
+    {
+      name: 'ratio',
+      type: 'number | string',
+      default: '1',
+      description: {
+        ko: "상자가 지키는 비율. CSS가 쓰는 그대로 — 숫자(1.5)나 비('16 / 9')가 aspect-ratio에 그대로 전달됩니다",
+        en: "The proportion the box holds, written the way CSS writes it — a number (1.5) or a ratio ('16 / 9'), reaching aspect-ratio untouched"
+      }
+    },
+    {
+      name: 'fit',
+      type: "'cover' | 'contain' | 'fill' | 'none'",
+      default: "'cover'",
+      description: {
+        ko: '안의 미디어를 상자에 맞추는 방식. 직계 자식인 img, video, canvas, svg, iframe에 적용되며 그 밖의 것은 평소대로 배치됩니다',
+        en: 'How a single piece of media inside is fitted. Applies to an img, video, canvas, svg or iframe that is a direct child; anything else is laid out normally'
+      }
+    },
+    {
+      name: 'rounded',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '모서리를 size 단계의 반경 사다리로 깎습니다. 레이아웃 컴포넌트는 아무것도 그리지 않으므로 기본은 꺼짐입니다',
+        en: 'Rounds the corners to the size step of the radius ladder. Off by default, because a layout component draws nothing'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: 'rounded가 쓰는 반경 사다리의 단계. Box에서처럼 높이도 타입 스케일도 건드리지 않습니다',
+        en: 'Which step of the radius ladder rounded uses. As on Box, it never touches a height or the type scale'
+      }
+    },
+    renderProp('render={<figure />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '비율 안에 담기는 것', en: 'What is held to the proportion' }
     }
   ]
 };

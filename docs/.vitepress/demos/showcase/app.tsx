@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  AspectRatio,
   Avatar,
   Badge,
   Blockquote,
@@ -25,6 +26,7 @@ import {
   Dialog,
   DialogClose,
   Divider,
+  Drawer,
   FilePicker,
   Grid,
   GridContainer,
@@ -46,6 +48,8 @@ import {
   Pane,
   Panes,
   Pill,
+  Popover,
+  PopoverClose,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -55,6 +59,7 @@ import {
   SegmentedButton,
   Select,
   Shortcut,
+  Skeleton,
   Slider,
   Spoiler,
   Statistic,
@@ -116,6 +121,19 @@ function SearchIcon() {
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="7" cy="7" r="4.25" stroke="currentColor" strokeWidth="1.5" />
       <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MenuGlyph() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -371,9 +389,28 @@ function ShowcaseBody() {
         {/* The controls that run a screen, all on one baseline. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Button · ButtonGroup · SegmentedButton · TextField · Select · Tooltip · Menu · Overlay
+            Button · ButtonGroup · SegmentedButton · TextField · Select · Tooltip · Menu · Popover ·
+            Drawer · Overlay
           </Caption>
           <div className="flex flex-wrap items-center gap-2">
+            <Drawer
+              size="sm"
+              trigger={
+                <Button size="sm" variant="text" color="secondary" startIcon={<MenuGlyph />}>
+                  Menu
+                </Button>
+              }
+              title="Workspace"
+              description="Everything this account can reach."
+            >
+              <List variant="text" size="sm" density="compact">
+                <ListItem description="Deploys, usage and alerts">Overview</ListItem>
+                <ListItem description="12 active">Projects</ListItem>
+                <ListItem description="4 people">Members</ListItem>
+                <ListItem description="Team plan">Billing</ListItem>
+              </List>
+            </Drawer>
+
             <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />
             <Select
               size="sm"
@@ -422,6 +459,26 @@ function ShowcaseBody() {
                 Reset view
               </MenuItem>
             </Menu>
+
+            <Popover
+              size="sm"
+              width={280}
+              trigger={
+                <Button size="sm" variant="outline" color="secondary">
+                  Filter
+                </Button>
+              }
+              title="Filter deploys"
+              description="Applied to the table below."
+            >
+              <div className="flex flex-col gap-2">
+                <Checkbox size="sm" label="Failed only" />
+                <Checkbox size="sm" label="This week" defaultChecked />
+                <div className="flex justify-end">
+                  <PopoverClose render={<Button size="sm">Apply</Button>} />
+                </div>
+              </div>
+            </Popover>
 
             <Button size="sm" variant="outline" color="secondary" onClick={rebuild}>
               Rebuild
@@ -918,6 +975,39 @@ function ShowcaseBody() {
                     09:37 live, cold · 09:44 warmed by hand.
                   </Typography>
                 </Spoiler>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        {/* The two that hold a place rather than fill one: the box keeps its
+            proportion whether or not the image has arrived, and the placeholder
+            is the shape of the card beside it. Nothing on the page moves when
+            the real thing lands. */}
+        <section className="flex flex-col gap-3">
+          <Caption>AspectRatio · Skeleton</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card size="sm" title="Preview" subtitle="16 / 9, whatever the column width">
+              <AspectRatio ratio={16 / 9} rounded size="sm">
+                <div className="flex size-full items-center justify-center bg-(--neba-primary-soft-press) text-[0.75rem] text-(--neba-muted-fg)">
+                  neba.cdget.com
+                </div>
+              </AspectRatio>
+            </Card>
+
+            <Card size="sm" title="Still loading" subtitle="The same card, one moment earlier">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton shape="circle" size="lg" />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Skeleton size="sm" width="45%" />
+                    <Skeleton size="xs" width="30%" />
+                  </div>
+                </div>
+                <AspectRatio ratio={16 / 9} rounded size="sm">
+                  <Skeleton shape="rect" className="size-full" label="Loading the deploy preview" />
+                </AspectRatio>
+                <Skeleton size="sm" lines={3} />
               </div>
             </Card>
           </div>

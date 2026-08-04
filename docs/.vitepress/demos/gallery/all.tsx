@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  AspectRatio,
   Avatar,
   Badge,
   Blockquote,
@@ -24,6 +25,7 @@ import {
   Dialog,
   DialogClose,
   Divider,
+  Drawer,
   FilePicker,
   Grid,
   GridContainer,
@@ -43,6 +45,8 @@ import {
   Pane,
   Panes,
   Pill,
+  Popover,
+  PopoverClose,
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
@@ -52,6 +56,7 @@ import {
   SegmentedButton,
   Select,
   Shortcut,
+  Skeleton,
   Slider,
   Spoiler,
   Statistic,
@@ -550,6 +555,28 @@ const GROUPS: Group[] = [
             </Panes>
           </div>
         )
+      },
+      {
+        name: 'AspectRatio',
+        summary: {
+          ko: '어떤 너비를 받아도 비율을 지키는 상자',
+          en: 'A box that keeps a proportion whatever width it gets'
+        },
+        path: '/components/layout/aspect-ratio',
+        preview: (
+          <div className="flex w-full max-w-56 gap-2">
+            <AspectRatio ratio="16 / 9" rounded className="flex-1 bg-[var(--neba-primary-soft)]">
+              <div className="flex size-full items-center justify-center text-[0.6875rem] text-[var(--neba-muted-fg)]">
+                16 / 9
+              </div>
+            </AspectRatio>
+            <AspectRatio ratio={1} rounded className="w-16 bg-[var(--neba-primary-soft-press)]">
+              <div className="flex size-full items-center justify-center text-[0.6875rem] text-[var(--neba-muted-fg)]">
+                1 / 1
+              </div>
+            </AspectRatio>
+          </div>
+        )
       }
     ]
   },
@@ -713,6 +740,54 @@ const GROUPS: Group[] = [
               <Typography level="caption">The butler did it</Typography>
             </Spoiler>
           </div>
+        )
+      },
+      {
+        name: 'Drawer',
+        summary: {
+          ko: '창의 한 변에 붙는 패널. 열거나, 고정하거나',
+          en: 'A panel attached to one edge — opened, or simply there'
+        },
+        path: '/components/surfaces/drawer',
+        preview: (
+          <Drawer
+            size="sm"
+            trigger={
+              <Button size="sm" variant="outline">
+                Open navigation
+              </Button>
+            }
+            title="Workspace"
+            description="Everything this account can reach."
+          >
+            <List density="compact">
+              <ListItem>Overview</ListItem>
+              <ListItem>Projects</ListItem>
+              <ListItem>Members</ListItem>
+            </List>
+          </Drawer>
+        )
+      },
+      {
+        name: 'Popover',
+        summary: {
+          ko: '자신을 연 컨트롤 옆에 열리는 시트',
+          en: 'A sheet that opens beside the control that opened it'
+        },
+        path: '/components/surfaces/popover',
+        preview: (
+          <Popover
+            size="sm"
+            trigger={
+              <Button size="sm" variant="outline">
+                Share
+              </Button>
+            }
+            title="Share this page"
+            description="Anyone with the link can read it."
+          >
+            <PopoverClose render={<Button size="sm">Copy link</Button>} />
+          </Popover>
         )
       }
     ]
@@ -1045,6 +1120,20 @@ const GROUPS: Group[] = [
         },
         path: '/components/feedback/overlay',
         preview: <OverlayButton />
+      },
+      {
+        name: 'Skeleton',
+        summary: {
+          ko: '아직 불러오지 않은 것의 형태',
+          en: 'The shape of something that has not loaded yet'
+        },
+        path: '/components/feedback/skeleton',
+        preview: (
+          <div className="flex w-full max-w-56 items-center gap-3">
+            <Skeleton shape="circle" size="lg" />
+            <Skeleton lines={3} className="flex-1" />
+          </div>
+        )
       },
       {
         name: 'Toast',

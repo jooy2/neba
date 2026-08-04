@@ -962,6 +962,48 @@
   animation-delay: calc(var(--n-i, 0) * 160ms);
 }
 
+/*
+ * The highlight travelling across a placeholder.
+ *
+ * `inset-inline-start` rather than a transform, the same trade `neba-sweep`
+ * makes and for the same reason: it runs the other way under RTL without being
+ * told, and the layout pass it costs is confined to a box with nothing in it.
+ *
+ * A pseudo-element rather than a child, so a Skeleton is one element per shape
+ * and a stack of ten lines is ten nodes rather than twenty. The gradient is
+ * symmetric, so it needs no direction of its own.
+ */
+@keyframes neba-skeleton-sweep {
+  from {
+    inset-inline-start: -60%;
+  }
+  to {
+    inset-inline-start: 100%;
+  }
+}
+
+.neba-skeleton::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inline-size: 60%;
+  background-image: linear-gradient(90deg, transparent, var(--n-panel-press), transparent);
+  animation: neba-skeleton-sweep 1.5s var(--neba-ease) infinite;
+}
+
+/* The reduced-motion stand-in: the highlight stops travelling and the whole
+   placeholder breathes instead. Colour, which is the axis every other state in
+   the library already uses. */
+@keyframes neba-skeleton-pulse {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--n-panel-press);
+  }
+}
+
 /* The reduced-motion stand-in for the sweep: the segment stops travelling and
    the whole groove pulses instead. Colour, which is the axis every other state
    in the library already uses. */
@@ -1013,5 +1055,15 @@
      they are there for. */
   .neba-typing-dot {
     animation-duration: 2.6s;
+  }
+
+  /* The highlight stops travelling and the placeholder pulses in place. Kept
+     running for the same reason: a skeleton that holds still is indistinguishable
+     from an empty box that finished loading with nothing in it. */
+  .neba-skeleton::after {
+    inset-inline-start: 0;
+    inline-size: 100%;
+    background-image: none;
+    animation: neba-skeleton-pulse 2.4s var(--neba-ease) infinite;
   }
 }
