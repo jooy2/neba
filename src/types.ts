@@ -147,6 +147,125 @@ export type NebaVariant = 'solid' | 'outline' | 'text';
  */
 export type NebaElevation = 0 | 1 | 2 | 3;
 
+/**
+ * The six effects the `Animate*` components are built out of, and the six
+ * values the `transition` prop takes.
+ *
+ * They are named after what a reader sees rather than after the CSS property
+ * underneath: `zoom` and `grow` are both a change of scale, and they are two
+ * words because they are two *gestures* — one arrives from the middle of where
+ * it will end up, the other unfolds from nothing.
+ *
+ * Everything past these six is a component rather than a value. Typing, a
+ * marquee and a headline reel need to know what their children *are*, and a
+ * prop that only sets class names cannot.
+ */
+export type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+
+/**
+ * What makes an animation run.
+ *
+ * - `mount` — as soon as it is on the page. The default, and the only one that
+ *   needs nothing from the caller.
+ * - `visible` — when it is scrolled into view. Once, unless `once` is off.
+ * - `hover` — while the pointer is on it, restarting from the beginning on each
+ *   entry. Keyboard focus counts as a pointer here, or the effect would be
+ *   unreachable without a mouse.
+ * - `manual` — never on its own. `play` is what runs it.
+ */
+export type NebaAnimateTrigger = 'mount' | 'visible' | 'hover' | 'manual';
+
+/** Whether an effect brings its child in or takes it away. */
+export type NebaAnimateMode = 'in' | 'out';
+
+/**
+ * How many times an animation runs. `'infinite'` rather than `Infinity`,
+ * because it is written into CSS as that word and a caller who types the
+ * number would be surprised by which one worked.
+ */
+export type NebaAnimateRepeat = number | 'infinite';
+
+/**
+ * The settings every `Animate*` component takes, and the reason they are one
+ * interface: a `delay` of 200 has to mean the same thing on a fade and on a
+ * marquee, exactly as a `size` of `md` means one height everywhere.
+ *
+ * Durations and delays are milliseconds — numbers, not CSS strings. A prop
+ * whose type is `string` invites `'0.4s'`, and then two components in the same
+ * screen are written in two units.
+ */
+export interface NebaAnimateProps {
+  /** How long one run takes, in milliseconds. */
+  duration?: number;
+  /** How long before it starts, in milliseconds. @default 0 */
+  delay?: number;
+  /** The easing curve, as CSS writes it. @default the house curve */
+  easing?: string;
+  /** How many times it runs. @default 1 */
+  repeat?: NebaAnimateRepeat;
+  /** Runs every other pass backwards, so a repeat returns instead of jumping. */
+  alternate?: boolean;
+  /** Holds the animation where it is. @default false */
+  paused?: boolean;
+  /** What starts it. @default 'mount' */
+  trigger?: NebaAnimateTrigger;
+  /** Runs it, when `trigger` is `manual`. Each `false` → `true` starts it over. */
+  play?: boolean;
+  /**
+   * With `trigger="visible"`, whether it runs only the first time. Off, it runs
+   * again every time the element comes back into view.
+   * @default true
+   */
+  once?: boolean;
+  /**
+   * With `trigger="visible"`, how much of the element has to be on screen
+   * before it counts as visible, from `0` to `1`.
+   * @default 0.2
+   */
+  threshold?: number;
+}
+
+/** The options a `transition` prop takes when a bare effect name is not enough. */
+export interface NebaTransitionOptions {
+  /** Which effect. */
+  type: NebaAnimation;
+  /** Milliseconds. */
+  duration?: number;
+  /** Milliseconds. @default 0 */
+  delay?: number;
+  /** CSS easing. @default the house curve */
+  easing?: string;
+  /** @default 1 */
+  repeat?: NebaAnimateRepeat;
+  /** Runs every other pass backwards. */
+  alternate?: boolean;
+  /** Which edge a `slide` comes from. @default 'bottom' */
+  from?: NebaSide;
+  /** How far a `slide` travels — a CSS length, or a number in pixels. */
+  distance?: number | string;
+  /** Where a `grow` or a `zoom` starts, as a multiple of its final size. */
+  scale?: number;
+  /** How far a `rotate` turns from, in degrees. */
+  angle?: number;
+}
+
+/**
+ * An entrance animation on a component that displays something.
+ *
+ * A bare effect name is the whole of what most callers want —
+ * `transition="fade"` — and the object form is there for the rest.
+ *
+ * It runs on mount and once. Anything else — replaying on scroll, on hover, or
+ * under your own control — is what the `Animate*` components are, and any
+ * component can be wrapped in one. This prop exists so the common case does not
+ * need an extra element in the tree.
+ *
+ * It is offered on components that *display* something and on none that are
+ * pressed. A control that moves under the pointer is the one thing the design
+ * language rules out, and a `transition` on a Button would be exactly that.
+ */
+export type NebaTransition = NebaAnimation | NebaTransitionOptions;
+
 /** Style props shared by most components; spread into their own prop types. */
 export interface NebaStyleProps {
   /** @default 'solid' */

@@ -1017,6 +1017,308 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Animation
+ *
+ * The `Animate*` components, and the `transition` prop that shares their
+ * effects. Everything below is real CSS for the reason the loading indicators
+ * above are: a keyframe is not a Tailwind variant, so there is nothing to
+ * express one with.
+ *
+ * The whole set is built on one idea. An effect is a single `@keyframes` that
+ * runs from a state written entirely in `--n-anim-*` custom properties to the
+ * element's natural one — so `src/internal/animate.ts` never generates CSS, it
+ * only fills slots, and running an effect backwards is `animation-direction:
+ * reverse` rather than a second keyframe. That is what makes `mode="out"` cost
+ * nothing on all six.
+ *
+ * `fill-mode` is `both` throughout, which is what lets an animation that has
+ * not been triggered yet simply sit paused on its own first frame. Without it,
+ * an element waiting to be scrolled into view would be fully drawn and then
+ * blink out the moment it arrived.
+ *
+ * This is also where the library's rule against transforms is at its narrowest.
+ * A *control* never moves — that rule is about a button resampling its label
+ * under the pointer, and it still holds without exception. An `Animate*` wraps
+ * content the caller asked to have moved, and it moves it with the independent
+ * `translate`, `scale` and `rotate` properties rather than the `transform`
+ * shorthand, so a caller's own transform on the same element survives.
+ * ------------------------------------------------------------------------- */
+
+.neba-anim {
+  animation-duration: var(--n-anim-duration, 320ms);
+  animation-delay: var(--n-anim-delay, 0ms);
+  animation-timing-function: var(--n-anim-ease, var(--neba-ease));
+  animation-iteration-count: var(--n-anim-repeat, 1);
+  animation-direction: var(--n-anim-direction, normal);
+  animation-fill-mode: both;
+  animation-play-state: var(--n-anim-state, running);
+}
+
+@keyframes neba-anim-fade {
+  from {
+    opacity: var(--n-anim-opacity, 0);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.neba-anim-fade {
+  animation-name: neba-anim-fade;
+}
+
+/* Grow and Zoom share this one: they are the same arithmetic at two strengths,
+   separated by their defaults and by their origin rather than by their maths. */
+@keyframes neba-anim-scale {
+  from {
+    opacity: var(--n-anim-opacity, 0);
+    scale: var(--n-anim-scale, 0.8);
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.neba-anim-scale {
+  animation-name: neba-anim-scale;
+}
+
+@keyframes neba-anim-slide {
+  from {
+    opacity: var(--n-anim-opacity, 0);
+    translate: var(--n-anim-x, 0px) var(--n-anim-y, 0px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.neba-anim-slide {
+  animation-name: neba-anim-slide;
+}
+
+/* Two angles rather than one, so the same keyframe covers both the quarter turn
+   something arrives on and the endless one a badge spins through. */
+@keyframes neba-anim-rotate {
+  from {
+    opacity: var(--n-anim-opacity, 0);
+    rotate: var(--n-anim-angle, -180deg);
+  }
+  to {
+    opacity: 1;
+    rotate: var(--n-anim-angle-to, 0deg);
+  }
+}
+
+.neba-anim-rotate {
+  animation-name: neba-anim-rotate;
+}
+
+/* Symmetric on purpose: a blink that ended anywhere but where it started would
+   leave the element half drawn whenever the count ran out. */
+@keyframes neba-anim-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: var(--n-anim-opacity, 0);
+  }
+}
+
+.neba-anim-blink {
+  animation-name: neba-anim-blink;
+}
+
+/*
+ * Lighting: a light travelling around the outside of something.
+ *
+ * The arc is a conic gradient and what moves is its `from` angle, which is only
+ * animatable because the angle is a registered custom property with a type. The
+ * alternative — rotating the pseudo-element itself — swings its corners out
+ * past the element on every quarter turn.
+ *
+ * `z-index: -1` inside an isolated stacking context puts the glow behind the
+ * content but still inside the component, so it reads as light escaping from
+ * under a sheet rather than as a border drawn around one.
+ */
+@property --neba-glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes neba-anim-lighting {
+  to {
+    --neba-glow-angle: 360deg;
+  }
+}
+
+.neba-anim-lighting {
+  position: relative;
+  isolation: isolate;
+}
+
+.neba-anim-lighting::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--n-anim-glow-width, 3px));
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--neba-glow-angle),
+    transparent 0deg,
+    var(--n-anim-glow, var(--n-accent)) var(--n-anim-glow-arc, 50deg),
+    transparent calc(var(--n-anim-glow-arc, 50deg) * 2),
+    transparent 360deg
+  );
+  filter: blur(var(--n-anim-glow-blur, 4px));
+  animation-name: neba-anim-lighting;
+  animation-duration: var(--n-anim-duration, 3s);
+  animation-delay: var(--n-anim-delay, 0ms);
+  animation-timing-function: linear;
+  animation-iteration-count: var(--n-anim-repeat, infinite);
+  animation-direction: var(--n-anim-direction, normal);
+  animation-fill-mode: both;
+  animation-play-state: var(--n-anim-state, running);
+}
+
+/*
+ * Marquee: two identical copies, both moving by exactly one copy plus the gap.
+ *
+ * Which is the whole trick — when the first copy has travelled its own width,
+ * the second is standing precisely where the first began, so there is no seam
+ * and no frame where the strip is empty. A percentage `translate` resolves
+ * against the element's own box, so neither copy has to be measured for this
+ * to hold; measuring only ever decides how *fast* it goes.
+ */
+@keyframes neba-anim-marquee-x {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: calc(-100% - var(--n-anim-gap, 0px)) 0;
+  }
+}
+
+@keyframes neba-anim-marquee-y {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(-100% - var(--n-anim-gap, 0px));
+  }
+}
+
+.neba-marquee {
+  display: flex;
+  overflow: hidden;
+  gap: var(--n-anim-gap, 0px);
+}
+
+.neba-marquee-vertical {
+  flex-direction: column;
+}
+
+.neba-marquee-track {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--n-anim-gap, 0px);
+  animation-name: neba-anim-marquee-x;
+  animation-duration: var(--n-anim-duration, 12s);
+  animation-delay: var(--n-anim-delay, 0ms);
+  /* Linear unless a caller insists otherwise. An eased marquee slows at both
+     ends of a loop that has no ends, which reads as the page stuttering. */
+  animation-timing-function: var(--n-anim-ease, linear);
+  animation-iteration-count: var(--n-anim-repeat, infinite);
+  animation-direction: var(--n-anim-direction, normal);
+  animation-fill-mode: both;
+  animation-play-state: var(--n-anim-state, running);
+}
+
+.neba-marquee-vertical .neba-marquee-track {
+  flex-direction: column;
+  animation-name: neba-anim-marquee-y;
+}
+
+.neba-marquee[data-pause-on-hover]:hover .neba-marquee-track {
+  animation-play-state: paused;
+}
+
+/*
+ * Headline: one line replacing another from below.
+ *
+ * Every item is in the same grid cell, so the box is as tall as the tallest of
+ * them and never resizes as the reel turns. The ones not on screen keep their
+ * space with `visibility` rather than `display`, which is what makes that true.
+ */
+@keyframes neba-anim-headline-in {
+  from {
+    translate: 0 var(--n-anim-rise, 100%);
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes neba-anim-headline-out {
+  from {
+    translate: 0 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0 calc(-1 * var(--n-anim-rise, 100%));
+    opacity: 0;
+  }
+}
+
+.neba-headline {
+  display: grid;
+  overflow: hidden;
+}
+
+.neba-headline-item {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  animation-duration: var(--n-anim-duration, 480ms);
+  animation-timing-function: var(--n-anim-ease, var(--neba-ease));
+  animation-fill-mode: both;
+}
+
+.neba-headline-item[data-state='active'] {
+  visibility: visible;
+  animation-name: neba-anim-headline-in;
+}
+
+.neba-headline-item[data-state='leaving'] {
+  visibility: visible;
+  animation-name: neba-anim-headline-out;
+}
+
+/* The block after a typewriter. `step-end` rather than a fade, because a caret
+   that eases is a caret that looks like it is being rendered slowly. */
+@keyframes neba-anim-caret {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.neba-typing-caret {
+  display: inline-block;
+  animation: neba-anim-caret 1s step-end infinite;
+}
+
 /* Respect a reduced-motion preference. Both layers track the pointer, so they
    are motion in the sense that matters here — drop them entirely. */
 @media (prefers-reduced-motion: reduce) {
@@ -1065,5 +1367,30 @@
     inline-size: 100%;
     background-image: none;
     animation: neba-skeleton-pulse 2.4s var(--neba-ease) infinite;
+  }
+
+  /*
+   * The Animate components go the other way from the indicators above, and the
+   * difference is what each of them is saying. A spinner that stops is lying
+   * about whether anything is happening; an entrance that does not play has
+   * still delivered its content, which is the only thing it was ever carrying.
+   *
+   * `animation: none` rather than a zero duration, because the shorthand also
+   * clears `fill-mode` — and it is the fill that was holding an untriggered
+   * element on its own first frame at `opacity: 0`. Left in place, respecting a
+   * reader's preference would blank the page.
+   */
+  .neba-anim,
+  .neba-marquee-track,
+  .neba-headline-item,
+  .neba-typing-caret {
+    animation: none;
+  }
+
+  /* The arc stops travelling and becomes an even glow. The same trade the
+     skeleton makes: the decoration survives, the motion does not. */
+  .neba-anim-lighting::before {
+    background: var(--n-anim-glow, var(--n-accent));
+    animation: none;
   }
 }
