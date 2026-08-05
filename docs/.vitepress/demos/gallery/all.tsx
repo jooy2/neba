@@ -3,6 +3,17 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  AnimateAppear,
+  AnimateBlink,
+  AnimateFade,
+  AnimateGrow,
+  AnimateHeadline,
+  AnimateLighting,
+  AnimateMarquee,
+  AnimateRotate,
+  AnimateSlide,
+  AnimateTyping,
+  AnimateZoom,
   AspectRatio,
   Avatar,
   Badge,
@@ -17,6 +28,7 @@ import {
   ChatBubble,
   Checkbox,
   Chip,
+  ColorPicker,
   Combobox,
   Container,
   DatePicker,
@@ -459,6 +471,15 @@ const GROUPS: Group[] = [
         },
         path: '/components/inputs/otp-field',
         preview: <OtpField size="xs" length={6} groupSize={3} defaultValue="4417" />
+      },
+      {
+        name: 'ColorPicker',
+        summary: {
+          ko: '눈으로 고르는 색. 사각형과 레일, 그리고 스와치',
+          en: 'A colour chosen by eye — a square, two rails and a row of swatches'
+        },
+        path: '/components/inputs/color-picker',
+        preview: <ColorPicker size="sm" defaultValue="#1a58d1" />
       }
     ]
   },
@@ -1197,6 +1218,150 @@ const GROUPS: Group[] = [
             <ProgressBox size="lg" />
             <ProgressBox size="lg" value={62} color="info" />
           </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Transitions',
+    note: {
+      ko: '무엇이든 감싸 움직이게 하는 래퍼',
+      en: 'Wrappers that make anything move'
+    },
+    entries: [
+      {
+        name: 'AnimateFade',
+        summary: { ko: '불투명도만으로 나타나고 사라짐', en: 'Arriving on opacity alone' },
+        path: '/components/transitions/animate-fade',
+        preview: (
+          <AnimateFade duration={1400} repeat="infinite" alternate>
+            <Chip>Fade</Chip>
+          </AnimateFade>
+        )
+      },
+      {
+        name: 'AnimateGrow',
+        summary: { ko: '한 점에서 펼쳐짐', en: 'Unfolding from a point' },
+        path: '/components/transitions/animate-grow',
+        preview: (
+          <AnimateGrow duration={1400} repeat="infinite" alternate origin="bottom left">
+            <Chip color="info">Grow</Chip>
+          </AnimateGrow>
+        )
+      },
+      {
+        name: 'AnimateZoom',
+        summary: { ko: '가운데에서 다가옴', en: 'Coming forward from the middle' },
+        path: '/components/transitions/animate-zoom',
+        preview: (
+          <AnimateZoom duration={1400} repeat="infinite" alternate>
+            <Chip color="success">Zoom</Chip>
+          </AnimateZoom>
+        )
+      },
+      {
+        name: 'AnimateSlide',
+        summary: { ko: '한쪽 변에서 미끄러져 들어옴', en: 'Travelling in from one edge' },
+        path: '/components/transitions/animate-slide',
+        preview: (
+          <div className="overflow-hidden">
+            <AnimateSlide from="left" duration={1400} repeat="infinite" alternate>
+              <Chip color="secondary">Slide</Chip>
+            </AnimateSlide>
+          </div>
+        )
+      },
+      {
+        name: 'AnimateRotate',
+        summary: { ko: '한 점을 축으로 회전', en: 'Turning about a point' },
+        path: '/components/transitions/animate-rotate',
+        preview: (
+          <AnimateRotate
+            from={0}
+            to={360}
+            duration={3200}
+            repeat="infinite"
+            easing="linear"
+            fade={false}
+          >
+            <Icon icon={<GalleryStarIcon />} size="xl" color="warning" label="Rotating" />
+          </AnimateRotate>
+        )
+      },
+      {
+        name: 'AnimateBlink',
+        summary: { ko: '정해진 바닥값까지 맥동', en: 'Pulsing down to a floor' },
+        path: '/components/transitions/animate-blink',
+        preview: (
+          <AnimateBlink min={0.3} duration={1200}>
+            <Chip color="danger" variant="solid">
+              Live
+            </Chip>
+          </AnimateBlink>
+        )
+      },
+      {
+        name: 'AnimateAppear',
+        summary: { ko: '하나씩 차례로 내려앉음', en: 'Settling into place one after another' },
+        path: '/components/transitions/animate-appear',
+        preview: (
+          <AnimateAppear stagger={220} duration={600} repeat="infinite" className="flex gap-2">
+            <Chip size="sm">One</Chip>
+            <Chip size="sm">Two</Chip>
+            <Chip size="sm">Three</Chip>
+          </AnimateAppear>
+        )
+      },
+      {
+        name: 'AnimateTyping',
+        summary: { ko: '한 글자씩 쓰이는 텍스트', en: 'Text typed one character at a time' },
+        path: '/components/transitions/animate-typing',
+        preview: (
+          <AnimateTyping
+            className="font-mono text-sm text-[var(--vp-c-text-1)]"
+            text="Typing…"
+            repeat="infinite"
+            erase
+            speed={10}
+          />
+        )
+      },
+      {
+        name: 'AnimateLighting',
+        summary: { ko: '바깥을 도는 빛', en: 'A light travelling around the outside' },
+        path: '/components/transitions/animate-lighting',
+        preview: (
+          <AnimateLighting size="md" arc={70} duration={2400}>
+            <Box size="md" density="compact">
+              <Typography level="caption">Working</Typography>
+            </Box>
+          </AnimateLighting>
+        )
+      },
+      {
+        name: 'AnimateMarquee',
+        summary: { ko: '끝없이 흘러가는 띠', en: 'A strip scrolling steadily past' },
+        path: '/components/transitions/animate-marquee',
+        preview: (
+          <AnimateMarquee className="w-full max-w-56" speed={35} gap="1rem">
+            {['Northwind', 'Contoso', 'Initech'].map((name) => (
+              <Chip key={name} size="sm">
+                {name}
+              </Chip>
+            ))}
+          </AnimateMarquee>
+        )
+      },
+      {
+        name: 'AnimateHeadline',
+        summary: { ko: '아래에서 올라오며 교체되는 줄', en: 'One line replacing the one above it' },
+        path: '/components/transitions/animate-headline',
+        preview: (
+          <AnimateHeadline interval={1800} className="text-base font-semibold">
+            <span>faster</span>
+            <span>quieter</span>
+            <span>yours</span>
+          </AnimateHeadline>
         )
       }
     ]

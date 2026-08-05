@@ -3,6 +3,11 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  AnimateAppear,
+  AnimateHeadline,
+  AnimateLighting,
+  AnimateMarquee,
+  AnimateTyping,
   AspectRatio,
   Avatar,
   Badge,
@@ -17,6 +22,7 @@ import {
   ChatBubble,
   Checkbox,
   Chip,
+  ColorPicker,
   Combobox,
   Container,
   ContextMenu,
@@ -840,6 +846,13 @@ function ShowcaseBody() {
                 minuteStep={15}
                 clearable
               />
+              <ColorPicker
+                fullWidth
+                label="Label colour"
+                description="Shown on the card and in the calendar."
+                defaultValue="#1a58d1"
+                clearable
+              />
             </div>
           </Card>
         </section>
@@ -889,6 +902,65 @@ function ShowcaseBody() {
               </Pane>
             </Panes>
           </div>
+        </section>
+
+        {/* The wrappers that make anything move. Every one of them is off
+            entirely under a reduced-motion preference, which is why none of
+            them is the only thing saying what it says. */}
+        <section className="flex flex-col gap-3">
+          <Caption>
+            AnimateHeadline · AnimateTyping · AnimateAppear · AnimateLighting · AnimateMarquee
+          </Caption>
+          <Card size="sm" title={<h3>What changed this week</h3>} dividers>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-baseline gap-2">
+                <Typography level="h5" render={<span />}>
+                  Now
+                </Typography>
+                <AnimateHeadline interval={2400} className="text-(--neba-primary-accent)">
+                  <Typography level="h5" render={<span />}>
+                    faster builds
+                  </Typography>
+                  <Typography level="h5" render={<span />}>
+                    quieter alerts
+                  </Typography>
+                  <Typography level="h5" render={<span />}>
+                    fewer rollbacks
+                  </Typography>
+                </AnimateHeadline>
+              </div>
+
+              <AnimateTyping
+                className="font-mono text-xs text-(--neba-muted-fg)"
+                text="$ neba deploy --production"
+                speed={22}
+                repeat="infinite"
+                erase
+              />
+
+              <AnimateAppear trigger="visible" stagger={90} className="flex flex-wrap gap-2">
+                {['api', 'web', 'workers', 'docs', 'billing'].map((service) => (
+                  <Chip key={service} size="sm">
+                    {service}
+                  </Chip>
+                ))}
+              </AnimateAppear>
+
+              <AnimateLighting size="md" arc={70} duration={2600}>
+                <Box size="md" density="compact" variant="solid">
+                  <Typography level="caption">Rebuilding the search index…</Typography>
+                </Box>
+              </AnimateLighting>
+
+              <AnimateMarquee speed={40} gap="1.5rem">
+                {['Northwind', 'Contoso', 'Umbrella', 'Initech', 'Hooli'].map((name) => (
+                  <Chip key={name} size="sm" variant="text" color="secondary">
+                    {name}
+                  </Chip>
+                ))}
+              </AnimateMarquee>
+            </div>
+          </Card>
         </section>
 
         {/* What a release page is made of: the run that produced it, the note

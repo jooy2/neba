@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.3.0 (2026-08-05)
+
+### Added
+
+- **A sixth group, Transitions: eleven `Animate*` wrappers that make anything move.** `AnimateFade`, `AnimateGrow`, `AnimateZoom`, `AnimateSlide`, `AnimateRotate` and `AnimateBlink` are the six named effects; `AnimateAppear`, `AnimateTyping`, `AnimateLighting`, `AnimateMarquee` and `AnimateHeadline` are the five that have to understand what their children are. All eleven take the same settings — `duration` and `delay` in milliseconds, `easing`, `repeat` (a count or `'infinite'`), `alternate`, `paused`, and `trigger`: `mount`, `visible` (with `once` and `threshold`), `hover`, or `manual` driven by `play`. Every one of them is switched off entirely by a `prefers-reduced-motion` preference, so none of them is ever the only thing carrying a message.
+- **A `transition` prop on the components that display something** — `Box`, `Card`, `Statistic`, `Alert`, `Chip`, `Avatar`, `Icon`, `Typography` and `Blockquote`. `transition="fade"` is an entrance run once on mount, and the object form takes the details: `{ type: 'slide', from: 'left', duration: 500 }`. It is offered on no component that is pressed, because a control that moves under the pointer aiming at it is the one thing the design language rules out. Anything past a mount — a replay, a scroll trigger, a hover — is an `Animate*` component, and any component can be wrapped in one.
+- `ColorPicker` — a colour chosen by eye: a saturation square, a hue rail, an optional opacity rail, a field for typing a value in, and a grid of swatches. `format` decides whether the value comes back as hex, `rgb()` or `hsl()`; `alpha` adds the fourth channel; `swatches` replaces the built-in set with the colours a product actually uses; `inline` draws the panel into the page instead of into a popup. It reads hex in all four lengths, `rgb()`/`rgba()` and `hsl()`/`hsla()` in both syntaxes, and it adds no dependency — the conversions are a hundred lines of arithmetic in `internal/color.ts`.
+- The i18n table gains a `color` namespace, so the picker's square, rails, field and swatch grid — none of which have any text on them — are named in all nineteen languages. `locale` picks the language and `labels` overrides any one of them.
+
+### Documentation
+
+- Pages for `ColorPicker` and the eleven `Animate*` components in both locales, their props rows, their demos, cards in the component gallery, a place on the sample screen, and their entries in `llms.txt`.
+- **Prop conventions gains a Motion section**, which is where the shared animation vocabulary and the rule about which components take `transition` are written down.
+
 ## 1.2.0 (2026-08-01)
 
 ### Added

@@ -49,6 +49,40 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 | `density` | **Padding only.** Never the height, never the type scale |
 | `elevation` | Drop shadow depth. `0` by default, meaning no shadow at all |
 
+## Motion
+
+Two vocabularies, and which one you want depends on whether the motion needs a trigger.
+
+`transition` is an entrance, run once on mount, on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography and Blockquote. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
+
+```ts
+type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+type NebaTransition = NebaAnimation | NebaTransitionOptions;
+```
+
+```tsx
+<Card transition="fade" />
+<Alert transition={{ type: 'slide', from: 'left', duration: 500, delay: 100 }} />
+```
+
+It is offered on no component that is pressed. A control that moves under the pointer aiming at it is the one thing the [design language](./design-language) rules out, and a `transition` on a Button would be exactly that.
+
+Anything past a mount — a replay, a scroll trigger, a hover, your own control — is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all eleven:
+
+| Prop                 | The rule                                                                 |
+| -------------------- | ------------------------------------------------------------------------ |
+| `duration` / `delay` | Milliseconds, always. Never a CSS string                                 |
+| `easing`             | A CSS easing curve. Defaults to the house one                            |
+| `repeat`             | A count, or `'infinite'` — the word CSS uses                             |
+| `alternate`          | Every other pass runs backwards, so a repeat returns instead of jumping  |
+| `mode`               | `'in'` or `'out'`. `out` is the same animation reversed, held at the end |
+| `trigger`            | `'mount'` (default), `'visible'`, `'hover'` or `'manual'`                |
+| `play`               | Runs a `manual` one. Each `false` → `true` starts it over                |
+| `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen   |
+| `paused`             | Holds the animation where it is                                          |
+
+Every effect in the library is switched off entirely by a reduced-motion preference, and none of them is ever the only thing carrying a message.
+
 ## State props
 
 | Prop       | Meaning                                                     |

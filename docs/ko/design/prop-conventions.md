@@ -49,6 +49,40 @@ export interface ButtonProps
 | `density` | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않습니다 |
 | `elevation` | 그림자 깊이. 기본 0(그림자 없음) |
 
+## 모션
+
+어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.
+
+`transition`은 mount 시 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 컴포넌트들이 받습니다 — Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
+
+```ts
+type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+type NebaTransition = NebaAnimation | NebaTransitionOptions;
+```
+
+```tsx
+<Card transition="fade" />
+<Alert transition={{ type: 'slide', from: 'left', duration: 500, delay: 100 }} />
+```
+
+눌리는 컴포넌트에는 제공하지 않습니다. 겨냥한 포인터 아래에서 컨트롤이 움직이는 것은 [디자인 언어](./design-language)가 금지하는 바로 그것이고, Button의 `transition`이 정확히 그것이 됩니다.
+
+mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 — 은 [`Animate*` 컴포넌트](../components/transitions/animate-fade)의 몫이며, 어떤 컴포넌트든 그것으로 감쌀 수 있습니다. 아래 설정을 열한 개 모두가 같은 뜻으로 공유합니다.
+
+| Prop | 규칙 |
+| --- | --- |
+| `duration` / `delay` | 언제나 밀리초입니다. CSS 문자열이 아닙니다 |
+| `easing` | CSS 이징 곡선. 기본값은 라이브러리의 곡선 |
+| `repeat` | 횟수 또는 CSS가 쓰는 단어 그대로 `'infinite'` |
+| `alternate` | 한 번 걸러 거꾸로 재생해, 반복이 처음으로 튀지 않고 되돌아옵니다 |
+| `mode` | `'in'` 또는 `'out'`. `out`은 같은 애니메이션을 거꾸로 재생하고 끝에서 멈춥니다 |
+| `trigger` | `'mount'`(기본값), `'visible'`, `'hover'`, `'manual'` |
+| `play` | `manual`을 재생합니다. `false` → `true`마다 처음부터 다시 |
+| `once` / `threshold` | `'visible'`용 — 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
+| `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
+
+라이브러리의 모든 효과는 축소된 모션 설정에서 통째로 꺼지며, 어느 것도 메시지를 혼자 지고 있지 않습니다.
+
 ## 상태 prop
 
 | Prop       | 의미                                                         |

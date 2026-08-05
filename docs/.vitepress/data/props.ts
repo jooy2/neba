@@ -486,6 +486,145 @@ const clockProps: PropRow[] = [
   }
 ];
 
+/* ---------------------------------------------------------------------------
+ * Animation
+ * ------------------------------------------------------------------------- */
+
+const ANIMATE_TRIGGER = "'mount' | 'visible' | 'hover' | 'manual'";
+const ANIMATE_REPEAT = "number | 'infinite'";
+const ANIMATE_MODE = "'in' | 'out'";
+
+/** The `transition` row, on every component that displays rather than acts. */
+function transitionProp(example: string): PropRow {
+  return {
+    name: 'transition',
+    type: 'NebaTransition',
+    shared: true,
+    description: {
+      ko: `mount 시 한 번 실행되는 등장 애니메이션 (${example}). 트리거나 반복이 필요하면 Animate* 컴포넌트로 감싸세요`,
+      en: `An entrance animation, run once on mount (${example}). Wrap it in an Animate* component for a trigger or a replay`
+    }
+  };
+}
+
+interface AnimateOptions {
+  /** Milliseconds, as the component's own default. */
+  duration: string;
+  repeat?: string;
+  /** Left out by the four that write their own motion. */
+  mode?: boolean;
+}
+
+/**
+ * The rows every `Animate*` takes.
+ *
+ * Written once for the same reason the picker rows are: eleven components share
+ * a vocabulary, and a reader who has learned `trigger` on AnimateFade has
+ * learned it everywhere. Only the durations and a couple of defaults differ.
+ */
+function animateProps(options: AnimateOptions): PropRow[] {
+  return [
+    ...(options.mode === false
+      ? []
+      : [
+          {
+            name: 'mode',
+            type: ANIMATE_MODE,
+            default: "'in'",
+            shared: true,
+            description: {
+              ko: '들어오는지 나가는지. out은 같은 애니메이션을 거꾸로 재생하고 그 자리에서 멈춥니다',
+              en: 'Whether the content arrives or leaves. out is the same animation run backwards, and it is held there'
+            }
+          } satisfies PropRow
+        ]),
+    {
+      name: 'duration',
+      type: 'number',
+      default: options.duration,
+      shared: true,
+      description: { ko: '한 번 재생되는 시간(ms)', en: 'How long one run takes, in milliseconds' }
+    },
+    {
+      name: 'delay',
+      type: 'number',
+      default: '0',
+      shared: true,
+      description: { ko: '시작 전 대기(ms)', en: 'How long before it starts, in milliseconds' }
+    },
+    {
+      name: 'easing',
+      type: 'string',
+      description: {
+        ko: 'CSS 이징 곡선. 기본값은 라이브러리의 곡선',
+        en: 'The easing curve, as CSS writes it. Defaults to the house curve'
+      }
+    },
+    {
+      name: 'repeat',
+      type: ANIMATE_REPEAT,
+      default: options.repeat ?? '1',
+      shared: true,
+      description: { ko: '반복 횟수', en: 'How many times it runs' }
+    },
+    {
+      name: 'alternate',
+      type: 'boolean',
+      default: 'false',
+      shared: true,
+      description: {
+        ko: '한 번 걸러 거꾸로 재생합니다. 반복이 처음으로 튀지 않고 되돌아옵니다',
+        en: 'Runs every other pass backwards, so a repeat returns instead of jumping'
+      }
+    },
+    {
+      name: 'trigger',
+      type: ANIMATE_TRIGGER,
+      default: "'mount'",
+      shared: true,
+      description: {
+        ko: '무엇이 재생을 시작하는지. visible은 화면에 들어올 때, hover는 포인터가 올라올 때(포커스 포함), manual은 play가 정합니다',
+        en: 'What starts it. visible is on scrolling into view, hover is under the pointer (focus counts), manual is whatever play says'
+      }
+    },
+    {
+      name: 'play',
+      type: 'boolean',
+      description: {
+        ko: 'trigger가 manual일 때 재생합니다. false → true 될 때마다 처음부터 다시 시작합니다',
+        en: 'Runs it when trigger is manual. Each false → true starts it over'
+      }
+    },
+    {
+      name: 'once',
+      type: 'boolean',
+      default: 'true',
+      shared: true,
+      description: {
+        ko: 'trigger가 visible일 때 처음 한 번만 재생할지. 끄면 화면에 들어올 때마다 다시 재생됩니다',
+        en: 'With trigger="visible", whether it runs only the first time. Off, it runs again on every return'
+      }
+    },
+    {
+      name: 'threshold',
+      type: 'number',
+      default: '0.2',
+      shared: true,
+      description: {
+        ko: 'trigger가 visible일 때 화면에 얼마나 들어와야 하는지, 0에서 1 사이',
+        en: 'With trigger="visible", how much of the element has to be on screen, from 0 to 1'
+      }
+    },
+    {
+      name: 'paused',
+      type: 'boolean',
+      default: 'false',
+      shared: true,
+      description: { ko: '있는 자리에 붙들어 둡니다', en: 'Holds the animation where it is' }
+    }
+  ];
+}
+
 export const propTables: Record<string, PropRow[]> = {
   Button: [
     ...sharedProps({
@@ -715,7 +854,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '박스에 담기는 내용', en: 'What the box holds' }
-    }
+    },
+    transitionProp('transition="fade"')
   ],
 
   Container: [
@@ -935,7 +1075,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '카드 본문', en: "The card's body" }
-    }
+    },
+    transitionProp('transition="grow"')
   ],
 
   ButtonGroup: [
@@ -1739,7 +1880,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '칩의 라벨', en: "The chip's label" }
-    }
+    },
+    transitionProp('transition="zoom"')
   ],
 
   Table: [
@@ -1891,7 +2033,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '메시지', en: 'The message' }
-    }
+    },
+    transitionProp('transition="slide"')
   ],
 
   Dialog: [
@@ -2539,7 +2682,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '텍스트', en: 'The text' }
-    }
+    },
+    transitionProp('transition="fade"')
   ],
 
   Avatar: [
@@ -2636,7 +2780,8 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '이니셜 대신 그릴 fallback. 아이콘, 로고, 이모지 하나',
         en: 'The fallback, drawn instead of the initials. An icon, a logo, a single emoji'
       }
-    }
+    },
+    transitionProp('transition="fade"')
   ],
 
   Badge: [
@@ -3984,7 +4129,8 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '아이콘이 하는 말. 없으면 접근성 트리에서 완전히 숨깁니다 — 대부분의 아이콘 옆에는 같은 말을 하는 단어가 이미 있고, 둘 다 읽는 것은 하나만 읽는 것보다 나쁩니다',
         en: 'What the icon says. Without it the icon is hidden from the accessibility tree entirely — most icons sit next to a word that already says the same thing, and reading both out loud is worse than reading one'
       }
-    }
+    },
+    transitionProp('transition="fade"')
   ],
 
   IconButton: [
@@ -4154,7 +4300,8 @@ export const propTables: Record<string, PropRow[]> = {
         ko: 'caption 아래 무엇이든 — 스파크라인, 목표 대비 ProgressLinear',
         en: 'Anything below the caption: a sparkline, a ProgressLinear against a target'
       }
-    }
+    },
+    transitionProp('transition="zoom"')
   ],
 
   Carousel: [
@@ -4501,7 +4648,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '인용된 말', en: 'What was said' }
-    }
+    },
+    transitionProp('transition="fade"')
   ],
 
   Shortcut: [
@@ -6108,6 +6256,629 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '비율 안에 담기는 것', en: 'What is held to the proportion' }
+    }
+  ],
+  ColorPicker: [
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: 'CSS 색상 문자열. 직접 제어할 때 씁니다',
+        en: 'The colour, as a CSS string. Pass it to drive the picker yourself'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string',
+      default: "'#1a58d1'",
+      description: { ko: '제어하지 않을 때의 시작 색', en: 'Where an uncontrolled picker starts' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string) => void',
+      description: {
+        ko: 'format이 정한 표기로 새 색을 전달합니다',
+        en: 'Called with the new colour, written in format'
+      }
+    },
+    {
+      name: 'format',
+      type: "'hex' | 'rgb' | 'hsl'",
+      default: "'hex'",
+      description: {
+        ko: '값을 내보낼 때의 표기법',
+        en: 'Which notation the value is written in on the way out'
+      }
+    },
+    {
+      name: 'alpha',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '불투명도 레일을 추가하고 값에 네 번째 채널을 싣습니다',
+        en: 'Offers an opacity rail, and lets the value carry a fourth channel'
+      }
+    },
+    {
+      name: 'swatches',
+      type: 'readonly string[] | false',
+      description: {
+        ko: '패널 아래의 기본 색들. false면 그리지 않고, 배열이면 내장 세트를 대체합니다',
+        en: 'The ready-made colours under the panel. false draws none; an array replaces the built-in set'
+      }
+    },
+    {
+      name: 'inline',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '팝업 대신 페이지에 패널을 직접 그립니다. 트리거는 없습니다',
+        en: 'Draws the panel in the page instead of in a popup, with no trigger'
+      }
+    },
+    {
+      name: 'editable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '패널 아래에 값을 직접 입력할 수 있는 필드',
+        en: 'The field under the panel that the value can be typed into'
+      }
+    },
+    {
+      name: 'clearable',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '값을 비우는 ×를 답니다', en: 'Offers the × that empties the control' }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열려 있는지. onOpenChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the popup is open. Use with onOpenChange for a controlled one'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음에 열린 채로 시작', en: 'Whether it starts open' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when the popup opens or closes' }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '접근성 이름들의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the accessible names are written in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<ColorPickerLabels>',
+      description: {
+        ko: '그 이름들을 하나씩 덮어씁니다. 색 사각형, 두 레일, 입력란, 스와치 묶음 — 글자가 없는 부분들의 이름입니다',
+        en: 'Overrides for those names, one at a time — the square, the two rails, the field and the swatch grid all have no text on them'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: { ko: '폼과 함께 전송될 이름', en: 'Submits with a form under this name' }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
+    },
+    ...fieldProps,
+    ...inertProps,
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      sizeDescription: {
+        ko: '트리거의 높이, 그리고 패널과 그 안 사각형의 크기',
+        en: "The trigger's height, and the size of the panel and the square on it"
+      },
+      colorDescription: {
+        ko: '테두리와 focus ring의 색 역할입니다. 고르는 색과는 무관합니다',
+        en: 'The family of the edge and the focus ring. Nothing to do with the colour being chosen'
+      }
+    })
+  ],
+
+  AnimateFade: [
+    {
+      name: 'from',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '시작 불투명도, 0에서 1 사이',
+        en: 'The opacity it starts from, between 0 and 1'
+      }
+    },
+    ...animateProps({ duration: '320' }),
+    renderProp('render={<section />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '나타나거나 사라지는 것', en: 'What arrives or leaves' }
+    }
+  ],
+
+  AnimateGrow: [
+    {
+      name: 'from',
+      type: 'number',
+      default: '0.8',
+      description: {
+        ko: '최종 크기에 대한 시작 배율. 1보다 크면 커진 채로 등장해 제자리로 내려앉습니다',
+        en: 'The scale it starts from, as a multiple of its final size. Above 1 it settles down onto the page'
+      }
+    },
+    {
+      name: 'origin',
+      type: 'string',
+      default: "'center'",
+      description: {
+        ko: '펼쳐지는 기준점. CSS transform-origin 그대로입니다',
+        en: 'Which point stays put while the rest moves — any CSS transform-origin'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '커지면서 함께 페이드인합니다',
+        en: 'Fades in as it grows'
+      }
+    },
+    ...animateProps({ duration: '340' }),
+    renderProp('render={<li />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '펼쳐지는 것', en: 'What unfolds' }
+    }
+  ],
+
+  AnimateZoom: [
+    {
+      name: 'from',
+      type: 'number',
+      default: '0.4',
+      description: {
+        ko: '최종 크기에 대한 시작 배율. 1보다 크면 앞에서 다가와 제자리에 놓입니다',
+        en: 'The scale it starts from. Above 1 it arrives oversized and settles back, which reads as coming towards the reader'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '확대되면서 함께 페이드인합니다', en: 'Fades in as it zooms' }
+    },
+    ...animateProps({ duration: '340' }),
+    renderProp('render={<section />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '다가오는 것', en: 'What comes forward' }
+    }
+  ],
+
+  AnimateSlide: [
+    {
+      name: 'from',
+      type: SIDE,
+      default: "'bottom'",
+      shared: true,
+      description: {
+        ko: '어느 변에서 들어오는지. NebaSide가 어디서나 그렇듯 물리적입니다',
+        en: 'Which edge it travels from. Physical, as NebaSide is everywhere'
+      }
+    },
+    {
+      name: 'distance',
+      type: 'number | string',
+      default: "'100%'",
+      description: {
+        ko: '이동 거리 — CSS 길이 또는 픽셀 수. 100%는 자기 자신의 크기입니다',
+        en: "How far it travels — a CSS length, or a number in pixels. '100%' is the element's own size"
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '이동하면서 함께 페이드인합니다', en: 'Fades in as it slides' }
+    },
+    ...animateProps({ duration: '380' }),
+    renderProp('render={<aside />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '미끄러져 들어오는 것', en: 'What travels in' }
+    }
+  ],
+
+  AnimateRotate: [
+    {
+      name: 'from',
+      type: 'number',
+      default: '-180',
+      description: {
+        ko: '시작 각도(도). 음수는 반시계 방향',
+        en: 'The angle it starts at, in degrees. Negative is anticlockwise'
+      }
+    },
+    {
+      name: 'to',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '끝 각도(도). from과 함께 쓰면 하나의 컴포넌트가 제자리에 안착하는 회전과 끝없는 회전을 모두 표현합니다',
+        en: 'The angle it ends at. Together with from this covers both a turn into place and an endless spin'
+      }
+    },
+    {
+      name: 'origin',
+      type: 'string',
+      default: "'center'",
+      description: {
+        ko: '회전축. CSS transform-origin 그대로입니다',
+        en: 'Which point it turns about — any CSS transform-origin'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '회전하면서 함께 페이드인합니다. 계속 도는 경우에는 꺼야 합니다',
+        en: 'Fades in as it turns. Turn it off for a continuous spin'
+      }
+    },
+    ...animateProps({ duration: '460' }),
+    renderProp('render={<span />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '회전하는 것', en: 'What turns' }
+    }
+  ],
+
+  AnimateBlink: [
+    {
+      name: 'min',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '가장 흐릴 때의 불투명도, 0에서 1 사이',
+        en: 'How faint it gets at the bottom of the cycle, between 0 and 1'
+      }
+    },
+    ...animateProps({ duration: '900', repeat: "'infinite'", mode: false }),
+    renderProp('render={<span />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '깜박이는 것', en: 'What pulses' }
+    }
+  ],
+
+  AnimateAppear: [
+    {
+      name: 'stagger',
+      type: 'number',
+      default: '80',
+      description: {
+        ko: '자식 하나와 다음 자식 사이의 간격(ms). 이 효과 자체입니다',
+        en: 'How long after one child the next one starts, in milliseconds. This is the whole effect'
+      }
+    },
+    {
+      name: 'from',
+      type: SIDE,
+      default: "'bottom'",
+      shared: true,
+      description: { ko: '각 자식이 밀려 들어오는 변', en: 'Which edge each child drifts in from' }
+    },
+    {
+      name: 'distance',
+      type: 'number | string',
+      default: "'0.75rem'",
+      description: {
+        ko: '각 자식의 이동 거리. 화면 밖에서 들어오는 것이 아니라 제자리에 내려앉는 정도로 짧습니다',
+        en: 'How far each child travels. Short on purpose: this is a settling, not an entrance from off screen'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '내려앉으면서 함께 페이드인합니다',
+        en: 'Fades each child in as it settles'
+      }
+    },
+    {
+      name: 'reverse',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '마지막 자식부터 실행합니다',
+        en: 'Runs the list from the last child to the first'
+      }
+    },
+    ...animateProps({ duration: '420', mode: false }),
+    renderProp('render={<ul />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '하나씩 나타나는 것들. 각 자식이 한 걸음입니다',
+        en: 'The things that appear, one after another. Each child is one step'
+      }
+    }
+  ],
+
+  AnimateTyping: [
+    {
+      name: 'text',
+      type: 'string',
+      description: {
+        ko: '타이핑할 문자열. children보다 우선합니다',
+        en: 'The text, when it is easier to pass than to nest. Overrides children'
+      }
+    },
+    {
+      name: 'speed',
+      type: 'number',
+      default: '24',
+      description: { ko: '초당 글자 수', en: 'How fast it is typed, in characters per second' }
+    },
+    {
+      name: 'hold',
+      type: 'number',
+      default: '1400',
+      description: {
+        ko: '다 쓴 뒤 반복 전까지 머무는 시간(ms)',
+        en: 'How long the finished text is held before it repeats, in milliseconds'
+      }
+    },
+    {
+      name: 'erase',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '반복 전에 한 번에 지우지 않고 한 글자씩 지웁니다',
+        en: 'Deletes the text again before repeating, rather than clearing it in one frame'
+      }
+    },
+    {
+      name: 'eraseSpeed',
+      type: 'number',
+      description: {
+        ko: '지우는 속도(초당 글자 수). 기본값은 speed의 두 배',
+        en: 'How fast it is deleted, in characters per second. Defaults to twice speed'
+      }
+    },
+    {
+      name: 'caret',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '글자 뒤의 커서', en: 'The block after the text' }
+    },
+    {
+      name: 'caretChar',
+      type: 'ReactNode',
+      default: "'|'",
+      description: { ko: '커서로 그릴 것', en: 'What the caret is drawn as' }
+    },
+    ...animateProps({ duration: '—', mode: false }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '타이핑할 텍스트. 텍스트만 타이핑됩니다 — 자식 중 요소가 있으면 그 안의 글자만 쓰이고 마크업은 무시됩니다',
+        en: 'The text to type. Only text is typed — an element among the children contributes its text and nothing about its markup'
+      }
+    }
+  ],
+
+  AnimateLighting: [
+    {
+      name: 'glow',
+      type: 'string',
+      description: {
+        ko: '의미론적 색이 아닌 임의의 CSS 색상. color보다 우선합니다',
+        en: 'A CSS colour, when a semantic family is not what is wanted. Overrides color'
+      }
+    },
+    {
+      name: 'spread',
+      type: 'number',
+      default: '3',
+      description: {
+        ko: '내용 바깥으로 빛이 번지는 거리(px)',
+        en: 'How far past the content the light reaches, in pixels'
+      }
+    },
+    {
+      name: 'arc',
+      type: 'number',
+      default: '50',
+      description: {
+        ko: '한 번에 밝아지는 호의 길이(도). 작으면 스치는 불꽃, 크면 훑는 빛입니다',
+        en: 'How much of the outline is lit at once, in degrees. Small is a travelling spark; large is a sweep'
+      }
+    },
+    {
+      name: 'blur',
+      type: 'number',
+      default: '4',
+      description: {
+        ko: '빛의 부드러움(px). 0이면 빛이 아니라 도형처럼 보입니다',
+        en: 'How soft the light is, in pixels. At 0 it reads as a graphic rather than as light'
+      }
+    },
+    {
+      name: 'reverse',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '빛이 반대 방향으로 돕니다', en: 'Runs the light the other way round' }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '빛이 따라가는 반경. 안에 든 것의 반경과 맞아야 합니다',
+        en: 'The radius the light follows. It has to match what is inside'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: { ko: '빛의 색 역할', en: 'Which family the light is drawn in' }
+    },
+    ...animateProps({ duration: '3000', repeat: "'infinite'", mode: false }),
+    renderProp('render={<section />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '빛이 둘러싸는 것', en: 'What the light travels around' }
+    }
+  ],
+
+  AnimateMarquee: [
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: { ko: '흐르는 방향의 축', en: 'Which way the strip runs' }
+    },
+    {
+      name: 'reverse',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '반대 방향으로 흐릅니다',
+        en: 'Runs it the other way — left to right, or bottom to top'
+      }
+    },
+    {
+      name: 'speed',
+      type: 'number',
+      default: '60',
+      description: {
+        ko: '초당 이동 픽셀. 시간이 아니라 속도이므로, 짧은 띠와 긴 띠가 같은 속도로 흐릅니다',
+        en: 'How fast the content travels, in pixels per second. A speed rather than a duration, so a short strip and a long one move at the same pace'
+      }
+    },
+    {
+      name: 'gap',
+      type: 'number | string',
+      default: "'2rem'",
+      description: {
+        ko: '항목 사이, 그리고 한 바퀴의 끝과 다음 시작 사이의 간격',
+        en: 'The gap between items, and between the last item and the first of the next pass'
+      }
+    },
+    {
+      name: 'copies',
+      type: 'number',
+      default: '2',
+      description: {
+        ko: '이어 붙이는 복제본 수. 내용이 상자보다 짧아 빈 구간이 생길 때만 올리면 됩니다',
+        en: 'How many copies are laid end to end. Raise it only when the content is short enough to leave a hole behind itself'
+      }
+    },
+    {
+      name: 'pauseOnHover',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '포인터가 올라가 있는 동안 멈춥니다. 지나가는 내용은 클릭할 수 없기 때문입니다',
+        en: 'Stops while the pointer is on it, because content moving past a pointer cannot be clicked'
+      }
+    },
+    ...animateProps({ duration: '—', repeat: "'infinite'", mode: false }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '흘러가는 것들', en: 'The things that scroll past' }
+    }
+  ],
+
+  AnimateHeadline: [
+    {
+      name: 'interval',
+      type: 'number',
+      default: '2600',
+      description: {
+        ko: '한 줄이 머무는 시간(ms). 줄이 도착한 순간부터 세므로 읽는 시간입니다',
+        en: 'How long each line is held, in milliseconds. Counted from the moment a line arrives, so it is reading time'
+      }
+    },
+    {
+      name: 'index',
+      type: 'number',
+      description: {
+        ko: '지금 보이는 줄. 직접 제어할 때 씁니다',
+        en: 'Which line is showing. Pass it to drive the reel yourself'
+      }
+    },
+    {
+      name: 'defaultIndex',
+      type: 'number',
+      default: '0',
+      description: { ko: '제어하지 않을 때 시작하는 줄', en: 'Where an uncontrolled reel starts' }
+    },
+    {
+      name: 'onIndexChange',
+      type: '(index: number) => void',
+      description: { ko: '새 줄이 올라왔을 때', en: 'Called with the line that has just come up' }
+    },
+    {
+      name: 'loop',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마지막 줄 다음에 처음으로 돌아갑니다. 끄면 마지막 줄에서 멈춥니다',
+        en: 'Starts again after the last line. Off, the reel stops on the last one'
+      }
+    },
+    {
+      name: 'rise',
+      type: 'number | string',
+      default: "'100%'",
+      description: {
+        ko: '한 줄이 올라오거나 나가며 이동하는 거리. 100%는 한 줄의 높이입니다',
+        en: "How far a line travels as it comes up or leaves. '100%' is one line's own height"
+      }
+    },
+    ...animateProps({ duration: '480', repeat: "'infinite'", mode: false }),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '읽히는 순서대로의 줄들',
+        en: 'The lines, in the order they should be read'
+      }
     }
   ]
 };
