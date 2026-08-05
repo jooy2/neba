@@ -13,7 +13,6 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
       "neba": ["../src/index.ts"]
     }

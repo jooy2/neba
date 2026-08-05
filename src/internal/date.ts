@@ -464,7 +464,14 @@ interface WeekInfo {
   firstDay?: number;
 }
 
-interface LocaleWithWeekInfo extends Intl.Locale {
+/**
+ * Deliberately not `extends Intl.Locale`. The lib declares `getWeekInfo()` as a
+ * method that is always there and always returns a whole `WeekInfo`, which is
+ * true of an engine that has it and is the case this code is not written for;
+ * an interface cannot widen an inherited member back to optional. So the shape
+ * is declared on its own and the locale is cast to it.
+ */
+interface LocaleWeekInfo {
   weekInfo?: WeekInfo;
   getWeekInfo?: () => WeekInfo;
 }
@@ -472,7 +479,7 @@ interface LocaleWithWeekInfo extends Intl.Locale {
 export function localeWeekStart(locale: string | undefined): NebaWeekday {
   try {
     const resolved = locale ?? new Intl.DateTimeFormat().resolvedOptions().locale;
-    const info = new Intl.Locale(resolved) as LocaleWithWeekInfo;
+    const info = new Intl.Locale(resolved) as LocaleWeekInfo;
     const week = typeof info.getWeekInfo === 'function' ? info.getWeekInfo() : info.weekInfo;
 
     // CLDR counts Monday as 1 through Sunday as 7; `getDay` counts Sunday as 0.
