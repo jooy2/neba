@@ -1,12 +1,19 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { transitionProps } from '../../internal/animate';
 import {
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import type {
+  NebaDensity,
+  NebaElevation,
+  NebaSize,
+  NebaStyleProps,
+  NebaTransition
+} from '../../types';
 
 export interface BoxProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -23,6 +30,12 @@ export interface BoxProps
    * @default true
    */
   padded?: boolean;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. For a trigger, a replay or anything under your own
+   * control, wrap the Box in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * Renders something other than a `<div>`: `render={<section />}`,
    * `render={<li />}`, or a function for full control. Base UI's own escape
@@ -128,6 +141,7 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
     density = 'default',
     elevation = 0,
     padded = true,
+    transition,
     render,
     className,
     style,
@@ -136,11 +150,14 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
   },
   ref
 ) {
+  const animation = transitionProps(transition);
+
   const classNames = [
     baseClasses,
     sizeClasses[size],
     padded ? boxPaddingClasses[density][size] : '',
     variantClasses[variant],
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -151,7 +168,7 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
     ref,
     props: {
       className: classNames,
-      style: { ...surfaceSlots(color, elevation), ...style },
+      style: { ...surfaceSlots(color, elevation), ...animation.style, ...style },
       children,
       ...props
     }

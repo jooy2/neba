@@ -173,4 +173,16 @@ describe('Blockquote', () => {
       expect(quote).toHaveClass('text-[1.0625rem]/[1.875rem]');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(
+        <Blockquote transition="fade" data-testid="quote">
+          Rosebud
+        </Blockquote>
+      );
+
+      expect(screen.getByTestId('quote').element()).toHaveClass('neba-anim-fade');
+    });
+  });
 });

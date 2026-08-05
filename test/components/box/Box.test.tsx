@@ -176,4 +176,66 @@ describe('Box', () => {
       expect(element.outerHTML).not.toContain('translate');
     });
   });
+
+  describe('transition', () => {
+    it('draws no animation unless it is asked for', async () => {
+      const screen = await render(<Box>content</Box>);
+
+      expect(screen.getByText('content').element()).not.toHaveClass('neba-anim');
+    });
+
+    it('takes an effect by name', async () => {
+      const screen = await render(<Box transition="fade">content</Box>);
+      const element = screen.getByText('content').element();
+
+      expect(element).toHaveClass('neba-anim');
+      expect(element).toHaveClass('neba-anim-fade');
+    });
+
+    it('takes the details as an object', async () => {
+      const screen = await render(
+        <Box transition={{ type: 'slide', from: 'left', distance: 40, duration: 600, delay: 50 }}>
+          content
+        </Box>
+      );
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-slide');
+      expect(element.style.getPropertyValue('--n-anim-x')).toBe('-40px');
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('600ms');
+      expect(element.style.getPropertyValue('--n-anim-delay')).toBe('50ms');
+    });
+
+    // A blink that ran once would be a flicker, so it is the one effect whose
+    // repeat defaults to endless.
+    it('repeats a blink forever and everything else once', async () => {
+      const screen = await render(<Box transition="blink">content</Box>);
+
+      expect(
+        (screen.getByText('content').element() as HTMLElement).style.getPropertyValue(
+          '--n-anim-repeat'
+        )
+      ).toBe('infinite');
+
+      await screen.rerender(<Box transition="fade">content</Box>);
+
+      expect(
+        (screen.getByText('content').element() as HTMLElement).style.getPropertyValue(
+          '--n-anim-repeat'
+        )
+      ).toBe('1');
+    });
+
+    it('leaves the surface slots and the caller\u2019s own style alone', async () => {
+      const screen = await render(
+        <Box transition="fade" color="success" style={{ marginTop: '4px' }}>
+          content
+        </Box>
+      );
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-success-accent)');
+      expect(element.style.marginTop).toBe('4px');
+    });
+  });
 });

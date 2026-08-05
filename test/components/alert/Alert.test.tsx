@@ -180,4 +180,18 @@ describe('Alert', () => {
       expect(html).not.toContain('translate');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(
+        <Alert transition="slide" data-testid="alert">
+          Saved
+        </Alert>
+      );
+      const element = screen.getByTestId('alert').element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-slide');
+      expect(element.style.getPropertyValue('--n-anim-y')).toBe('100%');
+    });
+  });
 });

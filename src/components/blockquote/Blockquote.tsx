@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box';
+import { transitionProps } from '../../internal/animate';
 import {
   hasContent,
   metaTextClasses,
@@ -8,7 +9,7 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types';
 
 /**
  * The props are a `<figure>`'s rather than a `<blockquote>`'s, which is a
@@ -25,6 +26,12 @@ export interface BlockquoteProps
    * @default 0
    */
   elevation?: NebaElevation;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. For a trigger, a replay or anything under your own
+   * control, wrap it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * Who said it. Its presence is what turns the quote into a `<figure>` with a
    * `<figcaption>`, which is the markup the HTML spec asks for: an attribution
@@ -156,6 +163,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
     source,
     cite,
     icon,
+    transition,
     className,
     style,
     children,
@@ -163,6 +171,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
   },
   ref
 ) {
+  const animation = transitionProps(transition);
   const attributed = hasContent(author) || hasContent(source);
   const glyph = icon === undefined ? <QuoteMarkIcon /> : icon;
 
@@ -176,6 +185,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
     variantClasses[variant],
     boxPaddingClasses[density][size],
     transitionClasses,
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -197,7 +207,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
     </blockquote>
   );
 
-  const shellStyle = { ...surfaceSlots(color, elevation), ...style };
+  const shellStyle = { ...surfaceSlots(color, elevation), ...animation.style, ...style };
 
   if (!attributed) {
     return (

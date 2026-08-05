@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar';
+import { transitionProps } from '../../internal/animate';
 import {
   controlHeightClasses,
   controlSlots,
@@ -9,7 +10,7 @@ import {
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaSize, NebaVariant } from '../../types';
+import type { NebaColor, NebaElevation, NebaSize, NebaTransition, NebaVariant } from '../../types';
 
 /** What Base UI reports about the picture as it loads. */
 export type AvatarLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
@@ -79,6 +80,12 @@ export interface AvatarProps extends Omit<React.ComponentPropsWithoutRef<'span'>
    * @default 0
    */
   elevation?: NebaElevation;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. For a trigger, a replay or anything under your own
+   * control, wrap it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * How long to wait before drawing the fallback, in milliseconds. Set it to
    * roughly the time a cached image takes and the initials stop flashing up in
@@ -258,6 +265,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
     delay,
     imageProps,
     onLoadingStatusChange,
+    transition,
     className,
     style,
     children,
@@ -266,6 +274,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
   ref
 ) {
   const derived = name ? initialsOf(name) : '';
+  const animation = transitionProps(transition);
   const label = alt ?? name;
 
   // `children` beats the initials beats the silhouette. Only the last of the
@@ -282,6 +291,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
     shape === 'circle' ? 'rounded-full' : avatarRadiusClasses[size],
     variantClasses[variant],
     plateClasses[variant],
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -291,7 +301,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
     <BaseAvatar.Root
       ref={ref}
       className={classNames}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
+      style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
       {...props}
     >
       {src ? (

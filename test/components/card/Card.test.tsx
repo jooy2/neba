@@ -208,4 +208,18 @@ describe('Card', () => {
       expect(root.outerHTML).not.toContain('translate');
     });
   });
+
+  describe('transition', () => {
+    // Card has no `transition` of its own — it is Box's, reaching it through
+    // the props Card passes straight down.
+    it('passes an entrance animation through to the sheet', async () => {
+      const screen = await render(
+        <Card transition="grow" data-testid="card">
+          content
+        </Card>
+      );
+
+      expect(screen.getByTestId('card').element()).toHaveClass('neba-anim-scale');
+    });
+  });
 });

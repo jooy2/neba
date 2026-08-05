@@ -211,4 +211,16 @@ describe('Avatar', () => {
       expect(screen.getByTestId('avatar').element().outerHTML).not.toContain('scale-');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(
+        <Avatar name="Jane Doe" transition="fade" data-testid="avatar" />
+      );
+      const element = screen.getByTestId('avatar').element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-fade');
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('320ms');
+    });
+  });
 });

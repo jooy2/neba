@@ -158,4 +158,14 @@ describe('Statistic', () => {
       expect(element).toHaveClass('p-2.5');
     });
   });
+
+  describe('transition', () => {
+    it('passes an entrance animation through to the sheet', async () => {
+      const screen = await render(
+        <Statistic label="Revenue" value={42} transition="zoom" data-testid="stat" />
+      );
+
+      expect(screen.getByTestId('stat').element()).toHaveClass('neba-anim-scale');
+    });
+  });
 });

@@ -98,4 +98,26 @@ describe('Icon', () => {
       expect(element).toHaveClass('text-(--n-accent)');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(
+        <Icon icon={<svg />} label="Refresh" transition={{ type: 'rotate', repeat: 'infinite' }} />
+      );
+      const element = screen.getByRole('img', { name: 'Refresh' }).element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-rotate');
+      expect(element.style.getPropertyValue('--n-anim-repeat')).toBe('infinite');
+    });
+
+    it('keeps the colour slot when it also has an animation', async () => {
+      const screen = await render(
+        <Icon icon={<svg />} label="Refresh" color="danger" transition="fade" />
+      );
+      const element = screen.getByRole('img', { name: 'Refresh' }).element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-danger-accent)');
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('320ms');
+    });
+  });
 });

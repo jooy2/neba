@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { transitionProps } from '../../internal/animate';
 import { iconSizeClasses } from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+import type { NebaColor, NebaSize, NebaTransition } from '../../types';
 
 /**
  * The same five lengths as `iconSizeClasses`, as a font size.
@@ -32,6 +33,13 @@ export interface IconProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 
    * *sizes*, not content the Icon merely wraps.
    */
   icon: React.ReactNode;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. `transition="rotate"` with `repeat="infinite"` is the one
+   * spin the design language allows on a glyph. For a trigger or a replay, wrap
+   * it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * The box the glyph is drawn in: 14, 16, 20, 24 and 28px. Its own ladder
    * rather than the control heights, because an icon is not a control.
@@ -76,9 +84,11 @@ export interface IconProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 
  * component: a box, a length written twice, and a colour.
  */
 export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
-  { icon, size = 'md', color = 'inherit', label, className, style, ...props },
+  { icon, size = 'md', color = 'inherit', label, transition, className, style, ...props },
   ref
 ) {
+  const animation = transitionProps(transition);
+
   const classNames = [
     'inline-flex shrink-0 items-center justify-center align-middle',
     iconSizeClasses[size],
@@ -88,6 +98,7 @@ export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
     '[&>svg]:block [&>svg]:size-full [&>img]:block [&>img]:size-full',
     `leading-none ${glyphFontClasses[size]}`,
     color === 'inherit' ? '' : 'text-(--n-accent)',
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -98,9 +109,13 @@ export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
       ref={ref}
       className={classNames}
       style={
-        color === 'inherit'
-          ? style
-          : ({ '--n-accent': `var(--neba-${color}-accent)`, ...style } as React.CSSProperties)
+        (color === 'inherit'
+          ? { ...animation.style, ...style }
+          : {
+              '--n-accent': `var(--neba-${color}-accent)`,
+              ...animation.style,
+              ...style
+            }) as React.CSSProperties
       }
       // An icon with something to say is a `img` with a name; one without is
       // furniture. There is no third case, and `role="img"` on a decorative

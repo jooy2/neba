@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import type { NebaColor } from '../../types';
+import { transitionProps } from '../../internal/animate';
+import type { NebaColor, NebaTransition } from '../../types';
 
 /**
  * What a piece of text *is*, which decides both its type scale and the element
@@ -27,6 +28,12 @@ export interface TypographyProps extends Omit<
    * @default 'body'
    */
   level?: TypographyLevel;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. For a trigger, a replay or anything under your own
+   * control, wrap it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * Semantic colour role. Unlike every other component this has **no default**:
    * text inherits the page's own colour unless a role is asked for, because the
@@ -180,6 +187,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     align,
     lines,
     gutter = false,
+    transition,
     render,
     className,
     style,
@@ -188,6 +196,8 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
   },
   ref
 ) {
+  const animation = transitionProps(transition);
+
   const classNames = [
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
@@ -199,6 +209,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
       : mutedLevels.has(level)
         ? 'text-(--neba-muted-fg)'
         : 'text-(--neba-fg)',
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -209,9 +220,9 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     ref,
     props: {
       className: classNames,
-      style: color
-        ? ({ '--n-accent': `var(--neba-${color}-accent)`, ...style } as React.CSSProperties)
-        : style,
+      style: (color
+        ? { '--n-accent': `var(--neba-${color}-accent)`, ...animation.style, ...style }
+        : { ...animation.style, ...style }) as React.CSSProperties,
       children,
       ...props
     }

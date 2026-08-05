@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { CloseIcon } from '../../internal/icons';
+import { transitionProps } from '../../internal/animate';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -15,7 +16,7 @@ import {
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types';
 
 export interface ChipProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
@@ -25,6 +26,12 @@ export interface ChipProps
    * @default 0
    */
   elevation?: NebaElevation;
+  /**
+   * An entrance animation, run once on mount: `transition="fade"`, or an object
+   * for the details. For a trigger, a replay or anything under your own
+   * control, wrap it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /** Content placed before the label — an icon, a status dot, an avatar. */
   startIcon?: React.ReactNode;
   /** Content placed after the label, before any `count`. */
@@ -170,6 +177,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
     count,
     onDelete,
     deleteLabel = 'Remove',
+    transition,
     selected = false,
     disabled = false,
     className,
@@ -182,6 +190,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
 ) {
   const interactive = Boolean(onClick) && !disabled;
   const step = chipScale[size];
+  const animation = transitionProps(transition);
 
   const padX = paddingXClasses[density][step];
 
@@ -202,6 +211,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
     // The delete button brings its own padding; stacking the chip's on top of it
     // would leave the × floating in the middle of a gap.
     onDelete ? 'pe-1' : interactive ? 'pe-0' : '',
+    animation.className,
     className ?? ''
   ]
     .filter(Boolean)
@@ -236,7 +246,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
     <span
       ref={ref as React.Ref<HTMLSpanElement>}
       className={shellClasses}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
+      style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
       aria-disabled={disabled && !interactive ? true : undefined}
       {...props}
     >

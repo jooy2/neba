@@ -146,4 +146,25 @@ describe('Typography', () => {
       expect(screen.getByText('Body').element()).toHaveAttribute('id', 'lede');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(<Typography transition="fade">Body copy</Typography>);
+      const element = screen.getByText('Body copy').element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-fade');
+    });
+
+    it('keeps the colour slot when it also has an animation', async () => {
+      const screen = await render(
+        <Typography color="success" transition="fade">
+          Body copy
+        </Typography>
+      );
+      const element = screen.getByText('Body copy').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-success-accent)');
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('320ms');
+    });
+  });
 });

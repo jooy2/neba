@@ -241,4 +241,18 @@ describe('Chip', () => {
       expect(element.outerHTML).not.toContain('translate');
     });
   });
+
+  describe('transition', () => {
+    it('takes an entrance animation', async () => {
+      const screen = await render(
+        <Chip transition="zoom" data-testid="chip">
+          Draft
+        </Chip>
+      );
+      const element = screen.getByTestId('chip').element() as HTMLElement;
+
+      expect(element).toHaveClass('neba-anim-scale');
+      expect(element.style.getPropertyValue('--n-anim-scale')).toBe('0.4');
+    });
+  });
 });

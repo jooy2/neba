@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box';
 import { CloseIcon, severityIcons } from '../../internal/icons';
+import { transitionProps } from '../../internal/animate';
 import {
   controlSlots,
   hasContent,
@@ -13,7 +14,7 @@ import {
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types';
+import type { NebaColor, NebaElevation, NebaStyleProps, NebaTransition } from '../../types';
 
 export interface AlertProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title'> {
@@ -23,6 +24,12 @@ export interface AlertProps
    * @default 0
    */
   elevation?: NebaElevation;
+  /**
+   * An entrance animation, run once on mount: `transition="slide"` for a banner
+   * arriving, `transition="fade"` for one appearing in place. For a trigger or
+   * a replay, wrap it in an `Animate*` component instead.
+   */
+  transition?: NebaTransition;
   /**
    * The heading line. With it the alert is two-part — a headline and the detail
    * under it; without it the whole thing is one line.
@@ -141,6 +148,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
     action,
     onClose,
     closeLabel = 'Dismiss',
+    transition,
     className,
     style,
     children,
@@ -151,6 +159,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
   const glyph = icon === undefined ? severityIcons[color] : icon;
   const accent = accentClasses[variant];
   const titled = hasContent(title);
+  const animation = transitionProps(transition);
 
   return (
     <div
@@ -165,11 +174,12 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         transitionClasses,
         restClasses[variant],
         iconClasses,
+        animation.className,
         className ?? ''
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
+      style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
       {...props}
     >
       {hasContent(glyph) ? (
