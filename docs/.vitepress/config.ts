@@ -6,7 +6,7 @@ import { withSidebar } from 'vitepress-sidebar';
 import packageJson from '../../package.json' with { type: 'json' };
 import { defineConfig, HeadConfig, SiteData, TransformContext, UserConfig } from 'vitepress';
 import { withI18n } from 'vitepress-i18n';
-import ReactPlugin from '@vitejs/plugin-react-swc';
+import ReactPlugin from '@vitejs/plugin-react';
 import type { VitePressI18nOptions } from 'vitepress-i18n/types';
 import type { VitePressSidebarOptions } from 'vitepress-sidebar/types';
 

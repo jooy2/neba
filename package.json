@@ -1,6 +1,6 @@
 {
   "name": "neba",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A comprehensive React UI component library — buttons, fields, menus, dialogs, tables and much more — accessible and themeable, sharing one prop vocabulary and a translucent acrylic design language. ESM only, types included, dark mode built in.",
   "type": "module",
   "types": "dist/index.d.ts",
@@ -104,7 +104,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@typescript-eslint/parser": "^8.65.0",
-    "@vitejs/plugin-react-swc": "^4.3.3",
+    "@vitejs/plugin-react": "^6.0.5",
     "@vitest/browser": "^4.1.10",
     "@vitest/browser-playwright": "^4.1.10",
     "eslint": "^9.39.1",
