@@ -65,6 +65,31 @@ export interface NebaMessages {
     /** What the three dots mean. */
     typing: string;
   };
+  /**
+   * ColorPicker.
+   *
+   * All but one of these are names for something with no text on it: a square
+   * of colour, two rails, a grid of swatches. A control a sighted reader
+   * understands from a glance at a gradient is a control that says nothing at
+   * all without them, which makes this the one namespace here where the strings
+   * are the entire accessible interface rather than a convenience on top of it.
+   */
+  color: {
+    /** The saturation/brightness square. */
+    area: string;
+    /** The rail beside it. */
+    hue: string;
+    /** The rail below that, when `alpha` is on. */
+    alpha: string;
+    /** The field the colour can be typed into. */
+    value: string;
+    /** The grid of ready-made colours. */
+    swatches: string;
+    /** The × that empties the control. */
+    clear: string;
+    /** What the trigger reads before anything has been chosen. */
+    empty: string;
+  };
 }
 
 /** A translation may fill in as much or as little of the table as it has. */
@@ -93,6 +118,15 @@ const base: NebaMessages = {
     read: 'Read',
     failed: 'Not sent',
     typing: 'Typing…'
+  },
+  color: {
+    area: 'Saturation and brightness',
+    hue: 'Hue',
+    alpha: 'Opacity',
+    value: 'Colour value',
+    swatches: 'Preset colours',
+    clear: 'Clear',
+    empty: 'Choose a colour'
   }
 };
 
@@ -119,6 +153,15 @@ const translations: Record<string, PartialMessages> = {
       read: '읽음',
       failed: '전송 실패',
       typing: '입력 중…'
+    },
+    color: {
+      area: '채도와 명도',
+      hue: '색상',
+      alpha: '불투명도',
+      value: '색상 값',
+      swatches: '기본 색상',
+      clear: '지우기',
+      empty: '색상 선택'
     }
   },
   ja: {
@@ -135,6 +178,15 @@ const translations: Record<string, PartialMessages> = {
       read: '既読',
       failed: '送信できませんでした',
       typing: '入力中…'
+    },
+    color: {
+      area: '彩度と明度',
+      hue: '色相',
+      alpha: '不透明度',
+      value: 'カラー値',
+      swatches: 'プリセットの色',
+      clear: 'クリア',
+      empty: '色を選択'
     }
   },
   'zh-hans': {
@@ -151,6 +203,15 @@ const translations: Record<string, PartialMessages> = {
       read: '已读',
       failed: '发送失败',
       typing: '正在输入…'
+    },
+    color: {
+      area: '饱和度和明度',
+      hue: '色相',
+      alpha: '不透明度',
+      value: '颜色值',
+      swatches: '预设颜色',
+      clear: '清除',
+      empty: '选择颜色'
     }
   },
   'zh-hant': {
@@ -167,6 +228,15 @@ const translations: Record<string, PartialMessages> = {
       read: '已讀',
       failed: '傳送失敗',
       typing: '正在輸入…'
+    },
+    color: {
+      area: '飽和度與明度',
+      hue: '色相',
+      alpha: '不透明度',
+      value: '顏色值',
+      swatches: '預設顏色',
+      clear: '清除',
+      empty: '選擇顏色'
     }
   },
   es: {
@@ -183,6 +253,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Leído',
       failed: 'No enviado',
       typing: 'Escribiendo…'
+    },
+    color: {
+      area: 'Saturación y brillo',
+      hue: 'Tono',
+      alpha: 'Opacidad',
+      value: 'Valor del color',
+      swatches: 'Colores predefinidos',
+      clear: 'Borrar',
+      empty: 'Elegir un color'
     }
   },
   pt: {
@@ -199,6 +278,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Lido',
       failed: 'Não enviado',
       typing: 'Digitando…'
+    },
+    color: {
+      area: 'Saturação e brilho',
+      hue: 'Matiz',
+      alpha: 'Opacidade',
+      value: 'Valor da cor',
+      swatches: 'Cores predefinidas',
+      clear: 'Limpar',
+      empty: 'Escolher uma cor'
     }
   },
   fr: {
@@ -215,6 +303,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Lu',
       failed: 'Non envoyé',
       typing: 'En train d’écrire…'
+    },
+    color: {
+      area: 'Saturation et luminosité',
+      hue: 'Teinte',
+      alpha: 'Opacité',
+      value: 'Valeur de la couleur',
+      swatches: 'Couleurs prédéfinies',
+      clear: 'Effacer',
+      empty: 'Choisir une couleur'
     }
   },
   de: {
@@ -231,6 +328,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Gelesen',
       failed: 'Nicht gesendet',
       typing: 'Schreibt…'
+    },
+    color: {
+      area: 'Sättigung und Helligkeit',
+      hue: 'Farbton',
+      alpha: 'Deckkraft',
+      value: 'Farbwert',
+      swatches: 'Vorgegebene Farben',
+      clear: 'Löschen',
+      empty: 'Farbe auswählen'
     }
   },
   it: {
@@ -247,6 +353,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Letto',
       failed: 'Non inviato',
       typing: 'Sta scrivendo…'
+    },
+    color: {
+      area: 'Saturazione e luminosità',
+      hue: 'Tonalità',
+      alpha: 'Opacità',
+      value: 'Valore del colore',
+      swatches: 'Colori predefiniti',
+      clear: 'Cancella',
+      empty: 'Scegli un colore'
     }
   },
   nl: {
@@ -263,6 +378,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Gelezen',
       failed: 'Niet verzonden',
       typing: 'Aan het typen…'
+    },
+    color: {
+      area: 'Verzadiging en helderheid',
+      hue: 'Kleurtoon',
+      alpha: 'Dekking',
+      value: 'Kleurwaarde',
+      swatches: 'Vooraf ingestelde kleuren',
+      clear: 'Wissen',
+      empty: 'Kies een kleur'
     }
   },
   pl: {
@@ -279,6 +403,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Przeczytano',
       failed: 'Nie wysłano',
       typing: 'Pisze…'
+    },
+    color: {
+      area: 'Nasycenie i jasność',
+      hue: 'Barwa',
+      alpha: 'Krycie',
+      value: 'Wartość koloru',
+      swatches: 'Kolory predefiniowane',
+      clear: 'Wyczyść',
+      empty: 'Wybierz kolor'
     }
   },
   ru: {
@@ -295,6 +428,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Прочитано',
       failed: 'Не отправлено',
       typing: 'Печатает…'
+    },
+    color: {
+      area: 'Насыщенность и яркость',
+      hue: 'Оттенок',
+      alpha: 'Непрозрачность',
+      value: 'Значение цвета',
+      swatches: 'Готовые цвета',
+      clear: 'Очистить',
+      empty: 'Выберите цвет'
     }
   },
   tr: {
@@ -311,6 +453,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Okundu',
       failed: 'Gönderilemedi',
       typing: 'Yazıyor…'
+    },
+    color: {
+      area: 'Doygunluk ve parlaklık',
+      hue: 'Renk tonu',
+      alpha: 'Opaklık',
+      value: 'Renk değeri',
+      swatches: 'Hazır renkler',
+      clear: 'Temizle',
+      empty: 'Bir renk seçin'
     }
   },
   ar: {
@@ -327,6 +478,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'تمت القراءة',
       failed: 'لم يتم الإرسال',
       typing: 'يكتب الآن…'
+    },
+    color: {
+      area: 'التشبع والسطوع',
+      hue: 'درجة اللون',
+      alpha: 'العتامة',
+      value: 'قيمة اللون',
+      swatches: 'ألوان جاهزة',
+      clear: 'مسح',
+      empty: 'اختر لونًا'
     }
   },
   hi: {
@@ -343,6 +503,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'पढ़ा गया',
       failed: 'नहीं भेजा गया',
       typing: 'टाइप कर रहे हैं…'
+    },
+    color: {
+      area: 'संतृप्ति और चमक',
+      hue: 'रंग',
+      alpha: 'अपारदर्शिता',
+      value: 'रंग मान',
+      swatches: 'पूर्व निर्धारित रंग',
+      clear: 'साफ़ करें',
+      empty: 'एक रंग चुनें'
     }
   },
   id: {
@@ -359,6 +528,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Dibaca',
       failed: 'Gagal terkirim',
       typing: 'Sedang mengetik…'
+    },
+    color: {
+      area: 'Saturasi dan kecerahan',
+      hue: 'Rona',
+      alpha: 'Opasitas',
+      value: 'Nilai warna',
+      swatches: 'Warna preset',
+      clear: 'Hapus',
+      empty: 'Pilih warna'
     }
   },
   vi: {
@@ -375,6 +553,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'Đã xem',
       failed: 'Chưa gửi được',
       typing: 'Đang nhập…'
+    },
+    color: {
+      area: 'Độ bão hòa và độ sáng',
+      hue: 'Sắc độ',
+      alpha: 'Độ mờ đục',
+      value: 'Giá trị màu',
+      swatches: 'Màu dựng sẵn',
+      clear: 'Xóa',
+      empty: 'Chọn màu'
     }
   },
   th: {
@@ -391,6 +578,15 @@ const translations: Record<string, PartialMessages> = {
       read: 'อ่านแล้ว',
       failed: 'ส่งไม่สำเร็จ',
       typing: 'กำลังพิมพ์…'
+    },
+    color: {
+      area: 'ความอิ่มตัวและความสว่าง',
+      hue: 'เฉดสี',
+      alpha: 'ความทึบ',
+      value: 'ค่าสี',
+      swatches: 'สีที่กำหนดไว้',
+      clear: 'ล้าง',
+      empty: 'เลือกสี'
     }
   }
 };
@@ -476,7 +672,8 @@ export function resolveMessages(locale?: string): NebaMessages {
     ? {
         link: { ...base.link, ...match.link },
         spoiler: { ...base.spoiler, ...match.spoiler },
-        chat: { ...base.chat, ...match.chat }
+        chat: { ...base.chat, ...match.chat },
+        color: { ...base.color, ...match.color }
       }
     : base;
 

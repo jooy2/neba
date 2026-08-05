@@ -14,6 +14,7 @@ export * from './components/carousel';
 export * from './components/chat-bubble';
 export * from './components/checkbox';
 export * from './components/chip';
+export * from './components/color-picker';
 export * from './components/combobox';
 export * from './components/container';
 export * from './components/date-picker';
