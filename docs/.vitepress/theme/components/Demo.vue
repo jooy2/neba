@@ -39,7 +39,7 @@ const MOUNT_MARGIN = 300;
 </script>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useData } from 'vitepress';
 import { basePath, localeOf, t } from '../../data/i18n';
 
@@ -75,7 +75,7 @@ const props = defineProps({
 
 // `lang` says which language the page is; `localeIndex` says where it lives in
 // the URL. They are different questions and only one of them is the default.
-const { lang, localeIndex } = useData();
+const { isDark, lang, localeIndex } = useData();
 const locale = localeOf(lang.value);
 const base = basePath(localeIndex.value);
 
@@ -83,6 +83,26 @@ const host = ref(null);
 const open = ref(false);
 let root = null;
 let observer = null;
+
+/*
+ * Which theme this one preview is in, and it is a *deviation* rather than a
+ * value: `null` means "whatever the page is", so an untouched preview carries
+ * no theme root at all and a reader flipping the site switch takes every
+ * preview with them. Only once someone asks for the other one does the canvas
+ * become a theme root of its own — which is all it takes, since `styles.css`
+ * declares both themes on `[data-theme]` as well as on `:root`.
+ */
+const override = ref(null);
+const pageTheme = computed(() => (isDark.value ? 'dark' : 'light'));
+const theme = computed(() => override.value ?? pageTheme.value);
+
+function flip() {
+  const next = theme.value === 'dark' ? 'light' : 'dark';
+
+  // Landing back on the page's own theme drops the override instead of pinning
+  // it, so the preview rejoins the site switch rather than quietly ignoring it.
+  override.value = next === pageTheme.value ? null : next;
+}
 
 async function mount() {
   const key = `../../demos/${props.src}.tsx`;
@@ -165,7 +185,45 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="neba-demo" :class="{ 'neba-demo--plain': plain }">
-    <div class="neba-demo-canvas" :data-align="align">
+    <div class="neba-demo-canvas" :data-align="align" :data-theme="override">
+      <button
+        v-if="!plain"
+        type="button"
+        class="neba-demo-theme"
+        :title="t(locale, theme === 'dark' ? 'viewLight' : 'viewDark')"
+        :aria-label="t(locale, theme === 'dark' ? 'viewLight' : 'viewDark')"
+        @click="flip"
+      >
+        <svg
+          v-if="theme === 'dark'"
+          viewBox="0 0 16 16"
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="8" cy="8" r="3" />
+          <path
+            d="M8 1.4v1.3M8 13.3v1.3M1.4 8h1.3M13.3 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M12.6 3.4l-.9.9M4.3 11.7l-.9.9"
+          />
+        </svg>
+        <svg
+          v-else
+          viewBox="0 0 16 16"
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M13.4 10.1A5.7 5.7 0 0 1 5.9 2.6a5.7 5.7 0 1 0 7.5 7.5Z" />
+        </svg>
+      </button>
       <div
         ref="host"
         class="neba-scope neba-demo-mount"

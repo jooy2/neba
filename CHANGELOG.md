@@ -11,8 +11,14 @@
 - **The screen is a viewport at the device's real resolution, not a picture scaled down.** `size` is a five-step ladder of genuine resolutions per device — a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920 — and `resolution` takes a `{ width, height }` pair for anything else. The whole device is then scaled once to whatever `width`/`height` come to on the page, so the same component laid out inside a phone and inside a desktop wraps differently in each. The screen is also a container named `neba-screen`, so content can answer to the device with a container query rather than to the window.
 - `scroll` lets content taller than the screen scroll instead of being clipped; `wallpaper` takes any CSS `background` for what sits behind it; `time` is the clock, and the only text the chrome draws — every menu title, dock icon and tray glyph is an abstract shape, so there is nothing to translate and no other party's marks in the library. Every part of the device is `aria-hidden`, which leaves a screen reader with `children` and nothing else.
 
+### Fixed
+
+- **Forcing a theme on a nested element now works in both directions.** `.dark` / `[data-theme='dark']` on an element that is not the document root was already documented, but the light values were declared on `:root` alone, so `.light` / `[data-theme='light']` inside a dark page had nothing to switch back to. The light block now carries all three selectors.
+- `--neba-plate-solid`, `--neba-plate-glass` and the `--neba-shadow-1` … `--neba-shadow-4` ladder moved into the derived block. Each is a base token spread into a shadow list, and declared only on `:root` they froze to the light hairline and the light ambient inside any theme root that was not the document root.
+
 ### Documentation
 
+- Every live preview carries a theme switch in its top corner, so a component can be read in the theme the page is not in without taking the whole site with it. Untouched previews still follow the site switch, and a preview flipped back to the page's own theme rejoins it.
 - An `Empty` page in both locales with eight examples, its props rows, its demos, a card in the component gallery, a place on the sample screen beside the placeholder it is the other half of, and its entry in `llms.txt`.
 - A `Mockup` page in both locales with eleven examples, its props rows, its demos, a card in the component gallery, a place on the sample screen and its entry in `llms.txt`.
 

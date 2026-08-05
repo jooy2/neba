@@ -21,11 +21,18 @@
  * canvas puts a little colour and a grid behind the components. Quiet on
  * purpose: this is documentation, not the demo page — it only has to give the
  * acrylic something to be in front of.
+ *
+ * The backdrop is mixed from the library's own tokens rather than taken from
+ * `--vp-c-bg-soft`, because the canvas is the one part of the frame that can be
+ * in a different theme from the page: `data-theme` makes it a theme root, and a
+ * VitePress variable would stay on whatever the site switch says. The mix lands
+ * within a shade of `--vp-c-bg-soft` in both themes, so an untouched preview
+ * looks the same as it always did.
  */
 .neba-demo-canvas {
   position: relative;
   padding: 32px 24px;
-  background-color: var(--vp-c-bg-soft);
+  background-color: color-mix(in srgb, var(--neba-fg) 3.5%, var(--neba-surface));
   background-image:
     radial-gradient(
       32rem 20rem at 8% -20%,
@@ -47,6 +54,52 @@
       color-mix(in srgb, var(--neba-fg) 4%, transparent) 0 1px,
       transparent 1px 2.5rem
     );
+}
+
+/* A preview in the theme the page is not in still has native widgets in it — a
+   scrollbar, a date input's picker — and those are the platform's to draw. */
+.neba-demo-canvas[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+.neba-demo-canvas[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* The per-preview theme switch, in the canvas's top corner rather than in the
+   frame: it belongs to what it changes, and the frame stays on the page theme.
+   Styled from the library's tokens so it flips along with the canvas it sits
+   in, and given a surface of its own so it stays legible over a wide demo. */
+.neba-demo-theme {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--neba-border);
+  border-radius: 9px;
+  background-color: color-mix(in srgb, var(--neba-surface) 78%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--neba-muted-fg);
+  cursor: pointer;
+  transition:
+    color 0.16s,
+    border-color 0.16s;
+}
+
+.neba-demo-theme:hover {
+  border-color: var(--neba-primary-line-hover);
+  color: var(--neba-fg);
+}
+
+.neba-demo-theme:focus-visible {
+  outline: 2px solid var(--neba-primary-ring);
+  outline-offset: 2px;
 }
 
 .neba-demo-canvas[data-align='center'] .neba-demo-mount {

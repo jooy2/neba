@@ -36,6 +36,8 @@ export function basePath(localeIndex: string | undefined): string {
 const strings = {
   showCode: { ko: '코드 보기', en: 'Show code' },
   hideCode: { ko: '코드 숨기기', en: 'Hide code' },
+  viewDark: { ko: '이 예시만 다크 모드로 보기', en: 'View this example in dark mode' },
+  viewLight: { ko: '이 예시만 라이트 모드로 보기', en: 'View this example in light mode' },
   propColumn: { ko: 'Prop', en: 'Prop' },
   typeColumn: { ko: '타입', en: 'Type' },
   defaultColumn: { ko: '기본값', en: 'Default' },

@@ -47,9 +47,18 @@
 
 /* ---------------------------------------------------------------------------
  * Light theme (default)
+ *
+ * `.light` and `[data-theme='light']` carry the same block rather than only
+ * `:root`, because forcing light has to work on a nested element too — a
+ * preview box inside a dark page has nowhere else to get these values from.
+ * Everything here that is not a colour (the radii, the motion, the grain) is
+ * identical in both themes, so re-declaring it costs a duplicate that resolves
+ * to what was inherited anyway.
  * ------------------------------------------------------------------------- */
 
-:root {
+:root,
+.light,
+[data-theme='light'] {
   /* Neutral surfaces and content */
   --neba-surface: oklch(100% 0 0);
   --neba-fg: oklch(24% 0.015 262);
@@ -86,8 +95,6 @@
      bottom bevel — that is what made the surface read as moulded plastic. */
   --neba-plate-edge: rgb(255 255 255 / 0.18);
   --neba-plate-top: rgb(255 255 255 / 0.26);
-  --neba-plate-solid: inset 0 1px 0 var(--neba-plate-top), inset 0 0 0 1px var(--neba-plate-edge);
-  --neba-plate-glass: inset 0 1px 0 var(--neba-plate-top);
   /* Off-vertical on purpose: light falling across a sheet at an angle, rather
      than the symmetric top-down gradient every framework ships. */
   --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0) 52%);
@@ -138,14 +145,6 @@
      surface in space, not to advertise it. Level 4 is only reachable by
      hovering a level-3 surface. */
   --neba-shadow-ambient: rgb(16 24 40 / 0.13);
-  --neba-shadow-0: 0 0 #0000;
-  --neba-shadow-1: 0 1px 2px -1px var(--neba-shadow-ambient);
-  --neba-shadow-2:
-    0 2px 4px -2px var(--neba-shadow-ambient), 0 5px 12px -7px var(--neba-shadow-ambient);
-  --neba-shadow-3:
-    0 4px 8px -3px var(--neba-shadow-ambient), 0 12px 24px -11px var(--neba-shadow-ambient);
-  --neba-shadow-4:
-    0 6px 12px -4px var(--neba-shadow-ambient), 0 20px 40px -15px var(--neba-shadow-ambient);
 
   /* Corner radius: ~45% of the control height at every step. Held just short of
      the 50% that would make it a pill — the flat run along the top and bottom
@@ -380,6 +379,22 @@
 .light,
 [data-theme='dark'],
 [data-theme='light'] {
+  /* The plate and the elevation ladder are two base tokens spread into shadow
+     lists, so they belong here rather than next to the values they read: left
+     in the light block they would keep the light hairline and the light ambient
+     inside a `.dark` that is not the document root. */
+  --neba-plate-solid: inset 0 1px 0 var(--neba-plate-top), inset 0 0 0 1px var(--neba-plate-edge);
+  --neba-plate-glass: inset 0 1px 0 var(--neba-plate-top);
+
+  --neba-shadow-0: 0 0 #0000;
+  --neba-shadow-1: 0 1px 2px -1px var(--neba-shadow-ambient);
+  --neba-shadow-2:
+    0 2px 4px -2px var(--neba-shadow-ambient), 0 5px 12px -7px var(--neba-shadow-ambient);
+  --neba-shadow-3:
+    0 4px 8px -3px var(--neba-shadow-ambient), 0 12px 24px -11px var(--neba-shadow-ambient);
+  --neba-shadow-4:
+    0 6px 12px -4px var(--neba-shadow-ambient), 0 20px 40px -15px var(--neba-shadow-ambient);
+
   --neba-primary-fill: color-mix(
     in srgb,
     var(--neba-primary-solid) var(--neba-fill-alpha),
