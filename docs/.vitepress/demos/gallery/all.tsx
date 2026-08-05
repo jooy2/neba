@@ -38,6 +38,7 @@ import {
   DialogClose,
   Divider,
   Drawer,
+  Empty,
   FilePicker,
   Grid,
   GridContainer,
@@ -1169,6 +1170,19 @@ const GROUPS: Group[] = [
             <Skeleton shape="circle" size="lg" />
             <Skeleton lines={3} className="flex-1" />
           </div>
+        )
+      },
+      {
+        name: 'Empty',
+        summary: {
+          ko: '내용이 있었어야 할 자리에 대신 서는 것',
+          en: 'What stands where content would have been'
+        },
+        path: '/components/feedback/empty',
+        preview: (
+          <Empty size="sm" density="compact" title="No results">
+            Nothing matched that filter.
+          </Empty>
         )
       },
       {

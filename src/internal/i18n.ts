@@ -65,6 +65,19 @@ export interface NebaMessages {
     /** What the three dots mean. */
     typing: string;
   };
+  /** Empty. */
+  empty: {
+    /**
+     * The headline over a region with nothing in it.
+     *
+     * The one string in here that is *drawn* at full size rather than read out
+     * or written on a button, and it is here for the same reason the rest are:
+     * an empty state has nothing to take its words from. What is missing is the
+     * caller's — a search, an inbox, a folder — so the default says only that
+     * there is nothing, and anything more specific is the `title` prop.
+     */
+    title: string;
+  };
   /**
    * ColorPicker.
    *
@@ -119,6 +132,7 @@ const base: NebaMessages = {
     failed: 'Not sent',
     typing: 'Typing…'
   },
+  empty: { title: 'Nothing here' },
   color: {
     area: 'Saturation and brightness',
     hue: 'Hue',
@@ -154,6 +168,7 @@ const translations: Record<string, PartialMessages> = {
       failed: '전송 실패',
       typing: '입력 중…'
     },
+    empty: { title: '내용이 없습니다' },
     color: {
       area: '채도와 명도',
       hue: '색상',
@@ -179,6 +194,7 @@ const translations: Record<string, PartialMessages> = {
       failed: '送信できませんでした',
       typing: '入力中…'
     },
+    empty: { title: '表示するものがありません' },
     color: {
       area: '彩度と明度',
       hue: '色相',
@@ -204,6 +220,7 @@ const translations: Record<string, PartialMessages> = {
       failed: '发送失败',
       typing: '正在输入…'
     },
+    empty: { title: '暂无内容' },
     color: {
       area: '饱和度和明度',
       hue: '色相',
@@ -229,6 +246,7 @@ const translations: Record<string, PartialMessages> = {
       failed: '傳送失敗',
       typing: '正在輸入…'
     },
+    empty: { title: '沒有內容' },
     color: {
       area: '飽和度與明度',
       hue: '色相',
@@ -254,6 +272,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'No enviado',
       typing: 'Escribiendo…'
     },
+    empty: { title: 'No hay nada aquí' },
     color: {
       area: 'Saturación y brillo',
       hue: 'Tono',
@@ -279,6 +298,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Não enviado',
       typing: 'Digitando…'
     },
+    empty: { title: 'Nada por aqui' },
     color: {
       area: 'Saturação e brilho',
       hue: 'Matiz',
@@ -304,6 +324,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Non envoyé',
       typing: 'En train d’écrire…'
     },
+    empty: { title: 'Rien ici' },
     color: {
       area: 'Saturation et luminosité',
       hue: 'Teinte',
@@ -329,6 +350,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Nicht gesendet',
       typing: 'Schreibt…'
     },
+    empty: { title: 'Nichts vorhanden' },
     color: {
       area: 'Sättigung und Helligkeit',
       hue: 'Farbton',
@@ -354,6 +376,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Non inviato',
       typing: 'Sta scrivendo…'
     },
+    empty: { title: 'Non c’è nulla' },
     color: {
       area: 'Saturazione e luminosità',
       hue: 'Tonalità',
@@ -379,6 +402,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Niet verzonden',
       typing: 'Aan het typen…'
     },
+    empty: { title: 'Hier is niets' },
     color: {
       area: 'Verzadiging en helderheid',
       hue: 'Kleurtoon',
@@ -404,6 +428,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Nie wysłano',
       typing: 'Pisze…'
     },
+    empty: { title: 'Nic tu nie ma' },
     color: {
       area: 'Nasycenie i jasność',
       hue: 'Barwa',
@@ -429,6 +454,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Не отправлено',
       typing: 'Печатает…'
     },
+    empty: { title: 'Здесь пусто' },
     color: {
       area: 'Насыщенность и яркость',
       hue: 'Оттенок',
@@ -454,6 +480,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Gönderilemedi',
       typing: 'Yazıyor…'
     },
+    empty: { title: 'Burada bir şey yok' },
     color: {
       area: 'Doygunluk ve parlaklık',
       hue: 'Renk tonu',
@@ -479,6 +506,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'لم يتم الإرسال',
       typing: 'يكتب الآن…'
     },
+    empty: { title: 'لا يوجد شيء هنا' },
     color: {
       area: 'التشبع والسطوع',
       hue: 'درجة اللون',
@@ -504,6 +532,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'नहीं भेजा गया',
       typing: 'टाइप कर रहे हैं…'
     },
+    empty: { title: 'यहाँ कुछ नहीं है' },
     color: {
       area: 'संतृप्ति और चमक',
       hue: 'रंग',
@@ -529,6 +558,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Gagal terkirim',
       typing: 'Sedang mengetik…'
     },
+    empty: { title: 'Tidak ada apa-apa di sini' },
     color: {
       area: 'Saturasi dan kecerahan',
       hue: 'Rona',
@@ -554,6 +584,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'Chưa gửi được',
       typing: 'Đang nhập…'
     },
+    empty: { title: 'Không có gì ở đây' },
     color: {
       area: 'Độ bão hòa và độ sáng',
       hue: 'Sắc độ',
@@ -579,6 +610,7 @@ const translations: Record<string, PartialMessages> = {
       failed: 'ส่งไม่สำเร็จ',
       typing: 'กำลังพิมพ์…'
     },
+    empty: { title: 'ไม่มีอะไรที่นี่' },
     color: {
       area: 'ความอิ่มตัวและความสว่าง',
       hue: 'เฉดสี',
@@ -673,6 +705,7 @@ export function resolveMessages(locale?: string): NebaMessages {
         link: { ...base.link, ...match.link },
         spoiler: { ...base.spoiler, ...match.spoiler },
         chat: { ...base.chat, ...match.chat },
+        empty: { ...base.empty, ...match.empty },
         color: { ...base.color, ...match.color }
       }
     : base;

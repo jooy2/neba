@@ -83,6 +83,7 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [ProgressBox](https://neba.cdget.com/components/feedback/progress-box): A row of acrylic plates that light up.
 - [Overlay](https://neba.cdget.com/components/feedback/overlay): A sheet over the whole page that stops it being used — the scrim on its own.
 - [Skeleton](https://neba.cdget.com/components/feedback/skeleton): The shape of something that has not loaded yet, in a line, a block or a circle. It reserves the space the real thing will take, so nothing on the page moves when the content arrives.
+- [Empty](https://neba.cdget.com/components/feedback/empty): What stands where content would have been — a glyph, a headline, a sentence and an `action`. The headline defaults to the `locale`'s way of saying there is nothing here, and `variant` defaults to `text` because an empty state is usually already inside a Card or a Table. The other half of Skeleton: one is content on its way, the other is content that is not coming.
 
 ### Layout
 

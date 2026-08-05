@@ -6213,6 +6213,74 @@ export const propTables: Record<string, PropRow[]> = {
     renderProp('render={<span />}')
   ],
 
+  Empty: [
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      color: "'secondary'",
+      variantDescription: {
+        ko: '표면의 무게. 기본이 text인 곳은 여기뿐입니다 — 빈 상태는 거의 언제나 이미 무언가(Card의 본문, Table의 아래) 안에 놓이고, 사각형 안에 사각형을 하나 더 그리는 것은 하나가 더 많은 것입니다',
+        en: 'Weight of the surface. text is the default here and nowhere else: an empty state is nearly always already inside something — a Card body, a Table — and a second rectangle drawn inside the first is one rectangle too many'
+      },
+      sizeDescription: {
+        ko: '타입 스케일과 글리프 크기, 그리고 상태가 차지하는 세로 여백',
+        en: 'The type scale, the glyph, and how much room the state takes vertically'
+      },
+      colorDescription: {
+        ko: '색 계열. 시트는 물들지 않고 하이라인과 focus ring까지만 닿습니다. secondary에서 옮길 만한 때는 비어 있다는 사실 자체가 문제일 때입니다 — 불러오지 못한 영역의 danger처럼',
+        en: 'Colour family. The sheet is never dyed; it reaches the hairline and the focus ring and stops. Worth moving off secondary only when the emptiness is itself a problem — danger on a region that failed to load'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 0이 거의 언제나 맞습니다 — 빈 상태는 이미 있는 표면에 뚫린 구멍이지 그 자체로 한 장의 시트가 아닙니다',
+        en: 'Drop shadow depth. 0 is almost always right: an empty state is a hole in a surface that already exists rather than a sheet of its own'
+      }
+    }),
+    {
+      name: 'title',
+      type: 'ReactNode | false',
+      default: "locale's wording",
+      description: {
+        ko: '제목 줄. 기본값은 locale이 “여기에는 아무것도 없다”를 말하는 방식이고, false면 글리프와 문장만 남습니다',
+        en: "The headline. Defaults to the locale's way of saying that there is nothing here; false leaves the glyph and the sentence with no heading over them"
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      description: {
+        ko: '제목 위의 글리프. 기본값은 빈 트레이, false면 생략. svg는 size 사다리에 맞춰지고 그 밖의 것(일러스트, 브랜드 마크)은 원래 크기 그대로입니다',
+        en: 'The glyph above the headline. Defaults to the empty tray; false drops it. An svg is sized off the size ladder, and anything else — an illustration, a brand mark — is left at the size it came in at'
+      }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '본문 아래에 놓이는 다음 할 일 — “첫 항목 만들기” 버튼, “필터 지우기” 링크. 여럿이면 한 줄에 놓이고 함께 줄바꿈됩니다',
+        en: 'What to do about it, under the text — a "Create the first one" button, a "Clear filters" link. Several sit in a row and wrap together'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '기본 제목의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). title을 주면 무시되고, 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the default headline is written in — a BCP 47 tag. Ignored once title is given, and unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 문장 — 왜 비어 있는지, 다음에 무엇을 할지',
+        en: 'The sentence under the headline: why it is empty, or what to do next'
+      }
+    },
+    transitionProp('transition="fade"'),
+    renderProp('render={<td colSpan={5} />}')
+  ],
+
   AspectRatio: [
     {
       name: 'ratio',

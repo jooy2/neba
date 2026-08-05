@@ -33,6 +33,7 @@ import {
   DialogClose,
   Divider,
   Drawer,
+  Empty,
   FilePicker,
   Grid,
   GridContainer,
@@ -1083,6 +1084,45 @@ function ShowcaseBody() {
                 <Skeleton size="sm" lines={3} />
               </div>
             </Card>
+          </div>
+        </section>
+
+        {/* The other half of the placeholder above. A skeleton is the shape of
+            something on its way; this is the shape of something that is not
+            coming, and the two are never both right at once. Neither card grows
+            a border of its own — an empty state is a hole in a surface that
+            already exists. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Empty</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card size="sm" title="Saved searches" dividers>
+              <Empty
+                size="sm"
+                title="Nothing saved yet"
+                action={
+                  <Button size="xs" variant="outline">
+                    Save this search
+                  </Button>
+                }
+              >
+                A saved search runs itself and tells you when the results change.
+              </Empty>
+            </Card>
+
+            <Table
+              size="sm"
+              headers={[
+                { key: 'region', label: 'Region', width: 160 },
+                { key: 'quota', label: 'Quota' }
+              ]}
+              items={[]}
+              caption="Regions over quota"
+              empty={
+                <Empty size="sm" density="compact" color="success" title="Nothing over quota">
+                  Every region is inside its limit.
+                </Empty>
+              }
+            />
           </div>
         </section>
 
