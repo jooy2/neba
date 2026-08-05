@@ -2,6 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateGrow } from 'neba';
 
+/**
+ * `transform-origin` read back out of the CSSOM, without the z offset.
+ *
+ * The property is three-dimensional and every engine reorders what it was given
+ * into `x y z`, but they disagree about the third component: Gecko serialises
+ * it always, so `top left` comes back as `left top 0px`, while Blink and WebKit
+ * drop it when it is zero. The z is not what this asserts.
+ */
+function originOf(element: HTMLElement): string {
+  return element.style.transformOrigin.replace(/ 0px$/, '');
+}
+
 describe('AnimateGrow', () => {
   describe('rendering', () => {
     it('renders what it was given', async () => {
@@ -54,7 +66,7 @@ describe('AnimateGrow', () => {
       );
       const element = screen.getByTestId('grow').element() as HTMLElement;
 
-      expect(element.style.transformOrigin).toBe('left top');
+      expect(originOf(element)).toBe('left top');
     });
 
     it('drops the opacity ramp when fade is off', async () => {

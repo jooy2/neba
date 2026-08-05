@@ -2,6 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateRotate } from 'neba';
 
+/**
+ * `transform-origin` read back out of the CSSOM, without the z offset.
+ *
+ * The property is three-dimensional and every engine reorders what it was given
+ * into `x y z`, but they disagree about the third component: Gecko serialises
+ * it always, so `bottom right` comes back as `right bottom 0px`, while Blink
+ * and WebKit drop it when it is zero. The z is not what this asserts.
+ */
+function originOf(element: HTMLElement): string {
+  return element.style.transformOrigin.replace(/ 0px$/, '');
+}
+
 describe('AnimateRotate', () => {
   describe('rendering', () => {
     it('renders what it was given', async () => {
@@ -53,7 +65,7 @@ describe('AnimateRotate', () => {
       );
       const element = screen.getByTestId('rotate').element() as HTMLElement;
 
-      expect(element.style.transformOrigin).toBe('right bottom');
+      expect(originOf(element)).toBe('right bottom');
     });
 
     it('drops the opacity ramp when fade is off', async () => {
