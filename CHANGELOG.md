@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.4.0 (2026--)
+
+### Added
+
+- `Mockup` — a device with a screen you can put anything on. `device` is the one prop with no default and picks the machine: a `mobile`, a `tablet`, or a `desktop` that is either a `monitor` on a stand or a `laptop` on a base. `os` draws that system's own chrome — a menu bar and a floating dock, a centred taskbar, a top bar with a dock down the leading edge, a status bar with a home indicator or three navigation glyphs — and `systemUi={false}` takes all of it away. `bezel` runs from `none` (no hardware at all, just the glass) through `thin` and `standard` to `thick`, which is an older device with a forehead and a chin rather than a wider frame; `finish` is `graphite`, `silver` or `white`; `notch` is a `dynamic-island`, a `notch`, a `punch-hole` or `none`, defaulting to whatever the device would really have. `orientation` turns a handheld, and the screen, the bezel and the cut-out turn with it.
+- **The screen is a viewport at the device's real resolution, not a picture scaled down.** `size` is a five-step ladder of genuine resolutions per device — a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920 — and `resolution` takes a `{ width, height }` pair for anything else. The whole device is then scaled once to whatever `width`/`height` come to on the page, so the same component laid out inside a phone and inside a desktop wraps differently in each. The screen is also a container named `neba-screen`, so content can answer to the device with a container query rather than to the window.
+- `scroll` lets content taller than the screen scroll instead of being clipped; `wallpaper` takes any CSS `background` for what sits behind it; `time` is the clock, and the only text the chrome draws — every menu title, dock icon and tray glyph is an abstract shape, so there is nothing to translate and no other party's marks in the library. Every part of the device is `aria-hidden`, which leaves a screen reader with `children` and nothing else.
+
+### Documentation
+
+- A `Mockup` page in both locales with eleven examples, its props rows, its demos, a card in the component gallery, a place on the sample screen and its entry in `llms.txt`.
+
 ## 1.3.0 (2026-08-05)
 
 ### Added

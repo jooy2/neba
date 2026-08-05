@@ -50,6 +50,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Mockup,
   NumberField,
   OtpField,
   Overlay,
@@ -809,6 +810,20 @@ const GROUPS: Group[] = [
           >
             <PopoverClose render={<Button size="sm">Copy link</Button>} />
           </Popover>
+        )
+      },
+      {
+        name: 'Mockup',
+        summary: {
+          ko: '화면에 무엇이든 올릴 수 있는 기기',
+          en: 'A device with a screen you can put anything on'
+        },
+        path: '/components/surfaces/mockup',
+        preview: (
+          <div className="flex w-full items-end justify-center gap-3">
+            <Mockup device="desktop" hardware="laptop" width={132} />
+            <Mockup device="mobile" width={44} />
+          </div>
         )
       }
     ]

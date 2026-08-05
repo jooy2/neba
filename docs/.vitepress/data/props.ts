@@ -6258,6 +6258,170 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '비율 안에 담기는 것', en: 'What is held to the proportion' }
     }
   ],
+
+  Mockup: [
+    {
+      name: 'device',
+      type: "'desktop' | 'tablet' | 'mobile'",
+      required: true,
+      description: {
+        ko: '무엇을 그린 그림인지. 형태와 해상도 사다리, 고를 수 있는 시스템이 여기서 정해집니다',
+        en: 'Which machine this is a picture of. It picks the shape, the resolution ladder and which systems are on offer'
+      }
+    },
+    {
+      name: 'os',
+      type: "'macos' | 'windows' | 'linux' | 'ios' | 'ipados' | 'android'",
+      default: "device's own",
+      description: {
+        ko: '화면에 크롬을 그릴 시스템. 데스크톱은 macos·windows·linux, 태블릿은 ipados·android, 휴대폰은 ios·android입니다. 그 기기가 돌리지 않는 값은 기본값으로 되돌아갑니다',
+        en: 'The system whose chrome is drawn. A desktop runs macos, windows or linux; a tablet ipados or android; a phone ios or android. Anything else falls back to the device default'
+      }
+    },
+    {
+      name: 'hardware',
+      type: "'monitor' | 'laptop'",
+      default: "'monitor'",
+      description: {
+        ko: '데스크톱 화면을 받치는 것 — 아래의 받침대인지 앞의 키보드인지. 태블릿과 휴대폰에서는 무시됩니다',
+        en: 'What holds a desktop screen up: a stand under it, or a keyboard in front of it. Ignored on a tablet and a phone'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '기기의 크기 — 기기별 실제 해상도 다섯 단계. Box에서처럼 높이도 타입 스케일도 아닙니다',
+        en: 'How big the device is, on a five-step ladder of real resolutions per device. As on Box, it is neither a height nor a type scale'
+      }
+    },
+    {
+      name: 'resolution',
+      type: '{ width: number; height: number }',
+      description: {
+        ko: '화면의 논리 해상도(CSS 픽셀). 다섯 단계 중 맞는 것이 없을 때 씁니다. 패널의 물리 픽셀 수가 아니라 내용이 배치되는 viewport입니다',
+        en: "The screen's logical resolution in CSS pixels, when none of the five steps is the machine you mean. The viewport the content lays out against, not the panel's physical pixel count"
+      }
+    },
+    {
+      name: 'orientation',
+      type: "'portrait' | 'landscape'",
+      default: "'portrait'",
+      description: {
+        ko: '손에 드는 기기를 돌립니다. 화면과 bezel과 구멍이 함께 돌아갑니다. 데스크톱에서는 무시됩니다',
+        en: 'Which way a handheld is held. The screen, the bezel and the cut-out turn together. Ignored on a desktop'
+      }
+    },
+    {
+      name: 'bezel',
+      type: "'none' | 'thin' | 'standard' | 'thick'",
+      default: "'standard'",
+      description: {
+        ko: '화면을 둘러싼 하드웨어의 양. none은 얇은 테두리가 아니라 하드웨어 없음이고, thick은 위아래가 넓은 옛날 기기입니다',
+        en: 'How much hardware there is around the screen. none is no hardware at all rather than a thinner frame; thick is an older device with a forehead and a chin'
+      }
+    },
+    {
+      name: 'finish',
+      type: "'graphite' | 'silver' | 'white'",
+      default: "'graphite'",
+      description: {
+        ko: '하드웨어의 재질. 테마 토큰이 아니라 고정된 색이므로 dark로 바뀌어도 그대로입니다',
+        en: 'What the hardware is made of. Fixed colours rather than theme tokens, so it stays the same on a page switched to dark'
+      }
+    },
+    {
+      name: 'notch',
+      type: "'none' | 'notch' | 'dynamic-island' | 'punch-hole'",
+      default: "device's own",
+      description: {
+        ko: '카메라 구멍. 크롬이 아니라 하드웨어이므로 systemUi를 꺼도 그려집니다. 기본값은 그 기기가 실제로 가졌을 것입니다',
+        en: 'The camera cut-out. Hardware rather than chrome, so it is drawn even with systemUi off. Defaults to what the device would have'
+      }
+    },
+    {
+      name: 'systemUi',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '시스템 자신의 바 — 상태바와 home indicator, 메뉴 바와 dock, 작업 표시줄. 각 바는 내용을 덮지 않고 자기 자리를 차지합니다',
+        en: "The system's own bars: a status bar and a home indicator, a menu bar and a dock, a taskbar. Each takes its own space rather than covering the content"
+      }
+    },
+    {
+      name: 'scroll',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '화면보다 긴 내용이 스크롤되는지. 꺼져 있으면 잘리며, 기기의 정지된 사진이 원하는 것이 그것입니다',
+        en: 'Whether content taller than the screen scrolls. Off it is clipped, which is what a still picture of a device wants'
+      }
+    },
+    {
+      name: 'wallpaper',
+      type: 'string',
+      default: '페이지의 surface 색',
+      description: {
+        ko: '내용 뒤에 놓이는 것. 색, gradient, url() 등 임의의 CSS background 값',
+        en: 'What is behind the content: any CSS background value — a colour, a gradient, a url()'
+      }
+    },
+    {
+      name: 'time',
+      type: 'string',
+      default: "'9:41'",
+      description: {
+        ko: '상태바나 작업 표시줄의 시계이자 크롬이 그리는 유일한 글자. Date가 아니라 문자열입니다 — 진짜 시각을 읽으면 서버와 브라우저가 어긋납니다',
+        en: 'The clock in the status bar or the taskbar, and the only text the chrome draws. A string rather than a Date: reading the real one would differ between the server and the browser'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      default: "'100%'",
+      description: {
+        ko: '기기가 페이지에 그려지는 너비. 숫자는 픽셀입니다. 화면은 자기 해상도를 유지하고 기기 전체가 여기에 맞춰 축소됩니다',
+        en: 'The rendered width of the device on the page. Numbers are pixels. The screen keeps its own resolution and the whole device is scaled to fit'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '그려지는 높이. 혼자 주면 너비가 기기의 비율을 따릅니다',
+        en: "The rendered height. Given on its own, the width follows the device's proportion"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '크롬의 강조색 — dock이나 작업 표시줄의 첫 아이콘',
+        en: "The accent in the chrome: a dock's first icon, a taskbar's"
+      }
+    },
+    {
+      name: 'elevation',
+      type: ELEVATION,
+      default: '0',
+      shared: true,
+      description: {
+        ko: '기기가 페이지에서 떠 있는 높이. 상자가 아니라 실루엣으로 그려지며 기기와 함께 줄어들지 않습니다',
+        en: 'How far off the page the device sits. Drawn as a silhouette rather than a box, and it does not shrink with the device'
+      }
+    },
+    transitionProp('transition="fade"'),
+    renderProp('render={<figure />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '화면에 놓이는 것', en: 'What is on the screen' }
+    }
+  ],
   ColorPicker: [
     {
       name: 'value',

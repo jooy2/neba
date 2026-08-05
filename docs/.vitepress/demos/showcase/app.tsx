@@ -47,6 +47,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Mockup,
   NumberField,
   OtpField,
   Overlay,
@@ -1082,6 +1083,31 @@ function ShowcaseBody() {
                 <Skeleton size="sm" lines={3} />
               </div>
             </Card>
+          </div>
+        </section>
+
+        {/* The same release page, on the two machines it is read on. The screen
+            inside each is a viewport at the device's own resolution, so the row
+            of cards that fits on the desktop stacks on the phone — one component
+            laid out twice rather than one picture scaled twice. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Mockup</Caption>
+          <div className="flex flex-wrap items-end justify-center gap-6">
+            <Mockup device="desktop" hardware="laptop" os="macos" elevation={1} width={420}>
+              <div className="grid grid-cols-1 gap-4 p-8 @min-[900px]/neba-screen:grid-cols-3">
+                {['Requests', 'Error rate', 'p95 latency'].map((label) => (
+                  <Card key={label} title={label} subtitle="Last 24 hours" />
+                ))}
+              </div>
+            </Mockup>
+
+            <Mockup device="mobile" os="ios" elevation={1} width={130}>
+              <div className="grid grid-cols-1 gap-4 p-8 @min-[900px]/neba-screen:grid-cols-3">
+                {['Requests', 'Error rate', 'p95 latency'].map((label) => (
+                  <Card key={label} title={label} subtitle="Last 24 hours" />
+                ))}
+              </div>
+            </Mockup>
           </div>
         </section>
 

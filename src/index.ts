@@ -42,6 +42,7 @@ export * from './components/icon';
 export * from './components/icon-button';
 export * from './components/list';
 export * from './components/menu';
+export * from './components/mockup';
 export * from './components/number-field';
 export * from './components/otp-field';
 export * from './components/overlay';
