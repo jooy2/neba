@@ -26,6 +26,7 @@ import {
   Combobox,
   Container,
   ContextMenu,
+  DataTable,
   DatePicker,
   DateRangePicker,
   DateTimePicker,
@@ -89,6 +90,7 @@ import {
   Typography,
   useToast,
   type DateRange,
+  type DataTableColumn,
   type TableColumn
 } from 'neba';
 
@@ -279,6 +281,60 @@ function nextWeekend(): DateRange {
  * symbols, and `IconButton` upcased to `ICONBUTTON` stops being the name of
  * anything you could import.
  */
+/**
+ * Enough rows that the table has to leave most of them out of the DOM — which
+ * is the only way to show what a DataTable is for on a page that also holds
+ * fifty other components.
+ */
+interface Trace {
+  id: number;
+  route: string;
+  method: string;
+  status: number;
+  ms: number;
+}
+
+const ROUTES = ['/api/deploys', '/api/builds', '/api/tokens', '/api/regions', '/api/usage'];
+const METHODS = ['GET', 'POST', 'GET', 'DELETE', 'GET'];
+
+const TRACES: Trace[] = Array.from({ length: 12_000 }, (_, index) => ({
+  id: 480_000 - index,
+  route: ROUTES[index % ROUTES.length],
+  method: METHODS[index % METHODS.length],
+  status: index % 17 === 0 ? 500 : index % 5 === 0 ? 404 : 200,
+  ms: 8 + ((index * 53) % 1400)
+}));
+
+const TRACE_COLUMNS: DataTableColumn<Trace>[] = [
+  { key: 'id', label: 'Trace', width: 100, align: 'end' },
+  { key: 'method', label: 'Method', width: 100 },
+  { key: 'route', label: 'Route', group: 'Request' },
+  {
+    key: 'status',
+    label: 'Status',
+    group: 'Response',
+    width: 110,
+    align: 'end',
+    render: (row) => (
+      <Chip
+        size="xs"
+        variant="text"
+        color={row.status >= 500 ? 'danger' : row.status >= 400 ? 'warning' : 'success'}
+      >
+        {row.status}
+      </Chip>
+    )
+  },
+  {
+    key: 'ms',
+    label: 'Duration',
+    group: 'Response',
+    width: 110,
+    align: 'end',
+    render: (row) => `${row.ms} ms`
+  }
+];
+
 function Caption({ children }: { children: ReactNode }) {
   return (
     <div className="text-[0.6875rem] font-medium tracking-wide text-[var(--neba-muted-fg)]">
@@ -607,6 +663,26 @@ function ShowcaseBody() {
               <Typography level="caption">Nothing building right now.</Typography>
             </TabPanel>
           </Tabs>
+        </section>
+
+        {/* Twelve thousand rows on the same page as everything else, with about
+            thirty of them in the DOM at a time. */}
+        <section className="flex flex-col gap-3">
+          <Caption>DataTable · virtual scroll · selection · sorting · search</Caption>
+          <DataTable
+            headers={TRACE_COLUMNS}
+            items={TRACES}
+            getRowKey={(row) => row.id}
+            height={260}
+            selectionMode="multiple"
+            checkboxes
+            sortable
+            resizable
+            searchable
+            striped
+            footer
+            label="Recent traces"
+          />
         </section>
 
         {/* A card holding controls — the composition the library is actually for. */}

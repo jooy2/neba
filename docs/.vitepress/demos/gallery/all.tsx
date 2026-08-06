@@ -31,6 +31,7 @@ import {
   ColorPicker,
   Combobox,
   Container,
+  DataTable,
   DatePicker,
   DateRangePicker,
   DateTimePicker,
@@ -878,6 +879,37 @@ const GROUPS: Group[] = [
             <Chip size="sm" color="danger" count={12}>
               Errors
             </Chip>
+          </div>
+        )
+      },
+      {
+        name: 'DataTable',
+        summary: {
+          ko: '수만 행을 렉 없이 다루는 표',
+          en: 'A table that keeps up with tens of thousands of rows'
+        },
+        path: '/components/display/data-table',
+        preview: (
+          <div className="w-full max-w-56">
+            <DataTable
+              size="xs"
+              height={92}
+              striped
+              sortable
+              selectionMode="single"
+              defaultSelected={['b']}
+              getRowKey={(row) => row.id}
+              headers={[
+                { key: 'sensor', label: 'Sensor' },
+                { key: 'c', label: '°C', width: 52, align: 'end' }
+              ]}
+              items={[
+                { id: 'a', sensor: 'S-0041', c: 21.4 },
+                { id: 'b', sensor: 'S-0042', c: 19.8 },
+                { id: 'c', sensor: 'S-0043', c: 24.1 },
+                { id: 'd', sensor: 'S-0044', c: 20.6 }
+              ]}
+            />
           </div>
         )
       },

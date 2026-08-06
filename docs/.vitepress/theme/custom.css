@@ -21,6 +21,15 @@
   /* Where the whole layout stops growing. Raised alongside the article below —
      without it the extra width would come out of the page's own margins. */
   --vp-layout-max-width: 1600px;
+  /*
+   * Half of what the page has left over once the layout has stopped growing.
+   *
+   * Never negative, which is the entire fix in the section below: the default
+   * theme writes this subtraction out five times without a floor, and raising
+   * the constant above is what makes it possible for the answer to come out
+   * below zero.
+   */
+  --neba-gutter: max(0px, calc((100vw - var(--vp-layout-max-width)) / 2));
 }
 
 /* ---------------------------------------------------------------------------
@@ -39,6 +48,75 @@
 @media (min-width: 1280px) {
   .VPContent .VPDoc.has-aside .content-container {
     max-width: 896px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * The shell, floored
+ *
+ * Raising `--vp-layout-max-width` above the default opens a window where the
+ * default theme's layout arithmetic goes negative, and things start hanging off
+ * the edges: the icons at the end of the nav bar sat 8px outside the viewport,
+ * and the sidebar climbed over the left margin of the article.
+ *
+ * The theme centres everything on the article by taking half of what the page
+ * has left over — `(100vw - var(--vp-layout-max-width)) / 2` — and it only does
+ * so from 1440px up, because with the constant left at its own 1440px that
+ * subtraction cannot come out below zero. At 1600px it does, for every viewport
+ * between the two: at 1500px the nav bar's right padding computes to −18px,
+ * which clamps to zero, and `.social-links` then carries its own `-8px` margin
+ * out past the window.
+ *
+ * `--neba-gutter` above is that same half, floored at nothing — and once it is
+ * floored, all five of the rules below say the same three things. Every offset
+ * in this layout is the gutter plus one of: nothing, the 32px page margin, or
+ * the width of the sidebar. Written that way they cannot drift apart, which is
+ * how three of the five came to be fixed and two missed the first time.
+ *
+ * The selectors are hung off `#app` — the id VitePress mounts on. The rules
+ * being corrected are Vue scoped styles, so they compile with a `[data-v-…]`
+ * attribute on them; an override built out of class names alone weighs the same
+ * and would be decided by which stylesheet Vite happened to emit last. One id
+ * settles all five at once rather than counting classes five times.
+ *
+ * `.VPLocalNav` carries the same expression and is deliberately not here: it is
+ * `display: none` from 1280px up, so it never reaches the window this fixes.
+ * ------------------------------------------------------------------------- */
+
+@media (min-width: 1440px) {
+  /*
+   * The sidebar, and the logo's box in the bar above it — one column, so they
+   * take one width.
+   *
+   * `> .title` and not ` .title`. Standing in for a scoped selector means
+   * giving up the one thing scoping was doing: `VPNavBarTitle` renders a second
+   * `.title` for the logo's link, the language menu renders a third, and a
+   * descendant selector reaches all of them. The theme's own rule cannot,
+   * because its `[data-v-…]` belongs to `VPNavBar`'s template alone — so every
+   * selector here that replaces a scoped one has to say how deep it goes.
+   */
+  #app .VPSidebar,
+  #app .VPNavBar.has-sidebar .container > .title {
+    padding-left: calc(var(--neba-gutter) + 32px);
+    width: calc(var(--neba-gutter) + var(--vp-sidebar-width));
+  }
+
+  /* Everything that starts where that column ends. `.content` and `.divider`
+     are each the only one of their name inside the bar. */
+  #app .VPNavBar.has-sidebar .content,
+  #app .VPNavBar.has-sidebar .divider,
+  #app .VPContent.has-sidebar {
+    padding-left: calc(var(--neba-gutter) + var(--vp-sidebar-width));
+  }
+
+  /* The bar keeps the page margin on its right; the article gives it back to
+     the page, because its own content is already capped. */
+  #app .VPNavBar.has-sidebar .content {
+    padding-right: calc(var(--neba-gutter) + 32px);
+  }
+
+  #app .VPContent.has-sidebar {
+    padding-right: var(--neba-gutter);
   }
 }
 

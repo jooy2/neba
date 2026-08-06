@@ -115,7 +115,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup
 
-**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, Statistic, List, Table, Timeline, Breadcrumb, TreeView
+**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, Statistic, List, Table, DataTable, Timeline, Breadcrumb, TreeView
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox
 

@@ -24,6 +24,8 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 
 There is no separate demo app. `docs/` renders the real components from `src/` through a Vite alias, so `npm run docs:dev` is the develop-and-eyeball loop.
 
+**The docs never read `dist/`, and none of the `docs:*` scripts build it.** The alias points `neba` at `src/index.ts` and `theme/styles/index.css` imports `src/styles.css` directly, so a component edit is on screen without a rebuild — which is the whole reason the alias exists. `npm run build` used to run first in all three scripts and cost about ten seconds of `format:fix`, `tsc` and terser that nothing then looked at, and it rewrote the files being edited while the dev server was starting. Do not put it back: if the docs ever need a built artefact, that is the thing to question.
+
 Three TypeScript projects, each with its own config, because their compiler needs genuinely differ (the library emits declarations; the docs and the tests are `noEmit` and need DOM libs):
 
 - `tsconfig.json` / `tsconfig.prod.json` — the library in `src/`. `prod` is what `npm run build` compiles.
@@ -249,7 +251,7 @@ All scripts run from the repository root, even the ones whose config lives in a 
 npm test              # Vitest, single run (headless Chromium)
 npm run test:watch    # Vitest in watch mode
 npm run typecheck     # tsc --noEmit over all three TS projects
-npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (builds and copies the changelog first)
+npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (copies the changelog first)
 npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
 npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
 npm run lint          # ESLint

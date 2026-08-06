@@ -1973,6 +1973,466 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  DataTable: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'sm'",
+      density: "'compact'",
+      variantDescription: {
+        ko: '표면의 무게. Box에 그대로 전달됩니다',
+        en: 'Weight of the surface, passed straight to the Box'
+      },
+      sizeDescription: {
+        ko: '셀의 타입 스케일과 여백, 그리고 rowHeight의 기본값. Table보다 한 단계 촘촘합니다',
+        en: "Type scale and padding of the cells, and the default rowHeight. One step tighter than Table's"
+      },
+      densityDescription: {
+        ko: '여백만 바꿉니다 — 다만 여기서는 rowHeight의 기본값도 함께 내려갑니다',
+        en: 'Padding only — though here it also lowers the default rowHeight'
+      },
+      colorDescription: {
+        ko: '의미론적 색 역할. 시트는 흰색이므로 하이라인·선택된 행·정렬된 열에만 나타납니다',
+        en: 'Semantic colour role. The sheet stays white, so it reaches the hairline, the chosen rows and the sorted column'
+      }
+    }),
+    {
+      name: 'headers',
+      type: 'readonly DataTableColumn[]',
+      required: true,
+      description: {
+        ko: '열 정의. 아래 DataTableColumn 참고',
+        en: 'The columns — see DataTableColumn below'
+      }
+    },
+    {
+      name: 'items',
+      type: 'readonly Row[]',
+      required: true,
+      description: { ko: '행 데이터', en: 'The rows' }
+    },
+    {
+      name: 'getRowKey',
+      type: '(row, index) => Key',
+      default: 'index',
+      description: {
+        ko: '행의 안정적인 식별자이자 selected가 담는 값. 선택·정렬·필터를 쓴다면 반드시 넘기세요',
+        en: 'A stable identity per row, and what selected is a list of. Required in practice the moment rows can be chosen, sorted or filtered'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '스크롤 본문의 높이. **virtual scroll을 켜는 것이 바로 이 prop입니다**',
+        en: 'The height of the scrolling body. **This is what turns virtual scrolling on**'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '같은 것을 상한으로. 행이 적으면 그만큼만 차지합니다',
+        en: 'The same, as a ceiling: as tall as its rows, up to this'
+      }
+    },
+    {
+      name: 'rowHeight',
+      type: 'number',
+      default: 'size/density',
+      description: {
+        ko: '행 하나의 높이(px). 모든 행이 같은 높이이며 셀은 줄바꿈 없이 잘립니다',
+        en: 'How tall one row is, in pixels. Every row is this tall and cells truncate rather than wrap'
+      }
+    },
+    {
+      name: 'virtual',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '화면 밖 행을 DOM에서 뺍니다. height 또는 maxHeight가 있어야 동작합니다',
+        en: 'Leaves off-screen rows out of the DOM. Needs a height or a maxHeight to do anything'
+      }
+    },
+    {
+      name: 'overscan',
+      type: 'number',
+      default: '8',
+      description: {
+        ko: '뷰포트 위아래로 더 그려 두는 행 수',
+        en: 'How many rows are kept rendered past each edge of the viewport'
+      }
+    },
+    {
+      name: 'striped',
+      type: "boolean | 'odd' | 'even'",
+      default: 'false',
+      description: {
+        ko: '한 행 걸러 색을 깝니다. true는 even이며, 홀짝은 전체 순번으로 셉니다',
+        en: 'Tints every other row. true means even, and the parity is counted over the whole set'
+      }
+    },
+    {
+      name: 'hoverable',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '포인터가 올라간 행을 밝힙니다', en: 'Lights the row under the pointer' }
+    },
+    {
+      name: 'stickyHeader',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '본문이 스크롤될 때 머리행을 고정합니다',
+        en: 'Pins the header while the body scrolls'
+      }
+    },
+    {
+      name: 'caption',
+      type: 'ReactNode',
+      description: {
+        ko: '표 위의 설명. 접근성 이름으로도 읽힙니다',
+        en: 'Shown above the table, and read as its accessible name'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: 'caption이 없을 때 grid를 부르는 이름',
+        en: 'The name the grid is announced by, when there is no caption'
+      }
+    },
+    {
+      name: 'empty',
+      type: 'ReactNode',
+      description: {
+        ko: '행이 하나도 없을 때 대신 보여 줄 내용',
+        en: 'What to show instead of rows when there are none'
+      }
+    },
+    {
+      name: 'sortable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '모든 열을 정렬 가능하게. 열이 자기 sortable로 뒤집을 수 있습니다',
+        en: 'Makes every column sortable. A column overrides it with its own sortable'
+      }
+    },
+    {
+      name: 'sortMode',
+      type: "'single' | 'multiple'",
+      default: "'single'",
+      description: {
+        ko: 'multiple이면 Shift-클릭이 정렬을 교체하지 않고 덧붙입니다',
+        en: 'With multiple, a Shift-click adds a column to the sort instead of replacing it'
+      }
+    },
+    {
+      name: 'sort / defaultSort',
+      type: 'readonly DataTableSort[]',
+      description: {
+        ko: '정렬 상태. { key, direction } 목록이며 앞쪽이 우선입니다',
+        en: 'The sort: a list of { key, direction }, first key outermost'
+      }
+    },
+    {
+      name: 'onSortChange',
+      type: '(sort: DataTableSort[]) => void',
+      description: { ko: '정렬이 바뀔 때', en: 'Fires when the sort changes' }
+    },
+    {
+      name: 'resizable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '머리행 경계를 끌어 열 너비를 바꿉니다. 핸들을 더블클릭하면 원래 너비로',
+        en: 'Lets the headers be dragged wider. A double-click on the handle restores the original width'
+      }
+    },
+    {
+      name: 'columnWidths / defaultColumnWidths',
+      type: 'Record<string, number>',
+      description: { ko: '열별 너비(px)', en: 'The widths, in pixels, keyed by column' }
+    },
+    {
+      name: 'onColumnWidthsChange',
+      type: '(widths) => void',
+      description: { ko: '너비가 바뀔 때', en: 'Fires when a column is resized' }
+    },
+    {
+      name: 'selectionMode',
+      type: "'none' | 'single' | 'multiple'",
+      default: "'none'",
+      description: {
+        ko: '한 번에 고를 수 있는 행 수',
+        en: 'How many rows may be chosen at once'
+      }
+    },
+    {
+      name: 'selected / defaultSelected',
+      type: 'readonly Key[]',
+      description: {
+        ko: '선택된 행의 key 목록',
+        en: 'The chosen rows, as their keys'
+      }
+    },
+    {
+      name: 'onSelectedChange',
+      type: '(keys: Key[], rows: Row[]) => void',
+      description: {
+        ko: 'key와 그 뒤의 행. 다른 페이지의 행도 포함합니다',
+        en: 'The keys, and the rows behind them — including rows on other pages'
+      }
+    },
+    {
+      name: 'checkboxes',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '체크박스 열과, 보이는 행을 한 번에 고르는 머리행 체크박스를 답니다',
+        en: 'Adds a column of ticks, and one in the header that chooses every displayed row at once'
+      }
+    },
+    {
+      name: 'onRowClick',
+      type: '(row, index, event) => void',
+      description: {
+        ko: '행을 누를 때마다, 선택이 바뀌기 전에',
+        en: 'Fires on every press of a row, before the selection changes'
+      }
+    },
+    {
+      name: 'onRowActivate',
+      type: '(row, index) => void',
+      description: {
+        ko: '더블클릭과 Enter. 행을 여는 동작입니다',
+        en: 'Fires on a double-click and on Enter — opening the row is what this is'
+      }
+    },
+    {
+      name: 'paging',
+      type: "'scroll' | 'pages'",
+      default: "'scroll'",
+      description: {
+        ko: '전체를 한 번에 스크롤할지, 한 페이지씩 끊을지',
+        en: 'Whether the rows arrive all at once or a page at a time'
+      }
+    },
+    {
+      name: 'page / defaultPage',
+      type: 'number',
+      default: '1',
+      description: { ko: '현재 페이지(1부터)', en: 'The current page, 1-based' }
+    },
+    {
+      name: 'onPageChange',
+      type: '(page: number) => void',
+      description: { ko: '페이지가 바뀔 때', en: 'Fires when the page changes' }
+    },
+    {
+      name: 'pageSize / defaultPageSize',
+      type: 'number',
+      default: '25',
+      description: { ko: '한 페이지의 행 수', en: 'How many rows a page holds' }
+    },
+    {
+      name: 'onPageSizeChange',
+      type: '(pageSize: number) => void',
+      description: { ko: '페이지 크기가 바뀔 때', en: 'Fires when the page size changes' }
+    },
+    {
+      name: 'pageSizeOptions',
+      type: 'readonly number[]',
+      default: '[10, 25, 50, 100]',
+      description: {
+        ko: '푸터의 Select가 제시할 값. 빈 배열이면 그 컨트롤이 사라집니다',
+        en: "What the footer's page-size Select offers. An empty list drops the control"
+      }
+    },
+    {
+      name: 'footer',
+      type: 'boolean',
+      default: "paging === 'pages'",
+      description: {
+        ko: '행 수·선택 개수·페이지를 담은 아래쪽 바',
+        en: 'The bar under the table: how many rows there are, how many are chosen, and the pages'
+      }
+    },
+    {
+      name: 'search / defaultSearch',
+      type: 'string',
+      description: {
+        ko: 'searchable한 모든 열과 대조할 질의',
+        en: 'The query every searchable column is matched against'
+      }
+    },
+    {
+      name: 'onSearchChange',
+      type: '(search: string) => void',
+      description: { ko: '질의가 바뀔 때', en: 'Fires when the query changes' }
+    },
+    {
+      name: 'searchable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '표 위에 검색 필드를 그립니다',
+        en: 'Draws the search field above the table'
+      }
+    },
+    {
+      name: 'searchPlaceholder',
+      type: 'string',
+      description: {
+        ko: '검색 필드의 placeholder이자 접근성 이름',
+        en: "The field's placeholder and its accessible name"
+      }
+    },
+    {
+      name: 'filter',
+      type: '(row, index) => boolean',
+      description: {
+        ko: '검색 다음에 적용되는 직접 만든 필터. false를 돌려주면 그 행이 빠집니다',
+        en: 'A filter of your own, applied after the search. Return false to drop a row'
+      }
+    },
+    {
+      name: 'toolbar',
+      type: 'ReactNode',
+      description: {
+        ko: '검색 필드가 있는 바의 끝에 놓일 내용',
+        en: 'Content at the end of the bar the search field sits in'
+      }
+    },
+    {
+      name: 'manual',
+      type: "boolean | ('sort' | 'filter' | 'pages')[]",
+      default: 'false',
+      description: {
+        ko: '이미 caller가 끝낸 단계. true는 셋 다입니다',
+        en: 'Which stages the caller has already done. true is all three'
+      }
+    },
+    {
+      name: 'rowCount',
+      type: 'number',
+      description: {
+        ko: '표가 페이징을 하지 않을 때의 전체 행 수',
+        en: 'How many rows there are in total, when the table is not doing the paging'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '표가 스스로 말하는 문구의 언어. 기본 정렬이 문자열을 비교할 때 쓰는 locale이기도 합니다',
+        en: "The language the table's own words are in, and what the default sort compares strings with"
+      }
+    }
+  ],
+
+  DataTableColumn: [
+    {
+      name: 'key',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '열의 식별자. value나 render가 없으면 행에서 읽을 속성 이름이기도 합니다',
+        en: 'Identifies the column, and unless value or render says otherwise, names the property to read off each row'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      default: 'key',
+      description: { ko: '머리글', en: 'The heading' }
+    },
+    {
+      name: 'group',
+      type: 'string',
+      description: {
+        ko: '이웃한 열들이 같은 문자열을 가지면 두 번째 머리행에서 하나로 합쳐집니다',
+        en: 'Adjacent columns carrying the same string are drawn under one merged cell in a second header row'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number',
+      description: {
+        ko: '너비(px). 지정하지 않은 열들이 남은 폭을 나눠 갖습니다',
+        en: 'How wide, in pixels. Columns that do not say share whatever is left'
+      }
+    },
+    {
+      name: 'minWidth',
+      type: 'number',
+      default: '48',
+      description: { ko: '드래그로 줄일 수 있는 하한', en: 'How narrow a drag may make it' }
+    },
+    {
+      name: 'align / headerAlign',
+      type: "'start' | 'center' | 'end'",
+      default: "'start'",
+      description: {
+        ko: '셀과 머리글이 붙는 쪽. 숫자는 보통 end',
+        en: 'Which edge the cells and the heading line up against. Numbers usually want end'
+      }
+    },
+    {
+      name: 'sortable / resizable',
+      type: 'boolean',
+      default: '표의 값',
+      description: {
+        ko: '표의 sortable·resizable을 이 열에서만 뒤집습니다',
+        en: "Overrides the table's own sortable and resizable for this column"
+      }
+    },
+    {
+      name: 'searchable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '검색이 이 열을 들여다볼지',
+        en: 'Whether the search looks in this column'
+      }
+    },
+    {
+      name: 'hidden',
+      type: 'boolean',
+      description: {
+        ko: '목록에서 지우지 않고 열만 빼 둡니다',
+        en: 'Leaves the column out without removing it from the list'
+      }
+    },
+    {
+      name: 'value',
+      type: '(row) => unknown',
+      default: 'row[key]',
+      description: {
+        ko: '셀 뒤의 값 — 정렬되고 검색되는 것',
+        en: 'The value behind the cell: what is sorted, and what the search is matched against'
+      }
+    },
+    {
+      name: 'compare',
+      type: '(a, b) => number',
+      description: {
+        ko: '기본 비교로는 순서를 매길 수 없는 값을 위한 비교 함수. 항상 오름차순으로 쓰고 표가 뒤집습니다',
+        en: 'Orders two rows by this column when the default comparison cannot. Always written ascending; the table reverses it'
+      }
+    },
+    {
+      name: 'render',
+      type: '(row, index) => ReactNode',
+      description: {
+        ko: '셀을 직접 그립니다. index는 정렬·필터된 순서에서의 자리이며 페이지를 가로질러 셉니다',
+        en: "Draws the cell. index is the row's place in the sorted, filtered order, counted across every page"
+      }
+    }
+  ],
+
   Alert: [
     ...sharedProps({
       variant: "'outline'",

@@ -79,6 +79,33 @@ export interface NebaMessages {
     title: string;
   };
   /**
+   * DataTable.
+   *
+   * A DataTable is the one component in the library that draws chrome of its
+   * own — a search field, a header tick that chooses everything at once, a
+   * footer counting what is on screen — so it is also the one that has the most
+   * to say without being handed the words.
+   */
+  table: {
+    /** Placeholder and accessible name of the search field. */
+    search: string;
+    /** The tick in the header row, which chooses every row at once. */
+    selectAll: string;
+    /** The tick on a row. */
+    selectRow: string;
+    /** Beside the footer's page-size Select. */
+    rowsPerPage: string;
+    /**
+     * Which rows are on screen, out of how many there are. `{start}`, `{end}`
+     * and `{total}` are replaced with the numbers, already formatted for the
+     * locale — a template rather than three fragments, because the order the
+     * three appear in is exactly what differs between languages.
+     */
+    range: string;
+    /** How many rows are chosen. `{count}` is replaced the same way. */
+    selected: string;
+  };
+  /**
    * ColorPicker.
    *
    * All but one of these are names for something with no text on it: a square
@@ -133,6 +160,14 @@ const base: NebaMessages = {
     typing: 'Typing…'
   },
   empty: { title: 'Nothing here' },
+  table: {
+    search: 'Search',
+    selectAll: 'Select all rows',
+    selectRow: 'Select row',
+    rowsPerPage: 'Rows per page',
+    range: '{start}–{end} of {total}',
+    selected: '{count} selected'
+  },
   color: {
     area: 'Saturation and brightness',
     hue: 'Hue',
@@ -169,6 +204,14 @@ const translations: Record<string, PartialMessages> = {
       typing: '입력 중…'
     },
     empty: { title: '내용이 없습니다' },
+    table: {
+      search: '검색',
+      selectAll: '모든 행 선택',
+      selectRow: '행 선택',
+      rowsPerPage: '페이지당 행 수',
+      range: '전체 {total}개 중 {start}–{end}',
+      selected: '{count}개 선택됨'
+    },
     color: {
       area: '채도와 명도',
       hue: '색상',
@@ -195,6 +238,14 @@ const translations: Record<string, PartialMessages> = {
       typing: '入力中…'
     },
     empty: { title: '表示するものがありません' },
+    table: {
+      search: '検索',
+      selectAll: 'すべての行を選択',
+      selectRow: '行を選択',
+      rowsPerPage: '1 ページの行数',
+      range: '{total} 件中 {start}–{end} 件',
+      selected: '{count} 件を選択中'
+    },
     color: {
       area: '彩度と明度',
       hue: '色相',
@@ -221,6 +272,14 @@ const translations: Record<string, PartialMessages> = {
       typing: '正在输入…'
     },
     empty: { title: '暂无内容' },
+    table: {
+      search: '搜索',
+      selectAll: '全选所有行',
+      selectRow: '选择此行',
+      rowsPerPage: '每页行数',
+      range: '第 {start}–{end} 行，共 {total} 行',
+      selected: '已选择 {count} 行'
+    },
     color: {
       area: '饱和度和明度',
       hue: '色相',
@@ -247,6 +306,14 @@ const translations: Record<string, PartialMessages> = {
       typing: '正在輸入…'
     },
     empty: { title: '沒有內容' },
+    table: {
+      search: '搜尋',
+      selectAll: '全選所有列',
+      selectRow: '選擇此列',
+      rowsPerPage: '每頁列數',
+      range: '第 {start}–{end} 列，共 {total} 列',
+      selected: '已選擇 {count} 列'
+    },
     color: {
       area: '飽和度與明度',
       hue: '色相',
@@ -273,6 +340,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Escribiendo…'
     },
     empty: { title: 'No hay nada aquí' },
+    table: {
+      search: 'Buscar',
+      selectAll: 'Seleccionar todas las filas',
+      selectRow: 'Seleccionar fila',
+      rowsPerPage: 'Filas por página',
+      range: '{start}–{end} de {total}',
+      selected: '{count} seleccionadas'
+    },
     color: {
       area: 'Saturación y brillo',
       hue: 'Tono',
@@ -299,6 +374,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Digitando…'
     },
     empty: { title: 'Nada por aqui' },
+    table: {
+      search: 'Pesquisar',
+      selectAll: 'Selecionar todas as linhas',
+      selectRow: 'Selecionar linha',
+      rowsPerPage: 'Linhas por página',
+      range: '{start}–{end} de {total}',
+      selected: '{count} selecionadas'
+    },
     color: {
       area: 'Saturação e brilho',
       hue: 'Matiz',
@@ -325,6 +408,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'En train d’écrire…'
     },
     empty: { title: 'Rien ici' },
+    table: {
+      search: 'Rechercher',
+      selectAll: 'Sélectionner toutes les lignes',
+      selectRow: 'Sélectionner la ligne',
+      rowsPerPage: 'Lignes par page',
+      range: '{start}–{end} sur {total}',
+      selected: '{count} sélectionnées'
+    },
     color: {
       area: 'Saturation et luminosité',
       hue: 'Teinte',
@@ -351,6 +442,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Schreibt…'
     },
     empty: { title: 'Nichts vorhanden' },
+    table: {
+      search: 'Suchen',
+      selectAll: 'Alle Zeilen auswählen',
+      selectRow: 'Zeile auswählen',
+      rowsPerPage: 'Zeilen pro Seite',
+      range: '{start}–{end} von {total}',
+      selected: '{count} ausgewählt'
+    },
     color: {
       area: 'Sättigung und Helligkeit',
       hue: 'Farbton',
@@ -377,6 +476,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Sta scrivendo…'
     },
     empty: { title: 'Non c’è nulla' },
+    table: {
+      search: 'Cerca',
+      selectAll: 'Seleziona tutte le righe',
+      selectRow: 'Seleziona riga',
+      rowsPerPage: 'Righe per pagina',
+      range: '{start}–{end} di {total}',
+      selected: '{count} selezionate'
+    },
     color: {
       area: 'Saturazione e luminosità',
       hue: 'Tonalità',
@@ -403,6 +510,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Aan het typen…'
     },
     empty: { title: 'Hier is niets' },
+    table: {
+      search: 'Zoeken',
+      selectAll: 'Alle rijen selecteren',
+      selectRow: 'Rij selecteren',
+      rowsPerPage: 'Rijen per pagina',
+      range: '{start}–{end} van {total}',
+      selected: '{count} geselecteerd'
+    },
     color: {
       area: 'Verzadiging en helderheid',
       hue: 'Kleurtoon',
@@ -429,6 +544,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Pisze…'
     },
     empty: { title: 'Nic tu nie ma' },
+    table: {
+      search: 'Szukaj',
+      selectAll: 'Zaznacz wszystkie wiersze',
+      selectRow: 'Zaznacz wiersz',
+      rowsPerPage: 'Wierszy na stronę',
+      range: '{start}–{end} z {total}',
+      selected: 'Zaznaczono: {count}'
+    },
     color: {
       area: 'Nasycenie i jasność',
       hue: 'Barwa',
@@ -455,6 +578,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Печатает…'
     },
     empty: { title: 'Здесь пусто' },
+    table: {
+      search: 'Поиск',
+      selectAll: 'Выбрать все строки',
+      selectRow: 'Выбрать строку',
+      rowsPerPage: 'Строк на странице',
+      range: '{start}–{end} из {total}',
+      selected: 'Выбрано: {count}'
+    },
     color: {
       area: 'Насыщенность и яркость',
       hue: 'Оттенок',
@@ -481,6 +612,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Yazıyor…'
     },
     empty: { title: 'Burada bir şey yok' },
+    table: {
+      search: 'Ara',
+      selectAll: 'Tüm satırları seç',
+      selectRow: 'Satırı seç',
+      rowsPerPage: 'Sayfa başına satır',
+      range: '{total} kayıttan {start}–{end}',
+      selected: '{count} seçildi'
+    },
     color: {
       area: 'Doygunluk ve parlaklık',
       hue: 'Renk tonu',
@@ -507,6 +646,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'يكتب الآن…'
     },
     empty: { title: 'لا يوجد شيء هنا' },
+    table: {
+      search: 'بحث',
+      selectAll: 'تحديد كل الصفوف',
+      selectRow: 'تحديد الصف',
+      rowsPerPage: 'صفوف لكل صفحة',
+      range: '{start}–{end} من {total}',
+      selected: 'تم تحديد {count}'
+    },
     color: {
       area: 'التشبع والسطوع',
       hue: 'درجة اللون',
@@ -533,6 +680,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'टाइप कर रहे हैं…'
     },
     empty: { title: 'यहाँ कुछ नहीं है' },
+    table: {
+      search: 'खोजें',
+      selectAll: 'सभी पंक्तियाँ चुनें',
+      selectRow: 'पंक्ति चुनें',
+      rowsPerPage: 'प्रति पृष्ठ पंक्तियाँ',
+      range: '{total} में से {start}–{end}',
+      selected: '{count} चुनी गईं'
+    },
     color: {
       area: 'संतृप्ति और चमक',
       hue: 'रंग',
@@ -559,6 +714,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Sedang mengetik…'
     },
     empty: { title: 'Tidak ada apa-apa di sini' },
+    table: {
+      search: 'Cari',
+      selectAll: 'Pilih semua baris',
+      selectRow: 'Pilih baris',
+      rowsPerPage: 'Baris per halaman',
+      range: '{start}–{end} dari {total}',
+      selected: '{count} dipilih'
+    },
     color: {
       area: 'Saturasi dan kecerahan',
       hue: 'Rona',
@@ -585,6 +748,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'Đang nhập…'
     },
     empty: { title: 'Không có gì ở đây' },
+    table: {
+      search: 'Tìm kiếm',
+      selectAll: 'Chọn tất cả các hàng',
+      selectRow: 'Chọn hàng',
+      rowsPerPage: 'Số hàng mỗi trang',
+      range: '{start}–{end} trên {total}',
+      selected: 'Đã chọn {count}'
+    },
     color: {
       area: 'Độ bão hòa và độ sáng',
       hue: 'Sắc độ',
@@ -611,6 +782,14 @@ const translations: Record<string, PartialMessages> = {
       typing: 'กำลังพิมพ์…'
     },
     empty: { title: 'ไม่มีอะไรที่นี่' },
+    table: {
+      search: 'ค้นหา',
+      selectAll: 'เลือกทุกแถว',
+      selectRow: 'เลือกแถวนี้',
+      rowsPerPage: 'จำนวนแถวต่อหน้า',
+      range: '{start}–{end} จาก {total}',
+      selected: 'เลือกแล้ว {count} รายการ'
+    },
     color: {
       area: 'ความอิ่มตัวและความสว่าง',
       hue: 'เฉดสี',
@@ -706,6 +885,7 @@ export function resolveMessages(locale?: string): NebaMessages {
         spoiler: { ...base.spoiler, ...match.spoiler },
         chat: { ...base.chat, ...match.chat },
         empty: { ...base.empty, ...match.empty },
+        table: { ...base.table, ...match.table },
         color: { ...base.color, ...match.color }
       }
     : base;
@@ -718,4 +898,18 @@ export function resolveMessages(locale?: string): NebaMessages {
 /** The same, as a hook, for the components that read it during a render. */
 export function useMessages(locale?: string): NebaMessages {
   return React.useMemo(() => resolveMessages(locale), [locale]);
+}
+
+/**
+ * Fills the `{placeholders}` in one of the strings above.
+ *
+ * Two of them carry numbers, and neither could be assembled out of fragments:
+ * "1–25 of 1,204" is "전체 1,204개 중 1–25" in Korean and "1,204 kayıttan 1–25"
+ * in Turkish, so what differs between languages is the *order*, which only a
+ * whole sentence can state. A `{name}` with no value is left alone rather than
+ * blanked, so a mistranslated placeholder shows up as itself instead of as a
+ * hole in the middle of a sentence.
+ */
+export function fillMessage(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (whole, name: string) => values[name] ?? whole);
 }

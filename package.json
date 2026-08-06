@@ -23,9 +23,9 @@
     "format": "prettier .",
     "format:fix": "prettier . --write",
     "docs:changelog": "node scripts/copy-changelog.mjs",
-    "docs:dev": "npm run build && npm run docs:changelog && vitepress dev docs",
-    "docs:build": "npm run build && npm run docs:changelog && vitepress build docs",
-    "docs:serve": "npm run build && npm run docs:build && vitepress serve docs",
+    "docs:dev": "npm run docs:changelog && vitepress dev docs",
+    "docs:build": "npm run docs:changelog && vitepress build docs",
+    "docs:serve": "npm run docs:build && vitepress serve docs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --project tsconfig.prod.json --noEmit && tsc --project test/tsconfig.json && tsc --project docs/tsconfig.json"
