@@ -582,6 +582,10 @@ function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
  * Inside a group the pages are sorted by name rather than by their `order`
  * frontmatter. A group holds up to nineteen components and nobody remembers
  * where Slider sits in a curated order.
+ *
+ * The groups themselves are sorted by name too, with `charts/` pinned last: it
+ * is the one group a reader either came for or has no use for at all, and
+ * alphabetical order would otherwise stand it in front of everything else.
  */
 function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string): T[] {
   const labels = groupLabels[lang] ?? groupLabels[defaultLocale];
@@ -603,6 +607,12 @@ function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string
       group.items = flattenItems(group.items ?? []).sort(byText);
     }
     groups.sort(byText);
+
+    const charts = groups.findIndex(startsWith('components/charts/'));
+
+    if (charts >= 0) {
+      groups.push(...groups.splice(charts, 1));
+    }
 
     const overview = components.link
       ? ({ text: labels.overview, link: components.link } as unknown as T)
