@@ -19,7 +19,7 @@ import { Statistic } from 'neba';
 
 <PropsTable name="Statistic" />
 
-`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. 변화량은 [Chip](./chip)으로 렌더링됩니다.
+`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. 변화량은 [Chip](../display/chip)으로 렌더링됩니다.
 
 ## 예시
 
@@ -39,7 +39,7 @@ import { Statistic } from 'neba';
 
 ### icon · unit · caption · align
 
-`icon`은 라벨 앞, `unit`은 수치 뒤에 놓입니다. `children`은 수치 아래 자리로, 목표 대비 [ProgressLinear](../feedback/progress-linear)나 스파크라인을 넣을 수 있습니다. `align="center"`는 여러 타일을 한 줄로 늘어놓을 때 씁니다.
+`icon`은 라벨 앞, `unit`은 수치 뒤에 놓입니다. `children`은 수치 아래 자리로, 목표 대비 [ProgressLinear](../feedback/progress-linear)나 [Sparkline](./sparkline)을 넣을 수 있습니다. `align="center"`는 여러 타일을 한 줄로 늘어놓을 때 씁니다.
 
 `prefix`와 `unit`이 따로 있는 이유는 조판 위치가 다르기 때문입니다. 통화 기호는 숫자 앞, 단위는 뒤에 옵니다.
 

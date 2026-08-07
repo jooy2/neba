@@ -113,7 +113,9 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup
 
-**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, Statistic, List, Table, DataTable, Timeline, Breadcrumb, TreeView
+**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, List, Table, DataTable, Timeline, Breadcrumb, TreeView
+
+**Charts** — Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox
 
@@ -121,7 +123,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Recently added** — the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

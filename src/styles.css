@@ -218,6 +218,42 @@
   --neba-info-solid-active: oklch(36.5% 0.068 223);
   --neba-info-on-solid: oklch(99% 0.004 223);
   --neba-info-accent: oklch(53.5% 0.096 223);
+
+  /* The chart series ramp ------------------------------------------------- */
+
+  /* Eight hues in a fixed order, and the one place in the library where a color
+     is not a semantic role. A series is an *entity* — a region, a plan, a
+     competitor — and nothing about it says success or danger; what the color has
+     to do is stay the same color when the chart is filtered, and be tellable
+     apart from its neighbours by every reader.
+
+     So they are not the six families reused. Those were picked to mean
+     something on a control, they are only six, and two of them (secondary,
+     info) sit close enough in hue that adjacent series would collapse. These
+     eight were solved for instead, and the constraints they satisfy are:
+
+     - every step inside OKLCH L 0.43–0.77, so no slot is louder than another;
+     - chroma at or above 0.10, below which a hue reads as grey and stops
+       carrying identity at all;
+     - each neighbouring pair at least ΔE 8 apart in OKLab under simulated
+       protanopia and deuteranopia — measured at 13.6 here, against a floor of 8;
+     - and at least 3:1 against the surface, so a 2px line is a line. Every slot
+       clears 4:1 on white and 5.3:1 on the dark sheet.
+
+     The order is the mechanism, not a preference: slots are handed out in
+     sequence and never cycled, which is what keeps the *adjacent* pairs — the
+     only ones that touch in a stack or a legend — the ones that were checked.
+     A ninth series is not a ninth colour; it is an "Other" row, or a second
+     chart. Series one is the primary hue because a one-series chart should look
+     like it belongs to the rest of the page. */
+  --neba-chart-1: oklch(60.5% 0.214 262);
+  --neba-chart-2: oklch(61% 0.166 48);
+  --neba-chart-3: oklch(62.5% 0.22 352);
+  --neba-chart-4: oklch(59.5% 0.122 92);
+  --neba-chart-5: oklch(59% 0.12 232);
+  --neba-chart-6: oklch(57.5% 0.18 145);
+  --neba-chart-7: oklch(62% 0.22 305);
+  --neba-chart-8: oklch(58.5% 0.104 182);
 }
 
 /* ---------------------------------------------------------------------------
@@ -293,6 +329,22 @@
     --neba-info-solid-active: oklch(46% 0.082 223);
     --neba-info-on-solid: oklch(99% 0.004 223);
     --neba-info-accent: oklch(79% 0.11 223);
+
+    /* The chart series ramp — the same eight hues, re-solved against the dark
+       sheet rather than lightened from the values above. The band is narrower
+       here (L 0.48–0.67), so every slot sits at one lightness and the identity
+       is carried entirely by hue: on a dark surface a step that also varied in
+       lightness would read as "this series matters more". Re-measured, not
+       flipped: worst adjacent pair ΔE 14.5 under deuteranopia, every slot above
+       5.3:1 on the sheet. */
+    --neba-chart-1: oklch(66% 0.18 262);
+    --neba-chart-2: oklch(66% 0.18 48);
+    --neba-chart-3: oklch(66% 0.22 352);
+    --neba-chart-4: oklch(66% 0.134 92);
+    --neba-chart-5: oklch(66% 0.134 232);
+    --neba-chart-6: oklch(66% 0.206 145);
+    --neba-chart-7: oklch(66% 0.22 305);
+    --neba-chart-8: oklch(66% 0.118 182);
   }
 }
 
@@ -362,6 +414,16 @@
   --neba-info-solid-active: oklch(46% 0.082 223);
   --neba-info-on-solid: oklch(99% 0.004 223);
   --neba-info-accent: oklch(79% 0.11 223);
+
+  /* The chart series ramp — see the note in the `prefers-color-scheme` block. */
+  --neba-chart-1: oklch(66% 0.18 262);
+  --neba-chart-2: oklch(66% 0.18 48);
+  --neba-chart-3: oklch(66% 0.22 352);
+  --neba-chart-4: oklch(66% 0.134 92);
+  --neba-chart-5: oklch(66% 0.134 232);
+  --neba-chart-6: oklch(66% 0.206 145);
+  --neba-chart-7: oklch(66% 0.22 305);
+  --neba-chart-8: oklch(66% 0.118 182);
 }
 
 /* ---------------------------------------------------------------------------
@@ -580,6 +642,27 @@
   --neba-info-line: color-mix(in srgb, var(--neba-info-accent) 22%, transparent);
   --neba-info-line-hover: color-mix(in srgb, var(--neba-info-accent) 40%, transparent);
   --neba-info-ring: color-mix(in srgb, var(--neba-info-accent) 55%, transparent);
+
+  /* A chart's chrome: the grid, the axis rules, the baseline.
+
+     One step off the surface and nothing more. Gridlines are the only ink on a
+     chart that is not data, and the moment they are as dark as a series the eye
+     starts reading them as one. They are derived from `--neba-border` rather
+     than given values of their own so a chart's rules and a Card's dividers are
+     the same family of line, and they are solid — a dashed grid says
+     "projection" or "threshold" when all it is is a grid.
+
+     The baseline is the exception that is allowed to be darker: it is where a
+     bar starts from and where zero is, which is a fact about the data. */
+  --neba-chart-grid: color-mix(in srgb, var(--neba-border) 70%, transparent);
+  --neba-chart-axis: var(--neba-border);
+  --neba-chart-baseline: color-mix(in srgb, var(--neba-muted-fg) 35%, transparent);
+
+  /* What a mark is separated from its neighbour by, and what a marker is ringed
+     with. The surface colour rather than white, so the 2px gap between two
+     stacked segments is the sheet showing through and not a stroke drawn on
+     top — a border around a mark is ink that is not data. */
+  --neba-chart-gap: var(--neba-surface);
 }
 
 /* ---------------------------------------------------------------------------

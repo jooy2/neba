@@ -625,7 +625,562 @@ function animateProps(options: AnimateOptions): PropRow[] {
   ];
 }
 
+const CHART_CURVE = "'linear' | 'smooth' | 'step'";
+const CHART_MARKERS = "'none' | 'auto' | 'all'";
+const CHART_LABELS = "'none' | 'last' | 'extremes' | 'all'";
+
+/**
+ * What every chart takes. Written once and spread into five tables, for the
+ * reason the component's own props are one interface: `height`, `legend`,
+ * `tooltip` and `format` have to mean the same thing on all of them, and two
+ * tables that describe them differently is how that stops being true.
+ */
+function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
+  return [
+    ...sharedProps({
+      variant: "'text'",
+      size: options.size ?? "'md'",
+      variantDescription: {
+        ko: '표면의 무게. 차트는 시트가 아니라 그림이므로 기본값이 text입니다 — Card 안에 넣으면 가장자리가 겹치지 않습니다. 혼자 서는 차트에는 outline을 주세요',
+        en: 'Weight of the surface. A chart is a drawing rather than a sheet, so this defaults to text and a chart inside a Card draws no second edge. Use outline for one that stands alone'
+      },
+      sizeDescription: {
+        ko: '축 글자·선 두께·마커 크기, 그리고 height를 주지 않았을 때의 높이',
+        en: 'Axis type, line weight, marker size — and the height, when none is given'
+      },
+      colorDescription: {
+        ko: '시트의 색 계열. series의 색은 여기서 오지 않습니다 — 팔레트나 series.color가 정합니다',
+        en: "The sheet's colour family. A series' colour does not come from here — the palette or series.color decides that"
+      }
+    }),
+    {
+      name: 'height',
+      type: 'number | string',
+      default: options.height,
+      description: {
+        ko: '그림의 높이. 축 라벨은 이 안에 그려지므로, 차트에 맞춘 카드는 차트가 들어가는 카드입니다',
+        en: 'How tall the drawing is. The axis labels are drawn inside it, so a card sized to the chart is a card the chart fits in'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '차트의 접근 가능한 이름. 그림 대신 읽히고, 아래에 숨겨진 데이터 표의 caption이 됩니다',
+        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it"
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '숫자가 나타나는 모든 곳의 표기 — 축·tooltip·값 라벨·표. 없으면 만 이상은 축약됩니다(12.4K)',
+        en: 'How numbers are written everywhere they appear — the axis, the tooltip, the value labels, the table. Without it, past ten thousand they are compacted (12.4K)'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '차트가 스스로 쓰는 말과 날짜의 언어',
+        en: "The language of the chart's own words and dates"
+      }
+    },
+    {
+      name: 'legend',
+      type: 'boolean | NebaChartLegend',
+      default: 'series ≥ 2',
+      description: {
+        ko: 'series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다 — 색 하나짜리 범례는 제목을 반복할 뿐입니다',
+        en: 'Shown automatically from two series up and left off below that — a legend with one swatch restates the title'
+      }
+    },
+    {
+      name: 'tooltip',
+      type: 'boolean | NebaChartTooltip',
+      default: 'true',
+      description: {
+        ko: '포인터가 무엇을 드러낼지. tooltip에만 있는 값은 없습니다 — 모든 값이 숨겨진 표에도 있습니다',
+        en: 'What the pointer uncovers. It never carries a value that is not also in the hidden table'
+      }
+    },
+    {
+      name: 'empty',
+      type: 'ReactNode',
+      description: {
+        ko: '그릴 것이 없을 때 대신 그릴 내용',
+        en: 'What to draw when there is nothing to draw'
+      }
+    }
+  ];
+}
+
+/** The two axes, and the `series` / `categories` pair that feeds them. */
+const cartesianDataProps: PropRow[] = [
+  {
+    name: 'series',
+    type: 'NebaChartSeries[]',
+    required: true,
+    description: {
+      ko: '그릴 series. 색은 이 배열에서의 자리로 정해지므로, 범례에서 하나를 숨겨도 나머지 색은 그대로입니다',
+      en: "The series. A colour is decided by a series' place in this array, so hiding one from the legend never repaints the survivors"
+    }
+  },
+  {
+    name: 'categories',
+    type: '(string | number | Date)[]',
+    description: {
+      ko: 'category 축의 위치 이름. 대신 각 점이 x를 직접 들고 있어도 됩니다',
+      en: "The category axis' labels. Points may carry their own x instead"
+    }
+  },
+  {
+    name: 'xAxis',
+    type: 'NebaChartAxis',
+    description: { ko: 'category 축', en: 'The category axis' }
+  },
+  {
+    name: 'yAxis',
+    type: 'NebaChartAxis',
+    description: { ko: '값 축', en: 'The value axis' }
+  }
+];
+
 export const propTables: Record<string, PropRow[]> = {
+  NebaChartAxis: [
+    {
+      name: 'hidden',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '축을 그리지 않습니다 — 선도 눈금도 라벨도. 그 자리는 plot에 돌아갑니다',
+        en: 'Leaves the axis undrawn — its rule, its ticks and its labels. The band goes back to the plot'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: { ko: '축이 재는 것의 이름', en: 'A name for what the axis measures' }
+    },
+    {
+      name: 'grid',
+      type: 'boolean',
+      default: '값 축은 true / true on the value axis',
+      description: {
+        ko: '이 축이 plot을 가로질러 긋는 격자선. 값 축은 켜져 있고 category 축은 꺼져 있습니다 — 양쪽 다 켜면 모눈종이가 됩니다',
+        en: 'The gridlines this axis casts across the plot. On for the value axis and off for the category axis; both is graph paper'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      description: {
+        ko: '축이 시작하는 값. 생략하면 데이터에서 옵니다. BarChart와 AreaChart는 0을 남겨 두고, LineChart는 자릅니다',
+        en: 'Where the scale starts. Taken from the data otherwise. A BarChart and an AreaChart keep zero; a LineChart crops'
+      }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      description: { ko: '축이 끝나는 값', en: 'Where the scale ends' }
+    },
+    {
+      name: 'tickCount',
+      type: 'number',
+      default: '5',
+      description: {
+        ko: '눈금의 대략적인 개수. 실제 값은 읽기 좋은 수로 반올림됩니다',
+        en: 'Roughly how many ticks. The scale still rounds to clean numbers'
+      }
+    },
+    {
+      name: 'tickFormat',
+      type: '(value, index) => ReactNode',
+      description: {
+        ko: '눈금 하나를 어떻게 쓸지. 차트의 format보다 우선합니다',
+        en: "How a tick is written, overriding the chart's own format"
+      }
+    },
+    {
+      name: 'thickness',
+      type: 'number',
+      description: {
+        ko: '축이 눈금과 이름을 위해 잡아 두는 폭(px). 기본값은 눈금 글자에서 측정합니다 — 대시보드에서 두 차트의 plot을 맞출 때 쓰세요',
+        en: 'How much room the axis keeps for its ticks and label, in pixels. Measured from the ticks otherwise; set it to line two charts up on a dashboard'
+      }
+    }
+  ],
+
+  NebaChartLegend: [
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'bottom'",
+      shared: true,
+      description: { ko: 'plot의 어느 쪽에 놓을지', en: 'Which edge of the plot' }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      shared: true,
+      description: { ko: '그 변에서의 위치', en: 'Where along that edge' }
+    },
+    {
+      name: 'interactive',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '항목을 클릭하면 그 series를 숨기고, hover하면 나머지를 흐립니다',
+        en: 'Clicking an entry hides its series; hovering one dims the rest'
+      }
+    },
+    {
+      name: 'showValue',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '이름 옆에 현재 category의 값을 함께 씁니다',
+        en: "Draws each series' value at the active category beside its name"
+      }
+    }
+  ],
+
+  NebaChartTooltip: [
+    {
+      name: 'mode',
+      type: "'index' | 'item' | 'none'",
+      default: "'index'",
+      description: {
+        ko: 'index는 포인터가 있는 category의 모든 series를 crosshair와 함께, item은 가리킨 마크 하나만 보여 줍니다',
+        en: 'index shows every series at the category under the pointer, with a crosshair; item shows the one mark being pointed at'
+      }
+    },
+    {
+      name: 'crosshair',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'index 모드에서 활성 category에 내리긋는 선. 숫자가 어느 열의 것인지를 말합니다',
+        en: 'The line dropped through the plot at the active category, in index mode. It is what says which column the numbers belong to'
+      }
+    },
+    {
+      name: 'render',
+      type: '(context) => ReactNode',
+      description: {
+        ko: '패널을 직접 그립니다. 없으면 차트가 자기 것을 그립니다',
+        en: 'Draws the panel. Without it the chart draws its own'
+      }
+    }
+  ],
+
+  LineChart: [
+    ...cartesianDataProps,
+    {
+      name: 'curve',
+      type: CHART_CURVE,
+      default: "'linear'",
+      description: {
+        ko: '점과 점 사이를 잇는 방식. smooth는 monotone cubic이라 양옆 값보다 아래로 내려가지 않고, step은 다음 측정까지 값을 유지합니다',
+        en: 'How the line gets from one point to the next. smooth is a monotone cubic, so it never dips below a value both neighbours are above; step holds each value until the next reading'
+      }
+    },
+    {
+      name: 'markers',
+      type: CHART_MARKERS,
+      default: "'auto'",
+      description: {
+        ko: '점 위의 dot. auto는 점이 열넷 이하일 때만 그립니다. 포인터가 올라간 점에는 설정과 무관하게 항상 그려집니다',
+        en: 'Dots on the points. auto draws them up to fourteen points. Whatever this says, the point under the pointer always gets one'
+      }
+    },
+    {
+      name: 'gradient',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '선을 같은 hue의 옅은 단계에서 시작해 끝에서 원래 색이 되게 합니다 — 최근 쪽이 진해집니다',
+        en: 'Fades the line from a paler step of its own hue at the start to the full colour at the end, so the recent end is the loud one'
+      }
+    },
+    {
+      name: 'connectNulls',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'null에서 끊지 않고 이어 그립니다. 결측이 수집 과정의 문제일 때만 — 이어진 구간은 차트가 지어낸 숫자입니다',
+        en: 'Draws straight through a null instead of breaking at it. Only when the gap is an artefact of collection — a bridged gap is a number the chart made up'
+      }
+    },
+    {
+      name: 'valueLabels',
+      type: CHART_LABELS,
+      default: "'none'",
+      description: {
+        ko: '선 위에 쓸 값. last는 각 series의 도달점, extremes는 최고와 최저입니다. 모든 점에 숫자를 쓰는 것이 차트를 못 읽게 만드는 가장 확실한 방법이라 기본은 none입니다',
+        en: 'Which values are written on the line. last names where each series ended up, extremes marks its own high and low. The default is none: a number beside every point is the most reliable way to make a chart unreadable'
+      }
+    },
+    {
+      name: 'stacked',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'series를 쌓습니다. 선 차트에서는 드물고, 쌓을 것이라면 AreaChart가 읽히는 모양입니다',
+        en: 'Stacks the series. Rare on a line chart — an AreaChart is the shape that makes stacking legible'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  AreaChart: [
+    ...cartesianDataProps,
+    {
+      name: 'stacked',
+      type: "boolean | 'full'",
+      default: 'false',
+      description: {
+        ko: 'true는 밴드를 쌓아 위 가장자리가 합계가 되게 하고, full은 각 category를 100%로 정규화해 크기가 아니라 비중의 차트로 만듭니다',
+        en: 'true stacks the bands so the top edge is the total; full normalises every category to 100%, which makes the chart about the mix rather than the size'
+      }
+    },
+    {
+      name: 'curve',
+      type: CHART_CURVE,
+      default: "'linear'",
+      description: {
+        ko: '밴드 가장자리가 점과 점 사이를 잇는 방식',
+        en: 'How the edge of the band gets from one point to the next'
+      }
+    },
+    {
+      name: 'markers',
+      type: CHART_MARKERS,
+      default: "'none'",
+      description: {
+        ko: '점 위의 dot. 채워진 밴드에는 이미 보이는 가장자리가 있으므로 기본이 none입니다',
+        en: 'Dots on the points. none by default — a filled band already has a visible edge'
+      }
+    },
+    {
+      name: 'valueLabels',
+      type: CHART_LABELS,
+      default: "'none'",
+      description: { ko: '밴드 위에 쓸 값', en: 'Which values are written on the band' }
+    },
+    {
+      name: 'connectNulls',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'null을 가로질러 이어 그립니다. 선보다 여기서 더 위험합니다 — 채움은 없는 숫자를 더 넓은 면적에 칠합니다',
+        en: 'Draws through a null instead of breaking at it. It matters more here than on a line: a fill paints a made-up number over a larger area'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  BarChart: [
+    ...cartesianDataProps,
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'vertical'",
+      shared: true,
+      description: {
+        ko: '막대가 자라는 방향. category 이름이 단어라면 horizontal이 정답입니다 — 세로 차트는 이름에 막대 하나만큼의 너비를 줍니다',
+        en: 'Which way the bars run. horizontal is right whenever the category names are words: a vertical chart gives each name the width of one bar'
+      }
+    },
+    {
+      name: 'stacked',
+      type: "boolean | 'full'",
+      default: 'false',
+      description: {
+        ko: '묶인 막대는 "어느 series가 더 큰가"에, 쌓인 막대는 "이 합계가 무엇으로 되어 있나"에 답합니다. full은 비중을 묻습니다',
+        en: 'Grouped bars answer "which series is bigger"; stacked bars answer "what is this total made of"; full asks about the mix'
+      }
+    },
+    {
+      name: 'rounded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '막대의 값 쪽 끝만 둥글게 깎습니다. 기준선 쪽은 각진 채로 — 둥근 발은 축을 물결치게 만듭니다',
+        en: 'Cuts the corners off the data end of each bar. The baseline end stays square; a rounded foot makes the axis look scalloped'
+      }
+    },
+    {
+      name: 'barSize',
+      type: 'number',
+      default: 'size (md는 24px)',
+      description: {
+        ko: '막대 두께의 상한(px). 상한 아래에서는 밴드의 자기 몫을 채우고, 넘으면 남은 자리는 여백이 됩니다',
+        en: 'How thick a bar may get, in pixels. Below the cap bars fill their share of the band; above it the leftover stays as air'
+      }
+    },
+    {
+      name: 'valueLabels',
+      type: CHART_LABELS,
+      default: "'none'",
+      description: {
+        ko: '막대 위에 쓸 값. 숫자가 붙은 막대 여덟 개는 차트이면서 표지만, 열두 개를 넘으면 둘 다 아니게 됩니다',
+        en: 'Which values are written on the bars. Eight bars with their numbers on them is a chart and a table at once; past a dozen it is neither'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  PieChart: [
+    {
+      name: 'data',
+      type: 'NebaChartDatum[]',
+      required: true,
+      description: {
+        ko: '조각들. pie는 series가 하나이므로 series 배열이 아니라 값의 배열을 받습니다 — 여기서 정체성을 갖는 것은 조각입니다',
+        en: 'The slices. A pie has one series, so it takes the values directly: the slices are the entities here'
+      }
+    },
+    {
+      name: 'categories',
+      type: '(string | number | Date)[]',
+      description: {
+        ko: '조각의 이름. 대신 각 점이 x를 직접 들고 있어도 됩니다',
+        en: 'What each slice is called. Points may carry their own x instead'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'pie' | 'donut' | 'semi'",
+      default: "'pie'",
+      description: {
+        ko: 'pie는 꽉 찬 원, donut은 가운데를 비운 고리, semi는 상자 아래쪽에서 그리는 반원입니다',
+        en: 'pie is a filled disc, donut opens a hole for the total, semi draws half a ring from the bottom of the box'
+      }
+    },
+    {
+      name: 'startAngle',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '첫 조각이 시작하는 각도 — 12시 방향에서 시계 방향으로. semi는 무시합니다',
+        en: 'Where the first slice starts, in degrees clockwise from twelve o’clock. Ignored by semi'
+      }
+    },
+    {
+      name: 'center',
+      type: 'ReactNode',
+      description: {
+        ko: '고리 가운데에 들어가는 것. 가운데가 빈 donut은 한 입 베어 문 pie일 뿐입니다',
+        en: 'What goes in the hole. A ring with nothing in the middle is a pie with a bite out of it'
+      }
+    },
+    {
+      name: 'valueLabels',
+      type: "'none' | 'all'",
+      default: "'none'",
+      description: {
+        ko: '각 조각에 그 비중을 씁니다. 글자가 양옆 여유까지 들어갈 만큼 넓은 조각에만 그려지고, 들어가지 않으면 잘리는 대신 그려지지 않습니다',
+        en: "Writes each slice's share on it, only where the text fits with room on both sides. One that does not fit is dropped rather than clipped"
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  Sparkline: [
+    {
+      name: 'data',
+      type: 'NebaChartDatum[]',
+      required: true,
+      description: {
+        ko: '값들. 다른 차트와 마찬가지로 null은 결측입니다',
+        en: 'The values. null is a gap, exactly as it is on every other chart'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'line' | 'area' | 'bar'",
+      default: "'line'",
+      description: {
+        ko: '어떤 마크로 그릴지. 추세에는 선, 양에는 area, 세는 것에는 막대',
+        en: 'Which mark. A line for a trend, an area for a quantity, bars for a count of discrete things'
+      }
+    },
+    {
+      name: 'curve',
+      type: CHART_CURVE,
+      default: "'linear'",
+      description: { ko: '점과 점 사이를 잇는 방식', en: 'How it gets from one point to the next' }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '띠의 높이. 페이지가 아니라 옆에 놓인 한 줄의 글자를 기준으로 만든 사다리입니다',
+        en: 'The height of the strip, on a ladder measured against the line of text beside it rather than against the page'
+      }
+    },
+    {
+      name: 'color',
+      type: `${COLOR} | string`,
+      default: '첫 번째 chart slot / the first chart slot',
+      description: {
+        ko: '마크의 색. 전체 차트와 달리 색을 직접 받습니다 — series가 하나이고 팔레트가 나눠 줄 범례도 없기 때문입니다',
+        en: "The mark's colour, taken directly unlike the full charts: a sparkline has one series and no legend for a palette to hand out"
+      }
+    },
+    {
+      name: 'endDot',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '마지막 점에 dot을 찍습니다. 이만한 크기가 담을 수 있는 유일한 직접 라벨입니다',
+        en: 'Puts a dot on the last point — the one direct label a strip this small has room for'
+      }
+    },
+    {
+      name: 'baseline',
+      type: 'number',
+      description: {
+        ko: '이 값의 자리에 가로선을 긋습니다 — 목표, 예산, 작년 평균',
+        en: "Draws a rule across the strip at this value — a target, a budget, last year's average"
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      description: {
+        ko: '축의 아래 끝. 생략하면 자기 데이터로 띠를 가득 채웁니다 — 나란히 놓인 둘을 비교하려면 같은 값을 주어야 합니다',
+        en: 'The bottom of the scale. Left out, the strip fills itself with its own range — two side by side are only comparable if both are given the same one'
+      }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      description: { ko: '축의 위 끝', en: 'The top of the scale' }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      default: "'100%'",
+      description: {
+        ko: '너비. 기본은 컨테이너를 채웁니다',
+        en: 'How wide. Fills its container by default'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '띠의 이름. 주면 값들이 보조 기술에 노출되고, 주지 않으면 완전히 감춰집니다',
+        en: 'A name for the strip. With one, the values are exposed to assistive technology; without one it is hidden entirely'
+      }
+    }
+  ],
+
   Button: [
     ...sharedProps({
       variant: "'solid'",

@@ -14,9 +14,11 @@ import {
   AnimateSlide,
   AnimateTyping,
   AnimateZoom,
+  AreaChart,
   AspectRatio,
   Avatar,
   Badge,
+  BarChart,
   Blockquote,
   Box,
   Breadcrumb,
@@ -46,6 +48,7 @@ import {
   Highlight,
   Icon,
   IconButton,
+  LineChart,
   List,
   ListItem,
   Menu,
@@ -59,6 +62,7 @@ import {
   Pagination,
   Pane,
   Panes,
+  PieChart,
   Pill,
   Popover,
   PopoverClose,
@@ -73,6 +77,7 @@ import {
   Shortcut,
   Skeleton,
   Slider,
+  Sparkline,
   Spoiler,
   Statistic,
   Switch,
@@ -1006,25 +1011,6 @@ const GROUPS: Group[] = [
         )
       },
       {
-        name: 'Statistic',
-        summary: {
-          ko: '이름이 붙은 숫자와, 그것이 얼마나 움직였는지',
-          en: 'A number with its name on it, and how far it moved'
-        },
-        path: '/components/display/statistic',
-        preview: (
-          <div className="w-full max-w-56">
-            <Statistic
-              size="sm"
-              label="Active users"
-              value={1284}
-              previousValue={1102}
-              caption="vs. last month"
-            />
-          </div>
-        )
-      },
-      {
         name: 'Blockquote',
         summary: {
           ko: '내 말과 구분해 놓은 남의 말',
@@ -1134,6 +1120,146 @@ const GROUPS: Group[] = [
             <TextLink href="#getting-started" size="sm" newTab color="primary">
               Getting started
             </TextLink>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Charts',
+    note: {
+      ko: '숫자를 그림으로 보여 주는 것들',
+      en: 'The things that draw numbers'
+    },
+    entries: [
+      {
+        name: 'Statistic',
+        summary: {
+          ko: '이름이 붙은 숫자와, 그것이 얼마나 움직였는지',
+          en: 'A number with its name on it, and how far it moved'
+        },
+        path: '/components/charts/statistic',
+        preview: (
+          <div className="w-full max-w-56">
+            <Statistic
+              size="sm"
+              label="Active users"
+              value={1284}
+              previousValue={1102}
+              caption="vs. last month"
+            />
+          </div>
+        )
+      },
+      {
+        name: 'Sparkline',
+        summary: {
+          ko: '축도 범례도 없는, 단어 크기의 추세 그림',
+          en: 'A word-sized picture of a trend, with no axes and no legend'
+        },
+        path: '/components/charts/sparkline',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-3">
+            <Sparkline
+              data={[18, 22, 19, 27, 24, 31, 29, 36, 34, 41, 38, 47]}
+              label="Signups"
+              endDot
+            />
+            <Sparkline
+              data={[8, 6, 11, 7, 4, 9, 5, 2, 6, 3, 4, 2]}
+              shape="bar"
+              color="danger"
+              label="Errors"
+            />
+          </div>
+        )
+      },
+      {
+        name: 'LineChart',
+        summary: {
+          ko: '순서가 있는 축 위의 값들, 선으로 이어서',
+          en: 'Values along an ordered axis, joined into a line'
+        },
+        path: '/components/charts/line-chart',
+        preview: (
+          <div className="w-full">
+            <LineChart
+              size="xs"
+              height={110}
+              legend={false}
+              label="Sessions by platform"
+              categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+              series={[
+                { name: 'Web', data: [18, 22, 27, 25, 31, 36] },
+                { name: 'Mobile', data: [9, 13, 15, 19, 22, 28] }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'AreaChart',
+        summary: {
+          ko: '선 아래를 채워, 합해서 의미가 있는 양을',
+          en: 'A line with the space under it filled, for a quantity that adds up'
+        },
+        path: '/components/charts/area-chart',
+        preview: (
+          <div className="w-full">
+            <AreaChart
+              size="xs"
+              height={110}
+              legend={false}
+              stacked
+              curve="smooth"
+              label="Storage by tier"
+              categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+              series={[
+                { name: 'Hot', data: [12, 14, 15, 17, 18, 21] },
+                { name: 'Archive', data: [30, 34, 39, 44, 51, 58] }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'BarChart',
+        summary: {
+          ko: 'category 사이의 길이를 견주는 것',
+          en: 'Lengths, compared across categories'
+        },
+        path: '/components/charts/bar-chart',
+        preview: (
+          <div className="w-full">
+            <BarChart
+              size="xs"
+              height={110}
+              legend={false}
+              label="Deploys per team"
+              categories={['Platform', 'Payments', 'Growth', 'Mobile']}
+              series={[{ name: 'Deploys', data: [318, 264, 197, 152] }]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'PieChart',
+        summary: {
+          ko: '전체에 대한 부분을, 한눈에',
+          en: 'Parts of a whole, at a glance'
+        },
+        path: '/components/charts/pie-chart',
+        preview: (
+          <div className="w-full">
+            <PieChart
+              size="xs"
+              height={110}
+              shape="donut"
+              legend={false}
+              label="Traffic by source"
+              categories={['Organic', 'Direct', 'Paid', 'Referral']}
+              data={[18420, 9260, 6140, 3080]}
+            />
           </div>
         )
       }

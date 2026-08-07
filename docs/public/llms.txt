@@ -63,7 +63,6 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [List](https://neba.cdget.com/components/display/list): A stack of rows — navigation, settings, results, anything that repeats.
 - [Badge](https://neba.cdget.com/components/display/badge): A small mark in the corner of something else: unread mail, a status dot, a count on a tab.
 - [Icon](https://neba.cdget.com/components/display/icon): A glyph at a known size, in a known colour. Neba ships no icon set; the glyph is a prop rather than children, and `color` defaults to `inherit`.
-- [Statistic](https://neba.cdget.com/components/display/statistic): A number with its name on it, and — given a `previousValue` — how far it has moved. `betterWhen` decides which direction is coloured as good.
 - [Blockquote](https://neba.cdget.com/components/display/blockquote): Somebody else's words, set apart from your own. An attribution turns it into the `figure`/`blockquote`/`figcaption` markup the HTML spec asks for.
 - [Shortcut](https://neba.cdget.com/components/display/shortcut): A keyboard key or a combination of them. `Mod` resolves to Command on a Mac and Control everywhere else, and every glyph key carries its name for a screen reader.
 - [Highlight](https://neba.cdget.com/components/display/highlight): Marks the words a reader is looking for inside text they were already reading. Case, whole words and regular expressions are props; elements in the children are walked into rather than rejected.
@@ -72,6 +71,17 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [Breadcrumb](https://neba.cdget.com/components/display/breadcrumb): The trail of pages above the one being read. `maxItems` collapses the middle of a long trail, and the last item is the current page rather than a link.
 - [TextLink](https://neba.cdget.com/components/display/text-link): A link, in a sentence or on its own. No surface and no height of its own — what it has is the line under it, and a mark for the links that take over the window.
 - [TreeView](https://neba.cdget.com/components/display/tree-view): Rows that belong to one another and open and shut — a folder listing, a navigation sidebar, any grouped list a reader needs to fold away. A row can select or can be an `href`.
+
+### Charts
+
+- [Statistic](https://neba.cdget.com/components/charts/statistic): A number with its name on it, and — given a `previousValue` — how far it has moved. `betterWhen` decides which direction is coloured as good.
+- [Sparkline](https://neba.cdget.com/components/charts/sparkline): A word-sized picture of a trend, with no axes, no grid and no legend — for beside a number, inside a sentence or in a table cell. `shape` picks a line, an area or bars; it scales itself to its own range unless `min` and `max` say otherwise, which is what makes two of them comparable.
+- [LineChart](https://neba.cdget.com/components/charts/line-chart): One or more series against an ordered category axis, for when the space between two points is a journey rather than two separate facts. `curve` is straight, monotone-smooth or stepped; a `null` breaks the line rather than being drawn as a zero; the value axis crops to the data because a line encodes a position.
+- [AreaChart](https://neba.cdget.com/components/charts/area-chart): A line with the space under it filled, for a quantity that adds up to something. `stacked` makes the top edge the total and `stacked="full"` normalises every category to 100%, which turns the chart from being about size into being about the mix.
+- [BarChart](https://neba.cdget.com/components/charts/bar-chart): Lengths compared across categories. The value axis starts at zero and cannot be talked out of it; `orientation="horizontal"` is the right answer whenever the category names are words; grouped, stacked and 100%-stacked answer three different questions.
+- [PieChart](https://neba.cdget.com/components/charts/pie-chart): Parts of a whole as slices of a circle, as a pie, a donut or a semicircle. Good for one question — is one of these most of it — and past six slices a BarChart is the honest answer.
+
+Every chart takes the same data: a `series` array (or, for a pie, `data`) of numbers, `null`s that mean a gap rather than a zero, or points carrying their own `x`, `color` and `label`. Colours come from a fixed eight-slot ramp that is never cycled and whose adjacent pairs are verified against simulated protanopia and deuteranopia; a series' slot follows its place in the array, so filtering the legend never repaints the survivors. Every chart also renders its data as a visually hidden table, so no value is reachable only by pointer, and the plot is focusable with the arrow keys stepping the crosshair.
 
 ### Feedback
 

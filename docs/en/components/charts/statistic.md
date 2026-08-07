@@ -19,7 +19,7 @@ import { Statistic } from 'neba';
 
 <PropsTable name="Statistic" />
 
-Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. The delta renders as a [Chip](./chip).
+Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. The delta renders as a [Chip](../display/chip).
 
 ## Examples
 
@@ -39,7 +39,7 @@ The figure and the delta change shape as well as colour — a rising arrow, a fa
 
 ### icon · unit · caption · align
 
-`icon` sits before the label and `unit` after the figure. `children` is the slot under the figure, for a [ProgressLinear](../feedback/progress-linear) against a target or a sparkline. `align="center"` is for a row of tiles laid out as one band.
+`icon` sits before the label and `unit` after the figure. `children` is the slot under the figure, for a [ProgressLinear](../feedback/progress-linear) against a target or a [Sparkline](./sparkline). `align="center"` is for a row of tiles laid out as one band.
 
 `prefix` and `unit` are separate props because they are typographically different: a currency symbol leads its number, a unit follows it.
 

@@ -7,6 +7,8 @@
  * never invent a parallel spelling of the same idea.
  */
 
+import type * as React from 'react';
+
 /** Scale of a component. `md` is the desktop default. */
 export type NebaSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -265,6 +267,204 @@ export interface NebaTransitionOptions {
  * language rules out, and a `transition` on a Button would be exactly that.
  */
 export type NebaTransition = NebaAnimation | NebaTransitionOptions;
+
+/* ---------------------------------------------------------------------------
+ * Charts
+ *
+ * The vocabulary the chart components share, and the reason it is here rather
+ * than in one of them: a `series` handed to a LineChart has to be the same
+ * `series` a BarChart takes, or switching a dashboard tile from one to the
+ * other is a rewrite instead of a rename. The same argument `NebaSize` makes.
+ *
+ * Everything below describes *data*. How a chart draws it — the curve, the
+ * stacking, the hole in a donut — belongs to the component, because that is
+ * exactly the part that differs.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Where a point sits along the category axis.
+ *
+ * A `Date` is accepted because a time series is the common case and converting
+ * one to a string at the call site is what makes two charts of the same data
+ * label their axes differently.
+ */
+export type NebaChartCategory = string | number | Date;
+
+/**
+ * One value, with everything the chart might want to know about it.
+ *
+ * `y` of `null` is a **gap** and not a zero — a sensor that was offline, a month
+ * that has not closed yet. A line breaks across it, an area breaks with it, and
+ * a bar is not drawn. This distinction is the whole reason a datum may be
+ * `null` at all: a chart that renders missing data as zero is a chart that
+ * reports an outage as a collapse.
+ */
+export interface NebaChartPoint {
+  /**
+   * Its place on the category axis. Optional — without it the point is placed
+   * by its index, against `categories` if the chart was given any.
+   */
+  x?: NebaChartCategory;
+  /** The value. `null` is a gap. */
+  y: number | null;
+  /**
+   * A second magnitude, for the marks that have one: the radius of a bubble,
+   * the weight of a tile. Ignored by the charts that do not.
+   */
+  z?: number;
+  /**
+   * Overrides the series' colour for this one point — the slice worth pointing
+   * at, the bar that is over budget. Any CSS colour, or a `NebaColor` family.
+   */
+  color?: string;
+  /** What the tooltip, the legend and any value label say instead of `y`. */
+  label?: React.ReactNode;
+}
+
+/** A number, a gap, or a point that says more about itself. */
+export type NebaChartDatum = number | null | NebaChartPoint;
+
+/**
+ * One line, one band of bars, one ring of slices — and the unit identity is
+ * attached to.
+ *
+ * Colour follows the series, never its position in the drawing: a chart whose
+ * legend is filtered keeps every survivor on the colour it had. That is why the
+ * slot a series takes is decided by where it sits in this array and not by how
+ * many of its neighbours are currently visible.
+ */
+export interface NebaChartSeries {
+  /**
+   * Its name in the legend, the tooltip and the data table. A chart with two or
+   * more series always shows a legend, so a series without a name is a series
+   * the reader cannot identify.
+   */
+  name?: string;
+  /** The values, in category order. */
+  data: readonly NebaChartDatum[];
+  /**
+   * Overrides the palette slot this series would otherwise take. A `NebaColor`
+   * family name, or any CSS colour.
+   *
+   * This is the one place in the library where a colour is not a semantic role,
+   * and it is deliberate: a series is an *entity* — a region, a plan, a
+   * competitor — and nothing about it means success or danger. Reach for it to
+   * match a brand or to hold a colour steady across two charts, not to say how
+   * a number should be felt.
+   */
+  color?: NebaColor | (string & {});
+  /**
+   * Starts the series hidden. Only meaningful with an interactive legend, which
+   * is what turns it back on.
+   * @default false
+   */
+  hidden?: boolean;
+}
+
+/** How a line gets from one point to the next. */
+export type NebaChartCurve = 'linear' | 'smooth' | 'step';
+
+/**
+ * Which values are written onto the marks themselves.
+ *
+ * The default is `none` everywhere, and that is not timidity — a number beside
+ * every point is the most reliable way to make a chart unreadable. Label the
+ * end, or the extremes, and let the axis and the tooltip carry the rest;
+ * `'all'` is there for the eight-bar chart where it genuinely is the answer.
+ */
+export type NebaChartValueLabels = 'none' | 'last' | 'extremes' | 'all';
+
+/**
+ * What the pointer uncovers.
+ *
+ * - `index` — every series at the category under the pointer, with a crosshair.
+ *   The default on anything with a shared x axis, because the question a line
+ *   chart is asked is "what happened in March", not "what is this pixel".
+ * - `item` — the one mark being pointed at.
+ * - `none` — no tooltip. The values still have to be readable some other way.
+ */
+export type NebaChartTooltipMode = 'index' | 'item' | 'none';
+
+/** One series' answer at the category the pointer is on. */
+export interface NebaChartTooltipItem {
+  /** Its place in the `series` array — the same index its colour came from. */
+  seriesIndex: number;
+  name?: string;
+  color: string;
+  value: number | null;
+  /** `value` run through the chart's `format`. */
+  formatted: string;
+  /** What the point called itself, if it said. */
+  label?: React.ReactNode;
+}
+
+/** What a custom tooltip is handed. */
+export interface NebaChartTooltipContext {
+  index: number;
+  category: NebaChartCategory;
+  /** Only the series that are visible and have a value here. */
+  items: readonly NebaChartTooltipItem[];
+}
+
+/** The tooltip, when a bare `true` or `false` is not enough. */
+export interface NebaChartTooltip {
+  /** @default 'index' */
+  mode?: NebaChartTooltipMode;
+  /**
+   * The line dropped through the plot at the active category. On in `index`
+   * mode, where it is what says which column the numbers belong to.
+   */
+  crosshair?: boolean;
+  /** Draws the panel. Without it the chart draws its own. */
+  render?: (context: NebaChartTooltipContext) => React.ReactNode;
+}
+
+/** One axis of a cartesian chart. */
+export interface NebaChartAxis {
+  /** Leaves the axis undrawn — its rule, its ticks and its labels. */
+  hidden?: boolean;
+  /** A name for what the axis measures, set beside it. */
+  label?: React.ReactNode;
+  /**
+   * The gridlines this axis casts across the plot. On by default for the value
+   * axis and off for the category axis, which is the only arrangement where the
+   * grid helps read a value without turning the plot into graph paper.
+   */
+  grid?: boolean;
+  /**
+   * Where the scale starts and ends. Left out, both are taken from the data —
+   * the value axis from zero, so a bar's length stays proportional to its
+   * value. Set `min` only when zero is genuinely not the baseline.
+   */
+  min?: number;
+  max?: number;
+  /** Roughly how many ticks. The scale still rounds to clean numbers. */
+  tickCount?: number;
+  /** How a tick is written, overriding the chart's own `format`. */
+  tickFormat?: (value: NebaChartCategory, index: number) => React.ReactNode;
+  /**
+   * How much room the axis keeps for its ticks and its label, in pixels.
+   * Measured from the ticks themselves otherwise; set it when a long category
+   * name needs more, or when two charts stacked on a dashboard have to line
+   * their plots up.
+   */
+  thickness?: number;
+}
+
+/** Where the legend sits, and whether it does anything when clicked. */
+export interface NebaChartLegend {
+  /** Which edge of the plot. @default 'bottom' */
+  side?: NebaSide;
+  /** Where along that edge. @default 'center' */
+  align?: NebaAlign;
+  /**
+   * Clicking an entry hides and shows its series; hovering one dims the rest.
+   * @default true
+   */
+  interactive?: boolean;
+  /** Draws each series' current value beside its name. @default false */
+  showValue?: boolean;
+}
 
 /** Style props shared by most components; spread into their own prop types. */
 export interface NebaStyleProps {

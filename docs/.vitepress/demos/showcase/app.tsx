@@ -8,9 +8,11 @@ import {
   AnimateLighting,
   AnimateMarquee,
   AnimateTyping,
+  AreaChart,
   AspectRatio,
   Avatar,
   Badge,
+  BarChart,
   Blockquote,
   Box,
   Breadcrumb,
@@ -56,6 +58,7 @@ import {
   Pagination,
   Pane,
   Panes,
+  PieChart,
   Pill,
   Popover,
   PopoverClose,
@@ -70,6 +73,7 @@ import {
   Shortcut,
   Skeleton,
   Slider,
+  Sparkline,
   Spoiler,
   Statistic,
   Switch,
@@ -174,9 +178,44 @@ function DotIcon() {
 }
 
 const STATS = [
-  { label: 'Deploys this month', value: 128, previousValue: 104, betterWhen: 'up' as const },
-  { label: 'Review apps', value: 9, previousValue: 9, betterWhen: 'up' as const },
-  { label: 'Failing builds', value: 2, previousValue: 5, betterWhen: 'down' as const }
+  {
+    label: 'Deploys this month',
+    value: 128,
+    previousValue: 104,
+    betterWhen: 'up' as const,
+    trend: [78, 84, 91, 88, 96, 104, 111, 128]
+  },
+  {
+    label: 'Review apps',
+    value: 9,
+    previousValue: 9,
+    betterWhen: 'up' as const,
+    trend: [7, 8, 8, 10, 9, 11, 9, 9]
+  },
+  {
+    label: 'Failing builds',
+    value: 2,
+    previousValue: 5,
+    betterWhen: 'down' as const,
+    trend: [8, 6, 7, 5, 6, 4, 5, 2]
+  }
+];
+
+const CHART_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+
+const BUILD_MINUTES = [
+  { name: 'production', data: [1840, 1920, 2010, 1980, 2240, 2380, 2510, 2690] },
+  { name: 'staging', data: [1120, 1080, 1240, 1310, 1290, 1440, 1520, 1610] },
+  { name: 'preview', data: [640, 720, 810, 890, 1040, 1180, 1320, 1490] }
+];
+
+const DEPLOYS_BY_REGION = [{ name: 'Deploys', data: [412, 388, 264, 190] }];
+
+const RUNTIME_MIX = [
+  { x: 'Node 22', y: 61 },
+  { x: 'Node 20', y: 24 },
+  { x: 'Bun', y: 11 },
+  { x: 'Deno', y: 4 }
 ];
 
 const HIGHLIGHTS = [
@@ -558,7 +597,7 @@ function ShowcaseBody() {
           arranges them and draws nothing itself. `betterWhen` is what makes the
           third card red for a figure that fell. */}
         <section className="flex flex-col gap-3">
-          <Caption>GridContainer · Grid · Statistic</Caption>
+          <Caption>GridContainer · Grid · Statistic · Sparkline</Caption>
           <GridContainer spacing={3} padded={false}>
             {STATS.map((stat) => (
               <Grid key={stat.label} span={{ xs: 12, sm: 4 }}>
@@ -569,9 +608,74 @@ function ShowcaseBody() {
                   betterWhen={stat.betterWhen}
                   caption="vs. last month"
                   className="h-full"
-                />
+                >
+                  <Sparkline
+                    data={stat.trend}
+                    label={`${stat.label}, last eight months`}
+                    color={stat.betterWhen === 'down' ? 'danger' : 'primary'}
+                    endDot
+                  />
+                </Statistic>
               </Grid>
             ))}
+          </GridContainer>
+        </section>
+
+        {/* The same eight months three ways. Each chart is a drawing on the
+          card rather than a sheet of its own, and all three take the palette
+          in the same fixed order — so "production" is the same blue wherever
+          it turns up on the page. */}
+        <section className="flex flex-col gap-3">
+          <Caption>AreaChart · BarChart · PieChart</Caption>
+          <GridContainer spacing={3} padded={false}>
+            <Grid span={{ xs: 12, lg: 7 }}>
+              <Card
+                size="sm"
+                title={<h3>Build minutes</h3>}
+                subtitle="By environment"
+                className="h-full"
+              >
+                <AreaChart
+                  label="Build minutes by environment and month"
+                  size="sm"
+                  height={200}
+                  stacked
+                  curve="smooth"
+                  categories={CHART_MONTHS}
+                  series={BUILD_MINUTES}
+                />
+              </Card>
+            </Grid>
+            <Grid span={{ xs: 12, lg: 5 }}>
+              <Card
+                size="sm"
+                title={<h3>Runtimes</h3>}
+                subtitle="Share of deploys"
+                className="h-full"
+              >
+                <PieChart
+                  label="Deploys by runtime"
+                  size="sm"
+                  height={200}
+                  shape="donut"
+                  data={RUNTIME_MIX}
+                  center={<Typography level="h5">1,254</Typography>}
+                />
+              </Card>
+            </Grid>
+            <Grid span={12}>
+              <Card size="sm" title={<h3>Deploys by region</h3>} className="h-full">
+                <BarChart
+                  label="Deploys by region"
+                  size="sm"
+                  height={160}
+                  orientation="horizontal"
+                  valueLabels="all"
+                  categories={['Seoul', 'Tokyo', 'Frankfurt', 'Washington DC']}
+                  series={DEPLOYS_BY_REGION}
+                />
+              </Card>
+            </Grid>
           </GridContainer>
         </section>
 
