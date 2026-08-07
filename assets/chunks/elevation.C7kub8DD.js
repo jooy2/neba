@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{g as s}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function e(){return t.jsx("div",{className:"flex flex-wrap items-start gap-5",children:[0,1,2,3].map(r=>t.jsxs(s,{variant:"solid",elevation:r,children:["elevation ",r]},r))})}export{e as default};

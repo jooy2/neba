@@ -1,0 +1,1 @@
+import{j as i}from"./jsx-runtime.BjG_zV1W.js";import{d6 as s}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";const e=["primary","secondary","success","warning","danger","info"];function t(){return i.jsx("div",{className:"flex w-full max-w-md flex-col gap-5",children:e.map(r=>i.jsx(s,{color:r,children:r},r))})}export{t as default};

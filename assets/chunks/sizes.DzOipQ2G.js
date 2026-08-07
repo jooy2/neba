@@ -1,0 +1,1 @@
+import{j as m}from"./jsx-runtime.BjG_zV1W.js";import{d$ as r}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";const a=["xs","sm","md","lg","xl"];function x(){return m.jsx("div",{className:"flex w-full max-w-md flex-col gap-6",children:a.map(l=>m.jsx(r,{size:l,label:l,defaultValue:50},l))})}export{x as default};

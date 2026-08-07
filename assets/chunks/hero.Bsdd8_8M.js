@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{P as s,Q as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function c(){return r.jsxs(s,{children:[r.jsx(e,{href:"#home",children:"Home"}),r.jsx(e,{href:"#projects",children:"Projects"}),r.jsx(e,{href:"#neba",children:"Neba"}),r.jsx(e,{children:"Settings"})]})}export{c as default};

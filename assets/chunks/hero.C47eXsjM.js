@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{p as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function s(){return t.jsx(e,{className:"text-xl font-semibold text-(--neba-fg)",speed:18,children:"Ship the interface, not the design system."})}export{s as default};

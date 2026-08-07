@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{p as m}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function o(){return t.jsx("div",{className:"flex w-full max-w-sm flex-col gap-2 font-mono text-sm",children:[8,20,60].map(e=>t.jsx(m,{speed:e,caretChar:"▌",children:`speed=${e} — the same line, three paces`},e))})}export{o as default};

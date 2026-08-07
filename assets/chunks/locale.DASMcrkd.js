@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{d_ as s}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";const i=["en","ko","ja","fr","ar"];function e(){return t.jsx("div",{className:"grid w-full gap-4 sm:grid-cols-3",children:i.map(r=>t.jsx(s,{variant:"outline",size:"sm",locale:r},r))})}export{e as default};

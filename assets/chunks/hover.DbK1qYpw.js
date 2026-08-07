@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{k as t,B as i}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function m(){return r.jsx(t,{trigger:"hover",size:"md",glow:"#d946ef",arc:70,duration:1600,children:r.jsx(i,{size:"lg",children:"Upgrade the plan"})})}export{m as default};

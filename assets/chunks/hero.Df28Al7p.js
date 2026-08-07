@@ -1,0 +1,1 @@
+import{j as i}from"./jsx-runtime.BjG_zV1W.js";import{e as r,C as n}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function m(){return i.jsx(r,{min:.35,duration:1100,children:i.jsx(n,{color:"danger",variant:"solid",children:"Recording"})})}export{m as default};

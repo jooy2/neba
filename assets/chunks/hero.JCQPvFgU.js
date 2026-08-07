@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime.BjG_zV1W.js";import{dG as r,dH as a}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function i(){return e.jsxs(r,{label:"Plan",defaultValue:"team",children:[e.jsx(a,{value:"starter",label:"Starter"}),e.jsx(a,{value:"team",label:"Team"}),e.jsx(a,{value:"enterprise",label:"Enterprise"})]})}export{i as default};

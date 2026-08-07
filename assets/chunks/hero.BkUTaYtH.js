@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{e6 as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function i(){return r.jsxs("div",{className:"flex flex-wrap items-center gap-8",children:[r.jsx(e,{}),r.jsx(e,{value:62,label:"Migrating",showValue:!0,color:"info"})]})}export{i as default};

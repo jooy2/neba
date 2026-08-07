@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{dJ as l}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function s(){return t.jsx("div",{className:"flex flex-wrap items-end gap-4",children:["xs","sm","md","lg","xl"].map(e=>t.jsx(l,{size:e,length:4,label:e,defaultValue:"42"},e))})}export{s as default};

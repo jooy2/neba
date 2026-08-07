@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{d9 as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function i(){return r.jsxs("div",{className:"flex flex-wrap items-center gap-6",children:[r.jsx(e,{value:72,showValue:!0,label:"Indexing"}),r.jsx(e,{color:"secondary"})]})}export{i as default};

@@ -1,0 +1,1 @@
+import{j as i}from"./jsx-runtime.BjG_zV1W.js";import{e,C as t}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function m(){return i.jsx("div",{className:"flex items-center gap-3",children:[0,.3,.6].map(r=>i.jsx(e,{min:r,duration:1200,children:i.jsxs(t,{color:"warning",children:["min ",r]})},r))})}export{m as default};

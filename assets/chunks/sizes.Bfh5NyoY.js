@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime.BjG_zV1W.js";import{S as r}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";const l=["xs","sm","md","lg","xl"];function i(){return e.jsx("div",{className:"flex flex-col gap-3",children:l.map(t=>e.jsx(r,{size:t,label:t,defaultChecked:!0},t))})}export{i as default};

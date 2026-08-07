@@ -1,0 +1,1 @@
+import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{E as r}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import{p as t}from"./photo.yKXBPDXo.js";import"./index.CicSMsZE.js";function p(){return o.jsx(r,{ratio:16/9,rounded:!0,className:"max-w-96",children:o.jsx("img",{src:t(212),alt:"A ridge of hills under a low sun"})})}export{p as default};

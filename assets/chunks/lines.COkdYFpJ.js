@@ -1,0 +1,1 @@
+import{j as s}from"./jsx-runtime.BjG_zV1W.js";import{F as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function n(){return s.jsxs("div",{className:"flex w-full max-w-96 flex-col gap-6",children:[s.jsx(e,{size:"sm",lines:2}),s.jsx(e,{lines:4}),s.jsx(e,{size:"lg",lines:3})]})}export{n as default};

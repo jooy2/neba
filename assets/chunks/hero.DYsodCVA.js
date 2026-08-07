@@ -1,0 +1,1 @@
+import{j as i}from"./jsx-runtime.BjG_zV1W.js";import{k as t,d as s}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function n(){return i.jsx(t,{size:"md",className:"w-full max-w-xs",children:i.jsx(s,{title:"Analysing 4,281 rows",size:"md",children:"This usually takes about a minute."})})}export{n as default};

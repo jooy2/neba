@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime.BjG_zV1W.js";import{dI as r}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function m(){return e.jsx("div",{className:"grid w-full grid-cols-1 gap-4 lg:grid-cols-3",children:["solid","outline","text"].map(i=>e.jsx(r,{variant:i,size:"sm",title:i,hint:"Any file"},i))})}export{m as default};

@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{bR as o}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function l(){return r.jsx(o,{inline:!0,defaultValue:"#22c55e"})}export{l as default};

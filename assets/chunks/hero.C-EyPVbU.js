@@ -1,0 +1,1 @@
+import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{e2 as e}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import{PhoneScreen as r}from"./screen.DyURTQCd.js";import"./index.CicSMsZE.js";function n(){return o.jsx(e,{device:"mobile",os:"ios",elevation:2,width:260,children:o.jsx(r,{})})}export{n as default};

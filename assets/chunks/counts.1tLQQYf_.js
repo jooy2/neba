@@ -1,0 +1,1 @@
+import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{e6 as s}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function a(){return o.jsx("div",{className:"flex flex-col gap-5",children:[3,4,6,10].map(r=>o.jsx(s,{count:r},r))})}export{a as default};

@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime.BjG_zV1W.js";import{f as r,C as t}from"./Typography.Da5YZw61.js";import"./index.CAJ_Adw3.js";import"./index.CicSMsZE.js";function o(){return e.jsx("div",{className:"flex flex-wrap items-center justify-center gap-2",children:[0,200,400,600].map(i=>e.jsx(r,{delay:i,duration:500,children:e.jsxs(t,{children:[i,"ms"]})},i))})}export{o as default};
