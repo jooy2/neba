@@ -21,6 +21,8 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
+This is not [TimelineChart](../charts/timeline-chart). That one draws spans against a calendar — a Gantt — for how long each piece of work took. This one is a list of steps, and the gaps between them are not to scale.
+
 ## Props
 
 ### Timeline

@@ -254,6 +254,75 @@
   --neba-chart-6: oklch(57.5% 0.18 145);
   --neba-chart-7: oklch(62% 0.22 305);
   --neba-chart-8: oklch(58.5% 0.104 182);
+
+  /* The sequential ramp — one hue, light to dark, for a mark whose colour is a
+     *magnitude* rather than an identity.
+
+     A different job from the eight above and so a different set, not a subset
+     of them. The eight are solved to be as far apart as possible, which is
+     exactly what a magnitude must not be: a heatmap coloured from a categorical
+     ramp says its cells are five unrelated things. Here the order is the whole
+     meaning, so what is solved for is the opposite —
+
+     - one hue throughout (spread 0°), because two hues in a ramp is a reader
+       inventing a boundary where the data has none;
+     - lightness strictly falling, in steps of at least ΔL 0.06 so no two are
+       the same shade at a glance;
+     - and the palest step still at 2:1 on the sheet, or the low end of the
+       scale is a cell that reads as empty rather than as small. It is 2.07:1
+       here, which is why step one is not paler than it is.
+
+     Chroma peaks in the middle and eases at both ends: at the pale end because
+     sRGB has none to give, and at the dark end because a saturated near-black
+     reads as a different hue.
+
+     Five steps and not a continuous gradient, because a reader cannot rank a
+     continuum. The scale legend under a heatmap has five swatches and the cells
+     have five values, and that is a picture with an answer in it. */
+  --neba-chart-seq-1: oklch(77% 0.09 262);
+  --neba-chart-seq-2: oklch(69% 0.13 262);
+  --neba-chart-seq-3: oklch(61% 0.17 262);
+  --neba-chart-seq-4: oklch(53% 0.19 262);
+  --neba-chart-seq-5: oklch(43% 0.17 262);
+
+  /* The diverging ramp — two poles and a neutral, for a magnitude with a
+     *middle* that means something: over and under target, gained and lost.
+
+     Reached for only when there is a real zero to diverge about. Used on a
+     plain magnitude it invents one, and the reader spends the chart looking for
+     what changed at the grey.
+
+     The neutral is grey and not a third hue, which is the rule that makes the
+     two arms read as two directions rather than as three categories. Each arm
+     is a one-hue ramp in its own right and passes the same three checks the
+     sequential ramp does; the two poles additionally clear the categorical
+     colour-vision gate at ΔE 17.4 under deuteranopia, because a diverging
+     scale whose ends cannot be told apart has no ends. */
+  --neba-chart-div-1: oklch(45% 0.09 232);
+  --neba-chart-div-2: oklch(63% 0.12 232);
+  --neba-chart-div-3: oklch(77% 0.008 262);
+  --neba-chart-div-4: oklch(63% 0.15 32);
+  --neba-chart-div-5: oklch(45% 0.16 32);
+
+  /* Which ink a label inside a filled tile wears.
+     Inside a mark is the one place text does not wear a text token outright: on
+     the pale end of a ramp the ink is right and on the dark end it is invisible,
+     and where the flip happens is different in each theme. So it is decided per
+     step, here, where the step's own lightness is known — computed rather than
+     eyeballed, and every one of the ten clears 4.5:1 against the fill it sits
+     on (the tightest is 4.58:1, in the middle of the ramp, which is where a
+     sequential scale is always hardest to write on). */
+  --neba-chart-seq-on-1: var(--neba-fg);
+  --neba-chart-seq-on-2: var(--neba-fg);
+  --neba-chart-seq-on-3: var(--neba-fg);
+  --neba-chart-seq-on-4: var(--neba-surface);
+  --neba-chart-seq-on-5: var(--neba-surface);
+
+  --neba-chart-div-on-1: var(--neba-surface);
+  --neba-chart-div-on-2: var(--neba-fg);
+  --neba-chart-div-on-3: var(--neba-fg);
+  --neba-chart-div-on-4: var(--neba-fg);
+  --neba-chart-div-on-5: var(--neba-surface);
 }
 
 /* ---------------------------------------------------------------------------
@@ -345,6 +414,34 @@
     --neba-chart-6: oklch(66% 0.206 145);
     --neba-chart-7: oklch(66% 0.22 305);
     --neba-chart-8: oklch(66% 0.118 182);
+
+    /* The two ramps, re-solved against the dark sheet rather than flipped. The
+       check that moves is the one at the *dark* end: there it is the deepest
+       step that has to stay clear of the surface, at 2.23:1 here, so the ramp
+       runs from a step lighter than the light theme's would. */
+    --neba-chart-seq-1: oklch(43% 0.12 262);
+    --neba-chart-seq-2: oklch(52% 0.16 262);
+    --neba-chart-seq-3: oklch(61% 0.19 262);
+    --neba-chart-seq-4: oklch(70% 0.15 262);
+    --neba-chart-seq-5: oklch(80% 0.09 262);
+
+    --neba-chart-div-1: oklch(46% 0.092 232);
+    --neba-chart-div-2: oklch(62% 0.125 232);
+    --neba-chart-div-3: oklch(76% 0.008 262);
+    --neba-chart-div-4: oklch(62% 0.15 32);
+    --neba-chart-div-5: oklch(46% 0.15 32);
+
+    --neba-chart-seq-on-1: var(--neba-fg);
+    --neba-chart-seq-on-2: var(--neba-fg);
+    --neba-chart-seq-on-3: var(--neba-surface);
+    --neba-chart-seq-on-4: var(--neba-surface);
+    --neba-chart-seq-on-5: var(--neba-surface);
+
+    --neba-chart-div-on-1: var(--neba-fg);
+    --neba-chart-div-on-2: var(--neba-surface);
+    --neba-chart-div-on-3: var(--neba-surface);
+    --neba-chart-div-on-4: var(--neba-surface);
+    --neba-chart-div-on-5: var(--neba-fg);
   }
 }
 
@@ -424,6 +521,31 @@
   --neba-chart-6: oklch(66% 0.206 145);
   --neba-chart-7: oklch(66% 0.22 305);
   --neba-chart-8: oklch(66% 0.118 182);
+
+  /* See the note in the `prefers-color-scheme` block. */
+  --neba-chart-seq-1: oklch(43% 0.12 262);
+  --neba-chart-seq-2: oklch(52% 0.16 262);
+  --neba-chart-seq-3: oklch(61% 0.19 262);
+  --neba-chart-seq-4: oklch(70% 0.15 262);
+  --neba-chart-seq-5: oklch(80% 0.09 262);
+
+  --neba-chart-div-1: oklch(46% 0.092 232);
+  --neba-chart-div-2: oklch(62% 0.125 232);
+  --neba-chart-div-3: oklch(76% 0.008 262);
+  --neba-chart-div-4: oklch(62% 0.15 32);
+  --neba-chart-div-5: oklch(46% 0.15 32);
+
+  --neba-chart-seq-on-1: var(--neba-fg);
+  --neba-chart-seq-on-2: var(--neba-fg);
+  --neba-chart-seq-on-3: var(--neba-surface);
+  --neba-chart-seq-on-4: var(--neba-surface);
+  --neba-chart-seq-on-5: var(--neba-surface);
+
+  --neba-chart-div-on-1: var(--neba-fg);
+  --neba-chart-div-on-2: var(--neba-surface);
+  --neba-chart-div-on-3: var(--neba-surface);
+  --neba-chart-div-on-4: var(--neba-surface);
+  --neba-chart-div-on-5: var(--neba-fg);
 }
 
 /* ---------------------------------------------------------------------------

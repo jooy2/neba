@@ -45,6 +45,7 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  HeatmapChart,
   Highlight,
   Icon,
   IconButton,
@@ -71,6 +72,7 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  ScatterChart,
   Segment,
   SegmentedButton,
   Select,
@@ -89,6 +91,7 @@ import {
   TextLink,
   TimePicker,
   Timeline,
+  TimelineChart,
   TimelineItem,
   ToastProvider,
   Toolbar,
@@ -1238,6 +1241,101 @@ const GROUPS: Group[] = [
               label="Deploys per team"
               categories={['Platform', 'Payments', 'Growth', 'Mobile']}
               series={[{ name: 'Deploys', data: [318, 264, 197, 152] }]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'ScatterChart',
+        summary: {
+          ko: '두 값을 서로에 대해 찍어, 함께 움직이는지를',
+          en: 'Two measures against each other, for whether they move together'
+        },
+        path: '/components/charts/scatter-chart',
+        preview: (
+          <div className="w-full">
+            <ScatterChart
+              size="xs"
+              height={110}
+              legend={false}
+              label="Pages read against session length"
+              series={[
+                {
+                  name: 'Visits',
+                  data: [
+                    { x: 22, y: 2 },
+                    { x: 41, y: 3 },
+                    { x: 68, y: 4 },
+                    { x: 90, y: 5 },
+                    { x: 112, y: 8 },
+                    { x: 141, y: 10 },
+                    { x: 166, y: 9 },
+                    { x: 203, y: 11 }
+                  ]
+                }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'HeatmapChart',
+        summary: {
+          ko: '셀마다 크기를 하나씩, 색으로',
+          en: 'A magnitude per cell, coloured rather than measured'
+        },
+        path: '/components/charts/heatmap-chart',
+        preview: (
+          <div className="w-full">
+            <HeatmapChart
+              size="xs"
+              height={110}
+              legend={false}
+              label="Sessions by hour and weekday"
+              categories={['00', '04', '08', '12', '16', '20']}
+              series={[
+                { name: 'Mon', data: [4, 3, 24, 38, 51, 18] },
+                { name: 'Wed', data: [3, 2, 29, 43, 58, 21] },
+                { name: 'Fri', data: [5, 3, 25, 37, 48, 26] },
+                { name: 'Sun', data: [8, 3, 9, 19, 25, 21] }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'TimelineChart',
+        summary: {
+          ko: '시간 위의 기간들 — 한 행에 하나씩',
+          en: 'Work against time, a row per thing'
+        },
+        path: '/components/charts/timeline-chart',
+        preview: (
+          <div className="w-full">
+            <TimelineChart
+              size="xs"
+              height={110}
+              label="Release plan"
+              series={[
+                {
+                  name: 'Design',
+                  data: [
+                    { start: new Date('2026-01-06'), end: new Date('2026-02-24'), label: 'Design' }
+                  ]
+                },
+                {
+                  name: 'Build',
+                  data: [
+                    { start: new Date('2026-02-10'), end: new Date('2026-04-21'), label: 'Build' }
+                  ]
+                },
+                {
+                  name: 'Launch',
+                  data: [
+                    { start: new Date('2026-04-07'), end: new Date('2026-05-19'), label: 'Launch' }
+                  ]
+                }
+              ]}
             />
           </div>
         )

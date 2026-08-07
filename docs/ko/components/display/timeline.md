@@ -21,6 +21,8 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
+[TimelineChart](../charts/timeline-chart)와 다른 컴포넌트입니다. 그쪽은 달력 위에 기간을 그리는 Gantt 차트로 각 작업이 얼마나 걸렸는지를 보여 주고, 이쪽은 단계의 목록이라 단계 사이의 간격은 실제 시간에 비례하지 않습니다.
+
 ## Props
 
 ### Timeline

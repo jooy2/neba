@@ -241,6 +241,98 @@ export function toValues(series: readonly NebaChartSeries[]): ChartValue[][] {
   return series.map((one) => one.data.map(toValue));
 }
 
+/**
+ * A category as a number, for a category axis that is really a value axis.
+ *
+ * A `Date` is its epoch milliseconds, which is what makes a scatter of
+ * timestamps work at all. A string is not a position on a number line, so it
+ * comes back `null` rather than `NaN` — the same rule `toValue` follows, and
+ * for the same reason: a `NaN` reaches the scale and leaves the letters in the
+ * path.
+ */
+export function toNumber(value: NebaChartCategory | undefined): number | null {
+  if (value instanceof Date) {
+    return Number.isFinite(value.getTime()) ? value.getTime() : null;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  return null;
+}
+
+/**
+ * Where one point sits along a category axis that runs on numbers.
+ *
+ * The same three sources `categoryAt` reads, in the same order — but per
+ * *point* rather than per column, because on a scatter each series has its own
+ * x at every index and there is no column for them to share.
+ */
+export function pointX(
+  value: ChartValue,
+  index: number,
+  categories: readonly NebaChartCategory[] | undefined
+): number | null {
+  return toNumber(value.x ?? categories?.[index] ?? index);
+}
+
+/**
+ * The extent of the category values, for a chart whose x is a number.
+ *
+ * Only points that have a `y` count. A point with no value is not on the plot,
+ * so letting its `x` stretch the axis would leave a margin of empty plot
+ * standing in for data that was never drawn.
+ */
+export function categoryExtent(
+  values: readonly ChartValue[][],
+  categories: readonly NebaChartCategory[] | undefined
+): { min: number; max: number } | null {
+  let min = Infinity;
+  let max = -Infinity;
+  let seen = false;
+
+  values.forEach((one) => {
+    one.forEach((value, index) => {
+      if (value.value === null) {
+        return;
+      }
+
+      const x = pointX(value, index, categories);
+
+      if (x === null) {
+        return;
+      }
+
+      seen = true;
+      min = Math.min(min, x);
+      max = Math.max(max, x);
+    });
+  });
+
+  return seen ? { min, max } : null;
+}
+
+/**
+ * The radius a bubble gets for its `z`, in pixels.
+ *
+ * `z` is an **area** and not a radius, which is the single most common way a
+ * bubble chart lies: encode it as a radius and a value twice as large draws a
+ * mark four times the size. The square root is what makes the ink on the page
+ * proportional to the number behind it.
+ *
+ * `min` is a floor rather than a scale — a bubble for a small-but-real value
+ * has to stay something a pointer can find, and a zero is the only thing
+ * allowed to disappear.
+ */
+export function bubbleRadius(z: number, maxZ: number, max: number, min: number): number {
+  if (!(maxZ > 0) || !Number.isFinite(z) || z <= 0) {
+    return z === 0 ? 0 : min;
+  }
+
+  return Math.max(min, Math.sqrt(Math.min(z, maxZ) / maxZ) * max);
+}
+
 /** How many categories the widest series has. */
 export function categoryCount(series: readonly NebaChartSeries[]): number {
   return series.reduce((most, one) => Math.max(most, one.data.length), 0);
@@ -481,6 +573,327 @@ export function valueScale(
     ticks,
     fraction: (value) => (value - start) / span
   };
+}
+
+/* ---------------------------------------------------------------------------
+ * Time
+ * ------------------------------------------------------------------------- */
+
+/** The units a time axis is allowed to step in. */
+export type TimeUnit = 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
+
+const second = 1000;
+const minute = 60 * second;
+const hour = 60 * minute;
+const day = 24 * hour;
+
+/**
+ * The steps a clock and a calendar actually have, smallest first.
+ *
+ * `niceStep`'s 1-2-5 is the right family for a count and the wrong one for an
+ * instant: run on a millisecond number it produces a tick every 200,000,000 ms,
+ * which lands at 14:53:20 on an arbitrary Tuesday. Nobody reads that. Time is
+ * not decimal below the year — sixty, sixty, twenty-four, seven, twelve — so
+ * the steps are written down rather than derived.
+ *
+ * `size` is only how the step is *chosen*: months and years are not a fixed
+ * number of milliseconds, so the ticks themselves are walked with a calendar.
+ */
+const timeSteps: readonly { unit: TimeUnit; count: number; size: number }[] = [
+  { unit: 'second', count: 1, size: second },
+  { unit: 'second', count: 5, size: 5 * second },
+  { unit: 'second', count: 15, size: 15 * second },
+  { unit: 'second', count: 30, size: 30 * second },
+  { unit: 'minute', count: 1, size: minute },
+  { unit: 'minute', count: 5, size: 5 * minute },
+  { unit: 'minute', count: 15, size: 15 * minute },
+  { unit: 'minute', count: 30, size: 30 * minute },
+  { unit: 'hour', count: 1, size: hour },
+  { unit: 'hour', count: 3, size: 3 * hour },
+  { unit: 'hour', count: 6, size: 6 * hour },
+  { unit: 'hour', count: 12, size: 12 * hour },
+  { unit: 'day', count: 1, size: day },
+  { unit: 'day', count: 2, size: 2 * day },
+  { unit: 'week', count: 1, size: 7 * day },
+  { unit: 'week', count: 2, size: 14 * day },
+  { unit: 'month', count: 1, size: 30 * day },
+  { unit: 'quarter', count: 1, size: 91 * day },
+  { unit: 'month', count: 6, size: 182 * day },
+  { unit: 'year', count: 1, size: 365 * day }
+];
+
+/**
+ * The start of the `unit` that `time` falls in, in the reader's own timezone.
+ *
+ * Local and not UTC, which is the whole reason this is calendar arithmetic
+ * rather than a modulo: a tick labelled "Mar 3" has to sit at midnight where
+ * the reader is, and an axis aligned to UTC puts it nine hours into the 2nd.
+ */
+function floorTime(time: number, unit: TimeUnit): number {
+  const at = new Date(time);
+
+  if (unit === 'year') {
+    return new Date(at.getFullYear(), 0, 1).getTime();
+  }
+
+  if (unit === 'quarter') {
+    return new Date(at.getFullYear(), Math.floor(at.getMonth() / 3) * 3, 1).getTime();
+  }
+
+  if (unit === 'month') {
+    return new Date(at.getFullYear(), at.getMonth(), 1).getTime();
+  }
+
+  if (unit === 'week') {
+    const midnight = new Date(at.getFullYear(), at.getMonth(), at.getDate());
+
+    midnight.setDate(midnight.getDate() - midnight.getDay());
+
+    return midnight.getTime();
+  }
+
+  if (unit === 'day') {
+    return new Date(at.getFullYear(), at.getMonth(), at.getDate()).getTime();
+  }
+
+  if (unit === 'hour') {
+    return new Date(at.getFullYear(), at.getMonth(), at.getDate(), at.getHours()).getTime();
+  }
+
+  if (unit === 'minute') {
+    return Math.floor(time / minute) * minute;
+  }
+
+  return Math.floor(time / second) * second;
+}
+
+/**
+ * `count` units on from `time`, again by the calendar.
+ *
+ * Adding 30 days is not adding a month and adding 365 is not adding a year, so
+ * a scale that stepped in milliseconds would drift a day per leap year and
+ * three per quarter. `setMonth` and `setDate` roll over correctly, and they are
+ * also what keeps a daily axis on midnight across a daylight-saving change.
+ */
+function addTime(time: number, unit: TimeUnit, count: number): number {
+  const at = new Date(time);
+
+  if (unit === 'year') {
+    at.setFullYear(at.getFullYear() + count);
+  } else if (unit === 'quarter') {
+    at.setMonth(at.getMonth() + 3 * count);
+  } else if (unit === 'month') {
+    at.setMonth(at.getMonth() + count);
+  } else if (unit === 'week') {
+    at.setDate(at.getDate() + 7 * count);
+  } else if (unit === 'day') {
+    at.setDate(at.getDate() + count);
+  } else if (unit === 'hour') {
+    at.setHours(at.getHours() + count);
+  } else {
+    return time + count * (unit === 'minute' ? minute : second);
+  }
+
+  return at.getTime();
+}
+
+/**
+ * The container a step of this unit should be counted from.
+ *
+ * A 6-month step floored only to a month starts wherever the data starts, and
+ * an axis reading "Apr · Oct · Apr · Oct" has told the reader nothing about
+ * where in the year they are. Counted from January it reads "Jan · Jul", which
+ * is the same six months landing where a calendar already has a name for them.
+ * The same argument makes an hourly axis start at midnight and a minute axis
+ * start on the hour.
+ */
+const timeContainer: Record<TimeUnit, TimeUnit> = {
+  second: 'minute',
+  minute: 'hour',
+  hour: 'day',
+  day: 'month',
+  week: 'week',
+  month: 'year',
+  quarter: 'year',
+  year: 'year'
+};
+
+/** The last step boundary at or before `time` — the axis' rounded-out start. */
+function alignTime(time: number, unit: TimeUnit, count: number): number {
+  let tick = floorTime(time, timeContainer[unit]);
+
+  if (unit === 'year' && count > 1) {
+    // Decades start at 1990 and not at 1993, which is the same rule one step up.
+    const year = new Date(tick).getFullYear();
+
+    tick = new Date(year - (((year % count) + count) % count), 0, 1).getTime();
+  }
+
+  for (let index = 0; index < 500; index++) {
+    const next = addTime(tick, unit, count);
+
+    if (next > time) {
+      return tick;
+    }
+
+    tick = next;
+  }
+
+  return tick;
+}
+
+/** A value scale whose numbers are instants, and the unit its ticks step in. */
+export interface TimeScale extends ValueScale {
+  unit: TimeUnit;
+  /** How many of that unit each step covers — 1, 5, 15 minutes and so on. */
+  step: number;
+}
+
+/**
+ * The scale a time axis runs on, ticking where a calendar ticks.
+ *
+ * The ends round *outward* to the step for the reason `valueScale`'s do: a span
+ * that starts exactly on the left edge reads as clipped rather than as
+ * starting there. Past a year the 1-2-5 family comes back, because above the
+ * year time really is decimal — decades and centuries are the only units left.
+ */
+export function timeScale(
+  extent: { min: number; max: number } | null,
+  options: { min?: number; max?: number; tickCount?: number } = {}
+): TimeScale {
+  const { tickCount = 6 } = options;
+
+  let low = options.min ?? extent?.min ?? Date.parse('2000-01-01T00:00:00');
+  let high = options.max ?? extent?.max ?? low + day;
+
+  // A single instant is not a range. Open a day around it rather than dividing
+  // by zero and drawing every mark on one pixel.
+  if (high <= low) {
+    low -= day / 2;
+    high += day / 2;
+  }
+
+  const span = high - low;
+
+  /* The step whose tick count comes *closest* to the one asked for, rather than
+     the largest that fits under it. "Largest that fits" is off by a factor of
+     two every time the next step up is the better answer: five months at six
+     ticks wants a month, and taking the biggest step under `span / 6` takes a
+     fortnight and draws eleven. */
+  let chosen = timeSteps[0];
+  let closest = Infinity;
+
+  for (const candidate of timeSteps) {
+    const distance = Math.abs(span / candidate.size - tickCount);
+
+    if (distance < closest) {
+      closest = distance;
+      chosen = candidate;
+    }
+  }
+
+  // Above a year the calendar has no more units to offer, so the step goes back
+  // to 1-2-5 — counted in years, never in milliseconds.
+  const unit = chosen.unit;
+  const count =
+    unit === 'year'
+      ? Math.max(1, Math.round(niceStep(span / tickCount / (365 * day))))
+      : chosen.count;
+
+  const start = options.min ?? alignTime(low, unit, count);
+  const ticks: number[] = [];
+
+  /* Walked rather than multiplied, so a month is a month. The loop runs one
+     step past the data and keeps that step as the end, which is what rounds the
+     axis outward at the top the way `alignTime` rounded it at the bottom — a
+     span whose last day is the last pixel reads as clipped rather than as
+     finished. The 500 is a guard and not a limit: a step small enough to need
+     more of them means the unit table was outrun. */
+  let tick = start;
+
+  for (let index = 0; index < 500; index++) {
+    ticks.push(tick);
+
+    if (tick > high) {
+      break;
+    }
+
+    tick = addTime(tick, unit, count);
+  }
+
+  const end = options.max ?? ticks[ticks.length - 1];
+  const width = end - start || 1;
+
+  return {
+    min: start,
+    max: end,
+    ticks: ticks.filter((one) => one >= start && one <= end),
+    unit,
+    step: count,
+    fraction: (value) => (value - start) / width
+  };
+}
+
+/**
+ * The `Intl` options one instant is written with, at each step size.
+ *
+ * Everything here comes from `Intl` and none of it from `internal/i18n.ts` —
+ * the same rule the date pickers follow, and for the same reason: the platform
+ * already knows every month name in every language, and a table of them in this
+ * repository would be a worse copy that goes stale.
+ */
+function timeParts(unit: TimeUnit, withYear: boolean): Intl.DateTimeFormatOptions {
+  if (unit === 'second') {
+    return { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' };
+  }
+
+  if (unit === 'minute' || unit === 'hour') {
+    return { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
+  }
+
+  if (unit === 'year') {
+    return { year: 'numeric' };
+  }
+
+  const parts: Intl.DateTimeFormatOptions =
+    unit === 'month' || unit === 'quarter'
+      ? { month: 'short' }
+      : { month: 'short', day: 'numeric' };
+
+  return withYear ? { ...parts, year: 'numeric' } : parts;
+}
+
+/** One instant on a time axis, written unambiguously — for a tooltip or a table. */
+export function formatTimeValue(value: number, unit: TimeUnit, locale?: string): string {
+  return new Intl.DateTimeFormat(locale, timeParts(unit, true)).format(new Date(value));
+}
+
+/**
+ * A whole axis of ticks, written the way an axis is read.
+ *
+ * The year is decided for the axis rather than for each tick, and that is the
+ * part worth explaining. Writing it only where it *changes* is what a reader
+ * wants and is not safe here: the labels are thinned again downstream, by a
+ * stride measured against the plot's real width, and the tick the year was
+ * riding on is exactly the one that gets dropped — leaving `Oct 2025 · Dec ·
+ * Feb` with nothing to say which year February is in.
+ *
+ * So: an axis inside one year names it once, on the first tick, which is the
+ * one tick a stride never removes. An axis that crosses a year names it on
+ * every tick, so whichever ones survive are each unambiguous. Wider labels mean
+ * a heavier stride, and a heavier stride is the better failure.
+ */
+export function formatTimeTicks(
+  ticks: readonly number[],
+  unit: TimeUnit,
+  locale?: string
+): string[] {
+  const years = new Set(ticks.map((tick) => new Date(tick).getFullYear()));
+  const always = years.size > 1;
+
+  return ticks.map((tick, index) =>
+    new Intl.DateTimeFormat(locale, timeParts(unit, always || index === 0)).format(new Date(tick))
+  );
 }
 
 /**
@@ -828,6 +1241,95 @@ export function barPath(
 }
 
 /**
+ * The shapes a point mark can take.
+ *
+ * The dependable second identity channel, and the only chart form with one
+ * going spare: a line cannot be a triangle and a bar cannot be a cross, but a
+ * dot can be anything. Five is enough for every palette a chart is allowed.
+ */
+export type MarkShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'cross';
+
+/** The order shapes are handed out in, matching the palette: fixed, never cycled. */
+export const markShapes: readonly MarkShape[] = [
+  'circle',
+  'square',
+  'triangle',
+  'diamond',
+  'cross'
+];
+
+/**
+ * How much bigger than a circle of the same area each shape has to be drawn.
+ *
+ * Equal *area*, not equal radius, and that is the whole reason this table
+ * exists rather than five hand-picked numbers. On a bubble chart the area is
+ * already carrying a magnitude, so a square that covers a third more ink than
+ * the circle beside it is a square reporting a value it was not given. Solved
+ * from `πr²`: a square's half-side is `r√π/2`, a diamond's half-diagonal
+ * `r√(π/2)`, an equilateral triangle's circumradius `r√(4π/3√3)`, and a plus
+ * whose arm is two thirds of its half-span `r√(9π/20)`.
+ */
+const shapeScale: Record<MarkShape, number> = {
+  circle: 1,
+  square: 0.8862,
+  triangle: 1.5551,
+  diamond: 1.2533,
+  cross: 1.189
+};
+
+/**
+ * One point mark, as a path, centred on `cx`/`cy` and covering the same area a
+ * circle of radius `r` would.
+ *
+ * A circle comes back as a path too rather than as a `<circle>`, so whoever
+ * draws the marks writes one element and not a branch — the ring, the fill and
+ * the hover treatment are then unarguably the same on all five.
+ */
+export function markPath(shape: MarkShape, cx: number, cy: number, r: number): string {
+  const size = Math.max(0, r) * shapeScale[shape];
+
+  if (size === 0) {
+    return '';
+  }
+
+  if (shape === 'circle') {
+    return (
+      `M${cx - size} ${cy}a${size} ${size} 0 1 0 ${size * 2} 0` +
+      `a${size} ${size} 0 1 0 ${-size * 2} 0Z`
+    );
+  }
+
+  if (shape === 'square') {
+    return `M${cx - size} ${cy - size}h${size * 2}v${size * 2}h${-size * 2}Z`;
+  }
+
+  if (shape === 'diamond') {
+    return `M${cx} ${cy - size}L${cx + size} ${cy}L${cx} ${cy + size}L${cx - size} ${cy}Z`;
+  }
+
+  if (shape === 'triangle') {
+    // Sat on its circumcircle rather than on a bounding box, so it shares a
+    // centre with the other four — a triangle centred on its box sits low, and
+    // a row of markers would then not line up with the row of dots beside it.
+    const points = [0, 120, 240].map((degrees) => {
+      const radians = ((degrees - 90) * Math.PI) / 180;
+
+      return `${cx + size * Math.cos(radians)} ${cy + size * Math.sin(radians)}`;
+    });
+
+    return `M${points.join('L')}Z`;
+  }
+
+  const arm = size / 3;
+
+  return (
+    `M${cx - arm} ${cy - size}h${arm * 2}v${size - arm}h${size - arm}v${arm * 2}` +
+    `h${-(size - arm)}v${size - arm}h${-arm * 2}v${-(size - arm)}h${-(size - arm)}` +
+    `v${-arm * 2}h${size - arm}Z`
+  );
+}
+
+/**
  * A slice of a ring, as a path.
  *
  * `inner` of 0 is a pie and anything above it is a donut. Angles are degrees
@@ -875,6 +1377,179 @@ export function arcPath(
     `M${point(outer, from)}A${outer} ${outer} 0 ${large} 1 ${point(outer, to)}` +
     `L${point(inner, to)}A${inner} ${inner} 0 ${large} 0 ${point(inner, from)}Z`
   );
+}
+
+/* ---------------------------------------------------------------------------
+ * Magnitude colour
+ * ------------------------------------------------------------------------- */
+
+/** Which way a magnitude is coloured. */
+export type ChartScaleKind = 'sequential' | 'diverging';
+
+/** How many steps each ramp has. Five, and the reason is in `styles.css`. */
+export const rampSteps = 5;
+
+/**
+ * The step a value lands on, and the ink a label on it wears.
+ *
+ * A magnitude is not an identity, so it does not come off the eight-slot
+ * categorical ramp — see the note above `--neba-chart-seq-1`. It comes off a
+ * one-hue ladder, and which rung is arithmetic on the value.
+ *
+ * A diverging scale is read from its *middle* rather than from its bottom, so
+ * it is the distance either side of the neutral that is scaled — and by the
+ * larger of the two arms, so a set running from −2 to +40 does not paint every
+ * negative the deepest blue there is.
+ */
+export function rampStep(
+  value: number,
+  min: number,
+  max: number,
+  kind: ChartScaleKind,
+  midpoint = 0
+): number {
+  if (kind === 'diverging') {
+    const reach = Math.max(Math.abs(max - midpoint), Math.abs(midpoint - min));
+
+    if (!(reach > 0)) {
+      return 2;
+    }
+
+    const share = (value - midpoint) / reach;
+
+    // Two rungs each side of the neutral, which is the middle rung.
+    return Math.min(4, Math.max(0, 2 + Math.round(share * 2)));
+  }
+
+  const span = max - min;
+
+  if (!(span > 0)) {
+    return rampSteps - 1;
+  }
+
+  return Math.min(rampSteps - 1, Math.max(0, Math.floor(((value - min) / span) * rampSteps)));
+}
+
+/** The `var()` for a step of the ramp, and for the ink that reads on it. */
+export function rampFill(step: number, kind: ChartScaleKind): string {
+  return `var(--neba-chart-${kind === 'diverging' ? 'div' : 'seq'}-${step + 1})`;
+}
+
+export function rampInk(step: number, kind: ChartScaleKind): string {
+  return `var(--neba-chart-${kind === 'diverging' ? 'div' : 'seq'}-on-${step + 1})`;
+}
+
+/* ---------------------------------------------------------------------------
+ * Treemap
+ * ------------------------------------------------------------------------- */
+
+/** One tile, in pixels, and which value it came from. */
+export interface TreemapTile {
+  index: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * A squarified treemap: the values as boxes whose areas are proportional, laid
+ * out as close to square as they can be got.
+ *
+ * Squarified rather than sliced, and the difference is the whole reason the
+ * forty lines are worth it. A slice-and-dice treemap of twenty values ends in
+ * slivers a pixel wide, and a sliver's *area* is unreadable however exact it is
+ * — the reader compares its length instead, which is not the encoded quantity.
+ * Bruls, Huizing and van Wijk's answer is greedy and simple: fill a row along
+ * the box's shorter side, keep adding to it while the worst aspect ratio in it
+ * improves, and start a new row the moment it stops.
+ *
+ * The order is the caller's; the layout sorts descending internally because the
+ * algorithm needs it and hands the original index back on every tile, so a
+ * tile's colour and its name are still its own.
+ */
+export function squarify(values: readonly number[], width: number, height: number): TreemapTile[] {
+  const total = values.reduce((sum, value) => sum + Math.max(0, value), 0);
+
+  if (!(total > 0) || width <= 0 || height <= 0) {
+    return [];
+  }
+
+  const scale = (width * height) / total;
+  const items = values
+    .map((value, index) => ({ index, area: Math.max(0, value) * scale }))
+    .filter((one) => one.area > 0)
+    .sort((a, b) => b.area - a.area);
+
+  const tiles: TreemapTile[] = [];
+
+  let x = 0;
+  let y = 0;
+  let boxWidth = width;
+  let boxHeight = height;
+  let row: typeof items = [];
+
+  /** The worst aspect ratio in a row laid along the current short side. */
+  const worst = (candidate: typeof items) => {
+    const side = Math.min(boxWidth, boxHeight);
+    const sum = candidate.reduce((total, one) => total + one.area, 0);
+
+    if (!(sum > 0) || !(side > 0)) {
+      return Infinity;
+    }
+
+    // Sorted descending, so the first is the largest and the last the smallest.
+    const biggest = candidate[0].area;
+    const smallest = candidate[candidate.length - 1].area;
+
+    return Math.max((side * side * biggest) / (sum * sum), (sum * sum) / (side * side * smallest));
+  };
+
+  const place = () => {
+    const sum = row.reduce((total, one) => total + one.area, 0);
+    const side = Math.min(boxWidth, boxHeight);
+    const thickness = side > 0 ? sum / side : 0;
+    const across = boxWidth >= boxHeight;
+
+    let along = 0;
+
+    for (const one of row) {
+      const length = thickness > 0 ? one.area / thickness : 0;
+
+      tiles.push(
+        across
+          ? { index: one.index, x, y: y + along, width: thickness, height: length }
+          : { index: one.index, x: x + along, y, width: length, height: thickness }
+      );
+
+      along += length;
+    }
+
+    if (across) {
+      x += thickness;
+      boxWidth -= thickness;
+    } else {
+      y += thickness;
+      boxHeight -= thickness;
+    }
+
+    row = [];
+  };
+
+  for (const one of items) {
+    if (row.length === 0 || worst([...row, one]) <= worst(row)) {
+      row.push(one);
+    } else {
+      place();
+      row.push(one);
+    }
+  }
+
+  if (row.length > 0) {
+    place();
+  }
+
+  return tiles;
 }
 
 /* ---------------------------------------------------------------------------

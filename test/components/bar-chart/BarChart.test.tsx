@@ -165,5 +165,43 @@ describe('BarChart', () => {
 
       expect(cells).toEqual(['40', '160']);
     });
+
+    it('puts the percentage on the value axis in either orientation', async () => {
+      const mix = (orientation: 'vertical' | 'horizontal') => (
+        <BarChart
+          label="Mix"
+          stacked="full"
+          orientation={orientation}
+          categories={['Seoul', 'Tokyo']}
+          series={[
+            { name: 'New', data: [1, 2] },
+            { name: 'Renewed', data: [3, 4] }
+          ]}
+        />
+      );
+
+      const screen = await render(mix('vertical'));
+      const plot = screen.getByRole('img', { name: 'Mix' });
+
+      const texts = async () => {
+        await expect.element(plot).toBeInTheDocument();
+
+        return [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+      };
+
+      expect(await texts()).toContain('100%');
+
+      await screen.rerender(mix('horizontal'));
+
+      // Still on the value axis, and nowhere near the category names. `xAxis`
+      // is the category axis and `yAxis` the value axis whichever way the bars
+      // run, so turning the chart on its side must not send the tick format to
+      // the other one.
+      const turned = await texts();
+
+      expect(turned).toContain('100%');
+      expect(turned).toContain('Seoul');
+      expect(turned).not.toContain('Seoul%');
+    });
   });
 });

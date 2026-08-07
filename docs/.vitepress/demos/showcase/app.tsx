@@ -40,6 +40,7 @@ import {
   FilePicker,
   Grid,
   GridContainer,
+  HeatmapChart,
   Highlight,
   Icon,
   IconButton,
@@ -67,6 +68,7 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  ScatterChart,
   Segment,
   SegmentedButton,
   Select,
@@ -85,6 +87,7 @@ import {
   TextLink,
   TimePicker,
   Timeline,
+  TimelineChart,
   TimelineItem,
   TreeItem,
   TreeView,
@@ -216,6 +219,63 @@ const RUNTIME_MIX = [
   { x: 'Node 20', y: 24 },
   { x: 'Bun', y: 11 },
   { x: 'Deno', y: 4 }
+];
+
+/** Build duration against the size of the diff, one point per build. */
+const BUILD_TIMES = [
+  {
+    name: 'production',
+    data: [
+      { x: 12, y: 96, z: 4 },
+      { x: 38, y: 121, z: 9 },
+      { x: 74, y: 148, z: 16 },
+      { x: 121, y: 205, z: 25 },
+      { x: 166, y: 232, z: 12 },
+      { x: 214, y: 301, z: 36 }
+    ]
+  },
+  {
+    name: 'preview',
+    data: [
+      { x: 9, y: 61, z: 3 },
+      { x: 31, y: 74, z: 6 },
+      { x: 66, y: 92, z: 11 },
+      { x: 104, y: 118, z: 8 },
+      { x: 158, y: 141, z: 20 },
+      { x: 196, y: 174, z: 14 }
+    ]
+  }
+];
+
+/** The quarter's programme, a row per workstream. */
+const ROADMAP = [
+  {
+    name: 'Platform',
+    data: [
+      { start: new Date(2026, 0, 6), end: new Date(2026, 1, 17), label: 'Build pipeline' },
+      { start: new Date(2026, 1, 17), end: new Date(2026, 3, 7), label: 'Regional builds' }
+    ]
+  },
+  {
+    name: 'Payments',
+    data: [{ start: new Date(2026, 0, 20), end: new Date(2026, 2, 24), label: 'Metered billing' }]
+  },
+  {
+    name: 'Growth',
+    data: [
+      { start: new Date(2026, 1, 3), end: new Date(2026, 2, 10), label: 'Onboarding' },
+      { start: new Date(2026, 2, 10), end: new Date(2026, 3, 21), label: 'Referrals' }
+    ]
+  }
+];
+
+/** Deploys by hour, one row per weekday — where the week actually happens. */
+const DEPLOY_CLOCK = [
+  { name: 'Mon', data: [0, 1, 6, 14, 18, 9, 2] },
+  { name: 'Tue', data: [1, 2, 8, 17, 21, 11, 3] },
+  { name: 'Wed', data: [0, 2, 9, 19, 24, 12, 4] },
+  { name: 'Thu', data: [1, 1, 7, 16, 20, 14, 5] },
+  { name: 'Fri', data: [0, 1, 5, 12, 15, 6, 1] }
 ];
 
 const HIGHLIGHTS = [
@@ -626,7 +686,9 @@ function ShowcaseBody() {
           in the same fixed order — so "production" is the same blue wherever
           it turns up on the page. */}
         <section className="flex flex-col gap-3">
-          <Caption>AreaChart · BarChart · PieChart</Caption>
+          <Caption>
+            AreaChart · BarChart · PieChart · ScatterChart · TimelineChart · HeatmapChart
+          </Caption>
           <GridContainer spacing={3} padded={false}>
             <Grid span={{ xs: 12, lg: 7 }}>
               <Card
@@ -663,7 +725,7 @@ function ShowcaseBody() {
                 />
               </Card>
             </Grid>
-            <Grid span={12}>
+            <Grid span={{ xs: 12, lg: 7 }}>
               <Card size="sm" title={<h3>Deploys by region</h3>} className="h-full">
                 <BarChart
                   label="Deploys by region"
@@ -673,6 +735,61 @@ function ShowcaseBody() {
                   valueLabels="all"
                   categories={['Seoul', 'Tokyo', 'Frankfurt', 'Washington DC']}
                   series={DEPLOYS_BY_REGION}
+                />
+              </Card>
+            </Grid>
+            {/* The one chart on the page with two value axes, and the only one
+              whose marks carry a third number — the bubble is the files the
+              build touched. */}
+            <Grid span={{ xs: 12, lg: 5 }}>
+              <Card
+                size="sm"
+                title={<h3>Build time</h3>}
+                subtitle="Against diff size"
+                className="h-full"
+              >
+                <ScatterChart
+                  label="Build time against diff size, by environment"
+                  size="sm"
+                  height={160}
+                  xAxis={{ label: 'Lines changed' }}
+                  yAxis={{ label: 'Seconds' }}
+                  series={BUILD_TIMES}
+                />
+              </Card>
+            </Grid>
+            {/* And the only one whose two axes are a set of rows and a
+              calendar — a bar here starts where its own work started. */}
+            <Grid span={12}>
+              <Card
+                size="sm"
+                title={<h3>Roadmap</h3>}
+                subtitle="This quarter, by workstream"
+                className="h-full"
+              >
+                <TimelineChart
+                  label="Roadmap for the quarter, by workstream"
+                  size="sm"
+                  height={160}
+                  series={ROADMAP}
+                />
+              </Card>
+            </Grid>
+            {/* The last of them, and the only one whose colour is a size
+              rather than an identity — so it comes off a one-hue ramp. */}
+            <Grid span={12}>
+              <Card
+                size="sm"
+                title={<h3>Deploys by hour</h3>}
+                subtitle="Weekdays, last quarter"
+                className="h-full"
+              >
+                <HeatmapChart
+                  label="Deploys by hour and weekday"
+                  size="sm"
+                  height={150}
+                  categories={['00', '04', '08', '12', '16', '20', '23']}
+                  series={DEPLOY_CLOCK}
                 />
               </Card>
             </Grid>

@@ -1032,6 +1032,240 @@ export const propTables: Record<string, PropRow[]> = {
     ...chartBaseProps({ height: 'size' })
   ],
 
+  ScatterChart: [
+    {
+      name: 'series',
+      type: 'NebaChartSeries[]',
+      required: true,
+      description: {
+        ko: '그릴 series. 각 점은 x와 y를 모두 숫자로 들고 있어야 하고, z가 있으면 그 점은 dot이 아니라 bubble이 됩니다',
+        en: 'The series. Every point carries both an x and a y as numbers, and one that also carries a z is drawn as a bubble rather than a dot'
+      }
+    },
+    {
+      name: 'categories',
+      type: '(number | Date)[]',
+      description: {
+        ko: '점이 x를 직접 들고 있지 않을 때 index로 찾아 쓰는 x 값. 문자열은 수직선 위의 자리가 아니므로 받지 않습니다',
+        en: 'The x of a point that does not carry its own, found by index. A string is not a place on a number line, so it is not accepted here'
+      }
+    },
+    {
+      name: 'xAxis',
+      type: 'NebaChartAxis',
+      description: {
+        ko: 'x 축. 여기서는 category 축이 아니라 두 번째 값 축이므로 눈금은 데이터가 아니라 반올림된 수에 놓이고, 격자선도 기본으로 켜집니다',
+        en: 'The x axis. Here it is a second value axis rather than a category axis, so it ticks at rounded numbers rather than at the data — and it casts a grid by default'
+      }
+    },
+    {
+      name: 'yAxis',
+      type: 'NebaChartAxis',
+      description: { ko: '값 축', en: 'The value axis' }
+    },
+    {
+      name: 'shape',
+      type: "'auto' | 'varied' | 'circle' | 'square' | 'triangle' | 'diamond' | 'cross'",
+      default: "'auto'",
+      description: {
+        ko: '마크의 모양. auto는 색만으로 구분되는 동안 원을, 네 번째 series부터는 series마다 다른 모양을 씁니다. varied는 항상 모양을 나눕니다 — 인쇄하거나 흑백으로 읽을 차트에',
+        en: 'What each mark is drawn as. auto is a circle while colour alone can carry identity and a shape per series from the fourth on; varied always separates them, which is what a chart that will be printed needs'
+      }
+    },
+    {
+      name: 'pointRadius',
+      type: 'number',
+      default: 'size',
+      description: {
+        ko: 'z가 없는 마크의 반지름(px)',
+        en: 'The radius of a mark with no z, in pixels'
+      }
+    },
+    {
+      name: 'maxRadius',
+      type: 'number',
+      default: 'plot 짧은 변의 1/12 / a twelfth of the plot',
+      description: {
+        ko: '가장 큰 bubble의 반지름(px). 나머지는 반지름이 아니라 넓이로 그 아래에 맞춰집니다 — z를 반지름에 쓰면 두 배인 값이 네 배로 보입니다',
+        en: 'The radius of the largest bubble, in pixels. Everything else is scaled under it by area, not by radius: encode z as a radius and a value twice as large draws a mark four times the size'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  HeatmapChart: [
+    {
+      name: 'series',
+      type: 'NebaChartSeries[]',
+      required: true,
+      description: {
+        ko: 'series 하나가 grid의 행 또는 treemap의 그룹입니다. y가 크기, x가 열·타일 이름이고, null은 결측이라 그 셀은 그리지 않습니다',
+        en: 'A series is a row of the grid or a group of the treemap. y is the magnitude and x names the column or tile; a null is a gap and its cell is not drawn'
+      }
+    },
+    {
+      name: 'categories',
+      type: '(string | number | Date)[]',
+      description: {
+        ko: '열 이름. 각 점이 x를 직접 들고 있어도 됩니다',
+        en: 'The column names. Points may carry their own x instead'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'grid' | 'treemap'",
+      default: "'grid'",
+      description: {
+        ko: 'grid는 category 축 둘과 숫자 하나, treemap은 비중대로 크기를 준 타일로 상자를 채웁니다',
+        en: 'grid is a cell per row and column; treemap packs a tile per datum, sized by its share'
+      }
+    },
+    {
+      name: 'scale',
+      type: "'sequential' | 'diverging'",
+      default: "'sequential'",
+      description: {
+        ko: 'sequential은 한 hue의 옅음→진함, diverging은 중립 회색을 사이에 둔 두 hue입니다. diverging은 기준이 되는 0이 실제로 있을 때만 — 없으면 없는 경계를 만들어 냅니다',
+        en: 'sequential is one hue pale to deep; diverging is two hues either side of a neutral grey. Reach for diverging only when there is a real zero to diverge about'
+      }
+    },
+    {
+      name: 'midpoint',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: 'diverging 스케일이 뒤집히는 지점',
+        en: 'Where a diverging scale turns over'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      description: {
+        ko: '스케일이 시작하는 값. 생략하면 데이터에서 옵니다 — 두 차트를 비교하려면 같은 범위를 주어야 합니다',
+        en: 'Where the scale starts. Taken from the data otherwise, so two charts are not comparable until they are given the same bounds'
+      }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      description: { ko: '스케일이 끝나는 값', en: 'Where the scale ends' }
+    },
+    {
+      name: 'valueLabels',
+      type: "'none' | 'all'",
+      default: "'none'",
+      description: {
+        ko: '각 셀 위에 값을 씁니다. 들어갈 자리가 없는 라벨은 잘리는 대신 생략되고, 잉크는 셀의 단계에 따라 정해집니다',
+        en: 'Writes each value on its cell. A label that does not fit is dropped rather than clipped, and its ink is picked from the step underneath it'
+      }
+    },
+    {
+      name: 'legend',
+      type: 'boolean | { side, align }',
+      default: 'true',
+      description: {
+        ko: '양 끝에 값이 붙은 스케일 막대. swatch 목록이 아닙니다 — 여기에는 이름을 가진 것이 없고 순서가 곧 의미입니다',
+        en: 'A scale bar with its ends labelled, not a list of swatches: nothing here has a name and the order is the meaning'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
+  NebaTimelinePoint: [
+    {
+      name: 'start',
+      type: 'Date | number',
+      required: true,
+      description: { ko: '이 span이 시작하는 시각', en: 'When the span begins' }
+    },
+    {
+      name: 'end',
+      type: 'Date | number',
+      required: true,
+      description: {
+        ko: '끝나는 시각. 앞뒤가 바뀌어 있어도 제대로 그립니다',
+        en: 'And when it is done. A span written back to front is drawn the right way round'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: 'tooltip과 표에서 이 span을 부르는 이름',
+        en: 'What the span is called, in the tooltip and the table'
+      }
+    },
+    {
+      name: 'color',
+      type: 'NebaColor | string',
+      description: {
+        ko: '이 span 하나만 행의 색 대신 이 색으로',
+        en: "Overrides its row's colour for this one span"
+      }
+    }
+  ],
+
+  TimelineChart: [
+    {
+      name: 'series',
+      type: 'NebaTimelineSeries[]',
+      required: true,
+      description: {
+        ko: 'series 하나가 행 하나이고, 그 안의 datum이 span입니다. 행 이름이 왼쪽 축에 쓰입니다',
+        en: "One row per series, and a span per datum. A row's name is what the axis says down the left"
+      }
+    },
+    {
+      name: 'min',
+      type: 'Date | number',
+      description: {
+        ko: '시간 축이 시작하는 지점. 생략하면 span에서 오고, 달력이 이름을 가진 날짜로 바깥쪽으로 반올림됩니다',
+        en: 'Where the time axis starts. Taken from the spans otherwise, and rounded outward to a date a calendar has a name for'
+      }
+    },
+    {
+      name: 'max',
+      type: 'Date | number',
+      description: { ko: '시간 축이 끝나는 지점', en: 'Where the time axis ends' }
+    },
+    {
+      name: 'xAxis',
+      type: 'NebaChartAxis',
+      description: {
+        ko: '행 축. 방향과 무관하게 xAxis가 category 축입니다',
+        en: 'The row axis. xAxis is the category axis whichever way a chart runs'
+      }
+    },
+    {
+      name: 'yAxis',
+      type: 'NebaChartAxis',
+      description: {
+        ko: '시간 축. 여기서는 아래쪽에 그려지지만 여전히 값 축이므로 yAxis입니다',
+        en: 'The time axis. It is drawn along the bottom here and it is still the value axis, so it is yAxis'
+      }
+    },
+    {
+      name: 'barSize',
+      type: 'number',
+      default: 'size',
+      description: {
+        ko: '막대가 두꺼워질 수 있는 최대 두께(px). 그 아래에서는 행의 몫을 채우고, 넘는 만큼은 여백으로 남습니다',
+        en: 'How thick a bar may get, in pixels. Below the cap the bars fill their share of the row; above it the leftover stays as air'
+      }
+    },
+    {
+      name: 'rounded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'span의 양쪽 끝을 둥글게. BarChart와 달리 양쪽 다입니다 — span은 0에서 자라지 않으므로 기준이 되는 끝이 없습니다',
+        en: 'Cuts the corners off a span. Both ends, unlike a BarChart: a span grows from nothing, so neither end is a baseline'
+      }
+    },
+    ...chartBaseProps({ height: 'size' })
+  ],
+
   PieChart: [
     {
       name: 'data',

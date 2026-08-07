@@ -22,6 +22,7 @@ import {
   bandScale,
   categoryAt,
   categoryCount,
+  categoryExtent,
   chartFontSizes,
   compactNumber,
   extentOf,
@@ -58,6 +59,9 @@ import type {
 
 /** A layout read where there is a layout, and a no-op where there is not. */
 const useMeasureEffect = typeof document === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
+/** One array rather than a fresh `[]` per render, for the charts with no marks. */
+const noMarks: readonly ChartMark[] = [];
 
 /**
  * How wide the chart actually is, in pixels.
@@ -254,6 +258,7 @@ interface LegendProps {
   visibility: Visibility;
   size: NebaSize;
   values?: readonly (string | undefined)[];
+  swatch?: (index: number, color: string) => React.ReactNode;
 }
 
 /**
@@ -266,8 +271,21 @@ interface LegendProps {
  *
  * A hidden series stays in the legend and goes grey rather than disappearing:
  * a list that shortens when you click it is a list you cannot click twice.
+ *
+ * `swatch` is for the chart whose marks carry a second identity channel. A
+ * scatter past the third series tells its series apart by shape as well as by
+ * hue, and a legend that answered with eight identical squares would be back to
+ * colour alone — which is the thing the shapes were added to fix.
  */
-function ChartLegendBar({ series, colors, options, visibility, size, values }: LegendProps) {
+function ChartLegendBar({
+  series,
+  colors,
+  options,
+  visibility,
+  size,
+  values,
+  swatch
+}: LegendProps) {
   const interactive = options.interactive !== false;
   const vertical = options.side === 'left' || options.side === 'right';
 
@@ -285,13 +303,24 @@ function ChartLegendBar({ series, colors, options, visibility, size, values }: L
         const dimmed = visibility.hovered !== null && visibility.hovered !== index;
         const name = one.name ?? `${index + 1}`;
 
+        const ink = shown ? colors[index] : 'var(--neba-disabled-fg)';
+
         const content = (
           <>
-            <span
-              aria-hidden="true"
-              className="size-2.5 shrink-0 rounded-[0.1875rem]"
-              style={{ backgroundColor: shown ? colors[index] : 'var(--neba-disabled-fg)' }}
-            />
+            {swatch ? (
+              <span
+                aria-hidden="true"
+                className="flex size-2.5 shrink-0 items-center justify-center"
+              >
+                {swatch(index, ink)}
+              </span>
+            ) : (
+              <span
+                aria-hidden="true"
+                className="size-2.5 shrink-0 rounded-[0.1875rem]"
+                style={{ backgroundColor: ink }}
+              />
+            )}
             <span className="min-w-0 truncate">{name}</span>
             {values?.[index] ? (
               <span className="shrink-0 tabular-nums text-(--neba-muted-fg)">{values[index]}</span>
@@ -336,6 +365,70 @@ function ChartLegendBar({ series, colors, options, visibility, size, values }: L
         );
       })}
     </ul>
+  );
+}
+
+interface ScaleLegendProps {
+  /** The steps, palest first, as the `var()`s that resolve them. */
+  steps: readonly string[];
+  /** What the two ends of the scale say. */
+  from: string;
+  to: string;
+  /** And the middle, on a diverging scale where the middle means something. */
+  middle?: string;
+  align: NonNullable<NebaChartLegend['align']>;
+  vertical: boolean;
+  size: NebaSize;
+}
+
+/**
+ * The legend a magnitude needs, which is a bar and not a list of swatches.
+ *
+ * `ChartLegendBar` answers "which one is Europe" — a set of names, in no order,
+ * each with a colour beside it. A sequential scale is the other question
+ * entirely: nothing here has a name, the order *is* the meaning, and what the
+ * reader needs is the two numbers at the ends. A key of five unnamed swatches
+ * would say neither.
+ *
+ * The steps are drawn as five joined blocks rather than as a CSS gradient,
+ * because five is what the cells are actually coloured with — a smooth bar
+ * would promise a continuum the chart cannot deliver, and a reader matching a
+ * cell against it would be guessing.
+ */
+function ChartScaleLegend({ steps, from, to, middle, align, vertical, size }: ScaleLegendProps) {
+  return (
+    <div className={cx('flex', vertical ? '' : legendAlignClasses[align])}>
+      {/* A grid rather than a row, so the middle label can sit in the bar's own
+          column. Written beside the bar it reads as a third end. */}
+      <div
+        className={cx(
+          'grid grid-cols-[auto_auto_auto] items-center gap-x-2',
+          metaTextClasses[size]
+        )}
+      >
+        <span className="shrink-0 tabular-nums text-(--neba-muted-fg)">{from}</span>
+        <span
+          aria-hidden="true"
+          className={cx(
+            'flex h-2.5 overflow-hidden rounded-[0.1875rem]',
+            vertical ? 'w-20' : 'w-24'
+          )}
+        >
+          {steps.map((step) => (
+            <span key={step} className="h-full flex-1" style={{ backgroundColor: step }} />
+          ))}
+        </span>
+        <span className="shrink-0 tabular-nums text-(--neba-muted-fg)">{to}</span>
+
+        {middle ? (
+          <>
+            <span />
+            <span className="text-center tabular-nums text-(--neba-muted-fg)">{middle}</span>
+            <span />
+          </>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
@@ -522,8 +615,47 @@ function ChartSurface({ legend, legendSide, children, table, className, ...box }
  * Cartesian charts
  * ------------------------------------------------------------------------- */
 
-/** Everything a mark needs to know about where it goes. */
-export interface CartesianContext {
+/**
+ * One mark on a plot whose marks are not arranged in columns.
+ *
+ * A scatter has no shared categories, so there is no column for a pointer to
+ * be inside and nothing for a crosshair to be dropped through: the only
+ * question a reader can be asking is "which of these dots". A chart that says
+ * so hands the frame its marks and gets the nearest-mark search, the arrow
+ * keys and the tooltip anchoring for free.
+ */
+export interface ChartMark {
+  /** Its series' place in the array as it was passed — where its colour is from. */
+  series: number;
+  /** Its own place within that series. */
+  index: number;
+  /** Its centre, in pixels from the chart's top-left. */
+  x: number;
+  y: number;
+  /** How big it is. Widens the hit target, so a bubble is easier to hit than a dot. */
+  r: number;
+  /**
+   * Its half-width and half-height, when the mark is a box rather than a disc.
+   *
+   * A span on a Gantt is two hundred pixels of bar whose centre a pointer may
+   * never go near, so measuring to the centre would hand the row's short bar a
+   * hover the reader is plainly not making. Given these, the pointer is tested
+   * against the *body*.
+   */
+  rx?: number;
+  ry?: number;
+}
+
+/**
+ * Where everything goes — the half of the context that is settled before the
+ * pointer is consulted.
+ *
+ * It is split out because the marks are built from it: a chart hands the frame
+ * a builder, the frame runs it on the layout, and only then is there a list for
+ * the pointer to be nearest to. A builder that could read what is active would
+ * be reading a value that does not exist yet.
+ */
+export interface CartesianLayout {
   plot: PlotBox;
   /** Every series unpacked, in the order it was passed. */
   values: readonly ChartValue[][];
@@ -531,10 +663,6 @@ export interface CartesianContext {
   visible: readonly boolean[];
   /** And what colour each one is, by its original index. */
   colors: readonly string[];
-  /** The series the legend is being hovered over, if any. */
-  hovered: number | null;
-  /** The category under the pointer, if any. */
-  activeIndex: number | null;
   scale: ValueScale;
   band: BandScale;
   /** Bars run along the category axis rather than across it. */
@@ -545,6 +673,17 @@ export interface CartesianContext {
   categoryPx: (index: number) => number;
   /** The two combined, whichever way round the chart runs. */
   point: (index: number, value: number) => { x: number; y: number };
+  /**
+   * The scale the *category* axis runs on, when `xScale` made it a second value
+   * axis. `null` on every chart whose categories are columns.
+   */
+  categoryScale: ValueScale | null;
+  /**
+   * Where a value sits along the category axis, in pixels from the chart's
+   * edge — the same absolute reckoning `valuePx` uses, and deliberately not
+   * `categoryPx`'s offset-along-the-axis. Only meaningful with `xScale="value"`.
+   */
+  categoryValuePx: (value: number) => number;
   /** Where the baseline is along the value axis. */
   zeroPx: number;
   categories: readonly NebaChartCategory[];
@@ -552,7 +691,63 @@ export interface CartesianContext {
   size: NebaSize;
 }
 
+/** The layout, plus everything the pointer decides. */
+export interface CartesianContext extends CartesianLayout {
+  /** The series the legend is being hovered over, if any. */
+  hovered: number | null;
+  /** The category under the pointer, if any. */
+  activeIndex: number | null;
+  /** Every mark, when the chart supplied a builder. Empty otherwise. */
+  marks: readonly ChartMark[];
+  /** The one the pointer is on, or the one the arrow keys walked to. */
+  activeMark: ChartMark | null;
+}
+
 interface CartesianProps extends CartesianChartProps {
+  /**
+   * Makes the category axis a second value axis instead of a row of columns.
+   * `value` is what a scatter needs and what nothing else does.
+   * @default 'band'
+   */
+  xScale?: 'band' | 'value';
+  /**
+   * Builds every mark on the plot, which swaps the frame's column hit-testing
+   * for a nearest-mark search and makes the arrow keys walk this list. The
+   * result comes back on the context, so the marks are laid out once and drawn
+   * from the same array they are hit-tested against.
+   */
+  marks?: (layout: CartesianLayout) => readonly ChartMark[];
+  /**
+   * How far off a mark the pointer still counts as on it, in pixels. Added to
+   * the mark's own radius — a 4px dot is not a hit target.
+   * @default 24
+   */
+  markRadius?: number;
+  /** The table under the chart, for a chart whose data is not a grid. */
+  table?: (id: string) => React.ReactNode;
+  /** The legend's swatch, for a chart whose marks are not all the same shape. */
+  swatch?: (index: number, color: string) => React.ReactNode;
+  /**
+   * The value axis' scale, already worked out.
+   *
+   * For the axis that is not a count. `valueScale` rounds to 1-2-5, which is
+   * the family a reader does arithmetic in and exactly the wrong one for an
+   * instant — sixty, twenty-four, seven, twelve. A chart whose axis has its own
+   * arithmetic builds the scale itself and hands it over.
+   */
+  scale?: ValueScale;
+  /**
+   * What the tooltip says about a mark.
+   *
+   * Without it a mark is read as "this series at this category", which is right
+   * for anything whose marks sit in a grid the frame already understands. A
+   * Gantt's rows are the frame's *categories* and its marks are spans within
+   * them, so there is no cell for the frame to look the answer up in.
+   */
+  markTooltip?: (mark: ChartMark) => {
+    heading: React.ReactNode;
+    items: readonly ChartTooltipItem[];
+  } | null;
   /** Bars, and only bars, run the other way. */
   horizontal?: boolean;
   /** The value axis measures totals rather than parts. */
@@ -569,6 +764,16 @@ interface CartesianProps extends CartesianChartProps {
   inset?: boolean;
   /** Extra room at the top of the plot, for value labels that ride the marks. */
   headroom?: number;
+  /**
+   * Room on **every** side of the plot, for marks drawn from their centre.
+   *
+   * `headroom` is not enough for those: a bubble at the largest x hangs over the
+   * right edge and one at the smallest hangs over the value axis' own labels.
+   * A line's marker gets away with it because a line is inset from both ends
+   * anyway; a scatter places a mark wherever the number says, including exactly
+   * on the corner.
+   */
+  markInset?: number;
   /** Draws the marks. */
   children: (context: CartesianContext) => React.ReactNode;
 }
@@ -592,6 +797,14 @@ export function CartesianChart({
   bandRatio = 1,
   inset = false,
   headroom = 0,
+  markInset = 0,
+  xScale = 'band',
+  marks,
+  markRadius = 24,
+  table,
+  swatch,
+  scale: givenScale,
+  markTooltip,
   height,
   format,
   locale,
@@ -612,7 +825,9 @@ export function CartesianChart({
   const tableId = React.useId();
 
   const visibility = useVisibility(series);
-  const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
+  const [columnIndex, setColumnIndex] = React.useState<number | null>(null);
+  /** Which entry of `markList` the pointer is on — the other way to be active. */
+  const [markIndex, setMarkIndex] = React.useState<number | null>(null);
   /** Where the pointer is along the value axis. `null` when it arrived by key. */
   const [pointer, setPointer] = React.useState<number | null>(null);
 
@@ -642,27 +857,69 @@ export function CartesianChart({
 
   const fontSize = chartFontSizes[size];
 
+  /* `xAxis` is the category axis and `yAxis` is the value axis, on every chart
+     and in both orientations — which is the whole point of naming them that
+     way: turning a bar chart on its side is a change to the drawing, not to
+     what the caller's data means, so it must not also move their axis options
+     from one prop to the other.
+
+     These were swapped by `horizontal`, and it produced exactly the collision
+     that argument predicts: a horizontal `stacked="full"` BarChart sends the
+     `%` tick format to the axis holding the category names and prints
+     `Seoul%`. Where the axes are *drawn* is still decided by `horizontal`,
+     below and in `ChartAxes`; that part was never in question. */
+  const valueAxis = yAxis;
+  const categoryAxis = xAxis;
+
   /* The scales. The value axis is rounded to clean numbers before anything is
      measured, because how much room the axis needs depends on how wide its
      widest tick prints — which is not knowable until the ticks exist. */
-  const scale = valueScale(extent, {
-    min: yAxis?.min,
-    max: yAxis?.max,
-    tickCount: yAxis?.tickCount,
-    includeZero
-  });
+  const scale =
+    givenScale ??
+    valueScale(extent, {
+      min: valueAxis?.min,
+      max: valueAxis?.max,
+      tickCount: valueAxis?.tickCount,
+      includeZero
+    });
 
-  const valueAxis = horizontal ? xAxis : yAxis;
-  const categoryAxis = horizontal ? yAxis : xAxis;
+  /* And a second one of the same kind when the categories are numbers rather
+     than columns. Zero is deliberately not forced in: what a position along an
+     axis encodes is a *place*, so cropping the scale moves every mark by the
+     same amount and the picture survives — which is the argument a line chart
+     already makes, and the opposite of the one a bar's length makes. An x that
+     runs from 100 to 140 dragged down to zero is a plot with all of its data in
+     one corner. */
+  const spread = xScale === 'value' ? categoryExtent(shownValues, categories) : null;
+  const categoryScale =
+    xScale === 'value'
+      ? valueScale(spread, {
+          min: categoryAxis?.min,
+          max: categoryAxis?.max,
+          tickCount: categoryAxis?.tickCount,
+          includeZero: false
+        })
+      : null;
 
   const tickTexts = scale.ticks.map((tick, index) =>
     valueAxis?.tickFormat ? String(valueAxis.tickFormat(tick, index)) : formatValue(tick)
   );
-  const rawCategoryTexts = labels.map((category, index) =>
-    categoryAxis?.tickFormat
-      ? String(categoryAxis.tickFormat(category, index))
-      : formatCategory(category, locale)
-  );
+
+  /* The category axis writes either its labels or its own ticks. `format`
+     belongs to the value axis and is not borrowed for these — a currency
+     applied to an axis of years prints `$2,019` — so the fallback is the plain
+     compaction and `xAxis.tickFormat` is how a caller says more. */
+  const rawCategoryTexts = categoryScale
+    ? categoryScale.ticks.map((tick, index) =>
+        categoryAxis?.tickFormat
+          ? String(categoryAxis.tickFormat(tick, index))
+          : compactNumber(tick, locale)
+      )
+    : labels.map((category, index) =>
+        categoryAxis?.tickFormat
+          ? String(categoryAxis.tickFormat(category, index))
+          : formatCategory(category, locale)
+      );
 
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
   const axisLabelBand = fontSize + 6;
@@ -679,9 +936,12 @@ export function CartesianChart({
   /* Cut a long name to its slot rather than dropping labels until the rest fit —
      five categories called "Onboarding flow" would otherwise leave one label on
      the axis. Below about four characters that stops helping, and the stride in
-     `ChartAxes` takes over instead. */
-  const categoryTexts =
-    horizontal || slot - 6 >= fontSize * 2.4
+     `ChartAxes` takes over instead. A tick is a number that was already rounded
+     to be short, so it is never cut: half of `12.4K` is not a smaller number,
+     it is a wrong one. */
+  const categoryTexts = categoryScale
+    ? rawCategoryTexts
+    : horizontal || slot - 6 >= fontSize * 2.4
       ? rawCategoryTexts.map((text) => truncate(text, horizontal ? 150 : slot - 6, fontSize))
       : rawCategoryTexts;
 
@@ -715,16 +975,23 @@ export function CartesianChart({
 
   // The last category's label is centred on the last tick, so half of it hangs
   // past the plot. Reserving that half is what stops a chart clipping the one
-  // label a reader looks for first.
-  const rightPad = horizontal ? 12 : Math.max(8, categoryTexts.length ? widestCategory / 2 : 8);
-  const topPad = markerRadii[size] + 4 + headroom;
+  // label a reader looks for first — and a value axis needs none of it, because
+  // it anchors its two end labels inward instead.
+  const rightPad =
+    (horizontal || categoryScale
+      ? 12
+      : Math.max(8, categoryTexts.length ? widestCategory / 2 : 8)) + markInset;
+  // A mark is drawn from its centre, so half of the widest one hangs over the
+  // top of the plot. On a scatter that half is a whole bubble, which is what
+  // `markInset` is reserving on the other three sides.
+  const topPad = markerRadii[size] + 4 + headroom + markInset;
 
   const boxHeight = plotHeight ?? 0;
   const plot: PlotBox = {
-    left,
+    left: left + markInset,
     top: topPad,
-    width: Math.max(0, width - left - rightPad),
-    height: Math.max(0, boxHeight - topPad - bottom)
+    width: Math.max(0, width - left - markInset - rightPad),
+    height: Math.max(0, boxHeight - topPad - bottom - markInset)
   };
 
   const categoryLength = horizontal ? plot.height : plot.width;
@@ -761,14 +1028,46 @@ export function CartesianChart({
     [horizontal, valuePx, categoryPx, plot.left, plot.top]
   );
 
+  const categoryValuePx = React.useCallback(
+    (value: number) =>
+      horizontal
+        ? plot.top + (1 - (categoryScale?.fraction(value) ?? 0)) * plot.height
+        : plot.left + (categoryScale?.fraction(value) ?? 0) * plot.width,
+    [horizontal, plot.left, plot.top, plot.width, plot.height, categoryScale]
+  );
+
   const zeroPx = valuePx(Math.min(Math.max(0, scale.min), scale.max));
+
+  const layout: CartesianLayout = {
+    plot,
+    values,
+    visible: visibility.visible,
+    colors,
+    scale,
+    band,
+    horizontal,
+    valuePx,
+    categoryPx,
+    point,
+    categoryScale,
+    categoryValuePx,
+    zeroPx,
+    categories: labels,
+    format: formatValue,
+    size
+  };
+
+  /* The marks, laid out once. They are what the pointer is tested against and
+     what `children` draws, and they are the same array both times — a chart
+     that placed its dots twice would eventually place them in two places. */
+  const markList = marks ? marks(layout) : noMarks;
 
   /* Hover. The nearest category to the pointer rather than the one it is
      literally over: a two-pixel line is not something a pointer can be asked to
      land on, and the hit area for a category is its whole column. */
   const tooltipOptions: NebaChartTooltip =
     tooltip === false ? { mode: 'none' } : tooltip === true || tooltip === undefined ? {} : tooltip;
-  const tooltipMode = tooltipOptions.mode ?? 'index';
+  const tooltipMode = tooltipOptions.mode ?? (marks ? 'item' : 'index');
 
   const indexAt = (clientX: number, clientY: number) => {
     const host = hostRef.current;
@@ -793,6 +1092,61 @@ export function CartesianChart({
     return Math.min(count - 1, Math.max(0, raw));
   };
 
+  /**
+   * The mark nearest the pointer, or `null` if it is not near one.
+   *
+   * A plain squared-distance sweep over the visible marks. The textbook answer
+   * is a Voronoi layer, and at the sizes a chart in a card is drawn at — a few
+   * hundred marks, recomputed only while a pointer is actually moving over it —
+   * building one costs more than it saves.
+   *
+   * The cap is the mark's own radius plus `markRadius`, so a bubble is easier
+   * to hit than a dot and neither is as small as it looks: an 8px dot is not
+   * something a pointer can be asked to land on.
+   */
+  const nearestMark = (clientX: number, clientY: number) => {
+    const host = hostRef.current;
+
+    if (!host || markList.length === 0) {
+      return null;
+    }
+
+    const rect = host.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    let found: number | null = null;
+    let best = Infinity;
+    let tie = Infinity;
+
+    // Hidden marks are the builder's business, not this loop's: it is the one
+    // place that knows which of its own marks belong to a hidden row, and a
+    // chart whose rows are not the frame's series has no `visible` to consult.
+    markList.forEach((mark, at) => {
+      const toCentre = Math.hypot(mark.x - x, mark.y - y);
+      // How far the pointer is from the mark's *edge*, which is zero anywhere
+      // inside it. Ranking on this rather than on the centre is what stops a
+      // small mark next door winning a hover the pointer is making on a big one.
+      const body =
+        mark.rx === undefined
+          ? Math.max(0, toCentre - mark.r)
+          : Math.hypot(
+              Math.max(0, Math.abs(mark.x - x) - mark.rx),
+              Math.max(0, Math.abs(mark.y - y) - (mark.ry ?? mark.rx))
+            );
+
+      // Inside two overlapping marks the edge distance is zero for both, and
+      // the nearer centre is the one being pointed at.
+      if (body <= markRadius && (body < best || (body === best && toCentre < tie))) {
+        best = body;
+        tie = toCentre;
+        found = at;
+      }
+    });
+
+    return found;
+  };
+
   /** Where the pointer sits along the *value* axis — `item` mode's other half. */
   const valueAt = (clientX: number, clientY: number) => {
     const host = hostRef.current;
@@ -806,13 +1160,35 @@ export function CartesianChart({
     return horizontal ? clientX - rect.left : clientY - rect.top;
   };
 
+  /* Which mark is being read, and the two ways of arriving at one. A chart with
+     marks is walked mark by mark; a chart without them is walked column by
+     column, and `activeIndex` is then the column. */
+  const activeMark = markIndex === null ? null : (markList[markIndex] ?? null);
+  const activeIndex = marks ? (activeMark ? activeMark.index : null) : columnIndex;
+  const walkLength = marks ? markList.length : count;
+
+  const clearActive = () => {
+    setColumnIndex(null);
+    setMarkIndex(null);
+    setPointer(null);
+  };
+
+  const goTo = (at: number | null) => {
+    const bounded = at === null ? null : Math.min(walkLength - 1, Math.max(0, at));
+
+    if (marks) {
+      setMarkIndex(bounded);
+    } else {
+      setColumnIndex(bounded);
+    }
+  };
+
   const step = (delta: number) => {
     setPointer(null);
-    setActiveIndex((current) => {
-      const next = (current ?? (delta > 0 ? -1 : count)) + delta;
 
-      return Math.min(count - 1, Math.max(0, next));
-    });
+    const current = marks ? markIndex : columnIndex;
+
+    goTo((current ?? (delta > 0 ? -1 : walkLength)) + delta);
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -824,11 +1200,11 @@ export function CartesianChart({
     } else if (event.key === back) {
       step(-1);
     } else if (event.key === 'Home') {
-      setActiveIndex(0);
+      goTo(0);
     } else if (event.key === 'End') {
-      setActiveIndex(count - 1);
+      goTo(walkLength - 1);
     } else if (event.key === 'Escape') {
-      setActiveIndex(null);
+      clearActive();
     } else {
       return;
     }
@@ -840,7 +1216,10 @@ export function CartesianChart({
     activeIndex === null
       ? []
       : series.flatMap((one, index) => {
-          if (!visibility.visible[index]) {
+          // A mark names its own series, so there is no column to narrow: two
+          // dots at the same index are two unrelated points that happen to be
+          // the nth of their series, not two readings of one category.
+          if (!visibility.visible[index] || (activeMark && activeMark.series !== index)) {
             return [];
           }
 
@@ -866,8 +1245,12 @@ export function CartesianChart({
      measured along the *value* axis — the category is already decided by where
      the pointer is across the plot, so the only question left is which of the
      series stacked at that category it is closest to. */
-  const items =
-    tooltipMode === 'item' && column.length > 1 && pointer !== null
+  /* A chart whose marks are not cells of a grid answers for its own panel. */
+  const supplied = activeMark && markTooltip ? markTooltip(activeMark) : null;
+
+  const items = supplied
+    ? supplied.items
+    : tooltipMode === 'item' && column.length > 1 && pointer !== null
       ? [
           column.reduce((nearest, item) =>
             Math.abs(valuePx(item.value ?? 0) - pointer) <
@@ -877,6 +1260,32 @@ export function CartesianChart({
           )
         ]
       : column;
+
+  /* Where the panel hangs, and what it is titled. A column is anchored on its
+     own centre and titled with the category every series in it shares; a mark
+     is anchored on itself and titled with its own x, because on a plot with two
+     value axes the x is data rather than a heading the marks were filed under. */
+  const markCategory = activeMark
+    ? (values[activeMark.series]?.[activeMark.index]?.x ??
+      categories?.[activeMark.index] ??
+      activeMark.index)
+    : undefined;
+
+  const anchorX = activeMark
+    ? activeMark.x
+    : horizontal
+      ? valuePx(items[0]?.value ?? 0)
+      : plot.left + categoryPx(activeIndex ?? 0);
+  const anchorY = activeMark
+    ? activeMark.y
+    : horizontal
+      ? plot.top + categoryPx(activeIndex ?? 0)
+      : plot.top;
+  const anchorFlip = activeMark
+    ? (activeMark.x - plot.left) / Math.max(1, plot.width) > 0.6
+    : (horizontal
+        ? scale.fraction(items[0]?.value ?? 0)
+        : categoryPx(activeIndex ?? 0) / Math.max(1, categoryLength)) > 0.6;
 
   const legendOptions: NebaChartLegend =
     legend === false
@@ -888,25 +1297,18 @@ export function CartesianChart({
   const legendSide = legendOptions.side ?? 'bottom';
 
   const context: CartesianContext = {
-    plot,
-    values,
-    visible: visibility.visible,
-    colors,
+    ...layout,
     hovered: visibility.hovered,
     activeIndex,
-    scale,
-    band,
-    horizontal,
-    valuePx,
-    categoryPx,
-    point,
-    zeroPx,
-    categories: labels,
-    format: formatValue,
-    size
+    marks: markList,
+    activeMark
   };
 
-  const nothing = count === 0 || extent === null;
+  // A category axis running on numbers has one more way to have nothing to
+  // draw: every point placed by a string, which is not a position on a number
+  // line. Drawing the empty state is the honest answer — the alternative is an
+  // axis of zeroes with every mark stacked on it.
+  const nothing = count === 0 || extent === null || (xScale === 'value' && spread === null);
 
   return (
     <ChartSurface
@@ -924,6 +1326,7 @@ export function CartesianChart({
             options={legendOptions}
             visibility={visibility}
             size={size}
+            swatch={swatch}
             values={
               legendOptions.showValue && activeIndex !== null
                 ? series.map((_, index) => {
@@ -937,18 +1340,20 @@ export function CartesianChart({
         ) : null
       }
       table={
-        nothing ? null : (
-          <ChartDataTable
-            id={tableId}
-            caption={label}
-            corner={categoryAxis?.label}
-            categories={labels}
-            series={series}
-            values={values}
-            format={formatValue}
-            locale={locale}
-          />
-        )
+        nothing
+          ? null
+          : (table?.(tableId) ?? (
+              <ChartDataTable
+                id={tableId}
+                caption={label}
+                corner={categoryAxis?.label}
+                categories={labels}
+                series={series}
+                values={values}
+                format={formatValue}
+                locale={locale}
+              />
+            ))
       }
     >
       <div
@@ -958,19 +1363,23 @@ export function CartesianChart({
         aria-label={label}
         aria-describedby={nothing ? undefined : tableId}
         onPointerMove={(event) => {
-          if (tooltipMode !== 'none') {
-            setActiveIndex(indexAt(event.clientX, event.clientY));
-            setPointer(valueAt(event.clientX, event.clientY));
+          if (tooltipMode === 'none') {
+            return;
           }
+
+          if (marks) {
+            setMarkIndex(nearestMark(event.clientX, event.clientY));
+          } else {
+            setColumnIndex(indexAt(event.clientX, event.clientY));
+          }
+
+          setPointer(valueAt(event.clientX, event.clientY));
         }}
-        onPointerLeave={() => {
-          setActiveIndex(null);
-          setPointer(null);
-        }}
+        onPointerLeave={clearActive}
         // A key press moves the crosshair without a pointer, so `item` mode has
         // nothing to measure against and falls back to the whole column.
         onKeyDown={tooltipMode === 'none' ? undefined : onKeyDown}
-        onBlur={() => setActiveIndex(null)}
+        onBlur={clearActive}
         className={cx(
           'relative w-full',
           'rounded-(--neba-radius-xs)',
@@ -1005,13 +1414,21 @@ export function CartesianChart({
               valuePx={valuePx}
               tickTexts={tickTexts}
               categoryTexts={categoryTexts}
+              categoryScale={categoryScale}
+              categoryValuePx={categoryValuePx}
               valueAxis={valueAxis}
               categoryAxis={categoryAxis}
               fontSize={fontSize}
               zeroPx={zeroPx}
             />
 
-            {activeIndex !== null && tooltipMode === 'index' && tooltipOptions.crosshair !== false
+            {/* No crosshair on a chart with marks, whatever mode was asked for:
+                a crosshair says "these numbers all belong to this column", and
+                there is no column — it would be a line through one dot. */}
+            {activeIndex !== null &&
+            !marks &&
+            tooltipMode === 'index' &&
+            tooltipOptions.crosshair !== false
               ? (() => {
                   const along = categoryPx(activeIndex);
 
@@ -1046,36 +1463,28 @@ export function CartesianChart({
             <div
               className="pointer-events-none absolute z-10"
               style={
-                categoryPx(activeIndex) > categoryLength / 2 && !horizontal
-                  ? {
-                      right: `calc(100% - ${plot.left + categoryPx(activeIndex)}px + 10px)`,
-                      top: plot.top
-                    }
-                  : {
-                      left: horizontal
-                        ? valuePx(items[0].value ?? 0) + 10
-                        : plot.left + categoryPx(activeIndex) + 10,
-                      top: horizontal ? plot.top + categoryPx(activeIndex) : plot.top
-                    }
+                anchorFlip
+                  ? { right: `calc(100% - ${anchorX}px + 10px)`, top: anchorY }
+                  : { left: anchorX + 10, top: anchorY }
               }
             >
               {tooltipOptions.render({
                 index: activeIndex,
-                category: labels[activeIndex],
+                category: markCategory ?? labels[activeIndex],
                 items
               })}
             </div>
           ) : (
             <ChartTooltipPanel
-              heading={formatCategory(labels[activeIndex], locale)}
-              items={items}
-              x={horizontal ? valuePx(items[0].value ?? 0) : plot.left + categoryPx(activeIndex)}
-              y={horizontal ? plot.top + categoryPx(activeIndex) : plot.top}
-              flip={
-                (horizontal
-                  ? scale.fraction(items[0].value ?? 0)
-                  : categoryPx(activeIndex) / Math.max(1, categoryLength)) > 0.6
+              heading={
+                supplied
+                  ? supplied.heading
+                  : formatCategory(markCategory ?? labels[activeIndex], locale)
               }
+              items={items}
+              x={anchorX}
+              y={anchorY}
+              flip={anchorFlip}
               size={size}
             />
           )
@@ -1098,7 +1507,10 @@ interface AxesProps {
   categoryPx: (index: number) => number;
   valuePx: (value: number) => number;
   tickTexts: readonly string[];
+  /** Either the category labels or, with `categoryScale`, that scale's ticks. */
   categoryTexts: readonly string[];
+  categoryScale: ValueScale | null;
+  categoryValuePx: (value: number) => number;
   valueAxis?: NebaChartAxis;
   categoryAxis?: NebaChartAxis;
   fontSize: number;
@@ -1121,13 +1533,31 @@ function ChartAxes({
   valuePx,
   tickTexts,
   categoryTexts,
+  categoryScale,
+  categoryValuePx,
   valueAxis,
   categoryAxis,
   fontSize,
   zeroPx
 }: AxesProps) {
   const grid = valueAxis?.grid !== false && !valueAxis?.hidden;
-  const categoryGrid = categoryAxis?.grid === true && !categoryAxis?.hidden;
+  /* A grid in both directions is graph paper, and on a chart of columns the
+     vertical rules do the job the crosshair is already doing under the pointer.
+     A plot with two value axes is the exception that makes the rule: there is
+     no column to be in, and reading a mark's x off the picture is half of what
+     the reader came for — so there, graph paper is the point. */
+  const categoryGrid = categoryAxis?.hidden
+    ? false
+    : (categoryAxis?.grid ?? categoryScale !== null);
+
+  /* Where each category label goes, and how many of them there is room for.
+     Ticks and labels are the same problem either way: a value scale's steps are
+     already evenly spaced, so both paths are `categoryTexts` laid along an axis
+     at a stride. */
+  const categoryAlong = (index: number) =>
+    categoryScale
+      ? categoryValuePx(categoryScale.ticks[index])
+      : (horizontal ? plot.top : plot.left) + categoryPx(index);
 
   const stride = tickStride(
     categoryTexts.length,
@@ -1150,7 +1580,7 @@ function ChartAxes({
   /* Whether the end of each axis still has room to be written down. Measured
      from the step it would sit at rather than assumed from the stride. */
   const categoryStep =
-    categoryTexts.length > 1 ? Math.abs(categoryPx(1) - categoryPx(0)) : plot.width;
+    categoryTexts.length > 1 ? Math.abs(categoryAlong(1) - categoryAlong(0)) : plot.width;
   const valueStep =
     scale.ticks.length > 1
       ? Math.abs(valuePx(scale.ticks[1]) - valuePx(scale.ticks[0]))
@@ -1260,45 +1690,63 @@ function ChartAxes({
           )}
 
           {categoryTexts.map((text, index) => {
-            if (!showsTick(index, categoryTexts.length, stride, lastCategory)) {
-              return null;
-            }
-
-            const along = categoryPx(index);
+            const along = categoryAlong(index);
+            // The grid is drawn at every tick and the labels are thinned, for
+            // the same reason the value axis does it: a rule with no number on
+            // it is still a rule the eye can measure against.
+            const labelled = showsTick(index, categoryTexts.length, stride, lastCategory);
 
             return horizontal ? (
-              <text
-                key={index}
-                x={plot.left - 8}
-                y={plot.top + along}
-                textAnchor="end"
-                dominantBaseline="central"
-                fontSize={fontSize}
-                fill="var(--neba-muted-fg)"
-              >
-                {text}
-              </text>
+              labelled ? (
+                <text
+                  key={index}
+                  x={plot.left - 8}
+                  y={along}
+                  textAnchor="end"
+                  dominantBaseline="central"
+                  fontSize={fontSize}
+                  fill="var(--neba-muted-fg)"
+                  className={categoryScale ? 'tabular-nums' : undefined}
+                >
+                  {text}
+                </text>
+              ) : null
             ) : (
               <g key={index}>
                 {categoryGrid ? (
                   <line
-                    x1={plot.left + along}
-                    x2={plot.left + along}
+                    x1={along}
+                    x2={along}
                     y1={plot.top}
                     y2={plot.top + plot.height}
                     stroke="var(--neba-chart-grid)"
                     strokeWidth={1}
                   />
                 ) : null}
-                <text
-                  x={plot.left + along}
-                  y={plot.top + plot.height + fontSize + 6}
-                  textAnchor="middle"
-                  fontSize={fontSize}
-                  fill="var(--neba-muted-fg)"
-                >
-                  {text}
-                </text>
+                {labelled ? (
+                  <text
+                    x={along}
+                    y={plot.top + plot.height + fontSize + 6}
+                    // A value scale's two end ticks sit on the ends of the plot,
+                    // so half of each hangs outside it — the same inward anchor
+                    // the horizontal value axis makes, and the reason a scatter
+                    // needs no margin reserved on its right.
+                    textAnchor={
+                      !categoryScale
+                        ? 'middle'
+                        : index === 0
+                          ? 'start'
+                          : index === categoryTexts.length - 1
+                            ? 'end'
+                            : 'middle'
+                    }
+                    fontSize={fontSize}
+                    fill="var(--neba-muted-fg)"
+                    className={categoryScale ? 'tabular-nums' : undefined}
+                  >
+                    {text}
+                  </text>
+                ) : null}
               </g>
             );
           })}
@@ -1343,6 +1791,7 @@ function ChartAxes({
 export {
   ChartDataTable,
   ChartLegendBar,
+  ChartScaleLegend,
   ChartSurface,
   ChartTooltipPanel,
   useMeasuredWidth,

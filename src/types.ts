@@ -361,6 +361,48 @@ export interface NebaChartSeries {
   hidden?: boolean;
 }
 
+/**
+ * One span on a [TimelineChart] — a stretch of time with two ends.
+ *
+ * Its own type rather than a `z2` or an `x2` bolted onto `NebaChartPoint`,
+ * because a second position on the axis is a field the other six charts would
+ * carry and never read. The trade the whole `types.ts` makes is that a name
+ * means one thing everywhere; a `NebaChartPoint` that sometimes has an end and
+ * usually does not is the opposite of that.
+ *
+ * `start` and `end` rather than `x` and `end`: a span has two places on the
+ * axis, and naming one of them `x` only reads correctly to someone who already
+ * knows which one it is.
+ */
+export interface NebaTimelinePoint {
+  /** When it begins. A `Date`, or a number of milliseconds. */
+  start: NebaChartCategory;
+  /** And when it is done. A span that ends before it starts is drawn either way round. */
+  end: NebaChartCategory;
+  /** What the span is called, in the tooltip and the table. */
+  label?: React.ReactNode;
+  /** Overrides its row's colour for this one span. */
+  color?: NebaColor | (string & {});
+}
+
+/**
+ * One row of a TimelineChart, and everything on it.
+ *
+ * A row is a series — one entity, one name, one colour — but its data are
+ * spans rather than values, so it cannot be a `NebaChartSeries`. There is no
+ * `hidden` here and no legend to pair it with: a Gantt's rows *are* its
+ * category axis, already named down the side, and a twenty-entry legend
+ * restating them is not a filter anyone wants.
+ */
+export interface NebaTimelineSeries {
+  /** Its name on the axis, in the tooltip and in the table. */
+  name?: string;
+  /** The spans on this row. Overlapping ones are drawn over each other. */
+  data: readonly NebaTimelinePoint[];
+  /** Overrides the palette slot this row would otherwise take. */
+  color?: NebaColor | (string & {});
+}
+
 /** How a line gets from one point to the next. */
 export type NebaChartCurve = 'linear' | 'smooth' | 'step';
 
