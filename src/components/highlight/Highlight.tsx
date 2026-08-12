@@ -105,7 +105,11 @@ function escapeRegExp(text: string): string {
  */
 function buildPattern(query: string | string[] | RegExp, caseSensitive: boolean): RegExp | null {
   if (query instanceof RegExp) {
-    return query.global ? query : new RegExp(query.source, `${query.flags}g`);
+    // Always a copy, even when the flags are already right. A global regular
+    // expression carries a `lastIndex` that `markString` moves, and mutating
+    // one the caller is holding — and may be matching with elsewhere — is not
+    // this component's to do.
+    return new RegExp(query.source, query.global ? query.flags : `${query.flags}g`);
   }
 
   const terms = (Array.isArray(query) ? query : [query])

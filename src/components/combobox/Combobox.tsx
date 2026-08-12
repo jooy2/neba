@@ -313,14 +313,22 @@ export function Combobox<Multiple extends boolean | undefined = false>({
 
   const [query, setQuery] = React.useState('');
 
+  /* A map rather than a `find`: this is called once per chosen item, and a
+     multi-select with a hundred options and twenty chips in it would otherwise
+     walk the list twenty times on every render. */
+  const byValue = React.useMemo(
+    () => new Map(options.map((option) => [option.value, option])),
+    [options]
+  );
+
   const entryFor = React.useCallback(
     (item: ComboboxValue): Entry =>
-      options.find((option) => option.value === item) ?? {
+      byValue.get(item) ?? {
         value: item,
         label: String(item),
         custom: true
       },
-    [options]
+    [byValue]
   );
 
   // The row that offers what was typed. It is a real item rather than a special

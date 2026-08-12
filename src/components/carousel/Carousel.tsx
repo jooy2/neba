@@ -230,7 +230,11 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
    */
   const handleScroll = () => {
     const track = trackRef.current;
-    if (!track || track.clientWidth === 0 || settling.current) {
+    // `settling` is tested before anything is measured, and that order is the
+    // point: a smooth scroll of our own throws events for most of a second, and
+    // those are exactly the ones with nothing to answer. Reading `clientWidth`
+    // first would force a layout on every one of them.
+    if (settling.current || !track || track.clientWidth === 0) {
       return;
     }
 

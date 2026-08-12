@@ -71,6 +71,22 @@ describe('Highlight', () => {
       expect(marks(screen.container)).toEqual(['66', '1977']);
     });
 
+    it('leaves a caller-supplied RegExp alone', async () => {
+      // A global expression carries a `lastIndex` that matching moves. The
+      // caller may be matching with this one elsewhere, so marking must not
+      // reach into it.
+      const query = /\d+/g;
+
+      query.lastIndex = 0;
+      expect(query.exec('Order 66')?.[0]).toBe('66');
+
+      const resumed = query.lastIndex;
+      const screen = await render(<Highlight query={query}>Order 66 of 1977</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['66', '1977']);
+      expect(query.lastIndex).toBe(resumed);
+    });
+
     it('does not hang on a pattern that can match nothing', async () => {
       const screen = await render(<Highlight query={/x*/}>abc</Highlight>);
 
