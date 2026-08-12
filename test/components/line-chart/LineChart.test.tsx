@@ -411,6 +411,78 @@ describe('LineChart', () => {
       expect(texts).not.toContain('11');
     });
 
+    it('labels the high and the low with valueLabels="extremes"', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          valueLabels="extremes"
+          series={[{ name: 'Web', data: [31, 12, 57, 44] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+
+      expect(texts).toContain('12');
+      expect(texts).toContain('57');
+      expect(texts).not.toContain('31');
+      expect(texts).not.toContain('44');
+    });
+
+    it('takes the extremes from the values that exist, not from the gaps', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          valueLabels="extremes"
+          series={[{ name: 'Web', data: [31, null, 57, 44] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+
+      // A gap is not a zero, so the low is 31 rather than the missing month.
+      expect(texts).toContain('31');
+      expect(texts).toContain('57');
+      expect(texts).not.toContain('44');
+    });
+
+    it('labels nothing for a series that is all gap, and still labels the one beside it', async () => {
+      // The second series is what keeps the chart drawn at all — a chart with
+      // no numbers anywhere renders its empty state instead, which would never
+      // reach the code this is about.
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          valueLabels="extremes"
+          series={[
+            { name: 'Web', data: [null, null, null, null] },
+            { name: 'App', data: [63, 21, 39, 47] }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+
+      expect(texts).toContain('21');
+      expect(texts).toContain('63');
+      expect(texts).not.toContain('39');
+      expect(texts).not.toContain('47');
+    });
+
     it('breaks the path at a gap and bridges it with connectNulls', async () => {
       const screen = await render(
         <LineChart

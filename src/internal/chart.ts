@@ -989,12 +989,19 @@ export function truncate(text: string, maxWidth: number, fontSize: number): stri
 
   const room = maxWidth - textWidth('…', fontSize);
   let cut = '';
+  // The running width, rather than re-measuring `cut + character` each time.
+  // Measuring the whole prefix again per character makes this quadratic in the
+  // length of the label, and it is called once per label per render.
+  let width = 0;
 
   for (const character of text) {
-    if (textWidth(cut + character, fontSize) > room) {
+    const next = width + textWidth(character, fontSize);
+
+    if (next > room) {
       break;
     }
 
+    width = next;
     cut += character;
   }
 

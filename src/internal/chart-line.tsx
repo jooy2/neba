@@ -175,6 +175,8 @@ export function LineSeries({
         // data. What separates them is the gap below.
         const banded = filled && stacked;
 
+        const labelled = labelledPoints(one, valueLabels);
+
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1}>
             {filled ? (
@@ -254,16 +256,7 @@ export function LineSeries({
               : tops.map((vertex, category) => {
                   const value = one[category].value;
 
-                  if (!vertex || value === null) {
-                    return null;
-                  }
-
-                  const shown =
-                    valueLabels === 'all' ||
-                    (valueLabels === 'last' && category === lastFilled(one)) ||
-                    (valueLabels === 'extremes' && isExtreme(one, category));
-
-                  if (!shown) {
+                  if (!vertex || value === null || !labelled(category)) {
                     return null;
                   }
 
@@ -295,25 +288,38 @@ export function LineSeries({
   );
 }
 
-/** The last category this series actually has a number for. */
-function lastFilled(one: readonly { value: number | null }[]): number {
-  for (let index = one.length - 1; index >= 0; index--) {
-    if (one[index].value !== null) {
-      return index;
+/**
+ * Which points of a series get a label, decided once for the whole series.
+ *
+ * Once and not per point, which is the only thing worth saying about it: asking
+ * "is this the series' high" inside the loop over the points means walking the
+ * series again for each of them, and a five-hundred-point line then does a
+ * quarter of a million comparisons to place two labels — on every render, which
+ * on a chart being hovered is every frame.
+ */
+function labelledPoints(
+  one: readonly { value: number | null }[],
+  valueLabels: NebaChartValueLabels
+): (index: number) => boolean {
+  if (valueLabels === 'all') {
+    return () => true;
+  }
+
+  if (valueLabels === 'last') {
+    let last = -1;
+
+    for (let index = one.length - 1; index >= 0; index--) {
+      if (one[index].value !== null) {
+        last = index;
+        break;
+      }
     }
+
+    return (index) => index === last;
   }
 
-  return -1;
-}
-
-/** Whether this is the series' own high or low — the two points worth naming. */
-function isExtreme(one: readonly { value: number | null }[], index: number): boolean {
-  const value = one[index].value;
-
-  if (value === null) {
-    return false;
-  }
-
+  // `extremes`. A series that is entirely `null` has no high and no low, and
+  // the comparison below is false for every point of it either way.
   let min = Infinity;
   let max = -Infinity;
 
@@ -326,5 +332,9 @@ function isExtreme(one: readonly { value: number | null }[], index: number): boo
     max = Math.max(max, entry.value);
   }
 
-  return value === min || value === max;
+  return (index) => {
+    const value = one[index].value;
+
+    return value !== null && (value === min || value === max);
+  };
 }
