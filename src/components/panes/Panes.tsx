@@ -292,6 +292,19 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     };
   }
 
+  /**
+   * How to take a drag in flight apart, held for as long as one is running.
+   *
+   * A drag is torn down by the `pointerup` that ends it, and that event never
+   * arrives if the Panes goes away first — a route change, a closed Accordion, a
+   * pane list that shrank. What is left behind is not only two listeners on a
+   * detached node: the drag takes the whole document's text selection away while
+   * it runs, and nothing else ever puts it back.
+   */
+  const teardownRef = React.useRef<(() => void) | null>(null);
+
+  React.useEffect(() => () => teardownRef.current?.(), []);
+
   function beginDrag(index: number, event: React.PointerEvent<HTMLDivElement>) {
     const held = grip(index);
     if (!held) return;
@@ -322,15 +335,25 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
       latest = held.resize((position - origin) * towardsEnd);
     };
 
-    const end = () => {
+    // Everything the drag took from outside itself, given back. Split from `end`
+    // because unmounting has to run this half and must not run the other: a
+    // component that disappeared did not finish resizing, and telling a caller it
+    // did would set state on the way out of the tree.
+    const release = () => {
+      teardownRef.current = null;
       handle.removeEventListener('pointermove', move);
       handle.removeEventListener('pointerup', end);
       handle.removeEventListener('pointercancel', end);
       delete handle.dataset.dragging;
       document.body.style.userSelect = selection;
+    };
+
+    const end = () => {
+      release();
       onResizeEnd?.(latest.map((fraction) => fraction * 100));
     };
 
+    teardownRef.current = release;
     handle.addEventListener('pointermove', move);
     handle.addEventListener('pointerup', end);
     handle.addEventListener('pointercancel', end);

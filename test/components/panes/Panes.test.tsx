@@ -304,6 +304,35 @@ describe('Panes', () => {
 
       await expect.element(screen.getByRole('separator')).toHaveAttribute('tabindex', '-1');
     });
+
+    /*
+     * A drag takes the whole document's text selection away for as long as it
+     * runs, and the `pointerup` that gives it back never arrives if the split
+     * leaves the page first. What is left is a page nobody can select text on.
+     */
+    it('gives the page its text selection back if it unmounts mid-drag', async () => {
+      const screen = await render(
+        <Sample>
+          <Pane>One</Pane>
+          <Pane>Two</Pane>
+        </Sample>
+      );
+      await expect.poll(() => shares(screen)).toEqual([50]);
+
+      const handle = screen.getByRole('separator').element() as HTMLElement;
+      // A synthetic press cannot capture a pointer the browser has no record of,
+      // and capturing one is not what is being tested.
+      handle.setPointerCapture = () => {};
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 1, clientX: 204 })
+      );
+
+      expect(document.body.style.userSelect).toBe('none');
+
+      screen.unmount();
+
+      expect(document.body.style.userSelect).toBe('');
+    });
   });
 
   describe('nesting', () => {
