@@ -319,9 +319,16 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
      * handle, which leaves the component focusing it by hand and every mouse
      * press wearing a keyboard focus ring. Taking the selection off the document
      * for the length of the drag fixes the selection without touching the focus.
+     *
+     * The property is written prefixed and through `setProperty`, because WebKit
+     * implements only `-webkit-user-select`: it has no `userSelect` on a style
+     * declaration, so `style.userSelect = 'none'` hangs a plain JS property off
+     * the object, changes nothing, and Safari selects text through the whole
+     * drag. Chromium and Firefox both read the prefixed name as the standard
+     * one. This is what Tailwind's own `select-none` emits, for the same reason.
      */
-    const selection = document.body.style.userSelect;
-    document.body.style.userSelect = 'none';
+    const selection = document.body.style.getPropertyValue('-webkit-user-select');
+    document.body.style.setProperty('-webkit-user-select', 'none');
 
     const origin = horizontal ? event.clientX : event.clientY;
     // Positive is always "toward the end", so a drag under RTL moves the
@@ -345,7 +352,11 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
       handle.removeEventListener('pointerup', end);
       handle.removeEventListener('pointercancel', end);
       delete handle.dataset.dragging;
-      document.body.style.userSelect = selection;
+
+      // Removed rather than set back to '', so a page that never wrote the
+      // property inline is left with the declaration it actually had.
+      if (selection) document.body.style.setProperty('-webkit-user-select', selection);
+      else document.body.style.removeProperty('-webkit-user-select');
     };
 
     const end = () => {

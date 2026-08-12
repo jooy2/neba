@@ -323,15 +323,29 @@ describe('Panes', () => {
       // A synthetic press cannot capture a pointer the browser has no record of,
       // and capturing one is not what is being tested.
       handle.setPointerCapture = () => {};
+
+      // Read through the computed style rather than off the inline declaration:
+      // WebKit has no `userSelect` on a style object, so an assertion written
+      // against that name passes on a plain JS property the component set and
+      // says nothing about whether the page can still be selected. The prefixed
+      // name is the one all three engines answer to, and its default differs
+      // between them, so the state before the drag is what the state after it is
+      // compared against.
+      const selectable = () => getComputedStyle(document.body).webkitUserSelect;
+      const before = selectable();
+
+      // Otherwise both assertions below would hold without the component.
+      expect(before).not.toBe('none');
+
       handle.dispatchEvent(
         new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 1, clientX: 204 })
       );
 
-      expect(document.body.style.userSelect).toBe('none');
+      expect(selectable()).toBe('none');
 
       screen.unmount();
 
-      expect(document.body.style.userSelect).toBe('');
+      expect(selectable()).toBe(before);
     });
   });
 
