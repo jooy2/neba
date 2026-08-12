@@ -145,7 +145,13 @@ export function HeatmapChart({
     () => Array.from({ length: columns }, (_, index) => categoryAt(index, categories, values)),
     [columns, categories, values]
   );
-  const names = series.map((row, index) => row.name ?? `${index + 1}`);
+  /* Memoised because `rowNames` below depends on it, and a fresh array here
+     would make that memo miss on every render — putting a `truncate` over every
+     row name back on the render path, which is what it exists to stay off. */
+  const names = React.useMemo(
+    () => series.map((row, index) => row.name ?? `${index + 1}`),
+    [series]
+  );
 
   /* The scale, over every cell. One ladder for the whole chart and not one per
      row: the colour of a cell has to mean the same number wherever it is, which
