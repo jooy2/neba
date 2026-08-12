@@ -61,3 +61,4 @@ Off by default, which is the other way round from [Dialog](./dialog). An Overlay
 - Renders with `role="dialog"`, and `label` is its accessible name. `label` has a default because an overlay holding only a spinner, or a `clear` one, still has to say what it is.
 - The portal, the scroll lock, focus held inside, the page behind going inert, and focus returning on close are all handled.
 - The entrance animates opacity only.
+- `locale` decides the overlay's accessible name; `label` writes it out instead.

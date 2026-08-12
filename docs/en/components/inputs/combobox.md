@@ -106,3 +106,4 @@ Identical to [Select](./select)'s: portalled to the end of `<body>`, with `neba-
 - Filtering, the popup's positioning and flipping, arrow-key navigation across both the list and the chips, and the hidden input for form submission are all handled.
 - A `disabled` option stays in the list and reports `aria-disabled`.
 - Each chip's remove button is named through `removeLabel`, which receives the chip's own label.
+- `locale` decides the no-matches line and the names of the clear and remove buttons; `emptyMessage`, `clearLabel` and `removeLabel` write them out instead.

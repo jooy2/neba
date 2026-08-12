@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon, severityIcons } from '../../internal/icons';
 import { transitionProps } from '../../internal/animate';
 import {
@@ -48,7 +49,15 @@ export interface AlertProps
   action?: React.ReactNode;
   /** Passing it is what makes the dismiss button appear. */
   onClose?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  /** Accessible name of the dismiss button. */
+  /**
+   * Which language the dismiss button is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `closeLabel` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of the dismiss button. Defaults to the `locale`'s word. */
   closeLabel?: string;
   /** The message. */
   children?: React.ReactNode;
@@ -147,7 +156,8 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
     icon,
     action,
     onClose,
-    closeLabel = 'Dismiss',
+    locale,
+    closeLabel,
     transition,
     className,
     style,
@@ -156,6 +166,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
   },
   ref
 ) {
+  const messages = useMessages(locale);
   const glyph = icon === undefined ? severityIcons[color] : icon;
   const accent = accentClasses[variant];
   const titled = hasContent(title);
@@ -210,7 +221,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         <span className="flex h-[1lh] shrink-0 items-center">
           <button
             type="button"
-            aria-label={closeLabel}
+            aria-label={closeLabel ?? messages.action.dismiss}
             onClick={onClose}
             className={[
               'inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',

@@ -85,3 +85,4 @@ The steppers are sized in `em`, so they track the number. The field lines up wit
 - `label` becomes the accessible name; the steppers are named by `incrementLabel` and `decrementLabel`.
 - The steppers stay out of the tab order, because the arrow keys on the field do the same job.
 - A stepper that has reached `min` or `max` becomes `disabled`.
+- `locale` names the two steppers, so a plain BCP 47 string keeps the digits and the buttons in one language.

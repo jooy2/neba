@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
+import { useMessages } from '../../internal/i18n';
 import { surfaceSlots } from '../../internal/styles';
 import type { NebaAlign, NebaColor, NebaSize } from '../../types';
 
@@ -62,10 +63,17 @@ export interface OverlayProps {
   /** Semantic colour role. Reaches the focus ring and whatever the content reads. */
   color?: NebaColor;
   /**
+   * Which language the overlay is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `label` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /**
    * The accessible name of the overlay. An overlay that holds nothing readable
    * — a bare spinner, a `clear` sheet — still has to say what it is, so this
-   * has a default rather than being optional.
-   * @default 'Overlay'
+   * falls back to the `locale`'s word for it rather than to nothing.
    */
   label?: string;
   /** What sits on top of the scrim — a spinner, a line of text, a small card. */
@@ -137,11 +145,14 @@ export function Overlay({
   align = 'center',
   size = 'md',
   color = 'primary',
-  label = 'Overlay',
+  locale,
+  label,
   className,
   style,
   children
 }: OverlayProps) {
+  const messages = useMessages(locale);
+
   return (
     <BaseUIDialog.Root
       open={open}
@@ -177,7 +188,7 @@ export function Overlay({
           ].join(' ')}
         >
           <BaseUIDialog.Popup
-            aria-label={label}
+            aria-label={label ?? messages.overlay.label}
             className={[
               'flex max-h-full max-w-full flex-col items-center justify-center',
               '[outline:none]',

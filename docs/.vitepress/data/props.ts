@@ -2600,6 +2600,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Chip: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 삭제 버튼의 접근성 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag naming the delete button in that language'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -2655,7 +2663,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'deleteLabel',
       type: 'string',
-      default: "'Remove'",
       description: { ko: '삭제 버튼의 접근성 이름', en: 'Accessible name of the delete button' }
     },
     {
@@ -2733,7 +2740,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'empty',
       type: 'ReactNode',
-      default: "'No data'",
       description: {
         ko: 'items가 비었을 때 대신 보여 줄 내용',
         en: 'What to show instead of rows when items is empty'
@@ -3231,6 +3237,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Alert: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 닫기 버튼의 접근성 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag naming the dismiss button in that language'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -3283,7 +3297,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeLabel',
       type: 'string',
-      default: "'Dismiss'",
       description: { ko: '닫기 버튼의 접근성 이름', en: 'Accessible name of the dismiss button' }
     },
     {
@@ -3295,6 +3308,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Dialog: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. ×의 접근성 이름을 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag naming the × in that language. Unsupported tags fall back to English'
+      }
+    },
     {
       name: 'size',
       type: SIZE,
@@ -3397,7 +3418,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeLabel',
       type: 'string',
-      default: "'Close'",
       description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
     },
     {
@@ -3452,6 +3472,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   ToastProvider: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 모든 toast의 × 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag naming the × on every toast in that language'
+      }
+    },
     {
       name: 'variant',
       type: VARIANT,
@@ -3519,7 +3547,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeLabel',
       type: 'string',
-      default: "'Close'",
       description: { ko: '× 버튼의 접근성 이름', en: "Accessible name of every toast's × button" }
     }
   ],
@@ -4808,6 +4835,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Pagination: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. nav 이름, 페이지 버튼, 화살표, 현재 위치 문장을 모두 이 언어로 씁니다',
+        en: 'BCP 47 tag: the nav name, the page buttons, the arrows and the status sentence'
+      }
+    },
     ...sharedProps({
       variant: "'text'",
       size: "'md'",
@@ -4902,7 +4937,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'label',
       type: 'string',
-      default: "'Pagination'",
       description: { ko: 'nav 랜드마크의 접근성 이름', en: 'Accessible name of the nav landmark' }
     },
     {
@@ -4946,6 +4980,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Combobox: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 결과 없음 문구와 지우기 · 삭제 버튼의 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag: the no-matches line and the clear and remove buttons'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -5037,7 +5079,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'emptyMessage',
       type: 'ReactNode',
-      default: "'No matches'",
       description: {
         ko: '일치하는 것이 없고 값을 추가할 수도 없을 때 팝업이 하는 말',
         en: 'Shown in the popup when nothing matches and no value may be added'
@@ -5084,7 +5125,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'clearLabel',
       type: 'string',
-      default: "'Clear'",
       description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the clear button' }
     },
     {
@@ -5205,8 +5245,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'locale',
       type: 'Intl.LocalesArgument',
       description: {
-        ko: '어느 로케일로 쓰고 읽을지. 기본은 런타임의 것',
-        en: "Which locale the number is written and parsed in. Defaults to the runtime's"
+        ko: '어느 로케일로 쓰고 읽을지. 기본은 런타임의 것. BCP 47 문자열이면 두 스테퍼의 이름도 이 언어로 씁니다',
+        en: "Which locale the number is written and parsed in. Defaults to the runtime's; a plain BCP 47 string also names the two steppers"
       }
     },
     {
@@ -5244,13 +5284,11 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'incrementLabel',
       type: 'string',
-      default: "'Increase'",
       description: { ko: '증가 버튼의 접근성 이름', en: 'Accessible name of the increment button' }
     },
     {
       name: 'decrementLabel',
       type: 'string',
-      default: "'Decrease'",
       description: { ko: '감소 버튼의 접근성 이름', en: 'Accessible name of the decrement button' }
     },
     {
@@ -5265,6 +5303,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Overlay: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. overlay의 접근성 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag naming the overlay in that language'
+      }
+    },
     {
       name: 'open',
       type: 'boolean',
@@ -5341,7 +5387,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'label',
       type: 'string',
-      default: "'Overlay'",
       description: {
         ko: '오버레이의 접근성 이름. 읽을 것이 없는 오버레이도 자기가 무엇인지는 말해야 하므로 선택이 아니라 기본값입니다',
         en: 'The accessible name. It has a default rather than being optional: an overlay that holds nothing readable still has to say what it is'
@@ -5579,6 +5624,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Carousel: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. region 이름, 화살표, 각 슬라이드 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag: the region name, the arrows and every slide name'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -5652,7 +5705,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'label',
       type: 'string',
-      default: "'Carousel'",
       description: {
         ko: '캐러셀의 접근성 이름. 선택이 아니라 기본값입니다 — 이름 없는 region은 건너뛸 수도 없습니다',
         en: 'The accessible name. It has a default rather than being optional: a region with no name is a region nobody can skip'
@@ -6665,6 +6717,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Breadcrumb: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. nav 이름과 … 버튼의 이름을 이 언어로 씁니다',
+        en: 'BCP 47 tag naming the nav landmark and the … button'
+      }
+    },
     ...scaleProps("'md'"),
     {
       name: 'density',
@@ -6717,7 +6777,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'label',
       type: 'string',
-      default: "'Breadcrumb'",
       description: {
         ko: '트레일이 읽히는 이름. nav의 aria-label입니다',
         en: "The name the trail is announced by, as the nav's aria-label"
@@ -7092,6 +7151,14 @@ export const propTables: Record<string, PropRow[]> = {
 
   Drawer: [
     {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. ×의 접근성 이름을 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag naming the × in that language. Unsupported tags fall back to English'
+      }
+    },
+    {
       name: 'side',
       type: SIDE,
       default: "'left'",
@@ -7209,7 +7276,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeLabel',
       type: 'string',
-      default: "'Close'",
       description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
     },
     {
@@ -7258,6 +7324,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   Popover: [
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. ×의 접근성 이름을 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag naming the × in that language. Unsupported tags fall back to English'
+      }
+    },
     {
       name: 'trigger',
       type: 'ReactElement',
@@ -7399,7 +7473,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeLabel',
       type: 'string',
-      default: "'Close'",
       description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the × button' }
     },
     {

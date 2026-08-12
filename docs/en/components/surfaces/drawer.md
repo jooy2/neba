@@ -85,3 +85,4 @@ The body is the only part that scrolls, so `title`, `description` and `actions` 
 - `modal="trap-focus"` keeps the page scrollable and clickable while still holding focus inside.
 - `dismissible={false}` cancels Escape and the click on the scrim. Give that drawer actions that close it, because there will be no other way out.
 - An `inline` drawer is not a dialog: it takes no focus, traps nothing, and announces nothing. Its `title` is a plain heading, so put it in the page's heading order.
+- `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.

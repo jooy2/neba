@@ -215,4 +215,20 @@ describe('Popover', () => {
       await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
     });
   });
+
+  describe('locale', () => {
+    it('names the × in the language it was given', async () => {
+      const screen = await render(<Popover defaultOpen showClose locale="ko" title="공유" />);
+
+      await expect.element(screen.getByRole('button', { name: '닫기' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Popover defaultOpen showClose locale="ko" closeLabel="Dismiss" title="공유" />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+    });
+  });
 });

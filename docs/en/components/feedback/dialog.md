@@ -78,3 +78,4 @@ actions={
 - `title` and `description` are wired into `aria-labelledby` and `aria-describedby`. The title renders as a real `<h2>`.
 - The focus trap, the scroll lock, the inert page behind, and focus returning to the trigger on close are all handled.
 - `showClose` is on by default. The way out of a modal should always be visible, and it is also what a touch screen reader uses to escape the popup.
+- `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.

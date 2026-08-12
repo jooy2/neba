@@ -229,4 +229,22 @@ describe('NumberField', () => {
       expect(root).not.toHaveClass('inline-flex');
     });
   });
+
+  describe('locale', () => {
+    it('names the two steppers in the language it was given', async () => {
+      const screen = await render(<NumberField locale="ko" label="수량" />);
+
+      await expect.element(screen.getByRole('button', { name: '값 늘리기' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '값 줄이기' })).toBeInTheDocument();
+    });
+
+    it('takes words of its own over the locale', async () => {
+      const screen = await render(
+        <NumberField locale="ko" label="수량" incrementLabel="Up" decrementLabel="Down" />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Up' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: 'Down' })).toBeInTheDocument();
+    });
+  });
 });

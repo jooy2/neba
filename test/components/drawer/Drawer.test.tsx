@@ -288,4 +288,20 @@ describe('Drawer', () => {
       expect(footer).toHaveClass('border-t');
     });
   });
+
+  describe('locale', () => {
+    it('names the × in the language it was given', async () => {
+      const screen = await render(<Drawer defaultOpen showClose locale="ko" title="설정" />);
+
+      await expect.element(screen.getByRole('button', { name: '닫기' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Drawer defaultOpen showClose locale="ko" closeLabel="Dismiss" title="설정" />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+    });
+  });
 });

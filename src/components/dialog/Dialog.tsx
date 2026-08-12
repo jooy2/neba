@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon } from '../../internal/icons';
 import {
   hasContent,
@@ -59,7 +60,15 @@ export interface DialogProps extends Pick<NebaStyleProps, 'size' | 'color' | 'de
    * @default true
    */
   showClose?: boolean;
-  /** Accessible name of the × button. */
+  /**
+   * Which language the × is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `closeLabel` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of the × button. Defaults to the `locale`'s word for it. */
   closeLabel?: string;
   /**
    * A hard cap on the sheet's width, overriding the one `size` implies. Numbers
@@ -191,7 +200,8 @@ export function Dialog({
   actions,
   dividers = false,
   showClose = true,
-  closeLabel = 'Close',
+  locale,
+  closeLabel,
   width,
   fullWidth = true,
   fullScreen = false,
@@ -201,6 +211,7 @@ export function Dialog({
   style,
   children
 }: DialogProps) {
+  const messages = useMessages(locale);
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
   // With dividers the lines have to reach both edges, so the sheet gives up its
@@ -283,7 +294,7 @@ export function Dialog({
 
                 {showClose ? (
                   <BaseUIDialog.Close
-                    aria-label={closeLabel}
+                    aria-label={closeLabel ?? messages.action.close}
                     className={[
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
                       'rounded-full text-(--neba-muted-fg)',

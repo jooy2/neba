@@ -75,3 +75,4 @@ The page being read and an arrow at the end of the row stay `<button>`. An `<a>`
 - The ellipsis is punctuation rather than a control, so it is not rendered as a disabled button.
 - With `getPageHref` the numbers are links, so they appear in a screen reader's list of links and a keyboard reader can see where each one goes.
 - Every accessible name is settable: `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`. With more than one pagination on a screen, use `label` to say what each one paginates.
+- `locale` decides the nav name, the page buttons, the arrows and the sentence that reads out where you are. Each of them takes a string of its own.

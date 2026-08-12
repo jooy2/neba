@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton';
+import { fillMessage, useMessages } from '../../internal/i18n';
 import { ChevronIcon } from '../../internal/icons';
 import {
   radiusClasses,
@@ -48,15 +49,21 @@ export interface CarouselProps
   arrows?: boolean;
   /** The row of position dots under the frame. @default true */
   indicators?: boolean;
-  /** The carousel's accessible name. @default 'Carousel' */
+  /**
+   * Which language the carousel names itself in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * The strings below write the words out instead; this is for the far more
+   * common case where the page already knows its own language.
+   */
+  locale?: string;
+  /** The carousel's accessible name. Defaults to the `locale`'s word for it. */
   label?: string;
-  /** @default 'Previous slide' */
   previousLabel?: string;
-  /** @default 'Next slide' */
   nextLabel?: string;
   /**
    * How one slide is named to a screen reader, and how its dot is labelled.
-   * @default (index, count) => `Slide ${index} of ${count}`
+   * Defaults to the `locale`'s wording.
    */
   slideLabel?: (index: number, count: number) => string;
   /** The slides. Every top-level child becomes one. */
@@ -106,8 +113,6 @@ const dotClasses: Record<NebaSize, { rest: string; current: string; gap: string 
   xl: { rest: 'h-2 w-2', current: 'h-2 w-6', gap: 'gap-2' }
 };
 
-const defaultSlideLabel = (index: number, count: number) => `Slide ${index} of ${count}`;
-
 /**
  * A strip of slides, one of which is in view.
  *
@@ -145,10 +150,11 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
     interval = 5000,
     arrows = true,
     indicators = true,
-    label = 'Carousel',
-    previousLabel = 'Previous slide',
-    nextLabel = 'Next slide',
-    slideLabel = defaultSlideLabel,
+    locale,
+    label,
+    previousLabel,
+    nextLabel,
+    slideLabel,
     className,
     style,
     children,
@@ -156,6 +162,12 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
   },
   ref
 ) {
+  const messages = useMessages(locale);
+  const nameSlide =
+    slideLabel ??
+    ((index: number, total: number) =>
+      fillMessage(messages.carousel.slide, { index: String(index), total: String(total) }));
+
   // `toArray` is what drops the `null`s and `false`s a conditional slide leaves
   // behind, and what gives every remaining child a stable key.
   const slides = React.Children.toArray(children);
@@ -272,7 +284,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
       ref={ref}
       role="region"
       aria-roledescription="carousel"
-      aria-label={label}
+      aria-label={label ?? messages.carousel.label}
       className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
       style={{ ...surfaceSlots(color, elevation), ...style }}
       // Hover and focus both stop the timer. The second one is the important
@@ -300,7 +312,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
           // have been.
           tabIndex={0}
           role="group"
-          aria-label={label}
+          aria-label={label ?? messages.carousel.label}
           className={[
             'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth',
             'motion-reduce:scroll-auto',
@@ -319,7 +331,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
               }}
               role="group"
               aria-roledescription="slide"
-              aria-label={slideLabel(slideIndex + 1, count)}
+              aria-label={nameSlide(slideIndex + 1, count)}
               // Deliberately *not* `aria-hidden` when off-screen. A slide can
               // hold a link or a button, and an `aria-hidden` subtree that is
               // still in the tab order is the exact shape of the bug where a
@@ -343,7 +355,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
               color={color}
               density={density}
               elevation={1}
-              label={previousLabel}
+              label={previousLabel ?? messages.carousel.previous}
               disabled={!loop && atStart}
               className="pointer-events-auto"
               // Drawn pointing down and turned, which is the one allowance the
@@ -363,7 +375,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
               color={color}
               density={density}
               elevation={1}
-              label={nextLabel}
+              label={nextLabel ?? messages.carousel.next}
               disabled={!loop && atEnd}
               className="pointer-events-auto"
               icon={
@@ -383,7 +395,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
             <button
               key={dotIndex}
               type="button"
-              aria-label={slideLabel(dotIndex + 1, count)}
+              aria-label={nameSlide(dotIndex + 1, count)}
               aria-current={dotIndex === index ? 'true' : undefined}
               className={[
                 'cursor-pointer rounded-full',
@@ -408,7 +420,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
           says a new slide's name every five seconds is what makes a screen
           reader unusable on a page that has one. */}
       <span className={srOnlyClasses} aria-live={autoPlay ? 'off' : 'polite'}>
-        {count > 0 ? slideLabel(index + 1, count) : ''}
+        {count > 0 ? nameSlide(index + 1, count) : ''}
       </span>
     </div>
   );

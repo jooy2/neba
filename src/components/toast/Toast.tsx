@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon, severityIcons } from '../../internal/icons';
 import {
   controlSlots,
@@ -89,7 +90,15 @@ export interface ToastProviderProps extends Pick<NebaStyleProps, 'variant' | 'si
   limit?: number;
   /** How wide a toast is allowed to get. Numbers are pixels. @default 380 */
   width?: number | string;
-  /** Accessible name of every toast's × button. */
+  /**
+   * Which language every toast's × is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `closeLabel` write the words out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of every toast's × button. Defaults to the `locale`'s word. */
   closeLabel?: string;
   children?: React.ReactNode;
 }
@@ -365,9 +374,12 @@ export function ToastProvider({
   timeout = 5000,
   limit = 3,
   width = 380,
-  closeLabel = 'Close',
+  locale,
+  closeLabel,
   children
 }: ToastProviderProps) {
+  const messages = useMessages(locale);
+
   return (
     <BaseUIToast.Provider timeout={timeout} limit={limit}>
       {children}
@@ -378,7 +390,7 @@ export function ToastProvider({
         color={color}
         density={density}
         width={width}
-        closeLabel={closeLabel}
+        closeLabel={closeLabel ?? messages.action.close}
       />
     </BaseUIToast.Provider>
   );

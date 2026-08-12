@@ -106,3 +106,4 @@ interface ComboboxOption {
 - 필터링, 팝업 위치 계산과 뒤집힘, 목록과 chip을 가로지르는 방향키 이동, 폼 제출용 hidden input이 모두 처리됩니다.
 - `disabled` 항목은 목록에 남은 채 `aria-disabled`로 보고됩니다.
 - chip의 제거 버튼 이름은 `removeLabel`이 chip 라벨을 받아 만듭니다.
+- 결과 없음 문구와 지우기 · 삭제 버튼의 이름을 `locale`이 정합니다. `emptyMessage`, `clearLabel`, `removeLabel`로 직접 쓸 수도 있습니다.

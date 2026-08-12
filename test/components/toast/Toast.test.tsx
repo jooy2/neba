@@ -217,4 +217,28 @@ describe('Toast', () => {
       expect(viewport).toHaveClass('pointer-events-none');
     });
   });
+
+  describe('locale', () => {
+    it('names every toast’s × in the language it was given', async () => {
+      const screen = await render(
+        <Harness locale="ko" options={{ title: '저장됨', timeout: 0 }} />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await screen.getByText('저장됨').hover();
+
+      await expect.element(screen.getByRole('button', { name: '닫기' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Harness locale="ko" closeLabel="Dismiss" options={{ title: '저장됨', timeout: 0 }} />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await screen.getByText('저장됨').hover();
+
+      await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+    });
+  });
 });

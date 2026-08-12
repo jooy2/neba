@@ -85,3 +85,4 @@ stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같�
 - `label`이 accessible name이 되고, stepper 버튼의 이름은 `incrementLabel`과 `decrementLabel`이 정합니다.
 - stepper는 tab 순서에서 빠져 있습니다. 필드의 방향키가 같은 일을 합니다.
 - `min`이나 `max`에 도달한 stepper는 `disabled`가 됩니다.
+- 두 스테퍼의 접근성 이름은 `locale`이 정합니다 — BCP 47 문자열을 넘기면 숫자와 버튼이 같은 언어로 읽힙니다.

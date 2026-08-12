@@ -83,3 +83,4 @@ The last step is the page you are on, so it is not a link even when it is given 
 - The current step carries `aria-current="page"`, and exactly one step in a trail ever does.
 - The separators are `aria-hidden`, so a reader hears the steps and not the punctuation between them.
 - The `…` is a real button named by `expandLabel`. With `expandable={false}` it is a mark and is hidden from readers.
+- `locale` names the nav landmark and the `…` button; `label` and `expandLabel` write them out instead.

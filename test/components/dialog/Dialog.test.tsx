@@ -219,4 +219,21 @@ describe('Dialog', () => {
       expect(html).not.toContain('translate');
     });
   });
+
+  describe('locale', () => {
+    it('names the × in the language it was given', async () => {
+      const screen = await render(<Dialog defaultOpen locale="ko" title="워크스페이스 삭제" />);
+
+      await expect.element(screen.getByRole('button', { name: '닫기' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Dialog defaultOpen locale="ko" closeLabel="Dismiss" title="워크스페이스 삭제" />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '닫기' }).query()).toBeNull();
+    });
+  });
 });

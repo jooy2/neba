@@ -35,6 +35,28 @@ import * as React from 'react';
  * language that has not caught up with it yet.
  */
 export interface NebaMessages {
+  /**
+   * The words more than one component needs.
+   *
+   * The one namespace here that is not a component, and it exists because five
+   * of them draw the same × and would otherwise each carry their own "Close" in
+   * eighteen languages. A reader meeting that button on a Dialog, a Drawer, a
+   * Popover and a Toast should hear the same word every time, which is easier to
+   * guarantee when there is only one of it.
+   */
+  action: {
+    /** The × on a Dialog, a Drawer, a Popover and a Toast. */
+    close: string;
+    /**
+     * And the one on an Alert, which is a different act: a dialog is closed
+     * because it has been answered, an alert is waved away.
+     */
+    dismiss: string;
+    /** The × that empties a Combobox. */
+    clear: string;
+    /** The × on a Chip. */
+    remove: string;
+  };
   /** TextLink. */
   link: {
     /**
@@ -104,6 +126,11 @@ export interface NebaMessages {
     range: string;
     /** How many rows are chosen. `{count}` is replaced the same way. */
     selected: string;
+    /**
+     * What a table with no rows in it says. Shared with Table, which has the
+     * same nothing to report and no chrome of its own to say it with.
+     */
+    empty: string;
   };
   /**
    * ColorPicker.
@@ -154,6 +181,70 @@ export interface NebaMessages {
     /** And what it is called before anything has been chosen. */
     empty: string;
   };
+  /**
+   * NumberField.
+   *
+   * Two buttons with an arrow on each and nothing else, which is the same case
+   * the ColorPicker's rails are.
+   */
+  number: {
+    /** The stepper that goes up. */
+    increase: string;
+    /** And the one that goes down. */
+    decrease: string;
+  };
+  /**
+   * Pagination.
+   *
+   * Every string here names a control that is a number or an arrow, so without
+   * them the row reads out as a list of digits with no idea what they page
+   * through.
+   */
+  pagination: {
+    /** Names the `<nav>` landmark. */
+    label: string;
+    /** One page button. `{page}` is replaced with the number. */
+    page: string;
+    /**
+     * Where the reader is, read out rather than drawn. `{page}` and `{total}`
+     * are both replaced — one sentence rather than two fragments, because a
+     * count of pages and the page you are on go in opposite orders depending on
+     * the language.
+     */
+    status: string;
+    previous: string;
+    next: string;
+    first: string;
+    last: string;
+  };
+  /** Carousel. */
+  carousel: {
+    /** Names the region, beside the `carousel` roledescription. */
+    label: string;
+    /** One slide. `{index}` and `{total}` are replaced with the numbers. */
+    slide: string;
+    previous: string;
+    next: string;
+  };
+  /** Breadcrumb. */
+  breadcrumb: {
+    /** Names the `<nav>` landmark. */
+    label: string;
+    /** The `…` that puts the folded middle of the trail back. */
+    expand: string;
+  };
+  /** Combobox. */
+  combobox: {
+    /** The line where the list would be, when nothing matched what was typed. */
+    empty: string;
+    /** The × on one chosen entry. `{label}` is replaced with its own label. */
+    remove: string;
+  };
+  /** Overlay. */
+  overlay: {
+    /** Names the sheet that covers whatever it was wrapped around. */
+    label: string;
+  };
 }
 
 /** A translation may fill in as much or as little of the table as it has. */
@@ -167,6 +258,12 @@ type PartialMessages = {
  * rather than an empty box.
  */
 const base: NebaMessages = {
+  action: {
+    close: 'Close',
+    dismiss: 'Dismiss',
+    clear: 'Clear',
+    remove: 'Remove'
+  },
   link: {
     newTab: '(opens in a new tab)'
   },
@@ -190,7 +287,8 @@ const base: NebaMessages = {
     selectRow: 'Select row',
     rowsPerPage: 'Rows per page',
     range: '{start}–{end} of {total}',
-    selected: '{count} selected'
+    selected: '{count} selected',
+    empty: 'No data'
   },
   color: {
     area: 'Saturation and brightness',
@@ -205,6 +303,36 @@ const base: NebaMessages = {
     label: 'Rating',
     value: '{value} out of {max}',
     empty: 'No rating'
+  },
+  number: {
+    increase: 'Increase',
+    decrease: 'Decrease'
+  },
+  pagination: {
+    label: 'Pagination',
+    page: 'Page {page}',
+    status: 'Page {page} of {total}',
+    previous: 'Previous page',
+    next: 'Next page',
+    first: 'First page',
+    last: 'Last page'
+  },
+  carousel: {
+    label: 'Carousel',
+    slide: 'Slide {index} of {total}',
+    previous: 'Previous slide',
+    next: 'Next slide'
+  },
+  breadcrumb: {
+    label: 'Breadcrumb',
+    expand: 'Show hidden steps'
+  },
+  combobox: {
+    empty: 'No matches',
+    remove: 'Remove {label}'
+  },
+  overlay: {
+    label: 'Overlay'
   }
 };
 
@@ -218,6 +346,12 @@ const base: NebaMessages = {
  */
 const translations: Record<string, PartialMessages> = {
   ko: {
+    action: {
+      close: '닫기',
+      dismiss: '알림 닫기',
+      clear: '지우기',
+      remove: '삭제'
+    },
     link: { newTab: '(새 창에서 열림)' },
     spoiler: {
       reveal: '내용 보기',
@@ -239,7 +373,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: '행 선택',
       rowsPerPage: '페이지당 행 수',
       range: '전체 {total}개 중 {start}–{end}',
-      selected: '{count}개 선택됨'
+      selected: '{count}개 선택됨',
+      empty: '데이터 없음'
     },
     color: {
       area: '채도와 명도',
@@ -254,9 +389,45 @@ const translations: Record<string, PartialMessages> = {
       label: '별점',
       value: '{max}점 만점에 {value}점',
       empty: '별점 없음'
+    },
+    number: {
+      increase: '값 늘리기',
+      decrease: '값 줄이기'
+    },
+    pagination: {
+      label: '페이지 매기기',
+      page: '{page}페이지',
+      status: '전체 {total}페이지 중 {page}페이지',
+      previous: '이전 페이지',
+      next: '다음 페이지',
+      first: '첫 페이지',
+      last: '마지막 페이지'
+    },
+    carousel: {
+      label: '캐러셀',
+      slide: '전체 {total}장 중 {index}장',
+      previous: '이전 슬라이드',
+      next: '다음 슬라이드'
+    },
+    breadcrumb: {
+      label: '탐색 경로',
+      expand: '숨겨진 단계 보기'
+    },
+    combobox: {
+      empty: '일치하는 항목 없음',
+      remove: '{label} 삭제'
+    },
+    overlay: {
+      label: '오버레이'
     }
   },
   ja: {
+    action: {
+      close: '閉じる',
+      dismiss: '閉じる',
+      clear: 'クリア',
+      remove: '削除'
+    },
     link: { newTab: '(新しいタブで開きます)' },
     spoiler: {
       reveal: '表示する',
@@ -278,7 +449,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: '行を選択',
       rowsPerPage: '1 ページの行数',
       range: '{total} 件中 {start}–{end} 件',
-      selected: '{count} 件を選択中'
+      selected: '{count} 件を選択中',
+      empty: 'データがありません'
     },
     color: {
       area: '彩度と明度',
@@ -293,9 +465,45 @@ const translations: Record<string, PartialMessages> = {
       label: '評価',
       value: '{max} 段階中 {value}',
       empty: '評価なし'
+    },
+    number: {
+      increase: '増やす',
+      decrease: '減らす'
+    },
+    pagination: {
+      label: 'ページ送り',
+      page: '{page} ページ',
+      status: '{total} ページ中 {page} ページ',
+      previous: '前のページ',
+      next: '次のページ',
+      first: '最初のページ',
+      last: '最後のページ'
+    },
+    carousel: {
+      label: 'カルーセル',
+      slide: '{total} 枚中 {index} 枚目',
+      previous: '前のスライド',
+      next: '次のスライド'
+    },
+    breadcrumb: {
+      label: 'パンくずリスト',
+      expand: '省略された階層を表示'
+    },
+    combobox: {
+      empty: '一致する項目がありません',
+      remove: '{label} を削除'
+    },
+    overlay: {
+      label: 'オーバーレイ'
     }
   },
   'zh-hans': {
+    action: {
+      close: '关闭',
+      dismiss: '关闭',
+      clear: '清除',
+      remove: '移除'
+    },
     link: { newTab: '(在新标签页中打开)' },
     spoiler: {
       reveal: '显示内容',
@@ -317,7 +525,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: '选择此行',
       rowsPerPage: '每页行数',
       range: '第 {start}–{end} 行，共 {total} 行',
-      selected: '已选择 {count} 行'
+      selected: '已选择 {count} 行',
+      empty: '暂无数据'
     },
     color: {
       area: '饱和度和明度',
@@ -332,9 +541,45 @@ const translations: Record<string, PartialMessages> = {
       label: '评分',
       value: '{max} 分中的 {value} 分',
       empty: '未评分'
+    },
+    number: {
+      increase: '增加',
+      decrease: '减少'
+    },
+    pagination: {
+      label: '分页',
+      page: '第 {page} 页',
+      status: '第 {page} 页，共 {total} 页',
+      previous: '上一页',
+      next: '下一页',
+      first: '第一页',
+      last: '最后一页'
+    },
+    carousel: {
+      label: '轮播',
+      slide: '第 {index} 张，共 {total} 张',
+      previous: '上一张',
+      next: '下一张'
+    },
+    breadcrumb: {
+      label: '面包屑导航',
+      expand: '显示隐藏的层级'
+    },
+    combobox: {
+      empty: '无匹配项',
+      remove: '移除 {label}'
+    },
+    overlay: {
+      label: '遮罩层'
     }
   },
   'zh-hant': {
+    action: {
+      close: '關閉',
+      dismiss: '關閉',
+      clear: '清除',
+      remove: '移除'
+    },
     link: { newTab: '(在新分頁中開啟)' },
     spoiler: {
       reveal: '顯示內容',
@@ -356,7 +601,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: '選擇此列',
       rowsPerPage: '每頁列數',
       range: '第 {start}–{end} 列，共 {total} 列',
-      selected: '已選擇 {count} 列'
+      selected: '已選擇 {count} 列',
+      empty: '沒有資料'
     },
     color: {
       area: '飽和度與明度',
@@ -371,9 +617,45 @@ const translations: Record<string, PartialMessages> = {
       label: '評分',
       value: '{max} 分中的 {value} 分',
       empty: '未評分'
+    },
+    number: {
+      increase: '增加',
+      decrease: '減少'
+    },
+    pagination: {
+      label: '分頁',
+      page: '第 {page} 頁',
+      status: '第 {page} 頁，共 {total} 頁',
+      previous: '上一頁',
+      next: '下一頁',
+      first: '第一頁',
+      last: '最後一頁'
+    },
+    carousel: {
+      label: '輪播',
+      slide: '第 {index} 張，共 {total} 張',
+      previous: '上一張',
+      next: '下一張'
+    },
+    breadcrumb: {
+      label: '麵包屑導覽',
+      expand: '顯示隱藏的層級'
+    },
+    combobox: {
+      empty: '沒有相符的項目',
+      remove: '移除 {label}'
+    },
+    overlay: {
+      label: '遮罩層'
     }
   },
   es: {
+    action: {
+      close: 'Cerrar',
+      dismiss: 'Descartar',
+      clear: 'Borrar',
+      remove: 'Quitar'
+    },
     link: { newTab: '(se abre en una pestaña nueva)' },
     spoiler: {
       reveal: 'Mostrar',
@@ -395,7 +677,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Seleccionar fila',
       rowsPerPage: 'Filas por página',
       range: '{start}–{end} de {total}',
-      selected: '{count} seleccionadas'
+      selected: '{count} seleccionadas',
+      empty: 'Sin datos'
     },
     color: {
       area: 'Saturación y brillo',
@@ -410,9 +693,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Valoración',
       value: '{value} de {max}',
       empty: 'Sin valoración'
+    },
+    number: {
+      increase: 'Aumentar',
+      decrease: 'Disminuir'
+    },
+    pagination: {
+      label: 'Paginación',
+      page: 'Página {page}',
+      status: 'Página {page} de {total}',
+      previous: 'Página anterior',
+      next: 'Página siguiente',
+      first: 'Primera página',
+      last: 'Última página'
+    },
+    carousel: {
+      label: 'Carrusel',
+      slide: 'Diapositiva {index} de {total}',
+      previous: 'Diapositiva anterior',
+      next: 'Diapositiva siguiente'
+    },
+    breadcrumb: {
+      label: 'Ruta de navegación',
+      expand: 'Mostrar los pasos ocultos'
+    },
+    combobox: {
+      empty: 'Sin coincidencias',
+      remove: 'Quitar {label}'
+    },
+    overlay: {
+      label: 'Superposición'
     }
   },
   pt: {
+    action: {
+      close: 'Fechar',
+      dismiss: 'Dispensar',
+      clear: 'Limpar',
+      remove: 'Remover'
+    },
     link: { newTab: '(abre em uma nova aba)' },
     spoiler: {
       reveal: 'Mostrar',
@@ -434,7 +753,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Selecionar linha',
       rowsPerPage: 'Linhas por página',
       range: '{start}–{end} de {total}',
-      selected: '{count} selecionadas'
+      selected: '{count} selecionadas',
+      empty: 'Sem dados'
     },
     color: {
       area: 'Saturação e brilho',
@@ -449,9 +769,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Avaliação',
       value: '{value} de {max}',
       empty: 'Sem avaliação'
+    },
+    number: {
+      increase: 'Aumentar',
+      decrease: 'Diminuir'
+    },
+    pagination: {
+      label: 'Paginação',
+      page: 'Página {page}',
+      status: 'Página {page} de {total}',
+      previous: 'Página anterior',
+      next: 'Próxima página',
+      first: 'Primeira página',
+      last: 'Última página'
+    },
+    carousel: {
+      label: 'Carrossel',
+      slide: 'Slide {index} de {total}',
+      previous: 'Slide anterior',
+      next: 'Próximo slide'
+    },
+    breadcrumb: {
+      label: 'Trilha de navegação',
+      expand: 'Mostrar as etapas ocultas'
+    },
+    combobox: {
+      empty: 'Nenhuma correspondência',
+      remove: 'Remover {label}'
+    },
+    overlay: {
+      label: 'Sobreposição'
     }
   },
   fr: {
+    action: {
+      close: 'Fermer',
+      dismiss: 'Ignorer',
+      clear: 'Effacer',
+      remove: 'Supprimer'
+    },
     link: { newTab: '(s’ouvre dans un nouvel onglet)' },
     spoiler: {
       reveal: 'Afficher',
@@ -473,7 +829,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Sélectionner la ligne',
       rowsPerPage: 'Lignes par page',
       range: '{start}–{end} sur {total}',
-      selected: '{count} sélectionnées'
+      selected: '{count} sélectionnées',
+      empty: 'Aucune donnée'
     },
     color: {
       area: 'Saturation et luminosité',
@@ -488,9 +845,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Note',
       value: '{value} sur {max}',
       empty: 'Aucune note'
+    },
+    number: {
+      increase: 'Augmenter',
+      decrease: 'Diminuer'
+    },
+    pagination: {
+      label: 'Pagination',
+      page: 'Page {page}',
+      status: 'Page {page} sur {total}',
+      previous: 'Page précédente',
+      next: 'Page suivante',
+      first: 'Première page',
+      last: 'Dernière page'
+    },
+    carousel: {
+      label: 'Carrousel',
+      slide: 'Diapositive {index} sur {total}',
+      previous: 'Diapositive précédente',
+      next: 'Diapositive suivante'
+    },
+    breadcrumb: {
+      label: 'Fil d’Ariane',
+      expand: 'Afficher les étapes masquées'
+    },
+    combobox: {
+      empty: 'Aucun résultat',
+      remove: 'Supprimer {label}'
+    },
+    overlay: {
+      label: 'Superposition'
     }
   },
   de: {
+    action: {
+      close: 'Schließen',
+      dismiss: 'Ausblenden',
+      clear: 'Löschen',
+      remove: 'Entfernen'
+    },
     link: { newTab: '(wird in einem neuen Tab geöffnet)' },
     spoiler: {
       reveal: 'Anzeigen',
@@ -512,7 +905,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Zeile auswählen',
       rowsPerPage: 'Zeilen pro Seite',
       range: '{start}–{end} von {total}',
-      selected: '{count} ausgewählt'
+      selected: '{count} ausgewählt',
+      empty: 'Keine Daten'
     },
     color: {
       area: 'Sättigung und Helligkeit',
@@ -527,9 +921,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Bewertung',
       value: '{value} von {max}',
       empty: 'Keine Bewertung'
+    },
+    number: {
+      increase: 'Erhöhen',
+      decrease: 'Verringern'
+    },
+    pagination: {
+      label: 'Seitennavigation',
+      page: 'Seite {page}',
+      status: 'Seite {page} von {total}',
+      previous: 'Vorherige Seite',
+      next: 'Nächste Seite',
+      first: 'Erste Seite',
+      last: 'Letzte Seite'
+    },
+    carousel: {
+      label: 'Karussell',
+      slide: 'Folie {index} von {total}',
+      previous: 'Vorherige Folie',
+      next: 'Nächste Folie'
+    },
+    breadcrumb: {
+      label: 'Breadcrumb-Navigation',
+      expand: 'Ausgeblendete Schritte anzeigen'
+    },
+    combobox: {
+      empty: 'Keine Treffer',
+      remove: '{label} entfernen'
+    },
+    overlay: {
+      label: 'Overlay'
     }
   },
   it: {
+    action: {
+      close: 'Chiudi',
+      dismiss: 'Ignora',
+      clear: 'Cancella',
+      remove: 'Rimuovi'
+    },
     link: { newTab: '(si apre in una nuova scheda)' },
     spoiler: {
       reveal: 'Mostra',
@@ -551,7 +981,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Seleziona riga',
       rowsPerPage: 'Righe per pagina',
       range: '{start}–{end} di {total}',
-      selected: '{count} selezionate'
+      selected: '{count} selezionate',
+      empty: 'Nessun dato'
     },
     color: {
       area: 'Saturazione e luminosità',
@@ -566,9 +997,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Valutazione',
       value: '{value} su {max}',
       empty: 'Nessuna valutazione'
+    },
+    number: {
+      increase: 'Aumenta',
+      decrease: 'Diminuisci'
+    },
+    pagination: {
+      label: 'Impaginazione',
+      page: 'Pagina {page}',
+      status: 'Pagina {page} di {total}',
+      previous: 'Pagina precedente',
+      next: 'Pagina successiva',
+      first: 'Prima pagina',
+      last: 'Ultima pagina'
+    },
+    carousel: {
+      label: 'Carosello',
+      slide: 'Diapositiva {index} di {total}',
+      previous: 'Diapositiva precedente',
+      next: 'Diapositiva successiva'
+    },
+    breadcrumb: {
+      label: 'Percorso di navigazione',
+      expand: 'Mostra i passaggi nascosti'
+    },
+    combobox: {
+      empty: 'Nessun risultato',
+      remove: 'Rimuovi {label}'
+    },
+    overlay: {
+      label: 'Sovrapposizione'
     }
   },
   nl: {
+    action: {
+      close: 'Sluiten',
+      dismiss: 'Negeren',
+      clear: 'Wissen',
+      remove: 'Verwijderen'
+    },
     link: { newTab: '(opent in een nieuw tabblad)' },
     spoiler: {
       reveal: 'Tonen',
@@ -590,7 +1057,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Rij selecteren',
       rowsPerPage: 'Rijen per pagina',
       range: '{start}–{end} van {total}',
-      selected: '{count} geselecteerd'
+      selected: '{count} geselecteerd',
+      empty: 'Geen gegevens'
     },
     color: {
       area: 'Verzadiging en helderheid',
@@ -605,9 +1073,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Beoordeling',
       value: '{value} van {max}',
       empty: 'Geen beoordeling'
+    },
+    number: {
+      increase: 'Verhogen',
+      decrease: 'Verlagen'
+    },
+    pagination: {
+      label: 'Paginering',
+      page: 'Pagina {page}',
+      status: 'Pagina {page} van {total}',
+      previous: 'Vorige pagina',
+      next: 'Volgende pagina',
+      first: 'Eerste pagina',
+      last: 'Laatste pagina'
+    },
+    carousel: {
+      label: 'Carrousel',
+      slide: 'Dia {index} van {total}',
+      previous: 'Vorige dia',
+      next: 'Volgende dia'
+    },
+    breadcrumb: {
+      label: 'Kruimelpad',
+      expand: 'Verborgen stappen tonen'
+    },
+    combobox: {
+      empty: 'Geen resultaten',
+      remove: '{label} verwijderen'
+    },
+    overlay: {
+      label: 'Overlay'
     }
   },
   pl: {
+    action: {
+      close: 'Zamknij',
+      dismiss: 'Odrzuć',
+      clear: 'Wyczyść',
+      remove: 'Usuń'
+    },
     link: { newTab: '(otwiera się w nowej karcie)' },
     spoiler: {
       reveal: 'Pokaż',
@@ -629,7 +1133,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Zaznacz wiersz',
       rowsPerPage: 'Wierszy na stronę',
       range: '{start}–{end} z {total}',
-      selected: 'Zaznaczono: {count}'
+      selected: 'Zaznaczono: {count}',
+      empty: 'Brak danych'
     },
     color: {
       area: 'Nasycenie i jasność',
@@ -644,9 +1149,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Ocena',
       value: '{value} z {max}',
       empty: 'Brak oceny'
+    },
+    number: {
+      increase: 'Zwiększ',
+      decrease: 'Zmniejsz'
+    },
+    pagination: {
+      label: 'Paginacja',
+      page: 'Strona {page}',
+      status: 'Strona {page} z {total}',
+      previous: 'Poprzednia strona',
+      next: 'Następna strona',
+      first: 'Pierwsza strona',
+      last: 'Ostatnia strona'
+    },
+    carousel: {
+      label: 'Karuzela',
+      slide: 'Slajd {index} z {total}',
+      previous: 'Poprzedni slajd',
+      next: 'Następny slajd'
+    },
+    breadcrumb: {
+      label: 'Ścieżka nawigacji',
+      expand: 'Pokaż ukryte kroki'
+    },
+    combobox: {
+      empty: 'Brak wyników',
+      remove: 'Usuń {label}'
+    },
+    overlay: {
+      label: 'Nakładka'
     }
   },
   ru: {
+    action: {
+      close: 'Закрыть',
+      dismiss: 'Скрыть',
+      clear: 'Очистить',
+      remove: 'Удалить'
+    },
     link: { newTab: '(откроется в новой вкладке)' },
     spoiler: {
       reveal: 'Показать',
@@ -668,7 +1209,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Выбрать строку',
       rowsPerPage: 'Строк на странице',
       range: '{start}–{end} из {total}',
-      selected: 'Выбрано: {count}'
+      selected: 'Выбрано: {count}',
+      empty: 'Нет данных'
     },
     color: {
       area: 'Насыщенность и яркость',
@@ -683,9 +1225,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Оценка',
       value: '{value} из {max}',
       empty: 'Без оценки'
+    },
+    number: {
+      increase: 'Увеличить',
+      decrease: 'Уменьшить'
+    },
+    pagination: {
+      label: 'Постраничная навигация',
+      page: 'Страница {page}',
+      status: 'Страница {page} из {total}',
+      previous: 'Предыдущая страница',
+      next: 'Следующая страница',
+      first: 'Первая страница',
+      last: 'Последняя страница'
+    },
+    carousel: {
+      label: 'Карусель',
+      slide: 'Слайд {index} из {total}',
+      previous: 'Предыдущий слайд',
+      next: 'Следующий слайд'
+    },
+    breadcrumb: {
+      label: 'Навигационная цепочка',
+      expand: 'Показать скрытые шаги'
+    },
+    combobox: {
+      empty: 'Совпадений нет',
+      remove: 'Удалить {label}'
+    },
+    overlay: {
+      label: 'Наложение'
     }
   },
   tr: {
+    action: {
+      close: 'Kapat',
+      dismiss: 'Yoksay',
+      clear: 'Temizle',
+      remove: 'Kaldır'
+    },
     link: { newTab: '(yeni sekmede açılır)' },
     spoiler: {
       reveal: 'Göster',
@@ -707,7 +1285,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Satırı seç',
       rowsPerPage: 'Sayfa başına satır',
       range: '{total} kayıttan {start}–{end}',
-      selected: '{count} seçildi'
+      selected: '{count} seçildi',
+      empty: 'Veri yok'
     },
     color: {
       area: 'Doygunluk ve parlaklık',
@@ -722,9 +1301,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Değerlendirme',
       value: '{max} üzerinden {value}',
       empty: 'Değerlendirilmedi'
+    },
+    number: {
+      increase: 'Artır',
+      decrease: 'Azalt'
+    },
+    pagination: {
+      label: 'Sayfalama',
+      page: '{page}. sayfa',
+      status: '{total} sayfadan {page}. sayfa',
+      previous: 'Önceki sayfa',
+      next: 'Sonraki sayfa',
+      first: 'İlk sayfa',
+      last: 'Son sayfa'
+    },
+    carousel: {
+      label: 'Karusel',
+      slide: '{total} slayttan {index}. slayt',
+      previous: 'Önceki slayt',
+      next: 'Sonraki slayt'
+    },
+    breadcrumb: {
+      label: 'Gezinti yolu',
+      expand: 'Gizli adımları göster'
+    },
+    combobox: {
+      empty: 'Eşleşme yok',
+      remove: '{label} kaldır'
+    },
+    overlay: {
+      label: 'Kaplama'
     }
   },
   ar: {
+    action: {
+      close: 'إغلاق',
+      dismiss: 'تجاهل',
+      clear: 'مسح',
+      remove: 'إزالة'
+    },
     link: { newTab: '(يفتح في علامة تبويب جديدة)' },
     spoiler: {
       reveal: 'إظهار',
@@ -746,7 +1361,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'تحديد الصف',
       rowsPerPage: 'صفوف لكل صفحة',
       range: '{start}–{end} من {total}',
-      selected: 'تم تحديد {count}'
+      selected: 'تم تحديد {count}',
+      empty: 'لا توجد بيانات'
     },
     color: {
       area: 'التشبع والسطوع',
@@ -761,9 +1377,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'التقييم',
       value: '{value} من {max}',
       empty: 'بدون تقييم'
+    },
+    number: {
+      increase: 'زيادة',
+      decrease: 'إنقاص'
+    },
+    pagination: {
+      label: 'ترقيم الصفحات',
+      page: 'الصفحة {page}',
+      status: 'الصفحة {page} من {total}',
+      previous: 'الصفحة السابقة',
+      next: 'الصفحة التالية',
+      first: 'الصفحة الأولى',
+      last: 'الصفحة الأخيرة'
+    },
+    carousel: {
+      label: 'شريط عرض',
+      slide: 'الشريحة {index} من {total}',
+      previous: 'الشريحة السابقة',
+      next: 'الشريحة التالية'
+    },
+    breadcrumb: {
+      label: 'مسار التنقل',
+      expand: 'إظهار الخطوات المخفية'
+    },
+    combobox: {
+      empty: 'لا توجد نتائج مطابقة',
+      remove: 'إزالة {label}'
+    },
+    overlay: {
+      label: 'تراكب'
     }
   },
   hi: {
+    action: {
+      close: 'बंद करें',
+      dismiss: 'खारिज करें',
+      clear: 'साफ़ करें',
+      remove: 'हटाएँ'
+    },
     link: { newTab: '(नए टैब में खुलता है)' },
     spoiler: {
       reveal: 'दिखाएँ',
@@ -785,7 +1437,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'पंक्ति चुनें',
       rowsPerPage: 'प्रति पृष्ठ पंक्तियाँ',
       range: '{total} में से {start}–{end}',
-      selected: '{count} चुनी गईं'
+      selected: '{count} चुनी गईं',
+      empty: 'कोई डेटा नहीं'
     },
     color: {
       area: 'संतृप्ति और चमक',
@@ -800,9 +1453,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'रेटिंग',
       value: '{max} में से {value}',
       empty: 'कोई रेटिंग नहीं'
+    },
+    number: {
+      increase: 'बढ़ाएँ',
+      decrease: 'घटाएँ'
+    },
+    pagination: {
+      label: 'पृष्ठ क्रमांकन',
+      page: 'पृष्ठ {page}',
+      status: '{total} में से पृष्ठ {page}',
+      previous: 'पिछला पृष्ठ',
+      next: 'अगला पृष्ठ',
+      first: 'पहला पृष्ठ',
+      last: 'अंतिम पृष्ठ'
+    },
+    carousel: {
+      label: 'कैरोसेल',
+      slide: '{total} में से स्लाइड {index}',
+      previous: 'पिछली स्लाइड',
+      next: 'अगली स्लाइड'
+    },
+    breadcrumb: {
+      label: 'ब्रेडक्रंब',
+      expand: 'छिपे हुए चरण दिखाएँ'
+    },
+    combobox: {
+      empty: 'कोई मिलान नहीं',
+      remove: '{label} हटाएँ'
+    },
+    overlay: {
+      label: 'ओवरले'
     }
   },
   id: {
+    action: {
+      close: 'Tutup',
+      dismiss: 'Abaikan',
+      clear: 'Bersihkan',
+      remove: 'Hapus'
+    },
     link: { newTab: '(terbuka di tab baru)' },
     spoiler: {
       reveal: 'Tampilkan',
@@ -824,7 +1513,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Pilih baris',
       rowsPerPage: 'Baris per halaman',
       range: '{start}–{end} dari {total}',
-      selected: '{count} dipilih'
+      selected: '{count} dipilih',
+      empty: 'Tidak ada data'
     },
     color: {
       area: 'Saturasi dan kecerahan',
@@ -839,9 +1529,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Peringkat',
       value: '{value} dari {max}',
       empty: 'Belum ada peringkat'
+    },
+    number: {
+      increase: 'Tambah',
+      decrease: 'Kurangi'
+    },
+    pagination: {
+      label: 'Penomoran halaman',
+      page: 'Halaman {page}',
+      status: 'Halaman {page} dari {total}',
+      previous: 'Halaman sebelumnya',
+      next: 'Halaman berikutnya',
+      first: 'Halaman pertama',
+      last: 'Halaman terakhir'
+    },
+    carousel: {
+      label: 'Korsel',
+      slide: 'Slide {index} dari {total}',
+      previous: 'Slide sebelumnya',
+      next: 'Slide berikutnya'
+    },
+    breadcrumb: {
+      label: 'Remah roti',
+      expand: 'Tampilkan langkah tersembunyi'
+    },
+    combobox: {
+      empty: 'Tidak ada yang cocok',
+      remove: 'Hapus {label}'
+    },
+    overlay: {
+      label: 'Hamparan'
     }
   },
   vi: {
+    action: {
+      close: 'Đóng',
+      dismiss: 'Bỏ qua',
+      clear: 'Xóa',
+      remove: 'Gỡ bỏ'
+    },
     link: { newTab: '(mở trong tab mới)' },
     spoiler: {
       reveal: 'Hiện nội dung',
@@ -863,7 +1589,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'Chọn hàng',
       rowsPerPage: 'Số hàng mỗi trang',
       range: '{start}–{end} trên {total}',
-      selected: 'Đã chọn {count}'
+      selected: 'Đã chọn {count}',
+      empty: 'Không có dữ liệu'
     },
     color: {
       area: 'Độ bão hòa và độ sáng',
@@ -878,9 +1605,45 @@ const translations: Record<string, PartialMessages> = {
       label: 'Đánh giá',
       value: '{value} trên {max}',
       empty: 'Chưa đánh giá'
+    },
+    number: {
+      increase: 'Tăng',
+      decrease: 'Giảm'
+    },
+    pagination: {
+      label: 'Phân trang',
+      page: 'Trang {page}',
+      status: 'Trang {page} trên {total}',
+      previous: 'Trang trước',
+      next: 'Trang sau',
+      first: 'Trang đầu',
+      last: 'Trang cuối'
+    },
+    carousel: {
+      label: 'Băng chuyền',
+      slide: 'Trang chiếu {index} trên {total}',
+      previous: 'Trang chiếu trước',
+      next: 'Trang chiếu sau'
+    },
+    breadcrumb: {
+      label: 'Đường dẫn',
+      expand: 'Hiện các bước đã ẩn'
+    },
+    combobox: {
+      empty: 'Không có kết quả',
+      remove: 'Gỡ bỏ {label}'
+    },
+    overlay: {
+      label: 'Lớp phủ'
     }
   },
   th: {
+    action: {
+      close: 'ปิด',
+      dismiss: 'ปิดการแจ้งเตือน',
+      clear: 'ล้าง',
+      remove: 'นำออก'
+    },
     link: { newTab: '(เปิดในแท็บใหม่)' },
     spoiler: {
       reveal: 'แสดงเนื้อหา',
@@ -902,7 +1665,8 @@ const translations: Record<string, PartialMessages> = {
       selectRow: 'เลือกแถวนี้',
       rowsPerPage: 'จำนวนแถวต่อหน้า',
       range: '{start}–{end} จาก {total}',
-      selected: 'เลือกแล้ว {count} รายการ'
+      selected: 'เลือกแล้ว {count} รายการ',
+      empty: 'ไม่มีข้อมูล'
     },
     color: {
       area: 'ความอิ่มตัวและความสว่าง',
@@ -917,6 +1681,36 @@ const translations: Record<string, PartialMessages> = {
       label: 'คะแนน',
       value: '{value} จาก {max}',
       empty: 'ยังไม่มีคะแนน'
+    },
+    number: {
+      increase: 'เพิ่ม',
+      decrease: 'ลด'
+    },
+    pagination: {
+      label: 'การแบ่งหน้า',
+      page: 'หน้า {page}',
+      status: 'หน้า {page} จาก {total}',
+      previous: 'หน้าก่อนหน้า',
+      next: 'หน้าถัดไป',
+      first: 'หน้าแรก',
+      last: 'หน้าสุดท้าย'
+    },
+    carousel: {
+      label: 'ภาพเลื่อน',
+      slide: 'สไลด์ {index} จาก {total}',
+      previous: 'สไลด์ก่อนหน้า',
+      next: 'สไลด์ถัดไป'
+    },
+    breadcrumb: {
+      label: 'เส้นทางนำทาง',
+      expand: 'แสดงขั้นตอนที่ซ่อนอยู่'
+    },
+    combobox: {
+      empty: 'ไม่พบรายการที่ตรงกัน',
+      remove: 'นำ {label} ออก'
+    },
+    overlay: {
+      label: 'เลเยอร์ซ้อน'
     }
   }
 };
@@ -1000,13 +1794,20 @@ export function resolveMessages(locale?: string): NebaMessages {
 
   const messages: NebaMessages = match
     ? {
+        action: { ...base.action, ...match.action },
         link: { ...base.link, ...match.link },
         spoiler: { ...base.spoiler, ...match.spoiler },
         chat: { ...base.chat, ...match.chat },
         empty: { ...base.empty, ...match.empty },
         table: { ...base.table, ...match.table },
         color: { ...base.color, ...match.color },
-        rating: { ...base.rating, ...match.rating }
+        rating: { ...base.rating, ...match.rating },
+        number: { ...base.number, ...match.number },
+        pagination: { ...base.pagination, ...match.pagination },
+        carousel: { ...base.carousel, ...match.carousel },
+        breadcrumb: { ...base.breadcrumb, ...match.breadcrumb },
+        combobox: { ...base.combobox, ...match.combobox },
+        overlay: { ...base.overlay, ...match.overlay }
       }
     : base;
 

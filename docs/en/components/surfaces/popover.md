@@ -73,3 +73,4 @@ Pass `open` with `onOpenChange` and the caller owns the state, so anything else 
 - Focus moves into the popup when it opens and returns to the trigger when it closes.
 - Escape closes it, and so does a click outside. `dismissible={false}` cancels both — a `PopoverClose` still gets through, so it is never a trap.
 - `modal` is `false` by default, so the page behind stays scrollable and usable. Use `'trap-focus'` for a popup that must be answered before anything else is touched.
+- `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.

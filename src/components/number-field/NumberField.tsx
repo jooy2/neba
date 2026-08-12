@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NumberField as BaseUINumberField } from '@base-ui/react/number-field';
 import { Field } from '@base-ui/react/field';
+import { useMessages } from '../../internal/i18n';
 import { MinusIcon, PlusIcon } from '../../internal/icons';
 import {
   controlHeightClasses,
@@ -79,11 +80,17 @@ export interface NumberFieldProps extends NebaStyleProps {
    * reports `1240`.
    */
   format?: Intl.NumberFormatOptions;
-  /** Which locale the number is written and parsed in. Defaults to the runtime's. */
+  /**
+   * Which locale the number is written and parsed in. Defaults to the runtime's.
+   *
+   * A plain BCP 47 string also names the two steppers, since a field that reads
+   * its digits in one language should not read its buttons in another.
+   * `incrementLabel` and `decrementLabel` write those words out instead.
+   */
   locale?: Intl.LocalesArgument;
   /** Where the steppers sit, or `none` for a field without them. @default 'end' */
   steppers?: NumberFieldSteppers;
-  /** Accessible name of the increment button. */
+  /** Accessible name of the increment button. Defaults to the `locale`'s word. */
   incrementLabel?: string;
   /** Accessible name of the decrement button. */
   decrementLabel?: string;
@@ -184,8 +191,8 @@ export function NumberField({
   format,
   locale,
   steppers = 'end',
-  incrementLabel = 'Increase',
-  decrementLabel = 'Decrease',
+  incrementLabel,
+  decrementLabel,
   label,
   description,
   error,
@@ -202,6 +209,9 @@ export function NumberField({
   className,
   style
 }: NumberFieldProps) {
+  // `Intl` takes more shapes than a message tag does; only a plain string names
+  // anything here, and anything else falls back to English.
+  const messages = useMessages(typeof locale === 'string' ? locale : undefined);
   const hasError = hasContent(error);
   const isInvalid = invalid ?? hasError;
   // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
@@ -219,13 +229,19 @@ export function NumberField({
   };
 
   const decrement = (
-    <BaseUINumberField.Decrement aria-label={decrementLabel} className={stepperClasses}>
+    <BaseUINumberField.Decrement
+      aria-label={decrementLabel ?? messages.number.decrease}
+      className={stepperClasses}
+    >
       <MinusIcon />
     </BaseUINumberField.Decrement>
   );
 
   const increment = (
-    <BaseUINumberField.Increment aria-label={incrementLabel} className={stepperClasses}>
+    <BaseUINumberField.Increment
+      aria-label={incrementLabel ?? messages.number.increase}
+      className={stepperClasses}
+    >
       <PlusIcon />
     </BaseUINumberField.Increment>
   );

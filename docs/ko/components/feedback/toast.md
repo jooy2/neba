@@ -84,3 +84,4 @@ toast.update(id, { color: 'success', title: '복구됨' });
 - `priority: 'high'`는 screen reader가 읽던 내용을 끊고, 기본값은 끊기지 않고 기다립니다.
 - 타이머는 hover 중이거나 창이 비활성일 때 멈춥니다. F6으로 스택에 focus를 옮길 수 있습니다.
 - 닫기 버튼은 스택이 hover되거나 focus를 받기 전까지 접근성 트리에서 빠져 있어, Toast가 "메시지 + 버튼"이 아니라 하나의 메시지로 읽힙니다.
+- 모든 toast의 × 이름은 provider의 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

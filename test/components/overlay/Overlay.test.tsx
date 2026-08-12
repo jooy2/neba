@@ -151,4 +151,26 @@ describe('Overlay', () => {
       expect(popup.style.getPropertyValue('--n-ring')).toBe('var(--neba-danger-ring)');
     });
   });
+
+  describe('locale', () => {
+    it('names the sheet in the language it was given', async () => {
+      const screen = await render(
+        <Overlay open locale="ko">
+          불러오는 중
+        </Overlay>
+      );
+
+      await expect.element(screen.getByRole('dialog', { name: '오버레이' })).toBeInTheDocument();
+    });
+
+    it('takes a name of its own over the locale', async () => {
+      const screen = await render(
+        <Overlay open locale="ko" label="Loading">
+          불러오는 중
+        </Overlay>
+      );
+
+      await expect.element(screen.getByRole('dialog', { name: 'Loading' })).toBeInTheDocument();
+    });
+  });
 });

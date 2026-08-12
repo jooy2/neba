@@ -83,3 +83,4 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 - 현재 단계에는 `aria-current="page"`가 붙고, 한 트레일에서 이것을 가지는 단계는 언제나 하나뿐입니다.
 - 구분자는 `aria-hidden`이므로 screen reader는 단계만 읽고 사이의 기호는 읽지 않습니다.
 - `…`는 `expandLabel`이 이름을 주는 실제 버튼입니다. `expandable={false}`이면 표시일 뿐이며 reader에게는 감춰집니다.
+- nav 이름과 `…` 버튼의 이름을 `locale`이 정합니다. `label`과 `expandLabel`로 직접 쓸 수도 있습니다.

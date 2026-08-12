@@ -414,4 +414,33 @@ describe('Pagination', () => {
       expect(screen.getByRole('navigation').element().outerHTML).not.toContain('translate');
     });
   });
+
+  describe('locale', () => {
+    it('names the row and its steppers in the language it was given', async () => {
+      const screen = await render(<Pagination count={5} page={2} locale="ko" />);
+
+      await expect
+        .element(screen.getByRole('navigation', { name: '페이지 매기기' }))
+        .toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '이전 페이지' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '2페이지' })).toBeInTheDocument();
+    });
+
+    // The one string here that is a whole sentence, and the reason it is one:
+    // "Page 2 of 5" puts its two numbers the other way round in Korean.
+    it('reads where the reader is as one sentence', async () => {
+      const screen = await render(<Pagination count={5} page={2} locale="ko" />);
+
+      await expect.element(screen.getByText('전체 5페이지 중 2페이지')).toBeInTheDocument();
+    });
+
+    it('takes words of its own over the locale', async () => {
+      const screen = await render(
+        <Pagination count={5} page={2} locale="ko" label="Pages" previousLabel="Back" />
+      );
+
+      await expect.element(screen.getByRole('navigation', { name: 'Pages' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+    });
+  });
 });

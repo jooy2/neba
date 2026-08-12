@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon } from '../../internal/icons';
 import {
   hasContent,
@@ -90,7 +91,15 @@ export interface DrawerProps extends Pick<NebaStyleProps, 'size' | 'color' | 'de
    * one-way door.
    */
   showClose?: boolean;
-  /** Accessible name of the × button. */
+  /**
+   * Which language the × is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `closeLabel` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of the × button. Defaults to the `locale`'s word for it. */
   closeLabel?: string;
   /**
    * How far the panel reaches in from its edge: a **width** for `left` and
@@ -293,7 +302,8 @@ export function Drawer({
   actions,
   dividers = false,
   showClose,
-  closeLabel = 'Close',
+  locale,
+  closeLabel,
   extent,
   rounded = true,
   modal = true,
@@ -302,6 +312,7 @@ export function Drawer({
   style,
   children
 }: DrawerProps) {
+  const messages = useMessages(locale);
   const overlay = mode === 'overlay';
   const along = side === 'left' || side === 'right';
   const showCloseButton = showClose ?? overlay;
@@ -361,13 +372,16 @@ export function Drawer({
 
           {showCloseButton ? (
             overlay ? (
-              <BaseUIDialog.Close aria-label={closeLabel} className={closeButtonClasses}>
+              <BaseUIDialog.Close
+                aria-label={closeLabel ?? messages.action.close}
+                className={closeButtonClasses}
+              >
                 <CloseIcon />
               </BaseUIDialog.Close>
             ) : (
               <button
                 type="button"
-                aria-label={closeLabel}
+                aria-label={closeLabel ?? messages.action.close}
                 className={closeButtonClasses}
                 onClick={() => onOpenChange?.(false)}
               >

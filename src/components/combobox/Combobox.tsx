@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Combobox as BaseUICombobox } from '@base-ui/react/combobox';
 import { Field } from '@base-ui/react/field';
 import { Chip } from '../chip/Chip';
+import { fillMessage, useMessages } from '../../internal/i18n';
 import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons';
 import {
   chipRemoveClasses,
@@ -93,7 +94,18 @@ export interface ComboboxProps<
    * @default false
    */
   clearable?: boolean;
-  /** Shown in the popup when nothing matches and no value may be added. */
+  /**
+   * Which language the combobox writes its own words in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * The strings below write the words out instead; this is for the far more
+   * common case where the page already knows its own language.
+   */
+  locale?: string;
+  /**
+   * Shown in the popup when nothing matches and no value may be added. Defaults
+   * to the `locale`'s wording.
+   */
   emptyMessage?: React.ReactNode;
   /** The most rows the list will show at once. `-1` is all of them. @default -1 */
   limit?: number;
@@ -130,9 +142,12 @@ export interface ComboboxProps<
   /** Whether the popup starts open. */
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  /** Accessible name of the clear button. */
+  /** Accessible name of the clear button. Defaults to the `locale`'s word. */
   clearLabel?: string;
-  /** Accessible name of a chip's remove button. Receives the chip's label. */
+  /**
+   * Accessible name of a chip's remove button. Receives the chip's label, and
+   * defaults to the `locale`'s wording.
+   */
   removeLabel?: (label: string) => string;
   /** A ref to the text input the user types into. */
   inputRef?: React.Ref<HTMLInputElement>;
@@ -262,7 +277,8 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   allowCustom = true,
   customLabel,
   clearable = false,
-  emptyMessage = 'No matches',
+  locale,
+  emptyMessage,
   limit,
   placeholder,
   label,
@@ -278,13 +294,17 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   open,
   defaultOpen,
   onOpenChange,
-  clearLabel = 'Clear',
-  removeLabel = (chip) => `Remove ${chip}`,
+  clearLabel,
+  removeLabel,
   inputRef,
   id,
   className,
   style
 }: ComboboxProps<Multiple>) {
+  const messages = useMessages(locale);
+  const nameRemove =
+    removeLabel ?? ((chip: string) => fillMessage(messages.combobox.remove, { label: chip }));
+
   const hasError = hasContent(error);
   const isInvalid = invalid ?? hasError;
   // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
@@ -507,7 +527,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
                             endIcon={
                               readOnly || disabled ? null : (
                                 <BaseUICombobox.ChipRemove
-                                  aria-label={removeLabel(entry.label)}
+                                  aria-label={nameRemove(entry.label)}
                                   className={chipRemoveClasses}
                                 >
                                   <CloseIcon />
@@ -530,7 +550,10 @@ export function Combobox<Multiple extends boolean | undefined = false>({
           )}
 
           {clearable && !readOnly ? (
-            <BaseUICombobox.Clear aria-label={clearLabel} className={adornmentClasses}>
+            <BaseUICombobox.Clear
+              aria-label={clearLabel ?? messages.action.clear}
+              className={adornmentClasses}
+            >
               <CloseIcon />
             </BaseUICombobox.Clear>
           ) : null}
@@ -562,7 +585,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
               style={surfaceSlots(family, 3)}
             >
               <BaseUICombobox.Empty className="px-2 py-1.5 text-(--neba-muted-fg) empty:hidden">
-                {emptyMessage}
+                {emptyMessage ?? messages.combobox.empty}
               </BaseUICombobox.Empty>
 
               <BaseUICombobox.List>

@@ -85,3 +85,4 @@ import { Button, Drawer } from 'neba';
 - `modal="trap-focus"`는 페이지의 스크롤과 클릭은 남기고 focus만 안에 붙잡습니다.
 - `dismissible={false}`는 Esc와 스크림 클릭을 모두 취소합니다. 그런 drawer에는 닫는 action을 반드시 함께 주세요. 다른 출구가 없습니다.
 - `inline` drawer는 dialog가 아닙니다. focus를 가져가지도, 가두지도, 알리지도 않습니다. `title`은 평범한 heading이므로 페이지의 heading 순서 안에 놓으세요.
+- ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

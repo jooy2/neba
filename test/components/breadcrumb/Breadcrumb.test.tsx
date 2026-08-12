@@ -277,4 +277,46 @@ describe('Breadcrumb', () => {
       expect(screen.getByRole('link', { name: 'Billing' }).query()).toBeNull();
     });
   });
+
+  describe('locale', () => {
+    it('names the trail in the language it was given', async () => {
+      const screen = await render(
+        <Breadcrumb locale="ko">
+          <BreadcrumbItem href="/">홈</BreadcrumbItem>
+          <BreadcrumbItem>설정</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      await expect
+        .element(screen.getByRole('navigation', { name: '탐색 경로' }))
+        .toBeInTheDocument();
+    });
+
+    it('names the fold in the language it was given', async () => {
+      const screen = await render(
+        <Breadcrumb locale="ko" maxItems={3}>
+          <BreadcrumbItem href="/">홈</BreadcrumbItem>
+          <BreadcrumbItem href="/a">하나</BreadcrumbItem>
+          <BreadcrumbItem href="/b">둘</BreadcrumbItem>
+          <BreadcrumbItem href="/c">셋</BreadcrumbItem>
+          <BreadcrumbItem>넷</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: '숨겨진 단계 보기' }))
+        .toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Breadcrumb locale="ko" label="Trail">
+          <BreadcrumbItem href="/">홈</BreadcrumbItem>
+          <BreadcrumbItem>설정</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      await expect.element(screen.getByRole('navigation', { name: 'Trail' })).toBeInTheDocument();
+    });
+  });
 });

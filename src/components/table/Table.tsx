@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { controlTextLeadingClasses, metaTextClasses, paddingXValues } from '../../internal/styles';
 import type { NebaAlign, NebaDensity, NebaSize } from '../../types';
 
@@ -57,7 +58,18 @@ export interface TableProps<Row> extends Omit<
   getRowKey?: (row: Row, index: number) => React.Key;
   /** Shown above the table, and read out as its accessible name. */
   caption?: React.ReactNode;
-  /** What to show instead of rows when `items` is empty. */
+  /**
+   * Which language the empty state is written in — a BCP 47 tag such as `ko`,
+   * `pt-BR` or `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `empty` writes the line out instead; this is for the far more common case
+   * where the page already knows its own language.
+   */
+  locale?: string;
+  /**
+   * What to show instead of rows when `items` is empty. Defaults to the
+   * `locale`'s wording for a table with nothing in it.
+   */
   empty?: React.ReactNode;
   /**
    * Tints every other row. Useful for a wide table where the eye has to track
@@ -148,6 +160,7 @@ export function Table<Row>({
   items,
   getRowKey,
   caption,
+  locale,
   empty,
   striped = false,
   hoverable = false,
@@ -158,6 +171,7 @@ export function Table<Row>({
   className,
   ...boxProps
 }: TableProps<Row>) {
+  const messages = useMessages(locale);
   const padX = paddingXValues[density][size];
   const padY = cellPaddingYValues[density][size];
   const clickable = Boolean(onRowClick);
@@ -238,7 +252,7 @@ export function Table<Row>({
                 className="text-(--neba-muted-fg)"
                 style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
               >
-                {empty ?? 'No data'}
+                {empty ?? messages.table.empty}
               </td>
             </tr>
           ) : (

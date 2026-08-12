@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon } from '../../internal/icons';
 import { transitionProps } from '../../internal/animate';
 import {
@@ -46,7 +47,15 @@ export interface ChipProps
    * makes the affordance appear.
    */
   onDelete?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  /** Accessible name of the delete button. */
+  /**
+   * Which language the delete button is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `deleteLabel` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of the delete button. Defaults to the `locale`'s word. */
   deleteLabel?: string;
   /**
    * Marks the chip as chosen — a filter that is on. `selected` deepens the
@@ -176,7 +185,8 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
     endIcon,
     count,
     onDelete,
-    deleteLabel = 'Remove',
+    locale,
+    deleteLabel,
     transition,
     selected = false,
     disabled = false,
@@ -188,6 +198,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
   },
   ref
 ) {
+  const messages = useMessages(locale);
   const interactive = Boolean(onClick) && !disabled;
   const step = chipScale[size];
   const animation = transitionProps(transition);
@@ -266,7 +277,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
       {onDelete ? (
         <button
           type="button"
-          aria-label={deleteLabel}
+          aria-label={deleteLabel ?? messages.action.remove}
           disabled={disabled}
           className={chipRemoveClasses}
           onClick={onDelete}

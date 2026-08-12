@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
+import { useMessages } from '../../internal/i18n';
 import { CloseIcon } from '../../internal/icons';
 import {
   hasContent,
@@ -83,7 +84,15 @@ export interface PopoverProps extends Pick<NebaStyleProps, 'size' | 'color' | 'd
   dismissible?: boolean;
   /** Shows the × in the corner. @default false */
   showClose?: boolean;
-  /** Accessible name of the × button. */
+  /**
+   * Which language the × is named in — a BCP 47 tag such as `ko`, `pt-BR` or
+   * `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * `closeLabel` writes the word out instead; this is for the far more common
+   * case where the page already knows its own language.
+   */
+  locale?: string;
+  /** Accessible name of the × button. Defaults to the `locale`'s word for it. */
   closeLabel?: string;
   /**
    * A hard cap on the popup's width, overriding the one `size` implies. Numbers
@@ -183,11 +192,13 @@ export function Popover({
   modal = false,
   dismissible = true,
   showClose = false,
-  closeLabel = 'Close',
+  locale,
+  closeLabel,
   width,
   className,
   style
 }: PopoverProps) {
+  const messages = useMessages(locale);
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
   const arrowSize = arrowSizes[size];
@@ -304,7 +315,7 @@ export function Popover({
 
                 {showClose ? (
                   <BaseUIPopover.Close
-                    aria-label={closeLabel}
+                    aria-label={closeLabel ?? messages.action.close}
                     className={[
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
                       'rounded-full text-(--neba-muted-fg)',

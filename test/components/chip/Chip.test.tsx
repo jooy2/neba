@@ -255,4 +255,26 @@ describe('Chip', () => {
       expect(element.style.getPropertyValue('--n-anim-scale')).toBe('0.4');
     });
   });
+
+  describe('locale', () => {
+    it('names the delete button in the language it was given', async () => {
+      const screen = await render(
+        <Chip locale="ko" onDelete={vi.fn()}>
+          디자인
+        </Chip>
+      );
+
+      await expect.element(screen.getByRole('button', { name: '삭제' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Chip locale="ko" deleteLabel="Remove tag" onDelete={vi.fn()}>
+          디자인
+        </Chip>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Remove tag' })).toBeInTheDocument();
+    });
+  });
 });

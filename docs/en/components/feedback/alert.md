@@ -75,3 +75,4 @@ Pass a node to replace the default glyph, or `icon={false}` to draw none.
 - The severity picks the live region: `warning` and `danger` get `role="alert"`, which interrupts what a screen reader is saying, and the rest get `role="status"`, which waits for a pause.
 - Passing `role` yourself overrides the default.
 - With several alerts on screen, use `closeLabel` to name what is being dismissed.
+- `locale` decides the dismiss button's accessible name; `closeLabel` writes it out instead.

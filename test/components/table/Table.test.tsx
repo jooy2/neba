@@ -283,4 +283,21 @@ describe('Table', () => {
       expect(screen.getByTestId('table').element()).toHaveClass('my-own-class');
     });
   });
+
+  describe('locale', () => {
+    it('writes the empty state in the language it was given', async () => {
+      const screen = await render(<Table headers={HEADERS} items={[]} locale="ko" />);
+
+      await expect.element(screen.getByText('데이터 없음')).toBeInTheDocument();
+    });
+
+    it('takes a line of its own over the locale', async () => {
+      const screen = await render(
+        <Table headers={HEADERS} items={[]} locale="ko" empty="배포 기록이 없습니다" />
+      );
+
+      await expect.element(screen.getByText('배포 기록이 없습니다')).toBeInTheDocument();
+      expect(screen.getByText('데이터 없음').query()).toBeNull();
+    });
+  });
 });

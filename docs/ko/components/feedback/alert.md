@@ -75,3 +75,4 @@ Alert는 색이 입혀지는 대상이므로 [Box](../surfaces/box)와 달리 sh
 - 심각도가 live region을 정합니다. `warning`과 `danger`는 screen reader가 읽던 내용을 끊는 `role="alert"`, 나머지는 끊기지 않고 기다리는 `role="status"`입니다.
 - `role`을 직접 넘기면 기본값을 덮어씁니다.
 - 여러 Alert가 있는 화면에서는 `closeLabel`로 무엇을 닫는지 밝혀 주세요.
+- 닫기 버튼의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

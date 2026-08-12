@@ -84,3 +84,4 @@ An [Alert](./alert) belongs to its page and stays there. A toast reports somethi
 - `priority: 'high'` interrupts what a screen reader is saying; the default waits for a pause.
 - Timers pause on hover and while the window is blurred. F6 moves focus into the stack.
 - The close button stays out of the accessibility tree until the stack is hovered or focused, so a toast is announced as one message rather than as a message and a button.
+- The provider's `locale` names the × on every toast; `closeLabel` writes it out instead.

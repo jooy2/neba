@@ -194,4 +194,26 @@ describe('Alert', () => {
       expect(element.style.getPropertyValue('--n-anim-y')).toBe('100%');
     });
   });
+
+  describe('locale', () => {
+    it('names the dismiss button in the language it was given', async () => {
+      const screen = await render(
+        <Alert locale="ko" onClose={vi.fn()}>
+          저장하지 못했습니다
+        </Alert>
+      );
+
+      await expect.element(screen.getByRole('button', { name: '알림 닫기' })).toBeInTheDocument();
+    });
+
+    it('takes a word of its own over the locale', async () => {
+      const screen = await render(
+        <Alert locale="ko" closeLabel="Dismiss" onClose={vi.fn()}>
+          저장하지 못했습니다
+        </Alert>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+    });
+  });
 });

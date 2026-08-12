@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button } from '../button/Button';
+import { fillMessage, useMessages } from '../../internal/i18n';
 import { ChevronIcon } from '../../internal/icons';
 import { controlTextClasses, gapClasses, srOnlyClasses } from '../../internal/styles';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
@@ -52,17 +53,22 @@ export interface PaginationProps
    * because `disabled` is not something an `<a>` can be.
    */
   getPageHref?: (page: number) => string;
-  /** Accessible name of the `<nav>`. @default 'Pagination' */
+  /**
+   * Which language the row names itself in — a BCP 47 tag such as `ko`, `pt-BR`
+   * or `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * Every string below writes one of these out instead; this is for the far more
+   * common case where the page already knows its own language. Nothing here is
+   * ever drawn, so without it a Korean page reads its pages out in English.
+   */
+  locale?: string;
+  /** Accessible name of the `<nav>`. Defaults to the `locale`'s word for it. */
   label?: string;
-  /** Accessible name of a page button. @default `Page ${page}` */
+  /** Accessible name of a page button. Defaults to the `locale`'s wording. */
   pageLabel?: (page: number) => string;
-  /** @default 'Previous page' */
   previousLabel?: string;
-  /** @default 'Next page' */
   nextLabel?: string;
-  /** @default 'First page' */
   firstLabel?: string;
-  /** @default 'Last page' */
   lastLabel?: string;
 }
 
@@ -193,18 +199,24 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
     showArrows = true,
     disabled = false,
     getPageHref,
-    label = 'Pagination',
-    pageLabel = (value) => `Page ${value}`,
-    previousLabel = 'Previous page',
-    nextLabel = 'Next page',
-    firstLabel = 'First page',
-    lastLabel = 'Last page',
+    locale,
+    label,
+    pageLabel,
+    previousLabel,
+    nextLabel,
+    firstLabel,
+    lastLabel,
     className,
     children,
     ...props
   },
   ref
 ) {
+  const messages = useMessages(locale);
+  const namePage =
+    pageLabel ??
+    ((value: number) => fillMessage(messages.pagination.page, { page: String(value) }));
+
   const [uncontrolled, setUncontrolled] = React.useState(defaultPage);
   const current = Math.min(Math.max(pageProp ?? uncontrolled, 1), Math.max(count, 1));
 
@@ -298,7 +310,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
   return (
     <nav
       ref={ref}
-      aria-label={label}
+      aria-label={label ?? messages.pagination.label}
       className={['flex items-center', className ?? ''].filter(Boolean).join(' ')}
       {...props}
     >
@@ -306,7 +318,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showEdges
           ? stepper(
               'first',
-              firstLabel,
+              firstLabel ?? messages.pagination.first,
               1,
               atStart,
               'rotate-180 rtl:rotate-0',
@@ -317,7 +329,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showArrows
           ? stepper(
               'previous',
-              previousLabel,
+              previousLabel ?? messages.pagination.previous,
               current - 1,
               atStart,
               'rotate-90 rtl:-rotate-90',
@@ -349,7 +361,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
                 density={density}
                 elevation={elevation}
                 disabled={disabled}
-                aria-label={pageLabel(slot)}
+                aria-label={namePage(slot)}
                 aria-current={slot === current ? 'page' : undefined}
                 className="tabular-nums"
                 onClick={(event) => press(event, slot)}
@@ -380,7 +392,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showArrows
           ? stepper(
               'next',
-              nextLabel,
+              nextLabel ?? messages.pagination.next,
               current + 1,
               atEnd,
               '-rotate-90 rtl:rotate-90',
@@ -390,7 +402,14 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
           : null}
 
         {showEdges
-          ? stepper('last', lastLabel, count, atEnd, 'rtl:rotate-180', <DoubleChevronIcon />)
+          ? stepper(
+              'last',
+              lastLabel ?? messages.pagination.last,
+              count,
+              atEnd,
+              'rtl:rotate-180',
+              <DoubleChevronIcon />
+            )
           : null}
       </ul>
 
@@ -398,7 +417,10 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
           `aria-current` says which page is chosen; this says how many there are,
           which the list length alone does not once an ellipsis is in it. */}
       <span className={srOnlyClasses} aria-live="polite">
-        {`${pageLabel(current)} of ${count}`}
+        {fillMessage(messages.pagination.status, {
+          page: String(current),
+          total: String(count)
+        })}
       </span>
 
       {children}

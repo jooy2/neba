@@ -75,3 +75,4 @@ import { Pagination } from 'neba';
 - 줄임표는 버튼이 아니라 문장 부호이므로 비활성 버튼으로 렌더링되지 않습니다.
 - `getPageHref`를 넘기면 번호가 링크가 되므로 스크린리더의 링크 목록에 올라가고, 키보드 사용자가 목적지를 미리 확인할 수 있습니다.
 - accessible name은 `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`로 모두 지정할 수 있습니다. 한 화면에 Pagination이 여러 개라면 `label`로 각각이 무엇의 페이지인지 밝혀 주세요.
+- nav 이름, 페이지 버튼, 화살표, 현재 위치를 읽는 문장까지 모두 `locale`이 정합니다. 어느 것이든 각자의 prop으로 직접 쓸 수 있습니다.

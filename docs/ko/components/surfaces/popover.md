@@ -73,3 +73,4 @@ popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 
 - 열리면 focus가 popup 안으로 들어가고, 닫히면 trigger로 돌아갑니다.
 - Esc로 닫히고 바깥 클릭으로도 닫힙니다. `dismissible={false}`는 둘 다 취소하지만 `PopoverClose`는 통과하므로 갇히지 않습니다.
 - `modal`은 기본이 `false`이므로 뒤 페이지는 계속 스크롤되고 쓸 수 있습니다. 다른 것을 건드리기 전에 반드시 답해야 하는 popup에는 `'trap-focus'`를 쓰세요.
+- ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

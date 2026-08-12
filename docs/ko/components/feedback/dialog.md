@@ -78,3 +78,4 @@ actions={
 - `title`과 `description`은 각각 `aria-labelledby`, `aria-describedby`로 연결됩니다. `title`은 실제 `<h2>`로 렌더링됩니다.
 - focus trap, scroll lock, 뒤 페이지 inert 처리, 닫을 때 trigger로 focus 복귀가 모두 적용됩니다.
 - `showClose`는 기본값이 켜짐입니다. modal에서 나가는 길은 항상 보여야 하고, 터치 screen reader가 팝업을 빠져나오는 통로이기도 합니다.
+- ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

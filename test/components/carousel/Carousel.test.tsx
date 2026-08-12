@@ -179,4 +179,29 @@ describe('Carousel', () => {
       expect(screen.getByRole('region').element().innerHTML).not.toContain('translate-x');
     });
   });
+
+  describe('locale', () => {
+    it('names the region, the arrows and every slide in the language it was given', async () => {
+      const screen = await render(<Carousel locale="ko">{slides}</Carousel>);
+
+      await expect.element(screen.getByRole('region', { name: '캐러셀' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('group', { name: '전체 3장 중 1장' }))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: '이전 슬라이드' }))
+        .toBeInTheDocument();
+    });
+
+    it('takes words of its own over the locale', async () => {
+      const screen = await render(
+        <Carousel locale="ko" label="Gallery" slideLabel={(index) => `Photo ${index}`}>
+          {slides}
+        </Carousel>
+      );
+
+      await expect.element(screen.getByRole('region', { name: 'Gallery' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('group', { name: 'Photo 1' })).toBeInTheDocument();
+    });
+  });
 });

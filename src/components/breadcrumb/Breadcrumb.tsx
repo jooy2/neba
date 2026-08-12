@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useMessages } from '../../internal/i18n';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons';
 import {
   controlTextClasses,
@@ -61,9 +62,17 @@ export interface BreadcrumbProps extends Omit<React.ComponentPropsWithoutRef<'na
    * @default true
    */
   expandable?: boolean;
-  /** The name the trail is announced by. @default 'Breadcrumb' */
+  /**
+   * Which language the trail names itself in — a BCP 47 tag such as `ko`,
+   * `pt-BR` or `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * Both strings below write the words out instead; this is for the far more
+   * common case where the page already knows its own language.
+   */
+  locale?: string;
+  /** The name the trail is announced by. Defaults to the `locale`'s word. */
   label?: string;
-  /** What the `…` is announced as. @default 'Show hidden steps' */
+  /** What the `…` is announced as. Defaults to the `locale`'s wording. */
   expandLabel?: string;
   /** The BreadcrumbItems. */
   children?: React.ReactNode;
@@ -178,8 +187,9 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
     itemsBeforeCollapse = 1,
     itemsAfterCollapse = 1,
     expandable = true,
-    label = 'Breadcrumb',
-    expandLabel = 'Show hidden steps',
+    locale,
+    label,
+    expandLabel,
     className,
     style,
     children,
@@ -187,6 +197,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
   },
   ref
 ) {
+  const messages = useMessages(locale);
   const [unfolded, setUnfolded] = React.useState(false);
 
   const steps = React.Children.toArray(children).filter(
@@ -237,7 +248,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
   return (
     <nav
       ref={ref}
-      aria-label={label}
+      aria-label={label ?? messages.breadcrumb.label}
       className={cx('flex', controlTextClasses[size], iconClasses, className)}
       style={
         {
@@ -279,7 +290,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
                   <button
                     type="button"
                     className={foldClassNames}
-                    aria-label={expandLabel}
+                    aria-label={expandLabel ?? messages.breadcrumb.expand}
                     onClick={() => setUnfolded(true)}
                   >
                     <EllipsisIcon />
