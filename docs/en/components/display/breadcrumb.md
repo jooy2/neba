@@ -77,6 +77,20 @@ The last step is the page you are on, so it is not a link even when it is given 
 
 </Demo>
 
+### structuredData
+
+Correct markup alone is not what puts a path under a search result — the structured data is. Turning `structuredData` on emits a schema.org `BreadcrumbList` in a `<script type="application/ld+json">` beside the trail. `baseUrl` is what relative `href`s are resolved against, since a search engine wants an absolute URL.
+
+Every step goes in, including the ones a `maxItems` fold is hiding: what is collapsed is a matter of how much room the row has, and the path is the path either way. A step with no `href` is emitted without an `item`, which is the last step's usual case.
+
+It is off by default. A page can only have one `BreadcrumbList`, and a great many apps already emit theirs from an SEO layer of their own.
+
+<Demo src="breadcrumb/structured-data">
+
+<<< @/.vitepress/demos/breadcrumb/structured-data.tsx
+
+</Demo>
+
 ## Accessibility
 
 - The trail is a `nav` named by `label`, which defaults to `Breadcrumb`, holding an ordered list.
@@ -84,3 +98,4 @@ The last step is the page you are on, so it is not a link even when it is given 
 - The separators are `aria-hidden`, so a reader hears the steps and not the punctuation between them.
 - The `…` is a real button named by `expandLabel`. With `expandable={false}` it is a mark and is hidden from readers.
 - `locale` names the nav landmark and the `…` button; `label` and `expandLabel` write them out instead.
+- `structuredData` is not an accessibility feature: it is read by a crawler and draws nothing on screen.

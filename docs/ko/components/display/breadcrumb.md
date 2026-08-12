@@ -77,6 +77,20 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 </Demo>
 
+### structuredData
+
+검색 결과 아래에 경로가 표시되려면 마크업만으로는 부족하고 구조화 데이터가 필요합니다. `structuredData`를 켜면 schema.org의 `BreadcrumbList`가 `<script type="application/ld+json">`으로 함께 나갑니다. `baseUrl`은 상대 `href`를 절대 URL로 만드는 기준입니다 — 검색엔진은 절대 URL을 원합니다.
+
+`maxItems`로 접힌 단계도 모두 들어갑니다. 무엇을 접을지는 줄에 자리가 얼마나 있느냐의 문제이고, 경로는 어느 쪽이든 같은 경로이기 때문입니다. `href`가 없는 단계는 `item` 없이 나가는데, 마지막 단계가 대개 그렇습니다.
+
+기본값은 꺼짐입니다. 한 페이지에 `BreadcrumbList`는 하나여야 하고, 이미 SEO 레이어에서 직접 내보내는 앱이 많습니다.
+
+<Demo src="breadcrumb/structured-data">
+
+<<< @/.vitepress/demos/breadcrumb/structured-data.tsx
+
+</Demo>
+
 ## 접근성
 
 - 트레일은 `label`이 이름을 주는 `nav`이며(기본값 `Breadcrumb`), 그 안에 순서 있는 리스트가 들어갑니다.
@@ -84,3 +98,4 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 - 구분자는 `aria-hidden`이므로 screen reader는 단계만 읽고 사이의 기호는 읽지 않습니다.
 - `…`는 `expandLabel`이 이름을 주는 실제 버튼입니다. `expandable={false}`이면 표시일 뿐이며 reader에게는 감춰집니다.
 - nav 이름과 `…` 버튼의 이름을 `locale`이 정합니다. `label`과 `expandLabel`로 직접 쓸 수도 있습니다.
+- `structuredData`는 접근성과는 무관합니다. 크롤러가 읽는 것이고, 화면에는 아무것도 그리지 않습니다.

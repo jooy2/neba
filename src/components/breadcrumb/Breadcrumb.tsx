@@ -74,6 +74,31 @@ export interface BreadcrumbProps extends Omit<React.ComponentPropsWithoutRef<'na
   label?: string;
   /** What the `…` is announced as. Defaults to the `locale`'s wording. */
   expandLabel?: string;
+  /**
+   * Emits the trail a second time as a `BreadcrumbList`, in a
+   * `<script type="application/ld+json">` beside the markup.
+   *
+   * Off by default, because a page can only have one of these and a great many
+   * apps already emit theirs from an SEO layer of their own — two would be a
+   * page describing itself twice. Turn it on where this component *is* the
+   * trail: correct markup alone is not what puts a path under a search result,
+   * and the structured data is.
+   *
+   * Every step goes in, including the ones a `maxItems` fold is hiding — what is
+   * collapsed is a matter of how much room the row has, and the path is the
+   * path either way.
+   * @default false
+   */
+  structuredData?: boolean;
+  /**
+   * What relative `href`s are resolved against for `structuredData` — the
+   * site's origin, as `https://example.com`.
+   *
+   * Search engines want an absolute URL there. Without this the `href`s are
+   * emitted exactly as written, which is right when they are already absolute
+   * and not much use when they are not.
+   */
+  baseUrl?: string;
   /** The BreadcrumbItems. */
   children?: React.ReactNode;
 }
@@ -159,6 +184,83 @@ function separatorMark(separator: BreadcrumbSeparator): React.ReactNode {
 
 const separatorNames: BreadcrumbSeparator[] = ['chevron', 'arrow', 'slash', 'dot'];
 
+/**
+ * The words in a step, with everything that is not a word left out.
+ *
+ * A step's label is a `ReactNode` and `name` in the structured data is a
+ * string, so the tree is walked for its text. Only `children` is read — a
+ * `startIcon` is a picture of the thing rather than its name, and a home glyph
+ * contributing nothing is exactly right.
+ */
+function textOf(node: React.ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(textOf).join('');
+  }
+
+  if (React.isValidElement(node)) {
+    return textOf((node.props as { children?: React.ReactNode }).children);
+  }
+
+  return '';
+}
+
+/**
+ * A step's `href` as a search engine wants it: absolute.
+ *
+ * `new URL` is what resolves `../guide` against a base rather than pasting the
+ * two together, and it throws on anything it cannot make sense of — a base that
+ * is not a URL, an `href` that is a router-only path. Falling back to the
+ * `href` as written is better than dropping the entry: a relative URL is a
+ * weaker signal, an absent one is none.
+ */
+function absoluteHref(href: string, baseUrl?: string): string {
+  if (!baseUrl) {
+    return href;
+  }
+
+  try {
+    return new URL(href, baseUrl).href;
+  } catch {
+    return href;
+  }
+}
+
+/**
+ * The trail as `schema.org`'s `BreadcrumbList`.
+ *
+ * `item` is omitted where a step has no `href`, which is the last step's usual
+ * case: Google reads a final entry without one as the page being looked at, and
+ * a `ListItem` pointing at nothing would be worse than one pointing nowhere.
+ */
+function breadcrumbListData(
+  steps: React.ReactElement<BreadcrumbItemProps>[],
+  baseUrl?: string
+): string {
+  const itemListElement = steps.map((step, index) => {
+    const { href, children } = step.props;
+
+    return {
+      '@type': 'ListItem',
+      position: index + 1,
+      name: textOf(children),
+      ...(href ? { item: absoluteHref(href, baseUrl) } : null)
+    };
+  });
+
+  // `<` is escaped because this string is written into a `<script>`: a label
+  // holding `</script>` would otherwise close the tag and turn the rest of the
+  // JSON into markup.
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement
+  }).replace(/</g, '\\u003c');
+}
+
 function isSeparatorName(value: unknown): value is BreadcrumbSeparator {
   return typeof value === 'string' && separatorNames.includes(value as BreadcrumbSeparator);
 }
@@ -190,6 +292,8 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
     locale,
     label,
     expandLabel,
+    structuredData = false,
+    baseUrl,
     className,
     style,
     children,
@@ -260,6 +364,17 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
       }
       {...props}
     >
+      {/* Beside the markup rather than instead of it: the `<ol>` is what a
+          reader gets and this is what a crawler reads. Every step is in it,
+          including any the fold is hiding — what is collapsed is a question of
+          room, and the path is the path either way. */}
+      {structuredData && total > 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: breadcrumbListData(steps, baseUrl) }}
+        />
+      ) : null}
+
       <ol
         // `role="list"` for the reason List says it out loud: Tailwind's reset
         // takes the bullets off every `<ol>`, and Safari takes the list

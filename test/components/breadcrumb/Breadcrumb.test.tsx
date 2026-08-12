@@ -319,4 +319,113 @@ describe('Breadcrumb', () => {
       await expect.element(screen.getByRole('navigation', { name: 'Trail' })).toBeInTheDocument();
     });
   });
+
+  describe('structuredData', () => {
+    /** The JSON-LD the trail emitted, parsed. */
+    function listData(screen: { container: HTMLElement }) {
+      const script = screen.container.querySelector('script[type="application/ld+json"]');
+
+      return script ? JSON.parse(script.textContent ?? '{}') : null;
+    }
+
+    it('emits nothing unless it is asked to', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem>Button</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(listData(screen)).toBeNull();
+    });
+
+    it('emits a BreadcrumbList with one entry per step', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/docs">Docs</BreadcrumbItem>
+          <BreadcrumbItem>Button</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(listData(screen)).toEqual({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: '/' },
+          { '@type': 'ListItem', position: 2, name: 'Docs', item: '/docs' },
+          // No `item`: the step the reader is on has nowhere to point.
+          { '@type': 'ListItem', position: 3, name: 'Button' }
+        ]
+      });
+    });
+
+    it('resolves a relative href against baseUrl', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData baseUrl="https://example.com">
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/docs">Docs</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(listData(screen).itemListElement.map((entry: { item: string }) => entry.item)).toEqual(
+        ['https://example.com/', 'https://example.com/docs']
+      );
+    });
+
+    it('leaves an href that is already absolute alone', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData baseUrl="https://example.com">
+          <BreadcrumbItem href="https://docs.example.org/guide">Guide</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(listData(screen).itemListElement[0].item).toBe('https://docs.example.org/guide');
+    });
+
+    // What a fold hides is a matter of how much room the row has. The path is
+    // the path, so every step is in the data even when three are behind a `…`.
+    it('includes the steps a fold is hiding', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData maxItems={3}>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/a">One</BreadcrumbItem>
+          <BreadcrumbItem href="/b">Two</BreadcrumbItem>
+          <BreadcrumbItem href="/c">Three</BreadcrumbItem>
+          <BreadcrumbItem>Four</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(screen.getByRole('button', { name: 'Show hidden steps' }).query()).not.toBeNull();
+      expect(listData(screen).itemListElement.map((entry: { name: string }) => entry.name)).toEqual(
+        ['Home', 'One', 'Two', 'Three', 'Four']
+      );
+    });
+
+    it('reads a step whose label is a node, ignoring its icon', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData>
+          <BreadcrumbItem href="/" startIcon={<svg />}>
+            <span>Home</span>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(listData(screen).itemListElement[0].name).toBe('Home');
+    });
+
+    // The JSON goes inside a `<script>`, so a label holding a closing tag would
+    // otherwise end it and spill the rest of the data onto the page as markup.
+    it('escapes a label that could close the script tag', async () => {
+      const screen = await render(
+        <Breadcrumb structuredData>
+          <BreadcrumbItem href="/">{'</script><b>x'}</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const raw = screen.container.querySelector('script')!.textContent ?? '';
+
+      expect(raw).not.toContain('</script>');
+      expect(listData(screen).itemListElement[0].name).toBe('</script><b>x');
+    });
+  });
 });

@@ -4943,26 +4943,23 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'pageLabel',
       type: '(page: number) => string',
       description: {
-        ko: '페이지 버튼의 접근성 이름. 기본값은 `Page ${page}`',
-        en: 'Accessible name of a page button. `Page ${page}` by default'
+        ko: '페이지 버튼의 접근성 이름. 기본값은 locale의 표현',
+        en: "Accessible name of a page button. Defaults to the locale's wording"
       }
     },
     {
       name: 'previousLabel',
       type: 'string',
-      default: "'Previous page'",
       description: { ko: '이전 버튼의 접근성 이름', en: 'Accessible name of the previous stepper' }
     },
     {
       name: 'nextLabel',
       type: 'string',
-      default: "'Next page'",
       description: { ko: '다음 버튼의 접근성 이름', en: 'Accessible name of the next stepper' }
     },
     {
       name: 'firstLabel',
       type: 'string',
-      default: "'First page'",
       description: {
         ko: '맨 앞 버튼의 접근성 이름',
         en: 'Accessible name of the first-page stepper'
@@ -4971,7 +4968,6 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'lastLabel',
       type: 'string',
-      default: "'Last page'",
       description: {
         ko: '맨 뒤 버튼의 접근성 이름',
         en: 'Accessible name of the last-page stepper'
@@ -5713,21 +5709,19 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'previousLabel',
       type: 'string',
-      default: "'Previous slide'",
       description: { ko: '이전 버튼의 이름', en: 'The previous button’s name' }
     },
     {
       name: 'nextLabel',
       type: 'string',
-      default: "'Next slide'",
       description: { ko: '다음 버튼의 이름', en: 'The next button’s name' }
     },
     {
       name: 'slideLabel',
       type: '(index: number, count: number) => string',
       description: {
-        ko: '슬라이드 하나를 스크린 리더에게 어떻게 부를지, 그리고 그 점의 라벨. 기본값은 `Slide ${index} of ${count}`',
-        en: 'How one slide is named to a screen reader, and how its dot is labelled. `Slide ${index} of ${count}` by default'
+        ko: '슬라이드 하나를 스크린 리더에게 어떻게 부를지, 그리고 그 점의 라벨. 기본값은 locale의 표현',
+        en: "How one slide is named to a screen reader, and how its dot is labelled. Defaults to the locale's wording"
       }
     },
     {
@@ -6785,8 +6779,24 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'expandLabel',
       type: 'string',
-      default: "'Show hidden steps'",
       description: { ko: '…가 읽히는 이름', en: 'What the `…` is announced as' }
+    },
+    {
+      name: 'structuredData',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'schema.org BreadcrumbList를 JSON-LD로 함께 내보냅니다. 접힌 단계도 모두 포함됩니다',
+        en: 'Also emits a schema.org BreadcrumbList as JSON-LD, folded steps included'
+      }
+    },
+    {
+      name: 'baseUrl',
+      type: 'string',
+      description: {
+        ko: 'structuredData에서 상대 href를 절대 URL로 만들 기준 — 사이트의 origin',
+        en: "What relative hrefs are resolved against for structuredData — the site's origin"
+      }
     },
     {
       name: 'children',
