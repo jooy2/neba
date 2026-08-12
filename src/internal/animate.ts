@@ -260,27 +260,41 @@ export function transitionProps(transition: NebaTransition | undefined): {
  * in JavaScript — a typewriter, a headline reel, a measured marquee — where
  * there is no rule to switch off and the component has to decide for itself
  * what "still" means.
+ *
+ * `useSyncExternalStore` rather than state plus an effect, which is the same
+ * choice `Shortcut` makes for the same reason: a media query is an external
+ * store, and reading it in an effect means every animated element on the page
+ * renders once with the wrong answer and then again with the right one. Here
+ * that first render is the one that would start a typewriter a reader asked
+ * not to see.
  */
+const reducedMotionQuery = '(prefers-reduced-motion: reduce)';
+
+function subscribeToMotion(onChange: () => void): () => void {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return () => {};
+  }
+
+  const query = window.matchMedia(reducedMotionQuery);
+
+  query.addEventListener('change', onChange);
+
+  return () => query.removeEventListener('change', onChange);
+}
+
+function readMotion(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia
+    ? window.matchMedia(reducedMotionQuery).matches
+    : false;
+}
+
+/** A server has no reader and so no preference. */
+function motionOnServer(): boolean {
+  return false;
+}
+
 export function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return;
-    }
-
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    setReduced(query.matches);
-
-    const listen = (event: MediaQueryListEvent) => setReduced(event.matches);
-
-    query.addEventListener('change', listen);
-
-    return () => query.removeEventListener('change', listen);
-  }, []);
-
-  return reduced;
+  return React.useSyncExternalStore(subscribeToMotion, readMotion, motionOnServer);
 }
 
 export interface AnimationRunOptions {
@@ -406,7 +420,10 @@ export function useAnimationRun({
       return;
     }
 
+    // `play` is a caller pressing go, and what it starts is a CSS animation.
+    // There is no external system to push to: the run counter *is* the rewind.
     if (play) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       start();
     } else {
       setStarted(false);

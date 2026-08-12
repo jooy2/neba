@@ -149,6 +149,9 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       if (open) {
         setMonth(startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today())));
       }
+      // Only when the popup opens — following `value` here would drag the
+      // calendar out from under someone typing into a form elsewhere.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     const setOpen = (next: boolean) => {

@@ -271,7 +271,10 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
   React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
   const [uncontrolled, setUncontrolled] = React.useState<File[]>(() => [...(defaultValue ?? [])]);
-  const files = value ? [...value] : uncontrolled;
+  // The copy is what stops a caller's array being the one held here, and it has
+  // to be memoised: the handlers below close over this list, and a fresh array
+  // every render would rebuild all of them every render.
+  const files = React.useMemo(() => (value ? [...value] : uncontrolled), [value, uncontrolled]);
 
   // `dragenter`/`dragleave` fire for every child the pointer crosses, so a
   // boolean flickers the whole time a file is over the box. The depth counter is

@@ -694,6 +694,9 @@ export function DataTable<Row>({
    * tearing a drag in half. They read this instead.
    */
   const latest = React.useRef({ paged, pagedKeys, byKey, selectedKeys, multiple });
+  // Read by handlers and by window listeners, never during a render — and
+  // re-binding those per render is what a drag cannot survive.
+  // eslint-disable-next-line react-hooks/refs
   latest.current = { paged, pagedKeys, byKey, selectedKeys, multiple };
 
   /**
@@ -1102,6 +1105,10 @@ export function DataTable<Row>({
   );
 
   const dragToRef = React.useRef(dragTo);
+  // The two window listeners a drag installs must not be re-bound while it is
+  // running, or the drag tears in half. They read the latest callback through
+  // this instead. Nothing renders from it, so a stale read shows nothing stale.
+  // eslint-disable-next-line react-hooks/refs
   dragToRef.current = dragTo;
 
   /**

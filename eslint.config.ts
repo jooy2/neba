@@ -3,6 +3,7 @@ import pluginJs from '@eslint/js';
 import pluginTypeScriptESLint from 'typescript-eslint';
 import parserTypeScript from '@typescript-eslint/parser';
 import pluginNode from 'eslint-plugin-n';
+import pluginReactHooks from 'eslint-plugin-react-hooks';
 import configPrettier from 'eslint-config-prettier';
 
 import globals from 'globals';
@@ -22,6 +23,12 @@ export default pluginTypeScriptESLint.config(
     '**/*-lock.json',
     '**/*-lock.yaml'
   ]),
+  // Every component in this library is a hook consumer, and the two mistakes
+  // this catches are both invisible until they are a bug in someone else's app:
+  // a dependency left out of a `useMemo` freezes a value at whatever it was on
+  // the first render, and a hook behind a condition desynchronises the whole
+  // list for that component.
+  pluginReactHooks.configs.flat['recommended-latest'],
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     languageOptions: {

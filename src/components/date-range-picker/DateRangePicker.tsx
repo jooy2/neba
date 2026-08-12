@@ -163,6 +163,9 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         setAnchor(null);
         setPreview(null);
       }
+      // Only when the popup opens — following `start` here would drag the
+      // calendar out from under someone typing into a form elsewhere.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     const setOpen = (next: boolean) => {

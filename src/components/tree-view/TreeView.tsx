@@ -373,9 +373,15 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
    * identity. `expanded={[...open]}` rebuilt on every render is the ordinary way
    * a controlled tree gets written, and keying on the array itself would rebuild
    * the context — and re-render every row under it — each time.
+   *
+   * A join rather than `JSON.stringify`: the keys are already strings, so the
+   * quoting and escaping is work spent producing a longer key that answers the
+   * same question. The separator is a NUL, which no key produced by `String()`
+   * of a `string | number` can contain, so two different lists cannot spell one
+   * key.
    */
-  const expandedKey = JSON.stringify(expandedValues.map(keyOf));
-  const selectedKey = JSON.stringify(selectedValues.map(keyOf));
+  const expandedKey = expandedValues.map(keyOf).join('\u0000');
+  const selectedKey = selectedValues.map(keyOf).join('\u0000');
 
   const context = React.useMemo<TreeViewContextValue>(
     () => ({
@@ -392,6 +398,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
     }),
     // The two lists are read inside and are deliberately not listed here: the
     // keys above change exactly when their contents do, which is the question.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [size, density, disabled, expandedKey, selectedKey, activeKey, toggle, select, register]
   );
 
@@ -401,7 +408,11 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
    * tree looks at what is actually rendered and moves the stop to the first row
    * whenever the one it was on has gone. It runs after every render and sets
    * state only when it has to, so it settles in a single extra pass.
+   *
+   * No dependency list, deliberately: a branch shutting unmounts rows without
+   * changing anything this could be keyed on.
    */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -410,6 +421,10 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
     if (rows.length === 0) return;
     if (activeKey !== null && rows.some((row) => row.dataset.nebaValue === activeKey)) return;
 
+    // The question is "is the row holding the tab stop still rendered", and the
+    // DOM is the only thing that can answer it. The two guards above are what
+    // stop this repeating: it runs at most once after the render that removed
+    // the row.
     setActiveKey(rows[0].dataset.nebaValue ?? null);
   });
 

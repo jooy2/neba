@@ -587,6 +587,9 @@ export function Calendar({
   // at: stepping a month and then pressing an arrow lands somewhere sensible
   // instead of scrolling the panel back where it came from.
   React.useEffect(() => {
+    // The tab stop follows a prop, and the updater is a no-op unless the month
+    // actually changed — so this settles in one pass rather than cascading.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFocusedDate((current) => (isSameMonth(current, month) ? current : startOfMonth(month)));
   }, [month]);
 

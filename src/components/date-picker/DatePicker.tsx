@@ -146,6 +146,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
     }
     // Only when the popup opens — following `value` here would drag the calendar
     // out from under someone typing into a form elsewhere on the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const setOpen = (next: boolean) => {

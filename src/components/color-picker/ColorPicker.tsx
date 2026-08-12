@@ -632,6 +632,10 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(fu
     if (!parsed) {
       // Not a colour this understands — `''` after a clear, or something a
       // caller made up. The field shows it and the panel stays where it was.
+      // The model is the source of truth and the string is derived from it;
+      // re-seeding on a render instead is what makes the hue rail snap to red
+      // at `#000000`.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setText(current);
 
       return;

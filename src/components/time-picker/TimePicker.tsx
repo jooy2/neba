@@ -176,11 +176,19 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
     [minTime, maxTime, shouldDisableTime]
   );
 
-  const displayFormat: Intl.DateTimeFormatOptions = format ?? {
-    hour: 'numeric',
-    minute: '2-digit',
-    ...(showSeconds ? { second: '2-digit' as const } : {})
-  };
+  /* Memoised because `samples` below is keyed on it, and the fallback is a
+     fresh object every render — which is the case that runs by default, since
+     `format` is optional. Left bare, the sizer re-formatted all twenty-four
+     sample instants on every keystroke the picker saw. */
+  const displayFormat = React.useMemo<Intl.DateTimeFormatOptions>(
+    () =>
+      format ?? {
+        hour: 'numeric',
+        minute: '2-digit',
+        ...(showSeconds ? { second: '2-digit' as const } : {})
+      },
+    [format, showSeconds]
+  );
 
   const now = new Date();
   const nowValue = withTime(referenceDate ?? fallbackDay, {
