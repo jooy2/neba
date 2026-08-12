@@ -7875,6 +7875,591 @@ export const propTables: Record<string, PropRow[]> = {
     })
   ],
 
+  Collapsible: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않습니다. text는 상자를 아예 그리지 않으므로 본문 속이나 Card 안의 fold에 맞습니다',
+        en: 'Weight of the sheet, said the way a container says it — never dyed. `text` draws no sheet at all, which is what a fold inside running prose or inside a Card wants'
+      },
+      sizeDescription: {
+        ko: '여백과 모서리, 그리고 제목과 본문의 타입 스케일',
+        en: 'The scale of the padding and the radius, and the type scale of the title and the body'
+      }
+    }),
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '패널이 열려 있는지. 직접 제어할 때 씁니다',
+        en: 'Whether the panel is showing. Pass it to drive the Collapsible yourself'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제어하지 않을 때의 시작 상태',
+        en: 'Where an uncontrolled Collapsible starts'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: 'trigger가 패널을 열거나 닫았을 때',
+        en: 'Called when the trigger opens or closes the panel'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: 'trigger에 쓰이는 제목', en: 'The heading on the trigger' }
+    },
+    {
+      name: 'subtitle',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄. 한 단계 작고 흐린 글씨',
+        en: 'A second line under the title, one step down the type scale and muted'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 앞의 내용 — 아이콘, 상태 점, 개수',
+        en: 'Content before the title — an icon, a status dot, a count'
+      }
+    },
+    {
+      name: 'action',
+      type: 'ReactNode',
+      description: {
+        ko: '헤더 끝에 고정되는 컨트롤. trigger 바깥이라 따로 누를 수 있습니다',
+        en: 'A control pinned to the end of the header, outside the trigger so it can be pressed on its own'
+      }
+    },
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: '헤더를 여러분의 컨트롤로 통째로 갈아 끼웁니다. 넘긴 요소가 곧 trigger가 되어 클릭 핸들러와 aria-expanded, aria-controls를 받습니다',
+        en: 'Replaces the header entirely with a control of your own. The element you pass becomes the trigger, and is handed the click handler, aria-expanded and aria-controls'
+      }
+    },
+    {
+      name: 'indicator',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '헤더 끝의 chevron. 상태에 따라 회전합니다',
+        en: 'The chevron at the end of the header, turned to report the state'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '패널 내용의 안쪽 여백. 가장자리까지 채워야 하는 것에는 끄면 됩니다',
+        en: 'Inner padding around the panel’s content. Turn it off for something that should reach the edges'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. trigger가 응답을 멈춥니다',
+        en: 'Unavailable. The trigger stops answering'
+      }
+    },
+    {
+      name: 'hiddenUntilFound',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 패널을 DOM에 남겨 브라우저의 페이지 내 찾기가 찾아 열 수 있게 합니다. keepMounted보다 우선합니다',
+        en: 'Keeps a closed panel in the DOM so the browser’s own page search can find and open it. Overrides keepMounted'
+      }
+    },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 패널을 DOM에 남깁니다. 만드는 비용이 크거나 폼 상태를 쥐고 있는 내용에',
+        en: 'Keeps a closed panel in the DOM. For content that is expensive to build, or that holds form state'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '본문', en: 'The body' }
+    }
+  ],
+
+  Rating: [
+    {
+      name: 'value',
+      type: 'number',
+      description: {
+        ko: '지금 점수. onValueChange와 함께 제어할 때 씁니다',
+        en: 'How much is rated. Use with onValueChange for a controlled Rating'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'number',
+      default: '0',
+      description: { ko: '제어하지 않을 때의 시작 점수', en: 'Where an uncontrolled Rating starts' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: number) => void',
+      description: {
+        ko: '새 점수와 함께 호출됩니다. 지워진 Rating은 0을 보고합니다',
+        en: 'Called with the new score. 0 is what a cleared Rating reports'
+      }
+    },
+    {
+      name: 'count',
+      type: 'number',
+      default: '5',
+      description: {
+        ko: '별의 개수이자 만점',
+        en: 'How many stars there are, and therefore the highest score'
+      }
+    },
+    {
+      name: 'precision',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '고를 수 있는 최소 단위. 0.5면 반 개씩입니다. 고르는 범위만 정할 뿐, 4.3 같은 평균값은 언제나 그대로 그려집니다',
+        en: 'The smallest step that can be chosen — 0.5 gives half stars. It bounds what a reader can pick and nothing else: a value of 4.3 is drawn as 4.3 at every precision'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: { ko: '채워진 별을 그리는 글리프', en: 'The glyph a filled star is drawn with' }
+    },
+    {
+      name: 'emptyIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '빈 별을 그리는 글리프. 채워진 쪽과 같은 모양이어야 합니다',
+        en: 'And the one an empty star is drawn with. Has to be the same shape'
+      }
+    },
+    {
+      name: 'clearable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '이미 고른 점수를 다시 고르면 0으로 지웁니다',
+        en: 'Choosing the score that is already chosen clears it back to 0'
+      }
+    },
+    {
+      name: 'readOnly',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '바꿀 수 없는 점수 — 평균 별점, 남이 남긴 평가. input이 사라지고 role="img" 하나만 남으며, 라이브러리에서 유일하게 채도를 빼지 않는 readOnly입니다',
+        en: 'Shows the score without letting it be changed — an average, somebody else’s rating. The inputs go and one role="img" is left; the one readOnly in the library that does not drain the saturation'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 색 계열을 버리고 중립 회색이 됩니다',
+        en: 'Unavailable. Drops the colour family for neutral grey'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 전송 시 값을 식별합니다',
+        en: 'Identifies the value when a form is submitted'
+      }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '별을 고르기 전에는 폼이 제출되지 않습니다',
+        en: 'A form will not submit until a star has been chosen'
+      }
+    },
+    ...scaleProps("'md'", "'warning'", {
+      ko: '의미론적 색 역할. 기본값이 warning인 유일한 컴포넌트입니다 — 별에 기대되는 호박색이기 때문입니다',
+      en: 'Semantic colour role. warning by default — the amber a star is expected to be — which makes this the one component whose default colour is chosen by what the object is'
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '접근성 이름의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
+        en: 'Which language the accessible names are written in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '컨트롤 전체의 이름. 기본값은 locale이 정합니다',
+        en: 'Names the whole control. Defaults to the locale’s word for "Rating"'
+      }
+    },
+    {
+      name: 'valueLabel',
+      type: '(value: number, count: number) => string',
+      description: {
+        ko: '별 하나와, readOnly일 때 컨트롤 전체를 뭐라고 부를지. 기본값은 locale의 "5점 만점에 3점"입니다',
+        en: 'What one star, and the whole control once it is read only, is called. Defaults to the locale’s way of saying "3 out of 5"'
+      }
+    }
+  ],
+
+  BottomNavigation: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다',
+        en: 'Weight of the bar, said the way a container says it — the sheet is never dyed. What carries the colour family is the one item that is current'
+      },
+      sizeDescription: {
+        ko: '행의 최소 높이와 글리프, 이름의 스케일. md는 56px입니다',
+        en: 'The row’s floor and the scale of the glyph and the name. md is 56px'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 기본이 0입니다 — 바는 창 가장자리에 붙어 있지 떠 있지 않고, 내용과의 구분은 divider가 합니다',
+        en: 'Drop shadow depth. 0 by default: the bar is attached to the edge of the window rather than floating over it, and divider is what separates it from the content'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'string | number | null',
+      description: {
+        ko: '지금 있는 목적지. onValueChange와 함께 제어할 때 씁니다',
+        en: 'The destination the reader is on. Use with onValueChange for a controlled bar'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number | null',
+      description: {
+        ko: '제어하지 않을 때 처음 선택되는 목적지',
+        en: 'Which starts current, for an uncontrolled bar'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | number) => void',
+      description: {
+        ko: '눌린 목적지와 함께 호출됩니다',
+        en: 'Called with the destination that was pressed'
+      }
+    },
+    {
+      name: 'position',
+      type: POSITION,
+      default: "'fixed'",
+      shared: true,
+      description: {
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. 다른 컴포넌트와 달리 fixed가 기본입니다 — 하단 내비게이션은 창 아래 가장자리에 고정되는 것이기 때문입니다',
+        en: 'How the bar sits in the page’s scroll. fixed by default, against the static everything else defaults to: a bottom navigation is held against the bottom edge of the window'
+      }
+    },
+    {
+      name: 'labels',
+      type: "'all' | 'selected' | 'none'",
+      default: "'all'",
+      description: {
+        ko: '어떤 이름을 그릴지. 그리지 않은 이름도 문서에는 남아 스크린 리더가 읽습니다',
+        en: 'Which names are drawn. An undrawn name is still in the document for a screen reader'
+      }
+    },
+    {
+      name: 'divider',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '내용을 마주 보는 위쪽 가장자리에 헤어라인을 긋습니다. Toolbar와 반대로 기본이 켜짐입니다',
+        en: 'Draws a hairline along the top edge, against the content. On by default, the other way round from Toolbar'
+      }
+    },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'env(safe-area-inset-bottom)만큼 아래를 띄워 홈 인디케이터를 피합니다. 시트는 화면 아래 끝까지 그대로 닿습니다',
+        en: 'Keeps the bar clear of the home indicator by adding env(safe-area-inset-bottom) under it. The sheet still reaches the bottom of the screen'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '모든 목적지가 응답을 멈춥니다', en: 'Every destination stops answering' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '바가 읽히는 이름 — "Main", "Sections"',
+        en: 'The name the bar is announced by — "Main", "Sections"'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'nav 대신 다른 요소로 렌더링합니다 (render={<footer />}). Base UI의 render prop 그대로이며, 여기서는 거의 필요하지 않습니다 — 목적지의 줄은 내비게이션입니다',
+        en: 'Renders something other than a nav (render={<footer />}). Base UI’s own escape hatch, and rarely what you want here: a row of destinations is navigation'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'BottomNavigationItem들', en: 'The BottomNavigationItems' }
+    }
+  ],
+
+  BottomNavigationItem: [
+    {
+      name: 'value',
+      type: 'string | number',
+      required: true,
+      description: {
+        ko: '목적지를 식별합니다. onValueChange가 보고하는 값',
+        en: 'Identifies the destination. What onValueChange reports'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: { ko: '이름 위의 글리프', en: 'The glyph above the name' }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '버튼 대신 링크로 렌더링합니다',
+        en: 'Renders the item as a link rather than as a button'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 자리는 지킵니다',
+        en: 'Unavailable, but still part of the set'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '목적지의 이름. labels가 그리지 않을 때에도 읽힙니다',
+        en: 'The destination’s name. Read out even when labels keeps it undrawn'
+      }
+    }
+  ],
+
+  FloatingActionButton: [
+    ...sharedProps({
+      variant: "'solid'",
+      size: "'lg'",
+      elevation: '2',
+      sizeDescription: {
+        ko: '높이. 사다리는 Button과 같고 시작점만 한 칸 위입니다 — 보지 않고 엄지로 찾아 누르는 유일한 컨트롤이기 때문입니다',
+        en: 'Height. The same ladder a Button is on, started a step up: this is the one control that has to be found and hit with a thumb without being looked at'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다 — 이 버튼은 페이지의 일부가 아니라 그 위에 떠 있습니다',
+        en: 'Drop shadow depth. 2 for the reason Pill’s is: this button is not part of the page, it hovers over it'
+      }
+    }),
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      default: 'a plus',
+      description: { ko: '버튼의 글리프', en: 'The glyph on the button' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '버튼이 무엇을 하는지, 말로. 필수입니다 — 그림만으로 된 버튼은 접근성 이름이 아예 없습니다. extended일 때는 버튼에 쓰이는 말이기도 합니다',
+        en: 'What the button does, in words. Required: a button whose whole label is a drawing has no accessible name at all. With extended it is also the word written on it'
+      }
+    },
+    {
+      name: 'extended',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'label을 글리프 옆에 씁니다. 원이 스타디움이 됩니다',
+        en: 'Writes label beside the glyph, which turns the disc into a stadium'
+      }
+    },
+    {
+      name: 'openIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '다이얼이 열려 있는 동안의 글리프. 액션이 있으면 기본이 ×입니다. icon과 같은 노드를 넘기면 바뀌지 않습니다',
+        en: 'The glyph while the dial is open. Defaults to a × when the button has actions; pass the same node as icon to keep it unchanged'
+      }
+    },
+    {
+      name: 'position',
+      type: "'static' | 'sticky' | 'fixed' | 'absolute'",
+      default: "'fixed'",
+      description: {
+        ko: '어디에 앉는지. fixed는 창의 모서리에, absolute는 가장 가까운 positioned 조상의 모서리에 고정합니다',
+        en: 'How it sits. fixed pins it to a corner of the window; absolute pins it to a corner of the nearest positioned ancestor'
+      }
+    },
+    {
+      name: 'corner',
+      type: "'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'",
+      default: "'bottom-end'",
+      shared: true,
+      description: { ko: '어느 모서리에 붙는지', en: 'Which corner it is pinned to' }
+    },
+    {
+      name: 'offset',
+      type: 'number | string',
+      default: '16',
+      description: {
+        ko: '양쪽 가장자리에서 얼마나 안쪽인지. CSS 길이 또는 픽셀 수',
+        en: 'How far in from both edges, as a CSS length or a number of pixels'
+      }
+    },
+    {
+      name: 'direction',
+      type: "'top' | 'bottom'",
+      description: {
+        ko: '액션이 펼쳐지는 방향. 지정하지 않으면 corner에서 가져옵니다',
+        en: 'Which way the actions fan out. Taken from corner when it is left out'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '다이얼이 열려 있는지. 직접 제어할 때',
+        en: 'Whether the dial is open. Use with onOpenChange for a controlled dial'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '제어하지 않을 때의 시작 상태', en: 'Where an uncontrolled dial starts' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '다이얼이 열리거나 닫혔을 때', en: 'Called when the dial opens or closes' }
+    },
+    {
+      name: 'openOnHover',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마우스가 버튼에 머무르면 다이얼을 엽니다. 터치와 펜은 제외됩니다',
+        en: 'Opens the dial when a mouse comes to rest on the button. Touch and pen are excluded'
+      }
+    },
+    {
+      name: 'closeOnAction',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '액션을 누르면 다이얼을 닫습니다',
+        en: 'Closes the dial when one of the actions is pressed'
+      }
+    },
+    {
+      name: 'showLabels',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '각 액션의 이름을 옆의 로젠지에 그립니다. 꺼도 이름은 그대로 읽힙니다',
+        en: 'Draws each action’s name on a lozenge beside it. Turned off, the names are still read out'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '버튼과 모든 액션이 응답을 멈춥니다',
+        en: 'Unavailable. The button and every action stop answering'
+      }
+    },
+    {
+      name: 'onClick',
+      type: 'MouseEventHandler<HTMLButtonElement>',
+      description: {
+        ko: '버튼을 눌렀을 때. 액션이 있어도 그대로 발생하며, 그때는 누름이 다이얼도 여닫습니다',
+        en: 'Fires when the button is pressed. It still fires when the button has actions, where the press also opens and closes the dial'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'FloatingAction들, 있다면', en: 'The FloatingActions, if there are any' }
+    }
+  ],
+
+  FloatingAction: [
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: { ko: '글리프', en: 'The glyph' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '액션이 무엇을 하는지, 말로. 옆에 그려지고 언제나 읽힙니다',
+        en: 'What the action does, in words. Drawn beside it, and always read out'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 다이얼에는 남습니다',
+        en: 'Unavailable, but still part of the dial'
+      }
+    },
+    {
+      name: 'onClick',
+      type: 'MouseEventHandler<HTMLButtonElement>',
+      description: { ko: '액션을 눌렀을 때', en: 'Fires when the action is pressed' }
+    }
+  ],
+
   AnimateFade: [
     {
       name: 'from',

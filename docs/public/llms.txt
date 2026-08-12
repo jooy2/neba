@@ -52,6 +52,9 @@ Documentation is available in English (served from `/`) and Korean (served from 
 - [SegmentedButton](https://neba.cdget.com/components/inputs/segmented-button): Two or more choices in one pill, exactly one of them taken. A radio group underneath, with a tile that slides between the segments and transforms nothing.
 - [OtpField](https://neba.cdget.com/components/inputs/otp-field): A row of one-character slots for a short code typed in from somewhere else — a PIN, a texted verification code, an invite key. `charset` decides what is accepted, `groupSize` where the gaps fall.
 - [ColorPicker](https://neba.cdget.com/components/inputs/color-picker): A colour chosen by eye — a saturation square, a hue rail, an optional opacity rail, a field to type a value into and a grid of swatches. Reads and writes hex, `rgb()` and `hsl()`, with no colour library underneath.
+- [Rating](https://neba.cdget.com/components/inputs/rating): A score, as a row of stars. Choosable it is a radio group of real `<input>`s — one tab stop, arrow keys, a value in a form submission; `readOnly` it is a single `role="img"` reporting an average, and the one read-only in the library that keeps its colour. `precision` bounds what can be picked without rounding what is displayed.
+- [BottomNavigation](https://neba.cdget.com/components/inputs/bottom-navigation): A bar of an app's main destinations, fixed to the bottom edge of the window. A `<nav>` of ordinary buttons or links with `aria-current` on the one you are on, rather than a tab list it would not honour. `labels` decides which names are drawn; an undrawn one is still read out. `safeArea` clears a phone's home indicator.
+- [FloatingActionButton](https://neba.cdget.com/components/inputs/floating-action-button): The one action a screen is about, floating over it — a FAB. `extended` writes the label beside the glyph; `corner`, `offset` and `position` decide where it sits, including inside a region rather than the window. Given FloatingAction children it becomes a dial that fans out, closes on Escape and returns the focus.
 
 ### Display
 
@@ -120,6 +123,7 @@ Every chart takes the same data: a `series` array (or, for a pie, `data`) of num
 - [Popover](https://neba.cdget.com/components/surfaces/popover): A sheet that opens beside the control that opened it. Unlike a Tooltip it stays up and can be reached, so a form, a filter panel or a picker belongs in it; unlike a Dialog it does not take the page.
 - [Mockup](https://neba.cdget.com/components/surfaces/mockup): A device with a screen you can put anything on — a phone, a tablet, a monitor or a laptop, with the system's own status bar, dock or taskbar drawn on it. `device` picks the machine, `os` the chrome, `bezel` and `finish` the hardware, `notch` the camera cut-out. The screen is a viewport at the device's real resolution and a container named `neba-screen`, so content inside lays out against the device rather than the page.
 - [Spoiler](https://neba.cdget.com/components/surfaces/spoiler): Content that stays covered until somebody asks for it. The cover is a blur rather than a hidden box, so a reader can see that there is something there and how much of it.
+- [Collapsible](https://neba.cdget.com/components/surfaces/collapsible): One section that folds, standing on its own — what an Accordion is a set of. `title`, `subtitle`, `startIcon` and `action` build the header, `trigger` replaces it with a control of your own, and `hiddenUntilFound` lets the browser's page search open it.
 
 ### Transitions
 

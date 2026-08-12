@@ -130,6 +130,30 @@ export interface NebaMessages {
     /** What the trigger reads before anything has been chosen. */
     empty: string;
   };
+  /**
+   * Rating.
+   *
+   * A row of stars is the same case the ColorPicker's rails are: the whole
+   * control is a picture, and without these it says nothing at all to a reader
+   * who is not looking at it.
+   */
+  rating: {
+    /** Names the group, when the caller has not named it themselves. */
+    label: string;
+    /**
+     * What one star — and the whole control, once it is read only — is called.
+     * `{value}` and `{max}` are replaced with the numbers, already formatted
+     * for the locale.
+     *
+     * A sentence with both numbers in it rather than "3 stars", because a count
+     * of stars is a plural in most languages and a fraction in none of them:
+     * "3 out of 5" is one string per locale, and "3 stars" is one per locale
+     * per plural form.
+     */
+    value: string;
+    /** And what it is called before anything has been chosen. */
+    empty: string;
+  };
 }
 
 /** A translation may fill in as much or as little of the table as it has. */
@@ -176,6 +200,11 @@ const base: NebaMessages = {
     swatches: 'Preset colours',
     clear: 'Clear',
     empty: 'Choose a colour'
+  },
+  rating: {
+    label: 'Rating',
+    value: '{value} out of {max}',
+    empty: 'No rating'
   }
 };
 
@@ -220,6 +249,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: '기본 색상',
       clear: '지우기',
       empty: '색상 선택'
+    },
+    rating: {
+      label: '별점',
+      value: '{max}점 만점에 {value}점',
+      empty: '별점 없음'
     }
   },
   ja: {
@@ -254,6 +288,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'プリセットの色',
       clear: 'クリア',
       empty: '色を選択'
+    },
+    rating: {
+      label: '評価',
+      value: '{max} 段階中 {value}',
+      empty: '評価なし'
     }
   },
   'zh-hans': {
@@ -288,6 +327,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: '预设颜色',
       clear: '清除',
       empty: '选择颜色'
+    },
+    rating: {
+      label: '评分',
+      value: '{max} 分中的 {value} 分',
+      empty: '未评分'
     }
   },
   'zh-hant': {
@@ -322,6 +366,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: '預設顏色',
       clear: '清除',
       empty: '選擇顏色'
+    },
+    rating: {
+      label: '評分',
+      value: '{max} 分中的 {value} 分',
+      empty: '未評分'
     }
   },
   es: {
@@ -356,6 +405,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Colores predefinidos',
       clear: 'Borrar',
       empty: 'Elegir un color'
+    },
+    rating: {
+      label: 'Valoración',
+      value: '{value} de {max}',
+      empty: 'Sin valoración'
     }
   },
   pt: {
@@ -390,6 +444,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Cores predefinidas',
       clear: 'Limpar',
       empty: 'Escolher uma cor'
+    },
+    rating: {
+      label: 'Avaliação',
+      value: '{value} de {max}',
+      empty: 'Sem avaliação'
     }
   },
   fr: {
@@ -424,6 +483,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Couleurs prédéfinies',
       clear: 'Effacer',
       empty: 'Choisir une couleur'
+    },
+    rating: {
+      label: 'Note',
+      value: '{value} sur {max}',
+      empty: 'Aucune note'
     }
   },
   de: {
@@ -458,6 +522,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Vorgegebene Farben',
       clear: 'Löschen',
       empty: 'Farbe auswählen'
+    },
+    rating: {
+      label: 'Bewertung',
+      value: '{value} von {max}',
+      empty: 'Keine Bewertung'
     }
   },
   it: {
@@ -492,6 +561,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Colori predefiniti',
       clear: 'Cancella',
       empty: 'Scegli un colore'
+    },
+    rating: {
+      label: 'Valutazione',
+      value: '{value} su {max}',
+      empty: 'Nessuna valutazione'
     }
   },
   nl: {
@@ -526,6 +600,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Vooraf ingestelde kleuren',
       clear: 'Wissen',
       empty: 'Kies een kleur'
+    },
+    rating: {
+      label: 'Beoordeling',
+      value: '{value} van {max}',
+      empty: 'Geen beoordeling'
     }
   },
   pl: {
@@ -560,6 +639,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Kolory predefiniowane',
       clear: 'Wyczyść',
       empty: 'Wybierz kolor'
+    },
+    rating: {
+      label: 'Ocena',
+      value: '{value} z {max}',
+      empty: 'Brak oceny'
     }
   },
   ru: {
@@ -594,6 +678,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Готовые цвета',
       clear: 'Очистить',
       empty: 'Выберите цвет'
+    },
+    rating: {
+      label: 'Оценка',
+      value: '{value} из {max}',
+      empty: 'Без оценки'
     }
   },
   tr: {
@@ -628,6 +717,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Hazır renkler',
       clear: 'Temizle',
       empty: 'Bir renk seçin'
+    },
+    rating: {
+      label: 'Değerlendirme',
+      value: '{max} üzerinden {value}',
+      empty: 'Değerlendirilmedi'
     }
   },
   ar: {
@@ -662,6 +756,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'ألوان جاهزة',
       clear: 'مسح',
       empty: 'اختر لونًا'
+    },
+    rating: {
+      label: 'التقييم',
+      value: '{value} من {max}',
+      empty: 'بدون تقييم'
     }
   },
   hi: {
@@ -696,6 +795,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'पूर्व निर्धारित रंग',
       clear: 'साफ़ करें',
       empty: 'एक रंग चुनें'
+    },
+    rating: {
+      label: 'रेटिंग',
+      value: '{max} में से {value}',
+      empty: 'कोई रेटिंग नहीं'
     }
   },
   id: {
@@ -730,6 +834,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Warna preset',
       clear: 'Hapus',
       empty: 'Pilih warna'
+    },
+    rating: {
+      label: 'Peringkat',
+      value: '{value} dari {max}',
+      empty: 'Belum ada peringkat'
     }
   },
   vi: {
@@ -764,6 +873,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'Màu dựng sẵn',
       clear: 'Xóa',
       empty: 'Chọn màu'
+    },
+    rating: {
+      label: 'Đánh giá',
+      value: '{value} trên {max}',
+      empty: 'Chưa đánh giá'
     }
   },
   th: {
@@ -798,6 +912,11 @@ const translations: Record<string, PartialMessages> = {
       swatches: 'สีที่กำหนดไว้',
       clear: 'ล้าง',
       empty: 'เลือกสี'
+    },
+    rating: {
+      label: 'คะแนน',
+      value: '{value} จาก {max}',
+      empty: 'ยังไม่มีคะแนน'
     }
   }
 };
@@ -886,7 +1005,8 @@ export function resolveMessages(locale?: string): NebaMessages {
         chat: { ...base.chat, ...match.chat },
         empty: { ...base.empty, ...match.empty },
         table: { ...base.table, ...match.table },
-        color: { ...base.color, ...match.color }
+        color: { ...base.color, ...match.color },
+        rating: { ...base.rating, ...match.rating }
       }
     : base;
 

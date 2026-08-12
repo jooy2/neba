@@ -279,6 +279,39 @@ export function EllipsisIcon() {
   );
 }
 
+/**
+ * The star a Rating is drawn out of, as one path used twice.
+ *
+ * Two components rather than one with a prop, and one geometry rather than two
+ * drawings, because the empty star and the filled one are laid *on top of each
+ * other*: a Rating shows a fraction by clipping the filled copy to a percentage
+ * of the width, and a half star only lands on the outline if the two shapes are
+ * congruent to the pixel. Two hand-drawn stars would be half a pixel apart at
+ * some size, and that shows up as a shadow along one edge of every star.
+ *
+ * The points are a regular five-pointed star about (8, 8) — outer radius 6.6,
+ * inner 2.9 — with round joins, which is what keeps the stroked copy inside the
+ * 16×16 box that every other glyph here is drawn in.
+ */
+const starPath =
+  'M8 1.4 9.71 5.65 14.28 5.96 10.76 8.9 11.88 13.34 8 10.9 4.12 13.34 5.24 8.9 1.72 5.96 6.29 5.65Z';
+
+export function StarIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d={starPath} fill="currentColor" stroke="currentColor" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function StarOutlineIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d={starPath} stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

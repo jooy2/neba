@@ -109,9 +109,9 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 ### Components
 
-**Inputs** — Button, IconButton, ButtonGroup, SegmentedButton, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker
+**Inputs** — Button, IconButton, ButtonGroup, SegmentedButton, FloatingActionButton (with FloatingAction), TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Rating, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, BottomNavigation, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker
 
-**Surfaces** — Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup
+**Surfaces** — Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup
 
 **Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, List, Table, DataTable, Timeline, Breadcrumb, TreeView
 
@@ -123,7 +123,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Recently added** — Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

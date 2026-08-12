@@ -14,6 +14,8 @@ import {
   Badge,
   BarChart,
   Blockquote,
+  BottomNavigation,
+  BottomNavigationItem,
   Box,
   Breadcrumb,
   BreadcrumbItem,
@@ -24,6 +26,7 @@ import {
   ChatBubble,
   Checkbox,
   Chip,
+  Collapsible,
   ColorPicker,
   Combobox,
   Container,
@@ -38,6 +41,8 @@ import {
   Drawer,
   Empty,
   FilePicker,
+  FloatingAction,
+  FloatingActionButton,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -68,6 +73,7 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  Rating,
   ScatterChart,
   Segment,
   SegmentedButton,
@@ -1445,6 +1451,75 @@ function ShowcaseBody() {
                 ))}
               </div>
             </Mockup>
+          </div>
+        </section>
+
+        {/* What a product page is made of below the fold: a score somebody
+            else left, and the detail nobody reads until they are deciding.
+            The Rating is `readOnly`, so it is a picture of a number rather
+            than twenty tab stops; the Collapsible is one Accordion section
+            with nothing beside it. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Collapsible · Rating</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card size="sm" title="Cold brew concentrate" subtitle="1 litre, unsweetened">
+              <div className="flex items-center gap-2">
+                <Rating size="sm" value={4.5} readOnly />
+                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                  4.5 · 1,284 reviews
+                </Typography>
+              </div>
+            </Card>
+
+            <div className="flex flex-col gap-2">
+              <Collapsible size="sm" title="Delivery and returns" defaultOpen>
+                Orders placed before 2pm ship the same day. Returns are free for thirty days.
+              </Collapsible>
+              <Collapsible size="sm" title="Leave a review">
+                <Rating size="sm" defaultValue={0} label="Your rating" />
+              </Collapsible>
+            </div>
+          </div>
+        </section>
+
+        {/* The phone half of the same product, where the two components that
+            only exist on a small screen live. The bar is `static` here because
+            it is inside a panel rather than against the window; the button is
+            `absolute` for the same reason, and lifted clear of the bar. */}
+        <section className="flex flex-col gap-3">
+          <Caption>BottomNavigation · FloatingActionButton</Caption>
+          <div className="flex justify-center">
+            <div className="relative flex h-64 w-full max-w-64 flex-col overflow-hidden rounded-[var(--neba-radius-lg)] border [border-color:var(--neba-border)]">
+              <div className="flex flex-1 flex-col gap-2 p-4">
+                <Typography level="h6">Basket</Typography>
+                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                  Two items, ready to check out.
+                </Typography>
+              </div>
+
+              <FloatingActionButton
+                position="absolute"
+                size="md"
+                offset={72}
+                label="Add"
+                icon={<PlusIcon />}
+              >
+                <FloatingAction label="Scan a code" icon={<SearchIcon />} />
+                <FloatingAction label="Repeat last order" icon={<DotIcon />} />
+              </FloatingActionButton>
+
+              <BottomNavigation size="sm" position="static" label="Shop" defaultValue="basket">
+                <BottomNavigationItem value="browse" icon={<SearchIcon />}>
+                  Browse
+                </BottomNavigationItem>
+                <BottomNavigationItem value="basket" icon={<DotIcon />}>
+                  Basket
+                </BottomNavigationItem>
+                <BottomNavigationItem value="alerts" icon={<BellIcon />}>
+                  Alerts
+                </BottomNavigationItem>
+              </BottomNavigation>
+            </div>
           </div>
         </section>
 

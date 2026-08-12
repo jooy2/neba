@@ -20,6 +20,8 @@ import {
   Badge,
   BarChart,
   Blockquote,
+  BottomNavigation,
+  BottomNavigationItem,
   Box,
   Breadcrumb,
   BreadcrumbItem,
@@ -32,6 +34,7 @@ import {
   Chip,
   ColorPicker,
   Combobox,
+  Collapsible,
   Container,
   DataTable,
   DatePicker,
@@ -43,6 +46,8 @@ import {
   Drawer,
   Empty,
   FilePicker,
+  FloatingAction,
+  FloatingActionButton,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -72,6 +77,7 @@ import {
   ProgressLinear,
   Radio,
   RadioGroup,
+  Rating,
   ScatterChart,
   Segment,
   SegmentedButton,
@@ -157,6 +163,42 @@ function GalleryDotIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none">
       <circle cx="8" cy="8" r="4" fill="currentColor" />
+    </svg>
+  );
+}
+
+function GalleryHomeIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <path
+        d="M2.5 7 8 2.5 13.5 7v6a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V7Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function GallerySearchIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <circle cx="7" cy="7" r="4.25" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m10.25 10.25 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function GalleryPersonIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="5.75" r="2.75" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M3 13.25a5 5 0 0 1 10 0"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -491,6 +533,54 @@ const GROUPS: Group[] = [
         },
         path: '/components/inputs/color-picker',
         preview: <ColorPicker size="sm" defaultValue="#1a58d1" />
+      },
+      {
+        name: 'Rating',
+        summary: {
+          ko: '별 한 줄로 매기는 점수',
+          en: 'A score, as a row of stars'
+        },
+        path: '/components/inputs/rating',
+        preview: <Rating size="sm" defaultValue={4} />
+      },
+      {
+        name: 'BottomNavigation',
+        summary: {
+          ko: '창 아래 가장자리에 고정되는 목적지 줄',
+          en: "A row of destinations held against the window's bottom edge"
+        },
+        path: '/components/inputs/bottom-navigation',
+        preview: (
+          <div className="w-full max-w-56">
+            <BottomNavigation size="sm" position="static" defaultValue="home">
+              <BottomNavigationItem value="home" icon={<GalleryHomeIcon />}>
+                Home
+              </BottomNavigationItem>
+              <BottomNavigationItem value="search" icon={<GallerySearchIcon />}>
+                Search
+              </BottomNavigationItem>
+              <BottomNavigationItem value="you" icon={<GalleryPersonIcon />}>
+                You
+              </BottomNavigationItem>
+            </BottomNavigation>
+          </div>
+        )
+      },
+      {
+        name: 'FloatingActionButton',
+        summary: {
+          ko: '화면 위에 떠 있는 하나의 액션, 그리고 펼쳐지는 다이얼',
+          en: 'One action floating over a screen, and the dial that fans out of it'
+        },
+        path: '/components/inputs/floating-action-button',
+        preview: (
+          <div className="flex items-center justify-center gap-3">
+            <FloatingActionButton position="static" size="md" label="Add" />
+            <FloatingActionButton position="static" size="md" label="Compose" extended>
+              <FloatingAction label="Note" />
+            </FloatingActionButton>
+          </div>
+        )
       }
     ]
   },
@@ -833,6 +923,21 @@ const GROUPS: Group[] = [
           <div className="flex w-full items-end justify-center gap-3">
             <Mockup device="desktop" hardware="laptop" width={132} />
             <Mockup device="mobile" width={44} />
+          </div>
+        )
+      },
+      {
+        name: 'Collapsible',
+        summary: {
+          ko: '혼자 서 있는 접이식 섹션 하나',
+          en: 'One section that folds, standing on its own'
+        },
+        path: '/components/surfaces/collapsible',
+        preview: (
+          <div className="w-full max-w-56">
+            <Collapsible size="sm" title="What is in the box">
+              A sled, mostly.
+            </Collapsible>
           </div>
         )
       }
