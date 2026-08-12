@@ -55,8 +55,23 @@ The number of slots in the row stays constant as the page changes. The window sl
 
 </Demo>
 
+### getPageHref
+
+Return the address of a page and the numbers in the row become real `<a href>`. A crawler cannot press a button, so without this everything past page one of a list does not exist to a search engine. The browser's own behaviour comes back with it: open in a new tab, copy the address, see where a press goes before making it. The two arrows carry `rel="prev"` and `rel="next"`.
+
+Pass `onPageChange` alongside it and the navigation is cancelled for the handler to answer — the shape a client-side router wants, keeping the page it already has. With no handler, the link does what a link does. A press carrying a modifier key is always left to the browser.
+
+The page being read and an arrow at the end of the row stay `<button>`. An `<a>` cannot be `disabled`, so one left as a link is one a keyboard still lands on and a crawler still follows.
+
+<Demo src="pagination/links">
+
+<<< @/.vitepress/demos/pagination/links.tsx
+
+</Demo>
+
 ## Accessibility
 
 - Renders a `<nav>` around a `<ul>`, with `aria-current="page"` on the current page.
 - The ellipsis is punctuation rather than a control, so it is not rendered as a disabled button.
+- With `getPageHref` the numbers are links, so they appear in a screen reader's list of links and a keyboard reader can see where each one goes.
 - Every accessible name is settable: `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`. With more than one pagination on a screen, use `label` to say what each one paginates.

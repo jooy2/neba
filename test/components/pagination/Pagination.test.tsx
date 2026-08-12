@@ -273,6 +273,110 @@ describe('Pagination', () => {
     });
   });
 
+  describe('as links', () => {
+    it('renders every page a reader is not on as a real link', async () => {
+      const screen = await render(
+        <Pagination count={5} page={2} getPageHref={(page) => `/posts?page=${page}`} />
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Page 3' }))
+        .toHaveAttribute('href', '/posts?page=3');
+      await expect
+        .element(screen.getByRole('link', { name: 'Page 1' }))
+        .toHaveAttribute('href', '/posts?page=1');
+    });
+
+    // The page being read is not somewhere to go, and it is the one number in
+    // the row that carries `aria-current`.
+    it('leaves the current page as a button', async () => {
+      const screen = await render(
+        <Pagination count={5} page={2} getPageHref={(page) => `/posts?page=${page}`} />
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Page 2' }))
+        .toHaveAttribute('aria-current', 'page');
+      expect(screen.getByRole('link', { name: 'Page 2' }).query()).toBeNull();
+    });
+
+    it('marks the two arrows with the rel a crawler reads', async () => {
+      const screen = await render(
+        <Pagination count={5} page={3} getPageHref={(page) => `/posts?page=${page}`} />
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Previous page' }))
+        .toHaveAttribute('rel', 'prev');
+      await expect
+        .element(screen.getByRole('link', { name: 'Next page' }))
+        .toHaveAttribute('rel', 'next');
+    });
+
+    // `disabled` is not something an `<a>` can be: a stepper left as a link at
+    // the end of the row is one a keyboard still lands on and a crawler follows.
+    it('keeps a stepper with nowhere to go as a button', async () => {
+      const screen = await render(
+        <Pagination count={5} page={1} showEdges getPageHref={(page) => `/posts?page=${page}`} />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
+      expect(screen.getByRole('link', { name: 'Previous page' }).query()).toBeNull();
+      await expect.element(screen.getByRole('button', { name: 'First page' })).toBeDisabled();
+    });
+
+    it('cancels the navigation when a handler is there to answer it', async () => {
+      const onPageChange = vi.fn();
+      let reachedParent: boolean | null = null;
+      const screen = await render(
+        <div
+          onClick={(event) => {
+            reachedParent = event.defaultPrevented;
+            // Nothing should actually leave the page mid-test.
+            event.preventDefault();
+          }}
+        >
+          <Pagination
+            count={5}
+            page={1}
+            getPageHref={(page) => `/posts?page=${page}`}
+            onPageChange={onPageChange}
+          />
+        </div>
+      );
+
+      await screen.getByRole('link', { name: 'Page 2' }).click();
+
+      expect(onPageChange).toHaveBeenCalledWith(2);
+      expect(reachedParent).toBe(true);
+    });
+
+    it('leaves the navigation to the browser when nothing answers it', async () => {
+      let reachedParent: boolean | null = null;
+      const screen = await render(
+        <div
+          onClick={(event) => {
+            reachedParent = event.defaultPrevented;
+            event.preventDefault();
+          }}
+        >
+          <Pagination count={5} page={1} getPageHref={(page) => `/posts?page=${page}`} />
+        </div>
+      );
+
+      await screen.getByRole('link', { name: 'Page 2' }).click();
+
+      expect(reachedParent).toBe(false);
+    });
+
+    it('is a row of buttons with no `getPageHref`', async () => {
+      const screen = await render(<Pagination count={5} page={2} />);
+
+      expect(screen.getByRole('link').query()).toBeNull();
+      await expect.element(screen.getByRole('button', { name: 'Page 3' })).toBeInTheDocument();
+    });
+  });
+
   describe('style props', () => {
     // The current page is always filled, whatever the row's resting variant is.
     it('fills the current page and leaves the rest at rest', async () => {

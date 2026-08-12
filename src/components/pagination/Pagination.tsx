@@ -35,6 +35,23 @@ export interface PaginationProps
   elevation?: NebaElevation;
   /** Unavailable. Every button in the row stops answering. */
   disabled?: boolean;
+  /**
+   * The address of a page, which turns every number in the row into a real
+   * link.
+   *
+   * Without it the row is buttons, and a crawler cannot press one — so a paged
+   * list of articles, products or search results exists for a reader and stops
+   * at page one for everything else. With it the numbers are `<a href>`, the
+   * two arrows carry `rel="prev"` / `rel="next"`, and the browser's own
+   * behaviour comes back: open in a new tab, copy the address, see where a
+   * press is going before making it.
+   *
+   * `onPageChange` still fires and the press is still cancelled first, so a
+   * client-side router keeps the page it already has. A link with nowhere to go
+   * — the current page, a stepper at the end of the row — stays a `<button>`,
+   * because `disabled` is not something an `<a>` can be.
+   */
+  getPageHref?: (page: number) => string;
   /** Accessible name of the `<nav>`. @default 'Pagination' */
   label?: string;
   /** Accessible name of a page button. @default `Page ${page}` */
@@ -175,6 +192,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
     showEdges = false,
     showArrows = true,
     disabled = false,
+    getPageHref,
     label = 'Pagination',
     pageLabel = (value) => `Page ${value}`,
     previousLabel = 'Previous page',
@@ -212,6 +230,38 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
   const atStart = current <= 1;
   const atEnd = current >= count;
 
+  /*
+   * A link only where there is somewhere to go. The page being read and a
+   * stepper at the end of the row are both `disabled`, and `disabled` is not
+   * something an `<a>` can be — a link that only looks unavailable is one a
+   * keyboard still lands on and a crawler still follows.
+   */
+  const linkProps = (to: number, inert: boolean, rel?: 'prev' | 'next') =>
+    getPageHref && !inert ? { render: <a href={getPageHref(to)} rel={rel} /> } : null;
+
+  /*
+   * Who answers the press.
+   *
+   * With an `href` and a handler both, the handler wins and the navigation is
+   * cancelled: that is a client-side router keeping the page it already has.
+   * With an `href` and no handler, the link is left to do what a link does —
+   * which is also what makes the row work with JavaScript still loading.
+   */
+  const press = (event: React.MouseEvent<HTMLElement>, to: number) => {
+    // A press carrying a modifier is the reader asking the browser for it: a
+    // new tab, a new window, a saved copy. Never ours to cancel.
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    if (getPageHref && !onPageChange) {
+      return;
+    }
+
+    event.preventDefault();
+    go(to);
+  };
+
   /**
    * The steppers. Icon-only Buttons, so they go square and land on exactly the
    * same footprint as a single-digit page — a row whose ends are a different
@@ -226,7 +276,8 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
     to: number,
     inert: boolean,
     rotation: string,
-    glyph: React.ReactNode
+    glyph: React.ReactNode,
+    rel?: 'prev' | 'next'
   ) => (
     <li key={key} className="flex">
       <Button
@@ -238,7 +289,8 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         disabled={disabled || inert}
         aria-label={accessibleName}
         startIcon={<span className={`flex items-center ${rotation}`}>{glyph}</span>}
-        onClick={() => go(to)}
+        onClick={(event) => press(event, to)}
+        {...linkProps(to, disabled || inert, rel)}
       />
     </li>
   );
@@ -269,7 +321,8 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
               current - 1,
               atStart,
               'rotate-90 rtl:-rotate-90',
-              <ChevronIcon />
+              <ChevronIcon />,
+              'prev'
             )
           : null}
 
@@ -299,7 +352,11 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
                 aria-label={pageLabel(slot)}
                 aria-current={slot === current ? 'page' : undefined}
                 className="tabular-nums"
-                onClick={() => go(slot)}
+                onClick={(event) => press(event, slot)}
+                // The page being read is not somewhere to go, so it keeps its
+                // `aria-current` and stops being a link — the same rule
+                // Breadcrumb applies to the step the reader is standing on.
+                {...linkProps(slot, disabled || slot === current)}
               >
                 {slot}
               </Button>
@@ -327,7 +384,8 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
               current + 1,
               atEnd,
               '-rotate-90 rtl:rotate-90',
-              <ChevronIcon />
+              <ChevronIcon />,
+              'next'
             )
           : null}
 

@@ -4892,6 +4892,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'getPageHref',
+      type: '(page: number) => string',
+      description: {
+        ko: '페이지의 주소. 넘기면 번호가 실제 링크가 되어 크롤러가 따라갈 수 있고, 좌우 화살표에 rel="prev" / rel="next"가 붙습니다',
+        en: 'The address of a page. Turns the numbers into real links a crawler can follow, and marks the two arrows rel="prev" / rel="next"'
+      }
+    },
+    {
       name: 'label',
       type: 'string',
       default: "'Pagination'",
