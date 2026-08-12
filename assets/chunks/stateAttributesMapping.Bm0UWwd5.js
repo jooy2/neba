@@ -1,0 +1,1 @@
+let e=function(t){return t.startingStyle="data-starting-style",t.endingStyle="data-ending-style",t}({});const n={"data-starting-style":""},a={"data-ending-style":""},s={transitionStatus(t){return t==="starting"?n:t==="ending"?a:null}};export{e as T,s as t};

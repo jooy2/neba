@@ -1,0 +1,1 @@
+import{r as o}from"./index.CAJ_Adw3.js";import{u as a}from"./useRenderElement.Dqq6PM6C.js";import{u as n,p}from"./progress.p2XAyEcD.js";const P=o.forwardRef(function(e,r){const{render:i,className:c,style:u,...t}=e,{state:s}=n();return a("div",e,{state:s,ref:r,props:t,stateAttributesMapping:p})});export{P};

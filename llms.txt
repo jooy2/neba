@@ -1,0 +1,156 @@
+# Neba
+
+> Neba is a React UI component library published to npm as `neba`. Behaviour and accessibility come from [Base UI](https://base-ui.com) primitives; styling comes from [Tailwind CSS](https://tailwindcss.com) v4. It ships as ESM only with type declarations included, has one runtime dependency (`@base-ui/react`), and supports dark mode out of the box.
+
+The design language: **a Neba surface is a sheet of cut acrylic, not a moulded plastic key.** A control never moves — there is no `transform` on press — it answers in colour and depth instead. Press is instant and release is slow. `elevation` defaults to `0`, and `0` means no shadow at all; the acrylic edge is what separates a surface from the page.
+
+Every component draws from one shared prop vocabulary, so `size="md"` means the same thing everywhere:
+
+```ts
+type NebaSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type NebaColor = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
+type NebaDensity = 'default' | 'compact';
+type NebaVariant = 'solid' | 'outline' | 'text';
+type NebaElevation = 0 | 1 | 2 | 3;
+```
+
+`color` is one of six semantic families, never an arbitrary value like `#4072cd`. Setup is `npm install neba`, then one line in the app's CSS entry point — `@import 'neba/styles.css';`. That file ships compiled, so Tailwind is not a requirement on the consumer's side. A project that already runs Tailwind v4 imports `neba/tailwind.css` instead, which is the token sheet and registers the package as a Tailwind source, so consumers never write an `@source` of their own.
+
+Documentation is available in English (served from `/`) and Korean (served from `/ko/`). The links below are the English pages; prefix any path with `/ko` for the Korean version.
+
+## Guide
+
+- [Getting started](https://neba.cdget.com/guide/getting-started): Install, the one-line CSS setup, what the bundled reset does, the Tailwind path, first component, dark mode via `data-theme` or a class, browser support.
+- [Design language](https://neba.cdget.com/design/design-language): The cut-acrylic rule and everything that follows from it — the four surface layers, the no-transform rule, instant press and slow release, the elevation ladder, translucency and blur.
+- [Colour](https://neba.cdget.com/design/color): The six semantic families, the five hand-picked tokens per family, and how everything else is derived with `color-mix()`. Includes a live palette table read back from the browser.
+- [Prop conventions](https://neba.cdget.com/design/prop-conventions): What the shared props mean, which components take which axes, and the rule against inventing a second spelling for an idea that already has one.
+
+## Components
+
+- [All components](https://neba.cdget.com/components/): Every released component on one page, each card a running preview rather than a picture.
+
+### Inputs
+
+- [Button](https://neba.cdget.com/components/inputs/button): A control that runs an action. Base UI's Button primitive with Neba's acrylic surface on top.
+- [ButtonGroup](https://neba.cdget.com/components/inputs/button-group): A row of buttons that belong together; corners facing a neighbour are squared off and shared props are set once for the whole set.
+- [TextField](https://neba.cdget.com/components/inputs/text-field): Single- or multi-line text input. Label, description and error are one component, wired together by Base UI's Field.
+- [Select](https://neba.cdget.com/components/inputs/select): One value chosen from a list. The trigger is a TextField's shell wearing a chevron.
+- [Checkbox](https://neba.cdget.com/components/inputs/checkbox): A single yes/no, or one member of a set.
+- [RadioGroup](https://neba.cdget.com/components/inputs/radio-group): A set of options where exactly one is chosen.
+- [Switch](https://neba.cdget.com/components/inputs/switch): An immediate on/off. The difference from a Checkbox is temporal, not visual.
+- [Slider](https://neba.cdget.com/components/inputs/slider): A value chosen along a range. Pass an array and it becomes a range slider.
+- [Menu](https://neba.cdget.com/components/inputs/menu): A list of actions that appears when something is pressed. Nests, holds state, fully keyboard-driven.
+- [FilePicker](https://neba.cdget.com/components/inputs/file-picker): A dashed box you drop files on, or press to open the file dialog.
+- [Pagination](https://neba.cdget.com/components/inputs/pagination): A row of page numbers, every one of them a real Button.
+- [Combobox](https://neba.cdget.com/components/inputs/combobox): A field you can type into and also choose from; the text filters the list and can become the value itself.
+- [NumberField](https://neba.cdget.com/components/inputs/number-field): A field that only holds a number — a TextField's shell plus stepping, clamping and formatting.
+- [IconButton](https://neba.cdget.com/components/inputs/icon-button): A round button with a glyph in it and nothing else. Everything else is Button's, and `label` is required rather than optional.
+- [DatePicker](https://neba.cdget.com/components/inputs/date-picker): One day, chosen from a calendar. The month name and the year are each a button that opens a grid of its own, so any month is two clicks away and any year is three.
+- [TimePicker](https://neba.cdget.com/components/inputs/time-picker): A time of day, chosen from columns. Bounds are checked against the span a row stands for, which is what keeps half past nine reachable when the minimum is 09:30.
+- [DateTimePicker](https://neba.cdget.com/components/inputs/date-time-picker): A day and a time in one popup, with the calendar and the clock at the same height and `minDate` read at full precision.
+- [DateRangePicker](https://neba.cdget.com/components/inputs/date-range-picker): A span between two days. Two months side by side, a band drawn as the pointer moves, and named presets beside them.
+- [SegmentedButton](https://neba.cdget.com/components/inputs/segmented-button): Two or more choices in one pill, exactly one of them taken. A radio group underneath, with a tile that slides between the segments and transforms nothing.
+- [OtpField](https://neba.cdget.com/components/inputs/otp-field): A row of one-character slots for a short code typed in from somewhere else — a PIN, a texted verification code, an invite key. `charset` decides what is accepted, `groupSize` where the gaps fall.
+- [ColorPicker](https://neba.cdget.com/components/inputs/color-picker): A colour chosen by eye — a saturation square, a hue rail, an optional opacity rail, a field to type a value into and a grid of swatches. Reads and writes hex, `rgb()` and `hsl()`, with no colour library underneath.
+- [Rating](https://neba.cdget.com/components/inputs/rating): A score, as a row of stars. Choosable it is a radio group of real `<input>`s — one tab stop, arrow keys, a value in a form submission; `readOnly` it is a single `role="img"` reporting an average, and the one read-only in the library that keeps its colour. `precision` bounds what can be picked without rounding what is displayed.
+- [BottomNavigation](https://neba.cdget.com/components/inputs/bottom-navigation): A bar of an app's main destinations, fixed to the bottom edge of the window. A `<nav>` of ordinary buttons or links with `aria-current` on the one you are on, rather than a tab list it would not honour. `labels` decides which names are drawn; an undrawn one is still read out. `safeArea` clears a phone's home indicator.
+- [FloatingActionButton](https://neba.cdget.com/components/inputs/floating-action-button): The one action a screen is about, floating over it — a FAB. `extended` writes the label beside the glyph; `corner`, `offset` and `position` decide where it sits, including inside a region rather than the window. Given FloatingAction children it becomes a dial that fans out, closes on Escape and returns the focus.
+
+### Display
+
+- [Typography](https://neba.cdget.com/components/display/typography): The library's type scale on its own.
+- [Divider](https://neba.cdget.com/components/display/divider): A rule between two things. Not a surface — no acrylic, no light, no shadow.
+- [Chip](https://neba.cdget.com/components/display/chip): A compact token — a tag, a filter, a status, an entity plucked out of a list.
+- [DataTable](https://neba.cdget.com/components/display/data-table): A table for tens of thousands of rows: only the ones on screen are in the DOM, and it sorts, searches, pages and selects them. `height` is what turns virtual scrolling on. Selection follows the file manager — click, Ctrl-click, Shift-click, click-and-drag, and the arrow keys with the same modifiers — with `checkboxes` as an option rather than the default. Headings sort (single or multi-key) and drag wider; adjacent columns sharing a `group` merge into a second header row; `paging="pages"` swaps the scroll for a footer with a page-size Select and a Pagination. `manual` hands any of sort, filter and paging back to the caller for a table whose rows come from a server.
+- [Table](https://neba.cdget.com/components/display/table): A grid of data rendered from a column list and a row list; there are no `<tr>`s to write.
+- [List](https://neba.cdget.com/components/display/list): A stack of rows — navigation, settings, results, anything that repeats.
+- [Badge](https://neba.cdget.com/components/display/badge): A small mark in the corner of something else: unread mail, a status dot, a count on a tab.
+- [Icon](https://neba.cdget.com/components/display/icon): A glyph at a known size, in a known colour. Neba ships no icon set; the glyph is a prop rather than children, and `color` defaults to `inherit`.
+- [Blockquote](https://neba.cdget.com/components/display/blockquote): Somebody else's words, set apart from your own. An attribution turns it into the `figure`/`blockquote`/`figcaption` markup the HTML spec asks for.
+- [Shortcut](https://neba.cdget.com/components/display/shortcut): A keyboard key or a combination of them. `Mod` resolves to Command on a Mac and Control everywhere else, and every glyph key carries its name for a screen reader.
+- [Highlight](https://neba.cdget.com/components/display/highlight): Marks the words a reader is looking for inside text they were already reading. Case, whole words and regular expressions are props; elements in the children are walked into rather than rejected.
+- [Timeline](https://neba.cdget.com/components/display/timeline): A sequence of steps in the order they happen. An `<ol>`, because the order is the content; `active` is an index rather than a value, because nothing here is chosen.
+- [Avatar](https://neba.cdget.com/components/display/avatar): A picture of a person or a thing, at a known size. Falls back to initials, a glyph or a silhouette when there is no image, so it is never an empty box.
+- [Breadcrumb](https://neba.cdget.com/components/display/breadcrumb): The trail of pages above the one being read. `maxItems` collapses the middle of a long trail, and the last item is the current page rather than a link.
+- [TextLink](https://neba.cdget.com/components/display/text-link): A link, in a sentence or on its own. No surface and no height of its own — what it has is the line under it, and a mark for the links that take over the window.
+- [TreeView](https://neba.cdget.com/components/display/tree-view): Rows that belong to one another and open and shut — a folder listing, a navigation sidebar, any grouped list a reader needs to fold away. A row can select or can be an `href`.
+
+### Charts
+
+- [Statistic](https://neba.cdget.com/components/charts/statistic): A number with its name on it, and — given a `previousValue` — how far it has moved. `betterWhen` decides which direction is coloured as good.
+- [Sparkline](https://neba.cdget.com/components/charts/sparkline): A word-sized picture of a trend, with no axes, no grid and no legend — for beside a number, inside a sentence or in a table cell. `shape` picks a line, an area or bars; it scales itself to its own range unless `min` and `max` say otherwise, which is what makes two of them comparable.
+- [LineChart](https://neba.cdget.com/components/charts/line-chart): One or more series against an ordered category axis, for when the space between two points is a journey rather than two separate facts. `curve` is straight, monotone-smooth or stepped; a `null` breaks the line rather than being drawn as a zero; the value axis crops to the data because a line encodes a position.
+- [AreaChart](https://neba.cdget.com/components/charts/area-chart): A line with the space under it filled, for a quantity that adds up to something. `stacked` makes the top edge the total and `stacked="full"` normalises every category to 100%, which turns the chart from being about size into being about the mix.
+- [BarChart](https://neba.cdget.com/components/charts/bar-chart): Lengths compared across categories. The value axis starts at zero and cannot be talked out of it; `orientation="horizontal"` is the right answer whenever the category names are words; grouped, stacked and 100%-stacked answer three different questions.
+- [ScatterChart](https://neba.cdget.com/components/charts/scatter-chart): Two measures per point plotted against each other, for reading whether they move together. Both axes measure, so every point carries an `x` that is a number or a `Date`; a point that also carries a `z` is drawn as a bubble whose *area* is that number, which is what makes a scatter plot and a bubble chart one component. Past three series the marks take a shape each, because the palette only separates three on a plot where any two of them can end up side by side.
+- [TimelineChart](https://neba.cdget.com/components/charts/timeline-chart): Rows of spans against a calendar — a Gantt. Each series is a row and each datum a `{ start, end }`, which is its own type rather than a widened `NebaChartPoint`; the axis picks its own unit (seconds through years) and ticks where a calendar ticks rather than on a 1-2-5 step. Not the same component as Timeline, which is a list of steps in `display` and draws no axis.
+- [HeatmapChart](https://neba.cdget.com/components/charts/heatmap-chart): A magnitude per cell, coloured rather than measured, in two shapes from one data model — `shape="grid"` for two categorical axes, `shape="treemap"` for squarified tiles sized by share. Colour encodes *size* and so comes off a one-hue sequential ramp (`--neba-chart-seq-*`) or a two-hue diverging one, never the eight-slot categorical palette; the legend is a scale bar with its ends labelled rather than a list of swatches.
+- [PieChart](https://neba.cdget.com/components/charts/pie-chart): Parts of a whole as slices of a circle, as a pie, a donut or a semicircle. Good for one question — is one of these most of it — and past six slices a BarChart is the honest answer.
+
+Every chart takes the same data: a `series` array (or, for a pie, `data`) of numbers, `null`s that mean a gap rather than a zero, or points carrying their own `x`, `color` and `label`. Colours come from a fixed eight-slot ramp that is never cycled and whose adjacent pairs are verified against simulated protanopia and deuteranopia; a series' slot follows its place in the array, so filtering the legend never repaints the survivors. Every chart also renders its data as a visually hidden table, so no value is reachable only by pointer, and the plot is focusable with the arrow keys stepping the crosshair.
+
+### Feedback
+
+- [Alert](https://neba.cdget.com/components/feedback/alert): A message about something that happened, set into the page it is about.
+- [Dialog](https://neba.cdget.com/components/feedback/dialog): A sheet that takes the page away until it is answered.
+- [Toast](https://neba.cdget.com/components/feedback/toast): A message that arrives on its own, over whatever is already on the page.
+- [Tooltip](https://neba.cdget.com/components/feedback/tooltip): A short label that appears when the pointer rests on something.
+- [ProgressLinear](https://neba.cdget.com/components/feedback/progress-linear): A bar that fills. The workhorse of the three progress indicators.
+- [ProgressCircular](https://neba.cdget.com/components/feedback/progress-circular): A ring that fills, for where there is no room for a bar.
+- [ProgressBox](https://neba.cdget.com/components/feedback/progress-box): A row of acrylic plates that light up.
+- [Overlay](https://neba.cdget.com/components/feedback/overlay): A sheet over the whole page that stops it being used — the scrim on its own.
+- [Skeleton](https://neba.cdget.com/components/feedback/skeleton): The shape of something that has not loaded yet, in a line, a block or a circle. It reserves the space the real thing will take, so nothing on the page moves when the content arrives.
+- [Empty](https://neba.cdget.com/components/feedback/empty): What stands where content would have been — a glyph, a headline, a sentence and an `action`. The headline defaults to the `locale`'s way of saying there is nothing here, and `variant` defaults to `text` because an empty state is usually already inside a Card or a Table. The other half of Skeleton: one is content on its way, the other is content that is not coming.
+
+### Layout
+
+- [Container](https://neba.cdget.com/components/layout/container): Horizontal breathing room around whatever it wraps; keeps a page's content off the edge of the window.
+- [Grid](https://neba.cdget.com/components/layout/grid): A responsive layout on twelve columns. Every grid is wrapped in a GridContainer and each cell is a Grid.
+- [Panes](https://neba.cdget.com/components/layout/panes): A box divided into regions with a draggable bar between each pair — an editor beside a file list, a preview beside a form. Panes nest, and a Pane can opt out of being resizable.
+- [AspectRatio](https://neba.cdget.com/components/layout/aspect-ratio): A box that keeps a proportion whatever width it is given. `ratio` is CSS's own `aspect-ratio`, and `fit` stretches a single piece of media to the box and fits it.
+
+### Surfaces
+
+- [Box](https://neba.cdget.com/components/surfaces/box): A sheet of acrylic with content on it. The plainest surface in the library.
+- [Card](https://neba.cdget.com/components/surfaces/card): A Box with the parts a card is made of — title, subtitle, body, footer. Every Box prop passes through.
+- [Accordion](https://neba.cdget.com/components/surfaces/accordion): A stack of sections that fold. Opening one closes the last.
+- [Tabs](https://neba.cdget.com/components/surfaces/tabs): One set of panels, one of which is shown. Horizontal or vertical.
+- [Carousel](https://neba.cdget.com/components/surfaces/carousel): A strip of slides, one of which is in view. A scroll-snap container, so it swipes, runs the other way under RTL, and transforms nothing.
+- [Pill](https://neba.cdget.com/components/surfaces/pill): A floating lozenge holding a small amount of live information, optionally growing into a second half. The one fully round shape in the library.
+- [Toolbar](https://neba.cdget.com/components/surfaces/toolbar): A bar of controls — an application header, a page's action row. `start`, `children` and `end` are the three slots; `position` pins it.
+- [ChatBubble](https://neba.cdget.com/components/surfaces/chat-bubble): One message in a conversation. The avatar, the sender, the time, the delivery mark, the media above the text and the link card below it are each drawn only when they are given something.
+- [Drawer](https://neba.cdget.com/components/surfaces/drawer): A panel attached to one edge of the window. `mode="overlay"` floats it over the page on a scrim; `mode="inline"` puts the same panel in the layout as a fixed sidebar. The corners on the free edge are cut and the ones against the window stay square.
+- [Popover](https://neba.cdget.com/components/surfaces/popover): A sheet that opens beside the control that opened it. Unlike a Tooltip it stays up and can be reached, so a form, a filter panel or a picker belongs in it; unlike a Dialog it does not take the page.
+- [Mockup](https://neba.cdget.com/components/surfaces/mockup): A device with a screen you can put anything on — a phone, a tablet, a monitor or a laptop, with the system's own status bar, dock or taskbar drawn on it. `device` picks the machine, `os` the chrome, `bezel` and `finish` the hardware, `notch` the camera cut-out. The screen is a viewport at the device's real resolution and a container named `neba-screen`, so content inside lays out against the device rather than the page.
+- [Spoiler](https://neba.cdget.com/components/surfaces/spoiler): Content that stays covered until somebody asks for it. The cover is a blur rather than a hidden box, so a reader can see that there is something there and how much of it.
+- [Collapsible](https://neba.cdget.com/components/surfaces/collapsible): One section that folds, standing on its own — what an Accordion is a set of. `title`, `subtitle`, `startIcon` and `action` build the header, `trigger` replaces it with a control of your own, and `hiddenUntilFound` lets the browser's page search open it.
+
+### Transitions
+
+Wrappers that make anything move. Every one takes the same settings — `duration` and `delay` in milliseconds, `easing`, `repeat` (a count or `'infinite'`), `alternate`, `paused`, and `trigger` (`'mount'`, `'visible'`, `'hover'` or `'manual'` with `play`). All of them are switched off entirely by a `prefers-reduced-motion` preference, so none of them is ever the only thing carrying a message. The six named effects are also available as a `transition` prop on the components that display something — Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote — where they run once on mount; they are offered on no component that is pressed.
+
+- [AnimateFade](https://neba.cdget.com/components/transitions/animate-fade): Content arriving or leaving on opacity alone. Nothing moves, so nothing reflows and no text is resampled. `mode="out"` is the same animation reversed and held at the end.
+- [AnimateGrow](https://neba.cdget.com/components/transitions/animate-grow): Content unfolding from a point. `origin` anchors it to any edge or corner, so it reads as opening out of the thing beside it.
+- [AnimateZoom](https://neba.cdget.com/components/transitions/animate-zoom): The same arithmetic as Grow at more than twice the distance and always about the centre — for the one thing on a screen meant to interrupt.
+- [AnimateSlide](https://neba.cdget.com/components/transitions/animate-slide): Content travelling in from one edge. The default distance is the element's own size, so it starts exactly out of frame.
+- [AnimateRotate](https://neba.cdget.com/components/transitions/animate-rotate): Content turning about a point. Two angles rather than one, so it covers both a glyph swinging into place and an endless spin.
+- [AnimateBlink](https://neba.cdget.com/components/transitions/animate-blink): Content pulsing to a floor and back. Symmetric, so however many times it runs it ends where it started.
+- [AnimateAppear](https://neba.cdget.com/components/transitions/animate-appear): A list settling into place one child after another. The animation is written onto the children themselves, so a list stays the shape it was.
+- [AnimateTyping](https://neba.cdget.com/components/transitions/animate-typing): Text typed one character at a time, counted in graphemes. The whole string is in the document from the first frame for a screen reader; the animated copy is `aria-hidden`.
+- [AnimateLighting](https://neba.cdget.com/components/transitions/animate-lighting): A light travelling around the outside of something, behind the content rather than on it — so it marks what it wraps without altering how that is drawn.
+- [AnimateMarquee](https://neba.cdget.com/components/transitions/animate-marquee): Content scrolling steadily past, laid down twice so there is no seam. `speed` is pixels per second rather than a duration, and it stops under the pointer.
+- [AnimateHeadline](https://neba.cdget.com/components/transitions/animate-headline): One line replacing the one above it on a timer. Every line shares a grid cell, so the box never resizes as the reel turns.
+
+## Examples
+
+- [Overview](https://neba.cdget.com/examples/overview): Every component in the library on a single product-shaped screen, with a block-by-block breakdown of which components each part uses.
+- [Landing page](https://neba.cdget.com/examples/concept-landing): A marketing page built only from these components — mostly type, space and one call to action repeated.
+- [Admin dashboard](https://neba.cdget.com/examples/concept-dashboard): A nav rail, a filter row, four figures, a table with an action on every row and a drawer of settings, all at the same size.
+- [Sign-up page](https://neba.cdget.com/examples/concept-signup): Registration in three steps — every kind of answer a form can ask for, and the states around them.
+
+## Optional
+
+- [Changelog](https://neba.cdget.com/changelog): What changed in each release, including the setup changes a consumer has to act on.
+- [Korean documentation](https://neba.cdget.com/ko/): The same site in Korean. Every path above works with a `/ko` prefix.
+- [GitHub repository](https://github.com/jooy2/neba): Source, issues and contribution guide.
+- [npm package](https://www.npmjs.com/package/neba): Published releases and version history.

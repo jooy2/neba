@@ -1,0 +1,5 @@
+import{j as i}from"./jsx-runtime.BjG_zV1W.js";import{S as t}from"./Spoiler.DMvgmdNP.js";import"./index.CAJ_Adw3.js";import"./Button.DtcxeGsh.js";import"./styles.Dq4W_niw.js";import"./useRender.3IC2I2hb.js";import"./useRenderElement.Dqq6PM6C.js";import"./useButton.DdURzrtA.js";import"./floating-ui.utils.dom.BjYItDIN.js";import"./useStableCallback.rhGZ0ANY.js";import"./useIsoLayoutEffect.rsVFvFvq.js";import"./i18n.BCvdBMhC.js";import"./Box.B0puxOtW.js";import"./animate.C_tZjSKw.js";const l="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220">
+    <rect width="400" height="220" fill="hsl(268 46% 58%)"/>
+    <circle cx="308" cy="58" r="34" fill="hsl(268 62% 84%)"/>
+    <path d="M0 160 96 96l78 42 68-34 158 78v38H0Z" fill="hsl(268 42% 36%)"/>
+  </svg>`);function g(){return i.jsx("div",{className:"w-full max-w-md",children:i.jsx(t,{padded:!1,label:"Show the still",description:"The last shot",children:i.jsx("img",{src:l,alt:"The final frame",className:"block w-full"})})})}export{g as default};
