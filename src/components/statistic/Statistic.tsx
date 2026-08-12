@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box';
 import { Chip } from '../chip/Chip';
 import { MinusIcon, TrendDownIcon, TrendUpIcon } from '../../internal/icons';
+import { numberFormatter } from '../../internal/format';
 import { hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles';
 import type { NebaAlign, NebaSize } from '../../types';
 
@@ -29,6 +30,13 @@ export interface StatisticProps extends Omit<BoxProps, 'title' | 'prefix'> {
    * own locale and otherwise left alone.
    */
   format?: Intl.NumberFormatOptions;
+  /**
+   * Which language the figure is written in, the same prop every chart takes.
+   * A Statistic is the smallest chart on the page and sits next to the others in
+   * a dashboard, so a locale set on one of them has to be settable on all.
+   * @default the reader's
+   */
+  locale?: string;
   /** Set before the figure and never wrapped away from it — a currency sign. */
   prefix?: React.ReactNode;
   /**
@@ -158,6 +166,7 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(functi
     label,
     value,
     format,
+    locale,
     prefix,
     unit,
     icon,
@@ -173,11 +182,11 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(functi
   ref
 ) {
   // An `Intl.NumberFormat` is expensive to construct and free to reuse, and a
-  // dashboard is a page full of these.
-  const numberFormat = React.useMemo(() => new Intl.NumberFormat(undefined, format), [format]);
-
+  // dashboard is a page full of these. The cache is keyed on what `format` says
+  // rather than on the object it arrived in, so the literal a caller writes
+  // inline — which is how that prop is nearly always written — still hits it.
   const numeric = typeof value === 'number' ? value : null;
-  const shown = numeric === null ? value : numberFormat.format(numeric);
+  const shown = numeric === null ? value : numberFormatter(locale, format).format(numeric);
 
   /**
    * The comparison, or `null` when there is nothing to compare.
@@ -202,7 +211,7 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(functi
 
   if (difference !== null && trend !== null && delta !== 'none') {
     const sign = difference > 0 ? '+' : difference < 0 ? '-' : '';
-    const absolute = `${sign}${numberFormat.format(Math.abs(difference))}`;
+    const absolute = `${sign}${numberFormatter(locale, format).format(Math.abs(difference))}`;
     const percent =
       ratio === null ? null : `${sign}${(Math.abs(ratio) * 100).toFixed(1).replace(/\.0$/, '')}%`;
 

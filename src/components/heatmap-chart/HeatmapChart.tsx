@@ -24,6 +24,7 @@ import {
   type ChartScaleKind,
   type ChartValue
 } from '../../internal/chart';
+import { numberFormatter } from '../../internal/format';
 import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles';
 import { useMessages } from '../../internal/i18n';
 import type {
@@ -131,13 +132,10 @@ export function HeatmapChart({
 
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
 
-  const numberFormat = React.useMemo(
-    () => (format ? new Intl.NumberFormat(locale, format) : null),
-    [format, locale]
-  );
   const formatValue = React.useCallback(
-    (value: number) => (numberFormat ? numberFormat.format(value) : compactNumber(value, locale)),
-    [numberFormat, locale]
+    (value: number) =>
+      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
+    [format, locale]
   );
 
   const values = React.useMemo(() => toValues(series), [series]);

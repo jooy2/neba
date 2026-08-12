@@ -60,3 +60,11 @@ The figure and the delta change shape as well as colour — a rising arrow, a fa
 ```
 
 A `previousValue` of `0` makes the proportion undefined, so the absolute difference is shown regardless of the `delta` setting.
+
+### locale
+
+`locale` decides which language the figure and its delta are written in. It is the same prop every chart takes, so one dashboard can set the same value on a Statistic and on the [LineChart](./line-chart) beside it. Without it the reader's own locale is used.
+
+```tsx
+<Statistic label="Revenue" value={1234.5} locale="de-DE" format={{ minimumFractionDigits: 1 }} />
+```

@@ -20,6 +20,7 @@ import {
   seriesColor,
   toValue
 } from '../../internal/chart';
+import { numberFormatter } from '../../internal/format';
 import { cx, metaTextClasses } from '../../internal/styles';
 import { useMessages } from '../../internal/i18n';
 import type {
@@ -113,13 +114,10 @@ export function PieChart({
   const messages = useMessages(locale);
   const tableId = React.useId();
 
-  const numberFormat = React.useMemo(
-    () => (format ? new Intl.NumberFormat(locale, format) : null),
-    [format, locale]
-  );
   const formatValue = React.useCallback(
-    (value: number) => (numberFormat ? numberFormat.format(value) : compactNumber(value, locale)),
-    [numberFormat, locale]
+    (value: number) =>
+      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
+    [format, locale]
   );
 
   const values = React.useMemo(() => data.map(toValue), [data]);

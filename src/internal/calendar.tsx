@@ -17,7 +17,6 @@ import {
   addYears,
   calendarWeeks,
   compareDay,
-  dateFormatter,
   daysInMonth,
   isDayOutside,
   isMonthBeforeYear,
@@ -37,6 +36,7 @@ import {
   type CalendarView,
   type TimeUnit
 } from './date';
+import { dateFormatter } from './format';
 import type { NebaColor, NebaDensity, NebaSize, NebaWeekday } from '../types';
 
 /**

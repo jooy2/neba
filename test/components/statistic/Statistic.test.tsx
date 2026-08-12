@@ -59,6 +59,36 @@ describe('Statistic', () => {
       await expect.element(screen.getByText(/^42.4\s?%$/)).toBeInTheDocument();
     });
 
+    it('writes the figure in the locale it was given', async () => {
+      const screen = await render(
+        <Statistic
+          label="Revenue"
+          value={1234.5}
+          locale="de-DE"
+          format={{ minimumFractionDigits: 1 }}
+        />
+      );
+
+      // German groups on `.` and decimalises on `,` — the reverse of en-US, so
+      // this fails if the prop is being ignored whatever the runtime's own
+      // locale happens to be.
+      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
+    });
+
+    it('writes a delta in the same locale as the figure', async () => {
+      const screen = await render(
+        <Statistic
+          label="Revenue"
+          value={3000}
+          previousValue={1750}
+          delta="absolute"
+          locale="de-DE"
+        />
+      );
+
+      await expect.element(screen.getByText('+1.250')).toBeInTheDocument();
+    });
+
     it('sets a prefix before the figure and a unit after it', async () => {
       const screen = await render(<Statistic label="Storage" value={42} prefix="~" unit="GB" />);
 

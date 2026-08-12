@@ -16,6 +16,7 @@
  */
 
 import type * as React from 'react';
+import { dateFormatter, numberFormatter } from './format';
 import type {
   NebaChartCategory,
   NebaChartDatum,
@@ -865,7 +866,7 @@ function timeParts(unit: TimeUnit, withYear: boolean): Intl.DateTimeFormatOption
 
 /** One instant on a time axis, written unambiguously — for a tooltip or a table. */
 export function formatTimeValue(value: number, unit: TimeUnit, locale?: string): string {
-  return new Intl.DateTimeFormat(locale, timeParts(unit, true)).format(new Date(value));
+  return dateFormatter(locale, timeParts(unit, true)).format(new Date(value));
 }
 
 /**
@@ -892,7 +893,7 @@ export function formatTimeTicks(
   const always = years.size > 1;
 
   return ticks.map((tick, index) =>
-    new Intl.DateTimeFormat(locale, timeParts(unit, always || index === 0)).format(new Date(tick))
+    dateFormatter(locale, timeParts(unit, always || index === 0)).format(new Date(tick))
   );
 }
 
@@ -1554,7 +1555,20 @@ export function squarify(values: readonly number[], width: number, height: numbe
 
 /* ---------------------------------------------------------------------------
  * Formatting
+ *
+ * Every formatter below comes out of `internal/format.ts` rather than out of a
+ * `new`. These functions are called once per axis tick, once per category and
+ * once per tooltip row, and all of that runs again on every re-render — so the
+ * one on a chart being hovered runs on every frame.
+ *
+ * The option objects are module constants for the same reason: the cache is
+ * keyed on what the options *say*, so a literal written inline would be
+ * stringified afresh on every call to ask a question it already knew.
  * ------------------------------------------------------------------------- */
+
+const shortDayParts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+const compactParts: Intl.NumberFormatOptions = { notation: 'compact', maximumFractionDigits: 1 };
+const plainParts: Intl.NumberFormatOptions = { maximumFractionDigits: 2 };
 
 /**
  * How a category is written when nobody said.
@@ -1565,7 +1579,7 @@ export function squarify(values: readonly number[], width: number, height: numbe
  */
 export function formatCategory(value: NebaChartCategory, locale?: string): string {
   if (value instanceof Date) {
-    return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
+    return dateFormatter(locale, shortDayParts).format(value);
   }
 
   return String(value);
@@ -1583,11 +1597,8 @@ export function compactNumber(value: number, locale?: string): string {
   const magnitude = Math.abs(value);
 
   if (magnitude >= 10000) {
-    return new Intl.NumberFormat(locale, {
-      notation: 'compact',
-      maximumFractionDigits: 1
-    }).format(value);
+    return numberFormatter(locale, compactParts).format(value);
   }
 
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value);
+  return numberFormatter(locale, plainParts).format(value);
 }

@@ -5469,6 +5469,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'locale',
+      type: 'string',
+      default: "the reader's",
+      description: {
+        ko: '수치를 어떤 언어로 쓸지. 모든 차트가 받는 것과 같은 prop입니다 — 대시보드에서 Statistic은 차트들 옆에 서므로 한쪽에 걸 수 있는 로케일은 다른 쪽에도 걸 수 있어야 합니다',
+        en: 'Which language the figure is written in — the same prop every chart takes. A Statistic sits next to the charts in a dashboard, so a locale set on one of them has to be settable on all'
+      }
+    },
+    {
       name: 'prefix',
       type: 'ReactNode',
       description: { ko: '수치 앞 — 통화 기호', en: 'Set before the figure — a currency sign' }

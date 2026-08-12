@@ -20,6 +20,7 @@
  *   `value` handed in by a caller is never the object that comes back out.
  */
 
+import { dateFormatter } from './format';
 import type { NebaWeekday } from '../types';
 
 /** Which unit the calendar is currently letting you pick. */
@@ -273,29 +274,11 @@ export function yearPageStart(year: number): number {
 /* ---------------------------------------------------------------------------
  * Naming
  *
- * Every string a picker draws that is not a number comes from `Intl`. The
- * formatters are cached because constructing one is genuinely expensive — a
- * calendar builds seven weekday names and twelve month names on every render of
- * the month view, and at 42 cells a month that adds up fast.
+ * Every string a picker draws that is not a number comes from `Intl`, through
+ * the memoised formatters in `internal/format.ts` — constructing one is the
+ * expensive half of using one, and a calendar builds seven weekday names and
+ * twelve month names on every render of the month view.
  * ------------------------------------------------------------------------- */
-
-const formatterCache = new Map<string, Intl.DateTimeFormat>();
-
-/** A memoised `Intl.DateTimeFormat`. `undefined` locale means the runtime's own. */
-export function dateFormatter(
-  locale: string | undefined,
-  options: Intl.DateTimeFormatOptions
-): Intl.DateTimeFormat {
-  const key = `${locale ?? ''}\u0000${JSON.stringify(options)}`;
-  let formatter = formatterCache.get(key);
-
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat(locale, options);
-    formatterCache.set(key, formatter);
-  }
-
-  return formatter;
-}
 
 /** Formats a date, tolerating the `null` a cleared picker holds. */
 export function formatDate(

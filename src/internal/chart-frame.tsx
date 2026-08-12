@@ -42,6 +42,7 @@ import {
   type PlotBox,
   type ValueScale
 } from './chart';
+import { numberFormatter } from './format';
 import { useMessages } from './i18n';
 import { cx, metaTextClasses, srOnlyClasses, transitionClasses } from './styles';
 import type {
@@ -831,13 +832,15 @@ export function CartesianChart({
   /** Where the pointer is along the value axis. `null` when it arrived by key. */
   const [pointer, setPointer] = React.useState<number | null>(null);
 
-  const numberFormat = React.useMemo(
-    () => (format ? new Intl.NumberFormat(locale, format) : null),
-    [format, locale]
-  );
+  /* No `useMemo` around the formatter: `format` is an options object, and the
+     ordinary way that prop gets written is a literal in the JSX — a fresh
+     object on every render, which a memo keyed on its identity would miss every
+     single time. The cache in `internal/format.ts` is keyed on what the options
+     say instead, so it hits. */
   const formatValue = React.useCallback(
-    (value: number) => (numberFormat ? numberFormat.format(value) : compactNumber(value, locale)),
-    [numberFormat, locale]
+    (value: number) =>
+      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
+    [format, locale]
   );
 
   const values = React.useMemo(() => toValues(series), [series]);

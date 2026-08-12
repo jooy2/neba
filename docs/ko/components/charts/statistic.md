@@ -60,3 +60,11 @@ import { Statistic } from 'neba';
 ```
 
 `previousValue`가 `0`이면 비율을 계산할 수 없으므로, `delta` 설정과 무관하게 차이 값만 표시합니다.
+
+### locale
+
+`locale`은 수치와 차이 값을 어느 언어로 쓸지 정합니다. 모든 차트가 받는 것과 같은 prop이므로, 대시보드 한 장에 놓인 Statistic과 [LineChart](./line-chart)에 같은 값을 걸 수 있습니다. 생략하면 읽는 사람의 locale을 따릅니다.
+
+```tsx
+<Statistic label="매출" value={1234.5} locale="de-DE" format={{ minimumFractionDigits: 1 }} />
+```
