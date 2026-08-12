@@ -1373,7 +1373,14 @@ export function CartesianChart({
             setColumnIndex(indexAt(event.clientX, event.clientY));
           }
 
-          setPointer(valueAt(event.clientX, event.clientY));
+          // Only `item` mode reads this, and only it may pay for it. The index
+          // above settles to the same value everywhere inside one column, so
+          // React bails out of the re-render — but a pointer offset is a fresh
+          // pixel on every event, and storing one the tooltip never consults
+          // would re-lay the whole chart out for each pixel the pointer moves.
+          if (tooltipMode === 'item') {
+            setPointer(valueAt(event.clientX, event.clientY));
+          }
         }}
         onPointerLeave={clearActive}
         // A key press moves the crosshair without a pointer, so `item` mode has
