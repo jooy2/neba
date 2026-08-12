@@ -111,9 +111,22 @@ Stretches to the width of the container.
 
 </Demo>
 
+### render
+
+Renders something other than a `<button>`. An action that navigates should be an `<a href>`: a crawler follows it, it appears in a screen reader's list of links, and the browser's own behaviour — open in a new tab, copy the address — keeps working. A router's `Link` goes in the same way.
+
+The surface, the sizes and the press signature are unchanged. An `<a>` has no `disabled`, so a button that has to be unavailable stays a `<button>`.
+
+<Demo src="button/render">
+
+<<< @/.vitepress/demos/button/render.tsx
+
+</Demo>
+
 ## Accessibility
 
-- Always renders a native `<button>`. `type` passes through, so `type="submit"` works inside a form.
+- Renders a native `<button>` by default. `type` passes through, so `type="submit"` works inside a form.
+- Changing the element with `render` keeps that element's semantics: an `<a href>` stays a link rather than being covered by `role="button"`.
 - Give icon-only buttons an `aria-label`.
 - The focus ring only appears on `:focus-visible`, so a mouse click never draws one.
 - `loading` and `readOnly` keep focus: dropping out of the tab order costs keyboard users their sense of the page.

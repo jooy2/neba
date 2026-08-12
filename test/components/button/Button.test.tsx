@@ -38,6 +38,29 @@ describe('Button', () => {
 
       expect(screen.getByRole('button').element()).toHaveAttribute('type', 'submit');
     });
+
+    it('renders as another element when `render` says so', async () => {
+      const screen = await render(<Button render={<a href="/pricing" />}>Pricing</Button>);
+      const element = screen.getByRole('link', { name: 'Pricing' }).element();
+
+      expect(element.tagName).toBe('A');
+      expect(element).toHaveAttribute('href', '/pricing');
+      expect(screen.getByRole('button').query()).toBeNull();
+    });
+
+    it('keeps its own surface when rendered as something else', async () => {
+      const screen = await render(
+        <Button render={<a href="/pricing" />} variant="outline" size="lg">
+          Pricing
+        </Button>
+      );
+      const element = screen.getByRole('link').element();
+
+      // The same two things every `outline` Button at `lg` carries: the family's
+      // hairline and the control height off the shared ladder.
+      expect(element).toHaveClass('[border-color:var(--n-line)]');
+      expect(element).toHaveClass('h-10');
+    });
   });
 
   describe('style props', () => {

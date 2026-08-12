@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button as BaseUIButton } from '@base-ui/react/button';
+import { useRender } from '@base-ui/react/use-render';
 import { ButtonGroupContext } from '../../internal/button-group';
 import {
   controlHeightClasses,
@@ -40,6 +41,21 @@ export interface ButtonProps
   readOnly?: boolean;
   /** Stretches to the width of the container. */
   fullWidth?: boolean;
+  /**
+   * Renders something other than a `<button>` — an `<a href>` for an action that
+   * is really a navigation, or the `Link` a router brings. Base UI's own escape
+   * hatch, so it behaves here as it does on [TextLink](../display/text-link) and
+   * [Typography](../display/typography).
+   *
+   * The surface, the sizes and the press signature are unchanged; what changes
+   * is the element they are drawn on, and what it *is* to everything reading the
+   * page. A link stays a link: it is announced as one, it is in the list a
+   * screen reader can pull up, and a crawler follows it.
+   *
+   * An `<a>` has no `disabled`, so a button that has to be unavailable stays a
+   * `<button>`.
+   */
+  render?: useRender.RenderProp;
   children?: React.ReactNode;
 }
 
@@ -162,6 +178,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     readOnly = false,
     fullWidth = false,
     disabled: disabledProp,
+    render,
     className,
     style,
     children,
@@ -207,25 +224,36 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     .filter(Boolean)
     .join(' ');
 
-  return (
-    <BaseUIButton
-      ref={ref}
-      disabled={disabled}
-      className={classNames}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
-      aria-disabled={inert || undefined}
-      aria-busy={loading || undefined}
-      data-loading={loading || undefined}
-      data-readonly={readOnly || undefined}
-      onClick={(event) => {
+  /*
+   * `render` deliberately steps around Base UI's Button rather than being handed
+   * to it. Told to render a non-`<button>`, that component puts `role="button"`
+   * on whatever it was given — which is right for a `<div>` and wrong for the
+   * case this prop exists for: an `<a href>` under a `role="button"` stops being
+   * a link to everything that reads the page, and the link list, the status bar
+   * and the crawler all lose it.
+   *
+   * What Base UI's Button adds over a bare `<button>` is its disabled handling,
+   * and `disabled` is the one thing that cannot travel to an `<a>` anyway.
+   */
+  return useRender({
+    render: render ?? <BaseUIButton disabled={disabled} />,
+    ref,
+    props: {
+      className: classNames,
+      style: { ...controlSlots(color, elevation, variant), ...style },
+      'aria-disabled': inert || undefined,
+      'aria-busy': loading || undefined,
+      'data-loading': loading || undefined,
+      'data-readonly': readOnly || undefined,
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
         if (inert) {
           event.preventDefault();
           event.stopPropagation();
           return;
         }
-        onClick?.(event);
-      }}
-      onPointerMove={(event) => {
+        onClick?.(event as React.MouseEvent<HTMLButtonElement>);
+      },
+      onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
         // Feeds the two light layers in `styles.css`. Written straight to the
         // element rather than held in state: this fires at pointer rate, and a
         // `setState` here would re-render the tree on every mouse move. Reading
@@ -235,13 +263,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
         const element = event.currentTarget;
         element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
         element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
-        onPointerMove?.(event);
-      }}
-      {...props}
-    >
-      {loading ? <Spinner /> : startIcon}
-      {children}
-      {endIcon}
-    </BaseUIButton>
-  );
+        onPointerMove?.(event as React.PointerEvent<HTMLButtonElement>);
+      },
+      ...props,
+      children: (
+        <>
+          {loading ? <Spinner /> : startIcon}
+          {children}
+          {endIcon}
+        </>
+      )
+    }
+  });
 });

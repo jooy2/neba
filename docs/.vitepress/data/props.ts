@@ -1475,6 +1475,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
     },
     {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'button 대신 다른 요소로 렌더링합니다 (<a href>, 라우터의 Link). 링크는 링크로 남아 크롤러와 스크린리더가 그대로 인식합니다',
+        en: 'Renders something other than a button (an <a href>, a router Link). A link stays a link, so crawlers and screen readers still see one'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

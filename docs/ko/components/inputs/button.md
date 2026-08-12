@@ -111,9 +111,22 @@ import { Button } from 'neba';
 
 </Demo>
 
+### render
+
+`<button>` 대신 다른 요소로 렌더링합니다. 누르면 이동하는 액션은 `<a href>`여야 합니다 — 크롤러가 따라갈 수 있고, 스크린리더의 링크 목록에 올라가며, 새 탭으로 열기나 주소 복사 같은 브라우저의 기본 동작이 그대로 살아납니다. 라우터의 `Link`도 같은 방식으로 넘깁니다.
+
+표면과 크기, press 신호는 그대로입니다. `<a>`에는 `disabled`가 없으므로, 사용할 수 없어야 하는 버튼은 `<button>`으로 두세요.
+
+<Demo src="button/render">
+
+<<< @/.vitepress/demos/button/render.tsx
+
+</Demo>
+
 ## 접근성
 
-- 항상 native `<button>`으로 렌더링됩니다. `type`도 그대로 전달되므로 폼 안에서 `type="submit"`이 동작합니다.
+- 기본적으로 native `<button>`으로 렌더링됩니다. `type`도 그대로 전달되므로 폼 안에서 `type="submit"`이 동작합니다.
+- `render`로 요소를 바꿔도 그 요소의 semantics는 유지됩니다. `<a href>`는 `role="button"`으로 덮이지 않고 링크로 남습니다.
 - 아이콘만 있는 버튼에는 `aria-label`을 주세요.
 - focus ring은 `:focus-visible`에서만 나타나므로 마우스 클릭에는 보이지 않습니다.
 - `loading`과 `readOnly`는 focus를 유지합니다. tab 순서에서 사라지면 키보드 사용자가 페이지 구조를 잃기 때문입니다.
