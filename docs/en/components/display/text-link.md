@@ -21,7 +21,7 @@ import { TextLink } from 'neba';
 
 <PropsTable name="TextLink" />
 
-Every other `<a>` attribute passes through, `target` and `rel` included — `newTab` only sets them when they are not already there.
+Every other `<a>` attribute passes through. `rel` is the one exception: it is merged rather than replaced — see `newTab` below.
 
 `color` and `size` are the two shared axes with no default: a link inside a paragraph is the colour and the size of that paragraph. The rest of the vocabulary is in [prop conventions](../../design/prop-conventions).
 
@@ -64,6 +64,8 @@ Also unset by default — a link in a sentence is the size of the sentence. Set 
 ### newTab and icon
 
 `newTab` sets `target="_blank"` and the `rel` that stops the new page reaching back through `window.opener`. It also turns `icon` on, because a window changing under the reader is the one thing about a link that cannot be seen until it has happened.
+
+A `rel` of your own is merged with that rather than replacing it. `rel="nofollow"` is an SEO decision and not a security one, so writing it never costs the link its `noopener`: `newTab rel="nofollow"` comes out as `nofollow noopener noreferrer`. On a link that stays in the tab, your `rel` is left exactly as written.
 
 `icon` overrides that either way: `false` for a new-tab link with no mark, `true` for a same-tab link that wants one, or a node of your own to replace the glyph.
 

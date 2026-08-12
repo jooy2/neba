@@ -64,6 +64,43 @@ describe('TextLink', () => {
       expect(element.getAttribute('rel')).toContain('noopener');
     });
 
+    /*
+     * `rel="nofollow"` beside `newTab` is a normal thing to write — it is an SEO
+     * decision, not a security one — and as a plain override it would take
+     * `noopener` off a link that still opens a new window.
+     */
+    it('keeps noopener when the caller writes a rel of their own', async () => {
+      const screen = await render(
+        <TextLink href="https://example.com" newTab rel="nofollow">
+          Example
+        </TextLink>
+      );
+      const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
+    });
+
+    it('does not repeat a token the caller already wrote', async () => {
+      const screen = await render(
+        <TextLink href="https://example.com" newTab rel="noopener sponsored">
+          Example
+        </TextLink>
+      );
+      const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer', 'sponsored']);
+    });
+
+    it('leaves a rel alone on a link that stays in the tab', async () => {
+      const screen = await render(
+        <TextLink href="/docs" rel="nofollow">
+          Docs
+        </TextLink>
+      );
+
+      expect(screen.getByRole('link').element()).toHaveAttribute('rel', 'nofollow');
+    });
+
     it('sets neither target nor rel by default', async () => {
       const screen = await render(<TextLink href="/docs">Docs</TextLink>);
       const element = screen.getByRole('link').element();

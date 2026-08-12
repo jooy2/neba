@@ -193,16 +193,31 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
     ...(color ? { '--n-accent': `var(--neba-${color}-accent)` } : null)
   } as React.CSSProperties;
 
+  /*
+   * `rel` is the one thing here a caller's own value is merged with rather than
+   * replaced by, and the reason is that the two purposes of the attribute have
+   * nothing to do with each other.
+   *
+   * `noopener` is what stops the new page reaching back through `window.opener`;
+   * `noreferrer` sits beside it for the browsers that still need the pair. The
+   * common reason to write a `rel` by hand is `nofollow` or `sponsored`, which
+   * is an SEO decision — and spelled as a plain override it would silently take
+   * the protection off a link that still opens in a new tab. Whatever was asked
+   * for is kept, with the two tokens added if they are not already there.
+   */
+  const { rel: askedFor, ...rest } = props;
+  const rel = newTab
+    ? [
+        ...new Set([...(askedFor ?? '').split(/\s+/).filter(Boolean), 'noopener', 'noreferrer'])
+      ].join(' ')
+    : askedFor;
+
   return useRender({
     render: render ?? <a />,
     ref,
     props: {
       href,
       target: newTab ? '_blank' : undefined,
-      // `noopener` is what stops the new page reaching back through
-      // `window.opener`; `noreferrer` is kept beside it for the browsers that
-      // still need the pair.
-      rel: newTab ? 'noopener noreferrer' : undefined,
       className: classNames,
       style: { ...slots, ...style },
       children: (
@@ -221,7 +236,10 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
           ) : null}
         </>
       ),
-      ...props
+      ...rest,
+      // After the spread on purpose: this is the merge above, not an override
+      // for a caller to win.
+      rel
     }
   });
 });
