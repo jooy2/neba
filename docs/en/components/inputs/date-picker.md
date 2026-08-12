@@ -19,6 +19,8 @@ import { DatePicker } from 'neba';
 
 <PropsTable name="DatePicker" />
 
+Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
+
 `value` is a `Date | null`. There is no date library underneath.
 
 Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local `YYYY-MM-DD` string too, so nothing shifts by a day the way `toISOString()` would.

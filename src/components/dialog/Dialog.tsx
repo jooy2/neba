@@ -23,7 +23,10 @@ import type { NebaSize, NebaStyleProps } from '../../types';
  * assert itself against the page around it", and a modal has already taken the
  * page. There is no `elevation` either — see `popupClasses`.
  */
-export interface DialogProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
+export interface DialogProps
+  extends
+    Pick<NebaStyleProps, 'size' | 'color' | 'density'>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title' | 'children'> {
   /** The dialog is shown. Use with `onOpenChange` for a controlled dialog. */
   open?: boolean;
   /** Whether the dialog starts open, for an uncontrolled one. */
@@ -102,8 +105,6 @@ export interface DialogProps extends Pick<NebaStyleProps, 'size' | 'color' | 'de
   dismissible?: boolean;
   /** The body. */
   children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 export type DialogCloseProps = React.ComponentPropsWithoutRef<typeof BaseUIDialog.Close>;
@@ -209,7 +210,8 @@ export function Dialog({
   dismissible = true,
   className,
   style,
-  children
+  children,
+  ...props
 }: DialogProps) {
   const messages = useMessages(locale);
   const insetX = boxPaddingXClasses[density][size];
@@ -274,6 +276,7 @@ export function Dialog({
                 : { maxWidth: typeof width === 'number' ? `${width}px` : width }),
               ...style
             }}
+            {...props}
           >
             {hasHeader || showClose ? (
               <div className={`flex shrink-0 items-start gap-3 ${sectionClasses}`}>

@@ -37,7 +37,10 @@ import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types';
  */
 export type NumberFieldSteppers = 'end' | 'split' | 'none';
 
-export interface NumberFieldProps extends NebaStyleProps {
+export interface NumberFieldProps
+  extends
+    NebaStyleProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'defaultValue' | 'children'> {
   /**
    * Drop shadow depth. `0` (the default) is flat — a field is a well, not a
    * surface that floats.
@@ -122,8 +125,6 @@ export interface NumberFieldProps extends NebaStyleProps {
   /** Placeholder shown while the field is empty. */
   placeholder?: string;
   id?: string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /** The shell is a TextField's, to the pixel — see `fieldRestClasses`. */
@@ -207,7 +208,8 @@ export function NumberField({
   placeholder,
   id,
   className,
-  style
+  style,
+  ...props
 }: NumberFieldProps) {
   // `Intl` takes more shapes than a message tag does; only a plain string names
   // anything here, and anything else falls back to English.
@@ -261,6 +263,7 @@ export function NumberField({
         .filter(Boolean)
         .join(' ')}
       style={{ ...surfaceSlots(family, elevation), ...style }}
+      {...props}
     >
       {label ? (
         <Field.Label

@@ -19,6 +19,8 @@ import { DateRangePicker } from 'neba';
 
 <PropsTable name="DateRangePicker" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 값은 튜플이 아니라 객체 하나입니다.
 
 ```ts

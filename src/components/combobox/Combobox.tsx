@@ -55,9 +55,10 @@ type Selection<Multiple extends boolean | undefined> = Multiple extends true
   ? ComboboxValue[]
   : ComboboxValue | null;
 
-export interface ComboboxProps<
-  Multiple extends boolean | undefined = false
-> extends NebaStyleProps {
+export interface ComboboxProps<Multiple extends boolean | undefined = false>
+  extends
+    NebaStyleProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'defaultValue' | 'children'> {
   /**
    * The options, as data — the same shape Select takes, and for the same
    * reason: what a caller has is almost always an array already.
@@ -152,8 +153,6 @@ export interface ComboboxProps<
   /** A ref to the text input the user types into. */
   inputRef?: React.Ref<HTMLInputElement>;
   id?: string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**
@@ -299,7 +298,8 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   inputRef,
   id,
   className,
-  style
+  style,
+  ...props
 }: ComboboxProps<Multiple>) {
   const messages = useMessages(locale);
   const nameRemove =
@@ -455,6 +455,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
         .filter(Boolean)
         .join(' ')}
       style={{ ...surfaceSlots(family, elevation), ...style }}
+      {...props}
     >
       {label ? (
         <Field.Label

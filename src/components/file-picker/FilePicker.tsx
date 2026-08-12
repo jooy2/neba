@@ -25,7 +25,10 @@ export interface FileRejection {
   reason: FileRejectionReason;
 }
 
-export interface FilePickerProps extends NebaStyleProps {
+export interface FilePickerProps
+  extends
+    NebaStyleProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'defaultValue' | 'title' | 'children'> {
   /**
    * Drop shadow depth. `0` (the default) is flat.
    * @default 0
@@ -88,8 +91,6 @@ export interface FilePickerProps extends NebaStyleProps {
   /** Identifies the field when a form is submitted. */
   name?: string;
   id?: string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**
@@ -263,7 +264,8 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
     name,
     id,
     className,
-    style
+    style,
+    ...props
   },
   ref
 ) {
@@ -391,6 +393,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
         .filter(Boolean)
         .join(' ')}
       style={{ ...surfaceSlots(family, elevation), ...style }}
+      {...props}
     >
       {hasContent(label) ? (
         <span

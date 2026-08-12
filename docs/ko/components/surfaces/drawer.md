@@ -21,6 +21,8 @@ import { Button, Drawer } from 'neba';
 
 <PropsTable name="Drawer" />
 
+`<div>`의 native 속성은 panel로 전달됩니다. `color` · `title` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `DrawerClose`는 Base UI의 `Dialog.Close`를 그대로 내보낸 것입니다. `render` prop을 주면 어떤 요소든 자기가 속한 drawer를 닫습니다: `<DrawerClose render={<Button>Cancel</Button>} />`. `overlay` drawer의 것이며, `inline` drawer는 dialog가 아닙니다.
 
 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.

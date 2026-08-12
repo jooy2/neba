@@ -26,6 +26,8 @@ import { Select } from 'neba';
 
 <PropsTable name="Select" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
+
 선택지를 검색해서 찾아야 한다면 [Combobox](./combobox)를, 선택지가 두세 개뿐이라면 [RadioGroup](./radio-group)이나 [SegmentedButton](./segmented-button)을 쓰세요.
 
 ### items

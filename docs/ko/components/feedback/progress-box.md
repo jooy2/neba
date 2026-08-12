@@ -20,6 +20,8 @@ import { ProgressBox } from 'neba';
 
 <PropsTable name="ProgressBox" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color`와 `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `value` · `min` · `max` · `format` · `showValue`는 [ProgressLinear](./progress-linear)와 동일하게 동작합니다. `value`가 `null`이면 판이 순서대로 밝아지는 indeterminate 상태입니다.
 
 ## 예시

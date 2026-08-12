@@ -19,6 +19,8 @@ import { DateTimePicker } from 'neba';
 
 <PropsTable name="DateTimePicker" />
 
+Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
+
 The calendar props behave as they do on [DatePicker](./date-picker) and the clock props as they do on [TimePicker](./time-picker). The calendar and the clock sit side by side at the same height.
 
 `closeOnSelect` defaults to `false` and the footer carries a Done button, since two answers have to be given before the popup can close.

@@ -9,7 +9,10 @@ import {
 } from '../../internal/styles';
 import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types';
 
-export interface TooltipProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
+export interface TooltipProps
+  extends
+    Pick<NebaStyleProps, 'size' | 'color' | 'density'>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'content' | 'children'> {
   /**
    * What the tooltip says.
    *
@@ -54,8 +57,6 @@ export interface TooltipProps extends Pick<NebaStyleProps, 'size' | 'color' | 'd
    * @default false
    */
   disabled?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**
@@ -153,7 +154,8 @@ export function Tooltip({
   onOpenChange,
   disabled = false,
   className,
-  style
+  style,
+  ...props
 }: TooltipProps) {
   const arrowSize = arrowSizes[size];
   const popupId = React.useId();
@@ -204,6 +206,7 @@ export function Tooltip({
               .filter(Boolean)
               .join(' ')}
             style={{ ...controlSlots(color, 3, 'solid'), ...style }}
+            {...props}
           >
             {arrow ? (
               <BaseUITooltip.Arrow

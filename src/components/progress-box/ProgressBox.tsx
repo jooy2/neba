@@ -55,7 +55,8 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(fu
     showValue = false,
     format,
     className,
-    style
+    style,
+    ...props
   },
   ref
 ) {
@@ -78,6 +79,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(fu
         .filter(Boolean)
         .join(' ')}
       style={{ ...progressSlots(color), ...style }}
+      {...props}
     >
       {label || showValue ? (
         <div

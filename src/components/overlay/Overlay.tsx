@@ -30,7 +30,10 @@ export type OverlayTone = 'scrim' | 'blur' | 'solid' | 'clear';
  * no `elevation` either: the overlay *is* the plane everything else floats
  * above, and a scrim with a drop shadow is a scrim with an edge.
  */
-export interface OverlayProps {
+export interface OverlayProps extends Omit<
+  React.ComponentPropsWithoutRef<'div'>,
+  'color' | 'children'
+> {
   /** The overlay is shown. Use with `onOpenChange` for a controlled overlay. */
   open?: boolean;
   /** Whether the overlay starts shown, for an uncontrolled one. */
@@ -78,8 +81,6 @@ export interface OverlayProps {
   label?: string;
   /** What sits on top of the scrim — a spinner, a line of text, a small card. */
   children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**
@@ -149,7 +150,8 @@ export function Overlay({
   label,
   className,
   style,
-  children
+  children,
+  ...props
 }: OverlayProps) {
   const messages = useMessages(locale);
 
@@ -198,6 +200,7 @@ export function Overlay({
               .filter(Boolean)
               .join(' ')}
             style={{ ...surfaceSlots(color, 0), ...style }}
+            {...props}
           >
             {children}
           </BaseUIDialog.Popup>

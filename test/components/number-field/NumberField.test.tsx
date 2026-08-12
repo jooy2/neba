@@ -247,4 +247,12 @@ describe('NumberField', () => {
       await expect.element(screen.getByRole('button', { name: 'Down' })).toBeInTheDocument();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<NumberField data-analytics="quantity" />);
+
+      expect(screen.container.querySelector('[data-analytics="quantity"]')).not.toBeNull();
+    });
+  });
 });

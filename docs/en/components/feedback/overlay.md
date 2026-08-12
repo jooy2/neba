@@ -21,6 +21,8 @@ import { Overlay, ProgressCircular } from 'neba';
 
 <PropsTable name="Overlay" />
 
+Native `<div>` attributes pass through to the sheet. Only `color` and `children` are excluded, since the table above spells them differently.
+
 An Overlay has no surface, no border, no title and no actions. If there is a decision to make, use [Dialog](./dialog) instead.
 
 ## Examples

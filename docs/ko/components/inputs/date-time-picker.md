@@ -19,6 +19,8 @@ import { DateTimePicker } from 'neba';
 
 <PropsTable name="DateTimePicker" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 달력 관련 prop은 [DatePicker](./date-picker), 시계 관련 prop은 [TimePicker](./time-picker)와 동일하게 동작합니다. 달력과 시계는 같은 높이로 나란히 놓입니다.
 
 `closeOnSelect`의 기본값은 `false`이고 푸터에 완료 버튼이 있습니다. 날짜와 시각 두 가지를 물어야 하므로 첫 선택에서 닫히지 않습니다.

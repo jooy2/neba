@@ -300,4 +300,12 @@ describe('TimePicker', () => {
       ).toBe('14:30:05');
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<TimePicker data-analytics="starts-at" />);
+
+      expect(screen.container.querySelector('[data-analytics="starts-at"]')).not.toBeNull();
+    });
+  });
 });

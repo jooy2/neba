@@ -21,6 +21,8 @@ import { Button, Tooltip } from 'neba';
 
 <PropsTable name="Tooltip" />
 
+Native `<div>` attributes pass through to the popup. Only `color`, `content` and `children` are excluded, since the table above spells them differently.
+
 The trigger merges onto `children` rather than rendering a box of its own, so the tooltip costs the layout nothing. `children` must be a single element that accepts a ref and spreads props — every Neba component does.
 
 ## Examples

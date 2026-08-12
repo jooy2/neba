@@ -175,4 +175,12 @@ describe('DateTimePicker', () => {
       expect(screen.getByRole('grid').query()).toBeNull();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<DateTimePicker data-analytics="runs-at" />);
+
+      expect(screen.container.querySelector('[data-analytics="runs-at"]')).not.toBeNull();
+    });
+  });
 });

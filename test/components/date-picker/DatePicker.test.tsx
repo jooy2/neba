@@ -435,4 +435,12 @@ describe('DatePicker', () => {
       ).toHaveAttribute('aria-hidden', 'true');
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<DatePicker data-analytics="due" />);
+
+      expect(screen.container.querySelector('[data-analytics="due"]')).not.toBeNull();
+    });
+  });
 });

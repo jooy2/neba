@@ -115,7 +115,10 @@ export const popupPaddingClasses: Record<NebaSize, string> = {
  * The shell
  * ------------------------------------------------------------------------- */
 
-export interface PickerShellProps extends NebaStyleProps {
+export interface PickerShellProps
+  extends
+    NebaStyleProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'children' | 'defaultValue'> {
   elevation?: NebaElevation;
   /** Label above the trigger. */
   label?: React.ReactNode;
@@ -131,8 +134,6 @@ export interface PickerShellProps extends NebaStyleProps {
   readOnly?: boolean;
   required?: boolean;
   id?: string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 interface InternalShellProps extends PickerShellProps {
@@ -197,7 +198,8 @@ export function PickerShell({
   hiddenValues,
   sideOffset = 6,
   children,
-  triggerRef
+  triggerRef,
+  ...props
 }: InternalShellProps) {
   const generatedId = React.useId();
   const triggerId = id ?? `${generatedId}-trigger`;
@@ -225,6 +227,7 @@ export function PickerShell({
         className
       )}
       style={{ ...surfaceSlots(family, elevation), ...style }}
+      {...props}
     >
       {label ? (
         <Field.Label

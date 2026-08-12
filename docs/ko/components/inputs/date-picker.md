@@ -19,6 +19,8 @@ import { DatePicker } from 'neba';
 
 <PropsTable name="DatePicker" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `value`의 타입은 `Date | null`입니다. 별도의 날짜 라이브러리는 쓰지 않습니다.
 
 모든 비교는 UTC 타임스탬프가 아니라 **로컬 달력의 날**을 기준으로 합니다. 폼이 제출하는 hidden input도 로컬 기준 `YYYY-MM-DD` 문자열이므로, `toISOString()`으로 하루가 밀리는 문제가 생기지 않습니다.

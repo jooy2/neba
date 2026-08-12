@@ -20,6 +20,8 @@ import { ProgressBox } from 'neba';
 
 <PropsTable name="ProgressBox" />
 
+Native `<div>` attributes pass through to the root. Only `color` and `children` are excluded, since the table above spells them differently.
+
 `value`, `min`, `max`, `format` and `showValue` behave as they do on [ProgressLinear](./progress-linear). A `value` of `null` gives the indeterminate state, where the plates light in sequence.
 
 ## Examples

@@ -21,6 +21,8 @@ import { Overlay, ProgressCircular } from 'neba';
 
 <PropsTable name="Overlay" />
 
+`<div>`의 native 속성은 sheet로 전달됩니다. `color`와 `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 Overlay에는 표면도, 테두리도, 제목도, 액션도 없습니다. 사용자가 결정할 것이 있다면 [Dialog](./dialog)를 쓰세요.
 
 ## 예시

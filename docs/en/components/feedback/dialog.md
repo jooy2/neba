@@ -26,6 +26,8 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 <PropsTable name="Dialog" />
 
+Native `<div>` attributes pass through to the popup. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
+
 There is no `variant` and no `elevation` — a modal always carries a level-3 shadow.
 
 ## Examples

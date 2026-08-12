@@ -231,4 +231,14 @@ describe('Popover', () => {
       await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the popup', async () => {
+      await render(<Popover defaultOpen title="Share" data-analytics="share-popover" />);
+
+      await expect
+        .element(document.querySelector<HTMLElement>('[data-analytics="share-popover"]')!)
+        .toBeInTheDocument();
+    });
+  });
 });

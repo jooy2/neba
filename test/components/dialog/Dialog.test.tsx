@@ -236,4 +236,14 @@ describe('Dialog', () => {
       expect(screen.getByRole('button', { name: '닫기' }).query()).toBeNull();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the popup', async () => {
+      await render(<Dialog defaultOpen title="Delete workspace" data-analytics="confirm-delete" />);
+
+      await expect
+        .element(document.querySelector<HTMLElement>('[data-analytics="confirm-delete"]')!)
+        .toBeInTheDocument();
+    });
+  });
 });

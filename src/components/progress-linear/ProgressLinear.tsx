@@ -48,7 +48,8 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       showValue = false,
       format,
       className,
-      style
+      style,
+      ...props
     },
     ref
   ) {
@@ -68,6 +69,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
           .filter(Boolean)
           .join(' ')}
         style={{ ...progressSlots(color), ...style }}
+        {...props}
       >
         {label || showValue ? (
           <div

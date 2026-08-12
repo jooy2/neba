@@ -27,6 +27,8 @@ import { FilePicker } from 'neba';
 
 <PropsTable name="FilePicker" />
 
+Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `title` are excluded, since the table above spells them differently.
+
 ## Examples
 
 ### variant

@@ -375,4 +375,12 @@ describe('Combobox', () => {
       expect(root).not.toHaveClass('inline-flex');
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} data-analytics="framework" />);
+
+      expect(screen.container.querySelector('[data-analytics="framework"]')).not.toBeNull();
+    });
+  });
 });

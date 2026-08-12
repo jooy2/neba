@@ -20,6 +20,8 @@ import { ProgressCircular } from 'neba';
 
 <PropsTable name="ProgressCircular" />
 
+Native `<div>` attributes pass through to the root. Only `color` and `children` are excluded, since the table above spells them differently.
+
 `value` defaults to `null`, and the ring spins while indeterminate. `min`, `max` and `format` behave exactly as they do on [ProgressLinear](./progress-linear).
 
 ## Examples

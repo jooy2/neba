@@ -21,6 +21,8 @@ import { Button, Popover } from 'neba';
 
 <PropsTable name="Popover" />
 
+`<div>`의 native 속성은 popup으로 전달됩니다. `color` · `title` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `PopoverClose`는 Base UI의 `Popover.Close`를 그대로 내보낸 것입니다. `render` prop을 주면 어떤 요소든 자기가 속한 popup을 닫습니다: `<PopoverClose render={<Button>Apply</Button>} />`.
 
 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.

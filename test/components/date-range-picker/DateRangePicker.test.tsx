@@ -307,4 +307,12 @@ describe('DateRangePicker', () => {
       expect(screen.getByRole('grid').query()).toBeNull();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<DateRangePicker data-analytics="span" />);
+
+      expect(screen.container.querySelector('[data-analytics="span"]')).not.toBeNull();
+    });
+  });
 });

@@ -39,7 +39,10 @@ export type NebaDrawerMode = 'overlay' | 'inline';
  * an `overlay` drawer floats and carries a shadow at level 3, an `inline` one is
  * part of the layout and carries none, and neither is a decision worth offering.
  */
-export interface DrawerProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
+export interface DrawerProps
+  extends
+    Pick<NebaStyleProps, 'size' | 'color' | 'density'>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title' | 'children'> {
   /**
    * Which edge the panel is attached to. Physical rather than logical, the way
    * `NebaSide` is everywhere: a drawer along the top of the window is along the
@@ -132,8 +135,6 @@ export interface DrawerProps extends Pick<NebaStyleProps, 'size' | 'color' | 'de
   dismissible?: boolean;
   /** The body. */
   children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 export type DrawerCloseProps = React.ComponentPropsWithoutRef<typeof BaseUIDialog.Close>;
@@ -310,7 +311,8 @@ export function Drawer({
   dismissible = true,
   className,
   style,
-  children
+  children,
+  ...props
 }: DrawerProps) {
   const messages = useMessages(locale);
   const overlay = mode === 'overlay';
@@ -475,6 +477,7 @@ export function Drawer({
           <BaseUIDialog.Popup
             className={panel}
             style={{ ...surfaceSlots(color, 3), ...sizeStyle, ...style }}
+            {...props}
           >
             {contents}
           </BaseUIDialog.Popup>

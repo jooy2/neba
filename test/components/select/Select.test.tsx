@@ -298,4 +298,12 @@ describe('Select', () => {
       expect(column).toHaveClass('flex-1');
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<Select items={PLANS} data-analytics="plan" />);
+
+      expect(screen.container.querySelector('[data-analytics="plan"]')).not.toBeNull();
+    });
+  });
 });

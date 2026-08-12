@@ -294,4 +294,12 @@ describe('FilePicker', () => {
       expect(screen.container.innerHTML).not.toContain('translate');
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the root', async () => {
+      const screen = await render(<FilePicker data-analytics="upload" />);
+
+      expect(screen.container.querySelector('[data-analytics="upload"]')).not.toBeNull();
+    });
+  });
 });

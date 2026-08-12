@@ -26,6 +26,8 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 <PropsTable name="Dialog" />
 
+`<div>`의 native 속성은 popup으로 전달됩니다. `color` · `title` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `variant`와 `elevation`은 없습니다. modal은 항상 3단계 그림자를 답니다.
 
 ## 예시

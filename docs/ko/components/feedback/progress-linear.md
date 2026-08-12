@@ -20,6 +20,8 @@ import { ProgressLinear } from 'neba';
 
 <PropsTable name="ProgressLinear" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color`와 `children`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `value`의 기본값은 `null`이며, 진행률을 알 수 없는 indeterminate 상태를 뜻합니다. 짧은 조각이 막대 위를 반복해 지나갑니다. `0`을 주면 "아직 아무것도 진행되지 않음"이라는 다른 의미가 되므로 구분해서 쓰세요.
 
 ## 예시

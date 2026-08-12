@@ -21,6 +21,8 @@ import { Button, Drawer } from 'neba';
 
 <PropsTable name="Drawer" />
 
+Native `<div>` attributes pass through to the panel. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
+
 `DrawerClose` is Base UI's `Dialog.Close`, re-exported. Give it a `render` prop and any element dismisses the drawer it is inside: `<DrawerClose render={<Button>Cancel</Button>} />`. It belongs to an `overlay` drawer — an `inline` one is not a dialog.
 
 The shared axes are described in [prop conventions](../../design/prop-conventions).

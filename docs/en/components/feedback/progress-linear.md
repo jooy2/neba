@@ -20,6 +20,8 @@ import { ProgressLinear } from 'neba';
 
 <PropsTable name="ProgressLinear" />
 
+Native `<div>` attributes pass through to the root. Only `color` and `children` are excluded, since the table above spells them differently.
+
 `value` defaults to `null`, the indeterminate state: a short segment travels along the groove. A `value` of `0` means something different — "nothing has progressed yet" — so keep the two apart.
 
 ## Examples

@@ -43,7 +43,10 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends NebaStyleProps {
+export interface SelectProps
+  extends
+    NebaStyleProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'defaultValue' | 'children'> {
   /**
    * The options, as data. There is no `<Select.Option>` to compose: what a
    * caller has is almost always an array already, and the list has to be
@@ -84,8 +87,6 @@ export interface SelectProps extends NebaStyleProps {
   /** Identifies the field when a form is submitted. */
   name?: string;
   id?: string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /** The trigger is a TextField's shell, to the pixel. */
@@ -167,7 +168,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
     name,
     id,
     className,
-    style
+    style,
+    ...props
   },
   ref
 ) {
@@ -209,6 +211,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
         .filter(Boolean)
         .join(' ')}
       style={{ ...surfaceSlots(family, elevation), ...style }}
+      {...props}
     >
       {label ? (
         <Field.Label

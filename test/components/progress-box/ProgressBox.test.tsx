@@ -136,4 +136,14 @@ describe('ProgressBox', () => {
       expect(plates(screen.getByRole('progressbar').element())[0]).toHaveClass('size-5');
     });
   });
+
+  describe('forwarded props', () => {
+    it('takes an accessible name of its own', async () => {
+      const screen = await render(<ProgressBox value={40} aria-label="Uploading" />);
+
+      await expect
+        .element(screen.getByRole('progressbar', { name: 'Uploading' }))
+        .toBeInTheDocument();
+    });
+  });
 });

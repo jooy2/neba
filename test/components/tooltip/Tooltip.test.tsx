@@ -179,4 +179,19 @@ describe('Tooltip', () => {
       expect(screen.getByRole('tooltip').element().querySelector('svg')).not.toBeNull();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the popup', async () => {
+      const screen = await render(
+        <Tooltip content="Copied" defaultOpen data-analytics="copy-hint">
+          <Button>Copy</Button>
+        </Tooltip>
+      );
+
+      await expect.element(screen.getByRole('tooltip')).toBeInTheDocument();
+      await expect
+        .element(document.querySelector<HTMLElement>('[data-analytics="copy-hint"]')!)
+        .toBeInTheDocument();
+    });
+  });
 });

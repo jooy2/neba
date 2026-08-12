@@ -40,7 +40,8 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       showValue = false,
       format,
       className,
-      style
+      style,
+      ...props
     },
     ref
   ) {
@@ -80,6 +81,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
           .filter(Boolean)
           .join(' ')}
         style={{ ...progressSlots(color), ...style }}
+        {...props}
       >
         <svg
           // The rotation is on the whole `<svg>`, not on a group inside it:

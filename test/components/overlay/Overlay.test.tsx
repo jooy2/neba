@@ -173,4 +173,18 @@ describe('Overlay', () => {
       await expect.element(screen.getByRole('dialog', { name: 'Loading' })).toBeInTheDocument();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the sheet', async () => {
+      await render(
+        <Overlay open data-analytics="loading-overlay">
+          Loading
+        </Overlay>
+      );
+
+      await expect
+        .element(document.querySelector<HTMLElement>('[data-analytics="loading-overlay"]')!)
+        .toBeInTheDocument();
+    });
+  });
 });

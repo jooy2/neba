@@ -21,6 +21,8 @@ import { Button, Popover } from 'neba';
 
 <PropsTable name="Popover" />
 
+Native `<div>` attributes pass through to the popup. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
+
 `PopoverClose` is Base UI's `Popover.Close`, re-exported. Give it a `render` prop and any element dismisses the popup it is inside: `<PopoverClose render={<Button>Apply</Button>} />`.
 
 The shared axes are described in [prop conventions](../../design/prop-conventions).

@@ -25,7 +25,10 @@ import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types'
  * the page by definition, so it carries a shadow at level 3 and a prop that
  * could sit it flat would be a prop that could stop it being a popover.
  */
-export interface PopoverProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
+export interface PopoverProps
+  extends
+    Pick<NebaStyleProps, 'size' | 'color' | 'density'>,
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title' | 'children'> {
   /**
    * The element the popup hangs off and that opens it. Exactly one element,
    * which must accept a ref and spread props — every Neba component does.
@@ -100,8 +103,6 @@ export interface PopoverProps extends Pick<NebaStyleProps, 'size' | 'color' | 'd
    * single line of help — rather than for tuning the scale, which is `size`.
    */
   width?: number | string;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 export type PopoverCloseProps = React.ComponentPropsWithoutRef<typeof BaseUIPopover.Close>;
@@ -196,7 +197,8 @@ export function Popover({
   closeLabel,
   width,
   className,
-  style
+  style,
+  ...props
 }: PopoverProps) {
   const messages = useMessages(locale);
   const insetX = boxPaddingXClasses[density][size];
@@ -260,6 +262,7 @@ export function Popover({
                 : { maxWidth: typeof width === 'number' ? `${width}px` : width }),
               ...style
             }}
+            {...props}
           >
             {arrow ? (
               <BaseUIPopover.Arrow

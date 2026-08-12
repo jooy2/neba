@@ -19,6 +19,8 @@ import { NumberField } from 'neba';
 
 <PropsTable name="NumberField" />
 
+`<div>`의 native 속성은 root로 전달됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
+
 `value`의 타입은 `number | null`이며 `null`이 비어 있음을 뜻합니다. 파싱해야 하는 문자열이 아닙니다.
 
 shell은 [TextField](./text-field)와 동일하므로 같은 `size`의 필드와 한 줄에 놓을 수 있습니다.

@@ -112,4 +112,14 @@ describe('ProgressCircular', () => {
       expect(element.style.getPropertyValue('--n-accent')).toBe('var(--neba-danger-accent)');
     });
   });
+
+  describe('forwarded props', () => {
+    it('takes an accessible name of its own', async () => {
+      const screen = await render(<ProgressCircular value={40} aria-label="Uploading" />);
+
+      await expect
+        .element(screen.getByRole('progressbar', { name: 'Uploading' }))
+        .toBeInTheDocument();
+    });
+  });
 });

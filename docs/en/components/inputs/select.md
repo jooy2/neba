@@ -26,6 +26,8 @@ import { Select } from 'neba';
 
 <PropsTable name="Select" />
 
+Native `<div>` attributes pass through to the root. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
+
 When the options have to be searched, use [Combobox](./combobox); with only two or three, use [RadioGroup](./radio-group) or [SegmentedButton](./segmented-button).
 
 ### items

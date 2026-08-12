@@ -26,6 +26,8 @@ import { Combobox } from 'neba';
 
 <PropsTable name="Combobox" />
 
+Native `<div>` attributes pass through to the root. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
+
 ### items
 
 The same array shape [Select](./select) takes; only `label`'s type differs.

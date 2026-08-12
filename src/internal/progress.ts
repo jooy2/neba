@@ -22,7 +22,10 @@ import type { NebaColor, NebaSize } from '../types';
  * `value` of `null` has to mean the same thing on a bar, a ring and a row of
  * plates, or the trio is three components that happen to share a prefix.
  */
-export interface ProgressSharedProps {
+export interface ProgressSharedProps extends Omit<
+  React.ComponentPropsWithoutRef<'div'>,
+  'color' | 'children'
+> {
   /**
    * How far along, between `min` and `max`.
    *
@@ -52,8 +55,6 @@ export interface ProgressSharedProps {
    * range nobody described.
    */
   format?: Intl.NumberFormatOptions;
-  className?: string;
-  style?: React.CSSProperties;
 }
 
 /**

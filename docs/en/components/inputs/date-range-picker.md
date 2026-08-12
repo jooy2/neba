@@ -19,6 +19,8 @@ import { DateRangePicker } from 'neba';
 
 <PropsTable name="DateRangePicker" />
 
+Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
+
 The value is a single object rather than a tuple.
 
 ```ts

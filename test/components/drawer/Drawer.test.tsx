@@ -304,4 +304,14 @@ describe('Drawer', () => {
       await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
     });
   });
+
+  describe('forwarded props', () => {
+    it('passes an unknown prop to the panel', async () => {
+      await render(<Drawer defaultOpen title="Settings" data-analytics="settings-panel" />);
+
+      await expect
+        .element(document.querySelector<HTMLElement>('[data-analytics="settings-panel"]')!)
+        .toBeInTheDocument();
+    });
+  });
 });

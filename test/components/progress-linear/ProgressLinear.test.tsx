@@ -123,4 +123,14 @@ describe('ProgressLinear', () => {
       expect(screen.getByRole('progressbar').element().outerHTML).not.toContain('translate');
     });
   });
+
+  describe('forwarded props', () => {
+    it('takes an accessible name of its own', async () => {
+      const screen = await render(<ProgressLinear value={40} aria-label="Uploading" />);
+
+      await expect
+        .element(screen.getByRole('progressbar', { name: 'Uploading' }))
+        .toBeInTheDocument();
+    });
+  });
 });
