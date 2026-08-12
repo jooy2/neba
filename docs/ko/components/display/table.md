@@ -85,3 +85,5 @@ interface TableColumn<Row> {
 - 실제 `<table>`과 `<th scope="col">`로 렌더링됩니다.
 - `caption`은 표의 accessible name으로 읽힙니다.
 - 빈 상태 셀은 `colSpan`으로 모든 열을 덮으므로, 첫 열에만 걸린 짧은 텍스트로 읽히지 않습니다.
+- `onRowClick`을 넘기면 행이 tab 순서에 들어가고 Enter와 Space에 반응하며, focus-visible ring을 그립니다. 행의 `role`은 그대로 두므로 열 머리글과 행 위치는 계속 읽힙니다.
+- 셀 안에 링크나 버튼을 두면 그 컨트롤의 키 입력은 컨트롤이 처리합니다. 다만 컨트롤이 발생시킨 click은 행까지 버블링되므로, 행이 함께 열리지 않아야 한다면 핸들러에서 `event.stopPropagation()`을 호출하세요.

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Table, type TableColumn } from 'neba';
 
 interface Deploy {
@@ -155,6 +156,64 @@ describe('Table', () => {
 
       expect(onRowClick).toHaveBeenCalledTimes(1);
       expect(onRowClick).toHaveBeenCalledWith(ITEMS[1], 1);
+    });
+
+    it('puts a pressable row in the tab order and answers Enter and Space', async () => {
+      const onRowClick = vi.fn();
+      const screen = await render(
+        <Table headers={HEADERS} items={ITEMS} onRowClick={onRowClick} />
+      );
+
+      const row = screen.container.querySelectorAll('tbody tr')[1] as HTMLElement;
+      expect(row).toHaveAttribute('tabindex', '0');
+
+      row.focus();
+      await userEvent.keyboard('{Enter}');
+
+      expect(onRowClick).toHaveBeenCalledTimes(1);
+      expect(onRowClick).toHaveBeenCalledWith(ITEMS[1], 1);
+
+      await userEvent.keyboard(' ');
+
+      expect(onRowClick).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps a row nobody can press out of the tab order', async () => {
+      const screen = await render(<Table headers={HEADERS} items={ITEMS} hoverable />);
+
+      expect(screen.container.querySelector('tbody tr')).not.toHaveAttribute('tabindex');
+    });
+
+    /*
+     * A cell can hold a control of its own, and that control's Enter belongs to
+     * it. The row's key handler stays out of the way entirely: what still
+     * reaches the row is the click the button raises, which is the same thing a
+     * pointer press on it has always sent up — so the row fires once, not twice.
+     */
+    it('does not answer a key pressed on a control inside a cell twice', async () => {
+      const onRowClick = vi.fn();
+      const onOpen = vi.fn();
+      const headers: TableColumn<Deploy>[] = [
+        ...HEADERS,
+        {
+          key: 'action',
+          label: 'Action',
+          render: (row) => (
+            <button type="button" onClick={onOpen}>
+              {`Open ${row.env}`}
+            </button>
+          )
+        }
+      ];
+      const screen = await render(
+        <Table headers={headers} items={ITEMS} onRowClick={onRowClick} />
+      );
+
+      await screen.getByRole('button', { name: 'Open staging' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      expect(onOpen).toHaveBeenCalledTimes(1);
+      expect(onRowClick).toHaveBeenCalledTimes(1);
     });
 
     it('lights the row under the pointer only when it is meant to', async () => {

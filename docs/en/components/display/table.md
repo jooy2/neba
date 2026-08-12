@@ -85,3 +85,5 @@ Pins the header row while the body scrolls. It only does anything if something a
 - Renders a real `<table>` with `<th scope="col">` headings.
 - A `caption` is read as the table's accessible name.
 - The empty state cell uses `colSpan` to cover every column, so it is not announced as short text in the first column.
+- With `onRowClick`, a row enters the tab order, answers Enter and Space, and draws a focus-visible ring. Its `role` is left alone, so the column headings and the row's position are still announced.
+- A link or a button inside a cell keeps its own keys. The click it raises still bubbles to the row, so call `event.stopPropagation()` in that control's handler if the row should not open with it.

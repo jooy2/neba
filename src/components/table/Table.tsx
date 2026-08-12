@@ -108,6 +108,25 @@ const rowClasses = [
 ].join(' ');
 
 /**
+ * What a row that answers a press needs beyond the pointer treatment.
+ *
+ * `tabIndex` is the whole point: a row whose only way in is `onClick` is a
+ * control that a keyboard cannot reach at all, and `cursor-pointer` advertises
+ * it as one anyway. The ring is inset rather than offset, because the sheet
+ * clips at its own rounded edge and an outline drawn outside the first or last
+ * row is an outline with its top or bottom sliced off.
+ *
+ * The `role` is deliberately left alone. `role="button"` on a `<tr>` reads well
+ * in isolation and takes the row semantics off it — which orphans every `<td>`
+ * inside from the table they belong to, and costs a screen reader the column
+ * headers, the row position and the count.
+ */
+const clickableRowClasses = [
+  'cursor-pointer [outline:none]',
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
+].join(' ');
+
+/**
  * The rule between rows is the same `--n-line` a Card scores its sections with,
  * so a table on a card and the card's own dividers are one family of lines.
  */
@@ -230,12 +249,34 @@ export function Table<Row>({
                   rowClasses,
                   striped && index % 2 === 1 ? '[--n-row:var(--n-panel-hover)]' : '',
                   lit ? 'hover:[--n-row:var(--n-soft)]' : '',
-                  clickable ? 'cursor-pointer' : ''
+                  clickable ? clickableRowClasses : ''
                 ]
                   .filter(Boolean)
                   .join(' ')}
                 style={rowRuleStyle}
+                tabIndex={clickable ? 0 : undefined}
                 onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+                onKeyDown={
+                  onRowClick
+                    ? (event) => {
+                        // Only the row's own keys. A cell can hold a link or a
+                        // button, and those have an Enter of their own — running
+                        // both would open the row and follow the link at once.
+                        if (event.target !== event.currentTarget) {
+                          return;
+                        }
+
+                        if (event.key !== 'Enter' && event.key !== ' ') {
+                          return;
+                        }
+
+                        // Space scrolls the page otherwise, which is the one
+                        // thing a reader pressing it on a row did not ask for.
+                        event.preventDefault();
+                        onRowClick(row, index);
+                      }
+                    : undefined
+                }
               >
                 {headers.map((column) => (
                   <td key={column.key} style={{ ...cellStyle, textAlign: column.align ?? 'start' }}>
