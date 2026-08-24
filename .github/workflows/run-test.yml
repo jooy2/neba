@@ -16,10 +16,18 @@ on:
       - .github/workflows/run-test.yml
   workflow_dispatch:
 
+# A superseded pull request run has nothing left to say, and a run that has
+# wedged holds a runner until it is noticed. Pushes to `main` are exempt: each
+# one is a commit whose own result is worth having.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     name: Lint and typecheck
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v5
@@ -42,6 +50,12 @@ jobs:
   run-test:
     runs-on: ${{ matrix.os }}
     name: Test Node.js ${{ matrix.node_version }} on ${{ matrix.os }} (${{ matrix.browser }})
+    # The slowest of these jobs is windows/chromium at about seven minutes, four
+    # of which are Playwright installing the Media Foundation feature. Twenty is
+    # therefore roughly three times the worst honest run, and short enough that a
+    # browser that has stopped answering costs twenty minutes rather than the six
+    # hours GitHub would otherwise allow it.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +77,10 @@ jobs:
       - name: Install Playwright browser (${{ matrix.browser }})
         run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Test module script
+        # A cap of its own, so a wedged browser is reported as the test step
+        # timing out rather than as the job running out somewhere unnamed. The
+        # suite's slowest honest run is under three minutes.
+        timeout-minutes: 10
         run: npm run test
         env:
           VITEST_BROWSER: ${{ matrix.browser }}
