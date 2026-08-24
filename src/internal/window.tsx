@@ -41,17 +41,21 @@ import type { NebaColor, NebaSize } from '../types';
 /**
  * Whose window this is a picture of.
  *
- * Windows is two entries rather than one, and it is the only system here that
- * is: 10 and 11 differ in exactly the things a title bar shows — square corners
- * against rounded ones, a ruled white bar against one that is the same sheet as
- * the window, sharp glyphs against rounded ones, and a border that takes the
- * accent colour on one and not the other. Every other system's versions differ
- * in ways this component does not draw.
+ * Versions are separate entries wherever the *title bar* is what changed, which
+ * is why Windows has five and the others have one or two. XP painted its bar in
+ * Luna blue and framed the window in it; 7 made it glass; 8 threw both away for
+ * a flat square sheet; 10 ruled the bar off from the body; 11 rounded the
+ * corners and made the two one Mica sheet again. `macosx` is Aqua — the striped
+ * grey bar, the glossy lights and the square bottom corners — against the flat
+ * `macos` that replaced it.
  *
- * `windows11` rather than `win11`, and `macos` rather than `mac`: these are the
- * names the systems have.
+ * They are named the way the systems are, so `windows11` rather than `win11`
+ * and `macos` rather than `mac`. Nothing here is a copy of any of them: what is
+ * drawn is a bar, a border and three buttons at the proportions the system used,
+ * and no mark, wordmark or icon belonging to anyone else.
  */
-export type NebaWindowOs = 'macos' | 'windows11' | 'windows10' | 'linux';
+export type NebaWindowOs =
+  'macos' | 'macosx' | 'windows11' | 'windows10' | 'windows8' | 'windows7' | 'windowsxp' | 'linux';
 
 /** The three buttons a title bar can carry. */
 export type NebaWindowControl = 'minimize' | 'maximize' | 'close';
@@ -70,8 +74,12 @@ export interface NebaWindowOffset {
 export interface WindowMetrics {
   /** The title bar's height. */
   bar: number;
-  /** The window's own corner. */
+  /** The window's own corner, at the top. */
   radius: number;
+  /** And at the bottom, which the older systems leave square. */
+  radiusBottom: number;
+  /** How thick the frame around the window is. XP's is a band, not a hairline. */
+  frame: number;
   /** The air at the leading edge of the bar. */
   padX: number;
   /** And at the trailing edge, which is nothing where the buttons run to it. */
@@ -84,24 +92,45 @@ export interface WindowMetrics {
   control: { width: number; height: number };
   /** The mark inside it. */
   glyph: number;
+  /** How heavy the title is written. */
+  weight: number;
   /** How much room the whole set of them takes, given how many are drawn. */
   controlsWidth: (count: number) => number;
+  /** Aero's close button, which is wider than the two beside it. */
+  closeWidth: number;
 }
 
 interface WindowChrome {
   bar: number;
   radius: number;
+  /** Square on every system before the corners were rounded all the way round. */
+  radiusBottom: number;
   padX: number;
+  /** The air at the trailing end, which is nothing where the buttons run to it. */
+  padEnd: number;
   gap: number;
   title: number;
   glyph: number;
+  weight: number;
+  frame: number;
   control: { width: number; height: number };
+  /** Aero's close button is wider than the two beside it. */
+  closeWidth?: number;
   /** Where the title sits along the bar. */
   titleAlign: 'start' | 'center';
   /** Which end the controls are on. */
   controlsSide: 'start' | 'end';
-  /** How one control is drawn. */
-  shape: 'dot' | 'square' | 'circle';
+  /**
+   * How one control is drawn.
+   *
+   * - `dot` — a flat traffic light, and `gloss-dot` the same one with Aqua's
+   *   highlight and ring on it.
+   * - `square` — a flat rectangle running to the corner of the window.
+   * - `plate` — XP's coloured, gradient-filled button.
+   * - `aero` — a pane of glass hung off the top edge, close first among equals.
+   * - `circle` — GNOME's small disc.
+   */
+  shape: 'dot' | 'gloss-dot' | 'square' | 'plate' | 'aero' | 'circle';
   /** Whether the bar is ruled off from the body. */
   rule: boolean;
   /** How thick the glyphs are drawn. */
@@ -112,6 +141,22 @@ interface WindowChrome {
   tint: [number, number];
   /** Whether an accented window carries the colour into its border as well. */
   accentBorder: boolean;
+  /**
+   * The chrome's own colours, for the systems that painted their title bar
+   * rather than taking the page's.
+   *
+   * Fixed values rather than theme tokens, exactly as `Mockup`'s finishes are:
+   * Luna blue is Luna blue on a page switched to dark, and a title bar that
+   * changed colour with the theme would be a drawing of the theme rather than
+   * of a window. `dark` says which way its own controls have to lighten.
+   */
+  paint: { fill: string; ink: string; dark: boolean } | null;
+  /** What is laid over that fill: the gradient, the gloss, the stripes. */
+  image: string | null;
+  /** The title's own shadow — XP's hard one, Aero's glow, Aqua's emboss. */
+  shadow: string | null;
+  /** Whether the bar blurs what is behind it, which is what made Aero glass. */
+  glass: boolean;
 }
 
 /**
@@ -128,10 +173,14 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
   macos: {
     bar: 38,
     radius: 10,
+    radiusBottom: 10,
     padX: 12,
+    padEnd: 12,
     gap: 8,
     title: 13,
     glyph: 7,
+    weight: 500,
+    frame: 1,
     control: { width: 12, height: 12 },
     titleAlign: 'center',
     controlsSide: 'start',
@@ -140,17 +189,53 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     stroke: 1.4,
     boxRadius: 0,
     tint: [6, 3],
-    accentBorder: false
+    accentBorder: false,
+    paint: null,
+    image: null,
+    shadow: null,
+    glass: false
+  },
+  macosx: {
+    // Aqua: a short striped bar, glossy lights, a bold embossed title in the
+    // middle of it, a hairline under it and a bottom that was never rounded.
+    bar: 26,
+    radius: 8,
+    radiusBottom: 0,
+    padX: 10,
+    padEnd: 10,
+    gap: 8,
+    title: 12,
+    glyph: 7,
+    weight: 700,
+    frame: 1,
+    control: { width: 13, height: 13 },
+    titleAlign: 'center',
+    controlsSide: 'start',
+    shape: 'gloss-dot',
+    rule: true,
+    stroke: 1.5,
+    boxRadius: 0,
+    tint: [0, 0],
+    accentBorder: false,
+    paint: { fill: '#e4e4e4', ink: '#333333', dark: false },
+    image:
+      'repeating-linear-gradient(180deg, rgb(255 255 255 / 0.55) 0 1px, rgb(0 0 0 / 0.035) 1px 2px), linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(0 0 0 / 0.07))',
+    shadow: '0 1px 0 rgb(255 255 255 / 0.85)',
+    glass: false
   },
   windows11: {
-    // 32px bar, 46×32 buttons: the real proportion, and the reason the buttons
+    // 32px bar, 46x32 buttons: the real proportion, and the reason the buttons
     // reach the top edge of the window rather than sitting inside a padding.
     bar: 32,
     radius: 8,
+    radiusBottom: 8,
     padX: 12,
+    padEnd: 0,
     gap: 0,
     title: 12,
     glyph: 10,
+    weight: 400,
+    frame: 1,
     control: { width: 46, height: 32 },
     titleAlign: 'start',
     controlsSide: 'end',
@@ -161,17 +246,25 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     tint: [3, 1],
     stroke: 1,
     boxRadius: 1.6,
-    accentBorder: false
+    accentBorder: false,
+    paint: null,
+    image: null,
+    shadow: null,
+    glass: false
   },
   windows10: {
     // Square corners, a shorter bar, a rule under it, thinner glyphs and a
     // border that takes the accent colour: the five things that say "not 11".
     bar: 30,
     radius: 0,
+    radiusBottom: 0,
     padX: 10,
+    padEnd: 0,
     gap: 0,
     title: 12,
     glyph: 10,
+    weight: 400,
+    frame: 1,
     control: { width: 45, height: 30 },
     titleAlign: 'start',
     controlsSide: 'end',
@@ -180,15 +273,110 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     tint: [0, 0],
     stroke: 0.9,
     boxRadius: 0,
-    accentBorder: true
+    accentBorder: true,
+    paint: null,
+    image: null,
+    shadow: null,
+    glass: false
+  },
+  windows8: {
+    // The flat one. Where 10 rules its bar off from the body, 8 leaves the two
+    // as one white sheet and draws a band of colour around the whole window —
+    // which is the trait it is remembered by.
+    bar: 32,
+    radius: 0,
+    radiusBottom: 0,
+    padX: 10,
+    padEnd: 0,
+    gap: 0,
+    title: 12,
+    glyph: 11,
+    weight: 400,
+    frame: 2,
+    control: { width: 45, height: 32 },
+    titleAlign: 'start',
+    controlsSide: 'end',
+    shape: 'square',
+    rule: false,
+    tint: [0, 0],
+    stroke: 1,
+    boxRadius: 0,
+    accentBorder: true,
+    paint: null,
+    image: null,
+    shadow: null,
+    glass: false
+  },
+  windows7: {
+    // Aero: a pane of glass with the page blurred behind it, a white glow
+    // around the title rather than a shadow under it, and three buttons in a
+    // group hung off the top edge with a wider close on the end.
+    bar: 30,
+    radius: 7,
+    radiusBottom: 0,
+    padX: 10,
+    padEnd: 0,
+    gap: 2,
+    title: 12,
+    glyph: 10,
+    weight: 400,
+    frame: 1,
+    control: { width: 29, height: 20 },
+    closeWidth: 42,
+    titleAlign: 'start',
+    controlsSide: 'end',
+    shape: 'aero',
+    rule: false,
+    tint: [0, 0],
+    stroke: 1.1,
+    boxRadius: 0,
+    accentBorder: false,
+    paint: { fill: 'rgb(214 232 250 / 0.72)', ink: '#12314f', dark: false },
+    image:
+      'linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.14) 48%, rgb(255 255 255 / 0.4))',
+    shadow: '0 0 6px rgb(255 255 255 / 0.95), 0 0 3px rgb(255 255 255 / 0.95)',
+    glass: true
+  },
+  windowsxp: {
+    // Luna: the bar is the system's blue rather than the page's white, the
+    // window is framed in the same blue on three sides, and the buttons are
+    // coloured plates rather than marks on the bar.
+    bar: 30,
+    radius: 8,
+    radiusBottom: 0,
+    padX: 6,
+    padEnd: 4,
+    gap: 2,
+    title: 13,
+    glyph: 9,
+    weight: 700,
+    frame: 3,
+    control: { width: 21, height: 21 },
+    titleAlign: 'start',
+    controlsSide: 'end',
+    shape: 'plate',
+    rule: false,
+    tint: [0, 0],
+    stroke: 1.8,
+    boxRadius: 3,
+    accentBorder: false,
+    paint: { fill: '#1152c4', ink: '#ffffff', dark: true },
+    image:
+      'linear-gradient(180deg, rgb(255 255 255 / 0.45), rgb(255 255 255 / 0.06) 45%, rgb(0 0 0 / 0.16))',
+    shadow: '0 1px 1px rgb(0 0 0 / 0.45)',
+    glass: false
   },
   linux: {
     bar: 44,
     radius: 12,
+    radiusBottom: 12,
     padX: 10,
+    padEnd: 10,
     gap: 6,
     title: 14,
     glyph: 10,
+    weight: 600,
+    frame: 1,
     control: { width: 24, height: 24 },
     titleAlign: 'center',
     controlsSide: 'end',
@@ -197,7 +385,11 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     stroke: 1.2,
     boxRadius: 0,
     tint: [11, 5],
-    accentBorder: false
+    accentBorder: false,
+    paint: null,
+    image: null,
+    shadow: null,
+    glass: false
   }
 };
 
@@ -227,22 +419,33 @@ export function windowMetrics(os: NebaWindowOs, size: NebaSize): WindowMetrics {
   const control = { width: round(chrome.control.width), height: round(chrome.control.height) };
   const gap = round(chrome.gap);
 
+  const closeWidth = chrome.closeWidth === undefined ? control.width : round(chrome.closeWidth);
+
   return {
     bar: round(chrome.bar),
-    // The corner is *not* scaled with the rest: it is the shape of the window
-    // rather than a measure of its chrome, and an `xs` macOS window with a 7px
-    // corner stops reading as macOS.
+    // The corners are *not* scaled with the rest: they are the shape of the
+    // window rather than a measure of its chrome, and an `xs` macOS window with
+    // a 7px corner stops reading as macOS.
     radius: chrome.radius,
+    radiusBottom: chrome.radiusBottom,
+    frame: chrome.frame,
     padX: round(chrome.padX),
     // A Windows caption button is a corner target — it runs to the edge of the
     // window, which is what makes it hittable by throwing the pointer at the
     // corner. Everything else keeps its air.
-    padEnd: chrome.shape === 'square' ? 0 : round(chrome.padX),
+    padEnd: round(chrome.padEnd),
     gap,
     title: round(chrome.title),
     glyph: round(chrome.glyph),
+    weight: chrome.weight,
     control,
-    controlsWidth: (count: number) => (count <= 0 ? 0 : count * control.width + (count - 1) * gap)
+    controlsWidth: (count: number) =>
+      count <= 0
+        ? 0
+        : // The close button is the odd one out on Aero, so the set is counted
+          // as one of it and the rest of the others.
+          closeWidth + (count - 1) * control.width + (count - 1) * gap,
+    closeWidth
   };
 }
 
@@ -257,8 +460,12 @@ export function windowChrome(os: NebaWindowOs): WindowChrome {
  */
 const controlOrder: Record<NebaWindowOs, readonly NebaWindowControl[]> = {
   macos: ['close', 'minimize', 'maximize'],
+  macosx: ['close', 'minimize', 'maximize'],
   windows11: ['minimize', 'maximize', 'close'],
   windows10: ['minimize', 'maximize', 'close'],
+  windows8: ['minimize', 'maximize', 'close'],
+  windows7: ['minimize', 'maximize', 'close'],
+  windowsxp: ['minimize', 'maximize', 'close'],
   linux: ['minimize', 'maximize', 'close']
 };
 
@@ -308,38 +515,60 @@ export function windowSlots(options: {
   // its colour drains, its shadow drops a step and its title greys. Never
   // `opacity`, which would take the content down with the chrome.
   const dyed = accent && active;
-  const bar = dyed ? `var(--neba-${color}-solid)` : plain;
+  const paint = chrome.paint;
+  // A painted bar that is not in front washes out rather than greys: that is
+  // what XP did to Luna blue and what Aqua did to its stripes.
+  const painted = paint
+    ? active
+      ? paint.fill
+      : `color-mix(in oklab, ${paint.fill} 45%, #c6c9ce)`
+    : null;
+
+  const bar = dyed ? `var(--neba-${color}-solid)` : (painted ?? plain);
   const barFg = dyed
     ? `var(--neba-${color}-on-solid)`
-    : active
-      ? 'var(--neba-fg)'
-      : 'var(--neba-muted-fg)';
-
-  const line =
-    dyed && chrome.accentBorder
-      ? `var(--neba-${color}-solid)`
+    : paint
+      ? active
+        ? paint.ink
+        : `color-mix(in oklab, ${paint.ink} 60%, transparent)`
       : active
-        ? 'var(--neba-border)'
-        : 'color-mix(in oklab, var(--neba-border) 55%, transparent)';
+        ? 'var(--neba-fg)'
+        : 'var(--neba-muted-fg)';
+
+  const banded = chrome.frame > 1;
+  const line =
+    dyed && (chrome.accentBorder || banded)
+      ? `var(--neba-${color}-solid)`
+      : painted && banded
+        ? painted
+        : active
+          ? 'var(--neba-border)'
+          : 'color-mix(in oklab, var(--neba-border) 55%, transparent)';
+
+  // Which way a control has to lighten when the pointer arrives is a property
+  // of what it is sitting on, not of the page.
+  const onDark = dyed || (paint?.dark ?? false);
 
   return {
     '--n-window-bar': veil(bar, veiled),
     '--n-window-bar-fg': barFg,
+    '--n-window-bar-image': chrome.image ?? 'none',
+    '--n-window-bar-shadow': chrome.shadow ?? 'none',
     '--n-window-body': veil(surface, veiled),
     '--n-window-line': line,
     // What a control's hover is mixed out of. Fixed rather than derived from
     // `currentColor`: the close button turns its own ink white on hover, and a
     // fill mixed out of that ink would turn white with it — which is a close
     // button that disappears at the moment it is aimed at.
-    '--n-window-hover': dyed
+    '--n-window-hover': onDark
       ? 'rgb(255 255 255 / 0.18)'
       : 'color-mix(in oklab, var(--neba-fg) 9%, transparent)',
-    '--n-window-press': dyed
+    '--n-window-press': onDark
       ? 'rgb(255 255 255 / 0.28)'
       : 'color-mix(in oklab, var(--neba-fg) 16%, transparent)',
     // The window in front sits a step further off the page than the ones behind
     // it. This is the whole of what "highlighted" means here — a ring around a
-    // window is not something any of these four systems draws.
+    // window is not something any of these systems draws.
     '--n-window-shadow': `var(--neba-shadow-${active ? elevation : Math.max(elevation - 1, 0)})`,
     '--n-accent': `var(--neba-${color}-accent)`,
     '--n-ring': `var(--neba-${color}-ring)`
@@ -349,10 +578,11 @@ export function windowSlots(options: {
 /* ---------------------------------------------------------------------------
  * The glyphs
  *
- * Drawn on a 10×10 grid and scaled by the caller, so a Windows minimize and a
+ * Drawn on a 10x10 grid and scaled by the caller, so a Windows minimize and a
  * GNOME one are the same line at two weights rather than two drawings. The
  * weight and the corner are the system's: Windows 11 rounds the maximize box
- * and draws it at a full pixel, Windows 10 leaves it sharp and hairline-thin.
+ * and draws it at a full pixel, Windows 10 leaves it sharp and hairline-thin,
+ * XP draws it heavy enough to read white on blue.
  * ------------------------------------------------------------------------- */
 
 function Glyph({
@@ -396,7 +626,10 @@ function controlGlyph(
   if (control === 'minimize') {
     return (
       <Glyph size={size} stroke={stroke} round={round}>
-        <path d="M1.5 5h7" />
+        {/* On the systems whose button is a plate, the minimize mark sits low in
+            it rather than through the middle, which is where every one of them
+            drew it. */}
+        <path d={chrome.shape === 'plate' ? 'M2 7.5h6' : 'M1.5 5h7'} />
       </Glyph>
     );
   }
@@ -423,6 +656,10 @@ function controlGlyph(
   );
 }
 
+/* ---------------------------------------------------------------------------
+ * The buttons
+ * ------------------------------------------------------------------------- */
+
 /** The traffic lights, which are hardware colours rather than theme tokens: a
  *  red close button is red on a page switched to dark. */
 const trafficColors: Record<NebaWindowControl, string> = {
@@ -431,13 +668,70 @@ const trafficColors: Record<NebaWindowControl, string> = {
   maximize: '#28c840'
 };
 
-/** What Windows turns the close button when the pointer is on it. */
+/** And XP's plates, which are the same three ideas at a different weight. */
+const plateColors: Record<NebaWindowControl, string> = {
+  close: '#cf4b36',
+  minimize: '#4b85d4',
+  maximize: '#4b85d4'
+};
+
+/** What each system turns the close button when the pointer is on it. */
 const closeHover: Record<NebaWindowOs, string | null> = {
   macos: null,
+  macosx: null,
   windows11: '#c42b1c',
   windows10: '#e81123',
+  windows8: '#e81123',
+  windows7: '#e04a45',
+  windowsxp: null,
   linux: null
 };
+
+/** A dot that has gone grey is a window that is not in front. */
+const dimLight = 'color-mix(in oklab, var(--neba-fg) 22%, transparent)';
+
+/** What one button is painted with, before the pointer arrives. */
+function controlFace(
+  chrome: WindowChrome,
+  control: NebaWindowControl,
+  active: boolean
+): { face?: string; ink?: string; image?: string; plate?: string } {
+  switch (chrome.shape) {
+    case 'dot':
+    case 'gloss-dot':
+      return {
+        face: active ? trafficColors[control] : dimLight,
+        ink: 'rgb(0 0 0 / 0.55)',
+        image:
+          chrome.shape === 'gloss-dot'
+            ? 'radial-gradient(circle at 50% 26%, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0) 62%)'
+            : undefined,
+        plate:
+          chrome.shape === 'gloss-dot'
+            ? 'inset 0 0 0 1px rgb(0 0 0 / 0.22), inset 0 -1px 1px rgb(0 0 0 / 0.15)'
+            : undefined
+      };
+    case 'plate':
+      return {
+        face: active
+          ? plateColors[control]
+          : `color-mix(in oklab, ${plateColors[control]} 45%, #c6c9ce)`,
+        ink: '#ffffff',
+        image:
+          'linear-gradient(180deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.05) 55%, rgb(0 0 0 / 0.14))',
+        plate: 'inset 0 0 0 1px rgb(255 255 255 / 0.4)'
+      };
+    case 'aero':
+      return {
+        face: 'rgb(255 255 255 / 0.3)',
+        image:
+          'linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.08) 52%, rgb(255 255 255 / 0.3))',
+        plate: 'inset 0 0 0 1px rgb(255 255 255 / 0.55)'
+      };
+    default:
+      return {};
+  }
+}
 
 export interface WindowControlsProps {
   os: NebaWindowOs;
@@ -459,6 +753,10 @@ export interface WindowControlsProps {
  * `<div>` with a click handler on it is invisible to a keyboard. They also stop
  * the press from reaching the bar underneath, or every close would begin by
  * dragging the window half a pixel.
+ *
+ * Every fill is written into a slot and every state is a class that reads one,
+ * so no two declarations are ever left arguing about which of them paints the
+ * button — which is the bug that made a hovered close button vanish.
  */
 export function WindowControls({
   os,
@@ -476,15 +774,22 @@ export function WindowControls({
     return null;
   }
 
-  const dots = chrome.shape === 'dot';
+  const dots = chrome.shape === 'dot' || chrome.shape === 'gloss-dot';
   const circles = chrome.shape === 'circle';
+  const plates = chrome.shape === 'plate';
+  const aero = chrome.shape === 'aero';
 
   return (
     <div
       // `group/controls` is what lets the traffic lights hold their glyphs back
       // until the pointer is on the set rather than on one of them, which is how
       // the originals behave — the three are one control in three parts.
-      className="group/controls flex shrink-0 items-center self-stretch"
+      className={cx(
+        'group/controls flex shrink-0 items-center',
+        // Aero's group hangs off the top edge of the window rather than sitting
+        // in the middle of the bar. Everything else is centred in it.
+        aero ? 'self-start' : 'self-stretch'
+      )}
       style={{ gap: metrics.gap }}
       // The bar under it drags the window; the buttons on it do not.
       onPointerDown={(event) => event.stopPropagation()}
@@ -493,6 +798,7 @@ export function WindowControls({
       {ordered.map((control) => {
         const name = control === 'maximize' && maximized ? labels.restore : labels[control];
         const danger = control === 'close' ? closeHover[os] : null;
+        const { face, ink, image, plate } = controlFace(chrome, control, active);
 
         return (
           <button
@@ -502,35 +808,48 @@ export function WindowControls({
             title={name}
             className={cx(
               'relative flex shrink-0 cursor-pointer items-center justify-center',
-              '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
+              '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease),filter_var(--neba-duration)_var(--neba-ease)]',
               'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-              dots ? 'rounded-full' : circles ? 'rounded-full bg-(--n-window-hover)' : '',
+              dots || circles ? 'rounded-full' : '',
+              circles ? 'bg-(--n-window-hover)' : '',
+              face ? 'bg-(--n-window-face)' : '',
               // An if/else rather than two hover classes of equal specificity:
               // which of them won would be decided by their order in the
               // generated stylesheet, which is not something a component may
-              // depend on. It is also the bug that made the × vanish — the
-              // neutral fill was mixed out of `currentColor`, which the same
-              // hover was turning white.
+              // depend on.
               danger
                 ? 'hover:bg-(--n-window-danger) hover:text-white active:bg-(--n-window-danger)'
                 : dots
                   ? ''
-                  : circles
-                    ? 'hover:bg-(--n-window-press) active:bg-(--n-window-press)'
-                    : 'hover:bg-(--n-window-hover) active:bg-(--n-window-press)'
+                  : plates
+                    ? // A plate is already carrying its own colour, so what the
+                      // pointer changes is how bright that colour is.
+                      'hover:brightness-110 active:brightness-95'
+                    : circles
+                      ? 'hover:bg-(--n-window-press) active:bg-(--n-window-press)'
+                      : aero
+                        ? 'hover:brightness-110 active:brightness-95'
+                        : 'hover:bg-(--n-window-hover) active:bg-(--n-window-press)'
             )}
             style={
               {
-                width: dots ? metrics.control.height : metrics.control.width,
+                width: dots
+                  ? metrics.control.height
+                  : control === 'close'
+                    ? metrics.closeWidth
+                    : metrics.control.width,
                 height: metrics.control.height,
-                // A traffic light that is not on the front window is grey, which
-                // is the only thing about it that says so.
-                background: dots
-                  ? active
-                    ? trafficColors[control]
-                    : 'color-mix(in oklab, var(--neba-fg) 22%, transparent)'
-                  : undefined,
-                color: dots ? 'rgb(0 0 0 / 0.55)' : undefined,
+                borderRadius: plates
+                  ? chrome.boxRadius + 1
+                  : // Aero's group is rounded where it leaves the window and
+                    // square where it meets the edge it is hanging from.
+                    aero
+                    ? '0 0 3px 3px'
+                    : undefined,
+                backgroundImage: image,
+                boxShadow: plate,
+                color: ink,
+                ...(face ? { '--n-window-face': face } : {}),
                 ...(danger ? { '--n-window-danger': danger } : {})
               } as React.CSSProperties
             }

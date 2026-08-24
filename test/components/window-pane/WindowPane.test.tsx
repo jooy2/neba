@@ -53,6 +53,70 @@ describe('WindowPane', () => {
       expect(controlNames(screen)).toEqual(['Minimize', 'Maximize', 'Close']);
     });
 
+    it('puts them where Aqua put them, which is where macOS still does', async () => {
+      const screen = await render(<WindowPane os="macosx" title="Finder" data-testid="window" />);
+
+      expect(controlNames(screen)).toEqual(['Close', 'Minimize', 'Maximize']);
+    });
+
+    // Every system before the corners were rounded all the way round left the
+    // bottom two square, which is most of what says "older" at a glance.
+    it('leaves the bottom corners of an older window square', async () => {
+      const screen = await render(
+        <WindowPane os="windowsxp" title="Explorer" data-testid="window" />
+      );
+
+      const radius = (screen.getByTestId('window').element() as HTMLElement).style.borderRadius;
+
+      expect(radius.startsWith('8px 8px')).toBe(true);
+      expect(radius.endsWith('0px 0px')).toBe(true);
+    });
+
+    // Luna is Luna on a page switched to dark: the chrome is the system's,
+    // exactly as a Mockup's finish is the hardware's.
+    it('paints an XP window in its own colour and frames it in the same one', async () => {
+      const screen = await render(
+        <WindowPane os="windowsxp" title="Explorer" data-testid="window" />
+      );
+
+      const root = screen.getByTestId('window').element() as HTMLElement;
+
+      expect(slot(screen, '--n-window-bar')).toBe('#1152c4');
+      expect(slot(screen, '--n-window-line')).toBe('#1152c4');
+      // Read off the shorthand: a `border` written with a `var()` in it leaves
+      // every longhand pending substitution, so `borderWidth` comes back empty.
+      expect(root.style.border.startsWith('3px')).toBe(true);
+    });
+
+    // The `background` shorthand resets every longhand it does not mention, so a
+    // bar that writes both loses whichever it wrote first. XP's gradient, Aqua's
+    // stripes and Aero's glass are all that longhand.
+    it("keeps the system's own image on the bar as well as its colour", async () => {
+      const screen = await render(
+        <WindowPane os="windowsxp" title="Explorer" data-testid="window" />
+      );
+      const bar = screen.getByText('Explorer').element().closest('div') as HTMLElement;
+
+      expect(slot(screen, '--n-window-bar-image')).toContain('linear-gradient');
+      expect(bar.style.backgroundImage).toBe('var(--n-window-bar-image)');
+      expect(bar.style.backgroundColor).toBe('var(--n-window-bar)');
+    });
+
+    it('blurs what is behind an Aero title bar, and nothing behind a flat one', async () => {
+      const screen = await render(
+        <WindowPane os="windows7" title="Explorer" data-testid="window" />
+      );
+      const bar = screen.getByText('Explorer').element().closest('div') as HTMLElement;
+
+      expect(bar).toHaveClass('[backdrop-filter:var(--neba-blur)]');
+
+      await screen.rerender(<WindowPane os="windows8" title="Explorer" data-testid="window" />);
+
+      expect(
+        (screen.getByText('Explorer').element().closest('div') as HTMLElement).className
+      ).not.toContain('backdrop-filter');
+    });
+
     it('draws only the buttons it was asked for', async () => {
       const screen = await render(
         <WindowPane controls={['close']} title="Finder" data-testid="window" />

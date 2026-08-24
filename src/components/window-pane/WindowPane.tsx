@@ -631,7 +631,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   );
 
   const named = hasContent(title) ? (
-    <span id={titleId} className="min-w-0 truncate font-medium">
+    <span id={titleId} className="min-w-0 truncate">
       {title}
     </span>
   ) : null;
@@ -643,10 +643,17 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
       className={cx(
         'relative flex shrink-0 items-center select-none',
         iconClasses,
+        // What made Aero glass: the page behind the bar is blurred rather than
+        // merely showing through it.
+        chrome.glass ? '[backdrop-filter:var(--neba-blur)]' : '',
         draggable && !maximized ? 'cursor-grab active:cursor-grabbing' : ''
       )}
       style={{
         height: metrics.bar,
+        // The title's shadow is the system's: XP's hard one, Aero's white glow,
+        // Aqua's emboss.
+        textShadow: 'var(--n-window-bar-shadow)',
+        fontWeight: metrics.weight,
         paddingInlineStart: metrics.padX,
         // Nothing at the trailing edge on Windows: a caption button is a corner
         // target, and a corner target that stops 12px short of the corner is the
@@ -654,7 +661,13 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
         paddingInlineEnd: metrics.padEnd,
         gap: Math.round(metrics.title * 0.7),
         fontSize: metrics.title,
-        background: 'var(--n-window-bar)',
+        // A colour and an image rather than the `background` shorthand, and that
+        // is load-bearing: the shorthand resets every longhand it does not
+        // mention, so a `background` written after a `backgroundImage` wipes the
+        // gradient, the stripes and the glass off the bar. Which is exactly
+        // what it did.
+        backgroundColor: 'var(--n-window-bar)',
+        backgroundImage: 'var(--n-window-bar-image)',
         color: 'var(--n-window-bar-fg)',
         // Windows 10 is the one of the four that rules its title bar off from
         // the body. On the others the two are one sheet in two shades.
@@ -759,10 +772,14 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
         ...windowSlots({ os, color, accent, transparency, active, elevation }),
         position: position === 'static' ? 'relative' : position,
         ...geometry,
-        // Square while maximized, as on every one of the four: a window filling
-        // the screen has no corners to cut.
-        borderRadius: maximized ? 0 : metrics.radius,
-        border: '1px solid var(--n-window-line)',
+        // Square while maximized, as on every one of them: a window filling the
+        // screen has no corners to cut. Unmaximized, the two ends are cut
+        // separately — every system before the corners were rounded all the way
+        // round left the bottom two square.
+        borderRadius: maximized
+          ? 0
+          : `${metrics.radius}px ${metrics.radius}px ${metrics.radiusBottom}px ${metrics.radiusBottom}px`,
+        border: `${metrics.frame}px solid var(--n-window-line)`,
         boxShadow: 'var(--n-window-shadow), var(--neba-plate-glass)',
         ...style
       } as React.CSSProperties,

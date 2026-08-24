@@ -7858,11 +7858,11 @@ export const propTables: Record<string, PropRow[]> = {
   WindowPane: [
     {
       name: 'os',
-      type: "'macos' | 'windows11' | 'windows10' | 'linux'",
+      type: "'macos' | 'macosx' | 'windows11' | 'windows10' | 'windows8' | 'windows7' | 'windowsxp' | 'linux'",
       default: "'macos'",
       description: {
-        ko: '어느 시스템의 창인지. 컨트롤의 위치와 모양, 제목표시줄의 높이, 모서리를 정합니다',
-        en: 'Whose window this is a picture of. Decides where the controls sit, how they are drawn, how tall the title bar is and how its corners are cut'
+        ko: '어느 시스템의 창인지. 컨트롤의 위치와 모양, 제목표시줄의 높이와 색, 테두리의 두께와 모서리를 정합니다. 제목표시줄이 달라진 버전마다 별도 항목입니다 — XP는 Luna 블루와 그 색의 테두리, 7은 아크릴 유리, 8은 납작한 사각형, 10은 바 아래의 선, 11은 둥근 모서리, macosx는 Aqua입니다',
+        en: 'Whose window this is a picture of. Decides where the controls sit and how they are drawn, how tall the title bar is and what colour, and how thick the frame is and how its corners are cut. A version is its own entry wherever the title bar is what changed: XP painted it Luna blue and framed the window in it, 7 made it glass, 8 threw both away, 10 ruled it off from the body, 11 rounded the corners, and macosx is Aqua'
       }
     },
     {

@@ -29,11 +29,24 @@ Every other `<div>` attribute passes through to the root, except `title` — her
 
 ### os
 
-`macos` puts three coloured dots on the left and centres the title over the whole window. `windows11` puts three rectangles on the right, above rounded corners. `windows10` is the same three over square corners, a shorter bar and a rule under it. `linux` is a GNOME header bar: taller, with circular buttons and a centred title.
+Eight systems, and a version is its own entry wherever the title bar is what changed:
+
+| `os` | What it draws |
+| --- | --- |
+| `macos` | Three coloured dots on the left, the title centred over the whole window, one flat sheet |
+| `macosx` | Aqua — a short striped bar, glossy lights, a bold embossed title, square bottom corners |
+| `windows11` | Three rectangles hard against a rounded top-right corner, bar and body one Mica sheet |
+| `windows10` | The same three over square corners, a shorter bar, and a rule under it |
+| `windows8` | Flat and square, no rule, and a band of colour around the whole window |
+| `windows7` | Aero — glass with the page blurred behind it, a glowing title, a wider close button |
+| `windowsxp` | Luna — a blue gradient bar, the window framed in the same blue, coloured button plates |
+| `linux` | A GNOME header bar: taller, with circular buttons and a centred title |
+
+The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark — the same choice [Mockup](./mockup)'s finishes make, because hardware and system chrome are not the theme.
 
 The buttons carry no other party's marks — a minimize is a line, a maximize is a box, a close is a cross — and none of the chrome writes a word except the title you gave it.
 
-<Demo src="window-pane/os" minHeight="420">
+<Demo src="window-pane/os" minHeight="760">
 
 <<< @/.vitepress/demos/window-pane/os.tsx
 
