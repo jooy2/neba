@@ -643,9 +643,6 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
       className={cx(
         'relative flex shrink-0 items-center select-none',
         iconClasses,
-        // What made Aero glass: the page behind the bar is blurred rather than
-        // merely showing through it.
-        chrome.glass ? '[backdrop-filter:var(--neba-blur)]' : '',
         draggable && !maximized ? 'cursor-grab active:cursor-grabbing' : ''
       )}
       style={{
@@ -750,6 +747,11 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
         // The acrylic is what a translucent window is made of. An opaque one
         // has nothing to blur and pays for nothing.
         transparency > 0 ? surfaceClasses : '',
+        // Aero's blur is the *window's* rather than the title bar's, and that
+        // is the difference between a pale blue bar and a sheet of glass with
+        // the content sunk into it: the band down the sides and along the
+        // bottom is showing the same blurred page.
+        chrome.glass && transparency === 0 ? '[backdrop-filter:var(--neba-blur)]' : '',
         // Maximizing, restoring and rolling up are journeys between two
         // geometries, so the window travels rather than jumps. No `transform` is
         // in the list and none should be added: a window that scaled would
@@ -779,7 +781,18 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
         borderRadius: maximized
           ? 0
           : `${metrics.radius}px ${metrics.radius}px ${metrics.radiusBottom}px ${metrics.radiusBottom}px`,
-        border: `${metrics.frame}px solid var(--n-window-line)`,
+        // Longhands rather than the `border` shorthand, so a test — and a
+        // caller — can read a width back off the element. A shorthand carrying
+        // a `var()` leaves every longhand pending substitution and reading as
+        // empty.
+        borderStyle: 'solid',
+        borderWidth: metrics.frame,
+        borderColor: 'var(--n-window-line)',
+        // The band, on the systems that have one. It is the window's own
+        // background rather than a fat border, because the caption has to run
+        // the full width of the window across the top of it and only the
+        // *content* is sunk into the frame.
+        backgroundColor: 'var(--n-window-band)',
         boxShadow: 'var(--n-window-shadow), var(--neba-plate-glass)',
         ...style
       } as React.CSSProperties,
@@ -797,7 +810,15 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
           */}
           <div
             className={cx('min-h-0 flex-1', scroll ? 'overflow-auto' : 'overflow-hidden')}
-            style={{ background: 'var(--n-window-body)' }}
+            style={{
+              backgroundColor: 'var(--n-window-body)',
+              marginInline: metrics.band.side,
+              marginBottom: metrics.band.bottom,
+              // The content of a banded window sits in a well: XP outlined it,
+              // Aero shadowed it, and without a line of some kind the sheet and
+              // the frame run into each other.
+              boxShadow: metrics.band.side > 0 ? 'inset 0 0 0 1px rgb(0 0 0 / 0.12)' : undefined
+            }}
             inert={minimized}
           >
             {children}

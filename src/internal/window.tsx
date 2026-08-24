@@ -78,8 +78,15 @@ export interface WindowMetrics {
   radius: number;
   /** And at the bottom, which the older systems leave square. */
   radiusBottom: number;
-  /** How thick the frame around the window is. XP's is a band, not a hairline. */
+  /** The hairline around the window. */
   frame: number;
+  /**
+   * The *band* around it, which is a different thing: the stretch of the
+   * system's own colour that XP and Aero put down the sides of a window and
+   * along the bottom of it, with the content inset into it. Zero on the systems
+   * that have only a hairline.
+   */
+  band: { side: number; bottom: number };
   /** The air at the leading edge of the bar. */
   padX: number;
   /** And at the trailing edge, which is nothing where the buttons run to it. */
@@ -113,6 +120,7 @@ interface WindowChrome {
   glyph: number;
   weight: number;
   frame: number;
+  band: { side: number; bottom: number };
   control: { width: number; height: number };
   /** Aero's close button is wider than the two beside it. */
   closeWidth?: number;
@@ -181,6 +189,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 7,
     weight: 500,
     frame: 1,
+    band: { side: 0, bottom: 0 },
     control: { width: 12, height: 12 },
     titleAlign: 'center',
     controlsSide: 'start',
@@ -208,6 +217,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 7,
     weight: 700,
     frame: 1,
+    band: { side: 0, bottom: 0 },
     control: { width: 13, height: 13 },
     titleAlign: 'center',
     controlsSide: 'start',
@@ -236,6 +246,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 10,
     weight: 400,
     frame: 1,
+    band: { side: 0, bottom: 0 },
     control: { width: 46, height: 32 },
     titleAlign: 'start',
     controlsSide: 'end',
@@ -265,6 +276,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 10,
     weight: 400,
     frame: 1,
+    band: { side: 0, bottom: 0 },
     control: { width: 45, height: 30 },
     titleAlign: 'start',
     controlsSide: 'end',
@@ -293,6 +305,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 11,
     weight: 400,
     frame: 2,
+    band: { side: 0, bottom: 0 },
     control: { width: 45, height: 32 },
     titleAlign: 'start',
     controlsSide: 'end',
@@ -308,21 +321,24 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glass: false
   },
   windows7: {
-    // Aero: a pane of glass with the page blurred behind it, a white glow
-    // around the title rather than a shadow under it, and three buttons in a
-    // group hung off the top edge with a wider close on the end.
+    // Aero, and the band is most of it: an Aero window is a sheet of glass with
+    // the content sunk into the middle of it, so the page is blurred down both
+    // sides and along the bottom as well as behind the caption. Drawn without
+    // that, all that is left is a pale blue title bar on an ordinary window —
+    // which is exactly what it looked like.
     bar: 30,
     radius: 7,
     radiusBottom: 0,
     padX: 10,
-    padEnd: 0,
+    padEnd: 3,
     gap: 2,
     title: 12,
     glyph: 10,
     weight: 400,
     frame: 1,
+    band: { side: 7, bottom: 7 },
     control: { width: 29, height: 20 },
-    closeWidth: 42,
+    closeWidth: 45,
     titleAlign: 'start',
     controlsSide: 'end',
     shape: 'aero',
@@ -331,9 +347,12 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     stroke: 1.1,
     boxRadius: 0,
     accentBorder: false,
-    paint: { fill: 'rgb(214 232 250 / 0.72)', ink: '#12314f', dark: false },
+    // Half a sheet of glass rather than a whole one: the band lays the first
+    // layer down and the caption lays this one over it, so the top of the
+    // window is denser than its sides — which is how Aero reads.
+    paint: { fill: 'rgb(198 218 242 / 0.45)', ink: '#12314f', dark: false },
     image:
-      'linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.14) 48%, rgb(255 255 255 / 0.4))',
+      'linear-gradient(180deg, rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.1) 46%, rgb(255 255 255 / 0.34) 88%, rgb(255 255 255 / 0.5))',
     shadow: '0 0 6px rgb(255 255 255 / 0.95), 0 0 3px rgb(255 255 255 / 0.95)',
     glass: true
   },
@@ -350,8 +369,12 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     title: 13,
     glyph: 9,
     weight: 700,
-    frame: 3,
+    frame: 1,
+    band: { side: 4, bottom: 4 },
     control: { width: 21, height: 21 },
+    // The close plate is the wide one on XP, as it is on Aero — the only two
+    // systems here that made the button you least want to hit the easiest one.
+    closeWidth: 26,
     titleAlign: 'start',
     controlsSide: 'end',
     shape: 'plate',
@@ -360,9 +383,16 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     stroke: 1.8,
     boxRadius: 3,
     accentBorder: false,
-    paint: { fill: '#1152c4', ink: '#ffffff', dark: true },
+    paint: { fill: '#1f66d6', ink: '#ffffff', dark: true },
+    // Luna's caption is not a slope from light to dark, which is what made a
+    // flat overlay wrong: it is bright at the very top, sinks through the
+    // middle, comes back up in a band at about four fifths, and is closed off by
+    // a dark line at the bottom edge. That inflated, glossy profile is the whole
+    // of what makes it recognisable. Written in white and black rather than in
+    // blues, so a caller who dyes the bar with `accent` gets the same curve in
+    // their own colour.
     image:
-      'linear-gradient(180deg, rgb(255 255 255 / 0.45), rgb(255 255 255 / 0.06) 45%, rgb(0 0 0 / 0.16))',
+      'linear-gradient(180deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.26) 7%, rgb(0 0 0 / 0.11) 42%, rgb(0 0 0 / 0.05) 56%, rgb(255 255 255 / 0.22) 76%, rgb(255 255 255 / 0.34) 88%, rgb(0 0 0 / 0.16) 96%, rgb(0 0 0 / 0.34))',
     shadow: '0 1px 1px rgb(0 0 0 / 0.45)',
     glass: false
   },
@@ -377,6 +407,7 @@ const chromes: Record<NebaWindowOs, WindowChrome> = {
     glyph: 10,
     weight: 600,
     frame: 1,
+    band: { side: 0, bottom: 0 },
     control: { width: 24, height: 24 },
     titleAlign: 'center',
     controlsSide: 'end',
@@ -429,6 +460,7 @@ export function windowMetrics(os: NebaWindowOs, size: NebaSize): WindowMetrics {
     radius: chrome.radius,
     radiusBottom: chrome.radiusBottom,
     frame: chrome.frame,
+    band: { side: round(chrome.band.side), bottom: round(chrome.band.bottom) },
     padX: round(chrome.padX),
     // A Windows caption button is a corner target — it runs to the edge of the
     // window, which is what makes it hittable by throwing the pointer at the
@@ -535,15 +567,22 @@ export function windowSlots(options: {
         ? 'var(--neba-fg)'
         : 'var(--neba-muted-fg)';
 
-  const banded = chrome.frame > 1;
-  const line =
-    dyed && (chrome.accentBorder || banded)
+  const banded = chrome.band.side > 0;
+  // The band is the same material as the caption: XP's blue frame is the blue
+  // of its title bar, and Aero's is the first of the two layers of glass.
+  const band = banded
+    ? veil(dyed ? `var(--neba-${color}-solid)` : (painted ?? plain), veiled)
+    : 'transparent';
+  const line = banded
+    ? // A banded window is outlined in a darker cut of its own band rather than
+      // in the page's border colour, which would be a grey line drawn around a
+      // blue window.
+      `color-mix(in oklab, ${dyed ? `var(--neba-${color}-solid)` : (painted ?? 'var(--neba-border)')} 72%, black)`
+    : dyed && chrome.accentBorder
       ? `var(--neba-${color}-solid)`
-      : painted && banded
-        ? painted
-        : active
-          ? 'var(--neba-border)'
-          : 'color-mix(in oklab, var(--neba-border) 55%, transparent)';
+      : active
+        ? 'var(--neba-border)'
+        : 'color-mix(in oklab, var(--neba-border) 55%, transparent)';
 
   // Which way a control has to lighten when the pointer arrives is a property
   // of what it is sitting on, not of the page.
@@ -556,6 +595,7 @@ export function windowSlots(options: {
     '--n-window-bar-shadow': chrome.shadow ?? 'none',
     '--n-window-body': veil(surface, veiled),
     '--n-window-line': line,
+    '--n-window-band': band,
     // What a control's hover is mixed out of. Fixed rather than derived from
     // `currentColor`: the close button turns its own ink white on hover, and a
     // fill mixed out of that ink would turn white with it — which is a close

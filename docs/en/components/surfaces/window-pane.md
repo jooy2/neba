@@ -38,11 +38,13 @@ Eight systems, and a version is its own entry wherever the title bar is what cha
 | `windows11` | Three rectangles hard against a rounded top-right corner, bar and body one Mica sheet |
 | `windows10` | The same three over square corners, a shorter bar, and a rule under it |
 | `windows8` | Flat and square, no rule, and a band of colour around the whole window |
-| `windows7` | Aero — glass with the page blurred behind it, a glowing title, a wider close button |
-| `windowsxp` | Luna — a blue gradient bar, the window framed in the same blue, coloured button plates |
+| `windows7` | Aero — a sheet of glass with the content sunk into it, the page blurred through the band as well as the caption, a glowing title and a wider close |
+| `windowsxp` | Luna — the glossy blue caption curve, a band of the same blue down the sides and along the bottom, coloured button plates |
 | `linux` | A GNOME header bar: taller, with circular buttons and a centred title |
 
 The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark — the same choice [Mockup](./mockup)'s finishes make, because hardware and system chrome are not the theme.
+
+XP and Aero are also the two that have a **band** rather than a hairline: the content is sunk into a stretch of the system's own material down both sides and along the bottom, which is most of what makes either of them recognisable. `accent` dyes the band with the caption, so a window in your own colour is framed in it too.
 
 The buttons carry no other party's marks — a minimize is a line, a maximize is a box, a close is a cross — and none of the chrome writes a word except the title you gave it.
 

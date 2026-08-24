@@ -74,18 +74,42 @@ describe('WindowPane', () => {
 
     // Luna is Luna on a page switched to dark: the chrome is the system's,
     // exactly as a Mockup's finish is the hardware's.
-    it('paints an XP window in its own colour and frames it in the same one', async () => {
+    it('paints an XP window in its own colour and bands it in the same one', async () => {
       const screen = await render(
         <WindowPane os="windowsxp" title="Explorer" data-testid="window" />
       );
 
-      const root = screen.getByTestId('window').element() as HTMLElement;
+      expect(slot(screen, '--n-window-bar')).toBe('#1f66d6');
+      expect(slot(screen, '--n-window-band')).toBe('#1f66d6');
+      expect(slot(screen, '--n-window-line')).toContain('#1f66d6');
+    });
 
-      expect(slot(screen, '--n-window-bar')).toBe('#1152c4');
-      expect(slot(screen, '--n-window-line')).toBe('#1152c4');
-      // Read off the shorthand: a `border` written with a `var()` in it leaves
-      // every longhand pending substitution, so `borderWidth` comes back empty.
-      expect(root.style.border.startsWith('3px')).toBe(true);
+    // The band is what a window of that era was framed in, and the content is
+    // sunk into it rather than filling the window.
+    it('sinks the content into the band, on the systems that have one', async () => {
+      const screen = await render(
+        <WindowPane os="windowsxp" title="Explorer" data-testid="window">
+          <p>Body</p>
+        </WindowPane>
+      );
+
+      const body = screen.getByText('Body').element().parentElement as HTMLElement;
+
+      expect(body.style.marginInline).toBe('4px');
+      expect(body.style.marginBottom).toBe('4px');
+    });
+
+    it("leaves a modern window's content filling it", async () => {
+      const screen = await render(
+        <WindowPane os="windows11" title="Explorer" data-testid="window">
+          <p>Body</p>
+        </WindowPane>
+      );
+
+      const body = screen.getByText('Body').element().parentElement as HTMLElement;
+
+      expect(body.style.marginInline).toBe('0px');
+      expect(slot(screen, '--n-window-band')).toBe('transparent');
     });
 
     // The `background` shorthand resets every longhand it does not mention, so a
@@ -102,19 +126,22 @@ describe('WindowPane', () => {
       expect(bar.style.backgroundColor).toBe('var(--n-window-bar)');
     });
 
-    it('blurs what is behind an Aero title bar, and nothing behind a flat one', async () => {
+    // Aero's blur belongs to the window rather than to its title bar: the band
+    // down the sides is showing the same blurred page, which is what makes it a
+    // sheet of glass instead of a pale blue bar.
+    it('blurs what is behind an Aero window, and nothing behind a flat one', async () => {
       const screen = await render(
         <WindowPane os="windows7" title="Explorer" data-testid="window" />
       );
-      const bar = screen.getByText('Explorer').element().closest('div') as HTMLElement;
 
-      expect(bar).toHaveClass('[backdrop-filter:var(--neba-blur)]');
+      expect(screen.getByTestId('window').element()).toHaveClass(
+        '[backdrop-filter:var(--neba-blur)]'
+      );
+      expect((screen.getByTestId('window').element() as HTMLElement).style.borderWidth).toBe('1px');
 
       await screen.rerender(<WindowPane os="windows8" title="Explorer" data-testid="window" />);
 
-      expect(
-        (screen.getByText('Explorer').element().closest('div') as HTMLElement).className
-      ).not.toContain('backdrop-filter');
+      expect(screen.getByTestId('window').element().className).not.toContain('backdrop-filter');
     });
 
     it('draws only the buttons it was asked for', async () => {
