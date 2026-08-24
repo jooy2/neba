@@ -141,6 +141,24 @@ const rowPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
   compact: { xs: 'p-0.5', sm: 'p-0.5', md: 'p-1', lg: 'p-1', xl: 'p-1' }
 };
 
+/**
+ * The tile that slides.
+ *
+ * The highlight belongs to the *bar* rather than to the item that is current,
+ * which is the whole of why it can travel: an item painting its own background
+ * can only switch it on and off, while one object moving between four boxes is
+ * a thing with a position to animate. It is the same arrangement SegmentedButton
+ * makes, for the same reason.
+ *
+ * Nothing is transformed — `left`, `top`, `width` and `height` are what move,
+ * so the label riding over the tile is never resampled.
+ */
+const tileClasses: Record<NebaVariant, string> = {
+  solid: `${surfaceClasses} bg-(--n-panel-hover) [box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]`,
+  outline: `${surfaceClasses} bg-(--n-soft-hover) [box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]`,
+  text: 'bg-(--n-soft-hover)'
+};
+
 /** Between one destination and the next. */
 const rowGapClasses: Record<NebaSize, string> = {
   xs: 'gap-0.5',
@@ -218,13 +236,95 @@ export const FloatingBottomNavigation = React.forwardRef<
     [value, change, size, density, labels, disabled]
   );
 
+  const rootRef = React.useRef<HTMLElement | null>(null);
+  const tileRef = React.useRef<HTMLSpanElement>(null);
+
+  const setRootRef = React.useCallback(
+    (node: HTMLElement | null) => {
+      rootRef.current = node;
+
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+    },
+    [ref]
+  );
+
+  /**
+   * Writes the current destination's box onto the tile as four custom
+   * properties.
+   *
+   * Written straight to the element rather than held in state: a `setState`
+   * here would re-render every destination on every resize, and nothing in the
+   * tree depends on the numbers except four CSS declarations.
+   *
+   * `animate` is what separates the two callers. A change of destination is the
+   * thing this exists to animate; a resize is the bar moving under a tile that
+   * was already in the right place, and animating that is a tile that lags
+   * behind the window being dragged.
+   */
+  const measure = React.useCallback((animate: boolean) => {
+    const root = rootRef.current;
+    const tile = tileRef.current;
+    if (!root || !tile) {
+      return;
+    }
+
+    // Found by what it *is* rather than by a ref per item: the items are the
+    // caller's children, composed however they liked, and `aria-current` is the
+    // one mark that is on the current one wherever it ended up.
+    const current = root.querySelector<HTMLElement>('[data-nav-item][aria-current]');
+    if (!current) {
+      return;
+    }
+
+    // A tile that has only just mounted has nowhere to travel *from*, so its
+    // first placement is instant however it was asked for.
+    const instant = !animate || !tile.hasAttribute('data-ready');
+    if (instant) {
+      tile.removeAttribute('data-ready');
+    }
+
+    tile.style.setProperty('--n-nav-x', `${current.offsetLeft}px`);
+    tile.style.setProperty('--n-nav-y', `${current.offsetTop}px`);
+    tile.style.setProperty('--n-nav-w', `${current.offsetWidth}px`);
+    tile.style.setProperty('--n-nav-h', `${current.offsetHeight}px`);
+
+    if (instant) {
+      // Reading a layout property commits the four writes above while the
+      // duration is still 0ms, so turning the transition back on cannot animate
+      // a move that has already happened.
+      void tile.offsetWidth;
+    }
+
+    tile.setAttribute('data-ready', '');
+  }, []);
+
+  // Before the browser paints, or the tile is visibly at nothing for a frame.
+  React.useLayoutEffect(() => {
+    measure(true);
+  }, [measure, value, variant, size, density, labels, children]);
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => measure(false));
+    observer.observe(root);
+
+    return () => observer.disconnect();
+  }, [measure]);
+
   const gap = typeof offset === 'number' ? `${offset}px` : offset;
 
   const classNames = cx(
     // `max-w-full` rather than a width: the lozenge is as wide as its
     // destinations until that is wider than the screen, and then it is the
     // screen. The names truncate before the sheet does.
-    'flex max-w-full min-w-0 items-center rounded-full',
+    // `relative` is load-bearing twice over: it is what makes the destinations
+    // the tile's offsetParent, and what the tile is positioned in.
+    'relative flex max-w-full min-w-0 items-center rounded-full',
     barMinHeightClasses[size],
     rowPaddingClasses[density][size],
     rowGapClasses[size],
@@ -236,7 +336,7 @@ export const FloatingBottomNavigation = React.forwardRef<
 
   return useRender({
     render: render ?? <nav />,
-    ref,
+    ref: setRootRef,
     props: {
       'aria-label': label,
       className: classNames,
@@ -250,6 +350,28 @@ export const FloatingBottomNavigation = React.forwardRef<
       } as React.CSSProperties,
       children: (
         <BottomNavigationContext.Provider value={context}>
+          {/* Rendered only once something is current. A bar with no destination
+              taken has no tile to slide, and mounting it on the first choice is
+              what makes that first choice appear in place rather than fly in
+              from the leading edge. */}
+          {value !== null && value !== undefined ? (
+            <span
+              ref={tileRef}
+              aria-hidden="true"
+              className={cx(
+                'pointer-events-none absolute rounded-full',
+                'top-(--n-nav-y) left-(--n-nav-x) h-(--n-nav-h) w-(--n-nav-w)',
+                tileClasses[variant],
+                '[transition-property:left,top,width,height]',
+                '[transition-timing-function:var(--neba-ease)]',
+                // Nothing until the first measurement has landed; the house
+                // duration from then on.
+                '[transition-duration:0ms] data-[ready]:[transition-duration:var(--neba-duration)]',
+                'motion-reduce:[transition-duration:0ms]'
+              )}
+            />
+          ) : null}
+
           {children}
         </BottomNavigationContext.Provider>
       ),

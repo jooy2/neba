@@ -64,6 +64,12 @@ How far the bar floats above the bottom edge, as a number of pixels or any CSS l
 
 </Demo>
 
+### The highlight
+
+The highlight belongs to the bar rather than to the destination that is current, which is why it can travel: it is measured off whichever item carries `aria-current` and animates its `left`, `top`, `width` and `height` to the next one. Nothing is transformed, so the name riding over it is never resampled.
+
+A name that `labels` is not drawing is collapsed rather than clipped — the box it sits in travels between nothing and the width of the words — so pressing a destination re-shapes the bar around it instead of jumping to the new arrangement: the name grows, its neighbours move over, and the highlight slides under it on the same clock. A reader who has asked for reduced motion gets the new arrangement without the journey.
+
 ### variant, color, size
 
 `variant` says what it says on every other container: the sheet is never dyed, and what carries the colour family is the one destination that is current. `outline` is the default here rather than the sheet with no edge — the hairline is what separates a floating lozenge from whatever is passing underneath it.

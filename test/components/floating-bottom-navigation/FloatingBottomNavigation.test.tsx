@@ -2,6 +2,19 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
+/** Whether a destination's name is being drawn rather than merely said. */
+function drawn(screen: Awaited<ReturnType<typeof render>>, name: string) {
+  return screen.getByText(name).element().closest('[data-drawn]') !== null;
+}
+
+/** The highlight, which is the bar's own rather than the current item's. */
+function tile(screen: Awaited<ReturnType<typeof render>>) {
+  return screen
+    .getByTestId('bar')
+    .element()
+    .querySelector<HTMLElement>(':scope > span[aria-hidden="true"]');
+}
+
 describe('FloatingBottomNavigation', () => {
   describe('rendering', () => {
     it('renders a nav holding one control per destination', async () => {
@@ -187,6 +200,70 @@ describe('FloatingBottomNavigation', () => {
     });
   });
 
+  describe('the highlight', () => {
+    // It belongs to the bar rather than to the item that is current, which is
+    // the whole of why it can travel: an item painting its own background can
+    // only switch it on and off.
+    it('is measured off the destination the reader is on', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation defaultValue="home" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      const current = screen.getByRole('button', { name: 'Home' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => tile(screen)?.style.getPropertyValue('--n-nav-w'))
+        .toBe(`${current.offsetWidth}px`);
+      expect(tile(screen)?.style.getPropertyValue('--n-nav-x')).toBe(`${current.offsetLeft}px`);
+    });
+
+    it('travels to the destination that was pressed', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation defaultValue="home" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      await screen.getByRole('button', { name: 'Search' }).click();
+
+      const next = screen.getByRole('button', { name: 'Search' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => tile(screen)?.style.getPropertyValue('--n-nav-x'))
+        .toBe(`${next.offsetLeft}px`);
+    });
+
+    it('is not drawn at all until a destination is current', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
+      expect(tile(screen)).toBeNull();
+    });
+
+    it('leaves the item to carry the colour rather than a second fill', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation defaultValue="home" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      expect(screen.getByRole('button', { name: 'Home' }).element()).not.toHaveClass(
+        'bg-(--n-soft)'
+      );
+      expect(screen.getByRole('button', { name: 'Home' }).element()).toHaveClass(
+        'text-(--n-accent)'
+      );
+    });
+  });
+
   describe('labels', () => {
     // The floating bar is only as wide as what is in it, so it names the
     // destination the reader is on and no other — the names it does not draw
@@ -199,8 +276,12 @@ describe('FloatingBottomNavigation', () => {
         </FloatingBottomNavigation>
       );
 
-      expect(screen.getByText('Home').element()).not.toHaveClass('size-px');
-      expect(screen.getByText('Search').element()).toHaveClass('size-px');
+      // A name the floating bar is not drawing is collapsed rather than
+      // clipped: the box it is in travels between nothing and the width of the
+      // words, which is what lets the bar re-shape itself around the
+      // destination that was pressed.
+      expect(drawn(screen, 'Home')).toBe(true);
+      expect(drawn(screen, 'Search')).toBe(false);
     });
 
     it('draws every name when it is asked to', async () => {
@@ -211,7 +292,7 @@ describe('FloatingBottomNavigation', () => {
         </FloatingBottomNavigation>
       );
 
-      expect(screen.getByText('Search').element()).not.toHaveClass('size-px');
+      expect(drawn(screen, 'Search')).toBe(true);
     });
 
     it('keeps an undrawn name in the document, so the item still has one', async () => {
@@ -224,7 +305,7 @@ describe('FloatingBottomNavigation', () => {
       );
 
       await expect.element(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
-      expect(screen.getByText('Home').element()).toHaveClass('size-px');
+      expect(drawn(screen, 'Home')).toBe(false);
     });
   });
 });

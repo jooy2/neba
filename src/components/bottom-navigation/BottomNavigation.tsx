@@ -283,7 +283,10 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
       // is in it, so the same item is sized by its own content there and cut as
       // a stadium rather than as a sheet.
       bar.floating
-        ? cx(paddingXClasses[bar.density][bar.size], 'rounded-full')
+        ? // `relative` with a stacking context of its own: the floating bar
+          // paints its highlight *behind* the destinations, and without this the
+          // tile would cover the name it is under.
+          cx('relative z-10', paddingXClasses[bar.density][bar.size], 'rounded-full')
         : cx('flex-1 px-1', radiusClasses[bar.size]),
       itemGapClasses[bar.size],
       '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
@@ -294,7 +297,12 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
       disabled
         ? 'cursor-not-allowed text-(--neba-disabled-fg)'
         : selected
-          ? 'cursor-pointer font-medium text-(--n-accent) bg-(--n-soft) hover:bg-(--n-soft-hover)'
+          ? // On a floating bar the highlight is the bar's own and is already
+            // under this item; painting a second one here would be two fills
+            // travelling at different speeds.
+            bar.floating
+            ? 'cursor-pointer font-medium text-(--n-accent)'
+            : 'cursor-pointer font-medium text-(--n-accent) bg-(--n-soft) hover:bg-(--n-soft-hover)'
           : 'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg) hover:bg-(--n-panel-hover)',
       className
     );
@@ -309,19 +317,54 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
           </span>
         ) : null}
 
+        {/*
+          Undrawn is not unsaid. A glyph on its own has no accessible name at
+          all, so the name a hidden label would have carried is kept in the
+          document rather than dropped with the pixels — as a clipped box on a
+          bar that spans an edge, and as a collapsed one on a bar that floats.
+
+          The collapsed form is a grid whose two tracks run from `0fr` to `1fr`,
+          which is the one way a box's *own* width and height can be travelled
+          between nothing and whatever the words come to. That is what makes a
+          floating bar re-shape itself around the destination that was pressed
+          rather than jump to the new arrangement: the name grows, its
+          neighbours move over, and the highlight slides under it, all on the
+          same clock. `opacity` rides along for the same reason it does on a
+          Chip's remove button — this is a thing arriving, not a state.
+        */}
         {hasContent(children) ? (
-          // Undrawn is not unsaid. A glyph on its own has no accessible name at
-          // all, so the name a hidden label would have carried is kept in the
-          // document rather than dropped with the pixels.
-          <span
-            className={
-              named
-                ? cx('max-w-full truncate leading-tight', metaTextClasses[bar.size])
-                : srOnlyClasses
-            }
-          >
-            {children}
-          </span>
+          bar.floating ? (
+            <span
+              data-drawn={named ? '' : undefined}
+              className={cx(
+                'grid justify-items-center',
+                '[transition-property:grid-template-rows,grid-template-columns,opacity]',
+                '[transition-duration:var(--neba-duration)]',
+                '[transition-timing-function:var(--neba-ease)]',
+                'motion-reduce:[transition-duration:0ms]',
+                named
+                  ? '[grid-template-columns:1fr] [grid-template-rows:1fr] opacity-100'
+                  : '[grid-template-columns:0fr] [grid-template-rows:0fr] opacity-0'
+              )}
+            >
+              <span
+                className={cx('min-h-0 min-w-0 truncate leading-tight', metaTextClasses[bar.size])}
+              >
+                {children}
+              </span>
+            </span>
+          ) : (
+            <span
+              data-drawn={named ? '' : undefined}
+              className={
+                named
+                  ? cx('max-w-full truncate leading-tight', metaTextClasses[bar.size])
+                  : srOnlyClasses
+              }
+            >
+              {children}
+            </span>
+          )
         ) : null}
       </>
     );
@@ -340,6 +383,7 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
       return (
         <a
           ref={ref as React.Ref<HTMLAnchorElement>}
+          data-nav-item=""
           href={disabled ? undefined : href}
           aria-current={selected ? 'page' : undefined}
           aria-disabled={disabled || undefined}
@@ -355,6 +399,7 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
     return (
       <button
         ref={ref as React.Ref<HTMLButtonElement>}
+        data-nav-item=""
         type="button"
         disabled={disabled}
         aria-current={selected ? 'page' : undefined}
