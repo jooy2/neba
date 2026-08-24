@@ -94,6 +94,34 @@ describe('FloatingBottomNavigation', () => {
       );
     });
 
+    // Two utilities setting `position` is a coin toss decided by the order of
+    // the generated stylesheet, and the toss went the wrong way: a bar that was
+    // told to pin itself to a region was laid out in the flow instead.
+    it('is positioned exactly once, whatever it was told to be', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation position="absolute" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      const bar = screen.getByTestId('bar').element();
+
+      // No component test loads CSS, so what is checked is what was *asked*
+      // for: one utility setting `position`, not two arguing about it.
+      expect(bar).toHaveClass('absolute');
+      expect(bar).not.toHaveClass('relative');
+    });
+
+    it('positions itself anyway when it is left in the flow, so the highlight has somewhere to sit', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation position="static" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      expect(screen.getByTestId('bar').element()).toHaveClass('relative');
+    });
+
     it('is a stadium rather than a sheet with the corners cut', async () => {
       const screen = await render(
         <FloatingBottomNavigation data-testid="bar">

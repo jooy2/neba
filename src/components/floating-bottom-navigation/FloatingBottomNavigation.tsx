@@ -121,7 +121,14 @@ const variantClasses: Record<NebaVariant, string> = {
  * RTL.
  */
 const positionClasses: Record<FloatingBottomNavigationPosition, string> = {
-  static: 'mx-auto w-fit',
+  // `relative` belongs to this table rather than to the class list, and that is
+  // not tidiness: the bar has to be positioned for the highlight to be measured
+  // against it, and a `relative` written unconditionally beside an `absolute`
+  // from here is two utilities of equal specificity setting the same property —
+  // which of them wins is decided by their order in the generated stylesheet,
+  // and the one that won took a `position="absolute"` bar out of its corner.
+  // The other three are already positioned and need nothing.
+  static: 'relative mx-auto w-fit',
   absolute: 'absolute inset-x-0 bottom-(--n-nav-offset) z-30 mx-auto w-fit',
   sticky: 'sticky bottom-(--n-nav-offset) z-30 mx-auto w-fit',
   fixed: 'fixed inset-x-0 bottom-(--n-nav-offset) z-40 mx-auto w-fit'
@@ -322,9 +329,7 @@ export const FloatingBottomNavigation = React.forwardRef<
     // `max-w-full` rather than a width: the lozenge is as wide as its
     // destinations until that is wider than the screen, and then it is the
     // screen. The names truncate before the sheet does.
-    // `relative` is load-bearing twice over: it is what makes the destinations
-    // the tile's offsetParent, and what the tile is positioned in.
-    'relative flex max-w-full min-w-0 items-center rounded-full',
+    'flex max-w-full min-w-0 items-center rounded-full',
     barMinHeightClasses[size],
     rowPaddingClasses[density][size],
     rowGapClasses[size],
