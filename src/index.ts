@@ -66,6 +66,7 @@ export * from './components/progress-linear';
 export * from './components/radio-group';
 export * from './components/rating';
 export * from './components/scatter-chart';
+export * from './components/scroll-zone';
 export * from './components/segmented-button';
 export * from './components/select';
 export * from './components/shortcut';

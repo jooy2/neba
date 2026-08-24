@@ -6608,6 +6608,168 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  ScrollZone: [
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '자식들이 놓이는 방향이자 스크롤되는 방향',
+        en: 'Which way the children run, and therefore which way the zone scrolls'
+      }
+    },
+    {
+      name: 'lines',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '가로 zone이 새 열로 넘어가기 전까지 쓰는 줄 수(세로 zone에서는 열 수). 2는 같은 너비에 두 배를 담는 선반입니다',
+        en: 'How many rows a horizontal zone uses before it starts a new column — columns, in a vertical one. 2 is the shelf that holds twice as much in the same width'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      default: '2',
+      description: {
+        ko: '자식 사이의 간격. Tailwind 스페이싱 스케일이며 2는 0.5rem으로, GridContainer의 spacing과 같은 사다리입니다',
+        en: "The gap between children, on Tailwind's spacing scale: 2 is 0.5rem, the same ladder GridContainer's spacing is on"
+      }
+    },
+    {
+      name: 'buttons',
+      type: "'auto' | 'always' | 'none'",
+      default: "'auto'",
+      description: {
+        ko: '스크롤 버튼을 언제 그릴지. auto는 갈 곳이 있는 쪽만, always는 둘 다(갈 곳 없는 쪽은 disabled), none은 아예 그리지 않습니다',
+        en: 'When the scroll buttons are drawn. auto is only the one that has somewhere to go, always is both with the other disabled, none is neither'
+      }
+    },
+    {
+      name: 'mode',
+      type: "'item' | 'page' | 'hold'",
+      default: "'item'",
+      description: {
+        ko: '버튼을 눌렀을 때 하는 일. item은 다음 자식으로, page는 지금 보이는 만큼, hold는 누르고 있는 동안 계속 — hold에서 짧게 누르면 item 한 칸입니다',
+        en: 'What pressing a button does: item moves to the next child, page moves by everything on screen, hold scrolls for as long as it is held. A press too short to be a hold falls back to one item'
+      }
+    },
+    {
+      name: 'step',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: 'item 모드에서 한 번에 지나갈 자식 수',
+        en: 'How many children one press moves, in item mode'
+      }
+    },
+    {
+      name: 'speed',
+      type: 'number',
+      default: '900',
+      description: {
+        ko: 'hold 모드에서 초당 스크롤되는 픽셀',
+        en: 'How fast a held button scrolls, in pixels a second'
+      }
+    },
+    {
+      name: 'snap',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '멈출 때 가장 가까운 자식을 시작 가장자리에 맞춥니다. 버튼뿐 아니라 드래그와 휠에도 적용됩니다',
+        en: 'Snaps the nearest child to the leading edge when the scrolling stops — dragging and the wheel included, not only the buttons'
+      }
+    },
+    {
+      name: 'drag',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마우스나 펜으로도 끌어서 스크롤합니다. 손가락은 브라우저 자신의 스크롤에 맡깁니다 — 관성과 스크롤바가 딸려 오기 때문입니다',
+        en: 'Lets a mouse or a pen drag the strip along, the way a finger already does. Touch is left to the browser, whose own scrolling brings momentum and a scrollbar with it'
+      }
+    },
+    {
+      name: 'scrollbar',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '기본 스크롤바를 보입니다', en: 'Shows the native scrollbar' }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'solid'",
+      shared: true,
+      description: {
+        ko: '스크롤 버튼의 무게. zone 자체는 아무것도 그리지 않습니다',
+        en: 'Weight of the scroll buttons. The zone itself draws nothing'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '스크롤 버튼의 크기와 가장자리에서 들어온 거리',
+        en: "The scroll buttons' size, and how far in from the edge they sit"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '버튼과 포커스 링의 의미론적 색 역할',
+        en: 'Semantic colour role of the buttons and the focus ring'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '버튼의 여백만 바꿉니다', en: "The buttons' padding only" }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '버튼이 자기 이름을 말하는 언어(BCP 47). 지원하지 않는 태그는 영어로 돌아갑니다',
+        en: 'Which language the buttons name themselves in — a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '스크롤 영역의 이름 — "Categories", "Recent files"',
+        en: 'What the scrollable region is called — "Categories", "Recent files"'
+      }
+    },
+    {
+      name: 'previousLabel',
+      type: 'string',
+      description: { ko: '뒤로 가는 버튼의 이름', en: "The back button's own name" }
+    },
+    {
+      name: 'nextLabel',
+      type: 'string',
+      description: { ko: '앞으로 가는 버튼의 이름', en: "The forward button's own name" }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '배치할 것들. 최상위 자식 하나가 스트립의 항목 하나입니다',
+        en: 'What is being laid out. Every top-level child is one item of the strip'
+      }
+    }
+  ],
+
   Panes: [
     {
       name: 'orientation',

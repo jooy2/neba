@@ -79,6 +79,7 @@ import {
   RadioGroup,
   Rating,
   ScatterChart,
+  ScrollZone,
   Segment,
   SegmentedButton,
   Select,
@@ -675,6 +676,25 @@ const GROUPS: Group[] = [
                 </Typography>
               </Pane>
             </Panes>
+          </div>
+        )
+      },
+      {
+        name: 'ScrollZone',
+        summary: {
+          ko: '한 방향으로 늘어놓고 그 방향으로 스크롤하는 스트립',
+          en: 'A strip laid out in one direction and scrolled in it'
+        },
+        path: '/components/layout/scroll-zone',
+        preview: (
+          <div className="w-full max-w-56">
+            <ScrollZone size="xs" spacing={1.5} buttons="always">
+              {['Design', 'Engineering', 'Research', 'Support', 'Finance'].map((team) => (
+                <Chip key={team} size="sm" color="secondary">
+                  {team}
+                </Chip>
+              ))}
+            </ScrollZone>
           </div>
         )
       },

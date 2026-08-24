@@ -226,6 +226,18 @@ export interface NebaMessages {
     previous: string;
     next: string;
   };
+  /**
+   * ScrollZone.
+   *
+   * Both buttons are an arrow with nothing else on them, and which way the
+   * strip runs is a prop — so the words are logical rather than physical. A
+   * vertical zone's "back" is up, and under RTL a horizontal one's is to the
+   * right.
+   */
+  scroll: {
+    previous: string;
+    next: string;
+  };
   /** Breadcrumb. */
   breadcrumb: {
     /** Names the `<nav>` landmark. */
@@ -323,6 +335,10 @@ const base: NebaMessages = {
     previous: 'Previous slide',
     next: 'Next slide'
   },
+  scroll: {
+    previous: 'Scroll back',
+    next: 'Scroll forward'
+  },
   breadcrumb: {
     label: 'Breadcrumb',
     expand: 'Show hidden steps'
@@ -409,6 +425,7 @@ const translations: Record<string, PartialMessages> = {
       previous: '이전 슬라이드',
       next: '다음 슬라이드'
     },
+    scroll: { previous: '뒤로 스크롤', next: '앞으로 스크롤' },
     breadcrumb: {
       label: '탐색 경로',
       expand: '숨겨진 단계 보기'
@@ -485,6 +502,7 @@ const translations: Record<string, PartialMessages> = {
       previous: '前のスライド',
       next: '次のスライド'
     },
+    scroll: { previous: '前へスクロール', next: '次へスクロール' },
     breadcrumb: {
       label: 'パンくずリスト',
       expand: '省略された階層を表示'
@@ -561,6 +579,7 @@ const translations: Record<string, PartialMessages> = {
       previous: '上一张',
       next: '下一张'
     },
+    scroll: { previous: '向前滚动', next: '向后滚动' },
     breadcrumb: {
       label: '面包屑导航',
       expand: '显示隐藏的层级'
@@ -637,6 +656,7 @@ const translations: Record<string, PartialMessages> = {
       previous: '上一張',
       next: '下一張'
     },
+    scroll: { previous: '向前捲動', next: '向後捲動' },
     breadcrumb: {
       label: '麵包屑導覽',
       expand: '顯示隱藏的層級'
@@ -713,6 +733,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Diapositiva anterior',
       next: 'Diapositiva siguiente'
     },
+    scroll: { previous: 'Desplazar hacia atrás', next: 'Desplazar hacia adelante' },
     breadcrumb: {
       label: 'Ruta de navegación',
       expand: 'Mostrar los pasos ocultos'
@@ -789,6 +810,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Slide anterior',
       next: 'Próximo slide'
     },
+    scroll: { previous: 'Rolar para trás', next: 'Rolar para a frente' },
     breadcrumb: {
       label: 'Trilha de navegação',
       expand: 'Mostrar as etapas ocultas'
@@ -865,6 +887,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Diapositive précédente',
       next: 'Diapositive suivante'
     },
+    scroll: { previous: 'Faire défiler vers l’arrière', next: 'Faire défiler vers l’avant' },
     breadcrumb: {
       label: 'Fil d’Ariane',
       expand: 'Afficher les étapes masquées'
@@ -941,6 +964,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Vorherige Folie',
       next: 'Nächste Folie'
     },
+    scroll: { previous: 'Zurückscrollen', next: 'Weiterscrollen' },
     breadcrumb: {
       label: 'Breadcrumb-Navigation',
       expand: 'Ausgeblendete Schritte anzeigen'
@@ -1017,6 +1041,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Diapositiva precedente',
       next: 'Diapositiva successiva'
     },
+    scroll: { previous: 'Scorri indietro', next: 'Scorri avanti' },
     breadcrumb: {
       label: 'Percorso di navigazione',
       expand: 'Mostra i passaggi nascosti'
@@ -1093,6 +1118,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Vorige dia',
       next: 'Volgende dia'
     },
+    scroll: { previous: 'Terugscrollen', next: 'Vooruitscrollen' },
     breadcrumb: {
       label: 'Kruimelpad',
       expand: 'Verborgen stappen tonen'
@@ -1169,6 +1195,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Poprzedni slajd',
       next: 'Następny slajd'
     },
+    scroll: { previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
     breadcrumb: {
       label: 'Ścieżka nawigacji',
       expand: 'Pokaż ukryte kroki'
@@ -1245,6 +1272,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Предыдущий слайд',
       next: 'Следующий слайд'
     },
+    scroll: { previous: 'Прокрутить назад', next: 'Прокрутить вперёд' },
     breadcrumb: {
       label: 'Навигационная цепочка',
       expand: 'Показать скрытые шаги'
@@ -1321,6 +1349,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Önceki slayt',
       next: 'Sonraki slayt'
     },
+    scroll: { previous: 'Geri kaydır', next: 'İleri kaydır' },
     breadcrumb: {
       label: 'Gezinti yolu',
       expand: 'Gizli adımları göster'
@@ -1397,6 +1426,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'الشريحة السابقة',
       next: 'الشريحة التالية'
     },
+    scroll: { previous: 'التمرير للخلف', next: 'التمرير للأمام' },
     breadcrumb: {
       label: 'مسار التنقل',
       expand: 'إظهار الخطوات المخفية'
@@ -1473,6 +1503,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'पिछली स्लाइड',
       next: 'अगली स्लाइड'
     },
+    scroll: { previous: 'पीछे स्क्रॉल करें', next: 'आगे स्क्रॉल करें' },
     breadcrumb: {
       label: 'ब्रेडक्रंब',
       expand: 'छिपे हुए चरण दिखाएँ'
@@ -1549,6 +1580,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Slide sebelumnya',
       next: 'Slide berikutnya'
     },
+    scroll: { previous: 'Gulir ke belakang', next: 'Gulir ke depan' },
     breadcrumb: {
       label: 'Remah roti',
       expand: 'Tampilkan langkah tersembunyi'
@@ -1625,6 +1657,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'Trang chiếu trước',
       next: 'Trang chiếu sau'
     },
+    scroll: { previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
     breadcrumb: {
       label: 'Đường dẫn',
       expand: 'Hiện các bước đã ẩn'
@@ -1701,6 +1734,7 @@ const translations: Record<string, PartialMessages> = {
       previous: 'สไลด์ก่อนหน้า',
       next: 'สไลด์ถัดไป'
     },
+    scroll: { previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
     breadcrumb: {
       label: 'เส้นทางนำทาง',
       expand: 'แสดงขั้นตอนที่ซ่อนอยู่'
@@ -1805,6 +1839,7 @@ export function resolveMessages(locale?: string): NebaMessages {
         number: { ...base.number, ...match.number },
         pagination: { ...base.pagination, ...match.pagination },
         carousel: { ...base.carousel, ...match.carousel },
+        scroll: { ...base.scroll, ...match.scroll },
         breadcrumb: { ...base.breadcrumb, ...match.breadcrumb },
         combobox: { ...base.combobox, ...match.combobox },
         overlay: { ...base.overlay, ...match.overlay }

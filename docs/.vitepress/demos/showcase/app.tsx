@@ -75,6 +75,7 @@ import {
   RadioGroup,
   Rating,
   ScatterChart,
+  ScrollZone,
   Segment,
   SegmentedButton,
   Select,
@@ -288,6 +289,25 @@ const HIGHLIGHTS = [
   { title: 'Instant rollbacks', body: 'Every deploy keeps its predecessor warm for an hour.' },
   { title: 'Preview per branch', body: 'A URL that exists exactly as long as the branch does.' },
   { title: 'Regional builds', body: 'Built where it is served, not where it was pushed.' }
+];
+
+/** Every edge the product claims to run in — a list longer than any row it
+    fits in, which is the whole reason the ScrollZone below is one. */
+const REGION_TAGS = [
+  'Seoul',
+  'Tokyo',
+  'Singapore',
+  'Sydney',
+  'Mumbai',
+  'Frankfurt',
+  'London',
+  'Paris',
+  'Stockholm',
+  'São Paulo',
+  'Washington DC',
+  'Oregon',
+  'Montréal',
+  'Cape Town'
 ];
 
 const REGIONS = [
@@ -814,6 +834,21 @@ function ShowcaseBody() {
               </div>
             ))}
           </Carousel>
+        </section>
+
+        {/* The other way of showing more than fits: a Carousel is one thing at a
+          time and knows which one, a ScrollZone is a shelf that happens to be
+          longer than the room it is in. Two lines, one scroll, and a button that
+          only appears while there is somewhere left to go. */}
+        <section className="flex flex-col gap-3">
+          <Caption>ScrollZone</Caption>
+          <ScrollZone label="Regions" lines={2} spacing={2} size="sm">
+            {REGION_TAGS.map((region) => (
+              <Chip key={region} size="sm" variant="outline" color="secondary">
+                {region}
+              </Chip>
+            ))}
+          </ScrollZone>
         </section>
 
         {/* What is happening right now, and what just went wrong. */}
