@@ -8117,11 +8117,34 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
-      name: 'minimizeLabel · maximizeLabel · restoreLabel · closeLabel · resizeLabel',
+      name: 'minimizeLabel',
+      type: 'string',
+      description: { ko: '최소화 버튼의 이름', en: 'The minimize button’s own name' }
+    },
+    {
+      name: 'maximizeLabel',
+      type: 'string',
+      description: { ko: '최대화 버튼의 이름', en: 'The maximize button’s own name' }
+    },
+    {
+      name: 'restoreLabel',
       type: 'string',
       description: {
-        ko: '버튼과 리사이즈 모서리의 이름을 직접 정합니다',
-        en: 'Override the names of the buttons and of the resize corner'
+        ko: '창이 최대화된 동안 그 버튼이 불리는 이름',
+        en: 'And what that button is called while the window is maximized'
+      }
+    },
+    {
+      name: 'closeLabel',
+      type: 'string',
+      description: { ko: '닫기 버튼의 이름', en: 'The close button’s own name' }
+    },
+    {
+      name: 'resizeLabel',
+      type: 'string',
+      description: {
+        ko: '키보드로 크기를 바꾸는 모서리의 이름',
+        en: 'The name of the corner a keyboard resizes with'
       }
     },
     {

@@ -222,13 +222,20 @@
   background-color: var(--vp-c-bg-soft);
 }
 
+/* A name never breaks in the middle — `onLoadingStatusChange` split across two
+   lines is not a prop anybody can search for — but a cell holding *several* of
+   them breaks between them, because those separators are spaces. Which is the
+   same arrangement the type column makes with its pipes, and for the same
+   reason: `nowrap` on the whole cell is what let one row of five names set the
+   width of the column for every other row in the table. */
 .neba-props-name {
   display: inline-block;
   font-family: var(--vp-font-family-mono);
   font-size: 12.5px;
   font-weight: 600;
   color: var(--vp-c-text-1);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: normal;
 }
 
 .neba-props-required {
