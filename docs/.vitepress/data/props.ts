@@ -6647,6 +6647,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'buttonPlacement',
+      type: "'overlay' | 'inline'",
+      default: "'overlay'",
+      description: {
+        ko: '버튼이 스트립 위에 겹칠지, 옆에 설지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지됩니다',
+        en: 'Whether the buttons sit over the strip or beside it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go'
+      }
+    },
+    {
       name: 'mode',
       type: "'item' | 'page' | 'hold'",
       default: "'item'",

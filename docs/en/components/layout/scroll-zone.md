@@ -61,6 +61,18 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 </Demo>
 
+### buttonPlacement
+
+`overlay` — the default — puts the buttons over the ends of the strip, which keeps every pixel of the box for content and lets an item pass under a button. `inline` puts them beside it: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on.
+
+An inline button keeps its lane even while it has nowhere to go, or the strip would resize under the pointer that had just reached the end of it.
+
+<Demo src="scroll-zone/placement" minHeight="280">
+
+<<< @/.vitepress/demos/scroll-zone/placement.tsx
+
+</Demo>
+
 ### Running down the page
 
 A vertical zone needs a height to scroll inside, and it takes it from the component: the root is a flex column and the scroller fills it, so `className="h-full"` on a box with a height is all it needs.

@@ -1,2 +1,7 @@
 export { ScrollZone } from './ScrollZone';
-export type { ScrollZoneButtons, ScrollZoneMode, ScrollZoneProps } from './ScrollZone';
+export type {
+  ScrollZoneButtonPlacement,
+  ScrollZoneButtons,
+  ScrollZoneMode,
+  ScrollZoneProps
+} from './ScrollZone';

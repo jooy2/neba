@@ -61,6 +61,18 @@ import { ScrollZone } from 'neba';
 
 </Demo>
 
+### buttonPlacement
+
+기본값 `overlay`는 버튼을 스트립의 양 끝 위에 겹칩니다. 상자의 모든 픽셀이 내용의 것이 되고, 항목은 버튼 밑을 지나갑니다. `inline`은 버튼을 옆에 세웁니다. 스크롤 영역이 버튼 앞에서 끝나므로 항목은 버튼 밑으로 숨는 대신 그 가장자리에서 **잘리고**, 버튼은 무엇 위에 얹혔든 상관없이 페이지 위에서 또렷하게 읽힙니다.
+
+inline 버튼은 갈 곳이 없을 때에도 자기 자리를 지킵니다. 그러지 않으면 끝에 막 닿은 포인터 아래에서 스트립이 크기를 바꾸게 됩니다.
+
+<Demo src="scroll-zone/placement" minHeight="280">
+
+<<< @/.vitepress/demos/scroll-zone/placement.tsx
+
+</Demo>
+
 ### 아래로 흐르게 하기
 
 세로 zone은 스크롤할 높이가 있어야 하고, 그 높이를 컴포넌트에서 받습니다. 루트가 flex 컬럼이고 스크롤 박스가 그것을 채우므로, 높이가 있는 상자 안에서 `className="h-full"` 하나면 충분합니다.

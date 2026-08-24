@@ -33,6 +33,23 @@ export type ScrollZoneButtons = 'auto' | 'always' | 'none';
  */
 export type ScrollZoneMode = 'item' | 'page' | 'hold';
 
+/**
+ * Where the scroll buttons sit, which is also where the strip ends.
+ *
+ * - `overlay` — over the ends of the strip, which keeps every pixel of the box
+ *   for content and lets an item pass under a button. The default, and what a
+ *   shelf of pictures wants.
+ * - `inline` — beside the strip, in the layout. The scroller stops where the
+ *   button starts, so an item is *cut off* at the button's edge rather than
+ *   sliding beneath it: nothing is ever half-hidden behind a control, and the
+ *   button is legible over the page rather than over whatever it landed on.
+ *
+ * The lane an `inline` button sits in is kept even while that button has
+ * nowhere to go, or the strip would resize under the pointer every time it
+ * reached an end.
+ */
+export type ScrollZoneButtonPlacement = 'overlay' | 'inline';
+
 export interface ScrollZoneProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   /**
@@ -55,6 +72,13 @@ export interface ScrollZoneProps
   spacing?: number;
   /** When the scroll buttons are drawn. @default 'auto' */
   buttons?: ScrollZoneButtons;
+  /**
+   * Whether the buttons sit over the strip or beside it. `inline` is what to
+   * reach for when an item disappearing under a button reads as a bug rather
+   * than as depth.
+   * @default 'overlay'
+   */
+  buttonPlacement?: ScrollZoneButtonPlacement;
   /** What pressing one does. @default 'item' */
   mode?: ScrollZoneMode;
   /** How many children one press moves, in `item` mode. @default 1 */
@@ -106,6 +130,15 @@ const buttonInsetClasses: Record<NebaSize, string> = {
   xl: 'p-4'
 };
 
+/** And the air between an inline button and the strip it flanks. */
+const buttonGapClasses: Record<NebaSize, string> = {
+  xs: 'gap-1',
+  sm: 'gap-1.5',
+  md: 'gap-2',
+  lg: 'gap-3',
+  xl: 'gap-4'
+};
+
 /** How far a press has to travel before it stops being a click. */
 const DRAG_THRESHOLD = 4;
 
@@ -145,6 +178,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
     lines = 1,
     spacing = 2,
     buttons = 'auto',
+    buttonPlacement = 'overlay',
     mode = 'item',
     step = 1,
     speed = 900,
@@ -452,9 +486,16 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
 
   const drawn = buttons !== 'none' && (buttons === 'always' || reach.back || reach.forward);
 
+  const inline = buttonPlacement === 'inline';
+
   function scrollButton(forward: boolean) {
     const available = forward ? reach.forward : reach.back;
-    if (buttons === 'auto' && !available) return <span />;
+    // An overlay button with nowhere to go is not drawn at all; an inline one
+    // leaves its lane behind, because a lane that came and went would resize the
+    // strip under the pointer that had just reached the end of it. `inert`
+    // rather than `hidden`, so the space is kept and the button is out of the
+    // tab order and out of the accessibility tree while it is invisible.
+    if (buttons === 'auto' && !available && !inline) return <span />;
 
     const turn = horizontal
       ? forward
@@ -464,7 +505,9 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
         ? ''
         : 'rotate-180';
 
-    return (
+    const spare = buttons === 'auto' && !available;
+
+    const button = (
       <IconButton
         variant={variant}
         size={size}
@@ -488,6 +531,19 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
         {...pressHandlers(forward)}
       />
     );
+
+    if (!inline) {
+      return button;
+    }
+
+    return (
+      <span
+        className={cx('flex shrink-0 items-center justify-center', spare ? 'invisible' : '')}
+        inert={spare}
+      >
+        {button}
+      </span>
+    );
   }
 
   return (
@@ -496,7 +552,12 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
       // A flex column, so a zone that was given a height passes it to the
       // scroller: a vertical strip only scrolls if something bounds it, and the
       // thing a caller sizes is the component rather than the box inside it.
-      className={cx('relative flex min-w-0 flex-col', className)}
+      className={cx(
+        'relative flex min-w-0',
+        inline && horizontal ? 'flex-row items-stretch' : 'flex-col',
+        inline ? buttonGapClasses[size] : '',
+        className
+      )}
       // Two slots rather than the whole set: a ScrollZone draws no sheet, so the
       // family only ever shows up in the focus ring the scroller takes. The
       // buttons are real IconButtons and carry their own.
@@ -508,6 +569,8 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
       }
       {...props}
     >
+      {drawn && inline ? scrollButton(false) : null}
+
       <div
         ref={scrollerRef}
         // Focusable, so the strip can be scrolled with the arrow keys by whoever
@@ -568,7 +631,9 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
         </div>
       </div>
 
-      {drawn ? (
+      {drawn && inline ? scrollButton(true) : null}
+
+      {drawn && !inline ? (
         <div
           className={cx(
             'pointer-events-none absolute inset-0 flex justify-between',

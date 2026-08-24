@@ -19,9 +19,12 @@ const cards = Array.from({ length: 6 }, (_, index) => (
   </div>
 ));
 
-/** The scrolling box: the only child of the root. */
+/** The scrolling box: the focusable one, wherever the buttons have put it. */
 function scroller(screen: Awaited<ReturnType<typeof render>>) {
-  return screen.getByTestId('zone').element().firstElementChild as HTMLElement;
+  return screen
+    .getByTestId('zone')
+    .element()
+    .querySelector<HTMLElement>(':scope > [tabindex="0"]') as HTMLElement;
 }
 
 /** And the grid inside it. */
@@ -181,6 +184,80 @@ describe('ScrollZone', () => {
 
       await expect.element(screen.getByRole('button', { name: 'Later' })).toBeInTheDocument();
       await expect.element(screen.getByRole('button', { name: 'Earlier' })).toBeInTheDocument();
+    });
+  });
+
+  describe('where the buttons sit', () => {
+    // Overlaid, the strip keeps every pixel of its box and an item passes under
+    // a button. Inline, the scroller stops where the button starts, so an item
+    // is cut off at its edge rather than half-hidden behind it.
+    it('overlays them by default', async () => {
+      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
+      const root = screen.getByTestId('zone').element();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .toBeInTheDocument();
+      // The scroller and the overlay the buttons are in, and nothing else.
+      expect(root.children).toHaveLength(2);
+      expect(root.children[1]).toHaveClass('absolute');
+    });
+
+    it('puts them beside the strip when it is asked to', async () => {
+      const screen = await render(
+        <ScrollZone buttonPlacement="inline" buttons="always" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const root = screen.getByTestId('zone').element();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .toBeInTheDocument();
+      expect(root.children).toHaveLength(3);
+      expect(root.children[1]).toBe(scroller(screen));
+      expect(
+        root.children[2].contains(screen.getByRole('button', { name: 'Scroll forward' }).element())
+      ).toBe(true);
+    });
+
+    // A lane that came and went would resize the strip under the pointer that
+    // had just reached the end of it.
+    it('keeps the lane of a button that has nowhere to go', async () => {
+      const screen = await render(
+        <ScrollZone buttonPlacement="inline" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const root = screen.getByTestId('zone').element();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .toBeInTheDocument();
+      // The button is still in the markup, holding its lane open — and `inert`,
+      // which is what keeps it out of the tab order and off the accessibility
+      // tree while it is invisible.
+      expect(root.children[0]).toHaveClass('invisible');
+      expect(root.children[0]).toHaveAttribute('inert');
+      expect(screen.getByRole('button', { name: 'Scroll back' }).element().closest('[inert]')).toBe(
+        root.children[0]
+      );
+    });
+
+    it('runs the strip down the page with the buttons above and below it', async () => {
+      const screen = await render(
+        <ScrollZone
+          orientation="vertical"
+          buttonPlacement="inline"
+          buttons="always"
+          data-testid="zone"
+        >
+          {cards}
+        </ScrollZone>
+      );
+
+      expect(screen.getByTestId('zone').element()).toHaveClass('flex-col');
+      expect(screen.getByTestId('zone').element().children).toHaveLength(3);
     });
   });
 
