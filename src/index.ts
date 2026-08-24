@@ -43,6 +43,7 @@ export * from './components/empty';
 export * from './components/file-picker';
 export * from './components/grid';
 export * from './components/floating-action-button';
+export * from './components/floating-bottom-navigation';
 export * from './components/grid-container';
 export * from './components/heatmap-chart';
 export * from './components/highlight';

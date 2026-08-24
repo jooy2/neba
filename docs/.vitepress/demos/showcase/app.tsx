@@ -43,6 +43,7 @@ import {
   FilePicker,
   FloatingAction,
   FloatingActionButton,
+  FloatingBottomNavigation,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -1517,13 +1518,15 @@ function ShowcaseBody() {
           </div>
         </section>
 
-        {/* The phone half of the same product, where the two components that
-            only exist on a small screen live. The bar is `static` here because
-            it is inside a panel rather than against the window; the button is
-            `absolute` for the same reason, and lifted clear of the bar. */}
+        {/* The phone half of the same product, where the components that only
+            exist on a small screen live. The bar is `static` in the first panel
+            because it is inside a panel rather than against the window; the
+            button is `absolute` for the same reason, and lifted clear of it. The
+            second panel is the same set of destinations lifted off the edge,
+            where the page carries on underneath. */}
         <section className="flex flex-col gap-3">
-          <Caption>BottomNavigation · FloatingActionButton</Caption>
-          <div className="flex justify-center">
+          <Caption>BottomNavigation · FloatingActionButton · FloatingBottomNavigation</Caption>
+          <div className="flex flex-wrap justify-center gap-6">
             <div className="relative flex h-64 w-full max-w-64 flex-col overflow-hidden rounded-[var(--neba-radius-lg)] border [border-color:var(--neba-border)]">
               <div className="flex flex-1 flex-col gap-2 p-4">
                 <Typography level="h6">Basket</Typography>
@@ -1554,6 +1557,34 @@ function ShowcaseBody() {
                   Alerts
                 </BottomNavigationItem>
               </BottomNavigation>
+            </div>
+
+            <div className="relative flex h-64 w-full max-w-64 flex-col overflow-hidden rounded-[var(--neba-radius-lg)] border [border-color:var(--neba-border)]">
+              <div className="flex flex-1 flex-col gap-2 p-4">
+                <Typography level="h6">Browse</Typography>
+                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                  The page keeps going under the bar.
+                </Typography>
+              </div>
+
+              <FloatingBottomNavigation
+                size="sm"
+                position="absolute"
+                offset={12}
+                safeArea={false}
+                label="Shop"
+                defaultValue="browse"
+              >
+                <BottomNavigationItem value="browse" icon={<SearchIcon />}>
+                  Browse
+                </BottomNavigationItem>
+                <BottomNavigationItem value="basket" icon={<DotIcon />}>
+                  Basket
+                </BottomNavigationItem>
+                <BottomNavigationItem value="alerts" icon={<BellIcon />}>
+                  Alerts
+                </BottomNavigationItem>
+              </FloatingBottomNavigation>
             </div>
           </div>
         </section>

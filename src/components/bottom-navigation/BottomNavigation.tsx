@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation';
+import type {
+  BottomNavigationLabels,
+  BottomNavigationValue
+} from '../../internal/bottom-navigation';
 import {
   cx,
   hasContent,
   iconSizeClasses,
   metaTextClasses,
+  paddingXClasses,
   radiusClasses,
   srOnlyClasses,
   surfaceClasses,
@@ -20,46 +26,10 @@ import type {
   NebaVariant
 } from '../../types';
 
-/** A destination's value. The same restraint Tabs and SegmentedButton put on theirs. */
-export type BottomNavigationValue = string | number;
-
-/**
- * Which labels are drawn.
- *
- * - `all` — every destination is named. The default, and the only one that
- *   works for a reader who has not used the app before.
- * - `selected` — only the destination that is current. The bar keeps its height
- *   either way, because the named one is always the tallest; what changes is
- *   how much of the row is words. The names the other items lose are still in
- *   the document for a screen reader.
- * - `none` — glyphs only, with every name read out but never drawn.
- */
-export type BottomNavigationLabels = 'all' | 'selected' | 'none';
-
-/**
- * What an item inherits from the bar around it.
- *
- * The same arrangement ButtonGroup, List, Tabs and SegmentedButton use: `size`,
- * `density` and which destination is current belong to the *set*. A bar whose
- * third item is a size out is not a bar.
- */
-interface BottomNavigationContextValue {
-  value: BottomNavigationValue | null;
-  change: (value: BottomNavigationValue) => void;
-  size: NebaSize;
-  density: NebaDensity;
-  labels: BottomNavigationLabels;
-  disabled: boolean;
-}
-
-const BottomNavigationContext = React.createContext<BottomNavigationContextValue>({
-  value: null,
-  change: () => {},
-  size: 'md',
-  density: 'default',
-  labels: 'all',
-  disabled: false
-});
+export type {
+  BottomNavigationLabels,
+  BottomNavigationValue
+} from '../../internal/bottom-navigation';
 
 export interface BottomNavigationProps
   extends
@@ -157,22 +127,6 @@ const positionClasses: Record<NebaPosition, string> = {
   fixed: 'fixed inset-x-0 bottom-0 z-30'
 };
 
-/**
- * The row's floor.
- *
- * `md` is 56px, which is the height a bottom navigation has had since the first
- * one — tall enough for a glyph with a word under it and short enough that it
- * is not competing with the page it is on. The ladder around it keeps the same
- * proportion to the glyph and the name it holds.
- */
-const rowMinHeightClasses: Record<NebaSize, string> = {
-  xs: 'min-h-10',
-  sm: 'min-h-12',
-  md: 'min-h-14',
-  lg: 'min-h-16',
-  xl: 'min-h-18'
-};
-
 /** The air inside the sheet, around the row of items. */
 const rowPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
   default: { xs: 'p-1', sm: 'p-1', md: 'p-1.5', lg: 'p-2', xl: 'p-2.5' },
@@ -247,7 +201,7 @@ export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationPr
     );
 
     const context = React.useMemo(
-      () => ({ value: value ?? null, change, size, density, labels, disabled }),
+      () => ({ value: value ?? null, change, size, density, labels, disabled, floating: false }),
       [value, change, size, density, labels, disabled]
     );
 
@@ -284,7 +238,7 @@ export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationPr
             <div
               className={cx(
                 'flex w-full items-stretch',
-                rowMinHeightClasses[size],
+                barMinHeightClasses[size],
                 rowPaddingClasses[density][size]
               )}
             >
@@ -323,9 +277,15 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
     const named = bar.labels === 'all' || (bar.labels === 'selected' && selected);
 
     const classNames = cx(
-      'flex min-w-0 flex-1 flex-col items-center justify-center px-1 py-1.5',
+      'flex min-w-0 flex-col items-center justify-center py-1.5',
+      // A bar pinned to an edge divides its whole width between its
+      // destinations; a lozenge hovering over the page is only as wide as what
+      // is in it, so the same item is sized by its own content there and cut as
+      // a stadium rather than as a sheet.
+      bar.floating
+        ? cx(paddingXClasses[bar.density][bar.size], 'rounded-full')
+        : cx('flex-1 px-1', radiusClasses[bar.size]),
       itemGapClasses[bar.size],
-      radiusClasses[bar.size],
       '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
       transitionClasses,
       'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',

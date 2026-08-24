@@ -8550,6 +8550,117 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  FloatingBottomNavigation: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      elevation: '2',
+      variantDescription: {
+        ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않으며, 페이지 위에 떠 있는 만큼 헤어라인이 있는 outline이 기본입니다',
+        en: 'Weight of the sheet, said the way a container says it — never dyed. outline is the default here because the bar is over the page rather than against its edge'
+      },
+      sizeDescription: {
+        ko: '행의 최소 높이와 글리프, 이름의 스케일. BottomNavigation과 같은 사다리로, md는 56px입니다',
+        en: 'The row’s floor and the scale of the glyph and the name. The same ladder BottomNavigation is on: md is 56px'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다 — 이 바는 페이지의 일부가 아니라 그 위에 떠 있습니다',
+        en: 'Drop shadow depth. 2 for the reason Pill’s is: this bar is not part of the page, it hovers over it'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'string | number | null',
+      description: {
+        ko: '지금 있는 목적지. onValueChange와 함께 제어할 때 씁니다',
+        en: 'The destination the reader is on. Use with onValueChange for a controlled bar'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number | null',
+      description: {
+        ko: '제어하지 않을 때 처음 선택되는 목적지',
+        en: 'Which starts current, for an uncontrolled bar'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | number) => void',
+      description: {
+        ko: '눌린 목적지와 함께 호출됩니다',
+        en: 'Called with the destination that was pressed'
+      }
+    },
+    {
+      name: 'position',
+      type: `${POSITION} | 'absolute'`,
+      default: "'fixed'",
+      shared: true,
+      description: {
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. absolute는 창이 아니라 가장 가까운 positioned 조상에 붙입니다 — FloatingActionButton과 같은 확장입니다',
+        en: 'How the bar sits in the page’s scroll. absolute holds it against the nearest positioned ancestor rather than the window — the same addition FloatingActionButton makes'
+      }
+    },
+    {
+      name: 'offset',
+      type: 'number | string',
+      default: '16',
+      description: {
+        ko: '아래 가장자리에서 얼마나 떠 있는지. BottomNavigation과의 차이 전부가 여기서 나옵니다 — 그 아래로 페이지가 계속 이어집니다',
+        en: 'How far the bar floats above the bottom edge. This is the whole difference from BottomNavigation: the page keeps going underneath'
+      }
+    },
+    {
+      name: 'labels',
+      type: "'all' | 'selected' | 'none'",
+      default: "'selected'",
+      description: {
+        ko: '어떤 이름을 그릴지. 전체 너비 바의 all과 달리 기본이 selected입니다 — 담긴 것만큼만 넓은 바에서 이름 다섯 개는 화면을 가로지릅니다. 그리지 않은 이름도 문서에는 남습니다',
+        en: 'Which names are drawn. selected here, against the all a full-width bar defaults to: this bar is only as wide as what is in it. An undrawn name is still in the document'
+      }
+    },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'offset에 env(safe-area-inset-bottom)을 더합니다. 시트 전체가 올라갑니다 — 아래에 덮어야 할 것이 없기 때문입니다',
+        en: 'Adds env(safe-area-inset-bottom) to offset. The whole sheet moves up: there is nothing under it to keep covered'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '모든 목적지가 응답을 멈춥니다', en: 'Every destination stops answering' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '바가 읽히는 이름 — "Main", "Sections"',
+        en: 'The name the bar is announced by — "Main", "Sections"'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'nav 대신 다른 요소로 렌더링합니다. 여기서는 거의 필요하지 않습니다',
+        en: 'Renders something other than a nav. Rarely what you want here'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'BottomNavigationItem들 — 두 바가 같은 항목을 씁니다',
+        en: 'The BottomNavigationItems. The same item both bars take'
+      }
+    }
+  ],
+
   FloatingActionButton: [
     ...sharedProps({
       variant: "'solid'",

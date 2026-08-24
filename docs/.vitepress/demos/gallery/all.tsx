@@ -48,6 +48,7 @@ import {
   FilePicker,
   FloatingAction,
   FloatingActionButton,
+  FloatingBottomNavigation,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -565,6 +566,27 @@ const GROUPS: Group[] = [
               </BottomNavigationItem>
             </BottomNavigation>
           </div>
+        )
+      },
+      {
+        name: 'FloatingBottomNavigation',
+        summary: {
+          ko: '아래 가장자리에서 떠 있는 목적지 줄',
+          en: 'A row of destinations floating clear of the bottom edge'
+        },
+        path: '/components/inputs/floating-bottom-navigation',
+        preview: (
+          <FloatingBottomNavigation size="sm" position="static" defaultValue="home">
+            <BottomNavigationItem value="home" icon={<GalleryHomeIcon />}>
+              Home
+            </BottomNavigationItem>
+            <BottomNavigationItem value="search" icon={<GallerySearchIcon />}>
+              Search
+            </BottomNavigationItem>
+            <BottomNavigationItem value="you" icon={<GalleryPersonIcon />}>
+              You
+            </BottomNavigationItem>
+          </FloatingBottomNavigation>
         )
       },
       {
