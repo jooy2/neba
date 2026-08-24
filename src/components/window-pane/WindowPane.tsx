@@ -81,9 +81,20 @@ export interface WindowPaneProps extends Omit<
    */
   transparency?: number;
   /**
-   * Whether this is the window in front. An inactive one keeps its shape and
-   * loses its emphasis: grey traffic lights, a quieter title, no accent.
-   * @default true
+   * Whether this is the window in front.
+   *
+   * Left out, the window works it out for itself: it is in front until another
+   * WindowPane on the page is pressed or takes the focus, exactly as windows on
+   * a desktop behave. A click on the page *around* the windows changes nothing
+   * — a paragraph is not a desktop.
+   *
+   * Pass it to drive that yourself, which is what a caller keeping its own
+   * z-order wants.
+   *
+   * What being in front looks like is the system's: coloured traffic lights on
+   * macOS against grey ones, an accent title bar and an accent border on
+   * Windows 10, a tinted header bar on GNOME — and, on all four, a window one
+   * step further off the page than the ones behind it.
    */
   active?: boolean;
   /**
@@ -248,7 +259,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
     color = 'primary',
     accent = false,
     transparency = 0,
-    active = true,
+    active: activeProp,
     elevation = 2,
     position = 'static',
     draggable = false,
@@ -302,6 +313,65 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   /** The size a drag has given the window, which outranks `width`/`height`. */
   const [sized, setSized] = React.useState<WindowPaneSize | null>(null);
 
+  /**
+   * Whether this window has the page's attention, when the caller has not said.
+   *
+   * It starts in front, because a page with one window on it should not open
+   * with that window greyed out, and it steps back only when another WindowPane
+   * is pressed or focused. That is the whole rule: what makes a window inactive
+   * is a *different window* becoming active, never a click on the prose beside
+   * it.
+   */
+  const [attended, setAttended] = React.useState(true);
+  const active = activeProp ?? attended;
+
+  /**
+   * The two lengths a roll-up animates between.
+   *
+   * `rolled` is what the window measures with nothing under its title bar, read
+   * off the bar itself rather than off the metrics table so it is right whatever
+   * box model the page is in. `pinned` is the height a window that was never
+   * given one had at the moment it was rolled up: a transition needs a number to
+   * travel from, and `auto` is not one.
+   */
+  const [rolled, setRolled] = React.useState<number | null>(null);
+  const [pinned, setPinned] = React.useState<number | null>(null);
+
+  /** Raised while a drag or a resize is running, which is when the window has to
+   *  keep up with the pointer rather than ease after it. */
+  const [gesturing, setGesturing] = React.useState(false);
+
+  /**
+   * Held for the length of one transition after a window is closed.
+   *
+   * A window that is simply dropped from the tree does not leave, it stops
+   * existing — so it is kept for as long as it takes to fade, `inert` and
+   * unpressable, and then let go. This is `opacity` carrying an *exit* rather
+   * than a state, which is the same allowance every `Animate*` component makes.
+   *
+   * The flip is noticed during the render that carries it rather than in an
+   * effect, which is React's own answer to "adjust some state when a prop
+   * changes": the second render happens before anything is painted, so the
+   * window never appears for a frame in the wrong state.
+   */
+  const [leaving, setLeaving] = React.useState(false);
+  const [wasOpen, setWasOpen] = React.useState(open);
+
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    setLeaving(!open);
+  }
+
+  React.useEffect(() => {
+    if (!leaving) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setLeaving(false), 260);
+
+    return () => window.clearTimeout(timer);
+  }, [leaving]);
+
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const setRootRef = React.useCallback(
     (node: HTMLDivElement | null) => {
@@ -312,6 +382,44 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
     },
     [ref]
   );
+
+  React.useEffect(() => {
+    if (activeProp !== undefined) {
+      return;
+    }
+
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    const notice = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (root.contains(target)) {
+        setAttended(true);
+        return;
+      }
+
+      const element = target instanceof Element ? target : target.parentElement;
+      if (element?.closest('.neba-window')) {
+        setAttended(false);
+      }
+    };
+
+    // Capture, so a press that a control inside another window stops from
+    // bubbling still counts as that window being brought forward.
+    document.addEventListener('pointerdown', notice, true);
+    document.addEventListener('focusin', notice, true);
+
+    return () => {
+      document.removeEventListener('pointerdown', notice, true);
+      document.removeEventListener('focusin', notice, true);
+    };
+  }, [activeProp]);
 
   /*
    * A gesture is torn down by the pointerup that ends it, and that event never
@@ -341,6 +449,10 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
     const target = event.currentTarget;
     target.setPointerCapture(event.pointerId);
     target.dataset.dragging = 'true';
+    // The window eases into a new size when a button put it there and follows
+    // the pointer exactly when a hand is doing it. A transition on `width` while
+    // a corner is being dragged is a window that lags behind the corner.
+    setGesturing(true);
 
     const fromX = event.clientX;
     const fromY = event.clientY;
@@ -357,6 +469,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
 
     const release = () => {
       teardownRef.current = null;
+      setGesturing(false);
       target.removeEventListener('pointermove', move);
       target.removeEventListener('pointerup', release);
       target.removeEventListener('pointercancel', release);
@@ -448,9 +561,53 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   const drawn = orderControls(os, wanted);
   const canMaximize = drawn.includes('maximize');
 
+  /**
+   * Rolling the window up, and the only thing here that cannot be done in one
+   * render.
+   *
+   * A window that was given a `height` has two numbers to travel between and
+   * animates on its own. One that was not is `height: auto`, which is not a
+   * length and so is not a thing CSS can transition *from* — so its height is
+   * measured, pinned for one frame, and only then taken away. The pin is
+   * released once the journey back is over, so content that grows later still
+   * grows the window.
+   */
+  function rollUp(next: boolean) {
+    const root = rootRef.current;
+    const bar = root?.firstElementChild;
+
+    if (root && bar instanceof HTMLElement) {
+      // Measured rather than read off the metrics table: the collapsed height is
+      // the bar plus whatever the borders come to, and which of those the height
+      // property includes is the page's box model to decide.
+      setRolled(bar.offsetHeight + (root.offsetHeight - root.clientHeight));
+    }
+
+    const auto = (sized?.height ?? height) === undefined;
+
+    if (next && auto && root) {
+      setPinned(root.getBoundingClientRect().height);
+      requestAnimationFrame(() => setMinimized(true));
+      return;
+    }
+
+    setMinimized(next);
+  }
+
+  /* The pin is only ever scaffolding for one transition. */
+  React.useEffect(() => {
+    if (minimized || pinned === null) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setPinned(null), 400);
+
+    return () => window.clearTimeout(timer);
+  }, [minimized, pinned]);
+
   function command(control: NebaWindowControl) {
     if (control === 'close') setOpen(false);
-    else if (control === 'minimize') setMinimized(!minimized);
+    else if (control === 'minimize') rollUp(!minimized);
     else setMaximized(!maximized);
   }
 
@@ -490,7 +647,11 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
       )}
       style={{
         height: metrics.bar,
-        paddingInline: metrics.padX,
+        paddingInlineStart: metrics.padX,
+        // Nothing at the trailing edge on Windows: a caption button is a corner
+        // target, and a corner target that stops 12px short of the corner is the
+        // one detail that stops a Windows title bar looking like one.
+        paddingInlineEnd: metrics.padEnd,
         gap: Math.round(metrics.title * 0.7),
         fontSize: metrics.title,
         background: 'var(--n-window-bar)',
@@ -548,16 +709,19 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   );
 
   const geometry: React.CSSProperties = maximized
-    ? position === 'static'
-      ? { left: 0, top: 0, width: '100%', height: '100%' }
-      : { inset: 0, width: 'auto', height: 'auto' }
+    ? // `100%` rather than `inset: 0`, and on every `position`: both ends of a
+      // maximize have to be lengths for the window to travel between them, and
+      // `auto` is not one.
+      { left: 0, top: 0, width: '100%', height: '100%' }
     : {
         left: offset.x,
         top: offset.y,
         width: sized?.width ?? width,
         // A rolled-up window is as tall as its title bar, whatever it was told
-        // to be — the height belongs to the body, and there is no body.
-        height: minimized ? undefined : (sized?.height ?? height)
+        // to be — the height belongs to the body, and the body has gone.
+        height: minimized
+          ? (rolled ?? metrics.bar)
+          : (sized?.height ?? height ?? pinned ?? undefined)
       };
 
   const pane = useRender({
@@ -573,31 +737,54 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
         // The acrylic is what a translucent window is made of. An opaque one
         // has nothing to blur and pays for nothing.
         transparency > 0 ? surfaceClasses : '',
+        // Maximizing, restoring and rolling up are journeys between two
+        // geometries, so the window travels rather than jumps. No `transform` is
+        // in the list and none should be added: a window that scaled would
+        // resample every glyph in it for the length of the move, which is the
+        // whole of what the house rule protects.
+        '[transition-property:left,top,width,height,opacity,box-shadow,background-color,border-color,border-radius]',
+        '[transition-duration:var(--neba-duration-window)]',
+        '[transition-timing-function:var(--neba-ease)]',
+        'motion-reduce:[transition-duration:0ms]',
+        // Under a hand, the window keeps up rather than eases after.
+        'data-[gesture]:[transition-property:none]',
         className
       ),
+      'data-gesture': gesturing ? '' : undefined,
+      // Nothing in a window on its way out can be pressed or reached, and the
+      // page underneath it is available again from the frame the close lands on.
+      inert: !open || undefined,
       style: {
-        ...windowSlots({ os, color, accent, transparency, active }),
+        opacity: open ? undefined : 0,
+        ...windowSlots({ os, color, accent, transparency, active, elevation }),
         position: position === 'static' ? 'relative' : position,
         ...geometry,
         // Square while maximized, as on every one of the four: a window filling
         // the screen has no corners to cut.
         borderRadius: maximized ? 0 : metrics.radius,
         border: '1px solid var(--n-window-line)',
-        boxShadow: `var(--neba-shadow-${elevation}), var(--neba-plate-glass)`,
+        boxShadow: 'var(--n-window-shadow), var(--neba-plate-glass)',
         ...style
       } as React.CSSProperties,
       children: (
         <>
           {bar}
 
-          {minimized ? null : (
-            <div
-              className={cx('min-h-0 flex-1', scroll ? 'overflow-auto' : 'overflow-hidden')}
-              style={{ background: 'var(--n-window-body)' }}
-            >
-              {children}
-            </div>
-          )}
+          {/*
+            Kept in the tree while the window is rolled up rather than unmounted,
+            which is what lets the roll-up be a journey rather than a cut — the
+            root's own `overflow: hidden` is what hides it. `inert` is what makes
+            it honest: a zero-height box its content is still perfectly focusable
+            inside is the exact shape of the bug where a keyboard reader lands
+            somewhere nobody can see.
+          */}
+          <div
+            className={cx('min-h-0 flex-1', scroll ? 'overflow-auto' : 'overflow-hidden')}
+            style={{ background: 'var(--n-window-body)' }}
+            inert={minimized}
+          >
+            {children}
+          </div>
 
           {resizable && !maximized && !minimized
             ? resizeHandles.map((handle) => {
@@ -652,5 +839,5 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   // is a hook, and a component that stops calling it on the render where it
   // closes is a component that calls a different number of hooks than it did
   // last time.
-  return open ? pane : null;
+  return open || leaving ? pane : null;
 });

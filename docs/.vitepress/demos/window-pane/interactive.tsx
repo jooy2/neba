@@ -26,14 +26,13 @@ export default function WindowPaneInteractive() {
         position="absolute"
         draggable
         resizable
-        active={false}
         width={230}
         height={150}
         defaultOffset={{ x: 210, y: 130 }}
       >
         <div className="p-3">
           <Typography level="caption" color="secondary">
-            active=&#123;false&#125;
+            Press one: the other steps back.
           </Typography>
         </div>
       </WindowPane>

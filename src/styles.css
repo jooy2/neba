@@ -165,6 +165,12 @@
      to drain back out — the button itself holds the press, not just the bloom
      under the cursor. */
   --neba-duration-fill: 340ms;
+  /* And the one journey in the library that is neither: a window being
+     maximized, restored or rolled up. It is longer than a control's 160ms
+     because what is travelling is the whole sheet rather than a colour on one,
+     and a window that snapped to full screen would read as a redraw rather than
+     as a move. Nothing else may use it. */
+  --neba-duration-window: 240ms;
 
   /* Color families -------------------------------------------------------
      Chroma sits just under the sRGB gamut boundary for each family's lightness

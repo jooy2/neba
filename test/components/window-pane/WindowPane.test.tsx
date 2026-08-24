@@ -115,6 +115,26 @@ describe('WindowPane', () => {
       await expect.poll(() => screen.getByText('Body').query()).toBeNull();
     });
 
+    // A window that is simply dropped from the tree does not leave, it stops
+    // existing — so it fades, unpressable, and is let go afterwards.
+    it('lets a closed window leave before it goes', async () => {
+      const screen = await render(
+        <WindowPane title="Finder" data-testid="window">
+          <p>Body</p>
+        </WindowPane>
+      );
+
+      await screen.getByRole('button', { name: 'Close' }).click();
+
+      const root = screen.getByTestId('window').query() as HTMLElement | null;
+      if (root) {
+        expect(root.style.opacity).toBe('0');
+        expect(root).toHaveAttribute('inert');
+      }
+
+      await expect.poll(() => screen.getByTestId('window').query()).toBeNull();
+    });
+
     it('leaves a controlled window open and reports the press', async () => {
       const onOpenChange = vi.fn();
       const screen = await render(
@@ -130,18 +150,43 @@ describe('WindowPane', () => {
     });
 
     // A page has no dock to send a window to, so minimizing rolls it up to its
-    // title bar and leaves it where it was.
+    // title bar and leaves it where it was. The body stays in the tree — that is
+    // what the roll-up travels over — and is made inert rather than unmounted,
+    // so nothing inside it is focusable while it cannot be seen.
     it('rolls the window up to its title bar', async () => {
       const screen = await render(
-        <WindowPane title="Finder" data-testid="window">
+        <WindowPane title="Finder" height={200} data-testid="window">
+          <p>Body</p>
+        </WindowPane>
+      );
+
+      const root = screen.getByTestId('window').element() as HTMLElement;
+      const bar = screen.getByText('Finder').element().closest('div') as HTMLElement;
+
+      await screen.getByRole('button', { name: 'Minimize' }).click();
+
+      await expect.poll(() => screen.getByText('Body').element().closest('[inert]')).not.toBeNull();
+      await expect.poll(() => root.style.height).not.toBe('200px');
+      expect(Number.parseFloat(root.style.height)).toBeGreaterThanOrEqual(bar.offsetHeight);
+      await expect.element(screen.getByText('Finder')).toBeInTheDocument();
+    });
+
+    it('unrolls it again, and gives the body back', async () => {
+      const screen = await render(
+        <WindowPane title="Finder" height={200} data-testid="window">
           <p>Body</p>
         </WindowPane>
       );
 
       await screen.getByRole('button', { name: 'Minimize' }).click();
+      await expect.poll(() => screen.getByText('Body').element().closest('[inert]')).not.toBeNull();
 
-      await expect.poll(() => screen.getByText('Body').query()).toBeNull();
-      await expect.element(screen.getByText('Finder')).toBeInTheDocument();
+      await screen.getByRole('button', { name: 'Minimize' }).click();
+
+      await expect.poll(() => screen.getByText('Body').element().closest('[inert]')).toBeNull();
+      await expect
+        .poll(() => (screen.getByTestId('window').element() as HTMLElement).style.height)
+        .toBe('200px');
     });
 
     it('fills what is holding it when it is maximized, and says so on the button', async () => {
@@ -232,9 +277,97 @@ describe('WindowPane', () => {
     it('drops the shadow when it is told to', async () => {
       const screen = await render(<WindowPane elevation={0} title="Finder" data-testid="window" />);
 
-      expect((screen.getByTestId('window').element() as HTMLElement).style.boxShadow).toContain(
-        'var(--neba-shadow-0)'
+      expect(slot(screen, '--n-window-shadow')).toBe('var(--neba-shadow-0)');
+    });
+
+    // Being in front is a step of elevation rather than a ring: none of the four
+    // systems draws an outline around the window you are using.
+    it('sits a step further off the page while it is in front', async () => {
+      const screen = await render(<WindowPane elevation={2} title="Finder" data-testid="window" />);
+
+      expect(slot(screen, '--n-window-shadow')).toBe('var(--neba-shadow-2)');
+
+      await screen.rerender(
+        <WindowPane elevation={2} active={false} title="Finder" data-testid="window" />
       );
+
+      expect(slot(screen, '--n-window-shadow')).toBe('var(--neba-shadow-1)');
+    });
+  });
+
+  describe('which window is in front', () => {
+    it('starts in front, so a page with one window on it is not greyed out', async () => {
+      const screen = await render(<WindowPane title="Finder" data-testid="window" />);
+
+      expect(slot(screen, '--n-window-bar-fg')).toBe('var(--neba-fg)');
+    });
+
+    it('steps back when another window is pressed', async () => {
+      const screen = await render(
+        <>
+          <WindowPane title="One" data-testid="window" />
+          <WindowPane title="Two" data-testid="other" />
+        </>
+      );
+
+      screen
+        .getByTestId('other')
+        .element()
+        .dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-muted-fg)');
+    });
+
+    it('comes back to the front when it is pressed itself', async () => {
+      const screen = await render(
+        <>
+          <WindowPane title="One" data-testid="window" />
+          <WindowPane title="Two" data-testid="other" />
+        </>
+      );
+
+      const one = screen.getByTestId('window').element();
+      const other = screen.getByTestId('other').element();
+
+      other.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-muted-fg)');
+
+      one.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-fg)');
+    });
+
+    // A paragraph is not a desktop: pressing the page around a window is not the
+    // same as pressing away from it.
+    it('stays in front when the page around it is pressed', async () => {
+      const screen = await render(
+        <>
+          <WindowPane title="One" data-testid="window" />
+          <p data-testid="prose">Somewhere else entirely</p>
+        </>
+      );
+
+      screen
+        .getByTestId('prose')
+        .element()
+        .dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-fg)');
+    });
+
+    it('leaves it alone when the caller is driving it', async () => {
+      const screen = await render(
+        <>
+          <WindowPane title="One" active data-testid="window" />
+          <WindowPane title="Two" data-testid="other" />
+        </>
+      );
+
+      screen
+        .getByTestId('other')
+        .element()
+        .dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-fg)');
     });
   });
 

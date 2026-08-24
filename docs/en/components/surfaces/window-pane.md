@@ -63,9 +63,21 @@ Both need somewhere to move: give the window `position="absolute"` and a positio
 
 </Demo>
 
+### Which window is in front
+
+Left out, `active` looks after itself: a window is in front until another WindowPane on the page is pressed or takes the focus. A press on the page _around_ the windows changes nothing — a paragraph is not a desktop.
+
+Being in front is drawn the way each system draws it: coloured traffic lights against grey ones on macOS, an accent title bar and an accent border on Windows 10, a tinted header bar on GNOME — and, on all four, one step more shadow than the windows behind it. Pass `active` to drive that yourself, which is what a caller keeping its own z-order wants.
+
+### Motion
+
+Maximizing, restoring and rolling up are journeys between two geometries, so the window travels rather than jumps: `left`, `top`, `width` and `height` are what move, never a transform, so no glyph in the window is resampled on the way. A window that was never given a `height` is measured and pinned for the length of the roll-up, because `auto` is not a length a transition can start from.
+
+A rolled-up window keeps its body in the tree, `inert` and clipped, which is what the roll-up travels over. A closed one fades before it goes rather than stopping existing. Every one of these is instant for a reader who has asked for reduced motion.
+
 ### accent, transparency, active
 
-`accent` dyes the title bar with `color`, the way Windows offers to. `transparency` is how much of the page shows through the chrome, from `0` to `1`; it applies to the title bar, the body's own fill and the border, never to the content on them, and anything above `0` also turns the acrylic on so what is behind is blurred rather than merely visible. `active={false}` is the window that is not in front: it keeps its shape and loses its emphasis, never its opacity.
+`accent` dyes the title bar with `color`, the way Windows offers to — and on `windows10` it takes the window's border with it, which is what that version does. `transparency` is how much of the page shows through the chrome, from `0` to `1`; it applies to the title bar, the body's own fill and the border, never to the content on them, and anything above `0` also turns the acrylic on so what is behind is blurred rather than merely visible. `active={false}` pins the window behind whatever else is on the page.
 
 <Demo src="window-pane/appearance" minHeight="420">
 

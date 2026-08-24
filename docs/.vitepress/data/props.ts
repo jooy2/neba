@@ -7930,10 +7930,9 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'active',
       type: 'boolean',
-      default: 'true',
       description: {
-        ko: '앞에 있는 창인지. 뒤에 있는 창은 모양을 지키고 강조만 잃습니다 — opacity로 흐려지지 않습니다',
-        en: 'Whether this is the window in front. An inactive one keeps its shape and loses its emphasis, never its opacity'
+        ko: '앞에 있는 창인지. 넘기지 않으면 스스로 판단합니다 — 페이지의 다른 WindowPane이 눌리거나 포커스를 가져갈 때까지 앞에 있습니다. 창들 *주변*의 페이지를 누르는 것은 아무것도 바꾸지 않습니다. 뒤에 있는 창은 모양을 지키고 강조만 잃으며(회색 신호등, 강조색 없는 제목표시줄, 한 단계 낮은 그림자) 흐려지지는 않습니다',
+        en: 'Whether this is the window in front. Left out, the window works it out for itself: it is in front until another WindowPane on the page is pressed or takes the focus, and a press on the page *around* the windows changes nothing. A window behind keeps its shape and loses its emphasis — grey traffic lights, no accent, one step less shadow — never its opacity'
       }
     },
     {
