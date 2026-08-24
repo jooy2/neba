@@ -103,6 +103,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  WindowPane,
   useToast,
   type DateRange,
   type DataTableColumn,
@@ -1487,6 +1488,45 @@ function ShowcaseBody() {
                 ))}
               </div>
             </Mockup>
+          </div>
+        </section>
+
+        {/* The same picture at the other end of the scale. A Mockup is the
+            machine; a WindowPane is one window on it, and this one is real
+            enough to drag by its title bar and pull by its corner. */}
+        <section className="flex flex-col gap-3">
+          <Caption>WindowPane</Caption>
+          <div className="relative h-64 overflow-hidden rounded-[var(--neba-radius-lg)] bg-[var(--neba-secondary-soft)]">
+            <WindowPane
+              title="Deployments"
+              position="absolute"
+              draggable
+              resizable
+              width={320}
+              height={180}
+              defaultOffset={{ x: 24, y: 18 }}
+            >
+              <div className="flex flex-col gap-2 p-4">
+                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                  Drag the title bar, pull the corner.
+                </Typography>
+                <Sparkline data={[3, 5, 4, 8, 7, 11, 9, 14]} shape="area" />
+              </div>
+            </WindowPane>
+
+            <WindowPane
+              os="windows11"
+              title="Logs"
+              position="absolute"
+              active={false}
+              width={230}
+              height={130}
+              defaultOffset={{ x: 300, y: 96 }}
+            >
+              <div className="p-3 font-mono">
+                <Typography level="caption">build 4821 · ok</Typography>
+              </div>
+            </WindowPane>
           </div>
         </section>
 

@@ -7846,6 +7846,291 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  WindowPane: [
+    {
+      name: 'os',
+      type: "'macos' | 'windows11' | 'windows10' | 'linux'",
+      default: "'macos'",
+      description: {
+        ko: '어느 시스템의 창인지. 컨트롤의 위치와 모양, 제목표시줄의 높이, 모서리를 정합니다',
+        en: 'Whose window this is a picture of. Decides where the controls sit, how they are drawn, how tall the title bar is and how its corners are cut'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '제목표시줄의 이름. 창 자체의 접근성 이름이기도 합니다',
+        en: 'The window’s name, in the title bar. Also what names the window itself'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 옆의 글리프 — 앱의 마크',
+        en: 'A glyph beside the title — the app’s mark'
+      }
+    },
+    {
+      name: 'actions',
+      type: 'ReactNode',
+      description: {
+        ko: '제목표시줄이 함께 나르는 것. 컨트롤 옆에 놓입니다',
+        en: 'Anything else the title bar carries, set beside the controls'
+      }
+    },
+    {
+      name: 'controls',
+      type: "boolean | ('minimize' | 'maximize' | 'close')[]",
+      default: 'true',
+      description: {
+        ko: '어떤 버튼을 둘지. 순서는 배열이 아니라 시스템이 정합니다 — macOS는 닫기가 앞, Windows는 뒤입니다',
+        en: 'Which of the three buttons the title bar has. The order is the system’s rather than the array’s: macOS puts close first and Windows puts it last'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '크롬의 스케일 — 제목표시줄 높이, 버튼, 글자. 내용은 건드리지 않습니다',
+        en: 'The scale of the chrome — the title bar’s height, its buttons and its type. It does not touch the content'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '포커스 링과 accent 제목표시줄이 입는 색 계열',
+        en: 'The colour family the focus rings and an accent title bar take'
+      }
+    },
+    {
+      name: 'accent',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'Windows가 제공하는 것처럼 제목표시줄에 색 계열을 입힙니다',
+        en: 'Dyes the title bar with the colour family, the way Windows offers to'
+      }
+    },
+    {
+      name: 'transparency',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '0에서 1 사이. 제목표시줄과 본문의 바탕, 테두리에만 적용되며 내용에는 적용되지 않습니다. 0보다 크면 아크릴(블러)이 함께 켜집니다',
+        en: 'From 0 to 1. It applies to the title bar, the body’s own fill and the border — never to the content. Anything above 0 also turns the acrylic on'
+      }
+    },
+    {
+      name: 'active',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '앞에 있는 창인지. 뒤에 있는 창은 모양을 지키고 강조만 잃습니다 — opacity로 흐려지지 않습니다',
+        en: 'Whether this is the window in front. An inactive one keeps its shape and loses its emphasis, never its opacity'
+      }
+    },
+    {
+      name: 'elevation',
+      type: ELEVATION,
+      default: '2',
+      shared: true,
+      description: {
+        ko: '창 주위의 그림자. 0은 그림자 없음입니다',
+        en: 'The shadow around the window. 0 means no shadow at all'
+      }
+    },
+    {
+      name: 'position',
+      type: "'static' | 'absolute' | 'fixed'",
+      default: "'static'",
+      shared: true,
+      description: {
+        ko: '어떻게 배치되는지. static은 흐름 안(relative로 놓여 offset이 주변을 밀지 않습니다), absolute는 가장 가까운 positioned 조상 안, fixed는 뷰포트에 고정',
+        en: 'How the window is laid out. static leaves it in the flow (as a relatively positioned box, so offset moves nothing around it), absolute pins it inside the nearest positioned ancestor, fixed pins it to the viewport'
+      }
+    },
+    {
+      name: 'draggable',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '제목표시줄을 끌 수 있게 합니다', en: 'Lets the title bar be dragged' }
+    },
+    {
+      name: 'resizable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '가장자리와 모서리를 끌 수 있게 합니다',
+        en: 'Lets the edges and corners be dragged'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: { ko: '창의 너비', en: 'The window’s width' }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '창의 높이. 없으면 담긴 것만큼입니다',
+        en: 'And its height. Left out, the window is as tall as what is in it'
+      }
+    },
+    {
+      name: 'minWidth',
+      type: 'number',
+      default: '180',
+      description: {
+        ko: '끌어서 줄일 수 있는 최소 너비(px)',
+        en: 'How small it may be dragged, in pixels'
+      }
+    },
+    {
+      name: 'minHeight',
+      type: 'number',
+      description: {
+        ko: '최소 높이. 기본값은 제목표시줄 자신의 높이입니다',
+        en: 'The same downward. Defaults to the title bar’s own height'
+      }
+    },
+    {
+      name: 'offset',
+      type: '{ x: number; y: number }',
+      description: {
+        ko: '레이아웃이 놓아준 자리에서 얼마나 끌려왔는지',
+        en: 'How far it has been dragged from where the layout put it'
+      }
+    },
+    {
+      name: 'defaultOffset',
+      type: '{ x: number; y: number }',
+      default: '{ x: 0, y: 0 }',
+      description: {
+        ko: '제어하지 않을 때 시작하는 자리',
+        en: 'Where an uncontrolled window starts'
+      }
+    },
+    {
+      name: 'onOffsetChange',
+      type: '(offset: { x: number; y: number }) => void',
+      description: { ko: '끌리는 동안 호출됩니다', en: 'Called while the window is dragged' }
+    },
+    {
+      name: 'onResize',
+      type: '(size: { width: number; height: number }) => void',
+      description: {
+        ko: '가장자리를 끄는 동안 창의 픽셀 크기와 함께 호출됩니다',
+        en: 'Fires with the window’s size, in pixels, while an edge is dragged'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '창이 화면에 있는지. 닫히면 아무것도 렌더링하지 않습니다',
+        en: 'Whether the window is on screen at all. Closing it renders nothing'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '제어하지 않을 때의 시작 상태', en: 'Where an uncontrolled window starts' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '닫기를 눌렀을 때', en: 'Called when the close button is pressed' }
+    },
+    {
+      name: 'minimized',
+      type: 'boolean',
+      description: {
+        ko: '제목표시줄만 남기고 말아 올렸는지. 페이지에는 창을 보낼 독이 없으므로 최소화는 이 뜻입니다',
+        en: 'Whether the window is rolled up to its title bar. A page has no dock to send it to, so this is what minimizing means'
+      }
+    },
+    {
+      name: 'defaultMinimized',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '제어하지 않을 때의 시작 상태', en: 'Where an uncontrolled window starts' }
+    },
+    {
+      name: 'onMinimizedChange',
+      type: '(minimized: boolean) => void',
+      description: { ko: '최소화를 눌렀을 때', en: 'Called when the minimize button is pressed' }
+    },
+    {
+      name: 'maximized',
+      type: 'boolean',
+      description: {
+        ko: '담고 있는 것을 가득 채우는지. 그동안 모서리는 각져집니다',
+        en: 'Whether the window fills whatever is holding it. Its corners go square while it does'
+      }
+    },
+    {
+      name: 'defaultMaximized',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '제어하지 않을 때의 시작 상태', en: 'Where an uncontrolled window starts' }
+    },
+    {
+      name: 'onMaximizedChange',
+      type: '(maximized: boolean) => void',
+      description: {
+        ko: '최대화를 눌렀을 때, 그리고 제목표시줄을 더블클릭했을 때',
+        en: 'Called when the maximize button is pressed, and on a double click of the title bar'
+      }
+    },
+    {
+      name: 'scroll',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '창보다 큰 내용이 스크롤될지',
+        en: 'Whether content taller than the window scrolls'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '제목표시줄 버튼이 자기 이름을 말하는 언어(BCP 47)',
+        en: 'Which language the title bar’s buttons name themselves in — a BCP 47 tag'
+      }
+    },
+    {
+      name: 'minimizeLabel · maximizeLabel · restoreLabel · closeLabel · resizeLabel',
+      type: 'string',
+      description: {
+        ko: '버튼과 리사이즈 모서리의 이름을 직접 정합니다',
+        en: 'Override the names of the buttons and of the resize corner'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'div 대신 다른 요소로 렌더링합니다 (render={<section />})',
+        en: 'Renders something other than a div (render={<section />})'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '창 안에 있는 것', en: 'What is in the window' }
+    }
+  ],
+
   Mockup: [
     {
       name: 'device',

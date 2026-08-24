@@ -257,6 +257,22 @@ export interface NebaMessages {
     /** Names the sheet that covers whatever it was wrapped around. */
     label: string;
   };
+  /**
+   * WindowPane.
+   *
+   * The three buttons on a title bar that are drawings of what they do, and the
+   * handle that has no drawing at all. The × is `action.close`, which every
+   * other component's close button already reads — a reader meeting it on a
+   * Dialog and on a window should hear the same word.
+   */
+  window: {
+    minimize: string;
+    maximize: string;
+    /** What the maximize button becomes once the window is maximized. */
+    restore: string;
+    /** Names the corner a pointer drags to resize. */
+    resize: string;
+  };
 }
 
 /** A translation may fill in as much or as little of the table as it has. */
@@ -349,6 +365,12 @@ const base: NebaMessages = {
   },
   overlay: {
     label: 'Overlay'
+  },
+  window: {
+    minimize: 'Minimize',
+    maximize: 'Maximize',
+    restore: 'Restore',
+    resize: 'Resize window'
   }
 };
 
@@ -436,6 +458,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: '오버레이'
+    },
+    window: {
+      minimize: '최소화',
+      maximize: '최대화',
+      restore: '이전 크기로 복원',
+      resize: '창 크기 조절'
     }
   },
   ja: {
@@ -513,6 +541,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'オーバーレイ'
+    },
+    window: {
+      minimize: '最小化',
+      maximize: '最大化',
+      restore: '元のサイズに戻す',
+      resize: 'ウィンドウのサイズを変更'
     }
   },
   'zh-hans': {
@@ -590,6 +624,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: '遮罩层'
+    },
+    window: {
+      minimize: '最小化',
+      maximize: '最大化',
+      restore: '向下还原',
+      resize: '调整窗口大小'
     }
   },
   'zh-hant': {
@@ -667,6 +707,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: '遮罩層'
+    },
+    window: {
+      minimize: '最小化',
+      maximize: '最大化',
+      restore: '還原',
+      resize: '調整視窗大小'
     }
   },
   es: {
@@ -744,6 +790,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Superposición'
+    },
+    window: {
+      minimize: 'Minimizar',
+      maximize: 'Maximizar',
+      restore: 'Restaurar',
+      resize: 'Cambiar el tamaño de la ventana'
     }
   },
   pt: {
@@ -821,6 +873,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Sobreposição'
+    },
+    window: {
+      minimize: 'Minimizar',
+      maximize: 'Maximizar',
+      restore: 'Restaurar',
+      resize: 'Redimensionar a janela'
     }
   },
   fr: {
@@ -898,6 +956,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Superposition'
+    },
+    window: {
+      minimize: 'Réduire',
+      maximize: 'Agrandir',
+      restore: 'Restaurer',
+      resize: 'Redimensionner la fenêtre'
     }
   },
   de: {
@@ -975,6 +1039,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Overlay'
+    },
+    window: {
+      minimize: 'Minimieren',
+      maximize: 'Maximieren',
+      restore: 'Wiederherstellen',
+      resize: 'Fenstergröße ändern'
     }
   },
   it: {
@@ -1052,6 +1122,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Sovrapposizione'
+    },
+    window: {
+      minimize: 'Riduci a icona',
+      maximize: 'Ingrandisci',
+      restore: 'Ripristina',
+      resize: 'Ridimensiona la finestra'
     }
   },
   nl: {
@@ -1129,6 +1205,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Overlay'
+    },
+    window: {
+      minimize: 'Minimaliseren',
+      maximize: 'Maximaliseren',
+      restore: 'Vorig formaat',
+      resize: 'Venstergrootte wijzigen'
     }
   },
   pl: {
@@ -1206,6 +1288,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Nakładka'
+    },
+    window: {
+      minimize: 'Minimalizuj',
+      maximize: 'Maksymalizuj',
+      restore: 'Przywróć',
+      resize: 'Zmień rozmiar okna'
     }
   },
   ru: {
@@ -1283,6 +1371,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Наложение'
+    },
+    window: {
+      minimize: 'Свернуть',
+      maximize: 'Развернуть',
+      restore: 'Восстановить',
+      resize: 'Изменить размер окна'
     }
   },
   tr: {
@@ -1360,6 +1454,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Kaplama'
+    },
+    window: {
+      minimize: 'Simge durumuna küçült',
+      maximize: 'Ekranı kapla',
+      restore: 'Geri yükle',
+      resize: 'Pencereyi yeniden boyutlandır'
     }
   },
   ar: {
@@ -1437,6 +1537,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'تراكب'
+    },
+    window: {
+      minimize: 'تصغير',
+      maximize: 'تكبير',
+      restore: 'استعادة',
+      resize: 'تغيير حجم النافذة'
     }
   },
   hi: {
@@ -1514,6 +1620,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'ओवरले'
+    },
+    window: {
+      minimize: 'छोटा करें',
+      maximize: 'बड़ा करें',
+      restore: 'पुनर्स्थापित करें',
+      resize: 'विंडो का आकार बदलें'
     }
   },
   id: {
@@ -1591,6 +1703,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Hamparan'
+    },
+    window: {
+      minimize: 'Perkecil',
+      maximize: 'Perbesar',
+      restore: 'Pulihkan',
+      resize: 'Ubah ukuran jendela'
     }
   },
   vi: {
@@ -1668,6 +1786,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'Lớp phủ'
+    },
+    window: {
+      minimize: 'Thu nhỏ',
+      maximize: 'Phóng to',
+      restore: 'Khôi phục',
+      resize: 'Thay đổi kích thước cửa sổ'
     }
   },
   th: {
@@ -1745,6 +1869,12 @@ const translations: Record<string, PartialMessages> = {
     },
     overlay: {
       label: 'เลเยอร์ซ้อน'
+    },
+    window: {
+      minimize: 'ย่อ',
+      maximize: 'ขยาย',
+      restore: 'คืนค่า',
+      resize: 'ปรับขนาดหน้าต่าง'
     }
   }
 };
@@ -1842,7 +1972,8 @@ export function resolveMessages(locale?: string): NebaMessages {
         scroll: { ...base.scroll, ...match.scroll },
         breadcrumb: { ...base.breadcrumb, ...match.breadcrumb },
         combobox: { ...base.combobox, ...match.combobox },
-        overlay: { ...base.overlay, ...match.overlay }
+        overlay: { ...base.overlay, ...match.overlay },
+        window: { ...base.window, ...match.window }
       }
     : base;
 

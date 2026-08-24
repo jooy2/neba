@@ -107,6 +107,7 @@ import {
   TreeItem,
   TreeView,
   Typography,
+  WindowPane,
   useToast
 } from 'neba';
 import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
@@ -965,6 +966,25 @@ const GROUPS: Group[] = [
           <div className="flex w-full items-end justify-center gap-3">
             <Mockup device="desktop" hardware="laptop" width={132} />
             <Mockup device="mobile" width={44} />
+          </div>
+        )
+      },
+      {
+        name: 'WindowPane',
+        summary: {
+          ko: '네 가지 OS 중 하나가 창을 그리는 방식으로',
+          en: 'Drawn the way one of four systems draws a window'
+        },
+        path: '/components/surfaces/window-pane',
+        preview: (
+          <div className="w-full max-w-56">
+            <WindowPane size="xs" title="Notes" elevation={1} height={96}>
+              <div className="p-2">
+                <Typography level="caption" color="secondary">
+                  Anything at all, in a window.
+                </Typography>
+              </div>
+            </WindowPane>
           </div>
         )
       },
