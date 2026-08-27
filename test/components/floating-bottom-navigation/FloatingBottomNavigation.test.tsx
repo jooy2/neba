@@ -323,6 +323,58 @@ describe('FloatingBottomNavigation', () => {
       expect(drawn(screen, 'Search')).toBe(true);
     });
 
+    // The bug this pins: the name used to collapse in *both* axes, so an item
+    // without one was shorter than an item with one — and because a press
+    // animates two items at once, one losing its name and one gaining it, the
+    // tallest item in the row dipped in the middle of every transition and took
+    // the bar's height down with it.
+    it('holds every destination at one height, named or not', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation value="home">
+          <BottomNavigationItem value="home" icon={<svg />}>
+            Home
+          </BottomNavigationItem>
+          <BottomNavigationItem value="search" icon={<svg />}>
+            Search
+          </BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      const named = screen.getByRole('button', { name: 'Home' }).element() as HTMLElement;
+      const unnamed = screen.getByRole('button', { name: 'Search' }).element() as HTMLElement;
+
+      expect(unnamed.offsetHeight).toBe(named.offsetHeight);
+    });
+
+    it('keeps the bar the same height as the current destination moves', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation value="home" data-testid="bar">
+          <BottomNavigationItem value="home" icon={<svg />}>
+            Home
+          </BottomNavigationItem>
+          <BottomNavigationItem value="search" icon={<svg />}>
+            Search
+          </BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      const bar = screen.getByTestId('bar').element() as HTMLElement;
+      const before = bar.offsetHeight;
+
+      await screen.rerender(
+        <FloatingBottomNavigation value="search" data-testid="bar">
+          <BottomNavigationItem value="home" icon={<svg />}>
+            Home
+          </BottomNavigationItem>
+          <BottomNavigationItem value="search" icon={<svg />}>
+            Search
+          </BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      expect(bar.offsetHeight).toBe(before);
+    });
+
     it('keeps an undrawn name in the document, so the item still has one', async () => {
       const screen = await render(
         <FloatingBottomNavigation labels="none">

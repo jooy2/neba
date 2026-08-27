@@ -11,9 +11,10 @@ export type BottomNavigationValue = string | number;
  *   who has not used the app before, and the default on the bar that spans an
  *   edge of the window.
  * - `selected` — only the destination that is current. The bar keeps its height
- *   either way, because the named one is always the tallest; what changes is
- *   how much of the row is words. The names the other items lose are still in
- *   the document for a screen reader.
+ *   either way: every item holds a line open for its name whether or not the
+ *   name is drawn there, so what travels when the reader moves between two
+ *   destinations is width and nothing else. The names the other items lose are
+ *   still in the document for a screen reader.
  * - `none` — glyphs only, with every name read out but never drawn.
  */
 export type BottomNavigationLabels = 'all' | 'selected' | 'none';

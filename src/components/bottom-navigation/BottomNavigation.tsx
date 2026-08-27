@@ -323,33 +323,45 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
           document rather than dropped with the pixels — as a clipped box on a
           bar that spans an edge, and as a collapsed one on a bar that floats.
 
-          The collapsed form is a grid whose two tracks run from `0fr` to `1fr`,
-          which is the one way a box's *own* width and height can be travelled
+          The collapsed form is a grid whose column track runs from `0fr` to
+          `1fr`, which is the one way a box's *own* width can be travelled
           between nothing and whatever the words come to. That is what makes a
           floating bar re-shape itself around the destination that was pressed
           rather than jump to the new arrangement: the name grows, its
           neighbours move over, and the highlight slides under it, all on the
           same clock. `opacity` rides along for the same reason it does on a
           Chip's remove button — this is a thing arriving, not a state.
+
+          Only the *column* travels, and that is the whole of it: the row is
+          held open at `1fr` whether or not the name is drawn. A row track that
+          collapsed with the column would change the item's height as the name
+          left it, and since two items animate at once — one losing its name,
+          one gaining it — the tallest item in the row is briefly shorter than
+          either of them ends up. That is the bar's own height dipping and
+          coming back on every press, which on a sheet floating over the page
+          reads as the whole lozenge wobbling. Reserving the line costs nothing
+          at rest, because the named item was already setting that height.
         */}
         {hasContent(children) ? (
-          bar.floating ? (
+          // The travelling form is only for the bar that actually travels: with
+          // `all` or `none` the same names are drawn on every item forever, so
+          // there is nothing to animate and no reason to hold a line open under
+          // a row of glyphs that will never be named.
+          bar.floating && bar.labels === 'selected' ? (
             <span
               data-drawn={named ? '' : undefined}
               className={cx(
-                'grid justify-items-center',
-                '[transition-property:grid-template-rows,grid-template-columns,opacity]',
+                'grid justify-items-center [grid-template-rows:1fr]',
+                '[transition-property:grid-template-columns,opacity]',
                 '[transition-duration:var(--neba-duration)]',
                 '[transition-timing-function:var(--neba-ease)]',
                 'motion-reduce:[transition-duration:0ms]',
                 named
-                  ? '[grid-template-columns:1fr] [grid-template-rows:1fr] opacity-100'
-                  : '[grid-template-columns:0fr] [grid-template-rows:0fr] opacity-0'
+                  ? '[grid-template-columns:1fr] opacity-100'
+                  : '[grid-template-columns:0fr] opacity-0'
               )}
             >
-              <span
-                className={cx('min-h-0 min-w-0 truncate leading-tight', metaTextClasses[bar.size])}
-              >
+              <span className={cx('min-w-0 truncate leading-tight', metaTextClasses[bar.size])}>
                 {children}
               </span>
             </span>
