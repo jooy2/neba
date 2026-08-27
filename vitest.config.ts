@@ -42,7 +42,10 @@ export default defineConfig({
   plugins: [ReactPlugin()],
   resolve: {
     alias: {
-      // Tests import from 'neba' exactly as a consumer would.
+      // Tests import from 'neba' exactly as a consumer would. The longer
+      // specifier is listed first: Vite matches these in order, and `neba`
+      // alone would swallow `neba/locales`.
+      'neba/locales': resolve(rootDir, 'src/locales/index.ts'),
       neba: resolve(rootDir, 'src/index.ts')
     }
   },

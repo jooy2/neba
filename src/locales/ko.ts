@@ -1,0 +1,98 @@
+/**
+ * Korean.
+ *
+ * Registered rather than shipped, so a project that says nothing about
+ * languages carries none of them:
+ *
+ * ```ts
+ * import { registerMessages, ko } from 'neba/locales';
+ *
+ * registerMessages('ko', ko);
+ * ```
+ */
+
+import type { NebaLocale } from '../internal/i18n.js';
+
+export const ko: NebaLocale = {
+  action: {
+    close: '닫기',
+    dismiss: '알림 닫기',
+    clear: '지우기',
+    remove: '삭제'
+  },
+  link: { newTab: '(새 창에서 열림)' },
+  spoiler: {
+    reveal: '내용 보기',
+    hide: '숨기기',
+    notice: '스포일러가 포함되어 있을 수 있습니다'
+  },
+  chat: {
+    sending: '보내는 중',
+    sent: '보냄',
+    delivered: '전달됨',
+    read: '읽음',
+    failed: '전송 실패',
+    typing: '입력 중…'
+  },
+  empty: { title: '내용이 없습니다' },
+  table: {
+    search: '검색',
+    selectAll: '모든 행 선택',
+    selectRow: '행 선택',
+    rowsPerPage: '페이지당 행 수',
+    range: '전체 {total}개 중 {start}–{end}',
+    selected: '{count}개 선택됨',
+    empty: '데이터 없음'
+  },
+  color: {
+    area: '채도와 명도',
+    hue: '색상',
+    alpha: '불투명도',
+    value: '색상 값',
+    swatches: '기본 색상',
+    clear: '지우기',
+    empty: '색상 선택'
+  },
+  rating: {
+    label: '별점',
+    value: '{max}점 만점에 {value}점',
+    empty: '별점 없음'
+  },
+  number: {
+    increase: '값 늘리기',
+    decrease: '값 줄이기'
+  },
+  pagination: {
+    label: '페이지 매기기',
+    page: '{page}페이지',
+    status: '전체 {total}페이지 중 {page}페이지',
+    previous: '이전 페이지',
+    next: '다음 페이지',
+    first: '첫 페이지',
+    last: '마지막 페이지'
+  },
+  carousel: {
+    label: '캐러셀',
+    slide: '전체 {total}장 중 {index}장',
+    previous: '이전 슬라이드',
+    next: '다음 슬라이드'
+  },
+  scroll: { previous: '뒤로 스크롤', next: '앞으로 스크롤' },
+  breadcrumb: {
+    label: '탐색 경로',
+    expand: '숨겨진 단계 보기'
+  },
+  combobox: {
+    empty: '일치하는 항목 없음',
+    remove: '{label} 삭제'
+  },
+  overlay: {
+    label: '오버레이'
+  },
+  window: {
+    minimize: '최소화',
+    maximize: '최대화',
+    restore: '이전 크기로 복원',
+    resize: '창 크기 조절'
+  }
+};

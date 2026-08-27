@@ -1,0 +1,98 @@
+/**
+ * Arabic.
+ *
+ * Registered rather than shipped, so a project that says nothing about
+ * languages carries none of them:
+ *
+ * ```ts
+ * import { registerMessages, ar } from 'neba/locales';
+ *
+ * registerMessages('ar', ar);
+ * ```
+ */
+
+import type { NebaLocale } from '../internal/i18n.js';
+
+export const ar: NebaLocale = {
+  action: {
+    close: 'إغلاق',
+    dismiss: 'تجاهل',
+    clear: 'مسح',
+    remove: 'إزالة'
+  },
+  link: { newTab: '(يفتح في علامة تبويب جديدة)' },
+  spoiler: {
+    reveal: 'إظهار',
+    hide: 'إخفاء',
+    notice: 'قد يحتوي على حرق للأحداث'
+  },
+  chat: {
+    sending: 'جارٍ الإرسال',
+    sent: 'تم الإرسال',
+    delivered: 'تم التسليم',
+    read: 'تمت القراءة',
+    failed: 'لم يتم الإرسال',
+    typing: 'يكتب الآن…'
+  },
+  empty: { title: 'لا يوجد شيء هنا' },
+  table: {
+    search: 'بحث',
+    selectAll: 'تحديد كل الصفوف',
+    selectRow: 'تحديد الصف',
+    rowsPerPage: 'صفوف لكل صفحة',
+    range: '{start}–{end} من {total}',
+    selected: 'تم تحديد {count}',
+    empty: 'لا توجد بيانات'
+  },
+  color: {
+    area: 'التشبع والسطوع',
+    hue: 'درجة اللون',
+    alpha: 'العتامة',
+    value: 'قيمة اللون',
+    swatches: 'ألوان جاهزة',
+    clear: 'مسح',
+    empty: 'اختر لونًا'
+  },
+  rating: {
+    label: 'التقييم',
+    value: '{value} من {max}',
+    empty: 'بدون تقييم'
+  },
+  number: {
+    increase: 'زيادة',
+    decrease: 'إنقاص'
+  },
+  pagination: {
+    label: 'ترقيم الصفحات',
+    page: 'الصفحة {page}',
+    status: 'الصفحة {page} من {total}',
+    previous: 'الصفحة السابقة',
+    next: 'الصفحة التالية',
+    first: 'الصفحة الأولى',
+    last: 'الصفحة الأخيرة'
+  },
+  carousel: {
+    label: 'شريط عرض',
+    slide: 'الشريحة {index} من {total}',
+    previous: 'الشريحة السابقة',
+    next: 'الشريحة التالية'
+  },
+  scroll: { previous: 'التمرير للخلف', next: 'التمرير للأمام' },
+  breadcrumb: {
+    label: 'مسار التنقل',
+    expand: 'إظهار الخطوات المخفية'
+  },
+  combobox: {
+    empty: 'لا توجد نتائج مطابقة',
+    remove: 'إزالة {label}'
+  },
+  overlay: {
+    label: 'تراكب'
+  },
+  window: {
+    minimize: 'تصغير',
+    maximize: 'تكبير',
+    restore: 'استعادة',
+    resize: 'تغيير حجم النافذة'
+  }
+};

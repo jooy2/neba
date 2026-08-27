@@ -2,6 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { Overlay } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the
+   project has registered. These assertions are about the prop, so the
+   languages they name are registered here the way a consumer would. */
+registerMessages('ko', ko);
 
 /**
  * The scrim. It carries no role of its own and no test hook — it is the one

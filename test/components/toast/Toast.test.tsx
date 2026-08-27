@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Button, ToastProvider, useToast, type ToastOptions, type ToastProviderProps } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the
+   project has registered. These assertions are about the prop, so the
+   languages they name are registered here the way a consumer would. */
+registerMessages('ko', ko);
 
 /**
  * A toast has no markup until something raises one, so every test needs the

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Avatar, ChatBubble } from 'neba';
+import { ja, ko, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the
+   project has registered. These assertions are about the prop, so the
+   languages they name are registered here the way a consumer would. */
+registerMessages('ko', ko);
+registerMessages('ja', ja);
 
 /**
  * A 1×1 transparent GIF. Inline so nothing here depends on the network — and so

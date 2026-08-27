@@ -78,114 +78,6 @@ export const actionMessages: MessageTable<ActionMessages> = {
     dismiss: 'Dismiss',
     clear: 'Clear',
     remove: 'Remove'
-  },
-  ko: {
-    close: '닫기',
-    dismiss: '알림 닫기',
-    clear: '지우기',
-    remove: '삭제'
-  },
-  ja: {
-    close: '閉じる',
-    dismiss: '閉じる',
-    clear: 'クリア',
-    remove: '削除'
-  },
-  'zh-hans': {
-    close: '关闭',
-    dismiss: '关闭',
-    clear: '清除',
-    remove: '移除'
-  },
-  'zh-hant': {
-    close: '關閉',
-    dismiss: '關閉',
-    clear: '清除',
-    remove: '移除'
-  },
-  es: {
-    close: 'Cerrar',
-    dismiss: 'Descartar',
-    clear: 'Borrar',
-    remove: 'Quitar'
-  },
-  pt: {
-    close: 'Fechar',
-    dismiss: 'Dispensar',
-    clear: 'Limpar',
-    remove: 'Remover'
-  },
-  fr: {
-    close: 'Fermer',
-    dismiss: 'Ignorer',
-    clear: 'Effacer',
-    remove: 'Supprimer'
-  },
-  de: {
-    close: 'Schließen',
-    dismiss: 'Ausblenden',
-    clear: 'Löschen',
-    remove: 'Entfernen'
-  },
-  it: {
-    close: 'Chiudi',
-    dismiss: 'Ignora',
-    clear: 'Cancella',
-    remove: 'Rimuovi'
-  },
-  nl: {
-    close: 'Sluiten',
-    dismiss: 'Negeren',
-    clear: 'Wissen',
-    remove: 'Verwijderen'
-  },
-  pl: {
-    close: 'Zamknij',
-    dismiss: 'Odrzuć',
-    clear: 'Wyczyść',
-    remove: 'Usuń'
-  },
-  ru: {
-    close: 'Закрыть',
-    dismiss: 'Скрыть',
-    clear: 'Очистить',
-    remove: 'Удалить'
-  },
-  tr: {
-    close: 'Kapat',
-    dismiss: 'Yoksay',
-    clear: 'Temizle',
-    remove: 'Kaldır'
-  },
-  ar: {
-    close: 'إغلاق',
-    dismiss: 'تجاهل',
-    clear: 'مسح',
-    remove: 'إزالة'
-  },
-  hi: {
-    close: 'बंद करें',
-    dismiss: 'खारिज करें',
-    clear: 'साफ़ करें',
-    remove: 'हटाएँ'
-  },
-  id: {
-    close: 'Tutup',
-    dismiss: 'Abaikan',
-    clear: 'Bersihkan',
-    remove: 'Hapus'
-  },
-  vi: {
-    close: 'Đóng',
-    dismiss: 'Bỏ qua',
-    clear: 'Xóa',
-    remove: 'Gỡ bỏ'
-  },
-  th: {
-    close: 'ปิด',
-    dismiss: 'ปิดการแจ้งเตือน',
-    clear: 'ล้าง',
-    remove: 'นำออก'
   }
 };
 
@@ -203,25 +95,7 @@ export interface LinkMessages {
 export const linkMessages: MessageTable<LinkMessages> = {
   '': {
     newTab: '(opens in a new tab)'
-  },
-  ko: { newTab: '(새 창에서 열림)' },
-  ja: { newTab: '(新しいタブで開きます)' },
-  'zh-hans': { newTab: '(在新标签页中打开)' },
-  'zh-hant': { newTab: '(在新分頁中開啟)' },
-  es: { newTab: '(se abre en una pestaña nueva)' },
-  pt: { newTab: '(abre em uma nova aba)' },
-  fr: { newTab: '(s’ouvre dans un nouvel onglet)' },
-  de: { newTab: '(wird in einem neuen Tab geöffnet)' },
-  it: { newTab: '(si apre in una nuova scheda)' },
-  nl: { newTab: '(opent in een nieuw tabblad)' },
-  pl: { newTab: '(otwiera się w nowej karcie)' },
-  ru: { newTab: '(откроется в новой вкладке)' },
-  tr: { newTab: '(yeni sekmede açılır)' },
-  ar: { newTab: '(يفتح في علامة تبويب جديدة)' },
-  hi: { newTab: '(नए टैब में खुलता है)' },
-  id: { newTab: '(terbuka di tab baru)' },
-  vi: { newTab: '(mở trong tab mới)' },
-  th: { newTab: '(เปิดในแท็บใหม่)' }
+  }
 };
 
 /** Spoiler. */
@@ -240,96 +114,6 @@ export const spoilerMessages: MessageTable<SpoilerMessages> = {
     reveal: 'Reveal',
     hide: 'Hide',
     notice: 'This may contain spoilers'
-  },
-  ko: {
-    reveal: '내용 보기',
-    hide: '숨기기',
-    notice: '스포일러가 포함되어 있을 수 있습니다'
-  },
-  ja: {
-    reveal: '表示する',
-    hide: '隠す',
-    notice: 'ネタバレを含む可能性があります'
-  },
-  'zh-hans': {
-    reveal: '显示内容',
-    hide: '隐藏',
-    notice: '此内容可能包含剧透'
-  },
-  'zh-hant': {
-    reveal: '顯示內容',
-    hide: '隱藏',
-    notice: '此內容可能包含劇透'
-  },
-  es: {
-    reveal: 'Mostrar',
-    hide: 'Ocultar',
-    notice: 'Puede contener spoilers'
-  },
-  pt: {
-    reveal: 'Mostrar',
-    hide: 'Ocultar',
-    notice: 'Pode conter spoilers'
-  },
-  fr: {
-    reveal: 'Afficher',
-    hide: 'Masquer',
-    notice: 'Peut contenir des spoilers'
-  },
-  de: {
-    reveal: 'Anzeigen',
-    hide: 'Ausblenden',
-    notice: 'Kann Spoiler enthalten'
-  },
-  it: {
-    reveal: 'Mostra',
-    hide: 'Nascondi',
-    notice: 'Può contenere spoiler'
-  },
-  nl: {
-    reveal: 'Tonen',
-    hide: 'Verbergen',
-    notice: 'Kan spoilers bevatten'
-  },
-  pl: {
-    reveal: 'Pokaż',
-    hide: 'Ukryj',
-    notice: 'Może zawierać spoilery'
-  },
-  ru: {
-    reveal: 'Показать',
-    hide: 'Скрыть',
-    notice: 'Может содержать спойлеры'
-  },
-  tr: {
-    reveal: 'Göster',
-    hide: 'Gizle',
-    notice: 'Spoiler içerebilir'
-  },
-  ar: {
-    reveal: 'إظهار',
-    hide: 'إخفاء',
-    notice: 'قد يحتوي على حرق للأحداث'
-  },
-  hi: {
-    reveal: 'दिखाएँ',
-    hide: 'छिपाएँ',
-    notice: 'इसमें स्पॉइलर हो सकते हैं'
-  },
-  id: {
-    reveal: 'Tampilkan',
-    hide: 'Sembunyikan',
-    notice: 'Mungkin mengandung spoiler'
-  },
-  vi: {
-    reveal: 'Hiện nội dung',
-    hide: 'Ẩn',
-    notice: 'Có thể chứa nội dung tiết lộ'
-  },
-  th: {
-    reveal: 'แสดงเนื้อหา',
-    hide: 'ซ่อน',
-    notice: 'อาจมีการเปิดเผยเนื้อหา'
   }
 };
 
@@ -355,150 +139,6 @@ export const chatMessages: MessageTable<ChatMessages> = {
     read: 'Read',
     failed: 'Not sent',
     typing: 'Typing…'
-  },
-  ko: {
-    sending: '보내는 중',
-    sent: '보냄',
-    delivered: '전달됨',
-    read: '읽음',
-    failed: '전송 실패',
-    typing: '입력 중…'
-  },
-  ja: {
-    sending: '送信中',
-    sent: '送信済み',
-    delivered: '配信済み',
-    read: '既読',
-    failed: '送信できませんでした',
-    typing: '入力中…'
-  },
-  'zh-hans': {
-    sending: '发送中',
-    sent: '已发送',
-    delivered: '已送达',
-    read: '已读',
-    failed: '发送失败',
-    typing: '正在输入…'
-  },
-  'zh-hant': {
-    sending: '傳送中',
-    sent: '已傳送',
-    delivered: '已送達',
-    read: '已讀',
-    failed: '傳送失敗',
-    typing: '正在輸入…'
-  },
-  es: {
-    sending: 'Enviando',
-    sent: 'Enviado',
-    delivered: 'Entregado',
-    read: 'Leído',
-    failed: 'No enviado',
-    typing: 'Escribiendo…'
-  },
-  pt: {
-    sending: 'Enviando',
-    sent: 'Enviado',
-    delivered: 'Entregue',
-    read: 'Lido',
-    failed: 'Não enviado',
-    typing: 'Digitando…'
-  },
-  fr: {
-    sending: 'Envoi en cours',
-    sent: 'Envoyé',
-    delivered: 'Distribué',
-    read: 'Lu',
-    failed: 'Non envoyé',
-    typing: 'En train d’écrire…'
-  },
-  de: {
-    sending: 'Wird gesendet',
-    sent: 'Gesendet',
-    delivered: 'Zugestellt',
-    read: 'Gelesen',
-    failed: 'Nicht gesendet',
-    typing: 'Schreibt…'
-  },
-  it: {
-    sending: 'Invio in corso',
-    sent: 'Inviato',
-    delivered: 'Consegnato',
-    read: 'Letto',
-    failed: 'Non inviato',
-    typing: 'Sta scrivendo…'
-  },
-  nl: {
-    sending: 'Wordt verzonden',
-    sent: 'Verzonden',
-    delivered: 'Afgeleverd',
-    read: 'Gelezen',
-    failed: 'Niet verzonden',
-    typing: 'Aan het typen…'
-  },
-  pl: {
-    sending: 'Wysyłanie',
-    sent: 'Wysłano',
-    delivered: 'Dostarczono',
-    read: 'Przeczytano',
-    failed: 'Nie wysłano',
-    typing: 'Pisze…'
-  },
-  ru: {
-    sending: 'Отправляется',
-    sent: 'Отправлено',
-    delivered: 'Доставлено',
-    read: 'Прочитано',
-    failed: 'Не отправлено',
-    typing: 'Печатает…'
-  },
-  tr: {
-    sending: 'Gönderiliyor',
-    sent: 'Gönderildi',
-    delivered: 'İletildi',
-    read: 'Okundu',
-    failed: 'Gönderilemedi',
-    typing: 'Yazıyor…'
-  },
-  ar: {
-    sending: 'جارٍ الإرسال',
-    sent: 'تم الإرسال',
-    delivered: 'تم التسليم',
-    read: 'تمت القراءة',
-    failed: 'لم يتم الإرسال',
-    typing: 'يكتب الآن…'
-  },
-  hi: {
-    sending: 'भेजा जा रहा है',
-    sent: 'भेजा गया',
-    delivered: 'डिलीवर हुआ',
-    read: 'पढ़ा गया',
-    failed: 'नहीं भेजा गया',
-    typing: 'टाइप कर रहे हैं…'
-  },
-  id: {
-    sending: 'Mengirim',
-    sent: 'Terkirim',
-    delivered: 'Diterima',
-    read: 'Dibaca',
-    failed: 'Gagal terkirim',
-    typing: 'Sedang mengetik…'
-  },
-  vi: {
-    sending: 'Đang gửi',
-    sent: 'Đã gửi',
-    delivered: 'Đã nhận',
-    read: 'Đã xem',
-    failed: 'Chưa gửi được',
-    typing: 'Đang nhập…'
-  },
-  th: {
-    sending: 'กำลังส่ง',
-    sent: 'ส่งแล้ว',
-    delivered: 'ส่งถึงแล้ว',
-    read: 'อ่านแล้ว',
-    failed: 'ส่งไม่สำเร็จ',
-    typing: 'กำลังพิมพ์…'
   }
 };
 
@@ -518,25 +158,7 @@ export interface EmptyMessages {
 
 /** The `empty` namespace, as Empty, DataTable, HeatmapChart and PieChart read it. */
 export const emptyMessages: MessageTable<EmptyMessages> = {
-  '': { title: 'Nothing here' },
-  ko: { title: '내용이 없습니다' },
-  ja: { title: '表示するものがありません' },
-  'zh-hans': { title: '暂无内容' },
-  'zh-hant': { title: '沒有內容' },
-  es: { title: 'No hay nada aquí' },
-  pt: { title: 'Nada por aqui' },
-  fr: { title: 'Rien ici' },
-  de: { title: 'Nichts vorhanden' },
-  it: { title: 'Non c’è nulla' },
-  nl: { title: 'Hier is niets' },
-  pl: { title: 'Nic tu nie ma' },
-  ru: { title: 'Здесь пусто' },
-  tr: { title: 'Burada bir şey yok' },
-  ar: { title: 'لا يوجد شيء هنا' },
-  hi: { title: 'यहाँ कुछ नहीं है' },
-  id: { title: 'Tidak ada apa-apa di sini' },
-  vi: { title: 'Không có gì ở đây' },
-  th: { title: 'ไม่มีอะไรที่นี่' }
+  '': { title: 'Nothing here' }
 };
 
 /**
@@ -582,168 +204,6 @@ export const tableMessages: MessageTable<TableMessages> = {
     range: '{start}–{end} of {total}',
     selected: '{count} selected',
     empty: 'No data'
-  },
-  ko: {
-    search: '검색',
-    selectAll: '모든 행 선택',
-    selectRow: '행 선택',
-    rowsPerPage: '페이지당 행 수',
-    range: '전체 {total}개 중 {start}–{end}',
-    selected: '{count}개 선택됨',
-    empty: '데이터 없음'
-  },
-  ja: {
-    search: '検索',
-    selectAll: 'すべての行を選択',
-    selectRow: '行を選択',
-    rowsPerPage: '1 ページの行数',
-    range: '{total} 件中 {start}–{end} 件',
-    selected: '{count} 件を選択中',
-    empty: 'データがありません'
-  },
-  'zh-hans': {
-    search: '搜索',
-    selectAll: '全选所有行',
-    selectRow: '选择此行',
-    rowsPerPage: '每页行数',
-    range: '第 {start}–{end} 行，共 {total} 行',
-    selected: '已选择 {count} 行',
-    empty: '暂无数据'
-  },
-  'zh-hant': {
-    search: '搜尋',
-    selectAll: '全選所有列',
-    selectRow: '選擇此列',
-    rowsPerPage: '每頁列數',
-    range: '第 {start}–{end} 列，共 {total} 列',
-    selected: '已選擇 {count} 列',
-    empty: '沒有資料'
-  },
-  es: {
-    search: 'Buscar',
-    selectAll: 'Seleccionar todas las filas',
-    selectRow: 'Seleccionar fila',
-    rowsPerPage: 'Filas por página',
-    range: '{start}–{end} de {total}',
-    selected: '{count} seleccionadas',
-    empty: 'Sin datos'
-  },
-  pt: {
-    search: 'Pesquisar',
-    selectAll: 'Selecionar todas as linhas',
-    selectRow: 'Selecionar linha',
-    rowsPerPage: 'Linhas por página',
-    range: '{start}–{end} de {total}',
-    selected: '{count} selecionadas',
-    empty: 'Sem dados'
-  },
-  fr: {
-    search: 'Rechercher',
-    selectAll: 'Sélectionner toutes les lignes',
-    selectRow: 'Sélectionner la ligne',
-    rowsPerPage: 'Lignes par page',
-    range: '{start}–{end} sur {total}',
-    selected: '{count} sélectionnées',
-    empty: 'Aucune donnée'
-  },
-  de: {
-    search: 'Suchen',
-    selectAll: 'Alle Zeilen auswählen',
-    selectRow: 'Zeile auswählen',
-    rowsPerPage: 'Zeilen pro Seite',
-    range: '{start}–{end} von {total}',
-    selected: '{count} ausgewählt',
-    empty: 'Keine Daten'
-  },
-  it: {
-    search: 'Cerca',
-    selectAll: 'Seleziona tutte le righe',
-    selectRow: 'Seleziona riga',
-    rowsPerPage: 'Righe per pagina',
-    range: '{start}–{end} di {total}',
-    selected: '{count} selezionate',
-    empty: 'Nessun dato'
-  },
-  nl: {
-    search: 'Zoeken',
-    selectAll: 'Alle rijen selecteren',
-    selectRow: 'Rij selecteren',
-    rowsPerPage: 'Rijen per pagina',
-    range: '{start}–{end} van {total}',
-    selected: '{count} geselecteerd',
-    empty: 'Geen gegevens'
-  },
-  pl: {
-    search: 'Szukaj',
-    selectAll: 'Zaznacz wszystkie wiersze',
-    selectRow: 'Zaznacz wiersz',
-    rowsPerPage: 'Wierszy na stronę',
-    range: '{start}–{end} z {total}',
-    selected: 'Zaznaczono: {count}',
-    empty: 'Brak danych'
-  },
-  ru: {
-    search: 'Поиск',
-    selectAll: 'Выбрать все строки',
-    selectRow: 'Выбрать строку',
-    rowsPerPage: 'Строк на странице',
-    range: '{start}–{end} из {total}',
-    selected: 'Выбрано: {count}',
-    empty: 'Нет данных'
-  },
-  tr: {
-    search: 'Ara',
-    selectAll: 'Tüm satırları seç',
-    selectRow: 'Satırı seç',
-    rowsPerPage: 'Sayfa başına satır',
-    range: '{total} kayıttan {start}–{end}',
-    selected: '{count} seçildi',
-    empty: 'Veri yok'
-  },
-  ar: {
-    search: 'بحث',
-    selectAll: 'تحديد كل الصفوف',
-    selectRow: 'تحديد الصف',
-    rowsPerPage: 'صفوف لكل صفحة',
-    range: '{start}–{end} من {total}',
-    selected: 'تم تحديد {count}',
-    empty: 'لا توجد بيانات'
-  },
-  hi: {
-    search: 'खोजें',
-    selectAll: 'सभी पंक्तियाँ चुनें',
-    selectRow: 'पंक्ति चुनें',
-    rowsPerPage: 'प्रति पृष्ठ पंक्तियाँ',
-    range: '{total} में से {start}–{end}',
-    selected: '{count} चुनी गईं',
-    empty: 'कोई डेटा नहीं'
-  },
-  id: {
-    search: 'Cari',
-    selectAll: 'Pilih semua baris',
-    selectRow: 'Pilih baris',
-    rowsPerPage: 'Baris per halaman',
-    range: '{start}–{end} dari {total}',
-    selected: '{count} dipilih',
-    empty: 'Tidak ada data'
-  },
-  vi: {
-    search: 'Tìm kiếm',
-    selectAll: 'Chọn tất cả các hàng',
-    selectRow: 'Chọn hàng',
-    rowsPerPage: 'Số hàng mỗi trang',
-    range: '{start}–{end} trên {total}',
-    selected: 'Đã chọn {count}',
-    empty: 'Không có dữ liệu'
-  },
-  th: {
-    search: 'ค้นหา',
-    selectAll: 'เลือกทุกแถว',
-    selectRow: 'เลือกแถวนี้',
-    rowsPerPage: 'จำนวนแถวต่อหน้า',
-    range: '{start}–{end} จาก {total}',
-    selected: 'เลือกแล้ว {count} รายการ',
-    empty: 'ไม่มีข้อมูล'
   }
 };
 
@@ -783,168 +243,6 @@ export const colorMessages: MessageTable<ColorMessages> = {
     swatches: 'Preset colours',
     clear: 'Clear',
     empty: 'Choose a colour'
-  },
-  ko: {
-    area: '채도와 명도',
-    hue: '색상',
-    alpha: '불투명도',
-    value: '색상 값',
-    swatches: '기본 색상',
-    clear: '지우기',
-    empty: '색상 선택'
-  },
-  ja: {
-    area: '彩度と明度',
-    hue: '色相',
-    alpha: '不透明度',
-    value: 'カラー値',
-    swatches: 'プリセットの色',
-    clear: 'クリア',
-    empty: '色を選択'
-  },
-  'zh-hans': {
-    area: '饱和度和明度',
-    hue: '色相',
-    alpha: '不透明度',
-    value: '颜色值',
-    swatches: '预设颜色',
-    clear: '清除',
-    empty: '选择颜色'
-  },
-  'zh-hant': {
-    area: '飽和度與明度',
-    hue: '色相',
-    alpha: '不透明度',
-    value: '顏色值',
-    swatches: '預設顏色',
-    clear: '清除',
-    empty: '選擇顏色'
-  },
-  es: {
-    area: 'Saturación y brillo',
-    hue: 'Tono',
-    alpha: 'Opacidad',
-    value: 'Valor del color',
-    swatches: 'Colores predefinidos',
-    clear: 'Borrar',
-    empty: 'Elegir un color'
-  },
-  pt: {
-    area: 'Saturação e brilho',
-    hue: 'Matiz',
-    alpha: 'Opacidade',
-    value: 'Valor da cor',
-    swatches: 'Cores predefinidas',
-    clear: 'Limpar',
-    empty: 'Escolher uma cor'
-  },
-  fr: {
-    area: 'Saturation et luminosité',
-    hue: 'Teinte',
-    alpha: 'Opacité',
-    value: 'Valeur de la couleur',
-    swatches: 'Couleurs prédéfinies',
-    clear: 'Effacer',
-    empty: 'Choisir une couleur'
-  },
-  de: {
-    area: 'Sättigung und Helligkeit',
-    hue: 'Farbton',
-    alpha: 'Deckkraft',
-    value: 'Farbwert',
-    swatches: 'Vorgegebene Farben',
-    clear: 'Löschen',
-    empty: 'Farbe auswählen'
-  },
-  it: {
-    area: 'Saturazione e luminosità',
-    hue: 'Tonalità',
-    alpha: 'Opacità',
-    value: 'Valore del colore',
-    swatches: 'Colori predefiniti',
-    clear: 'Cancella',
-    empty: 'Scegli un colore'
-  },
-  nl: {
-    area: 'Verzadiging en helderheid',
-    hue: 'Kleurtoon',
-    alpha: 'Dekking',
-    value: 'Kleurwaarde',
-    swatches: 'Vooraf ingestelde kleuren',
-    clear: 'Wissen',
-    empty: 'Kies een kleur'
-  },
-  pl: {
-    area: 'Nasycenie i jasność',
-    hue: 'Barwa',
-    alpha: 'Krycie',
-    value: 'Wartość koloru',
-    swatches: 'Kolory predefiniowane',
-    clear: 'Wyczyść',
-    empty: 'Wybierz kolor'
-  },
-  ru: {
-    area: 'Насыщенность и яркость',
-    hue: 'Оттенок',
-    alpha: 'Непрозрачность',
-    value: 'Значение цвета',
-    swatches: 'Готовые цвета',
-    clear: 'Очистить',
-    empty: 'Выберите цвет'
-  },
-  tr: {
-    area: 'Doygunluk ve parlaklık',
-    hue: 'Renk tonu',
-    alpha: 'Opaklık',
-    value: 'Renk değeri',
-    swatches: 'Hazır renkler',
-    clear: 'Temizle',
-    empty: 'Bir renk seçin'
-  },
-  ar: {
-    area: 'التشبع والسطوع',
-    hue: 'درجة اللون',
-    alpha: 'العتامة',
-    value: 'قيمة اللون',
-    swatches: 'ألوان جاهزة',
-    clear: 'مسح',
-    empty: 'اختر لونًا'
-  },
-  hi: {
-    area: 'संतृप्ति और चमक',
-    hue: 'रंग',
-    alpha: 'अपारदर्शिता',
-    value: 'रंग मान',
-    swatches: 'पूर्व निर्धारित रंग',
-    clear: 'साफ़ करें',
-    empty: 'एक रंग चुनें'
-  },
-  id: {
-    area: 'Saturasi dan kecerahan',
-    hue: 'Rona',
-    alpha: 'Opasitas',
-    value: 'Nilai warna',
-    swatches: 'Warna preset',
-    clear: 'Hapus',
-    empty: 'Pilih warna'
-  },
-  vi: {
-    area: 'Độ bão hòa và độ sáng',
-    hue: 'Sắc độ',
-    alpha: 'Độ mờ đục',
-    value: 'Giá trị màu',
-    swatches: 'Màu dựng sẵn',
-    clear: 'Xóa',
-    empty: 'Chọn màu'
-  },
-  th: {
-    area: 'ความอิ่มตัวและความสว่าง',
-    hue: 'เฉดสี',
-    alpha: 'ความทึบ',
-    value: 'ค่าสี',
-    swatches: 'สีที่กำหนดไว้',
-    clear: 'ล้าง',
-    empty: 'เลือกสี'
   }
 };
 
@@ -979,96 +277,6 @@ export const ratingMessages: MessageTable<RatingMessages> = {
     label: 'Rating',
     value: '{value} out of {max}',
     empty: 'No rating'
-  },
-  ko: {
-    label: '별점',
-    value: '{max}점 만점에 {value}점',
-    empty: '별점 없음'
-  },
-  ja: {
-    label: '評価',
-    value: '{max} 段階中 {value}',
-    empty: '評価なし'
-  },
-  'zh-hans': {
-    label: '评分',
-    value: '{max} 分中的 {value} 分',
-    empty: '未评分'
-  },
-  'zh-hant': {
-    label: '評分',
-    value: '{max} 分中的 {value} 分',
-    empty: '未評分'
-  },
-  es: {
-    label: 'Valoración',
-    value: '{value} de {max}',
-    empty: 'Sin valoración'
-  },
-  pt: {
-    label: 'Avaliação',
-    value: '{value} de {max}',
-    empty: 'Sem avaliação'
-  },
-  fr: {
-    label: 'Note',
-    value: '{value} sur {max}',
-    empty: 'Aucune note'
-  },
-  de: {
-    label: 'Bewertung',
-    value: '{value} von {max}',
-    empty: 'Keine Bewertung'
-  },
-  it: {
-    label: 'Valutazione',
-    value: '{value} su {max}',
-    empty: 'Nessuna valutazione'
-  },
-  nl: {
-    label: 'Beoordeling',
-    value: '{value} van {max}',
-    empty: 'Geen beoordeling'
-  },
-  pl: {
-    label: 'Ocena',
-    value: '{value} z {max}',
-    empty: 'Brak oceny'
-  },
-  ru: {
-    label: 'Оценка',
-    value: '{value} из {max}',
-    empty: 'Без оценки'
-  },
-  tr: {
-    label: 'Değerlendirme',
-    value: '{max} üzerinden {value}',
-    empty: 'Değerlendirilmedi'
-  },
-  ar: {
-    label: 'التقييم',
-    value: '{value} من {max}',
-    empty: 'بدون تقييم'
-  },
-  hi: {
-    label: 'रेटिंग',
-    value: '{max} में से {value}',
-    empty: 'कोई रेटिंग नहीं'
-  },
-  id: {
-    label: 'Peringkat',
-    value: '{value} dari {max}',
-    empty: 'Belum ada peringkat'
-  },
-  vi: {
-    label: 'Đánh giá',
-    value: '{value} trên {max}',
-    empty: 'Chưa đánh giá'
-  },
-  th: {
-    label: 'คะแนน',
-    value: '{value} จาก {max}',
-    empty: 'ยังไม่มีคะแนน'
   }
 };
 
@@ -1090,78 +298,6 @@ export const numberMessages: MessageTable<NumberMessages> = {
   '': {
     increase: 'Increase',
     decrease: 'Decrease'
-  },
-  ko: {
-    increase: '값 늘리기',
-    decrease: '값 줄이기'
-  },
-  ja: {
-    increase: '増やす',
-    decrease: '減らす'
-  },
-  'zh-hans': {
-    increase: '增加',
-    decrease: '减少'
-  },
-  'zh-hant': {
-    increase: '增加',
-    decrease: '減少'
-  },
-  es: {
-    increase: 'Aumentar',
-    decrease: 'Disminuir'
-  },
-  pt: {
-    increase: 'Aumentar',
-    decrease: 'Diminuir'
-  },
-  fr: {
-    increase: 'Augmenter',
-    decrease: 'Diminuer'
-  },
-  de: {
-    increase: 'Erhöhen',
-    decrease: 'Verringern'
-  },
-  it: {
-    increase: 'Aumenta',
-    decrease: 'Diminuisci'
-  },
-  nl: {
-    increase: 'Verhogen',
-    decrease: 'Verlagen'
-  },
-  pl: {
-    increase: 'Zwiększ',
-    decrease: 'Zmniejsz'
-  },
-  ru: {
-    increase: 'Увеличить',
-    decrease: 'Уменьшить'
-  },
-  tr: {
-    increase: 'Artır',
-    decrease: 'Azalt'
-  },
-  ar: {
-    increase: 'زيادة',
-    decrease: 'إنقاص'
-  },
-  hi: {
-    increase: 'बढ़ाएँ',
-    decrease: 'घटाएँ'
-  },
-  id: {
-    increase: 'Tambah',
-    decrease: 'Kurangi'
-  },
-  vi: {
-    increase: 'Tăng',
-    decrease: 'Giảm'
-  },
-  th: {
-    increase: 'เพิ่ม',
-    decrease: 'ลด'
   }
 };
 
@@ -1200,168 +336,6 @@ export const paginationMessages: MessageTable<PaginationMessages> = {
     next: 'Next page',
     first: 'First page',
     last: 'Last page'
-  },
-  ko: {
-    label: '페이지 매기기',
-    page: '{page}페이지',
-    status: '전체 {total}페이지 중 {page}페이지',
-    previous: '이전 페이지',
-    next: '다음 페이지',
-    first: '첫 페이지',
-    last: '마지막 페이지'
-  },
-  ja: {
-    label: 'ページ送り',
-    page: '{page} ページ',
-    status: '{total} ページ中 {page} ページ',
-    previous: '前のページ',
-    next: '次のページ',
-    first: '最初のページ',
-    last: '最後のページ'
-  },
-  'zh-hans': {
-    label: '分页',
-    page: '第 {page} 页',
-    status: '第 {page} 页，共 {total} 页',
-    previous: '上一页',
-    next: '下一页',
-    first: '第一页',
-    last: '最后一页'
-  },
-  'zh-hant': {
-    label: '分頁',
-    page: '第 {page} 頁',
-    status: '第 {page} 頁，共 {total} 頁',
-    previous: '上一頁',
-    next: '下一頁',
-    first: '第一頁',
-    last: '最後一頁'
-  },
-  es: {
-    label: 'Paginación',
-    page: 'Página {page}',
-    status: 'Página {page} de {total}',
-    previous: 'Página anterior',
-    next: 'Página siguiente',
-    first: 'Primera página',
-    last: 'Última página'
-  },
-  pt: {
-    label: 'Paginação',
-    page: 'Página {page}',
-    status: 'Página {page} de {total}',
-    previous: 'Página anterior',
-    next: 'Próxima página',
-    first: 'Primeira página',
-    last: 'Última página'
-  },
-  fr: {
-    label: 'Pagination',
-    page: 'Page {page}',
-    status: 'Page {page} sur {total}',
-    previous: 'Page précédente',
-    next: 'Page suivante',
-    first: 'Première page',
-    last: 'Dernière page'
-  },
-  de: {
-    label: 'Seitennavigation',
-    page: 'Seite {page}',
-    status: 'Seite {page} von {total}',
-    previous: 'Vorherige Seite',
-    next: 'Nächste Seite',
-    first: 'Erste Seite',
-    last: 'Letzte Seite'
-  },
-  it: {
-    label: 'Impaginazione',
-    page: 'Pagina {page}',
-    status: 'Pagina {page} di {total}',
-    previous: 'Pagina precedente',
-    next: 'Pagina successiva',
-    first: 'Prima pagina',
-    last: 'Ultima pagina'
-  },
-  nl: {
-    label: 'Paginering',
-    page: 'Pagina {page}',
-    status: 'Pagina {page} van {total}',
-    previous: 'Vorige pagina',
-    next: 'Volgende pagina',
-    first: 'Eerste pagina',
-    last: 'Laatste pagina'
-  },
-  pl: {
-    label: 'Paginacja',
-    page: 'Strona {page}',
-    status: 'Strona {page} z {total}',
-    previous: 'Poprzednia strona',
-    next: 'Następna strona',
-    first: 'Pierwsza strona',
-    last: 'Ostatnia strona'
-  },
-  ru: {
-    label: 'Постраничная навигация',
-    page: 'Страница {page}',
-    status: 'Страница {page} из {total}',
-    previous: 'Предыдущая страница',
-    next: 'Следующая страница',
-    first: 'Первая страница',
-    last: 'Последняя страница'
-  },
-  tr: {
-    label: 'Sayfalama',
-    page: '{page}. sayfa',
-    status: '{total} sayfadan {page}. sayfa',
-    previous: 'Önceki sayfa',
-    next: 'Sonraki sayfa',
-    first: 'İlk sayfa',
-    last: 'Son sayfa'
-  },
-  ar: {
-    label: 'ترقيم الصفحات',
-    page: 'الصفحة {page}',
-    status: 'الصفحة {page} من {total}',
-    previous: 'الصفحة السابقة',
-    next: 'الصفحة التالية',
-    first: 'الصفحة الأولى',
-    last: 'الصفحة الأخيرة'
-  },
-  hi: {
-    label: 'पृष्ठ क्रमांकन',
-    page: 'पृष्ठ {page}',
-    status: '{total} में से पृष्ठ {page}',
-    previous: 'पिछला पृष्ठ',
-    next: 'अगला पृष्ठ',
-    first: 'पहला पृष्ठ',
-    last: 'अंतिम पृष्ठ'
-  },
-  id: {
-    label: 'Penomoran halaman',
-    page: 'Halaman {page}',
-    status: 'Halaman {page} dari {total}',
-    previous: 'Halaman sebelumnya',
-    next: 'Halaman berikutnya',
-    first: 'Halaman pertama',
-    last: 'Halaman terakhir'
-  },
-  vi: {
-    label: 'Phân trang',
-    page: 'Trang {page}',
-    status: 'Trang {page} trên {total}',
-    previous: 'Trang trước',
-    next: 'Trang sau',
-    first: 'Trang đầu',
-    last: 'Trang cuối'
-  },
-  th: {
-    label: 'การแบ่งหน้า',
-    page: 'หน้า {page}',
-    status: 'หน้า {page} จาก {total}',
-    previous: 'หน้าก่อนหน้า',
-    next: 'หน้าถัดไป',
-    first: 'หน้าแรก',
-    last: 'หน้าสุดท้าย'
   }
 };
 
@@ -1382,114 +356,6 @@ export const carouselMessages: MessageTable<CarouselMessages> = {
     slide: 'Slide {index} of {total}',
     previous: 'Previous slide',
     next: 'Next slide'
-  },
-  ko: {
-    label: '캐러셀',
-    slide: '전체 {total}장 중 {index}장',
-    previous: '이전 슬라이드',
-    next: '다음 슬라이드'
-  },
-  ja: {
-    label: 'カルーセル',
-    slide: '{total} 枚中 {index} 枚目',
-    previous: '前のスライド',
-    next: '次のスライド'
-  },
-  'zh-hans': {
-    label: '轮播',
-    slide: '第 {index} 张，共 {total} 张',
-    previous: '上一张',
-    next: '下一张'
-  },
-  'zh-hant': {
-    label: '輪播',
-    slide: '第 {index} 張，共 {total} 張',
-    previous: '上一張',
-    next: '下一張'
-  },
-  es: {
-    label: 'Carrusel',
-    slide: 'Diapositiva {index} de {total}',
-    previous: 'Diapositiva anterior',
-    next: 'Diapositiva siguiente'
-  },
-  pt: {
-    label: 'Carrossel',
-    slide: 'Slide {index} de {total}',
-    previous: 'Slide anterior',
-    next: 'Próximo slide'
-  },
-  fr: {
-    label: 'Carrousel',
-    slide: 'Diapositive {index} sur {total}',
-    previous: 'Diapositive précédente',
-    next: 'Diapositive suivante'
-  },
-  de: {
-    label: 'Karussell',
-    slide: 'Folie {index} von {total}',
-    previous: 'Vorherige Folie',
-    next: 'Nächste Folie'
-  },
-  it: {
-    label: 'Carosello',
-    slide: 'Diapositiva {index} di {total}',
-    previous: 'Diapositiva precedente',
-    next: 'Diapositiva successiva'
-  },
-  nl: {
-    label: 'Carrousel',
-    slide: 'Dia {index} van {total}',
-    previous: 'Vorige dia',
-    next: 'Volgende dia'
-  },
-  pl: {
-    label: 'Karuzela',
-    slide: 'Slajd {index} z {total}',
-    previous: 'Poprzedni slajd',
-    next: 'Następny slajd'
-  },
-  ru: {
-    label: 'Карусель',
-    slide: 'Слайд {index} из {total}',
-    previous: 'Предыдущий слайд',
-    next: 'Следующий слайд'
-  },
-  tr: {
-    label: 'Karusel',
-    slide: '{total} slayttan {index}. slayt',
-    previous: 'Önceki slayt',
-    next: 'Sonraki slayt'
-  },
-  ar: {
-    label: 'شريط عرض',
-    slide: 'الشريحة {index} من {total}',
-    previous: 'الشريحة السابقة',
-    next: 'الشريحة التالية'
-  },
-  hi: {
-    label: 'कैरोसेल',
-    slide: '{total} में से स्लाइड {index}',
-    previous: 'पिछली स्लाइड',
-    next: 'अगली स्लाइड'
-  },
-  id: {
-    label: 'Korsel',
-    slide: 'Slide {index} dari {total}',
-    previous: 'Slide sebelumnya',
-    next: 'Slide berikutnya'
-  },
-  vi: {
-    label: 'Băng chuyền',
-    slide: 'Trang chiếu {index} trên {total}',
-    previous: 'Trang chiếu trước',
-    next: 'Trang chiếu sau'
-  },
-  th: {
-    label: 'ภาพเลื่อน',
-    slide: 'สไลด์ {index} จาก {total}',
-    previous: 'สไลด์ก่อนหน้า',
-    next: 'สไลด์ถัดไป'
   }
 };
 
@@ -1511,25 +377,7 @@ export const scrollMessages: MessageTable<ScrollMessages> = {
   '': {
     previous: 'Scroll back',
     next: 'Scroll forward'
-  },
-  ko: { previous: '뒤로 스크롤', next: '앞으로 스크롤' },
-  ja: { previous: '前へスクロール', next: '次へスクロール' },
-  'zh-hans': { previous: '向前滚动', next: '向后滚动' },
-  'zh-hant': { previous: '向前捲動', next: '向後捲動' },
-  es: { previous: 'Desplazar hacia atrás', next: 'Desplazar hacia adelante' },
-  pt: { previous: 'Rolar para trás', next: 'Rolar para a frente' },
-  fr: { previous: 'Faire défiler vers l’arrière', next: 'Faire défiler vers l’avant' },
-  de: { previous: 'Zurückscrollen', next: 'Weiterscrollen' },
-  it: { previous: 'Scorri indietro', next: 'Scorri avanti' },
-  nl: { previous: 'Terugscrollen', next: 'Vooruitscrollen' },
-  pl: { previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
-  ru: { previous: 'Прокрутить назад', next: 'Прокрутить вперёд' },
-  tr: { previous: 'Geri kaydır', next: 'İleri kaydır' },
-  ar: { previous: 'التمرير للخلف', next: 'التمرير للأمام' },
-  hi: { previous: 'पीछे स्क्रॉल करें', next: 'आगे स्क्रॉल करें' },
-  id: { previous: 'Gulir ke belakang', next: 'Gulir ke depan' },
-  vi: { previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
-  th: { previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' }
+  }
 };
 
 /** Breadcrumb. */
@@ -1545,78 +393,6 @@ export const breadcrumbMessages: MessageTable<BreadcrumbMessages> = {
   '': {
     label: 'Breadcrumb',
     expand: 'Show hidden steps'
-  },
-  ko: {
-    label: '탐색 경로',
-    expand: '숨겨진 단계 보기'
-  },
-  ja: {
-    label: 'パンくずリスト',
-    expand: '省略された階層を表示'
-  },
-  'zh-hans': {
-    label: '面包屑导航',
-    expand: '显示隐藏的层级'
-  },
-  'zh-hant': {
-    label: '麵包屑導覽',
-    expand: '顯示隱藏的層級'
-  },
-  es: {
-    label: 'Ruta de navegación',
-    expand: 'Mostrar los pasos ocultos'
-  },
-  pt: {
-    label: 'Trilha de navegação',
-    expand: 'Mostrar as etapas ocultas'
-  },
-  fr: {
-    label: 'Fil d’Ariane',
-    expand: 'Afficher les étapes masquées'
-  },
-  de: {
-    label: 'Breadcrumb-Navigation',
-    expand: 'Ausgeblendete Schritte anzeigen'
-  },
-  it: {
-    label: 'Percorso di navigazione',
-    expand: 'Mostra i passaggi nascosti'
-  },
-  nl: {
-    label: 'Kruimelpad',
-    expand: 'Verborgen stappen tonen'
-  },
-  pl: {
-    label: 'Ścieżka nawigacji',
-    expand: 'Pokaż ukryte kroki'
-  },
-  ru: {
-    label: 'Навигационная цепочка',
-    expand: 'Показать скрытые шаги'
-  },
-  tr: {
-    label: 'Gezinti yolu',
-    expand: 'Gizli adımları göster'
-  },
-  ar: {
-    label: 'مسار التنقل',
-    expand: 'إظهار الخطوات المخفية'
-  },
-  hi: {
-    label: 'ब्रेडक्रंब',
-    expand: 'छिपे हुए चरण दिखाएँ'
-  },
-  id: {
-    label: 'Remah roti',
-    expand: 'Tampilkan langkah tersembunyi'
-  },
-  vi: {
-    label: 'Đường dẫn',
-    expand: 'Hiện các bước đã ẩn'
-  },
-  th: {
-    label: 'เส้นทางนำทาง',
-    expand: 'แสดงขั้นตอนที่ซ่อนอยู่'
   }
 };
 
@@ -1633,78 +409,6 @@ export const comboboxMessages: MessageTable<ComboboxMessages> = {
   '': {
     empty: 'No matches',
     remove: 'Remove {label}'
-  },
-  ko: {
-    empty: '일치하는 항목 없음',
-    remove: '{label} 삭제'
-  },
-  ja: {
-    empty: '一致する項目がありません',
-    remove: '{label} を削除'
-  },
-  'zh-hans': {
-    empty: '无匹配项',
-    remove: '移除 {label}'
-  },
-  'zh-hant': {
-    empty: '沒有相符的項目',
-    remove: '移除 {label}'
-  },
-  es: {
-    empty: 'Sin coincidencias',
-    remove: 'Quitar {label}'
-  },
-  pt: {
-    empty: 'Nenhuma correspondência',
-    remove: 'Remover {label}'
-  },
-  fr: {
-    empty: 'Aucun résultat',
-    remove: 'Supprimer {label}'
-  },
-  de: {
-    empty: 'Keine Treffer',
-    remove: '{label} entfernen'
-  },
-  it: {
-    empty: 'Nessun risultato',
-    remove: 'Rimuovi {label}'
-  },
-  nl: {
-    empty: 'Geen resultaten',
-    remove: '{label} verwijderen'
-  },
-  pl: {
-    empty: 'Brak wyników',
-    remove: 'Usuń {label}'
-  },
-  ru: {
-    empty: 'Совпадений нет',
-    remove: 'Удалить {label}'
-  },
-  tr: {
-    empty: 'Eşleşme yok',
-    remove: '{label} kaldır'
-  },
-  ar: {
-    empty: 'لا توجد نتائج مطابقة',
-    remove: 'إزالة {label}'
-  },
-  hi: {
-    empty: 'कोई मिलान नहीं',
-    remove: '{label} हटाएँ'
-  },
-  id: {
-    empty: 'Tidak ada yang cocok',
-    remove: 'Hapus {label}'
-  },
-  vi: {
-    empty: 'Không có kết quả',
-    remove: 'Gỡ bỏ {label}'
-  },
-  th: {
-    empty: 'ไม่พบรายการที่ตรงกัน',
-    remove: 'นำ {label} ออก'
   }
 };
 
@@ -1718,60 +422,6 @@ export interface OverlayMessages {
 export const overlayMessages: MessageTable<OverlayMessages> = {
   '': {
     label: 'Overlay'
-  },
-  ko: {
-    label: '오버레이'
-  },
-  ja: {
-    label: 'オーバーレイ'
-  },
-  'zh-hans': {
-    label: '遮罩层'
-  },
-  'zh-hant': {
-    label: '遮罩層'
-  },
-  es: {
-    label: 'Superposición'
-  },
-  pt: {
-    label: 'Sobreposição'
-  },
-  fr: {
-    label: 'Superposition'
-  },
-  de: {
-    label: 'Overlay'
-  },
-  it: {
-    label: 'Sovrapposizione'
-  },
-  nl: {
-    label: 'Overlay'
-  },
-  pl: {
-    label: 'Nakładka'
-  },
-  ru: {
-    label: 'Наложение'
-  },
-  tr: {
-    label: 'Kaplama'
-  },
-  ar: {
-    label: 'تراكب'
-  },
-  hi: {
-    label: 'ओवरले'
-  },
-  id: {
-    label: 'Hamparan'
-  },
-  vi: {
-    label: 'Lớp phủ'
-  },
-  th: {
-    label: 'เลเยอร์ซ้อน'
   }
 };
 
@@ -1799,114 +449,6 @@ export const windowMessages: MessageTable<WindowMessages> = {
     maximize: 'Maximize',
     restore: 'Restore',
     resize: 'Resize window'
-  },
-  ko: {
-    minimize: '최소화',
-    maximize: '최대화',
-    restore: '이전 크기로 복원',
-    resize: '창 크기 조절'
-  },
-  ja: {
-    minimize: '最小化',
-    maximize: '最大化',
-    restore: '元のサイズに戻す',
-    resize: 'ウィンドウのサイズを変更'
-  },
-  'zh-hans': {
-    minimize: '最小化',
-    maximize: '最大化',
-    restore: '向下还原',
-    resize: '调整窗口大小'
-  },
-  'zh-hant': {
-    minimize: '最小化',
-    maximize: '最大化',
-    restore: '還原',
-    resize: '調整視窗大小'
-  },
-  es: {
-    minimize: 'Minimizar',
-    maximize: 'Maximizar',
-    restore: 'Restaurar',
-    resize: 'Cambiar el tamaño de la ventana'
-  },
-  pt: {
-    minimize: 'Minimizar',
-    maximize: 'Maximizar',
-    restore: 'Restaurar',
-    resize: 'Redimensionar a janela'
-  },
-  fr: {
-    minimize: 'Réduire',
-    maximize: 'Agrandir',
-    restore: 'Restaurer',
-    resize: 'Redimensionner la fenêtre'
-  },
-  de: {
-    minimize: 'Minimieren',
-    maximize: 'Maximieren',
-    restore: 'Wiederherstellen',
-    resize: 'Fenstergröße ändern'
-  },
-  it: {
-    minimize: 'Riduci a icona',
-    maximize: 'Ingrandisci',
-    restore: 'Ripristina',
-    resize: 'Ridimensiona la finestra'
-  },
-  nl: {
-    minimize: 'Minimaliseren',
-    maximize: 'Maximaliseren',
-    restore: 'Vorig formaat',
-    resize: 'Venstergrootte wijzigen'
-  },
-  pl: {
-    minimize: 'Minimalizuj',
-    maximize: 'Maksymalizuj',
-    restore: 'Przywróć',
-    resize: 'Zmień rozmiar okna'
-  },
-  ru: {
-    minimize: 'Свернуть',
-    maximize: 'Развернуть',
-    restore: 'Восстановить',
-    resize: 'Изменить размер окна'
-  },
-  tr: {
-    minimize: 'Simge durumuna küçült',
-    maximize: 'Ekranı kapla',
-    restore: 'Geri yükle',
-    resize: 'Pencereyi yeniden boyutlandır'
-  },
-  ar: {
-    minimize: 'تصغير',
-    maximize: 'تكبير',
-    restore: 'استعادة',
-    resize: 'تغيير حجم النافذة'
-  },
-  hi: {
-    minimize: 'छोटा करें',
-    maximize: 'बड़ा करें',
-    restore: 'पुनर्स्थापित करें',
-    resize: 'विंडो का आकार बदलें'
-  },
-  id: {
-    minimize: 'Perkecil',
-    maximize: 'Perbesar',
-    restore: 'Pulihkan',
-    resize: 'Ubah ukuran jendela'
-  },
-  vi: {
-    minimize: 'Thu nhỏ',
-    maximize: 'Phóng to',
-    restore: 'Khôi phục',
-    resize: 'Thay đổi kích thước cửa sổ'
-  },
-  th: {
-    minimize: 'ย่อ',
-    maximize: 'ขยาย',
-    restore: 'คืนค่า',
-    resize: 'ปรับขนาดหน้าต่าง'
   }
 };
 
@@ -2029,4 +571,110 @@ export function useMessages<T extends object>(table: MessageTable<T>, locale?: s
  */
 export function fillMessage(template: string, values: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (whole, name: string) => values[name] ?? whole);
+}
+
+/**
+ * A language, as `neba/locales` hands it over.
+ *
+ * Every namespace is optional and every string inside one is too: a locale
+ * fills in what it has and English answers for the rest, so a translation that
+ * has not caught up with a new component is a translation that has not caught
+ * up rather than a page of blanks.
+ */
+export interface NebaLocale {
+  /** Action. */
+  action?: Partial<ActionMessages>;
+  /** Link. */
+  link?: Partial<LinkMessages>;
+  /** Spoiler. */
+  spoiler?: Partial<SpoilerMessages>;
+  /** Chat. */
+  chat?: Partial<ChatMessages>;
+  /** Empty. */
+  empty?: Partial<EmptyMessages>;
+  /** Table. */
+  table?: Partial<TableMessages>;
+  /** Color. */
+  color?: Partial<ColorMessages>;
+  /** Rating. */
+  rating?: Partial<RatingMessages>;
+  /** Number. */
+  number?: Partial<NumberMessages>;
+  /** Pagination. */
+  pagination?: Partial<PaginationMessages>;
+  /** Carousel. */
+  carousel?: Partial<CarouselMessages>;
+  /** Scroll. */
+  scroll?: Partial<ScrollMessages>;
+  /** Breadcrumb. */
+  breadcrumb?: Partial<BreadcrumbMessages>;
+  /** Combobox. */
+  combobox?: Partial<ComboboxMessages>;
+  /** Overlay. */
+  overlay?: Partial<OverlayMessages>;
+  /** Window. */
+  window?: Partial<WindowMessages>;
+}
+
+/** Namespace name to the table that holds it, for the one function that needs all of them. */
+const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
+  action: actionMessages as MessageTable<never>,
+  link: linkMessages as MessageTable<never>,
+  spoiler: spoilerMessages as MessageTable<never>,
+  chat: chatMessages as MessageTable<never>,
+  empty: emptyMessages as MessageTable<never>,
+  table: tableMessages as MessageTable<never>,
+  color: colorMessages as MessageTable<never>,
+  rating: ratingMessages as MessageTable<never>,
+  number: numberMessages as MessageTable<never>,
+  pagination: paginationMessages as MessageTable<never>,
+  carousel: carouselMessages as MessageTable<never>,
+  scroll: scrollMessages as MessageTable<never>,
+  breadcrumb: breadcrumbMessages as MessageTable<never>,
+  combobox: comboboxMessages as MessageTable<never>,
+  overlay: overlayMessages as MessageTable<never>,
+  window: windowMessages as MessageTable<never>
+};
+
+/**
+ * Teaches the library a language.
+ *
+ * English is the only one built in. Everything else is a module under
+ * `neba/locales` that a project imports and registers once, at module scope,
+ * before it renders:
+ *
+ * ```ts
+ * import { registerMessages, ko } from 'neba/locales';
+ *
+ * registerMessages('ko', ko);
+ * ```
+ *
+ * Shipping the other seventeen unconditionally would put them in the bundle of
+ * every product that speaks one language, because a bundler cannot drop a key
+ * out of an object literal — which is the same reason the namespaces above are
+ * fourteen exports rather than one table. Registering is what makes the cost
+ * follow the need.
+ *
+ * The tag is matched the way a `locale` prop is: by script, then by region,
+ * then by language. Registering `zh-hans` answers `zh-CN` and a bare `zh`;
+ * registering `pt` answers `pt-BR`.
+ *
+ * Calling this after a tree has rendered does not re-render it. It replaces
+ * what a locale had, rather than merging into it, so a second call with a
+ * partial locale is a correction and not an addition.
+ */
+export function registerMessages(tag: string, locale: NebaLocale): void {
+  const key = tag.trim().toLowerCase();
+
+  for (const [namespace, messages] of Object.entries(locale)) {
+    const table = byNamespace[namespace as keyof NebaLocale];
+
+    if (!table || !messages) {
+      continue;
+    }
+
+    table[key] = messages as never;
+    // The resolved-and-merged copies were made from what the table said before.
+    resolved.delete(table as MessageTable<object>);
+  }
 }

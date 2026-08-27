@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Button, Spoiler } from 'neba';
+import { ko, zhHant, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the
+   project has registered. These assertions are about the prop, so the
+   languages they name are registered here the way a consumer would. */
+registerMessages('ko', ko);
+registerMessages('zh-hant', zhHant);
 
 describe('Spoiler', () => {
   describe('rendering', () => {

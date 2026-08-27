@@ -1,0 +1,98 @@
+/**
+ * Dutch.
+ *
+ * Registered rather than shipped, so a project that says nothing about
+ * languages carries none of them:
+ *
+ * ```ts
+ * import { registerMessages, nl } from 'neba/locales';
+ *
+ * registerMessages('nl', nl);
+ * ```
+ */
+
+import type { NebaLocale } from '../internal/i18n.js';
+
+export const nl: NebaLocale = {
+  action: {
+    close: 'Sluiten',
+    dismiss: 'Negeren',
+    clear: 'Wissen',
+    remove: 'Verwijderen'
+  },
+  link: { newTab: '(opent in een nieuw tabblad)' },
+  spoiler: {
+    reveal: 'Tonen',
+    hide: 'Verbergen',
+    notice: 'Kan spoilers bevatten'
+  },
+  chat: {
+    sending: 'Wordt verzonden',
+    sent: 'Verzonden',
+    delivered: 'Afgeleverd',
+    read: 'Gelezen',
+    failed: 'Niet verzonden',
+    typing: 'Aan het typen…'
+  },
+  empty: { title: 'Hier is niets' },
+  table: {
+    search: 'Zoeken',
+    selectAll: 'Alle rijen selecteren',
+    selectRow: 'Rij selecteren',
+    rowsPerPage: 'Rijen per pagina',
+    range: '{start}–{end} van {total}',
+    selected: '{count} geselecteerd',
+    empty: 'Geen gegevens'
+  },
+  color: {
+    area: 'Verzadiging en helderheid',
+    hue: 'Kleurtoon',
+    alpha: 'Dekking',
+    value: 'Kleurwaarde',
+    swatches: 'Vooraf ingestelde kleuren',
+    clear: 'Wissen',
+    empty: 'Kies een kleur'
+  },
+  rating: {
+    label: 'Beoordeling',
+    value: '{value} van {max}',
+    empty: 'Geen beoordeling'
+  },
+  number: {
+    increase: 'Verhogen',
+    decrease: 'Verlagen'
+  },
+  pagination: {
+    label: 'Paginering',
+    page: 'Pagina {page}',
+    status: 'Pagina {page} van {total}',
+    previous: 'Vorige pagina',
+    next: 'Volgende pagina',
+    first: 'Eerste pagina',
+    last: 'Laatste pagina'
+  },
+  carousel: {
+    label: 'Carrousel',
+    slide: 'Dia {index} van {total}',
+    previous: 'Vorige dia',
+    next: 'Volgende dia'
+  },
+  scroll: { previous: 'Terugscrollen', next: 'Vooruitscrollen' },
+  breadcrumb: {
+    label: 'Kruimelpad',
+    expand: 'Verborgen stappen tonen'
+  },
+  combobox: {
+    empty: 'Geen resultaten',
+    remove: '{label} verwijderen'
+  },
+  overlay: {
+    label: 'Overlay'
+  },
+  window: {
+    minimize: 'Minimaliseren',
+    maximize: 'Maximaliseren',
+    restore: 'Vorig formaat',
+    resize: 'Venstergrootte wijzigen'
+  }
+};

@@ -1,0 +1,98 @@
+/**
+ * Hindi.
+ *
+ * Registered rather than shipped, so a project that says nothing about
+ * languages carries none of them:
+ *
+ * ```ts
+ * import { registerMessages, hi } from 'neba/locales';
+ *
+ * registerMessages('hi', hi);
+ * ```
+ */
+
+import type { NebaLocale } from '../internal/i18n.js';
+
+export const hi: NebaLocale = {
+  action: {
+    close: 'बंद करें',
+    dismiss: 'खारिज करें',
+    clear: 'साफ़ करें',
+    remove: 'हटाएँ'
+  },
+  link: { newTab: '(नए टैब में खुलता है)' },
+  spoiler: {
+    reveal: 'दिखाएँ',
+    hide: 'छिपाएँ',
+    notice: 'इसमें स्पॉइलर हो सकते हैं'
+  },
+  chat: {
+    sending: 'भेजा जा रहा है',
+    sent: 'भेजा गया',
+    delivered: 'डिलीवर हुआ',
+    read: 'पढ़ा गया',
+    failed: 'नहीं भेजा गया',
+    typing: 'टाइप कर रहे हैं…'
+  },
+  empty: { title: 'यहाँ कुछ नहीं है' },
+  table: {
+    search: 'खोजें',
+    selectAll: 'सभी पंक्तियाँ चुनें',
+    selectRow: 'पंक्ति चुनें',
+    rowsPerPage: 'प्रति पृष्ठ पंक्तियाँ',
+    range: '{total} में से {start}–{end}',
+    selected: '{count} चुनी गईं',
+    empty: 'कोई डेटा नहीं'
+  },
+  color: {
+    area: 'संतृप्ति और चमक',
+    hue: 'रंग',
+    alpha: 'अपारदर्शिता',
+    value: 'रंग मान',
+    swatches: 'पूर्व निर्धारित रंग',
+    clear: 'साफ़ करें',
+    empty: 'एक रंग चुनें'
+  },
+  rating: {
+    label: 'रेटिंग',
+    value: '{max} में से {value}',
+    empty: 'कोई रेटिंग नहीं'
+  },
+  number: {
+    increase: 'बढ़ाएँ',
+    decrease: 'घटाएँ'
+  },
+  pagination: {
+    label: 'पृष्ठ क्रमांकन',
+    page: 'पृष्ठ {page}',
+    status: '{total} में से पृष्ठ {page}',
+    previous: 'पिछला पृष्ठ',
+    next: 'अगला पृष्ठ',
+    first: 'पहला पृष्ठ',
+    last: 'अंतिम पृष्ठ'
+  },
+  carousel: {
+    label: 'कैरोसेल',
+    slide: '{total} में से स्लाइड {index}',
+    previous: 'पिछली स्लाइड',
+    next: 'अगली स्लाइड'
+  },
+  scroll: { previous: 'पीछे स्क्रॉल करें', next: 'आगे स्क्रॉल करें' },
+  breadcrumb: {
+    label: 'ब्रेडक्रंब',
+    expand: 'छिपे हुए चरण दिखाएँ'
+  },
+  combobox: {
+    empty: 'कोई मिलान नहीं',
+    remove: '{label} हटाएँ'
+  },
+  overlay: {
+    label: 'ओवरले'
+  },
+  window: {
+    minimize: 'छोटा करें',
+    maximize: 'बड़ा करें',
+    restore: 'पुनर्स्थापित करें',
+    resize: 'विंडो का आकार बदलें'
+  }
+};

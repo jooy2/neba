@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Carousel } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the
+   project has registered. These assertions are about the prop, so the
+   languages they name are registered here the way a consumer would. */
+registerMessages('ko', ko);
 
 /** Three slides with something findable in each. */
 const slides = [<p key="a">Alpha</p>, <p key="b">Bravo</p>, <p key="c">Charlie</p>];

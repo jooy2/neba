@@ -1,0 +1,98 @@
+/**
+ * Russian.
+ *
+ * Registered rather than shipped, so a project that says nothing about
+ * languages carries none of them:
+ *
+ * ```ts
+ * import { registerMessages, ru } from 'neba/locales';
+ *
+ * registerMessages('ru', ru);
+ * ```
+ */
+
+import type { NebaLocale } from '../internal/i18n.js';
+
+export const ru: NebaLocale = {
+  action: {
+    close: 'Закрыть',
+    dismiss: 'Скрыть',
+    clear: 'Очистить',
+    remove: 'Удалить'
+  },
+  link: { newTab: '(откроется в новой вкладке)' },
+  spoiler: {
+    reveal: 'Показать',
+    hide: 'Скрыть',
+    notice: 'Может содержать спойлеры'
+  },
+  chat: {
+    sending: 'Отправляется',
+    sent: 'Отправлено',
+    delivered: 'Доставлено',
+    read: 'Прочитано',
+    failed: 'Не отправлено',
+    typing: 'Печатает…'
+  },
+  empty: { title: 'Здесь пусто' },
+  table: {
+    search: 'Поиск',
+    selectAll: 'Выбрать все строки',
+    selectRow: 'Выбрать строку',
+    rowsPerPage: 'Строк на странице',
+    range: '{start}–{end} из {total}',
+    selected: 'Выбрано: {count}',
+    empty: 'Нет данных'
+  },
+  color: {
+    area: 'Насыщенность и яркость',
+    hue: 'Оттенок',
+    alpha: 'Непрозрачность',
+    value: 'Значение цвета',
+    swatches: 'Готовые цвета',
+    clear: 'Очистить',
+    empty: 'Выберите цвет'
+  },
+  rating: {
+    label: 'Оценка',
+    value: '{value} из {max}',
+    empty: 'Без оценки'
+  },
+  number: {
+    increase: 'Увеличить',
+    decrease: 'Уменьшить'
+  },
+  pagination: {
+    label: 'Постраничная навигация',
+    page: 'Страница {page}',
+    status: 'Страница {page} из {total}',
+    previous: 'Предыдущая страница',
+    next: 'Следующая страница',
+    first: 'Первая страница',
+    last: 'Последняя страница'
+  },
+  carousel: {
+    label: 'Карусель',
+    slide: 'Слайд {index} из {total}',
+    previous: 'Предыдущий слайд',
+    next: 'Следующий слайд'
+  },
+  scroll: { previous: 'Прокрутить назад', next: 'Прокрутить вперёд' },
+  breadcrumb: {
+    label: 'Навигационная цепочка',
+    expand: 'Показать скрытые шаги'
+  },
+  combobox: {
+    empty: 'Совпадений нет',
+    remove: 'Удалить {label}'
+  },
+  overlay: {
+    label: 'Наложение'
+  },
+  window: {
+    minimize: 'Свернуть',
+    maximize: 'Развернуть',
+    restore: 'Восстановить',
+    resize: 'Изменить размер окна'
+  }
+};
