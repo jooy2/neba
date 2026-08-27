@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { chatMessages, useMessages } from '../../internal/i18n.js';
-import { CheckIcon, ClockIcon, LinkIcon, severityIcons } from '../../internal/icons.js';
+import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons.js';
 import {
   controlSlots,
   hasContent,
@@ -221,7 +221,7 @@ const statusIcons: Record<ChatBubbleStatus, React.ReactNode> = {
   sent: <CheckIcon />,
   delivered: <DoubleCheckIcon />,
   read: <DoubleCheckIcon />,
-  failed: severityIcons.danger
+  failed: <DangerIcon />
 };
 
 /**

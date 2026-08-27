@@ -322,7 +322,7 @@ export function DotIcon() {
 }
 
 /** The neutral note: a circled `i` without the serif problem an `i` has at 16px. */
-function NoteIcon() {
+export function NoteIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
@@ -332,18 +332,9 @@ function NoteIcon() {
   );
 }
 
-/**
- * One drawing per colour family.
- *
- * `primary` and `secondary` have no severity to draw, so they take the note the
- * informational one uses — three shapes for six families, because the three
- * that mean something are the three worth telling apart.
- */
-export const severityIcons: Record<NebaColor, React.ReactNode> = {
-  primary: <NoteIcon />,
-  secondary: <NoteIcon />,
-  info: <NoteIcon />,
-  success: (
+/** The tick in a circle: the one that went through. */
+export function SuccessIcon() {
+  return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
       <path
@@ -354,8 +345,12 @@ export const severityIcons: Record<NebaColor, React.ReactNode> = {
         strokeLinejoin="round"
       />
     </svg>
-  ),
-  warning: (
+  );
+}
+
+/** The triangle: the one that needs looking at before it goes wrong. */
+export function WarningIcon() {
+  return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
         d="M7.13 2.6 1.9 11.7a1 1 0 0 0 .87 1.5h10.46a1 1 0 0 0 .87-1.5L8.87 2.6a1 1 0 0 0-1.74 0Z"
@@ -366,8 +361,12 @@ export const severityIcons: Record<NebaColor, React.ReactNode> = {
       <path d="M8 6.1v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <circle cx="8" cy="11.2" r="0.85" fill="currentColor" />
     </svg>
-  ),
-  danger: (
+  );
+}
+
+/** The cross in a circle: the one that did not. */
+export function DangerIcon() {
+  return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
       <path
@@ -377,5 +376,33 @@ export const severityIcons: Record<NebaColor, React.ReactNode> = {
         strokeLinecap="round"
       />
     </svg>
-  )
-};
+  );
+}
+
+/**
+ * One drawing per colour family.
+ *
+ * `primary` and `secondary` have no severity to draw, so they take the note the
+ * informational one uses — three shapes for six families, because the three
+ * that mean something are the three worth telling apart.
+ *
+ * A function rather than a `Record` of elements, for the reason the tables in
+ * `i18n.ts` are one per namespace: a bundler drops an unused function and it
+ * cannot drop a key out of an object literal, so a ChatBubble that draws only
+ * the failed mark would otherwise carry all four drawings. The ones that pick
+ * by a `color` prop call this and keep them all, which is what they need; the
+ * one that wants a single mark imports that mark. It also stops six React
+ * elements being built at import time for a page that may draw none of them.
+ */
+export function severityIcon(color: NebaColor): React.ReactElement {
+  switch (color) {
+    case 'success':
+      return <SuccessIcon />;
+    case 'warning':
+      return <WarningIcon />;
+    case 'danger':
+      return <DangerIcon />;
+    default:
+      return <NoteIcon />;
+  }
+}

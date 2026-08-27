@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
-import { CloseIcon, severityIcons } from '../../internal/icons.js';
+import { CloseIcon, severityIcon } from '../../internal/icons.js';
 import {
   controlSlots,
   focusRingClasses,
@@ -240,7 +240,7 @@ function ToastItem({
 }: ToastItemProps) {
   const variant = toast.data?.variant ?? providerVariant ?? 'outline';
   const color = toast.data?.color ?? providerColor;
-  const glyph = toast.data?.icon === undefined ? severityIcons[color] : toast.data.icon;
+  const glyph = toast.data?.icon === undefined ? severityIcon(color) : toast.data.icon;
   const accent = accentClasses[variant];
   const titled = hasContent(toast.title);
 

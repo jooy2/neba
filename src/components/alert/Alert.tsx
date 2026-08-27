@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
-import { CloseIcon, severityIcons } from '../../internal/icons.js';
+import { CloseIcon, severityIcon } from '../../internal/icons.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   controlSlots,
@@ -167,7 +167,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
   ref
 ) {
   const messages = useMessages(actionMessages, locale);
-  const glyph = icon === undefined ? severityIcons[color] : icon;
+  const glyph = icon === undefined ? severityIcon(color) : icon;
   const accent = accentClasses[variant];
   const titled = hasContent(title);
   const animation = transitionProps(transition);
