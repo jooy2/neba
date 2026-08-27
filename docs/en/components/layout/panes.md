@@ -1,6 +1,6 @@
 ---
 title: Panes
-order: 3
+order: 7
 ---
 
 # Panes

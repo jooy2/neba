@@ -144,13 +144,13 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Surfaces** — Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup, WindowPane
 
-**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, Icon, Shortcut, List, Table, DataTable, Timeline, Breadcrumb, TreeView
+**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Shortcut, List, Table, DataTable, Timeline, Breadcrumb, TreeView
 
 **Charts** — Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox
 
-**Layout** — Container, Grid (with GridContainer), Panes, AspectRatio, ScrollZone
+**Layout** — PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Panes, AspectRatio, ScrollZone
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline
 

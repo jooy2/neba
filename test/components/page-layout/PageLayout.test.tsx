@@ -285,6 +285,51 @@ describe('PageLayout', () => {
     });
   });
 
+  describe('height', () => {
+    it('is the window by default, so a short page still fills the screen', async () => {
+      const screen = await render(<PageLayout data-testid="root">Page</PageLayout>);
+
+      expect(screen.getByTestId('root').element()).toHaveClass('min-h-dvh');
+    });
+
+    // A layout that is not the page: an app shell inside a Mockup's screen, a
+    // preview, a pane of a larger tool.
+    it('fills its parent instead when it is not the page', async () => {
+      const screen = await render(
+        <PageLayout data-testid="root" height="auto" scroll="content">
+          Page
+        </PageLayout>
+      );
+      const root = screen.getByTestId('root').element();
+
+      expect(root).toHaveClass('h-full');
+      expect(root).not.toHaveClass('h-dvh');
+    });
+
+    it('takes an exact height as a floor while the page scrolls', async () => {
+      const screen = await render(
+        <PageLayout data-testid="root" height={480}>
+          Page
+        </PageLayout>
+      );
+      const root = screen.getByTestId('root').element() as HTMLElement;
+
+      expect(root.style.minHeight).toBe('480px');
+      expect(root).not.toHaveClass('min-h-dvh');
+    });
+
+    it('and as the height itself while only the content does', async () => {
+      const screen = await render(
+        <PageLayout data-testid="root" height="30rem" scroll="content">
+          Page
+        </PageLayout>
+      );
+      const root = screen.getByTestId('root').element() as HTMLElement;
+
+      expect(root.style.height).toBe('30rem');
+    });
+  });
+
   describe('the sidebars', () => {
     it('owns the open state, so a trigger anywhere can reach it', async () => {
       await page.viewport(NARROW, 800);

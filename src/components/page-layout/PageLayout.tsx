@@ -9,7 +9,7 @@ import {
   type PageLayoutSpan,
   type SidebarSide
 } from '../../internal/page-layout.js';
-import { controlSlots, cx, hasContent } from '../../internal/styles.js';
+import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 
 export type {
@@ -66,6 +66,21 @@ export interface PageLayoutProps extends React.ComponentPropsWithoutRef<'div'> {
    * @default 'page'
    */
   scroll?: PageLayoutScroll;
+  /**
+   * How tall the layout is.
+   *
+   * - `viewport` — the window's, which is what a page wants: a short page still
+   *   pushes its footer to the bottom of the screen, and with `scroll="content"`
+   *   the layout is exactly one screen tall. The default.
+   * - `auto` — its parent's, for a layout that is not the page. An app shell
+   *   inside a [Mockup]'s screen, a preview, a pane of a larger tool.
+   * - a length — a number in pixels, or any CSS length.
+   *
+   * It sets a floor while the page scrolls and an exact height while only the
+   * content does, which is the same difference `scroll` makes everywhere else.
+   * @default 'viewport'
+   */
+  height?: 'viewport' | 'auto' | number | string;
   /**
    * The window width below which the sidebars stop being columns and become
    * drawers, with a [SidebarTrigger] as the way to open them. `none` keeps them
@@ -155,6 +170,7 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(func
     headerSpan = 'full',
     footerSpan = 'full',
     scroll = 'page',
+    height = 'viewport',
     collapseBelow = 'md',
     sidebarOpen,
     defaultSidebarOpen = false,
@@ -300,6 +316,20 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(func
 
   const fills = scroll === 'content';
 
+  // A named height is a class, because both of those are exactly two class
+  // names; anything else is a length nobody could have generated one for.
+  const extent = toLength(height === 'viewport' || height === 'auto' ? undefined : height);
+  const extentClasses =
+    extent !== undefined
+      ? ''
+      : height === 'auto'
+        ? fills
+          ? 'h-full'
+          : 'min-h-full'
+        : fills
+          ? 'h-dvh'
+          : 'min-h-dvh';
+
   const headerSlot = hasContent(header) ? header : null;
   const footerSlot = hasContent(footer) ? footer : null;
 
@@ -309,16 +339,21 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(func
         ref={setRootRef}
         className={cx(
           'relative flex w-full flex-col',
-          // The whole difference between a document and a workspace. `min-h-dvh`
-          // lets the page grow and the window scroll it; `h-dvh` with the
-          // overflow taken away pins the layout to the viewport and hands the
+          // The whole difference between a document and a workspace. A floor
+          // lets the page grow and the window scroll it; an exact height with
+          // the overflow taken away pins the layout down and hands the
           // scrolling to whichever region below asks for it.
-          fills ? 'h-dvh overflow-hidden' : 'min-h-dvh',
+          fills ? 'overflow-hidden' : '',
+          extentClasses,
           headerSpan === 'full' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
           footerSpan === 'full' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : '',
           className
         )}
-        style={style}
+        style={
+          extent === undefined
+            ? style
+            : { ...(fills ? { height: extent } : { minHeight: extent }), ...style }
+        }
         {...props}
       >
         {skipLink ? (

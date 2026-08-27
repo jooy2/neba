@@ -106,7 +106,8 @@ export interface AppLogoProps extends Omit<React.ComponentPropsWithoutRef<'a'>, 
    * inset from its own corners. Turn it off for a mark that was drawn to fill
    * the tile — a favicon, a photograph.
    *
-   * No effect on `bare`, which has no tile to inset from.
+   * No effect on `bare`, which has no tile to inset from, and none on a tile
+   * showing initials, which are sized by their own type scale.
    * @default true
    */
   padded?: boolean;
@@ -262,6 +263,19 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
   const tile = shape !== 'bare';
   const artwork = hasContent(children) ? children : src ? 'image' : null;
 
+  /*
+   * How much of the tile the artwork is allowed to take.
+   *
+   * Stated as a share of the *artwork's* size rather than as padding on the
+   * tile, and that is the whole point: a percentage padding resolves against
+   * the containing block's width, which here is the lockup — so the same icon
+   * was inset by 4px on its own and by 11px with the product's name beside it,
+   * and the inset grew with the length of the name. A percentage height on the
+   * artwork resolves against the tile itself, which is the box it is actually
+   * being held off the edges of, and it stays right at any `height`.
+   */
+  const inset = tile && padded;
+
   // With no artwork the name *is* the mark: as the logotype on a bare logo, and
   // as its initials on a tile. Which of the two decides whether `showName` has
   // anything left to do — a bare logotype with the name drawn beside it would
@@ -302,7 +316,6 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
           ? cx(
               box ? '' : controlSquareClasses[size],
               shape === 'circle' ? 'rounded-full' : tileRadiusClasses[size],
-              padded ? 'p-[14%]' : '',
               tileLetterClasses[size],
               variantClasses[variant]
             )
@@ -310,7 +323,10 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
         // A glyph handed to `children` is drawn against the tile rather than
         // against a word, so it is sized off the box the way the letter is
         // instead of off the `1.2em` an icon riding on a label takes.
-        '[&_svg]:h-full [&_svg]:w-auto [&_svg]:shrink-0',
+        '[&_svg]:w-auto [&_svg]:shrink-0',
+        // Written out both ways rather than assembled, because Tailwind only
+        // ever sees class names that appear literally in the source.
+        inset ? '[&_svg]:h-[72%] [&_svg]:max-w-[72%]' : '[&_svg]:h-full [&_svg]:max-w-full',
         transitionClasses
       )}
       style={{ ...(tile ? controlSlots(color, elevation, variant) : null), ...boxStyle }}
@@ -323,7 +339,10 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
           // somewhere else: `alt` left off is what makes a screen reader read
           // the file name out instead.
           alt={imageSpeaks ? (label ?? '') : ''}
-          className="h-full w-auto max-w-full object-contain"
+          className={cx(
+            'w-auto object-contain',
+            inset ? 'h-[72%] max-w-[72%]' : 'h-full max-w-full'
+          )}
           {...imageProps}
         />
       ) : (

@@ -86,6 +86,37 @@ describe('AppLogo', () => {
       expect(mark).toHaveClass('rounded-full');
     });
 
+    // The inset used to be a percentage padding on the tile, and a percentage
+    // padding resolves against the containing block's *width* — which is the
+    // lockup, not the tile. So the same icon was held 4px off its own edges
+    // alone and 11px off them with the product's name beside it, and the inset
+    // grew with the length of the name.
+    it('insets the artwork by a share of the tile, never by padding on it', async () => {
+      const screen = await render(
+        <AppLogo name="Neba Studio Cloud" shape="app" showName data-testid="logo">
+          <svg viewBox="0 0 24 24" />
+        </AppLogo>
+      );
+
+      const mark = screen.getByTestId('logo').element().firstElementChild as HTMLElement;
+
+      expect(mark).toHaveClass('[&_svg]:h-[72%]');
+      expect(mark.className).not.toMatch(/\bp-\[\d+(\.\d+)?%\]/);
+    });
+
+    it('lets the artwork reach the tile when it is told not to inset it', async () => {
+      const screen = await render(
+        <AppLogo name="Neba" shape="app" padded={false} data-testid="logo">
+          <svg viewBox="0 0 24 24" />
+        </AppLogo>
+      );
+
+      const mark = screen.getByTestId('logo').element().firstElementChild as HTMLElement;
+
+      expect(mark).toHaveClass('[&_svg]:h-full');
+      expect(mark).not.toHaveClass('[&_svg]:h-[72%]');
+    });
+
     it('falls back to the name initials on a tile', async () => {
       const screen = await render(<AppLogo name="Acme Corp" shape="app" data-testid="logo" />);
       const mark = screen.getByTestId('logo').element().firstElementChild as HTMLElement;

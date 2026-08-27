@@ -35,6 +35,7 @@ const ELEVATION = '0 | 1 | 2 | 3';
 const ORIENTATION = "'horizontal' | 'vertical'";
 const SIDE = "'top' | 'right' | 'bottom' | 'left'";
 const POSITION = "'static' | 'sticky' | 'fixed'";
+const BREAKPOINT = "'xs' | 'sm' | 'md' | 'lg' | 'xl'";
 const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
 const JUSTIFY_CONTENT =
   "'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly' | 'stretch'";
@@ -1653,6 +1654,664 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '박스에 담기는 내용', en: 'What the box holds' }
     },
     transitionProp('transition="fade"')
+  ],
+
+  PageLayout: [
+    {
+      name: 'header',
+      type: 'ReactNode',
+      description: {
+        ko: '맨 위 바. 보통 Header',
+        en: 'The bar across the top. A Header, usually'
+      }
+    },
+    {
+      name: 'footer',
+      type: 'ReactNode',
+      description: {
+        ko: '맨 아래 시트. 보통 Footer',
+        en: 'The sheet at the end. A Footer, usually'
+      }
+    },
+    {
+      name: 'sidebar',
+      type: 'ReactNode',
+      description: {
+        ko: '앞쪽 열. 여기에 넣은 Sidebar는 자기가 어느 쪽인지 이미 알고 있으므로 side를 다시 쓸 필요가 없습니다',
+        en: 'The leading column. A Sidebar handed to this slot already knows which end it is on and needs no side of its own'
+      }
+    },
+    {
+      name: 'endSidebar',
+      type: 'ReactNode',
+      description: {
+        ko: '뒤쪽 열. 한쪽엔 탐색, 반대쪽엔 목차·인스펙터·필터를 두는 레이아웃용',
+        en: 'The trailing column, for navigation down one side and a table of contents, an inspector or a filter panel down the other'
+      }
+    },
+    {
+      name: 'headerSpan',
+      type: "'full' | 'content'",
+      default: "'full'",
+      description: {
+        ko: 'header와 sidebar 중 어느 쪽이 위쪽 모서리를 차지하는지. full은 헤더가 전체 너비를 가로지르고 사이드바가 그 아래에서 시작하는 웹사이트 배치, content는 사이드바가 창 높이를 다 쓰고 헤더가 그 사이에 놓이는 애플리케이션 배치',
+        en: 'Which of the header and the sidebars takes the top corner. full spans the whole width with the sidebars beginning underneath it — a website; content runs the sidebars the full height with the header between them — an application'
+      }
+    },
+    {
+      name: 'footerSpan',
+      type: "'full' | 'content'",
+      default: "'full'",
+      description: {
+        ko: 'footer에 대한 같은 질문. 따로 답할 수 있는 이유는, 전체 높이 레일을 쓰는 대시보드도 저작권 줄은 대개 레일 아래가 아니라 콘텐츠 아래에 두기 때문',
+        en: 'The same question for the footer, and worth answering separately: a dashboard with a full-height rail still usually wants its copyright line under the content rather than under the rail'
+      }
+    },
+    {
+      name: 'scroll',
+      type: "'page' | 'content'",
+      default: "'page'",
+      description: {
+        ko: '무엇이 스크롤되는지. page는 문서 자체가 스크롤되고 헤더는 sticky로 자리를 지킵니다. content는 레이아웃이 창 높이에 고정되고 header와 footer 사이만 스크롤됩니다',
+        en: 'What scrolls. page scrolls the document and the header holds its place with sticky; content pins the layout to the window and scrolls only the region between the bars'
+      }
+    },
+    {
+      name: 'height',
+      type: "'viewport' | 'auto' | number | string",
+      default: "'viewport'",
+      description: {
+        ko: '레이아웃의 높이. viewport는 창 높이, auto는 부모 높이(Mockup 화면 안의 앱 셸이나 미리보기용), 길이를 주면 그 값. 숫자는 픽셀',
+        en: "How tall the layout is. viewport is the window's, auto is its parent's — an app shell inside a Mockup's screen, a preview — and a length is exactly that. Numbers are pixels"
+      }
+    },
+    {
+      name: 'collapseBelow',
+      type: `${BREAKPOINT} | 'none'`,
+      default: "'md'",
+      description: {
+        ko: '이 너비보다 좁아지면 사이드바가 열이 아니라 drawer가 되고, SidebarTrigger가 그것을 여는 버튼이 됩니다. none이면 어느 너비에서도 열로 남습니다',
+        en: 'The width below which the sidebars stop being columns and become drawers, with a SidebarTrigger as the way to open them. none keeps them as columns at every width'
+      }
+    },
+    {
+      name: 'sidebarOpen',
+      type: 'boolean',
+      description: {
+        ko: '앞쪽 사이드바의 drawer가 열려 있는지. onSidebarOpenChange와 함께 쓰면 controlled',
+        en: "Whether the leading sidebar's drawer is open. Use with onSidebarOpenChange for a controlled layout"
+      }
+    },
+    {
+      name: 'defaultSidebarOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음 상태', en: 'Which state it starts in' }
+    },
+    {
+      name: 'onSidebarOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리고 닫힐 때', en: 'Fires as it opens and closes' }
+    },
+    {
+      name: 'endSidebarOpen',
+      type: 'boolean',
+      description: {
+        ko: '뒤쪽 사이드바에 대한 같은 세 가지',
+        en: 'The same three for the trailing sidebar'
+      }
+    },
+    {
+      name: 'defaultEndSidebarOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음 상태', en: 'Which state it starts in' }
+    },
+    {
+      name: 'onEndSidebarOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리고 닫힐 때', en: 'Fires as it opens and closes' }
+    },
+    {
+      name: 'skipLink',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '문서 맨 앞에 “본문으로 건너뛰기” 링크를 둡니다. focus를 받을 때만 그려지므로 눈으로 보는 독자에게는 비용이 없습니다',
+        en: 'Puts a "Skip to content" link first in the document, drawn only while it holds the focus — so it costs a sighted reader nothing'
+      }
+    },
+    {
+      name: 'skipLabel',
+      type: 'string',
+      description: {
+        ko: '그 링크의 문구. 기본값은 locale의 표현',
+        en: "What that link says. Defaults to the locale's word for it"
+      }
+    },
+    {
+      name: 'mainId',
+      type: 'string',
+      default: "'main'",
+      description: {
+        ko: 'skip link가 향하는 id. main에 붙습니다',
+        en: 'The id the skip link jumps to, put on the main'
+      }
+    },
+    {
+      name: 'mainProps',
+      type: "Omit<ComponentPropsWithoutRef<'main'>, 'id' | 'children'>",
+      description: {
+        ko: 'main에 더 넘길 것들 — className, aria-label',
+        en: 'Anything else the main needs — a className, an aria-label'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '레이아웃이 쓰는 단어의 언어. 안쪽 Sidebar와 SidebarTrigger가 물려받으므로 페이지당 한 번만 씁니다',
+        en: "The language the layout's own words are in. Inherited by every Sidebar and SidebarTrigger inside it, so it is written once per page"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'skip link와 focus 링이 띠는 색 계열. 레이아웃 자체는 아무 면도 그리지 않습니다',
+        en: 'The colour family the skip link and the focus rings light up in. The layout itself draws no surface'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '페이지. main 안에 그려집니다', en: 'The page. Rendered inside the main' }
+    }
+  ],
+
+  Header: [
+    {
+      name: 'brand',
+      type: 'ReactNode',
+      description: {
+        ko: '앞쪽 자리 — 로고, 제품 이름, 모든 페이지에서 같은 것. 보통 AppLogo',
+        en: "The leading slot: the logo, the product's name, the thing that is the same on every page. An AppLogo, usually"
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '가운데 자리 — 대개 탐색', en: 'The middle slot, usually the navigation' }
+    },
+    {
+      name: 'actions',
+      type: 'ReactNode',
+      description: {
+        ko: '뒤쪽 자리 — 계정 메뉴, 테마 전환, 주요 행동. 끝에 붙여 배치되므로 버튼 여러 개를 감쌀 필요가 없습니다',
+        en: 'The trailing slot: the account menu, the theme switch, the call to action. Laid out end-aligned, so a row of buttons needs no wrapper'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'start'",
+      shared: true,
+      description: {
+        ko: '가운데 자리가 어디에 놓이는지. center는 남는 공간이 아니라 바 자체의 중심선에 놓습니다 — 그러려고 양끝에 같은 몫을 줍니다',
+        en: "Where the middle slot sits. center puts it on the bar's own midline rather than in the space left over, which is what giving both ends an equal share is for"
+      }
+    },
+    {
+      name: 'position',
+      type: POSITION,
+      default: "'sticky'",
+      shared: true,
+      description: {
+        ko: '스크롤 속에서 바가 놓이는 방식. sticky는 흐름 안에 남은 채 창 위에 붙고, fixed는 흐름에서 빠져나갑니다(PageLayout이 그 높이를 대신 비워 둡니다)',
+        en: "How the bar sits in the page's scroll. sticky stays in the flow while holding the top of the window; fixed leaves the flow, and a PageLayout reserves its height"
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      elevation: '0',
+      variantDescription: {
+        ko: '면의 무게. 바는 색으로 물들지 않습니다 — 위에 놓이는 것들이 자기 색을 갖고 오기 때문',
+        en: 'Weight of the sheet. The bar is never dyed, because what is on it arrives with colours of its own'
+      },
+      sizeDescription: {
+        ko: '바의 최소 높이와 거터. Box에서처럼 시트의 크기이며 타입 스케일은 건드리지 않습니다',
+        en: "The bar's height floor and gutter. As on Box this is the size of the sheet and never touches the type scale"
+      }
+    }),
+    {
+      name: 'divider',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '아래 가장자리의 헤어라인. 스크롤되는 내용이 계속 지나가는 바이므로 기본으로 켜져 있습니다',
+        en: 'A hairline along the bottom edge. On by default: a bar pinned over a scrolling page has content passing underneath it at every moment'
+      }
+    },
+    {
+      name: 'maxWidth',
+      type: `${SIZE} | 'none'`,
+      default: "'none'",
+      description: {
+        ko: '시트는 창을 가로지른 채, 안쪽 줄만 이 폭으로 묶어 가운데 놓습니다. Container와 같은 사다리',
+        en: 'Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder Container uses'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '양쪽 거터', en: 'The gutter down each side of the row' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '랜드마크의 이름. 한 페이지에 header가 둘 이상일 때 써 둘 만합니다',
+        en: 'The name the landmark is announced by. Worth writing when a page has more than one header in it'
+      }
+    },
+    renderProp('render={<div />}')
+  ],
+
+  Footer: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '안에 들어가는 모든 것. 링크 열, 저작권 줄, 로고 — 컴포넌트가 짐작할 수 없는 것들이라 자리를 나누지 않습니다',
+        en: 'Everything in it — columns of links, a copyright line, a logo. None of it something a component could guess at, which is why this one has slots for nothing'
+      }
+    },
+    {
+      name: 'position',
+      type: POSITION,
+      default: "'static'",
+      shared: true,
+      description: {
+        ko: 'Header와 반대되는 기본값. 푸터는 스크롤해서 닿는 문서의 끝입니다. sticky와 fixed는 손에 닿아 있어야 하는 바용',
+        en: "The opposite default from Header's: a footer is the thing at the end of the document, reached by scrolling to it. sticky and fixed are for the bar that has to stay in reach"
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      elevation: '0',
+      variantDescription: {
+        ko: '면의 무게. 바는 색으로 물들지 않습니다',
+        en: 'Weight of the sheet. The bar is never dyed'
+      },
+      sizeDescription: {
+        ko: '거터와 위아래 여백. Box에서처럼 시트의 크기입니다',
+        en: 'The gutter and the air above and below. As on Box this is the size of the sheet'
+      }
+    }),
+    {
+      name: 'divider',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '위 가장자리의 헤어라인. 위에는 내용이 있고 아래에는 아무것도 없는 유일한 시트이므로, 이 선이 문서가 끝났다고 말하는 전부입니다',
+        en: 'A hairline along the top edge. A footer is the one sheet with content directly above it and nothing below, so the line is the whole of what says the document ended'
+      }
+    },
+    {
+      name: 'maxWidth',
+      type: `${SIZE} | 'none'`,
+      default: "'none'",
+      description: {
+        ko: '시트는 창을 가로지른 채, 안쪽 내용만 이 폭으로 묶어 가운데 놓습니다',
+        en: 'Holds the content to a measure and centres it while the sheet still spans the window'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '거터와 위아래 여백', en: 'The gutter and the air above and below' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '랜드마크의 이름. 한 페이지에 footer가 둘 이상일 때',
+        en: 'The name the landmark is announced by. Worth writing when a page has more than one footer in it'
+      }
+    },
+    renderProp('render={<div />}')
+  ],
+
+  Sidebar: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '안에 들어가는 것 — 탐색, 필터 패널, 목차',
+        en: 'Everything in it: a nav, a filter panel, a table of contents'
+      }
+    },
+    {
+      name: 'side',
+      type: "'start' | 'end'",
+      default: "'start'",
+      shared: true,
+      description: {
+        ko: '어느 끝을 차지하는지. 물리적이 아니라 논리적이라 RTL에서 뒤집힙니다. PageLayout 안에서는 어느 자리에 넘겼는지로 이미 정해집니다',
+        en: 'Which end of the band it takes. Logical rather than physical, so it flips under RTL. Inside a PageLayout this is already decided by which slot it was handed to'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      default: 'size',
+      description: {
+        ko: '열의 너비. 숫자는 픽셀. resizable일 때는 시작 너비이며, 드래그가 이 값을 덮어씁니다',
+        en: 'How wide the column is. Numbers are pixels. With resizable it is only the width the sidebar starts at — dragging writes over it'
+      }
+    },
+    {
+      name: 'resizable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '안쪽 가장자리를 끌어 너비를 바꿀 수 있게 합니다. 키보드에서는 좌우 화살표',
+        en: "Lets the reader drag the inner edge to change the column's width. Arrow keys do the same from the keyboard"
+      }
+    },
+    {
+      name: 'minWidth',
+      type: 'number | string',
+      default: '160',
+      description: { ko: '드래그로 좁힐 수 있는 한계', en: 'How narrow it may be dragged' }
+    },
+    {
+      name: 'maxWidth',
+      type: 'number | string',
+      default: '480',
+      description: { ko: '넓힐 수 있는 한계', en: 'And how wide' }
+    },
+    {
+      name: 'onResize',
+      type: '(width: number) => void',
+      description: {
+        ko: '끄는 동안 매 걸음, 픽셀 단위로',
+        en: 'Fires with the width in pixels while the edge is being dragged'
+      }
+    },
+    {
+      name: 'onResizeEnd',
+      type: '(width: number) => void',
+      description: {
+        ko: '놓을 때 한 번. 너비를 저장해 둘 자리',
+        en: 'Fires once, with the same number, when it is let go'
+      }
+    },
+    {
+      name: 'collapseBelow',
+      type: `${BREAKPOINT} | 'none'`,
+      default: 'PageLayout',
+      description: {
+        ko: '이 너비보다 좁아지면 열이 아니라 drawer가 됩니다. PageLayout의 값을 물려받고, 밖에서는 none — 되돌릴 방법이 없는 채로 접히면 독자가 사이드바를 잃기 때문',
+        en: "The width below which it stops being a column and becomes a drawer. Defaults to the PageLayout's own, and to none outside one: a sidebar that collapsed with nothing able to bring it back is a sidebar the reader has lost"
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: 'drawer가 열려 있는지. 접힌 뒤에만 의미가 있습니다. PageLayout 안에서는 레이아웃이 이 상태를 가지므로 거기서 다루세요',
+        en: 'Whether the drawer is open — only meaningful once it has collapsed. Inside a PageLayout the layout owns this, so control it there'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '레이아웃 밖에서 쓸 때의 처음 상태',
+        en: 'Which state it starts in, for an uncontrolled standalone sidebar'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '열리고 닫힐 때. 어느 쪽이 상태를 갖든 항상 호출됩니다',
+        en: 'Fires as it opens and closes, whichever of the two owns the state'
+      }
+    },
+    {
+      name: 'sticky',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '페이지가 지나가는 동안 자리를 지키는지. 헤더 아래에서 시작해 남은 창 높이만큼인 sticky 열이 됩니다',
+        en: 'Whether the column holds its place while the page scrolls past it — a sticky column as tall as what is left of the window under the header'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: 'drawer일 때만 그려지는 제목. 열에는 주위의 페이지가 그것이 무엇인지 말해 주지만, 페이지를 덮은 패널에는 없습니다',
+        en: 'The heading, drawn only while the sidebar is a drawer. A column has the page around it to say what it is; a panel that has covered the page does not'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      elevation: '0',
+      variantDescription: {
+        ko: '면의 무게. 패널은 색으로 물들지 않습니다',
+        en: 'Weight of the sheet. The panel is never dyed'
+      },
+      sizeDescription: {
+        ko: '기본 너비와 안쪽 여백',
+        en: "The panel's default width and the air around its content"
+      }
+    }),
+    {
+      name: 'divider',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '내용을 마주보는 안쪽 가장자리의 헤어라인. 바깥쪽은 창에 닿아 있어 나눌 것이 없습니다',
+        en: 'A hairline down the inner edge, the one facing the content. The outer edge is against the window, where there is nothing to be separated from'
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '안쪽 여백', en: 'The gutter and the air above and below the content' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "locale('Sidebar')",
+      description: {
+        ko: '영역의 이름. 사이드바가 둘인 페이지는 반드시 써야 합니다 — 아니면 스크린 리더가 “complementary”라는 영역 두 개를 내놓습니다',
+        en: 'The name the region is announced by. A page with two sidebars must have one, or a screen reader offers two regions called "complementary"'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: 'PageLayout',
+      description: {
+        ko: '사이드바가 쓰는 단어의 언어. PageLayout 안에서는 물려받습니다',
+        en: "Which language the sidebar's own words are in. Inherited from the PageLayout when there is one"
+      }
+    }
+  ],
+
+  SidebarTrigger: [
+    {
+      name: 'side',
+      type: "'start' | 'end'",
+      default: "'start'",
+      shared: true,
+      description: {
+        ko: '레이아웃의 두 사이드바 중 어느 쪽을 여는지',
+        en: "Which of the layout's two sidebars it opens"
+      }
+    },
+    {
+      name: 'collapseBelow',
+      type: `${BREAKPOINT} | 'none'`,
+      default: 'PageLayout',
+      description: {
+        ko: '버튼이 나타나는 너비. 사이드바가 접히는 그 너비이며, PageLayout에서 정하는 것이 맞습니다',
+        en: 'The width below which the button appears — the same one the sidebar collapses at. Inherited from the PageLayout, which is where it should be set'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      default: '햄버거',
+      description: {
+        ko: '글리프. 기본은 세 줄',
+        en: 'The glyph. Three lines, unless something else is given'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      default: "locale('Open sidebar')",
+      description: {
+        ko: '하는 일을 말로. 기본값은 열림 상태에 따라 “사이드바 열기”와 “사이드바 닫기”',
+        en: 'What it does, in words. Defaults to the locale\'s "Open sidebar" and "Close sidebar", whichever is true'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: 'PageLayout',
+      description: { ko: '그 단어의 언어', en: 'Which language that word is in' }
+    }
+  ],
+
+  AppLogo: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '마크를 마크업으로. 대개 인라인 svg이며, src보다 우선합니다 — 문서의 일부가 된 마크는 페이지의 색을 따르고, 요청이 하나 줄고, 늦게 도착할 수 없습니다',
+        en: "The artwork as markup — an inline svg, usually. It beats src: a mark that is part of the document takes the page's own colours, needs no second request, and cannot arrive late"
+      }
+    },
+    {
+      name: 'src',
+      type: 'string',
+      description: {
+        ko: '마크를 이미지로. 로고 파일에는 제품 이름이 들어 있는 경우가 많은데, shape의 기본값이 bare인 이유이자 name을 옆에 또 그리지 않고 읽어 주기만 하는 이유입니다',
+        en: 'The artwork as an image. A logo file very often has the product\'s name set into it, which is what shape="bare" is the default for and why name is read out rather than drawn a second time'
+      }
+    },
+    {
+      name: 'srcSet',
+      type: 'string',
+      description: {
+        ko: '다른 해상도의 후보들. img에서와 같습니다',
+        en: 'Candidate images at other resolutions, as on any img'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '제품 이름. 한 prop이 세 가지 일을 합니다 — 마크의 이름이 되고, 마크가 아예 없으면 로고타이프로 그려지고, 타일에서는 이니셜의 출처가 됩니다',
+        en: "The product's name. One prop doing three jobs: it names the artwork, it is drawn as the logotype when there is no artwork at all, and its initials are what a tile falls back to"
+      }
+    },
+    {
+      name: 'alt',
+      type: 'string',
+      default: 'name',
+      description: {
+        ko: '볼 수 없는 독자에게 마크가 말하는 것. 로고는 제품을 뜻하므로 대개 name이 정답입니다',
+        en: 'What the artwork says for a reader who cannot see it. Almost always name, since a logo means the product'
+      }
+    },
+    {
+      name: 'initials',
+      type: 'string',
+      default: 'name에서 유도',
+      description: { ko: '타일 위 글자를 직접 씁니다', en: 'The letters on a tile, written out' }
+    },
+    {
+      name: 'showName',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '마크 옆에 이름을 그립니다. 그린 순간부터 그 글자가 접근성 이름이 되므로 이름이 두 번 읽히지 않습니다',
+        en: 'Draws the name beside the artwork. What is drawn *is* the accessible name from then on, so the name stops being read out twice'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'bare' | 'app' | 'circle'",
+      default: "'bare'",
+      description: {
+        ko: '마크를 두르는 방식. bare는 준 그대로(배경도 자르기도 여백도 없음), app은 모서리를 깎은 채워진 타일 안에 넣은 앱 아이콘, circle은 같은 타일을 둥글게',
+        en: 'How the artwork is framed. bare draws it as it was given — no plate, no crop, no padding; app is an app icon, a filled tile with the artwork inset and the corners cut off; circle is the same tile, round'
+      }
+    },
+    ...sharedProps({
+      variant: "'solid'",
+      size: "'md'",
+      elevation: '0',
+      variantDescription: {
+        ko: '마크 뒤 타일의 무게. bare에서는 타일이 없으므로 아무 일도 하지 않습니다',
+        en: 'Weight of the tile behind the artwork. Nothing at all on bare, which draws no tile'
+      },
+      sizeDescription: {
+        ko: '마크의 높이 — 컨트롤 높이 사다리라, 헤더에서 로고와 옆의 버튼이 같은 높이가 됩니다. bare는 높이만 정하고 너비는 마크의 비율대로',
+        en: "How tall the mark is — the control heights, so a logo and the button beside it in a header are the same height. On bare only the height is set and the width follows the artwork's own proportions"
+      }
+    }),
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '앱 아이콘의 글리프처럼 마크를 타일 가장자리에서 안쪽으로 들입니다. 타일을 꽉 채우도록 그린 마크(파비콘, 사진)면 끕니다',
+        en: "Insets the artwork from the tile's edge, the way an app icon's glyph is. Turn it off for a mark drawn to fill the tile — a favicon, a photograph"
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: 'size를 대신하는 정확한 높이. 숫자는 픽셀. 브랜드 아트워크는 누군가 고른 높이로 그려져 있고, 그것을 사다리의 가까운 칸으로 반올림하면 옆 글자와 반 픽셀씩 어긋납니다',
+        en: "An exact height, overriding size. Numbers are pixels: a brand's artwork is drawn at a height somebody chose, and rounding it to the nearest step of a ladder is how a logo ends up half a pixel off the type beside it"
+      }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '전체를 링크로 만듭니다. 헤더의 로고는 거의 언제나 첫 페이지로 돌아가는 길입니다',
+        en: 'Makes the whole lockup a link. A logo in a header is nearly always the way back to the front page'
+      }
+    },
+    {
+      name: 'imageProps',
+      type: "Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'srcSet' | 'alt'>",
+      description: {
+        ko: 'img에 더 넘길 것들 — loading, decoding, crossOrigin',
+        en: 'Anything else the img needs — loading, decoding, crossOrigin'
+      }
+    },
+    renderProp('render={<h1 />}')
   ],
 
   Container: [

@@ -14,6 +14,7 @@ import {
   AnimateSlide,
   AnimateTyping,
   AnimateZoom,
+  AppLogo,
   AreaChart,
   AspectRatio,
   Avatar,
@@ -49,9 +50,11 @@ import {
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
+  Footer,
   Grid,
   GridContainer,
   HeatmapChart,
+  Header,
   Highlight,
   Icon,
   IconButton,
@@ -67,6 +70,7 @@ import {
   OtpField,
   Overlay,
   Pagination,
+  PageLayout,
   Pane,
   Panes,
   PieChart,
@@ -85,6 +89,7 @@ import {
   SegmentedButton,
   Select,
   Shortcut,
+  Sidebar,
   Skeleton,
   Slider,
   Sparkline,
@@ -616,6 +621,86 @@ const GROUPS: Group[] = [
     },
     entries: [
       {
+        name: 'PageLayout',
+        summary: {
+          ko: 'header·footer·사이드바를 자리에 놓는 페이지의 뼈대',
+          en: "A page's skeleton: header, footer and sidebars, each in its place"
+        },
+        path: '/components/layout/page-layout',
+        preview: (
+          <div className="h-32 w-full max-w-56 overflow-hidden rounded-lg border border-(--neba-border)">
+            <PageLayout
+              height="auto"
+              scroll="content"
+              collapseBelow="none"
+              skipLink={false}
+              mainId="gallery-page-layout"
+              header={
+                <Header size="xs" padded brand={<AppLogo name="Neba" size="xs" showName />} />
+              }
+              sidebar={<Sidebar size="xs" width={64} label="Sections" />}
+            >
+              <div className="p-2 text-[0.6875rem] text-(--neba-muted-fg)">main</div>
+            </PageLayout>
+          </div>
+        )
+      },
+      {
+        name: 'Header',
+        summary: {
+          ko: '로고·탐색·행동으로 나뉜 맨 위 바',
+          en: 'The bar at the top: brand, navigation, actions'
+        },
+        path: '/components/layout/header',
+        preview: (
+          <div className="w-full max-w-56">
+            <Header
+              size="xs"
+              position="static"
+              className="rounded-lg"
+              brand={<AppLogo name="Neba" size="xs" showName />}
+              actions={<Chip size="xs">Beta</Chip>}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'Footer',
+        summary: {
+          ko: '문서가 끝났다고 말하는 맨 아래 시트',
+          en: 'The sheet at the end that says the document is over'
+        },
+        path: '/components/layout/footer',
+        preview: (
+          <div className="w-full max-w-56">
+            <Footer size="xs" className="rounded-lg">
+              <Typography level="caption" color="secondary">
+                © 2026 Neba
+              </Typography>
+            </Footer>
+          </div>
+        )
+      },
+      {
+        name: 'Sidebar',
+        summary: {
+          ko: '내용 옆의 열, 창이 좁아지면 drawer',
+          en: 'A column beside the content, a drawer once the window is narrow'
+        },
+        path: '/components/layout/sidebar',
+        preview: (
+          <div className="flex h-28 w-full max-w-56 overflow-hidden rounded-lg border border-(--neba-border)">
+            <Sidebar size="xs" collapseBelow="none" width={88} label="Sections">
+              <Typography level="caption">Overview</Typography>
+              <Typography level="caption" color="secondary">
+                Components
+              </Typography>
+            </Sidebar>
+            <div className="flex-1 p-2 text-[0.6875rem] text-(--neba-muted-fg)">content</div>
+          </div>
+        )
+      },
+      {
         name: 'Container',
         summary: {
           ko: '좌우 여백, 그리고 원한다면 본문 폭',
@@ -1024,6 +1109,21 @@ const GROUPS: Group[] = [
             <Typography level="overline">Changelog</Typography>
             <Typography level="h4">Cut acrylic</Typography>
             <Typography level="caption">Updated 2 minutes ago</Typography>
+          </div>
+        )
+      },
+      {
+        name: 'AppLogo',
+        summary: {
+          ko: '이미지든 글자든, 제품의 마크를 제대로 그리는 것',
+          en: "A product's mark, whether it is a file or a single letter"
+        },
+        path: '/components/display/app-logo',
+        preview: (
+          <div className="flex items-center gap-4">
+            <AppLogo name="Neba" />
+            <AppLogo name="Neba" shape="app" />
+            <AppLogo name="Neba" shape="circle" color="secondary" />
           </div>
         )
       },

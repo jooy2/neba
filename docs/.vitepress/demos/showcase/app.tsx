@@ -8,6 +8,7 @@ import {
   AnimateLighting,
   AnimateMarquee,
   AnimateTyping,
+  AppLogo,
   AreaChart,
   AspectRatio,
   Avatar,
@@ -44,9 +45,11 @@ import {
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
+  Footer,
   Grid,
   GridContainer,
   HeatmapChart,
+  Header,
   Highlight,
   Icon,
   IconButton,
@@ -62,6 +65,7 @@ import {
   NumberField,
   OtpField,
   Overlay,
+  PageLayout,
   Pagination,
   Pane,
   Panes,
@@ -100,6 +104,8 @@ import {
   TreeItem,
   TreeView,
   ToastProvider,
+  Sidebar,
+  SidebarTrigger,
   Toolbar,
   Tooltip,
   Typography,
@@ -575,6 +581,64 @@ function ShowcaseBody() {
             <BreadcrumbItem href="#repo">neba</BreadcrumbItem>
             <BreadcrumbItem>Deployments</BreadcrumbItem>
           </Breadcrumb>
+        </section>
+
+        {/* The page's own skeleton, drawn inside a frame because the real one
+          takes the whole window: the four regions a document is divided into,
+          and the landmarks that come with them. */}
+        <section className="flex flex-col gap-3">
+          <Caption>PageLayout · Header · Sidebar · Footer · AppLogo</Caption>
+          <div className="h-72 w-full overflow-hidden rounded-(--neba-radius-md) border border-(--neba-border)">
+            <PageLayout
+              height="auto"
+              scroll="content"
+              collapseBelow="sm"
+              skipLink={false}
+              mainId="showcase-page-layout"
+              header={
+                <Header
+                  size="sm"
+                  brand={
+                    <>
+                      <SidebarTrigger size="sm" />
+                      <AppLogo name="Neba Cloud" size="sm" shape="app" showName>
+                        <LogoIcon />
+                      </AppLogo>
+                    </>
+                  }
+                  actions={
+                    <Button size="xs" variant="outline">
+                      Deploy
+                    </Button>
+                  }
+                />
+              }
+              sidebar={
+                <Sidebar size="sm" width={168} label="Sections" title="Sections">
+                  <List variant="text" size="sm" density="compact">
+                    <ListItem selected>Overview</ListItem>
+                    <ListItem>Deployments</ListItem>
+                    <ListItem>Settings</ListItem>
+                  </List>
+                </Sidebar>
+              }
+              footer={
+                <Footer size="sm">
+                  <Typography level="caption" color="secondary">
+                    © 2026 Neba Cloud
+                  </Typography>
+                </Footer>
+              }
+            >
+              <div className="flex flex-col gap-2 p-4">
+                <Typography level="h6">Overview</Typography>
+                <Typography color="secondary">
+                  Header, sidebar and footer are slots; this is the main landmark between them.
+                  Narrow the window and the column becomes a drawer.
+                </Typography>
+              </div>
+            </PageLayout>
+          </div>
         </section>
 
         {/* The controls that run a screen, all on one baseline. */}
