@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
-import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   radiusClasses,
@@ -162,11 +162,11 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(carouselMessages, locale);
   const nameSlide =
     slideLabel ??
     ((index: number, total: number) =>
-      fillMessage(messages.carousel.slide, { index: String(index), total: String(total) }));
+      fillMessage(messages.slide, { index: String(index), total: String(total) }));
 
   // `toArray` is what drops the `null`s and `false`s a conditional slide leaves
   // behind, and what gives every remaining child a stable key.
@@ -284,7 +284,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
       ref={ref}
       role="region"
       aria-roledescription="carousel"
-      aria-label={label ?? messages.carousel.label}
+      aria-label={label ?? messages.label}
       className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
       style={{ ...surfaceSlots(color, elevation), ...style }}
       // Hover and focus both stop the timer. The second one is the important
@@ -312,7 +312,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
           // have been.
           tabIndex={0}
           role="group"
-          aria-label={label ?? messages.carousel.label}
+          aria-label={label ?? messages.label}
           className={[
             'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth',
             'motion-reduce:scroll-auto',
@@ -355,7 +355,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
               color={color}
               density={density}
               elevation={1}
-              label={previousLabel ?? messages.carousel.previous}
+              label={previousLabel ?? messages.previous}
               disabled={!loop && atStart}
               className="pointer-events-auto"
               // Drawn pointing down and turned, which is the one allowance the
@@ -375,7 +375,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
               color={color}
               density={density}
               elevation={1}
-              label={nextLabel ?? messages.carousel.next}
+              label={nextLabel ?? messages.next}
               disabled={!loop && atEnd}
               className="pointer-events-auto"
               icon={

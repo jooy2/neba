@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages, windowMessages } from '../../internal/i18n.js';
 import { cx, hasContent, iconClasses, surfaceClasses } from '../../internal/styles.js';
 import {
   WindowControls,
@@ -296,7 +296,8 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(windowMessages, locale);
+  const actionText = useMessages(actionMessages, locale);
   const chrome = windowChrome(os);
   const metrics = windowMetrics(os, size);
   const titleId = React.useId();
@@ -612,10 +613,10 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
   }
 
   const labels = {
-    minimize: minimizeLabel ?? messages.window.minimize,
-    maximize: maximizeLabel ?? messages.window.maximize,
-    restore: restoreLabel ?? messages.window.restore,
-    close: closeLabel ?? messages.action.close
+    minimize: minimizeLabel ?? messages.minimize,
+    maximize: maximizeLabel ?? messages.maximize,
+    restore: restoreLabel ?? messages.restore,
+    close: closeLabel ?? actionText.close
   };
 
   const barControls = (
@@ -837,7 +838,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
                     // the seven extra directions are worth.
                     role={corner ? 'button' : undefined}
                     tabIndex={corner ? 0 : undefined}
-                    aria-label={corner ? (resizeLabel ?? messages.window.resize) : undefined}
+                    aria-label={corner ? (resizeLabel ?? messages.resize) : undefined}
                     aria-hidden={corner ? undefined : 'true'}
                     className={cx(
                       'absolute z-10 touch-none',

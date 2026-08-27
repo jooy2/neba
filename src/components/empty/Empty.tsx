@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
 import { transitionProps } from '../../internal/animate.js';
-import { useMessages } from '../../internal/i18n.js';
+import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import {
   hasContent,
   iconClasses,
@@ -200,8 +200,8 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
   },
   ref
 ) {
-  const messages = useMessages(locale);
-  const heading = title === undefined ? messages.empty.title : title;
+  const messages = useMessages(emptyMessages, locale);
+  const heading = title === undefined ? messages.title : title;
   const glyph = icon === undefined ? <TrayIcon /> : icon;
   const animation = transitionProps(transition);
   const titled = hasContent(heading);

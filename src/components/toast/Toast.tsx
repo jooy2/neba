@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box.js';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon, severityIcons } from '../../internal/icons.js';
 import {
   controlSlots,
@@ -378,7 +378,7 @@ export function ToastProvider({
   closeLabel,
   children
 }: ToastProviderProps) {
-  const messages = useMessages(locale);
+  const messages = useMessages(actionMessages, locale);
 
   return (
     <BaseUIToast.Provider timeout={timeout} limit={limit}>
@@ -390,7 +390,7 @@ export function ToastProvider({
         color={color}
         density={density}
         width={width}
-        closeLabel={closeLabel ?? messages.action.close}
+        closeLabel={closeLabel ?? messages.close}
       />
     </BaseUIToast.Provider>
   );

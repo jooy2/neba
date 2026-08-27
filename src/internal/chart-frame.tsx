@@ -43,7 +43,7 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
-import { useMessages } from './i18n.js';
+import { emptyMessages, useMessages } from './i18n.js';
 import { cx, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
@@ -822,7 +822,7 @@ export function CartesianChart({
 }: CartesianProps) {
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
-  const messages = useMessages(locale);
+  const messages = useMessages(emptyMessages, locale);
   const tableId = React.useId();
 
   const visibility = useVisibility(series);
@@ -1404,7 +1404,7 @@ export function CartesianChart({
               metaTextClasses[size]
             )}
           >
-            {empty ?? messages.empty.title}
+            {empty ?? messages.title}
           </div>
         ) : width > 0 ? (
           <svg

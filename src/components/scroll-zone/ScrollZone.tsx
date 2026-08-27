@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import { spacingValue } from '../../internal/grid.js';
-import { useMessages } from '../../internal/i18n.js';
+import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
@@ -200,7 +200,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(scrollMessages, locale);
   const horizontal = orientation === 'horizontal';
   const rows = Math.max(1, Math.round(lines));
   const items = Math.max(1, Math.round(step));
@@ -514,11 +514,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
         color={color}
         density={density}
         elevation={1}
-        label={
-          forward
-            ? (nextLabel ?? messages.scroll.next)
-            : (previousLabel ?? messages.scroll.previous)
-        }
+        label={forward ? (nextLabel ?? messages.next) : (previousLabel ?? messages.previous)}
         disabled={!available}
         className="pointer-events-auto"
         // Drawn pointing down and turned, which is the one allowance the

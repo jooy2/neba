@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from '../button/Button.js';
-import { useMessages } from '../../internal/i18n.js';
+import { spoilerMessages, useMessages } from '../../internal/i18n.js';
 import { boxPaddingClasses, boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
   hasContent,
@@ -169,7 +169,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function S
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(spoilerMessages, locale);
   const contentId = React.useId();
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultRevealed);
@@ -183,7 +183,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function S
     onRevealedChange?.(next);
   };
 
-  const notice = description === false ? null : (description ?? messages.spoiler.notice);
+  const notice = description === false ? null : (description ?? messages.notice);
 
   return (
     <div
@@ -249,7 +249,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function S
               aria-expanded={false}
               aria-controls={contentId}
             >
-              {label ?? messages.spoiler.reveal}
+              {label ?? messages.reveal}
             </Button>
           )}
         </div>
@@ -278,7 +278,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function S
             aria-expanded
             aria-controls={contentId}
           >
-            {hideLabel ?? messages.spoiler.hide}
+            {hideLabel ?? messages.hide}
           </Button>
         </div>
       ) : null}

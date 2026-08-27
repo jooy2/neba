@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StarIcon, StarOutlineIcon } from '../../internal/icons.js';
-import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { fillMessage, ratingMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlSlots,
   focusWithinRingClasses,
@@ -145,7 +145,7 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(ratingMessages, locale);
   const generatedName = React.useId();
   const name = nameProp ?? generatedName;
 
@@ -168,12 +168,12 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
       valueLabel
         ? valueLabel(score, stars)
         : score <= 0
-          ? messages.rating.empty
+          ? messages.empty
           : // `String` rather than `Intl.NumberFormat`: a score is a small
             // number with at most one decimal, and a format that depends on the
             // runtime's own locale is text that differs between the server that
             // rendered it and the browser that hydrated it.
-            fillMessage(messages.rating.value, { value: String(score), max: String(stars) }),
+            fillMessage(messages.value, { value: String(score), max: String(stars) }),
     [valueLabel, stars, messages]
   );
 
@@ -318,7 +318,7 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
     <div
       ref={ref}
       role="radiogroup"
-      aria-label={label ?? messages.rating.label}
+      aria-label={label ?? messages.label}
       aria-disabled={disabled || undefined}
       aria-required={required || undefined}
       className={classNames}

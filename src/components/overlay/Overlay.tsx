@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
-import { useMessages } from '../../internal/i18n.js';
+import { overlayMessages, useMessages } from '../../internal/i18n.js';
 import { surfaceSlots } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaSize } from '../../types.js';
 
@@ -153,7 +153,7 @@ export function Overlay({
   children,
   ...props
 }: OverlayProps) {
-  const messages = useMessages(locale);
+  const messages = useMessages(overlayMessages, locale);
 
   return (
     <BaseUIDialog.Root
@@ -190,7 +190,7 @@ export function Overlay({
           ].join(' ')}
         >
           <BaseUIDialog.Popup
-            aria-label={label ?? messages.overlay.label}
+            aria-label={label ?? messages.label}
             className={[
               'flex max-h-full max-w-full flex-col items-center justify-center',
               '[outline:none]',

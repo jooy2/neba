@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
   hasContent,
@@ -314,7 +314,7 @@ export function Drawer({
   children,
   ...props
 }: DrawerProps) {
-  const messages = useMessages(locale);
+  const messages = useMessages(actionMessages, locale);
   const overlay = mode === 'overlay';
   const along = side === 'left' || side === 'right';
   const showCloseButton = showClose ?? overlay;
@@ -375,7 +375,7 @@ export function Drawer({
           {showCloseButton ? (
             overlay ? (
               <BaseUIDialog.Close
-                aria-label={closeLabel ?? messages.action.close}
+                aria-label={closeLabel ?? messages.close}
                 className={closeButtonClasses}
               >
                 <CloseIcon />
@@ -383,7 +383,7 @@ export function Drawer({
             ) : (
               <button
                 type="button"
-                aria-label={closeLabel ?? messages.action.close}
+                aria-label={closeLabel ?? messages.close}
                 className={closeButtonClasses}
                 onClick={() => onOpenChange?.(false)}
               >

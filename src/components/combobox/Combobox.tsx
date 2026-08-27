@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Combobox as BaseUICombobox } from '@base-ui/react/combobox';
 import { Field } from '@base-ui/react/field';
 import { Chip } from '../chip/Chip.js';
-import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { actionMessages, comboboxMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons.js';
 import {
   chipRemoveClasses,
@@ -301,9 +301,10 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   style,
   ...props
 }: ComboboxProps<Multiple>) {
-  const messages = useMessages(locale);
+  const messages = useMessages(comboboxMessages, locale);
+  const actions = useMessages(actionMessages, locale);
   const nameRemove =
-    removeLabel ?? ((chip: string) => fillMessage(messages.combobox.remove, { label: chip }));
+    removeLabel ?? ((chip: string) => fillMessage(messages.remove, { label: chip }));
 
   const hasError = hasContent(error);
   const isInvalid = invalid ?? hasError;
@@ -552,7 +553,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
 
           {clearable && !readOnly ? (
             <BaseUICombobox.Clear
-              aria-label={clearLabel ?? messages.action.clear}
+              aria-label={clearLabel ?? actions.clear}
               className={adornmentClasses}
             >
               <CloseIcon />
@@ -586,7 +587,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
               style={surfaceSlots(family, 3)}
             >
               <BaseUICombobox.Empty className="px-2 py-1.5 text-(--neba-muted-fg) empty:hidden">
-                {emptyMessage ?? messages.combobox.empty}
+                {emptyMessage ?? messages.empty}
               </BaseUICombobox.Empty>
 
               <BaseUICombobox.List>

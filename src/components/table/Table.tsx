@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box.js';
-import { useMessages } from '../../internal/i18n.js';
+import { tableMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
   metaTextClasses,
@@ -175,7 +175,7 @@ export function Table<Row>({
   className,
   ...boxProps
 }: TableProps<Row>) {
-  const messages = useMessages(locale);
+  const messages = useMessages(tableMessages, locale);
   const padX = paddingXValues[density][size];
   const padY = cellPaddingYValues[density][size];
   const clickable = Boolean(onRowClick);
@@ -256,7 +256,7 @@ export function Table<Row>({
                 className="text-(--neba-muted-fg)"
                 style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
               >
-                {empty ?? messages.table.empty}
+                {empty ?? messages.empty}
               </td>
             </tr>
           ) : (

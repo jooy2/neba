@@ -26,7 +26,7 @@ import {
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
-import { useMessages } from '../../internal/i18n.js';
+import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartCategory,
   NebaChartLegend,
@@ -127,7 +127,7 @@ export function HeatmapChart({
 }: HeatmapChartProps) {
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
-  const messages = useMessages(locale);
+  const messages = useMessages(emptyMessages, locale);
   const tableId = React.useId();
 
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
@@ -425,7 +425,7 @@ export function HeatmapChart({
               metaTextClasses[size]
             )}
           >
-            {empty ?? messages.empty.title}
+            {empty ?? messages.title}
           </div>
         ) : width > 0 ? (
           <svg

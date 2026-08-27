@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
   hasContent,
@@ -200,7 +200,7 @@ export function Popover({
   style,
   ...props
 }: PopoverProps) {
-  const messages = useMessages(locale);
+  const messages = useMessages(actionMessages, locale);
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
   const arrowSize = arrowSizes[size];
@@ -318,7 +318,7 @@ export function Popover({
 
                 {showClose ? (
                   <BaseUIPopover.Close
-                    aria-label={closeLabel ?? messages.action.close}
+                    aria-label={closeLabel ?? messages.close}
                     className={[
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
                       'rounded-full text-(--neba-muted-fg)',

@@ -22,7 +22,7 @@ import {
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
-import { useMessages } from '../../internal/i18n.js';
+import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartCategory,
   NebaChartDatum,
@@ -111,7 +111,7 @@ export function PieChart({
 }: PieChartProps) {
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
-  const messages = useMessages(locale);
+  const messages = useMessages(emptyMessages, locale);
   const tableId = React.useId();
 
   const formatValue = React.useCallback(
@@ -302,7 +302,7 @@ export function PieChart({
               metaTextClasses[size]
             )}
           >
-            {empty ?? messages.empty.title}
+            {empty ?? messages.title}
           </div>
         ) : width > 0 ? (
           <svg

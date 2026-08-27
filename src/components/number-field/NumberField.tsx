@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NumberField as BaseUINumberField } from '@base-ui/react/number-field';
 import { Field } from '@base-ui/react/field';
-import { useMessages } from '../../internal/i18n.js';
+import { numberMessages, useMessages } from '../../internal/i18n.js';
 import { MinusIcon, PlusIcon } from '../../internal/icons.js';
 import {
   controlHeightClasses,
@@ -213,7 +213,7 @@ export function NumberField({
 }: NumberFieldProps) {
   // `Intl` takes more shapes than a message tag does; only a plain string names
   // anything here, and anything else falls back to English.
-  const messages = useMessages(typeof locale === 'string' ? locale : undefined);
+  const messages = useMessages(numberMessages, typeof locale === 'string' ? locale : undefined);
   const hasError = hasContent(error);
   const isInvalid = invalid ?? hasError;
   // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
@@ -232,7 +232,7 @@ export function NumberField({
 
   const decrement = (
     <BaseUINumberField.Decrement
-      aria-label={decrementLabel ?? messages.number.decrease}
+      aria-label={decrementLabel ?? messages.decrease}
       className={stepperClasses}
     >
       <MinusIcon />
@@ -241,7 +241,7 @@ export function NumberField({
 
   const increment = (
     <BaseUINumberField.Increment
-      aria-label={incrementLabel ?? messages.number.increase}
+      aria-label={incrementLabel ?? messages.increase}
       className={stepperClasses}
     >
       <PlusIcon />

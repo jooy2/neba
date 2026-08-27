@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box.js';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon, severityIcons } from '../../internal/icons.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
@@ -166,7 +166,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(actionMessages, locale);
   const glyph = icon === undefined ? severityIcons[color] : icon;
   const accent = accentClasses[variant];
   const titled = hasContent(title);
@@ -221,7 +221,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         <span className="flex h-[1lh] shrink-0 items-center">
           <button
             type="button"
-            aria-label={closeLabel ?? messages.action.dismiss}
+            aria-label={closeLabel ?? messages.dismiss}
             onClick={onClose}
             className={[
               'inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',

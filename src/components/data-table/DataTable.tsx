@@ -19,7 +19,7 @@ import {
   virtualWindow,
   type SortEntry
 } from '../../internal/data-table.js';
-import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
@@ -548,7 +548,8 @@ export function DataTable<Row>({
   style,
   ...boxProps
 }: DataTableProps<Row>) {
-  const messages = useMessages(locale);
+  const messages = useMessages(tableMessages, locale);
+  const emptyText = useMessages(emptyMessages, locale);
   const reactId = React.useId();
 
   const rowHeight = rowHeightProp ?? dataRowHeights[density][size];
@@ -1337,7 +1338,7 @@ export function DataTable<Row>({
   const number = React.useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const showFooter = footer ?? paging === 'pages';
 
-  const rangeText = fillMessage(messages.table.range, {
+  const rangeText = fillMessage(messages.range, {
     start: number.format(total === 0 ? 0 : (paging === 'pages' ? bounds.start : 0) + 1),
     end: number.format(paging === 'pages' ? bounds.end : total),
     total: number.format(total)
@@ -1470,7 +1471,7 @@ export function DataTable<Row>({
           size={size}
           color={color}
           checked={selectedKeys.has(entry.key)}
-          aria-label={messages.table.selectRow}
+          aria-label={messages.selectRow}
           onCheckedChange={() => {
             if (multiple) {
               toggleKey(entry.key);
@@ -1490,7 +1491,7 @@ export function DataTable<Row>({
           color={color}
           checked={allChosen}
           indeterminate={chosenHere > 0 && !allChosen}
-          aria-label={messages.table.selectAll}
+          aria-label={messages.selectAll}
           onCheckedChange={toggleAll}
         />
       )
@@ -1544,8 +1545,8 @@ export function DataTable<Row>({
               type="search"
               className="w-full max-w-64"
               startIcon={<SearchIcon />}
-              placeholder={searchPlaceholder ?? messages.table.search}
-              aria-label={searchPlaceholder ?? messages.table.search}
+              placeholder={searchPlaceholder ?? messages.search}
+              aria-label={searchPlaceholder ?? messages.search}
               value={searchProp ?? uncontrolledSearch}
               onChange={(event) => {
                 const next = event.target.value;
@@ -1703,7 +1704,7 @@ export function DataTable<Row>({
                   className="text-(--neba-muted-fg)"
                   style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
                 >
-                  {empty ?? messages.empty.title}
+                  {empty ?? emptyText.title}
                 </td>
               </tr>
             ) : (
@@ -1780,7 +1781,7 @@ export function DataTable<Row>({
 
           {selects && selectedKeys.size > 0 ? (
             <span className="text-(--n-accent) tabular-nums">
-              {fillMessage(messages.table.selected, {
+              {fillMessage(messages.selected, {
                 count: number.format(selectedKeys.size)
               })}
             </span>
@@ -1798,7 +1799,7 @@ export function DataTable<Row>({
                   color={color}
                   density={density}
                   variant="outline"
-                  label={messages.table.rowsPerPage}
+                  label={messages.rowsPerPage}
                   items={pageSizeOptions.map((value) => ({ value }))}
                   value={pageSize}
                   onValueChange={(value) => {

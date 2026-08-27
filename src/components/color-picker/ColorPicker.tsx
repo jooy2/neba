@@ -2,7 +2,7 @@ import * as React from 'react';
 import { defaultPickerLabels } from '../../internal/calendar.js';
 import { PickerShell } from '../../internal/picker.js';
 import { CheckIcon } from '../../internal/icons.js';
-import { useMessages } from '../../internal/i18n.js';
+import { colorMessages, useMessages } from '../../internal/i18n.js';
 import {
   checkerBackground,
   clamp,
@@ -597,9 +597,9 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(fu
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(colorMessages, locale);
   const labels: ColorPickerLabels = React.useMemo(
-    () => ({ ...messages.color, ...labelOverrides }),
+    () => ({ ...messages, ...labelOverrides }),
     [messages, labelOverrides]
   );
 

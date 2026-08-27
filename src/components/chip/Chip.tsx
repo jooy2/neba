@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n.js';
+import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
@@ -198,7 +198,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(actionMessages, locale);
   const interactive = Boolean(onClick) && !disabled;
   const step = chipScale[size];
   const animation = transitionProps(transition);
@@ -277,7 +277,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
       {onDelete ? (
         <button
           type="button"
-          aria-label={deleteLabel ?? messages.action.remove}
+          aria-label={deleteLabel ?? messages.remove}
           disabled={disabled}
           className={chipRemoveClasses}
           onClick={onDelete}

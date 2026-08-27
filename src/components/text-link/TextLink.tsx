@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { useMessages } from '../../internal/i18n.js';
+import { linkMessages, useMessages } from '../../internal/i18n.js';
 import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
@@ -161,7 +161,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(linkMessages, locale);
 
   // `icon` left out follows `newTab`, which is the whole reason it is not a
   // plain boolean with a `false` default: a link that takes over the window
@@ -235,7 +235,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
           {newTab ? (
             <>
               {' '}
-              <span className={srOnlyClasses}>{messages.link.newTab}</span>
+              <span className={srOnlyClasses}>{messages.newTab}</span>
             </>
           ) : null}
         </>

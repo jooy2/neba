@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from '../button/Button.js';
-import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { fillMessage, paginationMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { controlTextClasses, gapClasses, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
@@ -212,10 +212,9 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(paginationMessages, locale);
   const namePage =
-    pageLabel ??
-    ((value: number) => fillMessage(messages.pagination.page, { page: String(value) }));
+    pageLabel ?? ((value: number) => fillMessage(messages.page, { page: String(value) }));
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultPage);
   const current = Math.min(Math.max(pageProp ?? uncontrolled, 1), Math.max(count, 1));
@@ -310,7 +309,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
   return (
     <nav
       ref={ref}
-      aria-label={label ?? messages.pagination.label}
+      aria-label={label ?? messages.label}
       className={['flex items-center', className ?? ''].filter(Boolean).join(' ')}
       {...props}
     >
@@ -318,7 +317,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showEdges
           ? stepper(
               'first',
-              firstLabel ?? messages.pagination.first,
+              firstLabel ?? messages.first,
               1,
               atStart,
               'rotate-180 rtl:rotate-0',
@@ -329,7 +328,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showArrows
           ? stepper(
               'previous',
-              previousLabel ?? messages.pagination.previous,
+              previousLabel ?? messages.previous,
               current - 1,
               atStart,
               'rotate-90 rtl:-rotate-90',
@@ -392,7 +391,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showArrows
           ? stepper(
               'next',
-              nextLabel ?? messages.pagination.next,
+              nextLabel ?? messages.next,
               current + 1,
               atEnd,
               '-rotate-90 rtl:rotate-90',
@@ -404,7 +403,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         {showEdges
           ? stepper(
               'last',
-              lastLabel ?? messages.pagination.last,
+              lastLabel ?? messages.last,
               count,
               atEnd,
               'rtl:rotate-180',
@@ -417,7 +416,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
           `aria-current` says which page is chosen; this says how many there are,
           which the list length alone does not once an ellipsis is in it. */}
       <span className={srOnlyClasses} aria-live="polite">
-        {fillMessage(messages.pagination.status, {
+        {fillMessage(messages.status, {
           page: String(current),
           total: String(count)
         })}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n.js';
+import { breadcrumbMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';
 import {
   controlTextClasses,
@@ -301,7 +301,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(breadcrumbMessages, locale);
   const [unfolded, setUnfolded] = React.useState(false);
 
   const steps = React.Children.toArray(children).filter(
@@ -352,7 +352,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
   return (
     <nav
       ref={ref}
-      aria-label={label ?? messages.breadcrumb.label}
+      aria-label={label ?? messages.label}
       className={cx('flex', controlTextClasses[size], iconClasses, className)}
       style={
         {
@@ -405,7 +405,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(functio
                   <button
                     type="button"
                     className={foldClassNames}
-                    aria-label={expandLabel ?? messages.breadcrumb.expand}
+                    aria-label={expandLabel ?? messages.expand}
                     onClick={() => setUnfolded(true)}
                   >
                     <EllipsisIcon />

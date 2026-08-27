@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n.js';
+import { chatMessages, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ClockIcon, LinkIcon, severityIcons } from '../../internal/icons.js';
 import {
   controlSlots,
@@ -312,7 +312,7 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(func
   },
   ref
 ) {
-  const messages = useMessages(locale);
+  const messages = useMessages(chatMessages, locale);
   const end = side === 'end';
 
   const hasHeader = hasContent(name) || hasContent(time);
@@ -326,7 +326,7 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(func
     transitionClasses
   ].join(' ');
 
-  const statusText = status ? (statusLabel ?? messages.chat[status]) : '';
+  const statusText = status ? (statusLabel ?? messages[status]) : '';
 
   return (
     <div
@@ -376,7 +376,7 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(func
                 ].join(' ')}
               >
                 {typing ? (
-                  <TypingDots label={messages.chat.typing} />
+                  <TypingDots label={messages.typing} />
                 ) : hasContent(children) ? (
                   <div className="min-w-0 break-words whitespace-pre-line">{children}</div>
                 ) : null}
