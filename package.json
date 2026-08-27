@@ -18,7 +18,7 @@
     "url": "https://github.com/jooy2/neba/issues"
   },
   "scripts": {
-    "build": "npm run format:fix && tsc --project tsconfig.prod.json && npm run minify && node scripts/build-styles.mjs",
+    "build": "npm run format:fix && tsc --project tsconfig.prod.json && node scripts/annotate-pure.mjs && npm run minify && node scripts/build-styles.mjs",
     "lint": "eslint . --report-unused-disable-directives",
     "lint:fix": "eslint . --report-unused-disable-directives --fix",
     "minify": "terser-glob 'dist/**/*.js' --config-file terser.config.json",
