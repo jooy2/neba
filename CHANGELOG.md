@@ -1,5 +1,56 @@
 # Changelog
 
+## 1.7.0 (2026-08-27)
+
+A release about what lands in your bundle. Nothing about how a component looks or behaves has changed; what changed is how much of the library you have to take to get one of them.
+
+Measured with a real bundler rather than reported from an `unpackedSize` — rollup and terser, `react` external, judged on gzip:
+
+| What you import               | 1.6.0    | 1.7.0    |
+| ----------------------------- | -------- | -------- |
+| `Chip`                        | 14.5 kB  | 3.0 kB   |
+| `LineChart`                   | 22.8 kB  | 11.0 kB  |
+| 12 components — a typical app | 79.8 kB  | 67.0 kB  |
+| 25 components — a large one   | 124.4 kB | 110.8 kB |
+| all 117 exports               | 218.7 kB | 206.8 kB |
+
+The last row is the least interesting one, and that is the point: taking the whole library is barely cheaper, because nothing was removed. What changed is the price of taking a _part_ — and the reason `Chip` used to cost fourteen kilobytes was never `Chip`.
+
+### Changed
+
+- **Languages are registered rather than shipped.** Neba speaks English out of the box and the other eighteen languages are now modules you turn on:
+
+  ```tsx
+  import { registerMessages, ko } from 'neba/locales';
+
+  registerMessages('ko', ko);
+  ```
+
+  Call it once at module scope, before your first render, for each language you support; then a `locale` prop translates exactly as it did.
+
+  **This is a breaking change in a minor release**, which is deliberate given how few projects are on Neba today, and it is the only one here. A project that passes `locale` and registers nothing will see English where it used to see a translation — the strings still resolve, they just resolve to the fallback. If you pass a `locale` anywhere, add the two lines above and you are done. Everything else is unchanged: tags are still matched by script, then region, then language, so registering `ko` answers `ko-KR` and `zhHans` registered as `zh-hans` answers `zh-CN` and a bare `zh`; a language still fills in only what it has and English answers for the rest; and every string a component invents still has a prop that overrides it.
+
+  The reason is arithmetic. Eighteen languages of sixteen namespaces was one object literal, and a bundler cannot drop a key out of an object literal — so a `Chip` that wanted the word "Remove" carried the ColorPicker's colour names and the Table's column labels in eighteen languages. Registered, a language costs about 1.7 kB gzipped and you pay for the ones you name.
+
+- `severityIcons` is now `severityIcon(color)` internally, so a component that draws one severity mark carries one, and no React elements are built at import time for a page that may draw none.
+
+### Added
+
+- **Every component is its own entry point**, named after its folder: `import { Button } from 'neba/button'`, `import { TextField } from 'neba/text-field'`. The bundle is the same as the barrel's — `import { Button } from 'neba'` already tree-shook correctly — but the barrel makes a bundler parse two hundred modules to keep five, and the subpath makes it parse five. It is also the escape hatch if your bundler ignores `sideEffects`.
+- `neba/locales` for the barrel and `neba/locales/ko` for one language, plus the `NebaLocale` type for a translation of your own.
+- `neba/package.json` is exported, which some tooling asks for.
+- `npm run size` — a bundle-size budget. Seven scenarios, from one component to all of them, bundled against `dist/` and checked against the numbers committed in `scripts/bundle-budget.json`. It runs as its own CI job, so a change that quietly stops something being tree-shakeable fails a pull request instead of shipping. `npm run size:update` records a new budget when the growth is real and wanted.
+
+### Fixed
+
+- **The package can be imported by Node, and by TypeScript on `moduleResolution: node16`.** Emitted ESM used extensionless relative imports (`export * from './types'`), which Node's resolver rejects outright and which TypeScript on `node16` or `nodenext` reported as _"Module 'neba' has no exported member"_ — for every component at once. Anything using a bundler was unaffected, which is why it went unnoticed. Every relative specifier now carries its `.js`.
+- The published files now carry `@__PURE__` annotations, so a bundler can drop the parts of a multi-component module you did not import. They are written into `dist/` during the build and terser is told to keep them, which it does not do by default — until now the annotations reached the consumer's bundler stripped, and it kept `Tab` and `TabPanel` for anyone who imported only `Tabs`. `Tabs` on its own is 23% smaller.
+
+### Documentation
+
+- The README gains a **Languages** section and the subpath import form; `CLAUDE.md` gains a **Packaging, bundle size and tree-shaking** section with the measurements, the five invariants that hold them in place, and the list of things measured and rejected so they are not tried again — minifier tuning, per-component stylesheets, and dropping Tailwind's `@property` fallback.
+- `test/package/resolution.test.ts` and `test/locales/register.test.tsx` are new. Neither renders a component: the first checks the wiring between `src/`, `dist/` and `package.json` that no render test or `tsc --noEmit` can see, and the second checks the registration contract.
+
 ## 1.6.0 (2026-08-24)
 
 ### Added
