@@ -18,6 +18,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 | `src/index.ts` | Public entry point. Every exported component must be re-exported from here. |
 | `src/components/{name}/` | One folder per component (lowercase folder name). |
 | `src/internal/` | The library talking to itself. Shipped but never re-exported from `src/index.ts`. |
+| `src/locales/` | One module per language, plus `registerMessages`. Public, reached as `neba/locales`; **not** re-exported from `src/index.ts`, because nothing here should be in a bundle that did not ask for it. |
 | `test/` | Test suite (Vitest). Mirrors the `src/` tree. Self-contained: owns its `tsconfig.json`. |
 | `docs/` | VitePress site — developer-facing documentation for library consumers, and the only place components are rendered during development. Self-contained: owns its `tsconfig.json`. Not published to npm. |
 | `dist/` | Build output (`tsc` + terser). Generated; never edit by hand, never commit. |
@@ -41,20 +42,22 @@ Each component lives in `src/components/{name}/`:
 ```
 src/components/button/
   Button.tsx     # implementation, named export
-  index.ts       # export { Button } from './Button';
+  index.ts       # export { Button } from './Button.js';
 ```
 
 Then re-export it from `src/index.ts`:
 
 ```ts
-export * from './components/button';
+export * from './components/button/index.js';
 ```
+
+Note both extensions. **Every relative specifier in `src/` ends in `.js`, and a directory is written out to its `index.js`** — see [Packaging](#packaging-bundle-size-and-tree-shaking) for why, and `test/package/resolution.test.ts` for the check that keeps it true.
 
 Rules to follow:
 
 1. **Folder name is lowercase** (`button`, `text-field`); the file and the exported symbol are `PascalCase` (`Button.tsx` → `Button`).
 2. **Use named exports**, never `export default`.
-3. Each component folder gets its own `index.ts` barrel; `src/index.ts` only ever re-exports those barrels. Grow this list as components are added.
+3. Each component folder gets its own `index.ts` barrel; `src/index.ts` only ever re-exports those barrels. Grow this list as components are added. The barrel is also the component's public entry point — `neba/button` resolves to it through the `./*` pattern in `exports`, so a new folder needs no `package.json` edit.
 4. When a component is added, document it under `docs/` — see [Documentation](#documentation) for the five places that means. That is also what makes it viewable alongside the others.
 5. **Tests are part of the change, not a follow-up.** See the rule below.
 
@@ -108,7 +111,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 
 `src/internal/sizer.tsx` is `WidthSizer`, and it is in `internal/` because Select, the picker shell and DateRangePicker all need it. A control that is not `fullWidth` is sized by what it is _currently_ saying, so a Select showing `Seoul` is narrower than the same Select showing `Washington DC` and a DatePicker on the 1st is narrower than the same picker on the 28th — the field moves under the pointer that just used it. The sizer lays out every alternative in a clipped, zero-height, `aria-hidden` box, which pins the intrinsic width to the widest of them. A **string** sample is drawn as generated content off a `data-sample` attribute rather than as a text node: it lays out identically so it reserves the same width, and it leaves nothing for a `getByText` or a find-in-page to match, which is what would otherwise make every query for a chosen value ambiguous in a consumer's tests. Only a sample that is not a string — a Select option whose label is a node — is rendered for real.
 
-Five more files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog, Toast and FilePicker all need; the chevron, drawn pointing **down** once and turned by whoever needs it — Select's trigger, Accordion's header, a submenu's arrow, Pagination's steppers — because rotating a glyph is the one allowance the no-transform rule makes; the tick and the dot that Select and the menu's checkable rows share; and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family.
+Five more files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog, Toast and FilePicker all need; the chevron, drawn pointing **down** once and turned by whoever needs it — Select's trigger, Accordion's header, a submenu's arrow, Pagination's steppers — because rotating a glyph is the one allowance the no-transform rule makes; the tick and the dot that Select and the menu's checkable rows share; and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family. That set is reached through `severityIcon(color)` rather than a `Record` of elements, for the reason the i18n tables are one per namespace: a component that draws a single mark imports that mark, and no React elements are built at import time for a page that may draw none of them.
 
 `internal/animate.ts` is the eleventh reason: eleven `Animate*` components need one table of effects, and the `transition` prop needs the same table from the other side — a Card and an `AnimateFade` must produce the same fade, or the library has two fades. Nothing in it generates CSS. Every effect is one `@keyframes` in `styles.css` running from a state written entirely in `--n-*` custom properties to the element's natural one, so the file only fills slots — the same split `styleSlots()` makes for colour, for the same reason. Because the from-state is the keyframe rather than a second class, `mode="out"` is `animation-direction: reverse` and costs nothing on all six. What is deliberately _not_ there is any effect that has to know what its children are: a marquee that duplicates them, a headline that swaps between them, a typewriter that counts characters. Those are components, and their logic stays in their own files.
 
@@ -118,7 +121,19 @@ Three rules there are load-bearing rather than stylistic. A **`null` is a gap an
 
 `internal/color.ts` is the arithmetic ColorPicker needs — three representations, the conversions between them, one parser and one formatter. It is a hundred lines, and it is the whole reason the package still has one runtime dependency. HSV is the model the panel is drawn in and it never leaves: round-tripping through RGB would lose the hue of every greyscale colour, and the rail would snap to red the moment the pointer reached a corner.
 
-`internal/i18n.ts` is the words the library says on its own behalf, keyed by language. Almost nothing in Neba writes text a reader sees — a Button says what it was handed — so this is only for the strings a component has to invent because there is nowhere else for them to come from: the sentence behind a link that opens a new tab, the label on the button that uncovers a Spoiler, the word under a chat message that says it was read. They are collected because they are a set: a product in Korean does not want eight components each defaulting to English and each needing an override prop of its own. English is the base and every other locale is merged over it one namespace at a time, so a partial translation is a partial translation rather than a page of blanks; a tag is resolved by script, then by region, then by language, and an unknown one falls back to English. Nothing `Intl` already knows goes in here — month names, weekday names and AM/PM come from the platform, which is why the date pickers do **not** read this file for those. A component that reads it takes a `locale` **and** an override prop for the string itself, so an unsupported language is never a dead end.
+`internal/i18n.ts` is the words the library says on its own behalf. Almost nothing in Neba writes text a reader sees — a Button says what it was handed — so this is only for the strings a component has to invent because there is nowhere else for them to come from: the sentence behind a link that opens a new tab, the label on the button that uncovers a Spoiler, the word under a chat message that says it was read. They are collected because they are a set: a product in Korean does not want eight components each defaulting to English and each needing an override prop of its own. Nothing `Intl` already knows goes in here — month names, weekday names and AM/PM come from the platform, which is why the date pickers do **not** read this file for those. A component that reads it takes a `locale` **and** an override prop for the string itself, so an unsupported language is never a dead end.
+
+Two things about its shape are load-bearing, and both are the same rule about what a bundler can drop. **There is one exported table per namespace and never one table of all of them**, because a bundler drops an unused `export const` and cannot drop a key out of an object literal — a single table put the ColorPicker's seven colour words and the Table's seven column words behind a Chip that wanted the word "Remove", which was fourteen and a half kilobytes gzipped under a two-kilobyte component. And **only English ships**; the other eighteen languages are one module each under `src/locales/`, registered by the consumer:
+
+```ts
+import { registerMessages, ko } from 'neba/locales';
+
+registerMessages('ko', ko);
+```
+
+A registered language costs about 1.7 kB gzipped, and a product that says nothing carries none of them. `registerMessages` writes into the namespace tables and drops what it invalidates out of the resolution cache, so registering after something has already rendered still takes (it does not re-render that tree — register at module scope). A tag is resolved by script, then by region, then by language; each language fills in as much as it has and is merged over English at read time, so a partial translation is a partial translation rather than a page of blanks.
+
+Adding a namespace is therefore a new `export const` beside the others **and** a field on `NebaLocale` — never a new key inside an existing table. Adding a language is a new file under `src/locales/` and a line in its barrel.
 
 ### Table cells are the exception to "styling is Tailwind"
 
@@ -146,6 +161,40 @@ An `<a>` is the other one, and TextLink answers it the other way. Inline styles 
 `src/reset.css` is Preflight cut down to what the components actually need and de-escalated: every selector is wrapped in `:where()`, so a consumer's `p { margin: 1rem }` outranks it without `!important`, a layer, or a particular import order. It is reachable only through `src/standalone.css` — a project with Preflight already has all of it. The docs' `theme/styles/scope.css` is the same idea solved the other way, scoped to `.neba-scope` because a VitePress page cannot lose its own typography; the two are separate on purpose and the specificity hazard scope.css documents does not exist in `reset.css`.
 
 Pseudo-element styling (the pointer spotlight, the release afterglow) lives in `styles.css` as real CSS rather than as Tailwind arbitrary variants — `[&::before]:[background:radial-gradient(...)]` is expressible and unreadable. That is the bar for moving something out of Tailwind: not "could this be CSS", but "is the Tailwind form unmaintainable".
+
+## Packaging, bundle size and tree-shaking
+
+A component library's real size is not its `unpackedSize` and not what a badge reports. It is what lands in the bundle of someone who imports _some_ of it, and that number is decided by things that fail silently. Measure with a real bundler, `react` external, judged on gzip, across a fixed set of scenarios — one component, a handful, all of them.
+
+`npm run size` does exactly that and fails when a scenario goes more than 2% over its recorded budget; `npm run size:update` rewrites the budgets after a change that is meant to move them. Both need `npm run build` to have run first, because they measure `dist/`. The scenarios and their budgets live together in [scripts/bundle-budget.json](scripts/bundle-budget.json), so changing what is measured and changing what it may weigh are one edit, and CI runs the check on its own job.
+
+Where it stands, gzipped, with `react`/`react-dom` external:
+
+| What a consumer imports       | Bundle   | Of which is Neba's own code |
+| ----------------------------- | -------- | --------------------------- |
+| `Divider`                     | 3.0 kB   | 1.3 kB                      |
+| `Button`                      | 5.0 kB   | 2.2 kB                      |
+| `Chip`                        | 3.0 kB   | 3.0 kB                      |
+| `LineChart`                   | 11.0 kB  | 9.5 kB                      |
+| 12 components — a typical app | 67.0 kB  | 10.6 kB                     |
+| 25 components — a large one   | 110.8 kB | 16.4 kB                     |
+| all 117 exports               | 206.8 kB | 95.1 kB                     |
+
+Registering one language adds about 1.7 kB on top. Plus `neba/styles.css`, which is 17.5 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-one files.
+
+`@base-ui/react` is roughly half of the maximum and most of what a Select or a Dialog costs. It is already imported per subpath (`@base-ui/react/button`, never the root), which is the only lever there is: the goal is not to slim it but to make sure a page that does not use a Select never meets it.
+
+Five things hold the numbers above in place. Each of them, broken, is invisible in this repository and expensive in someone else's:
+
+1. **`sideEffects: ["**/*.css"]`.** The single line that lets a bundler drop the ninety components a page did not import. Widen it and every consumer ships the whole library.
+2. **Every relative specifier ends in `.js`.** `tsc` under `module: Preserve` emits specifiers verbatim, so an extensionless `export * from './types'` reaches `dist/` unchanged — and Node's ESM resolver rejects it, as does TypeScript under `moduleResolution: node16`, where it takes out every named export of the barrel at once. Vite resolves it fine, which is exactly why nothing in this repository noticed for eighty-eight components.
+3. **An `@__PURE__` annotation on every `forwardRef`, `createContext` and `memo` call.** A bundler cannot prove `React.forwardRef(…)` is side-effect free, so in a file that exports more than one component the unused ones survive. `scripts/annotate-pure.mjs` writes them into `dist/` between `tsc` and `terser` — never into `src/`, where sixteen characters in front of an already long line makes Prettier rewrap the signature and re-indent the whole function body, which was one annotation and a hundred-line diff in seventy-seven files. It counts what it marked against what `src/` contains and fails the build on a mismatch, because the failure mode of a pattern over emitted code is that it quietly stops matching. Terser then has to be told to write the annotations out again: `output.preserve_annotations` in `terser.config.json`. The two settings are useless apart, and removing either silently costs about a quarter of a multi-part component.
+4. **Fixed-cost modules stay divisible.** A table every component reaches through is a table every component pays for in full. `i18n.ts` is one export per namespace and English only; `icons.tsx` reaches its severity set through a function. The rule generalises: an object literal cannot be tree-shaken per key, so anything that would grow past a few hundred bytes belongs in separate exports or separate modules.
+5. **Every component is its own entry point.** `neba/button`, through the `./*` pattern in `exports`. The bundle is the same either way — `import { Button } from 'neba'` already shakes correctly — but the barrel makes a bundler parse two hundred modules to keep five, and the subpath makes it parse five. It is also the escape hatch for a build that ignores `sideEffects`.
+
+`test/package/resolution.test.ts` asserts all five as structure; `npm run size` asserts the bytes they add up to. Both are needed: a change can keep every invariant above and still double what a consumer downloads, and a change can break one of them without moving a scenario the budget happens to measure.
+
+Things measured and **rejected**, so they do not get re-litigated: minifier option tuning (under 1%), splitting the stylesheet per component (above), dropping Tailwind's `@property` fallback for older Safari (0.4 kB gzip), and per-key tree-shaking of the size and density ladders in `internal/styles.ts` (impossible in principle, and they are a few hundred bytes).
 
 ## Documentation
 
@@ -259,6 +308,8 @@ npm run typecheck     # tsc --noEmit over all three TS projects
 npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (copies the changelog first)
 npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
 npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
+npm run size          # bundle the budget scenarios against dist/ and fail if one is over
+npm run size:update   # record what they weigh now as the new budgets
 npm run lint          # ESLint
 npm run lint:fix      # ESLint with --fix
 npm run format:fix    # Prettier write
@@ -278,7 +329,9 @@ Why a real browser rather than jsdom: every component wraps a Base UI primitive,
 
 **What not to test.** Base UI's own internals (focus trapping, positioning, keyboard navigation) — that's covered upstream. Visual/styling regressions are also out of scope; no component test loads CSS.
 
-The one exception is [test/styles/standalone.test.tsx](test/styles/standalone.test.tsx), and it is not a styling test — it is a test of the _package_. `neba/styles.css` promises that installing one package and importing one file gives you styled components, and that promise is made of three parts that each fail silently: the reset, the compiled utilities, and the tokens the utilities read. It loads `src/standalone.css` through Vite with `?inline` — the same entry the build compiles, so no build has to have run — injects it, and asserts only that each layer arrived and that they compose. Never assert a design value there (a radius, a shade, a height from the size ladder): those move with the design language, and a test that pins them turns every deliberate change into a failure. `border-radius` that is _not_ `0px`, a background that is _not_ transparent.
+Three files test the package rather than a component, and none of them renders one. [test/package/resolution.test.ts](test/package/resolution.test.ts) checks the wiring between `src/`, `dist/` and `package.json` — the extensions, the barrel, the subpath exports, `sideEffects`, and that the message tables stay one per namespace. [test/locales/register.test.tsx](test/locales/register.test.tsx) checks `registerMessages`: the English fallback for a tag nobody registered, tag matching by script and region, and that a language registered after a first render invalidates what that render cached.
+
+The third is [test/styles/standalone.test.tsx](test/styles/standalone.test.tsx), and it is not a styling test either — it is a test of the _package_. `neba/styles.css` promises that installing one package and importing one file gives you styled components, and that promise is made of three parts that each fail silently: the reset, the compiled utilities, and the tokens the utilities read. It loads `src/standalone.css` through Vite with `?inline` — the same entry the build compiles, so no build has to have run — injects it, and asserts only that each layer arrived and that they compose. Never assert a design value there (a radius, a shade, a height from the size ladder): those move with the design language, and a test that pins them turns every deliberate change into a failure. `border-radius` that is _not_ `0px`, a background that is _not_ transparent.
 
 Conventions, following [test/components/button/Button.test.tsx](test/components/button/Button.test.tsx):
 
@@ -316,6 +369,8 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 4 need Node 20.19+/22.12+, so the declared floor is stale.
 - Both `package-lock.json` and `pnpm-lock.yaml` are checked in; `pnpm-workspace.yaml` exists for pnpm users. Match whichever lockfile the working tree already reflects rather than switching package managers.
 - `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
+- `terser.config.json` sets `output.preserve_annotations`, and it exists for `scripts/annotate-pure.mjs`. Terser understands an `@__PURE__` comment and, by default, consumes it without emitting it again — which would hand the consumer's bundler minified files with the annotations gone. Neither `output.comments` nor `--comments` brings them back; this option is the one that does.
+- `npm run build` has four steps and their order is load-bearing: `tsc`, then `annotate-pure`, then `minify`, then `build-styles`. The annotations have to be written after the JavaScript exists and before terser reads it.
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
 - Docs are VitePress with `vitepress-i18n` + `vitepress-sidebar`. Two locales, and which one is the root is a single constant: `defaultLocale` in `docs/.vitepress/config.ts`, currently `en`. The root locale is served from `/` (rewritten from `docs/en/`) and every other locale keeps its folder as its URL prefix, so `ko` is served from `/ko/`. Changing that constant swings the locale config, the sidebar's base path and the `rewrites` together.
@@ -336,6 +391,6 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 These are pre-existing and worth being aware of before "fixing" them incidentally:
 
 - `react` / `react-dom` are declared **twice**, and both are correct: `peerDependencies` at `^18.0.0 || ^19.0.0`, because the consumer's copy is the one that must be used, and `devDependencies` at the version this repository builds and tests against. Widen the peer range only for a version the suite has actually run on — a peer range is a claim, and npm enforces it as one. `@types/react` is an optional peer, since a JavaScript consumer needs nothing from it.
-- Emitted ESM uses extensionless relative imports (`export * from './types'`), which Node's own ESM resolver rejects. Bundlers handle it; a direct `node` import of `dist/` would not. Pre-existing, and not something to fix incidentally.
+- Emitted ESM once used extensionless relative imports (`export * from './types'`), which Node's own ESM resolver rejects and which broke `moduleResolution: node16` for every named export of the barrel. **Fixed** — every relative specifier in `src/` now ends in `.js`, and `test/package/resolution.test.ts` keeps it that way. Do not "tidy" the extensions away.
 - **A chromium run occasionally loses its browser partway through the suite, and it is not ours.** It reads either as `Failed to run the test <file>` / `[vitest] Browser connection was closed while running tests` or, on Windows, as a file that prints `(0 test)` and then never says anything again. It is chromium-only, has never been seen on macOS, and has landed on five different files — ProgressCircular, AnimateSlide, AnimateZoom, AspectRatio, AreaChart — so no single test is guilty. What they share is a position: all of them are in the last ten or so of the ninety-two, where the files are small and the harness is tearing down and rebuilding a tester frame twice a second. Vitest's own tracker has the same report open against browser mode. Do not chase it through the component that happened to be running, and do not paper over it with a retry — a retry would also swallow the real failures this suite exists to catch. The timeouts above are the mitigation: the run fails in twenty minutes instead of hanging, and a re-run passes.
 - The docs paint a gradient-and-grid background behind every preview. That is docs chrome, not library styling — a translucent, blurred surface has nothing to show over a flat white page, so the acrylic can only be judged over real content.

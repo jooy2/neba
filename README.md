@@ -21,7 +21,7 @@ You install one package, add one line to your CSS, and import components. There 
 - **Accessible by construction** — real roles, labels, focus management and keyboard support, not `div`s with click handlers.
 - **Dark mode with no work** — follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file** — a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
-- **ESM only**, TypeScript declarations included, tree-shakeable — every component compiles to its own module.
+- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable — every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~67 kB; the whole library, all one hundred and seventeen exports at once, is ~207 kB.
 - **One runtime dependency.** React 18 or 19, Node.js 18 or later.
 
 ## Documentation
@@ -87,6 +87,37 @@ export default function SignIn() {
 ```
 
 A few components provide context and are mounted once, near the root, only if you use them — `ToastProvider` (paired with the `useToast()` hook) and `TooltipProvider`.
+
+Every component is also its own entry point, named after its folder:
+
+```tsx
+import { Button } from 'neba/button';
+import { TextField } from 'neba/text-field';
+```
+
+Both forms produce the same bundle. The root barrel is the one to reach for; the subpath is there for a build that would rather not parse a hundred and ninety-eight modules to keep five, and as an escape hatch for a bundler that does not honour `sideEffects`.
+
+### Languages
+
+Neba writes very little text of its own — a Button says what you hand it — but a few components have to invent a string: the label on a Dialog's close button, the word under a chat message that says it was read, the sentence a screen reader hears after a link that opens a new tab.
+
+Those ship in English. Eighteen other languages are included in the package and none of them is in your bundle until you say so:
+
+```tsx
+import { registerMessages, ko } from 'neba/locales';
+
+registerMessages('ko', ko);
+```
+
+Call it once, at module scope, before your first render. Then a `locale` prop translates:
+
+```tsx
+<Dialog locale="ko" title="설정" showClose />
+```
+
+A registered language costs about 1.7 kB gzipped and you pay only for the ones you name. Tags are matched by script, then by region, then by language — registering `ko` answers `ko-KR`, and `zhHans` registered as `zh-hans` answers `zh-CN` and a bare `zh`. Available: `ko`, `ja`, `zhHans`, `zhHant`, `es`, `pt`, `fr`, `de`, `it`, `nl`, `pl`, `ru`, `tr`, `ar`, `hi`, `id`, `vi`, `th`, each also its own entry point (`neba/locales/ko`).
+
+Anything the platform already knows — month names, weekday names, AM/PM, number and date formats — comes from `Intl` and needs no registration. And every string a component invents also has a prop that overrides it, so a language Neba does not carry is never a dead end.
 
 ### The shared prop vocabulary
 
