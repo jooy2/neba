@@ -2,6 +2,7 @@ export * from './types.js';
 export * from './components/accordion/index.js';
 export * from './components/alert/index.js';
 export * from './components/animate-appear/index.js';
+export * from './components/app-logo/index.js';
 export * from './components/animate-blink/index.js';
 export * from './components/animate-fade/index.js';
 export * from './components/animate-grow/index.js';

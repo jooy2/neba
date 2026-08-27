@@ -525,6 +525,22 @@ export function hasContent(node: React.ReactNode): boolean {
   return node !== undefined && node !== null && node !== false && node !== '';
 }
 
+/**
+ * A number is pixels; a string is already a CSS length, and nothing at all
+ * stays nothing.
+ *
+ * The one rule the library makes about a length a caller writes: `width={240}`
+ * and `width="15rem"` are both accepted and the number is never guessed at. It
+ * lives here rather than in whichever component needed it first because a
+ * second copy would eventually disagree about `0` — which is falsy, and is a
+ * length.
+ */
+export function toLength(value: number | string | undefined): string | undefined {
+  if (value === undefined || value === null) return undefined;
+
+  return typeof value === 'number' ? `${value}px` : value;
+}
+
 /** Joins class name fragments, dropping the empty ones. */
 export function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(' ');
