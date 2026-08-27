@@ -135,7 +135,7 @@ import { registerMessages, ko } from 'neba/locales';
 registerMessages('ko', ko);
 ```
 
-A registered language costs about 1.7 kB gzipped, and a product that says nothing carries none of them. `registerMessages` writes into the namespace tables and drops what it invalidates out of the resolution cache, so registering after something has already rendered still takes (it does not re-render that tree — register at module scope). A tag is resolved by script, then by region, then by language; each language fills in as much as it has and is merged over English at read time, so a partial translation is a partial translation rather than a page of blanks.
+A registered language costs about 1.9 kB gzipped, and a product that says nothing carries none of them. `registerMessages` writes into the namespace tables and drops what it invalidates out of the resolution cache, so registering after something has already rendered still takes (it does not re-render that tree — register at module scope). A tag is resolved by script, then by region, then by language; each language fills in as much as it has and is merged over English at read time, so a partial translation is a partial translation rather than a page of blanks.
 
 Adding a namespace is therefore a new `export const` beside the others **and** a field on `NebaLocale` — never a new key inside an existing table. Adding a language is a new file under `src/locales/` and a line in its barrel.
 
@@ -182,15 +182,18 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `LineChart`                   | 11.0 kB  | 9.5 kB                      |
 | 12 components — a typical app | 67.0 kB  | 10.6 kB                     |
 | 25 components — a large one   | 110.8 kB | 16.4 kB                     |
-| all 117 exports               | 206.8 kB | 95.1 kB                     |
+| a whole page shell            | 28.1 kB  | 8.5 kB                      |
+| all 123 exports               | 211.0 kB | 99.4 kB                     |
 
-Registering one language adds about 1.7 kB on top. Plus `neba/styles.css`, which is 17.5 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-one files.
+The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
+
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 17.6 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 `@base-ui/react` is roughly half of the maximum and most of what a Select or a Dialog costs. It is already imported per subpath (`@base-ui/react/button`, never the root), which is the only lever there is: the goal is not to slim it but to make sure a page that does not use a Select never meets it.
 
 Five things hold the numbers above in place. Each of them, broken, is invisible in this repository and expensive in someone else's:
 
-1. **`sideEffects: ["**/*.css"]`.** The single line that lets a bundler drop the ninety components a page did not import. Widen it and every consumer ships the whole library.
+1. **`sideEffects: ["**/*.css"]`.** The single line that lets a bundler drop the ninety-odd components a page did not import. Widen it and every consumer ships the whole library.
 2. **Every relative specifier ends in `.js`.** `tsc` under `module: Preserve` emits specifiers verbatim, so an extensionless `export * from './types'` reaches `dist/` unchanged — and Node's ESM resolver rejects it, as does TypeScript under `moduleResolution: node16`, where it takes out every named export of the barrel at once. Vite resolves it fine, which is exactly why nothing in this repository noticed for eighty-eight components.
 3. **An `@__PURE__` annotation on every `forwardRef`, `createContext` and `memo` call.** A bundler cannot prove `React.forwardRef(…)` is side-effect free, so in a file that exports more than one component the unused ones survive. `scripts/annotate-pure.mjs` writes them into `dist/` between `tsc` and `terser` — never into `src/`, where sixteen characters in front of an already long line makes Prettier rewrap the signature and re-indent the whole function body, which was one annotation and a hundred-line diff in seventy-seven files. It counts what it marked against what `src/` contains and fails the build on a mismatch, because the failure mode of a pattern over emitted code is that it quietly stops matching. Terser then has to be told to write the annotations out again: `output.preserve_annotations` in `terser.config.json`. The two settings are useless apart, and removing either silently costs about a quarter of a multi-part component.
 4. **Fixed-cost modules stay divisible.** A table every component reaches through is a table every component pays for in full. `i18n.ts` is one export per namespace and English only; `icons.tsx` reaches its severity set through a function. The rule generalises: an object literal cannot be tree-shaken per key, so anything that would grow past a few hundred bytes belongs in separate exports or separate modules.

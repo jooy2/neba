@@ -6,19 +6,25 @@
     {
       "id": "button",
       "label": "Button",
-      "imports": ["Button"],
+      "imports": [
+        "Button"
+      ],
       "budget": 5
     },
     {
       "id": "chip",
       "label": "Chip",
-      "imports": ["Chip"],
+      "imports": [
+        "Chip"
+      ],
       "budget": 3
     },
     {
       "id": "line-chart",
       "label": "LineChart",
-      "imports": ["LineChart"],
+      "imports": [
+        "LineChart"
+      ],
       "budget": 11
     },
     {
@@ -73,6 +79,19 @@
       "budget": 110.8
     },
     {
+      "id": "page-shell",
+      "label": "a page shell — the layout and its four",
+      "imports": [
+        "PageLayout",
+        "Header",
+        "Footer",
+        "Sidebar",
+        "SidebarTrigger",
+        "AppLogo"
+      ],
+      "budget": 28.1
+    },
+    {
       "id": "app-12-ko",
       "label": "12 components, with Korean registered",
       "imports": [
@@ -89,14 +108,16 @@
         "Chip",
         "Typography"
       ],
-      "locales": ["ko"],
-      "budget": 68.7
+      "locales": [
+        "ko"
+      ],
+      "budget": 68.9
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 206.8
+      "budget": 211
     }
   ]
 }
