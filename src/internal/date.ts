@@ -20,8 +20,8 @@
  *   `value` handed in by a caller is never the object that comes back out.
  */
 
-import { dateFormatter } from './format';
-import type { NebaWeekday } from '../types';
+import { dateFormatter } from './format.js';
+import type { NebaWeekday } from '../types.js';
 
 /** Which unit the calendar is currently letting you pick. */
 export type CalendarView = 'day' | 'month' | 'year';

@@ -1,2 +1,2 @@
-export { AnimateZoom } from './AnimateZoom';
-export type { AnimateZoomProps } from './AnimateZoom';
+export { AnimateZoom } from './AnimateZoom.js';
+export type { AnimateZoomProps } from './AnimateZoom.js';

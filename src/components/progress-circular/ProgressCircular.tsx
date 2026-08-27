@@ -8,9 +8,9 @@ import {
   ringDiameters,
   ringStrokes,
   type ProgressSharedProps
-} from '../../internal/progress';
-import { gapClasses, metaTextClasses } from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+} from '../../internal/progress.js';
+import { gapClasses, metaTextClasses } from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface ProgressCircularProps extends ProgressSharedProps {
   /** Diameter of the ring. Sits just under the control ladder at every step. */

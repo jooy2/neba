@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Menu as BaseUIMenu } from '@base-ui/react/menu';
 import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
-import { MenuContext } from '../../internal/menu';
-import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons';
+import { MenuContext } from '../../internal/menu.js';
+import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
   gapClasses,
@@ -13,7 +13,7 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaAlign,
   NebaColor,
@@ -21,7 +21,7 @@ import type {
   NebaSide,
   NebaSize,
   NebaStyleProps
-} from '../../types';
+} from '../../types.js';
 
 /**
  * A menu takes `size`, `color` and `density` and stops there.

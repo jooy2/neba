@@ -10,8 +10,8 @@ import {
   tickRowLeadingClasses,
   tickSizeClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaOrientation, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 /**
  * What a Radio inherits from the group around it.

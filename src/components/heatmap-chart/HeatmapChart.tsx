@@ -5,7 +5,7 @@ import {
   ChartTooltipPanel,
   useMeasuredWidth,
   type ChartTooltipItem
-} from '../../internal/chart-frame';
+} from '../../internal/chart-frame.js';
 import {
   categoryAt,
   chartFontSizes,
@@ -23,17 +23,17 @@ import {
   truncate,
   type ChartScaleKind,
   type ChartValue
-} from '../../internal/chart';
-import { numberFormatter } from '../../internal/format';
-import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles';
-import { useMessages } from '../../internal/i18n';
+} from '../../internal/chart.js';
+import { numberFormatter } from '../../internal/format.js';
+import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
+import { useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartCategory,
   NebaChartLegend,
   NebaChartSeries,
   NebaChartTooltip
-} from '../../types';
-import type { ChartBaseProps } from '../../internal/chart-frame';
+} from '../../types.js';
+import type { ChartBaseProps } from '../../internal/chart-frame.js';
 
 /** The corner radius of a cell. Small — a tile is a block, not a chip. */
 const cellRadius = 3;

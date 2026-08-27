@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
-import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
-import { useMessages } from '../../internal/i18n';
-import { CloseIcon } from '../../internal/icons';
+import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
+import { useMessages } from '../../internal/i18n.js';
+import { CloseIcon } from '../../internal/icons.js';
 import {
   hasContent,
   metaTextClasses,
@@ -13,8 +13,8 @@ import {
   sheetTitleClasses,
   surfaceClasses,
   surfaceSlots
-} from '../../internal/styles';
-import type { NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * A dialog takes `size`, `color` and `density` and stops there.

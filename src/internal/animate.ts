@@ -35,7 +35,7 @@ import type {
   NebaAnimation,
   NebaSide,
   NebaTransition
-} from '../types';
+} from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Slots

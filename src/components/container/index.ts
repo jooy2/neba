@@ -1,2 +1,2 @@
-export { Container } from './Container';
-export type { ContainerProps } from './Container';
+export { Container } from './Container.js';
+export type { ContainerProps } from './Container.js';

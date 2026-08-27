@@ -8,15 +8,15 @@ import {
   responsiveSlots,
   spacingValue,
   withBaseline
-} from '../../internal/grid';
-import { boxPaddingClasses } from '../box/Box';
+} from '../../internal/grid.js';
+import { boxPaddingClasses } from '../box/Box.js';
 import type {
   NebaAlignItems,
   NebaDensity,
   NebaJustifyContent,
   NebaResponsive,
   NebaSize
-} from '../../types';
+} from '../../types.js';
 
 export interface GridContainerProps extends React.ComponentPropsWithoutRef<'div'> {
   /**

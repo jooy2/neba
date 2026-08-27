@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button } from '../components/button/Button';
-import { ChevronIcon } from './icons';
+import { Button } from '../components/button/Button.js';
+import { ChevronIcon } from './icons.js';
 import {
   controlHeightClasses,
   controlTextClasses,
@@ -10,7 +10,7 @@ import {
   pressTransitionClasses,
   srOnlyClasses,
   transitionClasses
-} from './styles';
+} from './styles.js';
 import {
   addDays,
   addMonths,
@@ -35,9 +35,9 @@ import {
   yearPageStart,
   type CalendarView,
   type TimeUnit
-} from './date';
-import { dateFormatter } from './format';
-import type { NebaColor, NebaDensity, NebaSize, NebaWeekday } from '../types';
+} from './date.js';
+import { dateFormatter } from './format.js';
+import type { NebaColor, NebaDensity, NebaSize, NebaWeekday } from '../types.js';
 
 /**
  * The calendar grid and the clock columns, written once for the four pickers.

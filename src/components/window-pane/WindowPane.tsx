@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { useMessages } from '../../internal/i18n';
-import { cx, hasContent, iconClasses, surfaceClasses } from '../../internal/styles';
+import { useMessages } from '../../internal/i18n.js';
+import { cx, hasContent, iconClasses, surfaceClasses } from '../../internal/styles.js';
 import {
   WindowControls,
   orderControls,
   windowChrome,
   windowMetrics,
   windowSlots
-} from '../../internal/window';
-import type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window';
-import type { NebaColor, NebaElevation, NebaSize } from '../../types';
+} from '../../internal/window.js';
+import type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window.js';
+import type { NebaColor, NebaElevation, NebaSize } from '../../types.js';
 
-export type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window';
+export type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window.js';
 
 /** The three CSS positions a window can be laid out with. */
 export type WindowPanePosition = 'static' | 'absolute' | 'fixed';

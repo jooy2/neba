@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { boxPaddingXClasses } from '../box/Box';
+import { boxPaddingXClasses } from '../box/Box.js';
 import {
   focusRingClasses,
   gapClasses,
@@ -12,8 +12,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * What a ListItem inherits from the List around it.

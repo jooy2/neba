@@ -1,2 +1,2 @@
-export { GridContainer } from './GridContainer';
-export type { GridContainerProps } from './GridContainer';
+export { GridContainer } from './GridContainer.js';
+export type { GridContainerProps } from './GridContainer.js';

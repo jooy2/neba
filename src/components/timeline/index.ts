@@ -1,7 +1,7 @@
-export { Timeline, TimelineItem } from './Timeline';
+export { Timeline, TimelineItem } from './Timeline.js';
 export type {
   TimelineConnector,
   TimelineItemProps,
   TimelineProps,
   TimelineStatus
-} from './Timeline';
+} from './Timeline.js';

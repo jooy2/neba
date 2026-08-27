@@ -6,8 +6,8 @@ import {
   metaTextClasses,
   surfaceClasses,
   tickRowLeadingClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 /** Which side of the track the label sits on. */
 export type SwitchLabelPlacement = 'start' | 'end';

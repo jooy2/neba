@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { alignSelfClasses, offsetValue, responsiveSlots, spanValue } from '../../internal/grid';
-import type { NebaAlignSelf, NebaResponsive } from '../../types';
+import { alignSelfClasses, offsetValue, responsiveSlots, spanValue } from '../../internal/grid.js';
+import type { NebaAlignSelf, NebaResponsive } from '../../types.js';
 
 export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
   /**

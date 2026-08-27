@@ -1,2 +1,2 @@
-export { Switch } from './Switch';
-export type { SwitchLabelPlacement, SwitchProps } from './Switch';
+export { Switch } from './Switch.js';
+export type { SwitchLabelPlacement, SwitchProps } from './Switch.js';

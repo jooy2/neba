@@ -11,11 +11,11 @@ import {
   resolveColor,
   sparklineHeights,
   toValue
-} from '../../internal/chart';
-import { useMeasuredWidth } from '../../internal/chart-frame';
-import { cx, srOnlyClasses } from '../../internal/styles';
-import type { NebaChartCurve, NebaChartDatum, NebaColor, NebaSize } from '../../types';
-import { linePath } from '../../internal/chart';
+} from '../../internal/chart.js';
+import { useMeasuredWidth } from '../../internal/chart-frame.js';
+import { cx, srOnlyClasses } from '../../internal/styles.js';
+import type { NebaChartCurve, NebaChartDatum, NebaColor, NebaSize } from '../../types.js';
+import { linePath } from '../../internal/chart.js';
 
 export interface SparklineProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,

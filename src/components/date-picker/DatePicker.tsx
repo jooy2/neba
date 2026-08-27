@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar';
-import { CalendarIcon } from '../../internal/icons';
-import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
+import { Button } from '../button/Button.js';
+import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import { CalendarIcon } from '../../internal/icons.js';
+import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
 import {
   displaySamples,
   formatDate,
@@ -15,9 +15,9 @@ import {
   toISODate,
   today,
   withPlaceholder
-} from '../../internal/date';
-import { cx } from '../../internal/styles';
-import type { NebaWeekday } from '../../types';
+} from '../../internal/date.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaWeekday } from '../../types.js';
 
 /**
  * What the four pickers agree on, so a caller who has learned one has learned

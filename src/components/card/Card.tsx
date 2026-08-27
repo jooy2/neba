@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, boxPaddingXClasses, boxPaddingYClasses, type BoxProps } from '../box/Box';
+import { Box, boxPaddingXClasses, boxPaddingYClasses, type BoxProps } from '../box/Box.js';
 import {
   hasContent,
   metaTextClasses,
@@ -7,7 +7,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 
 export interface CardProps extends Omit<BoxProps, 'title' | 'padded'> {
   /**

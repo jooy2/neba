@@ -1,4 +1,4 @@
-export { DataTable } from './DataTable';
+export { DataTable } from './DataTable.js';
 export type {
   DataTableColumn,
   DataTablePaging,
@@ -8,4 +8,4 @@ export type {
   DataTableSortDirection,
   DataTableStage,
   DataTableStripe
-} from './DataTable';
+} from './DataTable.js';

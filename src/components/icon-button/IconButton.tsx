@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, type ButtonProps } from '../button/Button';
+import { Button, type ButtonProps } from '../button/Button.js';
 
 export interface IconButtonProps extends Omit<ButtonProps, 'children' | 'startIcon' | 'endIcon'> {
   /**

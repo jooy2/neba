@@ -5,8 +5,8 @@ import {
   srOnlyClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaCorner, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaCorner, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface BadgeProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color' | 'content'> {

@@ -1,2 +1,2 @@
-export { AnimateGrow } from './AnimateGrow';
-export type { AnimateGrowProps } from './AnimateGrow';
+export { AnimateGrow } from './AnimateGrow.js';
+export type { AnimateGrowProps } from './AnimateGrow.js';

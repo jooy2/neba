@@ -17,7 +17,7 @@
  */
 
 import * as React from 'react';
-import { Box, type BoxProps } from '../components/box/Box';
+import { Box, type BoxProps } from '../components/box/Box.js';
 import {
   bandScale,
   categoryAt,
@@ -41,10 +41,10 @@ import {
   type ChartValue,
   type PlotBox,
   type ValueScale
-} from './chart';
-import { numberFormatter } from './format';
-import { useMessages } from './i18n';
-import { cx, metaTextClasses, srOnlyClasses, transitionClasses } from './styles';
+} from './chart.js';
+import { numberFormatter } from './format.js';
+import { useMessages } from './i18n.js';
+import { cx, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
   NebaChartCategory,
@@ -52,7 +52,7 @@ import type {
   NebaChartSeries,
   NebaChartTooltip,
   NebaSize
-} from '../types';
+} from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Measurement

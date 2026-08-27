@@ -8,7 +8,7 @@ export {
   MenuRadioItem,
   MenuSeparator,
   MenuSubmenu
-} from './Menu';
+} from './Menu.js';
 export type {
   ContextMenuProps,
   MenuCheckboxItemProps,
@@ -19,4 +19,4 @@ export type {
   MenuRadioItemProps,
   MenuSeparatorProps,
   MenuSubmenuProps
-} from './Menu';
+} from './Menu.js';

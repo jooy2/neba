@@ -1,2 +1,2 @@
-export { Table } from './Table';
-export type { TableAlign, TableColumn, TableProps } from './Table';
+export { Table } from './Table.js';
+export type { TableAlign, TableColumn, TableProps } from './Table.js';

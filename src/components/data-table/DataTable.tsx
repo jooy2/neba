@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Box } from '../box/Box';
-import { Checkbox } from '../checkbox/Checkbox';
-import { Pagination } from '../pagination/Pagination';
-import { Select } from '../select/Select';
-import { TextField } from '../text-field/TextField';
+import { Box } from '../box/Box.js';
+import { Checkbox } from '../checkbox/Checkbox.js';
+import { Pagination } from '../pagination/Pagination.js';
+import { Select } from '../select/Select.js';
+import { TextField } from '../text-field/TextField.js';
 import {
   compareValues,
   dataHeaderHeights,
@@ -18,9 +18,9 @@ import {
   sortRows,
   virtualWindow,
   type SortEntry
-} from '../../internal/data-table';
-import { fillMessage, useMessages } from '../../internal/i18n';
-import { ChevronIcon } from '../../internal/icons';
+} from '../../internal/data-table.js';
+import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -28,8 +28,8 @@ import {
   metaTextClasses,
   paddingXValues,
   srOnlyClasses
-} from '../../internal/styles';
-import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
 
 /* ---------------------------------------------------------------------------
  * Vocabulary

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { boxPaddingXClasses } from '../box/Box';
-import { transitionProps } from '../../internal/animate';
-import { useMessages } from '../../internal/i18n';
+import { boxPaddingXClasses } from '../box/Box.js';
+import { transitionProps } from '../../internal/animate.js';
+import { useMessages } from '../../internal/i18n.js';
 import {
   hasContent,
   iconClasses,
@@ -14,14 +14,14 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
   NebaSize,
   NebaStyleProps,
   NebaTransition
-} from '../../types';
+} from '../../types.js';
 
 export interface EmptyProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title'> {

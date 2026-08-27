@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { isInfinite, useAnimateElement } from '../../internal/animate';
-import { cx } from '../../internal/styles';
-import type { NebaAnimateMode, NebaAnimateProps } from '../../types';
+import { isInfinite, useAnimateElement } from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaAnimateMode, NebaAnimateProps } from '../../types.js';
 
 export interface AnimateZoomProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
   /**

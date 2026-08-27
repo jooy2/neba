@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { NebaColor } from '../types';
+import type { NebaColor } from '../types.js';
 
 /**
  * The glyphs more than one component draws.

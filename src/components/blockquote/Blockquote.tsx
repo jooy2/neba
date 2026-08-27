@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { boxPaddingClasses } from '../box/Box';
-import { transitionProps } from '../../internal/animate';
+import { boxPaddingClasses } from '../box/Box.js';
+import { transitionProps } from '../../internal/animate.js';
 import {
   hasContent,
   metaTextClasses,
@@ -8,8 +8,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types.js';
 
 /**
  * The props are a `<figure>`'s rather than a `<blockquote>`'s, which is a

@@ -11,14 +11,14 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaOrientation,
   NebaSize,
   NebaStyleProps,
   NebaVariant
-} from '../../types';
+} from '../../types.js';
 
 /**
  * What a Tab inherits from the Tabs around it.

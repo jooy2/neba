@@ -6,7 +6,7 @@ import {
   type CartesianLayout,
   type ChartMark,
   type ChartTooltipItem
-} from '../../internal/chart-frame';
+} from '../../internal/chart-frame.js';
 import {
   barBandRatio,
   barMaxThickness,
@@ -19,9 +19,9 @@ import {
   timeScale,
   toNumber,
   type TimeScale
-} from '../../internal/chart';
-import { srOnlyClasses } from '../../internal/styles';
-import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types';
+} from '../../internal/chart.js';
+import { srOnlyClasses } from '../../internal/styles.js';
+import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
 
 export interface TimelineChartProps extends Omit<
   CartesianChartProps,

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Popover } from '@base-ui/react/popover';
-import { CloseIcon } from './icons';
-import { WidthSizer } from './sizer';
+import { CloseIcon } from './icons.js';
+import { WidthSizer } from './sizer.js';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -21,9 +21,9 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from './styles';
-import type { PickerLabels } from './calendar';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types';
+} from './styles.js';
+import type { PickerLabels } from './calendar.js';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
 
 /**
  * The shell all four pickers wear: a field-shaped trigger with a popup hanging

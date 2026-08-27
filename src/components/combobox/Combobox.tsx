@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Combobox as BaseUICombobox } from '@base-ui/react/combobox';
 import { Field } from '@base-ui/react/field';
-import { Chip } from '../chip/Chip';
-import { fillMessage, useMessages } from '../../internal/i18n';
-import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons';
+import { Chip } from '../chip/Chip.js';
+import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons.js';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -22,8 +22,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * What a Combobox's value may be — the same two types a [Select](../select)

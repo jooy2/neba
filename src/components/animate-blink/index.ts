@@ -1,2 +1,2 @@
-export { AnimateBlink } from './AnimateBlink';
-export type { AnimateBlinkProps } from './AnimateBlink';
+export { AnimateBlink } from './AnimateBlink.js';
+export type { AnimateBlinkProps } from './AnimateBlink.js';

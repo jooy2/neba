@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate';
-import { cx, srOnlyClasses } from '../../internal/styles';
-import type { NebaAnimateProps } from '../../types';
+import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
+import { cx, srOnlyClasses } from '../../internal/styles.js';
+import type { NebaAnimateProps } from '../../types.js';
 
 export interface AnimateTypingProps
   extends

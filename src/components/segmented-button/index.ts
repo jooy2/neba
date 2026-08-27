@@ -1,2 +1,2 @@
-export { Segment, SegmentedButton } from './SegmentedButton';
-export type { SegmentedButtonProps, SegmentProps, SegmentValue } from './SegmentedButton';
+export { Segment, SegmentedButton } from './SegmentedButton.js';
+export type { SegmentedButtonProps, SegmentProps, SegmentValue } from './SegmentedButton.js';

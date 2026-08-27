@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button as BaseUIButton } from '@base-ui/react/button';
 import { useRender } from '@base-ui/react/use-render';
-import { ButtonGroupContext } from '../../internal/button-group';
+import { ButtonGroupContext } from '../../internal/button-group.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -17,8 +17,8 @@ import {
   readOnlyFilterClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface ButtonProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> {

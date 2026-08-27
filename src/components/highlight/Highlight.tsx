@@ -1,7 +1,7 @@
 import * as React from 'react';
-import type { TypographyWeight } from '../typography/Typography';
-import { transitionClasses } from '../../internal/styles';
-import type { NebaColor, NebaVariant } from '../../types';
+import type { TypographyWeight } from '../typography/Typography.js';
+import { transitionClasses } from '../../internal/styles.js';
+import type { NebaColor, NebaVariant } from '../../types.js';
 
 export interface HighlightProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
   /**

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group';
-import type { NebaElevation, NebaOrientation, NebaStyleProps } from '../../types';
+import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
+import type { NebaElevation, NebaOrientation, NebaStyleProps } from '../../types.js';
 
 export interface ButtonGroupProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {

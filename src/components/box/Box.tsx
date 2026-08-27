@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { transitionProps } from '../../internal/animate';
+import { transitionProps } from '../../internal/animate.js';
 import {
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
   NebaSize,
   NebaStyleProps,
   NebaTransition
-} from '../../types';
+} from '../../types.js';
 
 export interface BoxProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { useMessages } from '../../internal/i18n';
-import { boxPaddingClasses, boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
+import { Button } from '../button/Button.js';
+import { useMessages } from '../../internal/i18n.js';
+import { boxPaddingClasses, boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
   hasContent,
   metaTextClasses,
@@ -9,8 +9,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
 
 export interface SpoilerProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,

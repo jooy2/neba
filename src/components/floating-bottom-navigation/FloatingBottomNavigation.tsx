@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation';
+import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation.js';
 import type {
   BottomNavigationLabels,
   BottomNavigationValue
-} from '../../internal/bottom-navigation';
-import { cx, surfaceClasses, surfaceSlots, transitionClasses } from '../../internal/styles';
+} from '../../internal/bottom-navigation.js';
+import { cx, surfaceClasses, surfaceSlots, transitionClasses } from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
@@ -13,7 +13,7 @@ import type {
   NebaSize,
   NebaStyleProps,
   NebaVariant
-} from '../../types';
+} from '../../types.js';
 
 /**
  * Where a floating bar sits, with one value the shared vocabulary does not have.

@@ -14,9 +14,9 @@
  */
 
 import * as React from 'react';
-import { areaPath, chartFontSizes, linePath, lineWidths, markerRadii, markGap } from './chart';
-import type { CartesianContext } from './chart-frame';
-import type { NebaChartCurve, NebaChartValueLabels } from '../types';
+import { areaPath, chartFontSizes, linePath, lineWidths, markerRadii, markGap } from './chart.js';
+import type { CartesianContext } from './chart-frame.js';
+import type { NebaChartCurve, NebaChartValueLabels } from '../types.js';
 
 /** Whether a point gets a dot on it. */
 export type ChartMarkers = 'none' | 'auto' | 'all';

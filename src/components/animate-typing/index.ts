@@ -1,2 +1,2 @@
-export { AnimateTyping } from './AnimateTyping';
-export type { AnimateTypingProps } from './AnimateTyping';
+export { AnimateTyping } from './AnimateTyping.js';
+export type { AnimateTypingProps } from './AnimateTyping.js';

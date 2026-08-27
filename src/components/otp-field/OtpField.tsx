@@ -10,8 +10,14 @@ import {
   stackGapClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type {
+  NebaColor,
+  NebaDensity,
+  NebaElevation,
+  NebaSize,
+  NebaStyleProps
+} from '../../types.js';
 
 /**
  * What may be typed into a slot.

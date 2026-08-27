@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { isInfinite, slideOffsets, useAnimateElement } from '../../internal/animate';
-import { cx } from '../../internal/styles';
-import type { NebaAnimateMode, NebaAnimateProps, NebaSide } from '../../types';
+import { isInfinite, slideOffsets, useAnimateElement } from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaAnimateMode, NebaAnimateProps, NebaSide } from '../../types.js';
 
 export interface AnimateSlideProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
   /**

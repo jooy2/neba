@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { IconButton } from '../icon-button/IconButton';
-import { fillMessage, useMessages } from '../../internal/i18n';
-import { ChevronIcon } from '../../internal/icons';
+import { IconButton } from '../icon-button/IconButton.js';
+import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { ChevronIcon } from '../../internal/icons.js';
 import {
   radiusClasses,
   srOnlyClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface CarouselProps
   extends

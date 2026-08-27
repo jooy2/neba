@@ -1,2 +1,2 @@
-export { AreaChart } from './AreaChart';
-export type { AreaChartProps } from './AreaChart';
+export { AreaChart } from './AreaChart.js';
+export type { AreaChartProps } from './AreaChart.js';

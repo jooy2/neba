@@ -1,2 +1,2 @@
-export { Highlight } from './Highlight';
-export type { HighlightProps } from './Highlight';
+export { Highlight } from './Highlight.js';
+export type { HighlightProps } from './Highlight.js';

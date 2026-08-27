@@ -12,7 +12,7 @@
  */
 
 import type * as React from 'react';
-import type { NebaColor, NebaSize } from '../types';
+import type { NebaColor, NebaSize } from '../types.js';
 
 /**
  * The props all three indicators take.

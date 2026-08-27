@@ -1,2 +1,2 @@
-export { Tab, TabPanel, Tabs } from './Tabs';
-export type { TabPanelProps, TabProps, TabsProps, TabValue } from './Tabs';
+export { Tab, TabPanel, Tabs } from './Tabs.js';
+export type { TabPanelProps, TabProps, TabsProps, TabValue } from './Tabs.js';

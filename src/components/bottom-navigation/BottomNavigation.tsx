@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation';
+import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation.js';
 import type {
   BottomNavigationLabels,
   BottomNavigationValue
-} from '../../internal/bottom-navigation';
+} from '../../internal/bottom-navigation.js';
 import {
   cx,
   hasContent,
@@ -16,7 +16,7 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
@@ -24,12 +24,12 @@ import type {
   NebaSize,
   NebaStyleProps,
   NebaVariant
-} from '../../types';
+} from '../../types.js';
 
 export type {
   BottomNavigationLabels,
   BottomNavigationValue
-} from '../../internal/bottom-navigation';
+} from '../../internal/bottom-navigation.js';
 
 export interface BottomNavigationProps
   extends

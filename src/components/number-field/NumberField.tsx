@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { NumberField as BaseUINumberField } from '@base-ui/react/number-field';
 import { Field } from '@base-ui/react/field';
-import { useMessages } from '../../internal/i18n';
-import { MinusIcon, PlusIcon } from '../../internal/icons';
+import { useMessages } from '../../internal/i18n.js';
+import { MinusIcon, PlusIcon } from '../../internal/icons.js';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -19,8 +19,8 @@ import {
   stackGapClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types.js';
 
 /**
  * Where the two steppers sit.

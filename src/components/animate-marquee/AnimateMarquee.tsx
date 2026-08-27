@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate';
-import { cx } from '../../internal/styles';
-import type { NebaAnimateProps, NebaOrientation } from '../../types';
+import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaAnimateProps, NebaOrientation } from '../../types.js';
 
 export interface AnimateMarqueeProps
   extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {

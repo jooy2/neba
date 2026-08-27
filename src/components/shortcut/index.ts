@@ -1,2 +1,2 @@
-export { Shortcut } from './Shortcut';
-export type { ShortcutOS, ShortcutProps } from './Shortcut';
+export { Shortcut } from './Shortcut.js';
+export type { ShortcutOS, ShortcutProps } from './Shortcut.js';

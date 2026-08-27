@@ -1,2 +1,2 @@
-export { AnimateRotate } from './AnimateRotate';
-export type { AnimateRotateProps } from './AnimateRotate';
+export { AnimateRotate } from './AnimateRotate.js';
+export type { AnimateRotateProps } from './AnimateRotate.js';

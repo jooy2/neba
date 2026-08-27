@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StarIcon, StarOutlineIcon } from '../../internal/icons';
-import { fillMessage, useMessages } from '../../internal/i18n';
+import { StarIcon, StarOutlineIcon } from '../../internal/icons.js';
+import { fillMessage, useMessages } from '../../internal/i18n.js';
 import {
   controlSlots,
   focusWithinRingClasses,
@@ -9,8 +9,8 @@ import {
   radiusClasses,
   srOnlyClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface RatingProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,

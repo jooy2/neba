@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { isInfinite, useAnimateElement } from '../../internal/animate';
-import { cx, radiusClasses } from '../../internal/styles';
-import type { NebaAnimateProps, NebaColor, NebaSize } from '../../types';
+import { isInfinite, useAnimateElement } from '../../internal/animate.js';
+import { cx, radiusClasses } from '../../internal/styles.js';
+import type { NebaAnimateProps, NebaColor, NebaSize } from '../../types.js';
 
 export interface AnimateLightingProps
   extends NebaAnimateProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {

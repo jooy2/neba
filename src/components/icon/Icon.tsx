@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { transitionProps } from '../../internal/animate';
-import { iconSizeClasses } from '../../internal/styles';
-import type { NebaColor, NebaSize, NebaTransition } from '../../types';
+import { transitionProps } from '../../internal/animate.js';
+import { iconSizeClasses } from '../../internal/styles.js';
+import type { NebaColor, NebaSize, NebaTransition } from '../../types.js';
 
 /**
  * The same five lengths as `iconSizeClasses`, as a font size.

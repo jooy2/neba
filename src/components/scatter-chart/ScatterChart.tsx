@@ -5,7 +5,7 @@ import {
   type CartesianContext,
   type CartesianLayout,
   type ChartMark
-} from '../../internal/chart-frame';
+} from '../../internal/chart-frame.js';
 import {
   bubbleRadius,
   formatCategory,
@@ -16,9 +16,9 @@ import {
   plotHeights,
   pointX,
   type MarkShape
-} from '../../internal/chart';
-import { cx, srOnlyClasses } from '../../internal/styles';
-import type { NebaChartCategory, NebaChartSeries } from '../../types';
+} from '../../internal/chart.js';
+import { cx, srOnlyClasses } from '../../internal/styles.js';
+import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
 
 /**
  * How many series the palette can tell apart on a plot where any two marks may

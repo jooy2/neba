@@ -4,9 +4,9 @@ import {
   lengthValue,
   useAnimationRun,
   usePrefersReducedMotion
-} from '../../internal/animate';
-import { cx } from '../../internal/styles';
-import type { NebaAnimateProps } from '../../types';
+} from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaAnimateProps } from '../../types.js';
 
 export interface AnimateHeadlineProps
   extends Omit<NebaAnimateProps, 'alternate' | 'mode'>, React.ComponentPropsWithoutRef<'div'> {

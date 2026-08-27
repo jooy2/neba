@@ -1,2 +1,2 @@
-export { ProgressCircular } from './ProgressCircular';
-export type { ProgressCircularProps } from './ProgressCircular';
+export { ProgressCircular } from './ProgressCircular.js';
+export type { ProgressCircularProps } from './ProgressCircular.js';

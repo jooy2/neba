@@ -1,2 +1,2 @@
-export { TimelineChart } from './TimelineChart';
-export type { TimelineChartProps } from './TimelineChart';
+export { TimelineChart } from './TimelineChart.js';
+export type { TimelineChartProps } from './TimelineChart.js';

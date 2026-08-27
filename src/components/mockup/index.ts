@@ -1,4 +1,4 @@
-export { Mockup } from './Mockup';
+export { Mockup } from './Mockup.js';
 export type {
   MockupProps,
   NebaMockupBezel,
@@ -9,4 +9,4 @@ export type {
   NebaMockupOrientation,
   NebaMockupOs,
   NebaMockupResolution
-} from './Mockup';
+} from './Mockup.js';

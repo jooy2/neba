@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
-import { useMessages } from '../../internal/i18n';
-import { surfaceSlots } from '../../internal/styles';
-import type { NebaAlign, NebaColor, NebaSize } from '../../types';
+import { useMessages } from '../../internal/i18n.js';
+import { surfaceSlots } from '../../internal/styles.js';
+import type { NebaAlign, NebaColor, NebaSize } from '../../types.js';
 
 /**
  * How much of the page the overlay takes away.

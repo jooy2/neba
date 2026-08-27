@@ -1,2 +1,2 @@
-export { AnimateHeadline } from './AnimateHeadline';
-export type { AnimateHeadlineProps } from './AnimateHeadline';
+export { AnimateHeadline } from './AnimateHeadline.js';
+export type { AnimateHeadlineProps } from './AnimateHeadline.js';

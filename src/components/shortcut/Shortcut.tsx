@@ -8,8 +8,8 @@ import {
   srOnlyClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * Which keyboard the shortcut is being read on.

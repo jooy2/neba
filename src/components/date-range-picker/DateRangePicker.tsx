@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar';
-import { ArrowRightIcon, CalendarIcon } from '../../internal/icons';
-import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
-import { WidthSizer } from '../../internal/sizer';
+import { Button } from '../button/Button.js';
+import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import { ArrowRightIcon, CalendarIcon } from '../../internal/icons.js';
+import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
+import { WidthSizer } from '../../internal/sizer.js';
 import {
   addMonths,
   compareDay,
@@ -16,9 +16,9 @@ import {
   toISODate,
   today,
   withPlaceholder
-} from '../../internal/date';
-import { cx, gapClasses, metaTextClasses } from '../../internal/styles';
-import type { NebaWeekday } from '../../types';
+} from '../../internal/date.js';
+import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
+import type { NebaWeekday } from '../../types.js';
 
 /**
  * Two ends, either of which may be missing.

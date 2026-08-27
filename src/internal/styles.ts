@@ -16,7 +16,7 @@
  */
 
 import type * as React from 'react';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types';
+import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Scales

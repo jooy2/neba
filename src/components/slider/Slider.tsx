@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slider as BaseUISlider } from '@base-ui/react/slider';
-import { metaTextClasses, surfaceClasses, transitionClasses } from '../../internal/styles';
-import type { NebaColor, NebaOrientation, NebaSize } from '../../types';
+import { metaTextClasses, surfaceClasses, transitionClasses } from '../../internal/styles.js';
+import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 type BaseSliderProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUISlider.Root>,

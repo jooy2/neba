@@ -1,2 +1,2 @@
-export { Skeleton } from './Skeleton';
-export type { NebaSkeletonShape, SkeletonProps } from './Skeleton';
+export { Skeleton } from './Skeleton.js';
+export type { NebaSkeletonShape, SkeletonProps } from './Skeleton.js';

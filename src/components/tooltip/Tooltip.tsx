@@ -6,8 +6,8 @@ import {
   paddingXClasses,
   radiusClasses,
   surfaceClasses
-} from '../../internal/styles';
-import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface TooltipProps
   extends

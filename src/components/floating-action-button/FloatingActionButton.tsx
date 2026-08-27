@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { CloseIcon, PlusIcon } from '../../internal/icons';
+import { Button } from '../button/Button.js';
+import { CloseIcon, PlusIcon } from '../../internal/icons.js';
 import {
   cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
   surfaceClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaColor,
   NebaCorner,
@@ -17,7 +17,7 @@ import type {
   NebaSize,
   NebaStyleProps,
   NebaVariant
-} from '../../types';
+} from '../../types.js';
 
 /**
  * Where a floating button sits, with one value the shared vocabulary does not

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Collapsible as BaseUICollapsible } from '@base-ui/react/collapsible';
-import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
-import { ChevronIcon } from '../../internal/icons';
+import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
+import { ChevronIcon } from '../../internal/icons.js';
 import {
   gapClasses,
   hasContent,
@@ -14,8 +14,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaStyleProps } from '../../types.js';
 
 export interface CollapsibleProps
   extends

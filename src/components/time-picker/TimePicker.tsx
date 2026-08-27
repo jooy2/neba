@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
+import { Button } from '../button/Button.js';
 import {
   TimeGrid,
   usePickerLabels,
   type PickerLabels,
   type TimeUnit
-} from '../../internal/calendar';
-import { ClockIcon } from '../../internal/icons';
-import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker';
+} from '../../internal/calendar.js';
+import { ClockIcon } from '../../internal/icons.js';
+import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
 import {
   displaySamples,
   formatDate,
@@ -18,8 +18,8 @@ import {
   toISOTime,
   withPlaceholder,
   withTime
-} from '../../internal/date';
-import { cx } from '../../internal/styles';
+} from '../../internal/date.js';
+import { cx } from '../../internal/styles.js';
 
 /**
  * Which column of the clock a row belongs to. Re-exported so a caller writing a

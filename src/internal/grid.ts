@@ -23,7 +23,7 @@ import type {
   NebaBreakpoint,
   NebaJustifyContent,
   NebaResponsive
-} from '../types';
+} from '../types.js';
 
 /** Smallest first, which is also the order the media queries have to be in. */
 export const breakpoints: readonly NebaBreakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];

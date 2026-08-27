@@ -27,8 +27,8 @@
  */
 
 import * as React from 'react';
-import { cx } from './styles';
-import type { NebaColor, NebaSize } from '../types';
+import { cx } from './styles.js';
+import type { NebaColor, NebaSize } from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * The vocabulary

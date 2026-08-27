@@ -3,7 +3,7 @@ import {
   CartesianChart,
   type CartesianChartProps,
   type CartesianContext
-} from '../../internal/chart-frame';
+} from '../../internal/chart-frame.js';
 import {
   barBandRatio,
   barMaxThickness,
@@ -13,8 +13,13 @@ import {
   markGap,
   toValues,
   type ChartValue
-} from '../../internal/chart';
-import type { NebaChartSeries, NebaChartValueLabels, NebaOrientation, NebaSize } from '../../types';
+} from '../../internal/chart.js';
+import type {
+  NebaChartSeries,
+  NebaChartValueLabels,
+  NebaOrientation,
+  NebaSize
+} from '../../types.js';
 
 export interface BarChartProps extends CartesianChartProps {
   /**

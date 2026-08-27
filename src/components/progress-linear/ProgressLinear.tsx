@@ -7,9 +7,9 @@ import {
   progressSlots,
   progressText,
   type ProgressSharedProps
-} from '../../internal/progress';
-import { metaTextClasses, stackGapClasses } from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+} from '../../internal/progress.js';
+import { metaTextClasses, stackGapClasses } from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface ProgressLinearProps extends ProgressSharedProps {
   /** Thickness of the groove. Nothing else on a bar has a size. */

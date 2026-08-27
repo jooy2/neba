@@ -1,2 +1,2 @@
-export { TimePicker } from './TimePicker';
-export type { TimePickerProps, TimeUnit } from './TimePicker';
+export { TimePicker } from './TimePicker.js';
+export type { TimePickerProps, TimeUnit } from './TimePicker.js';

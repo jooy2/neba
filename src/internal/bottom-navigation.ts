@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { NebaDensity, NebaSize } from '../types';
+import type { NebaDensity, NebaSize } from '../types.js';
 
 /** A destination's value. The same restraint Tabs and SegmentedButton put on theirs. */
 export type BottomNavigationValue = string | number;

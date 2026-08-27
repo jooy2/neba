@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types';
+import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types.js';
 
 /**
  * What a Button inherits from the ButtonGroup around it.

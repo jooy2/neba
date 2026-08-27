@@ -1,2 +1,2 @@
-export { ScatterChart } from './ScatterChart';
-export type { ScatterChartProps } from './ScatterChart';
+export { ScatterChart } from './ScatterChart.js';
+export type { ScatterChartProps } from './ScatterChart.js';

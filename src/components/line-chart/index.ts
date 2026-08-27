@@ -1,2 +1,2 @@
-export { LineChart } from './LineChart';
-export type { LineChartProps } from './LineChart';
+export { LineChart } from './LineChart.js';
+export type { LineChartProps } from './LineChart.js';

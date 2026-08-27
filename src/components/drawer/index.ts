@@ -1,2 +1,2 @@
-export { Drawer, DrawerClose } from './Drawer';
-export type { DrawerCloseProps, DrawerProps, NebaDrawerMode } from './Drawer';
+export { Drawer, DrawerClose } from './Drawer.js';
+export type { DrawerCloseProps, DrawerProps, NebaDrawerMode } from './Drawer.js';

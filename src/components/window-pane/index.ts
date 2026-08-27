@@ -1,4 +1,4 @@
-export { WindowPane } from './WindowPane';
+export { WindowPane } from './WindowPane.js';
 export type {
   NebaWindowControl,
   NebaWindowOffset,
@@ -6,4 +6,4 @@ export type {
   WindowPanePosition,
   WindowPaneProps,
   WindowPaneSize
-} from './WindowPane';
+} from './WindowPane.js';

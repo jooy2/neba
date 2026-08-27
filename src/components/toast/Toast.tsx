@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
-import { boxPaddingClasses } from '../box/Box';
-import { useMessages } from '../../internal/i18n';
-import { CloseIcon, severityIcons } from '../../internal/icons';
+import { boxPaddingClasses } from '../box/Box.js';
+import { useMessages } from '../../internal/i18n.js';
+import { CloseIcon, severityIcons } from '../../internal/icons.js';
 import {
   controlSlots,
   focusRingClasses,
@@ -15,8 +15,8 @@ import {
   sheetSectionGapClasses,
   sheetTitleClasses,
   surfaceClasses
-} from '../../internal/styles';
-import type { NebaAlign, NebaColor, NebaSize, NebaStyleProps, NebaVariant } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaAlign, NebaColor, NebaSize, NebaStyleProps, NebaVariant } from '../../types.js';
 
 /**
  * Where the stack sits.

@@ -27,7 +27,7 @@
  */
 
 import * as React from 'react';
-import type { NebaSize } from '../types';
+import type { NebaSize } from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * The vocabulary

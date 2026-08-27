@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
+import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
   hasContent,
   radiusClasses,
@@ -8,8 +8,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaPosition, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaPosition, NebaStyleProps } from '../../types.js';
 
 export interface ToolbarProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {

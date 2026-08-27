@@ -14,7 +14,7 @@
  * React in this file, and nothing in it knows what a column is.
  */
 
-import type { NebaDensity, NebaSize } from '../types';
+import type { NebaDensity, NebaSize } from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Scales

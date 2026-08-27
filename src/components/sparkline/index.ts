@@ -1,2 +1,2 @@
-export { Sparkline } from './Sparkline';
-export type { SparklineProps } from './Sparkline';
+export { Sparkline } from './Sparkline.js';
+export type { SparklineProps } from './Sparkline.js';

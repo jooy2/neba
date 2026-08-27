@@ -1,2 +1,2 @@
-export { ProgressBox } from './ProgressBox';
-export type { ProgressBoxProps } from './ProgressBox';
+export { ProgressBox } from './ProgressBox.js';
+export type { ProgressBoxProps } from './ProgressBox.js';

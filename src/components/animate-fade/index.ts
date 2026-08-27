@@ -1,2 +1,2 @@
-export { AnimateFade } from './AnimateFade';
-export type { AnimateFadeProps } from './AnimateFade';
+export { AnimateFade } from './AnimateFade.js';
+export type { AnimateFadeProps } from './AnimateFade.js';

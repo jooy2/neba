@@ -1,2 +1,2 @@
-export { Overlay } from './Overlay';
-export type { OverlayProps, OverlayTone } from './Overlay';
+export { Overlay } from './Overlay.js';
+export type { OverlayProps, OverlayTone } from './Overlay.js';

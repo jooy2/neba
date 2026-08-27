@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { transitionProps } from '../../internal/animate';
-import type { NebaColor, NebaTransition } from '../../types';
+import { transitionProps } from '../../internal/animate.js';
+import type { NebaColor, NebaTransition } from '../../types.js';
 
 /**
  * What a piece of text *is*, which decides both its type scale and the element

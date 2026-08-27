@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { CartesianChart, type CartesianChartProps } from '../../internal/chart-frame';
-import { LineSeries, type ChartMarkers } from '../../internal/chart-line';
-import { toValues } from '../../internal/chart';
-import type { NebaChartCurve, NebaChartSeries, NebaChartValueLabels } from '../../types';
+import { CartesianChart, type CartesianChartProps } from '../../internal/chart-frame.js';
+import { LineSeries, type ChartMarkers } from '../../internal/chart-line.js';
+import { toValues } from '../../internal/chart.js';
+import type { NebaChartCurve, NebaChartSeries, NebaChartValueLabels } from '../../types.js';
 
 export interface AreaChartProps extends CartesianChartProps {
   /**

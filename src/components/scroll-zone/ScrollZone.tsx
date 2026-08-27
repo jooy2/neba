@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { IconButton } from '../icon-button/IconButton';
-import { spacingValue } from '../../internal/grid';
-import { useMessages } from '../../internal/i18n';
-import { ChevronIcon } from '../../internal/icons';
-import { cx } from '../../internal/styles';
-import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types';
+import { IconButton } from '../icon-button/IconButton.js';
+import { spacingValue } from '../../internal/grid.js';
+import { useMessages } from '../../internal/i18n.js';
+import { ChevronIcon } from '../../internal/icons.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * When the scroll buttons are drawn.

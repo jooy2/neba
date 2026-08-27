@@ -11,14 +11,14 @@ import {
   paddingXClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
   NebaSize,
   NebaStyleProps,
   NebaVariant
-} from '../../types';
+} from '../../types.js';
 
 /** A segment's value. The same restraint Tabs and Select put on theirs. */
 export type SegmentValue = string | number;

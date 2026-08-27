@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Box, type BoxProps } from '../box/Box';
-import { Chip } from '../chip/Chip';
-import { MinusIcon, TrendDownIcon, TrendUpIcon } from '../../internal/icons';
-import { numberFormatter } from '../../internal/format';
-import { hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles';
-import type { NebaAlign, NebaSize } from '../../types';
+import { Box, type BoxProps } from '../box/Box.js';
+import { Chip } from '../chip/Chip.js';
+import { MinusIcon, TrendDownIcon, TrendUpIcon } from '../../internal/icons.js';
+import { numberFormatter } from '../../internal/format.js';
+import { hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles.js';
+import type { NebaAlign, NebaSize } from '../../types.js';
 
 /** Which way a figure moved, and the third case that is neither. */
 type Trend = 'up' | 'down' | 'flat';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { NebaColor, NebaDensity, NebaSize } from '../types';
+import type { NebaColor, NebaDensity, NebaSize } from '../types.js';
 
 /**
  * What a menu item inherits from the menu around it.

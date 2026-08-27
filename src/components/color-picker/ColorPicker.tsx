@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { defaultPickerLabels } from '../../internal/calendar';
-import { PickerShell } from '../../internal/picker';
-import { CheckIcon } from '../../internal/icons';
-import { useMessages } from '../../internal/i18n';
+import { defaultPickerLabels } from '../../internal/calendar.js';
+import { PickerShell } from '../../internal/picker.js';
+import { CheckIcon } from '../../internal/icons.js';
+import { useMessages } from '../../internal/i18n.js';
 import {
   checkerBackground,
   clamp,
@@ -11,7 +11,7 @@ import {
   formatColor,
   parseColor,
   readableInk
-} from '../../internal/color';
+} from '../../internal/color.js';
 import {
   controlTextClasses,
   cx,
@@ -20,9 +20,9 @@ import {
   radiusClasses,
   stackGapClasses,
   surfaceSlots
-} from '../../internal/styles';
-import type { ColorFormat, Hsv } from '../../internal/color';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { ColorFormat, Hsv } from '../../internal/color.js';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /** The names for the parts of the picker that have no text on them. */
 export interface ColorPickerLabels {

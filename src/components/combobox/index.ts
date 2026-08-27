@@ -1,2 +1,2 @@
-export { Combobox } from './Combobox';
-export type { ComboboxOption, ComboboxProps, ComboboxValue } from './Combobox';
+export { Combobox } from './Combobox.js';
+export type { ComboboxOption, ComboboxProps, ComboboxValue } from './Combobox.js';

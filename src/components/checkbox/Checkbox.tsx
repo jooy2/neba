@@ -9,8 +9,8 @@ import {
   tickRowLeadingClasses,
   tickSizeClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 /**
  * Base UI's own props, minus the ones this component owns: `className` and

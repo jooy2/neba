@@ -1,2 +1,2 @@
-export { HeatmapChart } from './HeatmapChart';
-export type { HeatmapChartProps } from './HeatmapChart';
+export { HeatmapChart } from './HeatmapChart.js';
+export type { HeatmapChartProps } from './HeatmapChart.js';

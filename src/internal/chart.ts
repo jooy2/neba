@@ -16,7 +16,7 @@
  */
 
 import type * as React from 'react';
-import { dateFormatter, numberFormatter } from './format';
+import { dateFormatter, numberFormatter } from './format.js';
 import type {
   NebaChartCategory,
   NebaChartDatum,
@@ -25,7 +25,7 @@ import type {
   NebaColor,
   NebaDensity,
   NebaSize
-} from '../types';
+} from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Scales

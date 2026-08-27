@@ -7,9 +7,9 @@ import {
   isInfinite,
   slideOffsets,
   useAnimationRun
-} from '../../internal/animate';
-import { cx } from '../../internal/styles';
-import type { NebaAnimateProps, NebaSide } from '../../types';
+} from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
+import type { NebaAnimateProps, NebaSide } from '../../types.js';
 
 export interface AnimateAppearProps
   extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {

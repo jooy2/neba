@@ -1,2 +1,2 @@
-export { AnimateAppear } from './AnimateAppear';
-export type { AnimateAppearProps } from './AnimateAppear';
+export { AnimateAppear } from './AnimateAppear.js';
+export type { AnimateAppearProps } from './AnimateAppear.js';

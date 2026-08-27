@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { Calendar, TimeGrid, usePickerLabels, type PickerLabels } from '../../internal/calendar';
-import { CalendarIcon } from '../../internal/icons';
+import { Button } from '../button/Button.js';
+import { Calendar, TimeGrid, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import { CalendarIcon } from '../../internal/icons.js';
 import {
   PickerDivider,
   PickerFooter,
   PickerShell,
   type PickerShellProps
-} from '../../internal/picker';
+} from '../../internal/picker.js';
 import {
   displaySamples,
   formatDate,
@@ -24,9 +24,9 @@ import {
   withPlaceholder,
   withTime,
   type TimeUnit
-} from '../../internal/date';
-import { cx, gapClasses } from '../../internal/styles';
-import type { NebaWeekday } from '../../types';
+} from '../../internal/date.js';
+import { cx, gapClasses } from '../../internal/styles.js';
+import type { NebaWeekday } from '../../types.js';
 
 export interface DateTimePickerProps extends PickerShellProps {
   /** The chosen moment. Use with `onValueChange` for a controlled picker. */

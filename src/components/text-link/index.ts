@@ -1,2 +1,2 @@
-export { TextLink } from './TextLink';
-export type { TextLinkProps, TextLinkUnderline } from './TextLink';
+export { TextLink } from './TextLink.js';
+export type { TextLinkProps, TextLinkUnderline } from './TextLink.js';

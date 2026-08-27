@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { boxPaddingXClasses } from '../box/Box';
-import type { NebaDensity, NebaSize } from '../../types';
+import { boxPaddingXClasses } from '../box/Box.js';
+import type { NebaDensity, NebaSize } from '../../types.js';
 
 export interface ContainerProps extends React.ComponentPropsWithoutRef<'div'> {
   /**

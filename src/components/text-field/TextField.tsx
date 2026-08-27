@@ -16,8 +16,8 @@ import {
   stackGapClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /** How the multiline control may be resized by the user. Ignored when single line. */
 export type TextFieldResize = 'none' | 'vertical' | 'horizontal' | 'both';

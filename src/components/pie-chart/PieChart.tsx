@@ -8,7 +8,7 @@ import {
   useVisibility,
   type ChartBaseProps,
   type ChartTooltipItem
-} from '../../internal/chart-frame';
+} from '../../internal/chart-frame.js';
 import {
   arcPath,
   categoryAt,
@@ -19,17 +19,17 @@ import {
   plotHeights,
   seriesColor,
   toValue
-} from '../../internal/chart';
-import { numberFormatter } from '../../internal/format';
-import { cx, metaTextClasses } from '../../internal/styles';
-import { useMessages } from '../../internal/i18n';
+} from '../../internal/chart.js';
+import { numberFormatter } from '../../internal/format.js';
+import { cx, metaTextClasses } from '../../internal/styles.js';
+import { useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartCategory,
   NebaChartDatum,
   NebaChartLegend,
   NebaChartSeries,
   NebaChartTooltip
-} from '../../types';
+} from '../../types.js';
 
 /** How much of the middle is cut out, per shape. */
 const holes = { pie: 0, donut: 0.62, semi: 0.62 } as const;

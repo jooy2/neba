@@ -10,8 +10,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaDensity, NebaOrientation, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaDensity, NebaOrientation, NebaSize } from '../../types.js';
 
 /**
  * How far along one item is.

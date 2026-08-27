@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ChevronIcon } from '../../internal/icons';
+import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextClasses,
   cx,
@@ -10,8 +10,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * How the hierarchy is drawn.

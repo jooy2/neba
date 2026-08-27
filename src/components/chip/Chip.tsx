@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n';
-import { CloseIcon } from '../../internal/icons';
-import { transitionProps } from '../../internal/animate';
+import { useMessages } from '../../internal/i18n.js';
+import { CloseIcon } from '../../internal/icons.js';
+import { transitionProps } from '../../internal/animate.js';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -16,8 +16,8 @@ import {
   radiusClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types.js';
 
 export interface ChipProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {

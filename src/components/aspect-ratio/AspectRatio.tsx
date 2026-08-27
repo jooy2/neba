@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { radiusClasses } from '../../internal/styles';
-import type { NebaSize } from '../../types';
+import { radiusClasses } from '../../internal/styles.js';
+import type { NebaSize } from '../../types.js';
 
 /**
  * How the media inside is fitted to the box, spelled the way CSS spells it.

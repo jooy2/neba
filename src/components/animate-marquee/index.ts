@@ -1,2 +1,2 @@
-export { AnimateMarquee } from './AnimateMarquee';
-export type { AnimateMarqueeProps } from './AnimateMarquee';
+export { AnimateMarquee } from './AnimateMarquee.js';
+export type { AnimateMarqueeProps } from './AnimateMarquee.js';

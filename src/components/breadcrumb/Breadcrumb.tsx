@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n';
-import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons';
+import { useMessages } from '../../internal/i18n.js';
+import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';
 import {
   controlTextClasses,
   cx,
@@ -9,8 +9,8 @@ import {
   iconClasses,
   radiusClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaDensity, NebaSize } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaDensity, NebaSize } from '../../types.js';
 
 /**
  * What is drawn between two steps of the trail.

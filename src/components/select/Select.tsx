@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Select as BaseUISelect } from '@base-ui/react/select';
 import { Field } from '@base-ui/react/field';
-import { CheckIcon, ChevronIcon } from '../../internal/icons';
-import { WidthSizer } from '../../internal/sizer';
+import { CheckIcon, ChevronIcon } from '../../internal/icons.js';
+import { WidthSizer } from '../../internal/sizer.js';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -20,8 +20,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types.js';
 
 /**
  * What a Select's value may be.

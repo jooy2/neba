@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button } from '../button/Button';
-import { fillMessage, useMessages } from '../../internal/i18n';
-import { ChevronIcon } from '../../internal/icons';
-import { controlTextClasses, gapClasses, srOnlyClasses } from '../../internal/styles';
-import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+import { Button } from '../button/Button.js';
+import { fillMessage, useMessages } from '../../internal/i18n.js';
+import { ChevronIcon } from '../../internal/icons.js';
+import { controlTextClasses, gapClasses, srOnlyClasses } from '../../internal/styles.js';
+import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface PaginationProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'nav'>, 'color' | 'onChange'> {

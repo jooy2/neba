@@ -1,1 +1,1 @@
-export * from './BottomNavigation';
+export * from './BottomNavigation.js';

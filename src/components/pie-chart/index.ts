@@ -1,2 +1,2 @@
-export { PieChart } from './PieChart';
-export type { PieChartProps } from './PieChart';
+export { PieChart } from './PieChart.js';
+export type { PieChartProps } from './PieChart.js';

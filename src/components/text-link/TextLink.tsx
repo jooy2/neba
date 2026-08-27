@@ -1,9 +1,13 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { useMessages } from '../../internal/i18n';
-import { ExternalLinkIcon, LinkIcon } from '../../internal/icons';
-import { controlTextLeadingClasses, focusRingClasses, srOnlyClasses } from '../../internal/styles';
-import type { NebaColor, NebaSize } from '../../types';
+import { useMessages } from '../../internal/i18n.js';
+import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
+import {
+  controlTextLeadingClasses,
+  focusRingClasses,
+  srOnlyClasses
+} from '../../internal/styles.js';
+import type { NebaColor, NebaSize } from '../../types.js';
 
 /**
  * When the line under a link is drawn.

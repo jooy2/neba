@@ -1,2 +1,2 @@
-export { ProgressLinear } from './ProgressLinear';
-export type { ProgressLinearProps } from './ProgressLinear';
+export { ProgressLinear } from './ProgressLinear.js';
+export type { ProgressLinearProps } from './ProgressLinear.js';

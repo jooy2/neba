@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { boxPaddingClasses } from '../box/Box';
-import { useMessages } from '../../internal/i18n';
-import { CloseIcon, severityIcons } from '../../internal/icons';
-import { transitionProps } from '../../internal/animate';
+import { boxPaddingClasses } from '../box/Box.js';
+import { useMessages } from '../../internal/i18n.js';
+import { CloseIcon, severityIcons } from '../../internal/icons.js';
+import { transitionProps } from '../../internal/animate.js';
 import {
   controlSlots,
   hasContent,
@@ -14,8 +14,8 @@ import {
   sheetTitleClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaStyleProps, NebaTransition } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaStyleProps, NebaTransition } from '../../types.js';
 
 export interface AlertProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title'> {

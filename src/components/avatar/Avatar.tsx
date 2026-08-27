@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar';
-import { transitionProps } from '../../internal/animate';
+import { transitionProps } from '../../internal/animate.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -9,8 +9,14 @@ import {
   srOnlyClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaSize, NebaTransition, NebaVariant } from '../../types';
+} from '../../internal/styles.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaSize,
+  NebaTransition,
+  NebaVariant
+} from '../../types.js';
 
 /** What Base UI reports about the picture as it loads. */
 export type AvatarLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';

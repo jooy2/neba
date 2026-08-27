@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { Box, type BoxProps } from '../box/Box';
-import { useMessages } from '../../internal/i18n';
-import { controlTextLeadingClasses, metaTextClasses, paddingXValues } from '../../internal/styles';
-import type { NebaAlign, NebaDensity, NebaSize } from '../../types';
+import { Box, type BoxProps } from '../box/Box.js';
+import { useMessages } from '../../internal/i18n.js';
+import {
+  controlTextLeadingClasses,
+  metaTextClasses,
+  paddingXValues
+} from '../../internal/styles.js';
+import type { NebaAlign, NebaDensity, NebaSize } from '../../types.js';
 
 /** Which edge the text in a column lines up against. */
 export type TableAlign = NebaAlign;

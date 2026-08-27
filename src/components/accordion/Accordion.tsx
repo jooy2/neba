@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Accordion as BaseUIAccordion } from '@base-ui/react/accordion';
-import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box';
-import { ChevronIcon } from '../../internal/icons';
+import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
+import { ChevronIcon } from '../../internal/icons.js';
 import {
   focusRingClasses,
   gapClasses,
@@ -15,8 +15,8 @@ import {
   surfaceClasses,
   surfaceSlots,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
  * What an AccordionItem inherits from the Accordion around it.

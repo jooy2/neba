@@ -13,14 +13,14 @@ import {
   sheetBodyClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
+} from '../../internal/styles.js';
 import type {
   NebaDensity,
   NebaElevation,
   NebaPosition,
   NebaSize,
   NebaStyleProps
-} from '../../types';
+} from '../../types.js';
 
 export interface PillProps
   extends

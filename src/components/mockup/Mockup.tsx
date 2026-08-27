@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { transitionProps } from '../../internal/animate';
+import { transitionProps } from '../../internal/animate.js';
 import {
   MockupCutout,
   defaultNotch,
@@ -10,7 +10,7 @@ import {
   mockupMetrics,
   resolveOs,
   shellClasses
-} from '../../internal/mockup';
+} from '../../internal/mockup.js';
 import type {
   NebaMockupBezel,
   NebaMockupDevice,
@@ -20,9 +20,9 @@ import type {
   NebaMockupOrientation,
   NebaMockupOs,
   NebaMockupResolution
-} from '../../internal/mockup';
-import { surfaceSlots } from '../../internal/styles';
-import type { NebaColor, NebaElevation, NebaSize, NebaTransition } from '../../types';
+} from '../../internal/mockup.js';
+import { surfaceSlots } from '../../internal/styles.js';
+import type { NebaColor, NebaElevation, NebaSize, NebaTransition } from '../../types.js';
 
 export type {
   NebaMockupBezel,
@@ -33,7 +33,7 @@ export type {
   NebaMockupOrientation,
   NebaMockupOs,
   NebaMockupResolution
-} from '../../internal/mockup';
+} from '../../internal/mockup.js';
 
 export interface MockupProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   /**

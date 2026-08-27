@@ -1,2 +1,2 @@
-export { OtpField } from './OtpField';
-export type { OtpFieldCharset, OtpFieldProps } from './OtpField';
+export { OtpField } from './OtpField.js';
+export type { OtpFieldCharset, OtpFieldProps } from './OtpField.js';

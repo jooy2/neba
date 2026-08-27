@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useMessages } from '../../internal/i18n';
-import { CheckIcon, ClockIcon, LinkIcon, severityIcons } from '../../internal/icons';
+import { useMessages } from '../../internal/i18n.js';
+import { CheckIcon, ClockIcon, LinkIcon, severityIcons } from '../../internal/icons.js';
 import {
   controlSlots,
   hasContent,
@@ -11,8 +11,8 @@ import {
   srOnlyClasses,
   surfaceClasses,
   transitionClasses
-} from '../../internal/styles';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types';
+} from '../../internal/styles.js';
+import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
 
 /**
  * Whose message this is.
