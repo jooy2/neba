@@ -22,6 +22,8 @@
     "lint": "eslint . --report-unused-disable-directives",
     "lint:fix": "eslint . --report-unused-disable-directives --fix",
     "minify": "terser-glob 'dist/**/*.js' --config-file terser.config.json",
+    "size": "node scripts/measure-bundle.mjs",
+    "size:update": "node scripts/measure-bundle.mjs --update",
     "prepare": "npm run build",
     "format": "prettier .",
     "format:fix": "prettier . --write",

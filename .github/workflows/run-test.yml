@@ -12,7 +12,9 @@ on:
       - package-lock.json
       - tsconfig.json
       - tsconfig.prod.json
+      - terser.config.json
       - vitest.config.ts
+      - scripts/**
       - .github/workflows/run-test.yml
   workflow_dispatch:
 
@@ -46,6 +48,31 @@ jobs:
         run: npx prettier . --check
       - name: Typecheck
         run: npm run typecheck
+
+  bundle:
+    runs-on: ubuntu-latest
+    name: Bundle size
+    # The build is about half of this and the seven scenarios the rest. A cap
+    # well above that, because a job that hangs here holds a runner for nothing.
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      # `prepare` has already built once on `npm ci`, but the check measures
+      # `dist/` and should say so itself rather than inherit it.
+      - name: Build
+        run: npm run build
+      - name: Check the bundle budgets
+        run: npm run size
 
   run-test:
     runs-on: ${{ matrix.os }}

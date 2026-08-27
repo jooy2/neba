@@ -1,0 +1,102 @@
+{
+  "bundler": "rollup + terser, via Vite's library build",
+  "unit": "kB gzipped, react and react-dom external",
+  "tolerancePercent": 2,
+  "scenarios": [
+    {
+      "id": "button",
+      "label": "Button",
+      "imports": ["Button"],
+      "budget": 5
+    },
+    {
+      "id": "chip",
+      "label": "Chip",
+      "imports": ["Chip"],
+      "budget": 3
+    },
+    {
+      "id": "line-chart",
+      "label": "LineChart",
+      "imports": ["LineChart"],
+      "budget": 11
+    },
+    {
+      "id": "app-12",
+      "label": "12 components — a typical app",
+      "imports": [
+        "Button",
+        "IconButton",
+        "TextField",
+        "Select",
+        "Checkbox",
+        "Card",
+        "Dialog",
+        "ToastProvider",
+        "Table",
+        "Tabs",
+        "Chip",
+        "Typography"
+      ],
+      "budget": 67
+    },
+    {
+      "id": "app-25",
+      "label": "25 components — a large one",
+      "imports": [
+        "Button",
+        "IconButton",
+        "ButtonGroup",
+        "TextField",
+        "NumberField",
+        "Select",
+        "Combobox",
+        "Checkbox",
+        "RadioGroup",
+        "Switch",
+        "Slider",
+        "Card",
+        "Box",
+        "Container",
+        "Grid",
+        "Dialog",
+        "Drawer",
+        "ToastProvider",
+        "Tooltip",
+        "Alert",
+        "Table",
+        "Tabs",
+        "Menu",
+        "Chip",
+        "Typography"
+      ],
+      "budget": 110.8
+    },
+    {
+      "id": "app-12-ko",
+      "label": "12 components, with Korean registered",
+      "imports": [
+        "Button",
+        "IconButton",
+        "TextField",
+        "Select",
+        "Checkbox",
+        "Card",
+        "Dialog",
+        "ToastProvider",
+        "Table",
+        "Tabs",
+        "Chip",
+        "Typography"
+      ],
+      "locales": ["ko"],
+      "budget": 68.7
+    },
+    {
+      "id": "everything",
+      "label": "every export",
+      "imports": null,
+      "budget": 206.8
+    }
+  ]
+}
