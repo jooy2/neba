@@ -97,5 +97,12 @@ export const zhHans: NebaLocale = {
     maximize: '最大化',
     restore: '向下还原',
     resize: '调整窗口大小'
+  },
+  layout: {
+    skipToContent: '跳到主要内容',
+    sidebar: '侧边栏',
+    openSidebar: '打开侧边栏',
+    closeSidebar: '关闭侧边栏',
+    resizeSidebar: '调整侧边栏宽度'
   }
 };

@@ -453,6 +453,44 @@ export const windowMessages: MessageTable<WindowMessages> = {
 };
 
 /**
+ * PageLayout, Header, Footer and Sidebar.
+ *
+ * A layout draws almost no text of its own — a header says whatever it was
+ * handed — so what is here is only the words that exist *because* the page has
+ * a structure: the link that jumps past it, the name of the region a reader
+ * lands in, and the button that puts a sidebar back on screen once the window
+ * is too narrow to hold one.
+ */
+export interface LayoutMessages {
+  /**
+   * The link that jumps a keyboard reader past the header and the sidebars,
+   * drawn only while it holds the focus. It is the first thing in the document
+   * and, on a page with forty links in its navigation, the difference between
+   * reaching the article and tabbing through the site map first.
+   */
+  skipToContent: string;
+  /** Names the `<aside>` when the caller gives it no name of its own. */
+  sidebar: string;
+  /** The button that brings back a sidebar the window has become too narrow to hold. */
+  openSidebar: string;
+  /** And the one that puts it away again. */
+  closeSidebar: string;
+  /** Names the edge a pointer drags to make a sidebar wider or narrower. */
+  resizeSidebar: string;
+}
+
+/** The `layout` namespace, as PageLayout and Sidebar read it. */
+export const layoutMessages: MessageTable<LayoutMessages> = {
+  '': {
+    skipToContent: 'Skip to content',
+    sidebar: 'Sidebar',
+    openSidebar: 'Open sidebar',
+    closeSidebar: 'Close sidebar',
+    resizeSidebar: 'Resize sidebar'
+  }
+};
+
+/**
  * The tags that are a different spelling of an entry above.
  *
  * Only the Chinese ones for now, and they are the reason the table is keyed by
@@ -614,6 +652,8 @@ export interface NebaLocale {
   overlay?: Partial<OverlayMessages>;
   /** Window. */
   window?: Partial<WindowMessages>;
+  /** Layout. */
+  layout?: Partial<LayoutMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -633,7 +673,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   breadcrumb: breadcrumbMessages as MessageTable<never>,
   combobox: comboboxMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
-  window: windowMessages as MessageTable<never>
+  window: windowMessages as MessageTable<never>,
+  layout: layoutMessages as MessageTable<never>
 };
 
 /**

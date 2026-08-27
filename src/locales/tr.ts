@@ -94,5 +94,12 @@ export const tr: NebaLocale = {
     maximize: 'Ekranı kapla',
     restore: 'Geri yükle',
     resize: 'Pencereyi yeniden boyutlandır'
+  },
+  layout: {
+    skipToContent: 'İçeriğe geç',
+    sidebar: 'Kenar çubuğu',
+    openSidebar: 'Kenar çubuğunu aç',
+    closeSidebar: 'Kenar çubuğunu kapat',
+    resizeSidebar: 'Kenar çubuğunu yeniden boyutlandır'
   }
 };

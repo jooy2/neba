@@ -94,5 +94,12 @@ export const ru: NebaLocale = {
     maximize: 'Развернуть',
     restore: 'Восстановить',
     resize: 'Изменить размер окна'
+  },
+  layout: {
+    skipToContent: 'Перейти к содержимому',
+    sidebar: 'Боковая панель',
+    openSidebar: 'Открыть боковую панель',
+    closeSidebar: 'Закрыть боковую панель',
+    resizeSidebar: 'Изменить размер боковой панели'
   }
 };

@@ -94,5 +94,12 @@ export const ko: NebaLocale = {
     maximize: '최대화',
     restore: '이전 크기로 복원',
     resize: '창 크기 조절'
+  },
+  layout: {
+    skipToContent: '본문으로 건너뛰기',
+    sidebar: '사이드바',
+    openSidebar: '사이드바 열기',
+    closeSidebar: '사이드바 닫기',
+    resizeSidebar: '사이드바 크기 조절'
   }
 };

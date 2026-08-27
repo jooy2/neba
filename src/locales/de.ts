@@ -94,5 +94,12 @@ export const de: NebaLocale = {
     maximize: 'Maximieren',
     restore: 'Wiederherstellen',
     resize: 'Fenstergröße ändern'
+  },
+  layout: {
+    skipToContent: 'Zum Inhalt springen',
+    sidebar: 'Seitenleiste',
+    openSidebar: 'Seitenleiste öffnen',
+    closeSidebar: 'Seitenleiste schließen',
+    resizeSidebar: 'Seitenleiste anpassen'
   }
 };

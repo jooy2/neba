@@ -94,5 +94,12 @@ export const vi: NebaLocale = {
     maximize: 'Phóng to',
     restore: 'Khôi phục',
     resize: 'Thay đổi kích thước cửa sổ'
+  },
+  layout: {
+    skipToContent: 'Chuyển đến nội dung',
+    sidebar: 'Thanh bên',
+    openSidebar: 'Mở thanh bên',
+    closeSidebar: 'Đóng thanh bên',
+    resizeSidebar: 'Thay đổi kích thước thanh bên'
   }
 };

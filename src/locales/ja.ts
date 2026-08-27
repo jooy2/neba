@@ -94,5 +94,12 @@ export const ja: NebaLocale = {
     maximize: '最大化',
     restore: '元のサイズに戻す',
     resize: 'ウィンドウのサイズを変更'
+  },
+  layout: {
+    skipToContent: '本文へスキップ',
+    sidebar: 'サイドバー',
+    openSidebar: 'サイドバーを開く',
+    closeSidebar: 'サイドバーを閉じる',
+    resizeSidebar: 'サイドバーの幅を変更'
   }
 };

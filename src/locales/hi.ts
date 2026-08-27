@@ -94,5 +94,12 @@ export const hi: NebaLocale = {
     maximize: 'बड़ा करें',
     restore: 'पुनर्स्थापित करें',
     resize: 'विंडो का आकार बदलें'
+  },
+  layout: {
+    skipToContent: 'सामग्री पर जाएँ',
+    sidebar: 'साइडबार',
+    openSidebar: 'साइडबार खोलें',
+    closeSidebar: 'साइडबार बंद करें',
+    resizeSidebar: 'साइडबार का आकार बदलें'
   }
 };

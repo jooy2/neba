@@ -94,5 +94,12 @@ export const id: NebaLocale = {
     maximize: 'Perbesar',
     restore: 'Pulihkan',
     resize: 'Ubah ukuran jendela'
+  },
+  layout: {
+    skipToContent: 'Lompat ke konten',
+    sidebar: 'Bilah sisi',
+    openSidebar: 'Buka bilah sisi',
+    closeSidebar: 'Tutup bilah sisi',
+    resizeSidebar: 'Ubah ukuran bilah sisi'
   }
 };

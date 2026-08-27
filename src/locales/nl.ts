@@ -94,5 +94,12 @@ export const nl: NebaLocale = {
     maximize: 'Maximaliseren',
     restore: 'Vorig formaat',
     resize: 'Venstergrootte wijzigen'
+  },
+  layout: {
+    skipToContent: 'Naar inhoud springen',
+    sidebar: 'Zijbalk',
+    openSidebar: 'Zijbalk openen',
+    closeSidebar: 'Zijbalk sluiten',
+    resizeSidebar: 'Zijbalk vergroten of verkleinen'
   }
 };
