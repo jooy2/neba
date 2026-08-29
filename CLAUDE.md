@@ -182,17 +182,19 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `Button`                      | 5.0 kB   | 2.2 kB                      |
 | `Chip`                        | 3.0 kB   | 3.0 kB                      |
 | `LineChart`                   | 11.0 kB  | 9.5 kB                      |
-| `CodeBlock`                   | 4.5 kB   | 4.5 kB                      |
+| `CodeBlock`                   | 4.8 kB   | 4.8 kB                      |
 | 12 components — a typical app | 67.0 kB  | 10.6 kB                     |
 | 25 components — a large one   | 110.8 kB | 16.4 kB                     |
 | a whole page shell            | 28.1 kB  | 8.5 kB                      |
-| all 126 exports               | 214.9 kB | 103.3 kB                    |
+| all 126 exports               | 215.3 kB | 103.7 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
 
-Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 18.9 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 19.7 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+
+CodeBlock's eight ported themes are the one deliberate exception to that marginal cost: they are 0.8 kB gzipped of the sheet, which everybody carries and only a CodeBlock user sees. The alternative was measured too — ship them as JS token objects and tree-shake per theme — and rejected, because it costs the two things that make the CSS form worth having: `theme` stays a string, and a consumer's own `[data-code-theme='ours']` block is a theme with nothing to import and nothing to register. The derived slots are what keep the number to 0.8: `dim`, `rule`, `hover` and the two a marked line uses are mixed from each theme's own `bg` and `fg`, so a theme is fourteen declarations rather than nineteen.
 
 `@base-ui/react` is roughly half of the maximum and most of what a Select or a Dialog costs. It is already imported per subpath (`@base-ui/react/button`, never the root), which is the only lever there is: the goal is not to slim it but to make sure a page that does not use a Select never meets it.
 

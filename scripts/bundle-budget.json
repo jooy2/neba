@@ -25,7 +25,7 @@
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 4.5
+      "budget": 4.8
     },
     {
       "id": "app-12",
@@ -108,7 +108,7 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 214.9
+      "budget": 215.3
     }
   ]
 }

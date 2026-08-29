@@ -46,11 +46,40 @@ registerLanguage('elixir', elixir);
 
 ### theme
 
-블록이 입는 팔레트이며, 페이지의 light·dark와는 별개입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 페이지를 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다.
+블록이 입는 팔레트이며, 페이지의 light·dark와는 별개입니다.
 
-<Demo src="code-block/theme" minHeight="640">
+넷은 라이브러리 자신의 것입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 페이지를 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다. 여기에 공개된 값을 그대로 옮겨 온 여덟 개가 더 있습니다 — `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github`, `solarized-light`.
+
+<Demo src="code-block/theme" minHeight="480">
 
 <<< @/.vitepress/demos/code-block/theme.tsx
+
+</Demo>
+
+테마는 `[data-code-theme]` selector 아래의 `--n-code-*` custom property 묶음일 뿐이므로, `theme`은 아무 문자열이나 받고 프로젝트는 자기 테마를 직접 쓸 수 있습니다.
+
+```css
+[data-code-theme='ours'] {
+  --n-code-bg: #101418;
+  --n-code-fg: #d7dce2;
+  --n-code-comment: #59626e;
+  --n-code-keyword: #ff8ab3;
+  --n-code-string: #9ad48f;
+  /* number, function, type, variable, tag, attr, meta, add, del */
+}
+```
+
+채워야 하는 slot은 열한 개입니다. 흐린 글자, 얇은 선, hover 틴트, 그리고 `highlightLines`가 쓰는 둘은 모두 `--n-code-bg`와 `--n-code-fg`에서 섞여 나오므로 따로 적지 않아도 따라옵니다.
+
+### highlightLines
+
+특정 줄을 배경색과 시작 모서리의 선으로 표시합니다. 숫자는 한 줄, 문자열은 줄과 범위의 목록 — `'4'`, `'4-9'`, `'1,4-9,12'` — 배열은 둘을 섞은 것입니다. 번호는 거터가 세는 방식 그대로이므로, `startLine={286}`일 때 거터가 288이라고 부르는 줄은 `highlightLines={288}`입니다.
+
+틴트는 페이지의 색 계열이 아니라 그 테마 자신의 잉크에서 섞여 나오므로 열두 팔레트 어디에서나 읽힙니다.
+
+<Demo src="code-block/marks" minHeight="520">
+
+<<< @/.vitepress/demos/code-block/marks.tsx
 
 </Demo>
 
@@ -113,4 +142,5 @@ registerLanguage('elixir', elixir);
 - 코드는 `tabIndex={0}`과 이름을 가진 스크롤 가능한 region이라, 드래그할 포인터가 없는 독자도 스크롤할 수 있습니다. 이름은 `title`이 있으면 그것, 없으면 language입니다.
 - 프롬프트와 줄 번호는 생성된 콘텐츠이므로 클립보드뿐 아니라 accessibility tree에서도 빠집니다.
 - 복사 버튼은 결과를 polite live region으로 알립니다. 그 외의 유일한 신호인 버튼 자신의 label 변화는 페이지를 읽고 있는 screen reader가 듣지 못하기 때문입니다.
+- 블록에 focus가 있는 상태의 <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd>는 그 코드만 선택합니다. 코드 블록까지 tab으로 이동해 온 독자가 어느 편집기에나 있는 그 단축키를 눌렀다면 뜻한 것은 주변의 글이 아니라 이 코드입니다. 프롬프트와 줄 번호는 클립보드에서 빠지는 것과 같은 이유로 선택에서도 빠집니다.
 - `theme`은 라이브러리에서 페이지를 따라가지 않는 유일한 색 결정입니다. `dark`로 둔 블록은 시스템이 light여도 어두운 채로 남으며, 이것은 의도된 것입니다. `auto`가 그 예외입니다.

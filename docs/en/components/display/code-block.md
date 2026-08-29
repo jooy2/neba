@@ -46,11 +46,40 @@ registerLanguage('elixir', elixir);
 
 ### theme
 
-Which palette the block wears, independent of the page's light and dark. `dark` is the default; `light` is its counterpart; `auto` follows the page; `mono` drops the hues entirely and carries the structure in weight and muting.
+Which palette the block wears, independent of the page's light and dark.
 
-<Demo src="code-block/theme" minHeight="640">
+Four are the library's own: `dark` is the default, `light` is its counterpart, `auto` follows the page, and `mono` drops the hues entirely and carries the structure in weight and muting. Eight more are ports kept at their published values — `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`.
+
+<Demo src="code-block/theme" minHeight="480">
 
 <<< @/.vitepress/demos/code-block/theme.tsx
+
+</Demo>
+
+A theme is a set of `--n-code-*` custom properties under a `[data-code-theme]` selector and nothing else, so `theme` takes any string and a project can write its own:
+
+```css
+[data-code-theme='ours'] {
+  --n-code-bg: #101418;
+  --n-code-fg: #d7dce2;
+  --n-code-comment: #59626e;
+  --n-code-keyword: #ff8ab3;
+  --n-code-string: #9ad48f;
+  /* number, function, type, variable, tag, attr, meta, add, del */
+}
+```
+
+Eleven slots to fill. The muted text, the hairline, the hover tint and the two used by `highlightLines` are all mixed from `--n-code-bg` and `--n-code-fg`, so they follow whatever you set without being declared.
+
+### highlightLines
+
+Marks lines with a tinted row and a rule down its leading edge. A number is one line, a string is a list of lines and ranges — `'4'`, `'4-9'`, `'1,4-9,12'` — and an array is any mix of the two. They are counted the way the gutter counts, so with `startLine={286}` the line the gutter calls 288 is `highlightLines={288}`.
+
+The tint is mixed from the theme's own ink rather than the page's colour family, so it stays legible on all twelve palettes.
+
+<Demo src="code-block/marks" minHeight="520">
+
+<<< @/.vitepress/demos/code-block/marks.tsx
 
 </Demo>
 
@@ -113,4 +142,5 @@ A shell symbol in front of every line that has something on it — `$`, `#`, `C:
 - The code is a scrollable region with `tabIndex={0}` and a name, so a reader with no pointer to drag with can still scroll it. The name is the `title` when there is one, and the language otherwise.
 - Prompts and line numbers are generated content, which keeps them out of the accessibility tree as well as off the clipboard.
 - The copy button announces the result through a polite live region, because the only other signal — the button's own label changing — is not something a screen reader reading the page would hear.
+- <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else. A reader who tabbed to a code block and pressed the shortcut every editor has meant this code, not the article around it. Prompts and line numbers are outside the selection for the same reason they are outside the clipboard.
 - `theme` is the one colour decision in the library that does not follow the page. A block set to `dark` stays dark under a light system preference, which is deliberate; `auto` is the opt-out.

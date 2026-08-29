@@ -10324,11 +10324,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'theme',
-      type: "'dark' | 'light' | 'auto' | 'mono'",
+      type: 'CodeBlockTheme | (string & {})',
       default: "'dark'",
       description: {
-        ko: '블록이 입는 팔레트. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. mono는 색을 전부 버리고 굵기와 흐림으로만 구조를 나타냅니다',
-        en: "The palette it wears. Independent of the page's light and dark except on auto; mono drops the hues entirely and carries the structure in weight and muting"
+        ko: "블록이 입는 팔레트. 집안 것 넷 — dark, light, auto, mono — 과 공개된 값을 그대로 옮겨 온 여덟 — one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. 아무 문자열이나 받으므로, [data-code-theme='ours']에 --n-code-* 를 써 두면 그것이 곧 테마입니다",
+        en: "The palette it wears. Four of the library's own — dark, light, auto, mono — and eight ports kept at their published values: one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. Independent of the page's light and dark except on auto. Any string works, so writing --n-code-* under [data-code-theme='ours'] in your own CSS is a theme"
       }
     },
     {
@@ -10419,6 +10419,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '하이라이팅을 걷어내고 문자를 있는 그대로 보여주는 토글. highlight가 꺼져 있으면 아무 의미가 없습니다',
         en: 'The toggle that drops the colouring and shows the characters as they are. It means nothing at all when highlight is off'
+      }
+    },
+    {
+      name: 'highlightLines',
+      type: 'number | string | Array<number | string>',
+      description: {
+        ko: "표시할 줄. 숫자는 한 줄, 문자열은 줄과 범위의 목록('4', '4-9', '1,4-9,12'), 배열은 둘의 조합입니다. 거터가 세는 방식 그대로 세므로 startLine을 따릅니다. 틴트는 그 테마 자신의 잉크에서 섞여 나옵니다",
+        en: "Lines to mark. A number is one line, a string is a list of lines and ranges ('4', '4-9', '1,4-9,12'), an array is any mix. Counted the way the gutter counts, so it follows startLine. The tint is mixed from the theme's own ink"
       }
     },
     {

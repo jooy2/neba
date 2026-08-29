@@ -1,18 +1,13 @@
 import { useState } from 'react';
 import { CodeBlock, Segment, SegmentedButton } from 'neba';
 
-const source = `{
-  "name": "neba",
-  "type": "module",
-  "sideEffects": ["**/*.css"],
-  "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./locales": { "types": "./dist/locales/index.d.ts", "default": "./dist/locales/index.js" },
-    "./styles.css": "./dist/styles.css",
-    "./*": { "types": "./dist/components/*/index.d.ts", "default": "./dist/components/*/index.js" }
-  },
-  "dependencies": { "@base-ui/react": "^1.7.0", "highlight.js": "^11.12.0" }
-}`;
+const source = `# One long line, so there is something for wrap to actually do.
+curl --fail --silent --show-error --location --retry 3 --retry-delay 2 --header "authorization: Bearer $NEBA_TOKEN" --header "content-type: application/json" --data '{"region":"icn","runtime":"node22","memory":512}' https://api.example.com/v1/projects/neba/deployments
+echo "queued"
+
+# And a second one, because a single wrapped line is easy to mistake for two.
+docker run --rm --interactive --tty --volume "$PWD:/work" --workdir /work --env CI=1 --env NODE_OPTIONS=--max-old-space-size=4096 node:22-bookworm npm run build -- --profile
+echo "built"`;
 
 export default function CodeBlockScroll() {
   const [wrap, setWrap] = useState(false);
@@ -30,11 +25,11 @@ export default function CodeBlockScroll() {
 
       <CodeBlock
         code={source}
-        language="json"
+        language="bash"
         wrap={wrap}
-        maxHeight={200}
+        maxHeight={220}
         lineNumbers
-        title="package.json"
+        title="deploy.sh"
       />
     </div>
   );

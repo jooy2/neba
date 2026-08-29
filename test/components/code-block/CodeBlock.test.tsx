@@ -317,15 +317,148 @@ describe('CodeBlock', () => {
     });
   });
 
+  describe('marked lines', () => {
+    const marks = (root: Element) =>
+      [...root.querySelectorAll('.neba-code-line')].map((line) => line.hasAttribute('data-mark'));
+
+    it('marks one line from a number', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc'} highlightLines={2} data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true, false]);
+    });
+
+    it('marks a range from a string', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc\nd'} highlightLines="2-3" data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true, true, false]);
+    });
+
+    it('takes a list of lines and ranges', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc\nd\ne'} highlightLines="1,3-4" data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([
+        true,
+        false,
+        true,
+        true,
+        false
+      ]);
+    });
+
+    it('takes an array mixing the two', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc\nd'} highlightLines={[1, '3-4']} data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([true, false, true, true]);
+    });
+
+    // The reader who typed `3-2` meant the same two lines.
+    it('reads a backwards range the way it was meant', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc'} highlightLines="3-2" data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true, true]);
+    });
+
+    // A marked line is an annotation, and a typo in one should cost the
+    // annotation rather than the code.
+    it('drops what it cannot read rather than throwing', async () => {
+      const screen = await render(
+        <CodeBlock code={'a\nb'} highlightLines="two, 2" data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true]);
+    });
+
+    // They are counted the way the gutter counts, or an excerpt starting at 286
+    // would need its marks written in a numbering nobody can see.
+    it('counts from startLine', async () => {
+      const screen = await render(
+        <CodeBlock
+          code={'a\nb\nc'}
+          lineNumbers
+          startLine={286}
+          highlightLines={287}
+          data-testid="block"
+        />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true, false]);
+    });
+
+    it('marks nothing when it is not asked to', async () => {
+      const screen = await render(<CodeBlock code={'a\nb'} data-testid="block" />);
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, false]);
+    });
+  });
+
+  describe('selecting', () => {
+    /*
+      A reader who tabbed to a code block and pressed the shortcut every editor
+      has meant *this* code, not the article around it — so the block answers
+      the key itself and stops the browser selecting the page.
+    */
+    it('selects the code and nothing else on Ctrl+A', async () => {
+      const screen = await render(<CodeBlock code={'const a = 1;\nconst b = 2;'} />);
+      const region = screen.getByRole('region', { name: 'Code' }).element() as HTMLElement;
+
+      region.focus();
+
+      const event = new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true
+      });
+
+      region.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+      expect(String(window.getSelection())).toBe('const a = 1;\nconst b = 2;');
+    });
+
+    it('leaves a plain A alone', async () => {
+      const screen = await render(<CodeBlock code="const a = 1;" />);
+      const region = screen.getByRole('region', { name: 'Code' }).element() as HTMLElement;
+
+      region.focus();
+      window.getSelection()?.removeAllRanges();
+
+      const event = new KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true });
+      region.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(String(window.getSelection())).toBe('');
+    });
+  });
+
   describe('appearance', () => {
     it('wears the theme it was given', async () => {
       const screen = await render(<CodeBlock code={SOURCE} data-testid="block" />);
 
       expect(screen.getByTestId('block').element()).toHaveAttribute('data-code-theme', 'dark');
 
-      await screen.rerender(<CodeBlock code={SOURCE} theme="mono" data-testid="block" />);
+      await screen.rerender(<CodeBlock code={SOURCE} theme="dracula" data-testid="block" />);
 
-      expect(screen.getByTestId('block').element()).toHaveAttribute('data-code-theme', 'mono');
+      expect(screen.getByTestId('block').element()).toHaveAttribute('data-code-theme', 'dracula');
+    });
+
+    // A theme is a set of custom properties under a `[data-code-theme]`
+    // selector and nothing else, so a name the library never heard of is a name
+    // the consumer's own stylesheet can answer.
+    it('passes a name of its own through', async () => {
+      const screen = await render(<CodeBlock code={SOURCE} theme="ours" data-testid="block" />);
+
+      expect(screen.getByTestId('block').element()).toHaveAttribute('data-code-theme', 'ours');
     });
 
     it('marks itself as wrapping only when it is', async () => {

@@ -24,12 +24,35 @@ export { registerLanguage } from '../../internal/highlight.js';
 /**
  * Which palette the block wears.
  *
- * `dark` is the default and is the only one that is not a preference: code has
- * been read on a dark ground since terminals, and a block that matched the page
- * would be the one element on it whose colours were chosen by something other
- * than the code.
+ * The four house themes come first. `dark` is the default and is the only one
+ * that is not a preference: code has been read on a dark ground since
+ * terminals, and a block that matched the page would be the one element on it
+ * whose colours were chosen by something other than the code. `auto` is the
+ * opt-out, and `mono` has no hue in it at all.
+ *
+ * The eight after them are ports, kept at their published values. They exist
+ * because a code block is the one component whose colours a reader already has
+ * an opinion about: someone who writes in One Dark all day reads a Dracula
+ * block as a different product's documentation.
+ *
+ * The type is open on purpose. A theme is a set of `--n-code-*` custom
+ * properties under a `[data-code-theme]` selector and nothing else, so a
+ * consumer who writes one in their own stylesheet has a theme — with nothing to
+ * register, nothing to import, and no cost to anybody who did not.
  */
-export type CodeBlockTheme = 'dark' | 'light' | 'auto' | 'mono';
+export type CodeBlockTheme =
+  | 'dark'
+  | 'light'
+  | 'auto'
+  | 'mono'
+  | 'one-dark'
+  | 'dracula'
+  | 'monokai'
+  | 'nord'
+  | 'night-owl'
+  | 'gruvbox'
+  | 'github'
+  | 'solarized-light';
 
 export interface CodeBlockProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -52,9 +75,14 @@ export interface CodeBlockProps extends Omit<
   language?: string;
   /**
    * The palette. Independent of the page's light and dark, except on `auto`.
+   *
+   * Any other string works too, and is how a project brings its own: write
+   * `[data-code-theme='ours'] { --n-code-bg: …; --n-code-keyword: … }` in your
+   * own CSS and pass the name. Sixteen slots, five of which are derived from
+   * the other two and need no declaration.
    * @default 'dark'
    */
-  theme?: CodeBlockTheme;
+  theme?: CodeBlockTheme | (string & {});
   /** The type scale and the air around the code. @default 'md' */
   size?: NebaSize;
   /** @default 'primary' */
@@ -97,6 +125,19 @@ export interface CodeBlockProps extends Omit<
    * @default false
    */
   rawToggle?: boolean;
+  /**
+   * Lines to mark: a tinted row with a rule down its leading edge.
+   *
+   * A number is one line, a string is a list of lines and ranges —
+   * `'4'`, `'4-9'`, `'1,4-9,12'` — and an array is any mix of the two. They
+   * are counted the way the gutter counts, so `startLine={286}` means
+   * `highlightLines={288}` marks the line the gutter calls 288.
+   *
+   * The tint is mixed from the theme's own ink rather than from the page's
+   * colour family, so it is legible on all twelve palettes and never the one
+   * colour on a Dracula block that nobody chose.
+   */
+  highlightLines?: number | string | Array<number | string>;
   /** Numbers down the side. @default false */
   lineNumbers?: boolean;
   /** What the first line is numbered. @default 1 */
@@ -155,32 +196,91 @@ const codeTextClasses: Record<NebaSize, string> = {
   xl: 'text-[1rem]/[1.7]'
 };
 
-/** The air around the code. */
-const bodyPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
-  default: { xs: 'p-2', sm: 'p-3', md: 'p-3.5', lg: 'p-4', xl: 'p-5' },
-  compact: { xs: 'p-1.5', sm: 'p-2', md: 'p-2.5', lg: 'p-3', xl: 'p-3.5' }
+/**
+ * The air around the code, split into the two axes because they go on two
+ * different elements.
+ *
+ * The vertical padding belongs to the box that scrolls; the horizontal padding
+ * belongs to each *line*, so a marked line's tint reaches both edges of the
+ * block instead of stopping at a gutter. The lines sit in a `w-max min-w-full`
+ * block, so they all reach the same edge whether the code is narrower than the
+ * block or scrolled sideways inside it.
+ */
+const bodyPaddingYClasses: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: { xs: 'py-2', sm: 'py-3', md: 'py-3.5', lg: 'py-4', xl: 'py-5' },
+  compact: { xs: 'py-1.5', sm: 'py-2', md: 'py-2.5', lg: 'py-3', xl: 'py-3.5' }
 };
 
-/** The bar is shallower than the body: it holds controls, not a paragraph. */
+const linePaddingXClasses: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: { xs: 'px-2', sm: 'px-3', md: 'px-3.5', lg: 'px-4', xl: 'px-5' },
+  compact: { xs: 'px-1.5', sm: 'px-2', md: 'px-2.5', lg: 'px-3', xl: 'px-3.5' }
+};
+
+/**
+ * The bar is shallower than the body: it holds controls, not a paragraph.
+ *
+ * Its horizontal padding is `linePaddingXClasses` plus the two pixels a line
+ * spends on the rule a marked one draws, so the name at the start of the bar
+ * begins exactly where the code under it does. Two ladders that were within
+ * four pixels of each other would read as one ladder somebody got wrong.
+ */
 const barPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
   default: {
-    xs: 'px-2 py-1',
-    sm: 'px-2.5 py-1',
-    md: 'px-3 py-1.5',
-    lg: 'px-4 py-2',
-    xl: 'px-5 py-2'
+    xs: 'px-2.5 py-1',
+    sm: 'px-3.5 py-1',
+    md: 'px-4 py-1.5',
+    lg: 'px-4.5 py-2',
+    xl: 'px-5.5 py-2'
   },
   compact: {
-    xs: 'px-1.5 py-0.5',
-    sm: 'px-2 py-0.5',
-    md: 'px-2.5 py-1',
-    lg: 'px-3 py-1',
+    xs: 'px-2 py-0.5',
+    sm: 'px-2.5 py-0.5',
+    md: 'px-3 py-1',
+    lg: 'px-3.5 py-1',
     xl: 'px-4 py-1.5'
   }
 };
 
 /** How long the copy button says it worked. */
 const COPIED_FOR = 2000;
+
+/**
+ * `4`, `'4-9'`, `'1,4-9,12'` or any array of those, as the set of numbers they
+ * name.
+ *
+ * A set rather than a sorted list of ranges because the only question ever
+ * asked of it is "is this line in it", once per line. Anything unparseable is
+ * dropped rather than thrown: a marked line is an annotation, and a typo in one
+ * should cost the annotation, not the code.
+ */
+function markedLines(spec: number | string | Array<number | string> | undefined): Set<number> {
+  const marked = new Set<number>();
+
+  if (spec === undefined) return marked;
+
+  for (const part of Array.isArray(spec) ? spec : [spec]) {
+    if (typeof part === 'number') {
+      if (Number.isFinite(part)) marked.add(Math.trunc(part));
+      continue;
+    }
+
+    for (const token of part.split(',')) {
+      const range = /^\s*(\d+)\s*(?:-\s*(\d+)\s*)?$/.exec(token);
+      if (!range) continue;
+
+      const from = Number(range[1]);
+      const to = range[2] === undefined ? from : Number(range[2]);
+
+      // Written the wrong way round is still a range, and the reader who typed
+      // `9-4` meant the same four lines.
+      for (let line = Math.min(from, to); line <= Math.max(from, to); line += 1) {
+        marked.add(line);
+      }
+    }
+  }
+
+  return marked;
+}
 
 /**
  * Puts `text` on the clipboard, through whichever of the two ways the browser
@@ -257,6 +357,7 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(functi
     showLanguage = true,
     copyable = true,
     rawToggle = false,
+    highlightLines,
     lineNumbers = false,
     startLine = 1,
     prompt,
@@ -353,6 +454,40 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(functi
     if (done) onCopy?.(source);
   };
 
+  const marked = React.useMemo(() => markedLines(highlightLines), [highlightLines]);
+
+  /**
+   * Select-all inside the block, rather than select-all of the page.
+   *
+   * The code is a focusable region, so a reader who tabbed to it and pressed
+   * the shortcut every editor has meant *this* code — and the browser's own
+   * answer, selecting the article around it too, is never what they were after.
+   * It is unconditional rather than a prop because the alternative it would
+   * turn back on is not a feature.
+   *
+   * The prompts and the line numbers are generated content, so they are outside
+   * the range for the same reason they are outside the clipboard: there is
+   * nothing there to select.
+   */
+  const codeRef = React.useRef<HTMLPreElement | null>(null);
+
+  const selectEverything = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'a' && event.key !== 'A') return;
+    if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
+
+    const node = codeRef.current;
+    const selection = typeof window === 'undefined' ? null : window.getSelection();
+
+    if (!node || !selection) return;
+
+    event.preventDefault();
+
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  };
+
   const copyName = copyLabel ?? messages.copy;
   const copiedName = copiedLabel ?? messages.copied;
   const rawName = rawLabel ?? messages.raw;
@@ -386,9 +521,10 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(functi
       role="region"
       aria-label={typeof title === 'string' ? title : label}
       tabIndex={0}
+      onKeyDown={selectEverything}
       className={cx(
         'min-h-0 overflow-auto',
-        bodyPaddingClasses[density][size],
+        bodyPaddingYClasses[density][size],
         'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:-outline-offset-2'
       )}
       style={maxHeight === undefined ? undefined : { maxHeight: toLength(maxHeight) }}
@@ -397,29 +533,39 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(functi
         `w-max min-w-full` is what keeps the gutter and the prompts aligned
         while the code is scrolled sideways: the rows are as wide as the
         longest line rather than as wide as the window onto them, so every
-        line's number starts at the same place instead of at the scroll's.
+        line's number starts at the same place instead of at the scroll's. It
+        is also what lets a marked line's tint reach the same right edge as
+        every other one.
       */}
-      <pre className={cx('m-0 bg-transparent p-0 font-mono', wrap ? 'w-full' : 'w-max min-w-full')}>
-        {lines.map((tokens, index) => (
-          <div
-            key={index}
-            className="neba-code-line"
-            data-line={lineNumbers ? startLine + index : undefined}
-            data-prompt={prompt && tokens.length > 0 ? prompt : undefined}
-          >
-            <code>
-              {tokens.map((run, position) =>
-                run.token ? (
-                  <span key={position} className={run.token}>
-                    {run.text}
-                  </span>
-                ) : (
-                  <React.Fragment key={position}>{run.text}</React.Fragment>
-                )
-              )}
-            </code>
-          </div>
-        ))}
+      <pre
+        ref={codeRef}
+        className={cx('m-0 bg-transparent p-0 font-mono', wrap ? 'w-full' : 'w-max min-w-full')}
+      >
+        {lines.map((tokens, index) => {
+          const number = startLine + index;
+
+          return (
+            <div
+              key={index}
+              className={cx('neba-code-line', linePaddingXClasses[density][size])}
+              data-line={lineNumbers ? number : undefined}
+              data-mark={marked.has(number) ? '' : undefined}
+              data-prompt={prompt && tokens.length > 0 ? prompt : undefined}
+            >
+              <code>
+                {tokens.map((run, position) =>
+                  run.token ? (
+                    <span key={position} className={run.token}>
+                      {run.text}
+                    </span>
+                  ) : (
+                    <React.Fragment key={position}>{run.text}</React.Fragment>
+                  )
+                )}
+              </code>
+            </div>
+          );
+        })}
       </pre>
     </div>
   );

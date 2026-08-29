@@ -853,34 +853,41 @@
  * page's palette. Code is read against a background that was chosen for code,
  * and a block that turned white because the page did would throw away the only
  * thing a reader is using to tell a keyword from a string. So the sheet carries
- * its own sixteen slots, `theme` picks which set fills them, and `auto` is the
- * opt-in for a block that would rather follow the page.
+ * its own slots, `theme` picks which set fills them, and `auto` is the opt-in
+ * for a block that would rather follow the page.
  *
  * They are custom properties on the block rather than a stylesheet per theme
  * for `animate.ts`'s reason: nothing here is generated, the component only
- * fills slots, and a seventeenth theme is a block of declarations rather than a
- * second copy of the token map below.
+ * fills slots, and a thirteenth theme is a block of declarations rather than a
+ * second copy of the token map below. That is also why `theme` accepts any
+ * string: a consumer who writes `[data-code-theme='ours']` in their own CSS has
+ * a theme, with nothing to register and nothing to import.
  *
- * The two dark palettes are written twice on purpose — once for `dark`, once
- * for `auto` inside a dark page — because a media query cannot be folded into a
- * selector list, and because a derived token resolves its `var()`s where it is
- * declared. It is the same repetition the theme roots at the top of this file
- * make, for the same reason.
+ * **Five of the slots are derived and are never written per theme.** `dim`,
+ * `rule` and `hover` are a fixed mix of the ground and the ink, and `mark` and
+ * `mark-edge` are the same for the highlighted-line background. A custom
+ * property resolves its `var()`s on the element that declares it, and every
+ * theme below declares its `fg` and `bg` on that same element — so the derived
+ * five follow whichever theme won without being restated fourteen times.
  *
- * Every hue is solved against its own background rather than flipped: the light
- * set runs dark and saturated on near-white, the dark set light and desaturated
- * on near-black, and neither is the other with the lightness inverted. The
- * pairs that have to stay apart are the ones that sit next to each other in
- * real code — a string beside a number, a type beside a function name.
+ * The two dark palettes at the top are written twice on purpose — once for
+ * `dark`, once for `auto` inside a dark page — because a media query cannot be
+ * folded into a selector list. It is the same repetition the theme roots at the
+ * top of this file make, for the same reason.
+ *
+ * Every hue in the house themes is solved against its own background rather
+ * than flipped: the light set runs dark and saturated on near-white, the dark
+ * set light and desaturated on near-black. The pairs that have to stay apart
+ * are the ones that sit next to each other in real code — a string beside a
+ * number, a type beside a function name. The eight named themes below them are
+ * ports and keep their own published values, because a Dracula that had been
+ * re-solved would not be Dracula.
  * ------------------------------------------------------------------------- */
 
 .neba-code {
   /* The light set, which is also what `auto` and `light` start from. */
   --n-code-bg: oklch(98.4% 0.003 262);
   --n-code-fg: oklch(30% 0.016 262);
-  --n-code-dim: oklch(64% 0.014 262);
-  --n-code-rule: oklch(30% 0.016 262 / 0.12);
-  --n-code-hover: oklch(30% 0.016 262 / 0.07);
 
   --n-code-comment: oklch(58% 0.022 262);
   --n-code-keyword: oklch(48% 0.19 322);
@@ -894,15 +901,25 @@
   --n-code-meta: oklch(52% 0.05 262);
   --n-code-add: oklch(45% 0.14 152);
   --n-code-del: oklch(48% 0.18 25);
+
+  /* The derived five. Declared once here and never in a theme: they are a mix
+     of that theme's own ground and ink, which resolves on this element. */
+  --n-code-dim: color-mix(in oklab, var(--n-code-fg) 58%, var(--n-code-bg));
+  --n-code-rule: color-mix(in oklab, var(--n-code-fg) 14%, transparent);
+  --n-code-hover: color-mix(in oklab, var(--n-code-fg) 9%, transparent);
+
+  /* A marked line is neutral rather than dyed with the page's accent family:
+     the block has deliberately refused the page's palette, and a primary-blue
+     wash over Dracula would be the one colour on it nobody chose. Mixed from
+     the theme's own ink, it is legible on all twelve. */
+  --n-code-mark: color-mix(in oklab, var(--n-code-fg) 10%, transparent);
+  --n-code-mark-edge: color-mix(in oklab, var(--n-code-fg) 45%, transparent);
 }
 
 .neba-code[data-code-theme='dark'],
 :where(.dark, [data-theme='dark']) .neba-code[data-code-theme='auto'] {
   --n-code-bg: oklch(19.5% 0.014 262);
   --n-code-fg: oklch(90% 0.012 262);
-  --n-code-dim: oklch(58% 0.018 262);
-  --n-code-rule: oklch(90% 0.012 262 / 0.14);
-  --n-code-hover: oklch(90% 0.012 262 / 0.1);
 
   --n-code-comment: oklch(60% 0.024 262);
   --n-code-keyword: oklch(76% 0.13 324);
@@ -922,9 +939,6 @@
   :root:not([data-theme='light']) .neba-code[data-code-theme='auto'] {
     --n-code-bg: oklch(19.5% 0.014 262);
     --n-code-fg: oklch(90% 0.012 262);
-    --n-code-dim: oklch(58% 0.018 262);
-    --n-code-rule: oklch(90% 0.012 262 / 0.14);
-    --n-code-hover: oklch(90% 0.012 262 / 0.1);
 
     --n-code-comment: oklch(60% 0.024 262);
     --n-code-keyword: oklch(76% 0.13 324);
@@ -951,9 +965,6 @@
 .neba-code[data-code-theme='mono'] {
   --n-code-bg: color-mix(in oklab, var(--neba-fg) 4%, var(--neba-surface));
   --n-code-fg: var(--neba-fg);
-  --n-code-dim: var(--neba-muted-fg);
-  --n-code-rule: color-mix(in oklab, var(--neba-fg) 14%, transparent);
-  --n-code-hover: color-mix(in oklab, var(--neba-fg) 8%, transparent);
 
   --n-code-comment: var(--neba-muted-fg);
   --n-code-keyword: var(--neba-fg);
@@ -979,6 +990,165 @@
 }
 
 /*
+ * The eight ports.
+ *
+ * They exist because a code block is the one component whose colours a reader
+ * already has an opinion about: someone who writes in One Dark all day reads a
+ * Dracula block as a different product's documentation. The published values
+ * are kept exactly, in the hex they were published in, rather than re-solved
+ * into the oklch the rest of this file uses — a Dracula that had been corrected
+ * against Neba's own ground would be a theme nobody recognises and nobody
+ * asked for.
+ *
+ * Six dark and two light, which is the ratio of how they are used. Each is
+ * fourteen declarations, because the muted, the rule, the hover and the two
+ * marked-line slots are all derived from the two at the top of it.
+ */
+.neba-code[data-code-theme='one-dark'] {
+  --n-code-bg: #282c34;
+  --n-code-fg: #abb2bf;
+
+  --n-code-comment: #5c6370;
+  --n-code-keyword: #c678dd;
+  --n-code-string: #98c379;
+  --n-code-number: #d19a66;
+  --n-code-function: #61afef;
+  --n-code-type: #e5c07b;
+  --n-code-variable: #e06c75;
+  --n-code-tag: #e06c75;
+  --n-code-attr: #d19a66;
+  --n-code-meta: #56b6c2;
+  --n-code-add: #98c379;
+  --n-code-del: #e06c75;
+}
+
+.neba-code[data-code-theme='dracula'] {
+  --n-code-bg: #282a36;
+  --n-code-fg: #f8f8f2;
+
+  --n-code-comment: #6272a4;
+  --n-code-keyword: #ff79c6;
+  --n-code-string: #f1fa8c;
+  --n-code-number: #bd93f9;
+  --n-code-function: #50fa7b;
+  --n-code-type: #8be9fd;
+  --n-code-variable: #f8f8f2;
+  --n-code-tag: #ff79c6;
+  --n-code-attr: #50fa7b;
+  --n-code-meta: #6272a4;
+  --n-code-add: #50fa7b;
+  --n-code-del: #ff5555;
+}
+
+.neba-code[data-code-theme='monokai'] {
+  --n-code-bg: #272822;
+  --n-code-fg: #f8f8f2;
+
+  --n-code-comment: #75715e;
+  --n-code-keyword: #f92672;
+  --n-code-string: #e6db74;
+  --n-code-number: #ae81ff;
+  --n-code-function: #a6e22e;
+  --n-code-type: #66d9ef;
+  --n-code-variable: #f8f8f2;
+  --n-code-tag: #f92672;
+  --n-code-attr: #a6e22e;
+  --n-code-meta: #75715e;
+  --n-code-add: #a6e22e;
+  --n-code-del: #f92672;
+}
+
+.neba-code[data-code-theme='nord'] {
+  --n-code-bg: #2e3440;
+  --n-code-fg: #d8dee9;
+
+  --n-code-comment: #616e88;
+  --n-code-keyword: #81a1c1;
+  --n-code-string: #a3be8c;
+  --n-code-number: #b48ead;
+  --n-code-function: #88c0d0;
+  --n-code-type: #8fbcbb;
+  --n-code-variable: #d8dee9;
+  --n-code-tag: #81a1c1;
+  --n-code-attr: #8fbcbb;
+  --n-code-meta: #5e81ac;
+  --n-code-add: #a3be8c;
+  --n-code-del: #bf616a;
+}
+
+.neba-code[data-code-theme='night-owl'] {
+  --n-code-bg: #011627;
+  --n-code-fg: #d6deeb;
+
+  --n-code-comment: #637777;
+  --n-code-keyword: #c792ea;
+  --n-code-string: #ecc48d;
+  --n-code-number: #f78c6c;
+  --n-code-function: #82aaff;
+  --n-code-type: #ffcb8b;
+  --n-code-variable: #addb67;
+  --n-code-tag: #7fdbca;
+  --n-code-attr: #addb67;
+  --n-code-meta: #82aaff;
+  --n-code-add: #addb67;
+  --n-code-del: #ef5350;
+}
+
+.neba-code[data-code-theme='gruvbox'] {
+  --n-code-bg: #282828;
+  --n-code-fg: #ebdbb2;
+
+  --n-code-comment: #928374;
+  --n-code-keyword: #fb4934;
+  --n-code-string: #b8bb26;
+  --n-code-number: #d3869b;
+  --n-code-function: #b8bb26;
+  --n-code-type: #fabd2f;
+  --n-code-variable: #83a598;
+  --n-code-tag: #8ec07c;
+  --n-code-attr: #fabd2f;
+  --n-code-meta: #928374;
+  --n-code-add: #b8bb26;
+  --n-code-del: #fb4934;
+}
+
+.neba-code[data-code-theme='github'] {
+  --n-code-bg: #ffffff;
+  --n-code-fg: #24292f;
+
+  --n-code-comment: #6e7781;
+  --n-code-keyword: #cf222e;
+  --n-code-string: #0a3069;
+  --n-code-number: #0550ae;
+  --n-code-function: #8250df;
+  --n-code-type: #953800;
+  --n-code-variable: #953800;
+  --n-code-tag: #116329;
+  --n-code-attr: #0550ae;
+  --n-code-meta: #6e7781;
+  --n-code-add: #116329;
+  --n-code-del: #82071e;
+}
+
+.neba-code[data-code-theme='solarized-light'] {
+  --n-code-bg: #fdf6e3;
+  --n-code-fg: #657b83;
+
+  --n-code-comment: #93a1a1;
+  --n-code-keyword: #859900;
+  --n-code-string: #2aa198;
+  --n-code-number: #d33682;
+  --n-code-function: #268bd2;
+  --n-code-type: #b58900;
+  --n-code-variable: #268bd2;
+  --n-code-tag: #268bd2;
+  --n-code-attr: #b58900;
+  --n-code-meta: #cb4b16;
+  --n-code-add: #859900;
+  --n-code-del: #dc322f;
+}
+
+/*
  * A line, and the two things in front of it that are not code.
  *
  * The number and the prompt are generated content off a `data-*` attribute, not
@@ -997,6 +1167,28 @@
   display: flex;
   min-height: 1.5em;
   min-height: 1lh;
+  /*
+   * Transparent on every line, coloured on a marked one. A border rather than
+   * an inset `box-shadow` because `box-shadow` has no logical form and this one
+   * has to sit on the *start* edge in both writing directions; drawn on all of
+   * them so marking a line does not shift its text two pixels sideways.
+   */
+  border-inline-start: 2px solid transparent;
+}
+
+/*
+ * A marked line, and the reason its horizontal padding is on the line rather
+ * than on the box that scrolls it.
+ *
+ * A highlight that stopped at the padding would be a stripe floating inside the
+ * block instead of a marked row. With the padding here the line box *is* the
+ * row, so the tint reaches both edges — and because the lines sit in a
+ * `w-max min-w-full` block, every one of them reaches the same edge whether the
+ * code is narrower than the block or scrolled sideways within it.
+ */
+.neba-code-line[data-mark] {
+  background: var(--n-code-mark);
+  border-inline-start-color: var(--n-code-mark-edge);
 }
 
 .neba-code-line[data-line]::before {
