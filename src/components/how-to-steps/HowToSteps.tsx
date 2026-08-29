@@ -3,9 +3,11 @@ import { Button } from '../button/Button.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { CheckIcon, ChevronIcon, RestartIcon, SuccessIcon } from '../../internal/icons.js';
 import { stepsMessages, useMessages } from '../../internal/i18n.js';
+import { transitionProps } from '../../internal/animate.js';
 import {
   cx,
   hasContent,
+  iconClasses,
   metaTextClasses,
   radiusClasses,
   sheetBodyClasses,
@@ -23,6 +25,7 @@ import type {
   NebaElevation,
   NebaOrientation,
   NebaSize,
+  NebaTransition,
   NebaVariant
 } from '../../types.js';
 
@@ -30,6 +33,16 @@ import type {
 export interface HowToStep {
   /** The heading, shown both in the list and over the step's own body. */
   title: React.ReactNode;
+  /**
+   * A glyph before the title, over the step's own body.
+   *
+   * Only there, and not in the list: a row there already carries a numbered
+   * disc, and a glyph beside it is a second mark making the same claim about
+   * the same row. What an icon is good for is telling a reader *what kind* of
+   * step this is — a terminal, a file, a warning — which is a thing to say
+   * once, where the step is stated at full size.
+   */
+  icon?: React.ReactNode;
   /** What the reader has to do. Anything — prose, a [CodeBlock], a screenshot. */
   content?: React.ReactNode;
   /** A picture above the content, for a step that is easier shown than said. */
@@ -97,6 +110,31 @@ export interface HowToStepsProps extends Omit<
    * @default true
    */
   navigation?: boolean;
+  /**
+   * Draws a hairline between the list and the body — down the inner edge while
+   * they are two columns, along the bottom of the list once they have stacked.
+   *
+   * On by default. The two are different kinds of thing — one is a map, the
+   * other is the place the map points at — and space alone leaves that to be
+   * inferred from a gap that a narrow screen is about to take away.
+   * @default true
+   */
+  divider?: boolean;
+  /**
+   * How a step arrives when the reader moves to it, from the same vocabulary
+   * `transition` uses everywhere: an effect name, or the object form for the
+   * duration, the easing and the rest. `'none'` turns it off.
+   *
+   * It runs on the panel rather than on anything that is pressed, which is what
+   * keeps it inside the library's rule against moving a control: the buttons
+   * and the list rows hold still, and what animates is the content they
+   * changed.
+   *
+   * A reduced-motion preference switches it off entirely, as it does every
+   * other effect in the library.
+   * @default 'fade'
+   */
+  transition?: NebaTransition | 'none';
   /**
    * Whether there is a finished state at all.
    *
@@ -225,6 +263,8 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
     maxHeight,
     railWidth = '15rem',
     navigation = true,
+    divider = true,
+    transition = 'fade',
     completion = true,
     completedContent,
     variant = 'outline',
@@ -312,6 +352,18 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
 
   const first = active === 0;
   const last = active === total - 1;
+
+  /**
+   * The entrance, and how it is re-run without remounting anything.
+   *
+   * The class is put on the panel that is *currently* active and on no other,
+   * so a panel gains it at the moment it becomes the one showing — and adding
+   * an animation class to an element that did not have one is what starts an
+   * animation. No key, no reflow hack, and above all no remount: a step can
+   * hold a form, and a guide that wiped what the reader typed every time they
+   * looked back at step one would be worse than one that did not animate.
+   */
+  const motion = transition === 'none' ? null : transitionProps(transition);
 
   const mark = (index: number) => {
     const done = completed || index < active;
@@ -449,10 +501,26 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
             className={cx(
               'col-start-1 row-start-1 min-w-0',
               bounded ? 'overflow-y-auto overscroll-contain' : '',
-              hidden ? 'invisible' : ''
+              hidden ? 'invisible' : (motion?.className ?? '')
             )}
+            style={hidden ? undefined : motion?.style}
           >
             <div className="mb-3 flex items-baseline gap-3">
+              {hasContent(item.icon) ? (
+                // `h-[1lh]` rather than a fixed height: the glyph sits on the
+                // heading's own line box, so it stays centred against the title
+                // at every step of the size ladder.
+                <span
+                  aria-hidden="true"
+                  className={cx(
+                    'flex h-[1lh] shrink-0 items-center text-(--n-accent)',
+                    sheetTitleClasses[size],
+                    iconClasses
+                  )}
+                >
+                  {item.icon}
+                </span>
+              ) : null}
               <h4 className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}>
                 {item.title}
               </h4>
@@ -487,8 +555,9 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
           inert={!completed || undefined}
           className={cx(
             'col-start-1 row-start-1 flex min-w-0 flex-col items-center justify-center gap-2 py-4 text-center',
-            completed ? '' : 'invisible'
+            completed ? (motion?.className ?? '') : 'invisible'
           )}
+          style={completed ? motion?.style : undefined}
         >
           <span aria-hidden="true" className="text-(--n-accent) [&_svg]:size-9">
             <SuccessIcon />
@@ -547,7 +616,24 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
           className={cx(
             'flex min-w-0 flex-col',
             bounded ? 'min-h-0' : '',
-            vertical ? 'sm:w-(--n-step-rail) sm:shrink-0' : ''
+            vertical ? 'sm:w-(--n-step-rail) sm:shrink-0' : '',
+            /*
+              The line goes on the list's inner edge, with a matching pad, so
+              the space on either side of it is the same: the row's text, the
+              gutter, the line, the gutter, the body. Put on the gap alone it
+              would sit hard against the list and 20px from the body.
+
+              Both directions are written out because a vertical guide is only
+              two columns above `sm` — below it the two have stacked, and a
+              line down the side of a stacked layout would be a line down the
+              side of nothing.
+            */
+            divider
+              ? vertical
+                ? 'border-b pb-4 sm:border-b-0 sm:border-e sm:pb-0 sm:pe-5'
+                : 'border-b pb-4'
+              : '',
+            divider ? '[border-color:var(--n-line)]' : ''
           )}
         >
           {rail}

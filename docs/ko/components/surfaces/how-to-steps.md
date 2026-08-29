@@ -65,6 +65,36 @@ import { HowToSteps } from 'neba';
 
 </Demo>
 
+### icon
+
+각 단계는 glyph를 하나 받을 수 있고, 그 단계 본문의 제목 앞에 그려집니다. 목록에는 그리지 않습니다 — 목록의 행에는 이미 번호가 붙은 원이 있고, 그 옆의 glyph는 같은 말을 두 번 하는 두 번째 표시이기 때문입니다. 아이콘이 잘하는 일은 이것이 _어떤 종류의_ 단계인지 말하는 것입니다 — 터미널, 파일, 경고.
+
+```tsx
+{ title: 'crontab 열기', icon: <TerminalIcon />, content: … }
+```
+
+### divider
+
+목록과 본문 사이의 얇은 선입니다. 둘이 두 열일 때는 안쪽 모서리를 따라, 위아래로 쌓인 뒤에는 목록 아래를 따라 그려집니다. 기본은 켜짐입니다 — 둘은 서로 다른 종류의 것이고, 여백만으로는 좁은 화면이 곧 없애버릴 gap에 그 구분을 맡기게 됩니다.
+
+<Demo src="how-to-steps/divider" minHeight="320">
+
+<<< @/.vitepress/demos/how-to-steps/divider.tsx
+
+</Demo>
+
+### transition
+
+독자가 어떤 단계로 옮겨갔을 때 그 단계가 등장하는 방식이며, 어디서나 [`transition`](../../design/prop-conventions)이 쓰는 것과 같은 어휘를 씁니다 — effect 이름 하나, 또는 duration·easing·방향까지 정하는 객체 형태. `'none'`이면 꺼지고, reduced-motion 설정에서도 꺼집니다.
+
+효과는 패널에서 실행되며 눌리는 것 위에서는 절대 실행되지 않습니다. 버튼과 목록 행은 가만히 있고, 움직이는 것은 그것들이 바꾼 내용입니다.
+
+<Demo src="how-to-steps/transition" minHeight="340">
+
+<<< @/.vitepress/demos/how-to-steps/transition.tsx
+
+</Demo>
+
 ### navigation · completion
 
 `navigation={false}`는 버튼 줄을 없애고 목록만 남깁니다. 페이지가 자체 내비게이션을 가진 곳에 안내서를 끼워 넣을 때 쓰는 형태입니다. `completion={false}`는 완료 상태 자체를 없앱니다 — 마지막 단계는 그냥 마지막 단계가 됩니다.
@@ -81,7 +111,7 @@ import { HowToSteps } from 'neba';
 
 ### 무엇이든 담기는 단계
 
-`content`는 노드를 받으므로 한 단계 안에 [CodeBlock](../display/code-block)이, `image`로 스크린샷이, 폼이, 다른 컴포넌트가 들어갈 수 있습니다. 본문 영역이 가장 긴 단계의 높이를 유지하기 때문에, 코드 블록이 들어 있는 단계에 도착해도 카드 크기가 바뀌지 않습니다.
+`content`는 노드를 받으므로 한 단계 안에 [CodeBlock](../display/code-block)이, `image`로 스크린샷이, 폼이, 다른 컴포넌트가 들어갈 수 있습니다. 본문 영역이 가장 긴 단계의 높이를 유지하기 때문에 코드 블록이 들어 있는 단계에 도착해도 카드 크기가 바뀌지 않으며, 단계가 바뀔 때 아무것도 다시 mount되지 않으므로 안내서 중간의 폼은 입력해 둔 내용을 그대로 들고 있습니다.
 
 ## Accessibility
 

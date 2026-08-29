@@ -67,6 +67,8 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 눌리는 컴포넌트에는 제공하지 않습니다. 겨냥한 포인터 아래에서 컨트롤이 움직이는 것은 [디자인 언어](./design-language)가 금지하는 바로 그것이고, Button의 `transition`이 정확히 그것이 됩니다.
 
+[HowToSteps](../components/surfaces/how-to-steps)는 같은 prop을 받으면서 mount가 아닌 순간에 실행하는 유일한 컴포넌트입니다 — 움직이는 것은 도착한 단계입니다 — 그리고 같은 이유로 규칙 안에 있습니다. 효과는 패널 위에서 실행되고, 그것을 바꾼 버튼과 행은 가만히 있습니다. union에 `'none'`이 들어 있는 것도 이 컴포넌트뿐인데, 기본값이 “없음”이 아니라 효과인 유일한 경우이기 때문입니다.
+
 mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 — 은 [`Animate*` 컴포넌트](../components/transitions/animate-fade)의 몫이며, 어떤 컴포넌트든 그것으로 감쌀 수 있습니다. 아래 설정을 열한 개 모두가 같은 뜻으로 공유합니다.
 
 | Prop | 규칙 |

@@ -67,6 +67,8 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 It is offered on no component that is pressed. A control that moves under the pointer aiming at it is the one thing the [design language](./design-language) rules out, and a `transition` on a Button would be exactly that.
 
+[HowToSteps](../components/surfaces/how-to-steps) is the one component that takes the same prop and runs it on something other than a mount — a step arriving is what it animates — and it stays inside the rule for the same reason: the effect is on the panel, and the buttons and rows that changed it hold still. It is also the only one with a `'none'` in the union, because it is the only one whose default is an effect rather than nothing.
+
 Anything past a mount — a replay, a scroll trigger, a hover, your own control — is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all eleven:
 
 | Prop                 | The rule                                                                 |

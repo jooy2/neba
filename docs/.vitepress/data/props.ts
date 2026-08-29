@@ -10629,6 +10629,25 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'divider',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '목록과 본문 사이의 얇은 선. 두 열일 때는 안쪽 모서리를 따라, 쌓인 뒤에는 목록 아래를 따라 그려집니다',
+        en: 'A hairline between the list and the body — down the inner edge while they are two columns, along the bottom of the list once they have stacked'
+      }
+    },
+    {
+      name: 'transition',
+      type: "NebaTransition | 'none'",
+      default: "'fade'",
+      shared: true,
+      description: {
+        ko: '독자가 옮겨간 단계가 등장하는 방식. 어디서나 쓰는 그 어휘 그대로이며, none이면 꺼집니다. 눌리는 것이 아니라 패널에서 실행되고, reduced-motion 설정에서는 전부 꺼집니다',
+        en: 'How a step arrives when the reader moves to it, from the same vocabulary transition uses everywhere. none turns it off. It runs on the panel rather than on anything that is pressed, and a reduced-motion preference switches it off entirely'
+      }
+    },
+    {
       name: 'completion',
       type: 'boolean',
       default: 'true',
@@ -10715,6 +10734,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '제목. 목록에도, 그 단계 본문 위에도 같은 것이 놓입니다',
         en: "The heading, shown both in the list and over the step's own body"
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: {
+        ko: '그 단계 본문의 제목 앞에 그려지는 glyph. 목록에는 그리지 않습니다 — 거기에는 이미 번호가 붙은 원이 있고, 옆의 glyph는 같은 말을 두 번 합니다',
+        en: "A glyph before the title over the step's own body. Not in the list: a row there already carries a numbered disc, and a glyph beside it is a second mark making the same claim"
       }
     },
     {

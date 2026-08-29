@@ -269,6 +269,117 @@ describe('HowToSteps', () => {
     });
   });
 
+  describe('the step icon', () => {
+    it('draws a glyph before the title on the step showing', async () => {
+      const screen = await render(
+        <HowToSteps
+          steps={[{ title: 'Install', icon: <svg data-testid="glyph" /> }]}
+          data-testid="guide"
+        />
+      );
+
+      await expect.element(screen.getByTestId('glyph')).toBeVisible();
+    });
+
+    // A row in the list already carries a numbered disc, and a glyph beside it
+    // is a second mark making the same claim about the same row.
+    it('keeps it out of the list', async () => {
+      const screen = await render(
+        <HowToSteps steps={[{ title: 'Install', icon: <svg data-testid="glyph" /> }]} />
+      );
+
+      expect(screen.getByTestId('glyph').elements()).toHaveLength(1);
+    });
+  });
+
+  describe('the divider', () => {
+    it('draws a hairline between the list and the body', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+      const rail = screen.getByRole('list', { name: 'Steps' }).element().parentElement;
+
+      expect(rail).toHaveClass('border-b');
+    });
+
+    it('leaves it out when it is turned off', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} divider={false} />);
+      const rail = screen.getByRole('list', { name: 'Steps' }).element().parentElement;
+
+      expect(rail).not.toHaveClass('border-b');
+    });
+  });
+
+  describe('the step transition', () => {
+    /*
+      The class is on the panel that is *currently* active and on no other, so a
+      panel gains it at the moment it becomes the one showing — which is what
+      starts the animation, with no key, no reflow hack and no remount.
+    */
+    const animated = (root: Element) =>
+      [...root.querySelectorAll('.neba-anim')].filter(
+        (node) => !node.className.includes('invisible')
+      );
+
+    it('fades a step in by default', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+      const running = animated(screen.getByTestId('guide').element());
+
+      expect(running).toHaveLength(1);
+      expect(running[0]).toHaveClass('neba-anim-fade');
+    });
+
+    it('moves the effect to the step being arrived at', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+
+      await expect
+        .poll(() => animated(screen.getByTestId('guide').element())[0]?.textContent)
+        .toContain('One stylesheet import.');
+    });
+
+    it('runs the effect it was given', async () => {
+      const screen = await render(
+        <HowToSteps
+          steps={STEPS}
+          transition={{ type: 'slide', duration: 90 }}
+          data-testid="guide"
+        />
+      );
+      const running = animated(screen.getByTestId('guide').element())[0] as HTMLElement;
+
+      expect(running).toHaveClass('neba-anim-slide');
+      expect(running.style.getPropertyValue('--n-anim-duration')).toBe('90ms');
+    });
+
+    it('animates nothing at all with none', async () => {
+      const screen = await render(
+        <HowToSteps steps={STEPS} transition="none" data-testid="guide" />
+      );
+
+      expect(screen.getByTestId('guide').element().querySelector('.neba-anim')).toBeNull();
+    });
+
+    // A step can hold a form, and a guide that wiped what was typed every time
+    // the reader looked back at step one would be worse than one that did not
+    // animate at all.
+    it('does not remount the step it leaves and returns to', async () => {
+      const screen = await render(
+        <HowToSteps
+          steps={[
+            { title: 'One', content: <input data-testid="field" defaultValue="" /> },
+            { title: 'Two', content: 'Nothing here.' }
+          ]}
+        />
+      );
+
+      await screen.getByTestId('field').fill('typed');
+      await screen.getByRole('button', { name: 'Next' }).click();
+      await screen.getByRole('button', { name: 'Previous' }).click();
+
+      await expect.element(screen.getByTestId('field')).toHaveValue('typed');
+    });
+  });
+
   describe('accessibility', () => {
     // A stepper looks like tabs and is not one: the panels are ordered and the
     // reader is expected to arrive at them in that order.

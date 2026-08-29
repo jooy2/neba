@@ -65,6 +65,36 @@ Both states are controllable. Pass `step` with `onStepChange` to keep the positi
 
 </Demo>
 
+### icon
+
+Each step takes a glyph, drawn before the title over its own body. Only there: a row in the list already carries a numbered disc, and a glyph beside it is a second mark making the same claim. What an icon is good for is saying what _kind_ of step this is — a terminal, a file, a warning.
+
+```tsx
+{ title: 'Open your crontab', icon: <TerminalIcon />, content: … }
+```
+
+### divider
+
+A hairline between the list and the body — down the inner edge while they are two columns, along the bottom of the list once they have stacked. On by default: the two are different kinds of thing, and space alone leaves that to a gap a narrow screen is about to take away.
+
+<Demo src="how-to-steps/divider" minHeight="320">
+
+<<< @/.vitepress/demos/how-to-steps/divider.tsx
+
+</Demo>
+
+### transition
+
+How a step arrives when the reader moves to it, from the same vocabulary [`transition`](../../design/prop-conventions) uses everywhere — an effect name, or the object form for the duration, the easing, the direction. `'none'` turns it off, and a reduced-motion preference does too.
+
+It runs on the panel and never on anything that is pressed: the buttons and the list rows hold still, and what animates is the content they changed.
+
+<Demo src="how-to-steps/transition" minHeight="340">
+
+<<< @/.vitepress/demos/how-to-steps/transition.tsx
+
+</Demo>
+
 ### navigation · completion
 
 `navigation={false}` drops the row of buttons and leaves the list as the only way to move, for a guide inside a page that has navigation of its own. `completion={false}` removes the finished state entirely: the last step is simply the last step.
@@ -81,7 +111,7 @@ The three weights say what they say everywhere, and the sheet is never dyed by `
 
 ### Steps with anything in them
 
-`content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it.
+`content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it — and nothing is remounted as the step changes, so a form halfway through a guide still holds what was typed into it.
 
 ## Accessibility
 
