@@ -13,9 +13,9 @@ order: 4
 import { List, ListItem, Sidebar } from 'neba';
 
 <Sidebar label="목차">
-  <List>
-    <ListItem selected>개요</ListItem>
-    <ListItem>컴포넌트</ListItem>
+  <List variant="text">
+    <ListItem href="/overview" selected>개요</ListItem>
+    <ListItem href="/components">컴포넌트</ListItem>
   </List>
 </Sidebar>;
 ```

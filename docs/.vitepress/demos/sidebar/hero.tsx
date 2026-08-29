@@ -5,11 +5,13 @@ export default function SidebarHero() {
     <div className="flex h-72 w-full overflow-hidden rounded-(--neba-radius-md) border border-(--neba-border)">
       <Sidebar collapseBelow="none" width={200}>
         <Typography level="overline">Sections</Typography>
-        <List>
-          <ListItem selected>Overview</ListItem>
-          <ListItem>Components</ListItem>
-          <ListItem>Design</ListItem>
-          <ListItem>Changelog</ListItem>
+        <List variant="text" size="sm">
+          <ListItem href="#" selected>
+            Overview
+          </ListItem>
+          <ListItem href="#">Components</ListItem>
+          <ListItem href="#">Design</ListItem>
+          <ListItem href="#">Changelog</ListItem>
         </List>
       </Sidebar>
 

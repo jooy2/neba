@@ -11,18 +11,20 @@ export default function PageLayoutTwoSidebars() {
         header={<Header>Reference</Header>}
         sidebar={
           <Sidebar label="Sections" width={150}>
-            <List>
-              <ListItem selected>Button</ListItem>
-              <ListItem>Card</ListItem>
+            <List variant="text" size="sm">
+              <ListItem href="#" selected>
+                Button
+              </ListItem>
+              <ListItem href="#">Card</ListItem>
             </List>
           </Sidebar>
         }
         endSidebar={
           <Sidebar label="On this page" width={150} variant="text">
             <Typography level="overline">On this page</Typography>
-            <List>
-              <ListItem>Props</ListItem>
-              <ListItem>Examples</ListItem>
+            <List variant="text" size="sm">
+              <ListItem href="#">Props</ListItem>
+              <ListItem href="#">Examples</ListItem>
             </List>
           </Sidebar>
         }

@@ -18,9 +18,15 @@ export default function HeaderHero() {
       className="rounded-(--neba-radius-md)"
     >
       <nav className="flex items-center gap-4">
-        <TextLink href="#">Docs</TextLink>
-        <TextLink href="#">Components</TextLink>
-        <TextLink href="#">Changelog</TextLink>
+        <TextLink href="#" underline="hover">
+          Docs
+        </TextLink>
+        <TextLink href="#" underline="hover">
+          Components
+        </TextLink>
+        <TextLink href="#" underline="hover">
+          Changelog
+        </TextLink>
       </nav>
     </Header>
   );

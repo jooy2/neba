@@ -33,9 +33,11 @@ export default function PageLayoutSpan() {
           header={<Header brand={<AppLogo name="Neba" showName size="sm" />} />}
           sidebar={
             <Sidebar label="Sections" width={160}>
-              <List>
-                <ListItem selected>Overview</ListItem>
-                <ListItem>Components</ListItem>
+              <List variant="text" size="sm">
+                <ListItem href="#" selected>
+                  Overview
+                </ListItem>
+                <ListItem href="#">Components</ListItem>
               </List>
             </Sidebar>
           }

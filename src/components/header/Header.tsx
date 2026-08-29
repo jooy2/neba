@@ -133,13 +133,30 @@ const barMinHeightClasses: Record<NebaSize, string> = {
   xl: 'min-h-20'
 };
 
-/** Between the brand, the middle and the actions. */
+/** Inside one slot — between a logo and the name beside it, or between two buttons. */
 const slotGapClasses: Record<NebaSize, string> = {
   xs: 'gap-1.5',
   sm: 'gap-2',
   md: 'gap-3',
   lg: 'gap-4',
   xl: 'gap-5'
+};
+
+/**
+ * Between the brand, the middle and the actions — about twice the gap *inside*
+ * a slot, and a separate ladder for that reason.
+ *
+ * The three slots are three regions, and a region needs to read as one. With a
+ * single gap doing both jobs, the first navigation link sits as far from the
+ * logo as the logo sits from its own name, so the eye groups the wrong things
+ * and the bar reads as one undifferentiated row.
+ */
+const barGapClasses: Record<NebaSize, string> = {
+  xs: 'gap-3',
+  sm: 'gap-4',
+  md: 'gap-6',
+  lg: 'gap-8',
+  xl: 'gap-10'
 };
 
 /** The measure, in the same `rem` steps Container's ladder uses. */
@@ -275,7 +292,7 @@ export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header
           className={cx(
             'flex w-full items-center',
             barMinHeightClasses[size],
-            slotGapClasses[size],
+            barGapClasses[size],
             padded ? boxPaddingXClasses[density][size] : '',
             maxWidth === 'none' ? '' : cx(maxWidthClasses[maxWidth], 'mx-auto')
           )}

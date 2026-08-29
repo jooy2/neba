@@ -29,8 +29,12 @@ export default function HeaderAlign() {
         className="rounded-(--neba-radius-md)"
       >
         <nav className="flex items-center gap-4">
-          <TextLink href="#">Docs</TextLink>
-          <TextLink href="#">Pricing</TextLink>
+          <TextLink href="#" underline="hover">
+            Docs
+          </TextLink>
+          <TextLink href="#" underline="hover">
+            Pricing
+          </TextLink>
         </nav>
       </Header>
     </div>

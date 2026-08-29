@@ -5,9 +5,11 @@ export default function SidebarSides() {
     <div className="flex h-72 w-full overflow-hidden rounded-(--neba-radius-md) border border-(--neba-border)">
       <Sidebar collapseBelow="none" width={160} label="Sections">
         <Typography level="overline">Sections</Typography>
-        <List>
-          <ListItem selected>Overview</ListItem>
-          <ListItem>Props</ListItem>
+        <List variant="text" size="sm">
+          <ListItem href="#" selected>
+            Overview
+          </ListItem>
+          <ListItem href="#">Props</ListItem>
         </List>
       </Sidebar>
 
@@ -18,9 +20,9 @@ export default function SidebarSides() {
 
       <Sidebar collapseBelow="none" side="end" width={160} label="On this page" variant="text">
         <Typography level="overline">On this page</Typography>
-        <List>
-          <ListItem>Props</ListItem>
-          <ListItem>Examples</ListItem>
+        <List variant="text" size="sm">
+          <ListItem href="#">Props</ListItem>
+          <ListItem href="#">Examples</ListItem>
         </List>
       </Sidebar>
     </div>

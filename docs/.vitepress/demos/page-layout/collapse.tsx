@@ -29,10 +29,12 @@ export default function PageLayoutCollapse() {
         }
         sidebar={
           <Sidebar label="Sections" title="Sections">
-            <List>
-              <ListItem selected>Overview</ListItem>
-              <ListItem>Components</ListItem>
-              <ListItem>Design</ListItem>
+            <List variant="text" size="sm">
+              <ListItem href="#" selected>
+                Overview
+              </ListItem>
+              <ListItem href="#">Components</ListItem>
+              <ListItem href="#">Design</ListItem>
             </List>
           </Sidebar>
         }

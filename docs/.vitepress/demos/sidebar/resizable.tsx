@@ -15,10 +15,12 @@ export default function SidebarResizable() {
         onResize={setWidth}
       >
         <Typography level="overline">Files</Typography>
-        <List>
-          <ListItem>src</ListItem>
-          <ListItem selected>package.json</ListItem>
-          <ListItem>README.md</ListItem>
+        <List variant="text" size="sm">
+          <ListItem href="#">src</ListItem>
+          <ListItem href="#" selected>
+            package.json
+          </ListItem>
+          <ListItem href="#">README.md</ListItem>
         </List>
       </Sidebar>
 
