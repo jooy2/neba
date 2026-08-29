@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { Drawer } from '../drawer/Drawer.js';

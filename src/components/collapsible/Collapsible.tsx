@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Collapsible as BaseUICollapsible } from '@base-ui/react/collapsible';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';

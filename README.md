@@ -86,6 +86,12 @@ export default function SignIn() {
 }
 ```
 
+### Next.js and React Server Components
+
+Every component carries `'use client'`, so it can be imported straight into a Server Component — no wrapper, no `transpilePackages` entry. The directive marks a boundary, not a page: the page stays a Server Component and only the components it renders reach the browser. The ordinary rule about that boundary still applies — an event handler defined in a Server Component cannot be passed across it.
+
+The `neba` barrel and `neba/locales` are deliberately left unmarked, so a Server Component importing the barrel reaches the components behind it rather than a boundary of its own, and `registerMessages` stays a plain function. Bundlers that do not implement Server Components ignore the directive entirely.
+
 A few components provide context and are mounted once, near the root, only if you use them — `ToastProvider` (paired with the `useToast()` hook) and `TooltipProvider`.
 
 Every component is also its own entry point, named after its folder:

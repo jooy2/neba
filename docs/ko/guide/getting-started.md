@@ -67,6 +67,62 @@ export default function App() {
 }
 ```
 
+## Next.js와 React Server Components
+
+**Neba의 모든 컴포넌트에는 `'use client'`가 붙어 있습니다.** Server Component에서 그대로 import해 쓸 수 있고, 따로 감싸는 wrapper도 `transpilePackages` 설정도 필요하지 않습니다.
+
+```tsx
+// app/page.tsx — Server Component
+import { Button, Card } from 'neba';
+
+export default function Page() {
+  return (
+    <Card>
+      <Button>Save</Button>
+    </Card>
+  );
+}
+```
+
+directive가 표시하는 것은 경계이지 페이지가 아닙니다. 위 페이지는 그대로 Server Component로 남고, 브라우저로 내려가는 것은 거기서 render한 컴포넌트뿐입니다.
+
+그 경계에 걸리는 일반적인 규칙은 그대로 적용됩니다. **prop은 경계를 넘지만 함수는 넘지 못합니다.** Server Component 안에서 정의한 handler는 Neba 컴포넌트에 넘길 수 없습니다.
+
+```tsx
+// ✗ Event handlers cannot be passed to Client Component props
+<Button onClick={() => save()}>Save</Button>
+```
+
+다른 컴포넌트를 쓸 때와 마찬가지로, 상호작용하는 부분은 `'use client'`로 시작하는 자신의 module에 두면 됩니다.
+
+stylesheet는 root layout에서 한 번만 import합니다.
+
+```tsx
+// app/layout.tsx
+import 'neba/styles.css';
+```
+
+의도적으로 client module이 **아닌** 것이 둘 있습니다. `neba` barrel과 `neba/locales`입니다. barrel은 re-export만 하므로 Server Component가 import하면 별도의 경계가 생기는 대신 뒤에 있는 컴포넌트에 그대로 닿고, `registerMessages`는 어디서든 호출할 수 있는 평범한 함수로 남습니다. 다만 컴포넌트는 render하는 시점에 등록된 언어를 읽고 그 render는 서버에서 한 번, 브라우저에서 한 번 일어나므로, 등록은 client graph에 속한 module에서 하십시오.
+
+```tsx
+// app/neba-locale.tsx
+'use client';
+
+import { registerMessages, ko } from 'neba/locales';
+
+registerMessages('ko', ko);
+
+export function NebaLocale({ children }: { children: React.ReactNode }) {
+  return children;
+}
+```
+
+이 컴포넌트로 `app/layout.tsx`에서 앱을 감싸면 됩니다.
+
+### 그 밖의 환경
+
+`'use client'`는 파일 맨 위에 있는 문자열입니다. Server Components를 구현하지 않는 bundler — Vite, webpack, Remix, Astro, Parcel, 순수 React — 는 이를 무시하므로, 위 내용이 그런 프로젝트에서의 동작을 바꾸지는 않습니다.
+
 ## 다크 모드
 
 기본값은 `prefers-color-scheme`을 따릅니다. 강제로 고정하려면 아무 조상 요소에 클래스나 `data-theme`을 주면 됩니다.

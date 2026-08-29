@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
 import type { NebaElevation, NebaOrientation, NebaStyleProps } from '../../types.js';

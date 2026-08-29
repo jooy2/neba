@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {

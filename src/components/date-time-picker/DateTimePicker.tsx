@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { Calendar, TimeGrid, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';

@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box.js';
 import { Chip } from '../chip/Chip.js';

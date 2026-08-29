@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { breadcrumbMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';

@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Box } from '../box/Box.js';
 import { Checkbox } from '../checkbox/Checkbox.js';

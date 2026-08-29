@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';

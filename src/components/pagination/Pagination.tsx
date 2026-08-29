@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { fillMessage, paginationMessages, useMessages } from '../../internal/i18n.js';

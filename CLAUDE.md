@@ -59,7 +59,22 @@ Rules to follow:
 2. **Use named exports**, never `export default`.
 3. Each component folder gets its own `index.ts` barrel; `src/index.ts` only ever re-exports those barrels. Grow this list as components are added. The barrel is also the component's public entry point — `neba/button` resolves to it through the `./*` pattern in `exports`, so a new folder needs no `package.json` edit.
 4. When a component is added, document it under `docs/` — see [Documentation](#documentation) for the five places that means. That is also what makes it viewable alongside the others.
-5. **Tests are part of the change, not a follow-up.** See the rule below.
+5. **The file starts with `'use client';`** — every component, no exceptions. See [The client boundary](#the-client-boundary).
+6. **Tests are part of the change, not a follow-up.** See the rule below.
+
+### The client boundary
+
+**Every `src/components/**/*.tsx` begins with `'use client';` on line one**, and so does every module anywhere in `src/` that calls a React API missing from React's `react-server` build — `useState`, `useEffect`, `useLayoutEffect`, `useRef`, `useContext`, `useReducer`, `useSyncExternalStore`, `createContext` and the rest. Those are not exported at all under the `react-server` condition, so `import * as React from 'react'` hands a server render an `undefined` and the failure is a `TypeError` in someone's Next.js app, not a degraded render. `test/package/resolution.test.ts` asserts it.
+
+All of them, and not only the ones that hold state today. Thirteen components would technically survive a server render right now, and eight of those are Base UI form controls a consumer puts inside a client boundary anyway. The other five are one prop from failing: `transition` is `internal/animate.ts`, which is a `useLayoutEffect`, and `render` is Base UI's `useRender`, which is a hook — nearly every component in the library already takes one or the other. A per-component answer would be a table that rots. "Every Neba component is a client component" is a sentence a consumer can hold, and it costs nothing measurable: `npm run size` did not move by a byte, because a bundler hoists the directive rather than shipping it a hundred and six times.
+
+Three things are deliberately **left unmarked**, and each would break if it were not:
+
+- **`src/index.ts` and the component barrels.** A barrel only re-exports. Unmarked, it is a module either graph may pull in, so a Server Component importing `neba` reaches the client modules behind it; marked, it would become a boundary of its own and drag the whole barrel across.
+- **`src/locales/**` and `src/internal/i18n.ts`.** `registerMessages` is a plain function a consumer calls at module scope, and `useMessages` is a `useMemo`, which the `react-server` build does export. Marked, `registerMessages` would come back to a consumer's server module as a client reference instead of a function, and calling it would throw.
+- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the seven that hold a context or an effect (`animate.ts`, `button-group.ts`, `menu.ts`, `page-layout.ts`, `bottom-navigation.ts`, `calendar.tsx`, `chart-frame.tsx`) are marked.
+
+The directive only survives the build because `terser.config.json` says `compress.directives: false`. See [Toolchain notes](#toolchain-notes).
 
 ### Tests ship with the component
 
@@ -383,6 +398,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 4 need Node 20.19+/22.12+, so the declared floor is stale.
 - Both `package-lock.json` and `pnpm-lock.yaml` are checked in; `pnpm-workspace.yaml` exists for pnpm users. Match whichever lockfile the working tree already reflects rather than switching package managers.
 - `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
+- `terser.config.json` sets `compress.directives: false`, and it exists for `'use client'`. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, so it strips it from all one hundred and six files without a word. The published package then says nothing at all to Next.js, and nothing in this repository would notice. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser would otherwise eat on the way out.
 - `terser.config.json` sets `output.preserve_annotations`, and it exists for `scripts/annotate-pure.mjs`. Terser understands an `@__PURE__` comment and, by default, consumes it without emitting it again — which would hand the consumer's bundler minified files with the annotations gone. Neither `output.comments` nor `--comments` brings them back; this option is the one that does.
 - `npm run build` has four steps and their order is load-bearing: `tsc`, then `annotate-pure`, then `minify`, then `build-styles`. The annotations have to be written after the JavaScript exists and before terser reads it.
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.

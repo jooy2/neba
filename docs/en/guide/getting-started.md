@@ -67,6 +67,62 @@ export default function App() {
 }
 ```
 
+## Next.js and React Server Components
+
+**Every Neba component carries `'use client'`.** Import one into a Server Component and it works — there is no wrapper to write and no `transpilePackages` entry to add.
+
+```tsx
+// app/page.tsx — a Server Component
+import { Button, Card } from 'neba';
+
+export default function Page() {
+  return (
+    <Card>
+      <Button>Save</Button>
+    </Card>
+  );
+}
+```
+
+The directive marks a boundary, not a page. The page above stays a Server Component; only the components it renders are sent to the browser.
+
+The ordinary rule about that boundary still holds — **props cross it, functions do not**. A handler defined in a Server Component cannot be passed to a Neba component:
+
+```tsx
+// ✗ Event handlers cannot be passed to Client Component props
+<Button onClick={() => save()}>Save</Button>
+```
+
+Put the interactive part in a module of your own that starts with `'use client'`, the way you would with any other component.
+
+The stylesheet is imported once, in the root layout:
+
+```tsx
+// app/layout.tsx
+import 'neba/styles.css';
+```
+
+Two things are deliberately **not** client modules: the `neba` barrel and `neba/locales`. The barrel only re-exports, so a Server Component importing it reaches the components behind it rather than a boundary of its own; and `registerMessages` stays a plain function you can call anywhere. Because the components read the registered language while they render — which happens once on the server and once in the browser — register it from a module that is in the client graph:
+
+```tsx
+// app/neba-locale.tsx
+'use client';
+
+import { registerMessages, ko } from 'neba/locales';
+
+registerMessages('ko', ko);
+
+export function NebaLocale({ children }: { children: React.ReactNode }) {
+  return children;
+}
+```
+
+Render that around your app in `app/layout.tsx`.
+
+### Everywhere else
+
+`'use client'` is a string at the top of a file. Bundlers that do not implement Server Components — Vite, webpack, Remix, Astro, Parcel, plain React — ignore it, so nothing above changes what the package does in those projects.
+
 ## Dark mode
 
 The default follows `prefers-color-scheme`. To force it either way, put a class or a `data-theme` on any ancestor.

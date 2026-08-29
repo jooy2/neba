@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { CloseIcon, PlusIcon } from '../../internal/icons.js';

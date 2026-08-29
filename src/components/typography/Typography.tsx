@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';

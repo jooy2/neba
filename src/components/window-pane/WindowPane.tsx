@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { actionMessages, useMessages, windowMessages } from '../../internal/i18n.js';

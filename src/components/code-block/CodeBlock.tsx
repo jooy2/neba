@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { CheckIcon, CodeIcon, CopyIcon } from '../../internal/icons.js';
 import { codeMessages, useMessages } from '../../internal/i18n.js';

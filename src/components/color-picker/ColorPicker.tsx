@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { defaultPickerLabels } from '../../internal/calendar.js';
 import { PickerShell } from '../../internal/picker.js';

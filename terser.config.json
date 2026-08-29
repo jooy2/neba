@@ -1,6 +1,8 @@
 {
   "module": true,
-  "compress": true,
+  "compress": {
+    "directives": false
+  },
   "ie8": false,
   "safari10": false,
   "mangle": {},

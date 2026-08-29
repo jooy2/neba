@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';

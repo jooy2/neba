@@ -23,6 +23,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import pkg from '../../package.json';
+import terser from '../../terser.config.json';
 import * as i18n from '../../src/internal/i18n.js';
 
 /** Every module under `src/`, as text. Vite inlines these at build time. */
@@ -125,6 +126,79 @@ describe('the published package', () => {
       // page did not import. Widen it and every consumer's bundle is the whole
       // library.
       expect(pkg.sideEffects).toEqual(['**/*.css']);
+    });
+  });
+
+  describe('names its client boundary', () => {
+    // Every React API a component here reaches for — `useState`, `useRef`,
+    // `useContext`, `createContext`, `useEffect` — is absent from React's
+    // `react-server` build. A module that calls one and is not marked is not a
+    // module that renders badly under RSC; it is `undefined is not a function`
+    // in someone's Next.js app, and it cannot happen in this repository,
+    // because nothing here renders on a server.
+    const CLIENT_ONLY =
+      /React\.(useState|useEffect|useLayoutEffect|useRef|useContext|useReducer|useSyncExternalStore|useTransition|useDeferredValue|useImperativeHandle|useInsertionEffect|createContext|useOptimistic|useActionState)\b/;
+
+    /** `'use client'` as the very first thing in the file — a leading comment would still parse, but line one is the rule a grep can check. */
+    const DIRECTIVE = /^'use client';\n/;
+
+    it("starts every component with 'use client'", () => {
+      // All of them, and not only the ones that happen to hold state today.
+      // Nearly every component already takes `transition` (a hook), `render` (a
+      // hook) or an event handler, and the ones that do not are one prop away
+      // from it. A per-component answer would be a table that rots; "every
+      // Neba component is a client component" is a sentence a consumer can
+      // hold.
+      const offenders = Object.entries(sources)
+        .filter(([path]) => /src\/components\/.+\.tsx$/.test(path))
+        .filter(([, source]) => !DIRECTIVE.test(source))
+        .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
+
+    it('starts every module that calls a client-only React API with it too', () => {
+      // The shared modules under `internal/`. A file with no directive is a
+      // module either graph may pull in, which is right for the ones that are
+      // arithmetic, a table or a glyph — and wrong for the seven that hold a
+      // context or an effect.
+      const offenders = Object.entries(sources)
+        .filter(([, source]) => CLIENT_ONLY.test(source))
+        .filter(([, source]) => !DIRECTIVE.test(source))
+        .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
+
+    it('leaves the barrels and the locales unmarked', () => {
+      // A barrel that only re-exports is reachable from either graph, and a
+      // server component importing `neba` should reach the client modules
+      // behind it rather than a boundary of its own. `registerMessages` is the
+      // load-bearing one: marked, it would come back to a consumer's server
+      // module as a client reference instead of a function, and calling it
+      // would throw.
+      const offenders = Object.entries(sources)
+        .filter(
+          ([path]) =>
+            /src\/(index|types)\.ts$/.test(path) ||
+            /src\/locales\//.test(path) ||
+            /src\/components\/[^/]+\/index\.ts$/.test(path)
+        )
+        .filter(([, source]) => DIRECTIVE.test(source))
+        .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
+
+    it('keeps terser from eating the directive on the way out', () => {
+      // `compress.directives` removes "redundant or non-standard" directives,
+      // and in a module — where `use strict` is implied — `use client` is both
+      // as far as terser is concerned. It strips it, silently, from all one
+      // hundred and six files, and the published package then says nothing at
+      // all to Next.js. This is `output.preserve_annotations`' twin: the
+      // directive and the `@__PURE__` comments each survive `npm run build`
+      // only because one setting says so.
+      expect(terser.compress).toMatchObject({ directives: false });
     });
   });
 

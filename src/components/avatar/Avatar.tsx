@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar';
 import { transitionProps } from '../../internal/animate.js';

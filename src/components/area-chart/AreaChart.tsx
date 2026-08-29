@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { CartesianChart, type CartesianChartProps } from '../../internal/chart-frame.js';
 import { LineSeries, type ChartMarkers } from '../../internal/chart-line.js';

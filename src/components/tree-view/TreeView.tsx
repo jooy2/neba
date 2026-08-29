@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { ChevronIcon } from '../../internal/icons.js';
 import {

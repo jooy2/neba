@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box.js';

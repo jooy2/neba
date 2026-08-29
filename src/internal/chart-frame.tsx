@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Everything a chart draws that is not its marks.
  *

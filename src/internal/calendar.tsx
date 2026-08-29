@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Button } from '../components/button/Button.js';
 import { ChevronIcon } from './icons.js';

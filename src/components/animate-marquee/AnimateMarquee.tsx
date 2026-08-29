@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';

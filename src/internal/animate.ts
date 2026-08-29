@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * The machinery every `Animate*` component runs on, and the `transition` prop
  * with it.

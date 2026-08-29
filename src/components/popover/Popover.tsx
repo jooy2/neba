@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';

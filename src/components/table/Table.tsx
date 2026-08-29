@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Box, type BoxProps } from '../box/Box.js';
 import { tableMessages, useMessages } from '../../internal/i18n.js';

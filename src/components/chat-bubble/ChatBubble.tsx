@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { chatMessages, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons.js';

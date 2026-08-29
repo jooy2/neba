@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import type { TypographyWeight } from '../typography/Typography.js';
 import { transitionClasses } from '../../internal/styles.js';
