@@ -1,0 +1,91 @@
+---
+title: HowToSteps
+order: 15
+---
+
+# HowToSteps
+
+<p class="neba-lede">A guide the reader walks through: numbered steps down one side, one step's instructions at a time beside them, and a way forward under those. It ends, and says so.</p>
+
+<Demo src="how-to-steps/hero" minHeight="420" />
+
+```tsx
+import { HowToSteps } from 'neba';
+
+<HowToSteps
+  title="Schedule a job with cron"
+  steps={[
+    { title: 'Open your crontab', content: 'crontab -e opens yours in $EDITOR.' },
+    { title: 'Write the schedule', content: 'Five fields, then the command.' }
+  ]}
+/>;
+```
+
+## Props
+
+<PropsTable name="HowToSteps" />
+
+Every native `<div>` attribute passes through, apart from `color`, `title` and `content`, which the component owns. The shared axes are described under [prop conventions](../../design/prop-conventions).
+
+### HowToStep
+
+<PropsTable name="HowToStep" />
+
+The steps are an array rather than children, which is the one place this component could not be built the other way: the list beside the body and the body itself are two renderings of the same data, and the panel is sized against every step rather than the one showing.
+
+## Examples
+
+### orientation
+
+`vertical` is the default: the numbers run down one side with the body beside them, which takes any number of steps and any amount to say about each. Below `sm` it stacks. `horizontal` runs the numbers across the top, and is only honest while every title is short.
+
+<Demo src="how-to-steps/orientation" minHeight="360">
+
+<<< @/.vitepress/demos/how-to-steps/orientation.tsx
+
+</Demo>
+
+### maxHeight
+
+How tall the guide may get before it scrolls — a number is pixels. The list and the body scroll inside it rather than the sheet growing, and the current row is kept in view as the step changes.
+
+<Demo src="how-to-steps/scrolling" minHeight="400">
+
+<<< @/.vitepress/demos/how-to-steps/scrolling.tsx
+
+</Demo>
+
+### step · completed
+
+Both states are controllable. Pass `step` with `onStepChange` to keep the position yourself — in a URL, in a form's state — and `completed` with `onCompletedChange` for the end.
+
+<Demo src="how-to-steps/controlled" minHeight="380">
+
+<<< @/.vitepress/demos/how-to-steps/controlled.tsx
+
+</Demo>
+
+### navigation · completion
+
+`navigation={false}` drops the row of buttons and leaves the list as the only way to move, for a guide inside a page that has navigation of its own. `completion={false}` removes the finished state entirely: the last step is simply the last step.
+
+<Demo src="how-to-steps/bare" minHeight="480">
+
+<<< @/.vitepress/demos/how-to-steps/bare.tsx
+
+</Demo>
+
+### variant · size · color
+
+The three weights say what they say everywhere, and the sheet is never dyed by `color` — what carries the family is the numbers, the connector and the buttons. `text` is the one to reach for inside a [Card](./card), which is already a sheet.
+
+### Steps with anything in them
+
+`content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it.
+
+## Accessibility
+
+- The list is a list of buttons, not a tablist. The current row carries `aria-current="step"`, which says the panels are ordered and the reader is expected to arrive at them in that order.
+- Each row is read as "Step 3: Use it" — the disc is decoration, and a number drawn beside a title is not a number a screen reader announces.
+- The steps that are not showing stay in the document so the panel can keep its height, and are `inert`: out of the tab order, off the accessibility tree, and out of a find-in-page.
+- Give the guide a `title` when a page has more than one.

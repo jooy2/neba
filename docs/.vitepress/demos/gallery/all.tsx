@@ -57,6 +57,7 @@ import {
   HeatmapChart,
   Header,
   Highlight,
+  HowToSteps,
   Icon,
   IconButton,
   LineChart,
@@ -975,6 +976,30 @@ const GROUPS: Group[] = [
             <ChatBubble size="sm" side="end" variant="solid" status="read">
               Yes
             </ChatBubble>
+          </div>
+        )
+      },
+      {
+        name: 'HowToSteps',
+        summary: {
+          ko: '번호가 매겨진 단계를 하나씩 따라가는 안내서',
+          en: 'A guide walked through one numbered step at a time'
+        },
+        path: '/components/surfaces/how-to-steps',
+        preview: (
+          <div className="w-full max-w-64">
+            <HowToSteps
+              size="xs"
+              density="compact"
+              variant="text"
+              navigation={false}
+              railWidth={96}
+              steps={[
+                { title: 'Install', content: 'One package.' },
+                { title: 'Import', content: 'One stylesheet.' },
+                { title: 'Ship', content: 'Nothing else.' }
+              ]}
+            />
           </div>
         )
       },

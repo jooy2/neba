@@ -186,13 +186,13 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | 12 components — a typical app | 67.0 kB  | 10.6 kB                     |
 | 25 components — a large one   | 110.8 kB | 16.4 kB                     |
 | a whole page shell            | 28.1 kB  | 8.5 kB                      |
-| all 125 exports               | 213.1 kB | 101.5 kB                    |
+| all 126 exports               | 214.9 kB | 103.3 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
 
-Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 18.7 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 18.9 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 `@base-ui/react` is roughly half of the maximum and most of what a Select or a Dialog costs. It is already imported per subpath (`@base-ui/react/button`, never the root), which is the only lever there is: the goal is not to slim it but to make sure a page that does not use a Select never meets it.
 
@@ -255,7 +255,7 @@ The groups are folders, and which one a component belongs in is decided by what 
 - **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Shortcut, List, Table, CodeBlock, Timeline, Breadcrumb, TreeView.
 - **`charts`** — it draws numbers. Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart. Statistic lives here rather than in `display` because what a reader is looking for is not "a component that shows a value" but "the place the charts are", and a number with a delta on it is the smallest chart on the page. The group is also what the shared data model is documented against: every one of them takes the same `series`/`data`, so the pages cross-reference one definition rather than each restating it.
 - **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox.
-- **`surfaces`** — it draws a sheet and holds other things on it. Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble.
+- **`surfaces`** — it draws a sheet and holds other things on it. Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, HowToSteps, ChatBubble.
 - **`layout`** — it decides where things go. Container, Grid + GridContainer, Panes, and the four that build a page's shell: PageLayout, Header, Footer, Sidebar. The first three draw nothing at all; the page shell is the exception, and a deliberate one — a header and a sidebar are _regions_, and a region has an edge. What they still do not decide is the gutter or the measure inside them, which is Container's, so a PageLayout with a Container in it is the ordinary arrangement.
 - **`transitions`** — it draws nothing either, and moves what is inside it. The eleven `Animate*` wrappers: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline. They are their own group rather than part of `layout` because a layout component is about where something sits and these are about how it got there; and they are one group rather than two — the six that are only a keyframe and the five that have to understand their children — because a reader looking for "the animation ones" is looking for one place.
 

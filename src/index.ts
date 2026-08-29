@@ -51,6 +51,7 @@ export * from './components/grid-container/index.js';
 export * from './components/header/index.js';
 export * from './components/heatmap-chart/index.js';
 export * from './components/highlight/index.js';
+export * from './components/how-to-steps/index.js';
 export * from './components/icon/index.js';
 export * from './components/icon-button/index.js';
 export * from './components/line-chart/index.js';

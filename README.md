@@ -21,7 +21,7 @@ You install one package, add one line to your CSS, and import components. There 
 - **Accessible by construction** — real roles, labels, focus management and keyboard support, not `div`s with click handlers.
 - **Dark mode with no work** — follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file** — a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
-- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable — every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~67 kB; the whole library, all one hundred and twenty-five exports at once, is ~213 kB.
+- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable — every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~67 kB; the whole library, all one hundred and twenty-six exports at once, is ~215 kB.
 - **Two runtime dependencies** — Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later.
 
 ## Documentation
@@ -142,7 +142,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Inputs** — Button, IconButton, ButtonGroup, SegmentedButton, FloatingActionButton (with FloatingAction), TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Rating, Menu (with submenus, checkbox and radio items), ContextMenu, FilePicker, Pagination, BottomNavigation, FloatingBottomNavigation, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker
 
-**Surfaces** — Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble, Drawer, Popover, Mockup, WindowPane
+**Surfaces** — Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, HowToSteps, ChatBubble, Drawer, Popover, Mockup, WindowPane
 
 **Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Shortcut, List, Table, DataTable, CodeBlock, Timeline, Breadcrumb, TreeView
 
@@ -154,7 +154,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — CodeBlock, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Recently added** — CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

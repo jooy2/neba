@@ -10522,5 +10522,225 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Fires with the copied text once the clipboard has taken it'
       }
     }
+  ],
+
+  HowToSteps: [
+    {
+      name: 'steps',
+      type: 'HowToStep[]',
+      required: true,
+      description: {
+        ko: '해야 하는 순서대로의 단계들. children이 아니라 배열인 이유는, 옆의 목록과 본문이 같은 데이터를 두 번 그린 것이고 본문 높이가 지금 보이는 단계가 아니라 모든 단계에 맞춰 정해지기 때문',
+        en: 'The steps, in the order they are to be done. An array rather than children because the list beside the body and the body itself are two renderings of the same data, and the panel is sized against every step rather than the one showing'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '안내서 자신의 제목. 두 열 위에 놓입니다',
+        en: "The guide's own heading, over both columns"
+      }
+    },
+    {
+      name: 'step',
+      type: 'number',
+      description: {
+        ko: '지금 보이는 단계. 직접 몰고 가려면 onStepChange와 함께 넘깁니다',
+        en: 'Which step is showing. Pass it with onStepChange to drive the guide yourself'
+      }
+    },
+    {
+      name: 'defaultStep',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: 'uncontrolled일 때 시작하는 자리',
+        en: 'Where an uncontrolled guide starts'
+      }
+    },
+    {
+      name: 'onStepChange',
+      type: '(step: number) => void',
+      description: {
+        ko: '단계가 바뀔 때마다 인덱스와 함께 호출됩니다. 버튼으로 바뀌었든 목록에서 바뀌었든',
+        en: 'Fires with the index whenever the step changes, however it changed'
+      }
+    },
+    {
+      name: 'completed',
+      type: 'boolean',
+      description: {
+        ko: '끝났는지. 이것도 직접 몰고 갈 수 있습니다',
+        en: 'Whether the guide is finished. Controllable too'
+      }
+    },
+    {
+      name: 'defaultCompleted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'uncontrolled일 때 끝난 상태로 시작할지',
+        en: 'Whether an uncontrolled guide starts finished'
+      }
+    },
+    {
+      name: 'onCompletedChange',
+      type: '(completed: boolean) => void',
+      description: {
+        ko: '끝났을 때, 그리고 처음으로 돌아갔을 때 호출됩니다',
+        en: 'Fires when the guide is finished, and again when it is started over'
+      }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'vertical'",
+      shared: true,
+      description: {
+        ko: '목록이 흐르는 방향. vertical은 번호가 옆으로 내려가고 본문이 그 옆에 놓이며 sm 아래에서는 쌓입니다. horizontal은 위쪽에 가로로 늘어놓는데, 제목이 짧을 때에만 정직합니다',
+        en: 'Which way the list runs. vertical puts the numbers down one side with the body beside them, stacking below sm; horizontal runs them across the top, and is only honest while every title is short'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '스크롤이 시작되기 전까지 커질 수 있는 높이. 시트가 커지는 대신 목록과 본문이 각자 스크롤되고, 현재 행은 보이는 자리로 따라옵니다. 숫자는 픽셀',
+        en: 'How tall the guide may get before it scrolls. The list and the body scroll inside it rather than the sheet growing, and the current row is kept in view. Numbers are pixels'
+      }
+    },
+    {
+      name: 'railWidth',
+      type: 'number | string',
+      default: "'15rem'",
+      description: {
+        ko: '목록이 열일 때의 너비. 숫자는 픽셀',
+        en: 'How wide the list is while it is a column. Numbers are pixels'
+      }
+    },
+    {
+      name: 'navigation',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '본문 아래의 버튼 줄. 꺼두면 목록이 유일한 이동 수단이 됩니다 — 자체 내비게이션을 가진 페이지 안에 넣을 때',
+        en: 'The row of buttons under the body. Off, the list is the only way to move — for a guide inside a page that has navigation of its own'
+      }
+    },
+    {
+      name: 'completion',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '완료 상태가 있는지. 켜져 있으면 마지막 단계의 버튼이 “완료”가 되고 누르면 끝났다고 말하는 패널로 바뀝니다. 꺼두면 마지막 단계는 그냥 마지막 단계입니다',
+        en: "Whether there is a finished state at all. On, the last step's button says Done and pressing it replaces the body with a panel that says so. Off, the last step is simply the last step"
+      }
+    },
+    {
+      name: 'completedContent',
+      type: 'ReactNode',
+      default: "locale('All steps complete')",
+      description: { ko: '완료 패널이 하는 말', en: 'What the finished panel says' }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'outline'",
+      shared: true,
+      description: {
+        ko: '시트의 weight, 컨테이너가 말하는 방식으로. 시트는 물들지 않습니다 — 색을 지니는 것은 번호와 연결선과 버튼입니다',
+        en: 'Weight of the sheet, said the way a container says it. The sheet is never dyed: what carries the family is the numbers, the connector and the buttons'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '번호 원의 지름, 타입 스케일, 버튼의 크기',
+        en: "The disc's diameter, the type scale, and the buttons' size"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '번호와 연결선과 버튼이 입는 계열',
+        en: 'The family the numbers, the connector and the buttons wear'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'elevation',
+      type: ELEVATION,
+      default: '0',
+      shared: true,
+      description: {
+        ko: '그림자 깊이. 0은 그림자 없음',
+        en: 'Drop shadow depth. 0 is no shadow at all'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '네 개의 버튼과 마지막 문장이 쓰이는 언어. 지원하지 않는 태그는 영어로 돌아갑니다',
+        en: 'Which language the four buttons and the closing sentence are in. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'previousLabel · nextLabel · doneLabel · restartLabel',
+      type: 'string',
+      default: 'locale',
+      description: { ko: '그 네 단어를 직접 씁니다', en: 'Those four words, written out' }
+    }
+  ],
+
+  HowToStep: [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '제목. 목록에도, 그 단계 본문 위에도 같은 것이 놓입니다',
+        en: "The heading, shown both in the list and over the step's own body"
+      }
+    },
+    {
+      name: 'content',
+      type: 'ReactNode',
+      description: {
+        ko: '독자가 해야 하는 일. 문장이든 CodeBlock이든 폼이든',
+        en: 'What the reader has to do — prose, a CodeBlock, a form'
+      }
+    },
+    {
+      name: 'image',
+      type: 'string',
+      description: {
+        ko: 'content 위의 그림. 말하기보다 보여주기가 쉬운 단계용',
+        en: 'A picture above the content, for a step that is easier shown than said'
+      }
+    },
+    {
+      name: 'imageAlt',
+      type: 'string',
+      default: 'title',
+      description: {
+        ko: '그 그림이 볼 수 없는 독자에게 하는 말',
+        en: 'What that picture says for a reader who cannot see it'
+      }
+    }
   ]
 };

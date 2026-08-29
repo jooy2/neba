@@ -52,6 +52,7 @@ import {
   HeatmapChart,
   Header,
   Highlight,
+  HowToSteps,
   Icon,
   IconButton,
   List,
@@ -1403,24 +1404,46 @@ function ShowcaseBody() {
           </div>
         </section>
 
-        {/* What a runbook is made of: the commands, and the file they read. */}
+        {/* The two halves of a runbook: what to type, and the walk-through that
+            says when to type it. */}
         <section className="flex flex-col gap-3">
-          <Caption>CodeBlock</Caption>
+          <Caption>CodeBlock · HowToSteps</Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
-            <CodeBlock
+            <div className="flex flex-col gap-4">
+              <CodeBlock
+                size="sm"
+                language="bash"
+                prompt="$"
+                title="roll back"
+                code={'neba deploy list --limit 5\nneba deploy rollback 8f2c1a'}
+              />
+              <CodeBlock
+                size="sm"
+                language="json"
+                theme="light"
+                lineNumbers
+                title="neba.config.json"
+                code={'{\n  "region": "icn",\n  "runtime": "node22",\n  "memory": 512\n}'}
+              />
+            </div>
+
+            <HowToSteps
               size="sm"
-              language="bash"
-              prompt="$"
-              title="roll back"
-              code={'neba deploy list --limit 5\nneba deploy rollback 8f2c1a'}
-            />
-            <CodeBlock
-              size="sm"
-              language="json"
-              theme="light"
-              lineNumbers
-              title="neba.config.json"
-              code={'{\n  "region": "icn",\n  "runtime": "node22",\n  "memory": 512\n}'}
+              title="Ship a rollback"
+              steps={[
+                {
+                  title: 'Find the deploy',
+                  content: 'List the last five and copy the id of the one that was good.'
+                },
+                {
+                  title: 'Roll back',
+                  content: 'Traffic moves the moment the new revision reports healthy.'
+                },
+                {
+                  title: 'Tell the channel',
+                  content: 'A rollback nobody announced is an outage twice.'
+                }
+              ]}
             />
           </div>
         </section>
