@@ -101,5 +101,23 @@ export const hi: NebaLocale = {
     openSidebar: 'साइडबार खोलें',
     closeSidebar: 'साइडबार बंद करें',
     resizeSidebar: 'साइडबार का आकार बदलें'
+  },
+  code: {
+    code: 'कोड',
+    copy: 'कॉपी करें',
+    copied: 'कॉपी हो गया',
+    copyFailed: 'कॉपी नहीं हो सका',
+    raw: 'मूल',
+    prompt: 'प्रॉम्प्ट'
+  },
+  steps: {
+    previous: 'पिछला',
+    next: 'अगला',
+    done: 'पूर्ण',
+    restart: 'फिर से शुरू करें',
+    completed: 'सभी चरण पूरे हुए',
+    steps: 'चरण',
+    position: '{total} में से {index}',
+    step: 'चरण {index}: {title}'
   }
 };

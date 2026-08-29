@@ -8,7 +8,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 
 - Ships as **ESM only**, type declarations included.
 - Compiled with plain `tsc` (no bundler) and then minified — the output mirrors the `src/` folder layout.
-- Runtime dependency: `@base-ui/react` (Base UI) only.
+- Runtime dependencies: `@base-ui/react` (Base UI), and `highlight.js` — which only `CodeBlock` reaches, only through a dynamic import, and therefore never lands in a bundle that did not ask for it. See `src/internal/highlight.ts` for why it is a `dependencies` entry rather than an optional peer.
 
 ## Repository layout
 
@@ -123,6 +123,8 @@ Three rules there are load-bearing rather than stylistic. A **`null` is a gap an
 
 `internal/initials.ts` is one function and it is here for `button-group.ts`'s reason: an Avatar with no photograph and an AppLogo with no artwork both have to say what the first letter of a name is, and a library with two of those rules spells the same person's initials two ways on one page.
 
+`internal/highlight.ts` is the one module in the library that _loads_ rather than imports. Colouring a language means knowing that language, and there are thirty-four of them, so highlight.js is the second runtime dependency — reached as `lib/core` plus one module per grammar, never the package root, and every one of those specifiers behind an `import()`. That is the whole design rather than a nicety: a bundler emits each as its own chunk, so `highlight={false}` downloads nothing and a page colouring TypeScript downloads TypeScript. It is a real `dependencies` entry rather than an optional peer because a specifier a bundler cannot resolve fails the _whole_ build — Rollup walks and resolves `CodeBlock.js` while it is still deciding whether to keep it — so an optional peer would break `import { Button } from 'neba'` for anyone who had not installed a highlighter. The loaders are written out one line each rather than built from a template literal, for `i18n.ts`'s reason in a different shape: an unresolvable dynamic specifier makes every bundler emit a chunk for all hundred and ninety languages. What comes back out is not HTML — `tokenize` turns highlight.js's nested spans into lines of coloured runs, because a line is what carries a number, a prompt and a place in a scroll, and because a span may cross a newline so nothing can simply `split('\n')`. It is also why nothing in the library writes `dangerouslySetInnerHTML`.
+
 `internal/color.ts` is the arithmetic ColorPicker needs — three representations, the conversions between them, one parser and one formatter. It is a hundred lines, and it is the whole reason the package still has one runtime dependency. HSV is the model the panel is drawn in and it never leaves: round-tripping through RGB would lose the hue of every greyscale colour, and the rail would snap to red the moment the pointer reached a corner.
 
 `internal/i18n.ts` is the words the library says on its own behalf. Almost nothing in Neba writes text a reader sees — a Button says what it was handed — so this is only for the strings a component has to invent because there is nowhere else for them to come from: the sentence behind a link that opens a new tab, the label on the button that uncovers a Spoiler, the word under a chat message that says it was read. They are collected because they are a set: a product in Korean does not want eight components each defaulting to English and each needing an override prop of its own. Nothing `Intl` already knows goes in here — month names, weekday names and AM/PM come from the platform, which is why the date pickers do **not** read this file for those. A component that reads it takes a `locale` **and** an override prop for the string itself, so an unsupported language is never a dead end.
@@ -180,14 +182,17 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `Button`                      | 5.0 kB   | 2.2 kB                      |
 | `Chip`                        | 3.0 kB   | 3.0 kB                      |
 | `LineChart`                   | 11.0 kB  | 9.5 kB                      |
+| `CodeBlock`                   | 4.5 kB   | 4.5 kB                      |
 | 12 components — a typical app | 67.0 kB  | 10.6 kB                     |
 | 25 components — a large one   | 110.8 kB | 16.4 kB                     |
 | a whole page shell            | 28.1 kB  | 8.5 kB                      |
-| all 123 exports               | 211.0 kB | 99.4 kB                     |
+| all 125 exports               | 213.1 kB | 101.5 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
-Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 17.6 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
+
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 18.7 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 `@base-ui/react` is roughly half of the maximum and most of what a Select or a Dialog costs. It is already imported per subpath (`@base-ui/react/button`, never the root), which is the only lever there is: the goal is not to slim it but to make sure a page that does not use a Select never meets it.
 
@@ -247,7 +252,7 @@ docs/{ko,en}/
 The groups are folders, and which one a component belongs in is decided by what it does rather than by what it looks like:
 
 - **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu, FilePicker, Pagination, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker.
-- **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Shortcut, List, Table, Timeline, Breadcrumb, TreeView.
+- **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Shortcut, List, Table, CodeBlock, Timeline, Breadcrumb, TreeView.
 - **`charts`** — it draws numbers. Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart. Statistic lives here rather than in `display` because what a reader is looking for is not "a component that shows a value" but "the place the charts are", and a number with a delta on it is the smallest chart on the page. The group is also what the shared data model is documented against: every one of them takes the same `series`/`data`, so the pages cross-reference one definition rather than each restating it.
 - **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox.
 - **`surfaces`** — it draws a sheet and holds other things on it. Box, Card, Accordion, Tabs, Carousel, Toolbar, Pill, Spoiler, ChatBubble.

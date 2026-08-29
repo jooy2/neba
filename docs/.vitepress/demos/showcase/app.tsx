@@ -27,6 +27,7 @@ import {
   ChatBubble,
   Checkbox,
   Chip,
+  CodeBlock,
   Collapsible,
   ColorPicker,
   Combobox,
@@ -1399,6 +1400,28 @@ function ShowcaseBody() {
                 </List>
               </Card>
             </div>
+          </div>
+        </section>
+
+        {/* What a runbook is made of: the commands, and the file they read. */}
+        <section className="flex flex-col gap-3">
+          <Caption>CodeBlock</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+            <CodeBlock
+              size="sm"
+              language="bash"
+              prompt="$"
+              title="roll back"
+              code={'neba deploy list --limit 5\nneba deploy rollback 8f2c1a'}
+            />
+            <CodeBlock
+              size="sm"
+              language="json"
+              theme="light"
+              lineNumbers
+              title="neba.config.json"
+              code={'{\n  "region": "icn",\n  "runtime": "node22",\n  "memory": 512\n}'}
+            />
           </div>
         </section>
 

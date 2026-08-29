@@ -11,8 +11,9 @@
  * knows is data and pixels; `chart-frame.tsx` is where those become elements.
  *
  * The scales are deliberately not a `d3-scale`. A linear scale is six lines, a
- * band scale is four, and `nice numbers` is twelve — and the package still has
- * one runtime dependency, which is the same trade `color.ts` makes.
+ * band scale is four, and `nice numbers` is twelve — against a charting stack
+ * that would be the largest thing in the package. The same trade `color.ts`
+ * makes.
  */
 
 import type * as React from 'react';

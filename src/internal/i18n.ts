@@ -491,6 +491,81 @@ export const layoutMessages: MessageTable<LayoutMessages> = {
 };
 
 /**
+ * CodeBlock.
+ *
+ * The one component in the library whose chrome sits *on* the content rather
+ * than beside it: a code block's buttons are inside the block, over the code,
+ * and a reader who cannot see them still has to be told what they do.
+ */
+export interface CodeMessages {
+  /** Names the block itself — the scrollable region, and the fallback when no `title` is given. */
+  code: string;
+  /** The button that puts the code on the clipboard. */
+  copy: string;
+  /** What that button says once it has. */
+  copied: string;
+  /** And what it says when the browser refused — a page served over plain HTTP, mostly. */
+  copyFailed: string;
+  /** The toggle that drops the colouring and shows the characters as they are. */
+  raw: string;
+  /** What is read out in place of a prompt symbol, which is decoration and not code. */
+  prompt: string;
+}
+
+/** The `code` namespace, as CodeBlock reads it. */
+export const codeMessages: MessageTable<CodeMessages> = {
+  '': {
+    code: 'Code',
+    copy: 'Copy',
+    copied: 'Copied',
+    copyFailed: 'Could not copy',
+    raw: 'Raw',
+    prompt: 'Prompt'
+  }
+};
+
+/**
+ * HowToSteps.
+ *
+ * Five words and a pair of counted sentences. The counted ones carry `{index}`,
+ * `{total}` and `{title}`, so a language that puts the number after the noun
+ * can, which is the whole reason they are strings with slots rather than
+ * numbers the component concatenates.
+ */
+export interface StepsMessages {
+  /** The button that goes back one step. */
+  previous: string;
+  /** The one that goes forward. */
+  next: string;
+  /** And what it becomes on the last step. */
+  done: string;
+  /** The button under a finished guide. */
+  restart: string;
+  /** What a finished guide says. */
+  completed: string;
+  /** Names the list of steps for a screen reader. */
+  steps: string;
+  /** The counter over the step's body — `{index}` of `{total}`. */
+  position: string;
+  /** How one row in the list is announced. */
+  step: string;
+}
+
+/** The `steps` namespace, as HowToSteps reads it. */
+export const stepsMessages: MessageTable<StepsMessages> = {
+  '': {
+    previous: 'Previous',
+    next: 'Next',
+    done: 'Done',
+    restart: 'Start over',
+    completed: 'All steps complete',
+    steps: 'Steps',
+    position: '{index} of {total}',
+    step: 'Step {index}: {title}'
+  }
+};
+
+/**
  * The tags that are a different spelling of an entry above.
  *
  * Only the Chinese ones for now, and they are the reason the table is keyed by
@@ -654,6 +729,10 @@ export interface NebaLocale {
   window?: Partial<WindowMessages>;
   /** Layout. */
   layout?: Partial<LayoutMessages>;
+  /** Code. */
+  code?: Partial<CodeMessages>;
+  /** Steps. */
+  steps?: Partial<StepsMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -674,7 +753,9 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   combobox: comboboxMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
   window: windowMessages as MessageTable<never>,
-  layout: layoutMessages as MessageTable<never>
+  layout: layoutMessages as MessageTable<never>,
+  code: codeMessages as MessageTable<never>,
+  steps: stepsMessages as MessageTable<never>
 };
 
 /**

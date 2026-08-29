@@ -34,7 +34,7 @@
  * does not fail — but the number is then stale, and the note says to bring it
  * down, because a budget with slack in it stops catching anything.
  */
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -82,7 +82,19 @@ function entrySource({ imports, locales }) {
   return `${lines.join('\n')}\n`;
 }
 
-/** One scenario, bundled and weighed. */
+/**
+ * One scenario, bundled and weighed — the entry chunk, and separately whatever
+ * else the build emitted.
+ *
+ * The split exists for CodeBlock and for anything that follows it. A grammar
+ * reached through `import()` is a chunk of its own, so it is not in the bundle
+ * a page downloads to draw its first frame — which is the number every budget
+ * here is about, and the number that would go through the roof if the import
+ * ever became a static one. But "not in the entry" is not "free", and a
+ * measurement that only reported the entry would be quietly hiding a megabyte.
+ * So the async total is printed beside it and nothing is budgeted against it:
+ * the figure is the sum of *every* chunk, and a page fetches one of them.
+ */
 async function measure(scenario, work) {
   const entry = join(work, `${scenario.id}.js`);
   const outDir = join(work, `out-${scenario.id}`);
@@ -112,7 +124,15 @@ async function measure(scenario, work) {
     }
   });
 
-  return gzipSync(readFileSync(join(outDir, 'bundle.js')), { level: 9 }).length / 1024;
+  const weigh = (name) => gzipSync(readFileSync(join(outDir, name)), { level: 9 }).length / 1024;
+  const chunks = readdirSync(outDir).filter((name) => name.endsWith('.js'));
+
+  return {
+    entry: weigh('bundle.js'),
+    async: chunks
+      .filter((name) => name !== 'bundle.js')
+      .reduce((total, name) => total + weigh(name), 0)
+  };
 }
 
 const kb = (bytes) => `${bytes.toFixed(1)} kB`;
@@ -152,7 +172,7 @@ async function main() {
 
   try {
     for (const scenario of config.scenarios) {
-      const measured = await measure(scenario, work);
+      const { entry: measured, async: deferred } = await measure(scenario, work);
       const over = measured > scenario.budget * (1 + config.tolerancePercent / 100);
       // Enough under that the budget has stopped meaning anything.
       const stale = !over && measured < scenario.budget * (1 - config.tolerancePercent / 100);
@@ -163,7 +183,8 @@ async function main() {
       console.log(
         `  ${over ? 'OVER ' : stale ? 'under' : '  ok '}  ${scenario.label.padEnd(width)}  ` +
           `${kb(measured).padStart(9)}   budget ${kb(scenario.budget).padStart(9)}   ` +
-          `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)}`
+          `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)}` +
+          (deferred > 0 ? `   + ${kb(deferred)} across on-demand chunks` : '')
       );
     }
   } finally {

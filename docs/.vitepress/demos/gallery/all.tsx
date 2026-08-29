@@ -33,6 +33,7 @@ import {
   ChatBubble,
   Checkbox,
   Chip,
+  CodeBlock,
   ColorPicker,
   Combobox,
   Collapsible,
@@ -1154,6 +1155,25 @@ const GROUPS: Group[] = [
             <Chip size="sm" color="danger" count={12}>
               Errors
             </Chip>
+          </div>
+        )
+      },
+      {
+        name: 'CodeBlock',
+        summary: {
+          ko: '문법 하이라이팅과 복사 버튼이 있는 코드 뷰어',
+          en: 'A code viewer with syntax highlighting and a copy button'
+        },
+        path: '/components/display/code-block',
+        preview: (
+          <div className="w-full max-w-64">
+            <CodeBlock
+              size="xs"
+              language="bash"
+              prompt="$"
+              showLanguage={false}
+              code={'npm install neba'}
+            />
           </div>
         )
       },

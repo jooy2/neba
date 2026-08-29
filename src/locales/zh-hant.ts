@@ -104,5 +104,23 @@ export const zhHant: NebaLocale = {
     openSidebar: '開啟側邊欄',
     closeSidebar: '關閉側邊欄',
     resizeSidebar: '調整側邊欄寬度'
+  },
+  code: {
+    code: '程式碼',
+    copy: '複製',
+    copied: '已複製',
+    copyFailed: '無法複製',
+    raw: '原始',
+    prompt: '提示符號'
+  },
+  steps: {
+    previous: '上一步',
+    next: '下一步',
+    done: '完成',
+    restart: '重新開始',
+    completed: '所有步驟已完成',
+    steps: '步驟',
+    position: '第 {index} 步，共 {total} 步',
+    step: '第 {index} 步：{title}'
   }
 };

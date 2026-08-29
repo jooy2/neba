@@ -1,10 +1,9 @@
 /**
  * The arithmetic and the naming the four pickers share.
  *
- * No date library under it, deliberately. Neba's one runtime dependency is Base
- * UI, and a component library that quietly adds `date-fns` — or worse, picks a
- * side in the dayjs/luxon/Temporal argument on its consumer's behalf — has made
- * a decision that was not its to make. Everything here is either `Date`
+ * No date library under it, deliberately. A component library that quietly adds
+ * `date-fns` — or worse, picks a side in the dayjs/luxon/Temporal argument on
+ * its consumer's behalf — has made a decision that was not its to make. Everything here is either `Date`
  * arithmetic, which is a dozen lines, or `Intl`, which the platform already
  * ships and which knows more about month names in more languages than any
  * bundled table ever will.

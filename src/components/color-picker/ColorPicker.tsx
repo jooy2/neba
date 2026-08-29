@@ -559,7 +559,7 @@ const fallbackHsv: Hsv = { h: 217, s: 87, v: 82 };
  *
  * There is no colour library under this. The conversions are in
  * `internal/color.ts`, which is a hundred lines of arithmetic — the whole
- * reason the package still has one runtime dependency.
+ * reason no colour library comes with it.
  */
 export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(function ColorPicker(
   {

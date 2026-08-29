@@ -101,5 +101,23 @@ export const ru: NebaLocale = {
     openSidebar: 'Открыть боковую панель',
     closeSidebar: 'Закрыть боковую панель',
     resizeSidebar: 'Изменить размер боковой панели'
+  },
+  code: {
+    code: 'Код',
+    copy: 'Копировать',
+    copied: 'Скопировано',
+    copyFailed: 'Не удалось скопировать',
+    raw: 'Без подсветки',
+    prompt: 'Приглашение'
+  },
+  steps: {
+    previous: 'Назад',
+    next: 'Далее',
+    done: 'Готово',
+    restart: 'Начать сначала',
+    completed: 'Все шаги пройдены',
+    steps: 'Шаги',
+    position: '{index} из {total}',
+    step: 'Шаг {index}: {title}'
   }
 };

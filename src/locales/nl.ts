@@ -101,5 +101,23 @@ export const nl: NebaLocale = {
     openSidebar: 'Zijbalk openen',
     closeSidebar: 'Zijbalk sluiten',
     resizeSidebar: 'Zijbalk vergroten of verkleinen'
+  },
+  code: {
+    code: 'Code',
+    copy: 'Kopiëren',
+    copied: 'Gekopieerd',
+    copyFailed: 'Kopiëren mislukt',
+    raw: 'Onopgemaakt',
+    prompt: 'Prompt'
+  },
+  steps: {
+    previous: 'Vorige',
+    next: 'Volgende',
+    done: 'Klaar',
+    restart: 'Opnieuw beginnen',
+    completed: 'Alle stappen voltooid',
+    steps: 'Stappen',
+    position: '{index} van {total}',
+    step: 'Stap {index}: {title}'
   }
 };

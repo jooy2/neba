@@ -101,5 +101,23 @@ export const de: NebaLocale = {
     openSidebar: 'Seitenleiste öffnen',
     closeSidebar: 'Seitenleiste schließen',
     resizeSidebar: 'Seitenleiste anpassen'
+  },
+  code: {
+    code: 'Code',
+    copy: 'Kopieren',
+    copied: 'Kopiert',
+    copyFailed: 'Kopieren nicht möglich',
+    raw: 'Unformatiert',
+    prompt: 'Eingabeaufforderung'
+  },
+  steps: {
+    previous: 'Zurück',
+    next: 'Weiter',
+    done: 'Fertig',
+    restart: 'Von vorn beginnen',
+    completed: 'Alle Schritte abgeschlossen',
+    steps: 'Schritte',
+    position: '{index} von {total}',
+    step: 'Schritt {index}: {title}'
   }
 };

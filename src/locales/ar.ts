@@ -101,5 +101,23 @@ export const ar: NebaLocale = {
     openSidebar: 'فتح الشريط الجانبي',
     closeSidebar: 'إغلاق الشريط الجانبي',
     resizeSidebar: 'تغيير حجم الشريط الجانبي'
+  },
+  code: {
+    code: 'شفرة',
+    copy: 'نسخ',
+    copied: 'تم النسخ',
+    copyFailed: 'تعذّر النسخ',
+    raw: 'خام',
+    prompt: 'موجّه الأوامر'
+  },
+  steps: {
+    previous: 'السابق',
+    next: 'التالي',
+    done: 'تم',
+    restart: 'البدء من جديد',
+    completed: 'اكتملت جميع الخطوات',
+    steps: 'الخطوات',
+    position: '{index} من {total}',
+    step: 'الخطوة {index}: {title}'
   }
 };

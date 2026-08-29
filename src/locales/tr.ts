@@ -101,5 +101,23 @@ export const tr: NebaLocale = {
     openSidebar: 'Kenar çubuğunu aç',
     closeSidebar: 'Kenar çubuğunu kapat',
     resizeSidebar: 'Kenar çubuğunu yeniden boyutlandır'
+  },
+  code: {
+    code: 'Kod',
+    copy: 'Kopyala',
+    copied: 'Kopyalandı',
+    copyFailed: 'Kopyalanamadı',
+    raw: 'Ham',
+    prompt: 'Komut istemi'
+  },
+  steps: {
+    previous: 'Önceki',
+    next: 'Sonraki',
+    done: 'Bitti',
+    restart: 'Baştan başla',
+    completed: 'Tüm adımlar tamamlandı',
+    steps: 'Adımlar',
+    position: '{total} adımdan {index}. adım',
+    step: 'Adım {index}: {title}'
   }
 };

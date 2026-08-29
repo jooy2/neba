@@ -4,8 +4,8 @@
  * ColorPicker is the only component that has to *compute* a colour rather than
  * name one, and the whole of what it needs is here: three representations, the
  * conversions between them, one parser and one formatter. It is a hundred lines
- * of trigonometry-free arithmetic, which is the entire reason the library still
- * has one runtime dependency.
+ * of trigonometry-free arithmetic, which is the entire reason a component that
+ * computes colours brings no colour library with it.
  *
  * Two decisions worth knowing before reading:
  *

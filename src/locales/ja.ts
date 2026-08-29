@@ -101,5 +101,23 @@ export const ja: NebaLocale = {
     openSidebar: 'サイドバーを開く',
     closeSidebar: 'サイドバーを閉じる',
     resizeSidebar: 'サイドバーの幅を変更'
+  },
+  code: {
+    code: 'コード',
+    copy: 'コピー',
+    copied: 'コピーしました',
+    copyFailed: 'コピーできません',
+    raw: '元のまま',
+    prompt: 'プロンプト'
+  },
+  steps: {
+    previous: '前へ',
+    next: '次へ',
+    done: '完了',
+    restart: '最初から',
+    completed: 'すべての手順が完了しました',
+    steps: '手順',
+    position: '{total} 件中 {index} 件目',
+    step: '手順 {index}: {title}'
   }
 };

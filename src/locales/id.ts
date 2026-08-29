@@ -101,5 +101,23 @@ export const id: NebaLocale = {
     openSidebar: 'Buka bilah sisi',
     closeSidebar: 'Tutup bilah sisi',
     resizeSidebar: 'Ubah ukuran bilah sisi'
+  },
+  code: {
+    code: 'Kode',
+    copy: 'Salin',
+    copied: 'Tersalin',
+    copyFailed: 'Tidak dapat menyalin',
+    raw: 'Mentah',
+    prompt: 'Prompt'
+  },
+  steps: {
+    previous: 'Sebelumnya',
+    next: 'Berikutnya',
+    done: 'Selesai',
+    restart: 'Mulai lagi',
+    completed: 'Semua langkah selesai',
+    steps: 'Langkah',
+    position: '{index} dari {total}',
+    step: 'Langkah {index}: {title}'
   }
 };

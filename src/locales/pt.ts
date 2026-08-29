@@ -101,5 +101,23 @@ export const pt: NebaLocale = {
     openSidebar: 'Abrir barra lateral',
     closeSidebar: 'Fechar barra lateral',
     resizeSidebar: 'Redimensionar barra lateral'
+  },
+  code: {
+    code: 'Código',
+    copy: 'Copiar',
+    copied: 'Copiado',
+    copyFailed: 'Não foi possível copiar',
+    raw: 'Sem formatação',
+    prompt: 'Prompt'
+  },
+  steps: {
+    previous: 'Anterior',
+    next: 'Próximo',
+    done: 'Concluir',
+    restart: 'Começar de novo',
+    completed: 'Todas as etapas concluídas',
+    steps: 'Etapas',
+    position: '{index} de {total}',
+    step: 'Etapa {index}: {title}'
   }
 };

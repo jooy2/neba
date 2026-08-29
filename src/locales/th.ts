@@ -101,5 +101,23 @@ export const th: NebaLocale = {
     openSidebar: 'เปิดแถบด้านข้าง',
     closeSidebar: 'ปิดแถบด้านข้าง',
     resizeSidebar: 'ปรับขนาดแถบด้านข้าง'
+  },
+  code: {
+    code: 'โค้ด',
+    copy: 'คัดลอก',
+    copied: 'คัดลอกแล้ว',
+    copyFailed: 'คัดลอกไม่ได้',
+    raw: 'ต้นฉบับ',
+    prompt: 'พร้อมต์'
+  },
+  steps: {
+    previous: 'ก่อนหน้า',
+    next: 'ถัดไป',
+    done: 'เสร็จสิ้น',
+    restart: 'เริ่มใหม่',
+    completed: 'ครบทุกขั้นตอนแล้ว',
+    steps: 'ขั้นตอน',
+    position: '{index} จาก {total}',
+    step: 'ขั้นตอนที่ {index}: {title}'
   }
 };

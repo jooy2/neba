@@ -262,6 +262,79 @@ export function ExternalLinkIcon() {
 }
 
 /**
+ * The two sheets of a copy, and the angle brackets of a raw view.
+ *
+ * A pair for the steppers' reason: they sit next to each other in a CodeBlock's
+ * toolbar and nowhere else, so a copy drawn at one weight beside brackets drawn
+ * at another reads as two toolkits in one bar. The copy is the back sheet
+ * showing behind the front one, which is the shape every editor has used for
+ * long enough that it needs no label; the brackets are the mark for "show me
+ * what is actually there".
+ */
+export function CopyIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect
+        x="5.75"
+        y="5.75"
+        width="7.5"
+        height="7.5"
+        rx="1.75"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M10.25 3.6a1.85 1.85 0 0 0-1.5-.85h-4a2 2 0 0 0-2 2v4c0 .62.28 1.17.72 1.54"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function CodeIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M5.75 4.5 2.5 8l3.25 3.5m4.5-7L13.5 8l-3.25 3.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The arrow that comes back round to where it started.
+ *
+ * Not the chevron turned, and not two arrows chasing each other: this one means
+ * "from the beginning", which is a different act from "again". HowToSteps draws
+ * it on the button under a finished guide.
+ */
+export function RestartIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M13 8a5 5 0 1 1-1.6-3.67"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.25 2.25v3h-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
  * The three dots that stand for what has been left out.
  *
  * Drawn rather than typed: `…` is a single glyph whose dots are spaced by

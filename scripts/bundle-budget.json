@@ -6,26 +6,26 @@
     {
       "id": "button",
       "label": "Button",
-      "imports": [
-        "Button"
-      ],
+      "imports": ["Button"],
       "budget": 5
     },
     {
       "id": "chip",
       "label": "Chip",
-      "imports": [
-        "Chip"
-      ],
+      "imports": ["Chip"],
       "budget": 3
     },
     {
       "id": "line-chart",
       "label": "LineChart",
-      "imports": [
-        "LineChart"
-      ],
+      "imports": ["LineChart"],
       "budget": 11
+    },
+    {
+      "id": "code-block",
+      "label": "CodeBlock",
+      "imports": ["CodeBlock"],
+      "budget": 4.5
     },
     {
       "id": "app-12",
@@ -81,14 +81,7 @@
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
-      "imports": [
-        "PageLayout",
-        "Header",
-        "Footer",
-        "Sidebar",
-        "SidebarTrigger",
-        "AppLogo"
-      ],
+      "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
       "budget": 28.1
     },
     {
@@ -108,16 +101,14 @@
         "Chip",
         "Typography"
       ],
-      "locales": [
-        "ko"
-      ],
-      "budget": 68.9
+      "locales": ["ko"],
+      "budget": 69.2
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 211
+      "budget": 213.1
     }
   ]
 }

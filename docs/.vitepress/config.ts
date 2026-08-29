@@ -29,7 +29,7 @@ const socialImage = `${siteUrl}/256x256.png`;
 const glob = (pattern: string) => resolve(rootDir, pattern).replaceAll('\\', '/');
 
 /**
- * Every `@base-ui/react` subpath the library imports, read out of `src/`.
+ * Every third-party subpath the library reaches for, read out of `src/`.
  *
  * These are reached only from a demo, which is reached only from a dynamic
  * import — so the dev server discovers them one at a time as previews mount,
@@ -37,19 +37,22 @@ const glob = (pattern: string) => resolve(rootDir, pattern).replaceAll('\\', '/'
  * underneath whoever is reading it. Listing them up front makes that one
  * pre-bundle at startup instead. Derived rather than written out, so a
  * component that starts using a new primitive is not a second edit here.
+ *
+ * The `highlight.js` half is worse than the Base UI half rather than merely the
+ * same: CodeBlock imports its grammars with `import()` *at render time*, so an
+ * undeclared one is discovered while somebody is reading the page it colours.
  */
-function baseUiEntries(): string[] {
+function vendorEntries(): string[] {
   const srcDir = resolve(rootDir, 'src');
   const entries = new Set<string>();
+  const pattern = /'(@base-ui\/react\/[a-z-]+|highlight\.js\/lib\/(?:core|languages\/[\w.+-]+))'/g;
 
   for (const file of readdirSync(srcDir, { recursive: true, encoding: 'utf8' })) {
     if (!/\.tsx?$/.test(file)) {
       continue;
     }
 
-    for (const [, entry] of readFileSync(resolve(srcDir, file), 'utf8').matchAll(
-      /from '(@base-ui\/react\/[a-z-]+)'/g
-    )) {
+    for (const [, entry] of readFileSync(resolve(srcDir, file), 'utf8').matchAll(pattern)) {
       entries.add(entry);
     }
   }
@@ -450,7 +453,7 @@ const vitePressConfig: UserConfig = {
         'react-dom/client',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
-        ...baseUiEntries()
+        ...vendorEntries()
       ]
     },
     server: {

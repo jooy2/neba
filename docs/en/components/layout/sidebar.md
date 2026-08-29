@@ -14,7 +14,9 @@ import { List, ListItem, Sidebar } from 'neba';
 
 <Sidebar label="Sections">
   <List variant="text">
-    <ListItem href="/overview" selected>Overview</ListItem>
+    <ListItem href="/overview" selected>
+      Overview
+    </ListItem>
     <ListItem href="/components">Components</ListItem>
   </List>
 </Sidebar>;

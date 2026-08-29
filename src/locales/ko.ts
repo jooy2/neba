@@ -101,5 +101,23 @@ export const ko: NebaLocale = {
     openSidebar: '사이드바 열기',
     closeSidebar: '사이드바 닫기',
     resizeSidebar: '사이드바 크기 조절'
+  },
+  code: {
+    code: '코드',
+    copy: '복사',
+    copied: '복사됨',
+    copyFailed: '복사할 수 없음',
+    raw: '원본',
+    prompt: '프롬프트'
+  },
+  steps: {
+    previous: '이전',
+    next: '다음',
+    done: '완료',
+    restart: '처음으로',
+    completed: '모든 단계를 마쳤습니다',
+    steps: '단계',
+    position: '{total}단계 중 {index}단계',
+    step: '{index}단계: {title}'
   }
 };

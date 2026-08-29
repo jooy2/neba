@@ -10302,5 +10302,225 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The lines, in the order they should be read'
       }
     }
+  ],
+
+  CodeBlock: [
+    {
+      name: 'code',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '코드 자체. 문자열이라서 children이 아닌 prop입니다 — 템플릿 리터럴은 자기 들여쓰기를 유지하지만 JSX는 그것을 뭉갭니다. 끝의 빈 줄만 잘라냅니다',
+        en: 'The code itself. A prop rather than children because it is a string: a template literal keeps its own indentation and JSX would collapse it. Only trailing blank lines are trimmed'
+      }
+    },
+    {
+      name: 'language',
+      type: 'string',
+      description: {
+        ko: '무엇으로 쓰였는지 — ts, bash, yml, dockerfile. 흔한 표기와 파일 확장자를 알아듣습니다. 모르는 이름은 거부하지 않고 하이라이팅 없이 그립니다',
+        en: 'What it is written in — ts, bash, yml, dockerfile. Common spellings and file extensions are understood; a name nothing here knows is drawn plain rather than refused'
+      }
+    },
+    {
+      name: 'theme',
+      type: "'dark' | 'light' | 'auto' | 'mono'",
+      default: "'dark'",
+      description: {
+        ko: '블록이 입는 팔레트. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. mono는 색을 전부 버리고 굵기와 흐림으로만 구조를 나타냅니다',
+        en: "The palette it wears. Independent of the page's light and dark except on auto; mono drops the hues entirely and carries the structure in weight and muting"
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '타입 스케일과 여백. 어느 단계에서든 본문보다 한 칸 작습니다 — 고정폭 서체는 같은 크기여도 한 치수 커 보입니다',
+        en: 'The type scale and the padding. One step under the running text at every size: a monospace face at the same nominal size reads a size larger'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '코드에는 닿지 않습니다. focus ring만 이 색을 씁니다 — 코드의 색은 theme의 것입니다',
+        en: "It does not reach the code. Only the focus ring takes it: the code's colours are the theme's"
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '여백만 바꿉니다', en: 'Padding only' }
+    },
+    {
+      name: 'elevation',
+      type: ELEVATION,
+      default: '0',
+      shared: true,
+      description: {
+        ko: '그림자 깊이. 0은 그림자 없음',
+        en: 'Drop shadow depth. 0 is no shadow at all'
+      }
+    },
+    {
+      name: 'highlight',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '코드에 색을 입힙니다. 꺼두면 아무것도 내려받지 않습니다 — 문법 엔진이 dynamic import 뒤에 있습니다. 켜져 있으면 첫 프레임은 색 없이 그려지고 문법이 도착하면 스스로 칠합니다',
+        en: 'Colours the code. Off, nothing is fetched at all — the grammar engine is behind a dynamic import. On, the block draws plain on the first frame and colours itself when the grammar lands'
+      }
+    },
+    {
+      name: 'toolbar',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '코드 위의 바이자 그것의 주 스위치. 꺼두면 showLanguage·copyable·rawToggle이 무엇이라고 하든 아무것도 그려지지 않습니다',
+        en: 'The bar over the code, and the master switch for it: with it off, showLanguage, copyable and rawToggle draw nothing whatever they say'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '바 맨 앞의 이름. 대개 파일 경로이며, 스크롤 영역의 접근성 이름이 되기도 합니다',
+        en: "A name at the start of the bar — a file path, usually. It also becomes the scrollable region's accessible name"
+      }
+    },
+    {
+      name: 'showLanguage',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '바 앞쪽에 language를 적습니다',
+        en: 'Names the language at the start of the bar'
+      }
+    },
+    {
+      name: 'copyable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '코드를 클립보드에 넣는 버튼. 클립보드가 거부하면 그렇게 말합니다 — 평문 HTTP로 서빙되는 페이지가 대표적입니다',
+        en: 'The button that puts the code on the clipboard. It says so when the clipboard refuses — a page served over plain HTTP, mostly'
+      }
+    },
+    {
+      name: 'rawToggle',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '하이라이팅을 걷어내고 문자를 있는 그대로 보여주는 토글. highlight가 꺼져 있으면 아무 의미가 없습니다',
+        en: 'The toggle that drops the colouring and shows the characters as they are. It means nothing at all when highlight is off'
+      }
+    },
+    {
+      name: 'lineNumbers',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '옆에 붙는 번호. 거터는 마지막 번호에 맞춰 잡히므로 스크롤해도 번호가 밀리지 않습니다',
+        en: 'Numbers down the side. The gutter is sized for the last number, so it does not step as the block scrolls'
+      }
+    },
+    {
+      name: 'startLine',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '첫 줄에 매길 번호. 발췌한 코드가 실제로 시작하는 자리',
+        en: 'What the first line is numbered — where an excerpt actually starts'
+      }
+    },
+    {
+      name: 'prompt',
+      type: 'string',
+      description: {
+        ko: '내용이 있는 줄 앞의 셸 기호 — $, #, C:\\>, >>>. 그려지되 거기 있지는 않습니다: 생성된 콘텐츠라 선택도, 페이지 내 찾기도, 복사도 되지 않습니다',
+        en: 'A shell symbol in front of every line that has something on it — $, #, C:\\>, >>>. Drawn but never present: it is generated content, so it cannot be selected, found or copied'
+      }
+    },
+    {
+      name: 'wrap',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '긴 줄을 가로 스크롤 대신 접습니다',
+        en: 'Wraps long lines instead of scrolling them sideways'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '코드가 안에서 스크롤되기 전까지 블록이 커질 수 있는 높이. 숫자는 픽셀',
+        en: 'How tall the block may get before the code scrolls inside it. Numbers are pixels'
+      }
+    },
+    {
+      name: 'fontFamily',
+      type: 'string',
+      default: 'font-mono',
+      description: {
+        ko: '서체. 기본은 페이지의 고정폭 스택',
+        en: "The typeface. Defaults to the page's own monospace stack"
+      }
+    },
+    {
+      name: 'fontSize',
+      type: 'number | string',
+      default: 'size',
+      description: {
+        ko: 'size가 고른 크기를 덮어씁니다. 숫자는 픽셀',
+        en: 'Overrides the size the size ladder chose. Numbers are pixels'
+      }
+    },
+    {
+      name: 'lineHeight',
+      type: 'number | string',
+      default: 'size',
+      description: {
+        ko: '행간. CSS에서처럼 맨숫자는 비율입니다',
+        en: 'The leading. A bare number is a ratio, as in CSS'
+      }
+    },
+    {
+      name: 'letterSpacing',
+      type: 'number | string',
+      description: {
+        ko: '자간. 숫자는 픽셀이고 -0.01em 같은 값도 됩니다',
+        en: 'Tracking. Numbers are pixels, and -0.01em and the like work too'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      default: "'en'",
+      description: {
+        ko: '복사 버튼과 raw 토글, region 이름이 쓰이는 언어. 지원하지 않는 태그는 영어로 돌아갑니다',
+        en: "Which language the copy button, the raw toggle and the region's name are in. Unsupported tags fall back to English"
+      }
+    },
+    {
+      name: 'copyLabel · copiedLabel · rawLabel',
+      type: 'string',
+      default: 'locale',
+      description: { ko: '그 단어들을 직접 씁니다', en: 'Those words, written out' }
+    },
+    {
+      name: 'onCopy',
+      type: '(code: string) => void',
+      description: {
+        ko: '클립보드가 코드를 받아간 뒤 그 문자열과 함께 호출됩니다',
+        en: 'Fires with the copied text once the clipboard has taken it'
+      }
+    }
   ]
 };

@@ -847,6 +847,287 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Code blocks
+ *
+ * A CodeBlock is the one surface in the library that does **not** take the
+ * page's palette. Code is read against a background that was chosen for code,
+ * and a block that turned white because the page did would throw away the only
+ * thing a reader is using to tell a keyword from a string. So the sheet carries
+ * its own sixteen slots, `theme` picks which set fills them, and `auto` is the
+ * opt-in for a block that would rather follow the page.
+ *
+ * They are custom properties on the block rather than a stylesheet per theme
+ * for `animate.ts`'s reason: nothing here is generated, the component only
+ * fills slots, and a seventeenth theme is a block of declarations rather than a
+ * second copy of the token map below.
+ *
+ * The two dark palettes are written twice on purpose — once for `dark`, once
+ * for `auto` inside a dark page — because a media query cannot be folded into a
+ * selector list, and because a derived token resolves its `var()`s where it is
+ * declared. It is the same repetition the theme roots at the top of this file
+ * make, for the same reason.
+ *
+ * Every hue is solved against its own background rather than flipped: the light
+ * set runs dark and saturated on near-white, the dark set light and desaturated
+ * on near-black, and neither is the other with the lightness inverted. The
+ * pairs that have to stay apart are the ones that sit next to each other in
+ * real code — a string beside a number, a type beside a function name.
+ * ------------------------------------------------------------------------- */
+
+.neba-code {
+  /* The light set, which is also what `auto` and `light` start from. */
+  --n-code-bg: oklch(98.4% 0.003 262);
+  --n-code-fg: oklch(30% 0.016 262);
+  --n-code-dim: oklch(64% 0.014 262);
+  --n-code-rule: oklch(30% 0.016 262 / 0.12);
+  --n-code-hover: oklch(30% 0.016 262 / 0.07);
+
+  --n-code-comment: oklch(58% 0.022 262);
+  --n-code-keyword: oklch(48% 0.19 322);
+  --n-code-string: oklch(46% 0.12 148);
+  --n-code-number: oklch(50% 0.14 48);
+  --n-code-function: oklch(48% 0.17 264);
+  --n-code-type: oklch(45% 0.1 214);
+  --n-code-variable: oklch(45% 0.12 28);
+  --n-code-tag: oklch(48% 0.18 22);
+  --n-code-attr: oklch(47% 0.13 82);
+  --n-code-meta: oklch(52% 0.05 262);
+  --n-code-add: oklch(45% 0.14 152);
+  --n-code-del: oklch(48% 0.18 25);
+}
+
+.neba-code[data-code-theme='dark'],
+:where(.dark, [data-theme='dark']) .neba-code[data-code-theme='auto'] {
+  --n-code-bg: oklch(19.5% 0.014 262);
+  --n-code-fg: oklch(90% 0.012 262);
+  --n-code-dim: oklch(58% 0.018 262);
+  --n-code-rule: oklch(90% 0.012 262 / 0.14);
+  --n-code-hover: oklch(90% 0.012 262 / 0.1);
+
+  --n-code-comment: oklch(60% 0.024 262);
+  --n-code-keyword: oklch(76% 0.13 324);
+  --n-code-string: oklch(80% 0.13 148);
+  --n-code-number: oklch(81% 0.12 62);
+  --n-code-function: oklch(78% 0.12 258);
+  --n-code-type: oklch(82% 0.1 210);
+  --n-code-variable: oklch(82% 0.09 32);
+  --n-code-tag: oklch(77% 0.13 22);
+  --n-code-attr: oklch(85% 0.11 92);
+  --n-code-meta: oklch(70% 0.05 262);
+  --n-code-add: oklch(80% 0.14 152);
+  --n-code-del: oklch(75% 0.15 25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .neba-code[data-code-theme='auto'] {
+    --n-code-bg: oklch(19.5% 0.014 262);
+    --n-code-fg: oklch(90% 0.012 262);
+    --n-code-dim: oklch(58% 0.018 262);
+    --n-code-rule: oklch(90% 0.012 262 / 0.14);
+    --n-code-hover: oklch(90% 0.012 262 / 0.1);
+
+    --n-code-comment: oklch(60% 0.024 262);
+    --n-code-keyword: oklch(76% 0.13 324);
+    --n-code-string: oklch(80% 0.13 148);
+    --n-code-number: oklch(81% 0.12 62);
+    --n-code-function: oklch(78% 0.12 258);
+    --n-code-type: oklch(82% 0.1 210);
+    --n-code-variable: oklch(82% 0.09 32);
+    --n-code-tag: oklch(77% 0.13 22);
+    --n-code-attr: oklch(85% 0.11 92);
+    --n-code-meta: oklch(70% 0.05 262);
+    --n-code-add: oklch(80% 0.14 152);
+    --n-code-del: oklch(75% 0.15 25);
+  }
+}
+
+/*
+ * `mono` is the one theme that follows the page, and the only one with no hue
+ * in it at all: the structure is carried by weight and by how far a run is
+ * muted. It is what a block printed on paper, or read by someone who cannot
+ * separate the hues above, is left with — so it has to stay legible on its own
+ * rather than being a degraded copy of a colour theme.
+ */
+.neba-code[data-code-theme='mono'] {
+  --n-code-bg: color-mix(in oklab, var(--neba-fg) 4%, var(--neba-surface));
+  --n-code-fg: var(--neba-fg);
+  --n-code-dim: var(--neba-muted-fg);
+  --n-code-rule: color-mix(in oklab, var(--neba-fg) 14%, transparent);
+  --n-code-hover: color-mix(in oklab, var(--neba-fg) 8%, transparent);
+
+  --n-code-comment: var(--neba-muted-fg);
+  --n-code-keyword: var(--neba-fg);
+  --n-code-string: var(--neba-muted-fg);
+  --n-code-number: var(--neba-muted-fg);
+  --n-code-function: var(--neba-fg);
+  --n-code-type: var(--neba-fg);
+  --n-code-variable: var(--neba-fg);
+  --n-code-tag: var(--neba-fg);
+  --n-code-attr: var(--neba-muted-fg);
+  --n-code-meta: var(--neba-muted-fg);
+  --n-code-add: var(--neba-fg);
+  --n-code-del: var(--neba-muted-fg);
+}
+
+.neba-code[data-code-theme='mono'] .hljs-keyword,
+.neba-code[data-code-theme='mono'] .hljs-selector-tag,
+.neba-code[data-code-theme='mono'] .hljs-title,
+.neba-code[data-code-theme='mono'] .hljs-tag,
+.neba-code[data-code-theme='mono'] .hljs-type,
+.neba-code[data-code-theme='mono'] .hljs-built_in {
+  font-weight: 600;
+}
+
+/*
+ * A line, and the two things in front of it that are not code.
+ *
+ * The number and the prompt are generated content off a `data-*` attribute, not
+ * text nodes, and that is the whole point: a `$` a reader drags across and
+ * pastes into their shell is a `$` their shell chokes on. Generated content
+ * cannot be selected, cannot be found by find-in-page and never reaches the
+ * clipboard — `user-select: none` is only *usually* true of all three. The
+ * `order` is what lets one pseudo-element sit in front of the other and both in
+ * front of the code, since `::after` would otherwise draw last.
+ *
+ * `min-height` keeps a blank line a line high. A flex row with nothing in it is
+ * zero pixels tall, and a code block that closed up its own paragraph breaks
+ * would be reflowing the reader's file.
+ */
+.neba-code-line {
+  display: flex;
+  min-height: 1.5em;
+  min-height: 1lh;
+}
+
+.neba-code-line[data-line]::before {
+  content: attr(data-line);
+  order: 0;
+  flex: none;
+  width: var(--n-code-gutter, 2ch);
+  margin-inline-end: 1.25em;
+  text-align: end;
+  color: var(--n-code-dim);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.neba-code-line[data-prompt]::after {
+  content: attr(data-prompt);
+  order: 1;
+  flex: none;
+  margin-inline-end: 0.75em;
+  color: var(--n-code-dim);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.neba-code-line > code {
+  order: 2;
+  min-width: 0;
+  font: inherit;
+  background: none;
+  padding: 0;
+  white-space: pre;
+}
+
+.neba-code[data-code-wrap='true'] .neba-code-line > code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * highlight.js's scopes, mapped onto the sixteen slots.
+ *
+ * Grouped by what a run *is* rather than by what highlight.js calls it, because
+ * the names are the union of a hundred and ninety grammars and half of them are
+ * one language's word for another language's idea — `selector-tag` and `tag`
+ * and `name` are all "the thing being declared". The point of the mapping is
+ * that the same idea gets the same colour whatever file it appears in.
+ */
+.neba-code .hljs-comment,
+.neba-code .hljs-quote {
+  color: var(--n-code-comment);
+  font-style: italic;
+}
+
+.neba-code .hljs-keyword,
+.neba-code .hljs-literal,
+.neba-code .hljs-selector-tag,
+.neba-code .hljs-operator,
+.neba-code .hljs-doctag,
+.neba-code .hljs-formula {
+  color: var(--n-code-keyword);
+}
+
+.neba-code .hljs-string,
+.neba-code .hljs-regexp,
+.neba-code .hljs-char,
+.neba-code .hljs-link {
+  color: var(--n-code-string);
+}
+
+.neba-code .hljs-number,
+.neba-code .hljs-symbol,
+.neba-code .hljs-bullet {
+  color: var(--n-code-number);
+}
+
+.neba-code .hljs-title,
+.neba-code .hljs-section,
+.neba-code .hljs-name,
+.neba-code .hljs-selector-id,
+.neba-code .hljs-selector-class {
+  color: var(--n-code-function);
+}
+
+.neba-code .hljs-type,
+.neba-code .hljs-built_in,
+.neba-code .hljs-class {
+  color: var(--n-code-type);
+}
+
+.neba-code .hljs-variable,
+.neba-code .hljs-template-variable,
+.neba-code .hljs-params,
+.neba-code .hljs-subst {
+  color: var(--n-code-variable);
+}
+
+.neba-code .hljs-tag,
+.neba-code .hljs-template-tag {
+  color: var(--n-code-tag);
+}
+
+.neba-code .hljs-attr,
+.neba-code .hljs-attribute,
+.neba-code .hljs-property,
+.neba-code .hljs-selector-attr,
+.neba-code .hljs-selector-pseudo {
+  color: var(--n-code-attr);
+}
+
+.neba-code .hljs-meta,
+.neba-code .hljs-punctuation {
+  color: var(--n-code-meta);
+}
+
+.neba-code .hljs-addition {
+  color: var(--n-code-add);
+}
+
+.neba-code .hljs-deletion {
+  color: var(--n-code-del);
+}
+
+.neba-code .hljs-emphasis {
+  font-style: italic;
+}
+
+.neba-code .hljs-strong {
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
  * Grid
  *
  * A column is `(100% + gap) * span / columns - gap` wide, and an offset shifts

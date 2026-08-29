@@ -101,5 +101,23 @@ export const pl: NebaLocale = {
     openSidebar: 'Otwórz panel boczny',
     closeSidebar: 'Zamknij panel boczny',
     resizeSidebar: 'Zmień szerokość panelu bocznego'
+  },
+  code: {
+    code: 'Kod',
+    copy: 'Kopiuj',
+    copied: 'Skopiowano',
+    copyFailed: 'Nie udało się skopiować',
+    raw: 'Surowy',
+    prompt: 'Znak zachęty'
+  },
+  steps: {
+    previous: 'Wstecz',
+    next: 'Dalej',
+    done: 'Gotowe',
+    restart: 'Zacznij od nowa',
+    completed: 'Wszystkie kroki ukończone',
+    steps: 'Kroki',
+    position: '{index} z {total}',
+    step: 'Krok {index}: {title}'
   }
 };

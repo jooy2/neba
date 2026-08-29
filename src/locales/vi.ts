@@ -101,5 +101,23 @@ export const vi: NebaLocale = {
     openSidebar: 'Mở thanh bên',
     closeSidebar: 'Đóng thanh bên',
     resizeSidebar: 'Thay đổi kích thước thanh bên'
+  },
+  code: {
+    code: 'Mã',
+    copy: 'Sao chép',
+    copied: 'Đã sao chép',
+    copyFailed: 'Không sao chép được',
+    raw: 'Thô',
+    prompt: 'Dấu nhắc'
+  },
+  steps: {
+    previous: 'Trước',
+    next: 'Tiếp',
+    done: 'Xong',
+    restart: 'Bắt đầu lại',
+    completed: 'Đã hoàn tất mọi bước',
+    steps: 'Các bước',
+    position: '{index} trên {total}',
+    step: 'Bước {index}: {title}'
   }
 };
