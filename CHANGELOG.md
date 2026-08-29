@@ -1,5 +1,72 @@
 # Changelog
 
+## 1.8.0 (2026-08-29)
+
+Everything Neba had until now went _inside_ a page somebody else had already built. This release builds the page: a layout and the three regions it arranges, the mark that goes in the corner of it, and two components for the kind of page you would put in it — a code viewer and a step-by-step guide.
+
+Eight components, nine exports, and not a byte on anyone who does not import them:
+
+| What you import               | 1.7.0    | 1.8.0    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.0 kB   | 3.0 kB   |
+| `LineChart`                   | 11.0 kB  | 11.0 kB  |
+| 12 components — a typical app | 67.0 kB  | 67.0 kB  |
+| 25 components — a large one   | 110.8 kB | 110.8 kB |
+| a whole page shell            | —        | 28.1 kB  |
+| `CodeBlock`                   | —        | 4.8 kB   |
+| all exports (117 → 126)       | 206.8 kB | 215.3 kB |
+
+The five unchanged rows are the interesting ones: they are what says the new modules are still shaken out of a bundle that did not ask for them. `neba/styles.css` moves 17.5 kB → 19.7 kB gzipped, and 0.8 kB of that is CodeBlock's ported themes — see below.
+
+### Added
+
+- **`PageLayout`, with `Header`, `Footer` and `Sidebar`.** The skeleton a page is hung on, and what it is really for is the landmarks: a page assembled out of divs is one undifferentiated region to a screen reader and one undifferentiated blob to a crawler, while the same page built out of `<header>`, `<aside>`, `<main>` and `<footer>` has a table of contents. `PageLayout` arranges the four, contributes the `<main>` and the skip link that jumps to it, and answers the questions the four cannot answer alone.
+
+  `headerSpan` and `footerSpan` decide which of the bar and the rail takes the top corner — `full` is a website, `content` is an application — and they are asked separately, because a dashboard with a full-height rail still usually wants its copyright line under the content rather than under the rail. `scroll` decides whether the document scrolls or only the region between the bars. `sidebar` and `endSidebar` are two slots, for navigation down one side and a table of contents, an inspector or a filter panel down the other.
+
+  The arrangement is flexbox and media queries on purpose: everything that decides where a column goes is stated in CSS, so the layout is right in the first frame the browser paints and right with JavaScript off. The only measurement is the header's and the footer's height, and only because a sidebar that holds its place has to start below a bar whose height nobody but the bar knows.
+
+- **A `Sidebar` below `collapseBelow` is a `Drawer`**, not a second drawer written beside it — over a scrim, with a focus trap, an Escape and a way back to the trigger. Its children exist once either way, so nothing inside is in the document twice for a screen reader to read twice. `SidebarTrigger` is the hamburger that opens it and is _hidden_ above the breakpoint by a class rather than being absent, or every phone would draw a header and then pop a button into it a moment later. A sidebar can also be `resizable`, dragged by its inner edge and reported through `onResizeEnd`.
+
+- **`Header` and `Footer` are usable on their own**, which is most of why they are separate components. A header takes three slots — `brand`, the middle, and `actions` — because the arrangement is fixed and what a caller wants to decide is what goes in each; `align="center"` centres the middle on the bar's own midline rather than in the space left over, so a logo one character longer does not move the navigation. Both take `position`, `maxWidth` on Container's ladder, and a `divider`.
+
+- **`AppLogo`.** A product's mark, at a known size, that is never an empty box. Four things can be the mark and exactly one is at a time: markup handed to `children`, an image at `src`, the initials of `name` on a tile, or — with no tile to put them on — the name itself set as the logotype. That last one is the point: a product that has not drawn a logo yet still has a logo, and swapping it for the real file later is one prop.
+
+  `shape` is the decision an `<img>` cannot make for you: a mark drawn as a bare glyph and one drawn with its own background need opposite treatment and the file cannot say which it is. `bare` keeps the artwork's proportions and draws nothing behind it; `app` and `circle` inset it into a tile. `bare` is the default because a logo file very often has the product's name set into it, which is also why `name` is read out rather than drawn a second time.
+
+- **`CodeBlock`.** A viewer for one line of code or a thousand. Everything it draws above the code is optional and off one prop each — `toolbar`, `showLanguage`, `copyable`, `rawToggle`, `lineNumbers`, `startLine`, `prompt` — because the same component has to be a bare snippet inside a sentence and the full transcript at the top of a README, and those are the same block with different things turned on rather than two components.
+
+  Syntax highlighting is highlight.js, and **every specifier that reaches it is behind an `import()`**: the core in one chunk, one chunk per grammar. So the block is 4.8 kB in the bundle a page downloads to draw its first frame, `highlight={false}` fetches none of the rest, and a block colouring TypeScript fetches about 11 kB more after the paint. Thirty-four languages come with it; `registerLanguage` is `registerMessages`' arrangement for the other hundred and fifty.
+
+  `prompt` draws a shell symbol — `$`, `#`, `C:\>` — that is never actually there: it is generated content, so it cannot be selected, cannot be found by find-in-page and never reaches the clipboard. A transcript stays a transcript and still pastes into a shell. `highlightLines` marks lines with a tinted row and a rule down the leading edge, taking a number, a string of lines and ranges (`'1,4-9,12'`) or an array of either, counted the way the gutter counts. <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else.
+
+  **`theme` is the one colour decision in the library that does not follow the page.** Code is read against a background chosen for code. Four themes are the library's own — `dark` (the default), `light`, `auto` and `mono` — and eight are ports kept at their published values: `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`. A theme is a set of `--n-code-*` custom properties under a `[data-code-theme]` selector and nothing else, so the prop takes any string and a project that writes one in its own CSS has a theme with nothing to import and nothing to register.
+
+- **`HowToSteps`.** A guide the reader walks through: numbered steps down one side, one step's instructions beside them, a way forward under those, and an end that says so. It is `Timeline`'s interactive sibling and the two are deliberately not one component — a Timeline _reports_ and nothing in it is pressed, while a HowToSteps _asks_.
+
+  Every step's body is rendered into the same grid cell, with the ones not showing left in the document, `invisible` and `inert`, so the panel is as tall as the tallest step at every moment: moving from a one-line step to one with a code block in it does not resize the card the guide sits in, which on a page the reader has already scrolled moves everything under it. Nothing is remounted either, so a form halfway through a guide still holds what was typed into it.
+
+  `orientation` runs the numbers down a column or across the top; `maxHeight` scrolls a long list and keeps the current row in view; `divider` puts a hairline between the list and the body; a step's `icon` is drawn before its title over the body and never in the list, where the numbered disc already says which step it is. `transition` is the entrance a step arrives with, from the library's usual motion vocabulary plus `'none'` — the one place that prop runs on something other than a mount, and inside the rule against moving a control for the same reason the rule exists: the effect is on the panel, and the buttons and rows that changed it hold still.
+
+- Three new message namespaces in all eighteen languages — `layout` for the skip link, the sidebar's name and the button that opens it, `code` for the copy button and the raw toggle, and `steps` for the four buttons and the sentence at the end. All three together move a twelve-component app with Korean registered from 68.7 kB to 69.2 kB, which is the whole of what a new set of words costs a project that has registered a language.
+- `npm run size` gains a **page shell** scenario — `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo` — and prints each scenario's on-demand chunk total beside its entry. That second number is unbudgeted and exists so CodeBlock's grammars cannot quietly become the entry's problem: the day that `import()` turns static, 4.8 kB becomes 68.
+
+### Changed
+
+- **`highlight.js` is a second runtime dependency**, alongside Base UI. Only `CodeBlock` reaches it, only through a dynamic import, and it therefore never lands in a bundle that did not ask for it. It is a real dependency rather than an optional peer because a specifier a bundler cannot resolve fails the _whole_ build — Rollup walks and resolves `CodeBlock.js` while it is still deciding whether to keep it — so an optional peer would break `import { Button } from 'neba'` for anyone who had not installed a highlighter.
+- A `Header`'s three slots are held apart by their own gap ladder, about twice the gap _inside_ a slot. One ladder was doing both jobs, which put the first navigation link exactly as far from the logo as the logo sits from its own name, so the eye grouped the wrong things and the bar read as one undifferentiated row.
+
+### Fixed
+
+- **A press on a `FloatingBottomNavigation` no longer moves the bar's height.** The name on a floating destination collapsed in both axes, so an item without one was shorter than an item with one — and since a press animates two items at once, the tallest item in the row dipped to somewhere between the two heights and came back, taking the sheet with it. On a lozenge floating over the page that read as the whole bar wobbling. Only the column track travels now.
+
+### Documentation
+
+- Seven component pages in both locales — `PageLayout`, `Header`, `Footer` and `Sidebar` under **Layout**, `AppLogo` and `CodeBlock` under **Display**, `HowToSteps` under **Surfaces** — with their props rows, thirty-five demos, seven cards in the component gallery, and their blocks on the sample screen.
+- The sidebar and page-layout demos draw their navigation as plain text links rather than as a bordered `List`, which is what a navigation rail is; the header demos' links lose their underline, which is the case `TextLink`'s three-way `underline` prop exists for.
+- `CLAUDE.md` records the one deliberate exception to the stylesheet's marginal cost: CodeBlock's eight ported themes are 0.8 kB gzipped that everybody carries and only a CodeBlock user sees. Shipping them as tree-shakeable JS token objects was the alternative and was rejected, because it costs both the string prop and the consumer's own theme.
+
 ## 1.7.0 (2026-08-27)
 
 A release about what lands in your bundle. Nothing about how a component looks or behaves has changed; what changed is how much of the library you have to take to get one of them.
