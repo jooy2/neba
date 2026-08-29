@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.1 (2026-08-29)
+
+Neba could not be imported into a React Server Component, and nothing in this repository could have said so. React's `react-server` build does not export `useState`, `useEffect`, `useRef`, `useContext` or `createContext` at all, so the fifty-three modules here that called one were a `TypeError` in someone's Next.js app rather than a component that rendered badly — and every check stayed green, because nothing here renders on a server.
+
+### Fixed
+
+- **Every component is a client component and now says so.** `'use client'` on all ninety-nine component files, and on the seven modules under `internal/` that hold a context or an effect. Importing one into a Server Component works, with no wrapper of your own and no `transpilePackages` entry. The directive marks a boundary rather than a page: a Server Component that renders a `Button` stays a Server Component, and only the components it renders reach the browser. What has not changed is the ordinary rule about that boundary — an event handler defined in a Server Component still cannot be passed across it.
+- All of them, and not only the ones that hold state today. Thirteen components would technically have survived a server render; eight of those are Base UI form controls that go inside a client boundary anyway, and the other five are one prop from failing, since `transition` is a `useLayoutEffect` and `render` is Base UI's `useRender` and nearly every component in the library already takes one or the other. A per-component answer would be a table that rots. It costs nothing measurable either: every `npm run size` scenario is unchanged to the byte, because a bundler hoists the directive rather than shipping it a hundred and six times.
+- **The `neba` barrel, the component barrels and `neba/locales` are deliberately left unmarked**, and each would break if they were not. A barrel only re-exports, so unmarked it belongs to whichever graph imports it and a Server Component importing `neba` reaches the client modules behind it rather than a boundary of its own. `registerMessages` stays a plain function for the same shape of reason: marked, it would arrive in a consumer's server module as a client reference instead of a function and throw when called.
+- **`terser.config.json` sets `compress.directives: false`**, which is the half of this that would otherwise have failed silently. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, stripping it out of all one hundred and six files without a word. The published package would have said nothing at all to Next.js while every check here still passed. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser eats on the way out.
+
+### Documentation
+
+- **Next.js and React Server Components**, a new section in _Getting started_ in both locales: what the directive does and does not do, why a handler written in a Server Component cannot be passed to a `Button`, where the stylesheet is imported in an App Router project, and how to register a language from a module that is in the client graph. `'use client'` is a string at the top of a file, so Vite, webpack, Remix, Astro and plain React ignore it and nothing above changes what the package does there. The README carries the short form.
+- `test/package/resolution.test.ts` gains four checks, since this is exactly the kind of invariant that is invisible here and expensive in someone else's project: that every component starts with the directive, that every module calling a client-only React API does too, that the barrels and the locales do not, and that the terser setting holding it all up is still there. `CLAUDE.md` records the rule and its three deliberate exemptions.
+
 ## 1.8.0 (2026-08-29)
 
 Everything Neba had until now went _inside_ a page somebody else had already built. This release builds the page: a layout and the three regions it arranges, the mark that goes in the corner of it, and two components for the kind of page you would put in it — a code viewer and a step-by-step guide.
