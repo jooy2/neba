@@ -39,7 +39,7 @@ Every rule in it is wrapped in `:where()`, so it has **specificity 0**. A single
 
 ### If you already use Tailwind
 
-When Tailwind v4 is already in your project, import the token sheet instead of the compiled one. Nothing is generated twice, and a `className` you pass to a component sorts correctly against the component's own classes.
+When Tailwind v4 is already in your project, import the token sheet instead of the compiled one. Nothing is generated twice, and a `className` you pass to a component is generated in the same pass as the component's own — which is what lets the two be ordered against each other at all. It does not make yours win: which of two utilities for the same property applies is decided by Tailwind's own ordering, so reach for the important modifier (`h-8!`) when the answer has to be yours. See [prop conventions](../design/prop-conventions).
 
 ```css
 @import 'tailwindcss';

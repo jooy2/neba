@@ -39,7 +39,7 @@ import 'neba/styles.css';
 
 ### 이미 Tailwind를 쓰고 있다면
 
-프로젝트에 Tailwind v4가 이미 있다면 컴파일된 쪽 대신 토큰 시트를 가져오세요. 유틸리티가 두 번 생성되지 않고, 컴포넌트에 넘긴 `className`이 컴포넌트 자신의 클래스와 올바른 순서로 정렬됩니다.
+프로젝트에 Tailwind v4가 이미 있다면 컴파일된 쪽 대신 토큰 시트를 가져오세요. 유틸리티가 두 번 생성되지 않고, 컴포넌트에 넘긴 `className`이 컴포넌트 자신의 클래스와 같은 pass에서 생성됩니다 — 둘이 서로 순서를 가릴 수 있는 것은 그래서입니다. 다만 그것이 여러분 쪽을 이기게 해 주지는 않습니다. 같은 속성을 다투는 두 utility 중 무엇이 적용될지는 Tailwind 자신의 순서가 정하므로, 답이 반드시 여러분 것이어야 하면 important modifier(`h-8!`)를 쓰세요. [prop 규약](../design/prop-conventions)을 보세요.
 
 ```css
 @import 'tailwindcss';

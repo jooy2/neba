@@ -95,6 +95,62 @@ mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 �
 
 `loading`과 `readOnly`는 네이티브 `disabled`를 쓰지 않습니다. 포커스 순서에서 사라지면 키보드 사용자가 페이지 구조를 잃기 때문입니다. 활성화는 핸들러에서 막습니다.
 
+## 스타일 덮어쓰기
+
+세 가지 통로가 있고, 무엇을 바꾸려는지에 따라 고르면 됩니다.
+
+### `className` — 루트
+
+모든 컴포넌트가 받고, 컴포넌트 자신이 쓴 class를 **대체하지 않고 합칩니다**. 붙는 곳은 컴포넌트의 **루트**입니다. field라면 라벨과 control, 그 아래 두 줄을 담는 열이고, Dialog·Tour·CommandPalette라면 시트 — 부르는 사람이 그 컴포넌트 이름으로 가리키는 바로 그 요소 — 입니다.
+
+```tsx
+<Button className="w-full" />
+```
+
+[ToastProvider](../components/feedback/toast) 하나만 받지 않는데, 이는 빠뜨린 것이 아니라 그것이 답이기 때문입니다. 자기 요소를 그리지 않으므로 루트 class가 붙을 곳이 없습니다.
+
+### `classNames` — 그 뒤의 파트들
+
+요소 하나를 그리는 컴포넌트에는 더 필요한 것이 없습니다. 여섯 개를 그리는 컴포넌트 — 라벨과 shell, control, 그리고 글 두 줄이 있는 field — 에는 눈에 보이고, 바꾸고 싶고, 부를 이름이 없는 파트들이 있습니다. `classNames`가 파트마다 하나씩 이름을 줍니다.
+
+```tsx
+<TextField classNames={{ label: 'uppercase', control: 'font-mono' }} />
+```
+
+**`root` 키는 절대 없습니다.** 모든 컴포넌트에서 루트는 `className`이고, 같은 것에 두 번째 이름을 붙이는 일이야말로 이 문서가 막으려는 것입니다.
+
+파트가 공유되는 곳에서는 slot 이름도 공유됩니다. `label`, `control`, `description`, `error`는 TextField·Select·Checkbox·RadioGroup에서 모두 같은 넷을 뜻합니다. 그 밖에 컴포넌트마다 더 있는 것은 각자의 페이지에 있습니다.
+
+특히 알아 둘 slot은 달리 닿을 방법이 없는 것들입니다. Select의 `popup`, Dialog의 `backdrop`, Tour의 `mask`, CommandPalette의 `viewport`는 모두 `className`이 닿는 요소 바깥, `<body>` 끝에 그려집니다. 루트를 기준으로 쓴 선택자로는 영영 찾을 수 없습니다.
+
+### `style`과 `--n-*` slot
+
+컴포넌트가 그리는 색 값은 전부 자기 자신에게 설정한 custom property에서 읽어 옵니다 — `--n-fill`, `--n-accent`, `--n-line`, `--n-ring`, `--n-panel`, `--n-elev` 등 백여 개입니다. 넘긴 `style`은 컴포넌트 자신의 것 **뒤에** 합쳐지므로, 그중 하나를 쓰는 것은 이 라이브러리에서 유일하게 질 수 없는 덮어쓰기입니다.
+
+```tsx
+<Button style={{ '--n-fill': 'rebeccapurple' }} />
+```
+
+inline custom property는 겨룰 cascade 자체가 없어서, 색이나 깊이에 관한 것이라면 class보다 안정적입니다. 한 단계 위에는 `:root`의 `--neba-*` 토큰이 있어 같은 것을 페이지 전체에 대해 바꿉니다 — [색](./color)을 보세요.
+
+### utility 둘이 부딪힐 때
+
+넘긴 class와 컴포넌트가 쓴 class는 둘 다 class 하나짜리 utility입니다. 어느 쪽도 더 구체적이지 않으므로 무엇이 적용될지는 **생성된 stylesheet 안의 순서**가 정하고, 그 순서는 여러분이 쓴 순서가 아니라 Tailwind 자신의 순서입니다.
+
+그래서 승패는 누가 썼는지가 아니라 값이 무엇인지에 달립니다. `h-8`이 `h-10`보다 먼저 생성되므로 컴포넌트의 `h-10`이 이깁니다. `rounded-full`이 `rounded-lg`보다 먼저이므로 컴포넌트의 `rounded-lg`가 이깁니다. `bg-red-500`은 `bg-(--n-fill)` 뒤에 오므로 여기서는 여러분 것이 이깁니다.
+
+언제나 이기는 형태는 Tailwind의 important modifier이고, 답이 반드시 여러분 것이어야 할 때 쓸 것이 이것입니다.
+
+```tsx
+<Button size="lg" className="h-8!" />
+```
+
+이것은 inline style도 이깁니다. utility에 기댈 수 없어 inline으로 쓴 컴포넌트가 몇 개 있는데, [IconButton](../components/inputs/icon-button)의 `border-radius`가 그렇습니다.
+
+### 두 개의 stylesheet
+
+class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있습니다. 그 경로에서만 여러분의 class와 컴포넌트의 class가 한 번의 Tailwind pass에서 생성되어 서로 순서를 가릴 수 있기 때문입니다. `neba/styles.css`는 이미 완성된 CSS라 여러분이 돌리는 빌드에 참여할 수 없습니다. 그 경로에서는 직접 쓴 CSS나 위의 `--n-*` slot으로 덮어쓰세요. [시작하기](../guide/getting-started)를 보세요.
+
 ## 이름 규칙
 
 - 아이콘 슬롯은 `startIcon` / `endIcon`. `leftIcon`/`rightIcon`은 RTL에서 뜻이 뒤집힙니다.
