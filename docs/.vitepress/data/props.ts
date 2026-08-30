@@ -9216,9 +9216,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'label',
       type: 'string',
+      default: "locale's word",
       description: {
-        ko: '스크롤 영역의 이름 — "Categories", "Recent files"',
-        en: 'What the scrollable region is called — "Categories", "Recent files"'
+        ko: '스크롤 영역의 이름 — "Categories", "Recent files". 띠는 키보드로 움직일 수 있어야 하므로 언제나 tab 정거장이며, 이름을 주지 않으면 locale의 일반 명사가 대신 쓰입니다',
+        en: 'What the scrollable region is called — "Categories", "Recent files". The strip is always a tab stop, because a reader with no pointer has to be able to move it; without a name the locale\'s generic word stands in'
       }
     },
     {

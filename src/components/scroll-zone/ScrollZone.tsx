@@ -647,8 +647,13 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
         // scroll container, which means it is already right under RTL — a
         // handler of ours mapping ArrowRight to "forward" would not have been.
         tabIndex={0}
-        role={label ? 'group' : undefined}
-        aria-label={label}
+        // Always a group with a name, never a bare focusable `<div>`. The strip
+        // has to be a tab stop or a reader with no pointer cannot move it, and a
+        // tab stop that announces nothing is worse than one that says only what
+        // kind of thing it is. `label` says what is *in* it; the fallback says
+        // what it is.
+        role="group"
+        aria-label={label ?? messages.label}
         className={cx(
           // `grow` with the basis left at `auto`, never `flex-1`: a zero basis
           // in a column whose own height is `auto` resolves to no height at all,

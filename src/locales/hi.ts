@@ -78,7 +78,11 @@ export const hi: NebaLocale = {
     next: 'अगली स्लाइड'
   },
   chart: { label: 'चार्ट' },
-  scroll: { previous: 'पीछे स्क्रॉल करें', next: 'आगे स्क्रॉल करें' },
+  scroll: {
+    label: 'स्क्रॉल करने योग्य सामग्री',
+    previous: 'पीछे स्क्रॉल करें',
+    next: 'आगे स्क्रॉल करें'
+  },
   breadcrumb: {
     label: 'ब्रेडक्रंब',
     expand: 'छिपे हुए चरण दिखाएँ'

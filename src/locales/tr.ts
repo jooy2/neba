@@ -78,7 +78,7 @@ export const tr: NebaLocale = {
     next: 'Sonraki slayt'
   },
   chart: { label: 'Grafik' },
-  scroll: { previous: 'Geri kaydır', next: 'İleri kaydır' },
+  scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {
     label: 'Gezinti yolu',
     expand: 'Gizli adımları göster'

@@ -78,7 +78,11 @@ export const ru: NebaLocale = {
     next: 'Следующий слайд'
   },
   chart: { label: 'Диаграмма' },
-  scroll: { previous: 'Прокрутить назад', next: 'Прокрутить вперёд' },
+  scroll: {
+    label: 'Прокручиваемая область',
+    previous: 'Прокрутить назад',
+    next: 'Прокрутить вперёд'
+  },
   breadcrumb: {
     label: 'Навигационная цепочка',
     expand: 'Показать скрытые шаги'

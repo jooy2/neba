@@ -78,7 +78,7 @@ export const ja: NebaLocale = {
     next: '次のスライド'
   },
   chart: { label: 'グラフ' },
-  scroll: { previous: '前へスクロール', next: '次へスクロール' },
+  scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {
     label: 'パンくずリスト',
     expand: '省略された階層を表示'

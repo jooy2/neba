@@ -78,7 +78,7 @@ export const pl: NebaLocale = {
     next: 'Następny slajd'
   },
   chart: { label: 'Wykres' },
-  scroll: { previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
+  scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
   breadcrumb: {
     label: 'Ścieżka nawigacji',
     expand: 'Pokaż ukryte kroki'

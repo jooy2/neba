@@ -78,7 +78,7 @@ export const vi: NebaLocale = {
     next: 'Trang chiếu sau'
   },
   chart: { label: 'Biểu đồ' },
-  scroll: { previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
+  scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
   breadcrumb: {
     label: 'Đường dẫn',
     expand: 'Hiện các bước đã ẩn'

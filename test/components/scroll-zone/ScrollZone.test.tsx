@@ -101,6 +101,17 @@ describe('ScrollZone', () => {
       expect(scroller(screen)).toHaveAttribute('tabindex', '0');
     });
 
+    // The strip has to be a tab stop or a reader with no pointer cannot move
+    // it, and a tab stop with no name announces nothing at all when the focus
+    // lands on it.
+    it('still says what it is when it was given no label', async () => {
+      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
+
+      await expect
+        .element(screen.getByRole('group', { name: 'Scrollable content' }))
+        .toBeInTheDocument();
+    });
+
     it('reflects a changed set of children on re-render', async () => {
       const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
 

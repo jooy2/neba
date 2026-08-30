@@ -78,7 +78,7 @@ export const ar: NebaLocale = {
     next: 'الشريحة التالية'
   },
   chart: { label: 'رسم بياني' },
-  scroll: { previous: 'التمرير للخلف', next: 'التمرير للأمام' },
+  scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {
     label: 'مسار التنقل',
     expand: 'إظهار الخطوات المخفية'

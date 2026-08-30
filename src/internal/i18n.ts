@@ -400,6 +400,16 @@ export const chartMessages: MessageTable<ChartMessages> = {
  * right.
  */
 export interface ScrollMessages {
+  /**
+   * Names the strip itself.
+   *
+   * A scroll container is a tab stop — it has to be, or a reader with no
+   * pointer cannot move it — and a tab stop with no name announces nothing at
+   * all when the focus lands on it. `label` on the component says what the
+   * strip holds; this says what it *is*, for the far more common case where
+   * the surrounding page has already said the first part.
+   */
+  label: string;
   previous: string;
   next: string;
 }
@@ -407,6 +417,7 @@ export interface ScrollMessages {
 /** The `scroll` namespace, as ScrollZone read it. */
 export const scrollMessages: MessageTable<ScrollMessages> = {
   '': {
+    label: 'Scrollable content',
     previous: 'Scroll back',
     next: 'Scroll forward'
   }

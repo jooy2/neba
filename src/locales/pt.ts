@@ -78,7 +78,7 @@ export const pt: NebaLocale = {
     next: 'Próximo slide'
   },
   chart: { label: 'Gráfico' },
-  scroll: { previous: 'Rolar para trás', next: 'Rolar para a frente' },
+  scroll: { label: 'Conteúdo rolável', previous: 'Rolar para trás', next: 'Rolar para a frente' },
   breadcrumb: {
     label: 'Trilha de navegação',
     expand: 'Mostrar as etapas ocultas'

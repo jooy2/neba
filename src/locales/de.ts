@@ -78,7 +78,7 @@ export const de: NebaLocale = {
     next: 'Nächste Folie'
   },
   chart: { label: 'Diagramm' },
-  scroll: { previous: 'Zurückscrollen', next: 'Weiterscrollen' },
+  scroll: { label: 'Scrollbarer Inhalt', previous: 'Zurückscrollen', next: 'Weiterscrollen' },
   breadcrumb: {
     label: 'Breadcrumb-Navigation',
     expand: 'Ausgeblendete Schritte anzeigen'
