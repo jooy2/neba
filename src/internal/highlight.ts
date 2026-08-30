@@ -240,7 +240,15 @@ export async function highlight(code: string, language: string): Promise<CodeLin
   let pending = resolved.get(language);
 
   if (!pending) {
-    pending = prepare(language);
+    // Dropped again if it fails. A chunk that did not arrive is a network
+    // event, not a fact about the language — cached, it would leave every
+    // block in that language plain for the rest of the page's life, including
+    // the ones that mount after the connection came back.
+    pending = prepare(language).catch((error: unknown) => {
+      resolved.delete(language);
+
+      throw error;
+    });
     resolved.set(language, pending);
   }
 
