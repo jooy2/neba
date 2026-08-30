@@ -169,6 +169,13 @@ function markString(
     const end = start + match[0].length;
 
     if (wholeWord && !isWholeWord(text, start, end)) {
+      // Rewound to just after where this match *started*, not to where it
+      // ended. `exec` has already moved past the whole of it, and a rejected
+      // match is not a claim on the characters inside it: searching `cat` in
+      // `concatenate cat` must not lose a second `cat` that begins one letter
+      // in. Only ever forward, so it still terminates.
+      pattern.lastIndex = start + 1;
+
       continue;
     }
 

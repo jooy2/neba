@@ -145,6 +145,21 @@ describe('Highlight', () => {
       expect(marks(screen.container)).toEqual(['cat']);
     });
 
+    // A rejected match is not a claim on the characters inside it. `exec` has
+    // already moved past the whole of it by the time the word boundaries are
+    // checked, and terms are tried longest first — so `a b` matches at `xa b`,
+    // is thrown out for starting mid-word, and takes the whole-word `b` inside
+    // it down with it unless the scan is rewound.
+    it('finds a whole word that starts inside a rejected match', async () => {
+      const screen = await render(
+        <Highlight query={['a b', 'b']} wholeWord>
+          xa b
+        </Highlight>
+      );
+
+      expect(marks(screen.container)).toEqual(['b']);
+    });
+
     // A word is a run of letters in any script, so it means what it should for
     // text the ASCII definition would get wrong.
     it('counts accented letters as part of a word', async () => {
