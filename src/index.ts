@@ -49,6 +49,7 @@ export * from './components/empty/index.js';
 export * from './components/fieldset/index.js';
 export * from './components/file-picker/index.js';
 export * from './components/form/index.js';
+export * from './components/gauge-chart/index.js';
 export * from './components/grid/index.js';
 export * from './components/floating-action-button/index.js';
 export * from './components/floating-bottom-navigation/index.js';

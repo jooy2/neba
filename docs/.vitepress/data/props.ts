@@ -2812,7 +2812,7 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'thresholds',
-      type: 'readonly MeterThreshold[]',
+      type: 'readonly NebaThreshold[]',
       description: {
         ko: '막대의 색이 바뀌는 지점들. { from, color } 배열이며 from이 작은 것부터 나열합니다. 값이 도달한 마지막 항목이 이기고, 아무 것에도 도달하지 못했다면 color가 그대로 쓰입니다',
         en: 'Where the bar changes colour, as { from, color } entries listed smallest first. The last one the value has reached wins; below all of them color stands'
@@ -2865,7 +2865,7 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
-  MeterThreshold: [
+  NebaThreshold: [
     {
       name: 'from',
       type: 'number',
@@ -4243,6 +4243,129 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onSelect',
       type: '() => void',
       description: { ko: '실행했을 때 하는 일', en: 'What running it does' }
+    }
+  ],
+
+  GaugeChart: [
+    {
+      name: 'value',
+      type: 'number | null',
+      required: true,
+      description: {
+        ko: '읽은 값. null이면 아무것도 얹히지 않은 계기판을 그립니다',
+        en: 'The reading. null draws the dial with nothing on it'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      default: '0',
+      description: { ko: '범위의 시작', en: 'The bottom of the range' }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      default: '100',
+      description: { ko: '범위의 끝', en: 'The top of the range' }
+    },
+    {
+      name: 'sweep',
+      type: 'number',
+      default: '180',
+      description: {
+        ko: '계기판이 도는 각도. 12시를 중심으로 대칭으로 열립니다. 180은 반원, 270은 계기, 360은 고리입니다',
+        en: 'How far round the dial goes, in degrees, opened symmetrically about twelve o clock. 180 is a half-dial, 270 the instrument shape, 360 a ring'
+      }
+    },
+    {
+      name: 'thickness',
+      type: 'number',
+      default: '0.22',
+      description: {
+        ko: '반지름에 대한 호의 두께 비율',
+        en: 'How thick the arc is, as a fraction of its radius'
+      }
+    },
+    {
+      name: 'thresholds',
+      type: 'readonly NebaThreshold[]',
+      description: {
+        ko: '호의 색이 바뀌는 지점들. Meter와 같은 { from, color } 항목이고 규칙도 같습니다',
+        en: 'Where the arc changes colour — the same { from, color } entries a Meter takes, with the same rule'
+      }
+    },
+    {
+      name: 'ticks',
+      type: 'number | false',
+      default: 'false',
+      description: {
+        ko: '양 끝을 포함해 그려지는 눈금의 수. 대시보드의 계기판은 비율로 읽히므로 기본은 꺼짐입니다',
+        en: 'How many marks are drawn around the dial, ends included. Off by default: a gauge on a dashboard is read as a proportion'
+      }
+    },
+    {
+      name: 'showRange',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '호의 양 끝에 min과 max를 씁니다',
+        en: 'Writes min and max at the two ends of the arc'
+      }
+    },
+    {
+      name: 'center',
+      type: 'ReactNode',
+      description: {
+        ko: '가운데에 들어갈 것. 기본은 format을 거친 값입니다',
+        en: 'What goes in the middle. Left out, it is the value written through format'
+      }
+    },
+    {
+      name: 'caption',
+      type: 'ReactNode',
+      description: {
+        ko: '값 아래 한 줄 — 단위, 또는 무엇을 재고 있는지',
+        en: 'A line under the value: the unit, or what is being measured'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'threshold에 도달하기 전 호가 띠는 색 역할',
+        en: 'The family the arc carries before any threshold is reached'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '그림의 높이. 지정하지 않으면 size 사다리를 따릅니다',
+        en: 'How tall the drawing is. Defaults to the size ladder'
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: { ko: '숫자를 쓰는 방식', en: 'How the numbers are written' }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '접근성 이름. 있으면 계기판 전체가 하나의 role="img"가 됩니다',
+        en: 'The accessible name. Given one, the dial is one role="img"'
+      }
+    },
+    {
+      name: 'empty',
+      type: 'ReactNode',
+      description: {
+        ko: '그릴 것이 없을 때 그리는 것',
+        en: 'What to draw when there is nothing to draw'
+      }
     }
   ],
 

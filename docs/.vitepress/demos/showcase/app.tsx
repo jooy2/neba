@@ -54,6 +54,7 @@ import {
   FloatingBottomNavigation,
   Footer,
   Form,
+  GaugeChart,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -837,10 +838,30 @@ function ShowcaseBody() {
           arranges them and draws nothing itself. `betterWhen` is what makes the
           third card red for a figure that fell. */}
         <section className="flex flex-col gap-3">
-          <Caption>GridContainer · Grid · Statistic · Sparkline</Caption>
+          <Caption>GridContainer · Grid · Statistic · Sparkline · GaugeChart</Caption>
           <GridContainer spacing={3} padded={false}>
+            {/* The one figure on this row that is a *reading* rather than a
+                movement: a share of a fixed capacity, so it gets the dial. */}
+            <Grid span={{ xs: 12, sm: 3 }}>
+              <GaugeChart
+                size="sm"
+                variant="outline"
+                height={116}
+                className="h-full"
+                label="Build minutes used"
+                caption="Build minutes"
+                value={82}
+                format={{ style: 'percent', maximumFractionDigits: 0 }}
+                min={0}
+                max={100}
+                thresholds={[
+                  { from: 70, color: 'warning' },
+                  { from: 90, color: 'danger' }
+                ]}
+              />
+            </Grid>
             {STATS.map((stat) => (
-              <Grid key={stat.label} span={{ xs: 12, sm: 4 }}>
+              <Grid key={stat.label} span={{ xs: 12, sm: 3 }}>
                 <Statistic
                   label={stat.label}
                   value={stat.value}

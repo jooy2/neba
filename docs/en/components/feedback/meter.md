@@ -23,9 +23,9 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 `value` is required, and that is the difference from [ProgressLinear](./progress-linear). A progress bar is about time — something is happening, it may have no value at all, and it is expected to move on its own. A meter is about quantity: it does not move unless the thing it measures does.
 
-### MeterThreshold
+### NebaThreshold
 
-<PropsTable name="MeterThreshold" />
+<PropsTable name="NebaThreshold" />
 
 ## Examples
 

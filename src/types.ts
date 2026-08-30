@@ -508,6 +508,23 @@ export interface NebaChartLegend {
   showValue?: boolean;
 }
 
+/**
+ * A point on a scale, and the colour family a reading takes once it has reached
+ * it.
+ *
+ * The one place in the library where a semantic colour is *computed*, and the
+ * reason it is here rather than in whichever component needed it first: a Meter
+ * and a GaugeChart are the same reading in two shapes, and a page carrying both
+ * must not disagree about where amber starts. Left to the caller that would be
+ * a ternary at every call site, and the fourth one would.
+ */
+export interface NebaThreshold {
+  /** The value from which this family applies, in the reading's own units. */
+  from: number;
+  /** What the bar, or the arc, turns at and above that point. */
+  color: NebaColor;
+}
+
 /** Style props shared by most components; spread into their own prop types. */
 export interface NebaStyleProps {
   /** @default 'solid' */

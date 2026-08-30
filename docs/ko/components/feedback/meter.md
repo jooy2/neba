@@ -23,9 +23,9 @@ import { Meter } from 'neba';
 
 `value`는 필수이며, 이것이 [ProgressLinear](./progress-linear)와의 차이입니다. 프로그레스 바는 *시간*에 대한 것이라 값이 아예 없을 수도 있고 스스로 움직이는 것이 전제입니다. Meter는 *양*에 대한 것이라, 측정 대상이 변하지 않는 한 움직이지 않습니다.
 
-### MeterThreshold
+### NebaThreshold
 
-<PropsTable name="MeterThreshold" />
+<PropsTable name="NebaThreshold" />
 
 ## 예시
 

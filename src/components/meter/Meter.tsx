@@ -4,24 +4,7 @@ import * as React from 'react';
 import { Meter as BaseUIMeter } from '@base-ui/react/meter';
 import { barThicknessClasses, progressFraction, progressSlots } from '../../internal/progress.js';
 import { metaTextClasses, stackGapClasses } from '../../internal/styles.js';
-import type { NebaColor, NebaSize } from '../../types.js';
-
-/**
- * A point on the scale, and the colour family the bar takes once the value has
- * reached it.
- *
- * This is the one component in the library where the semantic colour is allowed
- * to be *computed*, and it is the reason the prop exists: a meter's whole job is
- * that where the value sits is what it means — 40% of a disk is fine, 95% is a
- * page. Left to the caller, that would be a ternary at every call site, and the
- * fourth one would disagree with the first three about where amber starts.
- */
-export interface MeterThreshold {
-  /** The value from which this family applies, in the meter's own units. */
-  from: number;
-  /** What the bar turns at and above that point. */
-  color: NebaColor;
-}
+import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
 
 export interface MeterProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -55,7 +38,7 @@ export interface MeterProps extends Omit<
    * Where the bar changes colour, smallest `from` first. The family of the last
    * threshold the value has reached wins; below all of them `color` stands.
    */
-  thresholds?: readonly MeterThreshold[];
+  thresholds?: readonly NebaThreshold[];
   /** Thickness of the groove. Nothing else on a bar has a size. @default 'md' */
   size?: NebaSize;
   /** The family the bar carries before any threshold is reached. @default 'primary' */
@@ -75,7 +58,7 @@ const trackClasses = 'relative w-full overflow-hidden rounded-full bg-(--n-soft)
 function thresholdColor(
   value: number,
   color: NebaColor,
-  thresholds: readonly MeterThreshold[] | undefined
+  thresholds: readonly NebaThreshold[] | undefined
 ): NebaColor {
   if (!thresholds || thresholds.length === 0) return color;
 

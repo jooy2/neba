@@ -59,6 +59,7 @@ import {
   FloatingBottomNavigation,
   Footer,
   Form,
+  GaugeChart,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -1941,6 +1942,29 @@ const GROUPS: Group[] = [
               ]}
             />
           </div>
+        )
+      },
+      {
+        name: 'GaugeChart',
+        summary: {
+          ko: '미리 정해진 범위 위의 값 하나를 계기판으로',
+          en: 'One number on a known scale, drawn as a dial'
+        },
+        path: '/components/charts/gauge-chart',
+        preview: (
+          <GaugeChart
+            size="sm"
+            height={96}
+            padded={false}
+            className="w-full max-w-40"
+            label="Memory"
+            caption="Memory"
+            value={82}
+            thresholds={[
+              { from: 70, color: 'warning' },
+              { from: 90, color: 'danger' }
+            ]}
+          />
         )
       },
       {
