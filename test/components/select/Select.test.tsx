@@ -306,4 +306,58 @@ describe('Select', () => {
       expect(screen.container.querySelector('[data-analytics="plan"]')).not.toBeNull();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Select
+          items={PLANS}
+          label="Plan"
+          description="Change it any time."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            control: 'slot-control',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+
+      expect(screen.getByRole('combobox').element()).toHaveClass('slot-control');
+      expect(screen.getByText('Plan').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Change it any time.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    /** The popup is portalled, so nothing written against the root reaches it. */
+    it('reaches the portalled popup and its rows', async () => {
+      const screen = await render(
+        <Select
+          items={PLANS}
+          label="Plan"
+          classNames={{ popup: 'slot-popup', item: 'slot-item' }}
+        />
+      );
+
+      await screen.getByRole('combobox').click();
+
+      await expect.element(screen.getByRole('listbox')).toHaveClass('slot-popup');
+      expect(screen.getByRole('option', { name: 'Team' }).element()).toHaveClass('slot-item');
+    });
+
+    it('leaves the root to `className`', async () => {
+      const screen = await render(
+        <Select
+          items={PLANS}
+          label="Plan"
+          className="root-class"
+          classNames={{ control: 'control-class' }}
+        />
+      );
+      const trigger = screen.getByRole('combobox').element();
+
+      expect(trigger).not.toHaveClass('root-class');
+      expect(trigger.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

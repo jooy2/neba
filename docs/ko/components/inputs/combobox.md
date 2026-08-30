@@ -102,6 +102,21 @@ interface ComboboxOption {
 
 [Select](./select)의 팝업과 동일합니다. `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.
 
+### classNames
+
+`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
+
+```tsx
+<Combobox
+  items={frameworks}
+  label="Framework"
+  multiple
+  classNames={{ control: 'font-mono', chip: 'rounded-none', popup: 'max-h-40' }}
+/>
+```
+
+slot은 `label`, `shell`, `control`, `description`, `error`, `chip`, `popup`, `item`입니다. `chip`은 multiple 모드에서 input 앞에 놓이는 토큰 하나입니다. `popup`과 `item`은 `<body>` 끝에 그려지므로 루트를 기준으로 쓴 것으로는 닿지 않습니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - trigger는 `combobox`, 목록은 `listbox` role을 갖고 `label`이 accessible name이 됩니다.

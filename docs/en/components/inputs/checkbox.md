@@ -57,6 +57,16 @@ A third appearance for a parent checkbox whose children disagree. The value unde
 
 </Demo>
 
+### classNames
+
+`className` lands on the field wrapper, not on the tick. The tick and the mark inside it are reached through `classNames`.
+
+```tsx
+<Checkbox label="I agree" classNames={{ control: 'rounded-full', label: 'font-medium' }} />
+```
+
+The slots are `label`, `control`, `indicator`, `description` and `error`. `control` is the tick itself — the bordered box that fills when checked — and `indicator` is the mark inside it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - Renders `role="checkbox"` with a hidden `<input>` beside it, so giving it a `name` submits it with a form.

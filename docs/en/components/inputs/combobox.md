@@ -102,6 +102,21 @@ A single-select Combobox is exactly as tall as a [TextField](./text-field) of th
 
 Identical to [Select](./select)'s: portalled to the end of `<body>`, with `neba-portal` on the positioner.
 
+### classNames
+
+`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames.control`.
+
+```tsx
+<Combobox
+  items={frameworks}
+  label="Framework"
+  multiple
+  classNames={{ control: 'font-mono', chip: 'rounded-none', popup: 'max-h-40' }}
+/>
+```
+
+The slots are `label`, `shell`, `control`, `description`, `error`, `chip`, `popup` and `item`. `chip` is one token in front of the input in multiple mode. `popup` and `item` render at the end of `<body>`, so nothing written against the root reaches them. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - The trigger has the `combobox` role and the list the `listbox` role; `label` becomes the accessible name.

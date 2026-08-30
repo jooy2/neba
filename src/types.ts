@@ -536,3 +536,51 @@ export interface NebaStyleProps {
   /** @default 'default' */
   density?: NebaDensity;
 }
+
+/* ---------------------------------------------------------------------------
+ * Slots
+ *
+ * `className` is the root, everywhere and without exception. What follows is
+ * for everything behind it.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Class names for the parts of a component that its `className` cannot reach.
+ *
+ * A component that draws one element needs none of this: `className` lands on
+ * that element and there is nothing else to say. A component that draws six —
+ * a field with a label, a shell, a control and two lines of text under it — has
+ * five parts a caller can see, can want to change, and has no way to name. That
+ * is what this is for, and it is the whole of what it is for.
+ *
+ * **There is never a `root` key.** `className` is the root, on every component
+ * in the library, and a `classNames.root` beside it would be a second spelling
+ * of an idea that already has one. The rule that keeps `size` meaning one thing
+ * applies here too.
+ *
+ * A slot name is a promise about the element behind it, so the union each
+ * component declares is deliberately short. Only parts that are *structurally*
+ * there — a label is a label whatever the field is — get a name; the wrappers
+ * that exist to hold a flex direction do not, because naming one freezes a
+ * layout decision into the public API.
+ */
+export type NebaSlots<Slot extends string> = Partial<Record<Slot, string>>;
+
+/**
+ * The parts every field-shaped component draws, and the reason they are one
+ * type: a `classNames.label` has to mean the label on a TextField, a Select, a
+ * Checkbox and a RadioGroup alike, exactly as a `size` of `md` means one height
+ * everywhere.
+ *
+ * - `label` — the field's own name, above it or beside it.
+ * - `control` — the thing the reader actually operates: the `<input>`, the
+ *   trigger, the tick, the track.
+ * - `description` — the helper line under it.
+ * - `error` — the message that replaces it when the field is invalid.
+ *
+ * Four rather than more, because these four are the ones that exist on all of
+ * them. A shell around the control, a popup, a chip — those are real parts, but
+ * only some fields have them, and a slot offered on a component that cannot
+ * draw it is a slot that does nothing.
+ */
+export type NebaFieldSlot = 'label' | 'control' | 'description' | 'error';

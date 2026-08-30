@@ -157,6 +157,23 @@ const inertProps: PropRow[] = [
   }
 ];
 
+/**
+ * The `classNames` row.
+ *
+ * The slot union differs per component, so the type is written out at each call
+ * rather than shared. There is never a `root` key — `className` is the root.
+ */
+function slotsProp(...slots: string[]): PropRow {
+  return {
+    name: 'classNames',
+    type: `NebaSlots<${slots.map((slot) => `'${slot}'`).join(' | ')}>`,
+    description: {
+      ko: '루트 뒤에 있는 각 파트의 class. 루트 자체는 className이 맡으므로 root 키는 없습니다',
+      en: 'Class names for the parts behind the root. The root itself is className, so there is no root key'
+    }
+  };
+}
+
 interface SharedOptions {
   variant: string;
   size: string;
@@ -1608,7 +1625,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
-    }
+    },
+    slotsProp('label', 'shell', 'control', 'description', 'error')
   ],
 
   Box: [
@@ -4429,7 +4447,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'control', 'description', 'error', 'indicator')
   ],
 
   Switch: [
@@ -4471,7 +4490,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'control', 'description', 'error', 'thumb')
   ],
 
   RadioGroup: [
@@ -4530,7 +4550,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: 'Radio들', en: 'The Radio options' }
-    }
+    },
+    slotsProp('label', 'control', 'description', 'error')
   ],
 
   Radio: [
@@ -4553,7 +4574,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: { ko: '라벨 아래 보조 설명', en: 'Helper text under the label' }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'control', 'description', 'indicator')
   ],
 
   Select: [
@@ -4632,7 +4654,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'control', 'description', 'error', 'popup', 'item')
   ],
 
   DatePicker: [
@@ -7584,7 +7607,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'shell', 'control', 'description', 'error', 'chip', 'popup', 'item')
   ],
 
   NumberField: [
@@ -7748,7 +7772,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
-    ...inertProps
+    ...inertProps,
+    slotsProp('label', 'shell', 'control', 'description', 'error', 'stepper')
   ],
 
   Overlay: [

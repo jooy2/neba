@@ -188,4 +188,40 @@ describe('Checkbox', () => {
       expect(root.outerHTML).not.toContain('translate');
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Checkbox
+          label="Terms"
+          description="The long version."
+          error="Required"
+          defaultChecked
+          classNames={{
+            label: 'slot-label',
+            control: 'slot-control',
+            indicator: 'slot-indicator',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+      const tick = screen.getByRole('checkbox').element();
+
+      expect(tick).toHaveClass('slot-control');
+      expect(tick.querySelector('.slot-indicator')).not.toBeNull();
+      expect(screen.getByText('Terms').element()).toHaveClass('slot-label');
+      expect(screen.getByText('The long version.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    it('leaves the field wrapper to `className`', async () => {
+      const screen = await render(
+        <Checkbox label="Terms" className="root-class" classNames={{ control: 'control-class' }} />
+      );
+      const tick = screen.getByRole('checkbox').element();
+
+      expect(tick).not.toHaveClass('root-class');
+      expect(tick.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

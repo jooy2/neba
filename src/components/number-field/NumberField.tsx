@@ -23,7 +23,13 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaFieldSlot,
+  NebaSlots,
+  NebaStyleProps
+} from '../../types.js';
 
 /**
  * Where the two steppers sit.
@@ -39,6 +45,16 @@ import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types.js';
  * nobody hits.
  */
 export type NumberFieldSteppers = 'end' | 'split' | 'none';
+
+/**
+ * The parts a NumberField draws behind its root.
+ *
+ * `shell` is the framed box, `control` the `<input>` inside it, and `stepper`
+ * both of the two buttons — they are one slot rather than an `increment` and a
+ * `decrement`, because a pair of steppers that do not match is not a thing
+ * anyone is trying to build.
+ */
+export type NumberFieldSlot = NebaFieldSlot | 'shell' | 'stepper';
 
 export interface NumberFieldProps
   extends
@@ -128,6 +144,12 @@ export interface NumberFieldProps
   /** Placeholder shown while the field is empty. */
   placeholder?: string;
   id?: string;
+  /**
+   * Class names for the parts behind the root. `className` is the root — the
+   * column holding the label, the shell and the two lines under it — so the
+   * `<input>` itself is `classNames.control`.
+   */
+  classNames?: NebaSlots<NumberFieldSlot>;
 }
 
 /** The shell is a TextField's, to the pixel — see `fieldRestClasses`. */
@@ -211,6 +233,7 @@ export function NumberField({
   placeholder,
   id,
   className,
+  classNames,
   style,
   ...props
 }: NumberFieldProps) {
@@ -236,7 +259,7 @@ export function NumberField({
   const decrement = (
     <BaseUINumberField.Decrement
       aria-label={decrementLabel ?? messages.decrease}
-      className={stepperClasses}
+      className={cx(stepperClasses, classNames?.stepper)}
     >
       <MinusIcon />
     </BaseUINumberField.Decrement>
@@ -245,7 +268,7 @@ export function NumberField({
   const increment = (
     <BaseUINumberField.Increment
       aria-label={incrementLabel ?? messages.increase}
-      className={stepperClasses}
+      className={cx(stepperClasses, classNames?.stepper)}
     >
       <PlusIcon />
     </BaseUINumberField.Increment>
@@ -268,11 +291,12 @@ export function NumberField({
     >
       {label ? (
         <Field.Label
-          className={[
+          className={cx(
             metaTextClasses[size],
             'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-          ].join(' ')}
+            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+            classNames?.label
+          )}
         >
           {label}
         </Field.Label>
@@ -302,7 +326,7 @@ export function NumberField({
         required={required}
       >
         <BaseUINumberField.Group
-          className={[
+          className={cx(
             shellBaseClasses,
             controlHeightClasses[size],
             controlTextLeadingClasses[size],
@@ -315,8 +339,9 @@ export function NumberField({
               ? disabledClasses[variant]
               : readOnly
                 ? fieldReadOnlyClasses[variant]
-                : fieldRestClasses[variant]
-          ].join(' ')}
+                : fieldRestClasses[variant],
+            classNames?.shell
+          )}
         >
           {showSteppers && steppers === 'split' ? decrement : null}
 
@@ -339,7 +364,8 @@ export function NumberField({
               steppers === 'split' && showSteppers ? 'text-center' : '',
               'placeholder:text-(--neba-muted-fg)',
               'caret-(--n-accent) selection:bg-(--n-soft-press)',
-              'disabled:cursor-not-allowed'
+              'disabled:cursor-not-allowed',
+              classNames?.control
             ]
               .filter(Boolean)
               .join(' ')}
@@ -362,20 +388,27 @@ export function NumberField({
       </BaseUINumberField.Root>
 
       {description ? (
-        <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+        <Field.Description
+          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+        >
           {description}
         </Field.Description>
       ) : null}
 
       {hasError ? (
-        <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+        <Field.Error
+          match
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        >
           {error}
         </Field.Error>
       ) : (
         // No message of our own, so whatever the validity has: the browser's
         // own text for a failed constraint, or the entry a Form's `errors`
         // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+        <Field.Error
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        />
       )}
     </Field.Root>
   );

@@ -187,4 +187,61 @@ describe('RadioGroup', () => {
       expect(row).toHaveClass('leading-[1.4]');
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part of the group it was given one for', async () => {
+      const screen = await render(
+        <Plans
+          label="Plan"
+          description="Change it any time."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            control: 'slot-control',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+
+      expect(screen.getByRole('radiogroup').element()).toHaveClass('slot-control');
+      expect(screen.getByText('Plan').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Change it any time.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    /** A single option is styled on the Radio, never through the group. */
+    it('puts a class name on the parts of one option', async () => {
+      const screen = await render(
+        <RadioGroup label="Plan" defaultValue="team">
+          <Radio
+            value="team"
+            label="Team"
+            description="Up to ten seats."
+            classNames={{
+              label: 'slot-label',
+              control: 'slot-control',
+              indicator: 'slot-indicator',
+              description: 'slot-description'
+            }}
+          />
+        </RadioGroup>
+      );
+      const dot = screen.getByRole('radio', { name: /Team/ }).element();
+
+      expect(dot).toHaveClass('slot-control');
+      expect(dot.querySelector('.slot-indicator')).not.toBeNull();
+      expect(screen.getByText('Team').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Up to ten seats.').element()).toHaveClass('slot-description');
+    });
+
+    it('leaves the root to `className`', async () => {
+      const screen = await render(
+        <Plans label="Plan" className="root-class" classNames={{ control: 'control-class' }} />
+      );
+      const group = screen.getByRole('radiogroup').element();
+
+      expect(group).not.toHaveClass('root-class');
+      expect(group.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

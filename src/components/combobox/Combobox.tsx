@@ -26,7 +26,14 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaFieldSlot,
+  NebaSize,
+  NebaSlots,
+  NebaStyleProps
+} from '../../types.js';
 
 /**
  * What a Combobox's value may be — the same two types a [Select](../select)
@@ -57,6 +64,16 @@ export interface ComboboxOption {
 type Selection<Multiple extends boolean | undefined> = Multiple extends true
   ? ComboboxValue[]
   : ComboboxValue | null;
+
+/**
+ * The parts a Combobox draws behind its root.
+ *
+ * `shell` is the framed box, `control` the `<input>` the reader types into, and
+ * `chip` one of the tokens a multiple-selection combobox puts in front of it.
+ * `popup` and `item` are portalled, so nothing written against the root reaches
+ * them.
+ */
+export type ComboboxSlot = NebaFieldSlot | 'shell' | 'chip' | 'popup' | 'item';
 
 export interface ComboboxProps<Multiple extends boolean | undefined = false>
   extends
@@ -156,6 +173,12 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
   /** A ref to the text input the user types into. */
   inputRef?: React.Ref<HTMLInputElement>;
   id?: string;
+  /**
+   * Class names for the parts behind the root. `className` is the root — the
+   * column holding the label, the shell and the two lines under it — so the
+   * `<input>` itself is `classNames.control`.
+   */
+  classNames?: NebaSlots<ComboboxSlot>;
 }
 
 /**
@@ -301,6 +324,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   inputRef,
   id,
   className,
+  classNames,
   style,
   ...props
 }: ComboboxProps<Multiple>) {
@@ -409,8 +433,11 @@ export function Combobox<Multiple extends boolean | undefined = false>({
       ? disabledClasses[variant]
       : readOnly
         ? fieldReadOnlyClasses[variant]
-        : fieldRestClasses[variant]
-  ].join(' ');
+        : fieldRestClasses[variant],
+    classNames?.shell
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const inputClasses = [
     // `self-stretch` and no height of its own, in both modes. An input centres
@@ -424,8 +451,11 @@ export function Combobox<Multiple extends boolean | undefined = false>({
     '[outline:none]',
     'placeholder:text-(--neba-muted-fg)',
     'caret-(--n-accent) selection:bg-(--n-soft-press)',
-    'disabled:cursor-not-allowed'
-  ].join(' ');
+    'disabled:cursor-not-allowed',
+    classNames?.control
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   /**
    * `afterChips` is the space between the last chip and where typing starts.
@@ -461,11 +491,12 @@ export function Combobox<Multiple extends boolean | undefined = false>({
     >
       {label ? (
         <Field.Label
-          className={[
+          className={cx(
             metaTextClasses[size],
             'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-          ].join(' ')}
+            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+            classNames?.label
+          )}
         >
           {label}
         </Field.Label>
@@ -527,6 +558,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
                             color={family}
                             density="compact"
                             disabled={disabled}
+                            className={classNames?.chip}
                             endIcon={
                               readOnly || disabled ? null : (
                                 <BaseUICombobox.ChipRemove
@@ -584,7 +616,12 @@ export function Combobox<Multiple extends boolean | undefined = false>({
               subtree its host may have scoped a CSS reset to. */}
           <BaseUICombobox.Positioner className="neba-portal z-50 [outline:none]" sideOffset={6}>
             <BaseUICombobox.Popup
-              className={`${popupClasses} ${radiusClasses[size]} ${controlTextLeadingClasses[size]}`}
+              className={cx(
+                popupClasses,
+                radiusClasses[size],
+                controlTextLeadingClasses[size],
+                classNames?.popup
+              )}
               style={surfaceSlots(family, 3)}
             >
               <BaseUICombobox.Empty className="px-2 py-1.5 text-(--neba-muted-fg) empty:hidden">
@@ -597,7 +634,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
                     key={`${entry.custom ? 'custom:' : ''}${String(entry.value)}`}
                     value={entry}
                     disabled={entry.disabled}
-                    className={itemClasses}
+                    className={cx(itemClasses, classNames?.item)}
                   >
                     {entry.custom ? (
                       <React.Fragment>
@@ -625,20 +662,27 @@ export function Combobox<Multiple extends boolean | undefined = false>({
       </BaseUICombobox.Root>
 
       {description ? (
-        <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+        <Field.Description
+          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+        >
           {description}
         </Field.Description>
       ) : null}
 
       {hasError ? (
-        <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+        <Field.Error
+          match
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        >
           {error}
         </Field.Error>
       ) : (
         // No message of our own, so whatever the validity has: the browser's
         // own text for a failed constraint, or the entry a Form's `errors`
         // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+        <Field.Error
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        />
       )}
     </Field.Root>
   );

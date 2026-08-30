@@ -66,6 +66,18 @@ import { Radio, RadioGroup } from 'neba';
 
 </Demo>
 
+### classNames
+
+group과 개별 option은 따로 스타일합니다. 둘은 서로 다른 컴포넌트이기 때문입니다. RadioGroup의 `classNames`는 `label`, `control`, `description`, `error`를 받고, 여기서 `control`은 option들을 담아 가로·세로 방향을 지고 있는 요소입니다. Radio의 `classNames`는 `label`, `control`, `indicator`, `description`을 받고, 여기서 `control`은 점입니다.
+
+```tsx
+<RadioGroup label="Plan" classNames={{ control: 'gap-6' }}>
+  <Radio value="team" label="Team" classNames={{ control: 'rounded-sm' }} />
+</RadioGroup>
+```
+
+Radio에는 `error` slot이 없습니다. 유효성 메시지는 질문에 속하고, 질문은 group이기 때문입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - 세트 전체가 tab 정지 **하나**를 차지하고, 그 안에서는 방향키로 이동합니다(roving tab index).

@@ -81,6 +81,16 @@ The steppers are sized in `em`, so they track the number. The field lines up wit
 
 </Demo>
 
+### classNames
+
+`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames.control`.
+
+```tsx
+<NumberField label="Seats" classNames={{ control: 'text-right', stepper: 'rounded-none' }} />
+```
+
+The slots are `label`, `shell`, `control`, `description`, `error` and `stepper`. `stepper` is both buttons rather than one each: a pair of steppers that do not match is not a thing anyone is building. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - The visible control is a text input with `inputmode="numeric"` and an `aria-roledescription`; beside it a hidden `<input type="number">` holds `min`, `max` and `step` and handles form submission and browser validation. Keeping the two apart is what lets the visible field show `$1,240`.

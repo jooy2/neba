@@ -83,6 +83,20 @@ Identical to the native `<input>`.
 
 </Demo>
 
+### classNames
+
+`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames` instead. There is no `root` key; that is what `className` already is.
+
+```tsx
+<TextField
+  label="Email"
+  className="w-80"
+  classNames={{ label: 'uppercase tracking-wide', control: 'font-mono' }}
+/>
+```
+
+The slots are `label`, `shell`, `control`, `description` and `error`. `shell` is the framed box wearing the border, the fill and the focus ring; `control` is the `<input>` or `<textarea>` inside it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - `label`, `description` and `error` are connected to the control with `id` and `aria-describedby`.

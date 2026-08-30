@@ -11,7 +11,7 @@ import {
   surfaceClasses,
   tickRowLeadingClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaSize } from '../../types.js';
+import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
 
 /** Which side of the track the label sits on. */
 export type SwitchLabelPlacement = 'start' | 'end';
@@ -20,6 +20,14 @@ type BaseSwitchProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUISwitch.Root>,
   'className' | 'style' | 'render' | 'children'
 >;
+
+/**
+ * The parts a Switch draws behind its root.
+ *
+ * `control` is the track — the pill that fills when the switch is on — and
+ * `thumb` is the disc that travels across it.
+ */
+export type SwitchSlot = NebaFieldSlot | 'thumb';
 
 export interface SwitchProps extends BaseSwitchProps {
   /** @default 'md' */
@@ -43,6 +51,11 @@ export interface SwitchProps extends BaseSwitchProps {
   labelPlacement?: SwitchLabelPlacement;
   /** Class names for the field wrapper, not for the track. */
   className?: string;
+  /**
+   * Class names for the parts behind that wrapper — the track is
+   * `classNames.control`.
+   */
+  classNames?: NebaSlots<SwitchSlot>;
   style?: React.CSSProperties;
 }
 
@@ -151,6 +164,7 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     disabled = false,
     readOnly = false,
     className,
+    classNames,
     style,
     ...props
   },
@@ -175,16 +189,19 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     <span className="flex h-[1lh] shrink-0 items-center">
       <BaseUISwitch.Root
         ref={ref}
-        className={[
+        className={cx(
           trackBaseClasses,
           trackClasses[size],
-          disabled ? disabledTrackClasses : readOnly ? readOnlyTrackClasses : restTrackClasses
-        ].join(' ')}
+          disabled ? disabledTrackClasses : readOnly ? readOnlyTrackClasses : restTrackClasses,
+          classNames?.control
+        )}
         disabled={disabled}
         readOnly={readOnly}
         {...props}
       >
-        <BaseUISwitch.Thumb className={`${thumbClasses} ${thumbTravelClasses[size]}`} />
+        <BaseUISwitch.Thumb
+          className={cx(thumbClasses, thumbTravelClasses[size], classNames?.thumb)}
+        />
       </BaseUISwitch.Root>
     </span>
   );
@@ -201,16 +218,19 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
       >
         {label ? (
           <Field.Label
-            className={[
+            className={cx(
               'leading-[1.4]',
-              disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)'
-            ].join(' ')}
+              disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)',
+              classNames?.label
+            )}
           >
             {label}
           </Field.Label>
         ) : null}
         {description ? (
-          <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+          <Field.Description
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+          >
             {description}
           </Field.Description>
         ) : null}
@@ -241,14 +261,19 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
       </div>
 
       {hasError ? (
-        <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+        <Field.Error
+          match
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        >
           {error}
         </Field.Error>
       ) : (
         // No message of our own, so whatever the validity has: the browser's
         // own text for a failed constraint, or the entry a Form's `errors`
         // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+        <Field.Error
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        />
       )}
     </Field.Root>
   );

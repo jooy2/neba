@@ -57,6 +57,16 @@ import { Checkbox } from 'neba';
 
 </Demo>
 
+### classNames
+
+`className`은 tick이 아니라 감싸는 field wrapper에 붙습니다. tick과 그 안의 표시는 `classNames`로 갑니다.
+
+```tsx
+<Checkbox label="I agree" classNames={{ control: 'rounded-full', label: 'font-medium' }} />
+```
+
+slot은 `label`, `control`, `indicator`, `description`, `error`입니다. `control`은 tick 자체 — 체크되면 채워지는 테두리 상자 — 이고 `indicator`는 그 안의 표시입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - `role="checkbox"`와 함께 숨은 `<input>`이 렌더링되므로 `name`을 주면 폼과 함께 제출됩니다.

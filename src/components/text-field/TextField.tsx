@@ -20,10 +20,27 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaFieldSlot,
+  NebaSize,
+  NebaSlots,
+  NebaStyleProps
+} from '../../types.js';
 
 /** How the multiline control may be resized by the user. Ignored when single line. */
 export type TextFieldResize = 'none' | 'vertical' | 'horizontal' | 'both';
+
+/**
+ * The parts a TextField draws behind its root.
+ *
+ * `shell` is the framed box the control sits in — the thing wearing the border,
+ * the fill and the focus ring. It is a part rather than an implementation
+ * detail because it, and not the `<input>`, is what a caller means by "the
+ * field" when they want to change its shape.
+ */
+export type TextFieldSlot = NebaFieldSlot | 'shell';
 
 /**
  * Native `<input>` attributes, minus the three that collide with the shared
@@ -84,6 +101,12 @@ export interface TextFieldProps extends NebaStyleProps, NativeControlProps {
   loading?: boolean;
   /** Stretches to the width of the container. */
   fullWidth?: boolean;
+  /**
+   * Class names for the parts behind the root. `className` is the root — the
+   * column that holds the label, the shell and the two lines under it — so the
+   * control itself is reached through `classNames.control`.
+   */
+  classNames?: NebaSlots<TextFieldSlot>;
   onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }
 
@@ -185,6 +208,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       endIcon,
       loading = false,
       fullWidth = false,
+      classNames,
       readOnly = false,
       disabled = false,
       type = 'text',
@@ -227,10 +251,11 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         ? disabledClasses[variant]
         : readOnly
           ? readOnlyClasses[variant]
-          : restClasses[variant]
+          : restClasses[variant],
+      classNames?.shell
     );
 
-    const controlClasses = [
+    const controlClasses = cx(
       'min-w-0 flex-1 bg-transparent [font:inherit] text-inherit',
       // Not `outline-none`: that utility zeroes `--tw-outline-style`, and the
       // shell's focus ring is drawn with the same variable family. The shorthand
@@ -239,8 +264,9 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       'placeholder:text-(--neba-muted-fg)',
       'caret-(--n-accent) selection:bg-(--n-soft-press)',
       'disabled:cursor-not-allowed',
-      multiline ? `block ${resizeClasses[resize]}` : 'self-stretch'
-    ].join(' ');
+      multiline ? `block ${resizeClasses[resize]}` : 'self-stretch',
+      classNames?.control
+    );
 
     // `1lh` keeps an adornment centred on the first line rather than on the whole
     // box, which is the only way it stays put when the control grows to 5 rows.
@@ -261,11 +287,12 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       >
         {label ? (
           <Field.Label
-            className={[
+            className={cx(
               metaTextClasses[size],
               'font-medium',
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-            ].join(' ')}
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+              classNames?.label
+            )}
           >
             {label}
           </Field.Label>
@@ -308,21 +335,26 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
 
         {description ? (
           <Field.Description
-            className={[metaTextClasses[size], 'text-(--neba-muted-fg)'].join(' ')}
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
           >
             {description}
           </Field.Description>
         ) : null}
 
         {hasError ? (
-          <Field.Error match className={[metaTextClasses[size], 'text-(--n-accent)'].join(' ')}>
+          <Field.Error
+            match
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          >
             {error}
           </Field.Error>
         ) : (
           // No message of our own, so whatever the validity has: the browser's
           // own text for a failed constraint, or the entry a Form's `errors`
           // put here. Renders nothing at all while the field is valid.
-          <Field.Error className={[metaTextClasses[size], 'text-(--n-accent)'].join(' ')} />
+          <Field.Error
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          />
         )}
       </Field.Root>
     );

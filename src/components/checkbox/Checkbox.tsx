@@ -14,7 +14,7 @@ import {
   tickSizeClasses,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaSize } from '../../types.js';
+import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
 
 /**
  * Base UI's own props, minus the ones this component owns: `className` and
@@ -25,6 +25,14 @@ type BaseCheckboxProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUICheckbox.Root>,
   'className' | 'style' | 'render' | 'children'
 >;
+
+/**
+ * The parts a Checkbox draws behind its root.
+ *
+ * `control` is the tick itself — the bordered box that fills when checked — and
+ * `indicator` is the mark inside it.
+ */
+export type CheckboxSlot = NebaFieldSlot | 'indicator';
 
 export interface CheckboxProps extends BaseCheckboxProps {
   /** @default 'md' */
@@ -44,6 +52,11 @@ export interface CheckboxProps extends BaseCheckboxProps {
   invalid?: boolean;
   /** Class names for the field wrapper, not for the tick itself. */
   className?: string;
+  /**
+   * Class names for the parts behind that wrapper — the tick is
+   * `classNames.control`.
+   */
+  classNames?: NebaSlots<CheckboxSlot>;
   style?: React.CSSProperties;
 }
 
@@ -154,6 +167,7 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
     disabled = false,
     readOnly = false,
     className,
+    classNames,
     style,
     ...props
   },
@@ -203,12 +217,12 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
         <span className="flex h-[1lh] shrink-0 items-center">
           <BaseUICheckbox.Root
             ref={ref}
-            className={tickClasses}
+            className={cx(tickClasses, classNames?.control)}
             disabled={disabled}
             readOnly={readOnly}
             {...props}
           >
-            <BaseUICheckbox.Indicator className={markClasses}>
+            <BaseUICheckbox.Indicator className={cx(markClasses, classNames?.indicator)}>
               {props.indeterminate ? <DashMark /> : <CheckMark />}
             </BaseUICheckbox.Indicator>
           </BaseUICheckbox.Root>
@@ -218,16 +232,23 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
           <span className="flex min-w-0 flex-col gap-0.5">
             {label ? (
               <Field.Label
-                className={[
+                className={cx(
                   'leading-[1.4]',
-                  disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)'
-                ].join(' ')}
+                  disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)',
+                  classNames?.label
+                )}
               >
                 {label}
               </Field.Label>
             ) : null}
             {description ? (
-              <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+              <Field.Description
+                className={cx(
+                  metaTextClasses[size],
+                  'text-(--neba-muted-fg)',
+                  classNames?.description
+                )}
+              >
                 {description}
               </Field.Description>
             ) : null}
@@ -236,14 +257,19 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
       </div>
 
       {hasError ? (
-        <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+        <Field.Error
+          match
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        >
           {error}
         </Field.Error>
       ) : (
         // No message of our own, so whatever the validity has: the browser's
         // own text for a failed constraint, or the entry a Form's `errors`
         // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+        <Field.Error
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        />
       )}
     </Field.Root>
   );

@@ -383,4 +383,78 @@ describe('Combobox', () => {
       expect(screen.container.querySelector('[data-analytics="framework"]')).not.toBeNull();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Combobox
+          items={FRAMEWORKS}
+          label="Framework"
+          description="Pick the one you use."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            shell: 'slot-shell',
+            control: 'slot-control',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+      const control = screen.getByRole('combobox').element();
+
+      expect(control).toHaveClass('slot-control');
+      expect(control.closest('.slot-shell')).not.toBeNull();
+      expect(screen.getByText('Framework').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Pick the one you use.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    /** The popup is portalled, so nothing written against the root reaches it. */
+    it('reaches the portalled popup and its rows', async () => {
+      const screen = await render(
+        <Combobox
+          items={FRAMEWORKS}
+          label="Framework"
+          classNames={{ popup: 'slot-popup', item: 'slot-item' }}
+        />
+      );
+
+      await screen.getByRole('combobox').click();
+
+      const row = screen.getByRole('option', { name: 'Vue' });
+
+      await expect.element(row).toHaveClass('slot-item');
+      expect(row.element().closest('.slot-popup')).not.toBeNull();
+    });
+
+    it('reaches the chips a multiple-selection combobox draws', async () => {
+      const screen = await render(
+        <Combobox
+          items={FRAMEWORKS}
+          label="Framework"
+          multiple
+          defaultValue={['react']}
+          classNames={{ chip: 'slot-chip' }}
+        />
+      );
+
+      await expect.element(screen.getByText('React')).toBeInTheDocument();
+      expect(screen.getByText('React').element().closest('.slot-chip')).not.toBeNull();
+    });
+
+    it('leaves the root to `className`', async () => {
+      const screen = await render(
+        <Combobox
+          items={FRAMEWORKS}
+          label="Framework"
+          className="root-class"
+          classNames={{ control: 'control-class' }}
+        />
+      );
+      const control = screen.getByRole('combobox').element();
+
+      expect(control).not.toHaveClass('root-class');
+      expect(control.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

@@ -81,6 +81,16 @@ stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같�
 
 </Demo>
 
+### classNames
+
+`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
+
+```tsx
+<NumberField label="Seats" classNames={{ control: 'text-right', stepper: 'rounded-none' }} />
+```
+
+slot은 `label`, `shell`, `control`, `description`, `error`, `stepper`입니다. `stepper`는 증가·감소 버튼을 따로 두지 않고 하나로 받습니다. 서로 다르게 생긴 stepper 한 쌍을 만들려는 사람은 없기 때문입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - 보이는 컨트롤은 `inputmode="numeric"`과 `aria-roledescription`을 가진 텍스트 입력이고, 그 옆에 `min` · `max` · `step`을 들고 있는 hidden `<input type="number">`가 폼 제출과 브라우저 검증을 담당합니다. 이렇게 나뉘어 있어 보이는 필드가 `$1,240` 같은 서식을 표시할 수 있습니다.

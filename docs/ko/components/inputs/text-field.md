@@ -83,6 +83,20 @@ native `<input>`과 동일하게 동작합니다.
 
 </Demo>
 
+### classNames
+
+`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙습니다. `<input>` 자체는 `classNames`로 갑니다. `root` 키는 없습니다. 그것이 이미 `className`이기 때문입니다.
+
+```tsx
+<TextField
+  label="Email"
+  className="w-80"
+  classNames={{ label: 'uppercase tracking-wide', control: 'font-mono' }}
+/>
+```
+
+slot은 `label`, `shell`, `control`, `description`, `error`입니다. `shell`은 테두리와 채움, focus ring을 두른 상자이고 `control`은 그 안의 `<input>` 또는 `<textarea>`입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - `label` · `description` · `error`가 `id`와 `aria-describedby`로 컨트롤에 연결됩니다.

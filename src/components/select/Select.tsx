@@ -24,7 +24,13 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaElevation, NebaStyleProps } from '../../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaFieldSlot,
+  NebaSlots,
+  NebaStyleProps
+} from '../../types.js';
 
 /**
  * What a Select's value may be.
@@ -45,6 +51,16 @@ export interface SelectOption {
   /** Unavailable, but still listed — the option exists, it just cannot be picked. */
   disabled?: boolean;
 }
+
+/**
+ * The parts a Select draws behind its root.
+ *
+ * `control` is the trigger — the box the reader presses, which is a TextField's
+ * shell to the pixel and is styled as one. `popup` and `item` are portalled, so
+ * they render at the end of `<body>` and a descendant selector written against
+ * the root will not reach them; these are the only way in.
+ */
+export type SelectSlot = NebaFieldSlot | 'popup' | 'item';
 
 export interface SelectProps
   extends
@@ -90,6 +106,12 @@ export interface SelectProps
   /** Identifies the field when a form is submitted. */
   name?: string;
   id?: string;
+  /**
+   * Class names for the parts behind the root. `className` is the root — the
+   * column holding the label, the trigger and the two lines under it — and the
+   * trigger itself is `classNames.control`.
+   */
+  classNames?: NebaSlots<SelectSlot>;
 }
 
 /** The trigger is a TextField's shell, to the pixel. */
@@ -171,6 +193,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
     name,
     id,
     className,
+    classNames,
     style,
     ...props
   },
@@ -216,11 +239,12 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
     >
       {label ? (
         <Field.Label
-          className={[
+          className={cx(
             metaTextClasses[size],
             'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-          ].join(' ')}
+            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+            classNames?.label
+          )}
         >
           {label}
         </Field.Label>
@@ -239,7 +263,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
       >
         <BaseUISelect.Trigger
           ref={ref}
-          className={[
+          className={cx(
             triggerBaseClasses,
             controlHeightClasses[size],
             controlTextLeadingClasses[size],
@@ -252,8 +276,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
               ? disabledClasses[variant]
               : readOnly
                 ? `${fieldReadOnlyClasses[variant]} cursor-default`
-                : fieldRestClasses[variant]
-          ].join(' ')}
+                : fieldRestClasses[variant],
+            classNames?.control
+          )}
         >
           {startIcon ? (
             <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
@@ -300,7 +325,12 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
             alignItemWithTrigger={false}
           >
             <BaseUISelect.Popup
-              className={`${popupClasses} ${radiusClasses[size]} ${controlTextLeadingClasses[size]}`}
+              className={cx(
+                popupClasses,
+                radiusClasses[size],
+                controlTextLeadingClasses[size],
+                classNames?.popup
+              )}
               style={surfaceSlots(family, 3)}
             >
               {items.map((item) => (
@@ -308,7 +338,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
                   key={String(item.value)}
                   value={item.value}
                   disabled={item.disabled}
-                  className={itemClasses}
+                  className={cx(itemClasses, classNames?.item)}
                 >
                   <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
                     <CheckIcon />
@@ -324,20 +354,27 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
       </BaseUISelect.Root>
 
       {description ? (
-        <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+        <Field.Description
+          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+        >
           {description}
         </Field.Description>
       ) : null}
 
       {hasError ? (
-        <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+        <Field.Error
+          match
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        >
           {error}
         </Field.Error>
       ) : (
         // No message of our own, so whatever the validity has: the browser's
         // own text for a failed constraint, or the entry a Form's `errors`
         // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+        <Field.Error
+          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+        />
       )}
     </Field.Root>
   );

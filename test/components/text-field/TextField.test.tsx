@@ -439,4 +439,47 @@ describe('TextField', () => {
       expect(root.style.getPropertyValue('--n-accent')).toBe('var(--neba-danger-accent)');
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <TextField
+          label="Email"
+          description="We never share it."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            shell: 'slot-shell',
+            control: 'slot-control',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+      const control = screen.getByRole('textbox').element();
+
+      expect(control).toHaveClass('slot-control');
+      expect(control.closest('.slot-shell')).not.toBeNull();
+      expect(screen.getByText('Email').element()).toHaveClass('slot-label');
+      expect(screen.getByText('We never share it.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    it("keeps the part's own class names alongside the one it was handed", async () => {
+      const screen = await render(<TextField classNames={{ control: 'slot-control' }} />);
+      const control = screen.getByRole('textbox').element();
+
+      expect(control).toHaveClass('slot-control');
+      expect(control).toHaveClass('flex-1');
+    });
+
+    it('leaves the root to `className`', async () => {
+      const screen = await render(
+        <TextField className="root-class" classNames={{ control: 'control-class' }} />
+      );
+      const control = screen.getByRole('textbox').element();
+
+      expect(control).not.toHaveClass('root-class');
+      expect(control.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

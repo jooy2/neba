@@ -15,7 +15,13 @@ import {
   tickSizeClasses,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
+import type {
+  NebaColor,
+  NebaFieldSlot,
+  NebaOrientation,
+  NebaSize,
+  NebaSlots
+} from '../../types.js';
 
 /**
  * What a Radio inherits from the group around it.
@@ -36,6 +42,19 @@ const RadioGroupContext = React.createContext<RadioGroupContextValue>({
   color: 'primary',
   readOnly: false
 });
+
+/**
+ * The parts a RadioGroup draws behind its root. `control` is the element that
+ * holds the options — the one carrying the row or column direction — and not
+ * any single Radio, which has slots of its own.
+ */
+export type RadioGroupSlot = NebaFieldSlot;
+
+/**
+ * The parts one Radio draws. There is no `error`: a validity message belongs to
+ * the question, and the question is the group.
+ */
+export type RadioSlot = Exclude<NebaFieldSlot, 'error'> | 'indicator';
 
 export interface RadioGroupProps extends Omit<
   React.ComponentPropsWithoutRef<typeof BaseUIRadioGroup>,
@@ -61,6 +80,11 @@ export interface RadioGroupProps extends Omit<
   /** Forces the invalid state without a message. Defaults to `!!error`. */
   invalid?: boolean;
   className?: string;
+  /**
+   * Class names for the parts behind the root. The element holding the options
+   * is `classNames.control`; a single option is styled on the Radio itself.
+   */
+  classNames?: NebaSlots<RadioGroupSlot>;
   style?: React.CSSProperties;
 }
 
@@ -73,6 +97,11 @@ export interface RadioProps extends Omit<
   /** Helper text under the label. */
   description?: React.ReactNode;
   className?: string;
+  /**
+   * Class names for the parts behind the root — the dot is
+   * `classNames.control`.
+   */
+  classNames?: NebaSlots<RadioSlot>;
   style?: React.CSSProperties;
 }
 
@@ -131,7 +160,7 @@ const indicatorClasses = 'rounded-full bg-current';
  * option in the set.
  */
 export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
-  { label, description, disabled = false, className, style, ...props },
+  { label, description, disabled = false, className, classNames, style, ...props },
   ref
 ) {
   const group = React.useContext(RadioGroupContext);
@@ -148,16 +177,17 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
         <span className="flex h-[1lh] shrink-0 items-center">
           <BaseUIRadio.Root
             ref={ref}
-            className={[
+            className={cx(
               dotBaseClasses,
               tickSizeClasses[group.size],
-              disabled ? disabledDotClasses : readOnly ? readOnlyDotClasses : restDotClasses
-            ].join(' ')}
+              disabled ? disabledDotClasses : readOnly ? readOnlyDotClasses : restDotClasses,
+              classNames?.control
+            )}
             disabled={disabled}
             {...props}
           >
             <BaseUIRadio.Indicator
-              className={`${indicatorClasses} ${tickDotClasses[group.size]}`}
+              className={cx(indicatorClasses, tickDotClasses[group.size], classNames?.indicator)}
             />
           </BaseUIRadio.Root>
         </span>
@@ -166,17 +196,22 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
           <span className="flex min-w-0 flex-col gap-0.5">
             {label ? (
               <Field.Label
-                className={[
+                className={cx(
                   'leading-[1.4]',
-                  disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)'
-                ].join(' ')}
+                  disabled ? 'text-(--neba-disabled-fg)' : 'cursor-pointer text-(--neba-fg)',
+                  classNames?.label
+                )}
               >
                 {label}
               </Field.Label>
             ) : null}
             {description ? (
               <Field.Description
-                className={`${metaTextClasses[group.size]} text-(--neba-muted-fg)`}
+                className={cx(
+                  metaTextClasses[group.size],
+                  'text-(--neba-muted-fg)',
+                  classNames?.description
+                )}
               >
                 {description}
               </Field.Description>
@@ -207,6 +242,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(func
     disabled = false,
     readOnly = false,
     className,
+    classNames,
     style,
     children,
     ...props
@@ -244,18 +280,21 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(func
       >
         {label ? (
           <Field.Label
-            className={[
+            className={cx(
               metaTextClasses[size],
               'font-medium',
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-            ].join(' ')}
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+              classNames?.label
+            )}
           >
             {label}
           </Field.Label>
         ) : null}
 
         {description ? (
-          <Field.Description className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+          <Field.Description
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+          >
             {description}
           </Field.Description>
         ) : null}
@@ -264,24 +303,30 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(func
           ref={ref}
           disabled={disabled}
           readOnly={readOnly}
-          className={[
+          className={cx(
             'flex',
-            orientation === 'horizontal' ? 'flex-row flex-wrap gap-x-5 gap-y-2' : 'flex-col gap-2'
-          ].join(' ')}
+            orientation === 'horizontal' ? 'flex-row flex-wrap gap-x-5 gap-y-2' : 'flex-col gap-2',
+            classNames?.control
+          )}
           {...props}
         >
           {children}
         </BaseUIRadioGroup>
 
         {hasError ? (
-          <Field.Error match className={`${metaTextClasses[size]} text-(--n-accent)`}>
+          <Field.Error
+            match
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          >
             {error}
           </Field.Error>
         ) : (
           // No message of our own, so whatever the validity has: the browser's
           // own text for a failed constraint, or the entry a Form's `errors`
           // put here. Renders nothing at all while the field is valid.
-          <Field.Error className={`${metaTextClasses[size]} text-(--n-accent)`} />
+          <Field.Error
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          />
         )}
       </Field.Root>
     </RadioGroupContext.Provider>

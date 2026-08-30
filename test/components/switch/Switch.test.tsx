@@ -151,4 +151,39 @@ describe('Switch', () => {
       expect(thumb.outerHTML).not.toContain('scale');
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Switch
+          label="Alerts"
+          description="Only the urgent ones."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            control: 'slot-control',
+            thumb: 'slot-thumb',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+      const track = screen.getByRole('switch').element();
+
+      expect(track).toHaveClass('slot-control');
+      expect(track.querySelector('.slot-thumb')).not.toBeNull();
+      expect(screen.getByText('Alerts').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Only the urgent ones.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+    });
+
+    it('leaves the field wrapper to `className`', async () => {
+      const screen = await render(
+        <Switch label="Alerts" className="root-class" classNames={{ control: 'control-class' }} />
+      );
+      const track = screen.getByRole('switch').element();
+
+      expect(track).not.toHaveClass('root-class');
+      expect(track.closest('.root-class')).not.toBeNull();
+    });
+  });
 });

@@ -66,6 +66,18 @@ Both can be set on the group or on an individual `Radio`. On the group, they rea
 
 </Demo>
 
+### classNames
+
+The group and one option are styled separately, because they are two components. On RadioGroup, `classNames` takes `label`, `control`, `description` and `error`, where `control` is the element holding the options — the one carrying the row or column direction. On Radio it takes `label`, `control`, `indicator` and `description`, where `control` is the dot.
+
+```tsx
+<RadioGroup label="Plan" classNames={{ control: 'gap-6' }}>
+  <Radio value="team" label="Team" classNames={{ control: 'rounded-sm' }} />
+</RadioGroup>
+```
+
+There is no `error` slot on Radio: a validity message belongs to the question, and the question is the group. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - The set takes **one** tab stop and the arrow keys move within it (a roving tab index).

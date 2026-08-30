@@ -76,6 +76,20 @@ interface SelectOption {
 
 팝업은 portal을 통해 `<body>` 끝에 렌더링되므로, CSS reset을 특정 subtree에만 적용한 앱에서는 그 범위를 벗어납니다. positioner에 `neba-portal` 클래스가 붙어 있으니 그 경우 reset을 이 클래스에 걸어 주세요. Tailwind Preflight를 전역으로 적용했다면 아무것도 하지 않아도 됩니다.
 
+### classNames
+
+`className`은 루트 — 라벨과 trigger, 그 아래 두 줄을 담는 열 — 에 붙고, trigger 자체는 `classNames.control`로 갑니다.
+
+```tsx
+<Select
+  items={plans}
+  label="Plan"
+  classNames={{ control: 'font-mono', popup: 'max-h-40', item: 'rounded-none' }}
+/>
+```
+
+slot은 `label`, `control`, `description`, `error`, `popup`, `item`입니다. 뒤의 둘이 특히 중요합니다. popup은 `<body>` 끝에 그려지므로 루트를 기준으로 쓴 하위 선택자로는 닿지 않고, 이 slot이 유일한 경로입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - trigger는 `combobox` role을 갖고, `label`이 accessible name이 됩니다.

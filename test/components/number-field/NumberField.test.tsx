@@ -261,4 +261,45 @@ describe('NumberField', () => {
       expect(screen.container.querySelector('[data-analytics="quantity"]')).not.toBeNull();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <NumberField
+          label="Seats"
+          description="Per month."
+          error="Required"
+          classNames={{
+            label: 'slot-label',
+            shell: 'slot-shell',
+            control: 'slot-control',
+            stepper: 'slot-stepper',
+            description: 'slot-description',
+            error: 'slot-error'
+          }}
+        />
+      );
+      const control = screen.getByRole('textbox').element();
+
+      expect(control).toHaveClass('slot-control');
+      expect(control.closest('.slot-shell')).not.toBeNull();
+      expect(screen.getByText('Seats').element()).toHaveClass('slot-label');
+      expect(screen.getByText('Per month.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('Required').element()).toHaveClass('slot-error');
+      expect(document.querySelectorAll('.slot-stepper')).toHaveLength(2);
+    });
+
+    it('leaves the root to `className`', async () => {
+      const screen = await render(
+        <NumberField
+          label="Seats"
+          className="root-class"
+          classNames={{ control: 'control-class' }}
+        />
+      );
+      const control = screen.getByRole('textbox').element();
+
+      expect(control).not.toHaveClass('root-class');
+      expect(control.closest('.root-class')).not.toBeNull();
+    });
+  });
 });
