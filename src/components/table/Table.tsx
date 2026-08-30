@@ -5,6 +5,7 @@ import { Box, type BoxProps } from '../box/Box.js';
 import { tableMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
+  cx,
   metaTextClasses,
   paddingXValues
 } from '../../internal/styles.js';
@@ -198,7 +199,7 @@ export function Table<Row>({
       size={size}
       density={density}
       padded={false}
-      className={['overflow-x-auto', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('overflow-x-auto', className ?? '')}
       {...boxProps}
     >
       <table
@@ -236,12 +237,10 @@ export function Table<Row>({
               <th
                 key={column.key}
                 scope="col"
-                className={[
+                className={cx(
                   'font-semibold whitespace-nowrap text-(--neba-muted-fg)',
                   stickyHeader ? 'sticky top-0 z-10 [backdrop-filter:var(--neba-blur)]' : ''
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                )}
                 style={{ ...headCellStyle, textAlign: column.align ?? 'start' }}
               >
                 {column.label ?? column.key}
@@ -265,14 +264,12 @@ export function Table<Row>({
             items.map((row, index) => (
               <tr
                 key={getRowKey ? getRowKey(row, index) : index}
-                className={[
+                className={cx(
                   rowClasses,
                   striped && index % 2 === 1 ? '[--n-row:var(--n-panel-hover)]' : '',
                   lit ? 'hover:[--n-row:var(--n-soft)]' : '',
                   clickable ? clickableRowClasses : ''
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                )}
                 style={rowRuleStyle}
                 tabIndex={clickable ? 0 : undefined}
                 onClick={onRowClick ? () => onRowClick(row, index) : undefined}

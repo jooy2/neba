@@ -12,6 +12,7 @@ import {
   withBaseline
 } from '../../internal/grid.js';
 import { boxPaddingClasses } from '../box/Box.js';
+import { cx } from '../../internal/styles.js';
 import type {
   NebaAlignItems,
   NebaDensity,
@@ -123,7 +124,7 @@ export const GridContainer = React.forwardRef<HTMLDivElement, GridContainerProps
     },
     ref
   ) {
-    const classNames = [
+    const classNames = cx(
       'neba-grid flex',
       wrap ? 'flex-wrap' : 'flex-nowrap',
       // Both gutters are read from the slots below, which is what lets a media
@@ -134,9 +135,7 @@ export const GridContainer = React.forwardRef<HTMLDivElement, GridContainerProps
       alignItems ? alignItemsClasses[alignItems] : '',
       alignContent ? alignContentClasses[alignContent] : '',
       className ?? ''
-    ]
-      .filter(Boolean)
-      .join(' ');
+    );
 
     return useRender({
       render,

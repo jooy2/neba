@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Tooltip as BaseUITooltip } from '@base-ui/react/tooltip';
 import {
   controlSlots,
+  cx,
   metaTextClasses,
   paddingXClasses,
   radiusClasses,
@@ -203,16 +204,14 @@ export function Tooltip({
           <BaseUITooltip.Popup
             id={popupId}
             role="tooltip"
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               paddingXClasses[density][size],
               paddingYClasses[size],
               metaTextClasses[size],
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{ ...controlSlots(color, 3, 'solid'), ...style }}
             {...props}
           >

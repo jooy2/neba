@@ -213,8 +213,7 @@ export function PickerShell({
   const inert = disabled || readOnly;
 
   const describedBy =
-    [description ? descriptionId : null, hasError ? errorId : null].filter(Boolean).join(' ') ||
-    undefined;
+    cx(description ? descriptionId : null, hasError ? errorId : null) || undefined;
 
   return (
     <Field.Root

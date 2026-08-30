@@ -4,6 +4,7 @@ import * as React from 'react';
 import { boxPaddingClasses } from '../box/Box.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -177,7 +178,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
   const attributed = hasContent(author) || hasContent(source);
   const glyph = icon === undefined ? <QuoteMarkIcon /> : icon;
 
-  const shellClasses = [
+  const shellClasses = cx(
     'flex flex-col text-(--neba-fg)',
     ruleClasses,
     // A quote is never a pill, and the corners on the ruled edge stay square: a
@@ -189,9 +190,7 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(functio
     transitionClasses,
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const quote = (
     <blockquote cite={cite} className={quoteTextClasses[size]}>

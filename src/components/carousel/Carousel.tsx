@@ -6,6 +6,7 @@ import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.
 import { ChevronIcon } from '../../internal/icons.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
 import {
+  cx,
   radiusClasses,
   srOnlyClasses,
   surfaceClasses,
@@ -290,7 +291,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
       role="region"
       aria-roledescription="carousel"
       aria-label={label ?? messages.label}
-      className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('flex flex-col', className ?? '')}
       style={{ ...surfaceSlots(color, elevation), ...style }}
       // Hover and focus both stop the timer. The second one is the important
       // one: a keyboard reader who has tabbed into a slide is reading it.

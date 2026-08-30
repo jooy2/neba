@@ -8,6 +8,7 @@ import { commandMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
 import {
   controlTextLeadingClasses,
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -290,15 +291,13 @@ export function CommandPalette({
         <BaseUIDialog.Viewport className="neba-portal fixed inset-0 z-50 flex justify-center p-4 pt-[12vh]">
           <BaseUIDialog.Popup
             aria-label={label ?? messages.label}
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               controlTextLeadingClasses[size],
               sheetWidth === undefined ? widthClasses[size] : '',
               'self-start'
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{
               ...surfaceSlots(color, 3),
               ...(sheetWidth === undefined ? null : { maxWidth: sheetWidth })

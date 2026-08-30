@@ -6,6 +6,7 @@ import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -259,7 +260,7 @@ export function Dialog({
           ].join(' ')}
         >
           <BaseUIDialog.Popup
-            className={[
+            className={cx(
               popupClasses,
               sheetBodyClasses[size],
               fullScreen
@@ -268,9 +269,7 @@ export function Dialog({
               !fullScreen && !fullWidth ? 'w-auto' : '',
               dividers ? '' : `${insetY} ${sheetSectionGapClasses[size]}`,
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{
               ...surfaceSlots(color, 3),
               ...(width === undefined
@@ -320,7 +319,7 @@ export function Dialog({
               // item's default `min-height: auto` refuses to shrink below its
               // content, and the sheet would grow past the viewport instead.
               <div
-                className={[
+                className={cx(
                   'min-h-0 flex-1 overflow-y-auto overscroll-contain',
                   sectionClasses,
                   dividers && (hasHeader || showClose) ? dividerClasses : '',
@@ -333,9 +332,7 @@ export function Dialog({
                   // body already carries `insetY`, and pulling it up would drag
                   // the rule into the section above.
                   dividers ? '' : 'py-1 -my-1'
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                )}
               >
                 {children}
               </div>
@@ -343,13 +340,11 @@ export function Dialog({
 
             {hasActions ? (
               <div
-                className={[
+                className={cx(
                   'flex shrink-0 flex-wrap items-center justify-end gap-2',
                   sectionClasses,
                   dividers ? dividerClasses : ''
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                )}
               >
                 {actions}
               </div>

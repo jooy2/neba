@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   controlSlots,
+  cx,
   hasContent,
   srOnlyClasses,
   surfaceClasses,
@@ -239,7 +240,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
   const asDot = dot || empty;
   const hidden = invisible || (empty && !dot);
 
-  const markerClasses = [
+  const markerClasses = cx(
     'pointer-events-none z-10 inline-flex shrink-0 items-center justify-center',
     'font-semibold tabular-nums whitespace-nowrap',
     badgeRadiusClasses,
@@ -258,9 +259,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
     // so nothing around it moves when it comes back.
     hidden ? 'invisible' : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const capped = capContent(content, max);
 

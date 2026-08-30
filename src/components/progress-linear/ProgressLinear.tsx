@@ -10,7 +10,7 @@ import {
   progressText,
   type ProgressSharedProps
 } from '../../internal/progress.js';
-import { metaTextClasses, stackGapClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface ProgressLinearProps extends ProgressSharedProps {
@@ -67,9 +67,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
         max={max}
         format={format}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
-        className={['flex w-full flex-col', stackGapClasses[size], className ?? '']
-          .filter(Boolean)
-          .join(' ')}
+        className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(color), ...style }}
         {...props}
       >

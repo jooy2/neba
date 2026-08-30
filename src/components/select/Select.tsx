@@ -8,6 +8,7 @@ import { WidthSizer } from '../../internal/sizer.js';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
+  cx,
   disabledClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
@@ -204,14 +205,12 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
     <Field.Root
       disabled={disabled}
       invalid={isInvalid}
-      className={[
+      className={cx(
         'flex-col align-top',
         stackGapClasses[size],
         fullWidth ? 'flex w-full' : 'inline-flex',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...surfaceSlots(family, elevation), ...style }}
       {...props}
     >

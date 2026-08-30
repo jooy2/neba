@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaColor, NebaTransition } from '../../types.js';
 
 /**
@@ -200,7 +201,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
 ) {
   const animation = transitionProps(transition);
 
-  const classNames = [
+  const classNames = cx(
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
     align ? alignClasses[align] : '',
@@ -213,9 +214,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
         : 'text-(--neba-fg)',
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render: render ?? React.createElement(levelElements[level]),

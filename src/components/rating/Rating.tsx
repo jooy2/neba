@@ -5,6 +5,7 @@ import { StarIcon, StarOutlineIcon } from '../../internal/icons.js';
 import { fillMessage, ratingMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlSlots,
+  cx,
   focusWithinRingClasses,
   gapClasses,
   iconSizeClasses,
@@ -194,14 +195,12 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
     return (
       <span
         key={index}
-        className={[
+        className={cx(
           'relative inline-flex shrink-0',
           iconSizeClasses[size],
           radiusClasses.xs,
           readOnly || disabled ? '' : focusWithinRingClasses
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
       >
         <span
           className={[
@@ -282,14 +281,12 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
     );
   });
 
-  const classNames = [
+  const classNames = cx(
     'inline-flex items-center align-middle',
     gapClasses[size],
     disabled ? 'cursor-not-allowed' : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const styles = {
     ...controlSlots(color, 0, 'solid'),

@@ -5,6 +5,7 @@ import { Switch as BaseUISwitch } from '@base-ui/react/switch';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  cx,
   hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
@@ -191,14 +192,12 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
   const text =
     label || description ? (
       <span
-        className={[
+        className={cx(
           'flex min-w-0 flex-col gap-0.5',
           // With the label on the left it has to take the slack, or the switch
           // sits against the text instead of against the edge of the row.
           labelPlacement === 'start' ? 'flex-1' : ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
       >
         {label ? (
           <Field.Label
@@ -222,9 +221,7 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     <Field.Root
       disabled={disabled}
       invalid={isInvalid}
-      className={['inline-flex flex-col gap-1 align-top', className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('inline-flex flex-col gap-1 align-top', className ?? '')}
       style={{ ...slots, ...style }}
     >
       <div

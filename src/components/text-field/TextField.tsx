@@ -6,6 +6,7 @@ import { Input } from '@base-ui/react/input';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
+  cx,
   disabledClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
@@ -213,7 +214,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       [ref]
     );
 
-    const shellClasses = [
+    const shellClasses = cx(
       shellBaseClasses,
       sizeClasses[size],
       multiline
@@ -227,9 +228,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         : readOnly
           ? readOnlyClasses[variant]
           : restClasses[variant]
-    ]
-      .filter(Boolean)
-      .join(' ');
+    );
 
     const controlClasses = [
       'min-w-0 flex-1 bg-transparent [font:inherit] text-inherit',
@@ -252,14 +251,12 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       <Field.Root
         disabled={disabled}
         invalid={isInvalid}
-        className={[
+        className={cx(
           'flex-col align-top',
           stackGapClasses[size],
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={{ ...surfaceSlots(family, elevation), ...style }}
       >
         {label ? (

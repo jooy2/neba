@@ -8,6 +8,7 @@ import {
   controlHeightClasses,
   controlTextClasses,
   controlTextLeadingClasses,
+  cx,
   gapClasses,
   hasContent,
   iconClasses,
@@ -176,16 +177,14 @@ export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, Navigation
       <BaseUINavigationMenu.Link
         ref={ref}
         href={href}
-        className={[
+        className={cx(
           linkClasses,
           radiusClasses[size],
           gapClasses[size],
           paddingXClasses[density ?? 'default'][size],
           'py-2',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         {...props}
       >
         {hasContent(startIcon) ? (

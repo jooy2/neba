@@ -6,6 +6,7 @@ import { Menu } from '../menu/Menu.js';
 import { MenuContext } from '../../internal/menu.js';
 import {
   controlTextClasses,
+  cx,
   gapClasses,
   hasContent,
   iconClasses,
@@ -168,14 +169,12 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function M
         modal={modal}
         loopFocus={loopFocus}
         disabled={disabled}
-        className={[
+        className={cx(
           'flex items-center',
           orientation === 'vertical' ? 'flex-col items-stretch' : 'flex-row',
           gapClasses[size],
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={
           {
             '--n-soft': `var(--neba-${color}-soft)`,

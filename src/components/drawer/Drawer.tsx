@@ -6,6 +6,7 @@ import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   sheetBodyClasses,
@@ -335,7 +336,7 @@ export function Drawer({
       ? null
       : { [along ? 'width' : 'height']: typeof extent === 'number' ? `${extent}px` : extent };
 
-  const panel = [
+  const panel = cx(
     panelClasses,
     sheetBodyClasses[size],
     edgeClasses[side],
@@ -347,9 +348,7 @@ export function Drawer({
       : `w-full ${extent === undefined ? 'max-h-[85%]' : ''}`,
     dividers ? '' : `${insetY} ${sheetSectionGapClasses[size]}`,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   // Base UI's parts carry the `aria-labelledby` / `aria-describedby` wiring an
   // overlay drawer needs. An inline one is not a dialog and needs none, so it
@@ -401,7 +400,7 @@ export function Drawer({
         // default `min-height: auto` refuses to shrink below its content, and
         // the panel would grow past the window instead.
         <div
-          className={[
+          className={cx(
             'min-h-0 flex-1 overflow-y-auto overscroll-contain',
             sectionClasses,
             dividers && (hasHeader || showCloseButton) ? dividerClasses : '',
@@ -411,9 +410,7 @@ export function Drawer({
             // padding is room for the ring and the negative margin hands the
             // space straight back, so nothing on the sheet moves.
             dividers ? '' : 'py-1 -my-1'
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          )}
         >
           {children}
         </div>
@@ -421,13 +418,11 @@ export function Drawer({
 
       {hasActions ? (
         <div
-          className={[
+          className={cx(
             'flex shrink-0 flex-wrap items-center justify-end gap-2',
             sectionClasses,
             dividers ? dividerClasses : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          )}
         >
           {actions}
         </div>

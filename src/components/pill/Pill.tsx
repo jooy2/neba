@@ -5,6 +5,7 @@ import { observeResize } from '../../internal/observe.js';
 import {
   controlSlots,
   controlTextClasses,
+  cx,
   focusRingClasses,
   gapClasses,
   hasContent,
@@ -295,7 +296,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
   return (
     <div
       ref={ref}
-      className={[
+      className={cx(
         'inline-flex max-w-full flex-col overflow-hidden align-middle',
         pillRadiusClasses[size],
         'font-medium whitespace-nowrap select-none',
@@ -307,9 +308,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
         interactive ? `neba-glow ${hoverClasses[variant]}` : '',
         positionClasses[position][side],
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...controlSlots(color, elevation, variant), ...style }}
       {...props}
     >

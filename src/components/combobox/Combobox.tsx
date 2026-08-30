@@ -10,6 +10,7 @@ import {
   chipRemoveClasses,
   controlHeightClasses,
   controlTextLeadingClasses,
+  cx,
   disabledClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
@@ -449,14 +450,12 @@ export function Combobox<Multiple extends boolean | undefined = false>({
     <Field.Root
       disabled={disabled}
       invalid={isInvalid}
-      className={[
+      className={cx(
         'flex-col align-top',
         stackGapClasses[size],
         fullWidth ? 'flex w-full' : 'inline-flex',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...surfaceSlots(family, elevation), ...style }}
       {...props}
     >

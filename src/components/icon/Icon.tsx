@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { transitionProps } from '../../internal/animate.js';
-import { iconSizeClasses } from '../../internal/styles.js';
+import { cx, iconSizeClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaTransition } from '../../types.js';
 
 /**
@@ -91,7 +91,7 @@ export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
 ) {
   const animation = transitionProps(transition);
 
-  const classNames = [
+  const classNames = cx(
     'inline-flex shrink-0 items-center justify-center align-middle',
     iconSizeClasses[size],
     // The glyph fills the box however it was authored. `[font-size:100%]` on the
@@ -102,9 +102,7 @@ export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
     color === 'inherit' ? '' : 'text-(--n-accent)',
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return (
     <span

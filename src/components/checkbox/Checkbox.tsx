@@ -5,6 +5,7 @@ import { Checkbox as BaseUICheckbox } from '@base-ui/react/checkbox';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  cx,
   hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
@@ -189,9 +190,7 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(function Ch
     <Field.Root
       disabled={disabled}
       invalid={isInvalid}
-      className={['inline-flex flex-col gap-1 align-top', className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('inline-flex flex-col gap-1 align-top', className ?? '')}
       style={{ ...slots, ...style }}
     >
       <div

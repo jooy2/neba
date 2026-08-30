@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
 import {
+  cx,
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
@@ -154,16 +155,14 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
 ) {
   const animation = transitionProps(transition);
 
-  const classNames = [
+  const classNames = cx(
     baseClasses,
     sizeClasses[size],
     padded ? boxPaddingClasses[density][size] : '',
     variantClasses[variant],
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,

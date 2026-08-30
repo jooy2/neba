@@ -8,6 +8,7 @@ import {
   controlHeightClasses,
   controlSlots,
   controlTextClasses,
+  cx,
   gapClasses,
   hasContent,
   iconClasses,
@@ -153,7 +154,7 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
       // a `.map()`, through a fragment, through a component of their own — and
       // one attribute is the version of that which cannot fall out of step.
       data-segment=""
-      className={[
+      className={cx(
         // `z-10` and a stacking context of its own: the tile is painted behind
         // the segments, and without this it would cover the label it is under.
         'relative z-10 inline-flex shrink-0 cursor-pointer items-center justify-center select-none',
@@ -178,9 +179,7 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
         'data-[readonly]:cursor-default',
         fullWidth ? 'flex-1' : '',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       {hasContent(startIcon) ? (

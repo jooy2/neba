@@ -9,6 +9,7 @@ import {
   controlHeightClasses,
   controlSlots,
   controlSquareClasses,
+  cx,
   hasContent,
   srOnlyClasses,
   surfaceClasses,
@@ -277,7 +278,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
   const stand = hasContent(children) ? children : (initials ?? derived) || <PersonIcon />;
   const speaks = hasContent(children) || Boolean(initials ?? derived);
 
-  const classNames = [
+  const classNames = cx(
     baseClasses,
     controlHeightClasses[size],
     controlSquareClasses[size],
@@ -287,9 +288,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
     plateClasses[variant],
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return (
     <BaseAvatar.Root

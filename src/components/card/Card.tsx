@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Box, boxPaddingXClasses, boxPaddingYClasses, type BoxProps } from '../box/Box.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   sheetBodyClasses,
@@ -120,25 +121,21 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
       size={size}
       density={density}
       padded={false}
-      className={[
+      className={cx(
         'flex flex-col',
         dividers ? '' : `${insetY} ${sheetSectionGapClasses[size]}`,
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       {sections.map((section, index) => (
         <div
           key={section.key}
-          className={[
+          className={cx(
             sectionClasses,
             section.className,
             dividers && index > 0 ? dividerClasses : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          )}
         >
           {section.content}
         </div>

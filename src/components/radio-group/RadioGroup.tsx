@@ -6,6 +6,7 @@ import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  cx,
   hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
@@ -137,11 +138,7 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
   const readOnly = props.readOnly ?? group.readOnly;
 
   return (
-    <Field.Root
-      disabled={disabled}
-      className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
-      style={style}
-    >
+    <Field.Root disabled={disabled} className={cx('flex flex-col', className ?? '')} style={style}>
       <div
         className={`flex items-start gap-2 ${controlTextClasses[group.size]} ${tickRowLeadingClasses}`}
       >
@@ -242,7 +239,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(func
       <Field.Root
         disabled={disabled}
         invalid={isInvalid}
-        className={['flex flex-col gap-1.5', className ?? ''].filter(Boolean).join(' ')}
+        className={cx('flex flex-col gap-1.5', className ?? '')}
         style={{ ...slots, ...style }}
       >
         {label ? (

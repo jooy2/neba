@@ -4,6 +4,7 @@ import * as React from 'react';
 import { CloseIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
+  cx,
   disabledClasses,
   gapClasses,
   hasContent,
@@ -419,7 +420,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
     }
   };
 
-  const zoneClassNames = [
+  const zoneClassNames = cx(
     'flex w-full flex-col items-center justify-center text-center',
     'cursor-pointer select-none',
     zonePaddingClasses[density][size],
@@ -437,20 +438,16 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
         : zoneRestClasses[variant],
     !inert ? zoneHoverClasses[variant] : '',
     over && !inert ? zoneOverClasses : ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return (
     <div
-      className={[
+      className={cx(
         'flex-col align-top',
         stackGapClasses[size],
         fullWidth ? 'flex w-full' : 'inline-flex',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...surfaceSlots(family, elevation), ...style }}
       {...props}
     >

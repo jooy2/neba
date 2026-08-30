@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { ToggleGroup as BaseUIToggleGroup } from '@base-ui/react/toggle-group';
 import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaElevation, NebaOrientation, NebaStyleProps, NebaVariant } from '../../types.js';
 
 export interface ToggleGroupProps
@@ -120,7 +121,7 @@ export const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(fu
         orientation={orientation}
         disabled={disabled}
         loopFocus={loopFocus}
-        className={[
+        className={cx(
           baseClasses,
           orientation === 'vertical' ? 'flex-col' : 'flex-row',
           joinClasses[orientation],
@@ -129,9 +130,7 @@ export const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(fu
           (variant ?? 'outline') === 'outline' ? overlapClasses[orientation] : '',
           fullWidth ? 'flex w-full [&>*]:flex-1' : '',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         {...props}
       >
         {children}

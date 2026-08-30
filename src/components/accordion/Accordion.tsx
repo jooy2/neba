@@ -5,6 +5,7 @@ import { Accordion as BaseUIAccordion } from '@base-ui/react/accordion';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
+  cx,
   focusRingClasses,
   gapClasses,
   hasContent,
@@ -197,7 +198,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(functi
 ) {
   const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
 
-  const classNames = [
+  const classNames = cx(
     'flex flex-col',
     radiusClasses[size],
     variantClasses[variant],
@@ -207,9 +208,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(functi
     // rules have to reach the edge, so the padding goes and the tiles square off.
     dividers ? `overflow-hidden ${dividerClasses}` : 'p-1',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return (
     <AccordionContext.Provider value={context}>
@@ -256,12 +255,12 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         ref={ref}
         value={value}
         disabled={disabled}
-        className={['flex flex-col', className ?? ''].filter(Boolean).join(' ')}
+        className={cx('flex flex-col', className ?? '')}
         {...props}
       >
         <BaseUIAccordion.Header className="m-0 flex w-full items-center [font:inherit]">
           <BaseUIAccordion.Trigger
-            className={[
+            className={cx(
               'flex min-w-0 flex-1 cursor-pointer items-center text-start',
               padX,
               padY,
@@ -273,9 +272,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
               'hover:bg-(--n-soft)',
               'data-[panel-open]:text-(--n-accent)',
               'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
           >
             {hasContent(startIcon) ? (
               <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">

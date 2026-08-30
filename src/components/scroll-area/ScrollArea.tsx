@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { ScrollArea as BaseUIScrollArea } from '@base-ui/react/scroll-area';
-import { focusRingClasses, toLength } from '../../internal/styles.js';
+import { cx, focusRingClasses, toLength } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 
 /**
@@ -105,7 +105,7 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(func
   return (
     <BaseUIScrollArea.Root
       ref={ref}
-      className={['relative overflow-hidden', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('relative overflow-hidden', className ?? '')}
       style={
         {
           '--n-soft': `var(--neba-${color}-soft)`,
@@ -131,16 +131,14 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(func
         // silently take the scrolling with it. Base UI supplies the
         // `overflow: scroll` beside it, also inline.
         style={{ height: '100%', width: '100%' }}
-        className={[
+        className={cx(
           'overscroll-contain [outline:none]',
           focusRingClasses,
           // The fade is a mask rather than a gradient painted over the content:
           // a gradient would have to fade *to* a colour, and over a translucent
           // acrylic sheet there is no such colour. `styles.css` has the rest.
           fade ? 'neba-scroll-fade' : ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
       >
         <BaseUIScrollArea.Content className="min-w-full">{children}</BaseUIScrollArea.Content>
       </BaseUIScrollArea.Viewport>

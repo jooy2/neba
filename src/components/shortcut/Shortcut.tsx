@@ -5,6 +5,7 @@ import {
   controlHeightClasses,
   controlSlots,
   controlTextClasses,
+  cx,
   paddingXClasses,
   radiusClasses,
   srOnlyClasses,
@@ -381,9 +382,7 @@ export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(functio
   return (
     <span
       ref={ref}
-      className={['inline-flex max-w-full items-center gap-1 align-middle', className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('inline-flex max-w-full items-center gap-1 align-middle', className ?? '')}
       style={{ ...controlSlots(color, elevation, variant), ...style }}
       {...props}
     >

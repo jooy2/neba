@@ -4,6 +4,7 @@ import * as React from 'react';
 import { PreviewCard } from '@base-ui/react/preview-card';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -174,7 +175,7 @@ export function HoverCard({
           alignOffset={alignOffset}
         >
           <PreviewCard.Popup
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               sheetBodyClasses[size],
@@ -183,9 +184,7 @@ export function HoverCard({
               insetY,
               maxWidth === undefined ? maxWidthClasses[size] : '',
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{
               ...surfaceSlots(color, 3),
               ...(maxWidth === undefined ? null : { maxWidth }),

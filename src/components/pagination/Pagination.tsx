@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { fillMessage, paginationMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
-import { controlTextClasses, gapClasses, srOnlyClasses } from '../../internal/styles.js';
+import { controlTextClasses, cx, gapClasses, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 export interface PaginationProps
@@ -312,7 +312,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
     <nav
       ref={ref}
       aria-label={label ?? messages.label}
-      className={['flex items-center', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('flex items-center', className ?? '')}
       {...props}
     >
       <ul role="list" className={`m-0 flex list-none items-center p-0 ${gapClasses[size]}`}>

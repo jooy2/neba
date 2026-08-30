@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { radiusClasses } from '../../internal/styles.js';
+import { cx, radiusClasses } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
 
 /**
@@ -107,7 +107,7 @@ export const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(fu
   },
   ref
 ) {
-  const classNames = [
+  const classNames = cx(
     // `overflow-hidden` is not decoration: without it a `cover` image spills out
     // of the proportion it was just given, and the box would only be reserving
     // space rather than holding anything to it.
@@ -116,9 +116,7 @@ export const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(fu
     fitClasses[fit],
     rounded ? radiusClasses[size] : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,

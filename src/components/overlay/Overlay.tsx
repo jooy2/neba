@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { overlayMessages, useMessages } from '../../internal/i18n.js';
-import { surfaceSlots } from '../../internal/styles.js';
+import { cx, surfaceSlots } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaSize } from '../../types.js';
 
 /**
@@ -193,14 +193,12 @@ export function Overlay({
         >
           <BaseUIDialog.Popup
             aria-label={label ?? messages.label}
-            className={[
+            className={cx(
               'flex max-h-full max-w-full flex-col items-center justify-center',
               '[outline:none]',
               fadeClasses,
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{ ...surfaceSlots(color, 0), ...style }}
             {...props}
           >

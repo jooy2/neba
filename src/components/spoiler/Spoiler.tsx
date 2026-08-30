@@ -5,6 +5,7 @@ import { Button } from '../button/Button.js';
 import { spoilerMessages, useMessages } from '../../internal/i18n.js';
 import { boxPaddingClasses, boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -190,29 +191,25 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function S
   return (
     <div
       ref={ref}
-      className={[
+      className={cx(
         'relative isolate overflow-hidden',
         radiusClasses[size],
         variantClasses[variant],
         transitionClasses,
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...surfaceSlots(color, elevation), ...style }}
       {...props}
     >
       <div
         id={contentId}
-        className={[
+        className={cx(
           'min-w-0',
           padded ? boxPaddingClasses[density][size] : '',
           '[transition:filter_var(--neba-duration-fill)_var(--neba-ease)]',
           'motion-reduce:[transition-duration:0ms]',
           open ? '' : 'select-none'
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={{
           filter: open ? undefined : `blur(${blur}px)`,
           // The clamp is only ever on the covered state: revealing something and

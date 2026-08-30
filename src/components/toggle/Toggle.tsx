@@ -8,6 +8,7 @@ import {
   controlSlots,
   controlSquareClasses,
   controlTextClasses,
+  cx,
   disabledClasses,
   focusRingClasses,
   gapClasses,
@@ -205,7 +206,7 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(function 
       onPressedChange={(next) => onPressedChange?.(next)}
       disabled={disabled}
       className={(state) =>
-        [
+        cx(
           baseClasses,
           sizeClasses[size],
           iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
@@ -220,9 +221,7 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(function 
           disabled ? '' : 'neba-glow',
           fullWidth ? 'w-full' : '',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')
+        )
       }
       style={{ ...controlSlots(color, elevation, variant), ...style }}
       onPointerMove={(event) => {

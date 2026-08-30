@@ -6,6 +6,7 @@ import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -245,7 +246,7 @@ export function Popover({
           alignOffset={alignOffset}
         >
           <BaseUIPopover.Popup
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               sheetBodyClasses[size],
@@ -254,9 +255,7 @@ export function Popover({
               insetY,
               width === undefined ? maxWidthClasses[size] : '',
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{
               ...surfaceSlots(color, 3),
               ...(width === undefined

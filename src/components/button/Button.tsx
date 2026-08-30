@@ -9,6 +9,7 @@ import {
   controlSlots,
   controlSquareClasses,
   controlTextClasses,
+  cx,
   disabledClasses,
   focusRingClasses,
   gapClasses,
@@ -206,7 +207,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   // it from firing.
   const inert = loading || readOnly;
 
-  const classNames = [
+  const classNames = cx(
     baseClasses,
     sizeClasses[size],
     iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
@@ -222,9 +223,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     loading ? 'cursor-progress' : '',
     fullWidth ? 'w-full' : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   /*
    * `render` deliberately steps around Base UI's Button rather than being handed

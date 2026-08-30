@@ -5,7 +5,7 @@ import { Box, type BoxProps } from '../box/Box.js';
 import { Chip } from '../chip/Chip.js';
 import { MinusIcon, TrendDownIcon, TrendUpIcon } from '../../internal/icons.js';
 import { numberFormatter } from '../../internal/format.js';
-import { hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles.js';
+import { cx, hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles.js';
 import type { NebaAlign, NebaSize } from '../../types.js';
 
 /** Which way a figure moved, and the third case that is neither. */
@@ -237,14 +237,12 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(functi
       size={size}
       color={color}
       density={density}
-      className={[
+      className={cx(
         'flex flex-col',
         sheetSectionGapClasses[size],
         alignClasses[align],
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       {hasContent(label) || hasContent(icon) ? (

@@ -7,6 +7,7 @@ import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
 import { safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
+  cx,
   focusRingClasses,
   srOnlyClasses
 } from '../../internal/styles.js';
@@ -172,15 +173,13 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
   const mark = icon ?? newTab;
   const glyph = mark === true ? newTab ? <ExternalLinkIcon /> : <LinkIcon /> : mark;
 
-  const classNames = [
+  const classNames = cx(
     baseClasses,
     size ? controlTextLeadingClasses[size] : '',
     underlineClasses[underline],
     color ? '[&.neba-link]:text-(--n-accent)' : '[&.neba-link]:text-inherit',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   /*
    * The two line colours and the focus ring, as slots.

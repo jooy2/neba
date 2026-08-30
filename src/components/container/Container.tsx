@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaDensity, NebaSize } from '../../types.js';
 
 export interface ContainerProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -86,15 +87,13 @@ export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(functi
   },
   ref
 ) {
-  const classNames = [
+  const classNames = cx(
     'block w-full',
     maxWidth === 'none' ? '' : maxWidthClasses[maxWidth],
     centered ? 'mx-auto' : '',
     padded ? boxPaddingXClasses[density][size] : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,

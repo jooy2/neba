@@ -2,7 +2,12 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { controlHeightClasses, controlSquareClasses, surfaceSlots } from '../../internal/styles.js';
+import {
+  controlHeightClasses,
+  controlSquareClasses,
+  cx,
+  surfaceSlots
+} from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 
 /**
@@ -222,16 +227,14 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(function
             children: Array.from({ length: lines }, (_, index) => (
               <div
                 key={index}
-                className={[
+                className={cx(
                   fillClasses,
                   sweep,
                   barRadiusClasses[size],
                   lineHeightClasses[size],
                   // The last line of a paragraph does not reach the margin.
                   index === lines - 1 ? 'w-3/5' : 'w-full'
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                )}
               />
             ))
           }

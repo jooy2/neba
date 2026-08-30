@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Separator } from '@base-ui/react/separator';
-import { metaTextClasses, toLength } from '../../internal/styles.js';
+import { cx, metaTextClasses, toLength } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 /** Where the label sits along a labelled divider. Ignored without a label. */
@@ -150,7 +150,7 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
       <Separator
         ref={ref}
         orientation={orientation}
-        className={[
+        className={cx(
           // The line is a single border edge; the box itself has no thickness,
           // so a divider never adds a pixel of layout beyond the rule.
           vertical
@@ -158,9 +158,7 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
             : 'h-0 w-full border-t [border-top-width:var(--n-rule)]',
           lineClasses,
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={rootStyle}
         {...props}
       />
@@ -177,14 +175,12 @@ export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function D
       ref={ref}
       orientation={orientation}
       aria-label={typeof children === 'string' ? children : undefined}
-      className={[
+      className={cx(
         'flex items-center',
         vertical ? `w-auto flex-col ${span === undefined ? 'self-stretch' : ''}` : 'w-full',
         labelGapClasses[size],
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={rootStyle}
       {...props}
     >

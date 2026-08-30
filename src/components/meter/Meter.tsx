@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Meter as BaseUIMeter } from '@base-ui/react/meter';
 import { barThicknessClasses, progressFraction, progressSlots } from '../../internal/progress.js';
-import { metaTextClasses, stackGapClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
 
 export interface MeterProps extends Omit<
@@ -113,9 +113,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
       min={min}
       max={max}
       format={format}
-      className={['flex w-full flex-col', stackGapClasses[size], className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
       style={{ ...progressSlots(family), ...style }}
       {...props}
     >

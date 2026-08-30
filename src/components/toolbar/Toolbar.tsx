@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import {
+  cx,
   hasContent,
   radiusClasses,
   sheetSectionGapClasses,
@@ -130,7 +131,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(function T
   },
   ref
 ) {
-  const classNames = [
+  const classNames = cx(
     'flex w-full min-w-0 items-center',
     boxPaddingXClasses[density][size],
     boxPaddingYClasses[density][size],
@@ -144,9 +145,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(function T
     positionClasses[position][side],
     transitionClasses,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,

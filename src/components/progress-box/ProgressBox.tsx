@@ -12,7 +12,7 @@ import {
   progressText,
   type ProgressSharedProps
 } from '../../internal/progress.js';
-import { metaTextClasses, stackGapClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface ProgressBoxProps extends ProgressSharedProps {
@@ -77,9 +77,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(fu
       max={max}
       format={format}
       getAriaValueText={progressAriaText(fraction, hasFormat)}
-      className={['inline-flex flex-col', stackGapClasses[size], className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('inline-flex flex-col', stackGapClasses[size], className ?? '')}
       style={{ ...progressSlots(color), ...style }}
       {...props}
     >
@@ -106,7 +104,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(fu
         {Array.from({ length: plates }, (_, index) => (
           <span
             key={index}
-            className={[
+            className={cx(
               'relative overflow-hidden bg-(--n-soft)',
               '[box-shadow:var(--neba-plate-glass)]',
               plateSizeClasses[size],
@@ -115,9 +113,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(fu
               // its own delay — which is why the whole row is one class and one
               // custom property rather than N generated keyframe names.
               indeterminate ? 'neba-plate-wave' : ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={indeterminate ? ({ '--n-i': index } as React.CSSProperties) : undefined}
           >
             {indeterminate ? null : (

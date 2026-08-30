@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Avatar, type AvatarShape } from '../avatar/Avatar.js';
 import { AvatarGroupContext, type AvatarGroupContextValue } from '../../internal/avatar-group.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
 
 export interface AvatarGroupProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -104,16 +105,14 @@ export const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(fu
     <AvatarGroupContext.Provider value={context}>
       <div
         ref={ref}
-        className={[
+        className={cx(
           // `isolate` so the ring of the first avatar is painted against the
           // page rather than against whatever is behind the group.
           'isolate inline-flex items-center',
           '[&>*:not(:first-child)]:[margin-inline-start:calc(var(--n-overlap)*-1)]',
           ringClasses,
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={
           {
             '--n-overlap':

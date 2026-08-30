@@ -11,7 +11,7 @@ import {
   ringStrokes,
   type ProgressSharedProps
 } from '../../internal/progress.js';
-import { gapClasses, metaTextClasses } from '../../internal/styles.js';
+import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 
 export interface ProgressCircularProps extends ProgressSharedProps {
@@ -74,14 +74,12 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
         max={max}
         format={format}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
-        className={[
+        className={cx(
           'inline-flex items-center',
           gapClasses[size],
           metaTextClasses[size],
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={{ ...progressSlots(color), ...style }}
         {...props}
       >

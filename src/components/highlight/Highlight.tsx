@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import type { TypographyWeight } from '../typography/Typography.js';
-import { transitionClasses } from '../../internal/styles.js';
+import { cx, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaVariant } from '../../types.js';
 
 export interface HighlightProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
@@ -275,7 +275,7 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(funct
 ) {
   const pattern = React.useMemo(() => buildPattern(query, caseSensitive), [query, caseSensitive]);
 
-  const markClasses = [
+  const markClasses = cx(
     // A hair of padding so the surface does not sit flush against the letters,
     // and the same hair back out as a negative margin so the marked line is the
     // same length as it was before. A mark must not move the text around it.
@@ -290,9 +290,7 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(funct
     underline ? 'underline decoration-2 underline-offset-2' : '',
     weight ? weightClasses[weight] : '',
     transitionClasses
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const marked = pattern
     ? markNode(children, pattern, wholeWord, (matched, key) => (

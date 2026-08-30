@@ -24,7 +24,7 @@ import type {
   NebaMockupResolution
 } from '../../internal/mockup.js';
 import { observeResize } from '../../internal/observe.js';
-import { surfaceSlots } from '../../internal/styles.js';
+import { cx, surfaceSlots } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaTransition } from '../../types.js';
 
 export type {
@@ -308,9 +308,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
   // `neba-mockup` and `neba-mockup-screen` are hooks rather than styles, the way
   // `neba-link` and `neba-portal` are: the device draws itself, and these are
   // there so a caller can reach the glass without counting elements.
-  const classNames = ['neba-mockup relative block', animation.className, className ?? '']
-    .filter(Boolean)
-    .join(' ');
+  const classNames = cx('neba-mockup relative block', animation.className, className ?? '');
 
   return useRender({
     render,

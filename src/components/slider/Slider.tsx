@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Slider as BaseUISlider } from '@base-ui/react/slider';
-import { metaTextClasses, surfaceClasses, transitionClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses, surfaceClasses, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 type BaseSliderProps = Omit<
@@ -159,14 +159,12 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
       ref={ref}
       orientation={orientation}
       disabled={disabled}
-      className={[
+      className={cx(
         'flex',
         vertical ? 'w-fit flex-col items-center gap-2' : 'w-full flex-col gap-1.5',
         disabled ? disabledSliderClasses : '',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...slots, ...style }}
       {...props}
     >

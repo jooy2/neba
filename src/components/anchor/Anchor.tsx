@@ -4,6 +4,7 @@ import * as React from 'react';
 import { anchorMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
+  cx,
   focusRingClasses,
   transitionClasses
 } from '../../internal/styles.js';
@@ -229,7 +230,7 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
     <nav
       ref={ref}
       aria-label={label ?? messages.label}
-      className={['min-w-0', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('min-w-0', className ?? '')}
       style={
         {
           '--n-accent': `var(--neba-${color}-accent)`,
@@ -240,12 +241,10 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
       {...props}
     >
       <ul
-        className={[
+        className={cx(
           'm-0 flex list-none flex-col p-0',
           rail ? 'border-s [border-color:var(--neba-border)]' : ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
       >
         {items.map((item) => (
           <li key={item.href} className={rail ? '[margin-inline-start:-1px]' : ''}>
@@ -255,14 +254,12 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
               // within a set of links, which is the one thing that value means
               // and exactly what a table of contents is reporting.
               aria-current={active === item.href ? 'location' : undefined}
-              className={[
+              className={cx(
                 linkClasses,
                 controlTextLeadingClasses[size],
                 rowPaddingClasses[density][size],
                 rail ? `${railClasses} ps-3` : ''
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              )}
               style={{
                 marginInlineStart: item.depth ? item.depth * indentSizes[size] : undefined
               }}

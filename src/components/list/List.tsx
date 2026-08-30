@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
 import {
+  cx,
   focusRingClasses,
   gapClasses,
   hasContent,
@@ -187,7 +188,7 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
 ) {
   const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
 
-  const classNames = [
+  const classNames = cx(
     'flex flex-col',
     radiusClasses[size],
     variantClasses[variant],
@@ -197,9 +198,7 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
     // reach the edge, so the padding goes and the rows square off.
     dividers ? `overflow-hidden ${dividerClasses}` : 'p-1',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const element = useRender({
     render,
@@ -251,7 +250,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
   const padX = boxPaddingXClasses[density][size];
   const padY = rowPaddingYClasses[density][size];
 
-  const bodyClassNames = [
+  const bodyClassNames = cx(
     'flex min-w-0 flex-1 items-center text-start',
     padX,
     padY,
@@ -274,9 +273,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
     // hovered row and the chosen row are the same idea at two strengths.
     interactive && !selected ? 'hover:bg-(--n-soft)' : '',
     interactive && selected ? 'hover:bg-(--n-soft-press)' : ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   const body = (
     <>
@@ -302,11 +299,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
   );
 
   return (
-    <li
-      ref={ref}
-      className={['flex w-full items-center', className ?? ''].filter(Boolean).join(' ')}
-      {...props}
-    >
+    <li ref={ref} className={cx('flex w-full items-center', className ?? '')} {...props}>
       {interactive && href ? (
         // `aria-current="page"` on a link and `"true"` on a button: the first is
         // "this is the page you are on", the second is "this is the chosen one

@@ -5,6 +5,7 @@ import { Tabs as BaseUITabs } from '@base-ui/react/tabs';
 import {
   controlHeightClasses,
   controlTextClasses,
+  cx,
   gapClasses,
   hasContent,
   iconClasses,
@@ -218,7 +219,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
       ref={ref}
       value={value}
       disabled={disabled}
-      className={[
+      className={cx(
         'relative z-10 inline-flex shrink-0 cursor-pointer items-center justify-center select-none',
         'whitespace-nowrap font-medium',
         '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
@@ -236,9 +237,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
         'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
         fullWidth ? 'flex-1' : '',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       {hasContent(startIcon) ? (
@@ -342,20 +341,18 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
         defaultValue={defaultValue}
         onValueChange={(next) => onValueChange?.(next as TabValue | null)}
         orientation={orientation}
-        className={[
+        className={cx(
           'flex min-w-0',
           orientation === 'vertical' ? 'flex-row gap-4' : 'flex-col gap-4',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         style={{ ...surfaceSlots(color, 0), ...style }}
         {...props}
       >
         <BaseUITabs.List
           activateOnFocus={activateOnFocus}
           loopFocus={loopFocus}
-          className={[
+          className={cx(
             'relative shrink-0',
             listClasses[variant][orientation],
             variant === 'solid' ? radiusClasses[size] : '',
@@ -364,9 +361,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
             // bar on two lines has stopped being a bar, and the indicator has
             // nowhere sensible to sit.
             orientation === 'horizontal' ? 'overflow-x-auto overflow-y-hidden' : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          )}
         >
           {tabs}
 

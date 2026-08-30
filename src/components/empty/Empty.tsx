@@ -6,6 +6,7 @@ import { boxPaddingXClasses } from '../box/Box.js';
 import { transitionProps } from '../../internal/animate.js';
 import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import {
+  cx,
   hasContent,
   iconClasses,
   radiusClasses,
@@ -208,7 +209,7 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
   const animation = transitionProps(transition);
   const titled = hasContent(heading);
 
-  const classNames = [
+  const classNames = cx(
     'flex w-full flex-col items-center justify-center text-center',
     boxPaddingXClasses[density][size],
     emptyPaddingYClasses[density][size],
@@ -218,9 +219,7 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
     variantClasses[variant],
     animation.className,
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,

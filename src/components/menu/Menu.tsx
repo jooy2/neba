@@ -8,6 +8,7 @@ import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
 import { safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
+  cx,
   gapClasses,
   hasContent,
   iconClasses,
@@ -285,7 +286,7 @@ function rowClasses(
   accented: boolean,
   className?: string
 ): string {
-  return [
+  return cx(
     'relative flex w-full cursor-pointer items-center select-none',
     accented ? 'text-(--n-accent)' : 'text-(--neba-fg)',
     rowPaddingClasses[density][size],
@@ -302,9 +303,7 @@ function rowClasses(
     // focus indicator, which is what makes it the same one the mouse gets.
     '[outline:none]',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 }
 
 /** The fixed-width slot a check, a dot or a `startIcon` lands in. */
@@ -582,7 +581,7 @@ export function MenuGroup({ label, children, className }: MenuGroupProps) {
 export function MenuSeparator({ className, ...props }: MenuSeparatorProps) {
   return (
     <BaseUIMenu.Separator
-      className={['-mx-1 my-1 h-px bg-(--n-line)', className ?? ''].filter(Boolean).join(' ')}
+      className={cx('-mx-1 my-1 h-px bg-(--n-line)', className ?? '')}
       {...props}
     />
   );
@@ -635,14 +634,12 @@ export function MenuSubmenu({
           align="start"
         >
           <BaseUIMenu.Popup
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               controlTextLeadingClasses[size],
               className ?? ''
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            )}
             style={{ ...surfaceSlots(color, 3), ...style }}
           >
             {children}
@@ -715,14 +712,12 @@ export function Menu({
             sideOffset={sideOffset}
           >
             <BaseUIMenu.Popup
-              className={[
+              className={cx(
                 popupClasses,
                 radiusClasses[size],
                 controlTextLeadingClasses[size],
                 className ?? ''
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              )}
               style={{ ...surfaceSlots(color, 3), ...style }}
             >
               {children}
@@ -773,14 +768,12 @@ export function ContextMenu({
         <BaseUIContextMenu.Portal>
           <BaseUIContextMenu.Positioner className="neba-portal z-50 [outline:none]">
             <BaseUIContextMenu.Popup
-              className={[
+              className={cx(
                 popupClasses,
                 radiusClasses[size],
                 controlTextLeadingClasses[size],
                 className ?? ''
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              )}
               style={{ ...surfaceSlots(color, 3), ...style }}
             >
               {content}

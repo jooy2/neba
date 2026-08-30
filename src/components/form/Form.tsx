@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Form as BaseUIForm } from '@base-ui/react/form';
-import { sheetSectionGapClasses } from '../../internal/styles.js';
+import { cx, sheetSectionGapClasses } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
 
 /**
@@ -73,9 +73,7 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
       validationMode={validationMode}
       errors={errors}
       onFormSubmit={(values) => onSubmit?.(values)}
-      className={['flex flex-col', sheetSectionGapClasses[size], className ?? '']
-        .filter(Boolean)
-        .join(' ')}
+      className={cx('flex flex-col', sheetSectionGapClasses[size], className ?? '')}
       {...props}
     >
       {children}

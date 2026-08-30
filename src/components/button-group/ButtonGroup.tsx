@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaElevation, NebaOrientation, NebaStyleProps } from '../../types.js';
 
 export interface ButtonGroupProps
@@ -102,7 +103,7 @@ export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(fu
       <div
         ref={ref}
         role="group"
-        className={[
+        className={cx(
           baseClasses,
           orientation === 'vertical' ? 'flex-col' : 'flex-row',
           joinClasses[orientation],
@@ -111,9 +112,7 @@ export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(fu
           (variant ?? 'solid') === 'outline' ? overlapClasses[orientation] : '',
           fullWidth ? 'flex w-full [&>*]:flex-1' : '',
           className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        )}
         {...props}
       >
         {children}

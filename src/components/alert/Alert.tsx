@@ -7,6 +7,7 @@ import { CloseIcon, severityIcon } from '../../internal/icons.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   controlSlots,
+  cx,
   hasContent,
   iconClasses,
   radiusClasses,
@@ -178,7 +179,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
     <div
       ref={ref}
       role={rolesFor[color]}
-      className={[
+      className={cx(
         'flex w-full items-start',
         boxPaddingClasses[density][size],
         radiusClasses[size],
@@ -189,9 +190,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         iconClasses,
         animation.className,
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
       {...props}
     >

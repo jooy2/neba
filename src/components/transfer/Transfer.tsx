@@ -9,6 +9,7 @@ import { transferMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon } from '../../internal/icons.js';
 import { searchText } from '../../internal/search.js';
 import {
+  cx,
   fieldRestClasses,
   hasContent,
   metaTextClasses,
@@ -321,13 +322,11 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(function
   return (
     <div
       ref={ref}
-      className={[
+      className={cx(
         'grid w-full items-center gap-3',
         '[grid-template-columns:minmax(0,1fr)_auto_minmax(0,1fr)]',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       <Panel

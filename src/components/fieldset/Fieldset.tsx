@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Fieldset as BaseUIFieldset } from '@base-ui/react/fieldset';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   sheetHeaderGapClasses,
@@ -52,7 +53,7 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(fun
     <BaseUIFieldset.Root
       ref={ref}
       disabled={disabled}
-      className={[
+      className={cx(
         // A `<fieldset>` arrives with the browser's own border, padding and
         // margin, and none of the three is the library's. `min-w-0` is the other
         // half: a fieldset is `min-width: min-content` by default, which is what
@@ -60,9 +61,7 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(fun
         'm-0 flex min-w-0 flex-col border-0 p-0',
         sheetSectionGapClasses[size],
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       {...props}
     >
       {hasLegend ? (

@@ -6,6 +6,7 @@ import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons
 import { safeRel } from '../../internal/link.js';
 import {
   controlSlots,
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -334,13 +335,11 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(func
   return (
     <div
       ref={ref}
-      className={[
+      className={cx(
         'group/bubble flex w-full items-start gap-2',
         end ? 'flex-row-reverse' : '',
         className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
       style={{ ...controlSlots(color, elevation, variant), ...style }}
       {...props}
     >

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { alignSelfClasses, offsetValue, responsiveSlots, spanValue } from '../../internal/grid.js';
+import { cx } from '../../internal/styles.js';
 import type { NebaAlignSelf, NebaResponsive } from '../../types.js';
 
 export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -56,13 +57,11 @@ export const Grid = React.forwardRef<HTMLDivElement, GridProps>(function Grid(
   { span, offset, alignSelf, render, className, style, children, ...props },
   ref
 ) {
-  const classNames = [
+  const classNames = cx(
     'neba-grid-item',
     alignSelf ? alignSelfClasses[alignSelf] : '',
     className ?? ''
-  ]
-    .filter(Boolean)
-    .join(' ');
+  );
 
   return useRender({
     render,
