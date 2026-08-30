@@ -401,6 +401,11 @@ describe('CodeBlock', () => {
     });
   });
 
+  /** The current selection, with the line endings every browser agrees on. */
+  function selection(): string {
+    return String(window.getSelection()).replace(/\r\n/g, '\n').replace(/\n$/, '');
+  }
+
   describe('selecting', () => {
     /*
       A reader who tabbed to a code block and pressed the shortcut every editor
@@ -423,7 +428,11 @@ describe('CodeBlock', () => {
       region.dispatchEvent(event);
 
       expect(event.defaultPrevented).toBe(true);
-      expect(String(window.getSelection())).toBe('const a = 1;\nconst b = 2;');
+      // Normalised, because what is being claimed is *which* text ended up
+      // selected and not how a browser spells the gap between two block-level
+      // lines while stringifying a range: WebKit puts a newline after the last
+      // one and Firefox on Windows separates them with CRLF.
+      expect(selection()).toBe('const a = 1;\nconst b = 2;');
     });
 
     it('leaves a plain A alone', async () => {
