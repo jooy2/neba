@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { noMatchOnServer, queryMatches, subscribeToQuery } from './media.js';
 import type { NebaBreakpoint, NebaSide } from '../types.js';
 
 /**
@@ -178,28 +179,13 @@ export function useCollapsed(breakpoint: PageLayoutCollapse): boolean {
   const query = breakpoint === 'none' ? null : collapseQueries[breakpoint];
 
   const subscribe = React.useCallback(
-    (onChange: () => void) => {
-      if (!query || typeof window === 'undefined' || !window.matchMedia) {
-        return () => {};
-      }
-
-      const list = window.matchMedia(query);
-      list.addEventListener('change', onChange);
-
-      return () => list.removeEventListener('change', onChange);
-    },
+    (onChange: () => void) => (query ? subscribeToQuery(query, onChange) : () => {}),
     [query]
   );
 
-  const snapshot = React.useCallback(() => {
-    if (!query || typeof window === 'undefined' || !window.matchMedia) {
-      return false;
-    }
+  const snapshot = React.useCallback(() => (query ? queryMatches(query) : false), [query]);
 
-    return window.matchMedia(query).matches;
-  }, [query]);
-
-  return React.useSyncExternalStore(subscribe, snapshot, () => false);
+  return React.useSyncExternalStore(subscribe, snapshot, noMatchOnServer);
 }
 
 /**

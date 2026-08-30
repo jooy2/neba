@@ -236,6 +236,23 @@ function detectOS(): ResolvedOS {
   return 'linux';
 }
 
+/**
+ * The answer, once.
+ *
+ * `getSnapshot` is called on every render of every Shortcut on the page, and
+ * again on every commit. `detectOS` builds a string out of three sources and
+ * runs two regular expressions over it, and its answer cannot change under a
+ * running page — so it is worked out on the first ask and kept. Returning the
+ * same string back is also what `useSyncExternalStore` requires of a snapshot.
+ */
+let detected: ResolvedOS | null = null;
+
+function readOS(): ResolvedOS {
+  detected ??= detectOS();
+
+  return detected;
+}
+
 /** The platform never changes under a running page, so there is nothing to subscribe to. */
 function subscribe() {
   return () => {};
@@ -256,7 +273,7 @@ function serverOS(): ResolvedOS {
  * the browser's, which is exactly the sequence a Mac reader sees.
  */
 function useDetectedOS(): ResolvedOS {
-  return React.useSyncExternalStore(subscribe, detectOS, serverOS);
+  return React.useSyncExternalStore(subscribe, readOS, serverOS);
 }
 
 /**

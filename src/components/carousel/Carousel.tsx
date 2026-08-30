@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
+import { usePrefersReducedMotion } from '../../internal/media.js';
 import {
   radiusClasses,
   srOnlyClasses,
@@ -258,13 +259,15 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
     }
   };
 
-  React.useEffect(() => {
-    if (!autoPlay || paused || count < 2) {
-      return;
-    }
+  // Subscribed rather than read once inside the effect below: a reader who
+  // turns the setting on while a strip is already running has asked for it to
+  // stop, and a value read at setup would go on advancing until something else
+  // happened to re-run the effect.
+  const reduced = usePrefersReducedMotion();
 
+  React.useEffect(() => {
     // A reader who has asked for less motion has asked for this in particular.
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    if (!autoPlay || paused || reduced || count < 2) {
       return;
     }
 
@@ -276,7 +279,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function
     }, interval);
 
     return () => window.clearInterval(timer);
-  }, [autoPlay, paused, count, interval, index, go]);
+  }, [autoPlay, paused, reduced, count, interval, index, go]);
 
   const atStart = index <= 0;
   const atEnd = index >= count - 1;

@@ -160,8 +160,8 @@ describe('the published package', () => {
     it('starts every module that calls a client-only React API with it too', () => {
       // The shared modules under `internal/`. A file with no directive is a
       // module either graph may pull in, which is right for the ones that are
-      // arithmetic, a table or a glyph — and wrong for the seven that hold a
-      // context or an effect.
+      // arithmetic, a table or a glyph — and wrong for the nine that hold a
+      // context, an effect or a store.
       const offenders = Object.entries(sources)
         .filter(([, source]) => CLIENT_ONLY.test(source))
         .filter(([, source]) => !DIRECTIVE.test(source))

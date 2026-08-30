@@ -5,6 +5,7 @@ import { IconButton } from '../icon-button/IconButton.js';
 import { spacingValue } from '../../internal/grid.js';
 import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
+import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 
@@ -175,10 +176,7 @@ const WHEEL_LINE = 16;
 
 /** A reader who has asked for less motion gets the cut rather than the travel. */
 function scrollBehavior(): ScrollBehavior {
-  return typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    ? 'auto'
-    : 'smooth';
+  return queryMatches(reducedMotionQuery) ? 'auto' : 'smooth';
 }
 
 /**
