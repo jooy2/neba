@@ -34,6 +34,8 @@ import {
   Combobox,
   Container,
   ContextMenu,
+  DataList,
+  DataListItem,
   DataTable,
   DatePicker,
   DateRangePicker,
@@ -1728,14 +1730,21 @@ function ShowcaseBody() {
             than twenty tab stops; the Collapsible is one Accordion section
             with nothing beside it. */}
         <section className="flex flex-col gap-3">
-          <Caption>Collapsible · Rating</Caption>
+          <Caption>Collapsible · Rating · DataList</Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
             <Card size="sm" title="Cold brew concentrate" subtitle="1 litre, unsweetened">
-              <div className="flex items-center gap-2">
-                <Rating size="sm" value={4.5} readOnly />
-                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
-                  4.5 · 1,284 reviews
-                </Typography>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Rating size="sm" value={4.5} readOnly />
+                  <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                    4.5 · 1,284 reviews
+                  </Typography>
+                </div>
+                <DataList size="sm" density="compact" dividers>
+                  <DataListItem label="Roast">Medium</DataListItem>
+                  <DataListItem label="Origin">Yirgacheffe, Ethiopia</DataListItem>
+                  <DataListItem label="Ships">Tomorrow</DataListItem>
+                </DataList>
               </div>
             </Card>
 

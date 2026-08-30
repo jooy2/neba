@@ -39,6 +39,8 @@ import {
   Combobox,
   Collapsible,
   Container,
+  DataList,
+  DataListItem,
   DataTable,
   DatePicker,
   DateRangePicker,
@@ -1554,6 +1556,21 @@ const GROUPS: Group[] = [
               <TreeItem value="readme" label="README.md" />
             </TreeView>
           </div>
+        )
+      },
+      {
+        name: 'DataList',
+        summary: {
+          ko: '어떤 것들과 그것들의 이름',
+          en: 'A list of things and what they are called'
+        },
+        path: '/components/display/data-list',
+        preview: (
+          <DataList size="sm" density="compact" className="w-full max-w-56">
+            <DataListItem label="Status">Live</DataListItem>
+            <DataListItem label="Region">Frankfurt</DataListItem>
+            <DataListItem label="Commit">8f2c1a</DataListItem>
+          </DataList>
         )
       },
       {

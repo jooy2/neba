@@ -3551,6 +3551,78 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  DataList: [
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '라벨이 놓이는 자리. horizontal은 값 옆의 열, vertical은 값 위입니다',
+        en: 'Where the label sits. Horizontal is a column of its own beside the value, vertical is above it'
+      }
+    },
+    {
+      name: 'labelWidth',
+      type: 'number | string',
+      description: {
+        ko: 'horizontal일 때 라벨 열의 너비. 숫자는 px입니다. 지정하지 않으면 가장 긴 라벨만큼입니다',
+        en: 'How wide the label column is when horizontal. Numbers are pixels; left out it is as wide as the widest label'
+      }
+    },
+    {
+      name: 'dividers',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '행 사이에 하이라인을 그립니다', en: 'Draws a hairline between the rows' }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '라벨과 값의 타입 스케일',
+        en: 'The type scale of the labels and the values'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '행과 열 사이의 간격만 바꿉니다',
+        en: 'Changes the gaps between rows and columns, and nothing else'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'DataListItem들', en: 'The rows' }
+    }
+  ],
+
+  DataListItem: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '값의 이름. dt로 렌더링됩니다',
+        en: 'What the value is called. Rendered as the dt'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '값. 노드이므로 Chip이나 링크, 코드 조각도 들어갑니다. dd로 렌더링됩니다',
+        en: 'The value. A node, so a Chip, a link or a piece of code all fit. Rendered as the dd'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

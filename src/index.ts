@@ -35,6 +35,7 @@ export * from './components/collapsible/index.js';
 export * from './components/color-picker/index.js';
 export * from './components/combobox/index.js';
 export * from './components/container/index.js';
+export * from './components/data-list/index.js';
 export * from './components/data-table/index.js';
 export * from './components/date-picker/index.js';
 export * from './components/date-range-picker/index.js';
