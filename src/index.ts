@@ -57,6 +57,7 @@ export * from './components/icon-button/index.js';
 export * from './components/line-chart/index.js';
 export * from './components/list/index.js';
 export * from './components/menu/index.js';
+export * from './components/meter/index.js';
 export * from './components/mockup/index.js';
 export * from './components/number-field/index.js';
 export * from './components/otp-field/index.js';

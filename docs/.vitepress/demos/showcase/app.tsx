@@ -63,6 +63,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Meter,
   Mockup,
   NumberField,
   OtpField,
@@ -927,7 +928,7 @@ function ShowcaseBody() {
 
         {/* What is happening right now, and what just went wrong. */}
         <section className="flex flex-col gap-3">
-          <Caption>Alert · ProgressLinear · ProgressCircular · ProgressBox</Caption>
+          <Caption>Alert · ProgressLinear · ProgressCircular · ProgressBox · Meter</Caption>
           <Alert
             color="warning"
             title="One region is near its quota"
@@ -941,13 +942,22 @@ function ShowcaseBody() {
             Frankfurt is at 90% of its build minutes for this billing period.
           </Alert>
           <Box variant="solid">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:items-center">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:items-center lg:grid-cols-4">
               <ProgressLinear value={64} label="Uploading assets" showValue />
               <ProgressCircular label="Indexing" />
               <div className="flex items-center gap-3">
                 <ProgressBox color="info" />
                 <Typography level="caption">Draining the queue</Typography>
               </div>
+              <Meter
+                value={90}
+                label="Frankfurt build minutes"
+                showValue
+                thresholds={[
+                  { from: 70, color: 'warning' },
+                  { from: 90, color: 'danger' }
+                ]}
+              />
             </div>
           </Box>
         </section>

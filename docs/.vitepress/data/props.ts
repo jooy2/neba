@@ -2788,6 +2788,105 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Meter: [
+    {
+      name: 'value',
+      type: 'number',
+      required: true,
+      description: {
+        ko: '측정된 양. 필수이며, 이것이 ProgressLinear와의 차이입니다 — meter는 이미 알려진 양을 보고하므로 미정 상태가 없습니다',
+        en: 'How much there is. Required, and that is the difference from ProgressLinear: a meter reports a quantity that is already known, so there is no indeterminate case'
+      }
+    },
+    {
+      name: 'min',
+      type: 'number',
+      default: '0',
+      description: { ko: '범위의 시작', en: 'The bottom of the range' }
+    },
+    {
+      name: 'max',
+      type: 'number',
+      default: '100',
+      description: { ko: '범위의 끝', en: 'The top of the range' }
+    },
+    {
+      name: 'thresholds',
+      type: 'readonly MeterThreshold[]',
+      description: {
+        ko: '막대의 색이 바뀌는 지점들. { from, color } 배열이며 from이 작은 것부터 나열합니다. 값이 도달한 마지막 항목이 이기고, 아무 것에도 도달하지 못했다면 color가 그대로 쓰입니다',
+        en: 'Where the bar changes colour, as { from, color } entries listed smallest first. The last one the value has reached wins; below all of them color stands'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '무엇을 재고 있는지에 대한 이름. 값과 함께 읽힙니다',
+        en: 'A name for what is being measured. Read out with the value'
+      }
+    },
+    {
+      name: 'showValue',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '막대 옆에 값을 글자로 씁니다. format이 없으면 범위에 대한 비율입니다',
+        en: 'Shows the value as text beside the bar. A share of the range unless format says otherwise'
+      }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '값을 쓰는 방식. meter는 대개 실제 단위를 가지므로 프로그레스 바보다 자주 쓰입니다',
+        en: 'How to write the value. A meter usually has real units, which is when this matters more than it does on a progress bar'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '홈의 두께. ProgressLinear과 같은 사다리입니다',
+        en: 'Thickness of the groove, on the same ladder ProgressLinear uses'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'threshold에 도달하기 전 막대가 띠는 색 역할',
+        en: 'The family the bar carries before any threshold is reached'
+      }
+    }
+  ],
+
+  MeterThreshold: [
+    {
+      name: 'from',
+      type: 'number',
+      required: true,
+      description: {
+        ko: '이 색 계열이 적용되기 시작하는 값. meter 자신의 단위로 씁니다',
+        en: "The value from which this family applies, in the meter's own units"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      required: true,
+      shared: true,
+      description: {
+        ko: '그 지점부터 막대가 띠는 색',
+        en: 'What the bar turns at and above that point'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

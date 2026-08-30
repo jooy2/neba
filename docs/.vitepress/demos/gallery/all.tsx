@@ -67,6 +67,7 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Meter,
   Mockup,
   NumberField,
   OtpField,
@@ -1770,6 +1771,29 @@ const GROUPS: Group[] = [
           <div className="flex w-full max-w-56 items-center gap-3">
             <Skeleton shape="circle" size="lg" />
             <Skeleton lines={3} className="flex-1" />
+          </div>
+        )
+      },
+      {
+        name: 'Meter',
+        summary: {
+          ko: '미리 정해진 범위 안에서 어떤 양이 얼마나 되는지',
+          en: 'How much of something there is, on a known scale'
+        },
+        path: '/components/feedback/meter',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-3">
+            <Meter size="sm" value={38} label="Storage" showValue />
+            <Meter
+              size="sm"
+              value={92}
+              label="Seats"
+              showValue
+              thresholds={[
+                { from: 70, color: 'warning' },
+                { from: 90, color: 'danger' }
+              ]}
+            />
           </div>
         )
       },

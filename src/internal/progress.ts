@@ -9,6 +9,11 @@
  *
  * The shapes themselves are all that is left in each component, which is the
  * point: they are the only thing that genuinely differs.
+ *
+ * `Meter` reads three of these too — the colour slots, the bar's thickness and
+ * the fraction — because it is the same groove with different semantics, and a
+ * meter whose `md` were a pixel off the progress bar's would be visible the
+ * first time a page carried both.
  */
 
 import type * as React from 'react';
