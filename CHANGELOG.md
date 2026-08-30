@@ -1,5 +1,61 @@
 # Changelog
 
+## 1.10.0 (2026-08-30)
+
+No new components. This one is about the question that follows installing a component library and using it for a week: how do I change how this looks, when the design language and I disagree about one thing on one screen.
+
+`className` was never the missing half — every component already took one and merged it with its own. What it could never reach was everything _behind_ the root. A `TextField`'s `className` lands on the column holding the label, the shell and the two lines under it, which means the `<input>` itself had no name a caller could use; a `Table`'s lands on the sheet the table scrolls inside, leaving the `<table>`, its header band, its rows and its cells unreachable; and a `Select`'s popup, a `Dialog`'s backdrop and a `Tour`'s mask all render at the end of `<body>`, outside the element `className` reaches, so no selector written against the root would ever find them. Thirteen components now take a `classNames` map — seventy-six named parts between them.
+
+The standing scenarios say what that cost the people who do not use it:
+
+| What you import               | 1.9.0    | 1.10.0   |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.0 kB   | 3.0 kB   |
+| `LineChart`                   | 11.3 kB  | 11.3 kB  |
+| `CodeBlock`                   | 4.9 kB   | 4.9 kB   |
+| a whole page shell            | 28.4 kB  | 28.4 kB  |
+| 12 components — a typical app | 67.2 kB  | 67.3 kB  |
+| 12 components, with Korean    | 69.7 kB  | 69.9 kB  |
+| 25 components — a large one   | 111.4 kB | 111.7 kB |
+| all exports                   | 240.3 kB | 240.7 kB |
+
+A slot is one more argument into a `cx()` that was already being called, so nothing was added to the runtime and the five unchanged rows did not move. `neba/styles.css` does not move at all — there is no new CSS in this release. The 1.9.0 column is the budget as last recorded, which for two rows is a tenth or two above the table in those release notes — four commits of `perf` and `refactor` work landed after they were written.
+
+### Added
+
+- **`classNames` on thirteen components** — `TextField`, `NumberField`, `Select`, `Combobox`, `Checkbox`, `Switch`, `RadioGroup`, `Radio`, `Table`, `Dialog`, `ToastProvider`, `Tour` and `CommandPalette`. One class name per part, merged with the component's own rather than replacing it.
+
+  **There is never a `root` key.** `className` is the root, on every component in the library, and a `classNames.root` beside it would be a second spelling of an idea that already has one — which is the rule `src/types.ts` exists to hold. `NebaSlots` and `NebaFieldSlot` are in that file for the same reason `NebaStyleProps` is: `label`, `control`, `description` and `error` mean the same four things on a `TextField`, a `Select`, a `Checkbox` and a `RadioGroup`, and what a component adds past them lives with the component.
+
+  The slots worth knowing about are the ones with no other way in. `Select`'s and `Combobox`'s `popup` and `item`, `Dialog`'s and `CommandPalette`'s `backdrop` and `viewport`, and `Tour`'s `mask` are all portalled or siblings of the element `className` lands on. A descendant selector written against the root does not reach any of them, and before this there was nothing that did.
+
+- **`className` on `Tour` and `CommandPalette`**, on the card and on the sheet — the same element `Dialog` puts one on, because in all three that is what a caller means when they name the component.
+
+  `ToastProvider` still takes none, and that is the answer rather than an omission: it renders no element of its own — it wraps the application and puts a portalled stack on the page — so there is nothing for a root class name to land on. Its `viewport` and `toast` are slots instead.
+
+### Changed
+
+- **A `Table` cell's padding, alignment and background are still inline styles, and now say so.** They have to be — `.vp-doc td` and `.prose td` outrank any one-class utility, which is why the styling moved inline in the first place — so a class handed to `cell`, `headCell` or `empty` can add anything the component does not already set inline and needs an important utility (`p-4!`) to change what it does. The slot type and the component page both carry that caveat rather than leaving it to be discovered.
+
+- **`ToastProvider`'s description no longer builds an empty class name out of a nested ternary.** Same output, one condition instead of two.
+
+### Fixed
+
+- **`npm run size:update` no longer leaves the working tree failing `prettier --check`.** It serialised with `JSON.stringify(…, 2)`, which puts `"imports": ["Button"]` on three lines where Prettier wants one; the file stayed unformatted from the moment the script finished until something else rewrote it, and the only reason that was survivable is that `npm run build` runs `format:fix` first, so it was usually undone by accident before anyone looked. The formatter now does the layout, loaded on that path only so the check path — the one CI runs — does not pay for a formatter it never calls.
+
+### Documentation
+
+- **The getting-started guide stopped promising the wrong thing.** It told a Tailwind user that a `className` they pass "sorts correctly against the component's own classes", which reads as a promise that theirs wins. Same-pass generation is only what lets the two be ordered against each other at all; the order is Tailwind's own, so a component's `h-10` beats a caller's `h-8` and its `rounded-lg` beats a caller's `rounded-full`, while `bg-red-500` wins — decided by the value rather than by who wrote it. The important modifier (`h-8!`) is the form that always wins, and it is now documented as such.
+
+- **A new section in [prop conventions](https://neba.cdget.com/design/prop-conventions)** covering all three channels: `className` on the root, `classNames` on the parts behind it, and `style` writing one of the hundred-odd `--n-*` custom properties a component reads its colour and depth out of. The last of those is the one override in the library that cannot lose — a caller's `style` is merged after the component's own, and an inline custom property has no cascade to compete in.
+
+- Twenty-four component pages — twelve components in both locales — gain a `classNames` section, with their rows in the props tables.
+
+- **`test/package/resolution.test.ts` now holds the override contract**, which fails the way everything else in that file fails: silently, and in someone else's project. Four invariants — that no component drops the `className` or `style` it was handed into a props spread, in JSX and in the `props` object `useRender` takes; that a slot union is declared beside the component that offers it; that it never names `root`; and that every slot offered is actually read. A slot that type-checks, reads as supported and does nothing is exactly what this catches.
+
+- Thirty-nine new test cases across thirteen files, taking the suite to 2,466.
+
 ## 1.9.0 (2026-08-30)
 
 Sixteen components, and they come from one question asked properly: what does a large application still have to write by hand after installing this? The answer was in two places. Nine of them were Base UI primitives that had simply never been wrapped — a toggle and its group, a meter, a menu bar, a navigation menu, a hover card, a scroll area, a form and its fieldset. The other seven are the components a product team writes itself around the third month: a command palette, a guided tour, a two-list transfer, a table of contents that follows the scroll, a key-value panel, a stack of avatars, and a gauge.
