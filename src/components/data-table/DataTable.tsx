@@ -20,6 +20,7 @@ import {
   virtualWindow,
   type SortEntry
 } from '../../internal/data-table.js';
+import { beginPointerDrag } from '../../internal/drag.js';
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
@@ -420,7 +421,10 @@ const resizeHandleClasses = [
   'after:absolute after:inset-y-1 after:start-1/2 after:w-px',
   'after:[background:transparent]',
   'after:[transition:background_var(--neba-duration)_var(--neba-ease)]',
-  'hover:after:[background:var(--n-accent)]'
+  // Held as well as hovered: pointer capture means the pointer may be well away
+  // from the handle while the drag is running, and a rule that went out under
+  // the hand reads as the drag having been let go.
+  'hover:after:[background:var(--n-accent)] data-[dragging]:after:[background:var(--n-accent)]'
 ].join(' ');
 
 /** The magnifier on the search field. Local: nothing else in the library draws one. */
@@ -879,6 +883,12 @@ export function DataTable<Row>({
 
   const headRefs = React.useRef(new Map<string, HTMLTableCellElement>());
 
+  // A table that unmounts mid-resize would otherwise leave the document's text
+  // selection taken away, with nothing left to put it back.
+  const resizeRef = React.useRef<(() => void) | null>(null);
+
+  React.useEffect(() => () => resizeRef.current?.(), []);
+
   /**
    * A drag freezes every column, not just the one being pulled.
    *
@@ -909,23 +919,18 @@ export function DataTable<Row>({
     const startWidth = frozen[key] ?? defaultColumnWidth;
     const floor = columns.find((column) => column.key === key)?.minWidth ?? minColumnWidth;
 
-    handle.setPointerCapture(event.pointerId);
+    resizeRef.current = beginPointerDrag({
+      target: handle,
+      pointerId: event.pointerId,
+      onMove: (moveEvent) => {
+        const delta = (moveEvent.clientX - startX) * (rtl ? -1 : 1);
 
-    const move = (moveEvent: PointerEvent) => {
-      const delta = (moveEvent.clientX - startX) * (rtl ? -1 : 1);
-
-      setWidths({ ...frozen, [key]: Math.max(floor, Math.round(startWidth + delta)) });
-    };
-
-    const stop = () => {
-      handle.removeEventListener('pointermove', move);
-      handle.removeEventListener('pointerup', stop);
-      handle.removeEventListener('pointercancel', stop);
-    };
-
-    handle.addEventListener('pointermove', move);
-    handle.addEventListener('pointerup', stop);
-    handle.addEventListener('pointercancel', stop);
+        setWidths({ ...frozen, [key]: Math.max(floor, Math.round(startWidth + delta)) });
+      },
+      onEnd: () => {
+        resizeRef.current = null;
+      }
+    });
   };
 
   /** A double-click gives the column back whatever width it had before. */

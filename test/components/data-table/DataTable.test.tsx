@@ -700,6 +700,40 @@ describe('DataTable', () => {
       expect(cols[1].style.width).not.toBe('');
     });
 
+    // The three other components that drag something have always done this;
+    // the column resize was the copy that did not, so dragging a boundary in
+    // Safari selected the text of every cell the pointer crossed.
+    it('takes the page\u2019s text selection for the length of the drag', async () => {
+      const screen = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} resizable />
+      );
+      const handle = screen.container.querySelector<HTMLElement>('.cursor-col-resize')!;
+      const from = handle.getBoundingClientRect();
+      const held = () => document.body.style.getPropertyValue('-webkit-user-select');
+
+      expect(held()).toBe('');
+
+      handle.setPointerCapture = () => {};
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          clientX: from.x,
+          pointerId: 1,
+          button: 0
+        })
+      );
+
+      expect(held()).toBe('none');
+      expect(handle).toHaveAttribute('data-dragging');
+
+      handle.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+      // Removed rather than blanked, so a page that never wrote the property
+      // inline is left with the declaration it actually had.
+      expect(held()).toBe('');
+      expect(handle).not.toHaveAttribute('data-dragging');
+    });
+
     it('reports the widths and honours controlled ones', async () => {
       const screen = await render(
         <DataTable

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { beginPointerDrag } from '../../internal/drag.js';
 import { actionMessages, useMessages, windowMessages } from '../../internal/i18n.js';
 import { cx, hasContent, iconClasses, surfaceClasses } from '../../internal/styles.js';
 import {
@@ -450,44 +451,33 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(func
     teardownRef.current?.();
 
     const target = event.currentTarget;
-    target.setPointerCapture(event.pointerId);
-    target.dataset.dragging = 'true';
+    const fromX = event.clientX;
+    const fromY = event.clientY;
+
     // The window eases into a new size when a button put it there and follows
     // the pointer exactly when a hand is doing it. A transition on `width` while
     // a corner is being dragged is a window that lags behind the corner.
     setGesturing(true);
 
-    const fromX = event.clientX;
-    const fromY = event.clientY;
-
-    // Written prefixed and through `setProperty` because WebKit implements only
-    // `-webkit-user-select`: `style.userSelect = 'none'` hangs a plain JS
-    // property off the object and Safari selects text through the whole drag.
-    const selection = document.body.style.getPropertyValue('-webkit-user-select');
-    document.body.style.setProperty('-webkit-user-select', 'none');
-
-    const move = (moveEvent: PointerEvent) => {
-      onMove(moveEvent.clientX - fromX, moveEvent.clientY - fromY);
-    };
-
-    const release = () => {
+    // Run when the pointer is released *and* when the window is torn down
+    // mid-gesture, which is why `teardownRef` holds both halves rather than
+    // only the listener removal.
+    const finish = () => {
       teardownRef.current = null;
       setGesturing(false);
-      target.removeEventListener('pointermove', move);
-      target.removeEventListener('pointerup', release);
-      target.removeEventListener('pointercancel', release);
-      delete target.dataset.dragging;
-
-      // Removed rather than blanked, so a page that never wrote the property
-      // inline is left with the declaration it actually had.
-      if (selection) document.body.style.setProperty('-webkit-user-select', selection);
-      else document.body.style.removeProperty('-webkit-user-select');
     };
 
-    teardownRef.current = release;
-    target.addEventListener('pointermove', move);
-    target.addEventListener('pointerup', release);
-    target.addEventListener('pointercancel', release);
+    const stop = beginPointerDrag({
+      target,
+      pointerId: event.pointerId,
+      onMove: (moveEvent) => onMove(moveEvent.clientX - fromX, moveEvent.clientY - fromY),
+      onEnd: finish
+    });
+
+    teardownRef.current = () => {
+      stop();
+      finish();
+    };
   }
 
   function beginDrag(event: React.PointerEvent<HTMLDivElement>) {

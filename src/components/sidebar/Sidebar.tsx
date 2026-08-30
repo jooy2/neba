@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { Drawer } from '../drawer/Drawer.js';
+import { beginPointerDrag } from '../../internal/drag.js';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {
   drawerSide,
@@ -326,15 +327,6 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     if (!node || event.button !== 0) return;
 
     const handle = event.currentTarget;
-    handle.setPointerCapture(event.pointerId);
-    handle.dataset.dragging = 'true';
-
-    // The same prefixed write Panes makes, for the same reason: WebKit has no
-    // `userSelect` on a style declaration, so the unprefixed form changes
-    // nothing and Safari selects text through the whole drag.
-    const selection = document.body.style.getPropertyValue('-webkit-user-select');
-    document.body.style.setProperty('-webkit-user-select', 'none');
-
     const origin = event.clientX;
     const start = node.getBoundingClientRect().width;
     // Positive is always "wider", so a drag under RTL — where the start edge is
@@ -345,31 +337,18 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
     let latest = start;
 
-    const move = (moveEvent: PointerEvent) => {
-      latest = applyWidth(start + (moveEvent.clientX - origin) * outwards);
-      onResize?.(latest);
-    };
-
-    const release = () => {
-      teardownRef.current = null;
-      handle.removeEventListener('pointermove', move);
-      handle.removeEventListener('pointerup', end);
-      handle.removeEventListener('pointercancel', end);
-      delete handle.dataset.dragging;
-
-      if (selection) document.body.style.setProperty('-webkit-user-select', selection);
-      else document.body.style.removeProperty('-webkit-user-select');
-    };
-
-    const end = () => {
-      release();
-      onResizeEnd?.(latest);
-    };
-
-    teardownRef.current = release;
-    handle.addEventListener('pointermove', move);
-    handle.addEventListener('pointerup', end);
-    handle.addEventListener('pointercancel', end);
+    teardownRef.current = beginPointerDrag({
+      target: handle,
+      pointerId: event.pointerId,
+      onMove: (moveEvent) => {
+        latest = applyWidth(start + (moveEvent.clientX - origin) * outwards);
+        onResize?.(latest);
+      },
+      onEnd: () => {
+        teardownRef.current = null;
+        onResizeEnd?.(latest);
+      }
+    });
   };
 
   const nudge = (pixels: number) => {

@@ -413,6 +413,13 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
    * Dragging. Mouse and pen only — a finger already scrolls, and the browser's
    * own scrolling has momentum, rubber-banding and a scrollbar that no handler
    * reproduces.
+   *
+   * Not `beginPointerDrag`, and deliberately. That helper takes the pointer and
+   * the document's selection at the press, which is right for a handle that
+   * exists only to be dragged; this is the strip itself, where a press is far
+   * more often a click on a card inside it. Nothing is taken until the pointer
+   * has moved past the threshold, which is what keeps a plain click able to
+   * select text and focus what it landed on.
    */
   const dragRef = React.useRef<(() => void) | null>(null);
 
