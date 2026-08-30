@@ -196,6 +196,33 @@ export function formatFileSize(bytes: number): string {
 }
 
 /**
+ * Whether what was dropped is a file at all.
+ *
+ * A folder dragged onto a dropzone arrives in `dataTransfer.files` as a `File`
+ * with no type and a size of zero, and there is no flag on it that says so. The
+ * only thing that does is `webkitGetAsEntry`, which is on the *item* rather
+ * than on the file — so the two lists are walked in step, and a browser too old
+ * to have it is left trusting what it was given.
+ *
+ * Silently adding a folder is worse than refusing it: it goes into the list
+ * looking like a file, and the upload that follows sends nothing.
+ */
+function droppedFiles(transfer: DataTransfer): File[] {
+  const items = [...transfer.items];
+  const files = [...transfer.files];
+
+  if (items.length !== files.length) {
+    return files;
+  }
+
+  return files.filter((_, index) => {
+    const entry = items[index]?.webkitGetAsEntry?.();
+
+    return entry ? entry.isFile : true;
+  });
+}
+
+/**
  * Whether a file matches an `accept` string.
  *
  * The browser applies `accept` to its own picker and to nothing else, so a file
@@ -291,6 +318,30 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
   // the only thing that survives a zone with content in it.
   const dragDepth = React.useRef(0);
   const [over, setOver] = React.useState(false);
+
+  /*
+   * A drag can end without ever reaching the zone again. Escape cancels one,
+   * and a drop outside the window ends it somewhere the zone will never hear
+   * about — neither fires a `dragleave` here, so the counter stays up and the
+   * box keeps its lit edge until the next drag happens to balance it.
+   *
+   * `dragend` fires on the source, and `drop` on whatever accepted it, so both
+   * are listened for at the document with capture.
+   */
+  React.useEffect(() => {
+    const clear = () => {
+      dragDepth.current = 0;
+      setOver(false);
+    };
+
+    document.addEventListener('dragend', clear, true);
+    document.addEventListener('drop', clear, true);
+
+    return () => {
+      document.removeEventListener('dragend', clear, true);
+      document.removeEventListener('drop', clear, true);
+    };
+  }, []);
 
   const hasError = hasContent(error);
   const isInvalid = invalid ?? hasError;
@@ -453,7 +504,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(fu
           event.preventDefault();
           dragDepth.current = 0;
           setOver(false);
-          add(Array.from(event.dataTransfer.files));
+          add(droppedFiles(event.dataTransfer));
         }}
       >
         <button

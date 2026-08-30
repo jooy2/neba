@@ -139,6 +139,68 @@ describe('FilePicker', () => {
       await expect.element(screen.getByText('notes.txt')).toBeInTheDocument();
     });
 
+    // A folder arrives in `dataTransfer.files` as a zero-byte `File` with no
+    // type and nothing on it that says what it is. Added silently, it goes into
+    // the list looking like a file and the upload that follows sends nothing.
+    it('leaves a dropped folder out', async () => {
+      const onFilesChange = vi.fn();
+      const screen = await render(<FilePicker multiple onFilesChange={onFilesChange} />);
+      const target = screen.getByRole('button', { name: /Drop files here/ }).element();
+
+      const transfer = new DataTransfer();
+      transfer.items.add(file('notes.txt'));
+      transfer.items.add(new File([], 'photos', { type: '' }));
+
+      // Stubbed on the prototype rather than on an item: a synthetic
+      // `DataTransfer` has no filesystem behind it, so the real method answers
+      // `null` for everything, and the indexed accessor hands back a fresh
+      // wrapper on every read.
+      const real = Object.getOwnPropertyDescriptor(DataTransferItem.prototype, 'webkitGetAsEntry');
+
+      Object.defineProperty(DataTransferItem.prototype, 'webkitGetAsEntry', {
+        configurable: true,
+        value(this: DataTransferItem) {
+          const isFile = this.getAsFile()?.name !== 'photos';
+
+          return { isFile, isDirectory: !isFile };
+        }
+      });
+
+      try {
+        target.dispatchEvent(
+          new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: transfer })
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      } finally {
+        if (real) Object.defineProperty(DataTransferItem.prototype, 'webkitGetAsEntry', real);
+      }
+
+      expect(onFilesChange).toHaveBeenCalledWith([expect.objectContaining({ name: 'notes.txt' })]);
+      expect(screen.getByText('photos').query()).toBeNull();
+    });
+
+    // Escape cancels a drag and a drop outside the window ends it somewhere the
+    // zone never hears about. Neither fires a `dragleave` here, so without this
+    // the box keeps its lit edge until the next drag happens to balance it.
+    it('puts the edge out when a drag is abandoned rather than dropped', async () => {
+      const screen = await render(<FilePicker />);
+      const target = screen.getByRole('button', { name: /Drop files here/ }).element();
+      const transfer = new DataTransfer();
+      transfer.items.add(file('notes.txt'));
+
+      target.dispatchEvent(
+        new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: transfer })
+      );
+
+      await vi.waitFor(() => expect(target.className).toContain('[border-color:var(--n-ring)]'));
+
+      document.dispatchEvent(new DragEvent('dragend', { bubbles: true }));
+
+      await vi.waitFor(() =>
+        expect(target.className).not.toContain('[border-color:var(--n-ring)]')
+      );
+    });
+
     it('replaces rather than appends when it holds one file at a time', async () => {
       const screen = await render(<FilePicker defaultValue={[file('first.txt')]} />);
 
