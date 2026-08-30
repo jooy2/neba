@@ -20,6 +20,11 @@
  *
  * Neither shows up in a render test, in `tsc --noEmit`, or in a build. They
  * show up in someone else's project.
+ *
+ * The last group is the same failure mode one level in: the styling a caller
+ * passes. A `className` dropped on the floor, or a slot offered and never read,
+ * leaves a component that looks exactly right in every test here — because
+ * nothing here passes it one — and does nothing at all in a consumer's app.
  */
 import { describe, expect, it } from 'vitest';
 import pkg from '../../package.json';
@@ -50,6 +55,155 @@ function relativeSpecifiers(source: string): string[] {
   return [...source.matchAll(/(?:^|\n)\s*(?:import|export)[\s\S]*?from\s*['"](\.[^'"]*)['"]/g)].map(
     (match) => match[1]
   );
+}
+
+/**
+ * Every JSX opening tag in a module, as text.
+ *
+ * Crude on purpose. It walks from a `<Name` to the `>` that closes that tag,
+ * counting braces so a `className={cx(a > b ? …)}` cannot end it early. It is
+ * not a parser and does not need to be: the only question asked of it is
+ * whether *one element* carries both a spread and an attribute of its own.
+ */
+function openingTags(source: string): string[] {
+  const tags: string[] = [];
+  const opener = /<[A-Za-z][\w.]*/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = opener.exec(source)) !== null) {
+    let depth = 0;
+    let index = match.index;
+
+    while (index < source.length) {
+      const character = source[index];
+
+      if (character === '{') depth += 1;
+      else if (character === '}') depth -= 1;
+      else if (character === '>' && depth === 0) break;
+
+      index += 1;
+    }
+
+    tags.push(source.slice(match.index, index));
+  }
+
+  return tags;
+}
+
+/**
+ * The same thing in the other shape a component can be written in.
+ *
+ * Twenty-eight components render through Base UI's `useRender`, which takes the
+ * element's attributes as an *object* rather than as a tag — so a scan that
+ * only reads JSX would have nothing to say about Box, Button, Typography or any
+ * other component with a `render` prop.
+ *
+ * Only the top level of the object is kept: a nested `style: { ...slots }` is a
+ * value, not an attribute of the element, and reading it as one would report
+ * every component that mixes its colour slots into a caller's style.
+ */
+function renderPropsObjects(source: string): string[] {
+  const objects: string[] = [];
+
+  for (const match of source.matchAll(/\bprops:\s*\{/g)) {
+    let index = match.index + match[0].length - 1;
+    let depth = 0;
+    const top: string[] = [];
+
+    while (index < source.length) {
+      const character = source[index];
+
+      if (character === '{') {
+        depth += 1;
+        if (depth > 1) top.push(' ');
+      } else if (character === '}') {
+        depth -= 1;
+        if (depth === 0) break;
+        top.push(' ');
+      } else {
+        top.push(depth === 1 ? character : ' ');
+      }
+
+      index += 1;
+    }
+
+    objects.push(top.join(''));
+  }
+
+  return objects;
+}
+
+/**
+ * An element that spreads its props *and* writes an attribute of its own, in a
+ * module that never took that attribute out of the props first.
+ *
+ * `<div {...props} className={ours} />` type-checks, renders, and throws away
+ * the class name the caller passed. Written the other way round it throws away
+ * the component's own instead. Both are invisible in this repository — the
+ * component looks right, because nothing here passes it one — and both are a
+ * caller's styling silently doing nothing in their project.
+ */
+function spreadCollisions(attribute: string): string[] {
+  const offenders: string[] = [];
+  const destructured = new RegExp(`(^|[\\s{,])${attribute},`);
+  const inTag = new RegExp(`(^|\\s)${attribute}=\\{`);
+  const inObject = new RegExp(`(^|[\\s{])${attribute}\\s*:`);
+
+  for (const [path, source] of Object.entries(sources)) {
+    if (destructured.test(source)) {
+      continue;
+    }
+
+    for (const tag of openingTags(source)) {
+      if (/\{\.\.\.[A-Za-z]/.test(tag) && inTag.test(tag)) {
+        offenders.push(`${path}: ${tag.split('\n')[0]}`);
+      }
+    }
+
+    for (const object of renderPropsObjects(source)) {
+      if (/\.\.\.[A-Za-z]/.test(object) && inObject.test(object)) {
+        offenders.push(`${path}: useRender props`);
+      }
+    }
+  }
+
+  return offenders;
+}
+
+/** The four slots every field-shaped component has, from `NebaFieldSlot`. */
+const fieldSlots = ['label', 'control', 'description', 'error'];
+
+/** Every `classNames?: NebaSlots<X>` in the library, with the names `X` holds. */
+function slotUnions(): Array<{ path: string; name: string; slots: string[]; source: string }> {
+  const unions: Array<{ path: string; name: string; slots: string[]; source: string }> = [];
+
+  for (const [path, source] of Object.entries(sources)) {
+    const referenced = new Set([...source.matchAll(/NebaSlots<(\w+)>/g)].map((match) => match[1]));
+
+    for (const name of referenced) {
+      const declaration = source.match(new RegExp(`export type ${name} =([\\s\\S]*?);`));
+
+      unions.push({
+        path,
+        name,
+        source,
+        slots: declaration === null ? [] : slotNames(declaration[1])
+      });
+    }
+  }
+
+  return unions;
+}
+
+/** The literals a slot union resolves to, following `NebaFieldSlot` and `Exclude`. */
+function slotNames(union: string): string[] {
+  const excluded = new Set(
+    [...union.matchAll(/Exclude<[^,]+,\s*'([^']+)'\s*>/g)].map((match) => match[1])
+  );
+  const named = [...union.matchAll(/'([a-zA-Z]+)'/g)].map((match) => match[1]);
+  const inherited = union.includes('NebaFieldSlot') ? fieldSlots : [];
+
+  return [...new Set([...named, ...inherited])].filter((slot) => !excluded.has(slot));
 }
 
 describe('the published package', () => {
@@ -226,6 +380,62 @@ describe('the published package', () => {
           expect(typeof value, `${name}.${key}`).toBe('string');
         }
       }
+    });
+  });
+  /**
+   * What a caller writes on a component, and whether it survives.
+   *
+   * Both halves of this fail the way the rest of this file's subjects do:
+   * silently, and somewhere else. A dropped `className` renders a component
+   * that looks exactly right here, because nothing in this repository passes
+   * one to it; a slot offered and never read is a prop that type-checks, reads
+   * as supported, and does nothing at all.
+   */
+  describe('keeps the styling it was handed', () => {
+    it('takes the class name out of the props it spreads', () => {
+      expect(spreadCollisions('className')).toEqual([]);
+    });
+
+    it('takes the style out of the props it spreads', () => {
+      expect(spreadCollisions('style')).toEqual([]);
+    });
+
+    it('declares every slot union beside the component that offers it', () => {
+      const orphans = slotUnions()
+        .filter((union) => union.slots.length === 0)
+        .map((union) => `${union.path}: ${union.name}`);
+
+      expect(orphans).toEqual([]);
+    });
+
+    /**
+     * `className` is the root on every component in the library. A `root` key
+     * beside it would be a second spelling of an idea that already has one,
+     * which is the whole thing `src/types.ts` exists to prevent.
+     */
+    it('never offers a `root` slot beside `className`', () => {
+      const offenders = slotUnions()
+        .filter((union) => union.slots.includes('root'))
+        .map((union) => `${union.path}: ${union.name}`);
+
+      expect(offenders).toEqual([]);
+    });
+
+    it('reads every slot it offers', () => {
+      const unread: string[] = [];
+
+      for (const union of slotUnions()) {
+        for (const slot of union.slots) {
+          if (
+            !union.source.includes(`classNames?.${slot}`) &&
+            !union.source.includes(`classNames.${slot}`)
+          ) {
+            unread.push(`${union.path}: ${union.name}.${slot}`);
+          }
+        }
+      }
+
+      expect(unread).toEqual([]);
     });
   });
 });
