@@ -83,6 +83,15 @@ export const id: NebaLocale = {
     expand: 'Tampilkan langkah tersembunyi'
   },
   anchor: { label: 'Di halaman ini' },
+  transfer: {
+    source: 'Tersedia',
+    target: 'Terpilih',
+    toTarget: 'Pindahkan ke terpilih',
+    toSource: 'Kembalikan ke tersedia',
+    search: 'Cari',
+    selectAll: 'Pilih semua',
+    empty: 'Tidak ada apa pun'
+  },
   combobox: {
     empty: 'Tidak ada yang cocok',
     remove: 'Hapus {label}'

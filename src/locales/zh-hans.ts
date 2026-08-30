@@ -86,6 +86,15 @@ export const zhHans: NebaLocale = {
     expand: '显示隐藏的层级'
   },
   anchor: { label: '本页内容' },
+  transfer: {
+    source: '可选',
+    target: '已选',
+    toTarget: '移到已选',
+    toSource: '移回可选',
+    search: '搜索',
+    selectAll: '全选',
+    empty: '这里没有内容'
+  },
   combobox: {
     empty: '无匹配项',
     remove: '移除 {label}'

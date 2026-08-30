@@ -83,6 +83,15 @@ export const tr: NebaLocale = {
     expand: 'Gizli adımları göster'
   },
   anchor: { label: 'Bu sayfada' },
+  transfer: {
+    source: 'Kullanılabilir',
+    target: 'Seçili',
+    toTarget: 'Seçilenlere taşı',
+    toSource: 'Kullanılabilire geri al',
+    search: 'Ara',
+    selectAll: 'Tümünü seç',
+    empty: 'Burada bir şey yok'
+  },
   combobox: {
     empty: 'Eşleşme yok',
     remove: '{label} kaldır'

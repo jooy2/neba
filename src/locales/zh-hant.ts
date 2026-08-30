@@ -86,6 +86,15 @@ export const zhHant: NebaLocale = {
     expand: '顯示隱藏的層級'
   },
   anchor: { label: '本頁內容' },
+  transfer: {
+    source: '可選',
+    target: '已選',
+    toTarget: '移到已選',
+    toSource: '移回可選',
+    search: '搜尋',
+    selectAll: '全選',
+    empty: '這裡沒有內容'
+  },
   combobox: {
     empty: '沒有相符的項目',
     remove: '移除 {label}'

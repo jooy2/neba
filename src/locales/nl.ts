@@ -83,6 +83,15 @@ export const nl: NebaLocale = {
     expand: 'Verborgen stappen tonen'
   },
   anchor: { label: 'Op deze pagina' },
+  transfer: {
+    source: 'Beschikbaar',
+    target: 'Geselecteerd',
+    toTarget: 'Naar geselecteerd verplaatsen',
+    toSource: 'Terug naar beschikbaar',
+    search: 'Zoeken',
+    selectAll: 'Alles selecteren',
+    empty: 'Niets aanwezig'
+  },
   combobox: {
     empty: 'Geen resultaten',
     remove: '{label} verwijderen'

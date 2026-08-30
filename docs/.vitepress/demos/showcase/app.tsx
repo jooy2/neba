@@ -117,6 +117,7 @@ import {
   Timeline,
   TimelineChart,
   TimelineItem,
+  Transfer,
   TreeItem,
   TreeView,
   ToastProvider,
@@ -1054,7 +1055,7 @@ function ShowcaseBody() {
         {/* Twelve thousand rows on the same page as everything else, with about
             thirty of them in the DOM at a time. */}
         <section className="flex flex-col gap-3">
-          <Caption>DataTable · virtual scroll · selection · sorting · search</Caption>
+          <Caption>DataTable · virtual scroll · selection · sorting · search · Transfer</Caption>
           <DataTable
             headers={TRACE_COLUMNS}
             items={TRACES}
@@ -1068,6 +1069,26 @@ function ShowcaseBody() {
             striped
             footer
             label="Recent traces"
+          />
+
+          {/* Which of those columns are drawn — the long choice the table's own
+              View menu would have to hold thirty checkboxes for. */}
+          <Transfer
+            size="sm"
+            height={132}
+            searchable
+            sourceLabel="Hidden columns"
+            targetLabel="Shown columns"
+            items={[
+              { value: 'id', label: 'Trace id', disabled: true },
+              { value: 'route', label: 'Route' },
+              { value: 'status', label: 'Status' },
+              { value: 'duration', label: 'Duration' },
+              { value: 'region', label: 'Region' },
+              { value: 'runtime', label: 'Runtime' },
+              { value: 'cold', label: 'Cold start' }
+            ]}
+            defaultValue={['route', 'status', 'duration']}
           />
         </section>
 

@@ -83,6 +83,15 @@ export const ru: NebaLocale = {
     expand: 'Показать скрытые шаги'
   },
   anchor: { label: 'На этой странице' },
+  transfer: {
+    source: 'Доступные',
+    target: 'Выбранные',
+    toTarget: 'Переместить в выбранные',
+    toSource: 'Вернуть в доступные',
+    search: 'Поиск',
+    selectAll: 'Выбрать все',
+    empty: 'Здесь пусто'
+  },
   combobox: {
     empty: 'Совпадений нет',
     remove: 'Удалить {label}'

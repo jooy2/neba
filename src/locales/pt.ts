@@ -83,6 +83,15 @@ export const pt: NebaLocale = {
     expand: 'Mostrar as etapas ocultas'
   },
   anchor: { label: 'Nesta página' },
+  transfer: {
+    source: 'Disponíveis',
+    target: 'Selecionados',
+    toTarget: 'Mover para selecionados',
+    toSource: 'Devolver para disponíveis',
+    search: 'Pesquisar',
+    selectAll: 'Selecionar tudo',
+    empty: 'Nada aqui'
+  },
   combobox: {
     empty: 'Nenhuma correspondência',
     remove: 'Remover {label}'

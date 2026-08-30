@@ -83,6 +83,15 @@ export const pl: NebaLocale = {
     expand: 'Pokaż ukryte kroki'
   },
   anchor: { label: 'Na tej stronie' },
+  transfer: {
+    source: 'Dostępne',
+    target: 'Wybrane',
+    toTarget: 'Przenieś do wybranych',
+    toSource: 'Przenieś do dostępnych',
+    search: 'Szukaj',
+    selectAll: 'Zaznacz wszystko',
+    empty: 'Nic tu nie ma'
+  },
   combobox: {
     empty: 'Brak wyników',
     remove: 'Usuń {label}'

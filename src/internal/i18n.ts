@@ -396,6 +396,37 @@ export const breadcrumbMessages: MessageTable<BreadcrumbMessages> = {
   }
 };
 
+/** Transfer. */
+export interface TransferMessages {
+  /** The heading over the list of everything not yet chosen. */
+  source: string;
+  /** And over the list of what has been. */
+  target: string;
+  /** The button that moves the ticked rows to the right-hand list. */
+  toTarget: string;
+  /** And the one that sends them back. */
+  toSource: string;
+  /** The placeholder in each list's filter. */
+  search: string;
+  /** The tick above a list that takes every row in it at once. */
+  selectAll: string;
+  /** The line where the rows would be, when a list has none. */
+  empty: string;
+}
+
+/** The `transfer` namespace, as Transfer read it. */
+export const transferMessages: MessageTable<TransferMessages> = {
+  '': {
+    source: 'Available',
+    target: 'Selected',
+    toTarget: 'Move to selected',
+    toSource: 'Move to available',
+    search: 'Search',
+    selectAll: 'Select all',
+    empty: 'Nothing here'
+  }
+};
+
 /** Anchor. */
 export interface AnchorMessages {
   /** Names the `<nav>` landmark. */
@@ -736,6 +767,8 @@ export interface NebaLocale {
   breadcrumb?: Partial<BreadcrumbMessages>;
   /** Anchor. */
   anchor?: Partial<AnchorMessages>;
+  /** Transfer. */
+  transfer?: Partial<TransferMessages>;
   /** Combobox. */
   combobox?: Partial<ComboboxMessages>;
   /** Overlay. */
@@ -766,6 +799,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   scroll: scrollMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,
   anchor: anchorMessages as MessageTable<never>,
+  transfer: transferMessages as MessageTable<never>,
   combobox: comboboxMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
   window: windowMessages as MessageTable<never>,

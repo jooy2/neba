@@ -83,6 +83,15 @@ export const ko: NebaLocale = {
     expand: '숨겨진 단계 보기'
   },
   anchor: { label: '이 페이지의 내용' },
+  transfer: {
+    source: '선택 가능',
+    target: '선택함',
+    toTarget: '선택함으로 이동',
+    toSource: '선택 가능으로 되돌리기',
+    search: '검색',
+    selectAll: '모두 선택',
+    empty: '항목이 없습니다'
+  },
   combobox: {
     empty: '일치하는 항목 없음',
     remove: '{label} 삭제'

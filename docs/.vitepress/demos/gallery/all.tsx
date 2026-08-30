@@ -127,6 +127,7 @@ import {
   ToggleGroup,
   Toolbar,
   Tooltip,
+  Transfer,
   TreeItem,
   TreeView,
   Typography,
@@ -627,6 +628,27 @@ const GROUPS: Group[] = [
               <FloatingAction label="Note" />
             </FloatingActionButton>
           </div>
+        )
+      },
+      {
+        name: 'Transfer',
+        summary: {
+          ko: '두 목록과 그 사이의 화살표',
+          en: 'Two lists and the arrows between them'
+        },
+        path: '/components/inputs/transfer',
+        preview: (
+          <Transfer
+            size="xs"
+            height={92}
+            className="max-w-64"
+            items={[
+              { value: 'status', label: 'Status' },
+              { value: 'commit', label: 'Commit' },
+              { value: 'author', label: 'Author' }
+            ]}
+            defaultValue={['status']}
+          />
         )
       },
       {

@@ -83,6 +83,15 @@ export const de: NebaLocale = {
     expand: 'Ausgeblendete Schritte anzeigen'
   },
   anchor: { label: 'Auf dieser Seite' },
+  transfer: {
+    source: 'Verfügbar',
+    target: 'Ausgewählt',
+    toTarget: 'Zu Ausgewählt verschieben',
+    toSource: 'Zurück zu Verfügbar',
+    search: 'Suchen',
+    selectAll: 'Alle auswählen',
+    empty: 'Nichts vorhanden'
+  },
   combobox: {
     empty: 'Keine Treffer',
     remove: '{label} entfernen'

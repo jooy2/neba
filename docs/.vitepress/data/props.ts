@@ -3747,6 +3747,119 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Transfer: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '두 패널의 표면 무게',
+        en: 'Weight of the surface each of the two panels draws'
+      }
+    }).filter((row) => row.name !== 'elevation'),
+    {
+      name: 'items',
+      type: 'readonly TransferItem[]',
+      required: true,
+      description: {
+        ko: '양쪽에 놓일 수 있는 모든 것. 두 목록이 보여주는 순서 그대로입니다',
+        en: 'Everything that can be on either side, in the order the lists show it'
+      }
+    },
+    {
+      name: 'value',
+      type: 'readonly string[]',
+      description: {
+        ko: '오른쪽에 있는 것들. onValueChange와 함께 쓰면 controlled 컴포넌트가 됩니다',
+        en: 'What is on the right. With onValueChange it makes the pair controlled'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'readonly string[]',
+      description: {
+        ko: '처음에 오른쪽에 있는 것들 (uncontrolled)',
+        en: 'What starts on the right, uncontrolled'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string[]) => void',
+      description: { ko: '무언가 옮겨질 때마다 호출됩니다', en: 'Fired whenever something moves' }
+    },
+    {
+      name: 'sourceLabel',
+      type: 'ReactNode',
+      description: {
+        ko: '왼쪽 목록의 제목. 기본값은 locale의 표현입니다',
+        en: "The heading over the left-hand list. Defaults to the locale's word"
+      }
+    },
+    {
+      name: 'targetLabel',
+      type: 'ReactNode',
+      description: { ko: '오른쪽 목록의 제목', en: 'And over the right-hand one' }
+    },
+    {
+      name: 'searchable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '각 목록 위에 필터를 둡니다. 행을 숨길 뿐 옮기지는 않습니다',
+        en: 'Puts a filter above each list. It hides rows; it never moves them'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      default: '220',
+      description: {
+        ko: '각 목록의 높이. 숫자는 px입니다',
+        en: 'How tall each list is. Numbers are pixels'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '아무것도 체크되거나 옮겨지지 않습니다',
+        en: 'Nothing can be ticked or moved'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 제목·버튼·필터를 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag the headings, buttons and filter are written in. Unsupported tags fall back to English'
+      }
+    }
+  ],
+
+  TransferItem: [
+    {
+      name: 'value',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '항목을 식별하는 값. value가 이것들의 목록입니다',
+        en: 'What identifies it, and what value is a list of'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '행에 쓰이는 말', en: 'What the row says' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '목록에는 있지만 옮길 수 없습니다', en: 'In the list but not movable' }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

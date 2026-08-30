@@ -83,6 +83,15 @@ export const ja: NebaLocale = {
     expand: '省略された階層を表示'
   },
   anchor: { label: 'このページの内容' },
+  transfer: {
+    source: '未選択',
+    target: '選択済み',
+    toTarget: '選択済みに移動',
+    toSource: '未選択に戻す',
+    search: '検索',
+    selectAll: 'すべて選択',
+    empty: '項目がありません'
+  },
   combobox: {
     empty: '一致する項目がありません',
     remove: '{label} を削除'

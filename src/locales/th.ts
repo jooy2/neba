@@ -83,6 +83,15 @@ export const th: NebaLocale = {
     expand: 'แสดงขั้นตอนที่ซ่อนอยู่'
   },
   anchor: { label: 'ในหน้านี้' },
+  transfer: {
+    source: 'ที่มีอยู่',
+    target: 'ที่เลือก',
+    toTarget: 'ย้ายไปที่เลือก',
+    toSource: 'ย้ายกลับไปที่มีอยู่',
+    search: 'ค้นหา',
+    selectAll: 'เลือกทั้งหมด',
+    empty: 'ไม่มีรายการ'
+  },
   combobox: {
     empty: 'ไม่พบรายการที่ตรงกัน',
     remove: 'นำ {label} ออก'

@@ -83,6 +83,15 @@ export const ar: NebaLocale = {
     expand: 'إظهار الخطوات المخفية'
   },
   anchor: { label: 'في هذه الصفحة' },
+  transfer: {
+    source: 'المتاح',
+    target: 'المحدد',
+    toTarget: 'النقل إلى المحدد',
+    toSource: 'الإرجاع إلى المتاح',
+    search: 'بحث',
+    selectAll: 'تحديد الكل',
+    empty: 'لا شيء هنا'
+  },
   combobox: {
     empty: 'لا توجد نتائج مطابقة',
     remove: 'إزالة {label}'

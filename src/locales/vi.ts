@@ -83,6 +83,15 @@ export const vi: NebaLocale = {
     expand: 'Hiện các bước đã ẩn'
   },
   anchor: { label: 'Trên trang này' },
+  transfer: {
+    source: 'Có sẵn',
+    target: 'Đã chọn',
+    toTarget: 'Chuyển sang đã chọn',
+    toSource: 'Trả về có sẵn',
+    search: 'Tìm kiếm',
+    selectAll: 'Chọn tất cả',
+    empty: 'Không có gì ở đây'
+  },
   combobox: {
     empty: 'Không có kết quả',
     remove: 'Gỡ bỏ {label}'

@@ -270,7 +270,7 @@ docs/{ko,en}/
 
 The groups are folders, and which one a component belongs in is decided by what it does rather than by what it looks like:
 
-- **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, Toggle, ToggleGroup, Form, Fieldset, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu, Menubar, NavigationMenu, FilePicker, Pagination, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker.
+- **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, Toggle, ToggleGroup, Form, Fieldset, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu, Menubar, NavigationMenu, FilePicker, Transfer, Pagination, ColorPicker, DatePicker, TimePicker, DateTimePicker, DateRangePicker.
 - **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AvatarGroup, AppLogo, Icon, Shortcut, List, DataList, Table, CodeBlock, Timeline, Breadcrumb, Anchor, TreeView.
 - **`charts`** — it draws numbers. Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart. Statistic lives here rather than in `display` because what a reader is looking for is not "a component that shows a value" but "the place the charts are", and a number with a delta on it is the smallest chart on the page. The group is also what the shared data model is documented against: every one of them takes the same `series`/`data`, so the pages cross-reference one definition rather than each restating it.
 - **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox, Meter.

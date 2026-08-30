@@ -83,6 +83,15 @@ export const hi: NebaLocale = {
     expand: 'छिपे हुए चरण दिखाएँ'
   },
   anchor: { label: 'इस पृष्ठ पर' },
+  transfer: {
+    source: 'उपलब्ध',
+    target: 'चयनित',
+    toTarget: 'चयनित में ले जाएँ',
+    toSource: 'उपलब्ध में वापस भेजें',
+    search: 'खोजें',
+    selectAll: 'सभी चुनें',
+    empty: 'यहाँ कुछ नहीं है'
+  },
   combobox: {
     empty: 'कोई मिलान नहीं',
     remove: '{label} हटाएँ'
