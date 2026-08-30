@@ -210,10 +210,10 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `Chip`                        | 3.0 kB   | 3.0 kB                      |
 | `LineChart`                   | 11.3 kB  | 9.8 kB                      |
 | `CodeBlock`                   | 4.9 kB   | 4.9 kB                      |
-| 12 components — a typical app | 67.2 kB  | 10.7 kB                     |
-| 25 components — a large one   | 111.4 kB | 16.5 kB                     |
+| 12 components — a typical app | 67.3 kB  | 10.8 kB                     |
+| 25 components — a large one   | 111.7 kB | 16.8 kB                     |
 | a whole page shell            | 28.4 kB  | 8.8 kB                      |
-| all 146 exports               | 240.3 kB | 113.9 kB                    |
+| all 146 exports               | 240.7 kB | 114.3 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
