@@ -16,6 +16,7 @@ export * from './components/animate-zoom/index.js';
 export * from './components/area-chart/index.js';
 export * from './components/aspect-ratio/index.js';
 export * from './components/avatar/index.js';
+export * from './components/avatar-group/index.js';
 export * from './components/badge/index.js';
 export * from './components/bar-chart/index.js';
 export * from './components/blockquote/index.js';

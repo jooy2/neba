@@ -3467,6 +3467,90 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  AvatarGroup: [
+    {
+      name: 'max',
+      type: 'number',
+      description: {
+        ko: '나머지가 숫자가 되기 전까지 그려지는 아바타 개수. 지정하지 않으면 전부 그립니다',
+        en: 'How many avatars are drawn before the rest become a count. Left out, every one of them is drawn'
+      }
+    },
+    {
+      name: 'total',
+      type: 'number',
+      description: {
+        ko: '전체 인원 수. 앞의 몇 명만 전달받은 그룹을 위한 것으로, 없으면 children 개수로 계산합니다',
+        en: 'How many there are altogether, for a group handed only the first few. Without it the count comes from the children'
+      }
+    },
+    {
+      name: 'overlap',
+      type: 'number | string',
+      description: {
+        ko: '각 아바타가 앞선 아바타 아래로 들어가는 거리. 숫자는 px입니다. 지정하지 않으면 size의 일정 비율입니다',
+        en: 'How far each avatar sits under the one before it. Numbers are pixels; left out it is a fraction of size'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '그룹 안의 모든 아바타의 크기',
+        en: 'The size of every avatar in the group'
+      }
+    },
+    {
+      name: 'shape',
+      type: "'circle' | 'square'",
+      default: "'circle'",
+      description: {
+        ko: '그룹 안의 모든 아바타의 크롭',
+        en: 'The crop of every avatar in the group'
+      }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'text'",
+      shared: true,
+      description: {
+        ko: '그룹 안의 모든 아바타의 표면 무게',
+        en: 'The weight of the surface behind every fallback in the group'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '그룹 안의 모든 아바타의 색 역할',
+        en: 'The colour role of every avatar in the group'
+      }
+    },
+    {
+      name: 'elevation',
+      type: ELEVATION,
+      default: '0',
+      shared: true,
+      description: {
+        ko: '그룹 안의 모든 아바타의 그림자 깊이',
+        en: 'Drop shadow depth for every avatar in the group'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'Avatar들. 첫 번째가 맨 위에 옵니다',
+        en: 'The avatars. The first one is on top'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

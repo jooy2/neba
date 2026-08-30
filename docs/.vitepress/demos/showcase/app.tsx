@@ -12,6 +12,7 @@ import {
   AreaChart,
   AspectRatio,
   Avatar,
+  AvatarGroup,
   Badge,
   BarChart,
   Blockquote,
@@ -556,7 +557,7 @@ function ShowcaseBody() {
           rule facing the content, and the one live readout on the screen sitting
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
-          <Caption>Toolbar · Icon · IconButton · Pill · Avatar · Breadcrumb</Caption>
+          <Caption>Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb</Caption>
           <Toolbar
             render={<header />}
             variant="solid"
@@ -580,6 +581,12 @@ function ShowcaseBody() {
                     color="secondary"
                   />
                 </Badge>
+                <AvatarGroup size="sm" max={3} total={9}>
+                  <Avatar name="Kim Minji" />
+                  <Avatar name="Alex Park" />
+                  <Avatar name="Sam Lee" />
+                  <Avatar name="Noa Cohen" />
+                </AvatarGroup>
                 <Badge dot color="success" overlap="circle" label="Online">
                   <Avatar size="sm" name="Jane Doe" />
                 </Badge>

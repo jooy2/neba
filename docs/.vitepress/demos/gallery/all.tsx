@@ -18,6 +18,7 @@ import {
   AreaChart,
   AspectRatio,
   Avatar,
+  AvatarGroup,
   Badge,
   BarChart,
   Blockquote,
@@ -1553,6 +1554,22 @@ const GROUPS: Group[] = [
               <TreeItem value="readme" label="README.md" />
             </TreeView>
           </div>
+        )
+      },
+      {
+        name: 'AvatarGroup',
+        summary: {
+          ko: '겹쳐 쌓인 아바타와, 남은 수',
+          en: 'A stack of avatars, and the count that did not fit'
+        },
+        path: '/components/display/avatar-group',
+        preview: (
+          <AvatarGroup size="sm" max={3} total={12}>
+            <Avatar name="Jane Doe" />
+            <Avatar name="Kim Minji" />
+            <Avatar name="Alex Park" />
+            <Avatar name="Sam Lee" />
+          </AvatarGroup>
         )
       },
       {
