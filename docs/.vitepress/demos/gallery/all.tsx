@@ -74,6 +74,9 @@ import {
   MenubarMenu,
   Meter,
   Mockup,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
   NumberField,
   OtpField,
   Overlay,
@@ -620,6 +623,23 @@ const GROUPS: Group[] = [
               <FloatingAction label="Note" />
             </FloatingActionButton>
           </div>
+        )
+      },
+      {
+        name: 'NavigationMenu',
+        summary: {
+          ko: '패널이 열리는 사이트 내비게이션',
+          en: "A site's navigation, with panels that open"
+        },
+        path: '/components/inputs/navigation-menu',
+        preview: (
+          <NavigationMenu size="sm" aria-label="Gallery">
+            <NavigationMenuItem label="Product">
+              <NavigationMenuLink href="#analytics" title="Analytics" description="Every number." />
+              <NavigationMenuLink href="#pipelines" title="Pipelines" />
+            </NavigationMenuItem>
+            <NavigationMenuItem label="Pricing" href="#pricing" />
+          </NavigationMenu>
         )
       },
       {

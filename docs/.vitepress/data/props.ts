@@ -3282,6 +3282,191 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  NavigationMenu: [
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '항목의 높이와 타입 스케일. 패널 안의 링크까지 함께 따라갑니다',
+        en: 'The height and type scale of the items, and of the links in the panels'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '열린 항목과 패널의 가장자리가 띠는 색 역할',
+        en: 'The role the open item and the panel edge carry'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '가로 여백만 바꿉니다', en: 'Horizontal padding only' }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '줄이 이어지는 방향. vertical은 패널이 옆으로 열리는 내비게이션 레일이 됩니다',
+        en: 'Which way the row runs. Vertical is a nav rail whose panels open beside it'
+      }
+    },
+    {
+      name: 'value',
+      type: 'string | null',
+      description: {
+        ko: '어느 항목의 패널이 열려 있는지. nullish면 닫힌 상태입니다',
+        en: "Which item's panel is open, by its value. Nullish means closed"
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | null',
+      description: {
+        ko: '처음에 열려 있는 항목 (uncontrolled)',
+        en: 'Which starts open, uncontrolled'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | null) => void',
+      description: {
+        ko: '열린 항목이 바뀔 때마다 호출됩니다',
+        en: 'Fired whenever the open item changes'
+      }
+    },
+    {
+      name: 'delay',
+      type: 'number',
+      default: '50',
+      description: {
+        ko: '패널이 열리기까지 포인터가 머물러야 하는 시간 (ms)',
+        en: 'How long the pointer rests before a panel opens, in milliseconds'
+      }
+    },
+    {
+      name: 'closeDelay',
+      type: 'number',
+      default: '50',
+      description: {
+        ko: '포인터가 떠난 뒤 패널이 남아 있는 시간 (ms)',
+        en: 'How long a panel stays after the pointer leaves, in milliseconds'
+      }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '8',
+      description: { ko: '줄과 패널 사이의 거리 (px)', en: 'Distance from the row, in pixels' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'NavigationMenuItem들', en: 'The items' }
+    }
+  ],
+
+  NavigationMenuItem: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '줄에 놓이는 단어', en: 'The word in the row' }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '패널을 여는 대신 그냥 링크가 되게 합니다. href가 있고 children이 없는 항목은 목적지이며, 그렇게 안내됩니다',
+        en: 'Makes the item a plain link rather than something that opens a panel. An item with an href and no children is a destination, and it is announced as one'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크가 열리는 곳. href가 없으면 무시됩니다',
+        en: 'Where the link opens. Ignored without href'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '단어 앞의 내용', en: 'Content before the label' }
+    },
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: 'controlled 메뉴에서 이 항목을 식별하는 값',
+        en: 'Identifies the item, for a controlled menu'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 단어는 줄에 남고 아무것도 열지 않습니다',
+        en: 'Unavailable. The word stays in the row and opens nothing'
+      }
+    },
+    {
+      name: 'columns',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '패널이 링크를 몇 개의 열로 배치할지',
+        en: 'How many columns the panel lays its links out in'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '패널의 내용. 보통 NavigationMenuLink들입니다',
+        en: "The panel's contents — usually NavigationMenuLinks"
+      }
+    }
+  ],
+
+  NavigationMenuLink: [
+    {
+      name: 'href',
+      type: 'string',
+      required: true,
+      description: { ko: '가는 곳', en: 'Where it goes' }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '행의 이름', en: "The row's name" }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '그 아래 한 줄. 한 단계 아래 스케일에 흐린 색',
+        en: 'A second line under it, one step down the scale and muted'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '제목 앞의 글리프', en: 'A glyph before the title' }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

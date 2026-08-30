@@ -63,6 +63,7 @@ export * from './components/menu/index.js';
 export * from './components/menubar/index.js';
 export * from './components/meter/index.js';
 export * from './components/mockup/index.js';
+export * from './components/navigation-menu/index.js';
 export * from './components/number-field/index.js';
 export * from './components/otp-field/index.js';
 export * from './components/overlay/index.js';

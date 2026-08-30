@@ -70,6 +70,9 @@ import {
   MenubarMenu,
   Meter,
   Mockup,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
   NumberField,
   OtpField,
   Overlay,
@@ -598,7 +601,7 @@ function ShowcaseBody() {
           takes the whole window: the four regions a document is divided into,
           and the landmarks that come with them. */}
         <section className="flex flex-col gap-3">
-          <Caption>PageLayout · Header · Sidebar · Footer · AppLogo</Caption>
+          <Caption>PageLayout · Header · Sidebar · Footer · AppLogo · NavigationMenu</Caption>
           <div className="h-72 w-full overflow-hidden rounded-(--neba-radius-md) border border-(--neba-border)">
             <PageLayout
               height="auto"
@@ -622,7 +625,23 @@ function ShowcaseBody() {
                       Deploy
                     </Button>
                   }
-                />
+                >
+                  <NavigationMenu size="xs" aria-label="Product">
+                    <NavigationMenuItem label="Product">
+                      <NavigationMenuLink
+                        href="#analytics"
+                        title="Analytics"
+                        description="Every number the product produces."
+                      />
+                      <NavigationMenuLink
+                        href="#pipelines"
+                        title="Pipelines"
+                        description="Builds, tests and deploys."
+                      />
+                    </NavigationMenuItem>
+                    <NavigationMenuItem label="Docs" href="#docs" />
+                  </NavigationMenu>
+                </Header>
               }
               sidebar={
                 <Sidebar size="sm" width={168} label="Sections" title="Sections">
