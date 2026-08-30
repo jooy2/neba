@@ -209,34 +209,6 @@ export function nextSort(
 }
 
 /* ---------------------------------------------------------------------------
- * Searching
- * ------------------------------------------------------------------------- */
-
-/**
- * A cell value as something a query can be matched against.
- *
- * Case-folded and stripped of combining marks, so `jose` finds `José` and
- * `SEOUL` finds `Seoul`. `NFD` splits an accented letter into the letter and
- * its accent and the range then deletes the accent; a search field is the one
- * place where losing that distinction is the point.
- *
- * A `Date` is deliberately *not* formatted here. What a reader sees in the cell
- * came out of the caller's `render`, and guessing a format the search would
- * agree with is how a table ends up not finding a date that is on the screen —
- * a column that wants its dates searchable gives them a `value`.
- */
-export function searchText(value: unknown): string {
-  if (value === null || value === undefined || typeof value === 'object') {
-    return '';
-  }
-
-  return String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-}
-
-/* ---------------------------------------------------------------------------
  * Paging
  * ------------------------------------------------------------------------- */
 

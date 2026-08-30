@@ -16,12 +16,12 @@ import {
   minColumnWidth,
   nextSort,
   pageBounds,
-  searchText,
   sortRows,
   virtualWindow,
   type SortEntry
 } from '../../internal/data-table.js';
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
+import { searchHaystack, searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
@@ -584,6 +584,41 @@ export function DataTable<Row>({
 
   const [uncontrolledSearch, setUncontrolledSearch] = React.useState(defaultSearch ?? '');
   const query = (searchProp ?? uncontrolledSearch).trim();
+  const searching = query !== '' && !stages.has('filter');
+
+  const searchedColumns = React.useMemo(
+    () => columns.filter((column) => column.searchable !== false),
+    [columns]
+  );
+
+  /**
+   * Every row folded into one string, once.
+   *
+   * `searchText` normalizes and case-folds, and `normalize` is not cheap: done
+   * inside the filter it ran on every cell of every row for every keystroke,
+   * which on a hundred thousand rows of eight columns is eight hundred thousand
+   * calls per character typed. The fold depends on the rows and the columns and
+   * not on the query, so it is done when *those* change and a keystroke is left
+   * with an `includes` over a string that already exists.
+   *
+   * `null` until something is actually being searched for. A table nobody has
+   * typed at should not pay to be searchable.
+   */
+  const haystacks = React.useMemo(
+    () =>
+      !searching || searchedColumns.length === 0
+        ? null
+        : entries.map((entry) =>
+            searchHaystack(
+              searchedColumns.map((column) =>
+                column.value
+                  ? column.value(entry.row)
+                  : (entry.row as Record<string, unknown>)[column.key]
+              )
+            )
+          ),
+    [entries, searchedColumns, searching]
+  );
 
   const filtered = React.useMemo(() => {
     if (stages.has('filter')) {
@@ -591,24 +626,16 @@ export function DataTable<Row>({
     }
 
     const needle = searchText(query);
-    const searched = columns.filter((column) => column.searchable !== false);
 
-    let result = entries;
-
-    if (needle !== '' && searched.length > 0) {
-      result = result.filter((entry) =>
-        searched.some((column) => {
-          const value = column.value
-            ? column.value(entry.row)
-            : (entry.row as Record<string, unknown>)[column.key];
-
-          return searchText(value).includes(needle);
-        })
-      );
-    }
+    // Indexed by `origin`, which is the row's place in `items` and therefore
+    // its place in `entries` — so this holds however the rows are later sliced.
+    const result =
+      needle !== '' && haystacks
+        ? entries.filter((entry) => haystacks[entry.origin].includes(needle))
+        : entries;
 
     return filter ? result.filter((entry) => filter(entry.row, entry.origin)) : result;
-  }, [entries, columns, query, filter, stages]);
+  }, [entries, query, filter, stages, haystacks]);
 
   /*
    * The collator is built once per locale rather than per comparison: building

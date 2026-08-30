@@ -144,5 +144,31 @@ describe('Transfer', () => {
       await expect.element(screen.getByRole('checkbox', { name: 'Commit' })).toBeInTheDocument();
       expect(screen.getByRole('checkbox', { name: 'Status' }).query()).toBeNull();
     });
+
+    // The same fold a DataTable's search box uses. A reader who has learned
+    // what one search box in a product does has learned what the others do.
+    it('ignores case and accents, exactly as a table does', async () => {
+      const screen = await render(
+        <Transfer items={[{ value: 'region', label: 'Région' }, ...ITEMS.slice(1)]} searchable />
+      );
+
+      await screen.getByRole('textbox', { name: 'Search' }).first().fill('REGION');
+
+      await expect.element(screen.getByRole('checkbox', { name: 'Région' })).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Commit' }).query()).toBeNull();
+    });
+
+    it('keeps a row whose label is not a string', async () => {
+      // There is no text to match, and a row that vanished from a filter it
+      // could never satisfy is a row a reader cannot reach.
+      const screen = await render(
+        <Transfer items={[{ value: 'chip', label: <span>Chipped</span> }, ...ITEMS]} searchable />
+      );
+
+      await screen.getByRole('textbox', { name: 'Search' }).first().fill('zzzz');
+
+      await expect.element(screen.getByText('Chipped')).toBeInTheDocument();
+      expect(screen.getByRole('checkbox', { name: 'Status' }).query()).toBeNull();
+    });
   });
 });

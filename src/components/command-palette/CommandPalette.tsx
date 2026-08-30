@@ -5,6 +5,7 @@ import { Autocomplete } from '@base-ui/react/autocomplete';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { Shortcut } from '../shortcut/Shortcut.js';
 import { commandMessages, useMessages } from '../../internal/i18n.js';
+import { searchHaystack, searchText } from '../../internal/search.js';
 import {
   controlTextLeadingClasses,
   hasContent,
@@ -148,16 +149,15 @@ const rowClasses = [
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)'
 ].join(' ');
 
-/** Does the query appear in anything this command answers to? */
-function matches(item: CommandItem, query: string): boolean {
-  if (query === '') return true;
-
-  const needle = query.toLowerCase();
-
-  if (item.label.toLowerCase().includes(needle)) return true;
-  if (item.group?.toLowerCase().includes(needle)) return true;
-
-  return (item.keywords ?? []).some((word) => word.toLowerCase().includes(needle));
+/**
+ * Everything a command answers to, folded into one string.
+ *
+ * `searchHaystack` is the same fold a DataTable's search box uses, which is the
+ * point of it being shared: `cafe` finds `Café` in both, and a reader who has
+ * learned what one search box does has learned what the other does.
+ */
+function haystackOf(item: CommandItem): string {
+  return searchHaystack([item.label, item.group, ...(item.keywords ?? [])]);
 }
 
 /**
@@ -252,10 +252,16 @@ export function CommandPalette({
     // rebinds when the palette opens and closes and at no other time.
   }, [shortcut, setOpen]);
 
-  const filtered = React.useMemo(
-    () => items.filter((item) => matches(item, query)),
-    [items, query]
-  );
+  // Folded once per list rather than once per comparison — `searchText`
+  // normalizes, and doing that inside the filter puts a `normalize` on every
+  // command for every character typed.
+  const haystacks = React.useMemo(() => items.map(haystackOf), [items]);
+
+  const filtered = React.useMemo(() => {
+    const needle = searchText(query);
+
+    return needle === '' ? items : items.filter((_, index) => haystacks[index].includes(needle));
+  }, [items, haystacks, query]);
 
   const run = (item: CommandItem) => {
     if (item.disabled) return;

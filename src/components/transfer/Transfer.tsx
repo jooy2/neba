@@ -7,6 +7,7 @@ import { ScrollArea } from '../scroll-area/ScrollArea.js';
 import { TextField } from '../text-field/TextField.js';
 import { transferMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon } from '../../internal/icons.js';
+import { searchText } from '../../internal/search.js';
 import {
   fieldRestClasses,
   hasContent,
@@ -187,12 +188,22 @@ function Panel({
   );
 }
 
-/** Case-insensitive, and only against a label that is a string. */
-function matches(item: TransferItem, query: string): boolean {
-  if (query === '') return true;
-  if (typeof item.label !== 'string') return true;
+/**
+ * One side's rows, narrowed by what was typed at that side's box.
+ *
+ * The fold is `searchText`, the same one a DataTable and a CommandPalette use,
+ * so `cafe` finds `Café` on all three. A label that is a node rather than a
+ * string has no text to match and stays: the alternative is a row that
+ * disappears from a filter it could never satisfy.
+ */
+function narrow(rows: readonly TransferItem[], query: string): readonly TransferItem[] {
+  const needle = searchText(query);
 
-  return item.label.toLowerCase().includes(query.toLowerCase());
+  if (needle === '') return rows;
+
+  return rows.filter(
+    (item) => typeof item.label !== 'string' || searchText(item.label).includes(needle)
+  );
 }
 
 /**
@@ -241,8 +252,14 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(function
   const [targetSearch, setTargetSearch] = React.useState('');
 
   const chosen = React.useMemo(() => new Set(selected), [selected]);
-  const source = items.filter((item) => !chosen.has(item.value));
-  const target = items.filter((item) => chosen.has(item.value));
+  const source = React.useMemo(
+    () => items.filter((item) => !chosen.has(item.value)),
+    [items, chosen]
+  );
+  const target = React.useMemo(
+    () => items.filter((item) => chosen.has(item.value)),
+    [items, chosen]
+  );
 
   const commit = (next: string[]) => {
     if (value === undefined) setUncontrolled(next);
@@ -293,8 +310,8 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(function
     commit(next);
   };
 
-  const sourceRows = source.filter((item) => matches(item, sourceSearch));
-  const targetRows = target.filter((item) => matches(item, targetSearch));
+  const sourceRows = narrow(source, sourceSearch);
+  const targetRows = narrow(target, targetSearch);
   const canSend = sourceRows.some((item) => !item.disabled && ticked.has(item.value));
   const canReturn = targetRows.some((item) => !item.disabled && ticked.has(item.value));
   const listHeight = toLength(height);

@@ -82,6 +82,23 @@ describe('CommandPalette', () => {
       expect(screen.getByText('Go to overview').query()).toBeNull();
     });
 
+    // The same fold a DataTable's search box uses. A reader who has learned
+    // what one search box in a product does has learned what the others do.
+    it('ignores case and accents, exactly as a table does', async () => {
+      const screen = await render(
+        <CommandPalette
+          items={[{ value: 'cafe', label: 'Café settings' }, ...ITEMS]}
+          shortcut={false}
+          defaultOpen
+        />
+      );
+
+      await screen.getByRole('combobox').fill('CAFE');
+
+      await expect.element(screen.getByText('Café settings')).toBeInTheDocument();
+      expect(screen.getByText('Deploy production').query()).toBeNull();
+    });
+
     it('says so when nothing matched', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut={false} defaultOpen />);
 
