@@ -247,4 +247,44 @@ describe('Toast', () => {
       await expect.element(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Harness
+          options={{ title: 'Saved', description: 'The change is live.', actionLabel: 'Undo' }}
+          classNames={{
+            viewport: 'slot-viewport',
+            toast: 'slot-toast',
+            title: 'slot-title',
+            description: 'slot-description',
+            action: 'slot-action',
+            close: 'slot-close'
+          }}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+
+      const toast = screen.getByText('Saved').element().closest('.slot-toast');
+
+      expect(toast).not.toBeNull();
+      expect(toast?.closest('.slot-viewport')).not.toBeNull();
+      expect(screen.getByText('Saved').element()).toHaveClass('slot-title');
+      expect(screen.getByText('The change is live.').element()).toHaveClass('slot-description');
+      expect(screen.getByRole('button', { name: 'Undo' }).element()).toHaveClass('slot-action');
+      expect(toast?.querySelector('.slot-close')).not.toBeNull();
+    });
+
+    it("keeps the part's own class names alongside the one it was handed", async () => {
+      const screen = await render(
+        <Harness options={{ title: 'Saved' }} classNames={{ toast: 'slot-toast' }} />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+
+      const toast = screen.getByText('Saved').element().closest('.slot-toast');
+
+      expect(toast).toHaveClass('pointer-events-auto');
+    });
+  });
 });

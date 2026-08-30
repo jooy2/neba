@@ -179,4 +179,62 @@ describe('CommandPalette', () => {
       expect(screen.getByRole('dialog').query()).toBeNull();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on the sheet and on every part it was given one for', async () => {
+      const screen = await render(
+        <CommandPalette
+          items={ITEMS}
+          shortcut={false}
+          defaultOpen
+          className="sheet-class"
+          classNames={{
+            backdrop: 'slot-backdrop',
+            viewport: 'slot-viewport',
+            input: 'slot-input',
+            list: 'slot-list',
+            group: 'slot-group',
+            item: 'slot-item'
+          }}
+        />
+      );
+
+      await expect.element(screen.getByRole('dialog')).toHaveClass('sheet-class');
+      expect(screen.getByRole('combobox').element()).toHaveClass('slot-input');
+      expect(screen.getByText('Navigate').element()).toHaveClass('slot-group');
+      expect(screen.getByText('Go to overview').element().closest('.slot-item')).not.toBeNull();
+      expect(screen.getByRole('dialog').element().querySelector('.slot-list')).not.toBeNull();
+    });
+
+    /** Both render outside the sheet, so nothing written against it finds them. */
+    it('reaches the backdrop and the viewport', async () => {
+      const screen = await render(
+        <CommandPalette
+          items={ITEMS}
+          shortcut={false}
+          defaultOpen
+          classNames={{ backdrop: 'slot-backdrop', viewport: 'slot-viewport' }}
+        />
+      );
+      const sheet = screen.getByRole('dialog').element();
+
+      expect(sheet.closest('.slot-viewport')).not.toBeNull();
+      expect(sheet.querySelector('.slot-backdrop')).toBeNull();
+      expect(document.querySelector('.slot-backdrop')).not.toBeNull();
+    });
+
+    it('reaches the line that stands in for no matches', async () => {
+      const screen = await render(
+        <CommandPalette
+          items={ITEMS}
+          shortcut={false}
+          defaultOpen
+          classNames={{ empty: 'slot-empty' }}
+        />
+      );
+
+      await screen.getByRole('combobox').fill('nothing matches this');
+
+      await expect.element(screen.getByText('No commands found')).toHaveClass('slot-empty');
+    });
+  });
 });

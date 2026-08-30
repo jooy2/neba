@@ -74,6 +74,18 @@ toast.update(id, { color: 'success', title: '복구됨' });
 
 `promise`는 같은 흐름을 Promise 하나로 처리합니다. 대기 · 성공 · 실패 메시지를 넘기면 Toast 하나가 상태에 따라 바뀝니다.
 
+### classNames
+
+ToastProvider는 자기 요소를 그리지 않습니다. app을 감싸고 portal된 스택을 페이지에 놓을 뿐이라, 여기에는 `className`이 없고 그것이 붙을 `root` slot도 없습니다. 대신 스택의 각 파트에 이름이 있습니다.
+
+```tsx
+<ToastProvider classNames={{ viewport: 'p-8', toast: 'font-mono' }}>
+  <App />
+</ToastProvider>
+```
+
+slot은 `viewport`, `toast`, `title`, `description`, `action`, `close`입니다. `viewport`는 toast가 쌓이는 띠이고 `toast`는 그중 하나로, 스택의 모든 toast에 적용됩니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## Toast인가 Alert인가
 
 [Alert](./alert)는 해당 페이지에 속하며 그 자리에 남습니다. Toast는 방금 일어난 일을 알리고 사라집니다. 1분 뒤에도 여전히 유효한 메시지라면 Alert를 쓰세요.

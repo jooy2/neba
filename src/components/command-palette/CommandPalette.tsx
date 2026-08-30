@@ -16,7 +16,19 @@ import {
   surfaceSlots,
   toLength
 } from '../../internal/styles.js';
-import type { NebaSize, NebaStyleProps } from '../../types.js';
+import type { NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
+
+/**
+ * The parts a CommandPalette draws around its sheet.
+ *
+ * `className` is the sheet — the panel the search field and the rows sit on.
+ * `backdrop` and `viewport` render outside it and have no other way in.
+ *
+ * `group` is one heading between the rows, not the rows under it: a group is
+ * named by its first item's `group`, and the rows themselves are `item`.
+ */
+export type CommandPaletteSlot =
+  'backdrop' | 'viewport' | 'input' | 'list' | 'group' | 'item' | 'empty';
 
 /** One thing the palette can do. */
 export interface CommandItem {
@@ -88,6 +100,13 @@ export interface CommandPaletteProps extends Pick<NebaStyleProps, 'size' | 'colo
   emptyMessage?: React.ReactNode;
   /** The accessible name of the dialog, which has no visible title. */
   label?: string;
+  /** Class names for the sheet. */
+  className?: string;
+  /**
+   * Class names for the parts around it. `className` is the sheet, so the scrim
+   * behind it is `classNames.backdrop`.
+   */
+  classNames?: NebaSlots<CommandPaletteSlot>;
 }
 
 const backdropClasses = [
@@ -217,7 +236,9 @@ export function CommandPalette({
   label,
   size = 'md',
   color = 'primary',
-  density = 'default'
+  density = 'default',
+  className,
+  classNames
 }: CommandPaletteProps) {
   const messages = useMessages(commandMessages, locale);
 
@@ -286,9 +307,16 @@ export function CommandPalette({
       }}
     >
       <BaseUIDialog.Portal>
-        <BaseUIDialog.Backdrop className={`neba-portal ${backdropClasses}`} />
+        <BaseUIDialog.Backdrop
+          className={cx('neba-portal', backdropClasses, classNames?.backdrop)}
+        />
 
-        <BaseUIDialog.Viewport className="neba-portal fixed inset-0 z-50 flex justify-center p-4 pt-[12vh]">
+        <BaseUIDialog.Viewport
+          className={cx(
+            'neba-portal fixed inset-0 z-50 flex justify-center p-4 pt-[12vh]',
+            classNames?.viewport
+          )}
+        >
           <BaseUIDialog.Popup
             aria-label={label ?? messages.label}
             className={cx(
@@ -296,7 +324,8 @@ export function CommandPalette({
               radiusClasses[size],
               controlTextLeadingClasses[size],
               sheetWidth === undefined ? widthClasses[size] : '',
-              'self-start'
+              'self-start',
+              className
             )}
             style={{
               ...surfaceSlots(color, 3),
@@ -320,16 +349,20 @@ export function CommandPalette({
                 <Autocomplete.Input
                   autoFocus
                   placeholder={placeholder ?? messages.search}
-                  className={[
+                  className={cx(
                     'min-w-0 flex-1 bg-transparent [font:inherit] text-inherit [outline:none]',
                     'placeholder:text-(--neba-muted-fg) caret-(--n-accent)',
-                    inputHeights[size]
-                  ].join(' ')}
+                    inputHeights[size],
+                    classNames?.input
+                  )}
                 />
               </div>
 
               <Autocomplete.List
-                className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1"
+                className={cx(
+                  'min-h-0 flex-1 overflow-y-auto overscroll-contain p-1',
+                  classNames?.list
+                )}
                 style={{ maxHeight: listHeight }}
               >
                 {(item: CommandItem, index: number) => (
@@ -337,7 +370,12 @@ export function CommandPalette({
                     {item.group && item.group !== filtered[index - 1]?.group ? (
                       <div
                         role="presentation"
-                        className={`${insetX[size]} pt-2 pb-1 font-medium text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+                        className={cx(
+                          insetX[size],
+                          'pt-2 pb-1 font-medium text-(--neba-muted-fg)',
+                          metaTextClasses[size],
+                          classNames?.group
+                        )}
                       >
                         {item.group}
                       </div>
@@ -348,12 +386,13 @@ export function CommandPalette({
                       value={item}
                       disabled={item.disabled}
                       onClick={() => run(item)}
-                      className={[
+                      className={cx(
                         rowClasses,
                         radiusClasses[size],
                         insetX[size],
-                        rowPadY[density === 'compact' ? 'xs' : size]
-                      ].join(' ')}
+                        rowPadY[density === 'compact' ? 'xs' : size],
+                        classNames?.item
+                      )}
                     >
                       {hasContent(item.icon) ? (
                         <span className="flex h-[1lh] shrink-0 items-center [&_svg]:size-[1.15em]">
@@ -381,7 +420,12 @@ export function CommandPalette({
               </Autocomplete.List>
 
               <Autocomplete.Empty
-                className={`${insetX[size]} py-6 text-center text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+                className={cx(
+                  insetX[size],
+                  'py-6 text-center text-(--neba-muted-fg)',
+                  metaTextClasses[size],
+                  classNames?.empty
+                )}
               >
                 {emptyMessage ?? messages.empty}
               </Autocomplete.Empty>

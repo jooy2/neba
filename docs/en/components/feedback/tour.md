@@ -62,6 +62,20 @@ Dims the page and cuts the target out of the dimming. The dimming never takes th
 
 The buttons and the counter come from `locale`. `previousLabel`, `nextLabel`, `doneLabel` and `skipLabel` write any of them out instead.
 
+### className · classNames
+
+`className` lands on the card — the popup each step is written on. The dimming behind it is a sibling of that popup rather than a descendant, so it is reached through `classNames.mask` and no other way.
+
+```tsx
+<Tour
+  steps={steps}
+  className="max-w-sm"
+  classNames={{ mask: 'bg-black/70', footer: 'justify-between' }}
+/>
+```
+
+The slots are `mask`, `title`, `description`, `close` and `footer`. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - The card is a dialog named by its title and described by its content, and focus moves into it as each step opens.

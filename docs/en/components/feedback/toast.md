@@ -74,6 +74,18 @@ toast.update(id, { color: 'success', title: 'Restored' });
 
 `promise` runs the same flow from a single Promise: pass the loading, success and error messages and one toast moves between them.
 
+### classNames
+
+A ToastProvider renders no element of its own — it wraps the app and puts a portalled stack on the page — so there is no `className` here and no `root` slot for one to land on. Every part of the stack is named instead.
+
+```tsx
+<ToastProvider classNames={{ viewport: 'p-8', toast: 'font-mono' }}>
+  <App />
+</ToastProvider>
+```
+
+The slots are `viewport`, `toast`, `title`, `description`, `action` and `close`. `viewport` is the strip the toasts are stacked in; `toast` is one of them, and every toast in the stack gets it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Toast or Alert
 
 An [Alert](./alert) belongs to its page and stays there. A toast reports something that just happened and leaves. If the message is still true a minute from now, use an Alert.

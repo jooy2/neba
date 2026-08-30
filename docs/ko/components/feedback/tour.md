@@ -62,6 +62,20 @@ import { Tour } from 'neba';
 
 버튼과 카운터의 문구는 `locale`에서 옵니다. `previousLabel`, `nextLabel`, `doneLabel`, `skipLabel`로 각각을 직접 쓸 수 있습니다.
 
+### className · classNames
+
+`className`은 카드 — 각 step이 쓰이는 popup — 에 붙습니다. 그 뒤의 dimming은 popup의 자손이 아니라 형제라서 `classNames.mask`로만 닿습니다.
+
+```tsx
+<Tour
+  steps={steps}
+  className="max-w-sm"
+  classNames={{ mask: 'bg-black/70', footer: 'justify-between' }}
+/>
+```
+
+slot은 `mask`, `title`, `description`, `close`, `footer`입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - 카드는 제목이 이름이 되고 본문이 설명이 되는 dialog이며, 각 단계가 열릴 때 focus가 그 안으로 옮겨갑니다.

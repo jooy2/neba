@@ -145,4 +145,52 @@ describe('Tour', () => {
       await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on the card and on every part it was given one for', async () => {
+      const screen = await render(
+        <Page
+          steps={STEPS}
+          defaultOpen
+          className="card-class"
+          classNames={{
+            mask: 'slot-mask',
+            title: 'slot-title',
+            description: 'slot-description',
+            close: 'slot-close',
+            footer: 'slot-footer'
+          }}
+        />
+      );
+
+      const title = screen.getByRole('heading', { name: 'Save' });
+
+      await expect.element(title).toHaveClass('slot-title');
+      expect(screen.getByText('This writes the change.').element()).toHaveClass('slot-description');
+
+      const card = title.element().closest('.card-class');
+
+      expect(card).not.toBeNull();
+      expect(card?.querySelector('.slot-close')).not.toBeNull();
+      expect(card?.querySelector('.slot-footer')).not.toBeNull();
+    });
+
+    /** The mask is a sibling of the card, so nothing written against it reaches. */
+    it('reaches the mask, which sits outside the card', async () => {
+      const screen = await render(
+        <Page steps={STEPS} defaultOpen classNames={{ mask: 'slot-mask' }} />
+      );
+
+      await expect.element(screen.getByRole('heading', { name: 'Save' })).toBeInTheDocument();
+      expect(document.querySelector('.slot-mask')).not.toBeNull();
+    });
+
+    it('draws no mask class when the mask is off', async () => {
+      const screen = await render(
+        <Page steps={STEPS} defaultOpen mask={false} classNames={{ mask: 'slot-mask' }} />
+      );
+
+      await expect.element(screen.getByRole('heading', { name: 'Save' })).toBeInTheDocument();
+      expect(document.querySelector('.slot-mask')).toBeNull();
+    });
+  });
 });

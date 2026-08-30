@@ -8,6 +8,7 @@ import { actionMessages, fill, stepsMessages, useMessages } from '../../internal
 import { CloseIcon } from '../../internal/icons.js';
 import { observeResize } from '../../internal/observe.js';
 import {
+  cx,
   hasContent,
   metaTextClasses,
   radiusClasses,
@@ -18,7 +19,7 @@ import {
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
-import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import type { NebaAlign, NebaSide, NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
 
 /** One stop on the tour. */
 export interface TourStep {
@@ -43,6 +44,15 @@ export interface TourStep {
    */
   padding?: number;
 }
+
+/**
+ * The parts a Tour draws around its card.
+ *
+ * `className` is the card — the popup the steps are written on — and `mask` is
+ * the dimming behind it, which is a sibling of the popup rather than a
+ * descendant and so has no other way in.
+ */
+export type TourSlot = 'mask' | 'title' | 'description' | 'close' | 'footer';
 
 export interface TourProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
   /** The stops, in order. */
@@ -84,6 +94,13 @@ export interface TourProps extends Pick<NebaStyleProps, 'size' | 'color' | 'dens
   doneLabel?: React.ReactNode;
   /** The Skip button. */
   skipLabel?: React.ReactNode;
+  /** Class names for the card. */
+  className?: string;
+  /**
+   * Class names for the parts around it. `className` is the card, so the
+   * dimming behind it is `classNames.mask`.
+   */
+  classNames?: NebaSlots<TourSlot>;
 }
 
 /** The card. The same frosted sheet a Popover draws, at the same elevation. */
@@ -135,12 +152,20 @@ interface Spot {
  * modal dialog wearing a cut-out, and the whole point of the cut-out is that
  * the thing it is pointing at can still be used.
  */
-function Mask({ spot, radius }: { spot: Spot | null; radius: number }) {
+function Mask({
+  spot,
+  radius,
+  className
+}: {
+  spot: Spot | null;
+  radius: number;
+  className?: string;
+}) {
   if (spot === null) {
     return (
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-40 bg-(--neba-scrim)"
+        className={cx('pointer-events-none fixed inset-0 z-40 bg-(--neba-scrim)', className)}
       />
     );
   }
@@ -148,7 +173,10 @@ function Mask({ spot, radius }: { spot: Spot | null; radius: number }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed z-40 [box-shadow:0_0_0_9999px_var(--neba-scrim)]"
+      className={cx(
+        'pointer-events-none fixed z-40 [box-shadow:0_0_0_9999px_var(--neba-scrim)]',
+        className
+      )}
       style={{
         top: spot.top,
         left: spot.left,
@@ -195,7 +223,9 @@ export function Tour({
   skipLabel,
   size = 'md',
   color = 'primary',
-  density = 'default'
+  density = 'default',
+  className,
+  classNames
 }: TourProps) {
   const messages = useMessages(stepsMessages, locale);
   const actions = useMessages(actionMessages, locale);
@@ -321,7 +351,9 @@ export function Tour({
         setOpen(next);
       }}
     >
-      {running && mask ? <Mask spot={spot} radius={spot ? 8 : 0} /> : null}
+      {running && mask ? (
+        <Mask spot={spot} radius={spot ? 8 : 0} className={classNames?.mask} />
+      ) : null}
 
       <BaseUIPopover.Portal>
         <BaseUIPopover.Positioner
@@ -341,27 +373,36 @@ export function Tour({
           }}
         >
           <BaseUIPopover.Popup
-            className={[
+            className={cx(
               popupClasses,
               radiusClasses[size],
               sheetBodyClasses[size],
               sheetSectionGapClasses[size],
               maxWidthClasses[size],
               insetX,
-              insetY
-            ].join(' ')}
+              insetY,
+              className
+            )}
             style={surfaceSlots(color, 3)}
           >
             {hasHeader ? (
               <div className="flex items-start gap-3">
                 <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
                   {hasContent(current?.title) ? (
-                    <BaseUIPopover.Title className={`m-0 font-semibold ${sheetTitleClasses[size]}`}>
+                    <BaseUIPopover.Title
+                      className={cx(
+                        'm-0 font-semibold',
+                        sheetTitleClasses[size],
+                        classNames?.title
+                      )}
+                    >
                       {current?.title}
                     </BaseUIPopover.Title>
                   ) : null}
                   {hasContent(current?.content) ? (
-                    <BaseUIPopover.Description className="m-0 min-w-0">
+                    <BaseUIPopover.Description
+                      className={cx('m-0 min-w-0', classNames?.description)}
+                    >
                       {current?.content}
                     </BaseUIPopover.Description>
                   ) : null}
@@ -372,14 +413,15 @@ export function Tour({
                     type="button"
                     aria-label={actions.close}
                     onClick={() => setOpen(false)}
-                    className={[
+                    className={cx(
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
                       'rounded-full text-(--neba-muted-fg)',
                       '[&_svg]:size-[1.1em] [&_svg]:shrink-0',
                       '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
                       'hover:bg-(--n-soft) hover:text-(--neba-fg)',
-                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-                    ].join(' ')}
+                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+                      classNames?.close
+                    )}
                   >
                     <CloseIcon />
                   </button>
@@ -387,7 +429,7 @@ export function Tour({
               </div>
             ) : null}
 
-            <div className="flex items-center gap-2">
+            <div className={cx('flex items-center gap-2', classNames?.footer)}>
               <span
                 className={`shrink-0 tabular-nums text-(--neba-muted-fg) ${metaTextClasses[size]}`}
               >

@@ -7,6 +7,7 @@ import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon, severityIcon } from '../../internal/icons.js';
 import {
   controlSlots,
+  cx,
   focusRingClasses,
   hasContent,
   iconClasses,
@@ -18,7 +19,14 @@ import {
   sheetTitleClasses,
   surfaceClasses
 } from '../../internal/styles.js';
-import type { NebaAlign, NebaColor, NebaSize, NebaStyleProps, NebaVariant } from '../../types.js';
+import type {
+  NebaAlign,
+  NebaColor,
+  NebaSize,
+  NebaSlots,
+  NebaStyleProps,
+  NebaVariant
+} from '../../types.js';
 
 /**
  * Where the stack sits.
@@ -73,6 +81,17 @@ export interface ToastOptions extends ToastData {
   onRemove?: () => void;
 }
 
+/**
+ * The parts the toast stack draws.
+ *
+ * There is no `className` on the provider and there is deliberately no `root`
+ * slot: a ToastProvider renders no element of its own — it wraps the app and
+ * puts a portalled stack on the page — so there is nothing for a root class
+ * name to land on. `viewport` is the strip the toasts are stacked in and
+ * `toast` is one of them.
+ */
+export type ToastSlot = 'viewport' | 'toast' | 'title' | 'description' | 'action' | 'close';
+
 export interface ToastProviderProps extends Pick<NebaStyleProps, 'variant' | 'size' | 'density'> {
   /** The default colour family. A single toast overrides it in `add`. */
   color?: NebaColor;
@@ -102,6 +121,11 @@ export interface ToastProviderProps extends Pick<NebaStyleProps, 'variant' | 'si
   locale?: string;
   /** Accessible name of every toast's × button. Defaults to the `locale`'s word. */
   closeLabel?: string;
+  /**
+   * Class names for the parts of the stack. There is no `className` here — a
+   * provider renders no element of its own to put one on.
+   */
+  classNames?: NebaSlots<ToastSlot>;
   children?: React.ReactNode;
 }
 
@@ -229,6 +253,7 @@ interface ToastItemProps extends Pick<ToastProviderProps, 'variant' | 'size' | '
   closeLabel: string;
   /** Which way it can be flicked away, derived from where the stack is pinned. */
   swipeDirection: ('up' | 'down' | 'left' | 'right')[];
+  classNames?: NebaSlots<ToastSlot>;
 }
 
 function ToastItem({
@@ -238,7 +263,8 @@ function ToastItem({
   size,
   density,
   closeLabel,
-  swipeDirection
+  swipeDirection,
+  classNames
 }: ToastItemProps) {
   const variant = toast.data?.variant ?? providerVariant ?? 'outline';
   const color = toast.data?.color ?? providerColor;
@@ -250,7 +276,7 @@ function ToastItem({
     <BaseUIToast.Root
       toast={toast}
       swipeDirection={swipeDirection}
-      className={[
+      className={cx(
         'pointer-events-auto flex w-full items-start',
         boxPaddingClasses[density ?? 'default'][size],
         radiusClasses[size],
@@ -268,10 +294,9 @@ function ToastItem({
         // back; it just has nothing to say while it waits.
         'data-[limited]:hidden',
         focusRingClasses,
-        '[outline:none]'
-      ]
-        .filter(Boolean)
-        .join(' ')}
+        '[outline:none]',
+        classNames?.toast
+      )}
       style={controlSlots(color, 3, variant)}
     >
       {hasContent(glyph) ? (
@@ -280,33 +305,43 @@ function ToastItem({
 
       <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
         <BaseUIToast.Title
-          className={`neba-title font-semibold ${sheetTitleClasses[size]} ${accent}`}
+          className={cx(
+            'neba-title font-semibold',
+            sheetTitleClasses[size],
+            accent,
+            classNames?.title
+          )}
         />
         <BaseUIToast.Description
-          className={titled ? `${variant === 'solid' ? '' : 'text-(--neba-muted-fg)'}` : ''}
+          className={cx(
+            titled && variant !== 'solid' ? 'text-(--neba-muted-fg)' : '',
+            classNames?.description
+          )}
         />
       </div>
 
       <BaseUIToast.Action
-        className={[
+        className={cx(
           'flex h-[1lh] shrink-0 cursor-pointer items-center rounded-full px-2',
           'font-medium underline-offset-2',
           accent || 'text-(--n-on-solid)',
           'hover:underline',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-          metaTextClasses[size]
-        ].join(' ')}
+          metaTextClasses[size],
+          classNames?.action
+        )}
       />
 
       <span className="flex h-[1lh] shrink-0 items-center">
         <BaseUIToast.Close
           aria-label={closeLabel}
-          className={[
+          className={cx(
             'inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
             'opacity-70 [transition:opacity_var(--neba-duration)_var(--neba-ease)]',
             'hover:opacity-100 focus-visible:opacity-100',
-            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-          ].join(' ')}
+            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+            classNames?.close
+          )}
         >
           <CloseIcon />
         </BaseUIToast.Close>
@@ -318,10 +353,13 @@ function ToastItem({
 /** The stack itself. Rendered by the provider, never by a caller. */
 function ToastViewport(
   props: Required<Pick<ToastProviderProps, 'position' | 'size' | 'width'>> &
-    Pick<ToastProviderProps, 'variant' | 'density'> & { color: NebaColor; closeLabel: string }
+    Pick<ToastProviderProps, 'variant' | 'density' | 'classNames'> & {
+      color: NebaColor;
+      closeLabel: string;
+    }
 ) {
   const { toasts } = BaseUIToast.useToastManager<ToastData>();
-  const { position, width, ...rest } = props;
+  const { position, width, classNames, ...rest } = props;
 
   // One array rather than a fresh one per render. Every toast on screen is
   // handed it, and a new identity each time is a new prop each time on every
@@ -336,13 +374,14 @@ function ToastViewport(
       {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
           subtree a host may have scoped its CSS reset to. */}
       <BaseUIToast.Viewport
-        className={[
+        className={cx(
           // Full width and `pointer-events-none`, so the strip across the top or
           // the bottom of the page is not a wall the rest of the app is behind.
           // The toasts themselves take their events back.
           'neba-portal pointer-events-none fixed inset-x-0 z-50 flex flex-col gap-2 p-4',
-          viewportClasses[position]
-        ].join(' ')}
+          viewportClasses[position],
+          classNames?.viewport
+        )}
       >
         {toasts.map((toast) => (
           <div
@@ -350,7 +389,12 @@ function ToastViewport(
             className="w-full"
             style={{ maxWidth: typeof width === 'number' ? `${width}px` : width }}
           >
-            <ToastItem toast={toast} swipeDirection={swipeDirection} {...rest} />
+            <ToastItem
+              toast={toast}
+              swipeDirection={swipeDirection}
+              classNames={classNames}
+              {...rest}
+            />
           </div>
         ))}
       </BaseUIToast.Viewport>
@@ -381,6 +425,7 @@ export function ToastProvider({
   width = 380,
   locale,
   closeLabel,
+  classNames,
   children
 }: ToastProviderProps) {
   const messages = useMessages(actionMessages, locale);
@@ -396,6 +441,7 @@ export function ToastProvider({
         density={density}
         width={width}
         closeLabel={closeLabel ?? messages.close}
+        classNames={classNames}
       />
     </BaseUIToast.Provider>
   );

@@ -64,6 +64,20 @@ Each command may carry its own `onSelect`; the palette's runs after it, with the
 
 </Demo>
 
+### className · classNames
+
+`className` lands on the sheet — the panel the search field and the rows sit on. Everything around and inside it is reached through `classNames`.
+
+```tsx
+<CommandPalette
+  items={commands}
+  className="max-w-2xl"
+  classNames={{ backdrop: 'backdrop-blur-none', item: 'rounded-none' }}
+/>
+```
+
+The slots are `backdrop`, `viewport`, `input`, `list`, `group`, `item` and `empty`. `backdrop` and `viewport` render outside the sheet, so nothing written against it finds them; `group` is one heading between the rows, not the rows under it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - The sheet is a modal dialog named by `label`, which has no visible title of its own. Focus moves into the field as it opens and back to wherever the reader was as it closes.

@@ -4036,7 +4036,13 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'skipLabel',
       type: 'ReactNode',
       description: { ko: 'Skip 버튼의 문구', en: 'The Skip button' }
-    }
+    },
+    {
+      name: 'className',
+      type: 'string',
+      description: { ko: '카드에 붙는 class', en: 'Class names for the card' }
+    },
+    slotsProp('mask', 'title', 'description', 'close', 'footer')
   ],
 
   TourStep: [
@@ -4204,7 +4210,13 @@ export const propTables: Record<string, PropRow[]> = {
         ko: 'dialog의 접근성 이름. 보이는 제목이 없습니다',
         en: 'The accessible name of the dialog, which has no visible title'
       }
-    }
+    },
+    {
+      name: 'className',
+      type: 'string',
+      description: { ko: '시트에 붙는 class', en: 'Class names for the sheet' }
+    },
+    slotsProp('backdrop', 'viewport', 'input', 'list', 'group', 'item', 'empty')
   ],
 
   CommandItem: [
@@ -6010,7 +6022,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'closeLabel',
       type: 'string',
       description: { ko: '× 버튼의 접근성 이름', en: "Accessible name of every toast's × button" }
-    }
+    },
+    slotsProp('viewport', 'toast', 'title', 'description', 'action', 'close')
   ],
 
   'useToast().add': [

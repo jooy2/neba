@@ -64,6 +64,20 @@ import { CommandPalette } from 'neba';
 
 </Demo>
 
+### className · classNames
+
+`className`은 시트 — 검색 필드와 행이 놓이는 판 — 에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
+
+```tsx
+<CommandPalette
+  items={commands}
+  className="max-w-2xl"
+  classNames={{ backdrop: 'backdrop-blur-none', item: 'rounded-none' }}
+/>
+```
+
+slot은 `backdrop`, `viewport`, `input`, `list`, `group`, `item`, `empty`입니다. `backdrop`과 `viewport`는 시트 바깥에 그려지므로 시트를 기준으로 쓴 것으로는 찾을 수 없고, `group`은 행 사이의 heading 하나이지 그 아래 행들이 아닙니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - 시트는 `label`이 이름이 되는 modal dialog입니다. 보이는 제목이 따로 없습니다. 열릴 때 focus가 필드로 들어가고, 닫힐 때 독자가 있던 자리로 되돌아갑니다.
