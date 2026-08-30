@@ -51,7 +51,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 ### buttons
 
-`auto` — the default — draws only the button that has somewhere to go, and neither of them while everything fits. `always` draws both from the first paint and disables the one that cannot move, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to the wheel, the arrow keys and dragging.
+`auto` — the default — draws only the button that has somewhere to go, and neither of them while everything fits. `always` draws both from the first paint and disables the one that cannot move, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to dragging, the arrow keys and whatever the pointer can already swipe with.
 
 `snap` brings the nearest child to the leading edge whenever the scrolling stops, however it was scrolled.
 
@@ -63,7 +63,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 ### buttonPlacement
 
-`overlay` — the default — puts the buttons over the ends of the strip, which keeps every pixel of the box for content and lets an item pass under a button. `inline` puts them beside it: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on.
+`inline` — the default — puts the buttons beside the strip: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on. `overlay` puts them over the ends of the strip instead, which keeps every pixel of the box for content and lets an item pass under a button.
 
 An inline button keeps its lane even while it has nowhere to go, or the strip would resize under the pointer that had just reached the end of it.
 
@@ -92,6 +92,18 @@ A finger already scrolls the strip, because the mechanism is an ordinary scroll 
   {items}
 </ScrollZone>
 ```
+
+### wheel
+
+A mouse has one wheel and it points down the page, which is the one axis a horizontal strip does not run along. `wheel` turns a wheel rolled over the strip into travel along it.
+
+It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead. What it does take it gives back — at either end of the strip the wheel is the page's again, so a strip with nothing left ahead of it is scrolled past rather than caught in. A trackpad swiping sideways is left alone, since that already scrolls the strip, and a vertical zone ignores the prop.
+
+<Demo src="scroll-zone/wheel" minHeight="280">
+
+<<< @/.vitepress/demos/scroll-zone/wheel.tsx
+
+</Demo>
 
 ## Accessibility
 

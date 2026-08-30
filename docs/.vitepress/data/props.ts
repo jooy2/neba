@@ -9076,11 +9076,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'buttonPlacement',
-      type: "'overlay' | 'inline'",
-      default: "'overlay'",
+      type: "'inline' | 'overlay'",
+      default: "'inline'",
       description: {
-        ko: '버튼이 스트립 위에 겹칠지, 옆에 설지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지됩니다',
-        en: 'Whether the buttons sit over the strip or beside it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go'
+        ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지됩니다',
+        en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go'
       }
     },
     {
@@ -9126,6 +9126,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '마우스나 펜으로도 끌어서 스크롤합니다. 손가락은 브라우저 자신의 스크롤에 맡깁니다 — 관성과 스크롤바가 딸려 오기 때문입니다',
         en: 'Lets a mouse or a pen drag the strip along, the way a finger already does. Touch is left to the browser, whose own scrolling brings momentum and a scrollbar with it'
+      }
+    },
+    {
+      name: 'wheel',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '스트립 위에서 굴린 휠을 스트립을 따라가는 이동으로 바꿉니다. 갈 곳이 없어지는 양 끝에서는 휠을 다시 페이지에 돌려주고, 옆으로 미는 트랙패드와 세로 zone은 건드리지 않습니다',
+        en: 'Turns a wheel rolled over the strip into travel along it. At either end the wheel is the page’s again; a sideways trackpad swipe and a vertical zone are left alone'
       }
     },
     {

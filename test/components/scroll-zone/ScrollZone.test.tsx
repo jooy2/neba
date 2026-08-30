@@ -128,7 +128,11 @@ describe('ScrollZone', () => {
 
   describe('the buttons', () => {
     it('offers the one that has somewhere to go', async () => {
-      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
+      const screen = await render(
+        <ScrollZone buttonPlacement="overlay" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
 
       await expect
         .element(screen.getByRole('button', { name: 'Scroll forward' }))
@@ -197,8 +201,31 @@ describe('ScrollZone', () => {
     // Overlaid, the strip keeps every pixel of its box and an item passes under
     // a button. Inline, the scroller stops where the button starts, so an item
     // is cut off at its edge rather than half-hidden behind it.
-    it('overlays them by default', async () => {
-      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
+    it('puts them beside the strip by default', async () => {
+      const screen = await render(
+        <ScrollZone buttons="always" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const root = screen.getByTestId('zone').element();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .toBeInTheDocument();
+      // A lane either side of the scroller, and the scroller between them.
+      expect(root.children).toHaveLength(3);
+      expect(root.children[1]).toBe(scroller(screen));
+      expect(
+        root.children[2].contains(screen.getByRole('button', { name: 'Scroll forward' }).element())
+      ).toBe(true);
+    });
+
+    it('overlays them when it is asked to', async () => {
+      const screen = await render(
+        <ScrollZone buttonPlacement="overlay" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
       const root = screen.getByTestId('zone').element();
 
       await expect
@@ -209,32 +236,10 @@ describe('ScrollZone', () => {
       expect(root.children[1]).toHaveClass('absolute');
     });
 
-    it('puts them beside the strip when it is asked to', async () => {
-      const screen = await render(
-        <ScrollZone buttonPlacement="inline" buttons="always" data-testid="zone">
-          {cards}
-        </ScrollZone>
-      );
-      const root = screen.getByTestId('zone').element();
-
-      await expect
-        .element(screen.getByRole('button', { name: 'Scroll forward' }))
-        .toBeInTheDocument();
-      expect(root.children).toHaveLength(3);
-      expect(root.children[1]).toBe(scroller(screen));
-      expect(
-        root.children[2].contains(screen.getByRole('button', { name: 'Scroll forward' }).element())
-      ).toBe(true);
-    });
-
     // A lane that came and went would resize the strip under the pointer that
     // had just reached the end of it.
     it('keeps the lane of a button that has nowhere to go', async () => {
-      const screen = await render(
-        <ScrollZone buttonPlacement="inline" data-testid="zone">
-          {cards}
-        </ScrollZone>
-      );
+      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
       const root = screen.getByTestId('zone').element();
 
       await expect
@@ -252,12 +257,7 @@ describe('ScrollZone', () => {
 
     it('runs the strip down the page with the buttons above and below it', async () => {
       const screen = await render(
-        <ScrollZone
-          orientation="vertical"
-          buttonPlacement="inline"
-          buttons="always"
-          data-testid="zone"
-        >
+        <ScrollZone orientation="vertical" buttons="always" data-testid="zone">
           {cards}
         </ScrollZone>
       );
@@ -318,6 +318,97 @@ describe('ScrollZone', () => {
       await screen.getByRole('button', { name: 'Scroll forward' }).click();
 
       await expect.poll(() => scrollBy.mock.calls.length).toBeGreaterThan(0);
+    });
+  });
+
+  /*
+   * A wheel is dispatched rather than rolled: `page.mouse.wheel` scrolls the
+   * frame, and what is being asserted is what the component did with the event
+   * — whether it took it, and how far it asked the strip to go.
+   */
+  describe('the wheel', () => {
+    function roll(box: HTMLElement, init: WheelEventInit) {
+      const event = new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init });
+      box.dispatchEvent(event);
+
+      return event;
+    }
+
+    it('leaves it to the page unless it is asked for it', async () => {
+      const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaY: 120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    it('turns a wheel rolled down the page into travel along the strip', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaY: 120 }).defaultPrevented).toBe(true);
+      expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 120 }));
+    });
+
+    it('counts a notch measured in lines as lines', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      roll(box, { deltaY: 3, deltaMode: 1 });
+
+      expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 48 }));
+    });
+
+    // The strip is at its start, so there is nothing behind it and the page
+    // should have the wheel that asked to go there.
+    it('gives the wheel back at the end of the strip', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaY: -120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    it('leaves a sideways wheel to the browser, which already scrolls the strip', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaX: 120, deltaY: 4 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    it('ignores the prop on a strip that already runs the way the wheel points', async () => {
+      const screen = await render(
+        <ScrollZone orientation="vertical" wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaY: 120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
     });
   });
 });

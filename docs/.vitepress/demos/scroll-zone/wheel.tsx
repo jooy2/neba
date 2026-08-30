@@ -1,6 +1,6 @@
 import { Box, ScrollZone, Typography } from 'neba';
 
-const numbers = Array.from({ length: 12 }, (_, index) => index + 1);
+const numbers = Array.from({ length: 14 }, (_, index) => index + 1);
 
 function Strip() {
   return (
@@ -14,23 +14,23 @@ function Strip() {
   );
 }
 
-export default function ScrollZonePlacement() {
+export default function ScrollZoneWheel() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div>
         <Typography level="caption" color="secondary">
-          buttonPlacement=&quot;inline&quot;
+          The wheel is the page&apos;s
         </Typography>
-        <ScrollZone label="Beside" buttons="always">
+        <ScrollZone label="Without the wheel">
           <Strip />
         </ScrollZone>
       </div>
 
       <div>
         <Typography level="caption" color="secondary">
-          buttonPlacement=&quot;overlay&quot;
+          wheel — roll over the strip, and keep rolling at the end
         </Typography>
-        <ScrollZone label="Overlaid" buttons="always" buttonPlacement="overlay">
+        <ScrollZone label="With the wheel" wheel>
           <Strip />
         </ScrollZone>
       </div>

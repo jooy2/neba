@@ -17,8 +17,9 @@ import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
  * - `always` — both, from the first paint, with the one that has nowhere to go
  *   `disabled` rather than gone. What a row whose content arrives later wants,
  *   since the buttons do not appear under the pointer half a second in.
- * - `none` — none at all. Dragging, the wheel and the arrow keys are still
- *   there; this is the strip that scrolls the way a phone scrolls.
+ * - `none` — none at all. Dragging, the arrow keys and whatever the pointer can
+ *   already swipe with are still there; this is the strip that scrolls the way
+ *   a phone scrolls.
  */
 export type ScrollZoneButtons = 'auto' | 'always' | 'none';
 
@@ -38,19 +39,20 @@ export type ScrollZoneMode = 'item' | 'page' | 'hold';
 /**
  * Where the scroll buttons sit, which is also where the strip ends.
  *
+ * - `inline` — beside the strip, in the layout. The default. The scroller stops
+ *   where the button starts, so an item is *cut off* at the button's edge
+ *   rather than sliding beneath it: nothing is ever half-hidden behind a
+ *   control, and the button is legible over the page rather than over whatever
+ *   it landed on.
  * - `overlay` — over the ends of the strip, which keeps every pixel of the box
- *   for content and lets an item pass under a button. The default, and what a
- *   shelf of pictures wants.
- * - `inline` — beside the strip, in the layout. The scroller stops where the
- *   button starts, so an item is *cut off* at the button's edge rather than
- *   sliding beneath it: nothing is ever half-hidden behind a control, and the
- *   button is legible over the page rather than over whatever it landed on.
+ *   for content and lets an item pass under a button. What a shelf of pictures
+ *   wants, where the thing under the button is a picture that carries on.
  *
  * The lane an `inline` button sits in is kept even while that button has
  * nowhere to go, or the strip would resize under the pointer every time it
  * reached an end.
  */
-export type ScrollZoneButtonPlacement = 'overlay' | 'inline';
+export type ScrollZoneButtonPlacement = 'inline' | 'overlay';
 
 export interface ScrollZoneProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -75,10 +77,10 @@ export interface ScrollZoneProps
   /** When the scroll buttons are drawn. @default 'auto' */
   buttons?: ScrollZoneButtons;
   /**
-   * Whether the buttons sit over the strip or beside it. `inline` is what to
-   * reach for when an item disappearing under a button reads as a bug rather
-   * than as depth.
-   * @default 'overlay'
+   * Whether the buttons sit beside the strip or over it. `overlay` is what to
+   * reach for when the thing under a button is content that carries on rather
+   * than something to be read whole.
+   * @default 'inline'
    */
   buttonPlacement?: ScrollZoneButtonPlacement;
   /** What pressing one does. @default 'item' */
@@ -101,6 +103,21 @@ export interface ScrollZoneProps
    * @default true
    */
   drag?: boolean;
+  /**
+   * Turns a wheel rolled over the strip into travel along it — the one axis a
+   * mouse has, on a strip that does not run along it. Off by default, because a
+   * wheel taken from the page is the page's: a reader who meant to scroll past
+   * the shelf is held by it instead.
+   *
+   * What it does take it gives back at the ends, so a strip with nothing left
+   * ahead of it is something to scroll past rather than something to be caught
+   * in. A trackpad swiping sideways is left alone — that already scrolls the
+   * strip, and answering it here would move twice as far as it was asked to —
+   * and a vertical zone ignores the prop, the wheel already pointing the way it
+   * runs.
+   * @default false
+   */
+  wheel?: boolean;
   /** Shows the native scrollbar. @default false */
   scrollbar?: boolean;
   /**
@@ -147,6 +164,15 @@ const DRAG_THRESHOLD = 4;
 /** Under this, a press in `hold` mode was a tap and moves one item instead. */
 const TAP_MS = 140;
 
+/**
+ * What a wheel notch is worth when it is counted in lines rather than pixels.
+ *
+ * Firefox reports a mouse wheel that way — three lines a notch — and a line is
+ * whatever the reader's text is; sixteen pixels is the browser's own default
+ * and near enough for a gesture that is repeated until it looks right.
+ */
+const WHEEL_LINE = 16;
+
 /** A reader who has asked for less motion gets the cut rather than the travel. */
 function scrollBehavior(): ScrollBehavior {
   return typeof window !== 'undefined' &&
@@ -160,10 +186,11 @@ function scrollBehavior(): ScrollBehavior {
  *
  * The mechanism is an ordinary scroll container, and everything the component
  * offers is a way of driving one. Swiping on a phone, two-finger dragging on a
- * trackpad, the wheel, the arrow keys and the scrollbar are the browser's own
- * and are never intercepted; what is added on top is a pair of buttons for the
- * pointer that has neither a wheel nor a finger, and a mouse drag for the strip
- * that reads as something to pull rather than something to page.
+ * trackpad, the arrow keys and the scrollbar are the browser's own and are
+ * never intercepted; what is added on top is a pair of buttons for the pointer
+ * that has neither a wheel nor a finger, a mouse drag for the strip that reads
+ * as something to pull rather than something to page, and — only where it is
+ * asked for — the wheel turned onto the axis the strip runs along.
  *
  * Nothing is transformed. A translated track would have to argue for an
  * exception to the house rule; a scroll offset does not, and it is also what
@@ -180,12 +207,13 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
     lines = 1,
     spacing = 2,
     buttons = 'auto',
-    buttonPlacement = 'overlay',
+    buttonPlacement = 'inline',
     mode = 'item',
     step = 1,
     speed = 900,
     snap = false,
     drag = true,
+    wheel = false,
     scrollbar = false,
     variant = 'solid',
     size = 'md',
@@ -464,6 +492,45 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
     el.addEventListener('pointerup', end);
     el.addEventListener('pointercancel', release);
   }
+
+  /*
+   * The wheel, on the axis it is not pointing along. Registered here rather
+   * than as `onWheel`, because React attaches its wheel listener passively and
+   * a passive listener cannot `preventDefault` — which is the whole gesture:
+   * taking the wheel is only right if the page does not answer it as well.
+   */
+  React.useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || !wheel || !horizontal) return;
+
+    const onWheel = (event: WheelEvent) => {
+      // A wheel held with Ctrl is a zoom, and a trackpad swiping sideways is
+      // already travel along the strip — the browser scrolls it itself, and
+      // answering it here would move twice as far as it was asked to.
+      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+      const unit = event.deltaMode === 1 ? WHEEL_LINE : event.deltaMode === 2 ? el.clientWidth : 1;
+      const distance = event.deltaY * unit;
+      if (!distance) return;
+
+      // Only while there is somewhere to go, and measured now rather than read
+      // off the last render. At either end the wheel is the page's again, so a
+      // shelf in the middle of an article is something to scroll past rather
+      // than something to be caught in.
+      const along = Math.abs(el.scrollLeft);
+      const room = distance > 0 ? el.scrollWidth - el.clientWidth - along > 1 : along > 1;
+      if (!room) return;
+
+      event.preventDefault();
+      // Instantly: a wheel is already a stream of small movements, and smoothing
+      // each one would leave the strip still arriving after the hand stopped.
+      scrollByPixels(distance * forwardSign(), false);
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [forwardSign, horizontal, scrollByPixels, wheel]);
 
   function pressHandlers(forward: boolean) {
     if (mode !== 'hold') {

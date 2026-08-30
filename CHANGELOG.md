@@ -84,6 +84,8 @@ The spread in the new rows is Base UI rather than Neba. `DataList` is a `<dl>` a
 
 - Three new message namespaces in all eighteen languages — `anchor` for the table of contents' `<nav>` name, `transfer` for the two headings, the two buttons, the filter and the select-all, and `command` for the palette's placeholder, its empty line and the name of a dialog that has no visible title — plus `steps.skip`, which `Tour` and `HowToSteps` share. All four together move a twelve-component app with Korean registered from 69.2 kB to 69.6 kB.
 
+- **`ScrollZone` takes the wheel, where it is asked to.** A mouse has one wheel and it points down the page, which is the one axis a horizontal strip does not run along, so `wheel` turns a wheel rolled over the strip into travel along it. It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead. What it does take it gives back — at either end of the strip the wheel is the page's again — and a trackpad swiping sideways is left alone, since that already scrolls the strip and answering it here would move it twice as far as it was asked to.
+
 ### Changed
 
 - **A field with no `error` of its own now shows the message its validity already had.** `TextField`, `NumberField`, `OtpField`, `Select`, `Combobox`, `Checkbox`, `RadioGroup` and `Switch` rendered a message only when the caller passed one, so a `required` field that failed the browser's own constraint went red and said nothing, and a `Form`'s `errors` marked a field invalid without ever drawing the sentence. Each of the eight now falls through to a plain `Field.Error`, which renders the current validation message and nothing at all while the field is valid. An explicit `error` still wins and still shows whenever the field is invalid. This is the tenth of a kilobyte in the twelve- and twenty-five-component rows above.
@@ -93,6 +95,8 @@ The spread in the new rows is Base UI rather than Neba. `DataList` is a `<dl>` a
 - **`NebaThreshold` is in the shared vocabulary**, in `src/types.ts` beside `NebaSize` and `NebaColor`, because `Meter` and `GaugeChart` are the same reading in two shapes and a page carrying both must not disagree about where amber starts. It is the one place in the library where a semantic colour is _computed_.
 
 - `fill()` — the `{index} of {total}` interpolation — moved from `HowToSteps` into `internal/i18n.ts`, now that a second component counts steps. The placeholders are part of the message format, and a language that orders them the other way round is exactly the case a second copy of that function would eventually get wrong.
+
+- **`ScrollZone`'s `buttonPlacement` now defaults to `inline`.** The buttons stand beside the strip rather than over its ends, so an item is cut off at the button's edge instead of sliding beneath it, and the button is legible over the page rather than over whatever it landed on. `overlay` is still there and is still what a shelf of pictures wants, where the thing under a button is a picture that carries on. The type lists `inline` first now, the way every other union in the file puts its default first.
 
 ### Documentation
 
