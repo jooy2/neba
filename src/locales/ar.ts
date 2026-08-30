@@ -92,6 +92,11 @@ export const ar: NebaLocale = {
     selectAll: 'تحديد الكل',
     empty: 'لا شيء هنا'
   },
+  command: {
+    label: 'لوحة الأوامر',
+    search: 'اكتب أمراً أو ابحث…',
+    empty: 'لا توجد أوامر مطابقة'
+  },
   combobox: {
     empty: 'لا توجد نتائج مطابقة',
     remove: 'إزالة {label}'

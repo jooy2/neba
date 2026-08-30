@@ -33,6 +33,7 @@ import {
   Collapsible,
   ColorPicker,
   Combobox,
+  CommandPalette,
   Container,
   ContextMenu,
   DataList,
@@ -521,6 +522,7 @@ function ShowcaseBody() {
   const [stay, setStay] = useState<DateRange>({ start: null, end: null });
 
   const [tour, setTour] = useState(false);
+  const [palette, setPalette] = useState(false);
 
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -1495,7 +1497,7 @@ function ShowcaseBody() {
         {/* What a release page is made of: the run that produced it, the note
             that came with it, and the keys that drive the screen. */}
         <section className="flex flex-col gap-3">
-          <Caption>Timeline · Blockquote · Highlight · Shortcut</Caption>
+          <Caption>Timeline · Blockquote · Highlight · Shortcut · CommandPalette</Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
             <Card size="sm" title={<h3>Deploy 8f2c1a</h3>} subtitle="production · 4m 02s ago">
               <Timeline size="sm" density="compact" active={3} color="success">
@@ -1516,7 +1518,14 @@ function ShowcaseBody() {
 
               <Card size="sm" title="Keyboard">
                 <List variant="text" size="sm" density="compact">
-                  <ListItem action={<Shortcut size="xs" keys="Mod+K" />}>Command palette</ListItem>
+                  {/* The row is not a description of a keystroke — it is the
+                      keystroke, and pressing it opens the palette below. */}
+                  <ListItem
+                    action={<Shortcut size="xs" keys="Mod+K" />}
+                    onClick={() => setPalette(true)}
+                  >
+                    Command palette
+                  </ListItem>
                   <ListItem action={<Shortcut size="xs" keys="Mod+Shift+R" />}>Redeploy</ListItem>
                   <ListItem action={<Shortcut size="xs" keys="Escape" />}>Close</ListItem>
                 </List>
@@ -1524,6 +1533,30 @@ function ShowcaseBody() {
             </div>
           </div>
         </section>
+
+        <CommandPalette
+          open={palette}
+          onOpenChange={setPalette}
+          items={[
+            { value: 'overview', label: 'Go to overview', group: 'Navigate', shortcut: 'G O' },
+            { value: 'deploys', label: 'Go to deployments', group: 'Navigate', shortcut: 'G D' },
+            {
+              value: 'redeploy',
+              label: 'Redeploy production',
+              description: 'Builds the current branch and moves traffic when it is healthy.',
+              group: 'Actions',
+              shortcut: 'Mod+Shift+R',
+              keywords: ['ship', 'release']
+            },
+            {
+              value: 'rollback',
+              label: 'Roll back the last deploy',
+              group: 'Actions',
+              keywords: ['undo', 'revert']
+            },
+            { value: 'theme', label: 'Toggle dark mode', group: 'Preferences' }
+          ]}
+        />
 
         {/* The two halves of a runbook: what to type, and the walk-through that
             says when to type it. */}

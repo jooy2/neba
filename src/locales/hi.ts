@@ -92,6 +92,11 @@ export const hi: NebaLocale = {
     selectAll: 'सभी चुनें',
     empty: 'यहाँ कुछ नहीं है'
   },
+  command: {
+    label: 'कमांड पैलेट',
+    search: 'कमांड लिखें या खोजें…',
+    empty: 'कोई कमांड नहीं मिली'
+  },
   combobox: {
     empty: 'कोई मिलान नहीं',
     remove: '{label} हटाएँ'

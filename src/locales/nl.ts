@@ -92,6 +92,11 @@ export const nl: NebaLocale = {
     selectAll: 'Alles selecteren',
     empty: 'Niets aanwezig'
   },
+  command: {
+    label: 'Opdrachtenpalet',
+    search: 'Typ een opdracht of zoek…',
+    empty: 'Geen opdrachten gevonden'
+  },
   combobox: {
     empty: 'Geen resultaten',
     remove: '{label} verwijderen'

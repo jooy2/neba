@@ -92,6 +92,11 @@ export const tr: NebaLocale = {
     selectAll: 'Tümünü seç',
     empty: 'Burada bir şey yok'
   },
+  command: {
+    label: 'Komut paleti',
+    search: 'Bir komut yazın veya arayın…',
+    empty: 'Komut bulunamadı'
+  },
   combobox: {
     empty: 'Eşleşme yok',
     remove: '{label} kaldır'

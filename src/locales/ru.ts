@@ -92,6 +92,11 @@ export const ru: NebaLocale = {
     selectAll: 'Выбрать все',
     empty: 'Здесь пусто'
   },
+  command: {
+    label: 'Палитра команд',
+    search: 'Введите команду или поиск…',
+    empty: 'Команды не найдены'
+  },
   combobox: {
     empty: 'Совпадений нет',
     remove: 'Удалить {label}'

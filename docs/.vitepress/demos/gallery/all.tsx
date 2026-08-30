@@ -38,6 +38,7 @@ import {
   CodeBlock,
   ColorPicker,
   Combobox,
+  CommandPalette,
   Collapsible,
   Container,
   DataList,
@@ -236,6 +237,30 @@ function GalleryPersonIcon() {
 const GALLERY_DAY = new Date(2026, 6, 27);
 const GALLERY_DAY_LATER = new Date(2026, 7, 3);
 const GALLERY_MOMENT = new Date(2026, 6, 27, 9, 30);
+
+/** Opened from its own button, and never bound to a key inside the gallery. */
+function GalleryCommandPalette() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+        Open the palette
+      </Button>
+      <CommandPalette
+        size="sm"
+        shortcut={false}
+        open={open}
+        onOpenChange={setOpen}
+        items={[
+          { value: 'overview', label: 'Go to overview', group: 'Navigate', shortcut: 'G O' },
+          { value: 'logs', label: 'Go to logs', group: 'Navigate' },
+          { value: 'deploy', label: 'Deploy production', group: 'Actions', keywords: ['ship'] }
+        ]}
+      />
+    </>
+  );
+}
 
 /** The one preview that runs over the page, so it never draws the mask. */
 function GalleryTour() {
@@ -659,6 +684,15 @@ const GROUPS: Group[] = [
             </FloatingActionButton>
           </div>
         )
+      },
+      {
+        name: 'CommandPalette',
+        summary: {
+          ko: '애플리케이션이 할 수 있는 모든 것을 필드 하나 뒤에',
+          en: 'Everything an application can do, behind one field'
+        },
+        path: '/components/inputs/command-palette',
+        preview: <GalleryCommandPalette />
       },
       {
         name: 'Transfer',

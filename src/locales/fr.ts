@@ -92,6 +92,11 @@ export const fr: NebaLocale = {
     selectAll: 'Tout sélectionner',
     empty: 'Rien ici'
   },
+  command: {
+    label: 'Palette de commandes',
+    search: 'Tapez une commande ou recherchez…',
+    empty: 'Aucune commande trouvée'
+  },
   combobox: {
     empty: 'Aucun résultat',
     remove: 'Supprimer {label}'

@@ -95,6 +95,11 @@ export const zhHans: NebaLocale = {
     selectAll: '全选',
     empty: '这里没有内容'
   },
+  command: {
+    label: '命令面板',
+    search: '输入命令或搜索…',
+    empty: '未找到命令'
+  },
   combobox: {
     empty: '无匹配项',
     remove: '移除 {label}'

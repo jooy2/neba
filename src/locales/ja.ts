@@ -92,6 +92,11 @@ export const ja: NebaLocale = {
     selectAll: 'すべて選択',
     empty: '項目がありません'
   },
+  command: {
+    label: 'コマンドパレット',
+    search: 'コマンドを入力または検索…',
+    empty: 'コマンドが見つかりません'
+  },
   combobox: {
     empty: '一致する項目がありません',
     remove: '{label} を削除'

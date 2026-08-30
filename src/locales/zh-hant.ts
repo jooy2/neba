@@ -95,6 +95,11 @@ export const zhHant: NebaLocale = {
     selectAll: '全選',
     empty: '這裡沒有內容'
   },
+  command: {
+    label: '命令面板',
+    search: '輸入命令或搜尋…',
+    empty: '找不到命令'
+  },
   combobox: {
     empty: '沒有相符的項目',
     remove: '移除 {label}'

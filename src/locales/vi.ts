@@ -92,6 +92,11 @@ export const vi: NebaLocale = {
     selectAll: 'Chọn tất cả',
     empty: 'Không có gì ở đây'
   },
+  command: {
+    label: 'Bảng lệnh',
+    search: 'Nhập lệnh hoặc tìm kiếm…',
+    empty: 'Không tìm thấy lệnh'
+  },
   combobox: {
     empty: 'Không có kết quả',
     remove: 'Gỡ bỏ {label}'

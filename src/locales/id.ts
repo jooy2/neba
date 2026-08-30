@@ -92,6 +92,11 @@ export const id: NebaLocale = {
     selectAll: 'Pilih semua',
     empty: 'Tidak ada apa pun'
   },
+  command: {
+    label: 'Palet perintah',
+    search: 'Ketik perintah atau cari…',
+    empty: 'Perintah tidak ditemukan'
+  },
   combobox: {
     empty: 'Tidak ada yang cocok',
     remove: 'Hapus {label}'

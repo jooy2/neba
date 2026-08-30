@@ -409,6 +409,25 @@ export const breadcrumbMessages: MessageTable<BreadcrumbMessages> = {
   }
 };
 
+/** CommandPalette. */
+export interface CommandMessages {
+  /** Names the dialog, which has no visible title of its own. */
+  label: string;
+  /** The placeholder in the field the reader types into. */
+  search: string;
+  /** The line where the rows would be, when nothing matched. */
+  empty: string;
+}
+
+/** The `command` namespace, as CommandPalette read it. */
+export const commandMessages: MessageTable<CommandMessages> = {
+  '': {
+    label: 'Command palette',
+    search: 'Type a command or search…',
+    empty: 'No commands found'
+  }
+};
+
 /** Transfer. */
 export interface TransferMessages {
   /** The heading over the list of everything not yet chosen. */
@@ -785,6 +804,8 @@ export interface NebaLocale {
   anchor?: Partial<AnchorMessages>;
   /** Transfer. */
   transfer?: Partial<TransferMessages>;
+  /** Command. */
+  command?: Partial<CommandMessages>;
   /** Combobox. */
   combobox?: Partial<ComboboxMessages>;
   /** Overlay. */
@@ -816,6 +837,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   breadcrumb: breadcrumbMessages as MessageTable<never>,
   anchor: anchorMessages as MessageTable<never>,
   transfer: transferMessages as MessageTable<never>,
+  command: commandMessages as MessageTable<never>,
   combobox: comboboxMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
   window: windowMessages as MessageTable<never>,
