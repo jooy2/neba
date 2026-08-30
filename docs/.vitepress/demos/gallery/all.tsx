@@ -57,6 +57,7 @@ import {
   HeatmapChart,
   Header,
   Highlight,
+  HoverCard,
   HowToSteps,
   Icon,
   IconButton,
@@ -1076,6 +1077,24 @@ const GROUPS: Group[] = [
               <ListItem>Members</ListItem>
             </List>
           </Drawer>
+        )
+      },
+      {
+        name: 'HoverCard',
+        summary: {
+          ko: '포인터가 머무를 때 열리는, 그 너머의 미리보기',
+          en: 'A preview of what is on the other side, opened by resting on it'
+        },
+        path: '/components/surfaces/hover-card',
+        preview: (
+          <HoverCard
+            size="sm"
+            trigger={<TextLink href="#jooy2">@jooy2</TextLink>}
+            title="Jooy Lee"
+            description="Maintainer"
+          >
+            214 commits this year.
+          </HoverCard>
         )
       },
       {

@@ -52,6 +52,7 @@ import {
   HeatmapChart,
   Header,
   Highlight,
+  HoverCard,
   HowToSteps,
   Icon,
   IconButton,
@@ -1465,7 +1466,7 @@ function ShowcaseBody() {
         </section>
 
         <section className="flex flex-col gap-3">
-          <Caption>ChatBubble · Spoiler · TextLink</Caption>
+          <Caption>ChatBubble · Spoiler · TextLink · HoverCard</Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
             <Card size="sm" title="Support" subtitle="Thread 4192 · open">
               <div className="flex flex-col gap-3">
@@ -1499,9 +1500,18 @@ function ShowcaseBody() {
               <div className="flex flex-col gap-3">
                 <Typography level="body">
                   The full write-up is in the{' '}
-                  <TextLink href="#runbook" color="primary">
-                    runbook
-                  </TextLink>
+                  <HoverCard
+                    size="sm"
+                    trigger={
+                      <TextLink href="#runbook" color="primary">
+                        runbook
+                      </TextLink>
+                    }
+                    title="Warming the cache"
+                    description="docs.internal · edited 2 days ago"
+                  >
+                    Six steps, the last of which is the one that was skipped.
+                  </HoverCard>
                   , and the incident is filed under{' '}
                   <TextLink href="#incidents" newTab>
                     incidents

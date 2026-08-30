@@ -2887,6 +2887,146 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  HoverCard: [
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      required: true,
+      description: {
+        ko: '카드가 매달리는 요소. ref를 받고 props를 펼치는 요소 하나여야 하며, 카드는 감싸지 않고 그 요소에 병합됩니다',
+        en: 'What the card hangs off. One element that accepts a ref and spreads props; the card merges onto it rather than wrapping it'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '카드의 제목', en: 'The heading' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: { ko: '제목 아래 한 줄', en: 'A line under the title' }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '카드의 본문', en: 'The body' }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '타입 스케일과 여백, 그리고 카드가 넓어질 수 있는 한계까지 함께 정합니다',
+        en: 'The type scale, the padding, and how wide the card may get'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '의미론적 색 역할. 시트는 물들지 않으므로 가장자리에만 나타납니다',
+        en: 'Semantic colour role. The sheet is never dyed, so it reaches the edge'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '카드 안쪽 여백만 바꿉니다',
+        en: "Changes the card's inset and nothing else"
+      }
+    },
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'bottom'",
+      shared: true,
+      description: {
+        ko: '카드가 나타나는 trigger의 모서리. 공간이 없으면 반대편으로 뒤집힙니다',
+        en: 'Which edge of the trigger it appears on. Flips when there is no room'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      shared: true,
+      description: { ko: '그 모서리 위에서의 위치', en: 'Where it sits along that edge' }
+    },
+    {
+      name: 'sideOffset',
+      type: 'number',
+      default: '6',
+      description: { ko: 'trigger와의 거리 (px)', en: 'Distance from the trigger, in pixels' }
+    },
+    {
+      name: 'alignOffset',
+      type: 'number',
+      default: '0',
+      description: { ko: '그 모서리를 따라 미는 양 (px)', en: 'Shift along that edge, in pixels' }
+    },
+    {
+      name: 'arrow',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'trigger를 가리키는 꼭지를 그립니다. 반투명한 표면의 꼭지는 흐려진 배경을 함께 가져갈 수 없어 기본은 꺼짐입니다',
+        en: "Draws the wedge pointing at the trigger. Off by default: a translucent sheet's wedge cannot carry the blurred backdrop with it"
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '열림 여부. onOpenChange와 함께 쓰면 controlled 컴포넌트가 됩니다',
+        en: 'Whether the card is open. With onOpenChange it makes it controlled'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      description: {
+        ko: '열린 채로 시작할지 여부 (uncontrolled)',
+        en: 'Whether it starts open, uncontrolled'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리고 닫힐 때마다 호출됩니다', en: 'Fired whenever it opens or closes' }
+    },
+    {
+      name: 'delay',
+      type: 'number',
+      description: {
+        ko: '카드가 열리기까지 포인터가 머물러야 하는 시간 (ms)',
+        en: 'How long the pointer has to rest on the trigger before the card opens, in milliseconds'
+      }
+    },
+    {
+      name: 'closeDelay',
+      type: 'number',
+      description: {
+        ko: '포인터가 떠난 뒤 카드가 남아 있는 시간 (ms). trigger와 카드 사이의 빈틈을 건널 수 있게 합니다',
+        en: 'How long the card stays after the pointer has left, in milliseconds. This is what makes the gap crossable'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: {
+        ko: 'size가 정한 최대 너비를 덮어씁니다. 숫자는 px입니다',
+        en: 'A hard cap on the width, overriding the one size implies. Numbers are pixels'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,
