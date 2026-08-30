@@ -322,11 +322,14 @@ function ToastViewport(
 ) {
   const { toasts } = BaseUIToast.useToastManager<ToastData>();
   const { position, width, ...rest } = props;
-  const swipeDirection: ('up' | 'down' | 'left' | 'right')[] = [
-    position.startsWith('top') ? 'up' : 'down',
-    'left',
-    'right'
-  ];
+
+  // One array rather than a fresh one per render. Every toast on screen is
+  // handed it, and a new identity each time is a new prop each time on every
+  // one of them.
+  const swipeDirection = React.useMemo<('up' | 'down' | 'left' | 'right')[]>(
+    () => [position.startsWith('top') ? 'up' : 'down', 'left', 'right'],
+    [position]
+  );
 
   return (
     <BaseUIToast.Portal>
