@@ -82,6 +82,7 @@ export const id: NebaLocale = {
     label: 'Remah roti',
     expand: 'Tampilkan langkah tersembunyi'
   },
+  anchor: { label: 'Di halaman ini' },
   combobox: {
     empty: 'Tidak ada yang cocok',
     remove: 'Hapus {label}'

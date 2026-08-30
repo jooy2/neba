@@ -82,6 +82,7 @@ export const th: NebaLocale = {
     label: 'เส้นทางนำทาง',
     expand: 'แสดงขั้นตอนที่ซ่อนอยู่'
   },
+  anchor: { label: 'ในหน้านี้' },
   combobox: {
     empty: 'ไม่พบรายการที่ตรงกัน',
     remove: 'นำ {label} ออก'

@@ -82,6 +82,7 @@ export const es: NebaLocale = {
     label: 'Ruta de navegación',
     expand: 'Mostrar los pasos ocultos'
   },
+  anchor: { label: 'En esta página' },
   combobox: {
     empty: 'Sin coincidencias',
     remove: 'Quitar {label}'

@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  Anchor,
   AnimateAppear,
   AnimateBlink,
   AnimateFade,
@@ -1556,6 +1557,26 @@ const GROUPS: Group[] = [
               <TreeItem value="readme" label="README.md" />
             </TreeView>
           </div>
+        )
+      },
+      {
+        name: 'Anchor',
+        summary: {
+          ko: '지금 읽고 있는 페이지의 제목 목록',
+          en: 'The list of headings on the page being read'
+        },
+        path: '/components/display/anchor',
+        preview: (
+          <Anchor
+            size="sm"
+            activeHref="#gallery-anchor-b"
+            label="On this page"
+            items={[
+              { href: '#gallery-anchor-a', label: 'Overview' },
+              { href: '#gallery-anchor-b', label: 'Installation' },
+              { href: '#gallery-anchor-c', label: 'Configuration', depth: 1 }
+            ]}
+          />
         )
       },
       {

@@ -85,6 +85,7 @@ export const zhHans: NebaLocale = {
     label: '面包屑导航',
     expand: '显示隐藏的层级'
   },
+  anchor: { label: '本页内容' },
   combobox: {
     empty: '无匹配项',
     remove: '移除 {label}'

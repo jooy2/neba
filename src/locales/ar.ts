@@ -82,6 +82,7 @@ export const ar: NebaLocale = {
     label: 'مسار التنقل',
     expand: 'إظهار الخطوات المخفية'
   },
+  anchor: { label: 'في هذه الصفحة' },
   combobox: {
     empty: 'لا توجد نتائج مطابقة',
     remove: 'إزالة {label}'

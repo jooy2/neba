@@ -82,6 +82,7 @@ export const ru: NebaLocale = {
     label: 'Навигационная цепочка',
     expand: 'Показать скрытые шаги'
   },
+  anchor: { label: 'На этой странице' },
   combobox: {
     empty: 'Совпадений нет',
     remove: 'Удалить {label}'

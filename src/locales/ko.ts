@@ -82,6 +82,7 @@ export const ko: NebaLocale = {
     label: '탐색 경로',
     expand: '숨겨진 단계 보기'
   },
+  anchor: { label: '이 페이지의 내용' },
   combobox: {
     empty: '일치하는 항목 없음',
     remove: '{label} 삭제'

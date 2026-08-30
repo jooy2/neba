@@ -82,6 +82,7 @@ export const hi: NebaLocale = {
     label: 'ब्रेडक्रंब',
     expand: 'छिपे हुए चरण दिखाएँ'
   },
+  anchor: { label: 'इस पृष्ठ पर' },
   combobox: {
     empty: 'कोई मिलान नहीं',
     remove: '{label} हटाएँ'

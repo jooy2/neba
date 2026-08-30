@@ -82,6 +82,7 @@ export const fr: NebaLocale = {
     label: 'Fil d’Ariane',
     expand: 'Afficher les étapes masquées'
   },
+  anchor: { label: 'Sur cette page' },
   combobox: {
     empty: 'Aucun résultat',
     remove: 'Supprimer {label}'

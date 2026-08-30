@@ -3623,6 +3623,130 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Anchor: [
+    {
+      name: 'items',
+      type: 'readonly AnchorItem[]',
+      required: true,
+      description: {
+        ko: '제목들. 페이지에 나타나는 순서대로',
+        en: 'The headings, in the order they appear on the page'
+      }
+    },
+    {
+      name: 'activeHref',
+      type: 'string | null',
+      description: {
+        ko: '표시할 행의 href. 주면 스크롤 추적을 멈추고 지시받은 대로 표시합니다',
+        en: 'Which row is marked, by its href. Given, the list stops tracking the scroll and says what it is told'
+      }
+    },
+    {
+      name: 'onActiveChange',
+      type: '(href: string | null) => void',
+      description: {
+        ko: '독자가 있는 행이 바뀔 때마다 호출됩니다',
+        en: 'Called whenever the row the reader is in changes'
+      }
+    },
+    {
+      name: 'offset',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: 'scrollport 상단에서 얼마나 내려온 지점을 제목에 도달한 것으로 볼지 (px). sticky header의 높이를 넣으세요',
+        en: 'How far below the top of the scrollport a heading counts as reached, in pixels. Set it to the height of a sticky header'
+      }
+    },
+    {
+      name: 'container',
+      type: 'RefObject<HTMLElement | null>',
+      description: {
+        ko: '문서가 아닌 다른 것이 스크롤될 때 그 요소',
+        en: 'What scrolls, when it is not the document'
+      }
+    },
+    {
+      name: 'rail',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '앞쪽 가장자리를 따라 선을 그리고 현재 행에 불을 켭니다',
+        en: 'Draws the rail down the leading edge, with the active row lit'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '행의 타입 스케일과 들여쓰기 폭',
+        en: 'The type scale of the rows and the width of one indent'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '현재 행과 레일이 띠는 색 역할',
+        en: 'The role the marked row and the rail carry'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: { ko: '행의 세로 여백만 바꿉니다', en: 'Tightens the rows and nothing else' }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. nav의 이름을 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag naming the nav in that language. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: 'nav의 접근성 이름. 기본값은 locale의 표현입니다',
+        en: "The accessible name of the nav. Defaults to the locale's word for it"
+      }
+    }
+  ],
+
+  AnchorItem: [
+    {
+      name: 'href',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '가리키는 fragment — #getting-started. 여기 적힌 id를 목록이 지켜봅니다',
+        en: 'The fragment it points at. The id it names is what the list watches'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '행에 쓰이는 말', en: 'What the row says' }
+    },
+    {
+      name: 'depth',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '제목의 깊이. 들여쓰기에만 쓰이며 목록 자체는 평평합니다',
+        en: 'How deep the heading sits. Only the indent depends on it; the list is flat'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

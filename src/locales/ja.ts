@@ -82,6 +82,7 @@ export const ja: NebaLocale = {
     label: 'パンくずリスト',
     expand: '省略された階層を表示'
   },
+  anchor: { label: 'このページの内容' },
   combobox: {
     empty: '一致する項目がありません',
     remove: '{label} を削除'

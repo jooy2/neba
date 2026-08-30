@@ -396,6 +396,19 @@ export const breadcrumbMessages: MessageTable<BreadcrumbMessages> = {
   }
 };
 
+/** Anchor. */
+export interface AnchorMessages {
+  /** Names the `<nav>` landmark. */
+  label: string;
+}
+
+/** The `anchor` namespace, as Anchor read it. */
+export const anchorMessages: MessageTable<AnchorMessages> = {
+  '': {
+    label: 'On this page'
+  }
+};
+
 /** Combobox. */
 export interface ComboboxMessages {
   /** The line where the list would be, when nothing matched what was typed. */
@@ -721,6 +734,8 @@ export interface NebaLocale {
   scroll?: Partial<ScrollMessages>;
   /** Breadcrumb. */
   breadcrumb?: Partial<BreadcrumbMessages>;
+  /** Anchor. */
+  anchor?: Partial<AnchorMessages>;
   /** Combobox. */
   combobox?: Partial<ComboboxMessages>;
   /** Overlay. */
@@ -750,6 +765,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   carousel: carouselMessages as MessageTable<never>,
   scroll: scrollMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,
+  anchor: anchorMessages as MessageTable<never>,
   combobox: comboboxMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
   window: windowMessages as MessageTable<never>,

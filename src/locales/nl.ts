@@ -82,6 +82,7 @@ export const nl: NebaLocale = {
     label: 'Kruimelpad',
     expand: 'Verborgen stappen tonen'
   },
+  anchor: { label: 'Op deze pagina' },
   combobox: {
     empty: 'Geen resultaten',
     remove: '{label} verwijderen'

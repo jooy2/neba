@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionItem,
   Alert,
+  Anchor,
   AnimateAppear,
   AnimateHeadline,
   AnimateLighting,
@@ -1470,8 +1471,22 @@ function ShowcaseBody() {
         {/* The two halves of a runbook: what to type, and the walk-through that
             says when to type it. */}
         <section className="flex flex-col gap-3">
-          <Caption>CodeBlock · HowToSteps</Caption>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+          <Caption>CodeBlock · HowToSteps · Anchor</Caption>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr_1fr]">
+            {/* The rail a documentation page keeps beside its content. It is
+                controlled here rather than tracking, because the page it names
+                is the section next to it and not the window's own scroll. */}
+            <Anchor
+              size="xs"
+              activeHref="#runbook-roll-back"
+              label="Runbook contents"
+              items={[
+                { href: '#runbook-find', label: 'Find the deploy' },
+                { href: '#runbook-roll-back', label: 'Roll back' },
+                { href: '#runbook-config', label: 'Configuration', depth: 1 },
+                { href: '#runbook-announce', label: 'Tell the channel' }
+              ]}
+            />
             <div className="flex flex-col gap-4">
               <CodeBlock
                 size="sm"

@@ -85,6 +85,7 @@ export const zhHant: NebaLocale = {
     label: '麵包屑導覽',
     expand: '顯示隱藏的層級'
   },
+  anchor: { label: '本頁內容' },
   combobox: {
     empty: '沒有相符的項目',
     remove: '移除 {label}'

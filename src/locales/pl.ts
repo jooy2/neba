@@ -82,6 +82,7 @@ export const pl: NebaLocale = {
     label: 'Ścieżka nawigacji',
     expand: 'Pokaż ukryte kroki'
   },
+  anchor: { label: 'Na tej stronie' },
   combobox: {
     empty: 'Brak wyników',
     remove: 'Usuń {label}'

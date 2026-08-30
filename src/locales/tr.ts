@@ -82,6 +82,7 @@ export const tr: NebaLocale = {
     label: 'Gezinti yolu',
     expand: 'Gizli adımları göster'
   },
+  anchor: { label: 'Bu sayfada' },
   combobox: {
     empty: 'Eşleşme yok',
     remove: '{label} kaldır'

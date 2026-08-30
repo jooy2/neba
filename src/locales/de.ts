@@ -82,6 +82,7 @@ export const de: NebaLocale = {
     label: 'Breadcrumb-Navigation',
     expand: 'Ausgeblendete Schritte anzeigen'
   },
+  anchor: { label: 'Auf dieser Seite' },
   combobox: {
     empty: 'Keine Treffer',
     remove: '{label} entfernen'
