@@ -382,8 +382,17 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
    * of a `string | number` can contain, so two different lists cannot spell one
    * key.
    */
-  const expandedKey = expandedValues.map(keyOf).join('\u0000');
-  const selectedKey = selectedValues.map(keyOf).join('\u0000');
+  // Memoised on the arrays themselves as well. When a caller keeps the array
+  // stable this is free; when they rebuild it every render — which is what the
+  // paragraph above is about — it costs one miss and does the join anyway.
+  const expandedKey = React.useMemo(
+    () => expandedValues.map(keyOf).join('\u0000'),
+    [expandedValues]
+  );
+  const selectedKey = React.useMemo(
+    () => selectedValues.map(keyOf).join('\u0000'),
+    [selectedValues]
+  );
 
   const context = React.useMemo<TreeViewContextValue>(
     () => ({
@@ -407,26 +416,32 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(functi
   /*
    * The tab stop has to be somewhere, and after a branch shuts it may be on a
    * row that no longer exists. Rather than tracking every mount and unmount, the
-   * tree looks at what is actually rendered and moves the stop to the first row
+   * tree checks what is actually rendered and moves the stop to the first row
    * whenever the one it was on has gone. It runs after every render and sets
    * state only when it has to, so it settles in a single extra pass.
    *
    * No dependency list, deliberately: a branch shutting unmounts rows without
    * changing anything this could be keyed on.
+   *
+   * The usual answer is the first line and costs nothing. Every rendered row
+   * registers itself and unregisters on the way out, and a child's effect runs
+   * before its parent's — so by the time this runs the map is exactly what is on
+   * screen, and "is the tab stop still there" is a lookup rather than a
+   * `querySelectorAll` over a tree that may hold thousands of rows.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
+    if (activeKey !== null && apisRef.current.has(activeKey)) return;
+
     const root = rootRef.current;
     if (!root) return;
 
+    // Only when the cheap answer said no. Which row is *first* is a question
+    // about document order, and the DOM is the only thing that knows it — the
+    // map is in registration order, which is mount order and not the same.
     const rows = treeRows(root);
     if (rows.length === 0) return;
-    if (activeKey !== null && rows.some((row) => row.dataset.nebaValue === activeKey)) return;
 
-    // The question is "is the row holding the tab stop still rendered", and the
-    // DOM is the only thing that can answer it. The two guards above are what
-    // stop this repeating: it runs at most once after the render that removed
-    // the row.
     setActiveKey(rows[0].dataset.nebaValue ?? null);
   });
 

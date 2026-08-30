@@ -231,6 +231,36 @@ describe('TreeView', () => {
       expect(stops).toHaveLength(1);
     });
 
+    // The tab stop cannot stay on a row that has gone. It is checked against
+    // the rows that registered themselves rather than by querying the tree, so
+    // the case that matters is a branch shutting under the stop — and it is
+    // shut from outside here, so nothing else is moving the stop as a side
+    // effect of the press that did it.
+    it('moves the tab stop off a row a shut branch took away', async () => {
+      const stop = () =>
+        screen
+          .getByRole('treeitem')
+          .elements()
+          .filter((row) => row.getAttribute('tabindex') === '0')
+          .map((row) => row.getAttribute('data-neba-value'));
+
+      const screen = await render(<Sample expanded={['src', 'components']} />);
+
+      await screen
+        .getByRole('treeitem', { name: /^components/ })
+        .element()
+        .focus();
+      await treeHasFocus(screen);
+      await userEvent.keyboard('{ArrowDown}');
+
+      await expect.poll(stop).toEqual(['button']);
+
+      await screen.rerender(<Sample expanded={[]} />);
+
+      await expect.poll(stop).toEqual(['src']);
+      expect(screen.getByRole('treeitem', { name: /Button\.tsx/ }).query()).toBeNull();
+    });
+
     it('walks the visible rows with the arrow keys', async () => {
       const screen = await render(<Sample defaultExpanded={['src']} />);
 
