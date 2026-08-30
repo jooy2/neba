@@ -3173,6 +3173,115 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Menubar: [
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '단어의 높이와 타입 스케일. 각 단계에서 컨트롤 높이보다 한 칸 아래인 자기만의 사다리입니다',
+        en: 'The height and type scale of the words. Its own ladder, one rung below the control heights at every step'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '열린 메뉴의 단어가 띠는 색 역할',
+        en: 'The role the word of an open menu carries'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '단어의 가로 여백만 바꿉니다',
+        en: 'The horizontal padding of the words and nothing else'
+      }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '띠가 이어지는 방향. 방향키도 이를 따릅니다',
+        en: 'Which way the bar runs. The arrow keys follow it'
+      }
+    },
+    {
+      name: 'modal',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '열린 메뉴가 뒤 페이지를 가져가는지 여부',
+        en: 'Whether an open menu takes the page away'
+      }
+    },
+    {
+      name: 'loopFocus',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '방향키가 바 양 끝에서 순환할지 여부',
+        en: 'Whether the arrow keys wrap around at the ends of the bar'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '바 위의 모든 메뉴를 한 번에 비활성화합니다',
+        en: 'Disables every menu on the bar at once'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'MenubarMenu들', en: 'The menus' }
+    }
+  ],
+
+  MenubarMenu: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '바 위에 놓이는 단어', en: 'The word on the bar' }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '단어 앞의 내용. em 단위라 단어를 따라갑니다',
+        en: 'Content before the label. Sized in em, so it tracks it'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 단어는 바에 남고 아무것도 열지 않습니다',
+        en: 'Unavailable. The word stays on the bar and opens nothing'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '행들. Menu 안에 쓰는 것과 똑같이 씁니다',
+        en: 'The rows, written exactly as they are inside a Menu'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

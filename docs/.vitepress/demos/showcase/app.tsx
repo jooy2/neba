@@ -66,6 +66,8 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Menubar,
+  MenubarMenu,
   Meter,
   Mockup,
   NumberField,
@@ -1647,7 +1649,7 @@ function ShowcaseBody() {
             machine; a WindowPane is one window on it, and this one is real
             enough to drag by its title bar and pull by its corner. */}
         <section className="flex flex-col gap-3">
-          <Caption>WindowPane</Caption>
+          <Caption>WindowPane · Menubar</Caption>
           <div className="relative h-64 overflow-hidden rounded-[var(--neba-radius-lg)] bg-[var(--neba-secondary-soft)]">
             <WindowPane
               title="Deployments"
@@ -1658,11 +1660,23 @@ function ShowcaseBody() {
               height={180}
               defaultOffset={{ x: 24, y: 18 }}
             >
-              <div className="flex flex-col gap-2 p-4">
-                <Typography level="caption" className="text-[var(--neba-muted-fg)]">
-                  Drag the title bar, pull the corner.
-                </Typography>
-                <Sparkline data={[3, 5, 4, 8, 7, 11, 9, 14]} shape="area" />
+              <div className="flex h-full flex-col">
+                <Menubar size="xs" className="border-b border-(--neba-border) px-1 py-0.5">
+                  <MenubarMenu label="File">
+                    <MenuItem shortcut="⌘N">New deployment</MenuItem>
+                    <MenuSeparator />
+                    <MenuItem color="danger">Close</MenuItem>
+                  </MenubarMenu>
+                  <MenubarMenu label="View">
+                    <MenuCheckboxItem defaultChecked>Sparkline</MenuCheckboxItem>
+                  </MenubarMenu>
+                </Menubar>
+                <div className="flex flex-col gap-2 p-4">
+                  <Typography level="caption" className="text-[var(--neba-muted-fg)]">
+                    Drag the title bar, pull the corner.
+                  </Typography>
+                  <Sparkline data={[3, 5, 4, 8, 7, 11, 9, 14]} shape="area" />
+                </div>
               </div>
             </WindowPane>
 

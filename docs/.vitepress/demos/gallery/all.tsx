@@ -70,6 +70,8 @@ import {
   MenuItem,
   MenuSeparator,
   MenuSubmenu,
+  Menubar,
+  MenubarMenu,
   Meter,
   Mockup,
   NumberField,
@@ -618,6 +620,29 @@ const GROUPS: Group[] = [
               <FloatingAction label="Note" />
             </FloatingActionButton>
           </div>
+        )
+      },
+      {
+        name: 'Menubar',
+        summary: {
+          ko: '애플리케이션 상단의 단어 띠',
+          en: 'The strip of words at the top of an application'
+        },
+        path: '/components/inputs/menubar',
+        preview: (
+          <Menubar size="sm">
+            <MenubarMenu label="File">
+              <MenuItem shortcut="⌘N">New file</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Open…</MenuItem>
+            </MenubarMenu>
+            <MenubarMenu label="Edit">
+              <MenuItem shortcut="⌘Z">Undo</MenuItem>
+            </MenubarMenu>
+            <MenubarMenu label="View">
+              <MenuItem>Sidebar</MenuItem>
+            </MenubarMenu>
+          </Menubar>
         )
       },
       {

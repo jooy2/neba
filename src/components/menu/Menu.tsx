@@ -58,6 +58,11 @@ export interface MenuProps extends MenuSurfaceProps {
   sideOffset?: number;
   /**
    * Whether the page behind is taken away while the menu is open.
+   *
+   * Left undefined rather than defaulted here on purpose: Base UI's own default
+   * is the same `true`, and it warns when the prop is set on a menu that turns
+   * out to be nested — which is every menu on a [Menubar](./menubar) and every
+   * submenu. Not passing it is how the default stays a default.
    * @default true
    */
   modal?: boolean;
@@ -666,7 +671,7 @@ export function Menu({
   side = 'bottom',
   align = 'start',
   sideOffset = 6,
-  modal = true,
+  modal,
   openOnHover = false,
   loopFocus = true,
   disabled = false,
