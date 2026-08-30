@@ -1,5 +1,106 @@
 # Changelog
 
+## 1.9.0 (2026-08-30)
+
+Sixteen components, and they come from one question asked properly: what does a large application still have to write by hand after installing this? The answer was in two places. Nine of them were Base UI primitives that had simply never been wrapped — a toggle and its group, a meter, a menu bar, a navigation menu, a hover card, a scroll area, a form and its fieldset. The other seven are the components a product team writes itself around the third month: a command palette, a guided tour, a two-list transfer, a table of contents that follows the scroll, a key-value panel, a stack of avatars, and a gauge.
+
+Twenty new exports, and the standing scenarios say what they cost the people who do not import them:
+
+| What you import               | 1.8.1    | 1.9.0    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.0 kB   | 3.0 kB   |
+| `LineChart`                   | 11.0 kB  | 11.0 kB  |
+| a whole page shell            | 28.1 kB  | 28.1 kB  |
+| 12 components — a typical app | 67.0 kB  | 67.1 kB  |
+| 25 components — a large one   | 110.8 kB | 111.4 kB |
+| `DataList`                    | —        | 1.4 kB   |
+| `Anchor`                      | —        | 2.0 kB   |
+| `Meter`                       | —        | 3.9 kB   |
+| `Form` with `Fieldset`        | —        | 3.9 kB   |
+| `GaugeChart`                  | —        | 5.4 kB   |
+| `CommandPalette`              | —        | 36.6 kB  |
+| all exports (126 → 146)       | 215.3 kB | 239.8 kB |
+
+The four unchanged rows are the ones worth reading: twenty new exports, and a bundle that did not ask for them is the same size to the byte. The two application-sized rows moved by 0.1 kB and 0.6 kB, and for a reason that is in **Changed** below rather than for anything that stopped being shaken out — every field component now renders the message its validity already had.
+
+The spread in the new rows is Base UI rather than Neba. `DataList` is a `<dl>` and weighs what one weighs; `CommandPalette` is a modal dialog over an autocomplete, and the floating machinery underneath it is most of thirty-six kilobytes — shared with `Menu`, `Select`, `Popover` and `Dialog` the moment a page uses any of them. `neba/styles.css` moves 19.7 kB → 20.8 kB gzipped.
+
+### Added
+
+- **`Toggle` and `ToggleGroup`.** A button that stays down. The difference from a `Switch` is what the press _is_ — a switch changes a setting and the change is the point, a toggle changes the state of the thing beside it: bold on the selected words, the grid on the canvas, the filter on the list. The difference from a `Checkbox` is that this one is a control rather than an answer, so it never goes in a form.
+
+  `variant` says how the toggle looks while it is **off**, and on is always the colour family asserting itself. That is the whole design: the ink at rest is `--neba-muted-fg` in all three weights, because a Button at rest is an action waiting to be taken while a toggle at rest is a state that is currently _false_, and accent ink on an unpressed toggle says it is on. With no children it goes square around its icon, which is the shape a toolbar wants.
+
+  `ToggleGroup` squares off the corners facing a neighbour exactly as `ButtonGroup` does, owns the value as an array in both the single and the multiple case, and sets `variant`, `size`, `color`, `density`, `elevation` and `disabled` once for the set. It provides the same context a `ButtonGroup` provides rather than a second one spelled identically, so a `Toggle` dropped into a `ButtonGroup` picks the set up too.
+
+- **`Meter`.** How much of something there is, on a scale known in advance — disk used, seats taken, quota spent, a password's strength. It looks exactly like a `ProgressLinear` and is not one: a progress bar is about _time_, so it may have no value at all and is expected to move on its own, while a meter is about _quantity_ and does not move unless the thing it measures does. `value` is therefore required, and `role="meter"` rather than `role="progressbar"`.
+
+  `thresholds` is the reason it earns a component. A meter's whole job is that where the value sits is what it means — 40% of a disk is fine, 95% is a page — and left to the caller that is a ternary at every call site, with the fourth one disagreeing about where amber starts.
+
+- **`GaugeChart`.** The same reading bent into an arc, and deliberately the same component in two shapes: `value`, `min`, `max` and `thresholds` mean exactly what they mean on a `Meter`, so a figure can move from a bar to a dial without changing what it says. Reach for the bar in a row of fields and for the dial in a tile of its own, where it reads from across a room and four pixels of bar does not.
+
+  `sweep` opens the dial symmetrically about twelve o'clock — `180` for a dashboard tile, `270` for the instrument shape, `360` for a ring — and the drawing is sized against the box for the sweep it was given, so a half-dial leaves no empty half above it. It is not a `PieChart` with `shape="semi"`: a pie is parts of a whole and every slice is a category, while the unfilled part of a gauge is not a second category, it is the rest of the dial. The reading in the middle is real text rather than an SVG `<text>`, so it is selectable, findable and in the accessibility tree.
+
+- **`Menubar`.** The strip of words at the top of an application — File, Edit, View. What makes it a bar rather than a row of separate menus is what happens once one is open: moving along the strip walks through the others instead of closing the one you left, and the arrow keys move between the menus as well as inside them. `MenubarMenu` takes a `label` and the same `MenuItem`, `MenuGroup`, `MenuSeparator`, `MenuCheckboxItem`, `MenuRadioGroup` and `MenuSubmenu` a `Menu` takes, because it is the same menu.
+
+  It draws no surface, and the words sit on a ladder one rung below the control heights at every step. A menu bar is a strip of _words_ rather than a row of buttons, and it is always on something that already has a height — a `Toolbar`, a `WindowPane`'s title bar, a `Header`. Sized as controls, `File Edit View` would make the bar taller than the thing it is drawn on.
+
+- **`NavigationMenu`.** A site's navigation: a row of destinations, some of which open a panel of more of them. The difference from a `Menu` is what the rows _are_. A menu holds actions, so its rows are `menuitem`s and the whole thing is a widget. This holds links, so it is a `<nav>` full of real `<a href>`s — which is what puts them in the link list a screen reader pulls up, on the status bar, in a "open in new tab", and in a crawler's index. An item with children is a trigger and a panel; an item with an `href` and nothing else is a link, and the two are announced differently.
+
+  One panel is open at a time and it resizes between items rather than closing and reopening, so crossing the row reads as one surface rather than three. `columns` lays a wide panel out in two or three.
+
+- **`CommandPalette`.** Everything an application can do, behind one field — the shape a keyboard-first product takes once it has more actions than a menu bar can hold. Not a `Menu`, which is a short list in one place where every row is visible before you look for it; not a `Combobox` either, because what comes back is not a value, it is something happening.
+
+  `keywords` is the prop that decides whether anyone opens it twice: words the query matches and that are never drawn, so `Roll back` is found by typing `undo` and `Deploy production` by typing `ship`. `group` draws a heading each time it changes. `shortcut` binds the opening keystroke on the window and defaults to `Mod+K` — `Mod` being Command on a Mac and Control everywhere else, read from the same spelling `Shortcut` draws, so the label on the screen and the key that actually works cannot drift apart. `shortcut={false}` binds nothing, for an application that owns its own keyboard.
+
+- **`Tour`.** A guided walk over a page that already exists — the three things a new reader has to be shown once, pointed at where they actually are. It is `HowToSteps` turned inside out: that component puts the instructions _in_ the page and the reader follows them, this one leaves the page alone and stands over it. Each step names its target with a CSS selector rather than restating it, because what a tour is about is already on screen and a second copy inside the card is a second copy to keep in step.
+
+  The dimming is one element with a hole in it — a box the size of the target carrying a shadow larger than any screen — rather than four rectangles around it, because the corners of a four-piece scrim never quite meet and the seams show the moment the dimming is anything but opaque. It never takes the pointer either, so the control being pointed at can still be used while the card is up, which is the whole difference between a tour and a sequence of dialogs. A step with no `target` is centred with nothing cut out, for a welcome card and a closing one.
+
+- **`Transfer`.** Two lists and the arrows between them: everything that could be chosen on one side, everything that has been on the other. The shape for a choice that is _long_ — the columns in a report, the permissions on a role, the people on a channel — where a `Combobox` with forty chips in its field stops being readable and forty checkboxes give no answer to "what did I actually pick". Below about a dozen options, one of those two is the smaller component.
+
+  Ticking a row is not choosing it: ticks say which rows the next press moves and `value` says which side they are on, and keeping the two apart is what lets a filter hide a row without silently moving it. The order of `items` is the order both lists show, so a row does not jump when it is sent across and back.
+
+- **`Anchor`.** The list of headings on the page being read, with the one the reader is in marked. Real `<a href="#…">`s in a real `<nav>`: they jump to their headings with JavaScript off and they are in the link list, and the scroll tracking is added on top rather than being the thing that makes it work.
+
+  The marked row is the last heading whose top has passed the line, which is the only rule that reads correctly going _up_ as well as down, and the last heading wins once the scroll reaches the bottom — otherwise a final section with less content than a viewport is the one section that can never be marked. Nothing is marked while the reader is still above the first heading. `offset` clears a sticky header and `container` names what scrolls when it is not the document, which is what a `PageLayout` with `scroll="content"` needs.
+
+- **`DataList`.** A list of things and what they are called — a details panel, a summary of a record, the metadata under a heading. Real `<dt>`/`<dd>` pairs rather than a two-column `Table`, and the difference is not cosmetic: a table is a grid of rows all of the same shape and a screen reader walks it as a grid, while this is a set of pairs and each one is read as "label, value". The label column sizes itself to the widest label, so every value in the list starts at the same place without anybody measuring.
+
+- **`AvatarGroup`.** A stack of avatars, overlapping, with the ones that did not fit as a count. `max` is how many are drawn and `total` how many there are altogether, for a group handed only the first few. The first avatar is on top, because a stack read left to right is read front to back and the one the group is _about_ should not be the one behind everything else.
+
+- **`HoverCard`.** A card that opens when the pointer rests on something, holding a preview of what is on the other side — a person behind a mention, a repository behind a link, a deploy behind an id. It sits between the library's other two popups and is close to both: a `Tooltip` is a label the pointer never reaches, a `Popover` was _asked for_ by a press. This one is uninvited like the first and reachable like the second, so the pointer can cross into it and a link inside it can be followed. `closeDelay` is what makes the gap between the trigger and the card crossable.
+
+- **`ScrollArea`.** A box with a scrollbar of its own, because the browser's is drawn by the operating system: seventeen pixels wide on one machine, overlaid and invisible on the next, and a different colour from the sheet it is cut into. Not `ScrollZone`, which is a _rail_ — a strip of items with buttons that step through them; this is the plain case of a box too small for what is in it, and underneath both are ordinary scroll containers, so the wheel, the trackpad, momentum and the keyboard are the browser's own.
+
+  `fade` dims the content at each edge that has more beyond it and only there, so there is no fade at the top when you are at the top. It is a mask rather than a gradient painted over the content, because a gradient has to fade _to_ a colour and a scroll area usually sits on a translucent acrylic sheet where there is no such colour.
+
+- **`Form` and `Fieldset`.** A `<form>` that knows which of its fields is wrong. On its own, a page of `TextField`s validates one field at a time and a failed submit leaves the reader to find the red one; what this adds is the part that has to be owned above the fields — a submit collects every field's validity at once and moves focus to the first that failed, so the reader is taken to the problem rather than told there is one. `errors`, keyed by each field's `name`, puts a server's answer back on the field it belongs to instead of in a banner, and clears it as soon as that field changes.
+
+  It is not a form _library_. There is no schema, no resolver and no field array here — a project that wants those keeps them and hands the result to `errors`, which is the seam this is built around. `validationMode` defaults to `onSubmit`, the only setting that does not tell somebody their email is wrong while they are still typing it.
+
+  `Fieldset` is the grouping and draws no surface, because a group of fields is a grouping and not a sheet — the sheet already exists, and this goes inside a `Card`. What it owns is the legend, the gap the controls stand at, and the one thing only a real `<fieldset>` can do: `disabled` reaches every control inside it, including ones a component three levels down rendered and never heard of it.
+
+- Three new message namespaces in all eighteen languages — `anchor` for the table of contents' `<nav>` name, `transfer` for the two headings, the two buttons, the filter and the select-all, and `command` for the palette's placeholder, its empty line and the name of a dialog that has no visible title — plus `steps.skip`, which `Tour` and `HowToSteps` share. All four together move a twelve-component app with Korean registered from 69.2 kB to 69.6 kB.
+
+### Changed
+
+- **A field with no `error` of its own now shows the message its validity already had.** `TextField`, `NumberField`, `OtpField`, `Select`, `Combobox`, `Checkbox`, `RadioGroup` and `Switch` rendered a message only when the caller passed one, so a `required` field that failed the browser's own constraint went red and said nothing, and a `Form`'s `errors` marked a field invalid without ever drawing the sentence. Each of the eight now falls through to a plain `Field.Error`, which renders the current validation message and nothing at all while the field is valid. An explicit `error` still wins and still shows whenever the field is invalid. This is the tenth of a kilobyte in the twelve- and twenty-five-component rows above.
+
+- **`Menu` no longer passes `modal` when it was not given one.** Base UI's default is the same `true`, and it warns when the prop is set on a menu that turns out to be nested — which is every menu on a `Menubar` and every submenu. Not passing it is how the default stays a default; nothing about how a menu behaves has changed.
+
+- **`NebaThreshold` is in the shared vocabulary**, in `src/types.ts` beside `NebaSize` and `NebaColor`, because `Meter` and `GaugeChart` are the same reading in two shapes and a page carrying both must not disagree about where amber starts. It is the one place in the library where a semantic colour is _computed_.
+
+- `fill()` — the `{index} of {total}` interpolation — moved from `HowToSteps` into `internal/i18n.ts`, now that a second component counts steps. The placeholders are part of the message format, and a language that orders them the other way round is exactly the case a second copy of that function would eventually get wrong.
+
+### Documentation
+
+- Thirty-two component pages — sixteen components in both locales — with their props rows, sixty-one demos, sixteen cards in the component gallery and their blocks on the sample screen. `llms.txt` and the README's component lists carry all sixteen.
+- The sample screen gains the two components that are only really visible in a page that already exists: a `Tour` hung off the application header it points at, and a `CommandPalette` opened by the `Mod+K` row the Keyboard card was already advertising.
+- One hundred and eighty new test cases across sixteen files, taking the suite to 2,228.
+- `CLAUDE.md` records the new group memberships, the two internal modules that gained a second reader (`button-group.ts` for `ToggleGroup`, `menu.ts` for `Menubar`), the new `internal/avatar-group.ts`, and the refreshed bundle table.
+
 ## 1.8.1 (2026-08-29)
 
 Neba could not be imported into a React Server Component, and nothing in this repository could have said so. React's `react-server` build does not export `useState`, `useEffect`, `useRef`, `useContext` or `createContext` at all, so the fifty-three modules here that called one were a `TypeError` in someone's Next.js app rather than a component that rendered badly — and every check stayed green, because nothing here renders on a server.
