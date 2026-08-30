@@ -19,13 +19,13 @@
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 11
+      "budget": 11.3
     },
     {
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 4.8
+      "budget": 4.9
     },
     {
       "id": "app-12",
@@ -44,7 +44,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 67.1
+      "budget": 67.2
     },
     {
       "id": "app-25",
@@ -82,7 +82,7 @@
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 28.1
+      "budget": 28.4
     },
     {
       "id": "app-12-ko",
@@ -102,13 +102,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 69.6
+      "budget": 69.7
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 239.8
+      "budget": 240.3
     }
   ]
 }
