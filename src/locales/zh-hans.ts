@@ -80,6 +80,7 @@ export const zhHans: NebaLocale = {
     previous: '上一张',
     next: '下一张'
   },
+  chart: { label: '图表' },
   scroll: { previous: '向前滚动', next: '向后滚动' },
   breadcrumb: {
     label: '面包屑导航',

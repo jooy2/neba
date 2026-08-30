@@ -109,6 +109,31 @@ describe('HeatmapChart', () => {
     });
   });
 
+  describe('accessibility', () => {
+    it('names itself when no label was given', async () => {
+      const screen = await render(<HeatmapChart categories={HOURS} series={TRAFFIC} />);
+
+      await expect.element(screen.getByRole('img', { name: 'Chart' })).toBeInTheDocument();
+    });
+
+    it('keeps the readout outside the picture', async () => {
+      const screen = await render(
+        <HeatmapChart label="Sessions" categories={HOURS} series={TRAFFIC} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      // `role="img"` is a leaf: everything under it is cut out of the
+      // accessibility tree, so a live region in there would announce to nobody.
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toBeInTheDocument();
+      expect(plot.element().contains(status.element())).toBe(false);
+    });
+  });
+
   describe('colour', () => {
     it('takes the sequential ramp and not the categorical palette', async () => {
       const screen = await render(

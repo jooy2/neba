@@ -77,6 +77,7 @@ export const th: NebaLocale = {
     previous: 'สไลด์ก่อนหน้า',
     next: 'สไลด์ถัดไป'
   },
+  chart: { label: 'แผนภูมิ' },
   scroll: { previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
   breadcrumb: {
     label: 'เส้นทางนำทาง',

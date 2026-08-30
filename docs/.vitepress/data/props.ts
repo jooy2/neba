@@ -666,9 +666,10 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
     {
       name: 'label',
       type: 'string',
+      default: "locale's word",
       description: {
-        ko: '차트의 접근 가능한 이름. 그림 대신 읽히고, 아래에 숨겨진 데이터 표의 caption이 됩니다',
-        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it"
+        ko: '차트의 접근 가능한 이름. 그림 대신 읽히고, 아래에 숨겨진 데이터 표의 caption이 됩니다. 없으면 locale의 일반 명사가 쓰이지만, 무엇에 대한 차트인지는 여기서만 말할 수 있습니다',
+        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it. Without it the locale's generic word stands in — but what the chart is *of* can only be said here"
       }
     },
     {

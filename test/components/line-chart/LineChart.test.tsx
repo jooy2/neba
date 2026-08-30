@@ -187,6 +187,40 @@ describe('LineChart', () => {
     });
   });
 
+  describe('accessibility', () => {
+    it('names itself when no label was given', async () => {
+      const screen = await render(
+        <LineChart categories={MONTHS} series={[{ name: 'Web', data: [10, 20, 30, 40] }]} />
+      );
+
+      // A focusable `role="img"` with no name is a tab stop that announces
+      // nothing at all, so the fallback is not cosmetic.
+      await expect.element(screen.getByRole('img', { name: 'Chart' })).toBeInTheDocument();
+    });
+
+    it('keeps the readout outside the picture', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          height={200}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      // `role="img"` is a leaf: everything under it is cut out of the
+      // accessibility tree, so a live region in there would announce to nobody.
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toBeInTheDocument();
+      expect(plot.element().contains(status.element())).toBe(false);
+    });
+  });
+
   describe('tooltip', () => {
     it('opens on an arrow key and names the category', async () => {
       const screen = await render(
@@ -231,11 +265,16 @@ describe('LineChart', () => {
       // Near the top of the plot, which is where the high series runs.
       await plot.hover({ position: { x: 120, y: 12 } });
 
+      // The readout, which is what a screen reader is given, and the panel,
+      // which is what everybody else sees. The panel carries no role of its
+      // own — it is inside the chart's `role="img"`, where a role would be
+      // announced to nobody — so it is reached by its data attribute.
       const status = screen.getByRole('status');
 
       await expect.element(status).toBeInTheDocument();
-      expect(status.element().querySelectorAll('li').length).toBe(1);
       expect(status.element().textContent).toContain('High');
+      expect(status.element().textContent).not.toContain('Low');
+      expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
     });
 
     it('shows the whole column with mode="index"', async () => {
@@ -260,7 +299,9 @@ describe('LineChart', () => {
       const status = screen.getByRole('status');
 
       await expect.element(status).toBeInTheDocument();
-      expect(status.element().querySelectorAll('li').length).toBe(2);
+      expect(status.element().textContent).toContain('High');
+      expect(status.element().textContent).toContain('Low');
+      expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(2);
     });
 
     it('is not focusable when it is turned off', async () => {

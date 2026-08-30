@@ -77,6 +77,7 @@ export const fr: NebaLocale = {
     previous: 'Diapositive précédente',
     next: 'Diapositive suivante'
   },
+  chart: { label: 'Graphique' },
   scroll: { previous: 'Faire défiler vers l’arrière', next: 'Faire défiler vers l’avant' },
   breadcrumb: {
     label: 'Fil d’Ariane',

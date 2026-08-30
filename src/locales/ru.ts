@@ -77,6 +77,7 @@ export const ru: NebaLocale = {
     previous: 'Предыдущий слайд',
     next: 'Следующий слайд'
   },
+  chart: { label: 'Диаграмма' },
   scroll: { previous: 'Прокрутить назад', next: 'Прокрутить вперёд' },
   breadcrumb: {
     label: 'Навигационная цепочка',

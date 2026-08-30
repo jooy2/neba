@@ -77,6 +77,7 @@ export const ko: NebaLocale = {
     previous: '이전 슬라이드',
     next: '다음 슬라이드'
   },
+  chart: { label: '차트' },
   scroll: { previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {
     label: '탐색 경로',

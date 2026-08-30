@@ -576,11 +576,15 @@ describe('ScatterChart', () => {
 
       await plot.hover({ position: high });
 
+      // The readout, which is what a screen reader is given, and the panel,
+      // which is what everybody else sees. The panel carries no role of its
+      // own — it is inside the chart's `role="img"`, where a role would be
+      // announced to nobody — so it is reached by its data attribute.
       const status = screen.getByRole('status');
 
       await expect.element(status).toBeInTheDocument();
-      expect(status.element().querySelectorAll('li').length).toBe(1);
       expect(status.element().textContent).toContain('High');
+      expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
     });
 
     it('says nothing when the pointer is nowhere near a mark', async () => {
@@ -601,7 +605,11 @@ describe('ScatterChart', () => {
       // Well past the hit radius, which tops out at the mark's own size plus 24.
       await plot.hover({ position: { x: mark.x, y: mark.y - 80 } });
 
-      expect(screen.getByRole('status').query()).toBeNull();
+      // The region stays in the document with nothing in it. A live region
+      // that is mounted only once it has something to say is a live region
+      // assistive technology was not watching when the change arrived.
+      expect(screen.getByRole('status').element().textContent).toBe('');
+      expect(document.querySelector('[data-neba-tooltip]')).toBeNull();
     });
 
     it('draws no crosshair', async () => {

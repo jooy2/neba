@@ -373,6 +373,25 @@ export const carouselMessages: MessageTable<CarouselMessages> = {
 };
 
 /**
+ * The charts.
+ *
+ * A chart is a `role="img"`, and an image without a name is a focus stop that
+ * announces nothing at all. Every chart takes a `label` saying what it is a
+ * chart *of*, and this is what stands in when it was not given one — the same
+ * bargain Empty makes, and for the same reason: there is nowhere else for the
+ * word to come from.
+ */
+export interface ChartMessages {
+  /** Names the drawing when the caller did not. */
+  label: string;
+}
+
+/** The `chart` namespace, as every chart reads it. */
+export const chartMessages: MessageTable<ChartMessages> = {
+  '': { label: 'Chart' }
+};
+
+/**
  * ScrollZone.
  *
  * Both buttons are an arrow with nothing else on them, and which way the
@@ -796,6 +815,8 @@ export interface NebaLocale {
   pagination?: Partial<PaginationMessages>;
   /** Carousel. */
   carousel?: Partial<CarouselMessages>;
+  /** Chart. */
+  chart?: Partial<ChartMessages>;
   /** Scroll. */
   scroll?: Partial<ScrollMessages>;
   /** Breadcrumb. */
@@ -833,6 +854,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   number: numberMessages as MessageTable<never>,
   pagination: paginationMessages as MessageTable<never>,
   carousel: carouselMessages as MessageTable<never>,
+  chart: chartMessages as MessageTable<never>,
   scroll: scrollMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,
   anchor: anchorMessages as MessageTable<never>,

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   ChartScaleLegend,
+  ChartStatus,
   ChartSurface,
   ChartTooltipPanel,
   useMeasuredWidth,
@@ -28,7 +29,7 @@ import {
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
-import { emptyMessages, useMessages } from '../../internal/i18n.js';
+import { chartMessages, emptyMessages, useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartCategory,
   NebaChartLegend,
@@ -130,6 +131,7 @@ export function HeatmapChart({
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
+  const chartWords = useMessages(chartMessages, locale);
   const tableId = React.useId();
 
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
@@ -380,11 +382,15 @@ export function HeatmapChart({
         )
       }
     >
+      {/* Two children rather than one: the readout under the picture has to be
+          a *sibling* of it and not a child — see `ChartStatus`. */}
       <div
         ref={hostRef}
         role="img"
         tabIndex={nothing ? undefined : 0}
-        aria-label={label}
+        // Never the bare prop: `label` is optional, and a focusable `role="img"`
+        // with nothing to be called by is a tab stop that announces silence.
+        aria-label={label ?? chartWords.label}
         aria-describedby={nothing ? undefined : tableId}
         onPointerLeave={() => setActive(null)}
         onBlur={() => setActive(null)}
@@ -584,6 +590,14 @@ export function HeatmapChart({
           )
         ) : null}
       </div>
+
+      {/* Only where there is a crosshair to report — see `ChartStatus`. */}
+      {tooltipOff ? null : (
+        <ChartStatus
+          heading={hovered ? `${names[hovered.row]} · ${cellName(hovered)}` : undefined}
+          items={items}
+        />
+      )}
     </ChartSurface>
   );
 }

@@ -45,8 +45,8 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
-import { emptyMessages, useMessages } from './i18n.js';
-import { cx, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
+import { chartMessages, emptyMessages, useMessages } from './i18n.js';
+import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
   NebaChartCategory,
@@ -476,8 +476,13 @@ interface TooltipProps {
 function ChartTooltipPanel({ heading, items, x, y, flip, size }: TooltipProps) {
   return (
     <div
-      role="status"
-      aria-live="polite"
+      // The panel carries no role at all. It is drawn inside the element that
+      // carries `role="img"`, which prunes its whole subtree from the
+      // accessibility tree — so anything semantic written here would be
+      // written for nobody. `ChartStatus` is the half a reader hears; this is
+      // the half they see, and the attribute is what a stylesheet or a test
+      // reaches it by.
+      data-neba-tooltip=""
       className={cx(
         'pointer-events-none absolute z-10 max-w-56 min-w-24',
         'rounded-(--neba-radius-sm) border p-2',
@@ -508,6 +513,44 @@ function ChartTooltipPanel({ heading, items, x, y, flip, size }: TooltipProps) {
         ))}
       </ul>
     </div>
+  );
+}
+
+/**
+ * The same reading, said out loud rather than drawn.
+ *
+ * It cannot be the panel above, and that is not a preference. The panel is
+ * drawn inside the element carrying `role="img"`, and `img` is a leaf role:
+ * everything under it is cut out of the accessibility tree, so a live region
+ * in there announces to nobody. This is a *sibling* of the picture, clipped
+ * instead of painted, and it is what makes the arrow keys mean something to a
+ * reader who is not looking at the plot.
+ *
+ * Empty when nothing is active, so leaving the chart clears what was said
+ * rather than leaving the last column standing in the region forever.
+ */
+function ChartStatus({
+  heading,
+  items
+}: {
+  heading?: React.ReactNode;
+  items: readonly ChartTooltipItem[];
+}) {
+  return (
+    <span role="status" aria-live="polite" className={srOnlyClasses}>
+      {items.length === 0 ? null : (
+        <>
+          {hasContent(heading) ? <>{heading}, </> : null}
+          {items.map((item, index) => (
+            <React.Fragment key={item.seriesIndex}>
+              {index > 0 ? ', ' : null}
+              {item.name ? `${item.name}: ` : null}
+              {item.label ?? item.formatted}
+            </React.Fragment>
+          ))}
+        </>
+      )}
+    </span>
   );
 }
 
@@ -825,6 +868,7 @@ export function CartesianChart({
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
+  const chartWords = useMessages(chartMessages, locale);
   const tableId = React.useId();
 
   const visibility = useVisibility(series);
@@ -1361,11 +1405,15 @@ export function CartesianChart({
             ))
       }
     >
+      {/* Two children rather than one: the readout under the picture has to be
+          a *sibling* of it and not a child — see `ChartStatus`. */}
       <div
         ref={hostRef}
         role="img"
         tabIndex={nothing ? undefined : 0}
-        aria-label={label}
+        // Never the bare prop: `label` is optional, and a focusable `role="img"`
+        // with nothing to be called by is a tab stop that announces silence.
+        aria-label={label ?? chartWords.label}
         aria-describedby={nothing ? undefined : tableId}
         onPointerMove={(event) => {
           if (tooltipMode === 'none') {
@@ -1502,6 +1550,20 @@ export function CartesianChart({
           )
         ) : null}
       </div>
+
+      {/* Only where there is a crosshair to report. A chart with its tooltip
+          turned off has nothing to announce, and a live region standing empty
+          in the tree forever is a promise it never keeps. */}
+      {tooltipMode === 'none' ? null : (
+        <ChartStatus
+          heading={
+            activeIndex === null
+              ? undefined
+              : (supplied?.heading ?? formatCategory(markCategory ?? labels[activeIndex], locale))
+          }
+          items={items}
+        />
+      )}
     </ChartSurface>
   );
 }
@@ -1804,6 +1866,7 @@ export {
   ChartDataTable,
   ChartLegendBar,
   ChartScaleLegend,
+  ChartStatus,
   ChartSurface,
   ChartTooltipPanel,
   useMeasuredWidth,

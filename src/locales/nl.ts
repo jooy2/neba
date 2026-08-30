@@ -77,6 +77,7 @@ export const nl: NebaLocale = {
     previous: 'Vorige dia',
     next: 'Volgende dia'
   },
+  chart: { label: 'Grafiek' },
   scroll: { previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {
     label: 'Kruimelpad',

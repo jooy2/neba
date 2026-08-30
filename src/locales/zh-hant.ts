@@ -80,6 +80,7 @@ export const zhHant: NebaLocale = {
     previous: '上一張',
     next: '下一張'
   },
+  chart: { label: '圖表' },
   scroll: { previous: '向前捲動', next: '向後捲動' },
   breadcrumb: {
     label: '麵包屑導覽',

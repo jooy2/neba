@@ -77,6 +77,7 @@ export const id: NebaLocale = {
     previous: 'Slide sebelumnya',
     next: 'Slide berikutnya'
   },
+  chart: { label: 'Bagan' },
   scroll: { previous: 'Gulir ke belakang', next: 'Gulir ke depan' },
   breadcrumb: {
     label: 'Remah roti',
