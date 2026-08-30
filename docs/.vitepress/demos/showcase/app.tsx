@@ -42,11 +42,13 @@ import {
   Divider,
   Drawer,
   Empty,
+  Fieldset,
   FilePicker,
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
   Footer,
+  Form,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -1041,7 +1043,8 @@ function ShowcaseBody() {
         {/* A card holding controls — the composition the library is actually for. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Card · TextField · Combobox · NumberField · Checkbox · List · Dialog · Toast
+            Card · Form · Fieldset · TextField · Combobox · NumberField · Checkbox · List · Dialog ·
+            Toast
           </Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
             <Card
@@ -1053,34 +1056,41 @@ function ShowcaseBody() {
                   <Button variant="text" color="secondary">
                     Revert
                   </Button>
-                  <Button className="ml-auto" loading={saving} onClick={save}>
+                  {/* The submit button lives in the card's footer, outside the
+                      form element — which is what `form` on a button is for. */}
+                  <Button className="ml-auto" type="submit" form="profile-form" loading={saving}>
                     {saved ? 'Saved' : 'Save changes'}
                   </Button>
                 </>
               }
             >
-              <div className="flex flex-col gap-3">
-                <TextField
-                  label="Name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  fullWidth
-                />
-                <TextField
-                  label="Email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  error={emailValid ? undefined : 'Enter a valid address.'}
-                  fullWidth
-                />
-                <TextField
-                  multiline
-                  rows={3}
-                  label="About"
-                  placeholder="A sentence or two."
-                  description="Markdown is not supported."
-                  fullWidth
-                />
+              <Form id="profile-form" size="sm" onSubmit={save}>
+                <Fieldset legend="Public details" description="Everyone in the team sees these.">
+                  <TextField
+                    label="Name"
+                    name="name"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email"
+                    name="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    error={emailValid ? undefined : 'Enter a valid address.'}
+                    fullWidth
+                  />
+                  <TextField
+                    multiline
+                    rows={3}
+                    label="About"
+                    name="about"
+                    placeholder="A sentence or two."
+                    description="Markdown is not supported."
+                    fullWidth
+                  />
+                </Fieldset>
                 <Combobox
                   multiple
                   fullWidth
@@ -1105,7 +1115,7 @@ function ShowcaseBody() {
                   value={attachments}
                   onFilesChange={setAttachments}
                 />
-              </div>
+              </Form>
             </Card>
 
             <div className="flex flex-col gap-4">

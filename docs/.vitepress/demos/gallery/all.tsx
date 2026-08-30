@@ -47,11 +47,13 @@ import {
   Divider,
   Drawer,
   Empty,
+  Fieldset,
   FilePicker,
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
   Footer,
+  Form,
   Grid,
   GridContainer,
   HeatmapChart,
@@ -616,6 +618,36 @@ const GROUPS: Group[] = [
               <FloatingAction label="Note" />
             </FloatingActionButton>
           </div>
+        )
+      },
+      {
+        name: 'Form',
+        summary: {
+          ko: '어느 field가 잘못되었는지 아는 form',
+          en: 'A form that knows which of its fields is wrong'
+        },
+        path: '/components/inputs/form',
+        preview: (
+          <Form size="sm" className="w-full max-w-56" onSubmit={() => {}}>
+            <TextField size="sm" label="Email" name="email" type="email" required />
+            <Button size="sm" type="submit" fullWidth>
+              Sign up
+            </Button>
+          </Form>
+        )
+      },
+      {
+        name: 'Fieldset',
+        summary: {
+          ko: '하나의 질문에 함께 답하는 컨트롤 묶음',
+          en: 'Controls that answer one question together'
+        },
+        path: '/components/inputs/fieldset',
+        preview: (
+          <Fieldset size="sm" legend="Billing address" className="w-full max-w-56">
+            <TextField size="sm" label="Street" name="gallery-street" />
+            <TextField size="sm" label="City" name="gallery-city" />
+          </Fieldset>
         )
       },
       {

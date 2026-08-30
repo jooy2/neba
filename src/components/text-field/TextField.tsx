@@ -321,7 +321,12 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
           <Field.Error match className={[metaTextClasses[size], 'text-(--n-accent)'].join(' ')}>
             {error}
           </Field.Error>
-        ) : null}
+        ) : (
+          // No message of our own, so whatever the validity has: the browser's
+          // own text for a failed constraint, or the entry a Form's `errors`
+          // put here. Renders nothing at all while the field is valid.
+          <Field.Error className={[metaTextClasses[size], 'text-(--n-accent)'].join(' ')} />
+        )}
       </Field.Root>
     );
   }

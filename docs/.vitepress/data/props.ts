@@ -3090,6 +3090,89 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Form: [
+    {
+      name: 'onSubmit',
+      type: '(values: Record<string, unknown>) => void',
+      description: {
+        ko: '모든 field가 유효할 때만, 각 field의 name을 키로 하는 값 객체와 함께 호출됩니다. 네이티브 submit 이벤트는 막히므로 페이지가 이동하지 않습니다',
+        en: "Called only when every field is valid, with the form's values keyed by each field's name. The native submit event is prevented, so nothing navigates"
+      }
+    },
+    {
+      name: 'validationMode',
+      type: "'onSubmit' | 'onBlur' | 'onChange'",
+      default: "'onSubmit'",
+      description: {
+        ko: 'field가 언제 검사받는지. onSubmit은 제출할 때(그 뒤로는 변경할 때마다), onBlur는 focus가 빠질 때, onChange는 키를 누를 때마다입니다',
+        en: 'When a field validates. onSubmit means on submit and on every change afterwards, onBlur when it loses focus, onChange on every keystroke'
+      }
+    },
+    {
+      name: 'errors',
+      type: 'Record<string, string | string[]>',
+      description: {
+        ko: '브라우저 바깥에서 온 오류 — 서버, form action, 스키마 — 를 field의 name으로 키를 잡아 전달합니다. 해당 field에 표시되고 그 field가 바뀌면 사라집니다',
+        en: "Errors from outside the browser's own validation, keyed by the name of the field each belongs to. Shown on that field and cleared as soon as it changes"
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: 'children 사이의 간격. form은 세로 열이고, 이것이 어느 사다리 위에 쌓이는지를 정합니다',
+        en: 'The gap between the children. A form is a stack, and this is which rung it stacks on'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'field들과 제출 버튼', en: 'The fields and the submit button' }
+    }
+  ],
+
+  Fieldset: [
+    {
+      name: 'legend',
+      type: 'ReactNode',
+      description: {
+        ko: '묶음의 이름. 안의 모든 컨트롤의 접근 가능한 이름이 되므로, 각 컨트롤 앞에 붙여 읽어도 말이 되는 구절이어야 합니다',
+        en: 'What the group is called. It becomes the accessible name of every control inside, so it has to read correctly in front of each of them'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: { ko: 'legend 아래 한 줄', en: 'A line under the legend' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '안의 모든 컨트롤을 한 번에 비활성화합니다. 진짜 fieldset만 할 수 있는 일입니다',
+        en: 'Disables every control inside at once, the way only a real fieldset can'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: 'legend의 타입 스케일과 컨트롤 사이의 간격. 컨트롤 자체에는 닿지 않습니다',
+        en: 'The type scale of the legend and the gap between the controls. It does not reach the controls themselves'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '묶이는 컨트롤들', en: 'The controls being grouped' }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,
