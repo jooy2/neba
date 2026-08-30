@@ -109,6 +109,8 @@ import {
   TimelineChart,
   TimelineItem,
   ToastProvider,
+  Toggle,
+  ToggleGroup,
   Toolbar,
   Tooltip,
   TreeItem,
@@ -611,6 +613,37 @@ const GROUPS: Group[] = [
               <FloatingAction label="Note" />
             </FloatingActionButton>
           </div>
+        )
+      },
+      {
+        name: 'Toggle',
+        summary: { ko: '눌린 채로 머무는 버튼', en: 'A button that stays down' },
+        path: '/components/inputs/toggle',
+        preview: (
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Toggle size="sm" defaultPressed>
+              Bold
+            </Toggle>
+            <Toggle size="sm">Italic</Toggle>
+            <Toggle size="sm" variant="text" defaultPressed>
+              Grid
+            </Toggle>
+          </div>
+        )
+      },
+      {
+        name: 'ToggleGroup',
+        summary: {
+          ko: '하나의 상태를 공유하는 토글 묶음',
+          en: 'A set of toggles that share one state'
+        },
+        path: '/components/inputs/toggle-group',
+        preview: (
+          <ToggleGroup size="sm" aria-label="Text alignment" defaultValue={['center']}>
+            <Toggle value="left">Left</Toggle>
+            <Toggle value="center">Center</Toggle>
+            <Toggle value="right">Right</Toggle>
+          </ToggleGroup>
         )
       }
     ]

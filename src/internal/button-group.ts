@@ -4,7 +4,9 @@ import * as React from 'react';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types.js';
 
 /**
- * What a Button inherits from the ButtonGroup around it.
+ * What a Button inherits from the ButtonGroup around it — and what a Toggle
+ * inherits from the ToggleGroup around it, which is the same six values and so
+ * is the same context rather than a second one spelled identically.
  *
  * The alternative — `React.Children.map` with `cloneElement` — breaks the moment
  * a caller wraps one of the buttons in a Tooltip, a `<Fragment>` or a `.map()`,
@@ -15,7 +17,9 @@ import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } fro
  * `<ButtonGroup>` with no props changes nothing except the corners.
  *
  * It lives in `internal/` rather than in the button-group folder so that Button
- * can read it without the two components importing each other.
+ * can read it without the two components importing each other — and by now four
+ * components read it, which is the arrangement `menu.ts` makes for the same
+ * reason.
  */
 export interface ButtonGroupContextValue {
   variant?: NebaVariant;

@@ -108,6 +108,8 @@ import {
   ToastProvider,
   Sidebar,
   SidebarTrigger,
+  Toggle,
+  ToggleGroup,
   Toolbar,
   Tooltip,
   Typography,
@@ -646,8 +648,8 @@ function ShowcaseBody() {
         {/* The controls that run a screen, all on one baseline. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Button · ButtonGroup · SegmentedButton · TextField · Select · Tooltip · Menu · Popover ·
-            Drawer · Overlay
+            Button · ButtonGroup · SegmentedButton · Toggle · ToggleGroup · TextField · Select ·
+            Tooltip · Menu · Popover · Drawer · Overlay
           </Caption>
           <div className="flex flex-wrap items-center gap-2">
             <Drawer
@@ -685,6 +687,10 @@ function ShowcaseBody() {
               <Segment value="overview">Overview</Segment>
               <Segment value="activity">Activity</Segment>
             </SegmentedButton>
+            <ToggleGroup size="sm" color="secondary" aria-label="Rows" defaultValue={['failing']}>
+              <Toggle value="failing">Failing</Toggle>
+              <Toggle value="mine">Mine</Toggle>
+            </ToggleGroup>
             <div className="grow" />
 
             <Tooltip content="Import from a Git provider">

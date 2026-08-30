@@ -92,6 +92,8 @@ export * from './components/time-picker/index.js';
 export * from './components/timeline/index.js';
 export * from './components/timeline-chart/index.js';
 export * from './components/toast/index.js';
+export * from './components/toggle/index.js';
+export * from './components/toggle-group/index.js';
 export * from './components/toolbar/index.js';
 export * from './components/tooltip/index.js';
 export * from './components/tree-view/index.js';

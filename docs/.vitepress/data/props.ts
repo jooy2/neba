@@ -2600,6 +2600,194 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Toggle: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '토글이 **꺼져 있을 때**의 표면 무게. 켜졌을 때는 어느 weight든 색 계열이 전면에 나섭니다',
+        en: 'How the toggle looks while it is **off**. On is always the colour family asserting itself'
+      },
+      colorDescription: {
+        ko: '켜졌을 때 띠는 의미론적 색 역할. 꺼져 있으면 어느 계열이든 중립입니다',
+        en: 'The semantic role it turns when it goes on. Off it is neutral in every family'
+      }
+    }),
+    {
+      name: 'pressed',
+      type: 'boolean',
+      description: {
+        ko: '켜져 있는지 여부. onPressedChange와 함께 쓰면 controlled 컴포넌트가 됩니다',
+        en: 'Whether it is on. With onPressedChange it makes the toggle controlled'
+      }
+    },
+    {
+      name: 'defaultPressed',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '처음에 켜진 채로 시작할지 여부 (uncontrolled)',
+        en: 'Whether it starts on, for an uncontrolled toggle'
+      }
+    },
+    {
+      name: 'onPressedChange',
+      type: '(pressed: boolean) => void',
+      description: { ko: '상태가 바뀔 때마다 호출됩니다', en: 'Fired on every change' }
+    },
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: 'ToggleGroup 안에서 이 토글을 식별하는 값',
+        en: 'Identifies the toggle inside a ToggleGroup'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨 앞의 내용. em 단위라 라벨을 따라갑니다',
+        en: 'Content before the label. Sized in em, so it tracks the label'
+      }
+    },
+    {
+      name: 'endIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 뒤의 내용', en: 'Content after the label' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사용 불가. 색 계열을 버리고 중립 회색이 됩니다',
+        en: 'Unavailable. Drops the colour family for neutral grey'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '컨테이너 너비만큼 확장합니다',
+        en: 'Stretches to the width of the container'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '라벨. 없으면 아이콘을 감싸는 정사각형이 되며, 이때는 aria-label이 필요합니다',
+        en: 'The label. Without one the toggle goes square around its icon and needs an aria-label'
+      }
+    }
+  ],
+
+  ToggleGroup: [
+    ...sharedProps({
+      variant: '—',
+      size: '—',
+      color: '—',
+      density: '—',
+      elevation: '—',
+      variantDescription: {
+        ko: '세트 안의 모든 토글에 적용됩니다. 지정하지 않으면 Toggle 자신의 기본값이 그대로 쓰입니다',
+        en: "Applied to every toggle in the set. Unset means the Toggle's own default stands"
+      },
+      sizeDescription: {
+        ko: '세트 안의 모든 토글의 높이와 타입 스케일',
+        en: 'Height and type scale for every toggle in the set'
+      },
+      colorDescription: {
+        ko: '세트 안의 모든 토글의 색 역할. 토글 하나가 자기 색을 따로 지정하면 그쪽이 이깁니다',
+        en: "Colour role for every toggle in the set. A toggle's own prop still wins"
+      },
+      densityDescription: {
+        ko: '세트 안의 모든 토글의 가로 여백',
+        en: 'Horizontal padding for every toggle in the set'
+      },
+      elevationDescription: {
+        ko: '세트 안의 모든 토글의 그림자 깊이',
+        en: 'Drop shadow depth for every toggle in the set'
+      }
+    }),
+    {
+      name: 'value',
+      type: 'readonly string[]',
+      description: {
+        ko: '켜져 있는 토글들의 value. 단일 선택이든 다중 선택이든 배열입니다',
+        en: 'Which toggles are on, by their value. An array in both the single and the multiple case'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'readonly string[]',
+      description: {
+        ko: '처음에 켜져 있는 값들 (uncontrolled)',
+        en: 'Which start on, for an uncontrolled set'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string[]) => void',
+      description: { ko: '값이 바뀔 때마다 호출됩니다', en: 'Fired on every change' }
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '동시에 여러 개를 켤 수 있는지 여부. 꺼져 있으면 하나를 켤 때 직전 것이 꺼집니다',
+        en: 'Whether more than one can be on at a time. Off, turning one on turns the last one off'
+      }
+    },
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'horizontal'",
+      shared: true,
+      description: {
+        ko: '토글이 이어지는 방향. 세로면 위아래 모서리가 깎입니다',
+        en: 'Which way the toggles run. Vertical flattens the top and bottom corners instead'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      description: {
+        ko: '세트 전체를 한 번에 비활성화합니다',
+        en: 'Disables every toggle in the set at once'
+      }
+    },
+    {
+      name: 'loopFocus',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '방향키가 양 끝에서 순환할지 여부',
+        en: 'Whether the arrow keys wrap around at the ends'
+      }
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '컨테이너 너비만큼 확장하고 토글이 너비를 균등하게 나눠 가집니다',
+        en: 'Stretches to the container and divides the width evenly between the toggles'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'Toggle들. 중간에 다른 요소로 감싸도 세트의 값은 전달됩니다',
+        en: 'The toggles. The shared props reach them even through a wrapper'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,
