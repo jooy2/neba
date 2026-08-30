@@ -17,7 +17,21 @@ import {
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
-import type { NebaSize, NebaStyleProps } from '../../types.js';
+import type { NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
+
+/**
+ * The parts a Dialog draws around its popup.
+ *
+ * `className` is the popup — the sheet itself — which is the one element a
+ * caller means by "the dialog". Everything named here sits either outside it
+ * (`backdrop`, `viewport`) or inside it (the rest).
+ *
+ * The first two are the ones that could not be reached any other way: both
+ * render at the end of `<body>`, outside the popup, so no selector written
+ * against the sheet finds them.
+ */
+export type DialogSlot =
+  'backdrop' | 'viewport' | 'title' | 'description' | 'close' | 'body' | 'actions';
 
 /**
  * A dialog takes `size`, `color` and `density` and stops there.
@@ -106,6 +120,11 @@ export interface DialogProps
    * @default true
    */
   dismissible?: boolean;
+  /**
+   * Class names for the parts around the popup. `className` is the popup — the
+   * sheet — so the scrim behind it is `classNames.backdrop`.
+   */
+  classNames?: NebaSlots<DialogSlot>;
   /** The body. */
   children?: React.ReactNode;
 }
@@ -212,6 +231,7 @@ export function Dialog({
   modal = true,
   dismissible = true,
   className,
+  classNames,
   style,
   children,
   ...props
@@ -247,17 +267,20 @@ export function Dialog({
       <BaseUIDialog.Portal>
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
-        <BaseUIDialog.Backdrop className={`neba-portal ${backdropClasses}`} />
+        <BaseUIDialog.Backdrop
+          className={cx('neba-portal', backdropClasses, classNames?.backdrop)}
+        />
 
         <BaseUIDialog.Viewport
-          className={[
+          className={cx(
             'neba-portal fixed inset-0 z-50 flex justify-center',
             // `items-center` alone would clip the top of a dialog taller than
             // the viewport, because a centred flex item cannot scroll past its
             // own container's start edge. The popup caps its height instead and
             // scrolls its body, so the header and the actions stay put.
-            fullScreen ? 'items-stretch' : 'items-center p-4'
-          ].join(' ')}
+            fullScreen ? 'items-stretch' : 'items-center p-4',
+            classNames?.viewport
+          )}
         >
           <BaseUIDialog.Popup
             className={cx(
@@ -283,13 +306,24 @@ export function Dialog({
               <div className={`flex shrink-0 items-start gap-3 ${sectionClasses}`}>
                 <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
                   {hasContent(title) ? (
-                    <BaseUIDialog.Title className={`font-semibold ${sheetTitleClasses[size]} m-0`}>
+                    <BaseUIDialog.Title
+                      className={cx(
+                        'font-semibold',
+                        sheetTitleClasses[size],
+                        'm-0',
+                        classNames?.title
+                      )}
+                    >
                       {title}
                     </BaseUIDialog.Title>
                   ) : null}
                   {hasContent(description) ? (
                     <BaseUIDialog.Description
-                      className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+                      className={cx(
+                        'm-0 text-(--neba-muted-fg)',
+                        metaTextClasses[size],
+                        classNames?.description
+                      )}
                     >
                       {description}
                     </BaseUIDialog.Description>
@@ -299,14 +333,15 @@ export function Dialog({
                 {showClose ? (
                   <BaseUIDialog.Close
                     aria-label={closeLabel ?? messages.close}
-                    className={[
+                    className={cx(
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
                       'rounded-full text-(--neba-muted-fg)',
                       '[&_svg]:size-[1.1em] [&_svg]:shrink-0',
                       '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
                       'hover:bg-(--n-soft) hover:text-(--neba-fg)',
-                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-                    ].join(' ')}
+                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+                      classNames?.close
+                    )}
                   >
                     <CloseIcon />
                   </BaseUIDialog.Close>
@@ -331,7 +366,8 @@ export function Dialog({
                   // on the sheet moves. Only without `dividers`: with them the
                   // body already carries `insetY`, and pulling it up would drag
                   // the rule into the section above.
-                  dividers ? '' : 'py-1 -my-1'
+                  dividers ? '' : 'py-1 -my-1',
+                  classNames?.body
                 )}
               >
                 {children}
@@ -343,7 +379,8 @@ export function Dialog({
                 className={cx(
                   'flex shrink-0 flex-wrap items-center justify-end gap-2',
                   sectionClasses,
-                  dividers ? dividerClasses : ''
+                  dividers ? dividerClasses : '',
+                  classNames?.actions
                 )}
               >
                 {actions}

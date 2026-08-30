@@ -75,6 +75,19 @@ actions={
 }
 ```
 
+### classNames
+
+`className` lands on the popup — the sheet itself, which is what a caller means by "the dialog". Everything around and inside it is reached through `classNames`.
+
+```tsx
+<Dialog
+  title="Delete this?"
+  classNames={{ backdrop: 'backdrop-blur-none', actions: 'justify-between' }}
+/>
+```
+
+The slots are `backdrop`, `viewport`, `title`, `description`, `close`, `body` and `actions`. The first two are the ones with no other way in: both render at the end of `<body>`, outside the popup, so no selector written against the sheet finds them. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - `title` and `description` are wired into `aria-labelledby` and `aria-describedby`. The title renders as a real `<h2>`.

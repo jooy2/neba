@@ -252,4 +252,66 @@ describe('Dialog', () => {
         .toBeInTheDocument();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Dialog
+          defaultOpen
+          title="Delete this?"
+          description="It cannot be undone."
+          actions={<Button>Delete</Button>}
+          classNames={{
+            backdrop: 'slot-backdrop',
+            viewport: 'slot-viewport',
+            title: 'slot-title',
+            description: 'slot-description',
+            close: 'slot-close',
+            body: 'slot-body',
+            actions: 'slot-actions'
+          }}
+        >
+          The body.
+        </Dialog>
+      );
+      const popup = screen.getByRole('dialog').element();
+
+      expect(screen.getByText('Delete this?').element()).toHaveClass('slot-title');
+      expect(screen.getByText('It cannot be undone.').element()).toHaveClass('slot-description');
+      expect(screen.getByText('The body.').element()).toHaveClass('slot-body');
+      expect(popup.querySelector('.slot-close')).not.toBeNull();
+      expect(popup.querySelector('.slot-actions')).not.toBeNull();
+    });
+
+    /** Both render outside the popup, so nothing written against it finds them. */
+    it('reaches the backdrop and the viewport, which sit outside the sheet', async () => {
+      const screen = await render(
+        <Dialog
+          defaultOpen
+          title="Delete"
+          classNames={{ backdrop: 'slot-backdrop', viewport: 'slot-viewport' }}
+        />
+      );
+      const popup = screen.getByRole('dialog').element();
+
+      expect(popup.closest('.slot-viewport')).not.toBeNull();
+      expect(popup.querySelector('.slot-backdrop')).toBeNull();
+      expect(document.querySelector('.slot-backdrop')).not.toBeNull();
+    });
+
+    it('leaves the sheet itself to `className`', async () => {
+      const screen = await render(
+        <Dialog
+          defaultOpen
+          title="Delete"
+          className="root-class"
+          classNames={{ body: 'body-class' }}
+        >
+          The body.
+        </Dialog>
+      );
+
+      await expect.element(screen.getByRole('dialog')).toHaveClass('root-class');
+      expect(screen.getByRole('dialog').element()).not.toHaveClass('body-class');
+    });
+  });
 });

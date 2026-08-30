@@ -5929,7 +5929,8 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '본문. 스크롤되는 유일한 구역입니다',
         en: 'The body — the only part that scrolls'
       }
-    }
+    },
+    slotsProp('backdrop', 'viewport', 'title', 'description', 'close', 'body', 'actions')
   ],
 
   ToastProvider: [

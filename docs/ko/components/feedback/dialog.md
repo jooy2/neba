@@ -75,6 +75,19 @@ actions={
 }
 ```
 
+### classNames
+
+`className`은 popup — sheet 자체이며, 부르는 사람이 "dialog"라고 할 때 가리키는 것 — 에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
+
+```tsx
+<Dialog
+  title="Delete this?"
+  classNames={{ backdrop: 'backdrop-blur-none', actions: 'justify-between' }}
+/>
+```
+
+slot은 `backdrop`, `viewport`, `title`, `description`, `close`, `body`, `actions`입니다. 앞의 둘은 달리 닿을 방법이 없는 것들입니다. 둘 다 popup 바깥, `<body>` 끝에 그려지므로 sheet를 기준으로 쓴 선택자로는 찾을 수 없습니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - `title`과 `description`은 각각 `aria-labelledby`, `aria-describedby`로 연결됩니다. `title`은 실제 `<h2>`로 렌더링됩니다.
