@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { NavigationMenu as BaseUINavigationMenu } from '@base-ui/react/navigation-menu';
 import { ChevronIcon } from '../../internal/icons.js';
+import { safeRel } from '../../internal/link.js';
 import {
   controlHeightClasses,
   controlTextClasses,
@@ -70,8 +71,15 @@ export interface NavigationMenuItemProps {
    * one — which is the whole reason a site nav is not a Menu.
    */
   href?: string;
-  /** Where the link opens. Ignored without `href`. */
+  /**
+   * Where the link opens. Ignored without `href`.
+   *
+   * Anything other than this tab also gets `rel="noopener noreferrer"`, merged
+   * with whatever `rel` was asked for, exactly as on [TextLink].
+   */
   target?: string;
+  /** The link's `rel`. The two tokens a new tab needs are added to it. */
+  rel?: string;
   /** Content before the label. Sized in `em`, so it tracks it. */
   startIcon?: React.ReactNode;
   /**
@@ -206,6 +214,7 @@ export function NavigationMenuItem({
   label,
   href,
   target,
+  rel,
   startIcon,
   value,
   disabled = false,
@@ -227,7 +236,12 @@ export function NavigationMenuItem({
   return (
     <BaseUINavigationMenu.Item value={value}>
       {isLink ? (
-        <BaseUINavigationMenu.Link href={href} target={target} className={chrome}>
+        <BaseUINavigationMenu.Link
+          href={href}
+          target={target}
+          rel={safeRel(target, rel)}
+          className={chrome}
+        >
           {hasContent(startIcon) ? startIcon : null}
           {label}
         </BaseUINavigationMenu.Link>

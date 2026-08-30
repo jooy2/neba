@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { chatMessages, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons.js';
+import { safeRel } from '../../internal/link.js';
 import {
   controlSlots,
   hasContent,
@@ -438,12 +439,13 @@ function TypingDots({ label }: { label: string }) {
 /** The unfurled link: an image, who published it, a title and two lines of summary. */
 function LinkPreview({ preview }: { preview: ChatBubbleLinkPreview }) {
   const { url, title, description, image, site, newTab = false } = preview;
+  const target = newTab ? '_blank' : undefined;
 
   return (
     <a
       href={url}
-      target={newTab ? '_blank' : undefined}
-      rel={newTab ? 'noopener noreferrer' : undefined}
+      target={target}
+      rel={safeRel(target, undefined)}
       className={previewSurfaceClasses}
     >
       {image ? (

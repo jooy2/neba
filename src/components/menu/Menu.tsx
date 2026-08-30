@@ -5,6 +5,7 @@ import { Menu as BaseUIMenu } from '@base-ui/react/menu';
 import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
 import { MenuContext } from '../../internal/menu.js';
 import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
+import { safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
   gapClasses,
@@ -104,8 +105,15 @@ export interface MenuItemProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   /** Renders the row as a real `<a>`. A menu of links has to be links. */
   href?: string;
-  /** Where the link opens — `_blank` and the rest. Ignored without `href`. */
+  /**
+   * Where the link opens — `_blank` and the rest. Ignored without `href`.
+   *
+   * Anything other than this tab also gets `rel="noopener noreferrer"`, merged
+   * with whatever `rel` was asked for, exactly as on [TextLink].
+   */
   target?: string;
+  /** The link's `rel`. The two tokens a new tab needs are added to it. */
+  rel?: string;
   /** Content before the label — an icon, a swatch, a check. */
   startIcon?: React.ReactNode;
   /** Content after the label, before any `shortcut`. */
@@ -161,7 +169,7 @@ export interface MenuGroupProps {
 
 export interface MenuCheckboxItemProps extends Omit<
   MenuItemProps,
-  'href' | 'target' | 'startIcon' | 'onClick'
+  'href' | 'target' | 'rel' | 'startIcon' | 'onClick'
 > {
   checked?: boolean;
   defaultChecked?: boolean;
@@ -186,7 +194,7 @@ export interface MenuRadioGroupProps {
 
 export interface MenuRadioItemProps extends Omit<
   MenuItemProps,
-  'href' | 'target' | 'startIcon' | 'onClick'
+  'href' | 'target' | 'rel' | 'startIcon' | 'onClick'
 > {
   /** What this row sets the group to. */
   value: string | number;
@@ -347,6 +355,7 @@ export function MenuItem({
   onClick,
   href,
   target,
+  rel,
   startIcon,
   endIcon,
   shortcut,
@@ -394,6 +403,7 @@ export function MenuItem({
       <BaseUIMenu.LinkItem
         href={href}
         target={target}
+        rel={safeRel(target, rel)}
         label={label}
         closeOnClick={closeOnClick}
         onClick={onClick}

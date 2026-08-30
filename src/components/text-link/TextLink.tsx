@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { linkMessages, useMessages } from '../../internal/i18n.js';
 import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
+import { safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
   focusRingClasses,
@@ -201,29 +202,20 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(funct
 
   /*
    * `rel` is the one thing here a caller's own value is merged with rather than
-   * replaced by, and the reason is that the two purposes of the attribute have
-   * nothing to do with each other.
-   *
-   * `noopener` is what stops the new page reaching back through `window.opener`;
-   * `noreferrer` sits beside it for the browsers that still need the pair. The
-   * common reason to write a `rel` by hand is `nofollow` or `sponsored`, which
-   * is an SEO decision — and spelled as a plain override it would silently take
-   * the protection off a link that still opens in a new tab. Whatever was asked
-   * for is kept, with the two tokens added if they are not already there.
+   * replaced by. `safeRel` is where that merge lives, because a Menu row and a
+   * NavigationMenu link let a caller choose where they open too, and the three
+   * of them have to make the same promise.
    */
+  const target = newTab ? '_blank' : undefined;
   const { rel: askedFor, ...rest } = props;
-  const rel = newTab
-    ? [
-        ...new Set([...(askedFor ?? '').split(/\s+/).filter(Boolean), 'noopener', 'noreferrer'])
-      ].join(' ')
-    : askedFor;
+  const rel = safeRel(target, askedFor);
 
   return useRender({
     render: render ?? <a />,
     ref,
     props: {
       href,
-      target: newTab ? '_blank' : undefined,
+      target,
       className: classNames,
       style: { ...slots, ...style },
       children: (

@@ -35,6 +35,25 @@ describe('NavigationMenu', () => {
       expect(link.element().tagName).toBe('A');
     });
 
+    // The same promise TextLink and a Menu row make: a link that lets a caller
+    // choose where it opens can hand the new page a `window.opener` and a
+    // `Referer` naming this one.
+    it('closes window.opener on an item that opens elsewhere', async () => {
+      const screen = await render(
+        <NavigationMenu>
+          <NavigationMenuItem label="Docs" href="https://example.com" target="_blank" />
+        </NavigationMenu>
+      );
+
+      const link = screen.getByRole('link', { name: 'Docs' });
+
+      await expect.element(link).toBeInTheDocument();
+      expect(link.element().getAttribute('rel')?.split(' ').sort()).toEqual([
+        'noopener',
+        'noreferrer'
+      ]);
+    });
+
     it('opens no panel until an item is asked', async () => {
       const screen = await render(<Nav />);
 

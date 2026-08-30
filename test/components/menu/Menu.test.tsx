@@ -112,6 +112,52 @@ describe('Menu', () => {
       expect(item).toHaveAttribute('href', '#settings');
     });
 
+    // The same promise TextLink makes, because a row that lets a caller choose
+    // where it opens is a row that can hand the new page a `window.opener` and
+    // a `Referer` naming this one.
+    it('closes window.opener on a row that opens elsewhere', async () => {
+      const screen = await render(
+        <Menu defaultOpen>
+          <MenuItem href="https://example.com" target="_blank">
+            Docs
+          </MenuItem>
+        </Menu>
+      );
+
+      const rel = screen.getByRole('menuitem', { name: 'Docs' }).element().getAttribute('rel');
+
+      expect(rel?.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
+    });
+
+    it('keeps a rel the caller wrote beside the two it adds', async () => {
+      const screen = await render(
+        <Menu defaultOpen>
+          <MenuItem href="https://example.com" target="_blank" rel="nofollow">
+            Docs
+          </MenuItem>
+        </Menu>
+      );
+
+      const rel = screen.getByRole('menuitem', { name: 'Docs' }).element().getAttribute('rel');
+
+      expect(rel?.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
+    });
+
+    it('leaves a rel alone on a row that stays in the tab', async () => {
+      const screen = await render(
+        <Menu defaultOpen>
+          <MenuItem href="/docs" rel="nofollow">
+            Docs
+          </MenuItem>
+        </Menu>
+      );
+
+      expect(screen.getByRole('menuitem', { name: 'Docs' }).element()).toHaveAttribute(
+        'rel',
+        'nofollow'
+      );
+    });
+
     it('marks a disabled row as disabled', async () => {
       const screen = await render(
         <Menu defaultOpen>

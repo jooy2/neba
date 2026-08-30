@@ -3395,8 +3395,16 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'target',
       type: 'string',
       description: {
-        ko: '링크가 열리는 곳. href가 없으면 무시됩니다',
-        en: 'Where the link opens. Ignored without href'
+        ko: '링크가 열리는 곳. href가 없으면 무시됩니다. 이 탭이 아닌 곳으로 열면 rel에 noopener noreferrer가 더해집니다',
+        en: 'Where the link opens. Ignored without href. Anything other than this tab also gets noopener noreferrer added to rel'
+      }
+    },
+    {
+      name: 'rel',
+      type: 'string',
+      description: {
+        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다 — nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+        en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
       }
     },
     {
@@ -6711,6 +6719,22 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '넘기면 진짜 a가 됩니다. 링크로 이뤄진 메뉴는 링크여야 새 탭으로 열 수 있습니다',
         en: 'Passing it renders a real anchor. A menu of links has to be links, or none of them opens in a new tab'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크가 열리는 곳. href가 없으면 무시됩니다. 이 탭이 아닌 곳으로 열면 rel에 noopener noreferrer가 더해집니다',
+        en: 'Where the link opens. Ignored without href. Anything other than this tab also gets noopener noreferrer added to rel'
+      }
+    },
+    {
+      name: 'rel',
+      type: 'string',
+      description: {
+        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다 — nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+        en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
       }
     },
     {
