@@ -9,7 +9,7 @@ import {
   metaTextClasses,
   paddingXValues
 } from '../../internal/styles.js';
-import type { NebaAlign, NebaDensity, NebaSize } from '../../types.js';
+import type { NebaAlign, NebaDensity, NebaSize, NebaSlots } from '../../types.js';
 
 /** Which edge the text in a column lines up against. */
 export type TableAlign = NebaAlign;
@@ -49,6 +49,22 @@ export interface TableColumn<Row> {
    */
   render?: (row: Row, index: number) => React.ReactNode;
 }
+
+/**
+ * The parts a Table draws behind its root.
+ *
+ * `className` is the sheet — the Box that scrolls horizontally — and everything
+ * tabular is behind it, starting with the `<table>` itself.
+ *
+ * One caveat, and it is the whole reason the note above `cellStyle` exists: a
+ * cell's padding, alignment and background are written as **inline styles**,
+ * because `.vp-doc td` and `.prose td` outrank any one-class utility. A class
+ * handed to `headCell`, `cell` or `empty` can add anything the component does
+ * not already set inline — a colour, a font, a border — but to change one of
+ * those three it has to be an important one (`p-4!`).
+ */
+export type TableSlot =
+  'table' | 'caption' | 'head' | 'headCell' | 'body' | 'row' | 'cell' | 'empty';
 
 export interface TableProps<Row> extends Omit<
   BoxProps,
@@ -94,6 +110,11 @@ export interface TableProps<Row> extends Omit<
   stickyHeader?: boolean;
   /** Makes rows activatable. Also turns on the hover treatment. */
   onRowClick?: (row: Row, index: number) => void;
+  /**
+   * Class names for the parts behind the root. `className` is the sheet the
+   * table scrolls inside; the `<table>` itself is `classNames.table`.
+   */
+  classNames?: NebaSlots<TableSlot>;
 }
 
 /**
@@ -176,6 +197,7 @@ export function Table<Row>({
   size = 'md',
   density = 'default',
   className,
+  classNames,
   ...boxProps
 }: TableProps<Row>) {
   const messages = useMessages(tableMessages, locale);
@@ -203,12 +225,17 @@ export function Table<Row>({
       {...boxProps}
     >
       <table
-        className={`w-full text-start ${controlTextLeadingClasses[size]} text-(--neba-fg)`}
+        className={cx(
+          'w-full text-start',
+          controlTextLeadingClasses[size],
+          'text-(--neba-fg)',
+          classNames?.table
+        )}
         style={{ borderCollapse: 'collapse' }}
       >
         {caption ? (
           <caption
-            className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.caption)}
             style={{ ...cellStyle, textAlign: 'start' }}
           >
             {caption}
@@ -231,7 +258,7 @@ export function Table<Row>({
           ))}
         </colgroup>
 
-        <thead>
+        <thead className={classNames?.head}>
           <tr>
             {headers.map((column) => (
               <th
@@ -239,7 +266,8 @@ export function Table<Row>({
                 scope="col"
                 className={cx(
                   'font-semibold whitespace-nowrap text-(--neba-muted-fg)',
-                  stickyHeader ? 'sticky top-0 z-10 [backdrop-filter:var(--neba-blur)]' : ''
+                  stickyHeader ? 'sticky top-0 z-10 [backdrop-filter:var(--neba-blur)]' : '',
+                  classNames?.headCell
                 )}
                 style={{ ...headCellStyle, textAlign: column.align ?? 'start' }}
               >
@@ -249,12 +277,12 @@ export function Table<Row>({
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className={classNames?.body}>
           {items.length === 0 ? (
-            <tr className={rowClasses} style={rowRuleStyle}>
+            <tr className={cx(rowClasses, classNames?.row)} style={rowRuleStyle}>
               <td
                 colSpan={headers.length}
-                className="text-(--neba-muted-fg)"
+                className={cx('text-(--neba-muted-fg)', classNames?.empty)}
                 style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
               >
                 {empty ?? messages.empty}
@@ -268,7 +296,8 @@ export function Table<Row>({
                   rowClasses,
                   striped && index % 2 === 1 ? '[--n-row:var(--n-panel-hover)]' : '',
                   lit ? 'hover:[--n-row:var(--n-soft)]' : '',
-                  clickable ? clickableRowClasses : ''
+                  clickable ? clickableRowClasses : '',
+                  classNames?.row
                 )}
                 style={rowRuleStyle}
                 tabIndex={clickable ? 0 : undefined}
@@ -296,7 +325,11 @@ export function Table<Row>({
                 }
               >
                 {headers.map((column) => (
-                  <td key={column.key} style={{ ...cellStyle, textAlign: column.align ?? 'start' }}>
+                  <td
+                    key={column.key}
+                    className={classNames?.cell}
+                    style={{ ...cellStyle, textAlign: column.align ?? 'start' }}
+                  >
                     {column.render
                       ? column.render(row, index)
                       : ((row as Record<string, unknown>)[column.key] as React.ReactNode)}

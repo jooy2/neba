@@ -80,6 +80,22 @@ What to show when `items` is empty. It renders as a single cell spanning every c
 
 Pins the header row while the body scrolls. It only does anything if something around the table constrains its height.
 
+### classNames
+
+`className` is the sheet — the Box the table scrolls horizontally inside — so the `<table>` and everything in it are reached through `classNames`.
+
+```tsx
+<Table
+  headers={headers}
+  items={items}
+  classNames={{ table: 'tabular-nums', headCell: 'text-(--neba-fg)', row: 'align-top' }}
+/>
+```
+
+The slots are `table`, `caption`, `head`, `headCell`, `body`, `row`, `cell` and `empty`.
+
+One thing to know before reaching for `cell`: a cell's padding, alignment and background are written as inline styles rather than as utilities, because a host stylesheet's `td` rule outranks any one-class utility. A class you hand to `headCell`, `cell` or `empty` can add anything the component does not already set inline — a colour, a font, a border — but changing one of those three needs an important utility (`p-4!`). See [prop conventions](../../design/prop-conventions).
+
 ## Accessibility
 
 - Renders a real `<table>` with `<th scope="col">` headings.

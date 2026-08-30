@@ -5233,7 +5233,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onRowClick',
       type: '(row, index) => void',
       description: { ko: '행을 누를 수 있게 만듭니다', en: 'Makes the rows activatable' }
-    }
+    },
+    slotsProp('table', 'caption', 'head', 'headCell', 'body', 'row', 'cell', 'empty')
   ],
 
   DataTable: [

@@ -306,4 +306,68 @@ describe('Table', () => {
       expect(screen.getByText('데이터 없음').query()).toBeNull();
     });
   });
+  describe('slots', () => {
+    it('puts a class name on every part it was given one for', async () => {
+      const screen = await render(
+        <Table
+          headers={HEADERS}
+          items={ITEMS}
+          caption="Recent deploys"
+          classNames={{
+            table: 'slot-table',
+            caption: 'slot-caption',
+            head: 'slot-head',
+            headCell: 'slot-head-cell',
+            body: 'slot-body',
+            row: 'slot-row',
+            cell: 'slot-cell'
+          }}
+        />
+      );
+      const table = screen.getByRole('table').element();
+
+      expect(table).toHaveClass('slot-table');
+      expect(table.querySelector('caption')).toHaveClass('slot-caption');
+      expect(table.querySelector('thead')).toHaveClass('slot-head');
+      expect(table.querySelector('th')).toHaveClass('slot-head-cell');
+      expect(table.querySelector('tbody')).toHaveClass('slot-body');
+      expect(table.querySelector('tbody tr')).toHaveClass('slot-row');
+      expect(table.querySelector('tbody td')).toHaveClass('slot-cell');
+    });
+
+    it('reaches the cell that stands in for an empty table', async () => {
+      const screen = await render(
+        <Table headers={HEADERS} items={[]} classNames={{ empty: 'slot-empty' }} />
+      );
+
+      expect(screen.getByRole('table').element().querySelector('tbody td')).toHaveClass(
+        'slot-empty'
+      );
+    });
+
+    it("keeps the part's own class names alongside the one it was handed", async () => {
+      const screen = await render(
+        <Table headers={HEADERS} items={ITEMS} classNames={{ table: 'slot-table' }} />
+      );
+      const table = screen.getByRole('table').element();
+
+      expect(table).toHaveClass('slot-table');
+      expect(table).toHaveClass('w-full');
+    });
+
+    it('leaves the scrolling sheet to `className`', async () => {
+      const screen = await render(
+        <Table
+          headers={HEADERS}
+          items={ITEMS}
+          className="root-class"
+          classNames={{ table: 'table-class' }}
+        />
+      );
+      const table = screen.getByRole('table').element();
+
+      expect(table).not.toHaveClass('root-class');
+      expect(table.closest('.root-class')).not.toBeNull();
+    });
+  });
 });
