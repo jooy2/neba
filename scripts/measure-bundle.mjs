@@ -147,6 +147,40 @@ const suspects = [
 ];
 
 /**
+ * The budget file, written the way the repository writes every other file.
+ *
+ * `JSON.stringify(…, 2)` is not that: it puts `"imports": ["Button"]` on three
+ * lines, which Prettier then joins back onto one. So `npm run size:update`
+ * left the working tree failing `prettier --check` until something else
+ * reformatted it — and the only reason that was survivable is that `npm run
+ * build` runs `format:fix` first, so the damage was usually undone by accident
+ * before anyone saw it.
+ *
+ * Prettier is loaded here rather than at the top of the module because this is
+ * the only path that needs it: `npm run size` is the one that runs in CI and on
+ * every check, and it has no business paying for a formatter it never calls.
+ *
+ * Two details decide whether this actually agrees with `prettier --check`, and
+ * both are easy to get wrong:
+ *
+ * - **`editorconfig: true`.** The CLI reads `.editorconfig` by default and
+ *   `resolveConfig` does not, so without this the width here is Prettier's own
+ *   80 rather than the 100 this repository sets — and the one `imports` array
+ *   that lands between the two would be wrapped here and unwrapped by the
+ *   check, forever.
+ * - **The input is already indented.** Prettier preserves whether an object was
+ *   written expanded, so handing it `JSON.stringify(config)` on one line would
+ *   collapse every scenario into a single line each. It reflows arrays either
+ *   way, which is the part being fixed.
+ */
+async function formatted(config) {
+  const prettier = await import('prettier');
+  const options = await prettier.resolveConfig(budgetFile, { editorconfig: true });
+
+  return prettier.format(JSON.stringify(config, null, 2), { ...options, filepath: budgetFile });
+}
+
+/**
  * The whole run, as a function so a failure can `return`.
  *
  * The exit code is set rather than forced: `process.exit` truncates whatever
@@ -196,7 +230,7 @@ async function main() {
       scenario.budget = Number(measured.toFixed(1));
     }
 
-    writeFileSync(budgetFile, `${JSON.stringify(config, null, 2)}\n`);
+    writeFileSync(budgetFile, await formatted(config));
     console.log('\nbudgets rewritten: scripts/bundle-budget.json\n');
 
     return;
