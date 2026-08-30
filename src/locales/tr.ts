@@ -124,6 +124,7 @@ export const tr: NebaLocale = {
     previous: 'Önceki',
     next: 'Sonraki',
     done: 'Bitti',
+    skip: 'Atla',
     restart: 'Baştan başla',
     completed: 'Tüm adımlar tamamlandı',
     steps: 'Adımlar',

@@ -124,6 +124,7 @@ export const hi: NebaLocale = {
     previous: 'पिछला',
     next: 'अगला',
     done: 'पूर्ण',
+    skip: 'छोड़ें',
     restart: 'फिर से शुरू करें',
     completed: 'सभी चरण पूरे हुए',
     steps: 'चरण',

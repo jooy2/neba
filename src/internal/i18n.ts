@@ -37,6 +37,19 @@
 import * as React from 'react';
 
 /**
+ * `{index}`, `{total}` and `{title}` filled into a message.
+ *
+ * It lives beside the tables rather than in whichever component needed it first
+ * because the placeholders are part of the message format: a language that
+ * orders "3 of 8" the other way round writes `{total}단계 중 {index}단계`, and a
+ * second copy of this function would eventually disagree about what a
+ * placeholder looks like.
+ */
+export function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) => values[key] ?? whole);
+}
+
+/**
  * One namespace's strings, in every language that has them.
  *
  * `''` is English and is complete by construction — every other tag fills in as
@@ -583,6 +596,8 @@ export interface StepsMessages {
   next: string;
   /** And what it becomes on the last step. */
   done: string;
+  /** The way out of a guide that is running over the page, for a Tour. */
+  skip: string;
   /** The button under a finished guide. */
   restart: string;
   /** What a finished guide says. */
@@ -601,6 +616,7 @@ export const stepsMessages: MessageTable<StepsMessages> = {
     previous: 'Previous',
     next: 'Next',
     done: 'Done',
+    skip: 'Skip',
     restart: 'Start over',
     completed: 'All steps complete',
     steps: 'Steps',

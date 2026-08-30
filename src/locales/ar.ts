@@ -124,6 +124,7 @@ export const ar: NebaLocale = {
     previous: 'السابق',
     next: 'التالي',
     done: 'تم',
+    skip: 'تخطي',
     restart: 'البدء من جديد',
     completed: 'اكتملت جميع الخطوات',
     steps: 'الخطوات',

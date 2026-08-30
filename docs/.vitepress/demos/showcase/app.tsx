@@ -127,6 +127,7 @@ import {
   ToggleGroup,
   Toolbar,
   Tooltip,
+  Tour,
   Typography,
   WindowPane,
   useToast,
@@ -519,6 +520,8 @@ function ShowcaseBody() {
   const [rebuilding, setRebuilding] = useState(false);
   const [stay, setStay] = useState<DateRange>({ start: null, end: null });
 
+  const [tour, setTour] = useState(false);
+
   const emailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
   const save = () => {
@@ -561,7 +564,9 @@ function ShowcaseBody() {
           rule facing the content, and the one live readout on the screen sitting
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
-          <Caption>Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb</Caption>
+          <Caption>
+            Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb · Tour
+          </Caption>
           <Toolbar
             render={<header />}
             variant="solid"
@@ -569,7 +574,13 @@ function ShowcaseBody() {
             divider
             start={
               <>
-                <Icon icon={<LogoIcon />} size="lg" color="primary" label="Neba Cloud" />
+                <Icon
+                  data-tour="logo"
+                  icon={<LogoIcon />}
+                  size="lg"
+                  color="primary"
+                  label="Neba Cloud"
+                />
                 <Typography level="h6">Neba Cloud</Typography>
               </>
             }
@@ -578,6 +589,7 @@ function ShowcaseBody() {
                 <Pill size="sm" color="info" startIcon={<DotIcon />} title="Building — 2 of 7" />
                 <Badge content={3} color="danger" label="3 failing builds">
                   <IconButton
+                    data-tour="alerts"
                     icon={<BellIcon />}
                     label="Notifications"
                     size="sm"
@@ -585,6 +597,9 @@ function ShowcaseBody() {
                     color="secondary"
                   />
                 </Badge>
+                <Button size="xs" variant="text" color="secondary" onClick={() => setTour(true)}>
+                  Show me around
+                </Button>
                 <AvatarGroup size="sm" max={3} total={9}>
                   <Avatar name="Kim Minji" />
                   <Avatar name="Alex Park" />
@@ -596,6 +611,27 @@ function ShowcaseBody() {
                 </Badge>
               </>
             }
+          />
+
+          {/* Three things a new reader is shown once, pointed at where they are.
+              The dimming never takes the pointer, so the bar keeps working. */}
+          <Tour
+            open={tour}
+            onOpenChange={setTour}
+            steps={[
+              {
+                target: '[data-tour="logo"]',
+                title: 'Neba Cloud',
+                content: 'Every project this account can reach is behind the mark.'
+              },
+              {
+                target: '[data-tour="alerts"]',
+                title: 'What needs you',
+                content: 'The count is unread alerts across every environment.',
+                side: 'bottom',
+                align: 'end'
+              }
+            ]}
           />
 
           {/* The trail sits under the bar, where a page says where it is. */}

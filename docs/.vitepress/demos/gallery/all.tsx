@@ -127,6 +127,7 @@ import {
   ToggleGroup,
   Toolbar,
   Tooltip,
+  Tour,
   Transfer,
   TreeItem,
   TreeView,
@@ -235,6 +236,35 @@ function GalleryPersonIcon() {
 const GALLERY_DAY = new Date(2026, 6, 27);
 const GALLERY_DAY_LATER = new Date(2026, 7, 3);
 const GALLERY_MOMENT = new Date(2026, 6, 27, 9, 30);
+
+/** The one preview that runs over the page, so it never draws the mask. */
+function GalleryTour() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <Chip id="gallery-tour-target" size="sm" variant="solid" color="success">
+        Live
+      </Chip>
+      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+        Show me around
+      </Button>
+      <Tour
+        size="sm"
+        mask={false}
+        open={open}
+        onOpenChange={setOpen}
+        steps={[
+          {
+            target: '#gallery-tour-target',
+            title: 'The current state',
+            content: 'Green means the last deploy is serving traffic.'
+          }
+        ]}
+      />
+    </div>
+  );
+}
 
 interface Entry {
   name: string;
@@ -1966,6 +1996,15 @@ const GROUPS: Group[] = [
             <Skeleton lines={3} className="flex-1" />
           </div>
         )
+      },
+      {
+        name: 'Tour',
+        summary: {
+          ko: '이미 있는 페이지 위를 걸으며 안내하는 것',
+          en: 'A guided walk over a page that already exists'
+        },
+        path: '/components/feedback/tour',
+        preview: <GalleryTour />
       },
       {
         name: 'Meter',

@@ -127,6 +127,7 @@ export const zhHant: NebaLocale = {
     previous: '上一步',
     next: '下一步',
     done: '完成',
+    skip: '跳過',
     restart: '重新開始',
     completed: '所有步驟已完成',
     steps: '步驟',

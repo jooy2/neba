@@ -3860,6 +3860,205 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Tour: [
+    {
+      name: 'steps',
+      type: 'readonly TourStep[]',
+      required: true,
+      description: { ko: '순서대로 놓인 정거장들', en: 'The stops, in order' }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: 'tour가 실행 중인지. onOpenChange와 함께 쓰면 controlled 컴포넌트가 됩니다',
+        en: 'Whether the tour is running. With onOpenChange it makes it controlled'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '실행 중인 채로 시작할지 (uncontrolled)',
+        en: 'Whether it starts running, uncontrolled'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '시작하고 끝날 때마다 호출됩니다', en: 'Fired whenever it starts or ends' }
+    },
+    {
+      name: 'step',
+      type: 'number',
+      description: { ko: '몇 번째 정거장인지 (0부터)', en: 'Which stop, from 0' }
+    },
+    {
+      name: 'defaultStep',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '처음 시작하는 정거장 (uncontrolled)',
+        en: 'Which one it starts on, uncontrolled'
+      }
+    },
+    {
+      name: 'onStepChange',
+      type: '(step: number) => void',
+      description: { ko: '단계가 바뀔 때마다 호출됩니다', en: 'Fired whenever the step changes' }
+    },
+    {
+      name: 'onFinish',
+      type: '() => void',
+      description: {
+        ko: '마지막 단계의 버튼을 눌렀을 때, tour가 닫히기 전에 호출됩니다',
+        en: "Called when the last step's button is pressed, before the tour closes"
+      }
+    },
+    {
+      name: 'mask',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '페이지를 어둡게 하고 대상만 도려냅니다. 어두운 층은 포인터를 가로채지 않습니다',
+        en: 'Dims the page and cuts the target out of the dimming. The dimming never takes the pointer'
+      }
+    },
+    {
+      name: 'skippable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '카운터 옆에 Skip 버튼을 그립니다',
+        en: 'Draws the Skip button beside the counter'
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: 'Escape로 tour를 끝낼 수 있는지', en: 'Whether Escape ends the tour' }
+    },
+    {
+      name: 'scrollIntoView',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'tour가 각 단계에 닿을 때 그 대상을 화면 안으로 스크롤합니다',
+        en: 'Scrolls each target into view as the tour reaches it'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '카드의 타입 스케일과 너비 상한',
+        en: "The card's type scale and how wide it may get"
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: '카드의 가장자리와 버튼의 색 역할',
+        en: "The role the card's edge and buttons carry"
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '카드 안쪽 여백만 바꿉니다',
+        en: "Changes the card's inset and nothing else"
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'BCP 47 태그. 버튼과 카운터를 이 언어로 씁니다. 지원하지 않는 태그는 영어로',
+        en: 'BCP 47 tag the buttons and the counter are written in. Unsupported tags fall back to English'
+      }
+    },
+    {
+      name: 'previousLabel',
+      type: 'ReactNode',
+      description: { ko: 'Previous 버튼의 문구', en: 'The Previous button' }
+    },
+    {
+      name: 'nextLabel',
+      type: 'ReactNode',
+      description: { ko: 'Next 버튼의 문구', en: 'The Next button' }
+    },
+    {
+      name: 'doneLabel',
+      type: 'ReactNode',
+      description: {
+        ko: '마지막 단계에서 Next가 되는 문구',
+        en: 'What Next becomes on the last step'
+      }
+    },
+    {
+      name: 'skipLabel',
+      type: 'ReactNode',
+      description: { ko: 'Skip 버튼의 문구', en: 'The Skip button' }
+    }
+  ],
+
+  TourStep: [
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '이 단계가 가리키는 것의 CSS selector. 없으면 아무것도 도려내지 않고 가운데에 놓입니다',
+        en: 'A CSS selector for what this step is about. Left out, the step is centred with nothing cut out'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '단계의 제목', en: "The step's heading" }
+    },
+    {
+      name: 'content',
+      type: 'ReactNode',
+      description: { ko: '단계가 하는 말', en: 'What it says' }
+    },
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'bottom'",
+      shared: true,
+      description: {
+        ko: '카드가 놓이는 대상의 모서리',
+        en: 'Which edge of the target the card sits on'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      shared: true,
+      description: { ko: '그 모서리 위에서의 위치', en: 'Where along that edge' }
+    },
+    {
+      name: 'padding',
+      type: 'number',
+      default: '6',
+      description: {
+        ko: '도려낸 구멍이 대상보다 얼마나 넓어지는지 (px)',
+        en: 'How far the cut-out is inflated past the target, in pixels'
+      }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

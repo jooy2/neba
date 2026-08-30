@@ -124,6 +124,7 @@ export const ja: NebaLocale = {
     previous: '前へ',
     next: '次へ',
     done: '完了',
+    skip: 'スキップ',
     restart: '最初から',
     completed: 'すべての手順が完了しました',
     steps: '手順',

@@ -124,6 +124,7 @@ export const nl: NebaLocale = {
     previous: 'Vorige',
     next: 'Volgende',
     done: 'Klaar',
+    skip: 'Overslaan',
     restart: 'Opnieuw beginnen',
     completed: 'Alle stappen voltooid',
     steps: 'Stappen',

@@ -124,6 +124,7 @@ export const ko: NebaLocale = {
     previous: '이전',
     next: '다음',
     done: '완료',
+    skip: '건너뛰기',
     restart: '처음으로',
     completed: '모든 단계를 마쳤습니다',
     steps: '단계',

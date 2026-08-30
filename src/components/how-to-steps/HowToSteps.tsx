@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { CheckIcon, ChevronIcon, RestartIcon, SuccessIcon } from '../../internal/icons.js';
-import { stepsMessages, useMessages } from '../../internal/i18n.js';
+import { fill, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   cx,
@@ -215,11 +215,6 @@ const variantClasses: Record<NebaVariant, string> = {
   ].join(' '),
   text: 'text-(--neba-fg) bg-transparent'
 };
-
-/** `{index}`, `{total}` and `{title}` filled in, so a language can order them. */
-function fill(template: string, values: Record<string, string>): string {
-  return template.replace(/\{(\w+)\}/g, (whole, key: string) => values[key] ?? whole);
-}
 
 /** The label a screen reader gets, for a row whose text is a number and a title. */
 function plainTitle(title: React.ReactNode): string {

@@ -124,6 +124,7 @@ export const id: NebaLocale = {
     previous: 'Sebelumnya',
     next: 'Berikutnya',
     done: 'Selesai',
+    skip: 'Lewati',
     restart: 'Mulai lagi',
     completed: 'Semua langkah selesai',
     steps: 'Langkah',

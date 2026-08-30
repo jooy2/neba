@@ -124,6 +124,7 @@ export const vi: NebaLocale = {
     previous: 'Trước',
     next: 'Tiếp',
     done: 'Xong',
+    skip: 'Bỏ qua',
     restart: 'Bắt đầu lại',
     completed: 'Đã hoàn tất mọi bước',
     steps: 'Các bước',

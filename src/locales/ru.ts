@@ -124,6 +124,7 @@ export const ru: NebaLocale = {
     previous: 'Назад',
     next: 'Далее',
     done: 'Готово',
+    skip: 'Пропустить',
     restart: 'Начать сначала',
     completed: 'Все шаги пройдены',
     steps: 'Шаги',

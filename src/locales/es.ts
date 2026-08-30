@@ -124,6 +124,7 @@ export const es: NebaLocale = {
     previous: 'Anterior',
     next: 'Siguiente',
     done: 'Hecho',
+    skip: 'Omitir',
     restart: 'Empezar de nuevo',
     completed: 'Todos los pasos completados',
     steps: 'Pasos',

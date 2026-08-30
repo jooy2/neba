@@ -124,6 +124,7 @@ export const it: NebaLocale = {
     previous: 'Indietro',
     next: 'Avanti',
     done: 'Fatto',
+    skip: 'Salta',
     restart: 'Ricomincia',
     completed: 'Tutti i passaggi completati',
     steps: 'Passaggi',
