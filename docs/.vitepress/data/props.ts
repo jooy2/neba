@@ -3027,6 +3027,69 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  ScrollArea: [
+    {
+      name: 'orientation',
+      type: "'vertical' | 'horizontal' | 'both'",
+      default: "'vertical'",
+      shared: true,
+      description: {
+        ko: '스크롤할 수 있는 축. NebaOrientation에 값 하나를 더한 형태입니다 — both는 그 타입을 쓰는 다른 컴포넌트에서는 의미가 없습니다',
+        en: "Which axes may scroll. NebaOrientation plus a third value: 'both' means nothing anywhere else that type is used"
+      }
+    },
+    {
+      name: 'height',
+      type: 'number | string',
+      description: {
+        ko: '고정 높이. 세로 스크롤 영역은 무언가로 묶여야 스크롤할 것이 생깁니다. 숫자는 px입니다',
+        en: 'A fixed height. A vertical scroll area has to be bounded by something or there is nothing to scroll. Numbers are pixels'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '같은 것을 상한으로',
+        en: 'The same, as a ceiling rather than a fixed height'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '내용이 더 남아 있는 가장자리에서만 내용을 서서히 지웁니다. 내용 위의 그러데이션이 아니라 mask라서 반투명한 표면 위에서도 성립합니다',
+        en: 'Fades the content out at each edge that has more beyond it, and only at those. A mask rather than a gradient over the content, so it works on a translucent surface'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '레일의 두께. 스크롤바는 컨트롤이 아니므로 컨트롤 높이와는 다른 사다리입니다',
+        en: 'Thickness of the rail. A scrollbar is not a control, so it has its own ladder well below the control heights'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'thumb이 띠는 색 계열. 글 옆에서 두 번째 단처럼 보이지 않도록 낮춰 섞습니다',
+        en: 'The family the thumb carries, mixed down so it does not read as a second column beside the text'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '스크롤되는 내용', en: 'What is scrolled' }
+    }
+  ],
+
   Checkbox: [
     ...scaleProps("'md'"),
     ...fieldProps,

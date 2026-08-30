@@ -813,6 +813,77 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * ScrollArea's edge fade
+ *
+ * The content is faded out at each edge that has more behind it, and only at
+ * those edges: at the top of a list there is nothing above, so there is no fade
+ * above. Which edges those are is Base UI's answer — it writes
+ * `data-overflow-y-start` and its three siblings onto the root — so all this
+ * does is turn four attributes into four lengths.
+ *
+ * A **mask** rather than a gradient painted over the content, because a
+ * gradient has to fade *to* a colour and there is no such colour here: a scroll
+ * area usually sits on a translucent acrylic sheet, and anything opaque drawn
+ * over its edges would be a bar of paint across the backdrop.
+ *
+ * Two masks composited rather than one, because the two axes are independent
+ * and a single gradient cannot fade in two directions. `intersect` is what makes
+ * the corner where both apply come out as the darker of the two rather than the
+ * sum, which would punch a hole.
+ *
+ * The horizontal pair is mapped through `:dir()` because a gradient's `to right`
+ * is physical and `data-overflow-x-start` is logical — under RTL the start of
+ * the axis is the right-hand edge.
+ * ------------------------------------------------------------------------- */
+
+.neba-scroll-fade {
+  --n-fade-start: 0px;
+  --n-fade-end: 0px;
+  --n-fade-top: 0px;
+  --n-fade-bottom: 0px;
+  --n-fade-left: var(--n-fade-start);
+  --n-fade-right: var(--n-fade-end);
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--n-fade-top),
+      black calc(100% - var(--n-fade-bottom)),
+      transparent 100%
+    ),
+    linear-gradient(
+      to right,
+      transparent 0,
+      black var(--n-fade-left),
+      black calc(100% - var(--n-fade-right)),
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+.neba-scroll-fade:dir(rtl) {
+  --n-fade-left: var(--n-fade-end);
+  --n-fade-right: var(--n-fade-start);
+}
+
+[data-overflow-y-start] > .neba-scroll-fade {
+  --n-fade-top: var(--n-fade);
+}
+
+[data-overflow-y-end] > .neba-scroll-fade {
+  --n-fade-bottom: var(--n-fade);
+}
+
+[data-overflow-x-start] > .neba-scroll-fade {
+  --n-fade-start: var(--n-fade);
+}
+
+[data-overflow-x-end] > .neba-scroll-fade {
+  --n-fade-end: var(--n-fade);
+}
+
+/* ---------------------------------------------------------------------------
  * Links
  *
  * `<a>` is, with `<td>`, one of the two tags a host stylesheet still styles by

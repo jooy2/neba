@@ -84,6 +84,7 @@ import {
   RadioGroup,
   Rating,
   ScatterChart,
+  ScrollArea,
   ScrollZone,
   Segment,
   SegmentedButton,
@@ -651,7 +652,7 @@ function ShowcaseBody() {
         <section className="flex flex-col gap-3">
           <Caption>
             Button · ButtonGroup · SegmentedButton · Toggle · ToggleGroup · TextField · Select ·
-            Tooltip · Menu · Popover · Drawer · Overlay
+            Tooltip · Menu · Popover · Drawer · Overlay · ScrollArea
           </Caption>
           <div className="flex flex-wrap items-center gap-2">
             <Drawer
@@ -664,12 +665,17 @@ function ShowcaseBody() {
               title="Workspace"
               description="Everything this account can reach."
             >
-              <List variant="text" size="sm" density="compact">
-                <ListItem description="Deploys, usage and alerts">Overview</ListItem>
-                <ListItem description="12 active">Projects</ListItem>
-                <ListItem description="4 people">Members</ListItem>
-                <ListItem description="Team plan">Billing</ListItem>
-              </List>
+              <ScrollArea maxHeight={220} fade>
+                <List variant="text" size="sm" density="compact">
+                  <ListItem description="Deploys, usage and alerts">Overview</ListItem>
+                  <ListItem description="12 active">Projects</ListItem>
+                  <ListItem description="4 people">Members</ListItem>
+                  <ListItem description="Team plan">Billing</ListItem>
+                  <ListItem description="3 keys">API tokens</ListItem>
+                  <ListItem description="Every action, 90 days">Audit log</ListItem>
+                  <ListItem description="2 connected">Integrations</ListItem>
+                </List>
+              </ScrollArea>
             </Drawer>
 
             <TextField size="sm" startIcon={<SearchIcon />} placeholder="Search projects" />

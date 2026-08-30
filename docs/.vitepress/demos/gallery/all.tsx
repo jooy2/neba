@@ -88,6 +88,7 @@ import {
   RadioGroup,
   Rating,
   ScatterChart,
+  ScrollArea,
   ScrollZone,
   Segment,
   SegmentedButton,
@@ -822,6 +823,25 @@ const GROUPS: Group[] = [
               </Pane>
             </Panes>
           </div>
+        )
+      },
+      {
+        name: 'ScrollArea',
+        summary: {
+          ko: '자기 스크롤바를 가진 상자',
+          en: 'A box with a scrollbar of its own'
+        },
+        path: '/components/layout/scroll-area',
+        preview: (
+          <ScrollArea height={104} fade className="w-full max-w-48" color="secondary">
+            <div className="flex flex-col gap-1 pe-3">
+              {['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'].map((row) => (
+                <span key={row} className="text-[0.8125rem]">
+                  {row}
+                </span>
+              ))}
+            </div>
+          </ScrollArea>
         )
       },
       {
