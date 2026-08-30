@@ -31,7 +31,8 @@ import {
   hasContent,
   metaTextClasses,
   paddingXValues,
-  srOnlyClasses
+  srOnlyClasses,
+  toLength
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
 
@@ -440,11 +441,6 @@ function SearchIcon() {
       />
     </svg>
   );
-}
-
-/** A CSS length out of a prop that may be a number of pixels. */
-function toLength(value: number | string | undefined): string | undefined {
-  return typeof value === 'number' ? `${value}px` : value;
 }
 
 /** One row of `items`, with everything the table needs to talk about it. */

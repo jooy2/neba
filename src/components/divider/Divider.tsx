@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Separator } from '@base-ui/react/separator';
-import { metaTextClasses } from '../../internal/styles.js';
+import { metaTextClasses, toLength } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 /** Where the label sits along a labelled divider. Ignored without a label. */
@@ -69,11 +69,6 @@ export interface DividerProps extends Omit<
  * what keeps all three the same without threading a value through each.
  */
 const lineClasses = '[border-color:var(--n-line)]';
-
-/** Turns `2` into `2px` and leaves `'0.5rem'` alone. */
-function toLength(value: number | string | undefined): string | undefined {
-  return typeof value === 'number' ? `${value}px` : value;
-}
 
 /**
  * How the line is split around an off-centre label: `[before, after]`. The short

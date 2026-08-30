@@ -560,6 +560,59 @@ export function toLength(value: number | string | undefined): string | undefined
   return typeof value === 'number' ? `${value}px` : value;
 }
 
+/** The four units a length prop is allowed to be written in. */
+const LENGTH = /^\s*(-?[\d.]+)\s*(px|rem|em|%)\s*$/;
+
+/**
+ * The other direction: a CSS length a caller wrote, as the number a drag can do
+ * arithmetic on.
+ *
+ * `toLength` is what a component hands the browser; this is what it needs back
+ * the moment a gesture has to clamp against the value — a Sidebar's `minWidth`,
+ * a Panes' `maxSize`. Both wrote their own, and the copies disagreed: one of
+ * them resolved `em` against the document root, which is what `rem` means, so a
+ * `minWidth="2em"` on a sidebar with type of its own came out wrong.
+ *
+ * `percentOf` is what a percentage is a percentage *of*, because that differs:
+ * a Sidebar is bounded against the window and a pane against the split it sits
+ * in. `relativeTo` is the element `em` is measured against — its own font size,
+ * which is the whole difference between the two units.
+ *
+ * A bare number is deliberately **not** handled. It means pixels on one of them
+ * and a percentage on the other, and that is a question about the prop rather
+ * than about the length.
+ */
+export function toPixels(
+  value: string,
+  options: { percentOf: number; relativeTo?: Element | null }
+): number | undefined {
+  const match = LENGTH.exec(value);
+
+  if (!match) return undefined;
+
+  const amount = Number(match[1]);
+
+  if (Number.isNaN(amount)) return undefined;
+
+  switch (match[2]) {
+    case 'px':
+      return amount;
+    case '%':
+      return (options.percentOf * amount) / 100;
+    case 'em':
+      return amount * fontSize(options.relativeTo);
+    default:
+      return amount * fontSize(typeof document === 'undefined' ? null : document.documentElement);
+  }
+}
+
+/** An element's own type size, in pixels, with the browser's default as the floor. */
+function fontSize(element: Element | null | undefined): number {
+  if (!element || typeof getComputedStyle === 'undefined') return 16;
+
+  return parseFloat(getComputedStyle(element).fontSize) || 16;
+}
+
 /** Joins class name fragments, dropping the empty ones. */
 export function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(' ');

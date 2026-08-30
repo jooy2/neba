@@ -18,6 +18,7 @@ import {
   surfaceClasses,
   surfaceSlots,
   toLength,
+  toPixels,
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
@@ -181,34 +182,6 @@ const variantClasses: Record<NebaVariant, string> = {
 /** How far one arrow key press moves the edge. The same step Panes uses. */
 const KEYBOARD_STEP = 16;
 
-/** A length in pixels, against the window, for the two bounds a drag is clamped to. */
-function toPixels(value: number | string | undefined, fallback: number): number {
-  if (value === undefined || value === null) return fallback;
-  if (typeof value === 'number') return value;
-
-  const match = /^\s*(-?[\d.]+)\s*(px|rem|em|%)\s*$/.exec(value);
-  if (!match) return fallback;
-
-  const amount = Number(match[1]);
-  if (Number.isNaN(amount)) return fallback;
-
-  switch (match[2]) {
-    case 'px':
-      return amount;
-    case '%':
-      return typeof window === 'undefined' ? fallback : (window.innerWidth * amount) / 100;
-    default:
-      return (
-        amount *
-        parseFloat(
-          (typeof document === 'undefined'
-            ? ''
-            : getComputedStyle(document.documentElement).fontSize) || '16'
-        )
-      );
-  }
-}
-
 /**
  * A column beside the page's content, and a drawer once the window is too
  * narrow to hold one.
@@ -312,9 +285,27 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     const node = rootRef.current;
     if (!node) return pixels;
 
+    /**
+     * One of the two bounds, in pixels. A bare number is already pixels here —
+     * a sidebar's width is an absolute thing, unlike a pane's share of a split.
+     * A percentage is a percentage of the window, which is what the sidebar is
+     * ultimately competing with the page for.
+     */
+    const bound = (value: number | string | undefined, fallback: number) => {
+      if (value === undefined || value === null) return fallback;
+      if (typeof value === 'number') return value;
+
+      return (
+        toPixels(value, {
+          percentOf: typeof window === 'undefined' ? 0 : window.innerWidth,
+          relativeTo: node
+        }) ?? fallback
+      );
+    };
+
     const sized = Math.min(
-      toPixels(maxWidth, 480),
-      Math.max(toPixels(minWidth, 160), Math.round(pixels))
+      bound(maxWidth, 480),
+      Math.max(bound(minWidth, 160), Math.round(pixels))
     );
 
     node.style.setProperty('--n-sidebar-w', `${sized}px`);

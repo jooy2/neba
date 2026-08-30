@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { beginPointerDrag } from '../../internal/drag.js';
 import { observeResize } from '../../internal/observe.js';
-import { cx, transitionClasses } from '../../internal/styles.js';
+import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
 /**
@@ -101,32 +101,17 @@ const KEYBOARD_STEP = 16;
  * rather than as zero. A bad string should leave a pane unbounded, not pin it
  * shut.
  */
-function toPixels(
+function paneSize(
   value: PaneSize | undefined,
   extent: number,
   root: Element | null
 ): number | undefined {
   if (value === undefined || value === null) return undefined;
+  // A bare number is a percentage here rather than pixels: that is what a split
+  // is usually described in, and it keeps its meaning when the window changes.
   if (typeof value === 'number') return (extent * value) / 100;
 
-  const match = /^\s*(-?[\d.]+)\s*(px|rem|em|%)\s*$/.exec(value);
-  if (!match) return undefined;
-
-  const amount = Number(match[1]);
-  if (Number.isNaN(amount)) return undefined;
-
-  switch (match[2]) {
-    case 'px':
-      return amount;
-    case '%':
-      return (extent * amount) / 100;
-    case 'rem':
-      return amount * parseFloat(getComputedStyle(document.documentElement).fontSize || '16');
-    case 'em':
-      return amount * parseFloat((root && getComputedStyle(root).fontSize) || '16');
-    default:
-      return undefined;
-  }
+  return toPixels(value, { percentOf: extent, relativeTo: root });
 }
 
 /** Every pane's share of the space, summing to 1. */
@@ -135,7 +120,7 @@ function initialFractions(
   extent: number,
   root: Element | null
 ): number[] {
-  const sizes = constraints.map((pane) => toPixels(pane.defaultSize, extent, root));
+  const sizes = constraints.map((pane) => paneSize(pane.defaultSize, extent, root));
   const named = sizes.reduce<number>((total, size) => total + (size ?? 0), 0);
   const unnamed = sizes.filter((size) => size === undefined).length;
   // Whatever is left after the named panes, split evenly. Negative when the
@@ -263,12 +248,12 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     const pair = start + current[index + 1] * extent;
 
     const lower = Math.max(
-      toPixels(before?.minSize, extent, root) ?? 0,
-      pair - (toPixels(after?.maxSize, extent, root) ?? pair)
+      paneSize(before?.minSize, extent, root) ?? 0,
+      pair - (paneSize(after?.maxSize, extent, root) ?? pair)
     );
     const upper = Math.min(
-      toPixels(before?.maxSize, extent, root) ?? pair,
-      pair - (toPixels(after?.minSize, extent, root) ?? 0)
+      paneSize(before?.maxSize, extent, root) ?? pair,
+      pair - (paneSize(after?.minSize, extent, root) ?? 0)
     );
 
     if (upper < lower) return null;
