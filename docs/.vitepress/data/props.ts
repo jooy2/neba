@@ -12355,6 +12355,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'headingLevel',
+      type: '2 | 3 | 4 | 5',
+      default: '3',
+      description: {
+        ko: 'title이 쓰이는 heading 레벨. 단계의 제목은 그보다 한 단계 아래입니다. 레벨은 컴포넌트가 아니라 페이지에 대한 주장이므로 — h1 아래의 안내서는 h2이고 섹션 안의 같은 안내서는 h4입니다',
+        en: "Which heading level title is written at, with a step's title one below it. A level is a claim about the page rather than about the component: a guide under an h1 is an h2, and the same guide inside a section is an h4"
+      }
+    },
+    {
       name: 'step',
       type: 'number',
       description: {

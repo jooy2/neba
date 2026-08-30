@@ -69,6 +69,17 @@ export interface HowToStepsProps extends Omit<
   steps: HowToStep[];
   /** The guide's own heading, over both columns. */
   title?: React.ReactNode;
+  /**
+   * Which heading level `title` is written at, and the step's title one below
+   * it.
+   *
+   * A heading level is a claim about the *page*, not about the component: a
+   * guide under an `<h1>` is an `<h2>` and the same guide inside a section is an
+   * `<h4>`, and a component that decides for itself breaks the outline of every
+   * page it does not happen to suit.
+   * @default 3
+   */
+  headingLevel?: 2 | 3 | 4 | 5;
   /** Which step is showing. Pass it to drive the guide yourself. */
   step?: number;
   /** Where an uncontrolled guide starts. @default 0 */
@@ -246,10 +257,27 @@ function plainTitle(title: React.ReactNode): string {
  * so. A tablist's roving focus would tell a screen reader that these are
  * interchangeable views of one thing.
  */
+/**
+ * A heading at the level the page says, rather than at the level the component
+ * happens to prefer.
+ *
+ * `createElement` with a computed tag rather than a lookup table: the six of
+ * them differ in nothing but their name, and a table would be six entries
+ * saying so. Clamped, because `headingLevel + 1` on the deepest step would
+ * otherwise ask for an `<h7>`.
+ */
+function StepHeading({
+  level,
+  ...props
+}: React.ComponentPropsWithoutRef<'h3'> & { level: number }) {
+  return React.createElement(`h${Math.min(6, Math.max(1, level))}`, props);
+}
+
 export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(function HowToSteps(
   {
     steps,
     title,
+    headingLevel = 3,
     step: stepProp,
     defaultStep = 0,
     onStepChange,
@@ -518,9 +546,12 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
                   {item.icon}
                 </span>
               ) : null}
-              <h4 className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}>
+              <StepHeading
+                level={headingLevel + 1}
+                className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}
+              >
                 {item.title}
-              </h4>
+              </StepHeading>
               <span
                 className={cx(
                   'shrink-0 text-(--neba-muted-fg) tabular-nums',
@@ -597,9 +628,13 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
       {...props}
     >
       {hasContent(title) ? (
-        <h3 id={headingId} className={cx('m-0 shrink-0 font-medium', sheetTitleClasses[size])}>
+        <StepHeading
+          level={headingLevel}
+          id={headingId}
+          className={cx('m-0 shrink-0 font-medium', sheetTitleClasses[size])}
+        >
           {title}
-        </h3>
+        </StepHeading>
       ) : null}
 
       <div

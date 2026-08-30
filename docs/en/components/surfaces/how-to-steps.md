@@ -109,6 +109,14 @@ It runs on the panel and never on anything that is pressed: the buttons and the 
 
 The three weights say what they say everywhere, and the sheet is never dyed by `color` — what carries the family is the numbers, the connector and the buttons. `text` is the one to reach for inside a [Card](./card), which is already a sheet.
 
+### headingLevel
+
+`title` is drawn as an `<h3>` and a step's title one level below it, at `<h4>`. `headingLevel` moves that starting point, because a level is a claim about the page rather than about the component: a guide sitting directly under an `<h1>` should be an `<h2>`, and the same guide inside a section should be an `<h4>`.
+
+```tsx
+<HowToSteps steps={steps} title="Getting started" headingLevel={2} />
+```
+
 ### Steps with anything in them
 
 `content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it — and nothing is remounted as the step changes, so a form halfway through a guide still holds what was typed into it.

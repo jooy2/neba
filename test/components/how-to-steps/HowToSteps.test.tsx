@@ -34,6 +34,35 @@ describe('HowToSteps', () => {
         .toBeInTheDocument();
     });
 
+    // A heading level is a claim about the page rather than about the
+    // component: the same guide is an `h2` under an `h1` and an `h4` inside a
+    // section, and one that decides for itself breaks the outline of every page
+    // it does not happen to suit.
+    it('writes its headings at the level the page asked for', async () => {
+      const screen = await render(
+        <HowToSteps steps={STEPS} title="Getting started" headingLevel={2} />
+      );
+
+      await expect
+        .element(screen.getByRole('heading', { name: 'Getting started', level: 2 }))
+        .toBeInTheDocument();
+      // A step sits one below the guide, whatever the guide is.
+      await expect
+        .element(screen.getByRole('heading', { name: STEPS[0].title as string, level: 3 }))
+        .toBeInTheDocument();
+    });
+
+    it('puts the guide at h3 and a step at h4 by default', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} title="Getting started" />);
+
+      await expect
+        .element(screen.getByRole('heading', { name: 'Getting started', level: 3 }))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('heading', { name: STEPS[0].title as string, level: 4 }))
+        .toBeInTheDocument();
+    });
+
     // A guide whose data has not arrived is nothing, not an empty bordered box
     // with two dead buttons in it.
     it('draws nothing at all with no steps', async () => {
