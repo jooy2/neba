@@ -132,6 +132,14 @@ The uneven steps are deliberate. `md` is the desktop workhorse, `xs`/`sm` are fo
 
 `xl` at 48px clears the 44px mobile touch target.
 
+### What is drawn and what is pressed are two boxes
+
+A tick, a switch and the × on a Chip are not on the height ladder. They are sized against the text beside them, and text is smaller than a finger — a `md` tick is 18px where WCAG 2.5.8 asks for 24.
+
+So those controls carry `.neba-hit`. An empty `::before` grows the box that is pressed, and only on the axis that is short: a switch is already past 24px wide at every step, so it grows upward and downward only. **Nothing drawn moves by a pixel.**
+
+It is not applied to the controls on the height ladder. An `xs` Button is 22px and equally short, but a Button stands in a row of other Buttons and its label is the target — growing it two pixels past its own edge would take the press off whatever it was next to.
+
 ### The radius is 45% of the height
 
 At 50% it is a pill. Stopping at 45% leaves a flat run along the top and bottom edge, and that flat run is what reads as a plate with its corners cut off.

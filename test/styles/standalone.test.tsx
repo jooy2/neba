@@ -21,7 +21,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, List, ListItem, Typography } from 'neba';
+import { Button, Checkbox, Chip, List, ListItem, Switch, Typography } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 import pkg from '../../package.json';
 
@@ -40,6 +40,35 @@ afterAll(() => {
 /** Resolved value of a custom property, from wherever it inherits. */
 function token(element: Element, name: string): string {
   return getComputedStyle(element).getPropertyValue(name).trim();
+}
+
+/**
+ * How big the box a pointer is actually tested against is, in CSS pixels.
+ *
+ * A pseudo element has no rect to measure, so `.neba-hit`'s `::before` is
+ * reconstructed from its insets — which are resolved against the host's
+ * *padding* box, not its border box. What a press lands on is the union of that
+ * and the element itself, since the element is still there underneath.
+ */
+function targetSize(element: Element): { width: number; height: number } {
+  const own = element.getBoundingClientRect();
+  const styles = getComputedStyle(element);
+  const before = getComputedStyle(element, '::before');
+  const px = (declaration: CSSStyleDeclaration, name: string) =>
+    parseFloat(declaration.getPropertyValue(name)) || 0;
+
+  /** One axis, in the element's own border-box coordinates. */
+  const axis = (start: string, end: string, border: number, inner: number, extent: number) => {
+    const from = Math.min(0, border + px(before, start));
+    const to = Math.max(extent, border + inner - px(before, end));
+
+    return to - from;
+  };
+
+  return {
+    width: axis('left', 'right', px(styles, 'border-left-width'), element.clientWidth, own.width),
+    height: axis('top', 'bottom', px(styles, 'border-top-width'), element.clientHeight, own.height)
+  };
 }
 
 describe('neba/styles.css', () => {
@@ -147,6 +176,55 @@ describe('neba/styles.css', () => {
       const padding = getComputedStyle(screen.getByRole('list').element()).paddingLeft;
 
       expect(parseFloat(padding)).toBeGreaterThan(0);
+    });
+  });
+
+  describe('the target under a small control', () => {
+    /*
+     * WCAG 2.5.8 asks a target to be 24 CSS pixels in both directions. A tick,
+     * a switch and the × on a Chip are all sized against the text beside them,
+     * which is smaller than that at every step of the ladder — so `.neba-hit`
+     * grows the box that is pressed without touching the one that is drawn.
+     *
+     * The number is a conformance floor rather than a design value, which is
+     * why it is asserted here at all: nothing about it moves when the design
+     * language does.
+     */
+    it('gives a bare tick something a finger can hit', async () => {
+      const screen = await render(<Checkbox aria-label="Ship it" />);
+      const element = screen.getByRole('checkbox').element();
+      const target = targetSize(element);
+
+      expect(element.getBoundingClientRect().width).toBeLessThan(24);
+      expect(target.width).toBeGreaterThanOrEqual(24);
+      expect(target.height).toBeGreaterThanOrEqual(24);
+    });
+
+    it('grows only the axis that is short of it', async () => {
+      // A switch is wide and flat: the width is already past the minimum at
+      // every step, and growing it as well would push the target out over
+      // whatever the switch happens to be sitting next to.
+      const screen = await render(<Switch aria-label="Notify me" />);
+      const element = screen.getByRole('switch').element();
+      const drawn = element.getBoundingClientRect();
+      const target = targetSize(element);
+
+      expect(drawn.width).toBeGreaterThanOrEqual(24);
+      expect(drawn.height).toBeLessThan(24);
+      expect(Math.round(target.width)).toBe(Math.round(drawn.width));
+      expect(target.height).toBeGreaterThanOrEqual(24);
+    });
+
+    it('reaches the × that removes a chip', async () => {
+      const screen = await render(
+        <Chip onDelete={() => {}} deleteLabel="Remove">
+          Draft
+        </Chip>
+      );
+      const target = targetSize(screen.getByRole('button', { name: 'Remove' }).element());
+
+      expect(target.width).toBeGreaterThanOrEqual(24);
+      expect(target.height).toBeGreaterThanOrEqual(24);
     });
   });
 

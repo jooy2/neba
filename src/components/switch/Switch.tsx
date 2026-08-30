@@ -5,6 +5,7 @@ import { Switch as BaseUISwitch } from '@base-ui/react/switch';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
   tickRowLeadingClasses
@@ -78,6 +79,9 @@ const thumbTravelClasses: Record<NebaSize, string> = {
  */
 const trackBaseClasses = [
   'relative inline-flex shrink-0 border',
+  // Wide enough already at every step; it is the height that is short of the
+  // 24px a target owes a finger, and the rule grows only the axis that is.
+  hitAreaClasses,
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   'rounded-full',
   // `left` has to be in the property list here, which it is not in the shared

@@ -5,6 +5,7 @@ import { Checkbox as BaseUICheckbox } from '@base-ui/react/checkbox';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
   tickRadiusClasses,
@@ -56,6 +57,10 @@ export interface CheckboxProps extends BaseCheckboxProps {
  */
 const tickBaseClasses = [
   'relative inline-flex shrink-0 items-center justify-center border',
+  // The tick is 18px because it is sized against the text beside it. A finger
+  // is not, and a Checkbox with no label — a table's tick column — has nothing
+  // else to press. This grows the target and draws nothing.
+  hitAreaClasses,
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
   'active:[transition-duration:0ms]',

@@ -6,6 +6,7 @@ import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
 import { Field } from '@base-ui/react/field';
 import {
   controlTextClasses,
+  hitAreaClasses,
   metaTextClasses,
   surfaceClasses,
   tickDotClasses,
@@ -82,6 +83,9 @@ export interface RadioProps extends Omit<
  */
 const dotBaseClasses = [
   'relative inline-flex shrink-0 items-center justify-center rounded-full border',
+  // The same target a Checkbox gets, for the same reason: the ring is sized
+  // against the label's text, and a finger is bigger than text.
+  hitAreaClasses,
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
   'active:[transition-duration:0ms]',

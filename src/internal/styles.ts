@@ -183,6 +183,23 @@ export const tickDotClasses: Record<NebaSize, string> = {
 export const tickRowLeadingClasses = 'leading-[1.4]';
 
 /**
+ * What a finger gets, on a control drawn smaller than one.
+ *
+ * A tick, a switch and the × on a Chip are all sized against the text beside
+ * them, and text is smaller than 24px — which is what WCAG 2.5.8 asks a target
+ * to be in both directions. The class grows the pressable box and draws
+ * nothing; `styles.css` says how, and why it is CSS rather than an arbitrary
+ * variant. It needs `relative` on the element, which every control that uses it
+ * already has.
+ *
+ * Not applied to the controls on the height ladder. A Button at `xs` is 22px
+ * tall and equally short of the minimum, but a Button sits in a row of other
+ * Buttons and its label is the target — growing it two pixels past its own edge
+ * would take the press off whatever it was next to.
+ */
+export const hitAreaClasses = 'neba-hit';
+
+/**
  * The same two tracks again, as raw lengths.
  *
  * These exist for one element: a table cell. `<td>` and `<th>` are among the
@@ -512,8 +529,10 @@ export const readOnlyFilterClasses = '[filter:saturate(0.55)]';
  * way of the word beside it until the pointer is on it.
  */
 export const chipRemoveClasses = [
-  'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full',
+  'relative ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full',
   'size-[1.15em] cursor-pointer opacity-70',
+  // Drawn at the size of the word beside it, pressed at the size of a finger.
+  hitAreaClasses,
   '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
   'hover:opacity-100 focus-visible:opacity-100',
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',

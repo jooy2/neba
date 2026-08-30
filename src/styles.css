@@ -1568,6 +1568,39 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * The target under a small control
+ *
+ * A tick is 18px because it is sized against the text beside it, and a finger
+ * is not. WCAG 2.5.8 asks for 24 CSS pixels in both directions, and a Checkbox,
+ * a Radio, a Switch and the × that removes a Chip are all under it at most
+ * steps of the ladder — a bare Checkbox in a table's tick column is the worst
+ * case, because there is no label beside it to press instead.
+ *
+ * What is drawn does not change by a pixel. An empty `::before` grows the box
+ * the pointer is tested against, and only where it is short of the minimum:
+ * `100%` on `top`/`bottom` resolves against the containing block's height and
+ * on `left`/`right` against its width, so one declaration widens each axis by
+ * exactly what that axis lacks. A Switch, already 44px wide at `lg`, grows only
+ * upward and downward. The `min(0px, …)` is what keeps it from ever shrinking
+ * a control that is already big enough.
+ *
+ * `--n-hit` is the floor, so a component that needs the 44px of a touch-first
+ * design can ask for it without a second rule.
+ *
+ * It lives here rather than in a Tailwind arbitrary variant for the reason the
+ * layer below does: `before:[inset:min(0px,calc((1.5rem_-_100%)/-2))]` is
+ * expressible and nobody should have to read it.
+ * ------------------------------------------------------------------------- */
+
+.neba-hit::before {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc((var(--n-hit, 1.5rem) - 100%) / -2));
+  /* Nothing is painted here. The box exists to be pressed. */
+  border-radius: inherit;
+}
+
+/* ---------------------------------------------------------------------------
  * Interaction light
  *
  * Two stacked layers on an interactive surface, both reading `--n-mx`/`--n-my`
