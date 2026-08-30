@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { observeResize } from '../../internal/observe.js';
 import { cx, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 
@@ -235,10 +236,7 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
 
     measure();
 
-    const observer = new ResizeObserver(measure);
-    observer.observe(root);
-
-    return () => observer.disconnect();
+    return observeResize(root, measure);
   }, [count, horizontal, gutter]);
 
   /**

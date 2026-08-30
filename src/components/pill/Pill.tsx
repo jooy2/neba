@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { observeResize } from '../../internal/observe.js';
 import {
   controlSlots,
   controlTextClasses,
@@ -253,13 +254,9 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
       return;
     }
 
-    const observer = new ResizeObserver(() => {
-      setDetailsHeight(element.scrollHeight);
-    });
-    observer.observe(element);
     setDetailsHeight(element.scrollHeight);
 
-    return () => observer.disconnect();
+    return observeResize(element, () => setDetailsHeight(element.scrollHeight));
   }, [details]);
 
   const interactive = Boolean(onClick);

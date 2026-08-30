@@ -45,6 +45,7 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
+import { observeResize } from './observe.js';
 import { chartMessages, emptyMessages, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
@@ -94,15 +95,7 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
 
     measure();
 
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new ResizeObserver(measure);
-
-    observer.observe(host);
-
-    return () => observer.disconnect();
+    return observeResize(host, measure);
   }, [ref]);
 
   return width;

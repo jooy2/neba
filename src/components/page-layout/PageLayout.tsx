@@ -11,6 +11,7 @@ import {
   type PageLayoutSpan,
   type SidebarSide
 } from '../../internal/page-layout.js';
+import { observeResize } from '../../internal/observe.js';
 import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 
@@ -232,7 +233,11 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(func
     header: null,
     footer: null
   });
-  const observerRef = React.useRef<ResizeObserver | null>(null);
+  /** What is currently being watched, so a re-registered slot can be dropped. */
+  const stopRef = React.useRef<Record<PageLayoutSlot, (() => void) | null>>({
+    header: null,
+    footer: null
+  });
 
   /**
    * Writes what the header and the footer take out of the viewport onto the
@@ -279,29 +284,33 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(func
   }, [headerSpan, footerSpan]);
 
   const observe = React.useCallback(() => {
-    const observer = observerRef.current;
+    for (const slot of SLOTS) {
+      stopRef.current[slot]?.();
 
-    if (observer) {
-      observer.disconnect();
+      const node = slotsRef.current[slot];
 
-      for (const slot of SLOTS) {
-        const node = slotsRef.current[slot];
-        if (node) observer.observe(node);
-      }
+      stopRef.current[slot] = node ? observeResize(node, () => measure()) : null;
     }
 
     measure();
   }, [measure]);
 
   React.useEffect(() => {
-    observerRef.current = new ResizeObserver(() => measure());
+    // The record itself, captured once — it is never reassigned, so this is the
+    // same object the cleanup wants and not a value read too early. What the
+    // cleanup needs is whatever is being watched *then*, which is what its
+    // fields will hold.
+    const stops = stopRef.current;
+
     observe();
 
     return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
+      for (const slot of SLOTS) {
+        stops[slot]?.();
+        stops[slot] = null;
+      }
     };
-  }, [measure, observe]);
+  }, [observe]);
 
   const register = React.useCallback(
     (slot: PageLayoutSlot, node: HTMLElement | null) => {

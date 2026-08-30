@@ -6,6 +6,7 @@ import { Button } from '../button/Button.js';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, fill, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
+import { observeResize } from '../../internal/observe.js';
 import {
   hasContent,
   metaTextClasses,
@@ -271,15 +272,14 @@ export function Tour({
 
     read();
 
-    const observer = new ResizeObserver(schedule);
+    const stopObserving = observeResize(target, schedule);
 
-    observer.observe(target);
     window.addEventListener('scroll', schedule, { passive: true, capture: true });
     window.addEventListener('resize', schedule, { passive: true });
 
     return () => {
       if (frame !== 0) cancelAnimationFrame(frame);
-      observer.disconnect();
+      stopObserving();
       window.removeEventListener('scroll', schedule, true);
       window.removeEventListener('resize', schedule);
     };

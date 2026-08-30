@@ -23,6 +23,7 @@ import type {
   NebaMockupOs,
   NebaMockupResolution
 } from '../../internal/mockup.js';
+import { observeResize } from '../../internal/observe.js';
 import { surfaceSlots } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaTransition } from '../../types.js';
 
@@ -255,12 +256,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
 
     measure();
 
-    if (typeof ResizeObserver === 'undefined') return;
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(box);
-
-    return () => observer.disconnect();
+    return observeResize(box, measure);
   }, [frame.width, frame.height]);
 
   const setRef = React.useCallback(

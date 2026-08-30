@@ -23,6 +23,7 @@ import {
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
+import { observeResize } from '../../internal/observe.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -826,14 +827,9 @@ export function DataTable<Row>({
       return;
     }
 
-    const observer = new ResizeObserver(([entry]) => {
-      setViewportHeight(entry.contentRect.height);
-    });
-
-    observer.observe(node);
     setViewportHeight(node.clientHeight);
 
-    return () => observer.disconnect();
+    return observeResize(node, (entry) => setViewportHeight(entry.contentRect.height));
   }, [virtualized]);
 
   /*

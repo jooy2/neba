@@ -31,6 +31,7 @@
  */
 
 import * as React from 'react';
+import { observeVisibility } from './observe.js';
 import type {
   NebaAnimateRepeat,
   NebaAnimateTrigger,
@@ -353,31 +354,35 @@ export function useAnimationRun({
 
     const element = node.current;
 
-    if (!element || typeof IntersectionObserver === 'undefined') {
+    if (!element) {
+      return;
+    }
+
+    // Assigned before the callback can run, and read from inside it: a `once`
+    // effect stops watching from within its own first delivery.
+    let stop: (() => void) | null = null;
+
+    stop = observeVisibility(element, threshold, (visible) => {
+      if (visible) {
+        start();
+
+        if (once) {
+          stop?.();
+          stop = null;
+        }
+      } else if (!once) {
+        setStarted(false);
+      }
+    });
+
+    if (!stop) {
       // No observer means no way to know: show it rather than hide it forever.
       setStarted(true);
 
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          start();
-
-          if (once) {
-            observer.disconnect();
-          }
-        } else if (!once) {
-          setStarted(false);
-        }
-      },
-      { threshold }
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
+    return () => stop?.();
   }, [trigger, once, threshold, start]);
 
   React.useEffect(() => {

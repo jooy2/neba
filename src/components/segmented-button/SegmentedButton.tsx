@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Radio as BaseUIRadio } from '@base-ui/react/radio';
 import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
+import { observeResize } from '../../internal/observe.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -306,9 +307,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
         return;
       }
 
-      const observer = new ResizeObserver(() => measure(false));
-      observer.observe(root);
-      return () => observer.disconnect();
+      return observeResize(root, () => measure(false));
     }, [measure]);
 
     const context = React.useMemo(

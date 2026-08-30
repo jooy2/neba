@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
+import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaOrientation } from '../../types.js';
 
@@ -134,16 +135,13 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
 
       measure();
 
-      if (typeof ResizeObserver === 'undefined') {
-        return;
-      }
+      const stopTrack = observeResize(track, measure);
+      const stopBox = observeResize(box, measure);
 
-      const observer = new ResizeObserver(measure);
-
-      observer.observe(track);
-      observer.observe(box);
-
-      return () => observer.disconnect();
+      return () => {
+        stopTrack();
+        stopBox();
+      };
     }, [vertical, children]);
 
     // An explicit duration wins; otherwise the measurement decides, and until

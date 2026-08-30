@@ -7,6 +7,7 @@ import type {
   BottomNavigationLabels,
   BottomNavigationValue
 } from '../../internal/bottom-navigation.js';
+import { observeResize } from '../../internal/observe.js';
 import { cx, surfaceClasses, surfaceSlots, transitionClasses } from '../../internal/styles.js';
 import type {
   NebaDensity,
@@ -319,10 +320,7 @@ export const FloatingBottomNavigation = React.forwardRef<
       return;
     }
 
-    const observer = new ResizeObserver(() => measure(false));
-    observer.observe(root);
-
-    return () => observer.disconnect();
+    return observeResize(root, () => measure(false));
   }, [measure]);
 
   const gap = typeof offset === 'number' ? `${offset}px` : offset;

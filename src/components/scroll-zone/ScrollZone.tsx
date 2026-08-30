@@ -6,6 +6,7 @@ import { spacingValue } from '../../internal/grid.js';
 import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
+import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 
@@ -272,13 +273,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(func
 
     measure();
 
-    if (typeof ResizeObserver === 'undefined') return;
+    const stops = [observeResize(el, measure), track ? observeResize(track, measure) : null];
 
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    if (track) observer.observe(track);
-
-    return () => observer.disconnect();
+    return () => {
+      for (const stop of stops) stop?.();
+    };
   }, [measure]);
 
   /** Which way "forward" is on the physical axis: flipped under RTL. */

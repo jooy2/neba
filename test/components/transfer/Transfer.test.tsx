@@ -149,7 +149,10 @@ describe('Transfer', () => {
     // what one search box in a product does has learned what the others do.
     it('ignores case and accents, exactly as a table does', async () => {
       const screen = await render(
-        <Transfer items={[{ value: 'region', label: 'Région' }, ...ITEMS.slice(1)]} searchable />
+        <Transfer
+          items={[{ value: 'region', label: 'Région' }, ...ITEMS.slice(0, -1)]}
+          searchable
+        />
       );
 
       await screen.getByRole('textbox', { name: 'Search' }).first().fill('REGION');
