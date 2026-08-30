@@ -114,7 +114,9 @@ describe('CommandPalette', () => {
       expect(own).toHaveBeenCalledTimes(1);
       expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ value: 'home' }));
       expect(onOpenChange).toHaveBeenCalledWith(false);
-      expect(screen.getByRole('dialog').query()).toBeNull();
+      // The retrying form: the sheet is leaving rather than gone, and Base UI
+      // keeps it mounted for as long as an exit transition might still run.
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('never runs a disabled one', async () => {
