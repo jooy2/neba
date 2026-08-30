@@ -173,7 +173,13 @@ export function Tooltip({
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={(next) => {
-        setUncontrolledOpen(next);
+        // Only when nothing else is deciding. `isOpen` reads the prop when
+        // there is one, so writing here as well was a render of the whole
+        // tooltip for a value nothing would ever look at.
+        if (open === undefined) {
+          setUncontrolledOpen(next);
+        }
+
         onOpenChange?.(next);
       }}
     >

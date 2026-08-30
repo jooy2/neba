@@ -238,6 +238,28 @@ describe('Button', () => {
       expect(onClick).not.toHaveBeenCalled();
     });
 
+    // The two slots feed the pointer spotlight, which only exists on a button
+    // carrying `neba-glow` — the enabled one. Writing them on a disabled or a
+    // loading button invalidates its style on every pointer event to move a
+    // gradient nobody is painting.
+    it('writes the pointer slots only where the light layers are', async () => {
+      const screen = await render(
+        <>
+          <Button>Save</Button>
+          <Button disabled>Discard</Button>
+        </>
+      );
+      const on = screen.getByRole('button', { name: 'Save' }).element() as HTMLElement;
+      const off = screen.getByRole('button', { name: 'Discard' }).element() as HTMLElement;
+
+      await screen.getByRole('button', { name: 'Save' }).hover();
+      await vi.waitFor(() => expect(on.style.getPropertyValue('--n-mx')).not.toBe(''));
+
+      off.dispatchEvent(new PointerEvent('pointermove', { bubbles: true }));
+
+      expect(off.style.getPropertyValue('--n-mx')).toBe('');
+    });
+
     it('marks itself busy and swaps in a spinner while loading', async () => {
       const screen = await render(<Button loading>Save</Button>);
       const element = screen.getByRole('button').element();

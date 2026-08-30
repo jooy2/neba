@@ -262,9 +262,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
         // `offsetX/offsetY` costs nothing — no `getBoundingClientRect`, so no
         // forced layout. Icons carry `pointer-events: none`, so the offsets are
         // always relative to the button itself.
-        const element = event.currentTarget;
-        element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-        element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+        // Only where there are layers to feed. `neba-glow` is on the enabled
+        // button and nothing else, so writing the two slots on a disabled,
+        // loading or read-only one invalidates that element's style on every
+        // pointer event to move a gradient nobody is painting.
+        if (!disabled && !inert) {
+          const element = event.currentTarget;
+
+          element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
+          element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+        }
+
         onPointerMove?.(event as React.PointerEvent<HTMLButtonElement>);
       },
       ...props,

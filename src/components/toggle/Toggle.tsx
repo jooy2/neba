@@ -227,10 +227,15 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(function 
       style={{ ...controlSlots(color, elevation, variant), ...style }}
       onPointerMove={(event) => {
         // Feeds the two light layers in `styles.css`, exactly as Button does —
-        // written straight to the element because this fires at pointer rate.
-        const element = event.currentTarget;
-        element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-        element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+        // written straight to the element because this fires at pointer rate,
+        // and only while `neba-glow` is on it to read them.
+        if (!disabled) {
+          const element = event.currentTarget;
+
+          element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
+          element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+        }
+
         onPointerMove?.(event);
       }}
       {...props}
