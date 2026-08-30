@@ -126,6 +126,26 @@ describe('Avatar', () => {
       await vi.waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('loaded'));
     });
 
+    // Decoding an image on the main thread is what makes a list of forty
+    // avatars arrive as forty small pauses.
+    it('decodes off the main thread, and lets a caller say otherwise', async () => {
+      const screen = await render(<Avatar src={PIXEL} name="Jane Doe" data-testid="avatar" />);
+
+      expect(screen.getByTestId('avatar').element().querySelector('img')).toHaveAttribute(
+        'decoding',
+        'async'
+      );
+
+      const forced = await render(
+        <Avatar src={PIXEL} name="Jane Doe" imageProps={{ decoding: 'sync' }} data-testid="sync" />
+      );
+
+      expect(forced.getByTestId('sync').element().querySelector('img')).toHaveAttribute(
+        'decoding',
+        'sync'
+      );
+    });
+
     it('passes the rest of the img attributes through', async () => {
       const screen = await render(
         <Avatar src={PIXEL} name="Jane Doe" imageProps={{ loading: 'lazy' }} data-testid="avatar" />

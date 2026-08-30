@@ -566,6 +566,12 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
               <img
                 src={item.image}
                 alt={item.imageAlt ?? plainTitle(item.title)}
+                // Every step's picture is in the document at once so the panel
+                // can keep the height of the tallest — but only one of them is
+                // on screen, and the rest have no business being fetched before
+                // the reader reaches them.
+                loading="lazy"
+                decoding="async"
                 className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}
               />
             ) : null}

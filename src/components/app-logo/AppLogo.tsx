@@ -345,6 +345,11 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
             'w-auto object-contain',
             inset ? 'h-[72%] max-w-[72%]' : 'h-full max-w-full'
           )}
+          // Before the spread, so a caller can still say otherwise. Never
+          // `loading="lazy"` here: a logo is the top of the page by
+          // construction, and deferring it defers the thing a reader looks at
+          // first.
+          decoding="async"
           {...imageProps}
         />
       ) : (

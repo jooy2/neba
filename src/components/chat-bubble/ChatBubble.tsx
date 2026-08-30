@@ -450,7 +450,16 @@ function LinkPreview({ preview }: { preview: ChatBubbleLinkPreview }) {
     >
       {image ? (
         // Decorative: everything the picture is saying is written underneath it.
-        <img src={image} alt="" className="block h-28 w-full object-cover" />
+        <img
+          src={image}
+          alt=""
+          // A thread scrolls, and a preview is never the thing a reader is
+          // looking at when the page arrives. This is also the one `<img>` in
+          // the library a caller cannot reach to say so themselves.
+          loading="lazy"
+          decoding="async"
+          className="block h-28 w-full object-cover"
+        />
       ) : null}
       <div className="flex flex-col gap-0.5 p-2">
         {hasContent(site) ? (

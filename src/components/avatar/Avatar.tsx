@@ -307,6 +307,10 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Av
           // the file name out instead.
           alt={label ?? ''}
           className="size-full object-cover"
+          // Before the spread, so a caller can still say otherwise. Decoding an
+          // image on the main thread is what makes a list of forty avatars
+          // arrive as forty small pauses; off it, they arrive.
+          decoding="async"
           onLoadingStatusChange={onLoadingStatusChange}
           {...imageProps}
         />
