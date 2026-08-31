@@ -92,6 +92,7 @@ import {
   Panes,
   PieChart,
   Pill,
+  Popconfirm,
   Popover,
   PopoverClose,
   ProgressBox,
@@ -2168,6 +2169,27 @@ const GROUPS: Group[] = [
               </Button>
             </div>
           </div>
+        )
+      },
+      {
+        name: 'Popconfirm',
+        summary: {
+          ko: '그 행동을 띄운 컨트롤 옆에서 묻는 질문',
+          en: 'A question asked beside the control that raised it'
+        },
+        path: '/components/feedback/popconfirm',
+        preview: (
+          <Popconfirm
+            defaultOpen={false}
+            title="Remove this domain?"
+            description="It stops resolving immediately."
+            confirmLabel="Remove"
+            trigger={
+              <Button size="sm" variant="outline" color="danger">
+                Remove domain
+              </Button>
+            }
+          />
         )
       },
       {

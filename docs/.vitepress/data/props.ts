@@ -10351,6 +10351,135 @@ export const propTables: Record<string, PropRow[]> = {
     renderProp('render={<td colSpan={5} />}')
   ],
 
+  Popconfirm: [
+    {
+      name: 'trigger',
+      type: 'ReactElement',
+      description: {
+        ko: '질문이 매달리고, 질문을 띄우는 컨트롤. ref와 props spread를 받는 element 하나 — Neba 컴포넌트는 모두 됩니다',
+        en: 'The control the question hangs off and that raises it. One element that accepts a ref and spreads props — every Neba component does'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '질문', en: 'The question' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '답의 대가. 제목을 다시 쓰는 자리가 아니라 결과를 적는 자리입니다',
+        en: 'What answering costs — the consequence, not a restatement of the title'
+      }
+    },
+    {
+      name: 'onConfirm',
+      type: '() => void | Promise<unknown>',
+      description: {
+        ko: '확인했을 때. promise를 반환하면 그것이 settle될 때까지 버블이 떠 있고 확인 버튼이 busy로 남습니다 — 답이 닿기 전에 사라진 질문은 전달됐는지 알 수 없는 질문입니다',
+        en: 'Called when the reader confirms. Return a promise and the bubble stays up, its confirming button busy, until it settles — a question that vanished before its answer landed is one the reader cannot know was heard'
+      }
+    },
+    {
+      name: 'onCancel',
+      type: '() => void',
+      description: {
+        ko: '취소했을 때. Escape나 바깥 클릭으로 닫는 것은 여기 해당하지 않습니다 — 물러나는 것과 아니오라고 답하는 것은 다른 행동입니다',
+        en: 'Called when the reader cancels. Dismissing with Escape or a click outside does not: walking away from a question is not the same act as answering no'
+      }
+    },
+    {
+      name: 'confirmLabel',
+      type: 'ReactNode',
+      description: {
+        ko: '확인 버튼의 라벨. 기본값은 로케일의 단어',
+        en: "The confirming button's label. Defaults to the locale's own word"
+      }
+    },
+    {
+      name: 'cancelLabel',
+      type: 'ReactNode',
+      description: { ko: '취소 버튼의 라벨', en: "The cancelling button's label" }
+    },
+    {
+      name: 'color',
+      type: 'NebaColor',
+      default: "'danger'",
+      description: {
+        ko: '색 계열. Popconfirm이 보통 하는 일이 무언가를 없애는 것이라 기본값이 danger입니다',
+        en: 'The colour family. danger by default, because that is what a Popconfirm is usually for'
+      }
+    },
+    {
+      name: 'size',
+      type: 'NebaSize',
+      default: "'sm'",
+      description: {
+        ko: '버블과 두 버튼의 크기 단계',
+        en: 'The step the bubble and its two buttons sit on'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      default: 'true',
+      description: {
+        ko: '색 계열의 severity 마크를 질문 옆에 그립니다. 장식이 아니라 의미를 모양으로도 말하는 것 — 빨간색으로만 말하면 일부 독자에게만 말하는 셈입니다',
+        en: "Draws the colour family's severity mark beside the question. Not decoration: saying it only in red says it only to some readers, so the shape carries the meaning too"
+      }
+    },
+    {
+      name: 'side',
+      type: "'top' | 'bottom' | 'start' | 'end'",
+      default: "'top'",
+      description: {
+        ko: 'trigger의 어느 쪽에 앉을지. 어떤 줄에 대한 질문은 아래 줄을 덮는 것보다 위에 있는 편이 읽기 쉽습니다',
+        en: 'Which side of the trigger it sits on. A question about a row reads better above it than over the rows below'
+      }
+    },
+    {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      description: { ko: '그 변을 따라 어디에 맞출지', en: 'Where it lines up along that side' }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '버블이 열려 있는지. onOpenChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the bubble is open. Use with onOpenChange to control it'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '처음에 열린 채로 시작', en: 'Whether it starts open' }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: { ko: '열리거나 닫힐 때', en: 'Called when the bubble opens or closes' }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '두 기본 라벨을 정하는 BCP 47 태그. 기본값은 브라우저의 로케일',
+        en: "BCP 47 tag deciding the two default labels. Defaults to the browser's"
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      default: '280',
+      description: { ko: '버블의 너비', en: 'How wide the bubble is' }
+    },
+    slotsProp('icon', 'title', 'description', 'actions')
+  ],
+
   ConfirmProvider: [
     {
       name: 'children',

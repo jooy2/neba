@@ -89,6 +89,7 @@ import {
   Panes,
   PieChart,
   Pill,
+  Popconfirm,
   Popover,
   PopoverClose,
   ProgressBox,
@@ -1363,6 +1364,29 @@ function ShowcaseBody() {
                 }
               >
                 This cannot be undone.
+              </Card>
+
+              <Card
+                color="danger"
+                size="sm"
+                title="Popconfirm"
+                footer={
+                  <Popconfirm
+                    title="Remove this deploy hook?"
+                    description="Anything calling it stops working."
+                    confirmLabel="Remove"
+                    trigger={
+                      <Button size="sm" color="danger" variant="outline">
+                        Remove deploy hook
+                      </Button>
+                    }
+                    onConfirm={() => {
+                      toast.add({ title: 'Deploy hook removed', color: 'danger' });
+                    }}
+                  />
+                }
+              >
+                Asked beside the row rather than over the page.
               </Card>
 
               <Card

@@ -3,6 +3,7 @@
  * testing is about the promise: that it settles, that it settles with what the
  * reader pressed, and that nothing but a person ever settles it.
  */
+import { Component, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
@@ -198,20 +199,49 @@ describe('ConfirmProvider', () => {
     await expect.element(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
   });
 
+  /**
+   * Caught by a boundary rather than by a `try` around `render`.
+   *
+   * An uncaught render error does not stay inside the assertion: it escapes to
+   * the page, and the tester frame this suite runs every file in goes with it —
+   * which showed up as the next file in the queue reporting that its browser
+   * connection had closed. A boundary is also how a consumer would actually
+   * meet this message.
+   */
   it('tells a caller that forgot the provider', async () => {
-    const errors: string[] = [];
-    // React logs the throw as well; only the message matters here.
+    const seen: string[] = [];
+
+    class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+      state = { failed: false };
+
+      static getDerivedStateFromError() {
+        return { failed: true };
+      }
+
+      componentDidCatch(error: Error) {
+        seen.push(error.message);
+      }
+
+      render() {
+        return this.state.failed ? <p>caught</p> : this.props.children;
+      }
+    }
+
     const original = console.error;
     console.error = () => {};
 
     try {
-      await render(<Asker onAnswer={() => {}} />);
-    } catch (error) {
-      errors.push((error as Error).message);
+      const screen = await render(
+        <Boundary>
+          <Asker onAnswer={() => {}} />
+        </Boundary>
+      );
+
+      await expect.element(screen.getByText('caught')).toBeInTheDocument();
     } finally {
       console.error = original;
     }
 
-    expect(errors.join()).toContain('<ConfirmProvider>');
+    expect(seen.join()).toContain('<ConfirmProvider>');
   });
 });
