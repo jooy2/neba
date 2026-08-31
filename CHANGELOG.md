@@ -1,5 +1,75 @@
 # Changelog
 
+## 1.11.0 (2026--)
+
+Two things a component had already half-built and would not let you finish.
+
+A `DatePicker` has always drawn all three grids. The month name opened twelve months, the year opened twelve years, and both were only ever a way of reaching a day — so a product that wanted a billing period or a tax year got a control that showed it the twelve months and then insisted on a date inside one of them. `granularity` makes one of those grids the answer.
+
+And a field has always accepted an `onKeyDown`, which is not the same as being able to act on a key. On a `Combobox` the keys worth acting on are the list's and never arrive; on a `NumberField` the handler lands on the column holding the label rather than on the `<input>`. `shortcuts` is `{ 'Mod+Enter': send }` bound to the control itself, written in the vocabulary `Shortcut` already draws — which turned out to be a vocabulary the library only half spoke.
+
+| What you import               | 1.10.0   | 1.11.0   |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.0 kB   | 3.0 kB   |
+| `LineChart`                   | 11.3 kB  | 11.3 kB  |
+| `CodeBlock`                   | 4.9 kB   | 4.9 kB   |
+| a whole page shell            | 28.4 kB  | 28.4 kB  |
+| 12 components — a typical app | 67.3 kB  | 67.9 kB  |
+| 12 components, with Korean    | 69.9 kB  | 70.4 kB  |
+| 25 components — a large one   | 111.7 kB | 112.3 kB |
+| all exports                   | 240.7 kB | 241.3 kB |
+
+The three field rows carry the 0.6 kB of `internal/keys.ts`, and they carry it whether or not a `shortcuts` map was passed: the alias table and the predicate are reached from the control's own key handler, so there is nothing for a bundler to drop. That is the honest price of the prop, and it is stated here rather than left to be found. `all exports` moved only 0.2 because `Shortcut` and `CommandPalette` gave up two private copies of the same logic to pay for it. There is no new dependency, and `neba/styles.css` does not move — there is no new CSS in this release.
+
+### Added
+
+- **`granularity` on `DatePicker`** — `'day'` (the default, unchanged), `'month'` or `'year'`. At the two coarser settings the calendar opens on that grid and a click there is the answer; there is no day view to fall into. Climbing is untouched, so a month picker still reaches any month of any year in two clicks.
+
+  The value stays a `Date`, normalised to the first day of what was chosen — 1 March, 1 January. A second value type would have meant a second set of props to compare it with, and `minDate`/`maxDate` already speak `Date`.
+
+  Four things follow the unit rather than being left to the caller to keep in step. The trigger's default `format` becomes `{ year: 'numeric', month: 'long' }` or `{ year: 'numeric' }` — `dateStyle: 'medium'` on a month picker prints `Mar 1, 2026`, which names a day nobody chose in the one place a reader actually looks. The footer's shortcut says "This month" or "This year". `name` submits `YYYY-MM` or `YYYY`, the shape a native `<input type="month">` already submits, rather than a day the server would have to know to ignore. And the bounds are read at the unit.
+
+- **`thisMonth` and `thisYear` on `PickerLabels`** — the two strings that footer needs. Both have English defaults, like the eighteen already there.
+
+- **`shortcuts` on `TextField`, `NumberField` and `Combobox`** — a map from a key combination to what it does, spelled the way [`Shortcut`](https://neba.cdget.com/components/display/shortcut) draws it, so the key a form _shows_ a reader and the key it _binds_ are one string.
+
+  ```tsx
+  <TextField
+    label="Message"
+    multiline
+    shortcuts={{
+      'Mod+Enter': (event) => {
+        event.preventDefault();
+        send();
+      },
+      Escape: clear
+    }}
+  />
+  ```
+
+  A map rather than an `onShortcut(combination, event)`, because a caller with three shortcuts wants three functions and not a `switch`. Modifiers are matched **exactly**, so `Enter` and `Mod+Enter` are two entries that never both fire and no entry is ambiguous.
+
+  It is bound to the control, which is the half `onKeyDown` could not do. On a `TextField` that only moves `currentTarget` onto the `<input>`; on a `NumberField` it is the difference between the field and the column the label sits in; on a `Combobox` it is the only way in at all, because the arrows, `Escape` and `Enter` belong to the list and are gone before anything on the root sees them. `onKeyDown` still receives every keystroke and runs after the map — neither prop replaces the other, and nothing is prevented on your behalf.
+
+  This is deliberately three components and not thirteen. It is for a control a reader **types into**, where a key is a thing the control already has an opinion about. Everything else already takes the handler it needs.
+
+- **`NebaShortcuts` in `src/types.ts`** — the type behind that prop, generic in the element so `event.currentTarget.value` is typed without a cast.
+
+### Fixed
+
+- **`shortcut` on `CommandPalette` now binds every spelling `Shortcut` draws.** `Cmd+K`, `Command+K`, `Meta+K` and `Esc` all rendered a correct key cap and none of them fired; `Ctrl+K` was dead on Windows and Linux, because the matcher folded any `Ctrl` into the platform's `Mod` and then found no `Mod` in what it had been given. Only `Mod+…` and a bare key ever worked.
+
+  The cause was two spellings of one idea: the drawing side had an alias table and the binding side had a five-line predicate written separately. `src/internal/keys.ts` is now the one place that decides which key a token names, and both sides read it — the aliases, the platform, and the `Alt`-on-a-Mac case where `event.key` reports `˚` and the physical key has to be consulted instead. What a key looks like stays in `Shortcut`.
+
+### Changed
+
+- **`minDate`, `maxDate` and `shouldDisableDate` on `DatePicker` are read at `granularity`.** A minimum of 15 March leaves March pickable at `month`, since part of March is allowed, and `shouldDisableDate` is handed the value the cell would produce — the 1st, rather than a day inside the month it is being asked about.
+
+  Nothing changes at `day`, which is what every existing call is: `isUnitOutside` at day granularity is the `isDayOutside` it was before, character for character. The month grid was already making this comparison inline — it is the rule that keeps a month whose `minDate` falls inside it reachable — so the two coarser grids now call one function instead of restating it, and the footer's shortcut asks the same question the cells do.
+
+  `shouldDisableDate` reaches a coarser grid only when that grid is the one being chosen from. At `day` a callback blocking weekends must not grey out every month whose 1st happens to be a Saturday.
+
 ## 1.10.0 (2026-08-30)
 
 No new components. This one is about the question that follows installing a component library and using it for a week: how do I change how this looks, when the design language and I disagree about one thing on one screen.
