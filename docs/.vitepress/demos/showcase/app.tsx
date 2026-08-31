@@ -131,6 +131,7 @@ import {
   Tooltip,
   Tour,
   Typography,
+  VisuallyHidden,
   WindowPane,
   useToast,
   type DateRange,
@@ -568,7 +569,8 @@ function ShowcaseBody() {
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb · Tour
+            Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb · Tour ·
+            VisuallyHidden
           </Caption>
           <Toolbar
             render={<header />}
@@ -585,6 +587,9 @@ function ShowcaseBody() {
                   label="Neba Cloud"
                 />
                 <Typography level="h6">Neba Cloud</Typography>
+                {/* The environment is a coloured dot to the eye and a word to
+                    everyone else — the case VisuallyHidden exists for. */}
+                <VisuallyHidden render={<p />}>Production environment</VisuallyHidden>
               </>
             }
             end={

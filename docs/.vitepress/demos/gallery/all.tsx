@@ -134,6 +134,7 @@ import {
   TreeItem,
   TreeView,
   Typography,
+  VisuallyHidden,
   WindowPane,
   useToast
 } from 'neba';
@@ -1052,6 +1053,28 @@ const GROUPS: Group[] = [
             </AspectRatio>
           </div>
         )
+      },
+      {
+        name: 'Portal',
+        summary: {
+          ko: 'DOM의 다른 곳에 그려지는 children',
+          en: 'Children rendered somewhere else in the DOM'
+        },
+        path: '/components/layout/portal',
+        preview: (
+          // Drawn rather than portalled: a card in a gallery of cards has
+          // nowhere useful to escape to, and a preview that vanished out of its
+          // own tile would be showing the mechanism instead of the idea.
+          <div className="flex w-full max-w-56 flex-col gap-1.5">
+            <div className="rounded-(--neba-radius-sm) border border-dashed border-[var(--neba-border)] p-2 text-[0.6875rem] text-[var(--neba-muted-fg)]">
+              written here
+            </div>
+            <div className="text-center text-[0.6875rem] text-[var(--neba-muted-fg)]">↓</div>
+            <div className="rounded-(--neba-radius-sm) bg-[var(--neba-primary-soft)] p-2 text-[0.6875rem] text-[var(--neba-fg)]">
+              rendered on &lt;body&gt;
+            </div>
+          </div>
+        )
       }
     ]
   },
@@ -1391,6 +1414,25 @@ const GROUPS: Group[] = [
             <AppLogo name="Neba" />
             <AppLogo name="Neba" shape="app" />
             <AppLogo name="Neba" shape="circle" color="secondary" />
+          </div>
+        )
+      },
+      {
+        name: 'VisuallyHidden',
+        summary: {
+          ko: '화면에는 없고 스크린 리더에는 있는 내용',
+          en: 'Content a screen reader has and the screen does not'
+        },
+        path: '/components/display/visually-hidden',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col items-center gap-2">
+            <Button variant="text">
+              <span aria-hidden="true">7</span>
+              <VisuallyHidden>7 unread messages</VisuallyHidden>
+            </Button>
+            <span className="text-center text-[0.6875rem] text-[var(--neba-muted-fg)]">
+              reads “7 unread messages”
+            </span>
           </div>
         )
       },

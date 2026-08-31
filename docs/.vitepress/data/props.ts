@@ -10351,6 +10351,60 @@ export const propTables: Record<string, PropRow[]> = {
     renderProp('render={<td colSpan={5} />}')
   ],
 
+  VisuallyHidden: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '화면에는 없고 accessibility tree에는 있는 내용',
+        en: 'The content — in the accessibility tree, and not on the screen'
+      }
+    },
+    {
+      name: 'visible',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '숨김을 걷어내어 평범하게 그립니다. skip link가 focus를 받았을 때 필요한 것 — 1px 상자를 완전히 벗어나야 하므로 focus-visible: 만으로는 표현할 수 없습니다',
+        en: 'Takes the hiding off and draws it like anything else — what a skip link needs once it has the focus. focus-visible: cannot express it alone, because the element has to leave the 1px box entirely'
+      }
+    },
+    {
+      name: 'render',
+      type: 'ReactElement | (props, state) => ReactElement',
+      description: {
+        ko: 'span 대신 다른 것을 그립니다 — div, a, caption',
+        en: 'Renders something other than a span — a div, an a, a caption'
+      }
+    }
+  ],
+
+  Portal: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '다른 곳에 그려질 내용', en: 'What gets rendered elsewhere' }
+    },
+    {
+      name: 'container',
+      type: 'Element | DocumentFragment | null | (() => Element | DocumentFragment | null)',
+      default: 'document.body',
+      description: {
+        ko: 'children이 갈 곳. 함수는 마운트 이후에 호출되므로, props를 만들 때는 없던 element도 대상으로 삼을 수 있습니다',
+        en: 'Where the children go. A function is called after mount, so it can target an element that did not exist when the props were built'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'portal 대신 제자리에 그립니다. 마운트 시점에 한 번만 정하세요 — 뒤집으면 안의 모든 것이 remount되고 그 안에 있던 상태가 사라집니다',
+        en: 'Renders in place instead of portalling. Decide it once, at mount: flipping it remounts everything inside and throws away the state that was in it'
+      }
+    }
+  ],
+
   AspectRatio: [
     {
       name: 'ratio',

@@ -165,17 +165,17 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Surfaces** — Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, HowToSteps, ChatBubble, Drawer, Popover, Mockup, WindowPane, HoverCard
 
-**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AvatarGroup, AppLogo, Icon, Shortcut, List, DataList, Table, DataTable, CodeBlock, Timeline, Breadcrumb, Anchor, TreeView
+**Display** — Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AvatarGroup, AppLogo, Icon, Shortcut, List, DataList, Table, DataTable, CodeBlock, Timeline, Breadcrumb, Anchor, TreeView, VisuallyHidden
 
 **Charts** — Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart, GaugeChart
 
 **Feedback** — Alert, Dialog, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox, Meter, Tour
 
-**Layout** — PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Panes, AspectRatio, ScrollZone, ScrollArea
+**Layout** — PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Panes, AspectRatio, Portal, ScrollZone, ScrollArea
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateAppear, AnimateTyping, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — GaugeChart, CommandPalette, Tour, Transfer, Anchor, DataList, AvatarGroup, NavigationMenu, Menubar, Form (with Fieldset), ScrollArea, HoverCard, Meter, Toggle (with ToggleGroup), CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Recently added** — VisuallyHidden, Portal, GaugeChart, CommandPalette, Tour, Transfer, Anchor, DataList, AvatarGroup, NavigationMenu, Menubar, Form (with Fieldset), ScrollArea, HoverCard, Meter, Toggle (with ToggleGroup), CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the eleven `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 
