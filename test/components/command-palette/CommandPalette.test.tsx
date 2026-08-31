@@ -170,6 +170,36 @@ describe('CommandPalette', () => {
       await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
+    /*
+     * Every spelling below draws a correct key cap through `Shortcut`, and none
+     * of them used to fire: the display side knew the aliases and the binding
+     * side did not, so the label on the screen was the only evidence a reader
+     * had that the key existed at all.
+     *
+     * One test each rather than a loop inside one — two palettes rendered in
+     * the same test are two palettes bound to the same key, and the second
+     * `getByRole('dialog')` then has two to choose from.
+     */
+    const MAC = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+
+    for (const shortcut of MAC ? ['Cmd+K', 'Command+K', 'Meta+K'] : ['Ctrl+K', 'Control+K']) {
+      it(`binds ${shortcut}, which Shortcut already drew`, async () => {
+        const screen = await render(<CommandPalette items={ITEMS} shortcut={shortcut} />);
+
+        await userEvent.keyboard(MAC ? '{Meta>}k{/Meta}' : '{Control>}k{/Control}');
+
+        await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+    }
+
+    it('binds a key named the short way', async () => {
+      const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+Esc" />);
+
+      await userEvent.keyboard('{Alt>}{Escape}{/Alt}');
+
+      await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
     it('binds nothing when it is turned off', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut={false} />);
 

@@ -12,6 +12,7 @@ import {
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles.js';
+import { canonicalKey, readOS, tokenize, type ResolvedOS } from '../../internal/keys.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 
 /**
@@ -22,10 +23,7 @@ import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
  * platform rather than the reader's own — a support page describing the Windows
  * build, a table comparing the two.
  */
-export type ShortcutOS = 'auto' | 'mac' | 'windows' | 'linux';
-
-/** The three real platforms, once `auto` has been resolved. */
-type ResolvedOS = Exclude<ShortcutOS, 'auto'>;
+export type ShortcutOS = 'auto' | ResolvedOS;
 
 export interface ShortcutProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color' | 'children'> {
@@ -143,33 +141,15 @@ const keyLabels: Record<string, Record<ResolvedOS, KeyLabel>> = {
   }
 };
 
-/** The tokens that name one key by more than one word. */
-const keyAliases: Record<string, string> = {
-  cmdorctrl: 'mod',
-  commandorcontrol: 'mod',
-  cmd: 'meta',
-  command: 'meta',
-  super: 'meta',
-  win: 'meta',
-  windows: 'meta',
-  control: 'ctrl',
-  option: 'alt',
-  opt: 'alt',
-  return: 'enter',
-  esc: 'escape',
-  del: 'delete',
-  caps: 'capslock'
-};
-
 /**
  * The keys drawn as arrows on every platform, not just on a Mac. An arrow is not
  * a Mac convention — it is what is printed on the key.
+ *
+ * Only the `arrow*` spellings, because `canonicalKey` folds the bare `up` into
+ * `arrowup` on the way in — the same fold that lets a binding compare a token
+ * against a real `KeyboardEvent.key`.
  */
 const arrowLabels: Record<string, KeyLabel> = {
-  up: { symbol: '↑', name: 'Arrow up' },
-  down: { symbol: '↓', name: 'Arrow down' },
-  left: { symbol: '←', name: 'Arrow left' },
-  right: { symbol: '→', name: 'Arrow right' },
   arrowup: { symbol: '↑', name: 'Arrow up' },
   arrowdown: { symbol: '↓', name: 'Arrow down' },
   arrowleft: { symbol: '←', name: 'Arrow left' },
@@ -178,8 +158,7 @@ const arrowLabels: Record<string, KeyLabel> = {
 
 /** Resolves one token into what to draw and what to announce. */
 function labelFor(token: string, os: ResolvedOS): KeyLabel {
-  const normalized = token.toLowerCase().replace(/[\s_-]/g, '');
-  const canonical = keyAliases[normalized] ?? normalized;
+  const canonical = canonicalKey(token);
 
   const arrow = arrowLabels[canonical];
   if (arrow) {
@@ -195,63 +174,6 @@ function labelFor(token: string, os: ResolvedOS): KeyLabel {
   // single letter is capitalised: `keys="mod+k"` should draw a K, because that
   // is what is on the key.
   return word(token.length === 1 ? token.toUpperCase() : token);
-}
-
-/**
- * Splits the string form. Empty segments are what `'Ctrl++'` leaves behind, and
- * dropping them is why the array form exists for that case.
- */
-function tokenize(keys: string | string[]): string[] {
-  if (Array.isArray(keys)) {
-    return keys.map((key) => key.trim()).filter(Boolean);
-  }
-  return keys
-    .split('+')
-    .map((key) => key.trim())
-    .filter(Boolean);
-}
-
-/**
- * What the browser says it is running on.
- *
- * `userAgentData.platform` is the modern spelling and `navigator.platform` the
- * deprecated one that every browser still answers; the user agent string is the
- * last resort. All three are matched at once because the question here is coarse
- * — which of three key caps to print — and getting it slightly wrong is a label,
- * not a bug.
- */
-function detectOS(): ResolvedOS {
-  if (typeof navigator === 'undefined') {
-    return 'windows';
-  }
-
-  const data = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData;
-  const haystack = `${data?.platform ?? ''} ${navigator.platform ?? ''} ${navigator.userAgent ?? ''}`;
-
-  if (/mac|iphone|ipad|ipod/i.test(haystack)) {
-    return 'mac';
-  }
-  if (/win/i.test(haystack)) {
-    return 'windows';
-  }
-  return 'linux';
-}
-
-/**
- * The answer, once.
- *
- * `getSnapshot` is called on every render of every Shortcut on the page, and
- * again on every commit. `detectOS` builds a string out of three sources and
- * runs two regular expressions over it, and its answer cannot change under a
- * running page — so it is worked out on the first ask and kept. Returning the
- * same string back is also what `useSyncExternalStore` requires of a snapshot.
- */
-let detected: ResolvedOS | null = null;
-
-function readOS(): ResolvedOS {
-  detected ??= detectOS();
-
-  return detected;
 }
 
 /** The platform never changes under a running page, so there is nothing to subscribe to. */
