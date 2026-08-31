@@ -10580,6 +10580,80 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Image: [
+    {
+      name: 'src',
+      type: 'string',
+      description: { ko: '그림의 주소', en: 'Where the picture is' }
+    },
+    {
+      name: 'alt',
+      type: 'string',
+      description: {
+        ko: '필수입니다 — 타입 수준에서. alt이 없는 것과 빈 것은 뜻이 다르고("아무도 쓰지 않았다" · "이 그림은 말하는 바가 없다") 옳은 쪽은 두 번째뿐이라, 어느 쪽인지 직접 쓰게 합니다',
+        en: 'Required, by the type. A missing alt and an empty one mean different things — "nobody wrote this" and "this says nothing a reader needs" — and only the second is ever correct, so you are made to say which'
+      }
+    },
+    {
+      name: 'ratio',
+      type: "number | string | 'auto'",
+      default: "'auto'",
+      description: {
+        ko: '파일이 도착하는 동안 지킬 비율. 이것을 쓰는 주된 이유입니다 — 자리를 잡아 두지 않은 그림은 도착할 때 페이지를 밀어냅니다',
+        en: 'The proportion to hold while the file is arriving — the main reason to use this: an unreserved picture pushes the page down when it lands'
+      }
+    },
+    {
+      name: 'fit',
+      type: "'cover' | 'contain' | 'fill' | 'none'",
+      default: "'cover'",
+      description: { ko: '그림이 상자를 채우는 방식', en: 'How the picture fills that box' }
+    },
+    {
+      name: 'rounded',
+      type: 'NebaSize | boolean',
+      default: 'false',
+      description: {
+        ko: 'radius 사다리의 한 단계로 모서리를 둥글게. true면 md',
+        en: 'Rounds the corners at this step of the radius ladder. true is md'
+      }
+    },
+    {
+      name: 'placeholder',
+      type: 'ReactNode | false',
+      description: {
+        ko: '파일이 도착하는 동안 자리를 지키는 것. 기본값은 같은 모양의 Skeleton',
+        en: 'What stands in while the file is arriving. A Skeleton of the right shape by default'
+      }
+    },
+    {
+      name: 'fallback',
+      type: 'ReactNode',
+      description: {
+        ko: '도착하지 못했을 때 그려지는 것. 기본값은 alt을 담은 상자 — 브라우저의 찢어진 종이 글리프는 파일 하나가 아니라 사이트가 고장 났다고 말합니다',
+        en: "Drawn instead when it does not arrive. A box carrying the alt by default: the browser's own torn-page glyph says the site is broken rather than one file"
+      }
+    },
+    {
+      name: 'preview',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '클릭하면 Dialog에서 원본을 엽니다. 그림이 alt을 이름으로 갖는 button이 되므로 키보드로도 열립니다',
+        en: 'Opens the full picture in a Dialog on click. The picture becomes a button named by its alt, so a keyboard can open it too'
+      }
+    },
+    {
+      name: 'onLoadingStatusChange',
+      type: "(status: 'loading' | 'loaded' | 'failed') => void",
+      description: {
+        ko: '상태가 바뀔 때. src가 바뀌면 loading부터 다시 시작합니다',
+        en: 'Called as the status changes. A new src starts over at loading'
+      }
+    },
+    slotsProp('image', 'placeholder', 'fallback')
+  ],
+
   VisuallyHidden: [
     {
       name: 'children',

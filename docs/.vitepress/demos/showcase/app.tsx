@@ -65,6 +65,7 @@ import {
   HowToSteps,
   Icon,
   IconButton,
+  Image,
   List,
   ListItem,
   Menu,
@@ -1771,7 +1772,7 @@ function ShowcaseBody() {
             is the shape of the card beside it. Nothing on the page moves when
             the real thing lands. */}
         <section className="flex flex-col gap-3">
-          <Caption>AspectRatio · Skeleton</Caption>
+          <Caption>AspectRatio · Image · Skeleton</Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
             <Card size="sm" title="Preview" subtitle="16 / 9, whatever the column width">
               <AspectRatio ratio={16 / 9} rounded size="sm">
@@ -1779,6 +1780,15 @@ function ShowcaseBody() {
                   neba.cdget.com
                 </div>
               </AspectRatio>
+            </Card>
+
+            <Card size="sm" title="Screenshot" subtitle="Reserved, and honest when it fails">
+              <Image
+                src="/deploy-preview-that-is-not-there.png"
+                alt="The deploy preview could not be loaded"
+                ratio={16 / 9}
+                rounded="sm"
+              />
             </Card>
 
             <Card size="sm" title="Still loading" subtitle="The same card, one moment earlier">

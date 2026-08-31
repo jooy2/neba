@@ -68,6 +68,7 @@ import {
   HoverCard,
   HowToSteps,
   Icon,
+  Image,
   IconButton,
   LineChart,
   List,
@@ -140,6 +141,17 @@ import {
   useToast
 } from 'neba';
 import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
+
+/** A drawn ridge, so the gallery needs no network. */
+const GALLERY_RIDGE =
+  'data:image/svg+xml,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+      <rect width="320" height="180" fill="#f5b971"/>
+      <circle cx="232" cy="58" r="22" fill="#fff3d6"/>
+      <path d="M0 140 L74 92 L128 128 L196 74 L262 118 L320 88 L320 180 L0 180 Z" fill="#7a3f52"/>
+    </svg>`
+  );
 
 /**
  * The component index: one card per component, each holding a live instance of
@@ -1415,6 +1427,20 @@ const GROUPS: Group[] = [
             <AppLogo name="Neba" />
             <AppLogo name="Neba" shape="app" />
             <AppLogo name="Neba" shape="circle" color="secondary" />
+          </div>
+        )
+      },
+      {
+        name: 'Image',
+        summary: {
+          ko: '자리를 지키고, 실패도 말하는 그림',
+          en: 'A picture that holds its space and says when it failed'
+        },
+        path: '/components/display/image',
+        preview: (
+          <div className="grid w-full max-w-56 grid-cols-2 gap-2">
+            <Image src={GALLERY_RIDGE} alt="A ridge of hills" ratio="4 / 3" rounded />
+            <Image src="/does-not-exist.png" alt="Did not load" ratio="4 / 3" rounded />
           </div>
         )
       },
