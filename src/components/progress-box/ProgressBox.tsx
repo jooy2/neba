@@ -14,6 +14,7 @@ import {
 } from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ProgressBoxProps extends ProgressSharedProps {
   /** Size of one plate. */
@@ -45,91 +46,92 @@ export interface ProgressBoxProps extends ProgressSharedProps {
  * one partially, so four plates read as a four-segment bar. Without a value
  * they cycle, each held back by its own index.
  */
-export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(function ProgressBox(
-  {
-    size = 'md',
-    color = 'primary',
-    count = 4,
-    value = null,
-    min = 0,
-    max = 100,
-    label,
-    showValue = false,
-    format,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const fraction = progressFraction(value, min, max);
-  const indeterminate = fraction === null;
-  const hasFormat = format !== undefined;
-  // A row of no plates is not a loading indicator, and a fractional count is a
-  // caller who divided something. Both land on one plate rather than on none.
-  const plates = Math.max(1, Math.floor(count));
+export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
+  function ProgressBox(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      count = 4,
+      value = null,
+      min = 0,
+      max = 100,
+      label,
+      showValue = false,
+      format,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
 
-  return (
-    <Progress.Root
-      ref={ref}
-      value={value ?? null}
-      min={min}
-      max={max}
-      format={format}
-      getAriaValueText={progressAriaText(fraction, hasFormat)}
-      className={cx('inline-flex flex-col', stackGapClasses[size], className ?? '')}
-      style={{ ...progressSlots(color), ...style }}
-      {...props}
-    >
-      {label || showValue ? (
-        <div
-          className={[
-            'flex items-baseline gap-2',
-            label ? 'justify-between' : 'justify-end',
-            metaTextClasses[size]
-          ].join(' ')}
-        >
-          {label ? (
-            <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>
-          ) : null}
-          {showValue ? (
-            <Progress.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">
-              {(formatted) => progressText(fraction, formatted, hasFormat)}
-            </Progress.Value>
-          ) : null}
-        </div>
-      ) : null}
+    const fraction = progressFraction(value, min, max);
+    const indeterminate = fraction === null;
+    const hasFormat = format !== undefined;
+    // A row of no plates is not a loading indicator, and a fractional count is a
+    // caller who divided something. Both land on one plate rather than on none.
+    const plates = Math.max(1, Math.floor(count));
 
-      <Progress.Track className={`flex ${plateGapClasses[size]}`}>
-        {Array.from({ length: plates }, (_, index) => (
-          <span
-            key={index}
-            className={cx(
-              'relative overflow-hidden bg-(--n-soft)',
-              '[box-shadow:var(--neba-plate-glass)]',
-              plateSizeClasses[size],
-              plateRadiusClasses[size],
-              // The wave animates colour, not position, and reads `--n-i` for
-              // its own delay — which is why the whole row is one class and one
-              // custom property rather than N generated keyframe names.
-              indeterminate ? 'neba-plate-wave' : ''
-            )}
-            style={indeterminate ? ({ '--n-i': index } as React.CSSProperties) : undefined}
+    return (
+      <Progress.Root
+        ref={ref}
+        value={value ?? null}
+        min={min}
+        max={max}
+        format={format}
+        getAriaValueText={progressAriaText(fraction, hasFormat)}
+        className={cx('inline-flex flex-col', stackGapClasses[size], className ?? '')}
+        style={{ ...progressSlots(color), ...style }}
+        {...props}
+      >
+        {label || showValue ? (
+          <div
+            className={[
+              'flex items-baseline gap-2',
+              label ? 'justify-between' : 'justify-end',
+              metaTextClasses[size]
+            ].join(' ')}
           >
-            {indeterminate ? null : (
-              // The plate is a track of its own, so the leading one can be part
-              // full. Without that, four plates could only ever show 0, 25, 50,
-              // 75 or 100 and a value of 30% would round away to a quarter.
-              <span
-                className="absolute inset-y-0 start-0 bg-(--n-fill) [transition:width_var(--neba-duration-fill)_var(--neba-ease)]"
-                style={{
-                  width: `${Math.min(100, Math.max(0, (fraction * plates - index) * 100))}%`
-                }}
-              />
-            )}
-          </span>
-        ))}
-      </Progress.Track>
-    </Progress.Root>
-  );
-});
+            {label ? (
+              <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>
+            ) : null}
+            {showValue ? (
+              <Progress.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">
+                {(formatted) => progressText(fraction, formatted, hasFormat)}
+              </Progress.Value>
+            ) : null}
+          </div>
+        ) : null}
+
+        <Progress.Track className={`flex ${plateGapClasses[size]}`}>
+          {Array.from({ length: plates }, (_, index) => (
+            <span
+              key={index}
+              className={cx(
+                'relative overflow-hidden bg-(--n-soft)',
+                '[box-shadow:var(--neba-plate-glass)]',
+                plateSizeClasses[size],
+                plateRadiusClasses[size],
+                // The wave animates colour, not position, and reads `--n-i` for
+                // its own delay — which is why the whole row is one class and one
+                // custom property rather than N generated keyframe names.
+                indeterminate ? 'neba-plate-wave' : ''
+              )}
+              style={indeterminate ? ({ '--n-i': index } as React.CSSProperties) : undefined}
+            >
+              {indeterminate ? null : (
+                // The plate is a track of its own, so the leading one can be part
+                // full. Without that, four plates could only ever show 0, 25, 50,
+                // 75 or 100 and a value of 30% would round away to a quarter.
+                <span
+                  className="absolute inset-y-0 start-0 bg-(--n-fill) [transition:width_var(--neba-duration-fill)_var(--neba-ease)]"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, (fraction * plates - index) * 100))}%`
+                  }}
+                />
+              )}
+            </span>
+          ))}
+        </Progress.Track>
+      </Progress.Root>
+    );
+  }
+);

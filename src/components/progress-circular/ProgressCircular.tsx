@@ -13,6 +13,7 @@ import {
 } from '../../internal/progress.js';
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ProgressCircularProps extends ProgressSharedProps {
   /** Diameter of the ring. Sits just under the control ladder at every step. */
@@ -31,8 +32,8 @@ export interface ProgressCircularProps extends ProgressSharedProps {
  * across and there is nowhere for "40%" to go. Beside it, every size reads.
  */
 export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircularProps>(
-  function ProgressCircular(
-    {
+  function ProgressCircular(rawProps, ref) {
+    const {
       size = 'md',
       color = 'primary',
       value = null,
@@ -44,9 +45,8 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       className,
       style,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size']);
+
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
     const hasFormat = format !== undefined;

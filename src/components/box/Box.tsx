@@ -17,6 +17,7 @@ import type {
   NebaStyleProps,
   NebaTransition
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface BoxProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -136,8 +137,8 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
  * container's surface white. `color` reaches the hairline and the accent, and
  * stops there.
  */
-export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
-  {
+export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -150,9 +151,8 @@ export const Box = React.forwardRef<HTMLDivElement, BoxProps>(function Box(
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const animation = transitionProps(transition);
 
   const classNames = cx(

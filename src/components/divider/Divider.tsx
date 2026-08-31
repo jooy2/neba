@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Separator } from '@base-ui/react/separator';
 import { cx, metaTextClasses, toLength } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaOrientation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Where the label sits along a labelled divider. Ignored without a label. */
 export type DividerTextAlign = NebaAlign;
@@ -113,92 +114,93 @@ const labelGapClasses: Record<NebaSize, string> = {
  * There is no `variant` and no `elevation`: a divider is not a surface. It has
  * no acrylic, catches no light and casts no shadow.
  */
-export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(function Divider(
-  {
-    orientation = 'horizontal',
-    color = 'primary',
-    size = 'md',
-    length,
-    thickness,
-    textAlign = 'center',
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const vertical = orientation === 'vertical';
-  const hasLabel =
-    children !== undefined && children !== null && children !== false && children !== '';
+export const Divider = React.forwardRef<HTMLDivElement, DividerProps>(
+  function Divider(rawProps, ref) {
+    const {
+      orientation = 'horizontal',
+      color = 'primary',
+      size = 'md',
+      length,
+      thickness,
+      textAlign = 'center',
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
 
-  const slots = {
-    '--n-line': `var(--neba-${color}-line)`,
-    '--n-rule': toLength(thickness) ?? '1px'
-  } as React.CSSProperties;
+    const vertical = orientation === 'vertical';
+    const hasLabel =
+      children !== undefined && children !== null && children !== false && children !== '';
 
-  // The long axis, and only when it was asked for: left alone, a horizontal
-  // divider is `w-full` and a vertical one stretches to its flex row, which are
-  // the two things a rule between two things should already do.
-  const span = toLength(length);
-  const sizing = span === undefined ? null : vertical ? { height: span } : { width: span };
+    const slots = {
+      '--n-line': `var(--neba-${color}-line)`,
+      '--n-rule': toLength(thickness) ?? '1px'
+    } as React.CSSProperties;
 
-  const rootStyle = { ...slots, ...sizing, ...style };
+    // The long axis, and only when it was asked for: left alone, a horizontal
+    // divider is `w-full` and a vertical one stretches to its flex row, which are
+    // the two things a rule between two things should already do.
+    const span = toLength(length);
+    const sizing = span === undefined ? null : vertical ? { height: span } : { width: span };
 
-  if (!hasLabel) {
+    const rootStyle = { ...slots, ...sizing, ...style };
+
+    if (!hasLabel) {
+      return (
+        <Separator
+          ref={ref}
+          orientation={orientation}
+          className={cx(
+            // The line is a single border edge; the box itself has no thickness,
+            // so a divider never adds a pixel of layout beyond the rule.
+            vertical
+              ? `w-0 border-l [border-left-width:var(--n-rule)] ${span === undefined ? 'self-stretch' : ''}`
+              : 'h-0 w-full border-t [border-top-width:var(--n-rule)]',
+            lineClasses,
+            className ?? ''
+          )}
+          style={rootStyle}
+          {...props}
+        />
+      );
+    }
+
+    const [before, after] = stubClasses[orientation][textAlign];
+    const edgeClasses = vertical
+      ? 'w-0 border-l [border-left-width:var(--n-rule)]'
+      : 'h-0 border-t [border-top-width:var(--n-rule)]';
+
     return (
       <Separator
         ref={ref}
         orientation={orientation}
+        aria-label={typeof children === 'string' ? children : undefined}
         className={cx(
-          // The line is a single border edge; the box itself has no thickness,
-          // so a divider never adds a pixel of layout beyond the rule.
-          vertical
-            ? `w-0 border-l [border-left-width:var(--n-rule)] ${span === undefined ? 'self-stretch' : ''}`
-            : 'h-0 w-full border-t [border-top-width:var(--n-rule)]',
-          lineClasses,
+          'flex items-center',
+          vertical ? `w-auto flex-col ${span === undefined ? 'self-stretch' : ''}` : 'w-full',
+          labelGapClasses[size],
           className ?? ''
         )}
         style={rootStyle}
         {...props}
-      />
+      >
+        <span aria-hidden="true" className={`${edgeClasses} ${before} ${lineClasses}`} />
+        <span
+          className={[
+            'shrink-0 whitespace-nowrap text-(--neba-muted-fg)',
+            metaTextClasses[size],
+            // A vertical rule's label has to turn with it, or the line grows to
+            // the width of the word and stops being a hairline.
+            vertical ? '[writing-mode:vertical-rl]' : ''
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {children}
+        </span>
+        <span aria-hidden="true" className={`${edgeClasses} ${after} ${lineClasses}`} />
+      </Separator>
     );
   }
-
-  const [before, after] = stubClasses[orientation][textAlign];
-  const edgeClasses = vertical
-    ? 'w-0 border-l [border-left-width:var(--n-rule)]'
-    : 'h-0 border-t [border-top-width:var(--n-rule)]';
-
-  return (
-    <Separator
-      ref={ref}
-      orientation={orientation}
-      aria-label={typeof children === 'string' ? children : undefined}
-      className={cx(
-        'flex items-center',
-        vertical ? `w-auto flex-col ${span === undefined ? 'self-stretch' : ''}` : 'w-full',
-        labelGapClasses[size],
-        className ?? ''
-      )}
-      style={rootStyle}
-      {...props}
-    >
-      <span aria-hidden="true" className={`${edgeClasses} ${before} ${lineClasses}`} />
-      <span
-        className={[
-          'shrink-0 whitespace-nowrap text-(--neba-muted-fg)',
-          metaTextClasses[size],
-          // A vertical rule's label has to turn with it, or the line grows to
-          // the width of the word and stops being a hairline.
-          vertical ? '[writing-mode:vertical-rl]' : ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {children}
-      </span>
-      <span aria-hidden="true" className={`${edgeClasses} ${after} ${lineClasses}`} />
-    </Separator>
-  );
-});
+);

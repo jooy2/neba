@@ -14,6 +14,7 @@ import {
 } from '../../internal/styles.js';
 import { canonicalKey, readOS, tokenize, type ResolvedOS } from '../../internal/keys.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Which keyboard the shortcut is being read on.
@@ -262,74 +263,75 @@ const keyMinWidthClasses: Record<NebaSize, string> = {
  * `kbd` wrapper is a second box for a host stylesheet to reach into for no gain
  * — the semantics are carried by the keys themselves either way.
  */
-export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(function Shortcut(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'secondary',
-    density = 'compact',
-    elevation = 0,
-    keys,
-    os = 'auto',
-    separator,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const detected = useDetectedOS();
-  const resolved: ResolvedOS = os === 'auto' ? detected : os;
+export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(
+  function Shortcut(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'secondary',
+      density = 'compact',
+      elevation = 0,
+      keys,
+      os = 'auto',
+      separator,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const step = keyScale[size];
-  const tokens = tokenize(keys);
-  const labels = tokens.map((token) => labelFor(token, resolved));
+    const detected = useDetectedOS();
+    const resolved: ResolvedOS = os === 'auto' ? detected : os;
 
-  // macOS writes a shortcut as a run of symbols with nothing between them; the
-  // other two join theirs with a `+`. A caller who passes one gets theirs.
-  const joiner = separator === undefined ? (resolved === 'mac' ? null : '+') : separator;
+    const step = keyScale[size];
+    const tokens = tokenize(keys);
+    const labels = tokens.map((token) => labelFor(token, resolved));
 
-  const keyClasses = [
-    'inline-flex shrink-0 items-center justify-center',
-    'font-mono font-medium leading-none whitespace-nowrap tabular-nums',
-    controlHeightClasses[step],
-    controlTextClasses[step],
-    keyMinWidthClasses[step],
-    paddingXClasses[density][step],
-    radiusClasses[step],
-    variantClasses[variant],
-    transitionClasses
-  ].join(' ');
+    // macOS writes a shortcut as a run of symbols with nothing between them; the
+    // other two join theirs with a `+`. A caller who passes one gets theirs.
+    const joiner = separator === undefined ? (resolved === 'mac' ? null : '+') : separator;
 
-  return (
-    <span
-      ref={ref}
-      className={cx('inline-flex max-w-full items-center gap-1 align-middle', className ?? '')}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
-      {...props}
-    >
-      {labels.map((label, index) => (
-        // The index is a legitimate key here: the list is the `keys` prop, in
-        // order, and two identical keys in one shortcut are the same key.
-        <React.Fragment key={index}>
-          {index > 0 && joiner !== null ? (
-            <span aria-hidden="true" className="text-(--neba-muted-fg)">
-              {joiner}
-            </span>
-          ) : null}
+    const keyClasses = [
+      'inline-flex shrink-0 items-center justify-center',
+      'font-mono font-medium leading-none whitespace-nowrap tabular-nums',
+      controlHeightClasses[step],
+      controlTextClasses[step],
+      keyMinWidthClasses[step],
+      paddingXClasses[density][step],
+      radiusClasses[step],
+      variantClasses[variant],
+      transitionClasses
+    ].join(' ');
 
-          <kbd className={keyClasses}>
-            {label.symbol === label.name ? (
-              label.symbol
-            ) : (
-              <>
-                <span aria-hidden="true">{label.symbol}</span>
-                <span className={srOnlyClasses}>{label.name}</span>
-              </>
-            )}
-          </kbd>
-        </React.Fragment>
-      ))}
-    </span>
-  );
-});
+    return (
+      <span
+        ref={ref}
+        className={cx('inline-flex max-w-full items-center gap-1 align-middle', className ?? '')}
+        style={{ ...controlSlots(color, elevation, variant), ...style }}
+        {...props}
+      >
+        {labels.map((label, index) => (
+          // The index is a legitimate key here: the list is the `keys` prop, in
+          // order, and two identical keys in one shortcut are the same key.
+          <React.Fragment key={index}>
+            {index > 0 && joiner !== null ? (
+              <span aria-hidden="true" className="text-(--neba-muted-fg)">
+                {joiner}
+              </span>
+            ) : null}
+
+            <kbd className={keyClasses}>
+              {label.symbol === label.name ? (
+                label.symbol
+              ) : (
+                <>
+                  <span aria-hidden="true">{label.symbol}</span>
+                  <span className={srOnlyClasses}>{label.name}</span>
+                </>
+              )}
+            </kbd>
+          </React.Fragment>
+        ))}
+      </span>
+    );
+  }
+);

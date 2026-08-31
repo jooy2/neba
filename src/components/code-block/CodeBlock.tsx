@@ -20,6 +20,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export { registerLanguage } from '../../internal/highlight.js';
 
@@ -344,194 +345,194 @@ async function writeToClipboard(text: string): Promise<boolean> {
  * a place in the scroll, and a component that switched between two renderings
  * would have two sets of wrapping behaviour to keep in step.
  */
-export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(function CodeBlock(
-  {
-    code,
-    language,
-    theme = 'dark',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    highlight = true,
-    toolbar = true,
-    title,
-    showLanguage = true,
-    copyable = true,
-    rawToggle = false,
-    highlightLines,
-    lineNumbers = false,
-    startLine = 1,
-    prompt,
-    wrap = false,
-    maxHeight,
-    fontFamily,
-    fontSize,
-    lineHeight,
-    letterSpacing,
-    locale,
-    copyLabel,
-    copiedLabel,
-    rawLabel,
-    onCopy,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(codeMessages, locale);
+export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
+  function CodeBlock(rawProps, ref) {
+    const {
+      code,
+      language,
+      theme = 'dark',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      highlight = true,
+      toolbar = true,
+      title,
+      showLanguage = true,
+      copyable = true,
+      rawToggle = false,
+      highlightLines,
+      lineNumbers = false,
+      startLine = 1,
+      prompt,
+      wrap = false,
+      maxHeight,
+      fontFamily,
+      fontSize,
+      lineHeight,
+      letterSpacing,
+      locale,
+      copyLabel,
+      copiedLabel,
+      rawLabel,
+      onCopy,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-  /**
-   * What the clipboard gets and what the highlighter is handed: line endings
-   * normalised, trailing blank lines gone, and nothing else touched.
-   * Indentation is meaningful in half of the languages here, so nothing is
-   * trimmed off the front.
-   *
-   * The `\r` is not pedantry. A `code` prop very often arrives from a file, and
-   * a file written on Windows ends every line with one — which lines are split
-   * on `\n`, so each line keeps a carriage return the reader cannot see, the
-   * highlighter treats as part of the last token, and the clipboard hands
-   * straight to a shell.
-   */
-  const source = React.useMemo(() => code.replace(/\r\n?/g, '\n').replace(/\s+$/, ''), [code]);
+    const messages = useMessages(codeMessages, locale);
 
-  const name = canonicalLanguage(language);
+    /**
+     * What the clipboard gets and what the highlighter is handed: line endings
+     * normalised, trailing blank lines gone, and nothing else touched.
+     * Indentation is meaningful in half of the languages here, so nothing is
+     * trimmed off the front.
+     *
+     * The `\r` is not pedantry. A `code` prop very often arrives from a file, and
+     * a file written on Windows ends every line with one — which lines are split
+     * on `\n`, so each line keeps a carriage return the reader cannot see, the
+     * highlighter treats as part of the last token, and the clipboard hands
+     * straight to a shell.
+     */
+    const source = React.useMemo(() => code.replace(/\r\n?/g, '\n').replace(/\s+$/, ''), [code]);
 
-  const [raw, setRaw] = React.useState(false);
-  const [copied, setCopied] = React.useState<boolean | null>(null);
-  const [coloured, setColoured] = React.useState<CodeLine[] | null>(null);
+    const name = canonicalLanguage(language);
 
-  const wanted = highlight && !raw && name !== null;
+    const [raw, setRaw] = React.useState(false);
+    const [copied, setCopied] = React.useState<boolean | null>(null);
+    const [coloured, setColoured] = React.useState<CodeLine[] | null>(null);
 
-  /**
-   * The colouring, once the grammar has arrived.
-   *
-   * `cancelled` rather than an AbortController because there is nothing to
-   * abort: the import is already in flight and shared with every other block in
-   * the same language, and all this has to guarantee is that a block unmounted
-   * or re-pointed mid-fetch does not set state afterwards.
-   */
-  React.useEffect(() => {
-    if (!wanted || !name) {
-      setColoured(null);
+    const wanted = highlight && !raw && name !== null;
 
-      return;
-    }
+    /**
+     * The colouring, once the grammar has arrived.
+     *
+     * `cancelled` rather than an AbortController because there is nothing to
+     * abort: the import is already in flight and shared with every other block in
+     * the same language, and all this has to guarantee is that a block unmounted
+     * or re-pointed mid-fetch does not set state afterwards.
+     */
+    React.useEffect(() => {
+      if (!wanted || !name) {
+        setColoured(null);
 
-    let cancelled = false;
-
-    highlightCode(source, name).then(
-      (lines) => {
-        if (!cancelled) setColoured(lines);
-      },
-      () => {
-        if (!cancelled) setColoured(null);
+        return;
       }
+
+      let cancelled = false;
+
+      highlightCode(source, name).then(
+        (lines) => {
+          if (!cancelled) setColoured(lines);
+        },
+        () => {
+          if (!cancelled) setColoured(null);
+        }
+      );
+
+      return () => {
+        cancelled = true;
+      };
+    }, [source, name, wanted]);
+
+    const lines = React.useMemo(
+      () => (wanted && coloured ? coloured : plainLines(source)),
+      [wanted, coloured, source]
     );
 
-    return () => {
-      cancelled = true;
+    /** Wide enough for the last number, so the gutter does not step as it scrolls. */
+    const gutter = `${String(startLine + Math.max(lines.length - 1, 0)).length}ch`;
+
+    const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+    React.useEffect(() => () => clearTimeout(timer.current), []);
+
+    const copy = async () => {
+      const done = await writeToClipboard(source);
+
+      clearTimeout(timer.current);
+      setCopied(done);
+      timer.current = setTimeout(() => setCopied(null), COPIED_FOR);
+
+      if (done) onCopy?.(source);
     };
-  }, [source, name, wanted]);
 
-  const lines = React.useMemo(
-    () => (wanted && coloured ? coloured : plainLines(source)),
-    [wanted, coloured, source]
-  );
+    const marked = React.useMemo(() => markedLines(highlightLines), [highlightLines]);
 
-  /** Wide enough for the last number, so the gutter does not step as it scrolls. */
-  const gutter = `${String(startLine + Math.max(lines.length - 1, 0)).length}ch`;
+    /**
+     * Select-all inside the block, rather than select-all of the page.
+     *
+     * The code is a focusable region, so a reader who tabbed to it and pressed
+     * the shortcut every editor has meant *this* code — and the browser's own
+     * answer, selecting the article around it too, is never what they were after.
+     * It is unconditional rather than a prop because the alternative it would
+     * turn back on is not a feature.
+     *
+     * The prompts and the line numbers are generated content, so they are outside
+     * the range for the same reason they are outside the clipboard: there is
+     * nothing there to select.
+     */
+    const codeRef = React.useRef<HTMLPreElement | null>(null);
 
-  const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  React.useEffect(() => () => clearTimeout(timer.current), []);
+    const selectEverything = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key !== 'a' && event.key !== 'A') return;
+      if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
 
-  const copy = async () => {
-    const done = await writeToClipboard(source);
+      const node = codeRef.current;
+      const selection = typeof window === 'undefined' ? null : window.getSelection();
 
-    clearTimeout(timer.current);
-    setCopied(done);
-    timer.current = setTimeout(() => setCopied(null), COPIED_FOR);
+      if (!node || !selection) return;
 
-    if (done) onCopy?.(source);
-  };
+      event.preventDefault();
 
-  const marked = React.useMemo(() => markedLines(highlightLines), [highlightLines]);
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    };
 
-  /**
-   * Select-all inside the block, rather than select-all of the page.
-   *
-   * The code is a focusable region, so a reader who tabbed to it and pressed
-   * the shortcut every editor has meant *this* code — and the browser's own
-   * answer, selecting the article around it too, is never what they were after.
-   * It is unconditional rather than a prop because the alternative it would
-   * turn back on is not a feature.
-   *
-   * The prompts and the line numbers are generated content, so they are outside
-   * the range for the same reason they are outside the clipboard: there is
-   * nothing there to select.
-   */
-  const codeRef = React.useRef<HTMLPreElement | null>(null);
+    const copyName = copyLabel ?? messages.copy;
+    const copiedName = copiedLabel ?? messages.copied;
+    const rawName = rawLabel ?? messages.raw;
 
-  const selectEverything = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'a' && event.key !== 'A') return;
-    if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
+    /**
+     * The toolbar's buttons are plain elements against the block's own slots
+     * rather than IconButtons, and that is not a shortcut.
+     *
+     * A Neba control reads `--neba-fg` and the panel ladder, which are the
+     * *page's*. These sit on a sheet that has deliberately refused the page's
+     * palette — a dark block on a white article is the ordinary case — so an
+     * IconButton here would be a light control on a black bar. What they keep is
+     * the house treatment: the radius ladder, the transition, the focus ring.
+     */
+    const buttonClasses = cx(
+      'inline-flex shrink-0 cursor-pointer items-center gap-1 border-0 bg-transparent',
+      'px-1.5 py-1 text-(--n-code-dim) hover:text-(--n-code-fg) hover:bg-(--n-code-hover)',
+      radiusClasses.xs,
+      metaTextClasses[size],
+      '[&_svg]:pointer-events-none [&_svg]:size-[1.15em] [&_svg]:shrink-0',
+      transitionClasses,
+      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
+    );
 
-    const node = codeRef.current;
-    const selection = typeof window === 'undefined' ? null : window.getSelection();
+    const label = hasContent(title) ? undefined : (name ?? messages.code);
 
-    if (!node || !selection) return;
-
-    event.preventDefault();
-
-    const range = document.createRange();
-    range.selectNodeContents(node);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  };
-
-  const copyName = copyLabel ?? messages.copy;
-  const copiedName = copiedLabel ?? messages.copied;
-  const rawName = rawLabel ?? messages.raw;
-
-  /**
-   * The toolbar's buttons are plain elements against the block's own slots
-   * rather than IconButtons, and that is not a shortcut.
-   *
-   * A Neba control reads `--neba-fg` and the panel ladder, which are the
-   * *page's*. These sit on a sheet that has deliberately refused the page's
-   * palette — a dark block on a white article is the ordinary case — so an
-   * IconButton here would be a light control on a black bar. What they keep is
-   * the house treatment: the radius ladder, the transition, the focus ring.
-   */
-  const buttonClasses = cx(
-    'inline-flex shrink-0 cursor-pointer items-center gap-1 border-0 bg-transparent',
-    'px-1.5 py-1 text-(--n-code-dim) hover:text-(--n-code-fg) hover:bg-(--n-code-hover)',
-    radiusClasses.xs,
-    metaTextClasses[size],
-    '[&_svg]:pointer-events-none [&_svg]:size-[1.15em] [&_svg]:shrink-0',
-    transitionClasses,
-    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
-  );
-
-  const label = hasContent(title) ? undefined : (name ?? messages.code);
-
-  const body = (
-    <div
-      // A scrollable region has to be reachable by a keyboard that has no
-      // pointer to drag with, and a focusable region has to have a name.
-      role="region"
-      aria-label={typeof title === 'string' ? title : label}
-      tabIndex={0}
-      onKeyDown={selectEverything}
-      className={cx(
-        'min-h-0 overflow-auto',
-        bodyPaddingYClasses[density][size],
-        'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:-outline-offset-2'
-      )}
-      style={maxHeight === undefined ? undefined : { maxHeight: toLength(maxHeight) }}
-    >
-      {/*
+    const body = (
+      <div
+        // A scrollable region has to be reachable by a keyboard that has no
+        // pointer to drag with, and a focusable region has to have a name.
+        role="region"
+        aria-label={typeof title === 'string' ? title : label}
+        tabIndex={0}
+        onKeyDown={selectEverything}
+        className={cx(
+          'min-h-0 overflow-auto',
+          bodyPaddingYClasses[density][size],
+          'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:-outline-offset-2'
+        )}
+        style={maxHeight === undefined ? undefined : { maxHeight: toLength(maxHeight) }}
+      >
+        {/*
         `w-max min-w-full` is what keeps the gutter and the prompts aligned
         while the code is scrolled sideways: the rows are as wide as the
         longest line rather than as wide as the window onto them, so every
@@ -539,121 +540,126 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(functi
         is also what lets a marked line's tint reach the same right edge as
         every other one.
       */}
-      <pre
-        ref={codeRef}
-        className={cx('m-0 bg-transparent p-0 font-mono', wrap ? 'w-full' : 'w-max min-w-full')}
-      >
-        {lines.map((tokens, index) => {
-          const number = startLine + index;
-
-          return (
-            <div
-              key={index}
-              className={cx('neba-code-line', linePaddingXClasses[density][size])}
-              data-line={lineNumbers ? number : undefined}
-              data-mark={marked.has(number) ? '' : undefined}
-              data-prompt={prompt && tokens.length > 0 ? prompt : undefined}
-            >
-              <code>
-                {tokens.map((run, position) =>
-                  run.token ? (
-                    <span key={position} className={run.token}>
-                      {run.text}
-                    </span>
-                  ) : (
-                    <React.Fragment key={position}>{run.text}</React.Fragment>
-                  )
-                )}
-              </code>
-            </div>
-          );
-        })}
-      </pre>
-    </div>
-  );
-
-  return (
-    <div
-      ref={ref}
-      className={cx(
-        'neba-code flex min-w-0 flex-col overflow-hidden',
-        radiusClasses[size],
-        'border bg-(--n-code-bg) text-(--n-code-fg) [border-color:var(--n-code-rule)]',
-        '[box-shadow:var(--n-elev)]',
-        transitionClasses,
-        className
-      )}
-      data-code-theme={theme}
-      data-code-wrap={wrap ? 'true' : undefined}
-      style={
-        {
-          ...surfaceSlots(color, elevation),
-          '--n-code-gutter': gutter,
-          ...(fontFamily ? { fontFamily } : null),
-          ...(fontSize === undefined ? null : { fontSize: toLength(fontSize) }),
-          ...(lineHeight === undefined ? null : { lineHeight }),
-          ...(letterSpacing === undefined ? null : { letterSpacing: toLength(letterSpacing) }),
-          ...style
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      {toolbar && (showLanguage || copyable || rawToggle || hasContent(title)) ? (
-        <div
-          className={cx(
-            'flex min-w-0 items-center gap-1 border-b [border-color:var(--n-code-rule)]',
-            barPaddingClasses[density][size]
-          )}
+        <pre
+          ref={codeRef}
+          className={cx('m-0 bg-transparent p-0 font-mono', wrap ? 'w-full' : 'w-max min-w-full')}
         >
-          {hasContent(title) ? (
-            <span className={cx('min-w-0 truncate font-mono', metaTextClasses[size])}>{title}</span>
-          ) : null}
+          {lines.map((tokens, index) => {
+            const number = startLine + index;
 
-          {showLanguage && name ? (
-            <span
-              className={cx(
-                'min-w-0 truncate font-mono tracking-wide text-(--n-code-dim) uppercase select-none',
-                metaTextClasses[size]
-              )}
-            >
-              {name}
-            </span>
-          ) : null}
+            return (
+              <div
+                key={index}
+                className={cx('neba-code-line', linePaddingXClasses[density][size])}
+                data-line={lineNumbers ? number : undefined}
+                data-mark={marked.has(number) ? '' : undefined}
+                data-prompt={prompt && tokens.length > 0 ? prompt : undefined}
+              >
+                <code>
+                  {tokens.map((run, position) =>
+                    run.token ? (
+                      <span key={position} className={run.token}>
+                        {run.text}
+                      </span>
+                    ) : (
+                      <React.Fragment key={position}>{run.text}</React.Fragment>
+                    )
+                  )}
+                </code>
+              </div>
+            );
+          })}
+        </pre>
+      </div>
+    );
 
-          <span className="flex-1" />
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'neba-code flex min-w-0 flex-col overflow-hidden',
+          radiusClasses[size],
+          'border bg-(--n-code-bg) text-(--n-code-fg) [border-color:var(--n-code-rule)]',
+          '[box-shadow:var(--n-elev)]',
+          transitionClasses,
+          className
+        )}
+        data-code-theme={theme}
+        data-code-wrap={wrap ? 'true' : undefined}
+        style={
+          {
+            ...surfaceSlots(color, elevation),
+            '--n-code-gutter': gutter,
+            ...(fontFamily ? { fontFamily } : null),
+            ...(fontSize === undefined ? null : { fontSize: toLength(fontSize) }),
+            ...(lineHeight === undefined ? null : { lineHeight }),
+            ...(letterSpacing === undefined ? null : { letterSpacing: toLength(letterSpacing) }),
+            ...style
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {toolbar && (showLanguage || copyable || rawToggle || hasContent(title)) ? (
+          <div
+            className={cx(
+              'flex min-w-0 items-center gap-1 border-b [border-color:var(--n-code-rule)]',
+              barPaddingClasses[density][size]
+            )}
+          >
+            {hasContent(title) ? (
+              <span className={cx('min-w-0 truncate font-mono', metaTextClasses[size])}>
+                {title}
+              </span>
+            ) : null}
 
-          {rawToggle && highlight ? (
-            <button
-              type="button"
-              aria-pressed={raw}
-              aria-label={rawName}
-              title={rawName}
-              onClick={() => setRaw((previous) => !previous)}
-              className={cx(buttonClasses, raw ? 'text-(--n-code-fg) bg-(--n-code-hover)' : '')}
-            >
-              <CodeIcon />
-            </button>
-          ) : null}
+            {showLanguage && name ? (
+              <span
+                className={cx(
+                  'min-w-0 truncate font-mono tracking-wide text-(--n-code-dim) uppercase select-none',
+                  metaTextClasses[size]
+                )}
+              >
+                {name}
+              </span>
+            ) : null}
 
-          {copyable ? (
-            <button type="button" onClick={copy} className={buttonClasses}>
-              {copied ? <CheckIcon /> : <CopyIcon />}
-              <span>{copied === null ? copyName : copied ? copiedName : messages.copyFailed}</span>
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+            <span className="flex-1" />
 
-      <div className={cx('flex min-h-0 flex-col', codeTextClasses[size])}>{body}</div>
+            {rawToggle && highlight ? (
+              <button
+                type="button"
+                aria-pressed={raw}
+                aria-label={rawName}
+                title={rawName}
+                onClick={() => setRaw((previous) => !previous)}
+                className={cx(buttonClasses, raw ? 'text-(--n-code-fg) bg-(--n-code-hover)' : '')}
+              >
+                <CodeIcon />
+              </button>
+            ) : null}
 
-      {/*
+            {copyable ? (
+              <button type="button" onClick={copy} className={buttonClasses}>
+                {copied ? <CheckIcon /> : <CopyIcon />}
+                <span>
+                  {copied === null ? copyName : copied ? copiedName : messages.copyFailed}
+                </span>
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className={cx('flex min-h-0 flex-col', codeTextClasses[size])}>{body}</div>
+
+        {/*
         The copy button changes its own label, which a screen reader reading the
         page rather than the button would never hear. This is the announcement,
         and it is only ever one word long.
       */}
-      <span aria-live="polite" className={srOnlyClasses}>
-        {copied === null ? '' : copied ? copiedName : messages.copyFailed}
-      </span>
-    </div>
-  );
-});
+        <span aria-live="polite" className={srOnlyClasses}>
+          {copied === null ? '' : copied ? copiedName : messages.copyFailed}
+        </span>
+      </div>
+    );
+  }
+);

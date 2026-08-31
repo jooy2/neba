@@ -36,6 +36,7 @@ import type {
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a Combobox's value may be — the same two types a [Select](../select)
@@ -301,48 +302,52 @@ function toArray(value: unknown): ComboboxValue[] {
  * navigation across both the list and the chips, and the hidden input that
  * makes the whole thing submit with a form.
  */
-export function Combobox<Multiple extends boolean | undefined = false>({
-  variant = 'outline',
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  elevation = 0,
-  items,
-  multiple,
-  value,
-  defaultValue,
-  onValueChange,
-  onInputValueChange,
-  allowCustom = true,
-  customLabel,
-  clearable = false,
-  locale,
-  emptyMessage,
-  limit,
-  placeholder,
-  label,
-  description,
-  error,
-  invalid,
-  startIcon,
-  fullWidth = false,
-  disabled = false,
-  readOnly = false,
-  required = false,
-  name,
-  open,
-  defaultOpen,
-  onOpenChange,
-  clearLabel,
-  removeLabel,
-  inputRef,
-  shortcuts,
-  id,
-  className,
-  classNames,
-  style,
-  ...props
-}: ComboboxProps<Multiple>) {
+export function Combobox<Multiple extends boolean | undefined = false>(
+  rawProps: ComboboxProps<Multiple>
+) {
+  const {
+    variant = 'outline',
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    elevation = 0,
+    items,
+    multiple,
+    value,
+    defaultValue,
+    onValueChange,
+    onInputValueChange,
+    allowCustom = true,
+    customLabel,
+    clearable = false,
+    locale,
+    emptyMessage,
+    limit,
+    placeholder,
+    label,
+    description,
+    error,
+    invalid,
+    startIcon,
+    fullWidth = false,
+    disabled = false,
+    readOnly = false,
+    required = false,
+    name,
+    open,
+    defaultOpen,
+    onOpenChange,
+    clearLabel,
+    removeLabel,
+    inputRef,
+    shortcuts,
+    id,
+    className,
+    classNames,
+    style,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(comboboxMessages, locale);
   const actions = useMessages(actionMessages, locale);
   const nameRemove =

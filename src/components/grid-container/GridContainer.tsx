@@ -20,6 +20,7 @@ import type {
   NebaResponsive,
   NebaSize
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface GridContainerProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
@@ -103,8 +104,8 @@ const DEFAULT_SPACING = 2;
  * while the item around it keeps the width the outer grid gave it.
  */
 export const GridContainer = React.forwardRef<HTMLDivElement, GridContainerProps>(
-  function GridContainer(
-    {
+  function GridContainer(rawProps, ref) {
+    const {
       columns,
       spacing,
       rowSpacing,
@@ -121,9 +122,8 @@ export const GridContainer = React.forwardRef<HTMLDivElement, GridContainerProps
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density']);
+
     const classNames = cx(
       'neba-grid flex',
       wrap ? 'flex-wrap' : 'flex-nowrap',

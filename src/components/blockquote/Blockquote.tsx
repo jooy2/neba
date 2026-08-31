@@ -13,6 +13,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * The props are a `<figure>`'s rather than a `<blockquote>`'s, which is a
@@ -155,97 +156,98 @@ function QuoteMarkIcon() {
  * *outside* the blockquote — a name inside it claims the speaker said their own
  * name — and a `<figure>` with no `<figcaption>` in it is a figure of nothing.
  */
-export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(function Blockquote(
-  {
-    variant = 'text',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    author,
-    source,
-    cite,
-    icon,
-    transition,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const animation = transitionProps(transition);
-  const attributed = hasContent(author) || hasContent(source);
-  const glyph = icon === undefined ? <QuoteMarkIcon /> : icon;
+export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(
+  function Blockquote(rawProps, ref) {
+    const {
+      variant = 'text',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      author,
+      source,
+      cite,
+      icon,
+      transition,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const shellClasses = cx(
-    'flex flex-col text-(--neba-fg)',
-    ruleClasses,
-    // A quote is never a pill, and the corners on the ruled edge stay square: a
-    // 2px rule that curves away from the text it marks is a bracket, not a
-    // margin rule.
-    variant === 'text' ? '' : `${radiusClasses[size]} rounded-s-none`,
-    variantClasses[variant],
-    boxPaddingClasses[density][size],
-    transitionClasses,
-    animation.className,
-    className ?? ''
-  );
+    const animation = transitionProps(transition);
+    const attributed = hasContent(author) || hasContent(source);
+    const glyph = icon === undefined ? <QuoteMarkIcon /> : icon;
 
-  const quote = (
-    <blockquote cite={cite} className={quoteTextClasses[size]}>
-      {hasContent(glyph) ? (
-        // The mark tracks the quote's own type scale at twice its size, so one
-        // drawing is the right size at every step of the ladder.
-        <span
-          aria-hidden="true"
-          className="mb-1 block size-[2em] text-(--n-soft-press) [&>svg]:size-full"
-        >
-          {glyph}
-        </span>
-      ) : null}
-      {children}
-    </blockquote>
-  );
-
-  const shellStyle = { ...surfaceSlots(color, elevation), ...animation.style, ...style };
-
-  if (!attributed) {
-    return (
-      <div
-        ref={ref as React.Ref<HTMLDivElement>}
-        className={shellClasses}
-        style={shellStyle}
-        {...props}
-      >
-        {quote}
-      </div>
+    const shellClasses = cx(
+      'flex flex-col text-(--neba-fg)',
+      ruleClasses,
+      // A quote is never a pill, and the corners on the ruled edge stay square: a
+      // 2px rule that curves away from the text it marks is a bracket, not a
+      // margin rule.
+      variant === 'text' ? '' : `${radiusClasses[size]} rounded-s-none`,
+      variantClasses[variant],
+      boxPaddingClasses[density][size],
+      transitionClasses,
+      animation.className,
+      className ?? ''
     );
-  }
 
-  return (
-    <figure ref={ref} className={shellClasses} style={shellStyle} {...props}>
-      {quote}
-
-      <figcaption
-        className={[
-          'mt-2 flex flex-wrap items-baseline gap-x-1.5 text-(--neba-muted-fg)',
-          metaTextClasses[size]
-        ].join(' ')}
-      >
-        {hasContent(author) ? (
-          <span className="font-medium text-(--neba-fg)">
-            {/* An em dash, the way an attribution has been set since print, and
-                `aria-hidden` because a screen reader announcing "em dash" before
-                a name is reading the typography rather than the text. */}
-            <span aria-hidden="true">— </span>
-            {author}
+    const quote = (
+      <blockquote cite={cite} className={quoteTextClasses[size]}>
+        {hasContent(glyph) ? (
+          // The mark tracks the quote's own type scale at twice its size, so one
+          // drawing is the right size at every step of the ladder.
+          <span
+            aria-hidden="true"
+            className="mb-1 block size-[2em] text-(--n-soft-press) [&>svg]:size-full"
+          >
+            {glyph}
           </span>
         ) : null}
-        {/* `<cite>` arrives italic from the browser's own stylesheet. The library
+        {children}
+      </blockquote>
+    );
+
+    const shellStyle = { ...surfaceSlots(color, elevation), ...animation.style, ...style };
+
+    if (!attributed) {
+      return (
+        <div
+          ref={ref as React.Ref<HTMLDivElement>}
+          className={shellClasses}
+          style={shellStyle}
+          {...props}
+        >
+          {quote}
+        </div>
+      );
+    }
+
+    return (
+      <figure ref={ref} className={shellClasses} style={shellStyle} {...props}>
+        {quote}
+
+        <figcaption
+          className={[
+            'mt-2 flex flex-wrap items-baseline gap-x-1.5 text-(--neba-muted-fg)',
+            metaTextClasses[size]
+          ].join(' ')}
+        >
+          {hasContent(author) ? (
+            <span className="font-medium text-(--neba-fg)">
+              {/* An em dash, the way an attribution has been set since print, and
+                `aria-hidden` because a screen reader announcing "em dash" before
+                a name is reading the typography rather than the text. */}
+              <span aria-hidden="true">— </span>
+              {author}
+            </span>
+          ) : null}
+          {/* `<cite>` arrives italic from the browser's own stylesheet. The library
             has one type scale and italics are not on it. */}
-        {hasContent(source) ? <cite className="not-italic">{source}</cite> : null}
-      </figcaption>
-    </figure>
-  );
-});
+          {hasContent(source) ? <cite className="not-italic">{source}</cite> : null}
+        </figcaption>
+      </figure>
+    );
+  }
+);

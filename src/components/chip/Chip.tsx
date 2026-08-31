@@ -20,6 +20,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps, NebaTransition } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ChipProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
@@ -176,8 +177,8 @@ const labelButtonClasses = [
  * `<button>` is the most common way it invents a chip that Chrome silently
  * rewrites. This shape is what avoids both.
  */
-export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
-  {
+export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -197,9 +198,8 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(
     children,
     onClick,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
   const interactive = Boolean(onClick) && !disabled;
   const step = chipScale[size];

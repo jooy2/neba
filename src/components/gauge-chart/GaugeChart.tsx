@@ -7,6 +7,7 @@ import { numberFormatter } from '../../internal/format.js';
 import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaThreshold } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface GaugeChartProps extends Omit<ChartBaseProps, 'legend' | 'tooltip'> {
   /**
@@ -91,29 +92,31 @@ function pointAt(cx: number, cy: number, r: number, degrees: number): [number, n
  * the unfilled part of the arc is not a second category — it is the rest of the
  * dial.
  */
-export function GaugeChart({
-  value,
-  min = 0,
-  max = 100,
-  sweep = 180,
-  thickness = 0.22,
-  thresholds,
-  ticks = false,
-  showRange = true,
-  center,
-  caption,
-  height,
-  format,
-  locale,
-  label,
-  empty,
-  size = 'md',
-  variant = 'text',
-  color = 'primary',
-  padded = false,
-  className,
-  ...box
-}: GaugeChartProps) {
+export function GaugeChart(rawProps: GaugeChartProps) {
+  const {
+    value,
+    min = 0,
+    max = 100,
+    sweep = 180,
+    thickness = 0.22,
+    thresholds,
+    ticks = false,
+    showRange = true,
+    center,
+    caption,
+    height,
+    format,
+    locale,
+    label,
+    empty,
+    size = 'md',
+    variant = 'text',
+    color = 'primary',
+    padded = false,
+    className,
+    ...box
+  } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
+
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);

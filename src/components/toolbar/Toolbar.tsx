@@ -13,6 +13,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaPosition, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ToolbarProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -111,64 +112,65 @@ const dividerClasses: Record<'top' | 'bottom', string> = {
  * `render={<header />}`; what a genuine roving-focus toolbar wants is a
  * ButtonGroup, which is one.
  */
-export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(function Toolbar(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    position = 'static',
-    side = 'top',
-    divider = false,
-    start,
-    end,
-    render,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const classNames = cx(
-    'flex w-full min-w-0 items-center',
-    boxPaddingXClasses[density][size],
-    boxPaddingYClasses[density][size],
-    sheetSectionGapClasses[size],
-    // A pinned bar spans an edge of the window, and a rounded corner against the
-    // edge of the screen is a gap with nothing behind it. Only a bar sitting in
-    // the flow is a sheet with corners.
-    position === 'static' ? radiusClasses[size] : '',
-    variantClasses[variant],
-    divider ? dividerClasses[side] : '',
-    positionClasses[position][side],
-    transitionClasses,
-    className ?? ''
-  );
-
-  return useRender({
-    render,
-    ref,
-    props: {
-      className: classNames,
-      style: { ...surfaceSlots(color, elevation), ...style },
-      children: (
-        <>
-          {hasContent(start) ? (
-            <div className="flex min-w-0 shrink-0 items-center gap-2">{start}</div>
-          ) : null}
-
-          {/* `flex-1` even when empty, so `start` and `end` stay at their ends
-              rather than collapsing together in the middle of the bar. */}
-          <div className="flex min-w-0 flex-1 items-center gap-2">{children}</div>
-
-          {hasContent(end) ? (
-            <div className="flex min-w-0 shrink-0 items-center gap-2">{end}</div>
-          ) : null}
-        </>
-      ),
+export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
+  function Toolbar(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      position = 'static',
+      side = 'top',
+      divider = false,
+      start,
+      end,
+      render,
+      className,
+      style,
+      children,
       ...props
-    }
-  });
-});
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
+    const classNames = cx(
+      'flex w-full min-w-0 items-center',
+      boxPaddingXClasses[density][size],
+      boxPaddingYClasses[density][size],
+      sheetSectionGapClasses[size],
+      // A pinned bar spans an edge of the window, and a rounded corner against the
+      // edge of the screen is a gap with nothing behind it. Only a bar sitting in
+      // the flow is a sheet with corners.
+      position === 'static' ? radiusClasses[size] : '',
+      variantClasses[variant],
+      divider ? dividerClasses[side] : '',
+      positionClasses[position][side],
+      transitionClasses,
+      className ?? ''
+    );
+
+    return useRender({
+      render,
+      ref,
+      props: {
+        className: classNames,
+        style: { ...surfaceSlots(color, elevation), ...style },
+        children: (
+          <>
+            {hasContent(start) ? (
+              <div className="flex min-w-0 shrink-0 items-center gap-2">{start}</div>
+            ) : null}
+
+            {/* `flex-1` even when empty, so `start` and `end` stay at their ends
+              rather than collapsing together in the middle of the bar. */}
+            <div className="flex min-w-0 flex-1 items-center gap-2">{children}</div>
+
+            {hasContent(end) ? (
+              <div className="flex min-w-0 shrink-0 items-center gap-2">{end}</div>
+            ) : null}
+          </>
+        ),
+        ...props
+      }
+    });
+  }
+);

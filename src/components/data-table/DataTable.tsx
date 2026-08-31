@@ -35,6 +35,7 @@ import {
   toLength
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /* ---------------------------------------------------------------------------
  * Vocabulary
@@ -483,74 +484,76 @@ interface RowEntry<Row> {
  * is doing it. Both paths render the same, which is what stops a table that
  * starts local and grows remote from becoming a second component.
  */
-export function DataTable<Row>({
-  headers,
-  items,
-  getRowKey,
+export function DataTable<Row>(rawProps: DataTableProps<Row>) {
+  const {
+    headers,
+    items,
+    getRowKey,
 
-  variant = 'outline',
-  size = 'sm',
-  color = 'primary',
-  density = 'compact',
-  elevation = 0,
-  height,
-  maxHeight,
-  rowHeight: rowHeightProp,
-  striped = false,
-  hoverable = true,
-  stickyHeader = true,
-  caption,
-  label,
-  empty,
+    variant = 'outline',
+    size = 'sm',
+    color = 'primary',
+    density = 'compact',
+    elevation = 0,
+    height,
+    maxHeight,
+    rowHeight: rowHeightProp,
+    striped = false,
+    hoverable = true,
+    stickyHeader = true,
+    caption,
+    label,
+    empty,
 
-  virtual = true,
-  overscan = 8,
+    virtual = true,
+    overscan = 8,
 
-  sortable = false,
-  sortMode = 'single',
-  sort: sortProp,
-  defaultSort,
-  onSortChange,
+    sortable = false,
+    sortMode = 'single',
+    sort: sortProp,
+    defaultSort,
+    onSortChange,
 
-  resizable = false,
-  columnWidths,
-  defaultColumnWidths,
-  onColumnWidthsChange,
+    resizable = false,
+    columnWidths,
+    defaultColumnWidths,
+    onColumnWidthsChange,
 
-  selectionMode = 'none',
-  selected,
-  defaultSelected,
-  onSelectedChange,
-  checkboxes = false,
-  onRowClick,
-  onRowActivate,
+    selectionMode = 'none',
+    selected,
+    defaultSelected,
+    onSelectedChange,
+    checkboxes = false,
+    onRowClick,
+    onRowActivate,
 
-  paging = 'scroll',
-  page: pageProp,
-  defaultPage = 1,
-  onPageChange,
-  pageSize: pageSizeProp,
-  defaultPageSize = 25,
-  onPageSizeChange,
-  pageSizeOptions = [10, 25, 50, 100],
-  footer,
+    paging = 'scroll',
+    page: pageProp,
+    defaultPage = 1,
+    onPageChange,
+    pageSize: pageSizeProp,
+    defaultPageSize = 25,
+    onPageSizeChange,
+    pageSizeOptions = [10, 25, 50, 100],
+    footer,
 
-  search: searchProp,
-  defaultSearch,
-  onSearchChange,
-  searchable = false,
-  searchPlaceholder,
-  filter,
-  toolbar,
+    search: searchProp,
+    defaultSearch,
+    onSearchChange,
+    searchable = false,
+    searchPlaceholder,
+    filter,
+    toolbar,
 
-  manual = false,
-  rowCount,
+    manual = false,
+    rowCount,
 
-  locale,
-  className,
-  style,
-  ...boxProps
-}: DataTableProps<Row>) {
+    locale,
+    className,
+    style,
+    ...boxProps
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(tableMessages, locale);
   const emptyText = useMessages(emptyMessages, locale);
   const reactId = React.useId();

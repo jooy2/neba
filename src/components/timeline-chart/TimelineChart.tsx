@@ -24,6 +24,7 @@ import {
 } from '../../internal/chart.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface TimelineChartProps extends Omit<
   CartesianChartProps,
@@ -69,19 +70,21 @@ export interface TimelineChartProps extends Omit<
  * steps and draws no axis at all. That one is for a sequence of events; this
  * one is for how long each of them took.
  */
-export function TimelineChart({
-  series,
-  min,
-  max,
-  barSize,
-  rounded = true,
-  size = 'md',
-  density = 'default',
-  xAxis,
-  yAxis,
-  locale,
-  ...props
-}: TimelineChartProps) {
+export function TimelineChart(rawProps: TimelineChartProps) {
+  const {
+    series,
+    min,
+    max,
+    barSize,
+    rounded = true,
+    size = 'md',
+    density = 'default',
+    xAxis,
+    yAxis,
+    locale,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   /* The rows, as instants, in lanes. Done once here rather than in the marks
      builder, because the axis has to be solved before anything can be placed on
      it — and because the lane a span sits in is a fact about the data rather

@@ -30,6 +30,7 @@ import type {
   NebaTransition,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One step of the guide. */
 export interface HowToStep {
@@ -273,389 +274,392 @@ function StepHeading({
   return React.createElement(`h${Math.min(6, Math.max(1, level))}`, props);
 }
 
-export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(function HowToSteps(
-  {
-    steps,
-    title,
-    headingLevel = 3,
-    step: stepProp,
-    defaultStep = 0,
-    onStepChange,
-    completed: completedProp,
-    defaultCompleted = false,
-    onCompletedChange,
-    orientation = 'vertical',
-    maxHeight,
-    railWidth = '15rem',
-    navigation = true,
-    divider = true,
-    transition = 'fade',
-    completion = true,
-    completedContent,
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    locale,
-    previousLabel,
-    nextLabel,
-    doneLabel,
-    restartLabel,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(stepsMessages, locale);
-  const headingId = React.useId();
+export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
+  function HowToSteps(rawProps, ref) {
+    const {
+      steps,
+      title,
+      headingLevel = 3,
+      step: stepProp,
+      defaultStep = 0,
+      onStepChange,
+      completed: completedProp,
+      defaultCompleted = false,
+      onCompletedChange,
+      orientation = 'vertical',
+      maxHeight,
+      railWidth = '15rem',
+      navigation = true,
+      divider = true,
+      transition = 'fade',
+      completion = true,
+      completedContent,
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      locale,
+      previousLabel,
+      nextLabel,
+      doneLabel,
+      restartLabel,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const [ownStep, setOwnStep] = React.useState(defaultStep);
-  const [ownCompleted, setOwnCompleted] = React.useState(defaultCompleted);
+    const messages = useMessages(stepsMessages, locale);
+    const headingId = React.useId();
 
-  const controlledStep = stepProp !== undefined;
-  const controlledCompleted = completedProp !== undefined;
+    const [ownStep, setOwnStep] = React.useState(defaultStep);
+    const [ownCompleted, setOwnCompleted] = React.useState(defaultCompleted);
 
-  const total = steps.length;
+    const controlledStep = stepProp !== undefined;
+    const controlledCompleted = completedProp !== undefined;
 
-  /**
-   * Clamped on render rather than on change: `steps` can shrink under a
-   * controlled index, and a guide pointing past the end of its own list would
-   * draw an empty panel with no way back.
-   */
-  const active = Math.min(Math.max(controlledStep ? stepProp : ownStep, 0), Math.max(total - 1, 0));
-  const completed = completion && (controlledCompleted ? completedProp : ownCompleted);
-  const bounded = maxHeight !== undefined;
-  const vertical = orientation === 'vertical';
+    const total = steps.length;
 
-  /**
-   * Keeps the step being worked on inside the part of the list that is showing.
-   *
-   * `maxHeight` is what a guide with twenty steps needs, and a list that scrolls
-   * is a list whose current row can be off screen: press Next four times and the
-   * numbers stop agreeing with the panel beside them. The arithmetic is done
-   * against the list's own scroll box rather than through `scrollIntoView`,
-   * because that walks every scrollable ancestor and would move the page under
-   * a reader who only pressed a button inside a card.
-   */
-  const railRef = React.useRef<HTMLOListElement | null>(null);
-  const activeRef = React.useRef<HTMLLIElement | null>(null);
+    /**
+     * Clamped on render rather than on change: `steps` can shrink under a
+     * controlled index, and a guide pointing past the end of its own list would
+     * draw an empty panel with no way back.
+     */
+    const active = Math.min(
+      Math.max(controlledStep ? stepProp : ownStep, 0),
+      Math.max(total - 1, 0)
+    );
+    const completed = completion && (controlledCompleted ? completedProp : ownCompleted);
+    const bounded = maxHeight !== undefined;
+    const vertical = orientation === 'vertical';
 
-  React.useEffect(() => {
-    const box = railRef.current;
-    const row = activeRef.current;
+    /**
+     * Keeps the step being worked on inside the part of the list that is showing.
+     *
+     * `maxHeight` is what a guide with twenty steps needs, and a list that scrolls
+     * is a list whose current row can be off screen: press Next four times and the
+     * numbers stop agreeing with the panel beside them. The arithmetic is done
+     * against the list's own scroll box rather than through `scrollIntoView`,
+     * because that walks every scrollable ancestor and would move the page under
+     * a reader who only pressed a button inside a card.
+     */
+    const railRef = React.useRef<HTMLOListElement | null>(null);
+    const activeRef = React.useRef<HTMLLIElement | null>(null);
 
-    if (!box || !row) return;
+    React.useEffect(() => {
+      const box = railRef.current;
+      const row = activeRef.current;
 
-    const outer = box.getBoundingClientRect();
-    const inner = row.getBoundingClientRect();
+      if (!box || !row) return;
 
-    if (vertical) {
-      if (inner.top < outer.top) box.scrollTop -= outer.top - inner.top;
-      else if (inner.bottom > outer.bottom) box.scrollTop += inner.bottom - outer.bottom;
-    } else if (inner.left < outer.left) {
-      box.scrollLeft -= outer.left - inner.left;
-    } else if (inner.right > outer.right) {
-      box.scrollLeft += inner.right - outer.right;
+      const outer = box.getBoundingClientRect();
+      const inner = row.getBoundingClientRect();
+
+      if (vertical) {
+        if (inner.top < outer.top) box.scrollTop -= outer.top - inner.top;
+        else if (inner.bottom > outer.bottom) box.scrollTop += inner.bottom - outer.bottom;
+      } else if (inner.left < outer.left) {
+        box.scrollLeft -= outer.left - inner.left;
+      } else if (inner.right > outer.right) {
+        box.scrollLeft += inner.right - outer.right;
+      }
+    }, [active, vertical]);
+
+    if (total === 0) {
+      return null;
     }
-  }, [active, vertical]);
 
-  if (total === 0) {
-    return null;
-  }
+    const go = (next: number, done = false) => {
+      if (!controlledCompleted) setOwnCompleted(done);
+      if (completed !== done) onCompletedChange?.(done);
 
-  const go = (next: number, done = false) => {
-    if (!controlledCompleted) setOwnCompleted(done);
-    if (completed !== done) onCompletedChange?.(done);
+      if (done) return;
 
-    if (done) return;
+      if (!controlledStep) setOwnStep(next);
+      if (next !== active) onStepChange?.(next);
+    };
 
-    if (!controlledStep) setOwnStep(next);
-    if (next !== active) onStepChange?.(next);
-  };
+    const first = active === 0;
+    const last = active === total - 1;
 
-  const first = active === 0;
-  const last = active === total - 1;
+    /**
+     * The entrance, and how it is re-run without remounting anything.
+     *
+     * The class is put on the panel that is *currently* active and on no other,
+     * so a panel gains it at the moment it becomes the one showing — and adding
+     * an animation class to an element that did not have one is what starts an
+     * animation. No key, no reflow hack, and above all no remount: a step can
+     * hold a form, and a guide that wiped what the reader typed every time they
+     * looked back at step one would be worse than one that did not animate.
+     */
+    const motion = transition === 'none' ? null : transitionProps(transition);
 
-  /**
-   * The entrance, and how it is re-run without remounting anything.
-   *
-   * The class is put on the panel that is *currently* active and on no other,
-   * so a panel gains it at the moment it becomes the one showing — and adding
-   * an animation class to an element that did not have one is what starts an
-   * animation. No key, no reflow hack, and above all no remount: a step can
-   * hold a form, and a guide that wiped what the reader typed every time they
-   * looked back at step one would be worse than one that did not animate.
-   */
-  const motion = transition === 'none' ? null : transitionProps(transition);
+    const mark = (index: number) => {
+      const done = completed || index < active;
+      const current = !completed && index === active;
 
-  const mark = (index: number) => {
-    const done = completed || index < active;
-    const current = !completed && index === active;
+      return (
+        <span
+          aria-hidden="true"
+          className={cx(
+            'z-1 flex shrink-0 items-center justify-center rounded-full border font-medium',
+            'size-(--n-step-mark) [&_svg]:size-[1.15em]',
+            markSizes[size].text,
+            transitionClasses,
+            done
+              ? 'bg-(--n-fill) text-(--n-on-solid) [border-color:transparent]'
+              : current
+                ? 'bg-(--neba-surface) text-(--n-accent) [border-color:var(--n-accent)]'
+                : 'bg-(--neba-surface) text-(--neba-muted-fg) [border-color:var(--n-line)]'
+          )}
+        >
+          {done ? <CheckIcon /> : index + 1}
+        </span>
+      );
+    };
 
-    return (
-      <span
-        aria-hidden="true"
+    const rail = (
+      <ol
+        ref={railRef}
+        aria-label={messages.steps}
         className={cx(
-          'z-1 flex shrink-0 items-center justify-center rounded-full border font-medium',
-          'size-(--n-step-mark) [&_svg]:size-[1.15em]',
-          markSizes[size].text,
-          transitionClasses,
-          done
-            ? 'bg-(--n-fill) text-(--n-on-solid) [border-color:transparent]'
-            : current
-              ? 'bg-(--neba-surface) text-(--n-accent) [border-color:var(--n-accent)]'
-              : 'bg-(--neba-surface) text-(--neba-muted-fg) [border-color:var(--n-line)]'
+          'm-0 flex list-none p-0',
+          vertical ? 'flex-col' : 'flex-row',
+          railGapClasses[density][size],
+          bounded && vertical ? 'min-h-0 overflow-y-auto overscroll-contain' : '',
+          vertical ? '' : 'overflow-x-auto overscroll-contain'
         )}
       >
-        {done ? <CheckIcon /> : index + 1}
-      </span>
-    );
-  };
+        {steps.map((item, index) => {
+          const done = completed || index < active;
+          const current = !completed && index === active;
 
-  const rail = (
-    <ol
-      ref={railRef}
-      aria-label={messages.steps}
-      className={cx(
-        'm-0 flex list-none p-0',
-        vertical ? 'flex-col' : 'flex-row',
-        railGapClasses[density][size],
-        bounded && vertical ? 'min-h-0 overflow-y-auto overscroll-contain' : '',
-        vertical ? '' : 'overflow-x-auto overscroll-contain'
-      )}
-    >
-      {steps.map((item, index) => {
-        const done = completed || index < active;
-        const current = !completed && index === active;
-
-        return (
-          <li
-            key={index}
-            ref={current ? activeRef : undefined}
-            className={cx('relative', vertical ? '' : 'min-w-0 flex-1')}
-          >
-            {index < total - 1 ? (
-              /*
+          return (
+            <li
+              key={index}
+              ref={current ? activeRef : undefined}
+              className={cx('relative', vertical ? '' : 'min-w-0 flex-1')}
+            >
+              {index < total - 1 ? (
+                /*
                 The line between two numbers, drawn from the edge of one disc to
                 the edge of the next rather than behind them: a connector that
                 ran under a translucent disc would show through it. Both offsets
                 are arithmetic on `--n-step-mark`, which is why the disc's
                 diameter is a length rather than a class.
               */
-              <span
-                aria-hidden="true"
-                className={cx(
-                  'absolute',
-                  transitionClasses,
-                  done ? 'bg-(--n-fill)' : 'bg-(--n-line)',
-                  vertical
-                    ? [
-                        'w-px',
-                        '[inset-inline-start:calc(0.25rem+var(--n-step-mark)/2)]',
-                        '[top:calc(0.25rem+var(--n-step-mark))]',
-                        '[height:calc(100%-var(--n-step-mark))]'
-                      ].join(' ')
-                    : [
-                        'h-px',
-                        '[inset-inline-start:calc(50%+var(--n-step-mark)/2)]',
-                        '[top:calc(0.25rem+var(--n-step-mark)/2)]',
-                        '[width:calc(100%-var(--n-step-mark))]'
-                      ].join(' ')
-                )}
-              />
-            ) : null}
+                <span
+                  aria-hidden="true"
+                  className={cx(
+                    'absolute',
+                    transitionClasses,
+                    done ? 'bg-(--n-fill)' : 'bg-(--n-line)',
+                    vertical
+                      ? [
+                          'w-px',
+                          '[inset-inline-start:calc(0.25rem+var(--n-step-mark)/2)]',
+                          '[top:calc(0.25rem+var(--n-step-mark))]',
+                          '[height:calc(100%-var(--n-step-mark))]'
+                        ].join(' ')
+                      : [
+                          'h-px',
+                          '[inset-inline-start:calc(50%+var(--n-step-mark)/2)]',
+                          '[top:calc(0.25rem+var(--n-step-mark)/2)]',
+                          '[width:calc(100%-var(--n-step-mark))]'
+                        ].join(' ')
+                  )}
+                />
+              ) : null}
 
-            <button
-              type="button"
-              onClick={() => go(index)}
-              aria-current={current ? 'step' : undefined}
-              className={cx(
-                'flex w-full cursor-pointer items-center p-1 text-start',
-                vertical ? 'gap-3' : 'flex-col gap-1.5 text-center',
-                radiusClasses.sm,
-                'hover:bg-(--n-soft)',
-                transitionClasses,
-                'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
-              )}
-            >
-              {mark(index)}
-              <span
+              <button
+                type="button"
+                onClick={() => go(index)}
+                aria-current={current ? 'step' : undefined}
                 className={cx(
-                  'min-w-0',
-                  vertical ? 'truncate' : '',
-                  metaTextClasses[size],
-                  current ? 'font-medium text-(--neba-fg)' : 'text-(--neba-muted-fg)'
+                  'flex w-full cursor-pointer items-center p-1 text-start',
+                  vertical ? 'gap-3' : 'flex-col gap-1.5 text-center',
+                  radiusClasses.sm,
+                  'hover:bg-(--n-soft)',
+                  transitionClasses,
+                  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
                 )}
               >
-                {item.title}
-              </span>
-              {/* The row draws a disc and a title, and the disc is decoration.
+                {mark(index)}
+                <span
+                  className={cx(
+                    'min-w-0',
+                    vertical ? 'truncate' : '',
+                    metaTextClasses[size],
+                    current ? 'font-medium text-(--neba-fg)' : 'text-(--neba-muted-fg)'
+                  )}
+                >
+                  {item.title}
+                </span>
+                {/* The row draws a disc and a title, and the disc is decoration.
                   This is what a screen reader hears in place of "Install the
                   CLI" on its own. */}
-              <span className={srOnlyClasses}>
-                {fill(messages.step, {
-                  index: String(index + 1),
-                  title: plainTitle(item.title)
-                })}
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ol>
-  );
+                <span className={srOnlyClasses}>
+                  {fill(messages.step, {
+                    index: String(index + 1),
+                    title: plainTitle(item.title)
+                  })}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    );
 
-  const panels = (
-    /*
+    const panels = (
+      /*
       One grid cell, every panel in it. What is not showing stays in the
       document so the cell keeps the height of the tallest thing that could be
       in it, and is `inert` so it is out of the tab order, off the accessibility
       tree and out of a find-in-page.
     */
-    <div className={cx('grid flex-1 grid-cols-1', bounded ? 'min-h-0' : '')}>
-      {steps.map((item, index) => {
-        const hidden = completed || index !== active;
+      <div className={cx('grid flex-1 grid-cols-1', bounded ? 'min-h-0' : '')}>
+        {steps.map((item, index) => {
+          const hidden = completed || index !== active;
 
-        return (
-          <div
-            key={index}
-            aria-hidden={hidden}
-            inert={hidden || undefined}
-            className={cx(
-              'col-start-1 row-start-1 min-w-0',
-              bounded ? 'overflow-y-auto overscroll-contain' : '',
-              hidden ? 'invisible' : (motion?.className ?? '')
-            )}
-            style={hidden ? undefined : motion?.style}
-          >
-            <div className="mb-3 flex items-baseline gap-3">
-              {hasContent(item.icon) ? (
-                // `h-[1lh]` rather than a fixed height: the glyph sits on the
-                // heading's own line box, so it stays centred against the title
-                // at every step of the size ladder.
+          return (
+            <div
+              key={index}
+              aria-hidden={hidden}
+              inert={hidden || undefined}
+              className={cx(
+                'col-start-1 row-start-1 min-w-0',
+                bounded ? 'overflow-y-auto overscroll-contain' : '',
+                hidden ? 'invisible' : (motion?.className ?? '')
+              )}
+              style={hidden ? undefined : motion?.style}
+            >
+              <div className="mb-3 flex items-baseline gap-3">
+                {hasContent(item.icon) ? (
+                  // `h-[1lh]` rather than a fixed height: the glyph sits on the
+                  // heading's own line box, so it stays centred against the title
+                  // at every step of the size ladder.
+                  <span
+                    aria-hidden="true"
+                    className={cx(
+                      'flex h-[1lh] shrink-0 items-center text-(--n-accent)',
+                      sheetTitleClasses[size],
+                      iconClasses
+                    )}
+                  >
+                    {item.icon}
+                  </span>
+                ) : null}
+                <StepHeading
+                  level={headingLevel + 1}
+                  className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}
+                >
+                  {item.title}
+                </StepHeading>
                 <span
-                  aria-hidden="true"
                   className={cx(
-                    'flex h-[1lh] shrink-0 items-center text-(--n-accent)',
-                    sheetTitleClasses[size],
-                    iconClasses
+                    'shrink-0 text-(--neba-muted-fg) tabular-nums',
+                    metaTextClasses[size]
                   )}
                 >
-                  {item.icon}
+                  {fill(messages.position, { index: String(index + 1), total: String(total) })}
                 </span>
+              </div>
+
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.imageAlt ?? plainTitle(item.title)}
+                  // Every step's picture is in the document at once so the panel
+                  // can keep the height of the tallest — but only one of them is
+                  // on screen, and the rest have no business being fetched before
+                  // the reader reaches them.
+                  loading="lazy"
+                  decoding="async"
+                  className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}
+                />
               ) : null}
-              <StepHeading
-                level={headingLevel + 1}
-                className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}
-              >
-                {item.title}
-              </StepHeading>
-              <span
-                className={cx(
-                  'shrink-0 text-(--neba-muted-fg) tabular-nums',
-                  metaTextClasses[size]
-                )}
-              >
-                {fill(messages.position, { index: String(index + 1), total: String(total) })}
-              </span>
+
+              {hasContent(item.content) ? (
+                <div className={cx('min-w-0', sheetBodyClasses[size])}>{item.content}</div>
+              ) : null}
             </div>
+          );
+        })}
 
-            {item.image ? (
-              <img
-                src={item.image}
-                alt={item.imageAlt ?? plainTitle(item.title)}
-                // Every step's picture is in the document at once so the panel
-                // can keep the height of the tallest — but only one of them is
-                // on screen, and the rest have no business being fetched before
-                // the reader reaches them.
-                loading="lazy"
-                decoding="async"
-                className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}
-              />
-            ) : null}
-
-            {hasContent(item.content) ? (
-              <div className={cx('min-w-0', sheetBodyClasses[size])}>{item.content}</div>
-            ) : null}
+        {completion ? (
+          <div
+            aria-hidden={!completed}
+            inert={!completed || undefined}
+            className={cx(
+              'col-start-1 row-start-1 flex min-w-0 flex-col items-center justify-center gap-2 py-4 text-center',
+              completed ? (motion?.className ?? '') : 'invisible'
+            )}
+            style={completed ? motion?.style : undefined}
+          >
+            <span aria-hidden="true" className="text-(--n-accent) [&_svg]:size-9">
+              <SuccessIcon />
+            </span>
+            <p className={cx('m-0 font-medium', sheetBodyClasses[size])}>
+              {completedContent ?? messages.completed}
+            </p>
           </div>
-        );
-      })}
+        ) : null}
+      </div>
+    );
 
-      {completion ? (
-        <div
-          aria-hidden={!completed}
-          inert={!completed || undefined}
-          className={cx(
-            'col-start-1 row-start-1 flex min-w-0 flex-col items-center justify-center gap-2 py-4 text-center',
-            completed ? (motion?.className ?? '') : 'invisible'
-          )}
-          style={completed ? motion?.style : undefined}
-        >
-          <span aria-hidden="true" className="text-(--n-accent) [&_svg]:size-9">
-            <SuccessIcon />
-          </span>
-          <p className={cx('m-0 font-medium', sheetBodyClasses[size])}>
-            {completedContent ?? messages.completed}
-          </p>
-        </div>
-      ) : null}
-    </div>
-  );
-
-  return (
-    <div
-      ref={ref}
-      aria-labelledby={hasContent(title) ? headingId : undefined}
-      className={cx(
-        'flex min-w-0 flex-col',
-        radiusClasses[size],
-        boxPaddingClasses[density][size],
-        sheetSectionGapClasses[size],
-        variantClasses[variant],
-        transitionClasses,
-        className
-      )}
-      style={
-        {
-          ...surfaceSlots(color, elevation),
-          // A container's slots leave the fill out, and the numbers need it: a
-          // completed step is a filled disc, and the connector behind it is the
-          // same fill.
-          '--n-fill': `var(--neba-${color}-fill)`,
-          '--n-on-solid': `var(--neba-${color}-on-solid)`,
-          '--n-step-mark': markSizes[size].box,
-          '--n-step-rail': toLength(railWidth),
-          ...(bounded ? { maxHeight: toLength(maxHeight) } : null),
-          ...style
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      {hasContent(title) ? (
-        <StepHeading
-          level={headingLevel}
-          id={headingId}
-          className={cx('m-0 shrink-0 font-medium', sheetTitleClasses[size])}
-        >
-          {title}
-        </StepHeading>
-      ) : null}
-
+    return (
       <div
+        ref={ref}
+        aria-labelledby={hasContent(title) ? headingId : undefined}
         className={cx(
-          'flex min-w-0 flex-1 flex-col',
-          bounded ? 'min-h-0' : '',
-          vertical ? 'gap-4 sm:flex-row sm:gap-5' : 'gap-4'
+          'flex min-w-0 flex-col',
+          radiusClasses[size],
+          boxPaddingClasses[density][size],
+          sheetSectionGapClasses[size],
+          variantClasses[variant],
+          transitionClasses,
+          className
         )}
+        style={
+          {
+            ...surfaceSlots(color, elevation),
+            // A container's slots leave the fill out, and the numbers need it: a
+            // completed step is a filled disc, and the connector behind it is the
+            // same fill.
+            '--n-fill': `var(--neba-${color}-fill)`,
+            '--n-on-solid': `var(--neba-${color}-on-solid)`,
+            '--n-step-mark': markSizes[size].box,
+            '--n-step-rail': toLength(railWidth),
+            ...(bounded ? { maxHeight: toLength(maxHeight) } : null),
+            ...style
+          } as React.CSSProperties
+        }
+        {...props}
       >
+        {hasContent(title) ? (
+          <StepHeading
+            level={headingLevel}
+            id={headingId}
+            className={cx('m-0 shrink-0 font-medium', sheetTitleClasses[size])}
+          >
+            {title}
+          </StepHeading>
+        ) : null}
+
         <div
           className={cx(
-            'flex min-w-0 flex-col',
+            'flex min-w-0 flex-1 flex-col',
             bounded ? 'min-h-0' : '',
-            vertical ? 'sm:w-(--n-step-rail) sm:shrink-0' : '',
-            /*
+            vertical ? 'gap-4 sm:flex-row sm:gap-5' : 'gap-4'
+          )}
+        >
+          <div
+            className={cx(
+              'flex min-w-0 flex-col',
+              bounded ? 'min-h-0' : '',
+              vertical ? 'sm:w-(--n-step-rail) sm:shrink-0' : '',
+              /*
               The line goes on the list's inner edge, with a matching pad, so
               the space on either side of it is the same: the row's text, the
               gutter, the line, the gutter, the body. Put on the gap alone it
@@ -666,87 +670,88 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(func
               line down the side of a stacked layout would be a line down the
               side of nothing.
             */
-            divider
-              ? vertical
-                ? 'border-b pb-4 sm:border-b-0 sm:border-e sm:pb-0 sm:pe-5'
-                : 'border-b pb-4'
-              : '',
-            divider ? '[border-color:var(--n-line)]' : ''
-          )}
-        >
-          {rail}
-        </div>
+              divider
+                ? vertical
+                  ? 'border-b pb-4 sm:border-b-0 sm:border-e sm:pb-0 sm:pe-5'
+                  : 'border-b pb-4'
+                : '',
+              divider ? '[border-color:var(--n-line)]' : ''
+            )}
+          >
+            {rail}
+          </div>
 
-        <div
-          className={cx(
-            'flex min-w-0 flex-1 flex-col',
-            bounded ? 'min-h-0' : '',
-            sheetSectionGapClasses[size]
-          )}
-        >
-          {panels}
+          <div
+            className={cx(
+              'flex min-w-0 flex-1 flex-col',
+              bounded ? 'min-h-0' : '',
+              sheetSectionGapClasses[size]
+            )}
+          >
+            {panels}
 
-          {navigation ? (
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-              {completed ? (
-                <Button
-                  size={size}
-                  variant="outline"
-                  color={color}
-                  startIcon={<RestartIcon />}
-                  onClick={() => go(0)}
-                >
-                  {restartLabel ?? messages.restart}
-                </Button>
-              ) : (
-                <>
+            {navigation ? (
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                {completed ? (
                   <Button
                     size={size}
                     variant="outline"
                     color={color}
-                    disabled={first}
-                    startIcon={
-                      <span className="rotate-90 rtl:-rotate-90">
-                        <ChevronIcon />
-                      </span>
-                    }
-                    onClick={() => go(active - 1)}
+                    startIcon={<RestartIcon />}
+                    onClick={() => go(0)}
                   >
-                    {previousLabel ?? messages.previous}
+                    {restartLabel ?? messages.restart}
                   </Button>
-
-                  {last && completion ? (
+                ) : (
+                  <>
                     <Button
                       size={size}
-                      variant="solid"
+                      variant="outline"
                       color={color}
-                      startIcon={<CheckIcon />}
-                      onClick={() => go(active, true)}
-                    >
-                      {doneLabel ?? messages.done}
-                    </Button>
-                  ) : (
-                    <Button
-                      size={size}
-                      variant="solid"
-                      color={color}
-                      disabled={last}
-                      endIcon={
-                        <span className="-rotate-90 rtl:rotate-90">
+                      disabled={first}
+                      startIcon={
+                        <span className="rotate-90 rtl:-rotate-90">
                           <ChevronIcon />
                         </span>
                       }
-                      onClick={() => go(active + 1)}
+                      onClick={() => go(active - 1)}
                     >
-                      {nextLabel ?? messages.next}
+                      {previousLabel ?? messages.previous}
                     </Button>
-                  )}
-                </>
-              )}
-            </div>
-          ) : null}
+
+                    {last && completion ? (
+                      <Button
+                        size={size}
+                        variant="solid"
+                        color={color}
+                        startIcon={<CheckIcon />}
+                        onClick={() => go(active, true)}
+                      >
+                        {doneLabel ?? messages.done}
+                      </Button>
+                    ) : (
+                      <Button
+                        size={size}
+                        variant="solid"
+                        color={color}
+                        disabled={last}
+                        endIcon={
+                          <span className="-rotate-90 rtl:rotate-90">
+                            <ChevronIcon />
+                          </span>
+                        }
+                        onClick={() => go(active + 1)}
+                      >
+                        {nextLabel ?? messages.next}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);

@@ -17,6 +17,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Whose message this is.
@@ -291,125 +292,126 @@ const actionsClasses = [
  * convention, not a law, and a thread that fills neither is a perfectly good
  * thread.
  */
-export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(function ChatBubble(
-  {
-    side = 'start',
-    name,
-    time,
-    avatar,
-    status,
-    statusLabel,
-    typing = false,
-    media,
-    preview,
-    actions,
-    locale,
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(chatMessages, locale);
-  const end = side === 'end';
+export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+  function ChatBubble(rawProps, ref) {
+    const {
+      side = 'start',
+      name,
+      time,
+      avatar,
+      status,
+      statusLabel,
+      typing = false,
+      media,
+      preview,
+      actions,
+      locale,
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const hasHeader = hasContent(name) || hasContent(time);
-  const hasBody = typing || hasContent(children) || Boolean(preview);
+    const messages = useMessages(chatMessages, locale);
+    const end = side === 'end';
 
-  const bubbleClasses = [
-    'flex min-w-0 flex-col overflow-hidden',
-    radiusClasses[size],
-    tailClasses[side],
-    variantClasses[variant],
-    transitionClasses
-  ].join(' ');
+    const hasHeader = hasContent(name) || hasContent(time);
+    const hasBody = typing || hasContent(children) || Boolean(preview);
 
-  const statusText = status ? (statusLabel ?? messages[status]) : '';
+    const bubbleClasses = [
+      'flex min-w-0 flex-col overflow-hidden',
+      radiusClasses[size],
+      tailClasses[side],
+      variantClasses[variant],
+      transitionClasses
+    ].join(' ');
 
-  return (
-    <div
-      ref={ref}
-      className={cx(
-        'group/bubble flex w-full items-start gap-2',
-        end ? 'flex-row-reverse' : '',
-        className ?? ''
-      )}
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
-      {...props}
-    >
-      {hasContent(avatar) ? <div className="shrink-0">{avatar}</div> : null}
+    const statusText = status ? (statusLabel ?? messages[status]) : '';
 
+    return (
       <div
-        className={[
-          'flex min-w-0 max-w-[min(100%,32rem)] flex-col',
-          sheetHeaderGapClasses[size],
-          end ? 'items-end' : 'items-start'
-        ].join(' ')}
+        ref={ref}
+        className={cx(
+          'group/bubble flex w-full items-start gap-2',
+          end ? 'flex-row-reverse' : '',
+          className ?? ''
+        )}
+        style={{ ...controlSlots(color, elevation, variant), ...style }}
+        {...props}
       >
-        {hasHeader ? (
-          <div className={`flex items-baseline gap-2 ${metaTextClasses[size]}`}>
-            {hasContent(name) ? <span className="font-semibold">{name}</span> : null}
-            {hasContent(time) ? <span className="text-(--neba-muted-fg)">{time}</span> : null}
-          </div>
-        ) : null}
+        {hasContent(avatar) ? <div className="shrink-0">{avatar}</div> : null}
 
-        <div className={`flex min-w-0 items-center gap-1 ${end ? 'flex-row-reverse' : ''}`}>
-          <div className={bubbleClasses}>
-            {/* Edge to edge: the bubble's own corners are what crop it, which is
+        <div
+          className={[
+            'flex min-w-0 max-w-[min(100%,32rem)] flex-col',
+            sheetHeaderGapClasses[size],
+            end ? 'items-end' : 'items-start'
+          ].join(' ')}
+        >
+          {hasHeader ? (
+            <div className={`flex items-baseline gap-2 ${metaTextClasses[size]}`}>
+              {hasContent(name) ? <span className="font-semibold">{name}</span> : null}
+              {hasContent(time) ? <span className="text-(--neba-muted-fg)">{time}</span> : null}
+            </div>
+          ) : null}
+
+          <div className={`flex min-w-0 items-center gap-1 ${end ? 'flex-row-reverse' : ''}`}>
+            <div className={bubbleClasses}>
+              {/* Edge to edge: the bubble's own corners are what crop it, which is
                 why the padding lives on the sections rather than on the sheet. */}
-            {hasContent(media) ? (
-              <div className="[&_img]:block [&_img]:w-full [&_video]:block [&_video]:w-full">
-                {media}
-              </div>
-            ) : null}
+              {hasContent(media) ? (
+                <div className="[&_img]:block [&_img]:w-full [&_video]:block [&_video]:w-full">
+                  {media}
+                </div>
+              ) : null}
 
-            {hasBody ? (
-              <div
-                className={[
-                  bubblePaddingClasses[density][size],
-                  'flex min-w-0 flex-col gap-2',
-                  sheetBodyClasses[size]
-                ].join(' ')}
-              >
-                {typing ? (
-                  <TypingDots label={messages.typing} />
-                ) : hasContent(children) ? (
-                  <div className="min-w-0 break-words whitespace-pre-line">{children}</div>
-                ) : null}
+              {hasBody ? (
+                <div
+                  className={[
+                    bubblePaddingClasses[density][size],
+                    'flex min-w-0 flex-col gap-2',
+                    sheetBodyClasses[size]
+                  ].join(' ')}
+                >
+                  {typing ? (
+                    <TypingDots label={messages.typing} />
+                  ) : hasContent(children) ? (
+                    <div className="min-w-0 break-words whitespace-pre-line">{children}</div>
+                  ) : null}
 
-                {preview ? <LinkPreview preview={preview} /> : null}
-              </div>
-            ) : null}
+                  {preview ? <LinkPreview preview={preview} /> : null}
+                </div>
+              ) : null}
+            </div>
+
+            {hasContent(actions) ? <div className={actionsClasses}>{actions}</div> : null}
           </div>
 
-          {hasContent(actions) ? <div className={actionsClasses}>{actions}</div> : null}
-        </div>
-
-        {status ? (
-          <div
-            className={[
-              'flex items-center gap-1',
-              metaTextClasses[size],
-              statusToneClasses[status],
-              '[&_svg]:size-[1.15em] [&_svg]:shrink-0'
-            ].join(' ')}
-          >
-            {statusIcons[status]}
-            {/* The mark is the whole of what is drawn; the word behind it is for
+          {status ? (
+            <div
+              className={[
+                'flex items-center gap-1',
+                metaTextClasses[size],
+                statusToneClasses[status],
+                '[&_svg]:size-[1.15em] [&_svg]:shrink-0'
+              ].join(' ')}
+            >
+              {statusIcons[status]}
+              {/* The mark is the whole of what is drawn; the word behind it is for
                 the readers the mark says nothing to. */}
-            <span className={srOnlyClasses}>{statusText}</span>
-          </div>
-        ) : null}
+              <span className={srOnlyClasses}>{statusText}</span>
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 /**
  * Three dots that light in sequence.

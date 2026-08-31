@@ -22,6 +22,7 @@ import {
   withTime
 } from '../../internal/date.js';
 import { cx } from '../../internal/styles.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Which column of the clock a row belongs to. Re-exported so a caller writing a
@@ -97,209 +98,212 @@ export interface TimePickerProps extends PickerShellProps {
  * time on its own has nowhere to record that it crossed a DST boundary.
  * `referenceDate` is the day a bare time is written onto.
  */
-export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(function TimePicker(
-  {
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    referenceDate,
-    minTime,
-    maxTime,
-    shouldDisableTime,
-    hour12: hour12Prop,
-    showSeconds = false,
-    hourStep = 1,
-    minuteStep = 1,
-    secondStep = 1,
-    locale,
-    format,
-    placeholder,
-    clearable = false,
-    showNowButton = true,
-    closeOnSelect = false,
-    labels: labelOverrides,
-    name,
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    readOnly = false,
-    disabled = false,
-    startIcon,
-    ...shell
-  },
-  ref
-) {
-  const labels = usePickerLabels(labelOverrides);
-  const hour12 = hour12Prop ?? isHour12(locale);
+export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
+  function TimePicker(rawProps, ref) {
+    const {
+      value: valueProp,
+      defaultValue,
+      onValueChange,
+      open: openProp,
+      defaultOpen,
+      onOpenChange,
+      referenceDate,
+      minTime,
+      maxTime,
+      shouldDisableTime,
+      hour12: hour12Prop,
+      showSeconds = false,
+      hourStep = 1,
+      minuteStep = 1,
+      secondStep = 1,
+      locale,
+      format,
+      placeholder,
+      clearable = false,
+      showNowButton = true,
+      closeOnSelect = false,
+      labels: labelOverrides,
+      name,
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      readOnly = false,
+      disabled = false,
+      startIcon,
+      ...shell
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-  const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
-    defaultValue ?? null
-  );
-  const value = valueProp !== undefined ? valueProp : uncontrolledValue;
+    const labels = usePickerLabels(labelOverrides);
+    const hour12 = hour12Prop ?? isHour12(locale);
 
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
-  const open = openProp ?? uncontrolledOpen;
+    const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
+      defaultValue ?? null
+    );
+    const value = valueProp !== undefined ? valueProp : uncontrolledValue;
 
-  // Held still for as long as the picker is mounted, so a popup left open across
-  // midnight does not quietly move the value it is writing onto a new day.
-  const [fallbackDay] = React.useState(() => referenceDate ?? new Date());
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
+    const open = openProp ?? uncontrolledOpen;
 
-  const setOpen = (next: boolean) => {
-    if (next && (readOnly || disabled)) {
-      return;
-    }
-    if (openProp === undefined) {
-      setUncontrolledOpen(next);
-    }
-    onOpenChange?.(next);
-  };
+    // Held still for as long as the picker is mounted, so a popup left open across
+    // midnight does not quietly move the value it is writing onto a new day.
+    const [fallbackDay] = React.useState(() => referenceDate ?? new Date());
 
-  const commit = (next: Date | null) => {
-    if (valueProp === undefined) {
-      setUncontrolledValue(next);
-    }
-    onValueChange?.(next);
-  };
-
-  const isBlocked = React.useCallback(
-    (candidate: Date, unit: TimeUnit) => {
-      const [from, to] = timeUnitSpan(unit, candidate);
-      if (isValidDate(minTime) && to < secondsOfDay(minTime)) {
-        return true;
+    const setOpen = (next: boolean) => {
+      if (next && (readOnly || disabled)) {
+        return;
       }
-      if (isValidDate(maxTime) && from > secondsOfDay(maxTime)) {
-        return true;
+      if (openProp === undefined) {
+        setUncontrolledOpen(next);
       }
-      return shouldDisableTime?.(candidate, unit) ?? false;
-    },
-    [minTime, maxTime, shouldDisableTime]
-  );
+      onOpenChange?.(next);
+    };
 
-  /* Memoised because `samples` below is keyed on it, and the fallback is a
+    const commit = (next: Date | null) => {
+      if (valueProp === undefined) {
+        setUncontrolledValue(next);
+      }
+      onValueChange?.(next);
+    };
+
+    const isBlocked = React.useCallback(
+      (candidate: Date, unit: TimeUnit) => {
+        const [from, to] = timeUnitSpan(unit, candidate);
+        if (isValidDate(minTime) && to < secondsOfDay(minTime)) {
+          return true;
+        }
+        if (isValidDate(maxTime) && from > secondsOfDay(maxTime)) {
+          return true;
+        }
+        return shouldDisableTime?.(candidate, unit) ?? false;
+      },
+      [minTime, maxTime, shouldDisableTime]
+    );
+
+    /* Memoised because `samples` below is keyed on it, and the fallback is a
      fresh object every render — which is the case that runs by default, since
      `format` is optional. Left bare, the sizer re-formatted all twenty-four
      sample instants on every keystroke the picker saw. */
-  const displayFormat = React.useMemo<Intl.DateTimeFormatOptions>(
-    () =>
-      format ?? {
-        hour: 'numeric',
-        minute: '2-digit',
-        ...(showSeconds ? { second: '2-digit' as const } : {})
-      },
-    [format, showSeconds]
-  );
+    const displayFormat = React.useMemo<Intl.DateTimeFormatOptions>(
+      () =>
+        format ?? {
+          hour: 'numeric',
+          minute: '2-digit',
+          ...(showSeconds ? { second: '2-digit' as const } : {})
+        },
+      [format, showSeconds]
+    );
 
-  const now = new Date();
-  const nowValue = withTime(referenceDate ?? fallbackDay, {
-    hours: now.getHours(),
-    minutes: now.getMinutes(),
-    seconds: showSeconds ? now.getSeconds() : 0
-  });
-  const hasFooter = showNowButton || clearable || !closeOnSelect;
+    const now = new Date();
+    const nowValue = withTime(referenceDate ?? fallbackDay, {
+      hours: now.getHours(),
+      minutes: now.getMinutes(),
+      seconds: showSeconds ? now.getSeconds() : 0
+    });
+    const hasFooter = showNowButton || clearable || !closeOnSelect;
 
-  // Holds the trigger open at the width of the longest time it could show.
-  const samples = React.useMemo(
-    () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
-    [locale, displayFormat, placeholder]
-  );
+    // Holds the trigger open at the width of the longest time it could show.
+    const samples = React.useMemo(
+      () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
+      [locale, displayFormat, placeholder]
+    );
 
-  return (
-    <PickerShell
-      {...shell}
-      size={size}
-      color={color}
-      density={density}
-      readOnly={readOnly}
-      disabled={disabled}
-      triggerRef={ref}
-      startIcon={startIcon ?? <ClockIcon />}
-      display={isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')}
-      samples={samples}
-      empty={!isValidDate(value)}
-      clearable={clearable}
-      onClear={() => commit(null)}
-      open={open}
-      onOpenChange={setOpen}
-      labels={labels}
-      hiddenValues={
-        name
-          ? [{ name, value: isValidDate(value) ? toISOTime(value, showSeconds) : '' }]
-          : undefined
-      }
-    >
-      <div className={cx('flex flex-col', hasFooter && 'gap-1.5')}>
-        <TimeGrid
-          size={size}
-          density={density}
-          locale={locale}
-          value={isValidDate(value) ? value : null}
-          referenceDate={referenceDate ?? fallbackDay}
-          onChange={(next) => {
-            commit(next);
-            if (closeOnSelect) {
-              setOpen(false);
-            }
-          }}
-          hour12={hour12}
-          showSeconds={showSeconds}
-          hourStep={hourStep}
-          minuteStep={minuteStep}
-          secondStep={secondStep}
-          shouldDisableTime={isBlocked}
-          labels={labels}
-          autoFocus
-        />
+    return (
+      <PickerShell
+        {...shell}
+        size={size}
+        color={color}
+        density={density}
+        readOnly={readOnly}
+        disabled={disabled}
+        triggerRef={ref}
+        startIcon={startIcon ?? <ClockIcon />}
+        display={
+          isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')
+        }
+        samples={samples}
+        empty={!isValidDate(value)}
+        clearable={clearable}
+        onClear={() => commit(null)}
+        open={open}
+        onOpenChange={setOpen}
+        labels={labels}
+        hiddenValues={
+          name
+            ? [{ name, value: isValidDate(value) ? toISOTime(value, showSeconds) : '' }]
+            : undefined
+        }
+      >
+        <div className={cx('flex flex-col', hasFooter && 'gap-1.5')}>
+          <TimeGrid
+            size={size}
+            density={density}
+            locale={locale}
+            value={isValidDate(value) ? value : null}
+            referenceDate={referenceDate ?? fallbackDay}
+            onChange={(next) => {
+              commit(next);
+              if (closeOnSelect) {
+                setOpen(false);
+              }
+            }}
+            hour12={hour12}
+            showSeconds={showSeconds}
+            hourStep={hourStep}
+            minuteStep={minuteStep}
+            secondStep={secondStep}
+            shouldDisableTime={isBlocked}
+            labels={labels}
+            autoFocus
+          />
 
-        {hasFooter ? (
-          <PickerFooter size={size}>
-            {clearable ? (
-              <Button
-                variant="text"
-                size={size}
-                color={color}
-                density="compact"
-                onClick={() => {
-                  commit(null);
-                  setOpen(false);
-                }}
-              >
-                {labels.clear}
-              </Button>
-            ) : null}
-            {showNowButton ? (
-              <Button
-                variant="text"
-                size={size}
-                color={color}
-                density="compact"
-                disabled={isBlocked(nowValue, 'second')}
-                onClick={() => {
-                  commit(nowValue);
-                  setOpen(false);
-                }}
-              >
-                {labels.now}
-              </Button>
-            ) : null}
-            {/* The popup stays open while the columns are being read, so there
+          {hasFooter ? (
+            <PickerFooter size={size}>
+              {clearable ? (
+                <Button
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  onClick={() => {
+                    commit(null);
+                    setOpen(false);
+                  }}
+                >
+                  {labels.clear}
+                </Button>
+              ) : null}
+              {showNowButton ? (
+                <Button
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  disabled={isBlocked(nowValue, 'second')}
+                  onClick={() => {
+                    commit(nowValue);
+                    setOpen(false);
+                  }}
+                >
+                  {labels.now}
+                </Button>
+              ) : null}
+              {/* The popup stays open while the columns are being read, so there
                 has to be something to press that means "that is the one". */}
-            {!closeOnSelect ? (
-              <Button
-                variant="solid"
-                size={size}
-                color={color}
-                density="compact"
-                onClick={() => setOpen(false)}
-              >
-                {labels.done}
-              </Button>
-            ) : null}
-          </PickerFooter>
-        ) : null}
-      </div>
-    </PickerShell>
-  );
-});
+              {!closeOnSelect ? (
+                <Button
+                  variant="solid"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  onClick={() => setOpen(false)}
+                >
+                  {labels.done}
+                </Button>
+              ) : null}
+            </PickerFooter>
+          ) : null}
+        </div>
+      </PickerShell>
+    );
+  }
+);

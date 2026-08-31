@@ -22,6 +22,7 @@ import {
 } from '../../internal/date.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaDateGranularity, NebaWeekday } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How the trigger writes a value the caller has not given a `format` for.
@@ -151,196 +152,199 @@ export interface DatePickerProps extends PickerShellProps {
  * and a field that understands `27/7/26` in one browser and not in the next is
  * worse than one that never claimed to.
  */
-export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker(
-  {
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    granularity = 'day',
-    defaultMonth,
-    minDate,
-    maxDate,
-    shouldDisableDate,
-    locale,
-    weekStartsOn,
-    format,
-    placeholder,
-    clearable = false,
-    showTodayButton = true,
-    closeOnSelect = true,
-    labels: labelOverrides,
-    name,
-    size = 'md',
-    color = 'primary',
-    readOnly = false,
-    disabled = false,
-    startIcon,
-    ...shell
-  },
-  ref
-) {
-  const labels = usePickerLabels(labelOverrides);
-  const firstDay = weekStartsOn ?? localeWeekStart(locale);
-  const displayFormat = format ?? defaultFormats[granularity];
+export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
+  function DatePicker(rawProps, ref) {
+    const {
+      value: valueProp,
+      defaultValue,
+      onValueChange,
+      open: openProp,
+      defaultOpen,
+      onOpenChange,
+      granularity = 'day',
+      defaultMonth,
+      minDate,
+      maxDate,
+      shouldDisableDate,
+      locale,
+      weekStartsOn,
+      format,
+      placeholder,
+      clearable = false,
+      showTodayButton = true,
+      closeOnSelect = true,
+      labels: labelOverrides,
+      name,
+      size = 'md',
+      color = 'primary',
+      readOnly = false,
+      disabled = false,
+      startIcon,
+      ...shell
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
 
-  const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
-    defaultValue ?? null
-  );
-  // `null` is a value a controlled picker legitimately holds — an emptied one —
-  // so the test is against `undefined` and never against falsiness.
-  const value = valueProp !== undefined ? valueProp : uncontrolledValue;
+    const labels = usePickerLabels(labelOverrides);
+    const firstDay = weekStartsOn ?? localeWeekStart(locale);
+    const displayFormat = format ?? defaultFormats[granularity];
 
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
-  const open = openProp ?? uncontrolledOpen;
+    const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
+      defaultValue ?? null
+    );
+    // `null` is a value a controlled picker legitimately holds — an emptied one —
+    // so the test is against `undefined` and never against falsiness.
+    const value = valueProp !== undefined ? valueProp : uncontrolledValue;
 
-  const [month, setMonth] = React.useState(() =>
-    startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today()))
-  );
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
+    const open = openProp ?? uncontrolledOpen;
 
-  // Opening puts the calendar back on the chosen day. Without this, a picker
-  // that was left on 2019 while browsing stays there the next time it is opened,
-  // which reads as the control having forgotten its own value.
-  React.useEffect(() => {
-    if (open) {
-      setMonth(startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today())));
-    }
-    // Only when the popup opens — following `value` here would drag the calendar
-    // out from under someone typing into a form elsewhere on the page.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+    const [month, setMonth] = React.useState(() =>
+      startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today()))
+    );
 
-  const setOpen = (next: boolean) => {
-    // A read-only picker does not open. What it holds is something to read, and
-    // a calendar whose every cell was inert would be a menu of nothing.
-    if (next && (readOnly || disabled)) {
-      return;
-    }
-    if (openProp === undefined) {
-      setUncontrolledOpen(next);
-    }
-    onOpenChange?.(next);
-  };
-
-  const commit = (next: Date | null) => {
-    if (valueProp === undefined) {
-      setUncontrolledValue(next);
-    }
-    onValueChange?.(next);
-  };
-
-  const select = (date: Date) => {
-    // The unit is the answer, so the day inside it is not the caller's to read:
-    // a month picker reports the 1st whichever cell was clicked, and the footer
-    // shortcut lands on the same value the grid would have.
-    const unit = startOfUnit(date, granularity);
-    // The day changes; the time of day, if the value had one, does not. A
-    // `DatePicker` bound to a field that also carries a time should not silently
-    // reset it to midnight every time the day is corrected.
-    const next = isValidDate(value) ? mergeDateAndTime(unit, value) : unit;
-    commit(next);
-    setMonth(startOfMonth(next));
-    if (closeOnSelect) {
-      setOpen(false);
-    }
-  };
-
-  const now = today();
-  // Read at the same unit the grid reads it at, and against the same value the
-  // shortcut would commit — otherwise a "This month" button greys out because
-  // the 1st is a Saturday, or stays lit for a month that has no day left in it.
-  const shortcut = startOfUnit(now, granularity);
-  const shortcutBlocked =
-    isUnitOutside(now, granularity, minDate, maxDate) || (shouldDisableDate?.(shortcut) ?? false);
-  const shortcutLabel =
-    granularity === 'year'
-      ? labels.thisYear
-      : granularity === 'month'
-        ? labels.thisMonth
-        : labels.today;
-  const hasFooter = showTodayButton || clearable;
-
-  // Holds the trigger open at the width of the longest date it could show, so
-  // choosing the 1st after the 28th does not shrink the field.
-  const samples = React.useMemo(
-    () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
-    [locale, displayFormat, placeholder]
-  );
-
-  return (
-    <PickerShell
-      {...shell}
-      size={size}
-      color={color}
-      readOnly={readOnly}
-      disabled={disabled}
-      triggerRef={ref}
-      startIcon={startIcon ?? <CalendarIcon />}
-      display={isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')}
-      samples={samples}
-      empty={!isValidDate(value)}
-      clearable={clearable}
-      onClear={() => commit(null)}
-      open={open}
-      onOpenChange={setOpen}
-      labels={labels}
-      hiddenValues={
-        name
-          ? [{ name, value: isValidDate(value) ? isoWriters[granularity](value) : '' }]
-          : undefined
+    // Opening puts the calendar back on the chosen day. Without this, a picker
+    // that was left on 2019 while browsing stays there the next time it is opened,
+    // which reads as the control having forgotten its own value.
+    React.useEffect(() => {
+      if (open) {
+        setMonth(startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today())));
       }
-    >
-      <div className={cx('flex flex-col', hasFooter && 'gap-1.5')}>
-        <Calendar
-          size={size}
-          color={color}
-          locale={locale}
-          weekStartsOn={firstDay}
-          month={month}
-          onMonthChange={setMonth}
-          selected={[value]}
-          onSelect={select}
-          granularity={granularity}
-          minDate={minDate}
-          maxDate={maxDate}
-          shouldDisableDate={shouldDisableDate}
-          labels={labels}
-          autoFocus
-        />
+      // Only when the popup opens — following `value` here would drag the calendar
+      // out from under someone typing into a form elsewhere on the page.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
-        {hasFooter ? (
-          <PickerFooter size={size}>
-            {clearable ? (
-              <Button
-                variant="text"
-                size={size}
-                color={color}
-                density="compact"
-                onClick={() => {
-                  commit(null);
-                  setOpen(false);
-                }}
-              >
-                {labels.clear}
-              </Button>
-            ) : null}
-            {showTodayButton ? (
-              <Button
-                variant="text"
-                size={size}
-                color={color}
-                density="compact"
-                disabled={shortcutBlocked}
-                onClick={() => select(now)}
-              >
-                {shortcutLabel}
-              </Button>
-            ) : null}
-          </PickerFooter>
-        ) : null}
-      </div>
-    </PickerShell>
-  );
-});
+    const setOpen = (next: boolean) => {
+      // A read-only picker does not open. What it holds is something to read, and
+      // a calendar whose every cell was inert would be a menu of nothing.
+      if (next && (readOnly || disabled)) {
+        return;
+      }
+      if (openProp === undefined) {
+        setUncontrolledOpen(next);
+      }
+      onOpenChange?.(next);
+    };
+
+    const commit = (next: Date | null) => {
+      if (valueProp === undefined) {
+        setUncontrolledValue(next);
+      }
+      onValueChange?.(next);
+    };
+
+    const select = (date: Date) => {
+      // The unit is the answer, so the day inside it is not the caller's to read:
+      // a month picker reports the 1st whichever cell was clicked, and the footer
+      // shortcut lands on the same value the grid would have.
+      const unit = startOfUnit(date, granularity);
+      // The day changes; the time of day, if the value had one, does not. A
+      // `DatePicker` bound to a field that also carries a time should not silently
+      // reset it to midnight every time the day is corrected.
+      const next = isValidDate(value) ? mergeDateAndTime(unit, value) : unit;
+      commit(next);
+      setMonth(startOfMonth(next));
+      if (closeOnSelect) {
+        setOpen(false);
+      }
+    };
+
+    const now = today();
+    // Read at the same unit the grid reads it at, and against the same value the
+    // shortcut would commit — otherwise a "This month" button greys out because
+    // the 1st is a Saturday, or stays lit for a month that has no day left in it.
+    const shortcut = startOfUnit(now, granularity);
+    const shortcutBlocked =
+      isUnitOutside(now, granularity, minDate, maxDate) || (shouldDisableDate?.(shortcut) ?? false);
+    const shortcutLabel =
+      granularity === 'year'
+        ? labels.thisYear
+        : granularity === 'month'
+          ? labels.thisMonth
+          : labels.today;
+    const hasFooter = showTodayButton || clearable;
+
+    // Holds the trigger open at the width of the longest date it could show, so
+    // choosing the 1st after the 28th does not shrink the field.
+    const samples = React.useMemo(
+      () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
+      [locale, displayFormat, placeholder]
+    );
+
+    return (
+      <PickerShell
+        {...shell}
+        size={size}
+        color={color}
+        readOnly={readOnly}
+        disabled={disabled}
+        triggerRef={ref}
+        startIcon={startIcon ?? <CalendarIcon />}
+        display={
+          isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')
+        }
+        samples={samples}
+        empty={!isValidDate(value)}
+        clearable={clearable}
+        onClear={() => commit(null)}
+        open={open}
+        onOpenChange={setOpen}
+        labels={labels}
+        hiddenValues={
+          name
+            ? [{ name, value: isValidDate(value) ? isoWriters[granularity](value) : '' }]
+            : undefined
+        }
+      >
+        <div className={cx('flex flex-col', hasFooter && 'gap-1.5')}>
+          <Calendar
+            size={size}
+            color={color}
+            locale={locale}
+            weekStartsOn={firstDay}
+            month={month}
+            onMonthChange={setMonth}
+            selected={[value]}
+            onSelect={select}
+            granularity={granularity}
+            minDate={minDate}
+            maxDate={maxDate}
+            shouldDisableDate={shouldDisableDate}
+            labels={labels}
+            autoFocus
+          />
+
+          {hasFooter ? (
+            <PickerFooter size={size}>
+              {clearable ? (
+                <Button
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  onClick={() => {
+                    commit(null);
+                    setOpen(false);
+                  }}
+                >
+                  {labels.clear}
+                </Button>
+              ) : null}
+              {showTodayButton ? (
+                <Button
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density="compact"
+                  disabled={shortcutBlocked}
+                  onClick={() => select(now)}
+                >
+                  {shortcutLabel}
+                </Button>
+              ) : null}
+            </PickerFooter>
+          ) : null}
+        </div>
+      </PickerShell>
+    );
+  }
+);

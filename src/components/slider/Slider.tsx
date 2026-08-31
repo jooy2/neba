@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Slider as BaseUISlider } from '@base-ui/react/slider';
 import { cx, metaTextClasses, surfaceClasses, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 type BaseSliderProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUISlider.Root>,
@@ -123,8 +124,8 @@ const disabledSliderClasses = '[filter:saturate(0.25)] opacity-70 [&_*]:cursor-n
  * one thumb per entry — there is no separate `range` prop, because the shape of
  * the value already says which one this is.
  */
-export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Slider(
-  {
+export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Slider(rawProps, ref) {
+  const {
     size = 'md',
     color = 'primary',
     orientation = 'horizontal',
@@ -135,9 +136,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
     className,
     style,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size']);
+
   const vertical = orientation === 'vertical';
 
   const slots = {

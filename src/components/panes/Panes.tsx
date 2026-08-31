@@ -5,6 +5,7 @@ import { beginPointerDrag } from '../../internal/drag.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * A pane's share of the split, as a percentage of the container or as a CSS
@@ -151,8 +152,8 @@ function initialFractions(
  * *be* Panes: the constraints are read off their props, and a Pane wrapped in
  * something else is a pane with no minimum.
  */
-export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes(
-  {
+export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes(rawProps, ref) {
+  const {
     orientation = 'horizontal',
     resizable = true,
     color = 'primary',
@@ -163,9 +164,8 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size']);
+
   const items = React.Children.toArray(children).filter(
     React.isValidElement
   ) as React.ReactElement<PaneProps>[];

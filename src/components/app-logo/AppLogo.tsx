@@ -16,6 +16,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How the artwork is *framed*, which is the one question this component exists
@@ -237,8 +238,8 @@ const variantClasses: Record<NebaVariant, string> = {
  * a logo next to a [Typography], and inventing a second spelling for that would
  * give the library two of them.
  */
-export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppLogo(
-  {
+export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppLogo(rawProps, ref) {
+  const {
     src,
     srcSet,
     alt,
@@ -259,9 +260,8 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'variant']);
+
   const tile = shape !== 'bare';
   const artwork = hasContent(children) ? children : src ? 'image' : null;
 

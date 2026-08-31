@@ -7,6 +7,7 @@ import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import { collapsedOnlyClasses, PageLayoutContext } from '../../internal/page-layout.js';
 import type { PageLayoutCollapse, SidebarSide } from '../../internal/page-layout.js';
 import { cx } from '../../internal/styles.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface SidebarTriggerProps extends Omit<IconButtonProps, 'icon' | 'label'> {
   /** Which of the layout's two sidebars it opens. @default 'start' */
@@ -60,8 +61,8 @@ function MenuIcon() {
  * could be talking about, and it renders nothing.
  */
 export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTriggerProps>(
-  function SidebarTrigger(
-    {
+  function SidebarTrigger(rawProps, ref) {
+    const {
       side = 'start',
       collapseBelow: collapseBelowProp,
       icon,
@@ -71,9 +72,8 @@ export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTrigger
       className,
       onClick,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['variant', 'locale']);
+
     const layout = React.useContext(PageLayoutContext);
     const locale = localeProp ?? layout.locale;
     const messages = useMessages(layoutMessages, locale);

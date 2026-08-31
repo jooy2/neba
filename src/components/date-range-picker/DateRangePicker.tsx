@@ -21,6 +21,7 @@ import {
 } from '../../internal/date.js';
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaWeekday } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Two ends, either of which may be missing.
@@ -104,8 +105,8 @@ export interface DateRangePickerProps extends PickerShellProps {
  * between the two.
  */
 export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePickerProps>(
-  function DateRangePicker(
-    {
+  function DateRangePicker(rawProps, ref) {
+    const {
       value: valueProp,
       defaultValue,
       onValueChange,
@@ -133,9 +134,8 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       disabled = false,
       startIcon,
       ...shell
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
+
     const labels = usePickerLabels(labelOverrides);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
 

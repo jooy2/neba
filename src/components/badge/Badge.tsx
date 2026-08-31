@@ -10,6 +10,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaCorner, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface BadgeProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color' | 'content'> {
@@ -211,8 +212,8 @@ function capContent(content: React.ReactNode, max: number): React.ReactNode {
  * What it does owe a screen reader is a sentence rather than a number, which is
  * what `label` is for — `content={3}` beside a bell reads out as "3".
  */
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  {
+export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badge(rawProps, ref) {
+  const {
     variant = 'solid',
     size = 'md',
     color = 'primary',
@@ -230,9 +231,8 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const anchored = hasContent(children);
   // `0` is content, and `hasContent` would agree — this is the one place the
   // library asks a second question, because a count of nothing is not news.

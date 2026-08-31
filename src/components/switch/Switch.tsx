@@ -12,6 +12,7 @@ import {
   tickRowLeadingClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Which side of the track the label sits on. */
 export type SwitchLabelPlacement = 'start' | 'end';
@@ -152,8 +153,8 @@ const thumbClasses = [
  * value that gets submitted with a form, a switch takes effect the moment it
  * moves. If there is a Save button underneath, it should have been a checkbox.
  */
-export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch(
-  {
+export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch(rawProps, ref) {
+  const {
     size = 'md',
     color = 'primary',
     label,
@@ -167,9 +168,8 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     classNames,
     style,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size']);
+
   const hasError = error !== undefined && error !== null && error !== false && error !== '';
   const isInvalid = invalid ?? hasError;
   const family: NebaColor = isInvalid ? 'danger' : color;

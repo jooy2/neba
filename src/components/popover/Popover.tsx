@@ -18,6 +18,7 @@ import {
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * A popover takes `size`, `color` and `density` and stops there.
@@ -177,32 +178,34 @@ export const PopoverClose = BaseUIPopover.Close;
  * the `aria-labelledby` / `aria-describedby` wiring. What is left here is the
  * surface, the width ladder and the header.
  */
-export function Popover({
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  trigger,
-  title,
-  description,
-  children,
-  side = 'bottom',
-  align = 'center',
-  sideOffset = 6,
-  alignOffset = 0,
-  arrow = false,
-  open,
-  defaultOpen,
-  onOpenChange,
-  modal = false,
-  dismissible = true,
-  showClose = false,
-  locale,
-  closeLabel,
-  width,
-  className,
-  style,
-  ...props
-}: PopoverProps) {
+export function Popover(rawProps: PopoverProps) {
+  const {
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    trigger,
+    title,
+    description,
+    children,
+    side = 'bottom',
+    align = 'center',
+    sideOffset = 6,
+    alignOffset = 0,
+    arrow = false,
+    open,
+    defaultOpen,
+    onOpenChange,
+    modal = false,
+    dismissible = true,
+    showClose = false,
+    locale,
+    closeLabel,
+    width,
+    className,
+    style,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];

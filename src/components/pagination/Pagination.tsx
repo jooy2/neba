@@ -6,6 +6,7 @@ import { fillMessage, paginationMessages, useMessages } from '../../internal/i18
 import { ChevronIcon } from '../../internal/icons.js';
 import { controlTextClasses, cx, gapClasses, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface PaginationProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'nav'>, 'color' | 'onChange'> {
@@ -184,162 +185,162 @@ const ellipsisClasses: Record<NebaSize, string> = {
  * needs to hear: a named landmark it can skip, holding a list whose length says
  * how far the pages go, with `aria-current="page"` marking where it is.
  */
-export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(function Pagination(
-  {
-    variant = 'text',
-    size = 'md',
-    color = 'primary',
-    density = 'compact',
-    elevation = 0,
-    count,
-    page: pageProp,
-    defaultPage = 1,
-    onPageChange,
-    siblingCount = 1,
-    boundaryCount = 1,
-    showEdges = false,
-    showArrows = true,
-    disabled = false,
-    getPageHref,
-    locale,
-    label,
-    pageLabel,
-    previousLabel,
-    nextLabel,
-    firstLabel,
-    lastLabel,
-    className,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(paginationMessages, locale);
-  const namePage =
-    pageLabel ?? ((value: number) => fillMessage(messages.page, { page: String(value) }));
+export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
+  function Pagination(rawProps, ref) {
+    const {
+      variant = 'text',
+      size = 'md',
+      color = 'primary',
+      density = 'compact',
+      elevation = 0,
+      count,
+      page: pageProp,
+      defaultPage = 1,
+      onPageChange,
+      siblingCount = 1,
+      boundaryCount = 1,
+      showEdges = false,
+      showArrows = true,
+      disabled = false,
+      getPageHref,
+      locale,
+      label,
+      pageLabel,
+      previousLabel,
+      nextLabel,
+      firstLabel,
+      lastLabel,
+      className,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const [uncontrolled, setUncontrolled] = React.useState(defaultPage);
-  const current = Math.min(Math.max(pageProp ?? uncontrolled, 1), Math.max(count, 1));
+    const messages = useMessages(paginationMessages, locale);
+    const namePage =
+      pageLabel ?? ((value: number) => fillMessage(messages.page, { page: String(value) }));
 
-  const go = (next: number) => {
-    const clamped = Math.min(Math.max(next, 1), count);
-    if (clamped === current) {
-      return;
-    }
-    if (pageProp === undefined) {
-      setUncontrolled(clamped);
-    }
-    onPageChange?.(clamped);
-  };
+    const [uncontrolled, setUncontrolled] = React.useState(defaultPage);
+    const current = Math.min(Math.max(pageProp ?? uncontrolled, 1), Math.max(count, 1));
 
-  // One page is not a set of pages, and no pages is not a thing to say out loud.
-  // A row that renders a lone disabled "1" is a control advertising that it has
-  // nothing to do.
-  if (count < 2) {
-    return null;
-  }
+    const go = (next: number) => {
+      const clamped = Math.min(Math.max(next, 1), count);
+      if (clamped === current) {
+        return;
+      }
+      if (pageProp === undefined) {
+        setUncontrolled(clamped);
+      }
+      onPageChange?.(clamped);
+    };
 
-  const slots = paginationRange(count, current, siblingCount, boundaryCount);
-  const atStart = current <= 1;
-  const atEnd = current >= count;
-
-  /*
-   * A link only where there is somewhere to go. The page being read and a
-   * stepper at the end of the row are both `disabled`, and `disabled` is not
-   * something an `<a>` can be — a link that only looks unavailable is one a
-   * keyboard still lands on and a crawler still follows.
-   */
-  const linkProps = (to: number, inert: boolean, rel?: 'prev' | 'next') =>
-    getPageHref && !inert ? { render: <a href={getPageHref(to)} rel={rel} /> } : null;
-
-  /*
-   * Who answers the press.
-   *
-   * With an `href` and a handler both, the handler wins and the navigation is
-   * cancelled: that is a client-side router keeping the page it already has.
-   * With an `href` and no handler, the link is left to do what a link does —
-   * which is also what makes the row work with JavaScript still loading.
-   */
-  const press = (event: React.MouseEvent<HTMLElement>, to: number) => {
-    // A press carrying a modifier is the reader asking the browser for it: a
-    // new tab, a new window, a saved copy. Never ours to cancel.
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-      return;
+    // One page is not a set of pages, and no pages is not a thing to say out loud.
+    // A row that renders a lone disabled "1" is a control advertising that it has
+    // nothing to do.
+    if (count < 2) {
+      return null;
     }
 
-    if (getPageHref && !onPageChange) {
-      return;
-    }
+    const slots = paginationRange(count, current, siblingCount, boundaryCount);
+    const atStart = current <= 1;
+    const atEnd = current >= count;
 
-    event.preventDefault();
-    go(to);
-  };
+    /*
+     * A link only where there is somewhere to go. The page being read and a
+     * stepper at the end of the row are both `disabled`, and `disabled` is not
+     * something an `<a>` can be — a link that only looks unavailable is one a
+     * keyboard still lands on and a crawler still follows.
+     */
+    const linkProps = (to: number, inert: boolean, rel?: 'prev' | 'next') =>
+      getPageHref && !inert ? { render: <a href={getPageHref(to)} rel={rel} /> } : null;
 
-  /**
-   * The steppers. Icon-only Buttons, so they go square and land on exactly the
-   * same footprint as a single-digit page — a row whose ends are a different
-   * width from its middle reads as two controls pushed together.
-   *
-   * The chevron is drawn pointing down and turned, which is the one allowance
-   * the no-transform rule makes: a glyph has no text in it to resample.
-   */
-  const stepper = (
-    key: string,
-    accessibleName: string,
-    to: number,
-    inert: boolean,
-    rotation: string,
-    glyph: React.ReactNode,
-    rel?: 'prev' | 'next'
-  ) => (
-    <li key={key} className="flex">
-      <Button
-        variant={variant}
-        size={size}
-        color={color}
-        density={density}
-        elevation={elevation}
-        disabled={disabled || inert}
-        aria-label={accessibleName}
-        startIcon={<span className={`flex items-center ${rotation}`}>{glyph}</span>}
-        onClick={(event) => press(event, to)}
-        {...linkProps(to, disabled || inert, rel)}
-      />
-    </li>
-  );
+    /*
+     * Who answers the press.
+     *
+     * With an `href` and a handler both, the handler wins and the navigation is
+     * cancelled: that is a client-side router keeping the page it already has.
+     * With an `href` and no handler, the link is left to do what a link does —
+     * which is also what makes the row work with JavaScript still loading.
+     */
+    const press = (event: React.MouseEvent<HTMLElement>, to: number) => {
+      // A press carrying a modifier is the reader asking the browser for it: a
+      // new tab, a new window, a saved copy. Never ours to cancel.
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
 
-  return (
-    <nav
-      ref={ref}
-      aria-label={label ?? messages.label}
-      className={cx('flex items-center', className ?? '')}
-      {...props}
-    >
-      <ul role="list" className={`m-0 flex list-none items-center p-0 ${gapClasses[size]}`}>
-        {showEdges
-          ? stepper(
-              'first',
-              firstLabel ?? messages.first,
-              1,
-              atStart,
-              'rotate-180 rtl:rotate-0',
-              <DoubleChevronIcon />
-            )
-          : null}
+      if (getPageHref && !onPageChange) {
+        return;
+      }
 
-        {showArrows
-          ? stepper(
-              'previous',
-              previousLabel ?? messages.previous,
-              current - 1,
-              atStart,
-              'rotate-90 rtl:-rotate-90',
-              <ChevronIcon />,
-              'prev'
-            )
-          : null}
+      event.preventDefault();
+      go(to);
+    };
 
-        {/* Keyed by *slot*, never by page number.
+    /**
+     * The steppers. Icon-only Buttons, so they go square and land on exactly the
+     * same footprint as a single-digit page — a row whose ends are a different
+     * width from its middle reads as two controls pushed together.
+     *
+     * The chevron is drawn pointing down and turned, which is the one allowance
+     * the no-transform rule makes: a glyph has no text in it to resample.
+     */
+    const stepper = (
+      key: string,
+      accessibleName: string,
+      to: number,
+      inert: boolean,
+      rotation: string,
+      glyph: React.ReactNode,
+      rel?: 'prev' | 'next'
+    ) => (
+      <li key={key} className="flex">
+        <Button
+          variant={variant}
+          size={size}
+          color={color}
+          density={density}
+          elevation={elevation}
+          disabled={disabled || inert}
+          aria-label={accessibleName}
+          startIcon={<span className={`flex items-center ${rotation}`}>{glyph}</span>}
+          onClick={(event) => press(event, to)}
+          {...linkProps(to, disabled || inert, rel)}
+        />
+      </li>
+    );
+
+    return (
+      <nav
+        ref={ref}
+        aria-label={label ?? messages.label}
+        className={cx('flex items-center', className ?? '')}
+        {...props}
+      >
+        <ul role="list" className={`m-0 flex list-none items-center p-0 ${gapClasses[size]}`}>
+          {showEdges
+            ? stepper(
+                'first',
+                firstLabel ?? messages.first,
+                1,
+                atStart,
+                'rotate-180 rtl:rotate-0',
+                <DoubleChevronIcon />
+              )
+            : null}
+
+          {showArrows
+            ? stepper(
+                'previous',
+                previousLabel ?? messages.previous,
+                current - 1,
+                atStart,
+                'rotate-90 rtl:-rotate-90',
+                <ChevronIcon />,
+                'prev'
+              )
+            : null}
+
+          {/* Keyed by *slot*, never by page number.
             The window recentres on the page that was just chosen, so almost
             every number moves one place along — and with the number as the key,
             React moves the DOM nodes to match. The button under the pointer is
@@ -349,82 +350,83 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
             drains somewhere the cursor is not. That reads as a flicker.
             Keying by position keeps every node where it is and changes only its
             label and variant, which is what the row is actually doing. */}
-        {slots.map((slot, index) =>
-          typeof slot === 'number' ? (
-            <li key={`slot-${index}`} className="flex">
-              <Button
-                // The current page is always filled, whatever the row's resting
-                // variant is: it is the one thing here that has to be legible
-                // without being read.
-                variant={slot === current ? 'solid' : variant}
-                size={size}
-                color={color}
-                density={density}
-                elevation={elevation}
-                disabled={disabled}
-                aria-label={namePage(slot)}
-                aria-current={slot === current ? 'page' : undefined}
-                className="tabular-nums"
-                onClick={(event) => press(event, slot)}
-                // The page being read is not somewhere to go, so it keeps its
-                // `aria-current` and stops being a link — the same rule
-                // Breadcrumb applies to the step the reader is standing on.
-                {...linkProps(slot, disabled || slot === current)}
+          {slots.map((slot, index) =>
+            typeof slot === 'number' ? (
+              <li key={`slot-${index}`} className="flex">
+                <Button
+                  // The current page is always filled, whatever the row's resting
+                  // variant is: it is the one thing here that has to be legible
+                  // without being read.
+                  variant={slot === current ? 'solid' : variant}
+                  size={size}
+                  color={color}
+                  density={density}
+                  elevation={elevation}
+                  disabled={disabled}
+                  aria-label={namePage(slot)}
+                  aria-current={slot === current ? 'page' : undefined}
+                  className="tabular-nums"
+                  onClick={(event) => press(event, slot)}
+                  // The page being read is not somewhere to go, so it keeps its
+                  // `aria-current` and stops being a link — the same rule
+                  // Breadcrumb applies to the step the reader is standing on.
+                  {...linkProps(slot, disabled || slot === current)}
+                >
+                  {slot}
+                </Button>
+              </li>
+            ) : (
+              <li
+                key={`slot-${index}`}
+                aria-hidden="true"
+                className={[
+                  'flex select-none items-center justify-center',
+                  'text-(--neba-muted-fg)',
+                  controlTextClasses[size],
+                  ellipsisClasses[size]
+                ].join(' ')}
               >
-                {slot}
-              </Button>
-            </li>
-          ) : (
-            <li
-              key={`slot-${index}`}
-              aria-hidden="true"
-              className={[
-                'flex select-none items-center justify-center',
-                'text-(--neba-muted-fg)',
-                controlTextClasses[size],
-                ellipsisClasses[size]
-              ].join(' ')}
-            >
-              …
-            </li>
-          )
-        )}
-
-        {showArrows
-          ? stepper(
-              'next',
-              nextLabel ?? messages.next,
-              current + 1,
-              atEnd,
-              '-rotate-90 rtl:rotate-90',
-              <ChevronIcon />,
-              'next'
+                …
+              </li>
             )
-          : null}
+          )}
 
-        {showEdges
-          ? stepper(
-              'last',
-              lastLabel ?? messages.last,
-              count,
-              atEnd,
-              'rtl:rotate-180',
-              <DoubleChevronIcon />
-            )
-          : null}
-      </ul>
+          {showArrows
+            ? stepper(
+                'next',
+                nextLabel ?? messages.next,
+                current + 1,
+                atEnd,
+                '-rotate-90 rtl:rotate-90',
+                <ChevronIcon />,
+                'next'
+              )
+            : null}
 
-      {/* Where the reader is, as a sentence rather than as a highlighted button.
+          {showEdges
+            ? stepper(
+                'last',
+                lastLabel ?? messages.last,
+                count,
+                atEnd,
+                'rtl:rotate-180',
+                <DoubleChevronIcon />
+              )
+            : null}
+        </ul>
+
+        {/* Where the reader is, as a sentence rather than as a highlighted button.
           `aria-current` says which page is chosen; this says how many there are,
           which the list length alone does not once an ellipsis is in it. */}
-      <span className={srOnlyClasses} aria-live="polite">
-        {fillMessage(messages.status, {
-          page: String(current),
-          total: String(count)
-        })}
-      </span>
+        <span className={srOnlyClasses} aria-live="polite">
+          {fillMessage(messages.status, {
+            page: String(current),
+            total: String(count)
+          })}
+        </span>
 
-      {children}
-    </nav>
-  );
-});
+        {children}
+      </nav>
+    );
+  }
+);

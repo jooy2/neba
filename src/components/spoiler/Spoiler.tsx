@@ -14,6 +14,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface SpoilerProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -146,141 +147,142 @@ const scrimClasses = '[background-color:color-mix(in_oklab,var(--neba-surface)_5
  * readable by a screen reader and not selectable by a drag across the page. A
  * spoiler that could be defeated by Ctrl-A is not a spoiler.
  */
-export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(function Spoiler(
-  {
-    revealed,
-    defaultRevealed = false,
-    onRevealedChange,
-    locale,
-    label,
-    hideLabel,
-    description,
-    action,
-    reversible = false,
-    maxHeight,
-    blur = 10,
-    padded = true,
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(spoilerMessages, locale);
-  const contentId = React.useId();
+export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
+  function Spoiler(rawProps, ref) {
+    const {
+      revealed,
+      defaultRevealed = false,
+      onRevealedChange,
+      locale,
+      label,
+      hideLabel,
+      description,
+      action,
+      reversible = false,
+      maxHeight,
+      blur = 10,
+      padded = true,
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const [uncontrolled, setUncontrolled] = React.useState(defaultRevealed);
-  const open = revealed ?? uncontrolled;
+    const messages = useMessages(spoilerMessages, locale);
+    const contentId = React.useId();
 
-  const change = (next: boolean) => {
-    if (revealed === undefined) {
-      setUncontrolled(next);
-    }
+    const [uncontrolled, setUncontrolled] = React.useState(defaultRevealed);
+    const open = revealed ?? uncontrolled;
 
-    onRevealedChange?.(next);
-  };
+    const change = (next: boolean) => {
+      if (revealed === undefined) {
+        setUncontrolled(next);
+      }
 
-  const notice = description === false ? null : (description ?? messages.notice);
+      onRevealedChange?.(next);
+    };
 
-  return (
-    <div
-      ref={ref}
-      className={cx(
-        'relative isolate overflow-hidden',
-        radiusClasses[size],
-        variantClasses[variant],
-        transitionClasses,
-        className ?? ''
-      )}
-      style={{ ...surfaceSlots(color, elevation), ...style }}
-      {...props}
-    >
+    const notice = description === false ? null : (description ?? messages.notice);
+
+    return (
       <div
-        id={contentId}
+        ref={ref}
         className={cx(
-          'min-w-0',
-          padded ? boxPaddingClasses[density][size] : '',
-          '[transition:filter_var(--neba-duration-fill)_var(--neba-ease)]',
-          'motion-reduce:[transition-duration:0ms]',
-          open ? '' : 'select-none'
+          'relative isolate overflow-hidden',
+          radiusClasses[size],
+          variantClasses[variant],
+          transitionClasses,
+          className ?? ''
         )}
-        style={{
-          filter: open ? undefined : `blur(${blur}px)`,
-          // The clamp is only ever on the covered state: revealing something and
-          // leaving it in a box with a scrollbar is answering the wrong question.
-          maxHeight: open ? undefined : maxHeight,
-          overflow: open ? undefined : 'hidden'
-        }}
-        // `inert` rather than `aria-hidden`, the same choice Pill makes for a
-        // collapsed panel: it takes the content out of the tab order, off the
-        // accessibility tree and out of the selection in one attribute, and
-        // `aria-hidden` alone would leave a keyboard reader tabbing into a link
-        // their screen reader has been told is not there.
-        inert={!open}
+        style={{ ...surfaceSlots(color, elevation), ...style }}
+        {...props}
       >
-        {children}
-      </div>
-
-      {open ? null : (
         <div
-          className={[
-            'absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-center',
-            boxPaddingClasses[density][size],
-            scrimClasses
-          ].join(' ')}
+          id={contentId}
+          className={cx(
+            'min-w-0',
+            padded ? boxPaddingClasses[density][size] : '',
+            '[transition:filter_var(--neba-duration-fill)_var(--neba-ease)]',
+            'motion-reduce:[transition-duration:0ms]',
+            open ? '' : 'select-none'
+          )}
+          style={{
+            filter: open ? undefined : `blur(${blur}px)`,
+            // The clamp is only ever on the covered state: revealing something and
+            // leaving it in a box with a scrollbar is answering the wrong question.
+            maxHeight: open ? undefined : maxHeight,
+            overflow: open ? undefined : 'hidden'
+          }}
+          // `inert` rather than `aria-hidden`, the same choice Pill makes for a
+          // collapsed panel: it takes the content out of the tab order, off the
+          // accessibility tree and out of the selection in one attribute, and
+          // `aria-hidden` alone would leave a keyboard reader tabbing into a link
+          // their screen reader has been told is not there.
+          inert={!open}
         >
-          {hasContent(notice) ? (
-            <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>
-          ) : null}
+          {children}
+        </div>
 
-          {action ?? (
+        {open ? null : (
+          <div
+            className={[
+              'absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-center',
+              boxPaddingClasses[density][size],
+              scrimClasses
+            ].join(' ')}
+          >
+            {hasContent(notice) ? (
+              <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>
+            ) : null}
+
+            {action ?? (
+              <Button
+                size={size}
+                color={color}
+                density={density}
+                onClick={() => change(true)}
+                aria-expanded={false}
+                aria-controls={contentId}
+              >
+                {label ?? messages.reveal}
+              </Button>
+            )}
+          </div>
+        )}
+
+        {open && reversible ? (
+          <div
+            className={[
+              'flex justify-end',
+              boxPaddingXClasses[density][size],
+              // The row takes the sheet's padding on both axes and then gives the
+              // top back: `padded` content already ends with a full gap, and two
+              // of them stacked is a hole between the text and the way back out.
+              // `pt-0` beating `py-*` is Tailwind's own longhand-after-shorthand
+              // ordering rather than an accident of how these are concatenated.
+              boxPaddingYClasses[density][size],
+              'pt-0'
+            ].join(' ')}
+          >
             <Button
+              variant="text"
               size={size}
               color={color}
               density={density}
-              onClick={() => change(true)}
-              aria-expanded={false}
+              onClick={() => change(false)}
+              aria-expanded
               aria-controls={contentId}
             >
-              {label ?? messages.reveal}
+              {hideLabel ?? messages.hide}
             </Button>
-          )}
-        </div>
-      )}
-
-      {open && reversible ? (
-        <div
-          className={[
-            'flex justify-end',
-            boxPaddingXClasses[density][size],
-            // The row takes the sheet's padding on both axes and then gives the
-            // top back: `padded` content already ends with a full gap, and two
-            // of them stacked is a hole between the text and the way back out.
-            // `pt-0` beating `py-*` is Tailwind's own longhand-after-shorthand
-            // ordering rather than an accident of how these are concatenated.
-            boxPaddingYClasses[density][size],
-            'pt-0'
-          ].join(' ')}
-        >
-          <Button
-            variant="text"
-            size={size}
-            color={color}
-            density={density}
-            onClick={() => change(false)}
-            aria-expanded
-            aria-controls={contentId}
-          >
-            {hideLabel ?? messages.hide}
-          </Button>
-        </div>
-      ) : null}
-    </div>
-  );
-});
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+);

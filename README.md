@@ -125,6 +125,21 @@ A registered language costs about 1.9 kB gzipped and you pay only for the ones y
 
 Anything the platform already knows — month names, weekday names, AM/PM, number and date formats — comes from `Intl` and needs no registration. And every string a component invents also has a prop that overrides it, so a language Neba does not carry is never a dead end.
 
+### One place for your defaults
+
+```tsx
+import { NebaProvider } from 'neba';
+
+<NebaProvider
+  defaults={{ size: 'sm', density: 'compact', locale: 'ko' }}
+  defaultColorScheme="system"
+>
+  <App />
+</NebaProvider>;
+```
+
+Optional, and every component works without it. It fills in `size`, `density`, `variant` and `locale` where a call site left them out — the call site always wins — owns the colour scheme (`useColorScheme()`, plus a `colorSchemeScript()` for the first-paint flash), and sets the writing direction. `color` and `elevation` are deliberately not defaultable; [the guide](https://neba.cdget.com/guide/provider) says why.
+
 ### Hooks
 
 The hooks the components already run on, from `neba/hooks` (or from the package root):

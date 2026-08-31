@@ -29,6 +29,7 @@ import {
 } from '../../internal/date.js';
 import { cx, gapClasses } from '../../internal/styles.js';
 import type { NebaWeekday } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface DateTimePickerProps extends PickerShellProps {
   /** The chosen moment. Use with `onValueChange` for a controlled picker. */
@@ -94,8 +95,8 @@ export interface DateTimePickerProps extends PickerShellProps {
  * "not before now" rule needs, and it is the one a day-granular check cannot give.
  */
 export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePickerProps>(
-  function DateTimePicker(
-    {
+  function DateTimePicker(rawProps, ref) {
+    const {
       value: valueProp,
       defaultValue,
       onValueChange,
@@ -128,9 +129,8 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       disabled = false,
       startIcon,
       ...shell
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
     const labels = usePickerLabels(labelOverrides);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
     const hour12 = hour12Prop ?? isHour12(locale);

@@ -19,6 +19,7 @@ import {
   toLength
 } from '../../internal/styles.js';
 import type { NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One thing that can be on either side. */
 export interface TransferItem {
@@ -222,170 +223,171 @@ function narrow(rows: readonly TransferItem[], query: string): readonly Transfer
  * `value` is which side they are on, and the two are deliberately separate —
  * ticking is not choosing.
  */
-export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(function Transfer(
-  {
-    items,
-    value,
-    defaultValue,
-    onValueChange,
-    sourceLabel,
-    targetLabel,
-    searchable = false,
-    height = 220,
-    disabled = false,
-    locale,
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    className,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(transferMessages, locale);
+export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
+  function Transfer(rawProps, ref) {
+    const {
+      items,
+      value,
+      defaultValue,
+      onValueChange,
+      sourceLabel,
+      targetLabel,
+      searchable = false,
+      height = 220,
+      disabled = false,
+      locale,
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      className,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const [uncontrolled, setUncontrolled] = React.useState<readonly string[]>(defaultValue ?? []);
-  const selected = value ?? uncontrolled;
+    const messages = useMessages(transferMessages, locale);
 
-  const [ticked, setTicked] = React.useState<ReadonlySet<string>>(() => new Set());
-  const [sourceSearch, setSourceSearch] = React.useState('');
-  const [targetSearch, setTargetSearch] = React.useState('');
+    const [uncontrolled, setUncontrolled] = React.useState<readonly string[]>(defaultValue ?? []);
+    const selected = value ?? uncontrolled;
 
-  const chosen = React.useMemo(() => new Set(selected), [selected]);
-  const source = React.useMemo(
-    () => items.filter((item) => !chosen.has(item.value)),
-    [items, chosen]
-  );
-  const target = React.useMemo(
-    () => items.filter((item) => chosen.has(item.value)),
-    [items, chosen]
-  );
+    const [ticked, setTicked] = React.useState<ReadonlySet<string>>(() => new Set());
+    const [sourceSearch, setSourceSearch] = React.useState('');
+    const [targetSearch, setTargetSearch] = React.useState('');
 
-  const commit = (next: string[]) => {
-    if (value === undefined) setUncontrolled(next);
-    onValueChange?.(next);
-  };
+    const chosen = React.useMemo(() => new Set(selected), [selected]);
+    const source = React.useMemo(
+      () => items.filter((item) => !chosen.has(item.value)),
+      [items, chosen]
+    );
+    const target = React.useMemo(
+      () => items.filter((item) => chosen.has(item.value)),
+      [items, chosen]
+    );
 
-  const tick = (item: string, on: boolean) => {
-    setTicked((current) => {
-      const next = new Set(current);
+    const commit = (next: string[]) => {
+      if (value === undefined) setUncontrolled(next);
+      onValueChange?.(next);
+    };
 
-      if (on) next.add(item);
-      else next.delete(item);
+    const tick = (item: string, on: boolean) => {
+      setTicked((current) => {
+        const next = new Set(current);
 
-      return next;
-    });
-  };
+        if (on) next.add(item);
+        else next.delete(item);
 
-  const tickAll = (rows: readonly TransferItem[], on: boolean) => {
-    setTicked((current) => {
-      const next = new Set(current);
+        return next;
+      });
+    };
 
-      for (const row of rows) {
-        if (row.disabled) continue;
-        if (on) next.add(row.value);
-        else next.delete(row.value);
-      }
+    const tickAll = (rows: readonly TransferItem[], on: boolean) => {
+      setTicked((current) => {
+        const next = new Set(current);
 
-      return next;
-    });
-  };
+        for (const row of rows) {
+          if (row.disabled) continue;
+          if (on) next.add(row.value);
+          else next.delete(row.value);
+        }
 
-  /**
-   * Moving drops the ticks on what moved and keeps the rest. A row that has
-   * arrived on the other side is not still waiting to be sent there, and a row
-   * the filter was hiding was never part of this press.
-   */
-  const move = (moving: readonly TransferItem[], toTarget: boolean) => {
-    const moved = moving.filter((item) => !item.disabled && ticked.has(item.value));
+        return next;
+      });
+    };
 
-    if (moved.length === 0) return;
+    /**
+     * Moving drops the ticks on what moved and keeps the rest. A row that has
+     * arrived on the other side is not still waiting to be sent there, and a row
+     * the filter was hiding was never part of this press.
+     */
+    const move = (moving: readonly TransferItem[], toTarget: boolean) => {
+      const moved = moving.filter((item) => !item.disabled && ticked.has(item.value));
 
-    const ids = new Set(moved.map((item) => item.value));
-    const next = toTarget
-      ? items.filter((item) => chosen.has(item.value) || ids.has(item.value)).map((i) => i.value)
-      : selected.filter((item) => !ids.has(item));
+      if (moved.length === 0) return;
 
-    setTicked((current) => new Set([...current].filter((item) => !ids.has(item))));
-    commit(next);
-  };
+      const ids = new Set(moved.map((item) => item.value));
+      const next = toTarget
+        ? items.filter((item) => chosen.has(item.value) || ids.has(item.value)).map((i) => i.value)
+        : selected.filter((item) => !ids.has(item));
 
-  const sourceRows = narrow(source, sourceSearch);
-  const targetRows = narrow(target, targetSearch);
-  const canSend = sourceRows.some((item) => !item.disabled && ticked.has(item.value));
-  const canReturn = targetRows.some((item) => !item.disabled && ticked.has(item.value));
-  const listHeight = toLength(height);
+      setTicked((current) => new Set([...current].filter((item) => !ids.has(item))));
+      commit(next);
+    };
 
-  const panelStyle = { variant, size, color, density };
+    const sourceRows = narrow(source, sourceSearch);
+    const targetRows = narrow(target, targetSearch);
+    const canSend = sourceRows.some((item) => !item.disabled && ticked.has(item.value));
+    const canReturn = targetRows.some((item) => !item.disabled && ticked.has(item.value));
+    const listHeight = toLength(height);
 
-  return (
-    <div
-      ref={ref}
-      className={cx(
-        'grid w-full items-center gap-3',
-        '[grid-template-columns:minmax(0,1fr)_auto_minmax(0,1fr)]',
-        className ?? ''
-      )}
-      {...props}
-    >
-      <Panel
-        title={hasContent(sourceLabel) ? sourceLabel : messages.source}
-        rows={sourceRows}
-        ticked={ticked}
-        onTick={tick}
-        onTickAll={(on) => tickAll(sourceRows, on)}
-        search={sourceSearch}
-        onSearch={setSourceSearch}
-        searchable={searchable}
-        disabled={disabled}
-        height={listHeight}
-        emptyMessage={messages.empty}
-        searchLabel={messages.search}
-        selectAllLabel={messages.selectAll}
-        style={panelStyle}
-      />
+    const panelStyle = { variant, size, color, density };
 
-      <div className="flex flex-col gap-2">
-        <IconButton
-          size={size}
-          color={color}
-          variant={variant === 'text' ? 'text' : 'outline'}
-          label={messages.toTarget}
-          disabled={disabled || !canSend}
-          onClick={() => move(sourceRows, true)}
-          icon={<ArrowRightIcon />}
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'grid w-full items-center gap-3',
+          '[grid-template-columns:minmax(0,1fr)_auto_minmax(0,1fr)]',
+          className ?? ''
+        )}
+        {...props}
+      >
+        <Panel
+          title={hasContent(sourceLabel) ? sourceLabel : messages.source}
+          rows={sourceRows}
+          ticked={ticked}
+          onTick={tick}
+          onTickAll={(on) => tickAll(sourceRows, on)}
+          search={sourceSearch}
+          onSearch={setSourceSearch}
+          searchable={searchable}
+          disabled={disabled}
+          height={listHeight}
+          emptyMessage={messages.empty}
+          searchLabel={messages.search}
+          selectAllLabel={messages.selectAll}
+          style={panelStyle}
         />
-        <IconButton
-          size={size}
-          color={color}
-          variant={variant === 'text' ? 'text' : 'outline'}
-          label={messages.toSource}
-          disabled={disabled || !canReturn}
-          onClick={() => move(targetRows, false)}
-          // The same glyph turned, which is the one allowance the no-transform
-          // rule makes — and it is logical, so under RTL the arrows already
-          // point the way the lists are laid out.
-          icon={<span className="flex rotate-180">{<ArrowRightIcon />}</span>}
+
+        <div className="flex flex-col gap-2">
+          <IconButton
+            size={size}
+            color={color}
+            variant={variant === 'text' ? 'text' : 'outline'}
+            label={messages.toTarget}
+            disabled={disabled || !canSend}
+            onClick={() => move(sourceRows, true)}
+            icon={<ArrowRightIcon />}
+          />
+          <IconButton
+            size={size}
+            color={color}
+            variant={variant === 'text' ? 'text' : 'outline'}
+            label={messages.toSource}
+            disabled={disabled || !canReturn}
+            onClick={() => move(targetRows, false)}
+            // The same glyph turned, which is the one allowance the no-transform
+            // rule makes — and it is logical, so under RTL the arrows already
+            // point the way the lists are laid out.
+            icon={<span className="flex rotate-180">{<ArrowRightIcon />}</span>}
+          />
+        </div>
+
+        <Panel
+          title={hasContent(targetLabel) ? targetLabel : messages.target}
+          rows={targetRows}
+          ticked={ticked}
+          onTick={tick}
+          onTickAll={(on) => tickAll(targetRows, on)}
+          search={targetSearch}
+          onSearch={setTargetSearch}
+          searchable={searchable}
+          disabled={disabled}
+          height={listHeight}
+          emptyMessage={messages.empty}
+          searchLabel={messages.search}
+          selectAllLabel={messages.selectAll}
+          style={panelStyle}
         />
       </div>
-
-      <Panel
-        title={hasContent(targetLabel) ? targetLabel : messages.target}
-        rows={targetRows}
-        ticked={ticked}
-        onTick={tick}
-        onTickAll={(on) => tickAll(targetRows, on)}
-        search={targetSearch}
-        onSearch={setTargetSearch}
-        searchable={searchable}
-        disabled={disabled}
-        height={listHeight}
-        emptyMessage={messages.empty}
-        searchLabel={messages.search}
-        selectAllLabel={messages.selectAll}
-        style={panelStyle}
-      />
-    </div>
-  );
-});
+    );
+  }
+);

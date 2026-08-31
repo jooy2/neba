@@ -14,6 +14,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How the hierarchy is drawn.
@@ -281,282 +282,283 @@ const keyOf = (value: TreeViewValue) => String(value);
  * of them. The rows the query returns are in document order, which is reading
  * order, because a shut branch is unmounted rather than hidden.
  */
-export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(function TreeView(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    lines = 'simple',
-    expanded,
-    defaultExpanded,
-    onExpandedChange,
-    selected,
-    defaultSelected,
-    onSelectedChange,
-    multiple = false,
-    disabled = false,
-    label,
-    className,
-    style,
-    children,
-    onKeyDown,
-    ...props
-  },
-  ref
-) {
-  const [uncontrolledExpanded, setUncontrolledExpanded] = React.useState<TreeViewValue[]>(
-    defaultExpanded ?? []
-  );
-  const [uncontrolledSelected, setUncontrolledSelected] = React.useState<TreeViewValue[]>(
-    defaultSelected ?? []
-  );
-  const [activeKey, setActiveKey] = React.useState<string | null>(null);
+export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
+  function TreeView(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      lines = 'simple',
+      expanded,
+      defaultExpanded,
+      onExpandedChange,
+      selected,
+      defaultSelected,
+      onSelectedChange,
+      multiple = false,
+      disabled = false,
+      label,
+      className,
+      style,
+      children,
+      onKeyDown,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const expandedValues = expanded ?? uncontrolledExpanded;
-  const selectedValues = selected ?? uncontrolledSelected;
+    const [uncontrolledExpanded, setUncontrolledExpanded] = React.useState<TreeViewValue[]>(
+      defaultExpanded ?? []
+    );
+    const [uncontrolledSelected, setUncontrolledSelected] = React.useState<TreeViewValue[]>(
+      defaultSelected ?? []
+    );
+    const [activeKey, setActiveKey] = React.useState<string | null>(null);
 
-  const rootRef = React.useRef<HTMLUListElement | null>(null);
-  const setRootRef = React.useCallback(
-    (node: HTMLUListElement | null) => {
-      rootRef.current = node;
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
+    const expandedValues = expanded ?? uncontrolledExpanded;
+    const selectedValues = selected ?? uncontrolledSelected;
 
-  const toggle = React.useCallback(
-    (value: TreeViewValue) => {
-      const key = keyOf(value);
-      const current = expanded ?? uncontrolledExpanded;
-      const next = current.some((entry) => keyOf(entry) === key)
-        ? current.filter((entry) => keyOf(entry) !== key)
-        : [...current, value];
+    const rootRef = React.useRef<HTMLUListElement | null>(null);
+    const setRootRef = React.useCallback(
+      (node: HTMLUListElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
 
-      if (expanded === undefined) setUncontrolledExpanded(next);
-      onExpandedChange?.(next);
-    },
-    [expanded, uncontrolledExpanded, onExpandedChange]
-  );
-
-  const select = React.useCallback(
-    (value: TreeViewValue) => {
-      const key = keyOf(value);
-      const current = selected ?? uncontrolledSelected;
-      const isSelected = current.some((entry) => keyOf(entry) === key);
-      // Single select never empties: pressing the chosen row again keeps it,
-      // because "nothing chosen" is a state a caller cannot get back to by
-      // pointing at a row. Multi-select does toggle — that is what it is for.
-      const next = multiple
-        ? isSelected
+    const toggle = React.useCallback(
+      (value: TreeViewValue) => {
+        const key = keyOf(value);
+        const current = expanded ?? uncontrolledExpanded;
+        const next = current.some((entry) => keyOf(entry) === key)
           ? current.filter((entry) => keyOf(entry) !== key)
-          : [...current, value]
-        : [value];
+          : [...current, value];
 
-      if (selected === undefined) setUncontrolledSelected(next);
-      onSelectedChange?.(next);
-    },
-    [multiple, selected, uncontrolledSelected, onSelectedChange]
-  );
+        if (expanded === undefined) setUncontrolledExpanded(next);
+        onExpandedChange?.(next);
+      },
+      [expanded, uncontrolledExpanded, onExpandedChange]
+    );
 
-  const apisRef = React.useRef(new Map<string, TreeItemApi>());
-  const register = React.useCallback((key: string, api: TreeItemApi) => {
-    apisRef.current.set(key, api);
+    const select = React.useCallback(
+      (value: TreeViewValue) => {
+        const key = keyOf(value);
+        const current = selected ?? uncontrolledSelected;
+        const isSelected = current.some((entry) => keyOf(entry) === key);
+        // Single select never empties: pressing the chosen row again keeps it,
+        // because "nothing chosen" is a state a caller cannot get back to by
+        // pointing at a row. Multi-select does toggle — that is what it is for.
+        const next = multiple
+          ? isSelected
+            ? current.filter((entry) => keyOf(entry) !== key)
+            : [...current, value]
+          : [value];
 
-    return () => {
-      apisRef.current.delete(key);
-    };
-  }, []);
+        if (selected === undefined) setUncontrolledSelected(next);
+        onSelectedChange?.(next);
+      },
+      [multiple, selected, uncontrolledSelected, onSelectedChange]
+    );
 
-  /*
-   * The context is keyed on the *contents* of the two lists rather than on their
-   * identity. `expanded={[...open]}` rebuilt on every render is the ordinary way
-   * a controlled tree gets written, and keying on the array itself would rebuild
-   * the context — and re-render every row under it — each time.
-   *
-   * A join rather than `JSON.stringify`: the keys are already strings, so the
-   * quoting and escaping is work spent producing a longer key that answers the
-   * same question. The separator is a NUL, which no key produced by `String()`
-   * of a `string | number` can contain, so two different lists cannot spell one
-   * key.
-   */
-  // Memoised on the arrays themselves as well. When a caller keeps the array
-  // stable this is free; when they rebuild it every render — which is what the
-  // paragraph above is about — it costs one miss and does the join anyway.
-  const expandedKey = React.useMemo(
-    () => expandedValues.map(keyOf).join('\u0000'),
-    [expandedValues]
-  );
-  const selectedKey = React.useMemo(
-    () => selectedValues.map(keyOf).join('\u0000'),
-    [selectedValues]
-  );
+    const apisRef = React.useRef(new Map<string, TreeItemApi>());
+    const register = React.useCallback((key: string, api: TreeItemApi) => {
+      apisRef.current.set(key, api);
 
-  const context = React.useMemo<TreeViewContextValue>(
-    () => ({
-      size,
-      density,
-      disabled,
-      expandedKeys: new Set(expandedValues.map(keyOf)),
-      selectedKeys: new Set(selectedValues.map(keyOf)),
-      activeKey,
-      toggle,
-      select,
-      activate: setActiveKey,
-      register
-    }),
-    // The two lists are read inside and are deliberately not listed here: the
-    // keys above change exactly when their contents do, which is the question.
+      return () => {
+        apisRef.current.delete(key);
+      };
+    }, []);
+
+    /*
+     * The context is keyed on the *contents* of the two lists rather than on their
+     * identity. `expanded={[...open]}` rebuilt on every render is the ordinary way
+     * a controlled tree gets written, and keying on the array itself would rebuild
+     * the context — and re-render every row under it — each time.
+     *
+     * A join rather than `JSON.stringify`: the keys are already strings, so the
+     * quoting and escaping is work spent producing a longer key that answers the
+     * same question. The separator is a NUL, which no key produced by `String()`
+     * of a `string | number` can contain, so two different lists cannot spell one
+     * key.
+     */
+    // Memoised on the arrays themselves as well. When a caller keeps the array
+    // stable this is free; when they rebuild it every render — which is what the
+    // paragraph above is about — it costs one miss and does the join anyway.
+    const expandedKey = React.useMemo(
+      () => expandedValues.map(keyOf).join('\u0000'),
+      [expandedValues]
+    );
+    const selectedKey = React.useMemo(
+      () => selectedValues.map(keyOf).join('\u0000'),
+      [selectedValues]
+    );
+
+    const context = React.useMemo<TreeViewContextValue>(
+      () => ({
+        size,
+        density,
+        disabled,
+        expandedKeys: new Set(expandedValues.map(keyOf)),
+        selectedKeys: new Set(selectedValues.map(keyOf)),
+        activeKey,
+        toggle,
+        select,
+        activate: setActiveKey,
+        register
+      }),
+      // The two lists are read inside and are deliberately not listed here: the
+      // keys above change exactly when their contents do, which is the question.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [size, density, disabled, expandedKey, selectedKey, activeKey, toggle, select, register]
+    );
+
+    /*
+     * The tab stop has to be somewhere, and after a branch shuts it may be on a
+     * row that no longer exists. Rather than tracking every mount and unmount, the
+     * tree checks what is actually rendered and moves the stop to the first row
+     * whenever the one it was on has gone. It runs after every render and sets
+     * state only when it has to, so it settles in a single extra pass.
+     *
+     * No dependency list, deliberately: a branch shutting unmounts rows without
+     * changing anything this could be keyed on.
+     *
+     * The usual answer is the first line and costs nothing. Every rendered row
+     * registers itself and unregisters on the way out, and a child's effect runs
+     * before its parent's — so by the time this runs the map is exactly what is on
+     * screen, and "is the tab stop still there" is a lookup rather than a
+     * `querySelectorAll` over a tree that may hold thousands of rows.
+     */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [size, density, disabled, expandedKey, selectedKey, activeKey, toggle, select, register]
-  );
+    React.useEffect(() => {
+      if (activeKey !== null && apisRef.current.has(activeKey)) return;
 
-  /*
-   * The tab stop has to be somewhere, and after a branch shuts it may be on a
-   * row that no longer exists. Rather than tracking every mount and unmount, the
-   * tree checks what is actually rendered and moves the stop to the first row
-   * whenever the one it was on has gone. It runs after every render and sets
-   * state only when it has to, so it settles in a single extra pass.
-   *
-   * No dependency list, deliberately: a branch shutting unmounts rows without
-   * changing anything this could be keyed on.
-   *
-   * The usual answer is the first line and costs nothing. Every rendered row
-   * registers itself and unregisters on the way out, and a child's effect runs
-   * before its parent's — so by the time this runs the map is exactly what is on
-   * screen, and "is the tab stop still there" is a lookup rather than a
-   * `querySelectorAll` over a tree that may hold thousands of rows.
-   */
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => {
-    if (activeKey !== null && apisRef.current.has(activeKey)) return;
+      const root = rootRef.current;
+      if (!root) return;
 
-    const root = rootRef.current;
-    if (!root) return;
+      // Only when the cheap answer said no. Which row is *first* is a question
+      // about document order, and the DOM is the only thing that knows it — the
+      // map is in registration order, which is mount order and not the same.
+      const rows = treeRows(root);
+      if (rows.length === 0) return;
 
-    // Only when the cheap answer said no. Which row is *first* is a question
-    // about document order, and the DOM is the only thing that knows it — the
-    // map is in registration order, which is mount order and not the same.
-    const rows = treeRows(root);
-    if (rows.length === 0) return;
+      setActiveKey(rows[0].dataset.nebaValue ?? null);
+    });
 
-    setActiveKey(rows[0].dataset.nebaValue ?? null);
-  });
+    function handleKeyDown(event: React.KeyboardEvent<HTMLUListElement>) {
+      onKeyDown?.(event);
+      if (event.defaultPrevented) return;
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLUListElement>) {
-    onKeyDown?.(event);
-    if (event.defaultPrevented) return;
+      const root = rootRef.current;
+      const target = (event.target as HTMLElement | null)?.closest?.(
+        '[role="treeitem"]'
+      ) as HTMLElement | null;
+      if (!root || !target || !root.contains(target)) return;
 
-    const root = rootRef.current;
-    const target = (event.target as HTMLElement | null)?.closest?.(
-      '[role="treeitem"]'
-    ) as HTMLElement | null;
-    if (!root || !target || !root.contains(target)) return;
+      const rows = treeRows(root);
+      const index = rows.indexOf(target);
+      if (index === -1) return;
 
-    const rows = treeRows(root);
-    const index = rows.indexOf(target);
-    if (index === -1) return;
-
-    const move = (row: HTMLElement | null | undefined) => {
-      if (!row) return;
-      event.preventDefault();
-      setActiveKey(row.dataset.nebaValue ?? null);
-      row.focus();
-    };
-
-    // The arrows open and shut without choosing, so they go through the row's
-    // own opener rather than through a click, which would do both.
-    const openBranch = (row: HTMLElement) => {
-      const rowKey = row.dataset.nebaValue;
-      if (rowKey) apisRef.current.get(rowKey)?.toggle();
-    };
-
-    // The direction is read off the element rather than off a prop: a caller may
-    // have set `dir` three ancestors up, and ArrowRight has to mean "further in"
-    // either way.
-    const rtl = getComputedStyle(root).direction === 'rtl';
-    const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
-    const back = rtl ? 'ArrowRight' : 'ArrowLeft';
-    const open = target.getAttribute('aria-expanded');
-
-    switch (event.key) {
-      case 'ArrowDown':
-        move(rows[index + 1]);
-        break;
-      case 'ArrowUp':
-        move(rows[index - 1]);
-        break;
-      case 'Home':
-        move(rows[0]);
-        break;
-      case 'End':
-        move(rows[rows.length - 1]);
-        break;
-      case forward:
-        // Open a shut branch; on an open one, step into it. The first child is
-        // the next row in the document, which is what makes that one line.
-        if (open === 'false') {
-          event.preventDefault();
-          openBranch(target);
-        } else if (open === 'true') {
-          move(rows[index + 1]);
-        }
-        break;
-      case back:
-        if (open === 'true') {
-          event.preventDefault();
-          openBranch(target);
-        } else {
-          move(target.parentElement?.closest('[role="treeitem"]') as HTMLElement | null);
-        }
-        break;
-      // Enter is the one key that *presses* the row — it chooses it, and opens
-      // it on the way, which is what pressing it with a pointer does.
-      case 'Enter':
-      case ' ':
+      const move = (row: HTMLElement | null | undefined) => {
+        if (!row) return;
         event.preventDefault();
-        target.click();
-        break;
-      default:
-        break;
+        setActiveKey(row.dataset.nebaValue ?? null);
+        row.focus();
+      };
+
+      // The arrows open and shut without choosing, so they go through the row's
+      // own opener rather than through a click, which would do both.
+      const openBranch = (row: HTMLElement) => {
+        const rowKey = row.dataset.nebaValue;
+        if (rowKey) apisRef.current.get(rowKey)?.toggle();
+      };
+
+      // The direction is read off the element rather than off a prop: a caller may
+      // have set `dir` three ancestors up, and ArrowRight has to mean "further in"
+      // either way.
+      const rtl = getComputedStyle(root).direction === 'rtl';
+      const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
+      const back = rtl ? 'ArrowRight' : 'ArrowLeft';
+      const open = target.getAttribute('aria-expanded');
+
+      switch (event.key) {
+        case 'ArrowDown':
+          move(rows[index + 1]);
+          break;
+        case 'ArrowUp':
+          move(rows[index - 1]);
+          break;
+        case 'Home':
+          move(rows[0]);
+          break;
+        case 'End':
+          move(rows[rows.length - 1]);
+          break;
+        case forward:
+          // Open a shut branch; on an open one, step into it. The first child is
+          // the next row in the document, which is what makes that one line.
+          if (open === 'false') {
+            event.preventDefault();
+            openBranch(target);
+          } else if (open === 'true') {
+            move(rows[index + 1]);
+          }
+          break;
+        case back:
+          if (open === 'true') {
+            event.preventDefault();
+            openBranch(target);
+          } else {
+            move(target.parentElement?.closest('[role="treeitem"]') as HTMLElement | null);
+          }
+          break;
+        // Enter is the one key that *presses* the row — it chooses it, and opens
+        // it on the way, which is what pressing it with a pointer does.
+        case 'Enter':
+        case ' ':
+          event.preventDefault();
+          target.click();
+          break;
+        default:
+          break;
+      }
     }
+
+    const classNames = cx(
+      'flex list-none flex-col p-1',
+      radiusClasses[size],
+      variantClasses[variant],
+      transitionClasses,
+      linesClasses[lines],
+      className
+    );
+
+    return (
+      <TreeViewContext.Provider value={context}>
+        <ul
+          ref={setRootRef}
+          role="tree"
+          aria-label={label}
+          aria-multiselectable={multiple || undefined}
+          className={classNames}
+          style={
+            {
+              ...surfaceSlots(color, elevation),
+              '--n-tree-indent': indentValues[size],
+              '--n-tree-row': rowHeightValues[size],
+              ...style
+            } as React.CSSProperties
+          }
+          onKeyDown={handleKeyDown}
+          {...props}
+        >
+          {children}
+        </ul>
+      </TreeViewContext.Provider>
+    );
   }
-
-  const classNames = cx(
-    'flex list-none flex-col p-1',
-    radiusClasses[size],
-    variantClasses[variant],
-    transitionClasses,
-    linesClasses[lines],
-    className
-  );
-
-  return (
-    <TreeViewContext.Provider value={context}>
-      <ul
-        ref={setRootRef}
-        role="tree"
-        aria-label={label}
-        aria-multiselectable={multiple || undefined}
-        className={classNames}
-        style={
-          {
-            ...surfaceSlots(color, elevation),
-            '--n-tree-indent': indentValues[size],
-            '--n-tree-row': rowHeightValues[size],
-            ...style
-          } as React.CSSProperties
-        }
-        onKeyDown={handleKeyDown}
-        {...props}
-      >
-        {children}
-      </ul>
-    </TreeViewContext.Provider>
-  );
-});
+);
 
 /**
  * One row, and everything under it.

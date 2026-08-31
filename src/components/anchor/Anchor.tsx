@@ -9,6 +9,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One heading in the list. */
 export interface AnchorItem {
@@ -156,8 +157,8 @@ function activeAt(
  * frontmatter — already knows the ids, and a component that went looking for
  * them would be guessing at which `<h2>`s were content and which were chrome.
  */
-export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor(
-  {
+export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor(rawProps, ref) {
+  const {
     items,
     activeHref,
     onActiveChange,
@@ -172,9 +173,8 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
     className,
     style,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(anchorMessages, locale);
   const [tracked, setTracked] = React.useState<string | null>(null);
 

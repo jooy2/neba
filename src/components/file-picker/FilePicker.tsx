@@ -25,6 +25,7 @@ import type {
   NebaSize,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Why a file was turned away. One reason per file, in the order they are checked. */
 export type FileRejectionReason = 'type' | 'size' | 'count';
@@ -269,342 +270,345 @@ function matchesAccept(file: File, accept: string): boolean {
  * with the file list outside that button — the same shape Chip and ListItem
  * use, because the remove buttons cannot be nested inside the browse button.
  */
-export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(function FilePicker(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    accept,
-    multiple = false,
-    maxSize,
-    maxFiles,
-    value,
-    defaultValue,
-    onFilesChange,
-    onReject,
-    label,
-    description,
-    error,
-    invalid,
-    title,
-    hint,
-    icon,
-    showList = true,
-    removeLabel = (name) => `Remove ${name}`,
-    fullWidth = true,
-    disabled = false,
-    readOnly = false,
-    required = false,
-    name,
-    id,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
+  function FilePicker(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      accept,
+      multiple = false,
+      maxSize,
+      maxFiles,
+      value,
+      defaultValue,
+      onFilesChange,
+      onReject,
+      label,
+      description,
+      error,
+      invalid,
+      title,
+      hint,
+      icon,
+      showList = true,
+      removeLabel = (name: string) => `Remove ${name}`,
+      fullWidth = true,
+      disabled = false,
+      readOnly = false,
+      required = false,
+      name,
+      id,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const [uncontrolled, setUncontrolled] = React.useState<File[]>(() => [...(defaultValue ?? [])]);
-  // The copy is what stops a caller's array being the one held here, and it has
-  // to be memoised: the handlers below close over this list, and a fresh array
-  // every render would rebuild all of them every render.
-  const files = React.useMemo(() => (value ? [...value] : uncontrolled), [value, uncontrolled]);
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
-  // `dragenter`/`dragleave` fire for every child the pointer crosses, so a
-  // boolean flickers the whole time a file is over the box. The depth counter is
-  // the only thing that survives a zone with content in it.
-  const dragDepth = React.useRef(0);
-  const [over, setOver] = React.useState(false);
+    const [uncontrolled, setUncontrolled] = React.useState<File[]>(() => [...(defaultValue ?? [])]);
+    // The copy is what stops a caller's array being the one held here, and it has
+    // to be memoised: the handlers below close over this list, and a fresh array
+    // every render would rebuild all of them every render.
+    const files = React.useMemo(() => (value ? [...value] : uncontrolled), [value, uncontrolled]);
 
-  /*
-   * A drag can end without ever reaching the zone again. Escape cancels one,
-   * and a drop outside the window ends it somewhere the zone will never hear
-   * about — neither fires a `dragleave` here, so the counter stays up and the
-   * box keeps its lit edge until the next drag happens to balance it.
-   *
-   * `dragend` fires on the source, and `drop` on whatever accepted it, so both
-   * are listened for at the document with capture.
-   */
-  React.useEffect(() => {
-    const clear = () => {
-      dragDepth.current = 0;
-      setOver(false);
-    };
+    // `dragenter`/`dragleave` fire for every child the pointer crosses, so a
+    // boolean flickers the whole time a file is over the box. The depth counter is
+    // the only thing that survives a zone with content in it.
+    const dragDepth = React.useRef(0);
+    const [over, setOver] = React.useState(false);
 
-    document.addEventListener('dragend', clear, true);
-    document.addEventListener('drop', clear, true);
+    /*
+     * A drag can end without ever reaching the zone again. Escape cancels one,
+     * and a drop outside the window ends it somewhere the zone will never hear
+     * about — neither fires a `dragleave` here, so the counter stays up and the
+     * box keeps its lit edge until the next drag happens to balance it.
+     *
+     * `dragend` fires on the source, and `drop` on whatever accepted it, so both
+     * are listened for at the document with capture.
+     */
+    React.useEffect(() => {
+      const clear = () => {
+        dragDepth.current = 0;
+        setOver(false);
+      };
 
-    return () => {
-      document.removeEventListener('dragend', clear, true);
-      document.removeEventListener('drop', clear, true);
-    };
-  }, []);
+      document.addEventListener('dragend', clear, true);
+      document.addEventListener('drop', clear, true);
 
-  const hasError = hasContent(error);
-  const isInvalid = invalid ?? hasError;
-  // Invalid re-points the whole slot family at `danger`, so the edge, the ring
-  // and the message all turn over together — the same wiring TextField uses.
-  const family: NebaColor = isInvalid ? 'danger' : color;
-  const inert = disabled || readOnly;
-  const descriptionId = React.useId();
+      return () => {
+        document.removeEventListener('dragend', clear, true);
+        document.removeEventListener('drop', clear, true);
+      };
+    }, []);
 
-  const commit = React.useCallback(
-    (next: File[]) => {
-      if (!value) {
-        setUncontrolled(next);
-      }
-      onFilesChange?.(next);
-    },
-    [onFilesChange, value]
-  );
+    const hasError = hasContent(error);
+    const isInvalid = invalid ?? hasError;
+    // Invalid re-points the whole slot family at `danger`, so the edge, the ring
+    // and the message all turn over together — the same wiring TextField uses.
+    const family: NebaColor = isInvalid ? 'danger' : color;
+    const inert = disabled || readOnly;
+    const descriptionId = React.useId();
 
-  /**
-   * Sorts an incoming batch into kept and rejected.
-   *
-   * The count is checked against what is *already* held rather than against the
-   * batch, which is the difference between "you may drop five files" and "you
-   * may end up with five files" — only the second is what `maxFiles` means.
-   */
-  const accepting = React.useCallback(
-    (incoming: File[]) => {
-      const kept: File[] = [];
-      const rejections: FileRejection[] = [];
-      const room = multiple ? (maxFiles ?? Number.POSITIVE_INFINITY) : 1;
-      const held = multiple ? files.length : 0;
-
-      for (const file of incoming) {
-        if (accept && !matchesAccept(file, accept)) {
-          rejections.push({ file, reason: 'type' });
-        } else if (maxSize !== undefined && file.size > maxSize) {
-          rejections.push({ file, reason: 'size' });
-        } else if (held + kept.length >= room) {
-          rejections.push({ file, reason: 'count' });
-        } else {
-          kept.push(file);
+    const commit = React.useCallback(
+      (next: File[]) => {
+        if (!value) {
+          setUncontrolled(next);
         }
+        onFilesChange?.(next);
+      },
+      [onFilesChange, value]
+    );
+
+    /**
+     * Sorts an incoming batch into kept and rejected.
+     *
+     * The count is checked against what is *already* held rather than against the
+     * batch, which is the difference between "you may drop five files" and "you
+     * may end up with five files" — only the second is what `maxFiles` means.
+     */
+    const accepting = React.useCallback(
+      (incoming: File[]) => {
+        const kept: File[] = [];
+        const rejections: FileRejection[] = [];
+        const room = multiple ? (maxFiles ?? Number.POSITIVE_INFINITY) : 1;
+        const held = multiple ? files.length : 0;
+
+        for (const file of incoming) {
+          if (accept && !matchesAccept(file, accept)) {
+            rejections.push({ file, reason: 'type' });
+          } else if (maxSize !== undefined && file.size > maxSize) {
+            rejections.push({ file, reason: 'size' });
+          } else if (held + kept.length >= room) {
+            rejections.push({ file, reason: 'count' });
+          } else {
+            kept.push(file);
+          }
+        }
+
+        return { kept, rejections };
+      },
+      [accept, files.length, maxFiles, maxSize, multiple]
+    );
+
+    const add = React.useCallback(
+      (incoming: File[]) => {
+        const { kept, rejections } = accepting(incoming);
+
+        if (rejections.length > 0) {
+          onReject?.(rejections);
+        }
+        if (kept.length > 0) {
+          commit(multiple ? [...files, ...kept] : kept);
+        }
+      },
+      [accepting, commit, files, multiple, onReject]
+    );
+
+    const browse = () => {
+      if (inert) {
+        return;
       }
-
-      return { kept, rejections };
-    },
-    [accept, files.length, maxFiles, maxSize, multiple]
-  );
-
-  const add = React.useCallback(
-    (incoming: File[]) => {
-      const { kept, rejections } = accepting(incoming);
-
-      if (rejections.length > 0) {
-        onReject?.(rejections);
+      // Cleared first, so choosing the same file twice in a row still fires
+      // `change` — the input holds its value otherwise and the second pick is
+      // silently dropped.
+      if (inputRef.current) {
+        inputRef.current.value = '';
+        inputRef.current.click();
       }
-      if (kept.length > 0) {
-        commit(multiple ? [...files, ...kept] : kept);
-      }
-    },
-    [accepting, commit, files, multiple, onReject]
-  );
+    };
 
-  const browse = () => {
-    if (inert) {
-      return;
-    }
-    // Cleared first, so choosing the same file twice in a row still fires
-    // `change` — the input holds its value otherwise and the second pick is
-    // silently dropped.
-    if (inputRef.current) {
-      inputRef.current.value = '';
-      inputRef.current.click();
-    }
-  };
+    const zoneClassNames = cx(
+      'flex w-full flex-col items-center justify-center text-center',
+      'cursor-pointer select-none',
+      zonePaddingClasses[density][size],
+      radiusClasses[size],
+      gapClasses[size],
+      transitionClasses,
+      iconClasses,
+      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+      // An if/else rather than stacked variants: two Tailwind classes of equal
+      // specificity resolve by their order in the generated stylesheet.
+      disabled
+        ? `${disabledClasses[variant]} border-2 border-dashed`
+        : readOnly
+          ? `${zoneRestClasses[variant]} ${readOnlyFilterClasses} cursor-default`
+          : zoneRestClasses[variant],
+      !inert ? zoneHoverClasses[variant] : '',
+      over && !inert ? zoneOverClasses : ''
+    );
 
-  const zoneClassNames = cx(
-    'flex w-full flex-col items-center justify-center text-center',
-    'cursor-pointer select-none',
-    zonePaddingClasses[density][size],
-    radiusClasses[size],
-    gapClasses[size],
-    transitionClasses,
-    iconClasses,
-    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-    // An if/else rather than stacked variants: two Tailwind classes of equal
-    // specificity resolve by their order in the generated stylesheet.
-    disabled
-      ? `${disabledClasses[variant]} border-2 border-dashed`
-      : readOnly
-        ? `${zoneRestClasses[variant]} ${readOnlyFilterClasses} cursor-default`
-        : zoneRestClasses[variant],
-    !inert ? zoneHoverClasses[variant] : '',
-    over && !inert ? zoneOverClasses : ''
-  );
+    return (
+      <div
+        className={cx(
+          'flex-col align-top',
+          stackGapClasses[size],
+          fullWidth ? 'flex w-full' : 'inline-flex',
+          className ?? ''
+        )}
+        style={{ ...surfaceSlots(family, elevation), ...style }}
+        {...props}
+      >
+        {hasContent(label) ? (
+          <span
+            className={[
+              metaTextClasses[size],
+              'font-medium',
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
+            ].join(' ')}
+          >
+            {label}
+          </span>
+        ) : null}
 
-  return (
-    <div
-      className={cx(
-        'flex-col align-top',
-        stackGapClasses[size],
-        fullWidth ? 'flex w-full' : 'inline-flex',
-        className ?? ''
-      )}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
-      {...props}
-    >
-      {hasContent(label) ? (
-        <span
-          className={[
-            metaTextClasses[size],
-            'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-          ].join(' ')}
-        >
-          {label}
-        </span>
-      ) : null}
-
-      {/* The drag listeners belong to the shell rather than to the button: a
+        {/* The drag listeners belong to the shell rather than to the button: a
           drop is a gesture over an *area*, and the file list under the box is
           part of the same area as far as the pointer is concerned. */}
-      <div
-        className="flex w-full flex-col"
-        onDragEnter={(event) => {
-          if (inert) {
-            return;
-          }
-          event.preventDefault();
-          dragDepth.current += 1;
-          setOver(true);
-        }}
-        onDragOver={(event) => {
-          if (inert) {
-            return;
-          }
-          // Without this the browser navigates to the file instead of dropping
-          // it, which is the default and is never what anybody wants.
-          event.preventDefault();
-          event.dataTransfer.dropEffect = 'copy';
-        }}
-        onDragLeave={() => {
-          if (inert) {
-            return;
-          }
-          dragDepth.current = Math.max(0, dragDepth.current - 1);
-          if (dragDepth.current === 0) {
+        <div
+          className="flex w-full flex-col"
+          onDragEnter={(event) => {
+            if (inert) {
+              return;
+            }
+            event.preventDefault();
+            dragDepth.current += 1;
+            setOver(true);
+          }}
+          onDragOver={(event) => {
+            if (inert) {
+              return;
+            }
+            // Without this the browser navigates to the file instead of dropping
+            // it, which is the default and is never what anybody wants.
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+          }}
+          onDragLeave={() => {
+            if (inert) {
+              return;
+            }
+            dragDepth.current = Math.max(0, dragDepth.current - 1);
+            if (dragDepth.current === 0) {
+              setOver(false);
+            }
+          }}
+          onDrop={(event) => {
+            if (inert) {
+              return;
+            }
+            event.preventDefault();
+            dragDepth.current = 0;
             setOver(false);
-          }
-        }}
-        onDrop={(event) => {
-          if (inert) {
-            return;
-          }
-          event.preventDefault();
-          dragDepth.current = 0;
-          setOver(false);
-          add(droppedFiles(event.dataTransfer));
-        }}
-      >
-        <button
-          type="button"
-          id={id}
-          disabled={disabled}
-          aria-describedby={hasContent(description) || hasError ? descriptionId : undefined}
-          aria-invalid={isInvalid || undefined}
-          className={zoneClassNames}
-          onClick={browse}
+            add(droppedFiles(event.dataTransfer));
+          }}
         >
-          {icon === undefined ? (
-            <span className="flex items-center text-(--n-accent) [&_svg]:size-[1.8em]">
-              <UploadIcon />
+          <button
+            type="button"
+            id={id}
+            disabled={disabled}
+            aria-describedby={hasContent(description) || hasError ? descriptionId : undefined}
+            aria-invalid={isInvalid || undefined}
+            className={zoneClassNames}
+            onClick={browse}
+          >
+            {icon === undefined ? (
+              <span className="flex items-center text-(--n-accent) [&_svg]:size-[1.8em]">
+                <UploadIcon />
+              </span>
+            ) : hasContent(icon) ? (
+              <span className="flex items-center text-(--n-accent) [&_svg]:size-[1.8em]">
+                {icon}
+              </span>
+            ) : null}
+
+            <span className={`font-medium ${sheetTitleClasses[size]}`}>
+              {title ?? 'Drop files here, or click to browse'}
             </span>
-          ) : hasContent(icon) ? (
-            <span className="flex items-center text-(--n-accent) [&_svg]:size-[1.8em]">{icon}</span>
-          ) : null}
 
-          <span className={`font-medium ${sheetTitleClasses[size]}`}>
-            {title ?? 'Drop files here, or click to browse'}
-          </span>
+            {hasContent(hint) ? (
+              <span className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{hint}</span>
+            ) : null}
+          </button>
 
-          {hasContent(hint) ? (
-            <span className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{hint}</span>
-          ) : null}
-        </button>
-
-        {/*
+          {/*
           The real control, kept off-screen rather than hidden: `display: none`
           and `visibility: hidden` both make an input unfocusable in some
           browsers, and this one still has to be reachable to a form and to a
           `required` validation message.
         */}
-        <input
-          ref={inputRef}
-          type="file"
-          name={name}
-          accept={accept}
-          multiple={multiple}
-          required={required && files.length === 0}
-          disabled={inert}
-          tabIndex={-1}
-          aria-hidden="true"
-          className="absolute size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
-          onChange={(event) => add(Array.from(event.target.files ?? []))}
-        />
-      </div>
+          <input
+            ref={inputRef}
+            type="file"
+            name={name}
+            accept={accept}
+            multiple={multiple}
+            required={required && files.length === 0}
+            disabled={inert}
+            tabIndex={-1}
+            aria-hidden="true"
+            className="absolute size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
+            onChange={(event) => add(Array.from(event.target.files ?? []))}
+          />
+        </div>
 
-      {showList && files.length > 0 ? (
-        <ul
-          role="list"
-          className={`flex w-full flex-col ${stackGapClasses[size]} m-0 list-none p-0`}
-        >
-          {files.map((file, index) => (
-            <li
-              key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
-              className={[
-                'flex w-full items-center gap-2 px-2 py-1.5',
-                radiusClasses.xs,
-                controlTextLeadingClasses[size],
-                'bg-(--n-soft) text-(--neba-fg)'
-              ].join(' ')}
-            >
-              <span className="min-w-0 flex-1 truncate">{file.name}</span>
-              <span
-                className={`shrink-0 text-(--neba-muted-fg) tabular-nums ${metaTextClasses[size]}`}
+        {showList && files.length > 0 ? (
+          <ul
+            role="list"
+            className={`flex w-full flex-col ${stackGapClasses[size]} m-0 list-none p-0`}
+          >
+            {files.map((file, index) => (
+              <li
+                key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
+                className={[
+                  'flex w-full items-center gap-2 px-2 py-1.5',
+                  radiusClasses.xs,
+                  controlTextLeadingClasses[size],
+                  'bg-(--n-soft) text-(--neba-fg)'
+                ].join(' ')}
               >
-                {formatFileSize(file.size)}
-              </span>
-              {inert ? null : (
-                <button
-                  type="button"
-                  aria-label={removeLabel(file.name)}
-                  className={[
-                    'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full',
-                    'size-[1.3em] text-(--neba-muted-fg) opacity-70',
-                    '[transition:opacity_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
-                    '[&_svg]:size-[0.9em]',
-                    'hover:text-(--neba-fg) hover:opacity-100 focus-visible:opacity-100',
-                    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
-                  ].join(' ')}
-                  onClick={() => commit(files.filter((_, at) => at !== index))}
+                <span className="min-w-0 flex-1 truncate">{file.name}</span>
+                <span
+                  className={`shrink-0 text-(--neba-muted-fg) tabular-nums ${metaTextClasses[size]}`}
                 >
-                  <CloseIcon />
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+                  {formatFileSize(file.size)}
+                </span>
+                {inert ? null : (
+                  <button
+                    type="button"
+                    aria-label={removeLabel(file.name)}
+                    className={[
+                      'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full',
+                      'size-[1.3em] text-(--neba-muted-fg) opacity-70',
+                      '[transition:opacity_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
+                      '[&_svg]:size-[0.9em]',
+                      'hover:text-(--neba-fg) hover:opacity-100 focus-visible:opacity-100',
+                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
+                    ].join(' ')}
+                    onClick={() => commit(files.filter((_, at) => at !== index))}
+                  >
+                    <CloseIcon />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
-      {hasContent(description) && !hasError ? (
-        <span id={descriptionId} className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
-          {description}
-        </span>
-      ) : null}
+        {hasContent(description) && !hasError ? (
+          <span id={descriptionId} className={`${metaTextClasses[size]} text-(--neba-muted-fg)`}>
+            {description}
+          </span>
+        ) : null}
 
-      {hasError ? (
-        <span id={descriptionId} className={`${metaTextClasses[size]} text-(--n-accent)`}>
-          {error}
-        </span>
-      ) : null}
-    </div>
-  );
-});
+        {hasError ? (
+          <span id={descriptionId} className={`${metaTextClasses[size]} text-(--n-accent)`}>
+            {error}
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+);

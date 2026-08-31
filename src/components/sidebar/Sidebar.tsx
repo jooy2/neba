@@ -22,6 +22,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export type { SidebarSide } from '../../internal/page-layout.js';
 
@@ -205,8 +206,8 @@ const KEYBOARD_STEP = 16;
  * reader offers as "related to the page but not the page", and what a search
  * engine reads as navigation chrome rather than as the article.
  */
-export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Sidebar(
-  {
+export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Sidebar(rawProps, ref) {
+  const {
     side: sideProp,
     width: widthProp,
     minWidth = 160,
@@ -233,9 +234,8 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const layout = React.useContext(PageLayoutContext);
   const slotSide = React.useContext(SidebarSideContext);
   const side = sideProp ?? slotSide ?? 'start';

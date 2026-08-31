@@ -12,6 +12,7 @@ import {
   srOnlyClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * When the line under a link is drawn.
@@ -148,95 +149,96 @@ const baseClasses = [
  * new tab both visibly and for a screen reader, and it takes `render`, so the
  * `Link` a router brings can wear all of it.
  */
-export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(function TextLink(
-  {
-    href,
-    underline = 'always',
-    color,
-    size,
-    newTab = false,
-    icon,
-    locale,
-    render,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(linkMessages, locale);
-
-  // `icon` left out follows `newTab`, which is the whole reason it is not a
-  // plain boolean with a `false` default: a link that takes over the window
-  // should say so, and a caller should have to ask for the silent version.
-  const mark = icon ?? newTab;
-  const glyph = mark === true ? newTab ? <ExternalLinkIcon /> : <LinkIcon /> : mark;
-
-  const classNames = cx(
-    baseClasses,
-    size ? controlTextLeadingClasses[size] : '',
-    underlineClasses[underline],
-    color ? '[&.neba-link]:text-(--n-accent)' : '[&.neba-link]:text-inherit',
-    className ?? ''
-  );
-
-  /*
-   * The two line colours and the focus ring, as slots.
-   *
-   * `--n-ring` is set even when no family was asked for, because the ring is
-   * written as the `outline` shorthand and an undefined `var()` inside it makes
-   * the browser drop the whole declaration — an uncoloured link would lose its
-   * focus ring entirely rather than fall back to something plainer.
-   *
-   * The line rests at 45% of whatever the text is and goes to the full colour
-   * on hover, so it works the same on an inherited colour as on an accent one.
-   */
-  const slots = {
-    '--n-underline': 'color-mix(in oklab, currentColor 45%, transparent)',
-    '--n-underline-hover': 'currentColor',
-    '--n-ring': `var(--neba-${color ?? 'primary'}-ring)`,
-    ...(color ? { '--n-accent': `var(--neba-${color}-accent)` } : null)
-  } as React.CSSProperties;
-
-  /*
-   * `rel` is the one thing here a caller's own value is merged with rather than
-   * replaced by. `safeRel` is where that merge lives, because a Menu row and a
-   * NavigationMenu link let a caller choose where they open too, and the three
-   * of them have to make the same promise.
-   */
-  const target = newTab ? '_blank' : undefined;
-  const { rel: askedFor, ...rest } = props;
-  const rel = safeRel(target, askedFor);
-
-  return useRender({
-    render: render ?? <a />,
-    ref,
-    props: {
+export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
+  function TextLink(rawProps, ref) {
+    const {
       href,
-      target,
-      className: classNames,
-      style: { ...slots, ...style },
-      children: (
-        <>
-          {children}
-          {glyph ? <span className="ms-[0.25em]">{glyph}</span> : null}
-          {/* Drawn for nobody and read to everybody: the arrow says "new tab"
+      underline = 'always',
+      color,
+      size,
+      newTab = false,
+      icon,
+      locale,
+      render,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
+
+    const messages = useMessages(linkMessages, locale);
+
+    // `icon` left out follows `newTab`, which is the whole reason it is not a
+    // plain boolean with a `false` default: a link that takes over the window
+    // should say so, and a caller should have to ask for the silent version.
+    const mark = icon ?? newTab;
+    const glyph = mark === true ? newTab ? <ExternalLinkIcon /> : <LinkIcon /> : mark;
+
+    const classNames = cx(
+      baseClasses,
+      size ? controlTextLeadingClasses[size] : '',
+      underlineClasses[underline],
+      color ? '[&.neba-link]:text-(--n-accent)' : '[&.neba-link]:text-inherit',
+      className ?? ''
+    );
+
+    /*
+     * The two line colours and the focus ring, as slots.
+     *
+     * `--n-ring` is set even when no family was asked for, because the ring is
+     * written as the `outline` shorthand and an undefined `var()` inside it makes
+     * the browser drop the whole declaration — an uncoloured link would lose its
+     * focus ring entirely rather than fall back to something plainer.
+     *
+     * The line rests at 45% of whatever the text is and goes to the full colour
+     * on hover, so it works the same on an inherited colour as on an accent one.
+     */
+    const slots = {
+      '--n-underline': 'color-mix(in oklab, currentColor 45%, transparent)',
+      '--n-underline-hover': 'currentColor',
+      '--n-ring': `var(--neba-${color ?? 'primary'}-ring)`,
+      ...(color ? { '--n-accent': `var(--neba-${color}-accent)` } : null)
+    } as React.CSSProperties;
+
+    /*
+     * `rel` is the one thing here a caller's own value is merged with rather than
+     * replaced by. `safeRel` is where that merge lives, because a Menu row and a
+     * NavigationMenu link let a caller choose where they open too, and the three
+     * of them have to make the same promise.
+     */
+    const target = newTab ? '_blank' : undefined;
+    const { rel: askedFor, ...rest } = props;
+    const rel = safeRel(target, askedFor);
+
+    return useRender({
+      render: render ?? <a />,
+      ref,
+      props: {
+        href,
+        target,
+        className: classNames,
+        style: { ...slots, ...style },
+        children: (
+          <>
+            {children}
+            {glyph ? <span className="ms-[0.25em]">{glyph}</span> : null}
+            {/* Drawn for nobody and read to everybody: the arrow says "new tab"
               only to a reader who can see it. The space is a real text node, so
               the accessible name comes out as two words rather than as the
               label with a bracket stuck to the end of it. */}
-          {newTab ? (
-            <>
-              {' '}
-              <span className={srOnlyClasses}>{messages.newTab}</span>
-            </>
-          ) : null}
-        </>
-      ),
-      ...rest,
-      // After the spread on purpose: this is the merge above, not an override
-      // for a caller to win.
-      rel
-    }
-  });
-});
+            {newTab ? (
+              <>
+                {' '}
+                <span className={srOnlyClasses}>{messages.newTab}</span>
+              </>
+            ) : null}
+          </>
+        ),
+        ...rest,
+        // After the spread on purpose: this is the merge above, not an override
+        // for a caller to win.
+        rel
+      }
+    });
+  }
+);

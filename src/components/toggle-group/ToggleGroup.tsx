@@ -5,6 +5,7 @@ import { ToggleGroup as BaseUIToggleGroup } from '@base-ui/react/toggle-group';
 import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaElevation, NebaOrientation, NebaStyleProps, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ToggleGroupProps
   extends
@@ -81,60 +82,61 @@ const baseClasses = [
  * between the members — which is what makes a toolbar of eight toggles two key
  * presses deep instead of eight.
  */
-export const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(function ToggleGroup(
-  {
-    variant,
-    size,
-    color,
-    density,
-    elevation,
-    value,
-    defaultValue,
-    onValueChange,
-    multiple = false,
-    orientation = 'horizontal',
-    disabled,
-    loopFocus = true,
-    fullWidth = false,
-    className,
-    children,
-    ...props
-  },
-  ref
-) {
-  // Every value passes through as-is, `undefined` included: a Toggle reads the
-  // group only as a fallback, so "not set here" keeps meaning "use the
-  // Toggle's own default" rather than turning into one.
-  const context = React.useMemo<ButtonGroupContextValue>(
-    () => ({ variant, size, color, density, elevation, disabled }),
-    [variant, size, color, density, elevation, disabled]
-  );
+export const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
+  function ToggleGroup(rawProps, ref) {
+    const {
+      variant,
+      size,
+      color,
+      density,
+      elevation,
+      value,
+      defaultValue,
+      onValueChange,
+      multiple = false,
+      orientation = 'horizontal',
+      disabled,
+      loopFocus = true,
+      fullWidth = false,
+      className,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  return (
-    <ButtonGroupContext.Provider value={context}>
-      <BaseUIToggleGroup
-        ref={ref}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={(next) => onValueChange?.(next)}
-        multiple={multiple}
-        orientation={orientation}
-        disabled={disabled}
-        loopFocus={loopFocus}
-        className={cx(
-          baseClasses,
-          orientation === 'vertical' ? 'flex-col' : 'flex-row',
-          joinClasses[orientation],
-          // A Toggle defaults to `outline`, so an unset group is a hairline
-          // group and does need the overlap.
-          (variant ?? 'outline') === 'outline' ? overlapClasses[orientation] : '',
-          fullWidth ? 'flex w-full [&>*]:flex-1' : '',
-          className ?? ''
-        )}
-        {...props}
-      >
-        {children}
-      </BaseUIToggleGroup>
-    </ButtonGroupContext.Provider>
-  );
-});
+    // Every value passes through as-is, `undefined` included: a Toggle reads the
+    // group only as a fallback, so "not set here" keeps meaning "use the
+    // Toggle's own default" rather than turning into one.
+    const context = React.useMemo<ButtonGroupContextValue>(
+      () => ({ variant, size, color, density, elevation, disabled }),
+      [variant, size, color, density, elevation, disabled]
+    );
+
+    return (
+      <ButtonGroupContext.Provider value={context}>
+        <BaseUIToggleGroup
+          ref={ref}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(next) => onValueChange?.(next)}
+          multiple={multiple}
+          orientation={orientation}
+          disabled={disabled}
+          loopFocus={loopFocus}
+          className={cx(
+            baseClasses,
+            orientation === 'vertical' ? 'flex-col' : 'flex-row',
+            joinClasses[orientation],
+            // A Toggle defaults to `outline`, so an unset group is a hairline
+            // group and does need the overlap.
+            (variant ?? 'outline') === 'outline' ? overlapClasses[orientation] : '',
+            fullWidth ? 'flex w-full [&>*]:flex-1' : '',
+            className ?? ''
+          )}
+          {...props}
+        >
+          {children}
+        </BaseUIToggleGroup>
+      </ButtonGroupContext.Provider>
+    );
+  }
+);

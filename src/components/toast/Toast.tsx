@@ -27,6 +27,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Where the stack sits.
@@ -414,20 +415,22 @@ function ToastViewport(
  * limit, the swipe, the F6 focus hotkey, and the live region that makes a
  * message that appeared out of nowhere reach a screen reader at all.
  */
-export function ToastProvider({
-  variant = 'outline',
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  position = 'bottom-end',
-  timeout = 5000,
-  limit = 3,
-  width = 380,
-  locale,
-  closeLabel,
-  classNames,
-  children
-}: ToastProviderProps) {
+export function ToastProvider(rawProps: ToastProviderProps) {
+  const {
+    variant = 'outline',
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    position = 'bottom-end',
+    timeout = 5000,
+    limit = 3,
+    width = 380,
+    locale,
+    closeLabel,
+    classNames,
+    children
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
 
   return (

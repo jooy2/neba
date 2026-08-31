@@ -5,6 +5,7 @@ import { Meter as BaseUIMeter } from '@base-ui/react/meter';
 import { barThicknessClasses, progressFraction, progressSlots } from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface MeterProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -85,8 +86,8 @@ function thresholdColor(
  * Base UI's Meter owns the semantics: `role="meter"`, the value and range
  * attributes, and formatting the number for `aria-valuetext`.
  */
-export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter(
-  {
+export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter(rawProps, ref) {
+  const {
     value,
     min = 0,
     max = 100,
@@ -99,9 +100,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     className,
     style,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size']);
+
   const fraction = progressFraction(value, min, max);
   const family = thresholdColor(value, color, thresholds);
   const hasFormat = format !== undefined;

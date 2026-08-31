@@ -17,6 +17,7 @@ import {
   toLength
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * The same three axes a [Popover](./popover) takes, and for the same reasons:
@@ -126,29 +127,31 @@ const arrowSizes: Record<NebaSize, number> = {
  * without hover, a touchscreen with no pointer at all, and a screen reader all
  * arrive by that route instead.
  */
-export function HoverCard({
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  trigger,
-  title,
-  description,
-  children,
-  side = 'bottom',
-  align = 'center',
-  sideOffset = 6,
-  alignOffset = 0,
-  arrow = false,
-  open,
-  defaultOpen,
-  onOpenChange,
-  delay,
-  closeDelay,
-  width,
-  className,
-  style,
-  ...props
-}: HoverCardProps) {
+export function HoverCard(rawProps: HoverCardProps) {
+  const {
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    trigger,
+    title,
+    description,
+    children,
+    side = 'bottom',
+    align = 'center',
+    sideOffset = 6,
+    alignOffset = 0,
+    arrow = false,
+    open,
+    defaultOpen,
+    onOpenChange,
+    delay,
+    closeDelay,
+    width,
+    className,
+    style,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density']);
+
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
   const arrowSize = arrowSizes[size];

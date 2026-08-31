@@ -17,6 +17,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a ListItem inherits from the List around it.
@@ -170,8 +171,8 @@ const dividerClasses = '[&>li+li]:border-t [&>li+li]:[border-color:var(--n-line)
  * would hand every consumer's plain list of links the semantics of a menu,
  * which is the most common way a component library breaks a screen reader.
  */
-export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
-  {
+export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -183,9 +184,8 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
 
   const classNames = cx(

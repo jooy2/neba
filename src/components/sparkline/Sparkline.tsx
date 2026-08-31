@@ -18,6 +18,7 @@ import { useMeasuredWidth } from '../../internal/chart-frame.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCurve, NebaChartDatum, NebaColor, NebaSize } from '../../types.js';
 import { linePath } from '../../internal/chart.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface SparklineProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -87,166 +88,170 @@ export interface SparklineProps extends Omit<
  * side are drawn on two different scales unless they are given the same `min`
  * and `max`.
  */
-export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(function Sparkline(
-  {
-    data,
-    shape = 'line',
-    curve = 'linear',
-    size = 'md',
-    color,
-    endDot = false,
-    baseline,
-    min,
-    max,
-    width: widthProp,
-    label,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const hostRef = React.useRef<HTMLDivElement>(null);
-  const measured = useMeasuredWidth(hostRef);
-  const id = React.useId().replace(/:/g, '');
+export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
+  function Sparkline(rawProps, ref) {
+    const {
+      data,
+      shape = 'line',
+      curve = 'linear',
+      size = 'md',
+      color,
+      endDot = false,
+      baseline,
+      min,
+      max,
+      width: widthProp,
+      label,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
 
-  const values = React.useMemo(() => data.map(toValue), [data]);
-  const height = sparklineHeights[size];
-  const stroke = lineWidths[size];
-  const radius = markerRadii[size];
+    const hostRef = React.useRef<HTMLDivElement>(null);
+    const measured = useMeasuredWidth(hostRef);
+    const id = React.useId().replace(/:/g, '');
 
-  const extent = extentOf([values], false);
-  const low = min ?? (extent ? Math.min(extent.min, baseline ?? extent.min) : 0);
-  const high = max ?? (extent ? Math.max(extent.max, baseline ?? extent.max) : 1);
-  const span = high - low || 1;
+    const values = React.useMemo(() => data.map(toValue), [data]);
+    const height = sparklineHeights[size];
+    const stroke = lineWidths[size];
+    const radius = markerRadii[size];
 
-  const width = typeof widthProp === 'number' ? widthProp : measured;
-  const fill = resolveColor(color ?? 'var(--neba-chart-1)');
+    const extent = extentOf([values], false);
+    const low = min ?? (extent ? Math.min(extent.min, baseline ?? extent.min) : 0);
+    const high = max ?? (extent ? Math.max(extent.max, baseline ?? extent.max) : 1);
+    const span = high - low || 1;
 
-  // The stroke straddles the path, so the drawable band comes in by half of it
-  // at both ends — otherwise the highest and lowest points are shaved off by
-  // the edge of the box.
-  const inset = shape === 'bar' ? 0 : stroke / 2 + (endDot ? radius : 0);
-  const top = inset;
-  const usable = Math.max(1, height - inset * 2);
+    const width = typeof widthProp === 'number' ? widthProp : measured;
+    const fill = resolveColor(color ?? 'var(--neba-chart-1)');
 
-  const y = (value: number) => top + (1 - (value - low) / span) * usable;
-  const step = values.length > 1 ? width / (values.length - 1) : width;
+    // The stroke straddles the path, so the drawable band comes in by half of it
+    // at both ends — otherwise the highest and lowest points are shaved off by
+    // the edge of the box.
+    const inset = shape === 'bar' ? 0 : stroke / 2 + (endDot ? radius : 0);
+    const top = inset;
+    const usable = Math.max(1, height - inset * 2);
 
-  const points = values.map((value, index) =>
-    value.value === null ? null : { x: index * step, y: y(value.value) }
-  );
+    const y = (value: number) => top + (1 - (value - low) / span) * usable;
+    const step = values.length > 1 ? width / (values.length - 1) : width;
 
-  const lastIndex = (() => {
-    for (let index = values.length - 1; index >= 0; index--) {
-      if (values[index].value !== null) {
-        return index;
+    const points = values.map((value, index) =>
+      value.value === null ? null : { x: index * step, y: y(value.value) }
+    );
+
+    const lastIndex = (() => {
+      for (let index = values.length - 1; index >= 0; index--) {
+        if (values[index].value !== null) {
+          return index;
+        }
       }
-    }
 
-    return -1;
-  })();
+      return -1;
+    })();
 
-  const barWidth = Math.min(
-    barMaxThickness[size] / 2,
-    Math.max(1, width / Math.max(1, values.length) - markGap)
-  );
+    const barWidth = Math.min(
+      barMaxThickness[size] / 2,
+      Math.max(1, width / Math.max(1, values.length) - markGap)
+    );
 
-  return (
-    <div
-      ref={ref}
-      className={cx('relative block', className ?? undefined)}
-      style={{ width: widthProp ?? '100%', height, ...style }}
-      {...props}
-    >
-      <div ref={hostRef} className="absolute inset-0">
-        {width > 0 && values.length > 0 ? (
-          <svg
-            width={width}
-            height={height}
-            viewBox={`0 0 ${width} ${height}`}
-            role={label ? 'img' : 'presentation'}
-            aria-label={label}
-            aria-hidden={label ? undefined : true}
-            className="block overflow-visible"
-          >
-            {shape === 'area' ? (
-              <>
-                <defs>
-                  <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={`color-mix(in oklab, ${fill} 32%, transparent)`} />
-                    <stop
-                      offset="100%"
-                      stopColor={`color-mix(in oklab, ${fill} 2%, transparent)`}
+    return (
+      <div
+        ref={ref}
+        className={cx('relative block', className ?? undefined)}
+        style={{ width: widthProp ?? '100%', height, ...style }}
+        {...props}
+      >
+        <div ref={hostRef} className="absolute inset-0">
+          {width > 0 && values.length > 0 ? (
+            <svg
+              width={width}
+              height={height}
+              viewBox={`0 0 ${width} ${height}`}
+              role={label ? 'img' : 'presentation'}
+              aria-label={label}
+              aria-hidden={label ? undefined : true}
+              className="block overflow-visible"
+            >
+              {shape === 'area' ? (
+                <>
+                  <defs>
+                    <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor={`color-mix(in oklab, ${fill} 32%, transparent)`}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={`color-mix(in oklab, ${fill} 2%, transparent)`}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <path d={areaPath(points, height, curve)} fill={`url(#${id}-fill)`} />
+                </>
+              ) : null}
+
+              {baseline !== undefined ? (
+                <line
+                  x1={0}
+                  x2={width}
+                  y1={y(baseline)}
+                  y2={y(baseline)}
+                  stroke="var(--neba-chart-baseline)"
+                  strokeWidth={1}
+                />
+              ) : null}
+
+              {shape === 'bar' ? (
+                values.map((value, index) =>
+                  value.value === null ? null : (
+                    <path
+                      key={index}
+                      d={barPath(
+                        index * (width / Math.max(1, values.length)) +
+                          (width / Math.max(1, values.length) - barWidth) / 2,
+                        Math.min(y(value.value), y(Math.max(low, 0))),
+                        barWidth,
+                        Math.max(1, Math.abs(y(value.value) - y(Math.max(low, 0)))),
+                        barRadius / 2,
+                        value.value >= 0 ? 'up' : 'down'
+                      )}
+                      fill={value.color ?? fill}
                     />
-                  </linearGradient>
-                </defs>
-                <path d={areaPath(points, height, curve)} fill={`url(#${id}-fill)`} />
-              </>
-            ) : null}
-
-            {baseline !== undefined ? (
-              <line
-                x1={0}
-                x2={width}
-                y1={y(baseline)}
-                y2={y(baseline)}
-                stroke="var(--neba-chart-baseline)"
-                strokeWidth={1}
-              />
-            ) : null}
-
-            {shape === 'bar' ? (
-              values.map((value, index) =>
-                value.value === null ? null : (
-                  <path
-                    key={index}
-                    d={barPath(
-                      index * (width / Math.max(1, values.length)) +
-                        (width / Math.max(1, values.length) - barWidth) / 2,
-                      Math.min(y(value.value), y(Math.max(low, 0))),
-                      barWidth,
-                      Math.max(1, Math.abs(y(value.value) - y(Math.max(low, 0)))),
-                      barRadius / 2,
-                      value.value >= 0 ? 'up' : 'down'
-                    )}
-                    fill={value.color ?? fill}
-                  />
+                  )
                 )
-              )
-            ) : (
-              <path
-                d={linePath(points, curve)}
-                fill="none"
-                stroke={fill}
-                strokeWidth={stroke}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            )}
+              ) : (
+                <path
+                  d={linePath(points, curve)}
+                  fill="none"
+                  stroke={fill}
+                  strokeWidth={stroke}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
 
-            {endDot && lastIndex >= 0 && shape !== 'bar' ? (
-              <circle
-                cx={points[lastIndex]!.x}
-                cy={points[lastIndex]!.y}
-                r={radius}
-                fill={fill}
-                stroke="var(--neba-chart-gap)"
-                strokeWidth={markGap}
-              />
-            ) : null}
-          </svg>
-        ) : null}
-      </div>
+              {endDot && lastIndex >= 0 && shape !== 'bar' ? (
+                <circle
+                  cx={points[lastIndex]!.x}
+                  cy={points[lastIndex]!.y}
+                  r={radius}
+                  fill={fill}
+                  stroke="var(--neba-chart-gap)"
+                  strokeWidth={markGap}
+                />
+              ) : null}
+            </svg>
+          ) : null}
+        </div>
 
-      {/* The numbers, for the readers the strip does not reach. A sparkline is
+        {/* The numbers, for the readers the strip does not reach. A sparkline is
           a picture of a trend and nothing else, so what it owes is the values —
           not a description of the shape they happen to make. */}
-      {label ? (
-        <span className={srOnlyClasses}>
-          {values.map((value) => (value.value === null ? '—' : value.value)).join(', ')}
-        </span>
-      ) : null}
-    </div>
-  );
-});
+        {label ? (
+          <span className={srOnlyClasses}>
+            {values.map((value) => (value.value === null ? '—' : value.value)).join(', ')}
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+);

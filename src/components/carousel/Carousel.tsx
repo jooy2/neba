@@ -14,6 +14,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface CarouselProps
   extends
@@ -139,295 +140,296 @@ const dotClasses: Record<NebaSize, { rest: string; current: string; gap: string 
  * `role="group"`/`aria-roledescription="slide"` pair a screen reader needs, none
  * of which a caller should have to remember to put on a photograph.
  */
-export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(function Carousel(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    value,
-    defaultValue = 0,
-    onValueChange,
-    loop = true,
-    autoPlay = false,
-    interval = 5000,
-    arrows = true,
-    indicators = true,
-    locale,
-    label,
-    previousLabel,
-    nextLabel,
-    slideLabel,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(carouselMessages, locale);
-  const nameSlide =
-    slideLabel ??
-    ((index: number, total: number) =>
-      fillMessage(messages.slide, { index: String(index), total: String(total) }));
+export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
+  function Carousel(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      value,
+      defaultValue = 0,
+      onValueChange,
+      loop = true,
+      autoPlay = false,
+      interval = 5000,
+      arrows = true,
+      indicators = true,
+      locale,
+      label,
+      previousLabel,
+      nextLabel,
+      slideLabel,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  // `toArray` is what drops the `null`s and `false`s a conditional slide leaves
-  // behind, and what gives every remaining child a stable key.
-  const slides = React.Children.toArray(children);
-  const count = slides.length;
+    const messages = useMessages(carouselMessages, locale);
+    const nameSlide =
+      slideLabel ??
+      ((index: number, total: number) =>
+        fillMessage(messages.slide, { index: String(index), total: String(total) }));
 
-  const [uncontrolled, setUncontrolled] = React.useState(defaultValue);
-  const index = Math.min(Math.max(value ?? uncontrolled, 0), Math.max(count - 1, 0));
+    // `toArray` is what drops the `null`s and `false`s a conditional slide leaves
+    // behind, and what gives every remaining child a stable key.
+    const slides = React.Children.toArray(children);
+    const count = slides.length;
 
-  const trackRef = React.useRef<HTMLDivElement>(null);
-  const slideRefs = React.useRef<(HTMLDivElement | null)[]>([]);
-  // Set while the index is catching up with a scroll the reader performed. The
-  // effect below skips those, or every drag would be answered by a scroll back
-  // to where the browser had already put us.
-  const fromScroll = React.useRef(false);
-  const mounted = React.useRef(false);
-  // Raised while a smooth scroll of our own is still travelling. Without it the
-  // scroll events thrown on the way from slide 0 to slide 2 would each be read
-  // as the reader landing on slide 1.
-  const settling = React.useRef(false);
-  const [paused, setPaused] = React.useState(false);
+    const [uncontrolled, setUncontrolled] = React.useState(defaultValue);
+    const index = Math.min(Math.max(value ?? uncontrolled, 0), Math.max(count - 1, 0));
 
-  const go = React.useCallback(
-    (next: number, viaScroll = false) => {
-      if (count === 0) {
+    const trackRef = React.useRef<HTMLDivElement>(null);
+    const slideRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+    // Set while the index is catching up with a scroll the reader performed. The
+    // effect below skips those, or every drag would be answered by a scroll back
+    // to where the browser had already put us.
+    const fromScroll = React.useRef(false);
+    const mounted = React.useRef(false);
+    // Raised while a smooth scroll of our own is still travelling. Without it the
+    // scroll events thrown on the way from slide 0 to slide 2 would each be read
+    // as the reader landing on slide 1.
+    const settling = React.useRef(false);
+    const [paused, setPaused] = React.useState(false);
+
+    const go = React.useCallback(
+      (next: number, viaScroll = false) => {
+        if (count === 0) {
+          return;
+        }
+
+        const wrapped = loop
+          ? ((next % count) + count) % count
+          : Math.min(Math.max(next, 0), count - 1);
+
+        fromScroll.current = viaScroll;
+
+        if (value === undefined) {
+          setUncontrolled(wrapped);
+        }
+        if (wrapped !== index) {
+          onValueChange?.(wrapped);
+        }
+      },
+      [count, loop, value, index, onValueChange]
+    );
+
+    React.useEffect(() => {
+      if (fromScroll.current) {
+        fromScroll.current = false;
         return;
       }
 
-      const wrapped = loop
-        ? ((next % count) + count) % count
-        : Math.min(Math.max(next, 0), count - 1);
-
-      fromScroll.current = viaScroll;
-
-      if (value === undefined) {
-        setUncontrolled(wrapped);
-      }
-      if (wrapped !== index) {
-        onValueChange?.(wrapped);
-      }
-    },
-    [count, loop, value, index, onValueChange]
-  );
-
-  React.useEffect(() => {
-    if (fromScroll.current) {
-      fromScroll.current = false;
-      return;
-    }
-
-    // The first pass would otherwise scroll the page down to a carousel nobody
-    // has looked at yet, just to put slide 0 where the browser already had it.
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
-
-    slideRefs.current[index]?.scrollIntoView({ block: 'nearest', inline: 'start' });
-
-    settling.current = true;
-    const timer = window.setTimeout(() => {
-      settling.current = false;
-    }, 700);
-
-    return () => window.clearTimeout(timer);
-  }, [index]);
-
-  /**
-   * Where the strip has settled, read off the scroll offset rather than measured
-   * per slide: every slide is exactly the width of the frame, so the offset
-   * divided by that width *is* the index. `Math.abs` is what makes it hold under
-   * RTL, where a scroll position counts backwards from zero.
-   */
-  const handleScroll = () => {
-    const track = trackRef.current;
-    // `settling` is tested before anything is measured, and that order is the
-    // point: a smooth scroll of our own throws events for most of a second, and
-    // those are exactly the ones with nothing to answer. Reading `clientWidth`
-    // first would force a layout on every one of them.
-    if (settling.current || !track || track.clientWidth === 0) {
-      return;
-    }
-
-    const nearest = Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
-    if (nearest !== index && nearest >= 0 && nearest < count) {
-      go(nearest, true);
-    }
-  };
-
-  // Subscribed rather than read once inside the effect below: a reader who
-  // turns the setting on while a strip is already running has asked for it to
-  // stop, and a value read at setup would go on advancing until something else
-  // happened to re-run the effect.
-  const reduced = usePrefersReducedMotion();
-
-  React.useEffect(() => {
-    // A reader who has asked for less motion has asked for this in particular.
-    if (!autoPlay || paused || reduced || count < 2) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      if (document.hidden) {
+      // The first pass would otherwise scroll the page down to a carousel nobody
+      // has looked at yet, just to put slide 0 where the browser already had it.
+      if (!mounted.current) {
+        mounted.current = true;
         return;
       }
-      go(index + 1);
-    }, interval);
 
-    return () => window.clearInterval(timer);
-  }, [autoPlay, paused, reduced, count, interval, index, go]);
+      slideRefs.current[index]?.scrollIntoView({ block: 'nearest', inline: 'start' });
 
-  const atStart = index <= 0;
-  const atEnd = index >= count - 1;
+      settling.current = true;
+      const timer = window.setTimeout(() => {
+        settling.current = false;
+      }, 700);
 
-  return (
-    <div
-      ref={ref}
-      role="region"
-      aria-roledescription="carousel"
-      aria-label={label ?? messages.label}
-      className={cx('flex flex-col', className ?? '')}
-      style={{ ...surfaceSlots(color, elevation), ...style }}
-      // Hover and focus both stop the timer. The second one is the important
-      // one: a keyboard reader who has tabbed into a slide is reading it.
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      {...props}
-    >
+      return () => window.clearTimeout(timer);
+    }, [index]);
+
+    /**
+     * Where the strip has settled, read off the scroll offset rather than measured
+     * per slide: every slide is exactly the width of the frame, so the offset
+     * divided by that width *is* the index. `Math.abs` is what makes it hold under
+     * RTL, where a scroll position counts backwards from zero.
+     */
+    const handleScroll = () => {
+      const track = trackRef.current;
+      // `settling` is tested before anything is measured, and that order is the
+      // point: a smooth scroll of our own throws events for most of a second, and
+      // those are exactly the ones with nothing to answer. Reading `clientWidth`
+      // first would force a layout on every one of them.
+      if (settling.current || !track || track.clientWidth === 0) {
+        return;
+      }
+
+      const nearest = Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
+      if (nearest !== index && nearest >= 0 && nearest < count) {
+        go(nearest, true);
+      }
+    };
+
+    // Subscribed rather than read once inside the effect below: a reader who
+    // turns the setting on while a strip is already running has asked for it to
+    // stop, and a value read at setup would go on advancing until something else
+    // happened to re-run the effect.
+    const reduced = usePrefersReducedMotion();
+
+    React.useEffect(() => {
+      // A reader who has asked for less motion has asked for this in particular.
+      if (!autoPlay || paused || reduced || count < 2) {
+        return;
+      }
+
+      const timer = window.setInterval(() => {
+        if (document.hidden) {
+          return;
+        }
+        go(index + 1);
+      }, interval);
+
+      return () => window.clearInterval(timer);
+    }, [autoPlay, paused, reduced, count, interval, index, go]);
+
+    const atStart = index <= 0;
+    const atEnd = index >= count - 1;
+
+    return (
       <div
-        className={[
-          'relative min-w-0 overflow-hidden',
-          radiusClasses[size],
-          variantClasses[variant],
-          transitionClasses
-        ].join(' ')}
+        ref={ref}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={label ?? messages.label}
+        className={cx('flex flex-col', className ?? '')}
+        style={{ ...surfaceSlots(color, elevation), ...style }}
+        // Hover and focus both stop the timer. The second one is the important
+        // one: a keyboard reader who has tabbed into a slide is reading it.
+        onPointerEnter={() => setPaused(true)}
+        onPointerLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        {...props}
       >
         <div
-          ref={trackRef}
-          // Focusable, so the strip can be scrolled with the arrow keys by
-          // whoever is not using a pointer. That is the browser's own key
-          // handling on a scroll container, which means it is already right
-          // under RTL — a handler of ours mapping ArrowRight to "next" would not
-          // have been.
-          tabIndex={0}
-          role="group"
-          aria-label={label ?? messages.label}
           className={[
-            'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth',
-            'motion-reduce:scroll-auto',
-            // The strip is driven by buttons and by dragging; a scrollbar under
-            // it is a third control saying the same thing.
-            '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
+            'relative min-w-0 overflow-hidden',
+            radiusClasses[size],
+            variantClasses[variant],
+            transitionClasses
           ].join(' ')}
-          onScroll={handleScroll}
         >
-          {slides.map((slide, slideIndex) => (
+          <div
+            ref={trackRef}
+            // Focusable, so the strip can be scrolled with the arrow keys by
+            // whoever is not using a pointer. That is the browser's own key
+            // handling on a scroll container, which means it is already right
+            // under RTL — a handler of ours mapping ArrowRight to "next" would not
+            // have been.
+            tabIndex={0}
+            role="group"
+            aria-label={label ?? messages.label}
+            className={[
+              'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth',
+              'motion-reduce:scroll-auto',
+              // The strip is driven by buttons and by dragging; a scrollbar under
+              // it is a third control saying the same thing.
+              '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+              'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
+            ].join(' ')}
+            onScroll={handleScroll}
+          >
+            {slides.map((slide, slideIndex) => (
+              <div
+                key={slideIndex}
+                ref={(element) => {
+                  slideRefs.current[slideIndex] = element;
+                }}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={nameSlide(slideIndex + 1, count)}
+                // Deliberately *not* `aria-hidden` when off-screen. A slide can
+                // hold a link or a button, and an `aria-hidden` subtree that is
+                // still in the tab order is the exact shape of the bug where a
+                // keyboard reader lands somewhere their screen reader refuses to
+                // describe. The strip is scrollable, so everything in it is
+                // genuinely reachable — hiding it would be a lie.
+                className="w-full shrink-0 grow-0 basis-full snap-start"
+              >
+                {slide}
+              </div>
+            ))}
+          </div>
+
+          {arrows && count > 1 ? (
             <div
-              key={slideIndex}
-              ref={(element) => {
-                slideRefs.current[slideIndex] = element;
-              }}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={nameSlide(slideIndex + 1, count)}
-              // Deliberately *not* `aria-hidden` when off-screen. A slide can
-              // hold a link or a button, and an `aria-hidden` subtree that is
-              // still in the tab order is the exact shape of the bug where a
-              // keyboard reader lands somewhere their screen reader refuses to
-              // describe. The strip is scrollable, so everything in it is
-              // genuinely reachable — hiding it would be a lie.
-              className="w-full shrink-0 grow-0 basis-full snap-start"
+              className={`pointer-events-none absolute inset-y-0 flex items-center ${arrowInsetClasses[size]}`}
             >
-              {slide}
+              <IconButton
+                variant="solid"
+                size={size}
+                color={color}
+                density={density}
+                elevation={1}
+                label={previousLabel ?? messages.previous}
+                disabled={!loop && atStart}
+                className="pointer-events-auto"
+                // Drawn pointing down and turned, which is the one allowance the
+                // no-transform rule makes — and turned the other way under RTL,
+                // where "previous" is on the other side of the frame.
+                icon={
+                  <span className="flex items-center rotate-90 rtl:-rotate-90">
+                    <ChevronIcon />
+                  </span>
+                }
+                onClick={() => go(index - 1)}
+              />
+              <span className="flex-1" />
+              <IconButton
+                variant="solid"
+                size={size}
+                color={color}
+                density={density}
+                elevation={1}
+                label={nextLabel ?? messages.next}
+                disabled={!loop && atEnd}
+                className="pointer-events-auto"
+                icon={
+                  <span className="flex items-center -rotate-90 rtl:rotate-90">
+                    <ChevronIcon />
+                  </span>
+                }
+                onClick={() => go(index + 1)}
+              />
             </div>
-          ))}
+          ) : null}
         </div>
 
-        {arrows && count > 1 ? (
-          <div
-            className={`pointer-events-none absolute inset-y-0 flex items-center ${arrowInsetClasses[size]}`}
-          >
-            <IconButton
-              variant="solid"
-              size={size}
-              color={color}
-              density={density}
-              elevation={1}
-              label={previousLabel ?? messages.previous}
-              disabled={!loop && atStart}
-              className="pointer-events-auto"
-              // Drawn pointing down and turned, which is the one allowance the
-              // no-transform rule makes — and turned the other way under RTL,
-              // where "previous" is on the other side of the frame.
-              icon={
-                <span className="flex items-center rotate-90 rtl:-rotate-90">
-                  <ChevronIcon />
-                </span>
-              }
-              onClick={() => go(index - 1)}
-            />
-            <span className="flex-1" />
-            <IconButton
-              variant="solid"
-              size={size}
-              color={color}
-              density={density}
-              elevation={1}
-              label={nextLabel ?? messages.next}
-              disabled={!loop && atEnd}
-              className="pointer-events-auto"
-              icon={
-                <span className="flex items-center -rotate-90 rtl:rotate-90">
-                  <ChevronIcon />
-                </span>
-              }
-              onClick={() => go(index + 1)}
-            />
+        {indicators && count > 1 ? (
+          <div className={`flex shrink-0 items-center justify-center pt-2 ${dotClasses[size].gap}`}>
+            {slides.map((_, dotIndex) => (
+              <button
+                key={dotIndex}
+                type="button"
+                aria-label={nameSlide(dotIndex + 1, count)}
+                aria-current={dotIndex === index ? 'true' : undefined}
+                className={[
+                  'cursor-pointer rounded-full',
+                  // Width and colour, never a transform: the current dot grows
+                  // along the row instead of scaling, so nothing beside it moves.
+                  '[transition-property:width,background-color]',
+                  '[transition-duration:var(--neba-duration)]',
+                  '[transition-timing-function:var(--neba-ease)]',
+                  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+                  dotIndex === index
+                    ? `${dotClasses[size].current} bg-(--n-accent)`
+                    : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`
+                ].join(' ')}
+                onClick={() => go(dotIndex)}
+              />
+            ))}
           </div>
         ) : null}
-      </div>
 
-      {indicators && count > 1 ? (
-        <div className={`flex shrink-0 items-center justify-center pt-2 ${dotClasses[size].gap}`}>
-          {slides.map((_, dotIndex) => (
-            <button
-              key={dotIndex}
-              type="button"
-              aria-label={nameSlide(dotIndex + 1, count)}
-              aria-current={dotIndex === index ? 'true' : undefined}
-              className={[
-                'cursor-pointer rounded-full',
-                // Width and colour, never a transform: the current dot grows
-                // along the row instead of scaling, so nothing beside it moves.
-                '[transition-property:width,background-color]',
-                '[transition-duration:var(--neba-duration)]',
-                '[transition-timing-function:var(--neba-ease)]',
-                'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-                dotIndex === index
-                  ? `${dotClasses[size].current} bg-(--n-accent)`
-                  : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`
-              ].join(' ')}
-              onClick={() => go(dotIndex)}
-            />
-          ))}
-        </div>
-      ) : null}
-
-      {/* Where the reader is, as a sentence rather than as a highlighted dot.
+        {/* Where the reader is, as a sentence rather than as a highlighted dot.
           Silent while the carousel is advancing on its own: a live region that
           says a new slide's name every five seconds is what makes a screen
           reader unusable on a page that has one. */}
-      <span className={srOnlyClasses} aria-live={autoPlay ? 'off' : 'polite'}>
-        {count > 0 ? nameSlide(index + 1, count) : ''}
-      </span>
-    </div>
-  );
-});
+        <span className={srOnlyClasses} aria-live={autoPlay ? 'off' : 'polite'}>
+          {count > 0 ? nameSlide(index + 1, count) : ''}
+        </span>
+      </div>
+    );
+  }
+);

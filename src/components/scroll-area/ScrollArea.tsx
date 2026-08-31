@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ScrollArea as BaseUIScrollArea } from '@base-ui/react/scroll-area';
 import { cx, focusRingClasses, toLength } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Which axes may scroll.
@@ -84,84 +85,85 @@ const thumbClasses = 'flex-1 rounded-full bg-(--n-thumb) hover:bg-(--n-thumb-hov
  * what is in it. Underneath, both are ordinary scroll containers, so the wheel,
  * the trackpad, the keyboard and momentum are the browser's own in both.
  */
-export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(function ScrollArea(
-  {
-    orientation = 'vertical',
-    height,
-    maxHeight,
-    size = 'md',
-    color = 'primary',
-    fade = false,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const vertical = orientation === 'vertical' || orientation === 'both';
-  const horizontal = orientation === 'horizontal' || orientation === 'both';
+export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
+  function ScrollArea(rawProps, ref) {
+    const {
+      orientation = 'vertical',
+      height,
+      maxHeight,
+      size = 'md',
+      color = 'primary',
+      fade = false,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
 
-  return (
-    <BaseUIScrollArea.Root
-      ref={ref}
-      className={cx('relative overflow-hidden', className ?? '')}
-      style={
-        {
-          '--n-soft': `var(--neba-${color}-soft)`,
-          '--n-ring': `var(--neba-${color}-ring)`,
-          // The thumb is the colour family at a fraction of itself rather than
-          // `--neba-*-fill`: a scrollbar sits on top of content and a saturated
-          // rail down the side of a paragraph reads as a second column.
-          '--n-thumb': `color-mix(in oklab, var(--neba-${color}-accent) 35%, transparent)`,
-          '--n-thumb-hover': `color-mix(in oklab, var(--neba-${color}-accent) 55%, transparent)`,
-          '--n-rail': railSizes[size],
-          '--n-fade': fadeSizes[size],
-          height: toLength(height),
-          maxHeight: toLength(maxHeight),
-          ...style
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      <BaseUIScrollArea.Viewport
-        // The viewport filling its root is structure rather than styling —
-        // a viewport that does not is not a scroll area — so it is written
-        // inline, where nothing a caller passes can leave the box unbounded and
-        // silently take the scrolling with it. Base UI supplies the
-        // `overflow: scroll` beside it, also inline.
-        style={{ height: '100%', width: '100%' }}
-        className={cx(
-          'overscroll-contain [outline:none]',
-          focusRingClasses,
-          // The fade is a mask rather than a gradient painted over the content:
-          // a gradient would have to fade *to* a colour, and over a translucent
-          // acrylic sheet there is no such colour. `styles.css` has the rest.
-          fade ? 'neba-scroll-fade' : ''
-        )}
+    const vertical = orientation === 'vertical' || orientation === 'both';
+    const horizontal = orientation === 'horizontal' || orientation === 'both';
+
+    return (
+      <BaseUIScrollArea.Root
+        ref={ref}
+        className={cx('relative overflow-hidden', className ?? '')}
+        style={
+          {
+            '--n-soft': `var(--neba-${color}-soft)`,
+            '--n-ring': `var(--neba-${color}-ring)`,
+            // The thumb is the colour family at a fraction of itself rather than
+            // `--neba-*-fill`: a scrollbar sits on top of content and a saturated
+            // rail down the side of a paragraph reads as a second column.
+            '--n-thumb': `color-mix(in oklab, var(--neba-${color}-accent) 35%, transparent)`,
+            '--n-thumb-hover': `color-mix(in oklab, var(--neba-${color}-accent) 55%, transparent)`,
+            '--n-rail': railSizes[size],
+            '--n-fade': fadeSizes[size],
+            height: toLength(height),
+            maxHeight: toLength(maxHeight),
+            ...style
+          } as React.CSSProperties
+        }
+        {...props}
       >
-        <BaseUIScrollArea.Content className="min-w-full">{children}</BaseUIScrollArea.Content>
-      </BaseUIScrollArea.Viewport>
-
-      {vertical ? (
-        <BaseUIScrollArea.Scrollbar
-          orientation="vertical"
-          className={`${scrollbarClasses} w-(--n-rail) [margin-block:2px]`}
+        <BaseUIScrollArea.Viewport
+          // The viewport filling its root is structure rather than styling —
+          // a viewport that does not is not a scroll area — so it is written
+          // inline, where nothing a caller passes can leave the box unbounded and
+          // silently take the scrolling with it. Base UI supplies the
+          // `overflow: scroll` beside it, also inline.
+          style={{ height: '100%', width: '100%' }}
+          className={cx(
+            'overscroll-contain [outline:none]',
+            focusRingClasses,
+            // The fade is a mask rather than a gradient painted over the content:
+            // a gradient would have to fade *to* a colour, and over a translucent
+            // acrylic sheet there is no such colour. `styles.css` has the rest.
+            fade ? 'neba-scroll-fade' : ''
+          )}
         >
-          <BaseUIScrollArea.Thumb className={thumbClasses} />
-        </BaseUIScrollArea.Scrollbar>
-      ) : null}
+          <BaseUIScrollArea.Content className="min-w-full">{children}</BaseUIScrollArea.Content>
+        </BaseUIScrollArea.Viewport>
 
-      {horizontal ? (
-        <BaseUIScrollArea.Scrollbar
-          orientation="horizontal"
-          className={`${scrollbarClasses} h-(--n-rail) [margin-inline:2px]`}
-        >
-          <BaseUIScrollArea.Thumb className={thumbClasses} />
-        </BaseUIScrollArea.Scrollbar>
-      ) : null}
+        {vertical ? (
+          <BaseUIScrollArea.Scrollbar
+            orientation="vertical"
+            className={`${scrollbarClasses} w-(--n-rail) [margin-block:2px]`}
+          >
+            <BaseUIScrollArea.Thumb className={thumbClasses} />
+          </BaseUIScrollArea.Scrollbar>
+        ) : null}
 
-      {vertical && horizontal ? <BaseUIScrollArea.Corner /> : null}
-    </BaseUIScrollArea.Root>
-  );
-});
+        {horizontal ? (
+          <BaseUIScrollArea.Scrollbar
+            orientation="horizontal"
+            className={`${scrollbarClasses} h-(--n-rail) [margin-inline:2px]`}
+          >
+            <BaseUIScrollArea.Thumb className={thumbClasses} />
+          </BaseUIScrollArea.Scrollbar>
+        ) : null}
+
+        {vertical && horizontal ? <BaseUIScrollArea.Corner /> : null}
+      </BaseUIScrollArea.Root>
+    );
+  }
+);

@@ -14,6 +14,7 @@ import {
 import { observeResize } from '../../internal/observe.js';
 import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export type {
   PageLayoutCollapse,
@@ -164,269 +165,270 @@ const SLOTS: readonly PageLayoutSlot[] = ['header', 'footer'];
  * inside, where a page can have a wide dashboard on one route and a narrow
  * article on the next.
  */
-export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(function PageLayout(
-  {
-    header,
-    footer,
-    sidebar,
-    endSidebar,
-    headerSpan = 'full',
-    footerSpan = 'full',
-    scroll = 'page',
-    height = 'viewport',
-    collapseBelow = 'md',
-    sidebarOpen,
-    defaultSidebarOpen = false,
-    onSidebarOpenChange,
-    endSidebarOpen,
-    defaultEndSidebarOpen = false,
-    onEndSidebarOpenChange,
-    skipLink = true,
-    skipLabel,
-    mainId = 'main',
-    mainProps,
-    locale,
-    color = 'primary',
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(layoutMessages, locale);
+export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
+  function PageLayout(rawProps, ref) {
+    const {
+      header,
+      footer,
+      sidebar,
+      endSidebar,
+      headerSpan = 'full',
+      footerSpan = 'full',
+      scroll = 'page',
+      height = 'viewport',
+      collapseBelow = 'md',
+      sidebarOpen,
+      defaultSidebarOpen = false,
+      onSidebarOpenChange,
+      endSidebarOpen,
+      defaultEndSidebarOpen = false,
+      onEndSidebarOpenChange,
+      skipLink = true,
+      skipLabel,
+      mainId = 'main',
+      mainProps,
+      locale,
+      color = 'primary',
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['locale']);
 
-  const [ownStart, setOwnStart] = React.useState(defaultSidebarOpen);
-  const [ownEnd, setOwnEnd] = React.useState(defaultEndSidebarOpen);
+    const messages = useMessages(layoutMessages, locale);
 
-  const open = React.useMemo(
-    () => ({ start: sidebarOpen ?? ownStart, end: endSidebarOpen ?? ownEnd }),
-    [sidebarOpen, ownStart, endSidebarOpen, ownEnd]
-  );
+    const [ownStart, setOwnStart] = React.useState(defaultSidebarOpen);
+    const [ownEnd, setOwnEnd] = React.useState(defaultEndSidebarOpen);
 
-  const setOpen = React.useCallback(
-    (side: SidebarSide, next: boolean) => {
-      if (side === 'start') {
-        if (sidebarOpen === undefined) setOwnStart(next);
-        onSidebarOpenChange?.(next);
-        return;
-      }
+    const open = React.useMemo(
+      () => ({ start: sidebarOpen ?? ownStart, end: endSidebarOpen ?? ownEnd }),
+      [sidebarOpen, ownStart, endSidebarOpen, ownEnd]
+    );
 
-      if (endSidebarOpen === undefined) setOwnEnd(next);
-      onEndSidebarOpenChange?.(next);
-    },
-    [sidebarOpen, endSidebarOpen, onSidebarOpenChange, onEndSidebarOpenChange]
-  );
-
-  const rootRef = React.useRef<HTMLDivElement | null>(null);
-  const setRootRef = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      rootRef.current = node;
-
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
-
-  const slotsRef = React.useRef<Record<PageLayoutSlot, HTMLElement | null>>({
-    header: null,
-    footer: null
-  });
-  /** What is currently being watched, so a re-registered slot can be dropped. */
-  const stopRef = React.useRef<Record<PageLayoutSlot, (() => void) | null>>({
-    header: null,
-    footer: null
-  });
-
-  /**
-   * Writes what the header and the footer take out of the viewport onto the
-   * root, as two custom properties each.
-   *
-   * They are two rather than one because a bar takes two different things away
-   * depending on how it is positioned, and a sidebar and the page need opposite
-   * halves of that. A `sticky` bar is still in the flow, so nothing has to be
-   * reserved for it — but it is permanently across the top of the window, so a
-   * column that holds its place has to start below it. A `fixed` bar is out of
-   * the flow, so the page *does* have to reserve its height, and it is across
-   * the top as well. Which of the two a bar is is read off the element rather
-   * than plumbed through a prop: the bar already knows, `position` is what it
-   * knows it as, and asking is one line.
-   *
-   * Written straight to the DOM rather than held in state, exactly as the
-   * floating navigation's highlight is: nothing in the tree depends on the
-   * numbers except a handful of CSS declarations, and a `setState` here would
-   * re-render the whole page on every resize.
-   */
-  const measure = React.useCallback(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    for (const slot of SLOTS) {
-      const node = slotsRef.current[slot];
-      const span = slot === 'header' ? headerSpan : footerSpan;
-
-      if (!node) {
-        root.style.setProperty(`--n-layout-${slot}`, '0px');
-        root.style.setProperty(`--n-layout-${slot}-inset`, '0px');
-        continue;
-      }
-
-      const position = getComputedStyle(node).position;
-      const extent = `${node.offsetHeight}px`;
-      const pinned = position === 'sticky' || position === 'fixed';
-
-      // A bar that only spans the content column has the sidebars *beside* it,
-      // not under it, so it takes nothing off the top of theirs.
-      root.style.setProperty(`--n-layout-${slot}`, pinned && span === 'full' ? extent : '0px');
-      root.style.setProperty(`--n-layout-${slot}-inset`, position === 'fixed' ? extent : '0px');
-    }
-  }, [headerSpan, footerSpan]);
-
-  const observe = React.useCallback(() => {
-    for (const slot of SLOTS) {
-      stopRef.current[slot]?.();
-
-      const node = slotsRef.current[slot];
-
-      stopRef.current[slot] = node ? observeResize(node, () => measure()) : null;
-    }
-
-    measure();
-  }, [measure]);
-
-  React.useEffect(() => {
-    // The record itself, captured once — it is never reassigned, so this is the
-    // same object the cleanup wants and not a value read too early. What the
-    // cleanup needs is whatever is being watched *then*, which is what its
-    // fields will hold.
-    const stops = stopRef.current;
-
-    observe();
-
-    return () => {
-      for (const slot of SLOTS) {
-        stops[slot]?.();
-        stops[slot] = null;
-      }
-    };
-  }, [observe]);
-
-  const register = React.useCallback(
-    (slot: PageLayoutSlot, node: HTMLElement | null) => {
-      slotsRef.current[slot] = node;
-      observe();
-    },
-    [observe]
-  );
-
-  const context = React.useMemo(
-    () => ({ present: true, register, collapseBelow, open, setOpen, scroll, locale }),
-    [register, collapseBelow, open, setOpen, scroll, locale]
-  );
-
-  const fills = scroll === 'content';
-
-  // A named height is a class, because both of those are exactly two class
-  // names; anything else is a length nobody could have generated one for.
-  const extent = toLength(height === 'viewport' || height === 'auto' ? undefined : height);
-  const extentClasses =
-    extent !== undefined
-      ? ''
-      : height === 'auto'
-        ? fills
-          ? 'h-full'
-          : 'min-h-full'
-        : fills
-          ? 'h-dvh'
-          : 'min-h-dvh';
-
-  const headerSlot = hasContent(header) ? header : null;
-  const footerSlot = hasContent(footer) ? footer : null;
-
-  return (
-    <PageLayoutContext.Provider value={context}>
-      <div
-        ref={setRootRef}
-        className={cx(
-          'relative flex w-full flex-col',
-          // The whole difference between a document and a workspace. A floor
-          // lets the page grow and the window scroll it; an exact height with
-          // the overflow taken away pins the layout down and hands the
-          // scrolling to whichever region below asks for it.
-          fills ? 'overflow-hidden' : '',
-          extentClasses,
-          headerSpan === 'full' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
-          footerSpan === 'full' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : '',
-          className
-        )}
-        style={
-          extent === undefined
-            ? style
-            : { ...(fills ? { height: extent } : { minHeight: extent }), ...style }
+    const setOpen = React.useCallback(
+      (side: SidebarSide, next: boolean) => {
+        if (side === 'start') {
+          if (sidebarOpen === undefined) setOwnStart(next);
+          onSidebarOpenChange?.(next);
+          return;
         }
-        {...props}
-      >
-        {skipLink ? (
-          <a
-            href={`#${mainId}`}
-            // Clipped to a pixel until it is tabbed to, and a real chip from
-            // then on — not `hidden`, which would take it off the accessibility
-            // tree along with the screen and leave nothing for the Tab key to
-            // find in the first place.
-            className={cx(
-              'absolute start-3 top-3 z-50 size-px overflow-hidden whitespace-nowrap',
-              '[clip-path:inset(50%)] focus:size-auto focus:overflow-visible focus:[clip-path:none]',
-              'focus:rounded-(--neba-radius-md) focus:bg-(--n-fill) focus:px-4 focus:py-2',
-              'focus:font-medium focus:text-(--n-on-solid) focus:no-underline',
-              'focus:[box-shadow:var(--neba-shadow-2),var(--neba-plate-solid)]',
-              'focus:[outline:2px_solid_var(--n-ring)] focus:outline-offset-2'
-            )}
-            style={controlSlots(color, 2, 'solid')}
-          >
-            {skipLabel ?? messages.skipToContent}
-          </a>
-        ) : null}
 
-        {headerSpan === 'full' ? headerSlot : null}
+        if (endSidebarOpen === undefined) setOwnEnd(next);
+        onEndSidebarOpenChange?.(next);
+      },
+      [sidebarOpen, endSidebarOpen, onSidebarOpenChange, onEndSidebarOpenChange]
+    );
 
-        <div className={cx('flex w-full flex-1', fills ? 'min-h-0' : '')}>
-          {hasContent(sidebar) ? (
-            <SidebarSideContext.Provider value="start">{sidebar}</SidebarSideContext.Provider>
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    const slotsRef = React.useRef<Record<PageLayoutSlot, HTMLElement | null>>({
+      header: null,
+      footer: null
+    });
+    /** What is currently being watched, so a re-registered slot can be dropped. */
+    const stopRef = React.useRef<Record<PageLayoutSlot, (() => void) | null>>({
+      header: null,
+      footer: null
+    });
+
+    /**
+     * Writes what the header and the footer take out of the viewport onto the
+     * root, as two custom properties each.
+     *
+     * They are two rather than one because a bar takes two different things away
+     * depending on how it is positioned, and a sidebar and the page need opposite
+     * halves of that. A `sticky` bar is still in the flow, so nothing has to be
+     * reserved for it — but it is permanently across the top of the window, so a
+     * column that holds its place has to start below it. A `fixed` bar is out of
+     * the flow, so the page *does* have to reserve its height, and it is across
+     * the top as well. Which of the two a bar is is read off the element rather
+     * than plumbed through a prop: the bar already knows, `position` is what it
+     * knows it as, and asking is one line.
+     *
+     * Written straight to the DOM rather than held in state, exactly as the
+     * floating navigation's highlight is: nothing in the tree depends on the
+     * numbers except a handful of CSS declarations, and a `setState` here would
+     * re-render the whole page on every resize.
+     */
+    const measure = React.useCallback(() => {
+      const root = rootRef.current;
+      if (!root) return;
+
+      for (const slot of SLOTS) {
+        const node = slotsRef.current[slot];
+        const span = slot === 'header' ? headerSpan : footerSpan;
+
+        if (!node) {
+          root.style.setProperty(`--n-layout-${slot}`, '0px');
+          root.style.setProperty(`--n-layout-${slot}-inset`, '0px');
+          continue;
+        }
+
+        const position = getComputedStyle(node).position;
+        const extent = `${node.offsetHeight}px`;
+        const pinned = position === 'sticky' || position === 'fixed';
+
+        // A bar that only spans the content column has the sidebars *beside* it,
+        // not under it, so it takes nothing off the top of theirs.
+        root.style.setProperty(`--n-layout-${slot}`, pinned && span === 'full' ? extent : '0px');
+        root.style.setProperty(`--n-layout-${slot}-inset`, position === 'fixed' ? extent : '0px');
+      }
+    }, [headerSpan, footerSpan]);
+
+    const observe = React.useCallback(() => {
+      for (const slot of SLOTS) {
+        stopRef.current[slot]?.();
+
+        const node = slotsRef.current[slot];
+
+        stopRef.current[slot] = node ? observeResize(node, () => measure()) : null;
+      }
+
+      measure();
+    }, [measure]);
+
+    React.useEffect(() => {
+      // The record itself, captured once — it is never reassigned, so this is the
+      // same object the cleanup wants and not a value read too early. What the
+      // cleanup needs is whatever is being watched *then*, which is what its
+      // fields will hold.
+      const stops = stopRef.current;
+
+      observe();
+
+      return () => {
+        for (const slot of SLOTS) {
+          stops[slot]?.();
+          stops[slot] = null;
+        }
+      };
+    }, [observe]);
+
+    const register = React.useCallback(
+      (slot: PageLayoutSlot, node: HTMLElement | null) => {
+        slotsRef.current[slot] = node;
+        observe();
+      },
+      [observe]
+    );
+
+    const context = React.useMemo(
+      () => ({ present: true, register, collapseBelow, open, setOpen, scroll, locale }),
+      [register, collapseBelow, open, setOpen, scroll, locale]
+    );
+
+    const fills = scroll === 'content';
+
+    // A named height is a class, because both of those are exactly two class
+    // names; anything else is a length nobody could have generated one for.
+    const extent = toLength(height === 'viewport' || height === 'auto' ? undefined : height);
+    const extentClasses =
+      extent !== undefined
+        ? ''
+        : height === 'auto'
+          ? fills
+            ? 'h-full'
+            : 'min-h-full'
+          : fills
+            ? 'h-dvh'
+            : 'min-h-dvh';
+
+    const headerSlot = hasContent(header) ? header : null;
+    const footerSlot = hasContent(footer) ? footer : null;
+
+    return (
+      <PageLayoutContext.Provider value={context}>
+        <div
+          ref={setRootRef}
+          className={cx(
+            'relative flex w-full flex-col',
+            // The whole difference between a document and a workspace. A floor
+            // lets the page grow and the window scroll it; an exact height with
+            // the overflow taken away pins the layout down and hands the
+            // scrolling to whichever region below asks for it.
+            fills ? 'overflow-hidden' : '',
+            extentClasses,
+            headerSpan === 'full' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
+            footerSpan === 'full' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : '',
+            className
+          )}
+          style={
+            extent === undefined
+              ? style
+              : { ...(fills ? { height: extent } : { minHeight: extent }), ...style }
+          }
+          {...props}
+        >
+          {skipLink ? (
+            <a
+              href={`#${mainId}`}
+              // Clipped to a pixel until it is tabbed to, and a real chip from
+              // then on — not `hidden`, which would take it off the accessibility
+              // tree along with the screen and leave nothing for the Tab key to
+              // find in the first place.
+              className={cx(
+                'absolute start-3 top-3 z-50 size-px overflow-hidden whitespace-nowrap',
+                '[clip-path:inset(50%)] focus:size-auto focus:overflow-visible focus:[clip-path:none]',
+                'focus:rounded-(--neba-radius-md) focus:bg-(--n-fill) focus:px-4 focus:py-2',
+                'focus:font-medium focus:text-(--n-on-solid) focus:no-underline',
+                'focus:[box-shadow:var(--neba-shadow-2),var(--neba-plate-solid)]',
+                'focus:[outline:2px_solid_var(--n-ring)] focus:outline-offset-2'
+              )}
+              style={controlSlots(color, 2, 'solid')}
+            >
+              {skipLabel ?? messages.skipToContent}
+            </a>
           ) : null}
 
-          <div
-            className={cx(
-              'flex min-w-0 flex-1 flex-col',
-              fills ? 'min-h-0' : '',
-              headerSpan === 'content' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
-              footerSpan === 'content' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : ''
-            )}
-          >
-            {headerSpan === 'content' ? headerSlot : null}
+          {headerSpan === 'full' ? headerSlot : null}
 
-            <main
-              {...mainProps}
-              id={mainId}
+          <div className={cx('flex w-full flex-1', fills ? 'min-h-0' : '')}>
+            {hasContent(sidebar) ? (
+              <SidebarSideContext.Provider value="start">{sidebar}</SidebarSideContext.Provider>
+            ) : null}
+
+            <div
               className={cx(
-                'min-w-0 flex-1',
-                fills ? 'min-h-0 overflow-y-auto' : '',
-                mainProps?.className
+                'flex min-w-0 flex-1 flex-col',
+                fills ? 'min-h-0' : '',
+                headerSpan === 'content' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
+                footerSpan === 'content' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : ''
               )}
             >
-              {children}
-            </main>
+              {headerSpan === 'content' ? headerSlot : null}
 
-            {footerSpan === 'content' ? footerSlot : null}
+              <main
+                {...mainProps}
+                id={mainId}
+                className={cx(
+                  'min-w-0 flex-1',
+                  fills ? 'min-h-0 overflow-y-auto' : '',
+                  mainProps?.className
+                )}
+              >
+                {children}
+              </main>
+
+              {footerSpan === 'content' ? footerSlot : null}
+            </div>
+
+            {hasContent(endSidebar) ? (
+              <SidebarSideContext.Provider value="end">{endSidebar}</SidebarSideContext.Provider>
+            ) : null}
           </div>
 
-          {hasContent(endSidebar) ? (
-            <SidebarSideContext.Provider value="end">{endSidebar}</SidebarSideContext.Provider>
-          ) : null}
+          {footerSpan === 'full' ? footerSlot : null}
         </div>
-
-        {footerSpan === 'full' ? footerSlot : null}
-      </div>
-    </PageLayoutContext.Provider>
-  );
-});
+      </PageLayoutContext.Provider>
+    );
+  }
+);

@@ -17,6 +17,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Where a floating bar sits, with one value the shared vocabulary does not have.
@@ -200,8 +201,8 @@ const rowGapClasses: Record<NebaSize, string> = {
 export const FloatingBottomNavigation = React.forwardRef<
   HTMLElement,
   FloatingBottomNavigationProps
->(function FloatingBottomNavigation(
-  {
+>(function FloatingBottomNavigation(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -221,9 +222,8 @@ export const FloatingBottomNavigation = React.forwardRef<
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const [uncontrolled, setUncontrolled] = React.useState<BottomNavigationValue | null>(
     defaultValue
   );

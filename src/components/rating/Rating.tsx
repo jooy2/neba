@@ -14,6 +14,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface RatingProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -122,8 +123,8 @@ const starClasses = 'flex items-center justify-center';
  * that keeps twenty focusable radios is twenty tab stops on a page that was
  * only reporting a number.
  */
-export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rating(
-  {
+export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rating(rawProps, ref) {
+  const {
     value: valueProp,
     defaultValue = 0,
     onValueChange,
@@ -145,9 +146,8 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
     style,
     onPointerLeave,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
+
   const messages = useMessages(ratingMessages, locale);
   const generatedName = React.useId();
   const name = nameProp ?? generatedName;

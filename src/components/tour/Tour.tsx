@@ -20,6 +20,7 @@ import {
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaSide, NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One stop on the tour. */
 export interface TourStep {
@@ -203,30 +204,32 @@ function Mask({
  * pointed at while the card is up, which is the difference between a tour and a
  * sequence of dialogs.
  */
-export function Tour({
-  steps,
-  open,
-  defaultOpen = false,
-  onOpenChange,
-  step,
-  defaultStep = 0,
-  onStepChange,
-  onFinish,
-  mask = true,
-  skippable = true,
-  dismissible = true,
-  scrollIntoView = true,
-  locale,
-  previousLabel,
-  nextLabel,
-  doneLabel,
-  skipLabel,
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  className,
-  classNames
-}: TourProps) {
+export function Tour(rawProps: TourProps) {
+  const {
+    steps,
+    open,
+    defaultOpen = false,
+    onOpenChange,
+    step,
+    defaultStep = 0,
+    onStepChange,
+    onFinish,
+    mask = true,
+    skippable = true,
+    dismissible = true,
+    scrollIntoView = true,
+    locale,
+    previousLabel,
+    nextLabel,
+    doneLabel,
+    skipLabel,
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    className,
+    classNames
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(stepsMessages, locale);
   const actions = useMessages(actionMessages, locale);
 

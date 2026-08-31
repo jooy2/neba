@@ -13,6 +13,7 @@ import type {
   NebaSize,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface FooterProps extends Omit<
   React.ComponentPropsWithoutRef<'footer'>,
@@ -129,8 +130,8 @@ const maxWidthClasses: Record<NebaSize, string> = {
  * Inside a [PageLayout] it also registers itself, so a `fixed` footer's height
  * is reserved rather than sitting on top of the last paragraph.
  */
-export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer(
-  {
+export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer(rawProps, ref) {
+  const {
     position = 'static',
     variant = 'outline',
     size = 'md',
@@ -146,9 +147,8 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const layout = React.useContext(PageLayoutContext);
   const { register } = layout;
 

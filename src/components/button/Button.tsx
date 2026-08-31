@@ -22,6 +22,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ButtonProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> {
@@ -168,120 +169,121 @@ function Spinner() {
   );
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
-    variant: variantProp,
-    size: sizeProp,
-    color: colorProp,
-    density: densityProp,
-    elevation: elevationProp,
-    startIcon,
-    endIcon,
-    loading = false,
-    readOnly = false,
-    fullWidth = false,
-    disabled: disabledProp,
-    render,
-    className,
-    style,
-    children,
-    onClick,
-    onPointerMove,
-    ...props
-  },
-  ref
-) {
-  // A ButtonGroup sets these once for the whole set. The button's own prop still
-  // wins — a group of secondary actions with one danger button in it is a real
-  // thing — and with no group around it the defaults are what they always were.
-  const group = React.useContext(ButtonGroupContext);
-  const variant = variantProp ?? group?.variant ?? 'solid';
-  const size = sizeProp ?? group?.size ?? 'md';
-  const color = colorProp ?? group?.color ?? 'primary';
-  const density = densityProp ?? group?.density ?? 'default';
-  const elevation = elevationProp ?? group?.elevation ?? 0;
-  const disabled = disabledProp ?? group?.disabled ?? false;
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button(rawProps, ref) {
+    const {
+      variant: variantProp,
+      size: sizeProp,
+      color: colorProp,
+      density: densityProp,
+      elevation: elevationProp,
+      startIcon,
+      endIcon,
+      loading = false,
+      readOnly = false,
+      fullWidth = false,
+      disabled: disabledProp,
+      render,
+      className,
+      style,
+      children,
+      onClick,
+      onPointerMove,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const iconOnly = children === undefined || children === null || children === false;
-  // `disabled` and `readOnly` change how the button looks; `loading` only stops
-  // it from firing.
-  const inert = loading || readOnly;
+    // A ButtonGroup sets these once for the whole set. The button's own prop still
+    // wins — a group of secondary actions with one danger button in it is a real
+    // thing — and with no group around it the defaults are what they always were.
+    const group = React.useContext(ButtonGroupContext);
+    const variant = variantProp ?? group?.variant ?? 'solid';
+    const size = sizeProp ?? group?.size ?? 'md';
+    const color = colorProp ?? group?.color ?? 'primary';
+    const density = densityProp ?? group?.density ?? 'default';
+    const elevation = elevationProp ?? group?.elevation ?? 0;
+    const disabled = disabledProp ?? group?.disabled ?? false;
 
-  const classNames = cx(
-    baseClasses,
-    sizeClasses[size],
-    iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
-    // Deliberately an if/else rather than stacked `data-*` variants: two
-    // Tailwind variants of equal specificity resolve by their order in the
-    // generated stylesheet, which is not something a component should depend on.
-    disabled
-      ? disabledClasses[variant]
-      : readOnly
-        ? readOnlyClasses[variant]
-        : restClasses[variant],
-    !disabled && !inert ? [hoverClasses[variant], 'neba-glow', 'cursor-pointer'].join(' ') : '',
-    loading ? 'cursor-progress' : '',
-    fullWidth ? 'w-full' : '',
-    className ?? ''
-  );
+    const iconOnly = children === undefined || children === null || children === false;
+    // `disabled` and `readOnly` change how the button looks; `loading` only stops
+    // it from firing.
+    const inert = loading || readOnly;
 
-  /*
-   * `render` deliberately steps around Base UI's Button rather than being handed
-   * to it. Told to render a non-`<button>`, that component puts `role="button"`
-   * on whatever it was given — which is right for a `<div>` and wrong for the
-   * case this prop exists for: an `<a href>` under a `role="button"` stops being
-   * a link to everything that reads the page, and the link list, the status bar
-   * and the crawler all lose it.
-   *
-   * What Base UI's Button adds over a bare `<button>` is its disabled handling,
-   * and `disabled` is the one thing that cannot travel to an `<a>` anyway.
-   */
-  return useRender({
-    render: render ?? <BaseUIButton disabled={disabled} />,
-    ref,
-    props: {
-      className: classNames,
-      style: { ...controlSlots(color, elevation, variant), ...style },
-      'aria-disabled': inert || undefined,
-      'aria-busy': loading || undefined,
-      'data-loading': loading || undefined,
-      'data-readonly': readOnly || undefined,
-      onClick: (event: React.MouseEvent<HTMLElement>) => {
-        if (inert) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-        onClick?.(event as React.MouseEvent<HTMLButtonElement>);
-      },
-      onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
-        // Feeds the two light layers in `styles.css`. Written straight to the
-        // element rather than held in state: this fires at pointer rate, and a
-        // `setState` here would re-render the tree on every mouse move. Reading
-        // `offsetX/offsetY` costs nothing — no `getBoundingClientRect`, so no
-        // forced layout. Icons carry `pointer-events: none`, so the offsets are
-        // always relative to the button itself.
-        // Only where there are layers to feed. `neba-glow` is on the enabled
-        // button and nothing else, so writing the two slots on a disabled,
-        // loading or read-only one invalidates that element's style on every
-        // pointer event to move a gradient nobody is painting.
-        if (!disabled && !inert) {
-          const element = event.currentTarget;
+    const classNames = cx(
+      baseClasses,
+      sizeClasses[size],
+      iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
+      // Deliberately an if/else rather than stacked `data-*` variants: two
+      // Tailwind variants of equal specificity resolve by their order in the
+      // generated stylesheet, which is not something a component should depend on.
+      disabled
+        ? disabledClasses[variant]
+        : readOnly
+          ? readOnlyClasses[variant]
+          : restClasses[variant],
+      !disabled && !inert ? [hoverClasses[variant], 'neba-glow', 'cursor-pointer'].join(' ') : '',
+      loading ? 'cursor-progress' : '',
+      fullWidth ? 'w-full' : '',
+      className ?? ''
+    );
 
-          element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-          element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
-        }
+    /*
+     * `render` deliberately steps around Base UI's Button rather than being handed
+     * to it. Told to render a non-`<button>`, that component puts `role="button"`
+     * on whatever it was given — which is right for a `<div>` and wrong for the
+     * case this prop exists for: an `<a href>` under a `role="button"` stops being
+     * a link to everything that reads the page, and the link list, the status bar
+     * and the crawler all lose it.
+     *
+     * What Base UI's Button adds over a bare `<button>` is its disabled handling,
+     * and `disabled` is the one thing that cannot travel to an `<a>` anyway.
+     */
+    return useRender({
+      render: render ?? <BaseUIButton disabled={disabled} />,
+      ref,
+      props: {
+        className: classNames,
+        style: { ...controlSlots(color, elevation, variant), ...style },
+        'aria-disabled': inert || undefined,
+        'aria-busy': loading || undefined,
+        'data-loading': loading || undefined,
+        'data-readonly': readOnly || undefined,
+        onClick: (event: React.MouseEvent<HTMLElement>) => {
+          if (inert) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
+          onClick?.(event as React.MouseEvent<HTMLButtonElement>);
+        },
+        onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
+          // Feeds the two light layers in `styles.css`. Written straight to the
+          // element rather than held in state: this fires at pointer rate, and a
+          // `setState` here would re-render the tree on every mouse move. Reading
+          // `offsetX/offsetY` costs nothing — no `getBoundingClientRect`, so no
+          // forced layout. Icons carry `pointer-events: none`, so the offsets are
+          // always relative to the button itself.
+          // Only where there are layers to feed. `neba-glow` is on the enabled
+          // button and nothing else, so writing the two slots on a disabled,
+          // loading or read-only one invalidates that element's style on every
+          // pointer event to move a gradient nobody is painting.
+          if (!disabled && !inert) {
+            const element = event.currentTarget;
 
-        onPointerMove?.(event as React.PointerEvent<HTMLButtonElement>);
-      },
-      ...props,
-      children: (
-        <>
-          {loading ? <Spinner /> : startIcon}
-          {children}
-          {endIcon}
-        </>
-      )
-    }
-  });
-});
+            element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
+            element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+          }
+
+          onPointerMove?.(event as React.PointerEvent<HTMLButtonElement>);
+        },
+        ...props,
+        children: (
+          <>
+            {loading ? <Spinner /> : startIcon}
+            {children}
+            {endIcon}
+          </>
+        )
+      }
+    });
+  }
+);

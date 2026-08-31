@@ -20,6 +20,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSize, NebaStyleProps, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ToggleProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'button'>, 'color' | 'value'> {
@@ -162,86 +163,87 @@ const onClasses: Record<NebaVariant, string> = {
  * Base UI's Toggle owns `aria-pressed` and the controlled/uncontrolled pair.
  * What is left here is the surface, and the rule that off is neutral.
  */
-export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(function Toggle(
-  {
-    variant: variantProp,
-    size: sizeProp,
-    color: colorProp,
-    density: densityProp,
-    elevation: elevationProp,
-    pressed,
-    defaultPressed,
-    onPressedChange,
-    value,
-    startIcon,
-    endIcon,
-    fullWidth = false,
-    disabled: disabledProp,
-    className,
-    style,
-    children,
-    onPointerMove,
-    ...props
-  },
-  ref
-) {
-  // A ToggleGroup and a ButtonGroup provide the same context, so a Toggle picks
-  // up the set it is in either way. Its own prop still wins.
-  const group = React.useContext(ButtonGroupContext);
-  const variant = variantProp ?? group?.variant ?? 'outline';
-  const size = sizeProp ?? group?.size ?? 'md';
-  const color = colorProp ?? group?.color ?? 'primary';
-  const density = densityProp ?? group?.density ?? 'default';
-  const elevation = elevationProp ?? group?.elevation ?? 0;
-  const disabled = disabledProp ?? group?.disabled ?? false;
+export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+  function Toggle(rawProps, ref) {
+    const {
+      variant: variantProp,
+      size: sizeProp,
+      color: colorProp,
+      density: densityProp,
+      elevation: elevationProp,
+      pressed,
+      defaultPressed,
+      onPressedChange,
+      value,
+      startIcon,
+      endIcon,
+      fullWidth = false,
+      disabled: disabledProp,
+      className,
+      style,
+      children,
+      onPointerMove,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const iconOnly = children === undefined || children === null || children === false;
+    // A ToggleGroup and a ButtonGroup provide the same context, so a Toggle picks
+    // up the set it is in either way. Its own prop still wins.
+    const group = React.useContext(ButtonGroupContext);
+    const variant = variantProp ?? group?.variant ?? 'outline';
+    const size = sizeProp ?? group?.size ?? 'md';
+    const color = colorProp ?? group?.color ?? 'primary';
+    const density = densityProp ?? group?.density ?? 'default';
+    const elevation = elevationProp ?? group?.elevation ?? 0;
+    const disabled = disabledProp ?? group?.disabled ?? false;
 
-  return (
-    <BaseUIToggle
-      ref={ref}
-      value={value}
-      pressed={pressed}
-      defaultPressed={defaultPressed}
-      onPressedChange={(next) => onPressedChange?.(next)}
-      disabled={disabled}
-      className={(state) =>
-        cx(
-          baseClasses,
-          sizeClasses[size],
-          iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
-          // An if/else rather than stacked `data-*` variants: two Tailwind
-          // variants of equal specificity resolve by their order in the
-          // generated stylesheet, and "pressed" and "disabled" would collide.
-          disabled
-            ? disabledClasses[variant]
-            : state.pressed
-              ? onClasses[variant]
-              : offClasses[variant],
-          disabled ? '' : 'neba-glow',
-          fullWidth ? 'w-full' : '',
-          className ?? ''
-        )
-      }
-      style={{ ...controlSlots(color, elevation, variant), ...style }}
-      onPointerMove={(event) => {
-        // Feeds the two light layers in `styles.css`, exactly as Button does —
-        // written straight to the element because this fires at pointer rate,
-        // and only while `neba-glow` is on it to read them.
-        if (!disabled) {
-          const element = event.currentTarget;
+    const iconOnly = children === undefined || children === null || children === false;
 
-          element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-          element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+    return (
+      <BaseUIToggle
+        ref={ref}
+        value={value}
+        pressed={pressed}
+        defaultPressed={defaultPressed}
+        onPressedChange={(next) => onPressedChange?.(next)}
+        disabled={disabled}
+        className={(state) =>
+          cx(
+            baseClasses,
+            sizeClasses[size],
+            iconOnly ? iconOnlyClasses[size] : paddingXClasses[density][size],
+            // An if/else rather than stacked `data-*` variants: two Tailwind
+            // variants of equal specificity resolve by their order in the
+            // generated stylesheet, and "pressed" and "disabled" would collide.
+            disabled
+              ? disabledClasses[variant]
+              : state.pressed
+                ? onClasses[variant]
+                : offClasses[variant],
+            disabled ? '' : 'neba-glow',
+            fullWidth ? 'w-full' : '',
+            className ?? ''
+          )
         }
+        style={{ ...controlSlots(color, elevation, variant), ...style }}
+        onPointerMove={(event) => {
+          // Feeds the two light layers in `styles.css`, exactly as Button does —
+          // written straight to the element because this fires at pointer rate,
+          // and only while `neba-glow` is on it to read them.
+          if (!disabled) {
+            const element = event.currentTarget;
 
-        onPointerMove?.(event);
-      }}
-      {...props}
-    >
-      {startIcon}
-      {children}
-      {endIcon}
-    </BaseUIToggle>
-  );
-});
+            element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
+            element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
+          }
+
+          onPointerMove?.(event);
+        }}
+        {...props}
+      >
+        {startIcon}
+        {children}
+        {endIcon}
+      </BaseUIToggle>
+    );
+  }
+);

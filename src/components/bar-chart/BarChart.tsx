@@ -22,6 +22,7 @@ import type {
   NebaOrientation,
   NebaSize
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface BarChartProps extends CartesianChartProps {
   /**
@@ -83,18 +84,20 @@ export interface BarChartProps extends CartesianChartProps {
  * is this total made of". They are different questions and the chart should be
  * asked only one of them at a time.
  */
-export function BarChart({
-  orientation = 'vertical',
-  stacked = false,
-  rounded = true,
-  barSize,
-  valueLabels = 'none',
-  series,
-  yAxis,
-  size = 'md',
-  density = 'default',
-  ...props
-}: BarChartProps) {
+export function BarChart(rawProps: BarChartProps) {
+  const {
+    orientation = 'vertical',
+    stacked = false,
+    rounded = true,
+    barSize,
+    valueLabels = 'none',
+    series,
+    yAxis,
+    size = 'md',
+    density = 'default',
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density']);
+
   const horizontal = orientation === 'horizontal';
   const full = stacked === 'full';
 

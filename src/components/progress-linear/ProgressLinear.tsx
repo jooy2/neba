@@ -12,6 +12,7 @@ import {
 } from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ProgressLinearProps extends ProgressSharedProps {
   /** Thickness of the groove. Nothing else on a bar has a size. */
@@ -39,8 +40,8 @@ const trackClasses = 'relative w-full overflow-hidden rounded-full bg-(--n-soft)
  * case here is a class list and nothing else.
  */
 export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearProps>(
-  function ProgressLinear(
-    {
+  function ProgressLinear(rawProps, ref) {
+    const {
       size = 'md',
       color = 'primary',
       value = null,
@@ -52,9 +53,8 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       className,
       style,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size']);
+
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
     const hasFormat = format !== undefined;

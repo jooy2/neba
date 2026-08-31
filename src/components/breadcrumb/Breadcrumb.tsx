@@ -13,6 +13,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What is drawn between two steps of the trail.
@@ -281,150 +282,154 @@ function isSeparatorName(value: unknown): value is BreadcrumbSeparator {
  * not know whether anything follows it, and a mark that belonged to a step would
  * have to be taken off the last one by hand.
  */
-export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb(
-  {
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    separator = 'chevron',
-    maxItems,
-    itemsBeforeCollapse = 1,
-    itemsAfterCollapse = 1,
-    expandable = true,
-    locale,
-    label,
-    expandLabel,
-    structuredData = false,
-    baseUrl,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(breadcrumbMessages, locale);
-  const [unfolded, setUnfolded] = React.useState(false);
+export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
+  function Breadcrumb(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      separator = 'chevron',
+      maxItems,
+      itemsBeforeCollapse = 1,
+      itemsAfterCollapse = 1,
+      expandable = true,
+      locale,
+      label,
+      expandLabel,
+      structuredData = false,
+      baseUrl,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-  const steps = React.Children.toArray(children).filter(
-    React.isValidElement
-  ) as React.ReactElement<BreadcrumbItemProps>[];
-  const total = steps.length;
+    const messages = useMessages(breadcrumbMessages, locale);
+    const [unfolded, setUnfolded] = React.useState(false);
 
-  /*
-   * The last step is the page you are on — unless a step says it is. Exactly one
-   * element in a trail may carry `aria-current="page"`, so a caller who marks an
-   * earlier step has to take the mark off the last one, and doing that by hand
-   * would mean writing `current={false}` on a step that never asked for it.
-   */
-  const claimed = steps.some((step) => step.props.current === true);
+    const steps = React.Children.toArray(children).filter(
+      React.isValidElement
+    ) as React.ReactElement<BreadcrumbItemProps>[];
+    const total = steps.length;
 
-  const folding =
-    !unfolded &&
-    maxItems !== undefined &&
-    total > Math.max(maxItems, 1) &&
-    // A fold has to actually remove something. With `1` before and `1` after on
-    // a three-step trail the `…` would stand in for exactly one step, which is
-    // longer than the step it replaced.
-    total - itemsBeforeCollapse - itemsAfterCollapse > 1;
+    /*
+     * The last step is the page you are on — unless a step says it is. Exactly one
+     * element in a trail may carry `aria-current="page"`, so a caller who marks an
+     * earlier step has to take the mark off the last one, and doing that by hand
+     * would mean writing `current={false}` on a step that never asked for it.
+     */
+    const claimed = steps.some((step) => step.props.current === true);
 
-  const shown = folding
-    ? [
-        ...steps.slice(0, Math.max(0, itemsBeforeCollapse)),
-        null,
-        ...steps.slice(total - Math.max(0, itemsAfterCollapse))
-      ]
-    : steps;
+    const folding =
+      !unfolded &&
+      maxItems !== undefined &&
+      total > Math.max(maxItems, 1) &&
+      // A fold has to actually remove something. With `1` before and `1` after on
+      // a three-step trail the `…` would stand in for exactly one step, which is
+      // longer than the step it replaced.
+      total - itemsBeforeCollapse - itemsAfterCollapse > 1;
 
-  const mark = isSeparatorName(separator) ? separatorMark(separator) : separator;
+    const shown = folding
+      ? [
+          ...steps.slice(0, Math.max(0, itemsBeforeCollapse)),
+          null,
+          ...steps.slice(total - Math.max(0, itemsAfterCollapse))
+        ]
+      : steps;
 
-  const foldClassNames = cx(
-    'inline-flex items-center rounded-(--neba-radius-xs) px-0.5',
-    'text-(--neba-muted-fg)',
-    transitionClasses,
-    iconClasses,
-    expandable
-      ? cx(
-          'cursor-pointer hover:bg-(--n-soft) hover:text-(--n-accent)',
-          'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
-        )
-      : ''
-  );
+    const mark = isSeparatorName(separator) ? separatorMark(separator) : separator;
 
-  return (
-    <nav
-      ref={ref}
-      aria-label={label ?? messages.label}
-      className={cx('flex', controlTextClasses[size], iconClasses, className)}
-      style={
-        {
-          '--n-accent': `var(--neba-${color}-accent)`,
-          '--n-soft': `var(--neba-${color}-soft)`,
-          '--n-ring': `var(--neba-${color}-ring)`,
-          ...style
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      {/* Beside the markup rather than instead of it: the `<ol>` is what a
+    const foldClassNames = cx(
+      'inline-flex items-center rounded-(--neba-radius-xs) px-0.5',
+      'text-(--neba-muted-fg)',
+      transitionClasses,
+      iconClasses,
+      expandable
+        ? cx(
+            'cursor-pointer hover:bg-(--n-soft) hover:text-(--n-accent)',
+            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
+          )
+        : ''
+    );
+
+    return (
+      <nav
+        ref={ref}
+        aria-label={label ?? messages.label}
+        className={cx('flex', controlTextClasses[size], iconClasses, className)}
+        style={
+          {
+            '--n-accent': `var(--neba-${color}-accent)`,
+            '--n-soft': `var(--neba-${color}-soft)`,
+            '--n-ring': `var(--neba-${color}-ring)`,
+            ...style
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {/* Beside the markup rather than instead of it: the `<ol>` is what a
           reader gets and this is what a crawler reads. Every step is in it,
           including any the fold is hiding — what is collapsed is a question of
           room, and the path is the path either way. */}
-      {structuredData && total > 0 ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: breadcrumbListData(steps, baseUrl) }}
-        />
-      ) : null}
+        {structuredData && total > 0 ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: breadcrumbListData(steps, baseUrl) }}
+          />
+        ) : null}
 
-      <ol
-        // `role="list"` for the reason List says it out loud: Tailwind's reset
-        // takes the bullets off every `<ol>`, and Safari takes the list
-        // semantics off with them.
-        role="list"
-        className={cx('flex list-none flex-wrap items-center p-0', trailGapClasses[density][size])}
-      >
-        {shown.map((step, index) => (
-          <React.Fragment key={step ? (step.key ?? index) : 'fold'}>
-            {index > 0 ? (
-              <li
-                aria-hidden="true"
-                className="flex shrink-0 items-center text-(--neba-muted-fg) select-none"
-              >
-                {mark}
-              </li>
-            ) : null}
+        <ol
+          // `role="list"` for the reason List says it out loud: Tailwind's reset
+          // takes the bullets off every `<ol>`, and Safari takes the list
+          // semantics off with them.
+          role="list"
+          className={cx(
+            'flex list-none flex-wrap items-center p-0',
+            trailGapClasses[density][size]
+          )}
+        >
+          {shown.map((step, index) => (
+            <React.Fragment key={step ? (step.key ?? index) : 'fold'}>
+              {index > 0 ? (
+                <li
+                  aria-hidden="true"
+                  className="flex shrink-0 items-center text-(--neba-muted-fg) select-none"
+                >
+                  {mark}
+                </li>
+              ) : null}
 
-            {step ? (
-              <BreadcrumbContext.Provider
-                value={{ size, last: !claimed && index === shown.length - 1 }}
-              >
-                {step}
-              </BreadcrumbContext.Provider>
-            ) : (
-              <li className="flex shrink-0 items-center">
-                {expandable ? (
-                  <button
-                    type="button"
-                    className={foldClassNames}
-                    aria-label={expandLabel ?? messages.expand}
-                    onClick={() => setUnfolded(true)}
-                  >
-                    <EllipsisIcon />
-                  </button>
-                ) : (
-                  <span className={foldClassNames} aria-hidden="true">
-                    <EllipsisIcon />
-                  </span>
-                )}
-              </li>
-            )}
-          </React.Fragment>
-        ))}
-      </ol>
-    </nav>
-  );
-});
+              {step ? (
+                <BreadcrumbContext.Provider
+                  value={{ size, last: !claimed && index === shown.length - 1 }}
+                >
+                  {step}
+                </BreadcrumbContext.Provider>
+              ) : (
+                <li className="flex shrink-0 items-center">
+                  {expandable ? (
+                    <button
+                      type="button"
+                      className={foldClassNames}
+                      aria-label={expandLabel ?? messages.expand}
+                      onClick={() => setUnfolded(true)}
+                    >
+                      <EllipsisIcon />
+                    </button>
+                  ) : (
+                    <span className={foldClassNames} aria-hidden="true">
+                      <EllipsisIcon />
+                    </span>
+                  )}
+                </li>
+              )}
+            </React.Fragment>
+          ))}
+        </ol>
+      </nav>
+    );
+  }
+);
 
 /**
  * One step of the trail.

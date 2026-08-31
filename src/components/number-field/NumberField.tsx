@@ -32,6 +32,7 @@ import type {
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Where the two steppers sit.
@@ -209,47 +210,49 @@ const stepperClasses = [
  * clamping, the press-and-hold repeat on the steppers, and the hidden input
  * that submits with a form.
  */
-export function NumberField({
-  variant = 'outline',
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  elevation = 0,
-  value,
-  defaultValue,
-  onValueChange,
-  onValueCommitted,
-  min,
-  max,
-  step,
-  largeStep,
-  smallStep,
-  snapOnStep,
-  allowWheelScrub = false,
-  format,
-  locale,
-  steppers = 'end',
-  incrementLabel,
-  decrementLabel,
-  label,
-  description,
-  error,
-  invalid,
-  startIcon,
-  endIcon,
-  fullWidth = false,
-  disabled = false,
-  readOnly = false,
-  required = false,
-  name,
-  placeholder,
-  id,
-  className,
-  classNames,
-  shortcuts,
-  style,
-  ...props
-}: NumberFieldProps) {
+export function NumberField(rawProps: NumberFieldProps) {
+  const {
+    variant = 'outline',
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    elevation = 0,
+    value,
+    defaultValue,
+    onValueChange,
+    onValueCommitted,
+    min,
+    max,
+    step,
+    largeStep,
+    smallStep,
+    snapOnStep,
+    allowWheelScrub = false,
+    format,
+    locale,
+    steppers = 'end',
+    incrementLabel,
+    decrementLabel,
+    label,
+    description,
+    error,
+    invalid,
+    startIcon,
+    endIcon,
+    fullWidth = false,
+    disabled = false,
+    readOnly = false,
+    required = false,
+    name,
+    placeholder,
+    id,
+    className,
+    classNames,
+    shortcuts,
+    style,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   // `Intl` takes more shapes than a message tag does; only a plain string names
   // anything here, and anything else falls back to English.
   const messages = useMessages(numberMessages, typeof locale === 'string' ? locale : undefined);

@@ -25,6 +25,7 @@ import type {
   NebaSize,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface PillProps
   extends
@@ -223,8 +224,8 @@ const positionClasses: Record<NebaPosition, Record<'top' | 'bottom', string>> = 
  * hardcoded height, so a details area whose content changes — which is what live
  * information does — grows with it.
  */
-export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
-  {
+export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(rawProps, ref) {
+  const {
     variant = 'solid',
     size = 'md',
     color = 'secondary',
@@ -243,9 +244,8 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(
     children,
     onClick,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const detailsRef = React.useRef<HTMLDivElement>(null);
   const [detailsHeight, setDetailsHeight] = React.useState(0);
 

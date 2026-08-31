@@ -18,6 +18,7 @@ import {
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * The parts a Dialog draws around its popup.
@@ -210,32 +211,34 @@ export const DialogClose = BaseUIDialog.Close;
  * the header and the actions stay put while only the body scrolls, which is why
  * `dividers` matters more here than on a Card.
  */
-export function Dialog({
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  open,
-  defaultOpen,
-  onOpenChange,
-  trigger,
-  title,
-  description,
-  actions,
-  dividers = false,
-  showClose = true,
-  locale,
-  closeLabel,
-  width,
-  fullWidth = true,
-  fullScreen = false,
-  modal = true,
-  dismissible = true,
-  className,
-  classNames,
-  style,
-  children,
-  ...props
-}: DialogProps) {
+export function Dialog(rawProps: DialogProps) {
+  const {
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    open,
+    defaultOpen,
+    onOpenChange,
+    trigger,
+    title,
+    description,
+    actions,
+    dividers = false,
+    showClose = true,
+    locale,
+    closeLabel,
+    width,
+    fullWidth = true,
+    fullScreen = false,
+    modal = true,
+    dismissible = true,
+    className,
+    classNames,
+    style,
+    children,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];

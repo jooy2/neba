@@ -10,6 +10,7 @@ import {
   paddingXValues
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaDensity, NebaSize, NebaSlots } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Which edge the text in a column lines up against. */
 export type TableAlign = NebaAlign;
@@ -183,23 +184,25 @@ const rowRuleStyle: React.CSSProperties = {
  * might sit next to. What Table adds is the part that is genuinely tabular: the
  * columns, the rows, and the fact that the two cannot drift apart.
  */
-export function Table<Row>({
-  headers,
-  items,
-  getRowKey,
-  caption,
-  locale,
-  empty,
-  striped = false,
-  hoverable = false,
-  stickyHeader = false,
-  onRowClick,
-  size = 'md',
-  density = 'default',
-  className,
-  classNames,
-  ...boxProps
-}: TableProps<Row>) {
+export function Table<Row>(rawProps: TableProps<Row>) {
+  const {
+    headers,
+    items,
+    getRowKey,
+    caption,
+    locale,
+    empty,
+    striped = false,
+    hoverable = false,
+    stickyHeader = false,
+    onRowClick,
+    size = 'md',
+    density = 'default',
+    className,
+    classNames,
+    ...boxProps
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(tableMessages, locale);
   const padX = paddingXValues[density][size];
   const padY = cellPaddingYValues[density][size];

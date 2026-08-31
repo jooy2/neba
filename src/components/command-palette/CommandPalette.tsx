@@ -18,6 +18,7 @@ import {
   toLength
 } from '../../internal/styles.js';
 import type { NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * The parts a CommandPalette draws around its sheet.
@@ -196,25 +197,27 @@ function haystackOf(item: CommandItem): string {
  * its Dialog owns the sheet, the scrim, the focus trap and returning the focus
  * to wherever the reader was.
  */
-export function CommandPalette({
-  items,
-  open,
-  defaultOpen = false,
-  onOpenChange,
-  onSelect,
-  shortcut = 'Mod+K',
-  width,
-  maxHeight = 320,
-  locale,
-  placeholder,
-  emptyMessage,
-  label,
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  className,
-  classNames
-}: CommandPaletteProps) {
+export function CommandPalette(rawProps: CommandPaletteProps) {
+  const {
+    items,
+    open,
+    defaultOpen = false,
+    onOpenChange,
+    onSelect,
+    shortcut = 'Mod+K',
+    width,
+    maxHeight = 320,
+    locale,
+    placeholder,
+    emptyMessage,
+    label,
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    className,
+    classNames
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(commandMessages, locale);
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultOpen);

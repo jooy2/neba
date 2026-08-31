@@ -11,6 +11,7 @@ import {
   surfaceClasses
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface TooltipProps
   extends
@@ -137,29 +138,31 @@ const arrowSizes: Record<NebaSize, number> = {
  * this component wires both, and drops the reference while it is closed rather
  * than pointing at an element that is not in the document.
  */
-export function Tooltip({
-  content,
-  children,
-  size = 'sm',
-  // A tooltip is a note about something else, never the thing itself, so the
-  // neutral family is the honest default. A red tooltip on a delete button
-  // would be saying something the tooltip does not know.
-  color = 'secondary',
-  density = 'default',
-  side = 'top',
-  align = 'center',
-  sideOffset = 6,
-  delay,
-  closeDelay,
-  arrow = true,
-  open,
-  defaultOpen,
-  onOpenChange,
-  disabled = false,
-  className,
-  style,
-  ...props
-}: TooltipProps) {
+export function Tooltip(rawProps: TooltipProps) {
+  const {
+    content,
+    children,
+    size = 'sm',
+    // A tooltip is a note about something else, never the thing itself, so the
+    // neutral family is the honest default. A red tooltip on a delete button
+    // would be saying something the tooltip does not know.
+    color = 'secondary',
+    density = 'default',
+    side = 'top',
+    align = 'center',
+    sideOffset = 6,
+    delay,
+    closeDelay,
+    arrow = true,
+    open,
+    defaultOpen,
+    onOpenChange,
+    disabled = false,
+    className,
+    style,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density']);
+
   const arrowSize = arrowSizes[size];
   const popupId = React.useId();
 

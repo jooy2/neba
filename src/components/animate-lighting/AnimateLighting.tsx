@@ -5,6 +5,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimateElement } from '../../internal/animate.js';
 import { cx, radiusClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AnimateLightingProps
   extends NebaAnimateProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -67,8 +68,8 @@ export interface AnimateLightingProps
  * poking out of four corners the card has already rounded away.
  */
 export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingProps>(
-  function AnimateLighting(
-    {
+  function AnimateLighting(rawProps, ref) {
+    const {
       duration = 3000,
       delay = 0,
       easing,
@@ -91,9 +92,8 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size']);
+
     const animate = useAnimateElement({
       // The keyframe runs on a pseudo-element rather than on the root, so there
       // is no effect class to apply here — only the slots it reads.

@@ -37,6 +37,7 @@ import type {
   NebaChartTooltip
 } from '../../types.js';
 import type { ChartBaseProps } from '../../internal/chart-frame.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** The corner radius of a cell. Small — a tile is a block, not a chip. */
 const cellRadius = 3;
@@ -106,28 +107,30 @@ export interface HeatmapChartProps extends Omit<ChartBaseProps, 'legend'> {
  * rather than off the categorical palette — a heatmap in eight hues says its
  * cells are eight unrelated things.
  */
-export function HeatmapChart({
-  series,
-  categories,
-  shape = 'grid',
-  scale = 'sequential',
-  midpoint = 0,
-  min,
-  max,
-  valueLabels = 'none',
-  height,
-  format,
-  locale,
-  label,
-  legend,
-  tooltip,
-  empty,
-  size = 'md',
-  variant = 'text',
-  padded = false,
-  className,
-  ...box
-}: HeatmapChartProps) {
+export function HeatmapChart(rawProps: HeatmapChartProps) {
+  const {
+    series,
+    categories,
+    shape = 'grid',
+    scale = 'sequential',
+    midpoint = 0,
+    min,
+    max,
+    valueLabels = 'none',
+    height,
+    format,
+    locale,
+    label,
+    legend,
+    tooltip,
+    empty,
+    size = 'md',
+    variant = 'text',
+    padded = false,
+    className,
+    ...box
+  } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
+
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);

@@ -8,6 +8,7 @@ import {
   toLength
 } from '../../internal/styles.js';
 import type { NebaDensity, NebaOrientation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a row inherits from the list around it.
@@ -146,56 +147,57 @@ export function DataListItem({ label, children }: DataListItemProps) {
  *
  * It draws no surface. Put it in a [Card](../surfaces/card) when one is wanted.
  */
-export const DataList = React.forwardRef<HTMLDListElement, DataListProps>(function DataList(
-  {
-    orientation = 'horizontal',
-    labelWidth,
-    dividers = false,
-    size = 'md',
-    density = 'default',
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const context = React.useMemo(
-    () => ({ size, density, orientation }),
-    [size, density, orientation]
-  );
+export const DataList = React.forwardRef<HTMLDListElement, DataListProps>(
+  function DataList(rawProps, ref) {
+    const {
+      orientation = 'horizontal',
+      labelWidth,
+      dividers = false,
+      size = 'md',
+      density = 'default',
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density']);
 
-  const width = toLength(labelWidth);
+    const context = React.useMemo(
+      () => ({ size, density, orientation }),
+      [size, density, orientation]
+    );
 
-  return (
-    <DataListContext.Provider value={context}>
-      <dl
-        ref={ref}
-        className={[
-          // A `<dl>` arrives with the browser's own block margin.
-          'm-0 min-w-0',
-          orientation === 'vertical'
-            ? 'flex flex-col'
-            : 'grid [grid-template-columns:var(--n-label)_minmax(0,1fr)] items-baseline',
-          columnGapClasses[density][size],
-          rowGapClasses[density][size],
-          dividers ? `${dividerClasses} ${dividerPadClasses[density][size]}` : '',
-          className ?? ''
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style={
-          {
-            // `max-content` is what makes every value in the list start at the
-            // same place without the caller having to measure the longest label.
-            '--n-label': width ?? 'max-content',
-            ...style
-          } as React.CSSProperties
-        }
-        {...props}
-      >
-        {children}
-      </dl>
-    </DataListContext.Provider>
-  );
-});
+    const width = toLength(labelWidth);
+
+    return (
+      <DataListContext.Provider value={context}>
+        <dl
+          ref={ref}
+          className={[
+            // A `<dl>` arrives with the browser's own block margin.
+            'm-0 min-w-0',
+            orientation === 'vertical'
+              ? 'flex flex-col'
+              : 'grid [grid-template-columns:var(--n-label)_minmax(0,1fr)] items-baseline',
+            columnGapClasses[density][size],
+            rowGapClasses[density][size],
+            dividers ? `${dividerClasses} ${dividerPadClasses[density][size]}` : '',
+            className ?? ''
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={
+            {
+              // `max-content` is what makes every value in the list start at the
+              // same place without the caller having to measure the longest label.
+              '--n-label': width ?? 'max-content',
+              ...style
+            } as React.CSSProperties
+          }
+          {...props}
+        >
+          {children}
+        </dl>
+      </DataListContext.Provider>
+    );
+  }
+);

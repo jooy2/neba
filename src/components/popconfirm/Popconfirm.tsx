@@ -7,6 +7,7 @@ import { severityIcon } from '../../internal/icons.js';
 import { confirmMessages, useMessages } from '../../internal/i18n.js';
 import { cx, gapClasses } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaSide, NebaSize, NebaSlots } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** The parts a Popconfirm draws behind its root. */
 export type PopconfirmSlot = 'icon' | 'title' | 'description' | 'actions';
@@ -78,27 +79,29 @@ export interface PopconfirmProps {
  * A question that vanished before its answer landed is a question the reader
  * has no way to know was heard.
  */
-export function Popconfirm({
-  trigger,
-  title,
-  description,
-  onConfirm,
-  onCancel,
-  confirmLabel,
-  cancelLabel,
-  color = 'danger',
-  size = 'sm',
-  icon = true,
-  side = 'top',
-  align = 'center',
-  open: openProp,
-  defaultOpen,
-  onOpenChange,
-  locale,
-  width = 280,
-  className,
-  classNames
-}: PopconfirmProps) {
+export function Popconfirm(rawProps: PopconfirmProps) {
+  const {
+    trigger,
+    title,
+    description,
+    onConfirm,
+    onCancel,
+    confirmLabel,
+    cancelLabel,
+    color = 'danger',
+    size = 'sm',
+    icon = true,
+    side = 'top',
+    align = 'center',
+    open: openProp,
+    defaultOpen,
+    onOpenChange,
+    locale,
+    width = 280,
+    className,
+    classNames
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
+
   const messages = useMessages(confirmMessages, locale);
 
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);

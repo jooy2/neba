@@ -18,6 +18,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface CollapsibleProps
   extends
@@ -136,152 +137,155 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
  * the panel is a window opening onto it. Content that appears instantly is a
  * page that jumps, which is the failure the rule exists to prevent.
  */
-export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(function Collapsible(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    open,
-    defaultOpen = false,
-    onOpenChange,
-    title,
-    subtitle,
-    startIcon,
-    action,
-    trigger,
-    indicator = true,
-    disabled = false,
-    padded = true,
-    hiddenUntilFound = false,
-    keepMounted = false,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const padX = boxPaddingXClasses[density][size];
-  const padY = boxPaddingYClasses[density][size];
+export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
+  function Collapsible(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      open,
+      defaultOpen = false,
+      onOpenChange,
+      title,
+      subtitle,
+      startIcon,
+      action,
+      trigger,
+      indicator = true,
+      disabled = false,
+      padded = true,
+      hiddenUntilFound = false,
+      keepMounted = false,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  return (
-    <BaseUICollapsible.Root
-      ref={ref}
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={(next) => onOpenChange?.(next)}
-      disabled={disabled}
-      className={[
-        // `overflow-hidden` is what makes the panel a window rather than
-        // something that spills past the sheet's own corners while it moves.
-        'flex flex-col overflow-hidden',
-        radiusClasses[size],
-        variantClasses[variant],
-        transitionClasses,
-        className ?? ''
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      style={{ ...surfaceSlots(color, elevation), ...style }}
-      {...props}
-    >
-      {trigger ? (
-        <BaseUICollapsible.Trigger render={trigger} />
-      ) : (
-        <div className="flex w-full items-center">
-          <BaseUICollapsible.Trigger
-            className={[
-              'flex min-w-0 flex-1 cursor-pointer items-center text-start',
-              padX,
-              padY,
-              gapClasses[size],
-              transitionClasses,
-              iconClasses,
-              // Inset rather than offset. The sheet clips its children so the
-              // panel can be a window, and `overflow: hidden` clips a
-              // descendant's outline along with everything else — an offset
-              // ring on a trigger that fills the top of the sheet would be
-              // shaved off on three sides.
-              'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-              'hover:bg-(--n-soft)',
-              'data-[panel-open]:text-(--n-accent)',
-              'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
-            ].join(' ')}
-          >
-            {hasContent(startIcon) ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-                {startIcon}
-              </span>
-            ) : null}
+    const padX = boxPaddingXClasses[density][size];
+    const padY = boxPaddingYClasses[density][size];
 
-            <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
-              {hasContent(title) ? (
-                <span className={`truncate font-semibold ${sheetTitleClasses[size]}`}>{title}</span>
-              ) : null}
-              {hasContent(subtitle) ? (
-                <span className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
-                  {subtitle}
+    return (
+      <BaseUICollapsible.Root
+        ref={ref}
+        open={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={(next) => onOpenChange?.(next)}
+        disabled={disabled}
+        className={[
+          // `overflow-hidden` is what makes the panel a window rather than
+          // something that spills past the sheet's own corners while it moves.
+          'flex flex-col overflow-hidden',
+          radiusClasses[size],
+          variantClasses[variant],
+          transitionClasses,
+          className ?? ''
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        style={{ ...surfaceSlots(color, elevation), ...style }}
+        {...props}
+      >
+        {trigger ? (
+          <BaseUICollapsible.Trigger render={trigger} />
+        ) : (
+          <div className="flex w-full items-center">
+            <BaseUICollapsible.Trigger
+              className={[
+                'flex min-w-0 flex-1 cursor-pointer items-center text-start',
+                padX,
+                padY,
+                gapClasses[size],
+                transitionClasses,
+                iconClasses,
+                // Inset rather than offset. The sheet clips its children so the
+                // panel can be a window, and `overflow: hidden` clips a
+                // descendant's outline along with everything else — an offset
+                // ring on a trigger that fills the top of the sheet would be
+                // shaved off on three sides.
+                'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
+                'hover:bg-(--n-soft)',
+                'data-[panel-open]:text-(--n-accent)',
+                'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
+              ].join(' ')}
+            >
+              {hasContent(startIcon) ? (
+                <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+                  {startIcon}
                 </span>
               ) : null}
-            </span>
 
-            {/* Turned, not moved: the chevron is a glyph, so rotating it is the
+              <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
+                {hasContent(title) ? (
+                  <span className={`truncate font-semibold ${sheetTitleClasses[size]}`}>
+                    {title}
+                  </span>
+                ) : null}
+                {hasContent(subtitle) ? (
+                  <span className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+                    {subtitle}
+                  </span>
+                ) : null}
+              </span>
+
+              {/* Turned, not moved: the chevron is a glyph, so rotating it is the
                 one allowance the no-transform rule makes. It is also the only
                 thing on the header that reports the state by moving, which is
                 why the header itself only changes colour. */}
-            {indicator ? (
-              <span
-                className={[
-                  'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-                  '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                  'data-[panel-open]:rotate-180'
-                ].join(' ')}
-              >
-                <ChevronIcon />
-              </span>
+              {indicator ? (
+                <span
+                  className={[
+                    'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
+                    '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+                    'data-[panel-open]:rotate-180'
+                  ].join(' ')}
+                >
+                  <ChevronIcon />
+                </span>
+              ) : null}
+            </BaseUICollapsible.Trigger>
+
+            {hasContent(action) ? (
+              <span className={`flex shrink-0 items-center ${padX}`}>{action}</span>
             ) : null}
-          </BaseUICollapsible.Trigger>
+          </div>
+        )}
 
-          {hasContent(action) ? (
-            <span className={`flex shrink-0 items-center ${padX}`}>{action}</span>
-          ) : null}
-        </div>
-      )}
-
-      {/*
+        {/*
         `height` from Base UI's measured `--collapsible-panel-height` down to 0,
         plus `overflow-hidden` so the body is clipped rather than squashed while
         it moves — the same two lines the Accordion panel is written with.
       */}
-      <BaseUICollapsible.Panel
-        hiddenUntilFound={hiddenUntilFound}
-        keepMounted={keepMounted}
-        className={[
-          'h-(--collapsible-panel-height) overflow-hidden',
-          '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-          'motion-reduce:[transition-duration:0ms]',
-          'data-[starting-style]:h-0 data-[ending-style]:h-0'
-        ].join(' ')}
-      >
-        <div
+        <BaseUICollapsible.Panel
+          hiddenUntilFound={hiddenUntilFound}
+          keepMounted={keepMounted}
           className={[
-            'min-w-0 text-(--neba-muted-fg)',
-            sheetBodyClasses[size],
-            padded ? padX : '',
-            // The default header already paid for the space above, so the body
-            // only owes the space below it — otherwise a closed Collapsible
-            // would look padded. A caller's own `trigger` has paid for nothing,
-            // so there the panel owes both.
-            padded ? (trigger ? padY : density === 'compact' ? 'pb-2' : 'pb-4') : ''
-          ]
-            .filter(Boolean)
-            .join(' ')}
+            'h-(--collapsible-panel-height) overflow-hidden',
+            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
+            'motion-reduce:[transition-duration:0ms]',
+            'data-[starting-style]:h-0 data-[ending-style]:h-0'
+          ].join(' ')}
         >
-          {children}
-        </div>
-      </BaseUICollapsible.Panel>
-    </BaseUICollapsible.Root>
-  );
-});
+          <div
+            className={[
+              'min-w-0 text-(--neba-muted-fg)',
+              sheetBodyClasses[size],
+              padded ? padX : '',
+              // The default header already paid for the space above, so the body
+              // only owes the space below it — otherwise a closed Collapsible
+              // would look padded. A caller's own `trigger` has paid for nothing,
+              // so there the panel owes both.
+              padded ? (trigger ? padY : density === 'compact' ? 'pb-2' : 'pb-4') : ''
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {children}
+          </div>
+        </BaseUICollapsible.Panel>
+      </BaseUICollapsible.Root>
+    );
+  }
+);

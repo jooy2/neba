@@ -5,6 +5,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaDensity, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ContainerProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
@@ -73,35 +74,36 @@ const maxWidthClasses: Record<NebaSize, string> = {
  * outermost element on a page is the one thing that must not decide what the
  * page looks like.
  */
-export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(function Container(
-  {
-    maxWidth = 'none',
-    padded = true,
-    size = 'md',
-    density = 'default',
-    centered = true,
-    render,
-    className,
-    children,
-    ...props
-  },
-  ref
-) {
-  const classNames = cx(
-    'block w-full',
-    maxWidth === 'none' ? '' : maxWidthClasses[maxWidth],
-    centered ? 'mx-auto' : '',
-    padded ? boxPaddingXClasses[density][size] : '',
-    className ?? ''
-  );
-
-  return useRender({
-    render,
-    ref,
-    props: {
-      className: classNames,
+export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
+  function Container(rawProps, ref) {
+    const {
+      maxWidth = 'none',
+      padded = true,
+      size = 'md',
+      density = 'default',
+      centered = true,
+      render,
+      className,
       children,
       ...props
-    }
-  });
-});
+    } = useStyleDefaults(rawProps, ['size', 'density']);
+
+    const classNames = cx(
+      'block w-full',
+      maxWidth === 'none' ? '' : maxWidthClasses[maxWidth],
+      centered ? 'mx-auto' : '',
+      padded ? boxPaddingXClasses[density][size] : '',
+      className ?? ''
+    );
+
+    return useRender({
+      render,
+      ref,
+      props: {
+        className: classNames,
+        children,
+        ...props
+      }
+    });
+  }
+);

@@ -20,6 +20,7 @@ import type {
   NebaSize,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What may be typed into a slot.
@@ -180,147 +181,148 @@ const validationTypes: Record<OtpFieldCharset, 'numeric' | 'alpha' | 'alphanumer
  * with TextField and Select — a slot is a field-shaped box, and a form holding
  * both should not look like two form kits stacked on each other.
  */
-export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(function OtpField(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    length = 6,
-    charset = 'numeric',
-    mask = false,
-    groupSize,
-    separator = '–',
-    value,
-    defaultValue,
-    onValueChange,
-    onComplete,
-    onValueInvalid,
-    autoSubmit = false,
-    label,
-    description,
-    error,
-    invalid,
-    name,
-    required = false,
-    disabled = false,
-    readOnly = false,
-    autoFocus = false,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const slots = Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, Math.round(length)));
-  const hasError = error !== undefined && error !== null && error !== false && error !== '';
-  const isInvalid = invalid ?? hasError;
-  // Invalid re-points the whole slot family at `danger`, exactly as on
-  // TextField, so the edge, the ring, the caret and the message all turn over
-  // together and no state needs tokens of its own.
-  const family: NebaColor = isInvalid ? 'danger' : color;
+export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
+  function OtpField(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      length = 6,
+      charset = 'numeric',
+      mask = false,
+      groupSize,
+      separator = '–',
+      value,
+      defaultValue,
+      onValueChange,
+      onComplete,
+      onValueInvalid,
+      autoSubmit = false,
+      label,
+      description,
+      error,
+      invalid,
+      name,
+      required = false,
+      disabled = false,
+      readOnly = false,
+      autoFocus = false,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const slotClassNames = cx(
-    // `font-family` rather than the `font` shorthand TextField uses: the
-    // shorthand would take the inherited font *size* with it and undo the ladder
-    // set on the next line.
-    'text-center font-medium [font-family:inherit]',
-    slotSizeClasses[size],
-    slotTextClasses[size],
-    slotRadiusClasses[size],
-    transitionClasses,
-    'caret-(--n-accent) selection:bg-(--n-soft-press)',
-    // `focus` rather than `focus-visible`: a slot is put in focus by clicking it
-    // as often as by typing into it, and the ring is the only thing saying which
-    // character the next keystroke lands on.
-    'focus:[outline:2px_solid_var(--n-ring)] focus:outline-offset-1',
-    'focus:[transition-duration:0ms]',
-    // An if/else rather than stacked variants: two Tailwind classes of equal
-    // specificity resolve by their order in the generated stylesheet.
-    disabled
-      ? disabledClasses[variant]
-      : readOnly
-        ? fieldReadOnlyClasses[variant]
-        : fieldRestClasses[variant]
-  );
+    const slots = Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, Math.round(length)));
+    const hasError = error !== undefined && error !== null && error !== false && error !== '';
+    const isInvalid = invalid ?? hasError;
+    // Invalid re-points the whole slot family at `danger`, exactly as on
+    // TextField, so the edge, the ring, the caret and the message all turn over
+    // together and no state needs tokens of its own.
+    const family: NebaColor = isInvalid ? 'danger' : color;
 
-  const separatorEvery = groupSize && groupSize > 0 ? Math.round(groupSize) : 0;
+    const slotClassNames = cx(
+      // `font-family` rather than the `font` shorthand TextField uses: the
+      // shorthand would take the inherited font *size* with it and undo the ladder
+      // set on the next line.
+      'text-center font-medium [font-family:inherit]',
+      slotSizeClasses[size],
+      slotTextClasses[size],
+      slotRadiusClasses[size],
+      transitionClasses,
+      'caret-(--n-accent) selection:bg-(--n-soft-press)',
+      // `focus` rather than `focus-visible`: a slot is put in focus by clicking it
+      // as often as by typing into it, and the ring is the only thing saying which
+      // character the next keystroke lands on.
+      'focus:[outline:2px_solid_var(--n-ring)] focus:outline-offset-1',
+      'focus:[transition-duration:0ms]',
+      // An if/else rather than stacked variants: two Tailwind classes of equal
+      // specificity resolve by their order in the generated stylesheet.
+      disabled
+        ? disabledClasses[variant]
+        : readOnly
+          ? fieldReadOnlyClasses[variant]
+          : fieldRestClasses[variant]
+    );
 
-  return (
-    <Field.Root
-      disabled={disabled}
-      invalid={isInvalid}
-      className={cx('inline-flex flex-col align-top', stackGapClasses[size], className)}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
-    >
-      {label ? (
-        <Field.Label
-          className={cx(
-            metaTextClasses[size],
-            'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-          )}
-        >
-          {label}
-        </Field.Label>
-      ) : null}
+    const separatorEvery = groupSize && groupSize > 0 ? Math.round(groupSize) : 0;
 
-      <OTPField.Root
-        ref={ref}
-        length={slots}
-        validationType={validationTypes[charset]}
-        mask={mask}
-        name={name}
-        required={required}
+    return (
+      <Field.Root
         disabled={disabled}
-        readOnly={readOnly}
-        autoSubmit={autoSubmit}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={(next) => onValueChange?.(next)}
-        onValueComplete={(next) => onComplete?.(next)}
-        onValueInvalid={(next) => onValueInvalid?.(next)}
-        className={cx('flex items-center', slotGapClasses[density][size])}
-        {...props}
+        invalid={isInvalid}
+        className={cx('inline-flex flex-col align-top', stackGapClasses[size], className)}
+        style={{ ...surfaceSlots(family, elevation), ...style }}
       >
-        {Array.from({ length: slots }, (_, index) => (
-          <React.Fragment key={index}>
-            {/*
+        {label ? (
+          <Field.Label
+            className={cx(
+              metaTextClasses[size],
+              'font-medium',
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
+            )}
+          >
+            {label}
+          </Field.Label>
+        ) : null}
+
+        <OTPField.Root
+          ref={ref}
+          length={slots}
+          validationType={validationTypes[charset]}
+          mask={mask}
+          name={name}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          autoSubmit={autoSubmit}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(next) => onValueChange?.(next)}
+          onValueComplete={(next) => onComplete?.(next)}
+          onValueInvalid={(next) => onValueInvalid?.(next)}
+          className={cx('flex items-center', slotGapClasses[density][size])}
+          {...props}
+        >
+          {Array.from({ length: slots }, (_, index) => (
+            <React.Fragment key={index}>
+              {/*
               `aria-hidden` and a plain span rather than a `role="separator"`:
               the dash is punctuation inside one value, not a break between two
               things, and a reader that announces it once per group is reading
               out the shape of the box instead of the code in it.
             */}
-            {separatorEvery > 0 && index > 0 && index % separatorEvery === 0 ? (
-              <span
-                aria-hidden="true"
-                className={cx('select-none px-0.5 text-(--neba-muted-fg)', slotTextClasses[size])}
-              >
-                {separator}
-              </span>
-            ) : null}
-            <OTPField.Input className={slotClassNames} autoFocus={autoFocus && index === 0} />
-          </React.Fragment>
-        ))}
-      </OTPField.Root>
+              {separatorEvery > 0 && index > 0 && index % separatorEvery === 0 ? (
+                <span
+                  aria-hidden="true"
+                  className={cx('select-none px-0.5 text-(--neba-muted-fg)', slotTextClasses[size])}
+                >
+                  {separator}
+                </span>
+              ) : null}
+              <OTPField.Input className={slotClassNames} autoFocus={autoFocus && index === 0} />
+            </React.Fragment>
+          ))}
+        </OTPField.Root>
 
-      {description ? (
-        <Field.Description className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}>
-          {description}
-        </Field.Description>
-      ) : null}
+        {description ? (
+          <Field.Description className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}>
+            {description}
+          </Field.Description>
+        ) : null}
 
-      {hasError ? (
-        <Field.Error match className={cx(metaTextClasses[size], 'text-(--n-accent)')}>
-          {error}
-        </Field.Error>
-      ) : (
-        // No message of our own, so whatever the validity has: the browser's
-        // own text for a failed constraint, or the entry a Form's `errors`
-        // put here. Renders nothing at all while the field is valid.
-        <Field.Error className={cx(metaTextClasses[size], 'text-(--n-accent)')} />
-      )}
-    </Field.Root>
-  );
-});
+        {hasError ? (
+          <Field.Error match className={cx(metaTextClasses[size], 'text-(--n-accent)')}>
+            {error}
+          </Field.Error>
+        ) : (
+          // No message of our own, so whatever the validity has: the browser's
+          // own text for a failed constraint, or the entry a Form's `errors`
+          // put here. Renders nothing at all while the field is valid.
+          <Field.Error className={cx(metaTextClasses[size], 'text-(--n-accent)')} />
+        )}
+      </Field.Root>
+    );
+  }
+);

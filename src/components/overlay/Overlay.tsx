@@ -5,6 +5,7 @@ import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { overlayMessages, useMessages } from '../../internal/i18n.js';
 import { cx, surfaceSlots } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How much of the page the overlay takes away.
@@ -138,23 +139,25 @@ const fadeClasses = [
  * held inside, the page behind going inert, and focus returning to wherever it
  * came from when the overlay closes.
  */
-export function Overlay({
-  open,
-  defaultOpen,
-  onOpenChange,
-  tone = 'scrim',
-  dismissible = false,
-  modal = true,
-  align = 'center',
-  size = 'md',
-  color = 'primary',
-  locale,
-  label,
-  className,
-  style,
-  children,
-  ...props
-}: OverlayProps) {
+export function Overlay(rawProps: OverlayProps) {
+  const {
+    open,
+    defaultOpen,
+    onOpenChange,
+    tone = 'scrim',
+    dismissible = false,
+    modal = true,
+    align = 'center',
+    size = 'md',
+    color = 'primary',
+    locale,
+    label,
+    className,
+    style,
+    children,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
+
   const messages = useMessages(overlayMessages, locale);
 
   return (

@@ -26,6 +26,7 @@ import type {
 import { observeResize } from '../../internal/observe.js';
 import { cx, surfaceSlots } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaTransition } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export type {
   NebaMockupBezel,
@@ -193,8 +194,8 @@ const useMeasureEffect = typeof document === 'undefined' ? React.useEffect : Rea
  * The screen is also a container (`neba-screen`), so content inside can answer
  * to the device's width with a container query rather than to the window's.
  */
-export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Mockup(
-  {
+export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Mockup(rawProps, ref) {
+  const {
     device,
     os,
     hardware = 'monitor',
@@ -218,9 +219,8 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size']);
+
   const system = resolveOs(device, os);
   const cutout = notch ?? defaultNotch(device, system);
   const landscape = device !== 'desktop' && orientation === 'landscape';

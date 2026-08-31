@@ -25,6 +25,7 @@ import {
 } from '../../internal/styles.js';
 import type { ColorFormat, Hsv } from '../../internal/color.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** The names for the parts of the picker that have no text on them. */
 export interface ColorPickerLabels {
@@ -563,238 +564,241 @@ const fallbackHsv: Hsv = { h: 217, s: 87, v: 82 };
  * `internal/color.ts`, which is a hundred lines of arithmetic — the whole
  * reason no colour library comes with it.
  */
-export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(function ColorPicker(
-  {
-    value,
-    defaultValue = '#1a58d1',
-    onValueChange,
-    format = 'hex',
-    alpha = false,
-    swatches = defaultSwatches,
-    inline = false,
-    editable = true,
-    label,
-    description,
-    error,
-    invalid,
-    required = false,
-    disabled = false,
-    readOnly = false,
-    fullWidth = false,
-    clearable = false,
-    name,
-    open,
-    defaultOpen = false,
-    onOpenChange,
-    locale,
-    labels: labelOverrides,
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  const messages = useMessages(colorMessages, locale);
-  const labels: ColorPickerLabels = React.useMemo(
-    () => ({ ...messages, ...labelOverrides }),
-    [messages, labelOverrides]
-  );
+export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
+  function ColorPicker(rawProps, ref) {
+    const {
+      value,
+      defaultValue = '#1a58d1',
+      onValueChange,
+      format = 'hex',
+      alpha = false,
+      swatches = defaultSwatches,
+      inline = false,
+      editable = true,
+      label,
+      description,
+      error,
+      invalid,
+      required = false,
+      disabled = false,
+      readOnly = false,
+      fullWidth = false,
+      clearable = false,
+      name,
+      open,
+      defaultOpen = false,
+      onOpenChange,
+      locale,
+      labels: labelOverrides,
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
-  const current = value ?? uncontrolledValue;
+    const messages = useMessages(colorMessages, locale);
+    const labels: ColorPickerLabels = React.useMemo(
+      () => ({ ...messages, ...labelOverrides }),
+      [messages, labelOverrides]
+    );
 
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
-  const isOpen = open ?? uncontrolledOpen;
+    const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+    const current = value ?? uncontrolledValue;
 
-  /**
-   * HSV is the state, and the value is what it is written down as.
-   *
-   * The other way round — parsing the string on every render — is what makes a
-   * picker's hue rail jump: `#000000` has no hue to read back, so dragging into
-   * the bottom of the square would reset the rail to red. So the model is kept
-   * and the string is derived from it, and an incoming `value` only re-seeds the
-   * model when it says something different from what the model already means.
-   */
-  const [model, setModel] = React.useState(
-    () => parseColor(current) ?? { hsv: fallbackHsv, alpha: 1 }
-  );
-  const [text, setText] = React.useState(() => (current ? current : ''));
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+    const isOpen = open ?? uncontrolledOpen;
 
-  const written = formatColor(model.hsv, alpha ? model.alpha : 1, format);
-  const empty = current === '';
+    /**
+     * HSV is the state, and the value is what it is written down as.
+     *
+     * The other way round — parsing the string on every render — is what makes a
+     * picker's hue rail jump: `#000000` has no hue to read back, so dragging into
+     * the bottom of the square would reset the rail to red. So the model is kept
+     * and the string is derived from it, and an incoming `value` only re-seeds the
+     * model when it says something different from what the model already means.
+     */
+    const [model, setModel] = React.useState(
+      () => parseColor(current) ?? { hsv: fallbackHsv, alpha: 1 }
+    );
+    const [text, setText] = React.useState(() => (current ? current : ''));
 
-  React.useEffect(() => {
-    const parsed = parseColor(current);
+    const written = formatColor(model.hsv, alpha ? model.alpha : 1, format);
+    const empty = current === '';
 
-    if (!parsed) {
-      // Not a colour this understands — `''` after a clear, or something a
-      // caller made up. The field shows it and the panel stays where it was.
-      // The model is the source of truth and the string is derived from it;
-      // re-seeding on a render instead is what makes the hue rail snap to red
-      // at `#000000`.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    React.useEffect(() => {
+      const parsed = parseColor(current);
+
+      if (!parsed) {
+        // Not a colour this understands — `''` after a clear, or something a
+        // caller made up. The field shows it and the panel stays where it was.
+        // The model is the source of truth and the string is derived from it;
+        // re-seeding on a render instead is what makes the hue rail snap to red
+        // at `#000000`.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setText(current);
+
+        return;
+      }
+
+      // Compared as colours rather than as strings. `#FF0000` and `#ff0000` are
+      // the same colour written two ways, and a string comparison would re-seed
+      // the model from a value it had just produced, on every render, forever.
+      if (formatColor(parsed.hsv, alpha ? parsed.alpha : 1, format) === written) {
+        return;
+      }
+
       setText(current);
+      setModel(parsed);
+    }, [current, written, alpha, format]);
 
-      return;
+    const commit = (next: { hsv: Hsv; alpha: number }, typed?: string) => {
+      setModel(next);
+
+      const output = formatColor(next.hsv, alpha ? next.alpha : 1, format);
+
+      setText(typed ?? output);
+
+      if (value === undefined) {
+        setUncontrolledValue(output);
+      }
+
+      onValueChange?.(output);
+    };
+
+    const inert = disabled || readOnly;
+
+    const panel = (
+      <ColorPanel
+        hsv={model.hsv}
+        alphaValue={model.alpha}
+        onChange={commit}
+        text={text}
+        onTextChange={(next) => {
+          setText(next);
+
+          const parsed = parseColor(next);
+
+          if (parsed) {
+            commit(parsed, next);
+          }
+        }}
+        withAlpha={alpha}
+        swatches={swatches}
+        editable={editable}
+        size={size}
+        inert={inert}
+        labels={labels}
+      />
+    );
+
+    const hidden = name ? <input type="hidden" name={name} value={empty ? '' : written} /> : null;
+
+    if (inline) {
+      const family: NebaColor = (invalid ?? Boolean(error)) ? 'danger' : color;
+
+      return (
+        <div
+          ref={ref}
+          className={cx('flex flex-col', stackGapClasses[size], className)}
+          style={{ ...surfaceSlots(family, elevation), ...style }}
+          {...props}
+        >
+          {label ? (
+            <span
+              className={cx(
+                metaTextClasses[size],
+                'font-medium',
+                disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
+              )}
+            >
+              {label}
+            </span>
+          ) : null}
+
+          {panel}
+
+          {description ? (
+            <span className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}>
+              {description}
+            </span>
+          ) : null}
+
+          {error ? (
+            <span className={cx(metaTextClasses[size], 'text-(--n-accent)')}>{error}</span>
+          ) : null}
+
+          {hidden}
+        </div>
+      );
     }
-
-    // Compared as colours rather than as strings. `#FF0000` and `#ff0000` are
-    // the same colour written two ways, and a string comparison would re-seed
-    // the model from a value it had just produced, on every render, forever.
-    if (formatColor(parsed.hsv, alpha ? parsed.alpha : 1, format) === written) {
-      return;
-    }
-
-    setText(current);
-    setModel(parsed);
-  }, [current, written, alpha, format]);
-
-  const commit = (next: { hsv: Hsv; alpha: number }, typed?: string) => {
-    setModel(next);
-
-    const output = formatColor(next.hsv, alpha ? next.alpha : 1, format);
-
-    setText(typed ?? output);
-
-    if (value === undefined) {
-      setUncontrolledValue(output);
-    }
-
-    onValueChange?.(output);
-  };
-
-  const inert = disabled || readOnly;
-
-  const panel = (
-    <ColorPanel
-      hsv={model.hsv}
-      alphaValue={model.alpha}
-      onChange={commit}
-      text={text}
-      onTextChange={(next) => {
-        setText(next);
-
-        const parsed = parseColor(next);
-
-        if (parsed) {
-          commit(parsed, next);
-        }
-      }}
-      withAlpha={alpha}
-      swatches={swatches}
-      editable={editable}
-      size={size}
-      inert={inert}
-      labels={labels}
-    />
-  );
-
-  const hidden = name ? <input type="hidden" name={name} value={empty ? '' : written} /> : null;
-
-  if (inline) {
-    const family: NebaColor = (invalid ?? Boolean(error)) ? 'danger' : color;
 
     return (
-      <div
-        ref={ref}
-        className={cx('flex flex-col', stackGapClasses[size], className)}
-        style={{ ...surfaceSlots(family, elevation), ...style }}
-        {...props}
-      >
-        {label ? (
-          <span
-            className={cx(
-              metaTextClasses[size],
-              'font-medium',
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-            )}
-          >
-            {label}
-          </span>
-        ) : null}
+      <div ref={ref} className={fullWidth ? 'w-full' : 'inline-block'} {...props}>
+        <PickerShell
+          variant={variant}
+          size={size}
+          color={color}
+          density={density}
+          elevation={elevation}
+          style={style}
+          label={label}
+          description={description}
+          error={error}
+          invalid={invalid}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          fullWidth={fullWidth}
+          className={className}
+          startIcon={
+            <span
+              aria-hidden="true"
+              className={cx(
+                'block size-[1.15em] shrink-0 rounded-full border',
+                '[border-color:color-mix(in_oklab,var(--neba-fg)_18%,transparent)]'
+              )}
+              style={checkerBackground}
+            >
+              <span
+                className="block size-full rounded-full"
+                style={{
+                  backgroundColor: empty
+                    ? 'transparent'
+                    : cssColor(model.hsv, alpha ? model.alpha : 1)
+                }}
+              />
+            </span>
+          }
+          display={empty ? labels.empty : written}
+          samples={widthSamples(format, alpha)}
+          empty={empty}
+          clearable={clearable}
+          onClear={() => {
+            if (value === undefined) {
+              setUncontrolledValue('');
+            }
 
-        {panel}
+            setText('');
+            onValueChange?.('');
+          }}
+          open={isOpen}
+          onOpenChange={(next) => {
+            if (open === undefined) {
+              setUncontrolledOpen(next);
+            }
 
-        {description ? (
-          <span className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}>{description}</span>
-        ) : null}
-
-        {error ? (
-          <span className={cx(metaTextClasses[size], 'text-(--n-accent)')}>{error}</span>
-        ) : null}
-
-        {hidden}
+            onOpenChange?.(next);
+          }}
+          labels={{ ...defaultPickerLabels, clear: labels.clear }}
+          hiddenValues={name ? [{ name, value: empty ? '' : written }] : undefined}
+        >
+          <div className={controlTextClasses[size]}>{panel}</div>
+        </PickerShell>
       </div>
     );
   }
-
-  return (
-    <div ref={ref} className={fullWidth ? 'w-full' : 'inline-block'} {...props}>
-      <PickerShell
-        variant={variant}
-        size={size}
-        color={color}
-        density={density}
-        elevation={elevation}
-        style={style}
-        label={label}
-        description={description}
-        error={error}
-        invalid={invalid}
-        required={required}
-        disabled={disabled}
-        readOnly={readOnly}
-        fullWidth={fullWidth}
-        className={className}
-        startIcon={
-          <span
-            aria-hidden="true"
-            className={cx(
-              'block size-[1.15em] shrink-0 rounded-full border',
-              '[border-color:color-mix(in_oklab,var(--neba-fg)_18%,transparent)]'
-            )}
-            style={checkerBackground}
-          >
-            <span
-              className="block size-full rounded-full"
-              style={{
-                backgroundColor: empty
-                  ? 'transparent'
-                  : cssColor(model.hsv, alpha ? model.alpha : 1)
-              }}
-            />
-          </span>
-        }
-        display={empty ? labels.empty : written}
-        samples={widthSamples(format, alpha)}
-        empty={empty}
-        clearable={clearable}
-        onClear={() => {
-          if (value === undefined) {
-            setUncontrolledValue('');
-          }
-
-          setText('');
-          onValueChange?.('');
-        }}
-        open={isOpen}
-        onOpenChange={(next) => {
-          if (open === undefined) {
-            setUncontrolledOpen(next);
-          }
-
-          onOpenChange?.(next);
-        }}
-        labels={{ ...defaultPickerLabels, clear: labels.clear }}
-        hiddenValues={name ? [{ name, value: empty ? '' : written }] : undefined}
-      >
-        <div className={controlTextClasses[size]}>{panel}</div>
-      </PickerShell>
-    </div>
-  );
-});
+);

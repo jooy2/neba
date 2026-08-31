@@ -21,6 +21,7 @@ import {
 } from '../../internal/chart.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How many series the palette can tell apart on a plot where any two marks may
@@ -82,16 +83,18 @@ export interface ScatterChartProps extends CartesianChartProps {
  * `x` must be a number or a `Date`. A string has no place on a number line, and
  * a chart of named things against one measure is a [BarChart](./bar-chart).
  */
-export function ScatterChart({
-  shape = 'auto',
-  pointRadius,
-  maxRadius,
-  series,
-  categories,
-  size = 'md',
-  xAxis,
-  ...props
-}: ScatterChartProps) {
+export function ScatterChart(rawProps: ScatterChartProps) {
+  const {
+    shape = 'auto',
+    pointRadius,
+    maxRadius,
+    series,
+    categories,
+    size = 'md',
+    xAxis,
+    ...props
+  } = useStyleDefaults(rawProps, ['size']);
+
   const dot = pointRadius ?? markerRadii[size];
 
   /**

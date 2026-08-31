@@ -20,6 +20,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What an AccordionItem inherits from the Accordion around it.
@@ -174,62 +175,63 @@ const itemRadiusClasses: Record<NebaSize, string> = {
  * a window opening onto it. An accordion whose sections appear instantly is a
  * page that jumps, which is the failure the rule exists to prevent.
  */
-export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(function Accordion(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    multiple = false,
-    value,
-    defaultValue,
-    onValueChange,
-    dividers = true,
-    disabled = false,
-    hiddenUntilFound = false,
-    keepMounted = false,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
+export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
+  function Accordion(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      multiple = false,
+      value,
+      defaultValue,
+      onValueChange,
+      dividers = true,
+      disabled = false,
+      hiddenUntilFound = false,
+      keepMounted = false,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const classNames = cx(
-    'flex flex-col',
-    radiusClasses[size],
-    variantClasses[variant],
-    transitionClasses,
-    // Without dividers the sections are tiles and the sheet keeps a hair of
-    // padding so a hovered header does not run into the edge. With them the
-    // rules have to reach the edge, so the padding goes and the tiles square off.
-    dividers ? `overflow-hidden ${dividerClasses}` : 'p-1',
-    className ?? ''
-  );
+    const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
 
-  return (
-    <AccordionContext.Provider value={context}>
-      <BaseUIAccordion.Root
-        ref={ref}
-        multiple={multiple}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={(next) => onValueChange?.(next as (string | number)[])}
-        disabled={disabled}
-        hiddenUntilFound={hiddenUntilFound}
-        keepMounted={keepMounted}
-        className={classNames}
-        style={{ ...surfaceSlots(color, elevation), ...style }}
-        {...props}
-      >
-        {children}
-      </BaseUIAccordion.Root>
-    </AccordionContext.Provider>
-  );
-});
+    const classNames = cx(
+      'flex flex-col',
+      radiusClasses[size],
+      variantClasses[variant],
+      transitionClasses,
+      // Without dividers the sections are tiles and the sheet keeps a hair of
+      // padding so a hovered header does not run into the edge. With them the
+      // rules have to reach the edge, so the padding goes and the tiles square off.
+      dividers ? `overflow-hidden ${dividerClasses}` : 'p-1',
+      className ?? ''
+    );
+
+    return (
+      <AccordionContext.Provider value={context}>
+        <BaseUIAccordion.Root
+          ref={ref}
+          multiple={multiple}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(next) => onValueChange?.(next as (string | number)[])}
+          disabled={disabled}
+          hiddenUntilFound={hiddenUntilFound}
+          keepMounted={keepMounted}
+          className={classNames}
+          style={{ ...surfaceSlots(color, elevation), ...style }}
+          {...props}
+        >
+          {children}
+        </BaseUIAccordion.Root>
+      </AccordionContext.Provider>
+    );
+  }
+);
 
 /**
  * One section.

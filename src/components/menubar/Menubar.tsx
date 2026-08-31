@@ -15,6 +15,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface MenubarProps
   extends
@@ -143,51 +144,52 @@ export function MenubarMenu({ label, startIcon, disabled = false, children }: Me
  * title bar, a [Header](../layout/header) — and a sheet under a strip that is
  * already on a sheet is two sheets.
  */
-export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function Menubar(
-  {
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    orientation = 'horizontal',
-    modal = true,
-    loopFocus = true,
-    disabled = false,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
+  function Menubar(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      orientation = 'horizontal',
+      modal = true,
+      loopFocus = true,
+      disabled = false,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density']);
 
-  return (
-    <MenuContext.Provider value={context}>
-      <BaseUIMenubar
-        ref={ref}
-        orientation={orientation}
-        modal={modal}
-        loopFocus={loopFocus}
-        disabled={disabled}
-        className={cx(
-          'flex items-center',
-          orientation === 'vertical' ? 'flex-col items-stretch' : 'flex-row',
-          gapClasses[size],
-          className ?? ''
-        )}
-        style={
-          {
-            '--n-soft': `var(--neba-${color}-soft)`,
-            '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
-            '--n-accent': `var(--neba-${color}-accent)`,
-            '--n-ring': `var(--neba-${color}-ring)`,
-            ...style
-          } as React.CSSProperties
-        }
-        {...props}
-      >
-        {children}
-      </BaseUIMenubar>
-    </MenuContext.Provider>
-  );
-});
+    const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+
+    return (
+      <MenuContext.Provider value={context}>
+        <BaseUIMenubar
+          ref={ref}
+          orientation={orientation}
+          modal={modal}
+          loopFocus={loopFocus}
+          disabled={disabled}
+          className={cx(
+            'flex items-center',
+            orientation === 'vertical' ? 'flex-col items-stretch' : 'flex-row',
+            gapClasses[size],
+            className ?? ''
+          )}
+          style={
+            {
+              '--n-soft': `var(--neba-${color}-soft)`,
+              '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
+              '--n-accent': `var(--neba-${color}-accent)`,
+              '--n-ring': `var(--neba-${color}-ring)`,
+              ...style
+            } as React.CSSProperties
+          }
+          {...props}
+        >
+          {children}
+        </BaseUIMenubar>
+      </MenuContext.Provider>
+    );
+  }
+);

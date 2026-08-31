@@ -23,6 +23,7 @@ import type {
   NebaSize,
   NebaWeekday
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Both ends of a span. Either may be missing while one is being chosen. */
 export interface CalendarRange {
@@ -120,133 +121,134 @@ function chosenDays(mode: CalendarMode, value: unknown): Array<Date | null | und
  * one, and a click below the start begins again rather than inverting the span
  * — inverting is the behaviour that makes a reader believe they mis-clicked.
  */
-export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(function Calendar(
-  {
-    mode = 'single',
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    size = 'md',
-    color = 'primary',
-    elevation = 0,
-    bordered = true,
-    month: monthProp,
-    defaultMonth,
-    onMonthChange,
-    granularity = 'day',
-    minDate,
-    maxDate,
-    shouldDisableDate,
-    locale,
-    weekStartsOn,
-    showOutsideDays = true,
-    renderDay,
-    labels: labelOverrides,
-    className,
-    style,
-    ...props
-  }: CalendarProps,
-  ref
-) {
-  const pickerLabels = usePickerLabels(labelOverrides);
-  const firstDay = weekStartsOn ?? localeWeekStart(locale);
+export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
+  function Calendar(rawProps, ref) {
+    const {
+      mode = 'single',
+      value: valueProp,
+      defaultValue,
+      onValueChange,
+      size = 'md',
+      color = 'primary',
+      elevation = 0,
+      bordered = true,
+      month: monthProp,
+      defaultMonth,
+      onMonthChange,
+      granularity = 'day',
+      minDate,
+      maxDate,
+      shouldDisableDate,
+      locale,
+      weekStartsOn,
+      showOutsideDays = true,
+      renderDay,
+      labels: labelOverrides,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
 
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(
-    () => defaultValue ?? EMPTY[mode]
-  );
-  // `null` is a value a controlled calendar legitimately holds — an emptied
-  // one — so the test is against `undefined` and never against falsiness.
-  const value = valueProp !== undefined ? valueProp : uncontrolledValue;
+    const pickerLabels = usePickerLabels(labelOverrides);
+    const firstDay = weekStartsOn ?? localeWeekStart(locale);
 
-  const firstChosen = chosenDays(mode, value).find(isValidDate);
+    const [uncontrolledValue, setUncontrolledValue] = React.useState(
+      () => defaultValue ?? EMPTY[mode]
+    );
+    // `null` is a value a controlled calendar legitimately holds — an emptied
+    // one — so the test is against `undefined` and never against falsiness.
+    const value = valueProp !== undefined ? valueProp : uncontrolledValue;
 
-  const [uncontrolledMonth, setUncontrolledMonth] = React.useState(() =>
-    startOfMonth(firstChosen ?? defaultMonth ?? today())
-  );
-  const month = monthProp ?? uncontrolledMonth;
+    const firstChosen = chosenDays(mode, value).find(isValidDate);
 
-  const setMonth = (next: Date) => {
-    if (monthProp === undefined) {
-      setUncontrolledMonth(next);
-    }
-    onMonthChange?.(next);
-  };
+    const [uncontrolledMonth, setUncontrolledMonth] = React.useState(() =>
+      startOfMonth(firstChosen ?? defaultMonth ?? today())
+    );
+    const month = monthProp ?? uncontrolledMonth;
 
-  const commit = (next: unknown) => {
-    if (valueProp === undefined) {
-      setUncontrolledValue(next as never);
-    }
-    (onValueChange as ((value: unknown) => void) | undefined)?.(next);
-  };
+    const setMonth = (next: Date) => {
+      if (monthProp === undefined) {
+        setUncontrolledMonth(next);
+      }
+      onMonthChange?.(next);
+    };
 
-  const select = (date: Date) => {
-    const unit = startOfUnit(date, granularity);
+    const commit = (next: unknown) => {
+      if (valueProp === undefined) {
+        setUncontrolledValue(next as never);
+      }
+      (onValueChange as ((value: unknown) => void) | undefined)?.(next);
+    };
 
-    if (mode === 'multiple') {
-      const held = (value as Date[] | null) ?? [];
-      const without = held.filter((entry) => !isSameDay(entry, unit));
+    const select = (date: Date) => {
+      const unit = startOfUnit(date, granularity);
 
-      // Clicking a day that is already held takes it back out, which is the
-      // only way a multiple calendar can be undone with the pointer.
-      commit(without.length === held.length ? [...held, unit] : without);
-      return;
-    }
+      if (mode === 'multiple') {
+        const held = (value as Date[] | null) ?? [];
+        const without = held.filter((entry) => !isSameDay(entry, unit));
 
-    if (mode === 'range') {
-      const range = (value as CalendarRange | null) ?? EMPTY.range;
-
-      // A span in progress is one with a start and no end. Anything else — a
-      // finished span, an empty one — starts a new one.
-      if (!isValidDate(range.start) || isValidDate(range.end)) {
-        commit({ start: unit, end: null });
+        // Clicking a day that is already held takes it back out, which is the
+        // only way a multiple calendar can be undone with the pointer.
+        commit(without.length === held.length ? [...held, unit] : without);
         return;
       }
-      // Below the start is a new start rather than an inverted span: inverting
-      // is what makes a reader think they mis-clicked.
-      commit(
-        compareDay(unit, range.start) < 0
-          ? { start: unit, end: null }
-          : { start: range.start, end: unit }
-      );
-      return;
-    }
 
-    commit(unit);
-  };
+      if (mode === 'range') {
+        const range = (value as CalendarRange | null) ?? EMPTY.range;
 
-  const range = mode === 'range' ? ((value as CalendarRange | null) ?? EMPTY.range) : EMPTY.range;
+        // A span in progress is one with a start and no end. Anything else — a
+        // finished span, an empty one — starts a new one.
+        if (!isValidDate(range.start) || isValidDate(range.end)) {
+          commit({ start: unit, end: null });
+          return;
+        }
+        // Below the start is a new start rather than an inverted span: inverting
+        // is what makes a reader think they mis-clicked.
+        commit(
+          compareDay(unit, range.start) < 0
+            ? { start: unit, end: null }
+            : { start: range.start, end: unit }
+        );
+        return;
+      }
 
-  return (
-    <div
-      ref={ref}
-      className={cx(
-        'inline-block',
-        bordered && 'border p-3 [border-color:var(--n-line)] bg-(--n-panel-press)',
-        bordered && radiusClasses[size],
-        className
-      )}
-      style={{ ...surfaceSlots(color, elevation), ...style }}
-      {...props}
-    >
-      <CalendarGrid
-        size={size}
-        color={color}
-        locale={locale}
-        weekStartsOn={firstDay}
-        month={month}
-        onMonthChange={setMonth}
-        selected={chosenDays(mode, value)}
-        rangeStart={range.start}
-        rangeEnd={range.end}
-        onSelect={select}
-        granularity={granularity}
-        minDate={minDate}
-        maxDate={maxDate}
-        shouldDisableDate={shouldDisableDate}
-        showOutsideDays={showOutsideDays}
-        renderDay={renderDay}
-        labels={pickerLabels}
-      />
-    </div>
-  );
-});
+      commit(unit);
+    };
+
+    const range = mode === 'range' ? ((value as CalendarRange | null) ?? EMPTY.range) : EMPTY.range;
+
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'inline-block',
+          bordered && 'border p-3 [border-color:var(--n-line)] bg-(--n-panel-press)',
+          bordered && radiusClasses[size],
+          className
+        )}
+        style={{ ...surfaceSlots(color, elevation), ...style }}
+        {...props}
+      >
+        <CalendarGrid
+          size={size}
+          color={color}
+          locale={locale}
+          weekStartsOn={firstDay}
+          month={month}
+          onMonthChange={setMonth}
+          selected={chosenDays(mode, value)}
+          rangeStart={range.start}
+          rangeEnd={range.end}
+          onSelect={select}
+          granularity={granularity}
+          minDate={minDate}
+          maxDate={maxDate}
+          shouldDisableDate={shouldDisableDate}
+          showOutsideDays={showOutsideDays}
+          renderDay={renderDay}
+          labels={pickerLabels}
+        />
+      </div>
+    );
+  }
+);

@@ -20,6 +20,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * Where a floating button sits, with one value the shared vocabulary does not
@@ -242,8 +243,8 @@ const actionLabelClasses = cx(
  * everything else.
  */
 export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingActionButtonProps>(
-  function FloatingActionButton(
-    {
+  function FloatingActionButton(rawProps, ref) {
+    const {
       variant = 'solid',
       size = defaultSize,
       color = 'primary',
@@ -272,9 +273,8 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
       onPointerEnter,
       onPointerLeave,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
     const dialId = React.useId();
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const rootRef = React.useRef<HTMLDivElement>(null);

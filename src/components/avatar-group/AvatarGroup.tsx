@@ -5,6 +5,7 @@ import { Avatar, type AvatarShape } from '../avatar/Avatar.js';
 import { AvatarGroupContext, type AvatarGroupContextValue } from '../../internal/avatar-group.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AvatarGroupProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   /**
@@ -74,61 +75,62 @@ const ringClasses = '[&>*]:ring-2 [&>*]:ring-(--neba-surface)';
  * left to right is read front to back, so the one the group is *about* comes
  * first rather than last.
  */
-export const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(function AvatarGroup(
-  {
-    max,
-    total,
-    overlap,
-    size = 'md',
-    shape = 'circle',
-    variant = 'text',
-    color = 'primary',
-    elevation = 0,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const context = React.useMemo<AvatarGroupContextValue>(
-    () => ({ size, shape, variant, color, elevation }),
-    [size, shape, variant, color, elevation]
-  );
+export const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
+  function AvatarGroup(rawProps, ref) {
+    const {
+      max,
+      total,
+      overlap,
+      size = 'md',
+      shape = 'circle',
+      variant = 'text',
+      color = 'primary',
+      elevation = 0,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'variant']);
 
-  const items = React.Children.toArray(children);
-  const shown = max === undefined ? items : items.slice(0, Math.max(0, max));
-  const counted = total ?? items.length;
-  const hidden = Math.max(0, counted - shown.length);
+    const context = React.useMemo<AvatarGroupContextValue>(
+      () => ({ size, shape, variant, color, elevation }),
+      [size, shape, variant, color, elevation]
+    );
 
-  return (
-    <AvatarGroupContext.Provider value={context}>
-      <div
-        ref={ref}
-        className={cx(
-          // `isolate` so the ring of the first avatar is painted against the
-          // page rather than against whatever is behind the group.
-          'isolate inline-flex items-center',
-          '[&>*:not(:first-child)]:[margin-inline-start:calc(var(--n-overlap)*-1)]',
-          ringClasses,
-          className ?? ''
-        )}
-        style={
-          {
-            '--n-overlap':
-              overlap === undefined
-                ? overlapSizes[size]
-                : typeof overlap === 'number'
-                  ? `${overlap}px`
-                  : overlap,
-            ...style
-          } as React.CSSProperties
-        }
-        {...props}
-      >
-        {shown}
-        {hidden > 0 ? <Avatar initials={`+${hidden}`} /> : null}
-      </div>
-    </AvatarGroupContext.Provider>
-  );
-});
+    const items = React.Children.toArray(children);
+    const shown = max === undefined ? items : items.slice(0, Math.max(0, max));
+    const counted = total ?? items.length;
+    const hidden = Math.max(0, counted - shown.length);
+
+    return (
+      <AvatarGroupContext.Provider value={context}>
+        <div
+          ref={ref}
+          className={cx(
+            // `isolate` so the ring of the first avatar is painted against the
+            // page rather than against whatever is behind the group.
+            'isolate inline-flex items-center',
+            '[&>*:not(:first-child)]:[margin-inline-start:calc(var(--n-overlap)*-1)]',
+            ringClasses,
+            className ?? ''
+          )}
+          style={
+            {
+              '--n-overlap':
+                overlap === undefined
+                  ? overlapSizes[size]
+                  : typeof overlap === 'number'
+                    ? `${overlap}px`
+                    : overlap,
+              ...style
+            } as React.CSSProperties
+          }
+          {...props}
+        >
+          {shown}
+          {hidden > 0 ? <Avatar initials={`+${hidden}`} /> : null}
+        </div>
+      </AvatarGroupContext.Provider>
+    );
+  }
+);

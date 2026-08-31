@@ -9,6 +9,7 @@ import {
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What the placeholder is standing in for.
@@ -164,82 +165,83 @@ function length(value: number | string | undefined): string | undefined {
  * so a `md` line is as tall as `md` type and a `md` circle is exactly an
  * [Avatar](../display/avatar) at `md`.
  */
-export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(function Skeleton(
-  {
-    shape = 'line',
-    lines = 1,
-    size = 'md',
-    color = 'secondary',
-    width,
-    height,
-    animated = true,
-    label,
-    render,
-    className,
-    style,
-    ...props
-  },
-  ref
-) {
-  // The sweep lives in `styles.css` rather than in an arbitrary variant for the
-  // reason every other animation in this library does: keyframes are not a
-  // Tailwind variant, so there is nothing to express them with.
-  const sweep = animated ? 'neba-skeleton' : '';
-
-  const shapeClasses =
-    shape === 'circle'
-      ? `rounded-full ${controlHeightClasses[size]} ${controlSquareClasses[size]} shrink-0`
-      : shape === 'rect'
-        ? `w-full ${blockRadiusClasses[size]} ${height === undefined ? blockHeightClasses[size] : ''}`
-        : `w-full ${barRadiusClasses[size]} ${lineHeightClasses[size]}`;
-
-  // Unlabelled it is scenery and says nothing; labelled it is the one element
-  // that reports the wait for the region around it.
-  const announce = label
-    ? ({ role: 'status', 'aria-busy': true, 'aria-label': label } as const)
-    : ({ 'aria-hidden': true } as const);
-
-  // A run of lines is a stack of bars rather than one box, so the gaps between
-  // them are real gaps: text has leading, and a striped gradient would not
-  // survive a caller putting the block in a flex row. The root then holds only
-  // the stacking, which is why it drops the fill and the sweep.
-  const stacked = shape === 'line' && lines > 1;
-
-  return useRender({
-    render,
-    ref,
-    props: {
-      className: (stacked
-        ? ['flex w-full flex-col', lineGapClasses[size], className ?? '']
-        : [fillClasses, sweep, shapeClasses, className ?? '']
-      )
-        .filter(Boolean)
-        .join(' '),
-      style: {
-        ...surfaceSlots(color, 0),
-        width: length(width),
-        height: length(height),
-        ...style
-      },
-      ...announce,
-      ...(stacked
-        ? {
-            children: Array.from({ length: lines }, (_, index) => (
-              <div
-                key={index}
-                className={cx(
-                  fillClasses,
-                  sweep,
-                  barRadiusClasses[size],
-                  lineHeightClasses[size],
-                  // The last line of a paragraph does not reach the margin.
-                  index === lines - 1 ? 'w-3/5' : 'w-full'
-                )}
-              />
-            ))
-          }
-        : null),
+export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
+  function Skeleton(rawProps, ref) {
+    const {
+      shape = 'line',
+      lines = 1,
+      size = 'md',
+      color = 'secondary',
+      width,
+      height,
+      animated = true,
+      label,
+      render,
+      className,
+      style,
       ...props
-    }
-  });
-});
+    } = useStyleDefaults(rawProps, ['size']);
+
+    // The sweep lives in `styles.css` rather than in an arbitrary variant for the
+    // reason every other animation in this library does: keyframes are not a
+    // Tailwind variant, so there is nothing to express them with.
+    const sweep = animated ? 'neba-skeleton' : '';
+
+    const shapeClasses =
+      shape === 'circle'
+        ? `rounded-full ${controlHeightClasses[size]} ${controlSquareClasses[size]} shrink-0`
+        : shape === 'rect'
+          ? `w-full ${blockRadiusClasses[size]} ${height === undefined ? blockHeightClasses[size] : ''}`
+          : `w-full ${barRadiusClasses[size]} ${lineHeightClasses[size]}`;
+
+    // Unlabelled it is scenery and says nothing; labelled it is the one element
+    // that reports the wait for the region around it.
+    const announce = label
+      ? ({ role: 'status', 'aria-busy': true, 'aria-label': label } as const)
+      : ({ 'aria-hidden': true } as const);
+
+    // A run of lines is a stack of bars rather than one box, so the gaps between
+    // them are real gaps: text has leading, and a striped gradient would not
+    // survive a caller putting the block in a flex row. The root then holds only
+    // the stacking, which is why it drops the fill and the sweep.
+    const stacked = shape === 'line' && lines > 1;
+
+    return useRender({
+      render,
+      ref,
+      props: {
+        className: (stacked
+          ? ['flex w-full flex-col', lineGapClasses[size], className ?? '']
+          : [fillClasses, sweep, shapeClasses, className ?? '']
+        )
+          .filter(Boolean)
+          .join(' '),
+        style: {
+          ...surfaceSlots(color, 0),
+          width: length(width),
+          height: length(height),
+          ...style
+        },
+        ...announce,
+        ...(stacked
+          ? {
+              children: Array.from({ length: lines }, (_, index) => (
+                <div
+                  key={index}
+                  className={cx(
+                    fillClasses,
+                    sweep,
+                    barRadiusClasses[size],
+                    lineHeightClasses[size],
+                    // The last line of a paragraph does not reach the margin.
+                    index === lines - 1 ? 'w-3/5' : 'w-full'
+                  )}
+                />
+              ))
+            }
+          : null),
+        ...props
+      }
+    });
+  }
+);

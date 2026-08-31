@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ButtonGroupContext, type ButtonGroupContextValue } from '../../internal/button-group.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaElevation, NebaOrientation, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ButtonGroupProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
@@ -74,49 +75,50 @@ const baseClasses = [
  * not manage selection — for one-of-a-set use a RadioGroup, which is what that
  * actually is.
  */
-export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(function ButtonGroup(
-  {
-    variant,
-    size,
-    color,
-    density,
-    elevation,
-    orientation = 'horizontal',
-    disabled,
-    fullWidth = false,
-    className,
-    children,
-    ...props
-  },
-  ref
-) {
-  // Every value is passed through as-is, including `undefined`. A Button reads
-  // the group only as a fallback, so "not set here" keeps meaning "use the
-  // Button's own default" rather than turning into one.
-  const context = React.useMemo<ButtonGroupContextValue>(
-    () => ({ variant, size, color, density, elevation, disabled }),
-    [variant, size, color, density, elevation, disabled]
-  );
+export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
+  function ButtonGroup(rawProps, ref) {
+    const {
+      variant,
+      size,
+      color,
+      density,
+      elevation,
+      orientation = 'horizontal',
+      disabled,
+      fullWidth = false,
+      className,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  return (
-    <ButtonGroupContext.Provider value={context}>
-      <div
-        ref={ref}
-        role="group"
-        className={cx(
-          baseClasses,
-          orientation === 'vertical' ? 'flex-col' : 'flex-row',
-          joinClasses[orientation],
-          // `variant` defaults to `solid` on a Button, so an unset group is a
-          // solid group and must not overlap.
-          (variant ?? 'solid') === 'outline' ? overlapClasses[orientation] : '',
-          fullWidth ? 'flex w-full [&>*]:flex-1' : '',
-          className ?? ''
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    </ButtonGroupContext.Provider>
-  );
-});
+    // Every value is passed through as-is, including `undefined`. A Button reads
+    // the group only as a fallback, so "not set here" keeps meaning "use the
+    // Button's own default" rather than turning into one.
+    const context = React.useMemo<ButtonGroupContextValue>(
+      () => ({ variant, size, color, density, elevation, disabled }),
+      [variant, size, color, density, elevation, disabled]
+    );
+
+    return (
+      <ButtonGroupContext.Provider value={context}>
+        <div
+          ref={ref}
+          role="group"
+          className={cx(
+            baseClasses,
+            orientation === 'vertical' ? 'flex-col' : 'flex-row',
+            joinClasses[orientation],
+            // `variant` defaults to `solid` on a Button, so an unset group is a
+            // solid group and must not overlap.
+            (variant ?? 'solid') === 'outline' ? overlapClasses[orientation] : '',
+            fullWidth ? 'flex w-full [&>*]:flex-1' : '',
+            className ?? ''
+          )}
+          {...props}
+        >
+          {children}
+        </div>
+      </ButtonGroupContext.Provider>
+    );
+  }
+);

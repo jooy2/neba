@@ -4,6 +4,7 @@ import * as React from 'react';
 import type { TypographyWeight } from '../typography/Typography.js';
 import { cx, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaVariant } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface HighlightProps extends Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
   /**
@@ -257,66 +258,67 @@ function markNode(
  * function of `children` and `query`, so it re-marks on its own the moment the
  * search box changes.
  */
-export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(function Highlight(
-  {
-    query,
-    variant = 'solid',
-    color = 'warning',
-    caseSensitive = false,
-    wholeWord = false,
-    underline = false,
-    weight,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const pattern = React.useMemo(() => buildPattern(query, caseSensitive), [query, caseSensitive]);
+export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
+  function Highlight(rawProps, ref) {
+    const {
+      query,
+      variant = 'solid',
+      color = 'warning',
+      caseSensitive = false,
+      wholeWord = false,
+      underline = false,
+      weight,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['variant']);
 
-  const markClasses = cx(
-    // A hair of padding so the surface does not sit flush against the letters,
-    // and the same hair back out as a negative margin so the marked line is the
-    // same length as it was before. A mark must not move the text around it.
-    'rounded-[0.25rem] px-0.5 -mx-0.5',
-    // A mark that wraps across two lines gets its corners on both fragments
-    // rather than one long box with two square ends.
-    'box-decoration-clone',
-    variantClasses[variant],
-    // `decoration-2` and the offset so the rule sits under the descenders rather
-    // than through them, which is the whole difference between an underline and
-    // a strikethrough that missed.
-    underline ? 'underline decoration-2 underline-offset-2' : '',
-    weight ? weightClasses[weight] : '',
-    transitionClasses
-  );
+    const pattern = React.useMemo(() => buildPattern(query, caseSensitive), [query, caseSensitive]);
 
-  const marked = pattern
-    ? markNode(children, pattern, wholeWord, (matched, key) => (
-        <mark key={key} className={markClasses}>
-          {matched}
-        </mark>
-      ))
-    : children;
+    const markClasses = cx(
+      // A hair of padding so the surface does not sit flush against the letters,
+      // and the same hair back out as a negative margin so the marked line is the
+      // same length as it was before. A mark must not move the text around it.
+      'rounded-[0.25rem] px-0.5 -mx-0.5',
+      // A mark that wraps across two lines gets its corners on both fragments
+      // rather than one long box with two square ends.
+      'box-decoration-clone',
+      variantClasses[variant],
+      // `decoration-2` and the offset so the rule sits under the descenders rather
+      // than through them, which is the whole difference between an underline and
+      // a strikethrough that missed.
+      underline ? 'underline decoration-2 underline-offset-2' : '',
+      weight ? weightClasses[weight] : '',
+      transitionClasses
+    );
 
-  return (
-    <span
-      ref={ref}
-      className={className}
-      style={
-        {
-          '--n-fill': `var(--neba-${color}-fill)`,
-          '--n-on-solid': `var(--neba-${color}-on-solid)`,
-          '--n-accent': `var(--neba-${color}-accent)`,
-          '--n-panel': `var(--neba-${color}-panel)`,
-          '--n-line': `var(--neba-${color}-line)`,
-          ...style
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      {marked}
-    </span>
-  );
-});
+    const marked = pattern
+      ? markNode(children, pattern, wholeWord, (matched, key) => (
+          <mark key={key} className={markClasses}>
+            {matched}
+          </mark>
+        ))
+      : children;
+
+    return (
+      <span
+        ref={ref}
+        className={className}
+        style={
+          {
+            '--n-fill': `var(--neba-${color}-fill)`,
+            '--n-on-solid': `var(--neba-${color}-on-solid)`,
+            '--n-accent': `var(--neba-${color}-accent)`,
+            '--n-panel': `var(--neba-${color}-panel)`,
+            '--n-line': `var(--neba-${color}-line)`,
+            ...style
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {marked}
+      </span>
+    );
+  }
+);

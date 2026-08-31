@@ -33,6 +33,7 @@ import type {
   NebaChartSeries,
   NebaChartTooltip
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** How much of the middle is cut out, per shape. */
 const holes = { pie: 0, donut: 0.62, semi: 0.62 } as const;
@@ -92,26 +93,28 @@ export interface PieChartProps extends ChartBaseProps {
  * A slice's colour follows the slice and not its size, so a chart that is
  * refiltered or resorted keeps every category the colour it had.
  */
-export function PieChart({
-  data,
-  categories,
-  shape = 'pie',
-  startAngle = 0,
-  center,
-  valueLabels = 'none',
-  height,
-  format,
-  locale,
-  label,
-  legend,
-  tooltip,
-  empty,
-  size = 'md',
-  variant = 'text',
-  padded = false,
-  className,
-  ...box
-}: PieChartProps) {
+export function PieChart(rawProps: PieChartProps) {
+  const {
+    data,
+    categories,
+    shape = 'pie',
+    startAngle = 0,
+    center,
+    valueLabels = 'none',
+    height,
+    format,
+    locale,
+    label,
+    legend,
+    tooltip,
+    empty,
+    size = 'md',
+    variant = 'text',
+    padded = false,
+    className,
+    ...box
+  } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
+
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);

@@ -22,6 +22,7 @@ import type {
   NebaTransition,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** What Base UI reports about the picture as it loads. */
 export type AvatarLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
@@ -235,98 +236,99 @@ function PersonIcon() {
  * [Badge](./badge) with an avatar in it, and inventing a second spelling for
  * that would give the library two of them.
  */
-export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  {
-    src,
-    srcSet,
-    alt,
-    name,
-    initials,
-    shape: shapeProp,
-    variant: variantProp,
-    size: sizeProp,
-    color: colorProp,
-    elevation: elevationProp,
-    delay,
-    imageProps,
-    onLoadingStatusChange,
-    transition,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  // An AvatarGroup sets the five style axes once for the whole stack. The
-  // avatar's own prop still wins — one face marked out from the rest is a real
-  // thing — and with no group around it the defaults are what they always were.
-  const group = React.useContext(AvatarGroupContext);
-  const shape = shapeProp ?? group?.shape ?? 'circle';
-  const variant = variantProp ?? group?.variant ?? 'text';
-  const size = sizeProp ?? group?.size ?? 'md';
-  const color = colorProp ?? group?.color ?? 'primary';
-  const elevation = elevationProp ?? group?.elevation ?? 0;
+export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
+  function Avatar(rawProps, ref) {
+    const {
+      src,
+      srcSet,
+      alt,
+      name,
+      initials,
+      shape: shapeProp,
+      variant: variantProp,
+      size: sizeProp,
+      color: colorProp,
+      elevation: elevationProp,
+      delay,
+      imageProps,
+      onLoadingStatusChange,
+      transition,
+      className,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'variant']);
 
-  const derived = name ? initialsOf(name) : '';
-  const animation = transitionProps(transition);
-  const label = alt ?? name;
+    // An AvatarGroup sets the five style axes once for the whole stack. The
+    // avatar's own prop still wins — one face marked out from the rest is a real
+    // thing — and with no group around it the defaults are what they always were.
+    const group = React.useContext(AvatarGroupContext);
+    const shape = shapeProp ?? group?.shape ?? 'circle';
+    const variant = variantProp ?? group?.variant ?? 'text';
+    const size = sizeProp ?? group?.size ?? 'md';
+    const color = colorProp ?? group?.color ?? 'primary';
+    const elevation = elevationProp ?? group?.elevation ?? 0;
 
-  // `children` beats the initials beats the silhouette. Only the last of the
-  // three has nothing to say, which is what decides whether the fallback needs
-  // the name spelled out beside it.
-  const stand = hasContent(children) ? children : (initials ?? derived) || <PersonIcon />;
-  const speaks = hasContent(children) || Boolean(initials ?? derived);
+    const derived = name ? initialsOf(name) : '';
+    const animation = transitionProps(transition);
+    const label = alt ?? name;
 
-  const classNames = cx(
-    baseClasses,
-    controlHeightClasses[size],
-    controlSquareClasses[size],
-    initialsTextClasses[size],
-    shape === 'circle' ? 'rounded-full' : avatarRadiusClasses[size],
-    variantClasses[variant],
-    plateClasses[variant],
-    animation.className,
-    className ?? ''
-  );
+    // `children` beats the initials beats the silhouette. Only the last of the
+    // three has nothing to say, which is what decides whether the fallback needs
+    // the name spelled out beside it.
+    const stand = hasContent(children) ? children : (initials ?? derived) || <PersonIcon />;
+    const speaks = hasContent(children) || Boolean(initials ?? derived);
 
-  return (
-    <BaseAvatar.Root
-      ref={ref}
-      className={classNames}
-      style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
-      {...props}
-    >
-      {src ? (
-        <BaseAvatar.Image
-          src={src}
-          srcSet={srcSet}
-          // Empty rather than absent: an avatar beside the person's own name is
-          // decoration, and `alt` left off is what makes a screen reader read
-          // the file name out instead.
-          alt={label ?? ''}
-          className="size-full object-cover"
-          // Before the spread, so a caller can still say otherwise. Decoding an
-          // image on the main thread is what makes a list of forty avatars
-          // arrive as forty small pauses; off it, they arrive.
-          decoding="async"
-          onLoadingStatusChange={onLoadingStatusChange}
-          {...imageProps}
-        />
-      ) : null}
+    const classNames = cx(
+      baseClasses,
+      controlHeightClasses[size],
+      controlSquareClasses[size],
+      initialsTextClasses[size],
+      shape === 'circle' ? 'rounded-full' : avatarRadiusClasses[size],
+      variantClasses[variant],
+      plateClasses[variant],
+      animation.className,
+      className ?? ''
+    );
 
-      <BaseAvatar.Fallback
-        delay={src ? delay : undefined}
-        className="flex size-full items-center justify-center"
+    return (
+      <BaseAvatar.Root
+        ref={ref}
+        className={classNames}
+        style={{ ...controlSlots(color, elevation, variant), ...animation.style, ...style }}
+        {...props}
       >
-        {/* `JD` read out loud is two letters, not a person. When there is a name
+        {src ? (
+          <BaseAvatar.Image
+            src={src}
+            srcSet={srcSet}
+            // Empty rather than absent: an avatar beside the person's own name is
+            // decoration, and `alt` left off is what makes a screen reader read
+            // the file name out instead.
+            alt={label ?? ''}
+            className="size-full object-cover"
+            // Before the spread, so a caller can still say otherwise. Decoding an
+            // image on the main thread is what makes a list of forty avatars
+            // arrive as forty small pauses; off it, they arrive.
+            decoding="async"
+            onLoadingStatusChange={onLoadingStatusChange}
+            {...imageProps}
+          />
+        ) : null}
+
+        <BaseAvatar.Fallback
+          delay={src ? delay : undefined}
+          className="flex size-full items-center justify-center"
+        >
+          {/* `JD` read out loud is two letters, not a person. When there is a name
             it becomes the fallback's accessible name and the initials are left
             as the picture they are standing in for. */}
-        {label && speaks ? <span className={srOnlyClasses}>{label}</span> : null}
-        <span aria-hidden={label && speaks ? true : undefined} className="contents">
-          {stand}
-        </span>
-      </BaseAvatar.Fallback>
-    </BaseAvatar.Root>
-  );
-});
+          {label && speaks ? <span className={srOnlyClasses}>{label}</span> : null}
+          <span aria-hidden={label && speaks ? true : undefined} className="contents">
+            {stand}
+          </span>
+        </BaseAvatar.Fallback>
+      </BaseAvatar.Root>
+    );
+  }
+);

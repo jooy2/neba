@@ -30,6 +30,7 @@ import type {
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** How the multiline control may be resized by the user. Ignored when single line. */
 export type TextFieldResize = 'none' | 'vertical' | 'horizontal' | 'both';
@@ -203,8 +204,8 @@ function Spinner() {
 }
 
 export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
-  function TextField(
-    {
+  function TextField(rawProps, ref) {
+    const {
       variant = 'outline',
       size = 'md',
       color = 'primary',
@@ -230,9 +231,8 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       className,
       style,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;
     // Invalid re-points the whole slot family at `danger`, so the edge, the ring,

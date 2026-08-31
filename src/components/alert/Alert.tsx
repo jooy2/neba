@@ -19,6 +19,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaElevation, NebaStyleProps, NebaTransition } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AlertProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title'> {
@@ -145,8 +146,8 @@ const rolesFor: Record<NebaColor, 'alert' | 'status'> = {
  * only interactive parts it can grow — the action and the dismiss button — are
  * real buttons that the caller either passes in or gets by passing `onClose`.
  */
-export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  {
+export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     // An alert with no severity named is an informational one. This is the one
@@ -166,9 +167,8 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
   const glyph = icon === undefined ? severityIcon(color) : icon;
   const accent = accentClasses[variant];

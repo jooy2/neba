@@ -11,6 +11,7 @@ import {
   sheetSectionGapClasses,
   sheetTitleClasses
 } from '../../internal/styles.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface CardProps extends Omit<BoxProps, 'title' | 'padded'> {
   /**
@@ -61,8 +62,8 @@ const dividerClasses = 'border-t [border-color:var(--n-line)]';
  * Every Box prop passes straight through, so a card is styled on exactly the
  * same axes as the box it is.
  */
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
-  {
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(rawProps, ref) {
+  const {
     size = 'md',
     density = 'default',
     title,
@@ -73,9 +74,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
     className,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density']);
+
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
   // With dividers the lines have to reach both edges, so the sheet gives up its

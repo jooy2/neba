@@ -7,6 +7,7 @@ import { MinusIcon, TrendDownIcon, TrendUpIcon } from '../../internal/icons.js';
 import { numberFormatter } from '../../internal/format.js';
 import { cx, hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles.js';
 import type { NebaAlign, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** Which way a figure moved, and the third case that is neither. */
 type Trend = 'up' | 'down' | 'flat';
@@ -160,145 +161,152 @@ const trendIcons: Record<Trend, React.ReactNode> = {
  * red and nothing else is a report that says nothing to a reader who cannot
  * separate red from green.
  */
-export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(function Statistic(
-  {
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    label,
-    value,
-    format,
-    locale,
-    prefix,
-    unit,
-    icon,
-    previousValue,
-    delta = 'percent',
-    betterWhen = 'up',
-    caption,
-    align = 'start',
-    className,
-    children,
-    ...props
-  },
-  ref
-) {
-  // An `Intl.NumberFormat` is expensive to construct and free to reuse, and a
-  // dashboard is a page full of these. The cache is keyed on what `format` says
-  // rather than on the object it arrived in, so the literal a caller writes
-  // inline — which is how that prop is nearly always written — still hits it.
-  const numeric = typeof value === 'number' ? value : null;
-  const shown = numeric === null ? value : numberFormatter(locale, format).format(numeric);
+export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
+  function Statistic(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      label,
+      value,
+      format,
+      locale,
+      prefix,
+      unit,
+      icon,
+      previousValue,
+      delta = 'percent',
+      betterWhen = 'up',
+      caption,
+      align = 'start',
+      className,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-  /**
-   * The comparison, or `null` when there is nothing to compare.
-   *
-   * A percentage against a `previousValue` of zero is not a large number, it is
-   * an undefined one — so the ratio is dropped and the absolute difference is
-   * what gets written instead. Reporting "+∞%" because last month was the first
-   * month is the kind of thing a dashboard does exactly once before nobody
-   * trusts it again.
-   */
-  const difference =
-    numeric !== null && previousValue !== undefined ? numeric - previousValue : null;
-  const ratio =
-    difference !== null && previousValue !== 0 && previousValue !== undefined
-      ? difference / Math.abs(previousValue)
-      : null;
+    // An `Intl.NumberFormat` is expensive to construct and free to reuse, and a
+    // dashboard is a page full of these. The cache is keyed on what `format` says
+    // rather than on the object it arrived in, so the literal a caller writes
+    // inline — which is how that prop is nearly always written — still hits it.
+    const numeric = typeof value === 'number' ? value : null;
+    const shown = numeric === null ? value : numberFormatter(locale, format).format(numeric);
 
-  const trend: Trend | null =
-    difference === null ? null : difference > 0 ? 'up' : difference < 0 ? 'down' : 'flat';
+    /**
+     * The comparison, or `null` when there is nothing to compare.
+     *
+     * A percentage against a `previousValue` of zero is not a large number, it is
+     * an undefined one — so the ratio is dropped and the absolute difference is
+     * what gets written instead. Reporting "+∞%" because last month was the first
+     * month is the kind of thing a dashboard does exactly once before nobody
+     * trusts it again.
+     */
+    const difference =
+      numeric !== null && previousValue !== undefined ? numeric - previousValue : null;
+    const ratio =
+      difference !== null && previousValue !== 0 && previousValue !== undefined
+        ? difference / Math.abs(previousValue)
+        : null;
 
-  let deltaText: string | null = null;
+    const trend: Trend | null =
+      difference === null ? null : difference > 0 ? 'up' : difference < 0 ? 'down' : 'flat';
 
-  if (difference !== null && trend !== null && delta !== 'none') {
-    const sign = difference > 0 ? '+' : difference < 0 ? '-' : '';
-    const absolute = `${sign}${numberFormatter(locale, format).format(Math.abs(difference))}`;
-    const percent =
-      ratio === null ? null : `${sign}${(Math.abs(ratio) * 100).toFixed(1).replace(/\.0$/, '')}%`;
+    let deltaText: string | null = null;
 
-    deltaText =
-      delta === 'absolute'
-        ? absolute
-        : delta === 'both'
-          ? [percent, absolute].filter(Boolean).join(' · ')
-          : (percent ?? absolute);
-  }
+    if (difference !== null && trend !== null && delta !== 'none') {
+      const sign = difference > 0 ? '+' : difference < 0 ? '-' : '';
+      const absolute = `${sign}${numberFormatter(locale, format).format(Math.abs(difference))}`;
+      const percent =
+        ratio === null ? null : `${sign}${(Math.abs(ratio) * 100).toFixed(1).replace(/\.0$/, '')}%`;
 
-  // Flat is neither good nor bad, and saying so in grey is the honest answer.
-  const deltaColor =
-    trend === null || trend === 'flat' ? 'secondary' : trend === betterWhen ? 'success' : 'danger';
+      deltaText =
+        delta === 'absolute'
+          ? absolute
+          : delta === 'both'
+            ? [percent, absolute].filter(Boolean).join(' · ')
+            : (percent ?? absolute);
+    }
 
-  const hasFooter = deltaText !== null || hasContent(caption);
+    // Flat is neither good nor bad, and saying so in grey is the honest answer.
+    const deltaColor =
+      trend === null || trend === 'flat'
+        ? 'secondary'
+        : trend === betterWhen
+          ? 'success'
+          : 'danger';
 
-  return (
-    <Box
-      ref={ref}
-      size={size}
-      color={color}
-      density={density}
-      className={cx(
-        'flex flex-col',
-        sheetSectionGapClasses[size],
-        alignClasses[align],
-        className ?? ''
-      )}
-      {...props}
-    >
-      {hasContent(label) || hasContent(icon) ? (
-        <div
-          className={[
-            'flex min-w-0 items-center gap-1.5 font-medium text-(--neba-muted-fg)',
-            metaTextClasses[size]
-          ].join(' ')}
-        >
-          {hasContent(icon) ? <span className="flex shrink-0 items-center">{icon}</span> : null}
-          {hasContent(label) ? <span className="min-w-0 truncate">{label}</span> : null}
-        </div>
-      ) : null}
+    const hasFooter = deltaText !== null || hasContent(caption);
 
-      {/* `items-baseline`, so the unit sits on the figure's baseline rather than
+    return (
+      <Box
+        ref={ref}
+        size={size}
+        color={color}
+        density={density}
+        className={cx(
+          'flex flex-col',
+          sheetSectionGapClasses[size],
+          alignClasses[align],
+          className ?? ''
+        )}
+        {...props}
+      >
+        {hasContent(label) || hasContent(icon) ? (
+          <div
+            className={[
+              'flex min-w-0 items-center gap-1.5 font-medium text-(--neba-muted-fg)',
+              metaTextClasses[size]
+            ].join(' ')}
+          >
+            {hasContent(icon) ? <span className="flex shrink-0 items-center">{icon}</span> : null}
+            {hasContent(label) ? <span className="min-w-0 truncate">{label}</span> : null}
+          </div>
+        ) : null}
+
+        {/* `items-baseline`, so the unit sits on the figure's baseline rather than
           floating in the middle of its cap height — the one detail that decides
           whether "42%" reads as one number or as a number and a symbol. */}
-      <div
-        className={[
-          'flex min-w-0 flex-wrap items-baseline gap-1 font-semibold text-(--neba-fg) tabular-nums',
-          valueClasses[size]
-        ].join(' ')}
-      >
-        {hasContent(prefix) ? (
-          <span className={`font-medium text-(--neba-muted-fg) ${affixClasses[size]}`}>
-            {prefix}
-          </span>
-        ) : null}
-        <span className="min-w-0 break-words">{shown}</span>
-        {hasContent(unit) ? (
-          <span className={`font-medium text-(--neba-muted-fg) ${affixClasses[size]}`}>{unit}</span>
-        ) : null}
-      </div>
-
-      {hasFooter ? (
-        <div className={`flex min-w-0 flex-wrap items-center gap-x-2 ${footerGapYClasses[size]}`}>
-          {deltaText !== null && trend !== null ? (
-            <Chip
-              size={size}
-              variant="text"
-              color={deltaColor}
-              startIcon={trendIcons[trend]}
-              className="tabular-nums"
-            >
-              {deltaText}
-            </Chip>
+        <div
+          className={[
+            'flex min-w-0 flex-wrap items-baseline gap-1 font-semibold text-(--neba-fg) tabular-nums',
+            valueClasses[size]
+          ].join(' ')}
+        >
+          {hasContent(prefix) ? (
+            <span className={`font-medium text-(--neba-muted-fg) ${affixClasses[size]}`}>
+              {prefix}
+            </span>
           ) : null}
-          {hasContent(caption) ? (
-            <span className={`min-w-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
-              {caption}
+          <span className="min-w-0 break-words">{shown}</span>
+          {hasContent(unit) ? (
+            <span className={`font-medium text-(--neba-muted-fg) ${affixClasses[size]}`}>
+              {unit}
             </span>
           ) : null}
         </div>
-      ) : null}
 
-      {children}
-    </Box>
-  );
-});
+        {hasFooter ? (
+          <div className={`flex min-w-0 flex-wrap items-center gap-x-2 ${footerGapYClasses[size]}`}>
+            {deltaText !== null && trend !== null ? (
+              <Chip
+                size={size}
+                variant="text"
+                color={deltaColor}
+                startIcon={trendIcons[trend]}
+                className="tabular-nums"
+              >
+                {deltaText}
+              </Chip>
+            ) : null}
+            {hasContent(caption) ? (
+              <span className={`min-w-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+                {caption}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
+        {children}
+      </Box>
+    );
+  }
+);

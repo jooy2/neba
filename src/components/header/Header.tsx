@@ -20,6 +20,7 @@ import type {
   NebaSize,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface HeaderProps extends Omit<
   React.ComponentPropsWithoutRef<'header'>,
@@ -237,8 +238,8 @@ const middleClasses: Record<NebaAlign, string> = {
  * place knows how far down the window to start. Outside one it is simply a bar,
  * and everything above still works.
  */
-export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header(
-  {
+export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header(rawProps, ref) {
+  const {
     brand,
     actions,
     align = 'start',
@@ -257,9 +258,8 @@ export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
   const layout = React.useContext(PageLayoutContext);
   const { register } = layout;
 

@@ -17,6 +17,7 @@ import {
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How the panel relates to the page.
@@ -291,32 +292,34 @@ export const DrawerClose = BaseUIDialog.Close;
  * scroll lock, the `aria-labelledby` / `aria-describedby` wiring, restoring
  * focus to the trigger, and the inert page behind.
  */
-export function Drawer({
-  side = 'left',
-  mode = 'overlay',
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  open,
-  defaultOpen,
-  onOpenChange,
-  trigger,
-  title,
-  description,
-  actions,
-  dividers = false,
-  showClose,
-  locale,
-  closeLabel,
-  extent,
-  rounded = true,
-  modal = true,
-  dismissible = true,
-  className,
-  style,
-  children,
-  ...props
-}: DrawerProps) {
+export function Drawer(rawProps: DrawerProps) {
+  const {
+    side = 'left',
+    mode = 'overlay',
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    open,
+    defaultOpen,
+    onOpenChange,
+    trigger,
+    title,
+    description,
+    actions,
+    dividers = false,
+    showClose,
+    locale,
+    closeLabel,
+    extent,
+    rounded = true,
+    modal = true,
+    dismissible = true,
+    className,
+    style,
+    children,
+    ...props
+  } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+
   const messages = useMessages(actionMessages, locale);
   const overlay = mode === 'overlay';
   const along = side === 'left' || side === 'right';

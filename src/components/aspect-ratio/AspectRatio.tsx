@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { cx, radiusClasses } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How the media inside is fitted to the box, spelled the way CSS spells it.
@@ -93,39 +94,40 @@ const fitClasses: Record<NebaAspectFit, string> = {
  * media inside is stretched to the box and then fitted, which is the pair of
  * declarations every use of this component would otherwise start with.
  */
-export const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(function AspectRatio(
-  {
-    ratio = 1,
-    fit = 'cover',
-    rounded = false,
-    size = 'md',
-    render,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const classNames = cx(
-    // `overflow-hidden` is not decoration: without it a `cover` image spills out
-    // of the proportion it was just given, and the box would only be reserving
-    // space rather than holding anything to it.
-    'relative block w-full overflow-hidden',
-    stretchClasses,
-    fitClasses[fit],
-    rounded ? radiusClasses[size] : '',
-    className ?? ''
-  );
-
-  return useRender({
-    render,
-    ref,
-    props: {
-      className: classNames,
-      style: { aspectRatio: ratio, ...style },
+export const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(
+  function AspectRatio(rawProps, ref) {
+    const {
+      ratio = 1,
+      fit = 'cover',
+      rounded = false,
+      size = 'md',
+      render,
+      className,
+      style,
       children,
       ...props
-    }
-  });
-});
+    } = useStyleDefaults(rawProps, ['size']);
+
+    const classNames = cx(
+      // `overflow-hidden` is not decoration: without it a `cover` image spills out
+      // of the proportion it was just given, and the box would only be reserving
+      // space rather than holding anything to it.
+      'relative block w-full overflow-hidden',
+      stretchClasses,
+      fitClasses[fit],
+      rounded ? radiusClasses[size] : '',
+      className ?? ''
+    );
+
+    return useRender({
+      render,
+      ref,
+      props: {
+        className: classNames,
+        style: { aspectRatio: ratio, ...style },
+        children,
+        ...props
+      }
+    });
+  }
+);

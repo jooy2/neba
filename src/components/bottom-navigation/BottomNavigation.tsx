@@ -27,6 +27,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export type {
   BottomNavigationLabels,
@@ -161,8 +162,8 @@ const itemGapClasses: Record<NebaSize, string> = {
  * stopping in a stripe above it.
  */
 export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationProps>(
-  function BottomNavigation(
-    {
+  function BottomNavigation(rawProps, ref) {
+    const {
       variant = 'outline',
       size = 'md',
       color = 'primary',
@@ -182,9 +183,8 @@ export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationPr
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
     const [uncontrolled, setUncontrolled] = React.useState<BottomNavigationValue | null>(
       defaultValue
     );

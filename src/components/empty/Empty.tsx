@@ -25,6 +25,7 @@ import type {
   NebaStyleProps,
   NebaTransition
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface EmptyProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'title'> {
@@ -183,8 +184,8 @@ function TrayIcon() {
  * changing only when the emptiness is itself a problem (`color="danger"` on a
  * region that failed to load).
  */
-export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty(
-  {
+export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty(rawProps, ref) {
+  const {
     variant = 'text',
     size = 'md',
     color = 'secondary',
@@ -200,9 +201,8 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
   const messages = useMessages(emptyMessages, locale);
   const heading = title === undefined ? messages.title : title;
   const glyph = icon === undefined ? <TrayIcon /> : icon;

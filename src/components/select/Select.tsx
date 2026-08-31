@@ -31,6 +31,7 @@ import type {
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a Select's value may be.
@@ -169,213 +170,214 @@ const itemClasses = [
  * the focus trap, typeahead, the hidden input that makes it submit — and the
  * work here is the surface it all wears.
  */
-export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function Select(
-  {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    items,
-    value,
-    defaultValue,
-    onValueChange,
-    placeholder,
-    label,
-    description,
-    error,
-    invalid,
-    startIcon,
-    fullWidth = false,
-    disabled = false,
-    readOnly = false,
-    required = false,
-    name,
-    id,
-    className,
-    classNames,
-    style,
-    ...props
-  },
-  ref
-) {
-  const hasError = error !== undefined && error !== null && error !== false && error !== '';
-  const isInvalid = invalid ?? hasError;
-  // Invalid re-points the whole slot family at `danger`, so the edge, the ring
-  // and the message all turn over together.
-  const family: NebaColor = isInvalid ? 'danger' : color;
+export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
+  function Select(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      items,
+      value,
+      defaultValue,
+      onValueChange,
+      placeholder,
+      label,
+      description,
+      error,
+      invalid,
+      startIcon,
+      fullWidth = false,
+      disabled = false,
+      readOnly = false,
+      required = false,
+      name,
+      id,
+      className,
+      classNames,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  // Base UI reads this to render the chosen option's *label* in the trigger
-  // rather than its raw value, which is the only way `<Select.Value>` can show
-  // "Seoul" for `value="kr-11"` before the popup has ever been mounted.
-  const baseItems = React.useMemo(
-    () => items.map((item) => ({ label: item.label ?? String(item.value), value: item.value })),
-    [items]
-  );
+    const hasError = error !== undefined && error !== null && error !== false && error !== '';
+    const isInvalid = invalid ?? hasError;
+    // Invalid re-points the whole slot family at `danger`, so the edge, the ring
+    // and the message all turn over together.
+    const family: NebaColor = isInvalid ? 'danger' : color;
 
-  // Holds the trigger open at the width of the longest thing it could say, so
-  // choosing a shorter option does not shrink the field out from under the
-  // pointer that chose it.
-  const sizerSamples = React.useMemo(
-    () => [
-      ...items.map((item) => item.label ?? String(item.value)),
-      ...(hasContent(placeholder) ? [placeholder] : [])
-    ],
-    [items, placeholder]
-  );
+    // Base UI reads this to render the chosen option's *label* in the trigger
+    // rather than its raw value, which is the only way `<Select.Value>` can show
+    // "Seoul" for `value="kr-11"` before the popup has ever been mounted.
+    const baseItems = React.useMemo(
+      () => items.map((item) => ({ label: item.label ?? String(item.value), value: item.value })),
+      [items]
+    );
 
-  return (
-    <Field.Root
-      disabled={disabled}
-      invalid={isInvalid}
-      className={cx(
-        'flex-col align-top',
-        stackGapClasses[size],
-        fullWidth ? 'flex w-full' : 'inline-flex',
-        className ?? ''
-      )}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
-      {...props}
-    >
-      {label ? (
-        <Field.Label
-          className={cx(
-            metaTextClasses[size],
-            'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
-            classNames?.label
-          )}
-        >
-          {label}
-        </Field.Label>
-      ) : null}
+    // Holds the trigger open at the width of the longest thing it could say, so
+    // choosing a shorter option does not shrink the field out from under the
+    // pointer that chose it.
+    const sizerSamples = React.useMemo(
+      () => [
+        ...items.map((item) => item.label ?? String(item.value)),
+        ...(hasContent(placeholder) ? [placeholder] : [])
+      ],
+      [items, placeholder]
+    );
 
-      <BaseUISelect.Root
-        id={id}
-        name={name}
-        items={baseItems}
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={(next) => onValueChange?.(next as SelectValue | null)}
+    return (
+      <Field.Root
         disabled={disabled}
-        readOnly={readOnly}
-        required={required}
+        invalid={isInvalid}
+        className={cx(
+          'flex-col align-top',
+          stackGapClasses[size],
+          fullWidth ? 'flex w-full' : 'inline-flex',
+          className ?? ''
+        )}
+        style={{ ...surfaceSlots(family, elevation), ...style }}
+        {...props}
       >
-        <BaseUISelect.Trigger
-          ref={ref}
-          className={cx(
-            triggerBaseClasses,
-            controlHeightClasses[size],
-            controlTextLeadingClasses[size],
-            radiusClasses[size],
-            gapClasses[size],
-            paddingXClasses[density][size],
-            // An if/else rather than stacked variants: two Tailwind classes of
-            // equal specificity resolve by their order in the generated sheet.
-            disabled
-              ? disabledClasses[variant]
-              : readOnly
-                ? `${fieldReadOnlyClasses[variant]} cursor-default`
-                : fieldRestClasses[variant],
-            classNames?.control
-          )}
-        >
-          {startIcon ? (
-            <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-              {startIcon}
-            </span>
-          ) : null}
+        {label ? (
+          <Field.Label
+            className={cx(
+              metaTextClasses[size],
+              'font-medium',
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+              classNames?.label
+            )}
+          >
+            {label}
+          </Field.Label>
+        ) : null}
 
-          {/* The value, and under it every label it could hold. `min-w-0` on the
+        <BaseUISelect.Root
+          id={id}
+          name={name}
+          items={baseItems}
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(next) => onValueChange?.(next as SelectValue | null)}
+          disabled={disabled}
+          readOnly={readOnly}
+          required={required}
+        >
+          <BaseUISelect.Trigger
+            ref={ref}
+            className={cx(
+              triggerBaseClasses,
+              controlHeightClasses[size],
+              controlTextLeadingClasses[size],
+              radiusClasses[size],
+              gapClasses[size],
+              paddingXClasses[density][size],
+              // An if/else rather than stacked variants: two Tailwind classes of
+              // equal specificity resolve by their order in the generated sheet.
+              disabled
+                ? disabledClasses[variant]
+                : readOnly
+                  ? `${fieldReadOnlyClasses[variant]} cursor-default`
+                  : fieldRestClasses[variant],
+              classNames?.control
+            )}
+          >
+            {startIcon ? (
+              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+                {startIcon}
+              </span>
+            ) : null}
+
+            {/* The value, and under it every label it could hold. `min-w-0` on the
               column is what keeps the whole thing shrinkable when a narrow
               container asks it to be. */}
-          <span className="flex min-w-0 flex-1 flex-col">
-            <BaseUISelect.Value
+            <span className="flex min-w-0 flex-1 flex-col">
+              <BaseUISelect.Value
+                className={[
+                  'w-full truncate text-start',
+                  // The placeholder is muted the same way a TextField's is, so an
+                  // empty select and an empty field read as equally empty.
+                  'data-[placeholder]:text-(--neba-muted-fg)'
+                ].join(' ')}
+                placeholder={placeholder}
+              />
+              <WidthSizer samples={sizerSamples} />
+            </span>
+
+            <BaseUISelect.Icon
               className={[
-                'w-full truncate text-start',
-                // The placeholder is muted the same way a TextField's is, so an
-                // empty select and an empty field read as equally empty.
-                'data-[placeholder]:text-(--neba-muted-fg)'
+                'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
+                // The chevron is the one thing here that may turn: it is a
+                // glyph, not a label, and nothing about it resamples.
+                '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+                'data-[popup-open]:rotate-180'
               ].join(' ')}
-              placeholder={placeholder}
-            />
-            <WidthSizer samples={sizerSamples} />
-          </span>
+            >
+              <ChevronIcon />
+            </BaseUISelect.Icon>
+          </BaseUISelect.Trigger>
 
-          <BaseUISelect.Icon
-            className={[
-              'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-              // The chevron is the one thing here that may turn: it is a
-              // glyph, not a label, and nothing about it resamples.
-              '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-              'data-[popup-open]:rotate-180'
-            ].join(' ')}
-          >
-            <ChevronIcon />
-          </BaseUISelect.Icon>
-        </BaseUISelect.Trigger>
-
-        <BaseUISelect.Portal>
-          {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
+          <BaseUISelect.Portal>
+            {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
               subtree its host may have scoped a CSS reset to, and this is what
               such a host can hang the same reset off. */}
-          <BaseUISelect.Positioner
-            className="neba-portal z-50 [outline:none]"
-            sideOffset={6}
-            alignItemWithTrigger={false}
-          >
-            <BaseUISelect.Popup
-              className={cx(
-                popupClasses,
-                radiusClasses[size],
-                controlTextLeadingClasses[size],
-                classNames?.popup
-              )}
-              style={surfaceSlots(family, 3)}
+            <BaseUISelect.Positioner
+              className="neba-portal z-50 [outline:none]"
+              sideOffset={6}
+              alignItemWithTrigger={false}
             >
-              {items.map((item) => (
-                <BaseUISelect.Item
-                  key={String(item.value)}
-                  value={item.value}
-                  disabled={item.disabled}
-                  className={cx(itemClasses, classNames?.item)}
-                >
-                  <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
-                    <CheckIcon />
-                  </BaseUISelect.ItemIndicator>
-                  <BaseUISelect.ItemText className="truncate">
-                    {item.label ?? String(item.value)}
-                  </BaseUISelect.ItemText>
-                </BaseUISelect.Item>
-              ))}
-            </BaseUISelect.Popup>
-          </BaseUISelect.Positioner>
-        </BaseUISelect.Portal>
-      </BaseUISelect.Root>
+              <BaseUISelect.Popup
+                className={cx(
+                  popupClasses,
+                  radiusClasses[size],
+                  controlTextLeadingClasses[size],
+                  classNames?.popup
+                )}
+                style={surfaceSlots(family, 3)}
+              >
+                {items.map((item) => (
+                  <BaseUISelect.Item
+                    key={String(item.value)}
+                    value={item.value}
+                    disabled={item.disabled}
+                    className={cx(itemClasses, classNames?.item)}
+                  >
+                    <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
+                      <CheckIcon />
+                    </BaseUISelect.ItemIndicator>
+                    <BaseUISelect.ItemText className="truncate">
+                      {item.label ?? String(item.value)}
+                    </BaseUISelect.ItemText>
+                  </BaseUISelect.Item>
+                ))}
+              </BaseUISelect.Popup>
+            </BaseUISelect.Positioner>
+          </BaseUISelect.Portal>
+        </BaseUISelect.Root>
 
-      {description ? (
-        <Field.Description
-          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
-        >
-          {description}
-        </Field.Description>
-      ) : null}
+        {description ? (
+          <Field.Description
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+          >
+            {description}
+          </Field.Description>
+        ) : null}
 
-      {hasError ? (
-        <Field.Error
-          match
-          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
-        >
-          {error}
-        </Field.Error>
-      ) : (
-        // No message of our own, so whatever the validity has: the browser's
-        // own text for a failed constraint, or the entry a Form's `errors`
-        // put here. Renders nothing at all while the field is valid.
-        <Field.Error
-          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
-        />
-      )}
-    </Field.Root>
-  );
-});
+        {hasError ? (
+          <Field.Error
+            match
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          >
+            {error}
+          </Field.Error>
+        ) : (
+          // No message of our own, so whatever the validity has: the browser's
+          // own text for a failed constraint, or the entry a Form's `errors`
+          // put here. Renders nothing at all while the field is valid.
+          <Field.Error
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          />
+        )}
+      </Field.Root>
+    );
+  }
+);
