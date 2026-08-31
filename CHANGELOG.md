@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.11.0 (2026--)
+## 1.11.0 (2026-08-31)
 
 The release that closes the gaps, rather than the one that adds a shelf of new components.
 
