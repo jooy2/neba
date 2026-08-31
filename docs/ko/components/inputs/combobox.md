@@ -102,6 +102,18 @@ interface ComboboxOption {
 
 [Select](./select)의 팝업과 동일합니다. `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.
 
+### shortcuts
+
+Combobox에서는 이것이 유일한 통로입니다. 화살표는 highlight를 옮기고 `Escape`는 팝업을 닫고 `Enter`는 확정합니다. 이 키들은 목록의 것이라 root에 쓴 `onKeyDown`에는 아예 도달하지 않습니다.
+
+```tsx
+<Combobox label="Framework" items={frameworks} shortcuts={{ 'Mod+Enter': createAndOpen }} />
+```
+
+조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 쓰고, `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 합니다.
+
+`<input>`에 붙어 목록이 키를 처리하기 **전에** 실행되지만, 목록이 하는 일을 **대신하지는** 않습니다. `Enter`에 건 shortcut은 확정과 함께 실행되지 그것을 막지 않습니다. 키를 온전히 가져야 한다면 목록이 관심 없는 조합을 쓰세요.
+
 ### classNames
 
 `className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.

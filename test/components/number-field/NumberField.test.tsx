@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { NumberField } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
@@ -261,6 +262,44 @@ describe('NumberField', () => {
       expect(screen.container.querySelector('[data-analytics="quantity"]')).not.toBeNull();
     });
   });
+  /**
+   * Bound to the `<input>` rather than to the root, which is the whole reason
+   * the prop exists here: a plain `onKeyDown` lands on the column holding the
+   * label and the messages.
+   */
+  describe('shortcuts', () => {
+    it('runs the entry whose combination was pressed, on the control', async () => {
+      const seen: string[] = [];
+      const screen = await render(
+        <NumberField
+          label="Quantity"
+          defaultValue={3}
+          shortcuts={{ Enter: (event) => seen.push(event.currentTarget.tagName) }}
+        />
+      );
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard('{Enter}');
+
+      expect(seen).toEqual(['INPUT']);
+    });
+
+    it('leaves the arrow keys the steppers use alone unless they were bound', async () => {
+      const up = vi.fn();
+      const screen = await render(
+        <NumberField label="Quantity" defaultValue={3} shortcuts={{ ArrowUp: up }} />
+      );
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard('{ArrowUp}');
+
+      // The shortcut sees it and the field still steps: nothing is prevented on
+      // the caller's behalf.
+      expect(up).toHaveBeenCalledTimes(1);
+      await expect.element(screen.getByRole('textbox')).toHaveValue('4');
+    });
+  });
+
   describe('slots', () => {
     it('puts a class name on every part it was given one for', async () => {
       const screen = await render(

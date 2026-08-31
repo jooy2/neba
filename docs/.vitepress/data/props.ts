@@ -174,6 +174,24 @@ function slotsProp(...slots: string[]): PropRow {
   };
 }
 
+/**
+ * The `shortcuts` row.
+ *
+ * The element differs per component — a TextField's handler is handed a
+ * `<textarea>` in multiline mode — so the type is written out at each call, the
+ * way `slotsProp` writes its slots out.
+ */
+function shortcutsProp(element: string, note: Text): PropRow {
+  return {
+    name: 'shortcuts',
+    type: `NebaShortcuts<${element}>`,
+    description: {
+      ko: `Shortcut이 그리는 그대로 쓴 키 조합과 그때 할 일 — { 'Mod+Enter': send }. Mod는 Mac에서 Command, 나머지에서 Control입니다. ${note.ko}`,
+      en: `Key combinations to act on, spelled the way Shortcut draws them — { 'Mod+Enter': send }. Mod is Command on a Mac and Control everywhere else. ${note.en}`
+    }
+  };
+}
+
 interface SharedOptions {
   variant: string;
   size: string;
@@ -1626,6 +1644,10 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
     },
+    shortcutsProp('HTMLInputElement | HTMLTextAreaElement', {
+      ko: '컨트롤에 붙으므로 event.currentTarget이 input 또는 textarea입니다. onKeyDown보다 먼저 실행되고 그것을 대체하지 않으며, 대신 preventDefault를 해 주지도 않습니다',
+      en: 'Bound to the control, so event.currentTarget is the input or the textarea. It runs before onKeyDown and does not replace it, and nothing is prevented on your behalf'
+    }),
     slotsProp('label', 'shell', 'control', 'description', 'error')
   ],
 
@@ -7632,6 +7654,10 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...inertProps,
+    shortcutsProp('HTMLInputElement', {
+      ko: 'Combobox에서는 이것이 유일한 통로입니다 — 화살표·Escape·Enter는 목록의 키라서 root의 onKeyDown에는 아예 오지 않습니다. 목록보다 먼저 실행되지만 목록이 하는 일을 대신하지는 않습니다',
+      en: "On a Combobox this is the only way in: the arrows, Escape and Enter are the list's keys and never reach an onKeyDown on the root at all. It runs before the list acts, and does not replace what the list does"
+    }),
     slotsProp('label', 'shell', 'control', 'description', 'error', 'chip', 'popup', 'item')
   ],
 
@@ -7797,6 +7823,10 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...inertProps,
+    shortcutsProp('HTMLInputElement', {
+      ko: 'root가 아니라 input에 붙습니다 — onKeyDown은 라벨과 메시지가 함께 있는 열에 떨어지므로 currentTarget이 필드가 아닙니다',
+      en: 'Bound to the input rather than to the root: a plain onKeyDown lands on the column holding the label and the messages, so its currentTarget is not the field'
+    }),
     slotsProp('label', 'shell', 'control', 'description', 'error', 'stepper')
   ],
 

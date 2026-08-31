@@ -5,6 +5,7 @@ import { NumberField as BaseUINumberField } from '@base-ui/react/number-field';
 import { Field } from '@base-ui/react/field';
 import { numberMessages, useMessages } from '../../internal/i18n.js';
 import { MinusIcon, PlusIcon } from '../../internal/icons.js';
+import { keyHandler } from '../../internal/keys.js';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -27,6 +28,7 @@ import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaShortcuts,
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
@@ -150,6 +152,16 @@ export interface NumberFieldProps
    * `<input>` itself is `classNames.control`.
    */
   classNames?: NebaSlots<NumberFieldSlot>;
+  /**
+   * Key combinations to act on, spelled the way
+   * [Shortcut](../display/shortcut) draws them — `{ Enter: commit }`.
+   *
+   * Bound to the `<input>` rather than to the root, which is the difference
+   * that makes it worth having here: a plain `onKeyDown` lands on the column
+   * the label and the messages are in, so `event.currentTarget` is not the
+   * field and the arrow keys the steppers use never reach it as themselves.
+   */
+  shortcuts?: NebaShortcuts<HTMLInputElement>;
 }
 
 /** The shell is a TextField's, to the pixel — see `fieldRestClasses`. */
@@ -234,6 +246,7 @@ export function NumberField({
   id,
   className,
   classNames,
+  shortcuts,
   style,
   ...props
 }: NumberFieldProps) {
@@ -352,6 +365,7 @@ export function NumberField({
           ) : null}
 
           <BaseUINumberField.Input
+            onKeyDown={keyHandler(shortcuts)}
             placeholder={placeholder}
             className={[
               'min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',

@@ -6,6 +6,7 @@ import { Field } from '@base-ui/react/field';
 import { Chip } from '../chip/Chip.js';
 import { actionMessages, comboboxMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons.js';
+import { keyHandler } from '../../internal/keys.js';
 import {
   chipRemoveClasses,
   controlHeightClasses,
@@ -30,6 +31,7 @@ import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaShortcuts,
   NebaSize,
   NebaSlots,
   NebaStyleProps
@@ -179,6 +181,18 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
    * `<input>` itself is `classNames.control`.
    */
   classNames?: NebaSlots<ComboboxSlot>;
+  /**
+   * Key combinations to act on, spelled the way
+   * [Shortcut](../display/shortcut) draws them — `{ 'Mod+Enter': createAndGo }`.
+   *
+   * This is the only way in. A Combobox's keystrokes are the list's: the arrows
+   * move the highlight, `Escape` closes the popup and `Enter` commits, and the
+   * ones the list acts on never reach a plain `onKeyDown` on the root at all.
+   * Bound to the `<input>`, and it runs before the list does — but it does not
+   * *replace* what the list does, so a shortcut on `Enter` fires alongside the
+   * commit rather than instead of it.
+   */
+  shortcuts?: NebaShortcuts<HTMLInputElement>;
 }
 
 /**
@@ -322,6 +336,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   clearLabel,
   removeLabel,
   inputRef,
+  shortcuts,
   id,
   className,
   classNames,
@@ -469,6 +484,7 @@ export function Combobox<Multiple extends boolean | undefined = false>({
   const renderInput = (afterChips: boolean) => (
     <BaseUICombobox.Input
       ref={inputRef}
+      onKeyDown={keyHandler(shortcuts)}
       placeholder={placeholder}
       className={
         isMultiple ? `${inputClasses} min-w-16 ${afterChips ? 'ms-1.5' : ''}` : inputClasses

@@ -20,10 +20,12 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
+import { keyHandler } from '../../internal/keys.js';
 import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaShortcuts,
   NebaSize,
   NebaSlots,
   NebaStyleProps
@@ -107,6 +109,17 @@ export interface TextFieldProps extends NebaStyleProps, NativeControlProps {
    * control itself is reached through `classNames.control`.
    */
   classNames?: NebaSlots<TextFieldSlot>;
+  /**
+   * Key combinations to act on, spelled the way
+   * [Shortcut](../display/shortcut) draws them — `{ 'Mod+Enter': send }`. Bound
+   * to the control, so `event.currentTarget` is the `<input>` or the
+   * `<textarea>` and `event.currentTarget.value` is what was typed.
+   *
+   * It runs *before* `onKeyDown`, which still sees every keystroke; neither
+   * replaces the other. Nothing is prevented on the caller's behalf — a
+   * shortcut that must not also insert a newline calls `preventDefault` itself.
+   */
+  shortcuts?: NebaShortcuts<HTMLInputElement | HTMLTextAreaElement>;
   onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }
 
@@ -209,6 +222,8 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       loading = false,
       fullWidth = false,
       classNames,
+      shortcuts,
+      onKeyDown,
       readOnly = false,
       disabled = false,
       type = 'text',
@@ -322,6 +337,10 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
             data-loading={loading || undefined}
             {...(multiline ? { render: <textarea rows={rows} /> } : { type })}
             {...props}
+            // After the spread on purpose: `onKeyDown` is destructured out
+            // above, so this is the caller's own handler with the shortcut map
+            // in front of it rather than something written over the top of it.
+            onKeyDown={keyHandler(shortcuts, onKeyDown)}
           />
 
           {loading ? (

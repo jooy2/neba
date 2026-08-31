@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { TextField } from 'neba';
 
 describe('TextField', () => {
@@ -439,6 +440,89 @@ describe('TextField', () => {
       expect(root.style.getPropertyValue('--n-accent')).toBe('var(--neba-danger-accent)');
     });
   });
+  /**
+   * The map is bound to the control rather than to the root, so a handler reads
+   * `event.currentTarget.value` the way it would on a plain `<input>`.
+   */
+  describe('shortcuts', () => {
+    it('runs the entry whose combination was pressed', async () => {
+      // Read inside the handler: React nulls `currentTarget` the moment one
+      // returns, so a mock call kept for later has nothing left on it.
+      const sent: string[] = [];
+      const screen = await render(
+        <TextField
+          label="Message"
+          shortcuts={{
+            Enter: (event) => sent.push((event.currentTarget as HTMLInputElement).value)
+          }}
+        />
+      );
+
+      await screen.getByRole('textbox').fill('ship it');
+      await userEvent.keyboard('{Enter}');
+
+      expect(sent).toEqual(['ship it']);
+    });
+
+    it('tells Enter and Mod+Enter apart', async () => {
+      const plain = vi.fn();
+      const withMod = vi.fn();
+      const screen = await render(
+        <TextField label="Message" shortcuts={{ Enter: plain, 'Mod+Enter': withMod }} />
+      );
+      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard('{Enter}');
+      await userEvent.keyboard(mac ? '{Meta>}{Enter}{/Meta}' : '{Control>}{Enter}{/Control}');
+
+      expect([plain.mock.calls.length, withMod.mock.calls.length]).toEqual([1, 1]);
+    });
+
+    it('leaves a key nobody bound alone', async () => {
+      const send = vi.fn();
+      const screen = await render(<TextField label="Message" shortcuts={{ 'Mod+Enter': send }} />);
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard('{Enter}');
+
+      expect(send).not.toHaveBeenCalled();
+    });
+
+    it('runs beside onKeyDown rather than instead of it', async () => {
+      const order: string[] = [];
+      const screen = await render(
+        <TextField
+          label="Message"
+          shortcuts={{ Enter: () => order.push('shortcut') }}
+          onKeyDown={() => order.push('onKeyDown')}
+        />
+      );
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard('{Enter}');
+
+      expect(order).toEqual(['shortcut', 'onKeyDown']);
+    });
+
+    it('binds the textarea in multiline mode too', async () => {
+      const bound: string[] = [];
+      const screen = await render(
+        <TextField
+          label="Message"
+          multiline
+          shortcuts={{ 'Mod+Enter': (event) => bound.push(event.currentTarget.tagName) }}
+        />
+      );
+      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+
+      await screen.getByRole('textbox').click();
+      await userEvent.keyboard(mac ? '{Meta>}{Enter}{/Meta}' : '{Control>}{Enter}{/Control}');
+
+      expect(bound).toEqual(['TEXTAREA']);
+    });
+  });
+
   describe('slots', () => {
     it('puts a class name on every part it was given one for', async () => {
       const screen = await render(

@@ -81,6 +81,18 @@ The steppers are sized in `em`, so they track the number. The field lines up wit
 
 </Demo>
 
+### shortcuts
+
+`shortcuts` maps a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it. `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly — `Enter` and `Mod+Enter` never both fire.
+
+```tsx
+<NumberField label="Quantity" shortcuts={{ Enter: commit }} />
+```
+
+It is bound to the `<input>` rather than to the root, which is what makes it worth having here: `className` and a plain `onKeyDown` both land on the column holding the label and the two lines under it, so their `currentTarget` is not the field.
+
+Nothing is prevented for you. A shortcut on `ArrowUp` fires _and_ the field still steps; call `preventDefault` in the handler if it should not.
+
 ### classNames
 
 `className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames.control`.

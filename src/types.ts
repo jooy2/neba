@@ -582,6 +582,30 @@ export interface NebaStyleProps {
 export type NebaSlots<Slot extends string> = Partial<Record<Slot, string>>;
 
 /**
+ * Key combinations a control acts on, as a map from the combination to what it
+ * does.
+ *
+ * The combinations are written the way [Shortcut](../components/shortcut) draws
+ * them — `'Enter'`, `'Mod+Enter'`, `'Escape'` — and that is the point rather
+ * than a convenience: a key a product *shows* a reader and a key it *binds* have
+ * to be spelled the same, or the label on the screen is a claim nobody checked.
+ * `Mod` is Command on a Mac and Control everywhere else.
+ *
+ * A map rather than an `onShortcut(combination, event)`, because a caller with
+ * three shortcuts wants three functions and not a `switch`. The modifiers are
+ * matched exactly, so `Enter` and `Mod+Enter` are two entries that never both
+ * fire.
+ *
+ * It is not a replacement for `onKeyDown`, which still sees every keystroke.
+ * This is for the case a component cannot express any other way: a key the
+ * control itself already has an opinion about.
+ */
+export type NebaShortcuts<E extends Element = HTMLElement> = Record<
+  string,
+  (event: React.KeyboardEvent<E>) => void
+>;
+
+/**
  * The parts every field-shaped component draws, and the reason they are one
  * type: a `classNames.label` has to mean the label on a TextField, a Select, a
  * Checkbox and a RadioGroup alike, exactly as a `size` of `md` means one height

@@ -81,6 +81,18 @@ stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같�
 
 </Demo>
 
+### shortcuts
+
+`shortcuts`는 키 조합에서 할 일로 가는 map이고, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 하므로 `Enter`와 `Mod+Enter`가 함께 발동하는 일은 없습니다.
+
+```tsx
+<NumberField label="수량" shortcuts={{ Enter: commit }} />
+```
+
+root가 아니라 `<input>`에 붙는다는 점이 여기서는 중요합니다. `className`도 `onKeyDown`도 라벨과 아래 두 줄을 담는 열에 떨어지므로 `currentTarget`이 필드가 아닙니다.
+
+대신 `preventDefault`를 해 주지는 않습니다. `ArrowUp`에 건 shortcut은 실행되고 **동시에** 값도 한 칸 올라갑니다. 그러지 않아야 한다면 핸들러에서 직접 막으세요.
+
 ### classNames
 
 `className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.

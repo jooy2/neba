@@ -83,6 +83,34 @@ Identical to the native `<input>`.
 
 </Demo>
 
+### shortcuts
+
+`shortcuts` is a map from a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it — so the key a form shows a reader and the key it binds are the same string.
+
+```tsx
+<TextField
+  label="Message"
+  multiline
+  shortcuts={{
+    'Mod+Enter': (event) => {
+      event.preventDefault();
+      send();
+    },
+    Escape: clear
+  }}
+/>
+```
+
+`Mod` is Command on a Mac and Control everywhere else. The modifiers are matched exactly, so `Enter` and `Mod+Enter` are two entries that never both fire.
+
+It is bound to the control, so `event.currentTarget` is the `<input>` or the `<textarea>` and `event.currentTarget.value` is what was typed. Nothing is prevented for you: a `Mod+Enter` that must not also insert a newline calls `preventDefault` itself. `onKeyDown` still sees every keystroke and runs after the map — neither prop replaces the other.
+
+<Demo src="text-field/shortcuts">
+
+<<< @/.vitepress/demos/text-field/shortcuts.tsx
+
+</Demo>
+
 ### classNames
 
 `className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames` instead. There is no `root` key; that is what `className` already is.

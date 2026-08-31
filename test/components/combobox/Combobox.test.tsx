@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Combobox } from 'neba';
 
 const FRAMEWORKS = [
@@ -383,6 +384,68 @@ describe('Combobox', () => {
       expect(screen.container.querySelector('[data-analytics="framework"]')).not.toBeNull();
     });
   });
+  /**
+   * The keys a Combobox cares about are the list's, and Base UI acts on them
+   * before anything on the root could see them — so `shortcuts` is the only way
+   * a caller reaches `Enter` here at all.
+   */
+  describe('shortcuts', () => {
+    it('sees Enter, which never reaches a handler on the root', async () => {
+      const onEnter = vi.fn();
+      const onKeyDown = vi.fn();
+      const screen = await render(
+        <Combobox
+          label="Framework"
+          items={FRAMEWORKS}
+          shortcuts={{ Enter: onEnter }}
+          onKeyDown={onKeyDown}
+        />
+      );
+
+      await screen.getByRole('combobox').click();
+      await userEvent.keyboard('Re');
+      await userEvent.keyboard('{Enter}');
+
+      expect(onEnter).toHaveBeenCalledTimes(1);
+      // The same keystroke, through the prop that was there before: it is the
+      // letters and not the Enter, which is what made this prop necessary.
+      expect(onKeyDown.mock.calls.map((call) => call[0].key)).not.toContain('Enter');
+    });
+
+    it('runs before the list acts, and does not replace what it does', async () => {
+      const onEnter = vi.fn();
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <Combobox
+          label="Framework"
+          items={FRAMEWORKS}
+          shortcuts={{ Enter: onEnter }}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('combobox').click();
+      await userEvent.keyboard('Re');
+      await userEvent.keyboard('{Enter}');
+
+      expect(onEnter).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith('react');
+    });
+
+    it('reaches a combination the list has no opinion about', async () => {
+      const save = vi.fn();
+      const screen = await render(
+        <Combobox label="Framework" items={FRAMEWORKS} shortcuts={{ 'Mod+S': save }} />
+      );
+      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+
+      await screen.getByRole('combobox').click();
+      await userEvent.keyboard(mac ? '{Meta>}s{/Meta}' : '{Control>}s{/Control}');
+
+      expect(save).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('slots', () => {
     it('puts a class name on every part it was given one for', async () => {
       const screen = await render(

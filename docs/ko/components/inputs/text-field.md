@@ -83,6 +83,34 @@ native `<input>`과 동일하게 동작합니다.
 
 </Demo>
 
+### shortcuts
+
+`shortcuts`는 키 조합에서 할 일로 가는 map이고, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다 — 폼이 사용자에게 **보여 주는** 키와 실제로 **바인딩하는** 키가 같은 문자열이 됩니다.
+
+```tsx
+<TextField
+  label="메시지"
+  multiline
+  shortcuts={{
+    'Mod+Enter': (event) => {
+      event.preventDefault();
+      send();
+    },
+    Escape: clear
+  }}
+/>
+```
+
+`Mod`는 Mac에서 Command, 그 밖에서는 Control입니다. modifier는 정확히 일치해야 하므로 `Enter`와 `Mod+Enter`는 절대 함께 발동하지 않는 두 항목입니다.
+
+control에 붙기 때문에 `event.currentTarget`이 `<input>` 또는 `<textarea>`이고, `event.currentTarget.value`가 방금 입력된 값입니다. 대신 `preventDefault`를 해 주지는 않습니다. 줄바꿈까지 막아야 하는 `Mod+Enter`라면 직접 부르세요. `onKeyDown`은 여전히 모든 키를 받고 map 다음에 실행됩니다. 둘 중 어느 쪽도 다른 쪽을 대체하지 않습니다.
+
+<Demo src="text-field/shortcuts">
+
+<<< @/.vitepress/demos/text-field/shortcuts.tsx
+
+</Demo>
+
 ### classNames
 
 `className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙습니다. `<input>` 자체는 `classNames`로 갑니다. `root` 키는 없습니다. 그것이 이미 `className`이기 때문입니다.

@@ -45,6 +45,8 @@ import { Shortcut } from 'neba';
 
 `os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. `mac` · `windows` · `linux`를 명시하는 것은 특정 플랫폼을 설명하는 문서를 위한 것입니다.
 
+같은 문자열을 라이브러리가 **바인딩**에도 씁니다. [CommandPalette](../inputs/command-palette)의 `shortcut`, [TextField](../inputs/text-field) · [NumberField](../inputs/number-field) · [Combobox](../inputs/combobox)의 `shortcuts`가 모두 이 어휘를 읽습니다. 별칭도 마찬가지입니다 — `Cmd` · `Command` · `Meta` · `Win`은 한 키이고, `Esc` · `Return` · `Opt` · `Up`은 각각 `Escape` · `Enter` · `Alt` · `ArrowUp`의 다른 표기입니다. 화면에 그린 키캡과 실제로 발동하는 키가 같은 문자열입니다.
+
 <Demo src="shortcut/platforms">
 
 <<< @/.vitepress/demos/shortcut/platforms.tsx
