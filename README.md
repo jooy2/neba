@@ -125,6 +125,21 @@ A registered language costs about 1.9 kB gzipped and you pay only for the ones y
 
 Anything the platform already knows — month names, weekday names, AM/PM, number and date formats — comes from `Intl` and needs no registration. And every string a component invents also has a prop that overrides it, so a language Neba does not carry is never a dead end.
 
+### Hooks
+
+The hooks the components already run on, from `neba/hooks` (or from the package root):
+
+```tsx
+import { useDisclosure, useBreakpoint, useShortcut } from 'neba/hooks';
+
+const { open, onOpen, setOpen } = useDisclosure();
+const desktop = useBreakpoint('lg');
+
+useShortcut('Mod+K', onOpen);
+```
+
+`useDisclosure`, `useMediaQuery`, `useBreakpoint`, `usePrefersReducedMotion`, `useElementSize`, `useOnScreen`, `useShortcut`. Everything here is machinery the library needed for itself — there is no general-purpose hook collection, and there is not going to be one. Full notes in [the hooks guide](https://neba.cdget.com/guide/hooks).
+
 ### The shared prop vocabulary
 
 The reason a Neba screen looks composed rather than assembled is that the props mean one thing across the library. They live in [`src/types.ts`](src/types.ts) and every component draws from the same list:

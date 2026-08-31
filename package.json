@@ -50,6 +50,11 @@
       "module": "./dist/types.js",
       "default": "./dist/types.js"
     },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "module": "./dist/hooks/index.js",
+      "default": "./dist/hooks/index.js"
+    },
     "./locales": {
       "types": "./dist/locales/index.d.ts",
       "module": "./dist/locales/index.js",

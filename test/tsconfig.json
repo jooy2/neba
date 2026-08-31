@@ -15,6 +15,7 @@
     "types": ["@vitest/browser-playwright/context"],
     "paths": {
       "neba": ["../src/index.ts"],
+      "neba/hooks": ["../src/hooks/index.ts"],
       "neba/locales": ["../src/locales/index.ts"]
     }
   },

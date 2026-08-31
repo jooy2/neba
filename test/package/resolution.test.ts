@@ -43,6 +43,11 @@ const localeFiles = Object.keys(import.meta.glob('../../src/locales/*.ts', { eag
   .map((path) => path.split('/').at(-1)!.replace(/\.ts$/, ''))
   .filter((name) => name !== 'index');
 
+/** Every hook module, by the hook it is named for. */
+const hookFiles = Object.keys(import.meta.glob('../../src/hooks/*.ts', { eager: true }))
+  .map((path) => path.split('/').at(-1)!.replace(/\.ts$/, ''))
+  .filter((name) => name !== 'index');
+
 /** Every component barrel, by its folder name — the name a subpath import uses. */
 const barrels = Object.keys(
   import.meta.glob('../../src/components/*/index.ts', { eager: true })
@@ -275,6 +280,30 @@ describe('the published package', () => {
       expect(missing).toEqual([]);
     });
 
+    it('offers the hooks as a barrel of their own, ahead of the component wildcard', () => {
+      // `neba/hooks` would otherwise resolve to `dist/components/hooks/index.js`
+      // — the same hazard `./locales/*` sits in front of `./*` to avoid.
+      expect(pkg.exports['./hooks'].default).toBe('./dist/hooks/index.js');
+
+      const keys = Object.keys(pkg.exports);
+
+      expect(keys.indexOf('./hooks')).toBeLessThan(keys.indexOf('./*'));
+    });
+
+    it('re-exports every hook module from the hooks barrel', () => {
+      const barrel = sources['../../src/hooks/index.ts'];
+      const missing = hookFiles.filter((name) => !barrel.includes(`from './${name}.js'`));
+
+      expect(missing).toEqual([]);
+    });
+
+    it('re-exports the hooks from the entry point too', () => {
+      // Unlike the locales, which are deliberately not in the barrel: a hook is
+      // a few hundred bytes and a caller reaching for one is already importing
+      // the components it goes with.
+      expect(entry).toContain("'./hooks/index.js'");
+    });
+
     it('claims a side effect only for stylesheets', () => {
       // This one line is what lets a bundler drop the eighty-seven components a
       // page did not import. Widen it and every consumer's bundle is the whole
@@ -335,6 +364,7 @@ describe('the published package', () => {
         .filter(
           ([path]) =>
             /src\/(index|types)\.ts$/.test(path) ||
+            /src\/hooks\/index\.ts$/.test(path) ||
             /src\/locales\//.test(path) ||
             /src\/components\/[^/]+\/index\.ts$/.test(path)
         )

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { noMatchOnServer, queryMatches, subscribeToQuery } from './media.js';
+import { useMediaQuery, widthBelow } from './media.js';
 import type { NebaBreakpoint, NebaSide } from '../types.js';
 
 /**
@@ -123,14 +123,6 @@ export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
  * `xs` has no query because its floor is zero: there is no width below it, so
  * a sidebar that collapses there never collapses.
  */
-const collapseQueries: Record<NebaBreakpoint, string | null> = {
-  xs: null,
-  sm: '(width < 40rem)',
-  md: '(width < 48rem)',
-  lg: '(width < 64rem)',
-  xl: '(width < 80rem)'
-};
-
 /**
  * The same five widths as Tailwind variants, for the parts of this that are
  * decided in CSS rather than in JavaScript.
@@ -176,16 +168,7 @@ export const expandedOnlyClasses: Record<PageLayoutCollapse, string> = {
  * keeps that column off a narrow screen until this hook can say otherwise.
  */
 export function useCollapsed(breakpoint: PageLayoutCollapse): boolean {
-  const query = breakpoint === 'none' ? null : collapseQueries[breakpoint];
-
-  const subscribe = React.useCallback(
-    (onChange: () => void) => (query ? subscribeToQuery(query, onChange) : () => {}),
-    [query]
-  );
-
-  const snapshot = React.useCallback(() => (query ? queryMatches(query) : false), [query]);
-
-  return React.useSyncExternalStore(subscribe, snapshot, noMatchOnServer);
+  return useMediaQuery(breakpoint === 'none' ? null : widthBelow(breakpoint));
 }
 
 /**

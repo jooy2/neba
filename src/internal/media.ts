@@ -18,6 +18,7 @@
  */
 
 import * as React from 'react';
+import type { NebaBreakpoint } from '../types.js';
 
 const lists = new Map<string, MediaQueryList | null>();
 
@@ -56,6 +57,55 @@ export function queryMatches(query: string): boolean {
 /** A server has no window, so nothing matches. */
 export function noMatchOnServer(): boolean {
   return false;
+}
+
+/**
+ * The five widths, written once and read in both directions.
+ *
+ * They are Tailwind's own defaults, which is what makes a Neba layout and a
+ * `md:` utility change at the same moment — and they are here rather than in
+ * `page-layout.ts`, where they used to be, because a layout asks "is the window
+ * *narrower* than this" and a caller asks "is it *at least* this". Two
+ * questions, one table: a second copy would be a second chance for the two to
+ * disagree about what `md` is.
+ */
+export const breakpointWidths: Record<NebaBreakpoint, string> = {
+  xs: '0rem',
+  sm: '40rem',
+  md: '48rem',
+  lg: '64rem',
+  xl: '80rem'
+};
+
+/** Narrower than this breakpoint. `xs` has nothing below it, so it is `null`. */
+export function widthBelow(breakpoint: NebaBreakpoint): string | null {
+  return breakpoint === 'xs' ? null : `(width < ${breakpointWidths[breakpoint]})`;
+}
+
+/** At this breakpoint or wider — the direction a Tailwind `md:` variant means. */
+export function widthAtLeast(breakpoint: NebaBreakpoint): string {
+  return `(width >= ${breakpointWidths[breakpoint]})`;
+}
+
+/**
+ * One media query, as a boolean React can re-render on.
+ *
+ * `useSyncExternalStore` rather than state plus an effect, for the reason the
+ * whole module exists: a media query *is* an external store with a server
+ * answer, and reading it in an effect renders every subscriber once with the
+ * wrong answer and then again with the right one. `null` is a query that is
+ * always false and subscribes to nothing, which is what a breakpoint with
+ * nothing below it needs.
+ */
+export function useMediaQuery(query: string | null): boolean {
+  const subscribe = React.useCallback(
+    (onChange: () => void) => (query ? subscribeToQuery(query, onChange) : () => {}),
+    [query]
+  );
+
+  const snapshot = React.useCallback(() => (query ? queryMatches(query) : false), [query]);
+
+  return React.useSyncExternalStore(subscribe, snapshot, noMatchOnServer);
 }
 
 /** The query behind every "the reader asked for less motion" decision. */
