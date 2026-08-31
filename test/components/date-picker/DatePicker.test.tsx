@@ -222,6 +222,223 @@ describe('DatePicker', () => {
     });
   });
 
+  /**
+   * The header's month and year grids were only ever a way of reaching a day.
+   * `granularity` makes one of them the answer: the calendar opens on that grid
+   * and a click there commits rather than descending. Everything the picker
+   * says about the value follows it — the trigger's format, the footer's
+   * shortcut, the hidden input, and the unit the bounds are read at.
+   */
+  describe('granularity', () => {
+    it('opens on the month grid and commits the 1st of the month it was given', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultValue={JULY_27}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+
+      // No day view to be seen: the months are what is on screen.
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'November 2026' }))
+        .toBeInTheDocument();
+      expect(screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }).query()).toBeNull();
+
+      await screen.getByRole('gridcell', { name: 'November 2026' }).click();
+
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2026, 10, 1));
+      await expect.poll(() => screen.getByRole('grid').query()).toBeNull();
+    });
+
+    it('opens on the year grid and commits the 1st of January', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Vintage"
+          granularity="year"
+          defaultValue={JULY_27}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Vintage' }).click();
+      await screen.getByRole('gridcell', { name: '2020' }).click();
+
+      expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2020, 0, 1));
+    });
+
+    it('still climbs to the year grid, and comes back without committing', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultValue={JULY_27}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Choose a year' }).click();
+      await screen.getByRole('gridcell', { name: '2020' }).click();
+
+      // A year is one half of the answer, so it hands back to the month grid.
+      expect(onValueChange).not.toHaveBeenCalled();
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'March 2020' }))
+        .toBeInTheDocument();
+
+      await screen.getByRole('gridcell', { name: 'March 2020' }).click();
+
+      expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2020, 2, 1));
+    });
+
+    it('writes the trigger at the unit it asked for', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} label="Ships in" granularity="month" defaultValue={JULY_27} />
+      );
+
+      await expect.element(screen.getByText('July 2026')).toBeInTheDocument();
+
+      await screen.rerender(
+        <DatePicker locale={LOCALE} label="Ships in" granularity="year" defaultValue={JULY_27} />
+      );
+
+      await expect.element(screen.getByText('2026')).toBeInTheDocument();
+    });
+
+    it('lets a format override the unit default', async () => {
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultValue={JULY_27}
+          format={{ year: 'numeric', month: 'short' }}
+        />
+      );
+
+      await expect.element(screen.getByText('Jul 2026')).toBeInTheDocument();
+    });
+
+    it('names the footer shortcut after the unit', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} label="Ships in" granularity="month" />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+
+      await expect.element(screen.getByRole('button', { name: 'This month' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Today' }).query()).toBeNull();
+    });
+
+    it('commits the current month from the footer shortcut', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultMonth={JULY_27}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'This month' }).click();
+
+      const now = new Date();
+      expect(onValueChange.mock.calls[0][0]).toEqual(
+        new Date(now.getFullYear(), now.getMonth(), 1)
+      );
+    });
+
+    it('submits YYYY-MM and YYYY rather than a day nobody chose', async () => {
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          name="ships_in"
+          defaultValue={JULY_27}
+        />
+      );
+
+      const named = () =>
+        screen.container.querySelector<HTMLInputElement>('input[name="ships_in"]');
+      expect(named()?.value).toBe('2026-07');
+
+      await screen.rerender(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="year"
+          name="ships_in"
+          defaultValue={JULY_27}
+        />
+      );
+
+      expect(named()?.value).toBe('2026');
+    });
+
+    it('reads the bounds at the unit, so a month a minimum starts inside stays open', async () => {
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultValue={JULY_27}
+          minDate={new Date(2026, 6, 20)}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+
+      // July has days left after the 20th, so July is still an answer.
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'July 2026' }))
+        .not.toHaveAttribute('aria-disabled');
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'June 2026' }))
+        .toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('hands shouldDisableDate the 1st of each month, and only at that unit', async () => {
+      const seen: Date[] = [];
+      const screen = await render(
+        <DatePicker
+          locale={LOCALE}
+          label="Ships in"
+          granularity="month"
+          defaultValue={JULY_27}
+          shouldDisableDate={(date) => {
+            seen.push(date);
+            return date.getMonth() === 10;
+          }}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Ships in' }).click();
+
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'November 2026' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'July 2026' }))
+        .not.toHaveAttribute('aria-disabled');
+      expect(seen.every((date) => date.getDate() === 1)).toBe(true);
+    });
+  });
+
   describe('bounds', () => {
     it('marks days before minDate unavailable', async () => {
       const screen = await render(

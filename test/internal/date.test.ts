@@ -25,12 +25,17 @@ import {
   isDayOutside,
   isSameDay,
   isSameMonth,
+  isUnitOutside,
   isValidDate,
   makeDate,
   minutesOfDay,
   startOfDay,
   startOfMonth,
+  startOfUnit,
+  endOfUnit,
   toISODate,
+  toISOMonth,
+  toISOYear,
   yearPageStart
 } from '../../src/internal/date.js';
 
@@ -164,6 +169,71 @@ describe('bounds', () => {
   it('leaves the two ends outside the run between them', () => {
     expect(isDayInRange(makeDate(2026, 5, 10), min, max)).toBe(false);
     expect(isDayInRange(makeDate(2026, 5, 15), min, max)).toBe(true);
+  });
+});
+
+/**
+ * The same comparisons one unit up. A picker whose granularity is `month` reports
+ * March for the March cell, so a bound has to be checked against the span that
+ * cell stands for rather than against one instant inside it — otherwise a
+ * minimum of 15 March takes March away and the value it names becomes
+ * unreachable.
+ */
+describe('units', () => {
+  // The same two bounds the day-granular block uses, both carrying a time of
+  // day: what changes below is only the unit they are read at.
+  const min = new Date(2026, 5, 10, 12, 0);
+  const max = new Date(2026, 5, 20, 12, 0);
+
+  it('takes the first and last instant of the unit', () => {
+    const date = new Date(2026, 1, 15, 13, 45);
+
+    expect(toISODate(startOfUnit(date, 'day'))).toBe('2026-02-15');
+    expect(toISODate(startOfUnit(date, 'month'))).toBe('2026-02-01');
+    expect(toISODate(startOfUnit(date, 'year'))).toBe('2026-01-01');
+
+    expect(toISODate(endOfUnit(date, 'day'))).toBe('2026-02-15');
+    expect(toISODate(endOfUnit(date, 'year'))).toBe('2026-12-31');
+  });
+
+  it('ends a month on its own last day, February included', () => {
+    expect(toISODate(endOfUnit(makeDate(2026, 1, 5), 'month'))).toBe('2026-02-28');
+    expect(toISODate(endOfUnit(makeDate(2024, 1, 5), 'month'))).toBe('2024-02-29');
+  });
+
+  it('drops the clock the way startOfDay does', () => {
+    expect(startOfUnit(new Date(2026, 1, 15, 13, 45), 'day').getHours()).toBe(0);
+    expect(endOfUnit(new Date(2026, 1, 15, 13, 45), 'month').getHours()).toBe(0);
+  });
+
+  it('is isDayOutside exactly, at day granularity', () => {
+    for (const day of [9, 10, 15, 20, 21]) {
+      const date = makeDate(2026, 5, day);
+      expect(isUnitOutside(date, 'day', min, max)).toBe(isDayOutside(date, min, max));
+    }
+  });
+
+  it('keeps a unit the bound falls inside', () => {
+    // June is where both bounds are, so June is reachable at either coarser
+    // unit — it just starts late and ends early.
+    expect(isUnitOutside(makeDate(2026, 5, 1), 'month', min, max)).toBe(false);
+    expect(isUnitOutside(makeDate(2026, 5, 30), 'month', min, max)).toBe(false);
+    expect(isUnitOutside(makeDate(2026, 0, 1), 'year', min, max)).toBe(false);
+  });
+
+  it('drops a unit with no allowed day left in it', () => {
+    expect(isUnitOutside(makeDate(2026, 4, 31), 'month', min, max)).toBe(true);
+    expect(isUnitOutside(makeDate(2026, 6, 1), 'month', min, max)).toBe(true);
+    expect(isUnitOutside(makeDate(2025, 11, 31), 'year', min, max)).toBe(true);
+    expect(isUnitOutside(makeDate(2027, 0, 1), 'year', min, max)).toBe(true);
+  });
+
+  it('writes the unit rather than inventing the parts below it', () => {
+    const date = new Date(2026, 6, 27, 13, 45);
+
+    expect(toISOMonth(date)).toBe('2026-07');
+    expect(toISOYear(date)).toBe('2026');
+    expect(toISOMonth(makeDate(2026, 0, 5))).toBe('2026-01');
   });
 });
 

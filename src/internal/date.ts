@@ -20,7 +20,7 @@
  */
 
 import { dateFormatter } from './format.js';
-import type { NebaWeekday } from '../types.js';
+import type { NebaDateGranularity, NebaWeekday } from '../types.js';
 
 /** Which unit the calendar is currently letting you pick. */
 export type CalendarView = 'day' | 'month' | 'year';
@@ -63,6 +63,39 @@ export function startOfDay(date: Date): Date {
 /** The first day of the month this date is in, at midnight. */
 export function startOfMonth(date: Date): Date {
   return makeDate(date.getFullYear(), date.getMonth(), 1);
+}
+
+/** The first day of the year this date is in, at midnight. */
+export function startOfYear(date: Date): Date {
+  return makeDate(date.getFullYear(), 0, 1);
+}
+
+/**
+ * The first instant of the unit this date falls in — the day, the month, the
+ * year — which is exactly what a picker of that granularity reports.
+ *
+ * One function rather than a branch at each call site because there are four:
+ * the cell that was clicked, the footer's shortcut, the bound checks below, and
+ * the caller's own `shouldDisableDate`. All four have to agree on what "the
+ * value stands for a whole month" means, or a month is blocked on the strength
+ * of a day the picker would never hand back.
+ */
+export function startOfUnit(date: Date, granularity: NebaDateGranularity): Date {
+  return granularity === 'year'
+    ? startOfYear(date)
+    : granularity === 'month'
+      ? startOfMonth(date)
+      : startOfDay(date);
+}
+
+/** The last day of that same unit. */
+export function endOfUnit(date: Date, granularity: NebaDateGranularity): Date {
+  const year = date.getFullYear();
+  return granularity === 'year'
+    ? makeDate(year, 11, 31)
+    : granularity === 'month'
+      ? makeDate(year, date.getMonth(), daysInMonth(year, date.getMonth()))
+      : startOfDay(date);
 }
 
 /** How many days a month has, leap years included. */
@@ -169,6 +202,30 @@ export function isDayOutside(date: Date, min?: Date | null, max?: Date | null): 
     return true;
   }
   return isValidDate(max) && compareDay(date, max) > 0;
+}
+
+/**
+ * Is the *whole unit* this date falls in outside the allowed span?
+ *
+ * The generalisation of `isDayOutside`, and the reason it is a separate
+ * function rather than a wider one: a bound has to be checked against the span
+ * a cell stands for, not against one instant inside it. The month grid has
+ * always said so — a `minDate` of 15 March leaves March pickable, it just
+ * starts late — and a picker whose granularity is `month` reports March for
+ * that cell, so the same comparison has to decide both.
+ *
+ * At `day` granularity this is `isDayOutside` exactly.
+ */
+export function isUnitOutside(
+  date: Date,
+  granularity: NebaDateGranularity,
+  min?: Date | null,
+  max?: Date | null
+): boolean {
+  if (isValidDate(min) && compareDay(endOfUnit(date, granularity), min) < 0) {
+    return true;
+  }
+  return isValidDate(max) && compareDay(startOfUnit(date, granularity), max) > 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -349,6 +406,22 @@ export function withPlaceholder(samples: string[], placeholder: unknown): string
 export function toISODate(date: Date): string {
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${String(date.getFullYear()).padStart(4, '0')}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/**
+ * The same date at a coarser granularity: `2026-03` and `2026`.
+ *
+ * `YYYY-MM` is what a native `<input type="month">` submits, which is the
+ * standard this file already follows. A picker asked for a month has to say
+ * `2026-03` rather than `2026-03-01`: the second invents a day, and a server
+ * parsing it as one would be parsing a day nobody chose.
+ */
+export function toISOMonth(date: Date): string {
+  return `${String(date.getFullYear()).padStart(4, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+export function toISOYear(date: Date): string {
+  return String(date.getFullYear()).padStart(4, '0');
 }
 
 export function toISOTime(date: Date, withSeconds = false): string {

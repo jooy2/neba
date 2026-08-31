@@ -400,8 +400,8 @@ function pickerProps(options: PickerOptions): PropRow[] {
       name: 'labels',
       type: 'Partial<PickerLabels>',
       description: {
-        ko: '스크린 리더가 듣는 문자열들. 열여덟 개가 한 벌이라 프롭 하나로 받습니다 — 날짜 이름은 여기 없고 Intl이 만듭니다',
-        en: 'The strings a screen reader hears. One object rather than eighteen props, because they are a set — the date names are not among them, those come from Intl'
+        ko: '스크린 리더가 듣는 문자열들. 스무 개가 한 벌이라 프롭 하나로 받습니다 — 날짜 이름은 여기 없고 Intl이 만듭니다',
+        en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set — the date names are not among them, those come from Intl'
       }
     },
     {
@@ -444,8 +444,8 @@ function calendarProps(minMax: Text): PropRow[] {
       name: 'shouldDisableDate',
       type: '(date: Date) => boolean',
       description: {
-        ko: '범위 안이지만 고를 수 없는 날 — 주말, 공휴일, 이미 예약된 방. 셀은 목록에 남은 채 비활성이 됩니다',
-        en: 'Blocks individual days inside the range — weekends, holidays, a room already booked. The cell stays in the grid, unavailable'
+        ko: '범위 안이지만 고를 수 없는 칸 — 주말, 공휴일, 이미 예약된 방. 셀은 그리드에 남은 채 비활성이 되고, 인자로는 그 칸이 만들 값이 들어옵니다',
+        en: 'Blocks individual cells inside the range — weekends, holidays, a room already booked. The cell stays in the grid, unavailable, and the callback is handed the value that cell would produce'
       }
     },
     {
@@ -4705,17 +4705,26 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(value: Date | null) => void',
       description: { ko: '선택이 바뀔 때', en: 'Called when the chosen day changes' }
     },
+    {
+      name: 'granularity',
+      type: "'day' | 'month' | 'year'",
+      default: "'day'",
+      description: {
+        ko: '무엇을 묻는지 — 하루, 한 달, 한 해. month와 year는 그 그리드에서 열려 거기서 끝나고, 값은 고른 단위의 첫날(3월 1일, 1월 1일)이 됩니다. format 기본값과 푸터 버튼, name이 제출하는 문자열, 아래 세 프롭이 읽는 단위가 모두 여기를 따릅니다',
+        en: 'Which unit the picker asks for: a day, a whole month, a whole year. At month and year the calendar opens on that grid and stops there, and the value is the first day of what was chosen. The default format, the footer button, what name submits and the unit the three props below are read at all follow it'
+      }
+    },
     ...calendarProps({
-      ko: '고를 수 있는 가장 이른 날. 날짜 단위로만 비교하므로 시각은 무시됩니다',
-      en: 'The earliest day that may be chosen. Day-granular — the time of day is ignored'
+      ko: '고를 수 있는 가장 이른 날. granularity 단위로 비교하므로 3월 15일이 최솟값이면 day에서는 14일이 빠지고 month에서는 3월이 남습니다',
+      en: 'The earliest date that may be chosen, compared at granularity. A minimum of 15 March drops the 14th at day and keeps March at month'
     }),
     {
       name: 'showTodayButton',
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '푸터에 오늘로 가는 단축 버튼',
-        en: 'Offers the shortcut to today in the footer'
+        ko: '푸터에 지금 단위로 가는 단축 버튼 — granularity에 따라 오늘·이번 달·올해',
+        en: 'Offers the shortcut to the current unit in the footer — today, this month or this year'
       }
     },
     ...pickerProps({
@@ -4725,8 +4734,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Closes the popup as soon as a day is chosen. True by default, because only one thing was asked'
       },
       submitted: {
-        ko: '폼 제출 시의 필드 이름. 값은 YYYY-MM-DD로, UTC가 아니라 로컬 기준입니다',
-        en: 'Identifies the field when a form is submitted, as YYYY-MM-DD — local, not UTC'
+        ko: '폼 제출 시의 필드 이름. 값은 granularity를 따라 YYYY-MM-DD · YYYY-MM · YYYY로, UTC가 아니라 로컬 기준입니다',
+        en: 'Identifies the field when a form is submitted, written at granularity — YYYY-MM-DD, YYYY-MM or YYYY, local rather than UTC'
       }
     })
   ],

@@ -8,18 +8,45 @@ import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal
 import {
   displaySamples,
   formatDate,
-  isDayOutside,
+  isUnitOutside,
   isValidDate,
   localeWeekStart,
   mergeDateAndTime,
-  startOfDay,
   startOfMonth,
+  startOfUnit,
   toISODate,
+  toISOMonth,
+  toISOYear,
   today,
   withPlaceholder
 } from '../../internal/date.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaWeekday } from '../../types.js';
+import type { NebaDateGranularity, NebaWeekday } from '../../types.js';
+
+/**
+ * How the trigger writes a value the caller has not given a `format` for.
+ *
+ * Not one default with the coarser cases left to the caller: `dateStyle:
+ * 'medium'` on a month picker prints `Mar 1, 2026`, and a control that reports
+ * a whole month by naming a day inside it is lying in the one place a reader
+ * actually looks. The day row is the historical default, unchanged.
+ */
+const defaultFormats: Record<NebaDateGranularity, Intl.DateTimeFormatOptions> = {
+  day: { dateStyle: 'medium' },
+  month: { year: 'numeric', month: 'long' },
+  year: { year: 'numeric' }
+};
+
+/**
+ * And how the hidden input spells it — the shapes `<input type="date">` and
+ * `<input type="month">` submit. A year has no native input to copy, so it is
+ * the bare `YYYY` those two already start with.
+ */
+const isoWriters: Record<NebaDateGranularity, (date: Date) => string> = {
+  day: toISODate,
+  month: toISOMonth,
+  year: toISOYear
+};
 
 /**
  * What the four pickers agree on, so a caller who has learned one has learned
@@ -36,15 +63,34 @@ export interface DatePickerProps extends PickerShellProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /**
+   * Which unit the picker asks for: a day, a whole month, or a whole year.
+   *
+   * At `month` and `year` the calendar opens on that grid and stops there, and
+   * the value is the first day of what was chosen — 1 March, 1 January. The
+   * grid above is still reachable, so a year picker is one control and a month
+   * picker is still two clicks from any month of any year.
+   *
+   * Everything else follows it: the trigger's default `format`, what the
+   * footer's shortcut says, how `name` submits, and the unit `minDate`,
+   * `maxDate` and `shouldDisableDate` are read at.
+   * @default 'day'
+   */
+  granularity?: NebaDateGranularity;
   /** Which month the calendar opens on when there is no value. @default this one */
   defaultMonth?: Date;
-  /** The earliest day that may be chosen. Day-granular — the time is ignored. */
+  /**
+   * The earliest date that may be chosen, compared at `granularity`. A minimum
+   * of 15 March leaves the 14th out at `day` and leaves March in at `month`:
+   * the cell stands for the whole month, and part of that month is allowed.
+   */
   minDate?: Date | null;
-  /** The latest day that may be chosen. */
+  /** The latest date that may be chosen, read the same way. */
   maxDate?: Date | null;
   /**
-   * Blocks individual days that are inside the range but still not available —
-   * weekends, holidays, a room that is already booked.
+   * Blocks individual cells that are inside the range but still not available —
+   * weekends, holidays, a room that is already booked. Called with the value
+   * that cell would produce, so at `month` it is handed the 1st.
    */
   shouldDisableDate?: (date: Date) => boolean;
   /**
@@ -57,20 +103,28 @@ export interface DatePickerProps extends PickerShellProps {
   /**
    * How the trigger writes the chosen date. Passed straight to `Intl`, so
    * `{ dateStyle: 'full' }` and `{ year: '2-digit', month: 'narrow' }` both work.
-   * @default { dateStyle: 'medium' }
+   * Defaults to what `granularity` asked for — a medium date, a month and a
+   * year, or a bare year.
    */
   format?: Intl.DateTimeFormatOptions;
   /** Shown in the trigger while nothing is chosen. */
   placeholder?: React.ReactNode;
   /** Offers the × that empties the control. @default false */
   clearable?: boolean;
-  /** Offers the shortcut to today in the footer. @default true */
+  /**
+   * Offers the shortcut to the current unit in the footer — today, this month
+   * or this year, whichever `granularity` is asking for. @default true
+   */
   showTodayButton?: boolean;
   /** Closes the popup as soon as a day is chosen. @default true */
   closeOnSelect?: boolean;
   /** The strings a screen reader hears. Every one has an English default. */
   labels?: Partial<PickerLabels>;
-  /** Identifies the field when a form is submitted, as `YYYY-MM-DD`. */
+  /**
+   * Identifies the field when a form is submitted. The value is written at
+   * `granularity` — `YYYY-MM-DD`, `YYYY-MM` or `YYYY` — so a month is never
+   * submitted as a day nobody chose.
+   */
   name?: string;
 }
 
@@ -87,6 +141,11 @@ export interface DatePickerProps extends PickerShellProps {
  * its own — twelve months, then twelve years at a time. Any month of the year on
  * screen is two clicks; any year at all is three.
  *
+ * `granularity` turns that header into the answer. A month picker opens on the
+ * grid of twelve months and stops there; a year picker opens on the years. The
+ * value stays a `Date` — the 1st of what was chosen — because a second value
+ * type would mean a second set of props to compare it with.
+ *
  * There is no typing into the trigger. Parsing a date out of free text is
  * locale-dependent in a way that cannot be done honestly without a date library,
  * and a field that understands `27/7/26` in one browser and not in the next is
@@ -100,13 +159,14 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
     open: openProp,
     defaultOpen,
     onOpenChange,
+    granularity = 'day',
     defaultMonth,
     minDate,
     maxDate,
     shouldDisableDate,
     locale,
     weekStartsOn,
-    format = { dateStyle: 'medium' },
+    format,
     placeholder,
     clearable = false,
     showTodayButton = true,
@@ -124,6 +184,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
 ) {
   const labels = usePickerLabels(labelOverrides);
   const firstDay = weekStartsOn ?? localeWeekStart(locale);
+  const displayFormat = format ?? defaultFormats[granularity];
 
   const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
     defaultValue ?? null
@@ -171,10 +232,14 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
   };
 
   const select = (date: Date) => {
+    // The unit is the answer, so the day inside it is not the caller's to read:
+    // a month picker reports the 1st whichever cell was clicked, and the footer
+    // shortcut lands on the same value the grid would have.
+    const unit = startOfUnit(date, granularity);
     // The day changes; the time of day, if the value had one, does not. A
     // `DatePicker` bound to a field that also carries a time should not silently
     // reset it to midnight every time the day is corrected.
-    const next = isValidDate(value) ? mergeDateAndTime(date, value) : startOfDay(date);
+    const next = isValidDate(value) ? mergeDateAndTime(unit, value) : unit;
     commit(next);
     setMonth(startOfMonth(next));
     if (closeOnSelect) {
@@ -183,14 +248,25 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
   };
 
   const now = today();
-  const todayBlocked = isDayOutside(now, minDate, maxDate) || (shouldDisableDate?.(now) ?? false);
+  // Read at the same unit the grid reads it at, and against the same value the
+  // shortcut would commit — otherwise a "This month" button greys out because
+  // the 1st is a Saturday, or stays lit for a month that has no day left in it.
+  const shortcut = startOfUnit(now, granularity);
+  const shortcutBlocked =
+    isUnitOutside(now, granularity, minDate, maxDate) || (shouldDisableDate?.(shortcut) ?? false);
+  const shortcutLabel =
+    granularity === 'year'
+      ? labels.thisYear
+      : granularity === 'month'
+        ? labels.thisMonth
+        : labels.today;
   const hasFooter = showTodayButton || clearable;
 
   // Holds the trigger open at the width of the longest date it could show, so
   // choosing the 1st after the 28th does not shrink the field.
   const samples = React.useMemo(
-    () => withPlaceholder(displaySamples(locale, format), placeholder),
-    [locale, format, placeholder]
+    () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
+    [locale, displayFormat, placeholder]
   );
 
   return (
@@ -202,7 +278,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
       disabled={disabled}
       triggerRef={ref}
       startIcon={startIcon ?? <CalendarIcon />}
-      display={isValidDate(value) ? formatDate(value, locale, format) : (placeholder ?? '')}
+      display={isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')}
       samples={samples}
       empty={!isValidDate(value)}
       clearable={clearable}
@@ -211,7 +287,9 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
       onOpenChange={setOpen}
       labels={labels}
       hiddenValues={
-        name ? [{ name, value: isValidDate(value) ? toISODate(value) : '' }] : undefined
+        name
+          ? [{ name, value: isValidDate(value) ? isoWriters[granularity](value) : '' }]
+          : undefined
       }
     >
       <div className={cx('flex flex-col', hasFooter && 'gap-1.5')}>
@@ -224,6 +302,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
           onMonthChange={setMonth}
           selected={[value]}
           onSelect={select}
+          granularity={granularity}
           minDate={minDate}
           maxDate={maxDate}
           shouldDisableDate={shouldDisableDate}
@@ -253,10 +332,10 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
                 size={size}
                 color={color}
                 density="compact"
-                disabled={todayBlocked}
+                disabled={shortcutBlocked}
                 onClick={() => select(now)}
               >
-                {labels.today}
+                {shortcutLabel}
               </Button>
             ) : null}
           </PickerFooter>

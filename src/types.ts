@@ -84,6 +84,21 @@ export type NebaCorner = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
 export type NebaWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
+ * Which unit a date picker is actually asking for.
+ *
+ * A calendar already draws three grids — days, months, years — and until now
+ * two of them were only a way of reaching the third. This says which one the
+ * reader is allowed to stop on, and therefore what the value stands for: one
+ * day, one whole month, one whole year.
+ *
+ * A coarser granularity is not a different value type. The value stays a `Date`
+ * and is normalised to the first instant of the unit chosen — the 1st of the
+ * month, the 1st of January — because a month picker that reported the 15th
+ * would be reporting a day nobody chose.
+ */
+export type NebaDateGranularity = 'day' | 'month' | 'year';
+
+/**
  * The viewport widths the layout components branch on, smallest first.
  *
  * Deliberately the same five names as `NebaSize`, and deliberately *not* the

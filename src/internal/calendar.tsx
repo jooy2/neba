@@ -19,11 +19,11 @@ import {
   addYears,
   calendarWeeks,
   compareDay,
-  daysInMonth,
   isDayOutside,
   isMonthBeforeYear,
   isSameDay,
   isSameMonth,
+  isUnitOutside,
   isValidDate,
   makeDate,
   meridiemLabels,
@@ -39,7 +39,13 @@ import {
   type TimeUnit
 } from './date.js';
 import { dateFormatter } from './format.js';
-import type { NebaColor, NebaDensity, NebaSize, NebaWeekday } from '../types.js';
+import type {
+  NebaColor,
+  NebaDateGranularity,
+  NebaDensity,
+  NebaSize,
+  NebaWeekday
+} from '../types.js';
 
 /**
  * The calendar grid and the clock columns, written once for the four pickers.
@@ -65,9 +71,9 @@ import type { NebaColor, NebaDensity, NebaSize, NebaWeekday } from '../types.js'
 /**
  * Every string a picker says that is not a date.
  *
- * One object rather than eighteen props. These are a set: a caller who has to
+ * One object rather than twenty props. These are a set: a caller who has to
  * translate "Previous month" has to translate "Next month" in the same breath,
- * and a component with eighteen `*Label` props is a component whose signature is
+ * and a component with twenty `*Label` props is a component whose signature is
  * mostly apology. The dates themselves are never in here — those come from
  * `Intl`, which already knows what July is called in more languages than this
  * file ever will.
@@ -85,8 +91,14 @@ export interface PickerLabels {
   /** The two header buttons that open the month grid and the year grid. */
   chooseMonth: string;
   chooseYear: string;
-  /** The footer's actions. */
+  /**
+   * The footer's actions. Three shortcuts rather than one because the button
+   * jumps to the current *unit*, and a month picker whose footer says "Today"
+   * is offering a day it has no way to accept.
+   */
   today: string;
+  thisMonth: string;
+  thisYear: string;
   now: string;
   clear: string;
   done: string;
@@ -110,6 +122,8 @@ export const defaultPickerLabels: PickerLabels = {
   chooseMonth: 'Choose a month',
   chooseYear: 'Choose a year',
   today: 'Today',
+  thisMonth: 'This month',
+  thisYear: 'This year',
   now: 'Now',
   clear: 'Clear',
   done: 'Done',
@@ -489,6 +503,13 @@ function Header({
  * The calendar
  * ------------------------------------------------------------------------- */
 
+/**
+ * The three views, coarse to fine. A calendar opens at its granularity and may
+ * climb above it — a month picker still reaches 2019 through the year grid —
+ * but never descends below it, which is the whole of what `granularity` means.
+ */
+const viewRanks: Record<CalendarView, number> = { day: 0, month: 1, year: 2 };
+
 export interface CalendarProps {
   size: NebaSize;
   color: NebaColor;
@@ -503,6 +524,12 @@ export interface CalendarProps {
   rangeStart?: Date | null;
   rangeEnd?: Date | null;
   onSelect: (date: Date) => void;
+  /**
+   * Which grid the reader is allowed to stop on, and therefore what `onSelect`
+   * hands back: a day, the 1st of a month, or the 1st of January.
+   * @default 'day'
+   */
+  granularity?: NebaDateGranularity;
   /** The day under the pointer, for a range that is only half chosen. */
   onPreviewChange?: (date: Date | null) => void;
   minDate?: Date | null;
@@ -537,6 +564,12 @@ export interface CalendarProps {
  * two stretch four rows and three rows across that same height — so switching
  * view never resizes the popup under the pointer that opened it.
  *
+ * `granularity` says which of the three the reader may stop on. At `day` the
+ * other two are only a way of reaching it; at `month` or `year` the grid that
+ * names that unit is where the calendar opens and where a click becomes an
+ * answer. Climbing is unaffected — a month picker still reaches 2019 through
+ * the year grid — so the coarser settings take a view away and add none.
+ *
  * Arrow keys move by one cell, `PageUp`/`PageDown` by a month (a year with
  * Shift), `Home`/`End` to the ends of the week, and running off an edge steps
  * the calendar rather than stopping. One roving tab stop, so `Tab` leaves the
@@ -554,6 +587,7 @@ export function Calendar({
   rangeStart = null,
   rangeEnd = null,
   onSelect,
+  granularity = 'day',
   onPreviewChange,
   minDate,
   maxDate,
@@ -565,7 +599,11 @@ export function Calendar({
   labels,
   className
 }: CalendarProps) {
-  const [view, setView] = React.useState<CalendarView>('day');
+  const [requestedView, setView] = React.useState<CalendarView>(granularity);
+  // Clamped rather than kept in step by an effect: a view finer than the
+  // granularity is not a view this calendar has, so a `granularity` that
+  // changes under a reader takes effect on the next frame with no cascade.
+  const view = viewRanks[requestedView] < viewRanks[granularity] ? granularity : requestedView;
   const chosen = React.useMemo(() => selected.filter(isValidDate), [selected]);
 
   // The one cell that carries the tab stop. It starts on the chosen day, or on
@@ -694,10 +732,18 @@ export function Calendar({
             chosen={chosen}
             minDate={minDate}
             maxDate={maxDate}
+            shouldDisable={granularity === 'month' ? shouldDisableDate : undefined}
             onMoveCursor={moveCursor}
             onPick={(index) => {
-              onMonthChange(makeDate(month.getFullYear(), index, 1));
-              changeView('day');
+              const picked = makeDate(month.getFullYear(), index, 1);
+              onMonthChange(picked);
+              // The floor is where a pick becomes an answer. Above it, the pick
+              // is only a way of reaching the grid below.
+              if (granularity === 'month') {
+                onSelect(picked);
+              } else {
+                changeView('day');
+              }
             }}
           />
         ) : (
@@ -707,8 +753,15 @@ export function Calendar({
             chosen={chosen}
             minDate={minDate}
             maxDate={maxDate}
+            shouldDisable={granularity === 'year' ? shouldDisableDate : undefined}
             onMoveCursor={moveCursor}
             onPick={(year) => {
+              if (granularity === 'year') {
+                const picked = makeDate(year, 0, 1);
+                onMonthChange(picked);
+                onSelect(picked);
+                return;
+              }
               onMonthChange(makeDate(year, month.getMonth(), 1));
               changeView('month');
             }}
@@ -877,6 +930,12 @@ interface MonthGridProps {
   chosen: Date[];
   minDate?: Date | null;
   maxDate?: Date | null;
+  /**
+   * The caller's own `shouldDisableDate`, but only when a month is what is
+   * being chosen. At day granularity a callback that blocks weekends would
+   * grey out every month whose 1st happens to fall on a Saturday.
+   */
+  shouldDisable?: (date: Date) => boolean;
   onMoveCursor: (month: Date) => void;
   onPick: (index: number) => void;
 }
@@ -895,6 +954,7 @@ function MonthGrid({
   chosen,
   minDate,
   maxDate,
+  shouldDisable,
   onMoveCursor,
   onPick
 }: MonthGridProps) {
@@ -932,7 +992,6 @@ function MonthGrid({
             // A month is out of bounds only when every day in it is: the month a
             // `minDate` falls in is still reachable, it just starts late.
             const first = makeDate(year, index, 1);
-            const last = makeDate(year, index, daysInMonth(year, index));
 
             return (
               <Cell
@@ -944,8 +1003,8 @@ function MonthGrid({
                 )}
                 current={now.getFullYear() === year && now.getMonth() === index}
                 disabled={
-                  (isValidDate(minDate) && compareDay(last, minDate) < 0) ||
-                  (isValidDate(maxDate) && compareDay(first, maxDate) > 0)
+                  isUnitOutside(first, 'month', minDate, maxDate) ||
+                  (shouldDisable?.(first) ?? false)
                 }
                 focused={index === month.getMonth()}
                 className={cx('h-(--n-cell) w-full', controlTextClasses[size])}
@@ -968,12 +1027,23 @@ interface YearGridProps {
   chosen: Date[];
   minDate?: Date | null;
   maxDate?: Date | null;
+  /** As above, and only when a year is what is being chosen. */
+  shouldDisable?: (date: Date) => boolean;
   onMoveCursor: (month: Date) => void;
   onPick: (year: number) => void;
 }
 
 /** Twelve years, four across, and the same trick with the cursor. */
-function YearGrid({ size, month, chosen, minDate, maxDate, onMoveCursor, onPick }: YearGridProps) {
+function YearGrid({
+  size,
+  month,
+  chosen,
+  minDate,
+  maxDate,
+  shouldDisable,
+  onMoveCursor,
+  onPick
+}: YearGridProps) {
   const pageStart = yearPageStart(month.getFullYear());
   const now = new Date().getFullYear();
 
@@ -1000,6 +1070,7 @@ function YearGrid({ size, month, chosen, minDate, maxDate, onMoveCursor, onPick 
         <div role="row" key={row} className="grid grid-cols-4 gap-1">
           {[0, 1, 2, 3].map((column) => {
             const year = pageStart + row * 4 + column;
+            const first = makeDate(year, 0, 1);
 
             return (
               <Cell
@@ -1009,8 +1080,8 @@ function YearGrid({ size, month, chosen, minDate, maxDate, onMoveCursor, onPick 
                 selected={chosen.some((entry) => entry.getFullYear() === year)}
                 current={year === now}
                 disabled={
-                  (isValidDate(minDate) && year < minDate.getFullYear()) ||
-                  (isValidDate(maxDate) && year > maxDate.getFullYear())
+                  isUnitOutside(first, 'year', minDate, maxDate) ||
+                  (shouldDisable?.(first) ?? false)
                 }
                 focused={year === month.getFullYear()}
                 className={cx('h-(--n-cell) w-full', controlTextClasses[size])}
