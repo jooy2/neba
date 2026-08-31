@@ -2,25 +2,40 @@
 
 ## 1.11.0 (2026--)
 
-Two things a component had already half-built and would not let you finish.
+The release that closes the gaps, rather than the one that adds a shelf of new components.
+
+It started as an audit against the libraries people arrive here from — MUI, Ant Design, Chakra, Mantine, Radix, PrimeReact — and the answer was not the component list. Neba already ships charts, animations, a page shell and a data table that most of them charge for or split into a second package. What it was missing was smaller and felt harder: no way to say "this application is compact" once, no hooks, no imperative confirm, no standalone calendar, and a `TextField` you could hand an `onKeyDown` but could not actually make act on a key.
+
+Nine of those are closed here. The one deliberately left open is a rich text editor, which is somebody else's package.
+
+### Where the bytes went
+
+| What you import               | 1.10.0   | 1.11.0   |
+| ----------------------------- | -------- | -------- |
+| `Divider`                     | 3.0 kB   | 3.2 kB   |
+| `Button`                      | 5.0 kB   | 5.1 kB   |
+| `Chip`                        | 3.0 kB   | 3.2 kB   |
+| `LineChart`                   | 11.3 kB  | 11.4 kB  |
+| `CodeBlock`                   | 4.9 kB   | 5.0 kB   |
+| a whole page shell            | 28.4 kB  | 28.5 kB  |
+| 12 components — a typical app | 67.3 kB  | 68.2 kB  |
+| 12 components, with Korean    | 69.9 kB  | 70.7 kB  |
+| 25 components — a large one   | 111.7 kB | 112.6 kB |
+| all exports                   | 240.7 kB | 248.1 kB |
+
+**Every component grew by about 0.2 kB, and it is one thing.** `NebaProvider` fills in the props a call site left out, which means every component that takes `size`, `density`, `variant` or `locale` now reads a context before its own destructuring — a hundred and thirty of them. `internal/defaults.ts` is 0.2 kB gzipped and it is a fixed cost even on a page that has no provider, which on a Chip is five per cent. It is stated here rather than left to be found, and `CLAUDE.md` now carries it as the sixth thing that holds the bundle numbers in place: whatever goes into that module goes into all of them.
+
+The rest of the growth is the four new components and the hooks, and it lands where it should — on `all exports` and nowhere else.
+
+`neba/styles.css` moved 20.8 → 21.0 kB gzipped.
+
+---
 
 A `DatePicker` has always drawn all three grids. The month name opened twelve months, the year opened twelve years, and both were only ever a way of reaching a day — so a product that wanted a billing period or a tax year got a control that showed it the twelve months and then insisted on a date inside one of them. `granularity` makes one of those grids the answer.
 
 And a field has always accepted an `onKeyDown`, which is not the same as being able to act on a key. On a `Combobox` the keys worth acting on are the list's and never arrive; on a `NumberField` the handler lands on the column holding the label rather than on the `<input>`. `shortcuts` is `{ 'Mod+Enter': send }` bound to the control itself, written in the vocabulary `Shortcut` already draws — which turned out to be a vocabulary the library only half spoke.
 
-| What you import               | 1.10.0   | 1.11.0   |
-| ----------------------------- | -------- | -------- |
-| `Button`                      | 5.0 kB   | 5.0 kB   |
-| `Chip`                        | 3.0 kB   | 3.0 kB   |
-| `LineChart`                   | 11.3 kB  | 11.3 kB  |
-| `CodeBlock`                   | 4.9 kB   | 4.9 kB   |
-| a whole page shell            | 28.4 kB  | 28.4 kB  |
-| 12 components — a typical app | 67.3 kB  | 67.9 kB  |
-| 12 components, with Korean    | 69.9 kB  | 70.4 kB  |
-| 25 components — a large one   | 111.7 kB | 112.3 kB |
-| all exports                   | 240.7 kB | 241.3 kB |
-
-The three field rows carry the 0.6 kB of `internal/keys.ts`, and they carry it whether or not a `shortcuts` map was passed: the alias table and the predicate are reached from the control's own key handler, so there is nothing for a bundler to drop. That is the honest price of the prop, and it is stated here rather than left to be found. `all exports` moved only 0.2 because `Shortcut` and `CommandPalette` gave up two private copies of the same logic to pay for it. There is no new dependency, and `neba/styles.css` does not move — there is no new CSS in this release.
+`internal/keys.ts` is 0.6 kB of the field rows above, and it is carried whether or not a `shortcuts` map was passed: the alias table and the predicate are reached from the control's own key handler, so there is nothing for a bundler to drop.
 
 ### Added
 
@@ -56,7 +71,35 @@ The three field rows carry the 0.6 kB of `internal/keys.ts`, and they carry it w
 
 - **`NebaShortcuts` in `src/types.ts`** — the type behind that prop, generic in the element so `event.currentTarget.value` is typed without a cast.
 
+- **`NebaProvider`** — one optional place to set what every component under it starts from, and the gap that costs the most on every project while showing up in no bundle number.
+
+  `defaults` fills in `size`, `density`, `variant` and `locale` where a call site left them out, and the call site still wins: caller, then provider, then the component's own literal. The list is closed. `color` is out because a component's colour default is often semantic — an Alert is `info`, a Popconfirm is `danger` — and one global override would repaint those into something that means something else; `elevation` is out because a shadow is opt-in per surface, and an application-wide one is the moulded-plastic look the design language is against.
+
+  The colour scheme writes `data-theme` **and** `color-scheme` on `<html>`; the second is what turns the browser's own scrollbars and form controls over, and a page that changes only its own colours keeps a white scrollbar down the side of a dark one. `useColorScheme()` keeps `system` as its own answer and `resolvedColorScheme` never is, because a three-way switch has to show `system` as a position rather than as whichever of the two it resolves to. `colorSchemeScript()` is exported for the first-paint flash React cannot prevent, and shares the provider's key and attribute rather than being a snippet in a page nobody updates.
+
+  `direction` sets `dir` and wraps Base UI's `DirectionProvider`, and is left alone when not given, so a document that already sets it server-side is not fought over.
+
+- **Seven hooks, from `neba/hooks` and the barrel** — `useDisclosure`, `useMediaQuery`, `useBreakpoint`, `usePrefersReducedMotion`, `useElementSize`, `useOnScreen`, `useShortcut`.
+
+  Every one is machinery the library already runs on, which is the whole selection rule: there is no general-purpose hook collection here and there is not going to be one. `useDisclosure` is the caller's half of the `open`/`onOpenChange` pair every overlay takes; `useMediaQuery` is the store PageLayout subscribes to, one live `MediaQueryList` per query for the page; `useElementSize` and `useOnScreen` are the two shared observers; `useShortcut` is what CommandPalette binds its own opener with.
+
+- **`Calendar`** — the pickers' grid, inline. It has been in `internal/` since the first picker shipped, which meant a page wanting a month on it had to open a DatePicker and never close it. `mode` is `single`, `multiple` or `range`; a second click on a held day takes it out, and a range click below the start begins a new span rather than inverting the old one. `renderDay` puts a dot or a count under a number. It is **not** a scheduler, and the docs say so: the cells are the control ladder's heights.
+
+- **`TreeSelect`** — the gap between `Select` and `TreeView`. `selectableBranches` is off by default because in most of these trees the branches are the taxonomy and the leaves are the answers, and `searchable` keeps every ancestor of a match and opens the branches it kept — a tree filtered to bare matches is a list, which is what the tree was chosen over.
+
+- **`Image`** — the three things a bare `<img>` leaves to whoever wrote it: `ratio` reserves the box, a Skeleton stands in while the file arrives, and a box carrying the `alt` is drawn if it does not. `alt` is required by the type, because a missing one and an empty one mean different things and only the second is ever correct.
+
+- **`ConfirmProvider` and `useConfirm`** — "are you sure?" as something you await. A promise rather than an `onConfirm`, because the code that asks is the code that acts. It never rejects; cancelling, `Escape` and the backdrop all resolve `false`. Questions queue rather than replacing each other: resolving an older one to make room reports an answer nobody gave, which at the call site reads as "they said no".
+
+- **`Popconfirm`** — the same question beside the control that raised it. The choice between the two is **reach**, not danger or size.
+
+- **`VisuallyHidden` and `Portal`** — two things the library has needed everywhere and kept to itself. `VisuallyHidden` is the 1px clipped box behind a Chip's × and a chart's screen-reader table; `Portal` adds the `neba-portal` class a scoped stylesheet finds a portalled subtree by, which is the reason to reach for it over `createPortal`.
+
+- **Five things on `DataTable`** — column pinning, `columnOrder` and drag-to-reorder, in-place cell editing, `groupBy` with per-column `aggregate`, and CSV export. Each carries its own sharp edge in the docs: a pinned column moves to its edge, an order that does not name a key leaves it alone, editing needs both a column that allows it and a handler above it, grouping turns virtual scrolling off, and an export is every row the search and sort left rather than the page the reader is on.
+
 ### Fixed
+
+- **A folded group in `DataTable` kept its rows but lost its own heading**, so there was no way to unfold it. Caught by its own test on the way in; the body now renders group by group rather than deriving headings from the rows it can see.
 
 - **`shortcut` on `CommandPalette` now binds every spelling `Shortcut` draws.** `Cmd+K`, `Command+K`, `Meta+K` and `Esc` all rendered a correct key cap and none of them fired; `Ctrl+K` was dead on Windows and Linux, because the matcher folded any `Ctrl` into the platform's `Mod` and then found no `Mod` in what it had been given. Only `Mod+…` and a bare key ever worked.
 
@@ -69,6 +112,12 @@ The three field rows carry the 0.6 kB of `internal/keys.ts`, and they carry it w
   Nothing changes at `day`, which is what every existing call is: `isUnitOutside` at day granularity is the `isDayOutside` it was before, character for character. The month grid was already making this comparison inline — it is the rule that keeps a month whose `minDate` falls inside it reachable — so the two coarser grids now call one function instead of restating it, and the footer's shortcut asks the same question the cells do.
 
   `shouldDisableDate` reaches a coarser grid only when that grid is the one being chosen from. At `day` a callback blocking weekends must not grey out every month whose 1st happens to be a Saturday.
+
+- **Every component reads its props through `useStyleDefaults` before its own destructuring.** That is what makes `NebaProvider`'s precedence come out as caller → provider → literal, and it is why every row of the table above moved.
+
+  The keys are passed in per component rather than worked out, and that is load-bearing: a key a component does not destructure stays in the props it spreads onto its root, so filling `density` into one that has none would put `density="compact"` on a `<div>` — and `size` on an `<input>` is a real attribute that would quietly resize the field.
+
+- **`internal/media.ts` owns the five breakpoint widths**, which used to live in `page-layout.ts`. A layout asks "narrower than this" and a caller asks "at least this"; two tables would be two chances to disagree about what `md` is.
 
 ## 1.10.0 (2026-08-30)
 
