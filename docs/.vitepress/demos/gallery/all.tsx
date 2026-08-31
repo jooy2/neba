@@ -30,6 +30,7 @@ import {
   BreadcrumbItem,
   Button,
   ButtonGroup,
+  Calendar,
   Card,
   Carousel,
   ChatBubble,
@@ -555,6 +556,15 @@ const GROUPS: Group[] = [
             />
           </div>
         )
+      },
+      {
+        name: 'Calendar',
+        summary: {
+          ko: '팝업 없이 페이지 안에 놓인 한 달',
+          en: 'A month, inline, with no popup around it'
+        },
+        path: '/components/inputs/calendar',
+        preview: <Calendar size="xs" />
       },
       {
         name: 'DatePicker',

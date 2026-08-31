@@ -24,6 +24,7 @@ import {
   BreadcrumbItem,
   Button,
   ButtonGroup,
+  Calendar,
   Card,
   Carousel,
   ChatBubble,
@@ -1426,8 +1427,19 @@ function ShowcaseBody() {
         {/* The four pickers, in the form they are actually used in: a booking
             row where every field is a different question about the same trip. */}
         <section className="flex flex-col gap-3">
-          <Caption>DatePicker · TimePicker · DateTimePicker · DateRangePicker</Caption>
+          <Caption>Calendar · DatePicker · TimePicker · DateTimePicker · DateRangePicker</Caption>
           <Card title={<h3>Schedule</h3>} subtitle="Every field is a Date.">
+            <div className="mb-4 flex justify-center">
+              {/* The same grid the pickers open, with the stay marked on it. */}
+              <Calendar
+                size="sm"
+                mode="range"
+                value={stay}
+                onValueChange={setStay}
+                bordered={false}
+              />
+            </div>
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <DateRangePicker
                 fullWidth

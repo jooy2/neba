@@ -4692,6 +4692,124 @@ export const propTables: Record<string, PropRow[]> = {
     slotsProp('label', 'control', 'description', 'error', 'popup', 'item')
   ],
 
+  Calendar: [
+    ...sharedProps({
+      variant: '—',
+      size: "'md'",
+      sizeDescription: {
+        ko: '칸의 높이와 타입 스케일. md에서 32px로 Button·TextField와 같은 사다리입니다',
+        en: 'The height of a cell and the type scale — 32px at md, the same ladder as a Button'
+      },
+      elevationDescription: {
+        ko: '그림자 깊이. 페이지 안에 앉은 달력은 떠 있지 않으므로 기본값은 0입니다',
+        en: 'Drop shadow depth. 0 by default — a calendar sitting in a page is not floating'
+      }
+    }).filter((row) => row.name !== 'variant' && row.name !== 'density'),
+    {
+      name: 'mode',
+      type: "'single' | 'multiple' | 'range'",
+      default: "'single'",
+      description: {
+        ko: '값이 무엇인지를 정합니다 — 하루, 날들의 배열, { start, end } 구간',
+        en: 'Decides what the value is — one day, an array of them, or a { start, end } span'
+      }
+    },
+    {
+      name: 'value',
+      type: 'Date | null | Date[] | CalendarRange',
+      description: {
+        ko: 'mode에 따라 달라지는 값. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The value, whose type follows mode. Use with onValueChange for a controlled calendar'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'Date | null | Date[] | CalendarRange',
+      description: { ko: '초기 값', en: 'The initial value, for an uncontrolled calendar' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value) => void',
+      description: { ko: '선택이 바뀔 때', en: 'Called when the selection changes' }
+    },
+    {
+      name: 'month',
+      type: 'Date',
+      description: {
+        ko: '화면의 달. onMonthChange와 함께 제어합니다',
+        en: 'The month on screen. Use with onMonthChange to control it'
+      }
+    },
+    {
+      name: 'defaultMonth',
+      type: 'Date',
+      description: {
+        ko: '처음 열리는 달. 기본값은 값이 있는 달, 없으면 이번 달',
+        en: 'Which month it opens on. Defaults to the month of the value, or this one'
+      }
+    },
+    {
+      name: 'onMonthChange',
+      type: '(month: Date) => void',
+      description: { ko: '화면의 달이 바뀔 때', en: 'Called when the month on screen changes' }
+    },
+    {
+      name: 'granularity',
+      type: "'day' | 'month' | 'year'",
+      default: "'day'",
+      description: {
+        ko: '클릭이 무엇을 고르는지 — 하루, 한 달, 한 해. DatePicker와 같습니다',
+        en: 'Which unit a click chooses: a day, a whole month, a whole year. The same as on DatePicker'
+      }
+    },
+    {
+      name: 'renderDay',
+      type: '(date: Date) => ReactNode',
+      description: {
+        ko: '날짜 칸이 숫자 아래에 그리는 것 — 점, 개수, 막대. 하루치 일정을 담을 자리가 아닙니다',
+        en: 'What a day cell draws under its number — a dot, a count, a bar. Not room for a day of entries'
+      }
+    },
+    {
+      name: 'bordered',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'picker 팝업이 그리는 시트를 그립니다. 끄면 맨 그리드',
+        en: "Draws the sheet the picker's popup draws. Off for the bare grid"
+      }
+    },
+    ...calendarProps({
+      ko: '고를 수 있는 가장 이른 날. granularity 단위로 비교합니다',
+      en: 'The earliest date that may be chosen, compared at granularity'
+    }).filter((row) => row.name !== 'defaultMonth'),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '월·요일 이름과 헤더의 연/월 순서를 정하는 BCP 47 태그',
+        en: "BCP 47 tag deciding the month and weekday names and the header's order"
+      }
+    },
+    {
+      name: 'showOutsideDays',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '옆 달에 속한 앞뒤 날들을 그립니다',
+        en: 'Draws the leading and trailing days of the neighbouring months'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<PickerLabels>',
+      description: {
+        ko: '스크린 리더가 듣는 문자열들. 모두 영어 기본값이 있습니다',
+        en: 'The strings a screen reader hears. Every one has an English default'
+      }
+    }
+  ],
+
   DatePicker: [
     ...sharedProps({
       variant: "'outline'",

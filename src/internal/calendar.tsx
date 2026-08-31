@@ -547,6 +547,14 @@ export interface CalendarProps {
    * @default true
    */
   showOutsideDays?: boolean;
+  /**
+   * What a day cell draws under its number — a dot, a count, a bar.
+   *
+   * A hook rather than a slot: the caller is the only one who knows what a day
+   * *has* on it, and the alternative is an `events` prop that would make this
+   * file responsible for a data shape it has no opinion about.
+   */
+  renderDay?: (date: Date) => React.ReactNode;
   /** Takes the focus on mount — the popup has just opened. */
   autoFocus?: boolean;
   showPreviousButton?: boolean;
@@ -588,6 +596,7 @@ export function Calendar({
   rangeEnd = null,
   onSelect,
   granularity = 'day',
+  renderDay,
   onPreviewChange,
   minDate,
   maxDate,
@@ -715,6 +724,7 @@ export function Calendar({
             rangeStart={rangeStart}
             rangeEnd={rangeEnd}
             focusedDate={focusedDate}
+            renderDay={renderDay}
             showOutsideDays={showOutsideDays}
             isDisabled={isDisabled}
             onSelect={(date) => {
@@ -793,6 +803,7 @@ interface DayGridProps {
   rangeStart: Date | null;
   rangeEnd: Date | null;
   focusedDate: Date;
+  renderDay?: (date: Date) => React.ReactNode;
   showOutsideDays: boolean;
   isDisabled: (date: Date) => boolean;
   onSelect: (date: Date) => void;
@@ -809,6 +820,7 @@ function DayGrid({
   rangeStart,
   rangeEnd,
   focusedDate,
+  renderDay,
   showOutsideDays,
   isDisabled,
   onSelect,
@@ -914,6 +926,7 @@ function DayGrid({
                 onKeyDown={(event) => onKeyDown(event, date)}
               >
                 {date.getDate()}
+                {renderDay ? renderDay(date) : null}
               </Cell>
             );
           })}
