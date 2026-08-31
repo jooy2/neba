@@ -44,7 +44,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 67.3
+      "budget": 67.9
     },
     {
       "id": "app-25",
@@ -76,7 +76,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 111.7
+      "budget": 112.3
     },
     {
       "id": "page-shell",
@@ -102,13 +102,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 69.9
+      "budget": 70.4
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 241.1
+      "budget": 241.3
     }
   ]
 }
