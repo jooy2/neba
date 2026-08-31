@@ -20,6 +20,10 @@ export const es: NebaLocale = {
     clear: 'Borrar',
     remove: 'Quitar'
   },
+  confirm: {
+    confirm: 'Confirmar',
+    cancel: 'Cancelar'
+  },
   link: { newTab: '(se abre en una pestaña nueva)' },
   spoiler: {
     reveal: 'Mostrar',

@@ -10351,6 +10351,106 @@ export const propTables: Record<string, PropRow[]> = {
     renderProp('render={<td colSpan={5} />}')
   ],
 
+  ConfirmProvider: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'useConfirm을 쓸 수 있는 범위',
+        en: 'Everything that may call useConfirm'
+      }
+    },
+    {
+      name: 'defaults',
+      type: "Pick<ConfirmOptions, 'color' | 'size' | 'width' | 'locale'>",
+      description: {
+        ko: '그 아래 모든 질문이 공유하는 기본값. 각 호출이 덮어씁니다',
+        en: 'Shared by every question raised under it. Each call overrides them'
+      }
+    }
+  ],
+
+  ConfirmOptions: [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '질문. dialog의 제목이자 스크린 리더가 읽는 이름입니다',
+        en: "The question — the dialog's heading, and what a screen reader announces"
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '답의 대가. 제목을 다시 쓰는 자리가 아니라 결과를 적는 자리입니다',
+        en: 'What answering costs — the consequence, not a restatement of the title'
+      }
+    },
+    {
+      name: 'confirmLabel',
+      type: 'ReactNode',
+      description: {
+        ko: '확인 버튼의 라벨. 기본값은 로케일의 단어',
+        en: "The confirming button's label. Defaults to the locale's own word"
+      }
+    },
+    {
+      name: 'cancelLabel',
+      type: 'ReactNode',
+      description: { ko: '취소 버튼의 라벨', en: "The cancelling button's label" }
+    },
+    {
+      name: 'color',
+      type: 'NebaColor',
+      default: "'primary'",
+      description: {
+        ko: '색 계열. 무언가를 없애는 질문이라면 danger — confirm의 대부분이 그렇습니다',
+        en: 'The colour family. danger for anything that destroys something, which is most of them'
+      }
+    },
+    {
+      name: 'size',
+      type: 'NebaSize',
+      default: "'sm'",
+      description: { ko: '시트의 크기 단계', en: "The sheet's step on the size ladder" }
+    },
+    {
+      name: 'alert',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '취소 버튼을 없애 나가는 길을 하나만 남깁니다. 묻는 게 아니라 알리는 경우 — 그래도 항상 true로 resolve하므로 같은 await가 쓰입니다',
+        en: 'Drops the cancelling button, leaving one way out — for telling rather than asking. It still resolves, always true, so the same await works either way'
+      }
+    },
+    {
+      name: 'dismissible',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'Escape와 backdrop이 아니오로 답할지. 끄면 버튼으로만 답할 수 있습니다 — 나갈 길 없는 모달은 사람들이 제보하는 그것이니 거의 쓰지 마세요',
+        en: 'Whether Escape and the backdrop answer no. Off makes a question the reader has to answer with a button — use it rarely, since a modal with no way out is the thing people report'
+      }
+    },
+    {
+      name: 'width',
+      type: 'number | string',
+      description: {
+        ko: '시트의 너비. Dialog로 전달됩니다',
+        en: 'How wide the sheet is, passed to Dialog'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '두 기본 라벨을 정하는 BCP 47 태그. 기본값은 provider의 것',
+        en: "BCP 47 tag deciding the two default labels. Defaults to the provider's"
+      }
+    }
+  ],
+
   VisuallyHidden: [
     {
       name: 'children',

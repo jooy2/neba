@@ -20,6 +20,10 @@ export const tr: NebaLocale = {
     clear: 'Temizle',
     remove: 'Kaldır'
   },
+  confirm: {
+    confirm: 'Onayla',
+    cancel: 'İptal'
+  },
   link: { newTab: '(yeni sekmede açılır)' },
   spoiler: {
     reveal: 'Göster',

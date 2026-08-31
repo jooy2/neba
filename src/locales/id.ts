@@ -20,6 +20,10 @@ export const id: NebaLocale = {
     clear: 'Bersihkan',
     remove: 'Hapus'
   },
+  confirm: {
+    confirm: 'Konfirmasi',
+    cancel: 'Batal'
+  },
   link: { newTab: '(terbuka di tab baru)' },
   spoiler: {
     reveal: 'Tampilkan',

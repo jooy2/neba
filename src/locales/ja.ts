@@ -20,6 +20,10 @@ export const ja: NebaLocale = {
     clear: 'クリア',
     remove: '削除'
   },
+  confirm: {
+    confirm: '確認',
+    cancel: 'キャンセル'
+  },
   link: { newTab: '(新しいタブで開きます)' },
   spoiler: {
     reveal: '表示する',

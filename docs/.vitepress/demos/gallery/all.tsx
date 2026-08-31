@@ -2143,6 +2143,34 @@ const GROUPS: Group[] = [
         )
       },
       {
+        name: 'Confirm',
+        summary: {
+          ko: '기다릴 수 있는 "정말 하시겠습니까?"',
+          en: '“Are you sure?” as something you await'
+        },
+        path: '/components/feedback/confirm',
+        preview: (
+          // Drawn rather than raised: a card that took the whole gallery away
+          // to show itself would be demonstrating the wrong thing.
+          <div className="flex w-full max-w-56 flex-col gap-2 rounded-(--neba-radius-md) border border-[var(--neba-border)] bg-[var(--neba-surface)] p-3">
+            <span className="text-[0.8125rem] font-medium text-[var(--neba-fg)]">
+              Delete the project?
+            </span>
+            <span className="text-[0.6875rem] text-[var(--neba-muted-fg)]">
+              Everything in it goes too.
+            </span>
+            <div className="flex justify-end gap-1.5">
+              <Button size="xs" variant="text" color="secondary">
+                Cancel
+              </Button>
+              <Button size="xs" color="danger">
+                Delete
+              </Button>
+            </div>
+          </div>
+        )
+      },
+      {
         name: 'Toast',
         summary: {
           ko: '스스로 도착하는 알림',

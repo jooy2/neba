@@ -23,6 +23,10 @@ export const zhHans: NebaLocale = {
     clear: '清除',
     remove: '移除'
   },
+  confirm: {
+    confirm: '确认',
+    cancel: '取消'
+  },
   link: { newTab: '(在新标签页中打开)' },
   spoiler: {
     reveal: '显示内容',

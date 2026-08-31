@@ -20,6 +20,10 @@ export const th: NebaLocale = {
     clear: 'ล้าง',
     remove: 'นำออก'
   },
+  confirm: {
+    confirm: 'ยืนยัน',
+    cancel: 'ยกเลิก'
+  },
   link: { newTab: '(เปิดในแท็บใหม่)' },
   spoiler: {
     reveal: 'แสดงเนื้อหา',

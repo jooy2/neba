@@ -42,6 +42,7 @@ import {
   DatePicker,
   DateRangePicker,
   DateTimePicker,
+  ConfirmProvider,
   Dialog,
   DialogClose,
   Divider,
@@ -133,6 +134,7 @@ import {
   Typography,
   VisuallyHidden,
   WindowPane,
+  useConfirm,
   useToast,
   type DateRange,
   type DataTableColumn,
@@ -500,17 +502,20 @@ function Caption({ children }: { children: ReactNode }) {
 }
 
 export default function Showcase() {
-  // The provider has to be above whatever calls `useToast`, so the screen is
-  // the host and its body is a child.
+  // Both providers have to be above whatever calls `useToast` and `useConfirm`,
+  // so the screen is the host and its body is a child.
   return (
     <ToastProvider position="bottom-end">
-      <ShowcaseBody />
+      <ConfirmProvider>
+        <ShowcaseBody />
+      </ConfirmProvider>
     </ToastProvider>
   );
 }
 
 function ShowcaseBody() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [name, setName] = useState('Jane Doe');
   const [email, setEmail] = useState('jane@example.com');
   const [saving, setSaving] = useState(false);
@@ -1160,7 +1165,7 @@ function ShowcaseBody() {
         <section className="flex flex-col gap-3">
           <Caption>
             Card · Form · Fieldset · TextField · Combobox · NumberField · Checkbox · List · Dialog ·
-            Toast
+            Confirm · Toast
           </Caption>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
             <Card
@@ -1358,6 +1363,36 @@ function ShowcaseBody() {
                 }
               >
                 This cannot be undone.
+              </Card>
+
+              <Card
+                color="danger"
+                size="sm"
+                title="Confirm"
+                footer={
+                  <Button
+                    size="sm"
+                    color="danger"
+                    variant="outline"
+                    onClick={async () => {
+                      const yes = await confirm({
+                        title: 'Revoke every API key?',
+                        description: 'Anything using one stops working immediately.',
+                        confirmLabel: 'Revoke them',
+                        color: 'danger'
+                      });
+
+                      toast.add({
+                        title: yes ? 'Keys revoked' : 'Nothing revoked',
+                        color: yes ? 'danger' : 'secondary'
+                      });
+                    }}
+                  >
+                    Revoke API keys
+                  </Button>
+                }
+              >
+                The same question as the Dialog beside it — awaited rather than wired.
               </Card>
             </div>
           </div>

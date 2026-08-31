@@ -20,6 +20,10 @@ export const hi: NebaLocale = {
     clear: 'साफ़ करें',
     remove: 'हटाएँ'
   },
+  confirm: {
+    confirm: 'पुष्टि करें',
+    cancel: 'रद्द करें'
+  },
   link: { newTab: '(नए टैब में खुलता है)' },
   spoiler: {
     reveal: 'दिखाएँ',

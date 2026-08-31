@@ -20,6 +20,10 @@ export const vi: NebaLocale = {
     clear: 'Xóa',
     remove: 'Gỡ bỏ'
   },
+  confirm: {
+    confirm: 'Xác nhận',
+    cancel: 'Hủy'
+  },
   link: { newTab: '(mở trong tab mới)' },
   spoiler: {
     reveal: 'Hiện nội dung',

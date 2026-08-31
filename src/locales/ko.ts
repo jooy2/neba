@@ -20,6 +20,10 @@ export const ko: NebaLocale = {
     clear: '지우기',
     remove: '삭제'
   },
+  confirm: {
+    confirm: '확인',
+    cancel: '취소'
+  },
   link: { newTab: '(새 창에서 열림)' },
   spoiler: {
     reveal: '내용 보기',

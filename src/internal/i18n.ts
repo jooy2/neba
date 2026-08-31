@@ -94,6 +94,32 @@ export const actionMessages: MessageTable<ActionMessages> = {
   }
 };
 
+/** ConfirmProvider. */
+export interface ConfirmMessages {
+  /** The button that answers yes. */
+  confirm: string;
+  /**
+   * And the one that answers no — which is also what Escape and a click on the
+   * backdrop mean, so it is the label on the way out rather than a third option.
+   */
+  cancel: string;
+}
+
+/**
+ * The `confirm` namespace.
+ *
+ * Its own rather than two more keys on `action`, which holds the words on four
+ * different × buttons. A confirm's two buttons are a question being answered,
+ * not a thing being dismissed, and a namespace a Chip pulls in for the word
+ * "Remove" should not also carry them.
+ */
+export const confirmMessages: MessageTable<ConfirmMessages> = {
+  '': {
+    confirm: 'Confirm',
+    cancel: 'Cancel'
+  }
+};
+
 /** TextLink. */
 export interface LinkMessages {
   /**
@@ -850,11 +876,14 @@ export interface NebaLocale {
   code?: Partial<CodeMessages>;
   /** Steps. */
   steps?: Partial<StepsMessages>;
+  /** Confirm. */
+  confirm?: Partial<ConfirmMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
 const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   action: actionMessages as MessageTable<never>,
+  confirm: confirmMessages as MessageTable<never>,
   link: linkMessages as MessageTable<never>,
   spoiler: spoilerMessages as MessageTable<never>,
   chat: chatMessages as MessageTable<never>,
