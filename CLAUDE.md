@@ -213,7 +213,7 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | 12 components — a typical app | 67.3 kB  | 10.8 kB                     |
 | 25 components — a large one   | 111.7 kB | 16.8 kB                     |
 | a whole page shell            | 28.4 kB  | 8.8 kB                      |
-| all 146 exports               | 240.7 kB | 114.3 kB                    |
+| all 146 exports               | 241.1 kB | 114.7 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
