@@ -46,7 +46,8 @@ export const pl: NebaLocale = {
     rowsPerPage: 'Wierszy na stronę',
     range: '{start}–{end} z {total}',
     selected: 'Zaznaczono: {count}',
-    empty: 'Brak danych'
+    empty: 'Brak danych',
+    exportCsv: 'Eksportuj CSV'
   },
   color: {
     area: 'Nasycenie i jasność',

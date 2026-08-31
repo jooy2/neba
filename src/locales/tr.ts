@@ -46,7 +46,8 @@ export const tr: NebaLocale = {
     rowsPerPage: 'Sayfa başına satır',
     range: '{total} kayıttan {start}–{end}',
     selected: '{count} seçildi',
-    empty: 'Veri yok'
+    empty: 'Veri yok',
+    exportCsv: 'CSV dışa aktar'
   },
   color: {
     area: 'Doygunluk ve parlaklık',

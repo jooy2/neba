@@ -750,3 +750,349 @@ describe('DataTable', () => {
     });
   });
 });
+
+/* -------------------------------------------------------------------------
+ * The five that turn a table into a spreadsheet's neighbour: pinning,
+ * reordering, editing, grouping and export.
+ * ---------------------------------------------------------------------- */
+
+describe('pinned columns', () => {
+  const pinned: DataTableColumn<Person>[] = [
+    { key: 'name', label: 'Name', width: 160, pinned: 'start' },
+    { key: 'city', label: 'City', width: 120 },
+    { key: 'score', label: 'Score', width: 80, pinned: 'end' }
+  ];
+
+  it('sticks a pinned column against its edge', async () => {
+    const screen = await render(<DataTable headers={pinned} items={ITEMS} getRowKey={key} />);
+    const head = screen.getByRole('columnheader', { name: 'Name' }).element() as HTMLElement;
+
+    expect(head.style.position).toBe('sticky');
+    expect(head.style.insetInlineStart).toBe('0px');
+  });
+
+  it('offsets each pinned column by the widths before it', async () => {
+    const two: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name', width: 160, pinned: 'start' },
+      { key: 'city', label: 'City', width: 120, pinned: 'start' },
+      { key: 'score', label: 'Score', width: 80 }
+    ];
+    const screen = await render(<DataTable headers={two} items={ITEMS} getRowKey={key} />);
+
+    expect(
+      (screen.getByRole('columnheader', { name: 'City' }).element() as HTMLElement).style
+        .insetInlineStart
+    ).toBe('160px');
+  });
+
+  it('moves a pinned column to its edge whatever the order said', async () => {
+    // A frozen column between two scrolling ones would slide over its
+    // neighbours rather than hold still.
+    const screen = await render(<DataTable headers={pinned} items={ITEMS} getRowKey={key} />);
+    const headings = [...screen.container.querySelectorAll('th')].map((cell) =>
+      cell.textContent?.trim()
+    );
+
+    expect(headings.indexOf('Name')).toBeLessThan(headings.indexOf('City'));
+    expect(headings.indexOf('Score')).toBeGreaterThan(headings.indexOf('City'));
+  });
+
+  it('paints a pinned body cell opaquely', async () => {
+    // A sticky cell painted only with the row tint has the scrolling content
+    // showing through it.
+    const screen = await render(<DataTable headers={pinned} items={ITEMS} getRowKey={key} />);
+    const cell = screen.container.querySelector('tbody td') as HTMLElement;
+
+    expect(cell.style.position).toBe('sticky');
+    expect(cell.style.backgroundColor).not.toBe('');
+  });
+});
+
+describe('column order', () => {
+  it('draws the columns in the order it was given', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} columnOrder={['score', 'name']} />
+    );
+    const headings = [...screen.container.querySelectorAll('th')].map((cell) =>
+      cell.textContent?.trim()
+    );
+
+    expect(headings.slice(0, 3)).toEqual(['Score', 'Name', 'City']);
+  });
+
+  it('leaves a column the order does not name where it was', async () => {
+    // An order that has to list everything is an order a new column vanishes
+    // out of.
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} columnOrder={['city']} />
+    );
+    const headings = [...screen.container.querySelectorAll('th')].map((cell) =>
+      cell.textContent?.trim()
+    );
+
+    expect(headings.slice(0, 3)).toEqual(['City', 'Name', 'Score']);
+  });
+});
+
+describe('editing', () => {
+  it('does not edit without a handler above it', async () => {
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name', editable: true },
+      { key: 'city', label: 'City' }
+    ];
+    const screen = await render(<DataTable headers={columns} items={ITEMS} getRowKey={key} />);
+
+    await screen.getByText('Ada').dblClick();
+
+    expect(screen.getByRole('textbox').query()).toBeNull();
+  });
+
+  it('opens an editor on a double-click and commits on Enter', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name', editable: true },
+      { key: 'city', label: 'City' }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+
+    await screen.getByText('Ada').dblClick();
+    await screen.getByRole('textbox', { name: 'Name' }).fill('Adele');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCellEdit).toHaveBeenCalledTimes(1);
+    expect(onCellEdit.mock.calls[0][0]).toEqual(ITEMS[0]);
+    expect(onCellEdit.mock.calls[0][2]).toBe('Adele');
+  });
+
+  it('throws the edit away on Escape', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+
+    await screen.getByText('Ada').dblClick();
+    await screen.getByRole('textbox', { name: 'Name' }).fill('Adele');
+    await userEvent.keyboard('{Escape}');
+
+    expect(onCellEdit).not.toHaveBeenCalled();
+  });
+
+  it('does not fire onRowActivate for a cell that opened an editor', async () => {
+    const onRowActivate = vi.fn();
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable
+        headers={columns}
+        items={ITEMS}
+        getRowKey={key}
+        onCellEdit={() => {}}
+        onRowActivate={onRowActivate}
+      />
+    );
+
+    await screen.getByText('Ada').dblClick();
+
+    expect(onRowActivate).not.toHaveBeenCalled();
+  });
+
+  it('asks the column which rows may be edited', async () => {
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name', editable: (row) => row.id !== 'a' }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={() => {}} />
+    );
+
+    await screen.getByText('Ada').dblClick();
+    expect(screen.getByRole('textbox').query()).toBeNull();
+
+    await screen.getByText('Bo').dblClick();
+    await expect.element(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+  });
+
+  it('hands back a number for a number column', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name' },
+      { key: 'score', label: 'Score', editable: true, editType: 'number' }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+
+    await screen.getByText('30').dblClick();
+    await screen.getByRole('spinbutton', { name: 'Score' }).fill('45');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCellEdit.mock.calls[0][2]).toBe(45);
+  });
+});
+
+describe('grouping', () => {
+  const CITIES: Person[] = [
+    { id: 'a', name: 'Ada', city: 'Seoul', score: 30 },
+    { id: 'b', name: 'Bo', city: 'Seoul', score: 10 },
+    { id: 'c', name: 'Cy', city: 'Oslo', score: 20 }
+  ];
+
+  it('draws a heading over each group, with its count', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={CITIES} getRowKey={key} groupBy={(row) => row.city} />
+    );
+
+    await expect.element(screen.getByRole('button', { name: /Seoul/ })).toBeInTheDocument();
+    await expect.element(screen.getByRole('button', { name: /Seoul\s*2/ })).toBeInTheDocument();
+    await expect.element(screen.getByRole('button', { name: /Oslo\s*1/ })).toBeInTheDocument();
+  });
+
+  it('folds a group away and back', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={CITIES} getRowKey={key} groupBy={(row) => row.city} />
+    );
+
+    await expect.element(screen.getByText('Ada')).toBeInTheDocument();
+
+    await screen.getByRole('button', { name: /Seoul/ }).click();
+
+    await expect.poll(() => screen.getByText('Ada').query()).toBeNull();
+    // The other group is untouched.
+    await expect.element(screen.getByText('Cy')).toBeInTheDocument();
+
+    await screen.getByRole('button', { name: /Seoul/ }).click();
+    await expect.element(screen.getByText('Ada')).toBeInTheDocument();
+  });
+
+  it('starts with the groups it was told to fold', async () => {
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={CITIES}
+        getRowKey={key}
+        groupBy={(row) => row.city}
+        defaultCollapsedGroups={['Seoul']}
+      />
+    );
+
+    expect(screen.getByText('Ada').query()).toBeNull();
+    await expect.element(screen.getByText('Cy')).toBeInTheDocument();
+  });
+
+  it('puts an aggregate in the column it is a total of', async () => {
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name' },
+      {
+        key: 'score',
+        label: 'Score',
+        align: 'end',
+        aggregate: (rows) => rows.reduce((sum, row) => sum + row.score, 0)
+      }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={CITIES} getRowKey={key} groupBy={(row) => row.city} />
+    );
+
+    // Seoul is 30 + 10.
+    await expect.element(screen.getByText('40')).toBeInTheDocument();
+  });
+
+  it('groups after the sort, so each group stays sorted', async () => {
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={CITIES}
+        getRowKey={key}
+        groupBy={(row) => row.city}
+        defaultSort={[{ key: 'score', direction: 'asc' }]}
+      />
+    );
+
+    const names = [...screen.container.querySelectorAll('tbody tr[data-neba-row] td')]
+      .map((cell) => cell.textContent)
+      .filter((text) => text === 'Ada' || text === 'Bo');
+
+    expect(names).toEqual(['Bo', 'Ada']);
+  });
+});
+
+describe('export', () => {
+  const csvFor = async (extra: Partial<Parameters<typeof DataTable<Person>>[0]> = {}) => {
+    let csv = '';
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={ITEMS}
+        getRowKey={key}
+        exportable
+        onExport={(text) => {
+          csv = text;
+        }}
+        {...extra}
+      />
+    );
+
+    await screen.getByRole('button', { name: 'Export CSV' }).click();
+
+    return csv;
+  };
+
+  it('writes the headings and every row', async () => {
+    const csv = await csvFor();
+
+    expect(csv).toContain('Name,City,Score');
+    expect(csv).toContain('Ada,Seoul,30');
+    expect(csv).toContain('Cy,Oslo,20');
+  });
+
+  it('writes what the search left, not the page', async () => {
+    const csv = await csvFor({ searchable: true, search: 'seoul' });
+
+    expect(csv).toContain('Ada');
+    expect(csv).not.toContain('Cy');
+  });
+
+  it('leads with a byte-order mark, so a spreadsheet reads it as UTF-8', async () => {
+    const csv = await csvFor();
+
+    expect(csv.charCodeAt(0)).toBe(0xfeff);
+  });
+
+  it('quotes a field that holds the separator', async () => {
+    const csv = await csvFor({
+      items: [{ id: 'a', name: 'Ada, the first', city: 'Seoul', score: 1 }]
+    });
+
+    expect(csv).toContain('"Ada, the first"');
+  });
+
+  it('takes the text a column says rather than what it draws', async () => {
+    // A cell that draws a Chip has no text to put in a file.
+    const csv = await csvFor({
+      headers: [
+        {
+          key: 'name',
+          label: 'Name',
+          render: () => <span>drawn</span>,
+          exportValue: (row) => `${row.name}!`
+        }
+      ]
+    });
+
+    expect(csv).toContain('Ada!');
+    expect(csv).not.toContain('drawn');
+  });
+
+  it('leaves out a column that said not to export', async () => {
+    const csv = await csvFor({
+      headers: [
+        { key: 'name', label: 'Name' },
+        { key: 'city', label: 'City', exportable: false }
+      ]
+    });
+
+    expect(csv).toContain('Name');
+    expect(csv).not.toContain('Seoul');
+  });
+});

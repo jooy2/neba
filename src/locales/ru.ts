@@ -46,7 +46,8 @@ export const ru: NebaLocale = {
     rowsPerPage: 'Строк на странице',
     range: '{start}–{end} из {total}',
     selected: 'Выбрано: {count}',
-    empty: 'Нет данных'
+    empty: 'Нет данных',
+    exportCsv: 'Экспорт CSV'
   },
   color: {
     area: 'Насыщенность и яркость',

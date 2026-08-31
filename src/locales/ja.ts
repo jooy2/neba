@@ -46,7 +46,8 @@ export const ja: NebaLocale = {
     rowsPerPage: '1 ページの行数',
     range: '{total} 件中 {start}–{end} 件',
     selected: '{count} 件を選択中',
-    empty: 'データがありません'
+    empty: 'データがありません',
+    exportCsv: 'CSVをエクスポート'
   },
   color: {
     area: '彩度と明度',

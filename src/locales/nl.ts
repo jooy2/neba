@@ -46,7 +46,8 @@ export const nl: NebaLocale = {
     rowsPerPage: 'Rijen per pagina',
     range: '{start}–{end} van {total}',
     selected: '{count} geselecteerd',
-    empty: 'Geen gegevens'
+    empty: 'Geen gegevens',
+    exportCsv: 'CSV exporteren'
   },
   color: {
     area: 'Verzadiging en helderheid',

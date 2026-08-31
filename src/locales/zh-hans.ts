@@ -49,7 +49,8 @@ export const zhHans: NebaLocale = {
     rowsPerPage: '每页行数',
     range: '第 {start}–{end} 行，共 {total} 行',
     selected: '已选择 {count} 行',
-    empty: '暂无数据'
+    empty: '暂无数据',
+    exportCsv: '导出 CSV'
   },
   color: {
     area: '饱和度和明度',

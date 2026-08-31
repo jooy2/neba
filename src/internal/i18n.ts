@@ -231,6 +231,8 @@ export interface TableMessages {
    * same nothing to report and no chrome of its own to say it with.
    */
   empty: string;
+  /** The button that writes what is on screen out as a file. */
+  exportCsv: string;
 }
 
 /** The `table` namespace, as Table and DataTable read it. */
@@ -242,7 +244,8 @@ export const tableMessages: MessageTable<TableMessages> = {
     rowsPerPage: 'Rows per page',
     range: '{start}–{end} of {total}',
     selected: '{count} selected',
-    empty: 'No data'
+    empty: 'No data',
+    exportCsv: 'Export CSV'
   }
 };
 

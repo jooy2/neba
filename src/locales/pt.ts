@@ -46,7 +46,8 @@ export const pt: NebaLocale = {
     rowsPerPage: 'Linhas por página',
     range: '{start}–{end} de {total}',
     selected: '{count} selecionadas',
-    empty: 'Sem dados'
+    empty: 'Sem dados',
+    exportCsv: 'Exportar CSV'
   },
   color: {
     area: 'Saturação e brilho',

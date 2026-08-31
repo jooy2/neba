@@ -46,7 +46,8 @@ export const th: NebaLocale = {
     rowsPerPage: 'จำนวนแถวต่อหน้า',
     range: '{start}–{end} จาก {total}',
     selected: 'เลือกแล้ว {count} รายการ',
-    empty: 'ไม่มีข้อมูล'
+    empty: 'ไม่มีข้อมูล',
+    exportCsv: 'ส่งออก CSV'
   },
   color: {
     area: 'ความอิ่มตัวและความสว่าง',

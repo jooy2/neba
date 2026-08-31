@@ -46,7 +46,8 @@ export const id: NebaLocale = {
     rowsPerPage: 'Baris per halaman',
     range: '{start}–{end} dari {total}',
     selected: '{count} dipilih',
-    empty: 'Tidak ada data'
+    empty: 'Tidak ada data',
+    exportCsv: 'Ekspor CSV'
   },
   color: {
     area: 'Saturasi dan kecerahan',

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Box } from '../box/Box.js';
+import { Button } from '../button/Button.js';
 import { Checkbox } from '../checkbox/Checkbox.js';
 import { Pagination } from '../pagination/Pagination.js';
 import { Select } from '../select/Select.js';
@@ -25,6 +26,7 @@ import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../in
 import { searchHaystack, searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { observeResize } from '../../internal/observe.js';
+import { downloadText, toCsv } from '../../internal/csv.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -138,6 +140,19 @@ export interface DataTableColumn<Row> {
   /** Leaves the column out without removing it from the list. */
   hidden?: boolean;
   /**
+   * Freezes the column against one edge while the rest scroll past it.
+   *
+   * A pinned column needs a `width`: the offsets the sticky cells sit at are
+   * the sum of the widths before them, and a column that has not said how wide
+   * it is has no number to add. Without one it is measured at the default.
+   *
+   * Pinning also **moves** the column: everything pinned to the start is drawn
+   * first, in the order given, and everything pinned to the end last. A frozen
+   * column in the middle of the scrolling ones would be a column that overlaps
+   * its neighbours instead of holding still.
+   */
+  pinned?: 'start' | 'end';
+  /**
    * The value behind the cell: what is sorted, and what the search is matched
    * against. Defaults to `row[key]`.
    */
@@ -154,6 +169,39 @@ export interface DataTableColumn<Row> {
    * running row number.
    */
   render?: (row: Row, index: number) => React.ReactNode;
+  /**
+   * What an export writes for this cell.
+   *
+   * Defaults to `value`, and then to `row[key]`. It is separate from `render`
+   * on purpose: a cell that draws a Chip, an Avatar or a progress bar has no
+   * text to put in a file, and `render`'s return is a React element rather than
+   * something a spreadsheet can hold.
+   */
+  exportValue?: (row: Row) => unknown;
+  /** Leaves this column out of an export. @default true */
+  exportable?: boolean;
+  /**
+   * Lets a cell in this column be edited in place.
+   *
+   * A function decides per row — a locked record, a computed field, a row
+   * somebody else is holding. `onCellEdit` is what receives the new value; a
+   * column with no handler above it is not editable however this is set.
+   */
+  editable?: boolean | ((row: Row) => boolean);
+  /**
+   * What kind of field the editor is. `number` keeps the keypad on a phone and
+   * hands back a number rather than a string.
+   * @default 'text'
+   */
+  editType?: 'text' | 'number';
+  /**
+   * The one number that stands for a whole group of rows in this column.
+   *
+   * Called with the rows of one group. There is no `'sum' | 'avg'` shorthand
+   * on purpose: the moment a table has one column that needs a weighted mean
+   * or a distinct count, half the columns are functions and half are strings.
+   */
+  aggregate?: (rows: Row[]) => React.ReactNode;
 }
 
 export interface DataTableProps<Row>
@@ -262,6 +310,26 @@ export interface DataTableProps<Row>
   resizable?: boolean;
   /** The widths, keyed by column. Use with `onColumnWidthsChange`. */
   columnWidths?: Readonly<Record<string, number>>;
+  /**
+   * The order the columns are drawn in, as a list of keys.
+   *
+   * A key the list does not mention keeps its place behind the ones it does —
+   * so an order that names two columns moves those two and leaves the rest
+   * alone, and a column added to `columns` later appears without the stored
+   * order having to be migrated.
+   */
+  columnOrder?: readonly string[];
+  defaultColumnOrder?: readonly string[];
+  onColumnOrderChange?: (order: string[]) => void;
+  /**
+   * Lets a header be dragged along the row to move its column.
+   *
+   * Off by default. It is a real gesture on a real control, and a table whose
+   * columns move when a reader meant to press a heading is worse than one whose
+   * columns do not move at all.
+   * @default false
+   */
+  reorderable?: boolean;
   /** What they start as, for an uncontrolled table. */
   defaultColumnWidths?: Readonly<Record<string, number>>;
   onColumnWidthsChange?: (widths: Record<string, number>) => void;
@@ -334,6 +402,43 @@ export interface DataTableProps<Row>
   filter?: (row: Row, index: number) => boolean;
   /** Content at the end of the bar the search field sits in. */
   toolbar?: React.ReactNode;
+  /**
+   * Adds a button that writes the rows out as a CSV file.
+   *
+   * **Every row the reader is currently looking at, not the page they are on.**
+   * The search and the sort are applied and the paging is not, because a file
+   * of page 3 is not a file anybody asked for. A `manual` table exports the
+   * rows it was handed, which is the same rule seen from the server's side.
+   * @default false
+   */
+  exportable?: boolean;
+  /** What the downloaded file is called. @default 'table.csv' */
+  exportFileName?: string;
+  /**
+   * Takes the CSV instead of downloading it — to post it somewhere, to open it
+   * in a viewer of your own, or to add a sheet around it.
+   */
+  onExport?: (csv: string) => void;
+  /**
+   * Called when an edited cell is committed. Without it, nothing is editable.
+   *
+   * The table holds no copy of the rows: it hands the new value over and draws
+   * whatever comes back in `items`. A table that wrote into its own copy would
+   * be a table showing something the application does not know about.
+   */
+  onCellEdit?: (row: Row, column: DataTableColumn<Row>, value: string | number) => void;
+  /**
+   * Groups the rows under a heading row, by whatever this returns.
+   *
+   * The grouping runs after the search and the sort, so a sorted table stays
+   * sorted inside each group and a filtered one groups only what is left.
+   * `undefined` from a row puts it in no group at all, above the rest.
+   */
+  groupBy?: (row: Row) => string | undefined;
+  /** Whether a group can be folded away. @default true */
+  collapsibleGroups?: boolean;
+  /** Which groups start folded, by the label `groupBy` returned. */
+  defaultCollapsedGroups?: readonly string[];
 
   /**
    * Which stages the caller has already done — for a table whose rows come from
@@ -516,6 +621,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
     resizable = false,
     columnWidths,
+    columnOrder: columnOrderProp,
+    defaultColumnOrder,
+    onColumnOrderChange,
+    reorderable = false,
     defaultColumnWidths,
     onColumnWidthsChange,
 
@@ -544,6 +653,13 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     searchPlaceholder,
     filter,
     toolbar,
+    exportable = false,
+    exportFileName = 'table.csv',
+    onExport,
+    onCellEdit,
+    groupBy,
+    collapsibleGroups = true,
+    defaultCollapsedGroups,
 
     manual = false,
     rowCount,
@@ -567,7 +683,49 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     [manual]
   );
 
-  const columns = React.useMemo(() => headers.filter((column) => !column.hidden), [headers]);
+  const [uncontrolledOrder, setUncontrolledOrder] = React.useState<readonly string[]>(
+    () => defaultColumnOrder ?? []
+  );
+  const columnOrder = columnOrderProp ?? uncontrolledOrder;
+
+  const setColumnOrder = (next: string[]) => {
+    if (columnOrderProp === undefined) {
+      setUncontrolledOrder(next);
+    }
+    onColumnOrderChange?.(next);
+  };
+
+  /**
+   * The columns as they are actually drawn: ordered, then filtered, then pinned.
+   *
+   * Pinning is last because it *moves* a column. A frozen column between two
+   * scrolling ones would slide over its neighbours rather than hold still, so
+   * everything pinned to the start is drawn first and everything pinned to the
+   * end last, whatever the order said.
+   *
+   * An order that names some keys and not others moves only the ones it names:
+   * a column added to `columns` after an order was stored appears at its own
+   * place instead of vanishing, which is the failure mode of an order that has
+   * to list everything.
+   */
+  const columns = React.useMemo(() => {
+    const visible = headers.filter((column) => !column.hidden);
+
+    const named = columnOrder
+      .map((key) => visible.find((column) => column.key === key))
+      .filter((column): column is DataTableColumn<Row> => column !== undefined);
+
+    const rest = visible.filter((column) => !columnOrder.includes(column.key));
+    const ordered = columnOrder.length === 0 ? visible : [...named, ...rest];
+    const rank = (column: DataTableColumn<Row>) =>
+      column.pinned === 'start' ? 0 : column.pinned === 'end' ? 2 : 1;
+
+    return ordered
+      .map((column, index) => ({ column, index }))
+      .sort((a, b) => rank(a.column) - rank(b.column) || a.index - b.index)
+      .map((entry) => entry.column);
+  }, [headers, columnOrder]);
+
   const hasGroups = columns.some((column) => column.group !== undefined);
 
   const selects = selectionMode !== 'none';
@@ -685,16 +843,94 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const [uncontrolledPage, setUncontrolledPage] = React.useState(defaultPage);
   const [uncontrolledPageSize, setUncontrolledPageSize] = React.useState(defaultPageSize);
   const pageSize = pageSizeProp ?? uncontrolledPageSize;
-  const total = stages.has('pages') ? (rowCount ?? sorted.length) : sorted.length;
-  const bounds = pageBounds(total, pageProp ?? uncontrolledPage, pageSize);
+  const [collapsedGroups, setCollapsedGroups] = React.useState<ReadonlySet<string>>(
+    () => new Set(defaultCollapsedGroups ?? [])
+  );
 
-  const paged = React.useMemo(() => {
-    if (paging !== 'pages' || stages.has('pages')) {
+  /**
+   * The rows gathered under their headings, after the search and the sort.
+   *
+   * After, and not before: a sorted table stays sorted inside each group, and a
+   * filtered one groups only what is left. Groups keep the order their first
+   * row appeared in, so the sort decides which heading comes first — except the
+   * ungrouped rows, which go above everything, because a heading that says
+   * nothing is not a heading a reader can be asked to interpret.
+   */
+  const groups = React.useMemo(() => {
+    if (!groupBy) {
+      return null;
+    }
+
+    const order: string[] = [];
+    const byLabel = new Map<string, RowEntry<Row>[]>();
+
+    for (const entry of sorted) {
+      const label = groupBy(entry.row) ?? '';
+
+      if (!byLabel.has(label)) {
+        byLabel.set(label, []);
+        order.push(label);
+      }
+      byLabel.get(label)!.push(entry);
+    }
+
+    return { order: [...order].sort((a, b) => (a === '' ? -1 : b === '' ? 1 : 0)), byLabel };
+  }, [sorted, groupBy]);
+
+  const arranged = React.useMemo(() => {
+    if (!groups) {
       return sorted;
     }
 
-    return sorted.slice(bounds.start, bounds.end);
-  }, [sorted, paging, stages, bounds.start, bounds.end]);
+    return groups.order.flatMap((label) =>
+      collapsedGroups.has(label) ? [] : (groups.byLabel.get(label) ?? [])
+    );
+  }, [groups, collapsedGroups, sorted]);
+
+  const total = stages.has('pages') ? (rowCount ?? arranged.length) : arranged.length;
+  const bounds = pageBounds(total, pageProp ?? uncontrolledPage, pageSize);
+
+  /**
+   * Everything the reader is currently looking at, as a file.
+   *
+   * `sorted` and not `paged`: the search and the sort are what the reader
+   * narrowed the table to, and the page is only how much of it fits — a file
+   * of page 3 is not a file anybody asked for.
+   */
+  const exportCsv = () => {
+    const shown = columns.filter((column) => column.exportable !== false);
+
+    const header = shown.map((column) =>
+      typeof column.label === 'string' ? column.label : column.key
+    );
+
+    const body = sorted.map((entry) =>
+      shown.map((column) =>
+        column.exportValue
+          ? column.exportValue(entry.row)
+          : column.value
+            ? column.value(entry.row)
+            : (entry.row as Record<string, unknown>)[column.key]
+      )
+    );
+
+    const csv = toCsv([header, ...body]);
+
+    if (onExport) {
+      onExport(csv);
+      return;
+    }
+
+    downloadText(csv, exportFileName, 'text/csv;charset=utf-8');
+  };
+
+  const paged = React.useMemo(() => {
+    if (paging !== 'pages' || stages.has('pages')) {
+      return arranged;
+    }
+
+    return arranged.slice(bounds.start, bounds.end);
+  }, [arranged, paging, stages, bounds.start, bounds.end]);
 
   /** Where a displayed row sits in the sorted, filtered order — what `render` is told. */
   const displayOffset = paging === 'pages' ? bounds.start : 0;
@@ -821,7 +1057,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const [scrollTop, setScrollTop] = React.useState(0);
 
   const bounded = height !== undefined || maxHeight !== undefined;
-  const virtualized = virtual && bounded && paged.length > 0;
+  // Never while grouping: the window arithmetic counts every child of `<tbody>`
+  // as one row of `rowHeight`, and a heading row is one more than that. A
+  // grouped table renders all of its rows, which is the honest trade — the two
+  // are for different sizes of table anyway.
+  const virtualized = virtual && bounded && paged.length > 0 && !groupBy;
 
   React.useLayoutEffect(() => {
     const node = viewportRef.current;
@@ -885,8 +1125,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   // A table that unmounts mid-resize would otherwise leave the document's text
   // selection taken away, with nothing left to put it back.
   const resizeRef = React.useRef<(() => void) | null>(null);
+  const reorderRef = React.useRef<ReturnType<typeof beginPointerDrag> | null>(null);
+  const [movingKey, setMovingKey] = React.useState<string | null>(null);
+  const [dropKey, setDropKey] = React.useState<string | null>(null);
 
-  React.useEffect(() => () => resizeRef.current?.(), []);
+  React.useEffect(
+    () => () => {
+      resizeRef.current?.();
+      reorderRef.current?.();
+    },
+    []
+  );
 
   /**
    * A drag freezes every column, not just the one being pulled.
@@ -898,6 +1147,75 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * writes all of it down; from then on every column is explicit and a drag
    * moves exactly one boundary.
    */
+  /**
+   * Drags one header along the row to move its column.
+   *
+   * The drop target is worked out from the header cells that are already on
+   * screen — `headRefs` holds every one — rather than from the widths, because
+   * a column with no explicit width is only as wide as the browser decided and
+   * the widths table does not know that number.
+   *
+   * It starts at a threshold rather than at the press: a header is a control,
+   * and a table whose columns move when a reader meant to sort is worse than
+   * one whose columns do not move at all. Pinned headers are not draggable,
+   * since where they sit is what pinning decided.
+   */
+  const startReorder = (key: string, event: React.PointerEvent<HTMLTableCellElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const cell = event.currentTarget;
+    const startX = event.clientX;
+    let armed = false;
+
+    reorderRef.current = beginPointerDrag({
+      target: cell,
+      pointerId: event.pointerId,
+      onMove: (moveEvent) => {
+        if (!armed) {
+          if (Math.abs(moveEvent.clientX - startX) < 6) {
+            return;
+          }
+          armed = true;
+          setMovingKey(key);
+        }
+
+        const over = columns.find((column) => {
+          if (column.pinned) {
+            return false;
+          }
+          const node = headRefs.current.get(column.key);
+          if (!node) {
+            return false;
+          }
+          const box = node.getBoundingClientRect();
+
+          return moveEvent.clientX >= box.left && moveEvent.clientX <= box.right;
+        });
+
+        setDropKey(over && over.key !== key ? over.key : null);
+      },
+      onEnd: () => {
+        reorderRef.current = null;
+        setMovingKey((moving) => {
+          setDropKey((target) => {
+            if (moving && target && moving !== target) {
+              const keys = columns.map((column) => column.key);
+              const from = keys.indexOf(moving);
+              const to = keys.indexOf(target);
+
+              keys.splice(to, 0, ...keys.splice(from, 1));
+              setColumnOrder(keys);
+            }
+            return null;
+          });
+          return null;
+        });
+      }
+    });
+  };
+
   const startResize = (key: string, event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -1344,6 +1662,72 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     return runs;
   }, [columns]);
 
+  /**
+   * Where each pinned column comes to rest — the sum of the widths of whatever
+   * is pinned to the same edge before it, plus the tick column at the start.
+   *
+   * A pinned column that never said how wide it is has no number to add, so it
+   * is measured at the default. That is why the prop's documentation asks for a
+   * `width`: guessing here is how a frozen column ends up one pixel over its
+   * neighbour on somebody else's screen.
+   */
+  const pinOffsets = React.useMemo(() => {
+    const start = new Map<string, number>();
+    const end = new Map<string, number>();
+
+    let head = showTicks ? tickWidth : 0;
+    for (const column of columns) {
+      if (column.pinned === 'start') {
+        start.set(column.key, head);
+        head += explicitWidth(column) ?? defaultColumnWidth;
+      }
+    }
+
+    let tail = 0;
+    for (let index = columns.length - 1; index >= 0; index -= 1) {
+      const column = columns[index];
+      if (column.pinned === 'end') {
+        end.set(column.key, tail);
+        tail += explicitWidth(column) ?? defaultColumnWidth;
+      }
+    }
+
+    return { start, end };
+    // `widths` is what `explicitWidth` reads, so a dragged boundary has to move
+    // everything pinned behind it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columns, widths, showTicks, tickWidth]);
+
+  /**
+   * A pinned cell's own styles.
+   *
+   * The background is two declarations rather than one because the row's tint
+   * is a custom property that is often transparent: a sticky cell painted only
+   * with `var(--n-row)` has the scrolling content showing through it. The
+   * `linear-gradient` composites that tint over the sheet's own colour, which
+   * is the one form that keeps stripes, hover and selection while staying
+   * opaque.
+   */
+  const pinStyle = (column: DataTableColumn<Row>, header: boolean): React.CSSProperties => {
+    if (!column.pinned) {
+      return {};
+    }
+
+    const offset =
+      column.pinned === 'start' ? pinOffsets.start.get(column.key) : pinOffsets.end.get(column.key);
+
+    return {
+      position: 'sticky',
+      insetInlineStart: column.pinned === 'start' ? `${offset ?? 0}px` : undefined,
+      insetInlineEnd: column.pinned === 'end' ? `${offset ?? 0}px` : undefined,
+      // Above the scrolling cells, and under a sticky header, which carries its
+      // own higher one.
+      zIndex: header ? 3 : 1,
+      backgroundColor: header ? 'var(--n-panel-press)' : 'var(--n-panel-press)',
+      backgroundImage: header ? undefined : 'linear-gradient(var(--n-row), var(--n-row))'
+    };
+  };
+
   /* -- Styles -------------------------------------------------------------- */
 
   const cellStyle: React.CSSProperties = {
@@ -1381,11 +1765,91 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     onPageChange?.(next);
   };
 
+  /**
+   * One body row.
+   *
+   * A function rather than JSX inside the map, because the body is rendered
+   * two ways: flat, and once per group. The second is what keeps a folded
+   * group's heading on the screen — a heading drawn from the rows disappears
+   * with them, and a group nobody can see is a group nobody can unfold.
+   */
+  const bodyRow = (entry: RowEntry<Row>, index: number) => {
+    const isSelected = selectedKeys.has(entry.key);
+    const isActive = activeKey === entry.key;
+
+    return (
+      <tr
+        id={`${reactId}-${entry.key}`}
+        aria-selected={selects ? isSelected : undefined}
+        aria-rowindex={virtualized ? index + 2 : undefined}
+        data-neba-row={entry.key}
+        className={cx(
+          rowClasses,
+          // An if/else, not stacked variants: two Tailwind classes
+          // of equal specificity resolve by their order in the
+          // generated stylesheet, not by the order written here.
+          isSelected
+            ? '[--n-row:var(--n-soft-press)]'
+            : striped !== false && index % 2 === stripeIndex
+              ? '[--n-row:var(--n-stripe)]'
+              : '',
+          !isSelected && hoverable ? 'hover:[--n-row:var(--n-soft)]' : '',
+          isActive && selects ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
+          selects || onRowClick ? 'cursor-default' : ''
+        )}
+        style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
+        onPointerDown={(event) => handleRowPointerDown(entry, event)}
+        onClick={(event) => onRowClick?.(entry.row, displayOffset + index, event)}
+        onDoubleClick={() => onRowActivate?.(entry.row, displayOffset + index)}
+      >
+        {showTicks ? tickCell(entry) : null}
+
+        {columns.map((column) => {
+          const editable = canEdit(column, entry.row);
+          const open = editing?.key === entry.key && editing.column === column.key;
+
+          return (
+            <td
+              key={column.key}
+              role={selects ? 'gridcell' : undefined}
+              style={{
+                ...cellStyle,
+                ...pinStyle(column, false),
+                textAlign: column.align ?? 'start',
+                cursor: editable && !open ? 'cell' : undefined
+              }}
+              onDoubleClick={
+                editable
+                  ? (event) => {
+                      // A cell that opens an editor has answered
+                      // the double-click; `onRowActivate` must not
+                      // also fire and take the reader elsewhere.
+                      event.stopPropagation();
+                      setEditing({ key: entry.key, column: column.key });
+                    }
+                  : undefined
+              }
+            >
+              {open
+                ? cellEditor(entry, column)
+                : column.render
+                  ? column.render(entry.row, displayOffset + index)
+                  : ((entry.row as Record<string, unknown>)[column.key] as React.ReactNode)}
+            </td>
+          );
+        })}
+
+        {filler ? <td aria-hidden="true" style={{ ...cellStyle, padding: 0 }} /> : null}
+      </tr>
+    );
+  };
+
   /* -- Render -------------------------------------------------------------- */
 
   const heading = (column: DataTableColumn<Row>, index: number, rowSpan?: number) => {
     const canSort = column.sortable ?? sortable;
     const canResize = column.resizable ?? resizable;
+    const canMove = reorderable && !column.pinned;
     const entry = sortFor(column.key);
     const order = entry ? sort.findIndex((item) => item.key === column.key) + 1 : 0;
     const align = column.headerAlign ?? column.align ?? 'start';
@@ -1403,16 +1867,23 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         scope="col"
         rowSpan={rowSpan}
         aria-sort={entry ? (entry.direction === 'asc' ? 'ascending' : 'descending') : undefined}
+        data-column={column.key}
+        data-dragging={movingKey === column.key || undefined}
         className={cx(
           'relative font-semibold select-none',
           entry ? 'text-(--n-accent)' : 'text-(--neba-muted-fg)',
-          stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : ''
+          stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : '',
+          canMove ? 'cursor-grab' : '',
+          movingKey === column.key ? 'opacity-60' : '',
+          dropKey === column.key ? 'shadow-[inset_2px_0_0_var(--n-accent)]' : ''
         )}
         style={{
           ...headCellStyle,
+          ...pinStyle(column, true),
           top: stickyHeader ? (rowSpan === 2 || !hasGroups ? 0 : headerHeight) : undefined,
           textAlign: align
         }}
+        onPointerDown={canMove ? (event) => startReorder(column.key, event) : undefined}
       >
         {canSort ? (
           <button
@@ -1477,6 +1948,158 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           />
         ) : null}
       </th>
+    );
+  };
+
+  /* -- Groups -------------------------------------------------------------- */
+
+  /**
+   * The row that stands over a group.
+   *
+   * A cell per column rather than one cell spanning them all, because the whole
+   * point of `aggregate` is that a group's number sits in the same column as
+   * the numbers it is a total of. The label goes in the first cell; every
+   * column that has an aggregate draws it in its own; the rest are empty.
+   */
+  const groupHeading = (label: string, rows: RowEntry<Row>[]) => {
+    const folded = collapsedGroups.has(label);
+    const foldable = collapsibleGroups;
+    const plain = rows.map((entry) => entry.row);
+
+    const toggle = () =>
+      setCollapsedGroups((current) => {
+        const next = new Set(current);
+
+        if (next.has(label)) {
+          next.delete(label);
+        } else {
+          next.add(label);
+        }
+        return next;
+      });
+
+    const heading = (
+      <span className="flex min-w-0 items-center gap-1.5">
+        {foldable ? (
+          <span
+            aria-hidden="true"
+            className={cx(
+              'flex items-center text-(--neba-muted-fg)',
+              '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+              folded ? '-rotate-90 rtl:rotate-90' : ''
+            )}
+          >
+            <ChevronIcon />
+          </span>
+        ) : null}
+        <span className="truncate font-semibold">{label === '' ? emptyText.title : label}</span>
+        <span className="shrink-0 text-(--neba-muted-fg) tabular-nums">
+          {number.format(rows.length)}
+        </span>
+      </span>
+    );
+
+    return (
+      <tr
+        data-neba-group={label}
+        style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-soft)' }}
+      >
+        {showTicks ? <td style={{ ...cellStyle, padding: 0 }} /> : null}
+
+        {columns.map((column, index) => (
+          <td
+            key={column.key}
+            colSpan={1}
+            style={{
+              ...cellStyle,
+              ...pinStyle(column, false),
+              textAlign: index === 0 ? 'start' : (column.align ?? 'start')
+            }}
+          >
+            {index === 0 ? (
+              foldable ? (
+                <button
+                  type="button"
+                  aria-expanded={!folded}
+                  className="flex w-full min-w-0 items-center text-start [outline:none] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]"
+                  onClick={toggle}
+                >
+                  {heading}
+                </button>
+              ) : (
+                heading
+              )
+            ) : column.aggregate ? (
+              <span className="tabular-nums">{column.aggregate(plain)}</span>
+            ) : null}
+          </td>
+        ))}
+
+        {filler ? <td aria-hidden="true" style={{ ...cellStyle, padding: 0 }} /> : null}
+      </tr>
+    );
+  };
+
+  /* -- Editing ------------------------------------------------------------- */
+
+  const [editing, setEditing] = React.useState<{ key: string; column: string } | null>(null);
+
+  const canEdit = (column: DataTableColumn<Row>, row: Row) =>
+    onCellEdit !== undefined &&
+    (typeof column.editable === 'function' ? column.editable(row) : Boolean(column.editable));
+
+  /**
+   * The field one cell becomes while it is being edited.
+   *
+   * A bare `<input>` rather than a TextField: a field inside a table cell has
+   * to be exactly the height of the row it is in, and TextField's shell — the
+   * label column, the two message lines, its own padding — is a form's shape
+   * rather than a cell's.
+   *
+   * Blur commits and `Escape` cancels, which is the arrangement a spreadsheet
+   * taught everybody. `Enter` commits too, and does not submit anything: the
+   * key never reaches a form, because a table inside one would otherwise
+   * submit it every time a cell was finished.
+   */
+  const cellEditor = (entry: RowEntry<Row>, column: DataTableColumn<Row>) => {
+    const initial = column.value
+      ? column.value(entry.row)
+      : (entry.row as Record<string, unknown>)[column.key];
+
+    const commit = (raw: string) => {
+      setEditing(null);
+      const next = column.editType === 'number' ? Number(raw) : raw;
+
+      if (column.editType === 'number' && Number.isNaN(next as number)) {
+        return;
+      }
+      if (String(next) !== String(initial ?? '')) {
+        onCellEdit?.(entry.row, column, next);
+      }
+    };
+
+    return (
+      <input
+        autoFocus
+        type={column.editType === 'number' ? 'number' : 'text'}
+        defaultValue={initial === null || initial === undefined ? '' : String(initial)}
+        aria-label={typeof column.label === 'string' ? column.label : column.key}
+        className="w-full bg-transparent [font:inherit] text-inherit [outline:none]"
+        style={{ textAlign: column.align ?? 'start' }}
+        onPointerDown={(event) => event.stopPropagation()}
+        onBlur={(event) => commit(event.currentTarget.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            commit(event.currentTarget.value);
+          }
+          if (event.key === 'Escape') {
+            event.stopPropagation();
+            setEditing(null);
+          }
+        }}
+      />
     );
   };
 
@@ -1560,7 +2183,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       style={{ ...stripeSlot, ...style } as React.CSSProperties}
       {...boxProps}
     >
-      {searchable || hasContent(toolbar) ? (
+      {searchable || exportable || hasContent(toolbar) ? (
         <div
           className="flex items-center gap-2"
           style={{ padding: `${padX} ${padX}`, borderBottom: '1px solid var(--n-line)' }}
@@ -1592,8 +2215,21 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             />
           ) : null}
 
-          {hasContent(toolbar) ? (
-            <div className="ms-auto flex items-center gap-2">{toolbar}</div>
+          {exportable || hasContent(toolbar) ? (
+            <div className="ms-auto flex items-center gap-2">
+              {toolbar}
+              {exportable ? (
+                <Button
+                  size={size}
+                  color={color}
+                  density={density}
+                  variant="outline"
+                  onClick={exportCsv}
+                >
+                  {messages.exportCsv}
+                </Button>
+              ) : null}
+            </div>
           ) : null}
         </div>
       ) : null}
@@ -1740,59 +2376,19 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               <>
                 {spacer('before', window_.before)}
 
-                {rendered.map((entry, offset) => {
-                  const index = window_.start + offset;
-                  const isSelected = selectedKeys.has(entry.key);
-                  const isActive = activeKey === entry.key;
+                {groups
+                  ? groups.order.map((label) => {
+                      const all = groups.byLabel.get(label) ?? [];
+                      const onPage = all.filter((entry) => pagedKeys.includes(entry.key));
 
-                  return (
-                    <tr
-                      key={entry.key}
-                      id={`${reactId}-${entry.key}`}
-                      aria-selected={selects ? isSelected : undefined}
-                      aria-rowindex={virtualized ? index + 2 : undefined}
-                      data-neba-row={entry.key}
-                      className={cx(
-                        rowClasses,
-                        // An if/else, not stacked variants: two Tailwind classes
-                        // of equal specificity resolve by their order in the
-                        // generated stylesheet, not by the order written here.
-                        isSelected
-                          ? '[--n-row:var(--n-soft-press)]'
-                          : striped !== false && index % 2 === stripeIndex
-                            ? '[--n-row:var(--n-stripe)]'
-                            : '',
-                        !isSelected && hoverable ? 'hover:[--n-row:var(--n-soft)]' : '',
-                        isActive && selects ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
-                        selects || onRowClick ? 'cursor-default' : ''
-                      )}
-                      style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
-                      onPointerDown={(event) => handleRowPointerDown(entry, event)}
-                      onClick={(event) => onRowClick?.(entry.row, displayOffset + index, event)}
-                      onDoubleClick={() => onRowActivate?.(entry.row, displayOffset + index)}
-                    >
-                      {showTicks ? tickCell(entry) : null}
-
-                      {columns.map((column) => (
-                        <td
-                          key={column.key}
-                          role={selects ? 'gridcell' : undefined}
-                          style={{ ...cellStyle, textAlign: column.align ?? 'start' }}
-                        >
-                          {column.render
-                            ? column.render(entry.row, displayOffset + index)
-                            : ((entry.row as Record<string, unknown>)[
-                                column.key
-                              ] as React.ReactNode)}
-                        </td>
-                      ))}
-
-                      {filler ? (
-                        <td aria-hidden="true" style={{ ...cellStyle, padding: 0 }} />
-                      ) : null}
-                    </tr>
-                  );
-                })}
+                      return (
+                        <React.Fragment key={label || '\u0000'}>
+                          {groupHeading(label, all)}
+                          {onPage.map((entry) => bodyRow(entry, paged.indexOf(entry)))}
+                        </React.Fragment>
+                      );
+                    })
+                  : rendered.map((entry, offset) => bodyRow(entry, window_.start + offset))}
 
                 {spacer('after', window_.after)}
               </>

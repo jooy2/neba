@@ -5558,6 +5558,83 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   DataTable: [
+    {
+      name: 'columnOrder',
+      type: 'readonly string[]',
+      description: {
+        ko: '열이 그려지는 순서를 key 목록으로. 목록에 없는 key는 제자리를 지키므로, 나중에 추가된 열이 저장된 순서에서 사라지지 않습니다',
+        en: 'The order the columns are drawn in, as keys. A key it does not mention keeps its place, so a column added later does not vanish out of a stored order'
+      }
+    },
+    {
+      name: 'defaultColumnOrder',
+      type: 'readonly string[]',
+      description: { ko: '초기 순서', en: 'The initial order' }
+    },
+    {
+      name: 'onColumnOrderChange',
+      type: '(order: string[]) => void',
+      description: { ko: '순서가 바뀔 때', en: 'Called when the order changes' }
+    },
+    {
+      name: 'reorderable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '헤더를 끌어 열을 옮길 수 있게 합니다. 기본값이 꺼짐인 이유는 헤더가 컨트롤이기 때문 — 정렬하려던 손짓에 열이 움직이는 표는 안 움직이는 표보다 나쁩니다',
+        en: 'Lets a header be dragged to move its column. Off by default because a header is a control: a table whose columns move when a reader meant to sort is worse than one whose columns do not move'
+      }
+    },
+    {
+      name: 'onCellEdit',
+      type: '(row, column, value: string | number) => void',
+      description: {
+        ko: '편집한 셀이 확정될 때. 이것이 없으면 아무것도 편집되지 않습니다 — 표는 행의 사본을 갖지 않고 새 값을 넘긴 뒤 items로 돌아온 것을 그립니다',
+        en: 'Called when an edited cell is committed. Nothing is editable without it: the table holds no copy of the rows, it hands the value over and draws what comes back in items'
+      }
+    },
+    {
+      name: 'groupBy',
+      type: '(row: Row) => string | undefined',
+      description: {
+        ko: '행을 제목 아래로 묶습니다. 검색과 정렬 다음에 돌므로 각 그룹 안의 정렬이 유지됩니다. undefined인 행은 아무 그룹에도 속하지 않고 맨 위로 갑니다. 켜면 가상 스크롤이 꺼집니다',
+        en: 'Groups the rows under a heading. It runs after the search and the sort, so each group stays sorted; a row it returns undefined for goes above everything, in no group. It turns virtual scrolling off'
+      }
+    },
+    {
+      name: 'collapsibleGroups',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '그룹을 접을 수 있는지', en: 'Whether a group can be folded away' }
+    },
+    {
+      name: 'defaultCollapsedGroups',
+      type: 'readonly string[]',
+      description: { ko: '처음에 접혀 있는 그룹들', en: 'Which groups start folded' }
+    },
+    {
+      name: 'exportable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '행을 CSV로 쓰는 버튼을 붙입니다. 지금 보고 있는 페이지가 아니라 검색과 정렬이 남긴 모든 행입니다',
+        en: 'Adds a button that writes the rows out as CSV — every row the search and the sort left, not the page the reader is on'
+      }
+    },
+    {
+      name: 'exportFileName',
+      type: 'string',
+      default: "'table.csv'",
+      description: { ko: '내려받는 파일의 이름', en: 'What the downloaded file is called' }
+    },
+    {
+      name: 'onExport',
+      type: '(csv: string) => void',
+      description: {
+        ko: '내려받는 대신 CSV를 받아 갑니다',
+        en: 'Takes the CSV instead of downloading it'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'sm'",
@@ -5918,6 +5995,53 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   DataTableColumn: [
+    {
+      name: 'pinned',
+      type: "'start' | 'end'",
+      description: {
+        ko: '나머지가 지나가는 동안 그 가장자리에 얼려 둡니다. 열을 옮기기도 합니다 — start는 맨 앞, end는 맨 뒤. width를 주세요. sticky offset은 앞선 너비의 합이라 너비 없는 열은 더할 숫자가 없습니다',
+        en: 'Freezes the column against that edge while the rest scroll past. It also moves it — start first, end last. Give it a width: the sticky offsets are the sum of the widths before them, and a column with none has no number to add'
+      }
+    },
+    {
+      name: 'editable',
+      type: 'boolean | ((row: Row) => boolean)',
+      description: {
+        ko: '이 열의 셀을 제자리에서 편집할 수 있게 합니다. 함수면 행마다 판단합니다. 표에 onCellEdit이 없으면 어떻게 두든 편집되지 않습니다',
+        en: 'Lets a cell in this column be edited in place; a function decides per row. Not editable at all without an onCellEdit above it'
+      }
+    },
+    {
+      name: 'editType',
+      type: "'text' | 'number'",
+      default: "'text'",
+      description: {
+        ko: '에디터의 종류. number는 휴대폰에서 숫자 키패드를 유지하고 문자열이 아니라 숫자를 돌려줍니다',
+        en: 'What kind of field the editor is. number keeps the keypad on a phone and hands back a number rather than a string'
+      }
+    },
+    {
+      name: 'aggregate',
+      type: '(rows: Row[]) => ReactNode',
+      description: {
+        ko: '그룹 하나를 대표하는 값. 그룹 제목 줄의 자기 열에 그려집니다 — 합계는 그것이 합계인 숫자와 같은 열에 있어야 합니다',
+        en: 'The one value that stands for a group, drawn in the heading row in its own column — a total belongs in the column of the numbers it is a total of'
+      }
+    },
+    {
+      name: 'exportValue',
+      type: '(row: Row) => unknown',
+      description: {
+        ko: '내보내기가 이 셀에 쓰는 값. render와 별개입니다 — Chip을 그리는 셀에는 파일에 넣을 글자가 없습니다',
+        en: 'What an export writes for this cell. Separate from render: a cell that draws a Chip has no text to put in a file'
+      }
+    },
+    {
+      name: 'exportable',
+      type: 'boolean',
+      default: 'true',
+      description: { ko: '내보내기에서 이 열을 뺍니다', en: 'Leaves this column out of an export' }
+    },
     {
       name: 'key',
       type: 'string',
