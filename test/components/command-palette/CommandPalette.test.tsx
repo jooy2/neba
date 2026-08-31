@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { CommandPalette } from 'neba';
+import { readOS } from '../../../src/internal/keys.js';
 
 const ITEMS = [
   { value: 'home', label: 'Go to overview', group: 'Navigate', shortcut: 'G H' },
@@ -160,10 +161,12 @@ describe('CommandPalette', () => {
     });
 
     // `Mod` is the one token whose meaning changes with the platform, so the
-    // test has to ask the platform the same question the component does.
+    // test asks `readOS()` rather than re-deriving the answer. A second reading
+    // of the platform is a second chance to disagree with the one that binds
+    // the key, and disagreeing is exactly what it did.
     it('opens on the modifier this platform builds shortcuts on', async () => {
       const screen = await render(<CommandPalette items={ITEMS} />);
-      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+      const mac = readOS() === 'mac';
 
       await userEvent.keyboard(mac ? '{Meta>}k{/Meta}' : '{Control>}k{/Control}');
 
@@ -180,7 +183,7 @@ describe('CommandPalette', () => {
      * the same test are two palettes bound to the same key, and the second
      * `getByRole('dialog')` then has two to choose from.
      */
-    const MAC = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+    const MAC = readOS() === 'mac';
 
     for (const shortcut of MAC ? ['Cmd+K', 'Command+K', 'Meta+K'] : ['Ctrl+K', 'Control+K']) {
       it(`binds ${shortcut}, which Shortcut already drew`, async () => {

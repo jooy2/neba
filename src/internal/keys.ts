@@ -91,33 +91,55 @@ export function canonicalKey(token: string): string {
  *
  * `userAgentData.platform` is the modern spelling and `navigator.platform` the
  * deprecated one every browser still answers; the user agent string is the last
- * resort. All three are matched at once because the question is coarse.
+ * resort, and *last resort* is the load-bearing word. The three are asked in
+ * order and the first that says anything at all is the answer — never all three
+ * matched at once, which is what this used to do.
+ *
+ * A union of the three can only ever be wrong in one direction: towards `mac`.
+ * A WebKit build on Linux or Windows reports its own platform and a *Safari on
+ * macOS* user agent string, so a haystack holding both reads as a Mac, and
+ * `Mod` then binds Command on a keyboard that has no Command key — with
+ * `Shortcut` drawing a ⌘ over it. That is this file's own opening paragraph
+ * happening again, one layer down.
+ *
+ * The rule is a pure function so it can be asserted on directly: the browser
+ * this suite runs in only ever reports one of these combinations, and the one
+ * that broke is not it.
  */
+export function resolveOS(
+  userAgentDataPlatform: string | undefined,
+  platform: string | undefined,
+  userAgent: string | undefined
+): ResolvedOS {
+  const source = userAgentDataPlatform || platform || userAgent || '';
+
+  if (/mac|iphone|ipad|ipod/i.test(source)) {
+    return 'mac';
+  }
+  if (/win/i.test(source)) {
+    return 'windows';
+  }
+  return 'linux';
+}
+
 function detectOS(): ResolvedOS {
   if (typeof navigator === 'undefined') {
     return 'windows';
   }
 
   const data = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData;
-  const haystack = `${data?.platform ?? ''} ${navigator.platform ?? ''} ${navigator.userAgent ?? ''}`;
 
-  if (/mac|iphone|ipad|ipod/i.test(haystack)) {
-    return 'mac';
-  }
-  if (/win/i.test(haystack)) {
-    return 'windows';
-  }
-  return 'linux';
+  return resolveOS(data?.platform, navigator.platform, navigator.userAgent);
 }
 
 /**
  * The answer, once.
  *
- * `detectOS` builds a string out of three sources and runs two regular
- * expressions over it, its answer cannot change under a running page, and it is
- * asked on every render of every Shortcut and on every keystroke a bound field
- * sees. Returning the same string back is also what `useSyncExternalStore`
- * requires of a snapshot, which is how `Shortcut` reads it.
+ * `detectOS` walks three sources and runs two regular expressions over the one
+ * that answered, its answer cannot change under a running page, and it is asked
+ * on every render of every Shortcut and on every keystroke a bound field sees.
+ * Returning the same string back is also what `useSyncExternalStore` requires of
+ * a snapshot, which is how `Shortcut` reads it.
  */
 let detected: ResolvedOS | null = null;
 

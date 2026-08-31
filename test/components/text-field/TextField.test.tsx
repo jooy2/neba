@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { TextField } from 'neba';
+import { readOS } from '../../../src/internal/keys.js';
 
 describe('TextField', () => {
   describe('rendering', () => {
@@ -470,7 +471,7 @@ describe('TextField', () => {
       const screen = await render(
         <TextField label="Message" shortcuts={{ Enter: plain, 'Mod+Enter': withMod }} />
       );
-      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+      const mac = readOS() === 'mac';
 
       await screen.getByRole('textbox').click();
       await userEvent.keyboard('{Enter}');
@@ -514,7 +515,7 @@ describe('TextField', () => {
           shortcuts={{ 'Mod+Enter': (event) => bound.push(event.currentTarget.tagName) }}
         />
       );
-      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+      const mac = readOS() === 'mac';
 
       await screen.getByRole('textbox').click();
       await userEvent.keyboard(mac ? '{Meta>}{Enter}{/Meta}' : '{Control>}{Enter}{/Control}');

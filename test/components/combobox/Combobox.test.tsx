@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Combobox } from 'neba';
+import { readOS } from '../../../src/internal/keys.js';
 
 const FRAMEWORKS = [
   { value: 'react', label: 'React' },
@@ -437,7 +438,7 @@ describe('Combobox', () => {
       const screen = await render(
         <Combobox label="Framework" items={FRAMEWORKS} shortcuts={{ 'Mod+S': save }} />
       );
-      const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+      const mac = readOS() === 'mac';
 
       await screen.getByRole('combobox').click();
       await userEvent.keyboard(mac ? '{Meta>}s{/Meta}' : '{Control>}s{/Control}');

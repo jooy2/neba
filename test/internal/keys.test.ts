@@ -15,6 +15,7 @@ import {
   canonicalKey,
   matchesShortcut,
   readOS,
+  resolveOS,
   tokenize,
   type KeyPress
 } from '../../src/internal/keys.js';
@@ -36,6 +37,46 @@ function press(key: string, held: Partial<KeyPress> = {}): KeyPress {
 
 /** Whatever `Mod` resolves to here. */
 const mod = mac ? { metaKey: true } : { ctrlKey: true };
+
+/*
+ * The three sources are asked in order, and the order is the whole rule. This
+ * cannot be asserted through `readOS()` — the browser running this suite
+ * reports one combination and it is not the one that broke.
+ */
+describe('resolveOS', () => {
+  const SAFARI =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15';
+
+  it('takes the first source that says anything', () => {
+    expect(resolveOS('macOS', 'MacIntel', SAFARI)).toBe('mac');
+    expect(resolveOS('Windows', 'Win32', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)')).toBe(
+      'windows'
+    );
+    expect(resolveOS('Linux', 'Linux x86_64', 'Mozilla/5.0 (X11; Linux x86_64)')).toBe('linux');
+  });
+
+  /*
+   * A WebKit build off macOS reports its own platform and Safari-on-macOS's
+   * user agent string. Matched together they read as a Mac, and `Mod` then
+   * binds Command on a keyboard that has no Command key.
+   */
+  it('does not read a Mac user agent over a platform that is not one', () => {
+    expect(resolveOS(undefined, 'Linux x86_64', SAFARI)).toBe('linux');
+    expect(resolveOS(undefined, 'Win32', SAFARI)).toBe('windows');
+    expect(resolveOS('', 'Win32', SAFARI)).toBe('windows');
+  });
+
+  it('falls back to the user agent, and only when nothing above it answered', () => {
+    expect(resolveOS(undefined, '', SAFARI)).toBe('mac');
+    expect(resolveOS('', '', 'Mozilla/5.0 (X11; Linux x86_64)')).toBe('linux');
+    expect(resolveOS(undefined, undefined, undefined)).toBe('linux');
+  });
+
+  it('reads a phone and a tablet as the platform their keyboards behave like', () => {
+    expect(resolveOS(undefined, 'iPhone', undefined)).toBe('mac');
+    expect(resolveOS(undefined, 'iPad', undefined)).toBe('mac');
+  });
+});
 
 describe('tokenize', () => {
   it('splits on + and drops what a trailing one leaves behind', () => {

@@ -21,6 +21,7 @@ import {
   useShortcut
 } from 'neba/hooks';
 import { useDisclosure as useDisclosureFromBarrel } from 'neba';
+import { readOS } from '../../src/internal/keys.js';
 
 describe('useDisclosure', () => {
   function Panel() {
@@ -216,7 +217,7 @@ describe('useShortcut', () => {
     }
 
     await render(<Bound />);
-    const mac = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+    const mac = readOS() === 'mac';
 
     await userEvent.keyboard(
       mac ? '{Meta>}{Shift>}P{/Shift}{/Meta}' : '{Control>}{Shift>}P{/Shift}{/Control}'
