@@ -63,16 +63,26 @@ describe('Image', () => {
     await vi.waitFor(() => expect(onLoadingStatusChange).toHaveBeenLastCalledWith('failed'));
   });
 
+  /*
+   * No `src` at all, rather than one that is going to fail. `BROKEN` never
+   * reaches the loading phase in WebKit: a malformed data URI needs no network
+   * and no decode, so `error` is dispatched before the first assertion can
+   * look, and what this found was the fallback. An `<img>` with nothing to
+   * fetch fires neither `load` nor `error` in any browser, which is the loading
+   * phase held still — and holding it still is the only way to assert on it.
+   */
   it('stands a placeholder in while the file is arriving', async () => {
-    const screen = await render(
-      <Image src={BROKEN} alt="A ridge" placeholder={<span>loading…</span>} />
-    );
+    const screen = await render(<Image alt="A ridge" placeholder={<span>loading…</span>} />);
 
     await expect.element(screen.getByText('loading…')).toBeInTheDocument();
   });
 
+  // Held in the loading phase for the reason above, and here it is the whole
+  // test: with a `src` that fails immediately the phase is `failed` before this
+  // looks, and an assertion that no placeholder was drawn passes without the
+  // prop under test having been read at all.
   it('draws no placeholder when told not to', async () => {
-    const screen = await render(<Image src={BROKEN} alt="A ridge" placeholder={false} />);
+    const screen = await render(<Image alt="A ridge" placeholder={false} />);
 
     expect(screen.container.querySelectorAll('[class*="animate"]').length).toBe(0);
   });
