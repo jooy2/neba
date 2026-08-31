@@ -207,15 +207,15 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 
 | What a consumer imports       | Bundle   | Of which is Neba's own code |
 | ----------------------------- | -------- | --------------------------- |
-| `Divider`                     | 3.0 kB   | 1.3 kB                      |
-| `Button`                      | 5.0 kB   | 2.2 kB                      |
-| `Chip`                        | 3.0 kB   | 3.0 kB                      |
-| `LineChart`                   | 11.3 kB  | 9.8 kB                      |
-| `CodeBlock`                   | 4.9 kB   | 4.9 kB                      |
-| 12 components — a typical app | 67.9 kB  | 11.4 kB                     |
-| 25 components — a large one   | 112.3 kB | 17.4 kB                     |
-| a whole page shell            | 28.4 kB  | 8.8 kB                      |
-| all 146 exports               | 241.3 kB | 114.9 kB                    |
+| `Divider`                     | 3.2 kB   | 1.5 kB                      |
+| `Button`                      | 5.1 kB   | 2.3 kB                      |
+| `Chip`                        | 3.2 kB   | 3.2 kB                      |
+| `LineChart`                   | 11.4 kB  | 9.9 kB                      |
+| `CodeBlock`                   | 5.0 kB   | 5.0 kB                      |
+| 12 components — a typical app | 68.2 kB  | 11.7 kB                     |
+| 25 components — a large one   | 112.6 kB | 17.7 kB                     |
+| a whole page shell            | 28.5 kB  | 8.9 kB                      |
+| all 164 exports               | 248.1 kB | 121.7 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
@@ -233,9 +233,11 @@ Five things hold the numbers above in place. Each of them, broken, is invisible 
 2. **Every relative specifier ends in `.js`.** `tsc` under `module: Preserve` emits specifiers verbatim, so an extensionless `export * from './types'` reaches `dist/` unchanged — and Node's ESM resolver rejects it, as does TypeScript under `moduleResolution: node16`, where it takes out every named export of the barrel at once. Vite resolves it fine, which is exactly why nothing in this repository noticed for eighty-eight components.
 3. **An `@__PURE__` annotation on every `forwardRef`, `createContext` and `memo` call.** A bundler cannot prove `React.forwardRef(…)` is side-effect free, so in a file that exports more than one component the unused ones survive. `scripts/annotate-pure.mjs` writes them into `dist/` between `tsc` and `terser` — never into `src/`, where sixteen characters in front of an already long line makes Prettier rewrap the signature and re-indent the whole function body, which was one annotation and a hundred-line diff in seventy-seven files. It counts what it marked against what `src/` contains and fails the build on a mismatch, because the failure mode of a pattern over emitted code is that it quietly stops matching. Terser then has to be told to write the annotations out again: `output.preserve_annotations` in `terser.config.json`. The two settings are useless apart, and removing either silently costs about a quarter of a multi-part component.
 4. **Fixed-cost modules stay divisible.** A table every component reaches through is a table every component pays for in full. `i18n.ts` is one export per namespace and English only; `icons.tsx` reaches its severity set through a function. The rule generalises: an object literal cannot be tree-shaken per key, so anything that would grow past a few hundred bytes belongs in separate exports or separate modules.
-5. **Every component is its own entry point.** `neba/button`, through the `./*` pattern in `exports`. The bundle is the same either way — `import { Button } from 'neba'` already shakes correctly — but the barrel makes a bundler parse two hundred modules to keep five, and the subpath makes it parse five. It is also the escape hatch for a build that ignores `sideEffects`.
+5. **`internal/defaults.ts` stays one `useContext`.** Every component that takes `size`, `density`, `variant` or `locale` calls `useStyleDefaults` before its own destructuring, so whatever is in that module is a fixed cost on the smallest component in the library — it is 0.2 kB gzipped, which is 5% of a Chip. Anything added to it is added to all of them. The hook returns the props object untouched when there is no provider, which is what keeps a page that has none paying only the `useContext`.
 
-`test/package/resolution.test.ts` asserts all five as structure; `npm run size` asserts the bytes they add up to. Both are needed: a change can keep every invariant above and still double what a consumer downloads, and a change can break one of them without moving a scenario the budget happens to measure.
+6. **Every component is its own entry point.** `neba/button`, through the `./*` pattern in `exports`. The bundle is the same either way — `import { Button } from 'neba'` already shakes correctly — but the barrel makes a bundler parse two hundred modules to keep five, and the subpath makes it parse five. It is also the escape hatch for a build that ignores `sideEffects`.
+
+`test/package/resolution.test.ts` asserts them as structure; `npm run size` asserts the bytes they add up to. Both are needed: a change can keep every invariant above and still double what a consumer downloads, and a change can break one of them without moving a scenario the budget happens to measure.
 
 Things measured and **rejected**, so they do not get re-litigated: minifier option tuning (under 1%), splitting the stylesheet per component (above), dropping Tailwind's `@property` fallback for older Safari (0.4 kB gzip), and per-key tree-shaking of the size and density ladders in `internal/styles.ts` (impossible in principle, and they are a few hundred bytes).
 
@@ -414,7 +416,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 4 need Node 20.19+/22.12+, so the declared floor is stale.
 - Both `package-lock.json` and `pnpm-lock.yaml` are checked in; `pnpm-workspace.yaml` exists for pnpm users. Match whichever lockfile the working tree already reflects rather than switching package managers.
 - `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
-- `terser.config.json` sets `compress.directives: false`, and it exists for `'use client'`. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, so it strips it from all one hundred and twenty-three files without a word. The published package then says nothing at all to Next.js, and nothing in this repository would notice. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser would otherwise eat on the way out.
+- `terser.config.json` sets `compress.directives: false`, and it exists for `'use client'`. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, so it strips it from all a hundred and thirty files without a word. The published package then says nothing at all to Next.js, and nothing in this repository would notice. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser would otherwise eat on the way out.
 - `terser.config.json` sets `output.preserve_annotations`, and it exists for `scripts/annotate-pure.mjs`. Terser understands an `@__PURE__` comment and, by default, consumes it without emitting it again — which would hand the consumer's bundler minified files with the annotations gone. Neither `output.comments` nor `--comments` brings them back; this option is the one that does.
 - `npm run build` has four steps and their order is load-bearing: `tsc`, then `annotate-pure`, then `minify`, then `build-styles`. The annotations have to be written after the JavaScript exists and before terser reads it.
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.

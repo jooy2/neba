@@ -48,7 +48,7 @@ export interface ConfirmOptions {
 /** Asks, and resolves to what the reader answered. */
 export type ConfirmFunction = (options: ConfirmOptions | string) => Promise<boolean>;
 
-const ConfirmContext = /* @__PURE__ */ React.createContext<ConfirmFunction | null>(null);
+const ConfirmContext = React.createContext<ConfirmFunction | null>(null);
 
 export interface ConfirmProviderProps {
   children?: React.ReactNode;

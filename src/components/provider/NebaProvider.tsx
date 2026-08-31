@@ -58,7 +58,7 @@ export interface NebaProviderProps {
   direction?: NebaDirection;
 }
 
-const ColorSchemeContext = /* @__PURE__ */ React.createContext<ColorSchemeState | null>(null);
+const ColorSchemeContext = React.createContext<ColorSchemeState | null>(null);
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 

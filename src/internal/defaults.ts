@@ -33,7 +33,7 @@ export type DefaultableKey = keyof NebaDefaults;
  * making free: `useStyleDefaults` hands the props straight back without
  * allocating, so a page with no provider pays a `useContext` and nothing else.
  */
-export const DefaultsContext = /* @__PURE__ */ React.createContext<NebaDefaults | null>(null);
+export const DefaultsContext = React.createContext<NebaDefaults | null>(null);
 
 /**
  * Fills in the axes the caller left out, from the provider above.
