@@ -125,6 +125,7 @@ import {
   TimelineItem,
   Transfer,
   TreeItem,
+  TreeSelect,
   TreeView,
   ToastProvider,
   Sidebar,
@@ -141,7 +142,8 @@ import {
   useToast,
   type DateRange,
   type DataTableColumn,
-  type TableColumn
+  type TableColumn,
+  type TreeViewValue
 } from 'neba';
 
 /**
@@ -504,6 +506,32 @@ function Caption({ children }: { children: ReactNode }) {
   );
 }
 
+/** An org chart whose branches are headings and whose leaves are the teams. */
+const TEAM_TREE = [
+  {
+    value: 'engineering',
+    label: 'Engineering',
+    children: [
+      { value: 'platform', label: 'Platform' },
+      { value: 'web', label: 'Web' },
+      { value: 'mobile', label: 'Mobile' }
+    ]
+  },
+  {
+    value: 'design',
+    label: 'Design',
+    children: [
+      { value: 'product-design', label: 'Product' },
+      { value: 'brand', label: 'Brand' }
+    ]
+  },
+  {
+    value: 'support',
+    label: 'Support',
+    children: [{ value: 'success', label: 'Customer success' }]
+  }
+];
+
 export default function Showcase() {
   // Both providers have to be above whatever calls `useToast` and `useConfirm`,
   // so the screen is the host and its body is a child.
@@ -519,6 +547,7 @@ export default function Showcase() {
 function ShowcaseBody() {
   const toast = useToast();
   const confirm = useConfirm();
+  const [team, setTeam] = useState<TreeViewValue[]>(['web']);
   const [name, setName] = useState('Jane Doe');
   const [email, setEmail] = useState('jane@example.com');
   const [saving, setSaving] = useState(false);
@@ -1224,6 +1253,18 @@ function ShowcaseBody() {
                   items={TAG_OPTIONS}
                   value={tags}
                   onValueChange={setTags}
+                />
+                <TreeSelect
+                  fullWidth
+                  label="Team"
+                  placeholder="Pick a team"
+                  description="The branches are the org chart; only the teams can be chosen."
+                  items={TEAM_TREE}
+                  value={team}
+                  onValueChange={setTeam}
+                  defaultExpanded={['engineering']}
+                  searchable
+                  clearable
                 />
                 <Checkbox label="Show my email to other members" description="Members only." />
                 <Divider>Files</Divider>

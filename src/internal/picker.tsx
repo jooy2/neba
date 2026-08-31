@@ -157,6 +157,12 @@ interface InternalShellProps extends PickerShellProps {
   hiddenValues?: Array<{ name: string; value: string }>;
   /** How far off the trigger the popup sits. */
   sideOffset?: number;
+  /**
+   * A class name for the popup itself, which no `className` can reach: it is
+   * portalled to the end of `<body>`, outside the element the root class lands
+   * on. Only TreeSelect offers it to a caller so far.
+   */
+  popupClassName?: string;
   children: React.ReactNode;
   triggerRef?: React.Ref<HTMLButtonElement>;
 }
@@ -197,6 +203,7 @@ export function PickerShell({
   labels,
   hiddenValues,
   sideOffset = 6,
+  popupClassName,
   children,
   triggerRef,
   ...props
@@ -326,7 +333,8 @@ export function PickerShell({
                 pickerPopupClasses,
                 radiusClasses[size],
                 popupPaddingClasses[size],
-                controlTextLeadingClasses[size]
+                controlTextLeadingClasses[size],
+                popupClassName
               )}
               style={popupSlots(family, 3)}
             >

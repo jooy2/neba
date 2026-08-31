@@ -135,6 +135,7 @@ import {
   Tour,
   Transfer,
   TreeItem,
+  TreeSelect,
   TreeView,
   Typography,
   VisuallyHidden,
@@ -555,6 +556,36 @@ const GROUPS: Group[] = [
               color="secondary"
             />
           </div>
+        )
+      },
+      {
+        name: 'TreeSelect',
+        summary: {
+          ko: '목록이 아니라 트리에서 고르는 값',
+          en: 'A value chosen from a tree rather than a list'
+        },
+        path: '/components/inputs/tree-select',
+        preview: (
+          <TreeSelect
+            label="Category"
+            placeholder="Pick a category"
+            defaultValue="laptops"
+            items={[
+              {
+                value: 'hardware',
+                label: 'Hardware',
+                children: [
+                  { value: 'laptops', label: 'Laptops' },
+                  { value: 'monitors', label: 'Monitors' }
+                ]
+              },
+              {
+                value: 'software',
+                label: 'Software',
+                children: [{ value: 'design', label: 'Design tools' }]
+              }
+            ]}
+          />
         )
       },
       {

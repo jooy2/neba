@@ -4692,6 +4692,165 @@ export const propTables: Record<string, PropRow[]> = {
     slotsProp('label', 'control', 'description', 'error', 'popup', 'item')
   ],
 
+  TreeSelect: [
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '표면의 무게. TextField·Select와 같은 셸입니다',
+        en: 'Weight of the surface. The same shell as a TextField and a Select'
+      }
+    }),
+    {
+      name: 'items',
+      type: 'TreeSelectItem[]',
+      description: { ko: '중첩된 item으로 표현한 트리', en: 'The tree, as nested items' }
+    },
+    {
+      name: 'value',
+      type: 'TreeViewValue | TreeViewValue[] | null',
+      description: {
+        ko: '고른 값, multiple이면 값들. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The chosen value, or values when multiple. Use with onValueChange for a controlled one'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'TreeViewValue | TreeViewValue[] | null',
+      description: { ko: '초기 값', en: 'The initial value, for an uncontrolled one' }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: TreeViewValue[]) => void',
+      description: {
+        ko: '선택이 바뀔 때. single에서도 배열로 옵니다',
+        en: 'Called when the selection changes — an array even in single mode'
+      }
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '둘 이상을 담을 수 있는지', en: 'Whether more than one node may be held' }
+    },
+    {
+      name: 'selectableBranches',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '자식이 있는 노드도 고를 수 있는지. 기본값이 꺼짐인 이유는 대부분의 트리에서 가지가 분류 체계이고 잎이 답이기 때문 — France 옆에서 고를 수 있는 Europe은 보통 아무도 의도하지 않은 모델입니다',
+        en: 'Whether a node with children may itself be chosen. Off by default because in most of these trees the branches are the taxonomy and the leaves are the answers: a Europe choosable alongside France is a data model nobody meant'
+      }
+    },
+    {
+      name: 'searchable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '트리를 거르는 필드를 위에 붙입니다. 일치한 노드는 조상과 함께 남고 남은 가지는 펼쳐집니다 — 조상 없는 일치는 목록이고, 접힌 일치는 보여 주지 않은 일치입니다',
+        en: 'Adds a field above the tree that filters it. A match keeps its ancestors and every kept branch is opened: a match without them is a list, and a folded one was not shown'
+      }
+    },
+    {
+      name: 'searchPlaceholder',
+      type: 'string',
+      description: { ko: '그 필드의 placeholder', en: "The search field's placeholder" }
+    },
+    {
+      name: 'expanded',
+      type: 'TreeViewValue[]',
+      description: {
+        ko: '펼쳐진 가지들. onExpandedChange와 함께 제어합니다',
+        en: 'Which branches are open. Use with onExpandedChange to control them'
+      }
+    },
+    {
+      name: 'defaultExpanded',
+      type: 'TreeViewValue[]',
+      description: { ko: '처음에 펼쳐진 가지들', en: 'Which branches start open' }
+    },
+    {
+      name: 'onExpandedChange',
+      type: '(expanded: TreeViewValue[]) => void',
+      description: { ko: '펼침이 바뀔 때', en: 'Called when a branch opens or closes' }
+    },
+    {
+      name: 'format',
+      type: '(chosen: TreeSelectItem[]) => ReactNode',
+      description: {
+        ko: 'trigger가 담긴 것을 쓰는 방식. 기본값은 라벨을 쉼표로 이은 것',
+        en: 'How the trigger writes what is held. The labels, comma-joined, by default'
+      }
+    },
+    {
+      name: 'closeOnSelect',
+      type: 'boolean',
+      default: '!multiple',
+      description: {
+        ko: '고르는 즉시 팝업을 닫습니다',
+        en: 'Closes the popup as soon as a node is chosen'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 제출 시의 필드 이름. 값 하나당 hidden input 하나로 나갑니다',
+        en: 'Identifies the field when a form is submitted — one hidden input per value'
+      }
+    },
+    slotsProp('popup', 'tree', 'item', 'empty'),
+    ...fieldProps,
+    ...inertProps
+  ],
+
+  TreeSelectItem: [
+    {
+      name: 'value',
+      type: 'string | number',
+      description: {
+        ko: '고를 때 저장되는 것. 형제들 사이가 아니라 트리 전체에서 유일해야 합니다',
+        en: 'What is stored when this node is chosen. Unique across the whole tree, not just among siblings'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: { ko: '행에 그려지는 것', en: 'What the row draws' }
+    },
+    {
+      name: 'searchLabel',
+      type: 'string',
+      description: {
+        ko: '검색이 대조하는 문자열. label이 문자열이면 그것으로 대신합니다',
+        en: 'What a search matches against. Falls back to label when it is a string'
+      }
+    },
+    {
+      name: 'startIcon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 글리프', en: 'A glyph before the label' }
+    },
+    {
+      name: 'selectable',
+      type: 'boolean',
+      description: {
+        ko: '이 노드 자체를 고를 수 있는지. 잎은 true, 자식이 있으면 selectableBranches를 따릅니다',
+        en: 'Whether this node may itself be chosen. true for a leaf; a node with children follows selectableBranches'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      description: { ko: '고를 수 없음', en: 'Cannot be chosen' }
+    },
+    {
+      name: 'children',
+      type: 'TreeSelectItem[]',
+      description: { ko: '이 노드 아래의 노드들', en: 'The nodes under this one' }
+    }
+  ],
+
   Calendar: [
     ...sharedProps({
       variant: '—',
