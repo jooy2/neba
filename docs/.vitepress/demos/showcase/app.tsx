@@ -5,6 +5,12 @@ import {
   Alert,
   Anchor,
   AnimateAppear,
+  AnimateSplit,
+  AnimateShake,
+  AnimateScramble,
+  AnimateReveal,
+  AnimateFloat,
+  AnimateCounter,
   AnimateHeadline,
   AnimateLighting,
   AnimateMarquee,
@@ -13,7 +19,6 @@ import {
   AreaChart,
   AspectRatio,
   Avatar,
-  AvatarGroup,
   Badge,
   BarChart,
   Blockquote,
@@ -111,6 +116,7 @@ import {
   Slider,
   Sparkline,
   Spoiler,
+  Stack,
   Statistic,
   Switch,
   Tab,
@@ -606,8 +612,7 @@ function ShowcaseBody() {
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Toolbar · Icon · IconButton · Pill · Avatar · AvatarGroup · Breadcrumb · Tour ·
-            VisuallyHidden
+            Toolbar · Icon · IconButton · Pill · Avatar · Stack · Breadcrumb · Tour · VisuallyHidden
           </Caption>
           <Toolbar
             render={<header />}
@@ -645,12 +650,18 @@ function ShowcaseBody() {
                 <Button size="xs" variant="text" color="secondary" onClick={() => setTour(true)}>
                   Show me around
                 </Button>
-                <AvatarGroup size="sm" max={3} total={9}>
-                  <Avatar name="Kim Minji" />
-                  <Avatar name="Alex Park" />
-                  <Avatar name="Sam Lee" />
-                  <Avatar name="Noa Cohen" />
-                </AvatarGroup>
+                <Stack
+                  size="sm"
+                  max={3}
+                  total={9}
+                  ring
+                  overflow={(hidden) => <Avatar size="sm" initials={`+${hidden}`} />}
+                >
+                  <Avatar size="sm" name="Kim Minji" />
+                  <Avatar size="sm" name="Alex Park" />
+                  <Avatar size="sm" name="Sam Lee" />
+                  <Avatar size="sm" name="Noa Cohen" />
+                </Stack>
                 <Badge dot color="success" overlap="circle" label="Online">
                   <Avatar size="sm" name="Jane Doe" />
                 </Badge>
@@ -1579,7 +1590,9 @@ function ShowcaseBody() {
             them is the only thing saying what it says. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            AnimateHeadline · AnimateTyping · AnimateAppear · AnimateLighting · AnimateMarquee
+            AnimateHeadline · AnimateTyping · AnimateSplit · AnimateScramble · AnimateCounter ·
+            AnimateAppear · AnimateReveal · AnimateFloat · AnimateShake · AnimateLighting ·
+            AnimateMarquee
           </Caption>
           <Card size="sm" title={<h3>What changed this week</h3>} dividers>
             <div className="flex flex-col gap-4">
@@ -1607,6 +1620,47 @@ function ShowcaseBody() {
                 repeat="infinite"
                 erase
               />
+
+              <AnimateSplit trigger="visible" className="text-sm text-(--neba-fg)" stagger={60}>
+                Every service, one word at a time
+              </AnimateSplit>
+
+              <AnimateScramble
+                className="font-mono text-xs tracking-wide text-(--neba-muted-fg)"
+                text="RESOLVING DNS"
+                speed={9}
+                repeat="infinite"
+              />
+
+              <div className="flex items-center gap-4">
+                <Statistic
+                  size="sm"
+                  label="Requests today"
+                  value={
+                    <AnimateCounter
+                      trigger="visible"
+                      value={482900}
+                      format={{ notation: 'compact' }}
+                    />
+                  }
+                />
+                <AnimateFloat distance={6}>
+                  <Chip size="sm" color="info" variant="solid">
+                    live
+                  </Chip>
+                </AnimateFloat>
+                <AnimateShake trigger="hover">
+                  <Chip size="sm" color="danger" variant="outline">
+                    1 failing
+                  </Chip>
+                </AnimateShake>
+              </div>
+
+              <AnimateReveal trigger="visible" duration={900}>
+                <Typography level="caption" color="secondary">
+                  Nothing moved. It was let through.
+                </Typography>
+              </AnimateReveal>
 
               <AnimateAppear trigger="visible" stagger={90} className="flex flex-wrap gap-2">
                 {['api', 'web', 'workers', 'docs', 'billing'].map((service) => (

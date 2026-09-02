@@ -4,9 +4,14 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAnimateProps } from '../../types.js';
+import type { NebaAnimateProps, NebaStaggerProps, NebaTimelineProps } from '../../types.js';
 
-export interface AnimateBlinkProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+export interface AnimateBlinkProps
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /**
    * How faint it gets at the bottom of the cycle, between `0` and `1`. Raise it
    * for something that has to stay readable while it pulses.
@@ -47,6 +52,11 @@ export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
       play,
       once = true,
       threshold = 0.2,
+      stagger = 0,
+      durationStep = 0,
+      reverse = false,
+      timeline,
+      range,
       min = 0,
       render,
       className,
@@ -69,7 +79,13 @@ export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
       once,
       threshold,
       paused,
-      infinite: isInfinite(repeat)
+      infinite: isInfinite(repeat),
+      timeline,
+      range,
+      children,
+      stagger,
+      durationStep,
+      reverse
     });
 
     return useRender({
@@ -80,7 +96,7 @@ export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
         className: cx(animate.className, className),
         style: { ...animate.style, ...style },
         ...animate.props,
-        children
+        children: animate.children
       }
     });
   }

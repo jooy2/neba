@@ -57,6 +57,10 @@ The most common use of a zoom is a figure that lands as the reader reaches it. `
 </AnimateZoom>
 ```
 
+### stagger
+
+`stagger`, `durationStep` and `reverse` hand the effect to the children one at a time instead of running it on the box. They work the same way here as on [AnimateFade](./animate-fade), where they are set out in full.
+
 ## Accessibility
 
 - A reduced-motion preference switches the animation off entirely and the content is simply there, at full size.

@@ -4,9 +4,19 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAnimateMode, NebaAnimateProps } from '../../types.js';
+import type {
+  NebaAnimateMode,
+  NebaAnimateProps,
+  NebaStaggerProps,
+  NebaTimelineProps
+} from '../../types.js';
 
-export interface AnimateZoomProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+export interface AnimateZoomProps
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /**
    * Whether the content comes forward or falls away.
    * @default 'in'
@@ -52,6 +62,11 @@ export const AnimateZoom = React.forwardRef<HTMLDivElement, AnimateZoomProps>(fu
     play,
     once = true,
     threshold = 0.2,
+    stagger = 0,
+    durationStep = 0,
+    reverse = false,
+    timeline,
+    range,
     mode = 'in',
     from = 0.4,
     fade = true,
@@ -78,7 +93,13 @@ export const AnimateZoom = React.forwardRef<HTMLDivElement, AnimateZoomProps>(fu
     once,
     threshold,
     paused,
-    infinite: isInfinite(repeat)
+    infinite: isInfinite(repeat),
+    timeline,
+    range,
+    children,
+    stagger,
+    durationStep,
+    reverse
   });
 
   return useRender({
@@ -89,7 +110,7 @@ export const AnimateZoom = React.forwardRef<HTMLDivElement, AnimateZoomProps>(fu
       className: cx(animate.className, className),
       style: { transformOrigin: 'center', ...animate.style, ...style },
       ...animate.props,
-      children
+      children: animate.children
     }
   });
 });

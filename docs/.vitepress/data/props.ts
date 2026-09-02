@@ -549,6 +549,11 @@ interface AnimateOptions {
   repeat?: string;
   /** Left out by the four that write their own motion. */
   mode?: boolean;
+  /**
+   * The component's own default step, for the seven that can hand the effect to
+   * their children. Left out by the ones that already read what a child *is*.
+   */
+  stagger?: string;
 }
 
 /**
@@ -560,6 +565,40 @@ interface AnimateOptions {
  */
 function animateProps(options: AnimateOptions): PropRow[] {
   return [
+    ...(options.stagger === undefined
+      ? []
+      : ([
+          {
+            name: 'stagger',
+            type: 'number',
+            default: options.stagger,
+            shared: true,
+            description: {
+              ko: '한 자식 뒤 다음 자식이 시작하기까지의 간격(ms). 0이면 상자 자체가 재생되고, 그보다 크면 효과가 자식 하나하나에게 넘어갑니다',
+              en: 'How long after one child the next one starts, in milliseconds. 0 animates the box itself; anything above it moves the effect onto each child in turn'
+            }
+          },
+          {
+            name: 'durationStep',
+            type: 'number',
+            default: '0',
+            shared: true,
+            description: {
+              ko: '자식마다 재생 시간에 더해지는 값(ms). 음수면 뒤로 갈수록 빨라지며, 0 아래로는 내려가지 않습니다',
+              en: 'How much longer each successive child takes, in milliseconds. Negative speeds them up down the list, and never past zero'
+            }
+          },
+          {
+            name: 'reverse',
+            type: 'boolean',
+            default: 'false',
+            shared: true,
+            description: {
+              ko: '마지막 자식부터 실행합니다. 순서만 뒤집히고 각 자식은 그대로 재생됩니다',
+              en: 'Runs the children from the last to the first. Only the order reverses'
+            }
+          }
+        ] satisfies PropRow[])),
     ...(options.mode === false
       ? []
       : [
@@ -3516,29 +3555,30 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
-  AvatarGroup: [
+  Stack: [
     {
-      name: 'max',
-      type: 'number',
+      name: 'direction',
+      type: "'horizontal' | 'vertical' | 'diagonal'",
+      default: "'horizontal'",
       description: {
-        ko: '나머지가 숫자가 되기 전까지 그려지는 아바타 개수. 지정하지 않으면 전부 그립니다',
-        en: 'How many avatars are drawn before the rest become a count. Left out, every one of them is drawn'
-      }
-    },
-    {
-      name: 'total',
-      type: 'number',
-      description: {
-        ko: '전체 인원 수. 앞의 몇 명만 전달받은 그룹을 위한 것으로, 없으면 children 개수로 계산합니다',
-        en: 'How many there are altogether, for a group handed only the first few. Without it the count comes from the children'
+        ko: '더미가 자라는 방향. diagonal은 가로로 흐르면서 한 칸씩 내려앉습니다',
+        en: 'Which way the pile grows. diagonal flows along the inline axis and drops each item as it goes'
       }
     },
     {
       name: 'overlap',
       type: 'number | string',
       description: {
-        ko: '각 아바타가 앞선 아바타 아래로 들어가는 거리. 숫자는 px입니다. 지정하지 않으면 size의 일정 비율입니다',
-        en: 'How far each avatar sits under the one before it. Numbers are pixels; left out it is a fraction of size'
+        ko: '각 항목이 앞선 항목 아래로 들어가는 거리. 숫자는 px이고, 지정하지 않으면 size의 일정 비율입니다',
+        en: 'How far each item sits under the one before it, along the axis the stack flows on. Numbers are pixels; left out it is a fraction of size'
+      }
+    },
+    {
+      name: 'drop',
+      type: 'number | string',
+      description: {
+        ko: '흐르지 않는 축으로 각 항목이 내려앉는 거리. diagonal만 읽으며 기본값은 overlap입니다',
+        en: 'How far each item falls on the axis the stack does not flow along. Only diagonal reads it; defaults to overlap'
       }
     },
     {
@@ -3547,55 +3587,115 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '그룹 안의 모든 아바타의 크기',
-        en: 'The size of every avatar in the group'
+        ko: '쌓는 것들의 크기. overlap의 기본값을 정하는 데에만 쓰입니다',
+        en: 'The size of the things being stacked, read only to work out the default overlap'
       }
     },
     {
-      name: 'shape',
-      type: "'circle' | 'square'",
-      default: "'circle'",
+      name: 'max',
+      type: 'number',
       description: {
-        ko: '그룹 안의 모든 아바타의 크롭',
-        en: 'The crop of every avatar in the group'
+        ko: '나머지가 overflow로 넘어가기 전까지 그려지는 개수. 지정하지 않으면 전부 그립니다',
+        en: 'How many items are drawn before the rest become an overflow marker. Left out, every one of them is drawn'
       }
     },
     {
-      name: 'variant',
-      type: VARIANT,
-      default: "'text'",
+      name: 'total',
+      type: 'number',
+      description: {
+        ko: '전체 개수. 앞의 몇 개만 전달받았을 때를 위한 것으로, 없으면 children 개수로 계산합니다',
+        en: 'How many there are altogether, for a stack handed only the first few. Without it the count comes from the children'
+      }
+    },
+    {
+      name: 'overflow',
+      type: '(hidden: number) => ReactNode',
+      description: {
+        ko: '들어가지 못한 개수를 받아 더미 맨 뒤에 놓일 항목을 만듭니다',
+        en: 'What stands in for the ones that did not fit, given how many those are. Drawn as one more item at the back'
+      }
+    },
+    {
+      name: 'front',
+      type: "'first' | 'last'",
+      default: "'first'",
+      description: {
+        ko: '어느 쪽 끝이 더미의 맨 앞인지',
+        en: 'Which end of the list is at the front of the pile'
+      }
+    },
+    {
+      name: 'scaleStep',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '앞 항목 대비 곱해지는 배율. 0.94면 한 단계마다 6%씩 작아집니다',
+        en: 'What each item is multiplied by against the one in front of it. 0.94 takes six per cent off at every step'
+      }
+    },
+    {
+      name: 'opacityStep',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '투명도에 대한 같은 값. 등장 애니메이션의 페이드와 곱해집니다',
+        en: 'The same for opacity. It multiplies with an entrance own fade rather than replacing it'
+      }
+    },
+    {
+      name: 'ring',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '각 항목 둘레에 페이지 표면색 실선을 그립니다. 비슷한 톤의 형태 둘이 겹치면 그 사이에 경계가 전혀 없기 때문입니다',
+        en: 'Draws a hairline in the page own surface colour around each item — two shapes of similar tone laid over each other have no edge between them at all'
+      }
+    },
+    {
+      name: 'transition',
+      type: 'NebaTransition',
       shared: true,
       description: {
-        ko: '그룹 안의 모든 아바타의 표면 무게',
-        en: 'The weight of the surface behind every fallback in the group'
+        ko: '각 항목이 도착하는 방식. 라이브러리 공통 transition 어휘입니다',
+        en: 'How each item arrives, in the library own transition vocabulary'
       }
     },
     {
-      name: 'color',
-      type: COLOR,
-      default: "'primary'",
-      shared: true,
-      description: {
-        ko: '그룹 안의 모든 아바타의 색 역할',
-        en: 'The colour role of every avatar in the group'
-      }
-    },
-    {
-      name: 'elevation',
-      type: ELEVATION,
+      name: 'stagger',
+      type: 'number',
       default: '0',
       shared: true,
       description: {
-        ko: '그룹 안의 모든 아바타의 그림자 깊이',
-        en: 'Drop shadow depth for every avatar in the group'
+        ko: '항목마다 더해지는 지연(ms). 더미가 나타나는 대신 한 장씩 놓이게 만드는 값입니다',
+        en: 'Milliseconds added to each item delay in turn — what makes the pile look dealt rather than appeared'
+      }
+    },
+    {
+      name: 'durationStep',
+      type: 'number',
+      default: '0',
+      shared: true,
+      description: {
+        ko: '항목마다 재생 시간에 더해지는 값(ms). 0 아래로는 내려가지 않습니다',
+        en: 'Milliseconds added to each item duration in turn, and never past zero'
+      }
+    },
+    {
+      name: 'reverse',
+      type: 'boolean',
+      default: 'false',
+      shared: true,
+      description: {
+        ko: '마지막 항목부터 실행합니다. 순서만 뒤집힙니다',
+        en: 'Runs the items from the last to the first. Only the order reverses'
       }
     },
     {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: 'Avatar들. 첫 번째가 맨 위에 옵니다',
-        en: 'The avatars. The first one is on top'
+        ko: '쌓을 것들. 최상위 자식 하나가 항목 하나입니다',
+        en: 'The things being stacked. Every top-level child is one item'
       }
     }
   ],
@@ -7543,6 +7643,23 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'overflow',
+      type: "'scroll' | 'wrap'",
+      default: "'scroll'",
+      description: {
+        ko: '자리보다 탭이 많을 때 할 일. scroll은 한 줄을 유지한 채 스크롤하며 남은 쪽 끝을 흐리고, wrap은 필요한 만큼 줄을 씁니다',
+        en: 'What a bar with more tabs than room does. scroll stays one line and fades the end that has more past it; wrap takes as many lines as it needs'
+      }
+    },
+    {
+      name: 'lines',
+      type: 'number',
+      description: {
+        ko: '바가 가질 수 있는 최대 탭 줄 수. 그 위로는 스크롤합니다. overflow가 wrap일 때만 읽습니다',
+        en: 'The most tab-rows the bar may be tall; past it the bar scrolls. Only read when overflow is wrap'
+      }
+    },
+    {
       name: 'fullWidth',
       type: 'boolean',
       default: 'false',
@@ -8443,11 +8560,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'value',
-      type: 'number | string',
+      type: 'ReactNode',
       required: true,
       description: {
-        ko: '수치. 숫자는 형식이 적용되고, 문자열은 그대로 찍힙니다 — 숫자가 아닌 값("3h 42m", "A+")을 위해서',
-        en: 'The figure. A number is formatted; a string is printed exactly as given, for the values that are not numbers at all — "3h 42m", "A+"'
+        ko: '수치. 숫자는 형식이 적용되고, 그 밖의 것은 그대로 렌더링됩니다 — 숫자가 아닌 값("3h 42m", "A+")이나, AnimateCounter처럼 들어오는 길에 무언가를 하는 노드를 위해서',
+        en: 'The figure. A number is formatted; anything else is rendered exactly as given — a string for the values that are not numbers, or a node such as an AnimateCounter'
       }
     },
     {
@@ -10223,8 +10340,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '열고 난 뒤 다시 닫을 수 있게 아래에 닫기 버튼을 둡니다',
-        en: 'Keeps the content coverable: once revealed, a hide button appears under it'
+        ko: '열고 난 뒤 다시 닫을 수 있게 아래에 닫기 버튼을 둡니다. 그 줄은 덮인 동안에도 자리를 지켜 상자 높이가 변하지 않습니다',
+        en: 'Keeps the content coverable: a hide button under the content, whose row is held open while it is still covered so the box does not change height'
       }
     },
     {
@@ -12467,7 +12584,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The opacity it starts from, between 0 and 1'
       }
     },
-    ...animateProps({ duration: '320' }),
+    ...animateProps({ duration: '320', stagger: '0' }),
     renderProp('render={<section />}'),
     {
       name: 'children',
@@ -12504,7 +12621,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Fades in as it grows'
       }
     },
-    ...animateProps({ duration: '340' }),
+    ...animateProps({ duration: '340', stagger: '0' }),
     renderProp('render={<li />}'),
     {
       name: 'children',
@@ -12529,7 +12646,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: { ko: '확대되면서 함께 페이드인합니다', en: 'Fades in as it zooms' }
     },
-    ...animateProps({ duration: '340' }),
+    ...animateProps({ duration: '340', stagger: '0' }),
     renderProp('render={<section />}'),
     {
       name: 'children',
@@ -12564,7 +12681,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: { ko: '이동하면서 함께 페이드인합니다', en: 'Fades in as it slides' }
     },
-    ...animateProps({ duration: '380' }),
+    ...animateProps({ duration: '380', stagger: '0' }),
     renderProp('render={<aside />}'),
     {
       name: 'children',
@@ -12610,7 +12727,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Fades in as it turns. Turn it off for a continuous spin'
       }
     },
-    ...animateProps({ duration: '460' }),
+    ...animateProps({ duration: '460', stagger: '0' }),
     renderProp('render={<span />}'),
     {
       name: 'children',
@@ -12629,7 +12746,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'How faint it gets at the bottom of the cycle, between 0 and 1'
       }
     },
-    ...animateProps({ duration: '900', repeat: "'infinite'", mode: false }),
+    ...animateProps({ duration: '900', repeat: "'infinite'", mode: false, stagger: '0' }),
     renderProp('render={<span />}'),
     {
       name: 'children',
@@ -12639,15 +12756,6 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   AnimateAppear: [
-    {
-      name: 'stagger',
-      type: 'number',
-      default: '80',
-      description: {
-        ko: '자식 하나와 다음 자식 사이의 간격(ms). 이 효과 자체입니다',
-        en: 'How long after one child the next one starts, in milliseconds. This is the whole effect'
-      }
-    },
     {
       name: 'from',
       type: SIDE,
@@ -12673,16 +12781,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Fades each child in as it settles'
       }
     },
-    {
-      name: 'reverse',
-      type: 'boolean',
-      default: 'false',
-      description: {
-        ko: '마지막 자식부터 실행합니다',
-        en: 'Runs the list from the last child to the first'
-      }
-    },
-    ...animateProps({ duration: '420', mode: false }),
+    ...animateProps({ duration: '420', mode: false, stagger: '80' }),
     renderProp('render={<ul />}'),
     {
       name: 'children',
@@ -12691,6 +12790,270 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '하나씩 나타나는 것들. 각 자식이 한 걸음입니다',
         en: 'The things that appear, one after another. Each child is one step'
       }
+    }
+  ],
+
+  AnimateReveal: [
+    ...animateProps({ duration: '620', stagger: '0' }),
+    {
+      name: 'side',
+      type: SIDE,
+      default: "'left'",
+      description: {
+        ko: '지우개가 지나오는 변. left면 왼쪽에서 오른쪽으로 드러납니다',
+        en: 'The edge the wipe travels from. left uncovers left to right'
+      }
+    },
+    {
+      name: 'from',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '닦이면서 함께 페이드할 시작 투명도. 1이면 순수한 wipe입니다',
+        en: 'The opacity it fades from as it wipes. 1 is a wipe and nothing else'
+      }
+    },
+    renderProp('render={<h2 />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '드러날 것', en: 'What is uncovered' }
+    }
+  ],
+
+  AnimateFloat: [
+    ...animateProps({ duration: '3200', repeat: "'infinite'", mode: false, stagger: '0' }),
+    {
+      name: 'from',
+      type: SIDE,
+      default: "'top'",
+      description: { ko: '떠 가는 방향', en: 'Which way it drifts' }
+    },
+    {
+      name: 'distance',
+      type: 'number | string',
+      default: "'0.5rem'",
+      description: {
+        ko: '드리프트 정점까지의 거리. 숫자는 px입니다',
+        en: 'How far, at the top of the drift. Numbers are pixels'
+      }
+    },
+    renderProp('render={<figure />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '떠 있을 것', en: 'What drifts' }
+    }
+  ],
+
+  AnimateShake: [
+    ...animateProps({ duration: '420', mode: false, stagger: '0' }),
+    {
+      name: 'distance',
+      type: 'number | string',
+      default: '6',
+      description: {
+        ko: '가장 크게 흔들릴 때의 이동 거리. 숫자는 px입니다',
+        en: 'How far it travels at the widest point. Numbers are pixels'
+      }
+    },
+    renderProp('render={<label />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '흔들릴 것', en: 'What is shaken' }
+    }
+  ],
+
+  AnimateSplit: [
+    {
+      name: 'text',
+      type: 'string',
+      description: {
+        ko: '쪼갤 문자열. children보다 우선합니다',
+        en: 'The text, when it is easier to pass than to nest. Overrides children'
+      }
+    },
+    {
+      name: 'by',
+      type: "'word' | 'character'",
+      default: "'word'",
+      description: {
+        ko: '조각 하나의 단위. 여덟 단어짜리 제목은 상자 여덟 개, 글자 단위면 마흔여섯 개입니다',
+        en: 'What one piece is. A heading of eight words is eight boxes; by character it is forty-six'
+      }
+    },
+    {
+      name: 'effect',
+      type: 'NebaAnimation',
+      default: "'slide'",
+      description: {
+        ko: '각 조각이 도착하는 효과. 라이브러리 공통 어휘입니다',
+        en: 'Which effect each piece arrives on, in the library own vocabulary'
+      }
+    },
+    {
+      name: 'from',
+      type: SIDE,
+      default: "'bottom'",
+      description: {
+        ko: 'slide 조각이 들어오는 변',
+        en: 'Which edge a slide piece comes from'
+      }
+    },
+    {
+      name: 'distance',
+      type: 'number | string',
+      default: "'0.4em'",
+      description: { ko: 'slide 조각의 이동 거리', en: 'How far a slide piece travels' }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '단어와 글자 경계를 찾을 언어. 일본어·태국어·중국어에서 단어 경계는 공백이 아닙니다',
+        en: 'Which language the text is in, for the word and character boundaries — a word boundary is not a space in Japanese, Thai or Chinese'
+      }
+    },
+    ...animateProps({ duration: '520', mode: false, stagger: '45' }),
+    renderProp('render={<h1 />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '쪼갤 텍스트', en: 'The text to split' }
+    }
+  ],
+
+  AnimateCounter: [
+    {
+      name: 'value',
+      type: 'number',
+      required: true,
+      description: { ko: '도착할 숫자', en: 'Where it lands' }
+    },
+    {
+      name: 'from',
+      type: 'number',
+      default: '0',
+      description: { ko: '출발할 숫자', en: 'Where it starts' }
+    },
+    {
+      name: 'duration',
+      type: 'number',
+      default: '1200',
+      shared: true,
+      description: {
+        ko: '세는 데 걸리는 시간(ms)',
+        en: 'How long the count takes, in milliseconds'
+      }
+    },
+    {
+      name: 'delay',
+      type: 'number',
+      default: '0',
+      shared: true,
+      description: { ko: '시작 전 대기(ms)', en: 'How long before it starts, in milliseconds' }
+    },
+    {
+      name: 'format',
+      type: 'Intl.NumberFormatOptions',
+      description: {
+        ko: '숫자를 쓰는 방식. 통화·백분율·compact 표기가 콜백이 아니라 prop입니다',
+        en: 'How the number is written — Intl.NumberFormat options, so a currency, a percentage or a compact 1.2M is a prop rather than a callback'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: { ko: '숫자를 쓸 언어', en: 'Which language it is written in' }
+    },
+    {
+      name: 'trigger',
+      type: ANIMATE_TRIGGER,
+      default: "'mount'",
+      shared: true,
+      description: {
+        ko: '무엇이 세기를 시작하는지. 시작 전에는 from에 머뭅니다',
+        en: 'What starts the count. Before it does, the number sits at from'
+      }
+    },
+    {
+      name: 'play',
+      type: 'boolean',
+      description: {
+        ko: 'trigger가 manual일 때 세기 시작합니다',
+        en: 'Runs it when trigger is manual'
+      }
+    },
+    {
+      name: 'once',
+      type: 'boolean',
+      default: 'true',
+      shared: true,
+      description: {
+        ko: 'trigger가 visible일 때 처음 한 번만 셀지',
+        en: 'With trigger="visible", whether it counts only the first time'
+      }
+    },
+    {
+      name: 'threshold',
+      type: 'number',
+      default: '0.2',
+      shared: true,
+      description: {
+        ko: 'trigger가 visible일 때 화면에 얼마나 들어와야 하는지',
+        en: 'With trigger="visible", how much of it has to be on screen'
+      }
+    },
+    renderProp('render={<strong />}')
+  ],
+
+  AnimateScramble: [
+    {
+      name: 'text',
+      type: 'string',
+      description: {
+        ko: '정착할 문자열. children보다 우선합니다',
+        en: 'The text, when it is easier to pass than to nest. Overrides children'
+      }
+    },
+    {
+      name: 'speed',
+      type: 'number',
+      default: '18',
+      description: {
+        ko: '초당 정착하는 글자 수. duration을 주면 그쪽이 이깁니다',
+        en: 'How fast the text settles, in characters per second. duration wins when it is given'
+      }
+    },
+    {
+      name: 'tick',
+      type: 'number',
+      default: '45',
+      description: {
+        ko: '아직 정착하지 않은 글자를 다시 그리는 주기(ms). 30 아래로 가면 글자로 읽히지 않습니다',
+        en: 'How often an unsettled character is redrawn, in milliseconds. Below about 30 it stops reading as characters'
+      }
+    },
+    {
+      name: 'characters',
+      type: 'string',
+      description: {
+        ko: '노이즈를 뽑아 올 글자 풀. 높이가 들쭉날쭉한 글자를 섞으면 줄이 튑니다',
+        en: 'The pool an unsettled character is drawn from. Glyphs of different heights make the line jump'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: { ko: '글자 경계를 찾을 언어', en: 'Which language the text is in' }
+    },
+    ...animateProps({ duration: '\u2014', mode: false }),
+    renderProp('render={<h2 />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '정착할 텍스트', en: 'The text to settle' }
     }
   ],
 

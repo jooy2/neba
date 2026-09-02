@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Tabs as BaseUITabs } from '@base-ui/react/tabs';
 import {
   controlHeightClasses,
+  controlHeightValues,
   controlTextClasses,
   cx,
   gapClasses,
@@ -15,6 +16,7 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
+import { observeResize } from '../../internal/observe.js';
 import type {
   NebaDensity,
   NebaOrientation,
@@ -49,6 +51,18 @@ const TabsContext = React.createContext<TabsContextValue>({
 
 /** A tab's value. The same restraint Select puts on its own — an identifier. */
 export type TabValue = string | number;
+
+/**
+ * What a bar with more tabs than room does about it.
+ *
+ * - `scroll` — stays one line and scrolls along it. The default: a tab bar is a
+ *   row, and the indicator has one place to be. The ends fade while there is
+ *   more bar in that direction, which is the only cue there is — the scrollbar
+ *   is hidden, and on macOS it would have been invisible anyway.
+ * - `wrap` — takes as many lines as it needs, and the indicator rides the line
+ *   its tab is on. For a bar whose tabs all have to be visible at once.
+ */
+export type TabsOverflow = 'scroll' | 'wrap';
 
 export interface TabsProps
   extends
@@ -92,6 +106,23 @@ export interface TabsProps
    * @default true
    */
   loopFocus?: boolean;
+  /**
+   * What the bar does when there are more tabs than there is room for.
+   * @default 'scroll'
+   */
+  overflow?: TabsOverflow;
+  /**
+   * The most tab-rows tall the bar may be, which is a cap and not a target — a
+   * bar that fits on one line stays on one line.
+   *
+   * On a horizontal bar those rows are the lines it wraps onto; on a vertical
+   * one they are the tabs in a column before it starts another. Past the cap the
+   * bar scrolls in the direction it ran out of room in.
+   *
+   * Only read when `overflow` is `wrap`, since a `scroll` bar is one row by
+   * definition. Left out, a wrapping bar takes every line it needs.
+   */
+  lines?: number;
   /** The tabs share the bar's full width, each taking an equal share of it. */
   fullWidth?: boolean;
   children?: React.ReactNode;
@@ -182,6 +213,22 @@ const indicatorClasses: Record<NebaVariant, Record<NebaOrientation, string>> = {
     horizontal: 'absolute bottom-0 left-(--active-tab-left) h-0.5 w-(--active-tab-width)',
     vertical: 'absolute end-0 top-(--active-tab-top) h-(--active-tab-height) w-0.5'
   }
+};
+
+/**
+ * The same rule on a bar that wraps.
+ *
+ * `bottom-0` is the bottom of the *list*, which is the bottom of the active
+ * tab only while there is one row. On three rows a tab chosen in the first one
+ * underlines the third. So the box is put on the tab's own rectangle and the
+ * 2px is drawn as its bottom edge — the same two measurements, read the other
+ * way round. `solid` needs none of this: its tile is already the rectangle.
+ */
+const wrappedIndicatorClasses: Record<NebaOrientation, string> = {
+  horizontal:
+    'absolute left-(--active-tab-left) top-(--active-tab-top) h-(--active-tab-height) w-(--active-tab-width) border-b-2 [border-color:var(--n-accent)] !bg-transparent',
+  vertical:
+    'absolute left-(--active-tab-left) top-(--active-tab-top) h-(--active-tab-height) w-(--active-tab-width) border-e-2 [border-color:var(--n-accent)] !bg-transparent'
 };
 
 const indicatorSurfaceClasses: Record<NebaVariant, string> = {
@@ -306,6 +353,8 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
     orientation = 'horizontal',
     activateOnFocus = false,
     loopFocus = true,
+    overflow = 'scroll',
+    lines,
     fullWidth = false,
     className,
     style,
@@ -314,6 +363,10 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
   },
   ref
 ) {
+  const horizontal = orientation === 'horizontal';
+  const wraps = overflow === 'wrap';
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const listRef = React.useRef<HTMLDivElement | null>(null);
   const context = React.useMemo(
     () => ({ variant, size, density, orientation, fullWidth }),
     [variant, size, density, orientation, fullWidth]
@@ -333,10 +386,69 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
     }
   });
 
+  /*
+   * Which ends of the bar have more bar past them, written onto the root as the
+   * four `data-overflow-*` attributes `styles.css` already answers to — the same
+   * pair of masks ScrollArea uses, and the reason there is no new CSS here. Base
+   * UI's own ScrollArea sets them for that component; a tab list is an ordinary
+   * scroll container, so this sets them itself.
+   *
+   * It has to be measured rather than asked for: a bar overflows or does not
+   * depending on the room it was given, which nothing on the props knows. Both
+   * axes are written every time, so a bar that changes orientation cannot leave
+   * the other axis' attribute behind.
+   */
+  const count = tabs.length;
+
+  React.useEffect(() => {
+    const node = listRef.current;
+    const root = rootRef.current;
+
+    if (!node || !root) {
+      return;
+    }
+
+    const measure = () => {
+      // `abs`, because a right-to-left container counts its scroll backwards
+      // from zero — how far along we are is a distance either way, which is
+      // exactly what a *logical* start and end want.
+      const along = Math.abs(horizontal ? node.scrollLeft : node.scrollTop);
+      const extent = horizontal ? node.clientWidth : node.clientHeight;
+      const total = horizontal ? node.scrollWidth : node.scrollHeight;
+      const axis = horizontal ? 'x' : 'y';
+      const other = horizontal ? 'y' : 'x';
+
+      root.toggleAttribute(`data-overflow-${axis}-start`, along > 1);
+      root.toggleAttribute(`data-overflow-${axis}-end`, total - extent - along > 1);
+      root.removeAttribute(`data-overflow-${other}-start`);
+      root.removeAttribute(`data-overflow-${other}-end`);
+    };
+
+    measure();
+    node.addEventListener('scroll', measure, { passive: true });
+
+    const stop = observeResize(node, measure);
+
+    return () => {
+      node.removeEventListener('scroll', measure);
+      stop();
+    };
+    // `count`, because tabs arriving change what overflows without resizing
+    // anything the observer is watching.
+  }, [horizontal, count]);
+
   return (
     <TabsContext.Provider value={context}>
       <BaseUITabs.Root
-        ref={ref}
+        ref={(node) => {
+          rootRef.current = node;
+
+          if (typeof ref === 'function') {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }
+        }}
         value={value}
         defaultValue={defaultValue}
         onValueChange={(next) => onValueChange?.(next as TabValue | null)}
@@ -350,6 +462,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
         {...props}
       >
         <BaseUITabs.List
+          ref={listRef}
           activateOnFocus={activateOnFocus}
           loopFocus={loopFocus}
           className={cx(
@@ -357,18 +470,45 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
             listClasses[variant][orientation],
             variant === 'solid' ? radiusClasses[size] : '',
             fullWidth && orientation === 'horizontal' ? 'w-full' : '',
-            // A bar with more tabs than room scrolls rather than wrapping: a tab
-            // bar on two lines has stopped being a bar, and the indicator has
-            // nowhere sensible to sit.
-            orientation === 'horizontal' ? 'overflow-x-auto overflow-y-hidden' : ''
+            // A bar with more tabs than room stays one line and scrolls along
+            // it, unless it was told to wrap. The scrollbar is hidden either
+            // way: a horizontal rail under a tab bar is fifteen pixels of
+            // furniture on Windows and invisible on macOS, so the fade below is
+            // the cue on both.
+            wraps ? 'flex-wrap' : horizontal ? 'overflow-x-auto' : '',
+            wraps && lines !== undefined
+              ? horizontal
+                ? 'overflow-y-auto'
+                : 'overflow-x-auto'
+              : '',
+            !wraps && horizontal ? 'overflow-y-hidden' : '',
+            '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+            // The mask is a mask rather than a gradient painted on top, for the
+            // reason `styles.css` gives: over a translucent sheet there is no
+            // colour to fade to.
+            'neba-scroll-fade'
           )}
+          style={
+            {
+              '--n-fade': '2rem',
+              // A cap in rows, turned into the length a row actually is. The
+              // `solid` trough's own `p-1` is 4px at each end and has to be in the
+              // number, or the cap lands a padding short of the row it names.
+              maxHeight:
+                wraps && lines !== undefined
+                  ? `calc(${controlHeightValues[size]} * ${Math.max(1, Math.round(lines))}${variant === 'solid' ? ' + 0.5rem' : ''})`
+                  : undefined
+            } as React.CSSProperties
+          }
         >
           {tabs}
 
           <BaseUITabs.Indicator
             className={[
               'pointer-events-none',
-              indicatorClasses[variant][orientation],
+              wraps && variant !== 'solid'
+                ? wrappedIndicatorClasses[orientation]
+                : indicatorClasses[variant][orientation],
               indicatorSurfaceClasses[variant],
               variant === 'solid' ? radiusClasses[size] : 'rounded-full',
               // The same easing everything else uses, on the four properties the

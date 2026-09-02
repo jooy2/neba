@@ -92,27 +92,41 @@ const baseClasses = [
 /**
  * Off.
  *
- * The ink is `--neba-muted-fg` in all three, and that is the whole difference
- * from a Button: a Button in its resting state is an action waiting to be taken,
- * a toggle in its resting state is a *state that is currently false*. Accent ink
- * on an unpressed toggle would say it was on.
+ * The ink is `--neba-muted-fg` in all three, and that is the first half of the
+ * difference from a Button: a Button in its resting state is an action waiting
+ * to be taken, a toggle in its resting state is a *state that is currently
+ * false*. Accent ink on an unpressed toggle would say it was on.
+ *
+ * The second half is that the plate is the **undyed** `--neba-panel` ladder
+ * rather than the family's own. A control that has one state takes the tint,
+ * which is why `controlSlots` dyes the ladder and why a Button reads it; a
+ * control that has two cannot spend the colour family on the state that is
+ * false. Dyed, off was `accent 8%` and on was `accent 10%` — two names for one
+ * colour, and the only thing left carrying the state was the ink.
  */
 const offClasses: Record<NebaVariant, string> = {
   solid: [
     surfaceClasses,
-    'text-(--neba-muted-fg) bg-(--n-panel-hover)',
+    'text-(--neba-muted-fg) bg-(--neba-panel-hover)',
     '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
-    'hover:bg-(--n-panel-press) hover:text-(--neba-fg)',
-    'active:bg-(--n-panel-press)'
+    'hover:bg-(--neba-panel-press) hover:text-(--neba-fg)',
+    'active:bg-(--neba-panel-press)'
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--neba-muted-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
+    'border text-(--neba-muted-fg) bg-(--neba-panel)',
+    // The neutral hairline too, and it does not warm towards the accent on
+    // hover: a border moving into the colour family is the one move that reads
+    // as the toggle going on under the pointer that has not pressed it yet.
+    '[border-color:var(--neba-border)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:bg-(--n-panel-hover) hover:text-(--neba-fg) hover:[border-color:var(--n-line-hover)]',
-    'active:bg-(--n-panel-press)'
+    'hover:bg-(--neba-panel-hover) hover:text-(--neba-fg)',
+    'active:bg-(--neba-panel-press)'
   ].join(' '),
+  // The one place the family still shows while the toggle is off. A `text`
+  // toggle has no plate to darken, and there is no neutral wash token to darken
+  // it with — `--neba-panel*` is white, which is nothing over a white page. So
+  // hover keeps the accent at its lightest step, and `on` sits a step above it.
   text: [
     'text-(--neba-muted-fg) bg-transparent',
     'hover:bg-(--n-soft) hover:text-(--neba-fg)',
@@ -125,8 +139,14 @@ const offClasses: Record<NebaVariant, string> = {
  *
  * The same two answers the chosen segment of a SegmentedButton gives, because
  * they are the same claim: `solid` takes the fill and the on-fill ink, the other
- * two light the sheet and leave the label in the accent. A toggle that is on is
+ * two dye the sheet and leave the label in the accent. A toggle that is on is
  * not a toggle that is elevated — the depth does not change, only the colour.
+ *
+ * `outline` takes the dyed `--n-panel-press`, which is the token that draws that
+ * chosen segment, rather than the `--n-soft` wash it used to. The wash is not a
+ * plate: it is the accent over *nothing*, so an on toggle let the page through
+ * where the off one beside it was 66% white, and over a light backdrop the state
+ * that was true could come out the lighter of the two.
  */
 const onClasses: Record<NebaVariant, string> = {
   solid: [
@@ -138,15 +158,18 @@ const onClasses: Record<NebaVariant, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-soft)',
+    'border text-(--n-accent) bg-(--n-panel-press)',
     '[border-color:var(--n-line-hover)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
     'hover:bg-(--n-soft-hover)',
     'active:bg-(--n-soft-press)'
   ].join(' '),
+  // A step up the wash from where it was, because the step below it is what an
+  // *off* `text` toggle does on hover — the two were the same value, so hovering
+  // one that was off drew it exactly as one that was on.
   text: [
-    'text-(--n-accent) bg-(--n-soft)',
-    'hover:bg-(--n-soft-hover)',
+    'text-(--n-accent) bg-(--n-soft-hover)',
+    'hover:bg-(--n-soft-press)',
     'active:bg-(--n-soft-press)'
   ].join(' ')
 };

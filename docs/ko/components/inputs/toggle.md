@@ -37,7 +37,9 @@ import { Toggle } from 'neba';
 
 ### variant
 
-`variant`는 토글이 **꺼져 있을 때**의 모습을 정합니다. 켜졌을 때는 어느 weight든 색 계열이 전면에 나섭니다. `outline`이 기본이고, `solid`는 켜지면 accent로 채워지는 판이며, `text`는 hover하거나 켜지기 전까지 표면이 전혀 없습니다.
+`variant`는 토글이 **꺼져 있을 때**의 모습을 정합니다. `outline`이 기본이고, `solid`는 켜지면 accent로 채워지는 판이며, `text`는 hover하거나 켜지기 전까지 표면이 전혀 없습니다.
+
+꺼진 토글은 세 variant 어디에서도 색 계열을 띠지 않습니다. 판은 중립 회백색이고 글자는 muted이며, 켜지는 순간 판과 글자와 hairline이 한꺼번에 accent로 넘어갑니다.
 
 <Demo src="toggle/variants">
 

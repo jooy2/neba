@@ -67,6 +67,20 @@ The opacity the fade starts at, between `0` and `1`. Raise it for content that s
 </AnimateFade>
 ```
 
+### stagger, durationStep and reverse
+
+`stagger` is how long after one child the next one starts, in milliseconds. At `0` — the default — the box itself is what fades, and the children are left alone. Above it the effect moves onto each child in turn and nothing is written on the box, so a list of five arrives one row at a time.
+
+`durationStep` adds that many milliseconds to each successive child's `duration`; a negative value speeds them up down the list, and a duration never goes below zero. `reverse` runs the children last-to-first — only the order reverses, each child still plays forwards.
+
+The step is per _child_, so what you pass matters: five children are five steps, and one child holding five things is one step. Grouping is how part of a list opts out.
+
+<Demo src="animate-fade/stagger" minHeight="360">
+
+<<< @/.vitepress/demos/animate-fade/stagger.tsx
+
+</Demo>
+
 ## Accessibility
 
 - A reduced-motion preference switches the animation off entirely and the content is simply there. It is never left invisible.

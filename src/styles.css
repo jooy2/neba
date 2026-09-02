@@ -1858,6 +1858,27 @@
   animation-play-state: var(--n-anim-state, running);
 }
 
+/*
+ * The same eleven effects, driven by where the element is rather than by when.
+ *
+ * Two declarations and nothing else, which is the whole reason this is a prop
+ * and not a component: every keyframe already runs from a start state to the
+ * element's own, so pointing it at a scroll timeline instead of the clock needs
+ * no new keyframe and no JavaScript. A `timeline` of `view` fills the slot; the
+ * default `auto` is the clock, and the three declarations above go on meaning
+ * what they meant.
+ *
+ * Guarded, because a browser without `animation-timeline` must not be handed an
+ * animation with no clock to run on: unsupported, the whole block is skipped and
+ * the effect plays once on the timeline it always had. Degraded, never blank.
+ */
+@supports (animation-timeline: view()) {
+  .neba-anim {
+    animation-timeline: var(--n-anim-timeline, auto);
+    animation-range: var(--n-anim-range, normal);
+  }
+}
+
 @keyframes neba-anim-fade {
   from {
     opacity: var(--n-anim-opacity, 0);
@@ -1934,6 +1955,81 @@
 
 .neba-anim-blink {
   animation-name: neba-anim-blink;
+}
+
+/*
+ * Reveal: an edge travelling across something that is already there.
+ *
+ * `clip-path` rather than a mask, and rather than a wrapper with `overflow`.
+ * A mask would need a gradient whose direction is a fourth thing to keep in
+ * step with the side; a wrapper would be an element in the layout that the
+ * effect had no other reason to add. An inset is one property, it is animatable,
+ * and `inset(0)` — the resting state — is exactly "nothing clipped".
+ *
+ * The opacity slot defaults to `1` here rather than to `0`: a reveal is not a
+ * fade, and something wiped in while also fading has had the wipe wasted on it.
+ * Pass `fade` and it is both.
+ */
+@keyframes neba-anim-reveal {
+  from {
+    opacity: var(--n-anim-opacity, 1);
+    clip-path: var(--n-anim-clip, inset(0 100% 0 0));
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+
+.neba-anim-reveal {
+  animation-name: neba-anim-reveal;
+}
+
+/* Float: a slow drift with nowhere to get to. Asymmetric on purpose — it starts
+   where the element sits, so an element whose animation is interrupted is left
+   where the layout put it rather than half a centimetre above it. */
+@keyframes neba-anim-float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: var(--n-anim-x, 0px) var(--n-anim-y, -0.5rem);
+  }
+}
+
+.neba-anim-float {
+  animation-name: neba-anim-float;
+}
+
+/*
+ * Shake: the one effect in the set that says *no*.
+ *
+ * Five stops rather than two, and the last two are smaller than the first two,
+ * because a shake that ends as hard as it began reads as a loop that was cut
+ * off. It starts and ends at zero for the reason `blink` is symmetric: an
+ * interrupted run must not leave the element off its own mark.
+ */
+@keyframes neba-anim-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: calc(var(--n-anim-x, 6px) * -1) 0;
+  }
+  40% {
+    translate: var(--n-anim-x, 6px) 0;
+  }
+  60% {
+    translate: calc(var(--n-anim-x, 6px) * -0.55) 0;
+  }
+  80% {
+    translate: calc(var(--n-anim-x, 6px) * 0.55) 0;
+  }
+}
+
+.neba-anim-shake {
+  animation-name: neba-anim-shake;
 }
 
 /*

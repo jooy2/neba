@@ -37,7 +37,9 @@ A [Switch](./switch) changes a setting and the change itself is the point; a [Ch
 
 ### variant
 
-`variant` says how the toggle looks while it is **off**; on is always the colour family asserting itself. `outline` is the default, `solid` is a filled plate that fills with the accent, and `text` has no surface at all until it is hovered or on.
+`variant` says how the toggle looks while it is **off**. `outline` is the default, `solid` is a filled plate that fills with the accent, and `text` has no surface at all until it is hovered or on.
+
+An off toggle carries no colour family in any of the three: the plate is neutral and the label is muted. Turning it on moves the plate, the label and the hairline into the accent together.
 
 <Demo src="toggle/variants">
 

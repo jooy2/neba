@@ -225,6 +225,58 @@ describe('Tabs', () => {
     });
   });
 
+  describe('more tabs than room', () => {
+    /*
+     * A bar that overflows already scrolled; what it had no way of saying was
+     * that it had. The scrollbar is hidden — a horizontal rail under a tab bar
+     * is furniture on Windows and invisible on macOS — so the ends fade instead,
+     * through the same two masks ScrollArea uses.
+     */
+    it('stays one line and scrolls by default', async () => {
+      const screen = await render(<Basic defaultValue="overview" />);
+      const list = screen.getByRole('tablist').element();
+
+      expect(list).toHaveClass('overflow-x-auto');
+      expect(list).toHaveClass('neba-scroll-fade');
+      expect(list).not.toHaveClass('flex-wrap');
+    });
+
+    it('wraps when it is told to, and stops scrolling sideways', async () => {
+      const screen = await render(<Basic defaultValue="overview" overflow="wrap" />);
+      const list = screen.getByRole('tablist').element();
+
+      expect(list).toHaveClass('flex-wrap');
+      expect(list).not.toHaveClass('overflow-x-auto');
+    });
+
+    // The cap is in rows, and a row is the control height ladder — the same one
+    // a `md` tab and a `md` Button share.
+    it('caps a wrapping bar at the number of rows it was given', async () => {
+      const screen = await render(<Basic defaultValue="overview" overflow="wrap" lines={2} />);
+      const list = screen.getByRole('tablist').element() as HTMLElement;
+
+      expect(list.style.maxHeight).toBe('calc(4rem)');
+      expect(list).toHaveClass('overflow-y-auto');
+    });
+
+    it('ignores lines on a bar that does not wrap', async () => {
+      const screen = await render(<Basic defaultValue="overview" lines={2} />);
+      const list = screen.getByRole('tablist').element() as HTMLElement;
+
+      expect(list.style.maxHeight).toBe('');
+    });
+
+    // `bottom-0` is the bottom of the list, which is the bottom of the active
+    // tab only while there is one row.
+    it('moves the rule onto the active tab when the bar wraps', async () => {
+      const screen = await render(<Basic defaultValue="overview" overflow="wrap" />);
+      const indicator = screen.getByRole('tablist').element().lastElementChild;
+
+      expect(indicator).toHaveClass('border-b-2');
+      expect(indicator).not.toHaveClass('bottom-0');
+    });
+  });
+
   describe('style props', () => {
     it('gives the bar a trough when solid', async () => {
       const screen = await render(<Basic defaultValue="overview" variant="solid" />);

@@ -559,6 +559,65 @@ describe('DataTable', () => {
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(2);
     });
 
+    /*
+     * Home, End and the two Page keys are about the scrollbar and not about the
+     * choice: a reader who has ticked a row and wants to see the bottom of a
+     * thousand of them should still have the tick when they get there. `End`
+     * used to answer with the last row.
+     *
+     * What is asserted is the half that does not need a stylesheet. The scroll
+     * itself is one assignment to `scrollTop`, and a component test loads no
+     * CSS — without `overflow-auto` the viewport is not a scroll container at
+     * all, so the assignment has nowhere to land.
+     */
+    it('keeps the chosen row through Home, End and the Page keys', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(500)}
+          getRowKey={key}
+          selectionMode="multiple"
+          height={200}
+        />
+      );
+
+      await screen.getByText('Person 2', { exact: true }).click();
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', '2');
+
+      await userEvent.keyboard('{End}');
+      await userEvent.keyboard('{PageDown}');
+      await userEvent.keyboard('{PageUp}');
+      await userEvent.keyboard('{Home}');
+
+      expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(1);
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', '2');
+    });
+
+    // And the arrows still do, which is the line the four are on the other side
+    // of.
+    it('still moves and chooses with the arrows', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(500)}
+          getRowKey={key}
+          selectionMode="multiple"
+          height={200}
+        />
+      );
+
+      await screen.getByText('Person 2', { exact: true }).click();
+      await userEvent.keyboard('{ArrowDown}');
+
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', '3');
+    });
+
     it('takes everything with Ctrl+A and lets go with Escape', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />

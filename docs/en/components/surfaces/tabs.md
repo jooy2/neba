@@ -63,6 +63,18 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 </Demo>
 
+### overflow and lines
+
+`overflow` says what a bar with more tabs than room does about it. `scroll` — the default — keeps the bar on one line and scrolls along it; the ends fade while there is more bar in that direction, and the scrollbar itself is hidden. `wrap` takes as many lines as the tabs need, and the rule under the chosen tab moves onto the line that tab is on.
+
+`lines` caps a wrapping bar at that many tab-rows and scrolls past the cap. It is read only when `overflow` is `wrap`.
+
+<Demo src="tabs/overflow" minHeight="420">
+
+<<< @/.vitepress/demos/tabs/overflow.tsx
+
+</Demo>
+
 ### startIcon and endIcon
 
 Put an icon or a count before or after the label.

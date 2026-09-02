@@ -13,13 +13,13 @@
       "id": "chip",
       "label": "Chip",
       "imports": ["Chip"],
-      "budget": 3.2
+      "budget": 3.3
     },
     {
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 11.4
+      "budget": 11.5
     },
     {
       "id": "code-block",
@@ -44,7 +44,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 68.2
+      "budget": 68.9
     },
     {
       "id": "app-25",
@@ -76,7 +76,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 112.6
+      "budget": 113.3
     },
     {
       "id": "page-shell",
@@ -102,13 +102,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 70.7
+      "budget": 71.2
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 248.1
+      "budget": 250.4
     }
   ]
 }

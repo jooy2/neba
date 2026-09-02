@@ -5,22 +5,24 @@ import { useRender } from '@base-ui/react/use-render';
 import {
   animBaseClass,
   animationClasses,
-  animationSlots,
   isInfinite,
   slideOffsets,
+  staggerChildren,
   useAnimationRun
 } from '../../internal/animate.js';
-import { cx } from '../../internal/styles.js';
-import type { NebaAnimateProps, NebaSide } from '../../types.js';
+import type {
+  NebaAnimateProps,
+  NebaSide,
+  NebaStaggerProps,
+  NebaTimelineProps
+} from '../../types.js';
 
 export interface AnimateAppearProps
-  extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
-  /**
-   * How long after one child the next one starts, in milliseconds. This is the
-   * whole effect — everything else is what a single child does.
-   * @default 80
-   */
-  stagger?: number;
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /**
    * Which edge each child drifts in from.
    * @default 'bottom'
@@ -38,11 +40,6 @@ export interface AnimateAppearProps
    * @default true
    */
   fade?: boolean;
-  /**
-   * Runs the list from the last child to the first.
-   * @default false
-   */
-  reverse?: boolean;
   /** Renders something other than a `<div>`. Base UI's own escape hatch. */
   render?: useRender.RenderProp;
   /** The things that appear, one after another. */
@@ -79,11 +76,16 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
       play,
       once = true,
       threshold = 0.2,
+      // The one component whose step is not zero by default: on the other six a
+      // step is something a caller turns on, and here it *is* the component.
       stagger = 80,
+      durationStep = 0,
+      reverse = false,
+      timeline,
+      range,
       from = 'bottom',
       distance = '0.75rem',
       fade = true,
-      reverse = false,
       render,
       className,
       style,
@@ -102,37 +104,16 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
     });
 
     const { x, y } = slideOffsets(from, distance);
-    const items = React.Children.toArray(children);
-    const itemClassName = `${animBaseClass} ${animationClasses.slide}`;
 
-    const animated = items.map((child, index) => {
-      const step = reverse ? items.length - 1 - index : index;
-      const slots = animationSlots({
-        duration,
-        delay: delay + step * stagger,
-        easing,
-        repeat,
-        alternate,
-        x,
-        y,
-        opacity: fade ? 0 : 1
-      });
-
-      if (!React.isValidElement(child)) {
-        return (
-          <span key={index} className={itemClassName} style={slots}>
-            {child}
-          </span>
-        );
-      }
-
-      const childProps = child.props as { className?: string; style?: React.CSSProperties };
-
-      return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
-        className: cx(itemClassName, childProps.className),
-        style: { ...slots, ...childProps.style }
-      });
-    });
+    // The same helper the other six reach for once they are given a step. Appear
+    // is the one that cannot be turned off — a slide with no order to it is an
+    // `AnimateSlide`.
+    const animated = staggerChildren(
+      children,
+      `${animBaseClass} ${animationClasses.slide}`,
+      { duration, delay, easing, repeat, alternate, x, y, opacity: fade ? 0 : 1, timeline, range },
+      { stagger, durationStep, reverse }
+    );
 
     return useRender({
       render,

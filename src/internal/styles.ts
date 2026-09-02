@@ -54,6 +54,22 @@ export const controlHeightClasses: Record<NebaSize, string> = {
   xl: 'h-12'
 };
 
+/**
+ * The same ladder as raw lengths, for the arithmetic a class cannot do.
+ *
+ * `paddingXValues` is here for the same reason one level down: Tailwind only
+ * ever sees class names written out literally, so "three rows of tabs tall" is a
+ * number a component has to multiply. **Keep the two in step** — a height that
+ * disagrees with its class is a cap that lands half a row out.
+ */
+export const controlHeightValues: Record<NebaSize, string> = {
+  xs: '1.375rem',
+  sm: '1.625rem',
+  md: '2rem',
+  lg: '2.5rem',
+  xl: '3rem'
+};
+
 /** The same numbers as a width, for a control with nothing to pad against. */
 export const controlSquareClasses: Record<NebaSize, string> = {
   xs: 'w-5.5',

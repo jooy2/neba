@@ -1,5 +1,98 @@
 # Changelog
 
+## vNext (2026--)
+
+The release about the things that were already there and were not quite saying it.
+
+Six of the nine items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
+
+The other three are new: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
+
+### Where the bytes went
+
+| What you import               | 1.11.0   | vNext    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.1 kB   | 5.1 kB   |
+| `Chip`                        | 3.2 kB   | 3.3 kB   |
+| `LineChart`                   | 11.4 kB  | 11.5 kB  |
+| `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
+| a whole page shell            | 28.5 kB  | 28.5 kB  |
+| 12 components — a typical app | 68.2 kB  | 68.9 kB  |
+| 12 components, with Korean    | 70.7 kB  | 71.2 kB  |
+| 25 components — a large one   | 112.6 kB | 113.3 kB |
+| all exports                   | 248.1 kB | 250.4 kB |
+
+`Chip` is the row worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
+
+The two effects that did **not** go in are the reason it is only 0.1 kB. `AnimateFloat` and `AnimateShake` bring their own keyframe class instead of a row in the shared table: neither is an entrance, and a drift with no arrival in it should not be paid for by every Chip on every page that draws one.
+
+---
+
+### A toggle that is on now looks like it
+
+`Toggle` and `ToggleGroup` had off at `accent 8%` and on at `accent 10%` — two names for one colour. The only thing carrying the state was the ink.
+
+Off leaves the colour family entirely now: the neutral `--neba-panel` ladder, a neutral hairline, muted ink. On takes the dyed `--n-panel-press` that draws a `SegmentedButton`'s chosen segment, plus the accent hairline and the accent label. A control with one state may spend the family on its surface; a control with two cannot spend it on the state that is false.
+
+The `text` variant had a real bug underneath the same problem: its off-hover and its on were both `--n-soft`, so hovering a toggle that was off drew it exactly as one that was on.
+
+### Home, End, PageUp and PageDown scroll a DataTable and nothing else
+
+They used to move the selection with them, which meant that ticking a row and then looking at the bottom of a thousand of them threw the tick away on the journey. They are about the scrollbar; the arrows are about the choice, and they still move and choose. A table with no `height` or `maxHeight` scrolls with the page, so the four are left to the browser rather than taken and turned into nothing.
+
+### A Spoiler is the same height covered and uncovered
+
+`reversible` grew the box by a whole button row at the moment of the press — forty-eight pixels, twice for anyone who covered it again. The row is drawn from the start and only kept out of sight.
+
+The cover moved with it. It was an `absolute inset-0` layer, which contributes no height, so a cover taller than what it covered — a one-line spoiler under a two-line notice — lost its own reveal button off the bottom edge. It is a grid item spanning every row now, and the box grows to hold it.
+
+### A tab bar says when it has more bar
+
+It already scrolled. What it had no way of saying was that it had: the scrollbar is an overlay on macOS and furniture on Windows, so it is hidden on both and the ends fade instead — through the same two masks `ScrollArea` already uses, which is why there is no new CSS.
+
+`overflow="wrap"` is the other answer, for a bar whose tabs all have to be visible at once, and the rule under the chosen tab moves onto the line that tab is on rather than staying at the bottom of the list. `lines` caps a wrapping bar at that many tab-rows.
+
+### Stack, and the end of AvatarGroup
+
+**Breaking: `AvatarGroup` is removed.** `Stack` does what it did and is not about avatars: `direction` runs a pile along the inline axis, down the page, or diagonally as a fanned deck; `overlap` and `drop` say how far each item sits under the last; `max`, `total` and `overflow` turn the ones that did not fit into one more item at the back; `scaleStep` and `opacityStep` make the pile recede; `ring` draws the hairline that stops two overlapping shapes of similar tone reading as one smeared one.
+
+Two things about it are load-bearing. The overlap is a **margin** rather than a `translate`, so the box is exactly as big as what is in it and the content after a Stack is laid out against the right width. And each item is drawn into a wrapper of its own rather than cloned onto — cloning would need every child to accept a `className` and a `style`, which a Tooltip around an avatar is under no obligation to do.
+
+What is lost with `AvatarGroup` is its context: `size`, `shape`, `variant`, `color` and `elevation` set once for the group. Set them on the avatars, or on a `NebaProvider` for the two it covers.
+
+```tsx
+<Stack ring max={3} total={12} overflow={(hidden) => <Avatar initials={`+${hidden}`} />}>
+  {team.map((name) => (
+    <Avatar key={name} name={name} />
+  ))}
+</Stack>
+```
+
+### One effect, spread across the children
+
+`stagger`, `durationStep` and `reverse` go on the nine `Animate*` whose motion is one `@keyframes` on the element itself. At `0` — the default — the box animates and the children are left alone, which is what they always did. Above it the effect moves onto each child in turn and nothing is written on the box, because a box fading in over eight children fading in is the same content faded twice.
+
+`AnimateAppear` was already doing this and now runs on the same helper, which is what stops the library having two staggers.
+
+### Six more Animate\*, and a timeline
+
+- **`AnimateReveal`** — an edge travelling across content that is already in place at full size. A `clip-path`, so there is no wrapper and nothing reflows. Also a `transition` value.
+- **`AnimateFloat`** — a slow drift with nowhere to get to, for something that is not fixed to the page.
+- **`AnimateShake`** — the one effect that says _no_. It defaults to `trigger="manual"`, and it is the single documented exception to the rule that a control is never transformed: a shake is not a resting state, it is a reply.
+- **`AnimateSplit`** — a line arriving a word, or a letter, at a time. `AnimateAppear` walks down a list; this walks along a sentence.
+- **`AnimateCounter`** — a number counted up to its value, formatted with `Intl.NumberFormat` options on every frame. `Statistic`'s `value` takes a node now, which is where it belongs.
+- **`AnimateScramble`** — text resolving out of noise, in a box that is the finished length from the first frame. Whitespace is never scrambled.
+
+The three that animate text put the whole string in the document once for a screen reader and hide the performance from it, which is `AnimateTyping`'s arrangement — and `internal/text.ts` is now where all four get their grapheme boundaries, because three segmenters is three chances to disagree about where a character ends.
+
+`timeline="view"` is the cheapest thing here and reaches furthest: two declarations behind an `@supports`, and every one of the nine keyframe effects can be driven by how far the element has travelled through the viewport instead of by the clock. It costs `duration`, `delay`, `repeat` and every `trigger`, and falls back to running once on mount where the browser has no `animation-timeline`.
+
+### And two things found on the way
+
+`npm run build` empties `dist/` first. It never did, and `tsc` only ever writes — so a component deleted from `src/` stayed in `dist/` and shipped. Removing `AvatarGroup` is what surfaced it.
+
+`ScrollZone`'s `buttons="auto"` disables an inline button that has nowhere to go rather than hiding it. The lane is held open either way, so an emptied one was not a lighter row — it was the same row reading as stray padding at the leading edge, which is the state every reader meets first.
+
 ## 1.11.0 (2026-08-31)
 
 The release that closes the gaps, rather than the one that adds a shelf of new components.

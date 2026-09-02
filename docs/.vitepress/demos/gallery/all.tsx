@@ -6,6 +6,12 @@ import {
   Anchor,
   AnimateAppear,
   AnimateBlink,
+  AnimateSplit,
+  AnimateShake,
+  AnimateScramble,
+  AnimateReveal,
+  AnimateFloat,
+  AnimateCounter,
   AnimateFade,
   AnimateGrow,
   AnimateHeadline,
@@ -19,7 +25,6 @@ import {
   AreaChart,
   AspectRatio,
   Avatar,
-  AvatarGroup,
   Badge,
   BarChart,
   Blockquote,
@@ -115,6 +120,7 @@ import {
   Slider,
   Sparkline,
   Spoiler,
+  Stack,
   Statistic,
   Switch,
   Tab,
@@ -1792,19 +1798,25 @@ const GROUPS: Group[] = [
         )
       },
       {
-        name: 'AvatarGroup',
+        name: 'Stack',
         summary: {
-          ko: '겹쳐 쌓인 아바타와, 남은 수',
-          en: 'A stack of avatars, and the count that did not fit'
+          ko: '겹쳐 쌓인 것들과, 남은 수',
+          en: 'Things laid over each other, and the count that did not fit'
         },
-        path: '/components/display/avatar-group',
+        path: '/components/layout/stack',
         preview: (
-          <AvatarGroup size="sm" max={3} total={12}>
-            <Avatar name="Jane Doe" />
-            <Avatar name="Kim Minji" />
-            <Avatar name="Alex Park" />
-            <Avatar name="Sam Lee" />
-          </AvatarGroup>
+          <Stack
+            size="sm"
+            max={3}
+            total={12}
+            ring
+            overflow={(n) => <Avatar size="sm" initials={`+${n}`} />}
+          >
+            <Avatar size="sm" name="Jane Doe" />
+            <Avatar size="sm" name="Kim Minji" />
+            <Avatar size="sm" name="Alex Park" />
+            <Avatar size="sm" name="Sam Lee" />
+          </Stack>
         )
       },
       {
@@ -2402,6 +2414,58 @@ const GROUPS: Group[] = [
             </Chip>
           </AnimateBlink>
         )
+      },
+      {
+        name: 'AnimateReveal',
+        summary: { ko: '가장자리가 지나가며 드러냄', en: 'An edge travelling across it' },
+        path: '/components/transitions/animate-reveal',
+        preview: (
+          <AnimateReveal duration={1400} repeat="infinite">
+            <Chip color="info">Uncovered</Chip>
+          </AnimateReveal>
+        )
+      },
+      {
+        name: 'AnimateFloat',
+        summary: { ko: '도착할 곳 없는 표류', en: 'A drift with nowhere to get to' },
+        path: '/components/transitions/animate-float',
+        preview: (
+          <AnimateFloat distance={8}>
+            <Chip color="secondary">Floating</Chip>
+          </AnimateFloat>
+        )
+      },
+      {
+        name: 'AnimateShake',
+        summary: { ko: '아니라고 말하는 하나', en: 'The one that says no' },
+        path: '/components/transitions/animate-shake',
+        preview: (
+          <AnimateShake trigger="hover">
+            <Chip color="danger">Hover me</Chip>
+          </AnimateShake>
+        )
+      },
+      {
+        name: 'AnimateSplit',
+        summary: { ko: '한 단어씩 도착하는 문장', en: 'A line arriving a word at a time' },
+        path: '/components/transitions/animate-split',
+        preview: (
+          <AnimateSplit repeat="infinite" duration={2400} stagger={90}>
+            One word at a time
+          </AnimateSplit>
+        )
+      },
+      {
+        name: 'AnimateCounter',
+        summary: { ko: '값까지 세어 올리는 숫자', en: 'A number counted up to its value' },
+        path: '/components/transitions/animate-counter',
+        preview: <AnimateCounter value={128400} format={{ notation: 'compact' }} />
+      },
+      {
+        name: 'AnimateScramble',
+        summary: { ko: '노이즈를 뚫고 자리를 잡는 글자', en: 'Text resolving out of noise' },
+        path: '/components/transitions/animate-scramble',
+        preview: <AnimateScramble text="RESOLVING" repeat="infinite" speed={6} />
       },
       {
         name: 'AnimateAppear',

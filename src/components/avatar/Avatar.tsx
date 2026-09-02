@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Avatar as BaseAvatar } from '@base-ui/react/avatar';
 import { transitionProps } from '../../internal/animate.js';
-import { AvatarGroupContext } from '../../internal/avatar-group.js';
 import { initialsOf } from '../../internal/initials.js';
 import {
   controlHeightClasses,
@@ -259,15 +258,11 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'variant']);
 
-    // An AvatarGroup sets the five style axes once for the whole stack. The
-    // avatar's own prop still wins — one face marked out from the rest is a real
-    // thing — and with no group around it the defaults are what they always were.
-    const group = React.useContext(AvatarGroupContext);
-    const shape = shapeProp ?? group?.shape ?? 'circle';
-    const variant = variantProp ?? group?.variant ?? 'text';
-    const size = sizeProp ?? group?.size ?? 'md';
-    const color = colorProp ?? group?.color ?? 'primary';
-    const elevation = elevationProp ?? group?.elevation ?? 0;
+    const shape = shapeProp ?? 'circle';
+    const variant = variantProp ?? 'text';
+    const size = sizeProp ?? 'md';
+    const color = colorProp ?? 'primary';
+    const elevation = elevationProp ?? 0;
 
     const derived = name ? initialsOf(name) : '';
     const animation = transitionProps(transition);

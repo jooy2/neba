@@ -59,6 +59,10 @@ import { AnimateBlink } from 'neba';
 </AnimateBlink>
 ```
 
+### stagger
+
+`stagger`, `durationStep`, `reverse`는 상자 대신 자식 하나하나에게 효과를 차례로 넘깁니다. 동작은 [AnimateFade](./animate-fade)와 같고, 그쪽 페이지에 자세히 적혀 있습니다.
+
 ## 접근성
 
 - 축소된 모션 설정에서는 애니메이션이 통째로 꺼지고 내용은 완전한 불투명도로 놓입니다.

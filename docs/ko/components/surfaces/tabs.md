@@ -63,6 +63,18 @@ import { Tab, TabPanel, Tabs } from 'neba';
 
 </Demo>
 
+### overflow와 lines
+
+`overflow`는 자리보다 탭이 많을 때 바가 무엇을 할지 정합니다. 기본값 `scroll`은 한 줄을 유지한 채 그 위를 스크롤하고, 그 방향에 바가 더 남아 있는 동안 양 끝을 흐립니다. 스크롤바 자체는 감춥니다. `wrap`은 탭이 필요한 만큼 줄을 쓰고, 선택된 탭 아래의 선도 그 탭이 있는 줄로 따라갑니다.
+
+`lines`는 wrap하는 바의 높이를 탭 줄 수로 제한하고, 그 위로는 스크롤합니다. `overflow`가 `wrap`일 때만 읽습니다.
+
+<Demo src="tabs/overflow" minHeight="420">
+
+<<< @/.vitepress/demos/tabs/overflow.tsx
+
+</Demo>
+
 ### startIcon과 endIcon
 
 라벨 앞뒤에 아이콘이나 개수를 넣습니다.

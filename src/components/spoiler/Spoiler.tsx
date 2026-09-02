@@ -193,13 +193,24 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
       <div
         ref={ref}
         className={cx(
-          'relative isolate overflow-hidden',
+          'isolate grid overflow-hidden',
           radiusClasses[size],
           variantClasses[variant],
           transitionClasses,
           className ?? ''
         )}
-        style={{ ...surfaceSlots(color, elevation), ...style }}
+        // One column and, when there is a way back, one row for the content and
+        // one for the button that puts the cover back on. The cover is a grid
+        // item spanning both rather than an `absolute inset-0` layer, which is
+        // what stops it being clipped: an absolute box contributes no height, so
+        // a cover taller than what it covers — a one-line spoiler under a
+        // two-line notice — simply lost its button off the bottom edge.
+        style={{
+          gridTemplateColumns: 'minmax(0, 1fr)',
+          gridTemplateRows: reversible ? 'auto auto' : 'auto',
+          ...surfaceSlots(color, elevation),
+          ...style
+        }}
         {...props}
       >
         <div
@@ -212,6 +223,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
             open ? '' : 'select-none'
           )}
           style={{
+            gridArea: '1 / 1',
             filter: open ? undefined : `blur(${blur}px)`,
             // The clamp is only ever on the covered state: revealing something and
             // leaving it in a box with a scrollbar is answering the wrong question.
@@ -228,13 +240,51 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
           {children}
         </div>
 
+        {reversible ? (
+          <div
+            // Drawn while the content is still covered, and only kept out of
+            // sight. A row that arrives with the reveal is forty-eight pixels the
+            // box grows by at the moment of the press, and the page under it
+            // moves — twice, for anyone who covers it again. The cover is over
+            // this lane, so there is nothing to see in the space it holds.
+            className={[
+              open ? '' : 'invisible',
+              'flex justify-end',
+              boxPaddingXClasses[density][size],
+              // The row takes the sheet's padding on both axes and then gives the
+              // top back: `padded` content already ends with a full gap, and two
+              // of them stacked is a hole between the text and the way back out.
+              // `pt-0` beating `py-*` is Tailwind's own longhand-after-shorthand
+              // ordering rather than an accident of how these are concatenated.
+              boxPaddingYClasses[density][size],
+              'pt-0'
+            ].join(' ')}
+            style={{ gridArea: '2 / 1' }}
+            inert={!open}
+          >
+            <Button
+              variant="text"
+              size={size}
+              color={color}
+              density={density}
+              onClick={() => change(false)}
+              aria-expanded
+              aria-controls={contentId}
+            >
+              {hideLabel ?? messages.hide}
+            </Button>
+          </div>
+        ) : null}
         {open ? null : (
           <div
             className={[
-              'absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-center',
+              'z-10 flex flex-col items-center justify-center gap-2 text-center',
               boxPaddingClasses[density][size],
               scrimClasses
             ].join(' ')}
+            // Every row, so it covers the lane the hide button is holding open
+            // as well. `z-index` on a grid item needs no `position`.
+            style={{ gridRow: '1 / -1', gridColumn: '1' }}
           >
             {hasContent(notice) ? (
               <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>
@@ -254,34 +304,6 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
             )}
           </div>
         )}
-
-        {open && reversible ? (
-          <div
-            className={[
-              'flex justify-end',
-              boxPaddingXClasses[density][size],
-              // The row takes the sheet's padding on both axes and then gives the
-              // top back: `padded` content already ends with a full gap, and two
-              // of them stacked is a hole between the text and the way back out.
-              // `pt-0` beating `py-*` is Tailwind's own longhand-after-shorthand
-              // ordering rather than an accident of how these are concatenated.
-              boxPaddingYClasses[density][size],
-              'pt-0'
-            ].join(' ')}
-          >
-            <Button
-              variant="text"
-              size={size}
-              color={color}
-              density={density}
-              onClick={() => change(false)}
-              aria-expanded
-              aria-controls={contentId}
-            >
-              {hideLabel ?? messages.hide}
-            </Button>
-          </div>
-        ) : null}
       </div>
     );
   }

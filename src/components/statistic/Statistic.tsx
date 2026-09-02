@@ -23,10 +23,15 @@ export interface StatisticProps extends Omit<BoxProps, 'title' | 'prefix'> {
    */
   label?: React.ReactNode;
   /**
-   * The figure. A number is formatted; a string is printed exactly as given, for
-   * the values that are not numbers at all — "3h 42m", "A+", "—".
+   * The figure. A number is formatted; anything else is rendered exactly as
+   * given — a string, for the values that are not numbers at all ("3h 42m",
+   * "A+", "—"), or a node for the ones that have to do something on the way in,
+   * which is what an [AnimateCounter](../transitions/animate-counter) is.
+   *
+   * `delta` and `previous` are arithmetic and so only mean anything against a
+   * number; with anything else there is nothing to compare.
    */
-  value: number | string;
+  value: React.ReactNode;
   /**
    * How to write a numeric `value` — `Intl.NumberFormat` options, the same prop
    * the progress indicators take. Without it a number is grouped by the reader's

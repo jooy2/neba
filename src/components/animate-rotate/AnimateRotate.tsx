@@ -4,10 +4,19 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAnimateMode, NebaAnimateProps } from '../../types.js';
+import type {
+  NebaAnimateMode,
+  NebaAnimateProps,
+  NebaStaggerProps,
+  NebaTimelineProps
+} from '../../types.js';
 
 export interface AnimateRotateProps
-  extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /** Whether the content turns into place or out of it. @default 'in' */
   mode?: NebaAnimateMode;
   /**
@@ -65,6 +74,11 @@ export const AnimateRotate = React.forwardRef<HTMLDivElement, AnimateRotateProps
       play,
       once = true,
       threshold = 0.2,
+      stagger = 0,
+      durationStep = 0,
+      reverse = false,
+      timeline,
+      range,
       mode = 'in',
       from = -180,
       to = 0,
@@ -94,7 +108,13 @@ export const AnimateRotate = React.forwardRef<HTMLDivElement, AnimateRotateProps
       once,
       threshold,
       paused,
-      infinite: isInfinite(repeat)
+      infinite: isInfinite(repeat),
+      timeline,
+      range,
+      children,
+      stagger,
+      durationStep,
+      reverse
     });
 
     return useRender({
@@ -105,7 +125,7 @@ export const AnimateRotate = React.forwardRef<HTMLDivElement, AnimateRotateProps
         className: cx(animate.className, className),
         style: { transformOrigin: origin, ...animate.style, ...style },
         ...animate.props,
-        children
+        children: animate.children
       }
     });
   }

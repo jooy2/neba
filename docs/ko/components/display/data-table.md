@@ -66,7 +66,8 @@ const headers: DataTableColumn<Build>[] = [
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + 클릭 | 하나를 더하거나 뺍니다 |
 | <kbd>Shift</kbd> + 클릭 | 마지막으로 고른 행부터 여기까지 |
 | 클릭 후 드래그 | 포인터가 지나간 구간, 가장자리에서는 스크롤하며 |
-| <kbd>↑</kbd> <kbd>↓</kbd> <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | 이동하며 고릅니다 |
+| <kbd>↑</kbd> <kbd>↓</kbd> | 이동하며 고릅니다 |
+| <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | 스크롤만 합니다. 고른 행은 그대로 남습니다 |
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + 방향키 | 고르지 않고 이동만 |
 | <kbd>Shift</kbd> + 방향키 | 구간을 늘립니다 |
 | <kbd>Space</kbd> | focus가 있는 행을 고릅니다. <kbd>Ctrl</kbd>/<kbd>⌘</kbd>와 함께면 토글 |

@@ -4,9 +4,19 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAnimateMode, NebaAnimateProps } from '../../types.js';
+import type {
+  NebaAnimateMode,
+  NebaAnimateProps,
+  NebaStaggerProps,
+  NebaTimelineProps
+} from '../../types.js';
 
-export interface AnimateFadeProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+export interface AnimateFadeProps
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /**
    * Whether the content arrives or leaves.
    * @default 'in'
@@ -46,6 +56,11 @@ export const AnimateFade = React.forwardRef<HTMLDivElement, AnimateFadeProps>(fu
     play,
     once = true,
     threshold = 0.2,
+    stagger = 0,
+    durationStep = 0,
+    reverse = false,
+    timeline,
+    range,
     mode = 'in',
     from = 0,
     render,
@@ -70,7 +85,13 @@ export const AnimateFade = React.forwardRef<HTMLDivElement, AnimateFadeProps>(fu
     once,
     threshold,
     paused,
-    infinite: isInfinite(repeat)
+    infinite: isInfinite(repeat),
+    timeline,
+    range,
+    children,
+    stagger,
+    durationStep,
+    reverse
   });
 
   return useRender({
@@ -81,7 +102,7 @@ export const AnimateFade = React.forwardRef<HTMLDivElement, AnimateFadeProps>(fu
       className: cx(animate.className, className),
       style: { ...animate.style, ...style },
       ...animate.props,
-      children
+      children: animate.children
     }
   });
 });

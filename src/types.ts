@@ -165,19 +165,44 @@ export type NebaVariant = 'solid' | 'outline' | 'text';
 export type NebaElevation = 0 | 1 | 2 | 3;
 
 /**
- * The six effects the `Animate*` components are built out of, and the six
- * values the `transition` prop takes.
+ * The seven effects the `transition` prop takes, which is the **entrance**
+ * vocabulary: everything a component can be given to arrive on.
  *
  * They are named after what a reader sees rather than after the CSS property
  * underneath: `zoom` and `grow` are both a change of scale, and they are two
  * words because they are two *gestures* — one arrives from the middle of where
  * it will end up, the other unfolds from nothing.
  *
- * Everything past these six is a component rather than a value. Typing, a
- * marquee and a headline reel need to know what their children *are*, and a
- * prop that only sets class names cannot.
+ * Two `Animate*` components are deliberately **not** in it, and not only
+ * because neither is an entrance. This union is two `Record`s in
+ * `internal/animate.tsx`, an object literal cannot be tree-shaken per key, and
+ * those two tables are a fixed cost on every component that offers a
+ * `transition` — so `AnimateFloat`'s drift, which has no arrival in it, and
+ * `AnimateShake`'s reply to a failed form would be paid for by every Chip on
+ * every page that draws one. They bring their own keyframe instead.
+ *
+ * Everything past a keyframe is a component rather than a value. A typewriter,
+ * a marquee, a headline reel, a split line, a settling scramble and a counted
+ * number all need to know what their children *are*, and a prop that only sets
+ * class names cannot.
  */
-export type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+export type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal';
+
+/**
+ * What drives an animation's progress.
+ *
+ * - `time` — the clock. The default, and what every other prop on an animation
+ *   is written against.
+ * - `view` — how far the element has travelled through the viewport. The
+ *   animation has no duration of its own any more: scrolling forwards plays it
+ *   forwards, scrolling back plays it back, and stopping halfway holds it
+ *   halfway. `duration`, `delay`, `repeat` and every `trigger` are ignored,
+ *   because the scroll position *is* the trigger.
+ *
+ * Where `animation-timeline` is not supported the effect falls back to `time`
+ * and runs on mount, which is the same content delivered a plainer way.
+ */
+export type NebaAnimateTimeline = 'time' | 'view';
 
 /**
  * What makes an animation run.
@@ -211,6 +236,44 @@ export type NebaAnimateRepeat = number | 'infinite';
  * whose type is `string` invites `'0.4s'`, and then two components in the same
  * screen are written in two units.
  */
+/**
+ * The three props that turn one effect on a box into the same effect on the
+ * things inside it, one after another.
+ *
+ * They are their own bundle rather than part of `NebaAnimateProps` because only
+ * some of the eleven can take them. An effect that already has to understand its
+ * children — a marquee that duplicates them, a headline that swaps between them,
+ * a typewriter that counts characters — has no second axis to spend on order.
+ *
+ * `delay` and `duration` stay what they were: what *every* child gets. These
+ * three are the difference between them.
+ */
+export interface NebaStaggerProps {
+  /**
+   * How long after one child the next one starts, in milliseconds.
+   *
+   * `0` — the default everywhere but `AnimateAppear` — animates the box itself
+   * and leaves the children alone, which is the plain single-element effect.
+   * Anything above it moves the animation onto each child in turn.
+   * @default 0
+   */
+  stagger?: number;
+  /**
+   * How much longer each successive child takes than the one before it, in
+   * milliseconds. Negative to speed them up down the list.
+   *
+   * A duration never goes below zero however far the list runs.
+   * @default 0
+   */
+  durationStep?: number;
+  /**
+   * Runs the children from the last to the first. Only the *order* reverses —
+   * each child still plays forwards.
+   * @default false
+   */
+  reverse?: boolean;
+}
+
 export interface NebaAnimateProps {
   /** How long one run takes, in milliseconds. */
   duration?: number;
@@ -242,6 +305,36 @@ export interface NebaAnimateProps {
   threshold?: number;
 }
 
+/**
+ * The two props that swap the clock for the scrollbar.
+ *
+ * Their own bundle rather than part of `NebaAnimateProps`, for the reason
+ * `NebaStaggerProps` is: only the effects whose motion is one `@keyframes` on
+ * the element itself can be pointed at another timeline. A marquee that measures
+ * its own track, a typewriter counting characters and a light travelling round a
+ * pseudo-element are motion written in other places, and offering them a prop
+ * that quietly did nothing would be worse than not offering it.
+ */
+export interface NebaTimelineProps {
+  /**
+   * What drives the progress: the clock, or how far the element has travelled
+   * through the viewport.
+   *
+   * `view` costs `duration`, `delay`, `repeat` and `trigger` — a scroll-driven
+   * animation has no time in it, and the scroll position is what starts it. It
+   * falls back to `time` where the browser has no `animation-timeline`, which
+   * plays the effect once on mount.
+   * @default 'time'
+   */
+  timeline?: NebaAnimateTimeline;
+  /**
+   * The scroll range a `view` timeline is mapped over, written the way CSS
+   * `animation-range` is: `entry 0% cover 45%` is the default, which plays the
+   * effect out over the first part of the element's journey up the screen.
+   */
+  range?: string;
+}
+
 /** The options a `transition` prop takes when a bare effect name is not enough. */
 export interface NebaTransitionOptions {
   /** Which effect. */
@@ -264,6 +357,12 @@ export interface NebaTransitionOptions {
   scale?: number;
   /** How far a `rotate` turns from, in degrees. */
   angle?: number;
+  /** Which edge a `reveal` is wiped from. @default 'left' */
+  side?: NebaSide;
+  /** What drives the progress. @default 'time' */
+  timeline?: NebaAnimateTimeline;
+  /** The scroll range a `view` timeline is mapped over, as CSS writes it. */
+  range?: string;
 }
 
 /**

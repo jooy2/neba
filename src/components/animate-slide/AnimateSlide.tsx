@@ -4,9 +4,20 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, slideOffsets, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAnimateMode, NebaAnimateProps, NebaSide } from '../../types.js';
+import type {
+  NebaAnimateMode,
+  NebaAnimateProps,
+  NebaSide,
+  NebaStaggerProps,
+  NebaTimelineProps
+} from '../../types.js';
 
-export interface AnimateSlideProps extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+export interface AnimateSlideProps
+  extends
+    NebaAnimateProps,
+    NebaStaggerProps,
+    NebaTimelineProps,
+    React.ComponentPropsWithoutRef<'div'> {
   /**
    * Whether the content slides in or slides away. `out` leaves by the same edge
    * it would have come from.
@@ -62,6 +73,11 @@ export const AnimateSlide = React.forwardRef<HTMLDivElement, AnimateSlideProps>(
       play,
       once = true,
       threshold = 0.2,
+      stagger = 0,
+      durationStep = 0,
+      reverse = false,
+      timeline,
+      range,
       mode = 'in',
       from = 'bottom',
       distance = '100%',
@@ -92,7 +108,13 @@ export const AnimateSlide = React.forwardRef<HTMLDivElement, AnimateSlideProps>(
       once,
       threshold,
       paused,
-      infinite: isInfinite(repeat)
+      infinite: isInfinite(repeat),
+      timeline,
+      range,
+      children,
+      stagger,
+      durationStep,
+      reverse
     });
 
     return useRender({
@@ -103,7 +125,7 @@ export const AnimateSlide = React.forwardRef<HTMLDivElement, AnimateSlideProps>(
         className: cx(animate.className, className),
         style: { ...animate.style, ...style },
         ...animate.props,
-        children
+        children: animate.children
       }
     });
   }

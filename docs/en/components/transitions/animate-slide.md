@@ -59,6 +59,10 @@ A CSS length or a number in pixels. `'100%'` — the default — is the element'
 </AnimateSlide>
 ```
 
+### stagger
+
+`stagger`, `durationStep` and `reverse` hand the effect to the children one at a time instead of running it on the box. They work the same way here as on [AnimateFade](./animate-fade), where they are set out in full.
+
 ## Accessibility
 
 - A reduced-motion preference switches the animation off entirely and the content is simply there, in place.

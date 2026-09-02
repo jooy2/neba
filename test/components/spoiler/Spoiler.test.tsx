@@ -146,6 +146,53 @@ describe('Spoiler', () => {
       expect(screen.getByTestId('spoiler').element().firstElementChild).toHaveAttribute('inert');
     });
 
+    /*
+     * The way back is drawn from the start and only kept out of sight, so the
+     * box is the same height covered and uncovered. A row that arrived with the
+     * reveal grew the box by a whole button at the moment of the press, and
+     * everything below it on the page moved — twice, for anyone who covered it
+     * again.
+     *
+     * Structure rather than pixels: a component test loads no CSS, so the
+     * `invisible` class does nothing here and only `inert` is observable. The
+     * heights were measured against the real stylesheet by hand.
+     */
+    it('holds the way back open while the content is still covered', async () => {
+      const screen = await render(
+        <Spoiler reversible data-testid="spoiler">
+          Secret
+        </Spoiler>
+      );
+      const root = screen.getByTestId('spoiler').element();
+      const lane = root.children[1];
+
+      expect(lane).toHaveClass('invisible');
+      expect(lane).toHaveAttribute('inert');
+
+      await screen.getByRole('button', { name: 'Reveal' }).click();
+
+      expect(root.children[1]).toBe(lane);
+      expect(lane).not.toHaveClass('invisible');
+      expect(lane).not.toHaveAttribute('inert');
+    });
+
+    // The cover is a grid item over every row rather than an `absolute inset-0`
+    // layer, so a cover taller than what it covers pushes the box out instead of
+    // losing its own button off the bottom edge.
+    it('lays the cover out in the grid rather than over it', async () => {
+      const screen = await render(
+        <Spoiler reversible data-testid="spoiler">
+          Secret
+        </Spoiler>
+      );
+      const root = screen.getByTestId('spoiler').element() as HTMLElement;
+      const cover = root.lastElementChild as HTMLElement;
+
+      expect(root).toHaveClass('grid');
+      expect(cover).not.toHaveClass('absolute');
+      expect(cover.style.gridRow).toBe('1 / -1');
+    });
+
     it('offers no way back when it is not reversible', async () => {
       const screen = await render(<Spoiler>Secret</Spoiler>);
 

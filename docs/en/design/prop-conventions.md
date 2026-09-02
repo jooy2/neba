@@ -56,7 +56,8 @@ Two vocabularies, and which one you want depends on whether the motion needs a t
 `transition` is an entrance, run once on mount, on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography and Blockquote. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
 
 ```ts
-type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+type NebaAnimation =
+  'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal' | 'float' | 'shake';
 type NebaTransition = NebaAnimation | NebaTransitionOptions;
 ```
 
@@ -69,7 +70,7 @@ It is offered on no component that is pressed. A control that moves under the po
 
 [HowToSteps](../components/surfaces/how-to-steps) is the one component that takes the same prop and runs it on something other than a mount — a step arriving is what it animates — and it stays inside the rule for the same reason: the effect is on the panel, and the buttons and rows that changed it hold still. It is also the only one with a `'none'` in the union, because it is the only one whose default is an effect rather than nothing.
 
-Anything past a mount — a replay, a scroll trigger, a hover, your own control — is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all eleven:
+Anything past a mount — a replay, a scroll trigger, a hover, your own control — is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all of them:
 
 | Prop                 | The rule                                                                 |
 | -------------------- | ------------------------------------------------------------------------ |
@@ -82,6 +83,18 @@ Anything past a mount — a replay, a scroll trigger, a hover, your own control 
 | `play`               | Runs a `manual` one. Each `false` → `true` starts it over                |
 | `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen   |
 | `paused`             | Holds the animation where it is                                          |
+
+Two more go on the nine whose motion is one `@keyframes` on the element itself — everything but AnimateAppear's own stagger, AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting, whose motion is written elsewhere:
+
+| Prop           | The rule                                                                        |
+| -------------- | ------------------------------------------------------------------------------- |
+| `stagger`      | Milliseconds added to each child's delay in turn. `0` animates the box itself   |
+| `durationStep` | Milliseconds added to each child's duration in turn. Negative speeds them up    |
+| `reverse`      | Runs the children last-to-first. Only the order reverses                        |
+| `timeline`     | `'time'` (default) or `'view'`, which drives the effect from the scroll instead |
+| `range`        | The `animation-range` a `'view'` timeline is mapped over                        |
+
+`timeline="view"` costs `duration`, `delay`, `repeat` and every `trigger`: a scroll-driven animation has no time in it, and the scroll position is what starts it. Where the browser has no `animation-timeline` the effect falls back to running once on mount.
 
 Every effect in the library is switched off entirely by a reduced-motion preference, and none of them is ever the only thing carrying a message.
 

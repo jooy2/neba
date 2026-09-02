@@ -56,7 +56,8 @@ export interface ButtonProps
 `transition`은 mount 시 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 컴포넌트들이 받습니다 — Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
 
 ```ts
-type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink';
+type NebaAnimation =
+  'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal' | 'float' | 'shake';
 type NebaTransition = NebaAnimation | NebaTransitionOptions;
 ```
 
@@ -69,7 +70,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 [HowToSteps](../components/surfaces/how-to-steps)는 같은 prop을 받으면서 mount가 아닌 순간에 실행하는 유일한 컴포넌트입니다 — 움직이는 것은 도착한 단계입니다 — 그리고 같은 이유로 규칙 안에 있습니다. 효과는 패널 위에서 실행되고, 그것을 바꾼 버튼과 행은 가만히 있습니다. union에 `'none'`이 들어 있는 것도 이 컴포넌트뿐인데, 기본값이 “없음”이 아니라 효과인 유일한 경우이기 때문입니다.
 
-mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 — 은 [`Animate*` 컴포넌트](../components/transitions/animate-fade)의 몫이며, 어떤 컴포넌트든 그것으로 감쌀 수 있습니다. 아래 설정을 열한 개 모두가 같은 뜻으로 공유합니다.
+mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 — 은 [`Animate*` 컴포넌트](../components/transitions/animate-fade)의 몫이며, 어떤 컴포넌트든 그것으로 감쌀 수 있습니다. 아래 설정을 전부가 같은 뜻으로 공유합니다.
 
 | Prop | 규칙 |
 | --- | --- |
@@ -82,6 +83,18 @@ mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 �
 | `play` | `manual`을 재생합니다. `false` → `true`마다 처음부터 다시 |
 | `once` / `threshold` | `'visible'`용 — 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
 | `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
+
+움직임이 요소 자신에게 걸린 `@keyframes` 하나인 아홉 개는 두 가지를 더 받습니다. AnimateAppear의 자체 stagger와 AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline, AnimateLighting은 움직임이 다른 곳에 쓰여 있어 해당되지 않습니다.
+
+| Prop           | 규칙                                                                |
+| -------------- | ------------------------------------------------------------------- |
+| `stagger`      | 자식마다 지연에 더해지는 값(ms). `0`이면 상자 자체가 재생됩니다     |
+| `durationStep` | 자식마다 재생 시간에 더해지는 값(ms). 음수면 뒤로 갈수록 빨라집니다 |
+| `reverse`      | 마지막 자식부터 실행합니다. 순서만 뒤집힙니다                       |
+| `timeline`     | `'time'`(기본) 또는 `'view'`. view는 시계 대신 스크롤이 재생합니다  |
+| `range`        | `'view'` 타임라인이 매핑될 `animation-range`                        |
+
+`timeline="view"`는 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`를 대가로 가져갑니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
 
 라이브러리의 모든 효과는 축소된 모션 설정에서 통째로 꺼지며, 어느 것도 메시지를 혼자 지고 있지 않습니다.
 
