@@ -41,7 +41,7 @@ The three weights say what they say everywhere. The sheet is never dyed by `colo
 
 ### maxWidth
 
-Holds the content to a measure and centres it while the sheet still spans the window, on the same ladder [Container](./container) uses.
+Holds the content to a measure and centres it while the sheet still spans the window. The same ladder [Container](./container) uses, and the same lengths of your own and per-breakpoint maps.
 
 <Demo src="footer/measure">
 

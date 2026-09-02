@@ -70,6 +70,44 @@ export const controlHeightValues: Record<NebaSize, string> = {
   xl: '3rem'
 };
 
+/**
+ * How wide content is allowed to get — a Container's `maxWidth`, and the same
+ * prop on a Header and a Footer whose bar spans the window while what is on it
+ * lines up with the page.
+ *
+ * Written here once because the three had a copy each, and in `rem` rather than
+ * in Tailwind's named `max-w-*` steps so that a Container's `lg` and a `lg:`
+ * variant are the same 64rem. Tailwind's own container scale is a different set
+ * of numbers, and two ladders called `lg` on one page is how a layout drifts by
+ * a few pixels for no reason anybody can find later.
+ *
+ * Four of the five are exactly the breakpoint floors. `xs` is the one that is
+ * not — a measure of zero is not a thing — and that is the whole of the
+ * difference between this ladder and `NebaBreakpoint`.
+ */
+export const measureWidths: Record<NebaSize, string> = {
+  xs: '30rem',
+  sm: '40rem',
+  md: '48rem',
+  lg: '64rem',
+  xl: '80rem'
+};
+
+/**
+ * One value of a `maxWidth`, as the length the `--n-max-w` slot takes.
+ *
+ * A step of the ladder resolves to its `rem`; anything else is a length the
+ * caller wrote and is passed through untouched, so `'48rem'`, `'60ch'`,
+ * `'min(90vw, 72rem)'` and `640` all reach `max-width` meaning what they say.
+ * `'none'` is not in the table and therefore falls through to the CSS keyword,
+ * which is what it already was.
+ */
+export function measureValue(value: NebaSize | 'none' | number | string): string {
+  if (typeof value === 'number') return `${value}px`;
+
+  return measureWidths[value as NebaSize] ?? value;
+}
+
 /** The same numbers as a width, for a control with nothing to pad against. */
 export const controlSquareClasses: Record<NebaSize, string> = {
   xs: 'w-5.5',

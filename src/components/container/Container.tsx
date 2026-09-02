@@ -3,20 +3,29 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
-import { cx } from '../../internal/styles.js';
-import type { NebaDensity, NebaSize } from '../../types.js';
+import { responsiveSlots } from '../../internal/responsive.js';
+import { cx, measureValue } from '../../internal/styles.js';
+import type { NebaDensity, NebaMeasure, NebaResponsive, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface ContainerProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
-   * How wide the content is allowed to get, on the same ladder the breakpoints
-   * use — `sm` 40rem, `md` 48rem, `lg` 64rem, `xl` 80rem, `xs` 30rem.
+   * How wide the content is allowed to get.
+   *
+   * A step of the measure ladder — `xs` 30rem, `sm` 40rem, `md` 48rem, `lg`
+   * 64rem, `xl` 80rem — or any length of your own: `'60ch'`, `'min(90vw,
+   * 72rem)'`, or a number, which is pixels. The four upper steps are the
+   * breakpoint floors; `xs` is not, because a measure of zero is not a thing.
+   *
+   * Responsive: `maxWidth={{ xs: 'none', lg: 'xl' }}` lets the content run to
+   * the gutters until 64rem and holds it at 80rem from there on. Every entry
+   * applies from its own breakpoint up.
    *
    * `none`, the default, is no limit: a Container's job is the gutter, and a
    * measure is a second decision that a page should have to ask for.
    * @default 'none'
    */
-  maxWidth?: NebaSize | 'none';
+  maxWidth?: NebaResponsive<NebaMeasure>;
   /**
    * The gutter, on the `size`/`density` scale. Turn it off to keep the
    * centring and the measure without the padding.
@@ -48,21 +57,6 @@ export interface ContainerProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 /**
- * The measure ladder, in `rem` rather than in Tailwind's named `max-w-*` steps
- * so that a Container's `lg` and a `lg:` utility are the same 64rem. Tailwind's
- * own container scale is a different set of numbers, and having two ladders
- * called `lg` on one page is how a layout drifts by a few pixels for no reason
- * anybody can find later.
- */
-const maxWidthClasses: Record<NebaSize, string> = {
-  xs: 'max-w-[30rem]',
-  sm: 'max-w-[40rem]',
-  md: 'max-w-[48rem]',
-  lg: 'max-w-[64rem]',
-  xl: 'max-w-[80rem]'
-};
-
-/**
  * Horizontal breathing room, and optionally a measure.
  *
  * Nothing to do with the grid — a Container holds a grid as happily as it holds
@@ -77,20 +71,22 @@ const maxWidthClasses: Record<NebaSize, string> = {
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
   function Container(rawProps, ref) {
     const {
-      maxWidth = 'none',
+      maxWidth,
       padded = true,
       size = 'md',
       density = 'default',
       centered = true,
       render,
       className,
+      style,
       children,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density']);
 
     const classNames = cx(
-      'block w-full',
-      maxWidth === 'none' ? '' : maxWidthClasses[maxWidth],
+      // The measure is read out of the slot by an ordinary utility, so a
+      // caller's own `max-w-*` still fights it on equal terms.
+      'neba-measure block w-full max-w-(--n-max-w)',
       centered ? 'mx-auto' : '',
       padded ? boxPaddingXClasses[density][size] : '',
       className ?? ''
@@ -101,6 +97,10 @@ export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
       ref,
       props: {
         className: classNames,
+        style: {
+          ...responsiveSlots('max-w', maxWidth, measureValue),
+          ...style
+        },
         children,
         ...props
       }

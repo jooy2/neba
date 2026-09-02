@@ -21,7 +21,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, Checkbox, Chip, List, ListItem, Switch, Typography } from 'neba';
+import { Button, Checkbox, Chip, Container, List, ListItem, Switch, Typography } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 import pkg from '../../package.json';
 
@@ -250,6 +250,18 @@ describe('neba/styles.css', () => {
 
         expect(standaloneCss).toContain(`@media (width >= ${width})`);
       }
+    });
+
+    it('resolves a responsive slot into the property that reads it', async () => {
+      // The whole chain a responsive prop is made of: the component writes
+      // `--n-max-w-xs`, the `.neba-measure` cascade folds it into `--n-max-w`,
+      // and a `max-w-(--n-max-w)` utility applies it. Any link missing leaves
+      // the measure at `none`, which looks like a component that ignored its
+      // prop rather than like a stylesheet that did not arrive.
+      const screen = await render(<Container maxWidth="md">Measured</Container>);
+      const element = screen.getByText('Measured').element();
+
+      expect(getComputedStyle(element).maxWidth).toBe(`${48 * 16}px`);
     });
 
     it('leaves no theme() call for a consumer build to resolve', () => {

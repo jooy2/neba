@@ -4,12 +4,21 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { PageLayoutContext } from '../../internal/page-layout.js';
-import { cx, surfaceClasses, surfaceSlots, transitionClasses } from '../../internal/styles.js';
+import {
+  cx,
+  measureValue,
+  surfaceClasses,
+  surfaceSlots,
+  transitionClasses
+} from '../../internal/styles.js';
+import { responsiveSlots } from '../../internal/responsive.js';
 import type {
   NebaColor,
   NebaDensity,
   NebaElevation,
+  NebaMeasure,
   NebaPosition,
+  NebaResponsive,
   NebaSize,
   NebaVariant
 } from '../../types.js';
@@ -55,10 +64,11 @@ export interface FooterProps extends Omit<
   divider?: boolean;
   /**
    * Holds the content to a measure and centres it, while the sheet itself still
-   * spans the window. On the same ladder Container's own `maxWidth` uses.
+   * spans the window. The same ladder — and the same lengths, and the same
+   * per-breakpoint map — Container's own `maxWidth` takes.
    * @default 'none'
    */
-  maxWidth?: NebaSize | 'none';
+  maxWidth?: NebaResponsive<NebaMeasure>;
   /** The gutter and the air above and below. @default true */
   padded?: boolean;
   /**
@@ -103,15 +113,6 @@ const positionClasses: Record<NebaPosition, string> = {
   fixed: 'fixed inset-x-0 bottom-0 z-40'
 };
 
-/** The measure, in the same `rem` steps Container's ladder uses. */
-const maxWidthClasses: Record<NebaSize, string> = {
-  xs: 'max-w-[30rem]',
-  sm: 'max-w-[40rem]',
-  md: 'max-w-[48rem]',
-  lg: 'max-w-[64rem]',
-  xl: 'max-w-[80rem]'
-};
-
 /**
  * The sheet at the end of a page.
  *
@@ -139,7 +140,7 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
     density = 'default',
     elevation = 0,
     divider = true,
-    maxWidth = 'none',
+    maxWidth,
     padded = true,
     label,
     render,
@@ -183,8 +184,11 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
           className={cx(
             'w-full',
             padded ? cx(boxPaddingXClasses[density][size], boxPaddingYClasses[density][size]) : '',
-            maxWidth === 'none' ? '' : cx(maxWidthClasses[maxWidth], 'mx-auto')
+            // `mx-auto` unconditionally: with no measure there is nothing left
+            // over to centre in, so it costs nothing to say it once.
+            'neba-measure mx-auto max-w-(--n-max-w)'
           )}
+          style={responsiveSlots('max-w', maxWidth, measureValue)}
         >
           {children}
         </div>

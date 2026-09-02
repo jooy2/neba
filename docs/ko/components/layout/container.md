@@ -31,11 +31,31 @@ import { Container } from 'neba';
 
 기본값은 `none`으로, 너비 제한 없이 좌우 여백만 둡니다.
 
-값을 주면 [Grid의 breakpoint](./grid#breakpoint)와 같은 단계를 씁니다. `lg`는 64rem이며 Tailwind의 `lg:` 유틸리티가 적용되는 폭과 같은 값입니다.
+값을 주면 measure 사다리의 한 단계를 씁니다 — `xs` 30rem, `sm` 40rem, `md` 48rem, `lg` 64rem, `xl` 80rem. 위 네 단계는 [breakpoint](../../design/breakpoints)의 바닥과 같은 값이므로, `maxWidth="lg"`는 `lg:` variant가 시작되는 바로 그 폭으로 내용을 묶습니다. `xs`만 예외인데, 폭이 0인 measure는 존재하지 않기 때문입니다.
 
 <Demo src="container/max-width">
 
 <<< @/.vitepress/demos/container/max-width.tsx
+
+</Demo>
+
+### 직접 쓴 길이
+
+사다리의 단계가 아닌 값은 `max-width`에 그대로 전달됩니다. 사다리에 없는 폭이 필요해도 따로 빠져나갈 길이 필요 없다는 뜻입니다. 숫자는 px입니다.
+
+```tsx
+<Container maxWidth="60ch">…</Container>
+<Container maxWidth="min(90vw, 72rem)">…</Container>
+<Container maxWidth={640}>…</Container>
+```
+
+### breakpoint에 따라 바꾸기
+
+`maxWidth`는 breakpoint별 map을 받고, 각 항목은 자기 breakpoint부터 위로 적용됩니다. 그래서 두 개면 페이지 하나를 다 설명합니다. [Header](./header)와 [Footer](./footer)도 같은 prop을 같은 모양으로 받으며, 바와 그 아래 내용이 같은 가장자리에 서는 것이 그 방식입니다.
+
+<Demo src="container/responsive">
+
+<<< @/.vitepress/demos/container/responsive.tsx
 
 </Demo>
 

@@ -7,16 +7,20 @@ import { PageLayoutContext } from '../../internal/page-layout.js';
 import {
   cx,
   hasContent,
+  measureValue,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
+import { responsiveSlots } from '../../internal/responsive.js';
 import type {
   NebaAlign,
   NebaColor,
   NebaDensity,
   NebaElevation,
+  NebaMeasure,
   NebaPosition,
+  NebaResponsive,
   NebaSize,
   NebaVariant
 } from '../../types.js';
@@ -95,11 +99,12 @@ export interface HeaderProps extends Omit<
   divider?: boolean;
   /**
    * Holds the row of slots to a measure and centres it, while the sheet itself
-   * still spans the window. On the same ladder Container's own `maxWidth` uses,
-   * so a header and the [Container] under it line up on the same edge.
+   * still spans the window. The same ladder — and the same lengths, and the
+   * same per-breakpoint map — Container's own `maxWidth` takes, so a header and
+   * the Container under it line up on the same edge.
    * @default 'none'
    */
-  maxWidth?: NebaSize | 'none';
+  maxWidth?: NebaResponsive<NebaMeasure>;
   /** The gutter down each side of the row. @default true */
   padded?: boolean;
   /**
@@ -160,15 +165,6 @@ const barGapClasses: Record<NebaSize, string> = {
   md: 'gap-6',
   lg: 'gap-8',
   xl: 'gap-10'
-};
-
-/** The measure, in the same `rem` steps Container's ladder uses. */
-const maxWidthClasses: Record<NebaSize, string> = {
-  xs: 'max-w-[30rem]',
-  sm: 'max-w-[40rem]',
-  md: 'max-w-[48rem]',
-  lg: 'max-w-[64rem]',
-  xl: 'max-w-[80rem]'
 };
 
 /**
@@ -250,7 +246,7 @@ export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header
     density = 'default',
     elevation = 0,
     divider = true,
-    maxWidth = 'none',
+    maxWidth,
     padded = true,
     label,
     render,
@@ -296,8 +292,11 @@ export const Header = React.forwardRef<HTMLElement, HeaderProps>(function Header
             barMinHeightClasses[size],
             barGapClasses[size],
             padded ? boxPaddingXClasses[density][size] : '',
-            maxWidth === 'none' ? '' : cx(maxWidthClasses[maxWidth], 'mx-auto')
+            // `mx-auto` unconditionally: with no measure there is nothing left
+            // over to centre in, so it costs nothing to say it once.
+            'neba-measure mx-auto max-w-(--n-max-w)'
           )}
+          style={responsiveSlots('max-w', maxWidth, measureValue)}
         >
           {hasContent(brand) ? (
             <div

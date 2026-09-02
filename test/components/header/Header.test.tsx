@@ -126,7 +126,8 @@ describe('Header', () => {
       const row = element.firstElementChild as HTMLElement;
 
       expect(element).toHaveClass('w-full');
-      expect(row).toHaveClass('max-w-[64rem]', 'mx-auto');
+      expect(row).toHaveClass('max-w-(--n-max-w)', 'mx-auto');
+      expect(row.style.getPropertyValue('--n-max-w-xs')).toBe('64rem');
     });
 
     it('carries the colour family in its slots rather than in its fill', async () => {

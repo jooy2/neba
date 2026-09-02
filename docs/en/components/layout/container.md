@@ -31,11 +31,31 @@ It is often used with [Grid](./grid), but the two are separate: a Container deci
 
 The default is `none` — gutters with no width limit.
 
-Given a value, it uses [the same steps as Grid's breakpoints](./grid#breakpoints). `lg` is 64rem, the same width Tailwind's `lg:` utilities apply at.
+Given a value it takes a step of the measure ladder: `xs` 30rem, `sm` 40rem, `md` 48rem, `lg` 64rem, `xl` 80rem. The four upper steps are the [breakpoint](../../design/breakpoints) floors, so `maxWidth="lg"` holds the content to exactly the width at which a `lg:` variant starts. `xs` is the one that is not, because a measure of zero is not a thing.
 
 <Demo src="container/max-width">
 
 <<< @/.vitepress/demos/container/max-width.tsx
+
+</Demo>
+
+### A length of your own
+
+Anything that is not a step of the ladder is passed to `max-width` untouched, so a measure the ladder does not have needs no escape hatch. A number is pixels.
+
+```tsx
+<Container maxWidth="60ch">…</Container>
+<Container maxWidth="min(90vw, 72rem)">…</Container>
+<Container maxWidth={640}>…</Container>
+```
+
+### Changing at a breakpoint
+
+`maxWidth` takes a per-breakpoint map, and every entry applies from its own breakpoint up — so two of them describe a whole page. [Header](./header) and [Footer](./footer) take the same prop in the same shape, which is how a bar and the content under it stay on one edge.
+
+<Demo src="container/responsive">
+
+<<< @/.vitepress/demos/container/responsive.tsx
 
 </Demo>
 

@@ -1420,7 +1420,28 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Grid
+ * Responsive slots
+ *
+ * Every value in the library that changes at a breakpoint resolves here: one
+ * cascade per slot name, each breakpoint falling back through the ones below
+ * it, so `span={{ md: 6 }}` sets one custom property and not five. A media
+ * query can change an inherited custom property without React hearing about
+ * it, which is the whole reason this is CSS — the alternative is re-rendering
+ * the tree at every breakpoint to say the same thing.
+ *
+ * Nothing here *applies* a value except the grid's own width arithmetic. The
+ * components read the resolved slot through an ordinary Tailwind utility —
+ * `gap-x-(--n-gap-x)`, `max-w-(--n-max-w)` — so a caller's own class fights
+ * that utility on equal terms, exactly as it did before the value was
+ * responsive. A real declaration in this file would win that fight, because
+ * this sheet is loaded after the utilities.
+ *
+ * The chains get long at `xl`; that is the cost of keeping the DOM lean, and it
+ * is paid once here rather than on every grid item in a consumer's app. It is
+ * also why the list of responsive axes is deliberately short — four media
+ * blocks per slot cannot be generated, so each new one is a decision.
+ *
+ * The grid ------------------------------------------------------------------
  *
  * A column is `(100% + gap) * span / columns - gap` wide, and an offset shifts
  * it by `(100% + gap) * offset / columns`. Both are exact rather than
@@ -1438,11 +1459,6 @@
  * `min(span, columns)` is the clamp: a `span={99}` fills its row instead of
  * overflowing the page, which is what the caller meant.
  *
- * Every slot cascades upward — each breakpoint falls back through the ones
- * below it — so `span={{ md: 6 }}` sets one custom property and not five. The
- * chains get long at `xl`; that is the cost of keeping the DOM lean, and it is
- * paid once here rather than on every grid item in a consumer's app.
- *
  * The widths are read from Tailwind's theme, so a Neba grid and a `md:` utility
  * change at the same moment — including when a consumer has moved them.
  * ------------------------------------------------------------------------- */
@@ -1451,6 +1467,16 @@
   --n-cols: var(--n-cols-xs, 12);
   --n-gap-x: var(--n-gap-x-xs, 0px);
   --n-gap-y: var(--n-gap-y-xs, 0px);
+}
+
+/* A Container, a Header and a Footer, whose one responsive value is how wide
+   the content on them is allowed to get. The slot is applied by a
+   `max-w-(--n-max-w)` utility on the component rather than by a rule here, so
+   the component's measure stays exactly as overridable by a caller's own
+   `max-w-*` as it was when it was a `max-w-[48rem]` — a custom property is
+   invisible to that fight, and a real class in this file would have won it. */
+.neba-measure {
+  --n-max-w: var(--n-max-w-xs, none);
 }
 
 .neba-grid-item {
@@ -1472,6 +1498,10 @@
 }
 
 @media (width >= theme(--breakpoint-sm)) {
+  .neba-measure {
+    --n-max-w: var(--n-max-w-sm, var(--n-max-w-xs, none));
+  }
+
   .neba-grid {
     --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
     --n-gap-x: var(--n-gap-x-sm, var(--n-gap-x-xs, 0px));
@@ -1485,6 +1515,10 @@
 }
 
 @media (width >= theme(--breakpoint-md)) {
+  .neba-measure {
+    --n-max-w: var(--n-max-w-md, var(--n-max-w-sm, var(--n-max-w-xs, none)));
+  }
+
   .neba-grid {
     --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
     --n-gap-x: var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px)));
@@ -1498,6 +1532,10 @@
 }
 
 @media (width >= theme(--breakpoint-lg)) {
+  .neba-measure {
+    --n-max-w: var(--n-max-w-lg, var(--n-max-w-md, var(--n-max-w-sm, var(--n-max-w-xs, none))));
+  }
+
   .neba-grid {
     --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
     --n-gap-x: var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))));
@@ -1514,6 +1552,13 @@
 }
 
 @media (width >= theme(--breakpoint-xl)) {
+  .neba-measure {
+    --n-max-w: var(
+      --n-max-w-xl,
+      var(--n-max-w-lg, var(--n-max-w-md, var(--n-max-w-sm, var(--n-max-w-xs, none))))
+    );
+  }
+
   .neba-grid {
     --n-cols: var(
       --n-cols-xl,

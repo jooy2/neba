@@ -57,7 +57,7 @@ The three weights say what they say everywhere: filled, hairline, none. The bar 
 
 ### maxWidth
 
-Holds the row of slots to a measure and centres it while the sheet still spans the window. On the same ladder [Container](./container) uses, so a header and the Container under it line up on the same edge.
+Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder [Container](./container) uses — and the same lengths of your own, and the same per-breakpoint maps — so a header and the Container under it line up on the same edge at every width.
 
 <Demo src="header/measure">
 

@@ -37,6 +37,7 @@ const SIDE = "'top' | 'right' | 'bottom' | 'left'";
 const POSITION = "'static' | 'sticky' | 'fixed'";
 const BREAKPOINT = "'xs' | 'sm' | 'md' | 'lg' | 'xl'";
 const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
+const RESPONSIVE_MEASURE = 'NebaMeasure | Partial<Record<NebaBreakpoint, NebaMeasure>>';
 const JUSTIFY_CONTENT =
   "'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly' | 'stretch'";
 const ALIGN_ITEMS = "'start' | 'center' | 'end' | 'stretch' | 'baseline'";
@@ -1978,11 +1979,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'maxWidth',
-      type: `${SIZE} | 'none'`,
+      type: RESPONSIVE_MEASURE,
       default: "'none'",
       description: {
-        ko: '시트는 창을 가로지른 채, 안쪽 줄만 이 폭으로 묶어 가운데 놓습니다. Container와 같은 사다리',
-        en: 'Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder Container uses'
+        ko: '시트는 창을 가로지른 채, 안쪽 줄만 이 폭으로 묶어 가운데 놓습니다. Container와 같은 사다리이고, 직접 쓴 길이와 breakpoint별 map도 같은 방식으로 받습니다',
+        en: 'Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder Container uses, and the same lengths and per-breakpoint maps'
       }
     },
     {
@@ -2045,11 +2046,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'maxWidth',
-      type: `${SIZE} | 'none'`,
+      type: RESPONSIVE_MEASURE,
       default: "'none'",
       description: {
-        ko: '시트는 창을 가로지른 채, 안쪽 내용만 이 폭으로 묶어 가운데 놓습니다',
-        en: 'Holds the content to a measure and centres it while the sheet still spans the window'
+        ko: '시트는 창을 가로지른 채, 안쪽 내용만 이 폭으로 묶어 가운데 놓습니다. Container와 같은 사다리이고, 직접 쓴 길이와 breakpoint별 map도 같은 방식으로 받습니다',
+        en: 'Holds the content to a measure and centres it while the sheet still spans the window. The same ladder Container uses, and the same lengths and per-breakpoint maps'
       }
     },
     {
@@ -2397,11 +2398,11 @@ export const propTables: Record<string, PropRow[]> = {
   Container: [
     {
       name: 'maxWidth',
-      type: `${SIZE} | 'none'`,
+      type: RESPONSIVE_MEASURE,
       default: "'none'",
       description: {
-        ko: '내용이 넓어질 수 있는 한계. 브레이크포인트와 같은 사다리입니다 — xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem. 기본값 none은 제한 없음',
-        en: 'How wide the content may get, on the breakpoint ladder — xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem. The default, none, is no limit'
+        ko: '내용이 넓어질 수 있는 한계. 사다리 한 단계(xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem)이거나 직접 쓴 길이 — 60ch, min(90vw, 72rem), 숫자는 px — 이며, { xs: "none", lg: "xl" }처럼 breakpoint별로 줄 수 있습니다. 기본값 none은 제한 없음',
+        en: 'How wide the content may get. A step of the measure ladder (xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem) or a length of your own — 60ch, min(90vw, 72rem), a number for pixels — and it may change at a breakpoint: { xs: "none", lg: "xl" }. The default, none, is no limit'
       }
     },
     {

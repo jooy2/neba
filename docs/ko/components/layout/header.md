@@ -57,7 +57,7 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### maxWidth
 
-시트는 창을 가로지른 채, 안쪽 줄만 이 폭으로 묶어 가운데에 놓습니다. [Container](./container)와 같은 사다리라 header와 그 아래 Container가 같은 선에서 시작합니다.
+시트는 창을 가로지른 채, 안쪽 줄만 이 폭으로 묶어 가운데에 놓습니다. [Container](./container)와 같은 사다리이고, 직접 쓴 길이와 breakpoint별 map도 같은 방식으로 받습니다. 그래서 header와 그 아래 Container가 모든 너비에서 같은 선에서 시작합니다.
 
 <Demo src="header/measure">
 

@@ -115,6 +115,24 @@ export type NebaDateGranularity = 'day' | 'month' | 'year';
 export type NebaBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 /**
+ * How wide content is allowed to get.
+ *
+ * A step of the measure ladder — `xs` 30rem, `sm` 40rem, `md` 48rem, `lg`
+ * 64rem, `xl` 80rem — `none` for no limit, or any CSS length the caller writes:
+ * `'60ch'`, `'min(90vw, 72rem)'`, or a number, which is pixels.
+ *
+ * The ladder shares its five names with `NebaBreakpoint` and four of its five
+ * values, which is deliberate: `maxWidth="md"` holds the content to the width
+ * at which a `md:` variant starts, so the two ladders line up where a layout
+ * needs them to. `xs` is the one step that is not a breakpoint floor, because a
+ * measure of zero is not a thing.
+ *
+ * The `string & {}` is what keeps the five names in a caller's autocomplete: a
+ * bare `| string` would swallow the literals and offer nothing.
+ */
+export type NebaMeasure = NebaSize | 'none' | number | (string & {});
+
+/**
  * A value that may differ per breakpoint.
  *
  * A bare value applies from `xs` up; a partial map applies each entry from its

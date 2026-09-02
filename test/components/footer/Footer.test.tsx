@@ -75,7 +75,8 @@ describe('Footer', () => {
       const screen = await render(<Footer maxWidth="md" />);
       const inner = screen.getByRole('contentinfo').element().firstElementChild as HTMLElement;
 
-      expect(inner).toHaveClass('max-w-[48rem]', 'mx-auto');
+      expect(inner).toHaveClass('max-w-(--n-max-w)', 'mx-auto');
+      expect(inner.style.getPropertyValue('--n-max-w-xs')).toBe('48rem');
     });
 
     it('drops the gutter when it is turned off', async () => {

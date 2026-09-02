@@ -74,22 +74,47 @@ describe('Container', () => {
 
   describe('measure', () => {
     it('has no width limit by default', async () => {
+      // The slot is left unset, so the cascade's own fallback — `none` — is
+      // what `max-w-(--n-max-w)` resolves to. That is also why a caller who
+      // names only `{ lg: 'xl' }` gets no measure below 64rem rather than a
+      // silent one.
       const screen = await render(<Container>content</Container>);
       const element = screen.getByText('content').element();
 
-      expect(element.className).not.toContain('max-w-');
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('');
     });
 
-    it('maps maxWidth onto the breakpoint ladder', async () => {
+    it('maps maxWidth onto the measure ladder', async () => {
       const screen = await render(<Container maxWidth="lg">content</Container>);
       const element = screen.getByText('content').element();
 
-      expect(element).toHaveClass('max-w-[64rem]');
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('64rem');
 
       await screen.rerender(<Container maxWidth="sm">content</Container>);
 
-      expect(element).toHaveClass('max-w-[40rem]');
-      expect(element).not.toHaveClass('max-w-[64rem]');
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('40rem');
+    });
+
+    it('takes a length of its own, and a number as pixels', async () => {
+      const screen = await render(<Container maxWidth="60ch">content</Container>);
+      const element = screen.getByText('content').element();
+
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('60ch');
+
+      await screen.rerender(<Container maxWidth={640}>content</Container>);
+
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('640px');
+    });
+
+    it('changes at a breakpoint, writing only the steps it was given', async () => {
+      const screen = await render(
+        <Container maxWidth={{ xs: 'none', lg: 'xl' }}>content</Container>
+      );
+      const element = screen.getByText('content').element();
+
+      expect(element.style.getPropertyValue('--n-max-w-xs')).toBe('none');
+      expect(element.style.getPropertyValue('--n-max-w-lg')).toBe('80rem');
+      expect(element.style.getPropertyValue('--n-max-w-md')).toBe('');
     });
 
     it('centres by default and stops on request', async () => {
