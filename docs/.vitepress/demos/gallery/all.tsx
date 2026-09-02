@@ -115,6 +115,7 @@ import {
   SegmentedButton,
   Select,
   Shortcut,
+  Show,
   Sidebar,
   Skeleton,
   Slider,
@@ -1111,6 +1112,24 @@ const GROUPS: Group[] = [
                 1 / 1
               </div>
             </AspectRatio>
+          </div>
+        )
+      },
+      {
+        name: 'Show',
+        summary: {
+          ko: '어떤 너비에서는 그리고 어떤 너비에서는 그리지 않습니다',
+          en: 'Its children at some widths and not at others'
+        },
+        path: '/components/layout/show',
+        preview: (
+          <div className="flex w-full max-w-56 flex-col gap-2">
+            <Show below="md">
+              <Chip color="secondary">below md</Chip>
+            </Show>
+            <Show above="md">
+              <Chip color="primary">above md</Chip>
+            </Show>
           </div>
         )
       },

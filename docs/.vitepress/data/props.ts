@@ -11226,6 +11226,34 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Show: [
+    {
+      name: 'above',
+      type: BREAKPOINT,
+      description: {
+        ko: 'children이 그려지기 시작하는 가장 좁은 너비. 이 값을 포함하며, 그 아래에서는 그려지지 않습니다. xs는 바닥이 0이므로 "언제나"와 같습니다',
+        en: 'The narrowest width the children are drawn at, inclusive. Below it they are not drawn. xs is a floor of zero and so means "always"'
+      }
+    },
+    {
+      name: 'below',
+      type: BREAKPOINT,
+      description: {
+        ko: 'children이 그려지기를 멈추는 너비. 이 값을 포함하지 않으므로 같은 breakpoint의 above와 정확히 짝이 되어 모든 너비를 한 번씩 덮습니다. below="xs"는 아무 데서도 그리지 않습니다',
+        en: 'The width at which the children stop being drawn, exclusive — so it pairs with above at the same breakpoint to cover every width exactly once. below="xs" draws nothing at all'
+      }
+    },
+    renderProp('render={<td />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '어떤 너비에서 그려질지가 정해지는 것. 언제나 렌더되며 바뀌는 것은 display입니다',
+        en: 'What is drawn at some widths and not others. Always rendered; what changes is display'
+      }
+    }
+  ],
+
   AspectRatio: [
     {
       name: 'ratio',

@@ -186,11 +186,11 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Feedback** — Alert, Dialog, Confirm, Popconfirm, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox, Meter, Tour
 
-**Layout** — PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Panes, Stack, AspectRatio, Portal, ScrollZone, ScrollArea
+**Layout** — PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Panes, Stack, Show, AspectRatio, Portal, ScrollZone, ScrollArea
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit, AnimateTyping, AnimateScramble, AnimateCounter, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — the six new `Animate*` (Reveal, Float, Shake, Split, Counter, Scramble), Stack, TreeSelect, Calendar, Image, Confirm, Popconfirm, VisuallyHidden, Portal, GaugeChart, CommandPalette, Tour, Transfer, Anchor, DataList, NavigationMenu, Menubar, Form (with Fieldset), ScrollArea, HoverCard, Meter, Toggle (with ToggleGroup), CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Recently added** — Show, the six new `Animate*` (Reveal, Float, Shake, Split, Counter, Scramble), Stack, TreeSelect, Calendar, Image, Confirm, Popconfirm, VisuallyHidden, Portal, GaugeChart, CommandPalette, Tour, Transfer, Anchor, DataList, NavigationMenu, Menubar, Form (with Fieldset), ScrollArea, HoverCard, Meter, Toggle (with ToggleGroup), CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

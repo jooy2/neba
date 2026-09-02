@@ -112,6 +112,7 @@ import {
   SegmentedButton,
   Select,
   Shortcut,
+  Show,
   Skeleton,
   Slider,
   Sparkline,
@@ -612,7 +613,8 @@ function ShowcaseBody() {
           in the shape that exists for live readouts. */}
         <section className="flex flex-col gap-3">
           <Caption>
-            Toolbar · Icon · IconButton · Pill · Avatar · Stack · Breadcrumb · Tour · VisuallyHidden
+            Toolbar · Icon · IconButton · Pill · Avatar · Stack · Show · Breadcrumb · Tour ·
+            VisuallyHidden
           </Caption>
           <Toolbar
             render={<header />}
@@ -636,7 +638,12 @@ function ShowcaseBody() {
             }
             end={
               <>
-                <Pill size="sm" color="info" startIcon={<DotIcon />} title="Building — 2 of 7" />
+                {/* A live readout a phone's toolbar has no room for. `Show`
+                    keeps it in the markup and off the screen, so nothing has to
+                    wait for JavaScript to find out how wide the window is. */}
+                <Show above="sm">
+                  <Pill size="sm" color="info" startIcon={<DotIcon />} title="Building — 2 of 7" />
+                </Show>
                 <Badge content={3} color="danger" label="3 failing builds">
                   <IconButton
                     data-tour="alerts"

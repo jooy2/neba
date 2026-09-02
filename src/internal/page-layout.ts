@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useMediaQuery, widthBelow } from './media.js';
+import { hiddenBelowClasses, hiddenFromClasses } from './responsive.js';
 import type { NebaBreakpoint, NebaSide } from '../types.js';
 
 /**
@@ -127,33 +128,27 @@ export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
  * The same five widths as Tailwind variants, for the parts of this that are
  * decided in CSS rather than in JavaScript.
  *
- * Written out per breakpoint because Tailwind only ever sees class names that
- * appear literally in the source — the same reason every table in
- * `internal/styles.ts` is a `Record` of complete strings.
+ * The tables themselves are `internal/responsive.ts`', because `Show` asks the
+ * identical question and two spellings of "hidden below `md`" would be two
+ * chances to disagree. What is added here is only the sixth key: `none` is a
+ * layout that never collapses, which is not a breakpoint and has no place in a
+ * table the rest of the library reads.
  *
- * `belowClasses` hides something at and above the breakpoint, which is what a
- * sidebar's own trigger wants: the hamburger exists exactly while the sidebar
- * does not. `aboveClasses` hides it below, which is what the sidebar's column
- * wants for the one paint between the server's HTML arriving and JavaScript
- * finding out how wide the window is — without it a phone draws the sidebar
- * full width and then throws it away.
+ * `collapsedOnlyClasses` hides something at and above the breakpoint, which is
+ * what a sidebar's own trigger wants: the hamburger exists exactly while the
+ * sidebar does not. `expandedOnlyClasses` hides it below, which is what the
+ * sidebar's column wants for the one paint between the server's HTML arriving
+ * and JavaScript finding out how wide the window is — without it a phone draws
+ * the sidebar full width and then throws it away.
  */
 export const collapsedOnlyClasses: Record<PageLayoutCollapse, string> = {
   none: 'hidden',
-  xs: 'hidden',
-  sm: 'sm:hidden',
-  md: 'md:hidden',
-  lg: 'lg:hidden',
-  xl: 'xl:hidden'
+  ...hiddenFromClasses
 };
 
 export const expandedOnlyClasses: Record<PageLayoutCollapse, string> = {
   none: '',
-  xs: '',
-  sm: 'max-sm:hidden',
-  md: 'max-md:hidden',
-  lg: 'max-lg:hidden',
-  xl: 'max-xl:hidden'
+  ...hiddenBelowClasses
 };
 
 /**

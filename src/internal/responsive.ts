@@ -96,3 +96,41 @@ export function withBaseline<T>(
 export function lengthOf(value: number | string): string {
   return typeof value === 'number' ? `${value}px` : value;
 }
+
+/* ---------------------------------------------------------------------------
+ * Being drawn at all
+ *
+ * The one responsive axis that is *not* a slot, and deliberately so. Whether an
+ * element is drawn is a `display`, `display` has exactly two values here, and
+ * Tailwind already ships both under every breakpoint — so this is ten literal
+ * class names rather than a cascade and four media blocks. It is also the only
+ * form that follows a consumer's own `@theme` without the library doing
+ * anything: their build generates `md:hidden` from their `--breakpoint-md`.
+ *
+ * Written out per breakpoint because Tailwind only ever sees class names that
+ * appear literally in the source — the same reason every table in
+ * `internal/styles.ts` is a `Record` of complete strings.
+ * ------------------------------------------------------------------------- */
+
+/** Hidden below this breakpoint: the element exists from here up. */
+export const hiddenBelowClasses: Record<NebaBreakpoint, string> = {
+  xs: '',
+  sm: 'max-sm:hidden',
+  md: 'max-md:hidden',
+  lg: 'max-lg:hidden',
+  xl: 'max-xl:hidden'
+};
+
+/**
+ * Hidden at this breakpoint and above: the element exists only under it.
+ *
+ * `xs` is `hidden` outright rather than empty — nothing is below a floor of
+ * zero, so "only under `xs`" is nowhere at all.
+ */
+export const hiddenFromClasses: Record<NebaBreakpoint, string> = {
+  xs: 'hidden',
+  sm: 'sm:hidden',
+  md: 'md:hidden',
+  lg: 'lg:hidden',
+  xl: 'xl:hidden'
+};
