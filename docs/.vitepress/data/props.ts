@@ -9575,8 +9575,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'auto' | 'always' | 'none'",
       default: "'auto'",
       description: {
-        ko: '스크롤 버튼을 언제 그릴지. auto는 갈 곳이 있는 쪽만, always는 둘 다(갈 곳 없는 쪽은 disabled), none은 아예 그리지 않습니다',
-        en: 'When the scroll buttons are drawn. auto is only the one that has somewhere to go, always is both with the other disabled, none is neither'
+        ko: '스크롤 버튼을 언제 그릴지. auto는 전부 들어맞으면 둘 다 그리지 않고, 끝에서는 overlay 버튼을 지우되 자리를 지키는 inline 버튼은 disabled로 남깁니다. always는 늘 둘 다, none은 아예 그리지 않습니다',
+        en: 'When the scroll buttons are drawn. auto draws neither while everything fits and, at an end, removes an overlay button but disables an inline one, whose lane is held open either way. always is both from the first paint, none is neither'
       }
     },
     {
@@ -9584,8 +9584,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'inline' | 'overlay'",
       default: "'inline'",
       description: {
-        ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지됩니다',
-        en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go'
+        ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지되고, 그래서 auto일 때 지워지는 대신 disabled가 됩니다',
+        en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go, which is why an auto button is disabled there rather than removed'
       }
     },
     {

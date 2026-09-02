@@ -138,7 +138,9 @@ describe('ScrollZone', () => {
   });
 
   describe('the buttons', () => {
-    it('offers the one that has somewhere to go', async () => {
+    // Overlaid, the absence costs nothing, so `auto` takes the button away
+    // outright rather than disabling it.
+    it('offers only the overlaid one that has somewhere to go', async () => {
       const screen = await render(
         <ScrollZone buttonPlacement="overlay" data-testid="zone">
           {cards}
@@ -248,22 +250,19 @@ describe('ScrollZone', () => {
     });
 
     // A lane that came and went would resize the strip under the pointer that
-    // had just reached the end of it.
-    it('keeps the lane of a button that has nowhere to go', async () => {
+    // had just reached the end of it, so it is held open either way — and a lane
+    // that is paid for is one the button stays in, disabled, rather than one that
+    // reads as stray padding at the edge every reader meets first.
+    it('disables an inline button with nowhere to go rather than emptying its lane', async () => {
       const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
       const root = screen.getByTestId('zone').element();
 
-      await expect
-        .element(screen.getByRole('button', { name: 'Scroll forward' }))
-        .toBeInTheDocument();
-      // The button is still in the markup, holding its lane open — and `inert`,
-      // which is what keeps it out of the tab order and off the accessibility
-      // tree while it is invisible.
-      expect(root.children[0]).toHaveClass('invisible');
-      expect(root.children[0]).toHaveAttribute('inert');
-      expect(screen.getByRole('button', { name: 'Scroll back' }).element().closest('[inert]')).toBe(
-        root.children[0]
-      );
+      await expect.element(screen.getByRole('button', { name: 'Scroll back' })).toBeDisabled();
+      await expect.element(screen.getByRole('button', { name: 'Scroll forward' })).toBeEnabled();
+      // A lane either side, and nothing invisible or `inert` in either of them.
+      expect(root.children).toHaveLength(3);
+      expect(root.children[0]).not.toHaveClass('invisible');
+      expect(root.children[0]).not.toHaveAttribute('inert');
     });
 
     it('runs the strip down the page with the buttons above and below it', async () => {

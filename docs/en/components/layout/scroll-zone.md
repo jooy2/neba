@@ -51,7 +51,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 ### buttons
 
-`auto` — the default — draws only the button that has somewhere to go, and neither of them while everything fits. `always` draws both from the first paint and disables the one that cannot move, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to dragging, the arrow keys and whatever the pointer can already swipe with.
+`auto` — the default — draws neither while everything fits. At an end it does whichever costs less: an overlaid button with nowhere to go is removed, an inline one is `disabled`, since its lane is held open either way. `always` draws both from the first paint, including while everything still fits, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to dragging, the arrow keys and whatever the pointer can already swipe with.
 
 `snap` brings the nearest child to the leading edge whenever the scrolling stops, however it was scrolled.
 
@@ -65,7 +65,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 `inline` — the default — puts the buttons beside the strip: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on. `overlay` puts them over the ends of the strip instead, which keeps every pixel of the box for content and lets an item pass under a button.
 
-An inline button keeps its lane even while it has nowhere to go, or the strip would resize under the pointer that had just reached the end of it.
+An inline button keeps its lane even while it has nowhere to go, or the strip would resize under the pointer that had just reached the end of it. That is also what `buttons="auto"` follows at an end: the lane is paid for either way, so an inline button stays there and is `disabled`, while an overlaid one is removed.
 
 <Demo src="scroll-zone/placement" minHeight="280">
 

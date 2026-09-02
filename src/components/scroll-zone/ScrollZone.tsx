@@ -14,9 +14,12 @@ import { useStyleDefaults } from '../../internal/defaults.js';
 /**
  * When the scroll buttons are drawn.
  *
- * - `auto` — only the one that has somewhere to go, and neither of them while
- *   everything fits. The default: a control that cannot do anything is worse
- *   than no control, and a row that does not overflow is not a scroller.
+ * - `auto` — neither of them while everything fits, and at an end whichever
+ *   costs less: an `overlay` button with nowhere to go is not drawn at all, an
+ *   `inline` one is drawn `disabled`. The default. A control that cannot do
+ *   anything is worse than no control — but an inline lane is held open either
+ *   way, and an empty one is not one control fewer, it is the same width
+ *   reading as stray padding. A row that does not overflow is not a scroller.
  * - `always` — both, from the first paint, with the one that has nowhere to go
  *   `disabled` rather than gone. What a row whose content arrives later wants,
  *   since the buttons do not appear under the pointer half a second in.
@@ -53,7 +56,9 @@ export type ScrollZoneMode = 'item' | 'page' | 'hold';
  *
  * The lane an `inline` button sits in is kept even while that button has
  * nowhere to go, or the strip would resize under the pointer every time it
- * reached an end.
+ * reached an end. That is also what decides what `buttons="auto"` does at an
+ * end: the lane is paid for either way, so the button stays there and is
+ * `disabled`, while an `overlay` one — whose absence is free — is removed.
  */
 export type ScrollZoneButtonPlacement = 'inline' | 'overlay';
 
@@ -567,11 +572,14 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
 
     function scrollButton(forward: boolean) {
       const available = forward ? reach.forward : reach.back;
-      // An overlay button with nowhere to go is not drawn at all; an inline one
-      // leaves its lane behind, because a lane that came and went would resize the
-      // strip under the pointer that had just reached the end of it. `inert`
-      // rather than `hidden`, so the space is kept and the button is out of the
-      // tab order and out of the accessibility tree while it is invisible.
+      // What `auto` does at an end is decided by what the absence would cost. An
+      // overlay button takes no space, so the one with nowhere to go is not drawn
+      // at all. An inline one sits in a lane that is kept either way — a lane that
+      // came and went would resize the strip under the pointer that had just
+      // reached the end of it — and an emptied lane is not a lighter row, it is
+      // the same row reading as stray padding at the edge every reader meets
+      // first. So it stays and is `disabled`, in the width it was occupying
+      // anyway, which is what `always` was already doing there.
       if (buttons === 'auto' && !available && !inline) return <span />;
 
       const turn = horizontal
@@ -581,8 +589,6 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
         : forward
           ? ''
           : 'rotate-180';
-
-      const spare = buttons === 'auto' && !available;
 
       const button = (
         <IconButton
@@ -609,14 +615,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
         return button;
       }
 
-      return (
-        <span
-          className={cx('flex shrink-0 items-center justify-center', spare ? 'invisible' : '')}
-          inert={spare}
-        >
-          {button}
-        </span>
-      );
+      return <span className="flex shrink-0 items-center justify-center">{button}</span>;
     }
 
     return (
