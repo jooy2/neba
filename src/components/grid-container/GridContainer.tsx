@@ -7,10 +7,9 @@ import {
   alignItemsClasses,
   columnCount,
   justifyContentClasses,
-  responsiveSlots,
-  spacingValue,
-  withBaseline
+  spacingValue
 } from '../../internal/grid.js';
+import { responsiveSlots, withBaseline } from '../../internal/responsive.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { cx } from '../../internal/styles.js';
 import type {

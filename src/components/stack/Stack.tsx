@@ -7,6 +7,7 @@ import {
   animationSlots,
   transitionParts
 } from '../../internal/animate.js';
+import { lengthOf } from '../../internal/responsive.js';
 import { cx } from '../../internal/styles.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import type { NebaSize, NebaStaggerProps, NebaTransition } from '../../types.js';
@@ -131,11 +132,6 @@ const overlapSizes: Record<NebaSize, string> = {
   lg: '0.75rem',
   xl: '0.875rem'
 };
-
-/** A number is pixels; a string is already a CSS length. */
-function lengthOf(value: number | string): string {
-  return typeof value === 'number' ? `${value}px` : value;
-}
 
 /**
  * Things laid over each other, so the set reads as a pile rather than a row.

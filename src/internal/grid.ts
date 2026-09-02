@@ -1,32 +1,30 @@
 /**
- * The arithmetic and the vocabulary the three layout components share.
+ * The arithmetic and the vocabulary the layout components share.
  *
  * Like `internal/styles.ts` this is the library talking to itself, and it lives
  * here rather than in either component's folder for the same reason
  * `internal/button-group.ts` does: `GridContainer` and `Grid` are one system in
- * two elements, and neither should have to import the other.
+ * two elements, and neither should have to import the other. `Flex` reads the
+ * alignment tables and the gutter arithmetic below and nothing else, which is
+ * the whole of what it has in common with a grid.
  *
  * What is *not* here is the layout itself. A column width is
  * `(100% + gap) * span / columns - gap`, it has to change at four breakpoints,
  * and it is the width of an element whose column count is declared on its
  * parent — none of which Tailwind can spell, because Tailwind only ever sees
  * class names written out literally and `columns` is a number a caller picks.
- * So the widths are real CSS in `styles.css`, driven by the `--n-*` slots this
- * file generates. That is the same split the rest of the library makes: per-
- * instance values go in inline custom properties, never in class names.
+ * So the widths are real CSS in `styles.css`, driven by the `--n-*` slots
+ * `internal/responsive.ts` generates. That is the same split the rest of the
+ * library makes: per-instance values go in inline custom properties, never in
+ * class names.
+ *
+ * What is also not here any more is that generator. `responsiveSlots` and
+ * `withBaseline` were written for the grid and are not about grids, so they sit
+ * in `responsive.ts` where a Container and a Flex can reach them without
+ * importing column arithmetic they will never run.
  */
 
-import type * as React from 'react';
-import type {
-  NebaAlignItems,
-  NebaAlignSelf,
-  NebaBreakpoint,
-  NebaJustifyContent,
-  NebaResponsive
-} from '../types.js';
-
-/** Smallest first, which is also the order the media queries have to be in. */
-export const breakpoints: readonly NebaBreakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+import type { NebaAlignItems, NebaAlignSelf, NebaJustifyContent } from '../types.js';
 
 /**
  * One step of `spacing`, in `rem`.
@@ -38,61 +36,6 @@ export const breakpoints: readonly NebaBreakpoint[] = ['xs', 'sm', 'md', 'lg', '
  * place a caller has to stop and convert.
  */
 const SPACING_STEP = 0.25;
-
-/** A bare value means "from `xs` up"; a map is already per-breakpoint. */
-function breakpointMap<T>(
-  value: NebaResponsive<T> | undefined
-): Partial<Record<NebaBreakpoint, T>> {
-  if (value === undefined || value === null) return {};
-  if (typeof value === 'object') return value as Partial<Record<NebaBreakpoint, T>>;
-
-  return { xs: value };
-}
-
-/**
- * Turns a responsive value into the `--n-{name}-{breakpoint}` slots the CSS
- * reads, emitting only the breakpoints the caller actually named.
- *
- * The gaps are filled in by CSS rather than here: each breakpoint's rule falls
- * back through the ones below it, so `{ md: 6 }` needs one slot and not five.
- * That keeps the inline style on a grid item down to what was asked for.
- */
-export function responsiveSlots<T>(
-  name: string,
-  value: NebaResponsive<T> | undefined,
-  toCss: (value: T) => string
-): React.CSSProperties {
-  const map = breakpointMap(value);
-  const slots: Record<string, string> = {};
-
-  for (const breakpoint of breakpoints) {
-    const entry = map[breakpoint];
-    if (entry !== undefined) slots[`--n-${name}-${breakpoint}`] = toCss(entry);
-  }
-
-  return slots as React.CSSProperties;
-}
-
-/**
- * Fills in the `xs` entry of a partial map with the prop's own default.
- *
- * Without this, `spacing={{ md: 4 }}` would be a grid with no gutter at all
- * below 48rem — the CSS fallback rather than the documented default of 2 — and
- * a caller who narrowed one breakpoint would silently lose every other one. A
- * map says "from here up, use this instead"; it does not say "and nothing
- * below".
- */
-export function withBaseline<T>(
-  value: NebaResponsive<T> | undefined,
-  baseline: T
-): NebaResponsive<T> {
-  if (value === undefined || value === null) return baseline;
-  if (typeof value === 'object') {
-    return { xs: baseline, ...(value as Partial<Record<NebaBreakpoint, T>>) };
-  }
-
-  return value;
-}
 
 /**
  * A count of columns, as a plain number for `calc()` to divide by.
