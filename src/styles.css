@@ -1391,6 +1391,35 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Breakpoints
+ *
+ * The five widths the whole library branches on, taken from Tailwind's theme
+ * rather than written out — `theme()` resolves at build time, in whichever
+ * Tailwind build compiles this file, so a consumer who redeclares
+ * `--breakpoint-md` in their own `@theme` moves the media queries below, the
+ * `md:` variants the components spell out, and the JavaScript that reads the
+ * tokens here, all at once. That is the whole mechanism: a breakpoint is a
+ * build-time decision, because `@media` cannot read a custom property and no
+ * amount of runtime configuration can change that.
+ *
+ * `xs` has no token because its floor is `0`: it is the value with no media
+ * query around it, and there is nothing for JavaScript to look up.
+ *
+ * Tailwind does not emit `--breakpoint-*` into `:root` — they are compile-time
+ * values to it — so the four are copied under a name of the library's own,
+ * which is what `internal/media.ts` reads to build its `matchMedia` queries.
+ * Declared once, on `:root` alone: a width is not a theme-dependent value, so
+ * the rule about repeating derived tokens per theme root does not apply.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --neba-breakpoint-sm: theme(--breakpoint-sm);
+  --neba-breakpoint-md: theme(--breakpoint-md);
+  --neba-breakpoint-lg: theme(--breakpoint-lg);
+  --neba-breakpoint-xl: theme(--breakpoint-xl);
+}
+
+/* ---------------------------------------------------------------------------
  * Grid
  *
  * A column is `(100% + gap) * span / columns - gap` wide, and an offset shifts
@@ -1414,8 +1443,8 @@
  * chains get long at `xl`; that is the cost of keeping the DOM lean, and it is
  * paid once here rather than on every grid item in a consumer's app.
  *
- * The widths are Tailwind's own breakpoints, so a Neba grid and a `md:` utility
- * change at the same moment.
+ * The widths are read from Tailwind's theme, so a Neba grid and a `md:` utility
+ * change at the same moment — including when a consumer has moved them.
  * ------------------------------------------------------------------------- */
 
 .neba-grid {
@@ -1442,7 +1471,7 @@
   margin-inline-start: calc(var(--n-track) * min(var(--n-offset), var(--n-cols, 12)));
 }
 
-@media (width >= 40rem) {
+@media (width >= theme(--breakpoint-sm)) {
   .neba-grid {
     --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
     --n-gap-x: var(--n-gap-x-sm, var(--n-gap-x-xs, 0px));
@@ -1455,7 +1484,7 @@
   }
 }
 
-@media (width >= 48rem) {
+@media (width >= theme(--breakpoint-md)) {
   .neba-grid {
     --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
     --n-gap-x: var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px)));
@@ -1468,7 +1497,7 @@
   }
 }
 
-@media (width >= 64rem) {
+@media (width >= theme(--breakpoint-lg)) {
   .neba-grid {
     --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
     --n-gap-x: var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))));
@@ -1484,7 +1513,7 @@
   }
 }
 
-@media (width >= 80rem) {
+@media (width >= theme(--breakpoint-xl)) {
   .neba-grid {
     --n-cols: var(
       --n-cols-xl,

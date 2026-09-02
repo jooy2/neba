@@ -228,6 +228,37 @@ describe('neba/styles.css', () => {
     });
   });
 
+  describe('the breakpoints', () => {
+    /*
+     * The one place the stylesheet is read *back* by JavaScript. Every width
+     * question the library asks — `useBreakpoint`, a sidebar deciding whether
+     * to be a drawer — is a `matchMedia` string built in `internal/media.ts`
+     * out of these tokens, and every width question it answers in CSS is a
+     * media query built from the same `theme()` call. A missing or disagreeing
+     * token is a page whose CSS and whose JavaScript change at different
+     * widths, which is invisible here and only shows up on a consumer's site.
+     */
+    it('publishes the four widths JavaScript reads back', () => {
+      for (const name of ['sm', 'md', 'lg', 'xl']) {
+        expect(token(document.documentElement, `--neba-breakpoint-${name}`)).toMatch(/^[\d.]+\w/);
+      }
+    });
+
+    it('publishes the same widths the media queries were built at', () => {
+      for (const name of ['sm', 'md', 'lg', 'xl']) {
+        const width = token(document.documentElement, `--neba-breakpoint-${name}`);
+
+        expect(standaloneCss).toContain(`@media (width >= ${width})`);
+      }
+    });
+
+    it('leaves no theme() call for a consumer build to resolve', () => {
+      // Same failure mode as the `@source` check above: a browser ignores an
+      // unresolved `theme()`, so the grid would simply stop being responsive.
+      expect(standaloneCss).not.toContain('theme(--breakpoint');
+    });
+  });
+
   describe('the tokens', () => {
     it('resolve through the utilities into a painted surface', async () => {
       // The full chain: a `color` prop picks a family, the component writes it

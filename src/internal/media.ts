@@ -62,12 +62,19 @@ export function noMatchOnServer(): boolean {
 /**
  * The five widths, written once and read in both directions.
  *
- * They are Tailwind's own defaults, which is what makes a Neba layout and a
- * `md:` utility change at the same moment — and they are here rather than in
+ * They are Tailwind's defaults, which is what makes a Neba layout and a `md:`
+ * utility change at the same moment — and they are here rather than in
  * `page-layout.ts`, where they used to be, because a layout asks "is the window
  * *narrower* than this" and a caller asks "is it *at least* this". Two
  * questions, one table: a second copy would be a second chance for the two to
  * disagree about what `md` is.
+ *
+ * This copy is the fallback rather than the source. `styles.css` publishes the
+ * same four widths as `--neba-breakpoint-*`, filled in from Tailwind's own
+ * theme at build time, and `readBreakpoints` below prefers those — so a
+ * consumer who moves `--breakpoint-md` moves the CSS and this together instead
+ * of leaving the two to disagree silently. What is written here is what a
+ * server, and a page whose stylesheet has not arrived, has to answer with.
  */
 export const breakpointWidths: Record<NebaBreakpoint, string> = {
   xs: '0rem',
@@ -77,14 +84,49 @@ export const breakpointWidths: Record<NebaBreakpoint, string> = {
   xl: '80rem'
 };
 
+/**
+ * The widths actually in force, read off the document once.
+ *
+ * Once, and lazily: `getComputedStyle` is a layout read, and the answer cannot
+ * change without a new stylesheet. The first call happens when something first
+ * asks a width question, which is after React has rendered and therefore after
+ * the stylesheet is in the document.
+ *
+ * Every failure falls back to the table above rather than throwing — no window,
+ * no stylesheet yet, a token a consumer's build did not emit. A wrong-by-a-
+ * default breakpoint is a layout that changes at 48rem instead of 50rem; an
+ * exception here would be a page that does not render.
+ */
+let resolved: Record<NebaBreakpoint, string> | null = null;
+
+function readBreakpoints(): Record<NebaBreakpoint, string> {
+  if (resolved) return resolved;
+
+  if (typeof window === 'undefined' || !window.getComputedStyle) {
+    return breakpointWidths;
+  }
+
+  const style = getComputedStyle(document.documentElement);
+  const widths = { ...breakpointWidths };
+
+  for (const name of ['sm', 'md', 'lg', 'xl'] as const) {
+    const value = style.getPropertyValue(`--neba-breakpoint-${name}`).trim();
+    if (value) widths[name] = value;
+  }
+
+  resolved = widths;
+
+  return widths;
+}
+
 /** Narrower than this breakpoint. `xs` has nothing below it, so it is `null`. */
 export function widthBelow(breakpoint: NebaBreakpoint): string | null {
-  return breakpoint === 'xs' ? null : `(width < ${breakpointWidths[breakpoint]})`;
+  return breakpoint === 'xs' ? null : `(width < ${readBreakpoints()[breakpoint]})`;
 }
 
 /** At this breakpoint or wider — the direction a Tailwind `md:` variant means. */
 export function widthAtLeast(breakpoint: NebaBreakpoint): string {
-  return `(width >= ${breakpointWidths[breakpoint]})`;
+  return `(width >= ${readBreakpoints()[breakpoint]})`;
 }
 
 /**
