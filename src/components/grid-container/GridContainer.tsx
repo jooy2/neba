@@ -9,7 +9,7 @@ import {
   justifyContentClasses,
   spacingValue
 } from '../../internal/grid.js';
-import { responsiveSlots, withBaseline } from '../../internal/responsive.js';
+import { overlayResponsive, responsiveSlots, withBaseline } from '../../internal/responsive.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { cx } from '../../internal/styles.js';
 import type {
@@ -143,14 +143,17 @@ export const GridContainer = React.forwardRef<HTMLDivElement, GridContainerProps
         className: classNames,
         style: {
           ...responsiveSlots('cols', withBaseline(columns, DEFAULT_COLUMNS), columnCount),
+          // The axis-specific gutter is laid *over* `spacing` rather than
+          // replacing it, so a map that names one breakpoint does not take the
+          // gutter away everywhere else.
           ...responsiveSlots(
             'gap-x',
-            withBaseline(columnSpacing ?? spacing, DEFAULT_SPACING),
+            overlayResponsive(withBaseline(spacing, DEFAULT_SPACING), columnSpacing),
             spacingValue
           ),
           ...responsiveSlots(
             'gap-y',
-            withBaseline(rowSpacing ?? spacing, DEFAULT_SPACING),
+            overlayResponsive(withBaseline(spacing, DEFAULT_SPACING), rowSpacing),
             spacingValue
           ),
           ...style

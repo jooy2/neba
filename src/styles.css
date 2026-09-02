@@ -1463,10 +1463,22 @@
  * change at the same moment — including when a consumer has moved them.
  * ------------------------------------------------------------------------- */
 
-.neba-grid {
-  --n-cols: var(--n-cols-xs, 12);
+/* The two gutters, shared: a GridContainer and a Flex ask the same question
+   and `spacing` has to mean the same number on both. */
+.neba-grid,
+.neba-flex {
   --n-gap-x: var(--n-gap-x-xs, 0px);
   --n-gap-y: var(--n-gap-y-xs, 0px);
+}
+
+.neba-grid {
+  --n-cols: var(--n-cols-xs, 12);
+}
+
+/* A Flex, whose other responsive value is which way the row runs. `row` is the
+   fallback so a `<Flex>` with no direction at all is still a row. */
+.neba-flex {
+  --n-flex-dir: var(--n-flex-dir-xs, row);
 }
 
 /* A Container, a Header and a Footer, whose one responsive value is how wide
@@ -1502,10 +1514,18 @@
     --n-max-w: var(--n-max-w-sm, var(--n-max-w-xs, none));
   }
 
-  .neba-grid {
-    --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
+  .neba-grid,
+  .neba-flex {
     --n-gap-x: var(--n-gap-x-sm, var(--n-gap-x-xs, 0px));
     --n-gap-y: var(--n-gap-y-sm, var(--n-gap-y-xs, 0px));
+  }
+
+  .neba-grid {
+    --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
+  }
+
+  .neba-flex {
+    --n-flex-dir: var(--n-flex-dir-sm, var(--n-flex-dir-xs, row));
   }
 
   .neba-grid-item {
@@ -1519,10 +1539,18 @@
     --n-max-w: var(--n-max-w-md, var(--n-max-w-sm, var(--n-max-w-xs, none)));
   }
 
-  .neba-grid {
-    --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
+  .neba-grid,
+  .neba-flex {
     --n-gap-x: var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px)));
     --n-gap-y: var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px)));
+  }
+
+  .neba-grid {
+    --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
+  }
+
+  .neba-flex {
+    --n-flex-dir: var(--n-flex-dir-md, var(--n-flex-dir-sm, var(--n-flex-dir-xs, row)));
   }
 
   .neba-grid-item {
@@ -1536,10 +1564,21 @@
     --n-max-w: var(--n-max-w-lg, var(--n-max-w-md, var(--n-max-w-sm, var(--n-max-w-xs, none))));
   }
 
-  .neba-grid {
-    --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
+  .neba-grid,
+  .neba-flex {
     --n-gap-x: var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))));
     --n-gap-y: var(--n-gap-y-lg, var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px))));
+  }
+
+  .neba-grid {
+    --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
+  }
+
+  .neba-flex {
+    --n-flex-dir: var(
+      --n-flex-dir-lg,
+      var(--n-flex-dir-md, var(--n-flex-dir-sm, var(--n-flex-dir-xs, row)))
+    );
   }
 
   .neba-grid-item {
@@ -1559,11 +1598,8 @@
     );
   }
 
-  .neba-grid {
-    --n-cols: var(
-      --n-cols-xl,
-      var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))))
-    );
+  .neba-grid,
+  .neba-flex {
     --n-gap-x: var(
       --n-gap-x-xl,
       var(--n-gap-x-lg, var(--n-gap-x-md, var(--n-gap-x-sm, var(--n-gap-x-xs, 0px))))
@@ -1571,6 +1607,20 @@
     --n-gap-y: var(
       --n-gap-y-xl,
       var(--n-gap-y-lg, var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px))))
+    );
+  }
+
+  .neba-grid {
+    --n-cols: var(
+      --n-cols-xl,
+      var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))))
+    );
+  }
+
+  .neba-flex {
+    --n-flex-dir: var(
+      --n-flex-dir-xl,
+      var(--n-flex-dir-lg, var(--n-flex-dir-md, var(--n-flex-dir-sm, var(--n-flex-dir-xs, row))))
     );
   }
 

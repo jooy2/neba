@@ -21,7 +21,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, Checkbox, Chip, Container, List, ListItem, Switch, Typography } from 'neba';
+import { Button, Checkbox, Chip, Container, Flex, List, ListItem, Switch, Typography } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 import pkg from '../../package.json';
 
@@ -262,6 +262,16 @@ describe('neba/styles.css', () => {
       const element = screen.getByText('Measured').element();
 
       expect(getComputedStyle(element).maxWidth).toBe(`${48 * 16}px`);
+    });
+
+    it('resolves a slot whose fallback is a keyword rather than a length', async () => {
+      // `--n-flex-dir` is the other shape a cascade takes: the fallback is a
+      // CSS keyword, and it is applied by an arbitrary-property utility rather
+      // than a named one. A `<Flex>` that came out `column` would mean the
+      // chain resolved to nothing at all.
+      const screen = await render(<Flex>Row</Flex>);
+
+      expect(getComputedStyle(screen.getByText('Row').element()).flexDirection).toBe('row');
     });
 
     it('leaves no theme() call for a consumer build to resolve', () => {

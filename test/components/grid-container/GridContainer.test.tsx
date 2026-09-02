@@ -135,6 +135,40 @@ describe('GridContainer', () => {
       expect(element.style.getPropertyValue('--n-gap-y-xs')).toBe('1rem');
     });
 
+    it('lays an axis gutter over spacing rather than replacing it', async () => {
+      // The failure this exists for: a `columnSpacing` map that names one
+      // breakpoint used to take the whole prop, so the row lost the gutter
+      // `spacing` had given it everywhere the map said nothing.
+      const screen = await render(
+        <GridContainer spacing={2} columnSpacing={{ md: 6 }}>
+          content
+        </GridContainer>
+      );
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-gap-x-xs')).toBe('0.5rem');
+      expect(element.style.getPropertyValue('--n-gap-x-md')).toBe('1.5rem');
+      expect(element.style.getPropertyValue('--n-gap-y-xs')).toBe('0.5rem');
+      expect(element.style.getPropertyValue('--n-gap-y-md')).toBe('');
+    });
+
+    it('keeps the more specific gutter above where it was set', async () => {
+      // `columnSpacing` is the more specific of the two, so a later `spacing`
+      // step does not take the column gutter back — the same way a more
+      // specific CSS declaration is not undone by a later general one.
+      const screen = await render(
+        <GridContainer spacing={{ xs: 2, lg: 4 }} columnSpacing={{ md: 6 }}>
+          content
+        </GridContainer>
+      );
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-gap-x-xs')).toBe('0.5rem');
+      expect(element.style.getPropertyValue('--n-gap-x-md')).toBe('1.5rem');
+      expect(element.style.getPropertyValue('--n-gap-x-lg')).toBe('');
+      expect(element.style.getPropertyValue('--n-gap-y-lg')).toBe('1rem');
+    });
+
     it('keeps the default gutter below a breakpoint the map does not name', async () => {
       const screen = await render(<GridContainer spacing={{ md: 6 }}>content</GridContainer>);
       const element = screen.getByText('content').element() as HTMLElement;

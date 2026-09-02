@@ -56,6 +56,7 @@ import {
   Empty,
   Fieldset,
   FilePicker,
+  Flex,
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
@@ -785,9 +786,12 @@ function ShowcaseBody() {
         <section className="flex flex-col gap-3">
           <Caption>
             Button · ButtonGroup · SegmentedButton · Toggle · ToggleGroup · TextField · Select ·
-            Tooltip · Menu · Popover · Drawer · Overlay · ScrollArea
+            Tooltip · Menu · Popover · Drawer · Overlay · ScrollArea · Flex
           </Caption>
-          <div className="flex flex-wrap items-center gap-2">
+          {/* The row every control on this screen sits in. `spacing` tightens
+              on a phone and opens up from md — one prop rather than a
+              `gap-2 md:gap-3` a caller has to keep in step with the grid. */}
+          <Flex wrap alignItems="center" spacing={{ xs: 2, md: 3 }}>
             <Drawer
               size="sm"
               trigger={
@@ -891,7 +895,7 @@ function ShowcaseBody() {
             <Button size="sm" startIcon={<PlusIcon />}>
               New project
             </Button>
-          </div>
+          </Flex>
         </section>
 
         {/* The numbers a report opens with, laid out on the grid — which

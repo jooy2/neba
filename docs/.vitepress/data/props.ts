@@ -11227,6 +11227,103 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Flex: [
+    {
+      name: 'direction',
+      type: "'horizontal' | 'vertical' | Partial<Record<NebaBreakpoint, 'horizontal' | 'vertical'>>",
+      default: "'horizontal'",
+      description: {
+        ko: "줄이 흐르는 방향. horizontal은 row, vertical은 column입니다. 반응형이며, 이 컴포넌트가 존재하는 이유이기도 합니다 — { xs: 'vertical', md: 'horizontal' }",
+        en: "Which way the row runs — horizontal is a row, vertical a column. Responsive, and the prop the component exists for: { xs: 'vertical', md: 'horizontal' }"
+      }
+    },
+    {
+      name: 'reverse',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'direction이 고른 축을 따라 children을 반대로 흐르게 합니다. 모든 breakpoint에 한 번에 적용되며, 시각적 순서만 바꾸므로 DOM 순서는 그대로입니다',
+        en: 'Runs the children the other way along whichever axis direction chose. Applies to every breakpoint at once, and is a visual order only — the DOM order is unchanged'
+      }
+    },
+    {
+      name: 'spacing',
+      type: RESPONSIVE,
+      default: '0',
+      description: {
+        ko: 'children 사이의 거터. Tailwind의 spacing 스케일이라 spacing={4}는 1rem이며, GridContainer와 같은 prop·같은 스케일·같은 슬롯입니다',
+        en: "The gutter between children, on Tailwind's spacing scale — spacing={4} is 1rem. The same prop, scale and slot a GridContainer uses"
+      }
+    },
+    {
+      name: 'rowSpacing',
+      type: RESPONSIVE,
+      description: {
+        ko: '줄바꿈된 줄 사이의 거터만. spacing 위에 덮어씌워지므로, 한 breakpoint만 적어도 나머지에서 spacing이 사라지지 않습니다',
+        en: 'The gutter between wrapped lines only. Laid over spacing rather than replacing it, so naming one breakpoint does not drop the gutter elsewhere'
+      }
+    },
+    {
+      name: 'columnSpacing',
+      type: RESPONSIVE,
+      description: {
+        ko: '줄을 따라가는 거터만. rowSpacing과 같은 방식으로 spacing 위에 덮어씌워집니다',
+        en: 'The gutter along the row only. Laid over spacing the same way rowSpacing is'
+      }
+    },
+    {
+      name: 'justifyContent',
+      type: JUSTIFY_CONTENT,
+      shared: true,
+      description: {
+        ko: '줄이 남은 공간을 어떻게 나누는지',
+        en: 'How the row distributes the space its children did not use'
+      }
+    },
+    {
+      name: 'alignItems',
+      type: ALIGN_ITEMS,
+      shared: true,
+      description: {
+        ko: 'children이 줄을 가로질러 어디에 서는지',
+        en: 'How the children sit across the axis the row runs on'
+      }
+    },
+    {
+      name: 'alignContent',
+      type: JUSTIFY_CONTENT,
+      shared: true,
+      description: {
+        ko: '상자가 줄들보다 높을 때 줄바꿈된 줄들이 어디에 놓이는지',
+        en: 'Where wrapped lines sit when the box is taller than they are'
+      }
+    },
+    {
+      name: 'wrap',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '폭이 모자란 줄이 다음 줄로 이어질지. GridContainer와 반대로 기본이 꺼짐입니다 — Flex는 대개 한 줄에 머물러야 하는 툴바나 필드 줄입니다',
+        en: 'Whether a row that runs out of width continues on the next line. Off by default, the opposite of a GridContainer: a Flex is most often a toolbar or a field row that should stay on one line'
+      }
+    },
+    {
+      name: 'inline',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '상자를 inline으로 배치해 글줄 안에 놓습니다',
+        en: 'Lays the box out inline, so it sits in a line of text'
+      }
+    },
+    renderProp('render={<nav />}'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '줄에 놓이는 것들', en: 'What is laid out along the row' }
+    }
+  ],
+
   Show: [
     {
       name: 'above',

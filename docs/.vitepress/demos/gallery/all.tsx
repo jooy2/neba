@@ -60,6 +60,7 @@ import {
   Empty,
   Fieldset,
   FilePicker,
+  Flex,
   FloatingAction,
   FloatingActionButton,
   FloatingBottomNavigation,
@@ -1113,6 +1114,28 @@ const GROUPS: Group[] = [
               </div>
             </AspectRatio>
           </div>
+        )
+      },
+      {
+        name: 'Flex',
+        summary: {
+          ko: '줄이거나 열이며, 어느 너비에서 바뀌는지',
+          en: 'A row, or a column, and the width it changes at'
+        },
+        path: '/components/layout/flex',
+        preview: (
+          <Flex
+            direction={{ xs: 'vertical', sm: 'horizontal' }}
+            spacing={2}
+            className="w-full max-w-56"
+          >
+            <Box size="sm" variant="solid" className="flex-1 text-[0.6875rem]">
+              one
+            </Box>
+            <Box size="sm" variant="solid" className="flex-1 text-[0.6875rem]">
+              two
+            </Box>
+          </Flex>
         )
       },
       {

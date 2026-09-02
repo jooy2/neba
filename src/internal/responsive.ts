@@ -87,6 +87,52 @@ export function withBaseline<T>(
 }
 
 /**
+ * One responsive value laid over another, the way a more specific CSS
+ * declaration is laid over a general one.
+ *
+ * This is what a pair like `spacing` and `columnSpacing` needs, and doing it
+ * with `columnSpacing ?? spacing` is wrong in a way that only shows up once
+ * either of them is a map: `spacing={2} columnSpacing={{ md: 6 }}` took the
+ * override whole and left the row with no column gutter at all below 48rem,
+ * because the map says nothing there and the baseline it fell back to was the
+ * prop's own default rather than the `spacing` beside it.
+ *
+ * So the two are walked together. At each breakpoint the override wins if it
+ * has said anything at or below there — and keeps winning above, because it is
+ * the more specific of the two — and the base fills in until then. Only the
+ * steps where the answer actually changes are emitted, so the result is still
+ * one or two slots rather than five.
+ */
+export function overlayResponsive<T>(
+  base: NebaResponsive<T>,
+  override: NebaResponsive<T> | undefined
+): NebaResponsive<T> {
+  if (override === undefined || override === null) return base;
+
+  const baseMap = breakpointMap(base);
+  const overrideMap = breakpointMap(override);
+  const merged: Partial<Record<NebaBreakpoint, T>> = {};
+
+  let baseValue: T | undefined;
+  let overrideValue: T | undefined;
+  let effective: T | undefined;
+
+  for (const breakpoint of breakpoints) {
+    if (baseMap[breakpoint] !== undefined) baseValue = baseMap[breakpoint];
+    if (overrideMap[breakpoint] !== undefined) overrideValue = overrideMap[breakpoint];
+
+    const next = overrideValue !== undefined ? overrideValue : baseValue;
+
+    if (next !== undefined && next !== effective) {
+      merged[breakpoint] = next;
+      effective = next;
+    }
+  }
+
+  return merged;
+}
+
+/**
  * A number is pixels; a string is already a CSS length.
  *
  * Every length a caller can hand this library goes through here — a Stack's
