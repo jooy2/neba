@@ -30,7 +30,7 @@
     "format:fix": "prettier . --write",
     "docs:changelog": "node scripts/copy-changelog.mjs",
     "docs:dev": "npm run docs:changelog && vitepress dev docs",
-    "docs:build": "npm run docs:changelog && vitepress build docs",
+    "docs:build": "npm run docs:changelog && node --max-old-space-size=8192 ./node_modules/vitepress/bin/vitepress.js build docs",
     "docs:serve": "npm run docs:build && vitepress serve docs",
     "test": "vitest run",
     "test:watch": "vitest",

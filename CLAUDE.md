@@ -353,6 +353,7 @@ npm test              # Vitest, single run (headless Chromium)
 npm run test:watch    # Vitest in watch mode
 npm run typecheck     # tsc --noEmit over all three TS projects
 npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (copies the changelog first)
+npm run docs:build    # the static site into docs-dist/ (raises the heap; see Toolchain notes)
 npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
 npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
 npm run size          # bundle the budget scenarios against dist/ and fail if one is over
@@ -422,6 +423,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - `terser.config.json` sets `output.preserve_annotations`, and it exists for `scripts/annotate-pure.mjs`. Terser understands an `@__PURE__` comment and, by default, consumes it without emitting it again — which would hand the consumer's bundler minified files with the annotations gone. Neither `output.comments` nor `--comments` brings them back; this option is the one that does.
 - `npm run build` starts by **emptying `dist/`**, and that is not tidiness: `tsc` only ever writes, so a component that is deleted from `src/` stays in `dist/` and ships. It surfaced as `annotate-pure` counting more annotations in `dist/` than `src/` contains, which is the cheap symptom; the expensive one is a removed export still resolving out of the published package.
 - The four steps after it are `tsc`, then `annotate-pure`, then `minify`, then `build-styles`, and their order is load-bearing: the annotations have to be written after the JavaScript exists and before terser reads it.
+- **`docs:build` raises Node's heap on purpose.** A hundred and thirty-nine pages with two hundred React demos behind them is more than the 4.3 GB default, and the failure is a V8 `Abort trap: 6` in the middle of Rollup rather than anything that names a page — so it reads as a broken document. `--max-old-space-size=8192` is passed by invoking VitePress's own bin through `node`, because `NODE_OPTIONS` on the wrapper does not reach the child. `docs:dev` needs none of it; only the production bundle holds the whole site at once.
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
 - Docs are VitePress with `vitepress-i18n` + `vitepress-sidebar`. Two locales, and which one is the root is a single constant: `defaultLocale` in `docs/.vitepress/config.ts`, currently `en`. The root locale is served from `/` (rewritten from `docs/en/`) and every other locale keeps its folder as its URL prefix, so `ko` is served from `/ko/`. Changing that constant swings the locale config, the sidebar's base path and the `rewrites` together.

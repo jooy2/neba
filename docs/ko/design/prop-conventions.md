@@ -49,6 +49,8 @@ export interface ButtonProps
 | `density` | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않습니다 |
 | `elevation` | 그림자 깊이. 기본 0(그림자 없음) |
 
+레이아웃 prop 몇 개는 자기 값 위에 breakpoint별 map을 더 받습니다 — `span`에 주는 `{ xs: 12, md: 6 }` 같은 것입니다. 어떤 것들이 그렇고 위의 다섯 축은 왜 의도적으로 거기에 들지 않는지는 [breakpoints](./breakpoints)에 있습니다.
+
 ## 모션
 
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.

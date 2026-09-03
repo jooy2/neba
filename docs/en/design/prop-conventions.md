@@ -49,6 +49,8 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 | `density` | **Padding only.** Never the height, never the type scale |
 | `elevation` | Drop shadow depth. `0` by default, meaning no shadow at all |
 
+A handful of layout props take a per-breakpoint map on top of their own value — a `span` of `{ xs: 12, md: 6 }`. Which ones, and why the five axes above are deliberately not among them, is [breakpoints](./breakpoints).
+
 ## Motion
 
 Two vocabularies, and which one you want depends on whether the motion needs a trigger.
