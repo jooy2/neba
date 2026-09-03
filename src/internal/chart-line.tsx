@@ -15,7 +15,7 @@
 
 import * as React from 'react';
 import { areaPath, chartFontSizes, linePath, lineWidths, markerRadii, markGap } from './chart.js';
-import { seriesDimClasses } from './chart-frame.js';
+import { markTransitionClasses } from './chart-frame.js';
 import type { CartesianContext } from './chart-frame.js';
 import type { NebaChartCurve, NebaChartValueLabels } from '../types.js';
 
@@ -179,7 +179,7 @@ export function LineSeries({
         const labelled = labelledPoints(one, valueLabels);
 
         return (
-          <g key={index} opacity={dimmed ? 0.28 : 1} className={seriesDimClasses}>
+          <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
             {filled ? (
               <path
                 d={areaPath(
@@ -248,6 +248,7 @@ export function LineSeries({
                   // the hit target, not only spacing.
                   stroke="var(--neba-chart-gap)"
                   strokeWidth={markGap}
+                  className={markTransitionClasses}
                 />
               );
             })}

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   CartesianChart,
+  markTransitionClasses,
   type CartesianChartProps,
   type CartesianContext,
   type CartesianLayout,
@@ -376,6 +377,7 @@ function Spans({ context, spans, colors, rounded }: SpansProps) {
             rx={Math.min(radius, width / 2, height / 2)}
             fill={one.color ?? colors[mark.series]}
             opacity={active ? 1 : 0.92}
+            className={markTransitionClasses}
           />
         );
       })}

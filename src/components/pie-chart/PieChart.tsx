@@ -7,7 +7,7 @@ import {
   ChartStatus,
   ChartSurface,
   ChartTooltipPanel,
-  seriesDimClasses,
+  markTransitionClasses,
   type ChartBaseProps,
   type ChartTooltipItem,
   useMeasuredWidth,
@@ -341,7 +341,7 @@ export function PieChart(rawProps: PieChartProps) {
                   fill={values[arc.index].color ?? colors[arc.index]}
                   opacity={dimmed ? 0.32 : 1}
                   onPointerEnter={tooltipOff ? undefined : () => setActive(arc.index)}
-                  className={seriesDimClasses}
+                  className={markTransitionClasses}
                 />
               );
             })}

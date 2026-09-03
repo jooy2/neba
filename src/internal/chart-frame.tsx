@@ -118,18 +118,41 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
  * is there for the chart that stands on the page by itself.
  */
 /**
- * What a series that is not the one being pointed at fades to, and how long it
- * takes to get there.
+ * How a mark answers the pointer: the three properties one is allowed to change
+ * when the reader points at it, and how long each takes.
  *
- * Every chart in the library dims its other series when the legend is hovered,
- * and until now only the pie did it over any time at all — on a line, a bar and
- * a scatter the whole picture snapped between two states on the frame the
- * pointer crossed a legend row, which reads as a redraw rather than as a
- * highlight. It is the one place a chart is allowed to say something with
- * `opacity`: nothing here is a control, and what is being said is "this is the
- * one you asked about", not "this one is off".
+ * One declaration and one class on every mark, rather than one per property.
+ * `transition` is a shorthand, so two of them on the same element are decided by
+ * their order in the generated stylesheet rather than by intent — a scatter mark
+ * carrying a fade *and* a grow written separately keeps whichever Tailwind
+ * happened to emit last, which is the kind of bug that looks like the browser's
+ * fault. A property an element never changes costs it nothing.
+ *
+ * **`opacity`** is two states that are the same sentence at two scales. A whole
+ * *series* drops to 0.28 when the legend is pointed at one of the others; a
+ * single *datum* sits at 0.92 until the crosshair reaches it. Both mean "this is
+ * the one you asked about". It is also the one place a chart may say something
+ * with opacity at all: nothing here is a control, and "not the one you are
+ * pointing at" is not a state a colour family can carry without recolouring the
+ * data.
+ *
+ * **`r`** and **`scale`** are the same pixel of growth reached two ways, because
+ * the two shapes that grow are drawn differently. A line's marker is a
+ * `<circle>`, whose radius is the geometry property `r` — a number, which
+ * travels. A scatter's mark is an arbitrary `<path>`, whose size lives inside
+ * `d`, which does not; that one grows on the independent `scale` property about
+ * the point it is pinned to, so a triangle grows where it stands rather than
+ * drifting toward the middle of its own bounding box.
+ *
+ * Only the pie and the heatmap ever moved on any of this. The line, the area,
+ * the bar, the scatter and the timeline snapped, and a dashboard holding two of
+ * each showed both answers at once.
  */
-export const seriesDimClasses = '[transition:opacity_var(--neba-duration)_var(--neba-ease)]';
+export const markTransitionClasses = [
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease),',
+  'r_var(--neba-duration)_var(--neba-ease),',
+  'scale_var(--neba-duration)_var(--neba-ease)]'
+].join('');
 
 export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
   /**

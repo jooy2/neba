@@ -461,6 +461,39 @@ describe('ScatterChart', () => {
     });
   });
 
+  describe('the highlight', () => {
+    /**
+     * A scatter mark is an arbitrary `<path>`, so its size lives inside `d`,
+     * which nothing can travel along — it used to be redrawn a pixel bigger the
+     * frame the crosshair reached it. It grows on `scale` now, about the point
+     * it is pinned to rather than the middle of its own bounding box, so a
+     * triangle grows where it stands instead of drifting as it grows.
+     */
+    it('grows the mark under the crosshair on a property that travels', async () => {
+      const screen = await render(
+        <ScatterChart label="Spend" series={[{ name: 'A', data: [{ x: 1, y: 1 }] }]} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const mark = plot.element().querySelector('path[stroke]') as SVGPathElement;
+
+      // One `transition` shorthand naming all three, never two beside each
+      // other: two shorthands on one element are decided by stylesheet order
+      // rather than by intent, and a mark that both fades and grows would keep
+      // only whichever Tailwind happened to emit last.
+      const declarations = (mark.getAttribute('class') ?? '').match(/transition:/g) ?? [];
+
+      expect(declarations).toHaveLength(1);
+      expect(mark.getAttribute('class')).toContain(',scale_');
+      expect(mark.style.transformBox).toBe('view-box');
+      expect(mark.style.transformOrigin).not.toBe('');
+      expect(mark.style.scale).toBe('1');
+    });
+  });
+
   describe('the table', () => {
     it('gives every point a row of its own', async () => {
       const screen = await render(

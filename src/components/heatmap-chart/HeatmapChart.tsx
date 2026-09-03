@@ -6,8 +6,9 @@ import {
   ChartStatus,
   ChartSurface,
   ChartTooltipPanel,
-  useMeasuredWidth,
-  type ChartTooltipItem
+  markTransitionClasses,
+  type ChartTooltipItem,
+  useMeasuredWidth
 } from '../../internal/chart-frame.js';
 import {
   categoryAt,
@@ -488,7 +489,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
                     onPointerEnter={
                       tooltipOff ? undefined : () => setActive({ row: one.row, index: one.index })
                     }
-                    className="[transition:opacity_var(--neba-duration)_var(--neba-ease)]"
+                    className={markTransitionClasses}
                   />
                   {written.map((line, row) => (
                     <text

@@ -204,4 +204,34 @@ describe('BarChart', () => {
       expect(turned).not.toContain('Seoul%');
     });
   });
+
+  describe('the highlight', () => {
+    /**
+     * Two states, one sentence at two scales: a whole series drops to 0.28 when
+     * the legend is pointed at another, and a single bar sits at 0.92 until the
+     * crosshair reaches it. Only the pie and the heatmap ever faded either of
+     * them; everywhere else the picture snapped between two states on the frame
+     * the pointer crossed something.
+     */
+    it('fades both the series and the bar under the crosshair', async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys per team"
+          categories={TEAMS}
+          series={[
+            { name: 'Deploys', data: [10, 20, 30] },
+            { name: 'Rollbacks', data: [1, 2, 3] }
+          ]}
+        />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Deploys' })).toBeInTheDocument();
+
+      const series = screen.container.querySelector('svg g[opacity]') as SVGGElement;
+      const bar = series.querySelector('path') as SVGPathElement;
+
+      expect(series.getAttribute('class')).toContain('transition:opacity');
+      expect(bar.getAttribute('class')).toContain('transition:opacity');
+    });
+  });
 });

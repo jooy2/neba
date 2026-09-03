@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {
   CartesianChart,
-  seriesDimClasses,
+  markTransitionClasses,
   type CartesianChartProps,
   type CartesianContext,
   type CartesianLayout,
@@ -253,7 +253,7 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
         return (
           <path
             key={`${mark.series}-${mark.index}`}
-            d={markPath(shapeOf(mark.series), mark.x, mark.y, active ? mark.r + 1 : mark.r)}
+            d={markPath(shapeOf(mark.series), mark.x, mark.y, mark.r)}
             fill={value?.color ?? colors[mark.series]}
             // The surface showing through, not a stroke drawn around the mark —
             // which is what keeps two overlapping dots two dots, and is part of
@@ -261,7 +261,17 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
             stroke="var(--neba-chart-gap)"
             strokeWidth={markGap}
             opacity={dimmed ? 0.28 : 1}
-            className={seriesDimClasses}
+            className={markTransitionClasses}
+            // A pixel bigger under the crosshair, and the pixel is a `scale`
+            // because the size of an arbitrary shape lives inside `d`, which
+            // nothing can travel along. The origin is the point the mark is
+            // pinned to rather than the middle of its own bounding box, so a
+            // triangle grows where it stands instead of drifting as it grows.
+            style={{
+              transformBox: 'view-box',
+              transformOrigin: `${mark.x}px ${mark.y}px`,
+              scale: active && mark.r > 0 ? (mark.r + 1) / mark.r : 1
+            }}
           />
         );
       })}
