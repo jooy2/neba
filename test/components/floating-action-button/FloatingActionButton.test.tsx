@@ -142,6 +142,24 @@ describe('FloatingActionButton', () => {
       expect(document.getElementById(controls as string)).not.toBeNull();
     });
 
+    /**
+     * The dial arrived in one frame, which on a corner of the screen reads as
+     * something having gone wrong rather than as something having opened.
+     * Opacity and nothing else — these are buttons with words beside them.
+     */
+    it('fades in rather than switching on', async () => {
+      const screen = await render(dial({ defaultOpen: true }));
+
+      const controls = screen
+        .getByRole('button', { name: 'Share' })
+        .element()
+        .getAttribute('aria-controls') as string;
+      const panel = document.getElementById(controls) as HTMLElement;
+
+      expect(panel.className).toContain('animation:neba-anim-fade');
+      expect(panel.className).not.toContain('translate');
+    });
+
     it('fires an action and puts the dial away', async () => {
       const onClick = vi.fn();
       const screen = await render(

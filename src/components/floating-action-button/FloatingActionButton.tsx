@@ -432,7 +432,18 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
               'flex',
               fan === 'top' ? 'flex-col-reverse' : 'flex-col',
               reversed ? 'items-end' : 'items-start',
-              size === 'xs' || size === 'sm' ? 'gap-1.5' : 'gap-2'
+              size === 'xs' || size === 'sm' ? 'gap-1.5' : 'gap-2',
+              // The dial arrived in one frame, which on a corner of the screen
+              // reads as something having gone wrong rather than as something
+              // having opened. Opacity and nothing else: these are buttons with
+              // words beside them, and a dial that slid would move the action
+              // the finger was already travelling towards.
+              //
+              // Written as the `animation` shorthand rather than through the
+              // `neba-anim` classes, whose `--n-anim-*` slots would have to be
+              // plumbed from a caller that has no say over this. `both` keeps it
+              // on the first frame until it starts.
+              '[animation:neba-anim-fade_var(--neba-duration)_var(--neba-ease)_both]'
             )}
           >
             <FloatingActionContext.Provider value={context}>
