@@ -146,6 +146,22 @@ describe('Avatar', () => {
       );
     });
 
+    /**
+     * The picture mounts only once the file has decoded, so the swap from
+     * initials to a face happened in a single frame. It is faded up on its own
+     * clock rather than through the `neba-anim` classes, whose `--n-anim-*`
+     * slots are declared on this Avatar's root — a `delay` on the Avatar's own
+     * `transition` would otherwise hold the face back long after the circle.
+     */
+    it('fades the picture up over whatever stood in for it', async () => {
+      const screen = await render(<Avatar src={PIXEL} name="Jane Doe" data-testid="avatar" />);
+      const image = screen.getByTestId('avatar').element().querySelector('img') as HTMLElement;
+
+      expect(image.className).toContain('animation:neba-anim-fade');
+      expect(image.className).not.toContain('neba-anim-duration');
+      expect(image).not.toHaveClass('neba-anim');
+    });
+
     it('passes the rest of the img attributes through', async () => {
       const screen = await render(
         <Avatar src={PIXEL} name="Jane Doe" imageProps={{ loading: 'lazy' }} data-testid="avatar" />

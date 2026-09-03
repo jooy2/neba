@@ -301,7 +301,18 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
             // decoration, and `alt` left off is what makes a screen reader read
             // the file name out instead.
             alt={label ?? ''}
-            className="size-full object-cover"
+            // Faded up over whatever stood in for it. Base UI mounts this only
+            // once the file has decoded, so the swap from initials to a face
+            // happened in a single frame — on a list of forty avatars that is
+            // forty separate flickers as the network answers.
+            //
+            // The `animation` shorthand rather than the `neba-anim` classes the
+            // `transition` prop uses: those read `--n-anim-*` slots, and the
+            // slots are declared on this Avatar's own root, so an entrance the
+            // caller asked for would set the picture's timing too — a `delay` on
+            // the Avatar would hold the face back long after the circle arrived.
+            // `both` keeps it on the first frame until it starts.
+            className="size-full object-cover [animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]"
             // Before the spread, so a caller can still say otherwise. Decoding an
             // image on the main thread is what makes a list of forty avatars
             // arrive as forty small pauses; off it, they arrive.
