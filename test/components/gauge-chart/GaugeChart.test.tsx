@@ -88,18 +88,56 @@ describe('GaugeChart', () => {
       { from: 90, color: 'danger' }
     ] as const;
 
+    // The reading is a stroke along the groove rather than a second wedge inside
+    // it, so the family lands on `stroke`.
     it('keeps its own family below every threshold', async () => {
       const screen = await render(<Tile value={40} thresholds={thresholds} label="CPU" />);
       const arc = screen.getByRole('img').element().querySelectorAll('path')[1];
 
-      expect(arc?.getAttribute('fill')).toBe('var(--neba-primary-fill)');
+      expect(arc?.getAttribute('stroke')).toBe('var(--neba-primary-fill)');
     });
 
     it('takes the family of the last one it has reached', async () => {
       const screen = await render(<Tile value={95} thresholds={thresholds} label="CPU" />);
       const arc = screen.getByRole('img').element().querySelectorAll('path')[1];
 
-      expect(arc?.getAttribute('fill')).toBe('var(--neba-danger-fill)');
+      expect(arc?.getAttribute('stroke')).toBe('var(--neba-danger-fill)');
+    });
+  });
+
+  describe('the reading', () => {
+    /**
+     * A wedge is a closed shape, so moving the value rewrites its `d` — and `d`
+     * is not a property CSS can travel along, which is why the dial jumped to
+     * each new reading while the Meter it is a bent copy of swept to it. A
+     * stroke's drawn length is `stroke-dashoffset`, and `pathLength="1"` makes
+     * that number the fraction itself.
+     */
+    it('sweeps to a new value rather than jumping to it', async () => {
+      const screen = await render(<Tile value={25} label="CPU" />);
+      const arc = () => screen.getByRole('img').element().querySelectorAll('path')[1];
+
+      expect(arc()?.getAttribute('pathLength')).toBe('1');
+      expect(arc()?.getAttribute('stroke-dasharray')).toBe('1');
+      expect(parseFloat(arc()?.getAttribute('stroke-dashoffset') ?? '')).toBeCloseTo(0.75);
+      expect(arc()?.getAttribute('style')).toContain('stroke-dashoffset');
+
+      await screen.rerender(<Tile value={80} label="CPU" />);
+
+      // The same path, a different offset — which is the whole point: nothing
+      // about the geometry changed, so there is something to travel along.
+      expect(parseFloat(arc()?.getAttribute('stroke-dashoffset') ?? '')).toBeCloseTo(0.2);
+    });
+
+    it('draws none of the arc at zero, and all of it at full', async () => {
+      const screen = await render(<Tile value={0} label="CPU" />);
+      const arc = () => screen.getByRole('img').element().querySelectorAll('path')[1];
+
+      expect(parseFloat(arc()?.getAttribute('stroke-dashoffset') ?? '')).toBeCloseTo(1);
+
+      await screen.rerender(<Tile value={100} label="CPU" />);
+
+      expect(parseFloat(arc()?.getAttribute('stroke-dashoffset') ?? '')).toBeCloseTo(0);
     });
   });
 

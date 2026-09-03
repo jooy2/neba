@@ -1339,6 +1339,44 @@ export function markPath(shape: MarkShape, cx: number, cy: number, r: number): s
 }
 
 /**
+ * The centre line of that slice, as an *open* path.
+ *
+ * `arcPath` below draws the slice itself, which is a closed shape — and a shape
+ * whose `d` has to be rewritten every time the value moves. `d` is not a
+ * property CSS can travel along, so a dial drawn that way jumps to each new
+ * reading. Stroked instead, the same ring is one line with a width, and how much
+ * of it is drawn is `stroke-dashoffset`, which is a number and does travel.
+ *
+ * It is what ProgressCircular already does, bent to an arbitrary span — which is
+ * the point: a gauge is a Meter bent into an arc, and the four indicators in
+ * this library have to agree about what a value changing looks like.
+ *
+ * Angles are degrees clockwise from twelve o'clock, as below.
+ */
+export function ringPath(cx: number, cy: number, radius: number, from: number, to: number): string {
+  const point = (degrees: number) => {
+    const radians = ((degrees - 90) * Math.PI) / 180;
+
+    return `${cx + radius * Math.cos(radians)} ${cy + radius * Math.sin(radians)}`;
+  };
+
+  // A full circle cannot be one arc — start and end are the same point, and the
+  // renderer draws nothing at all. Two half-arcs are the standard answer.
+  if (Math.abs(to - from) >= 360) {
+    const half = from + 180;
+
+    return (
+      `M${point(from)}A${radius} ${radius} 0 1 1 ${point(half)}` +
+      `A${radius} ${radius} 0 1 1 ${point(from)}`
+    );
+  }
+
+  const large = Math.abs(to - from) > 180 ? 1 : 0;
+
+  return `M${point(from)}A${radius} ${radius} 0 ${large} 1 ${point(to)}`;
+}
+
+/**
  * A slice of a ring, as a path.
  *
  * `inner` of 0 is a pie and anything above it is a donut. Angles are degrees

@@ -22,6 +22,7 @@ import {
   chartPalette,
   extentOf,
   linePath,
+  ringPath,
   seriesColor,
   tickStride,
   toValue,
@@ -310,5 +311,37 @@ describe('arcPath', () => {
   it('draws an ordinary slice without a NaN in it', () => {
     expect(arcPath(50, 50, 40, 0, 0, 90)).not.toContain('NaN');
     expect(arcPath(50, 50, 40, 20, 90, 200)).not.toContain('NaN');
+  });
+});
+
+describe('ringPath', () => {
+  /**
+   * The open half of the pair, and the reason it exists: a stroked line has a
+   * `stroke-dashoffset`, which is a number CSS can travel along, where a closed
+   * wedge only has a `d`, which is not.
+   */
+  it('leaves the path open, so it can be stroked rather than filled', () => {
+    const path = ringPath(50, 50, 30, -90, 90);
+
+    expect(path).not.toContain('Z');
+    expect(path.match(/M/g)).toHaveLength(1);
+    expect(path).not.toContain('NaN');
+  });
+
+  it('draws a full circle as two arcs rather than one', () => {
+    const path = ringPath(50, 50, 30, 0, 360);
+
+    expect(path.match(/A/g)).toHaveLength(2);
+    expect(path).not.toContain('NaN');
+  });
+
+  it('flags a span over a half turn as the long way round', () => {
+    expect(ringPath(50, 50, 30, -135, 135)).toContain('0 1 1');
+    expect(ringPath(50, 50, 30, -45, 45)).toContain('0 0 1');
+  });
+
+  it('starts at twelve o\u2019clock, not at three', () => {
+    // A zero-degree point sits directly above the centre.
+    expect(ringPath(50, 50, 30, 0, 90).startsWith('M50 20')).toBe(true);
   });
 });

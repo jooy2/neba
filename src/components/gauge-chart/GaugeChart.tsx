@@ -2,7 +2,13 @@
 
 import * as React from 'react';
 import { ChartSurface, useMeasuredWidth, type ChartBaseProps } from '../../internal/chart-frame.js';
-import { arcPath, chartFontSizes, compactNumber, plotHeights } from '../../internal/chart.js';
+import {
+  arcPath,
+  chartFontSizes,
+  compactNumber,
+  plotHeights,
+  ringPath
+} from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { emptyMessages, useMessages } from '../../internal/i18n.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
@@ -169,7 +175,6 @@ export function GaugeChart(rawProps: GaugeChartProps) {
   const centreY = margin + outer;
 
   const nothing = outer <= 0 || range === 0;
-  const filledTo = fraction === null ? from : from + span * fraction;
 
   // The reading sits inside the arc rather than at the geometric centre: on a
   // half-dial the centre is the bottom edge of the drawing, and text pinned
@@ -231,14 +236,32 @@ export function GaugeChart(rawProps: GaugeChartProps) {
                 fill={`var(--neba-${color}-soft)`}
               />
 
-              {fraction !== null && fraction > 0 ? (
+              {fraction !== null ? (
+                /*
+                 * The reading, drawn as a *stroke* along the groove rather than
+                 * as a second wedge filling part of it.
+                 *
+                 * A wedge is a closed shape, so moving the value rewrites its
+                 * `d` — and `d` is not a property CSS can travel along, which is
+                 * why a dial used to jump to each new reading while the Meter it
+                 * is a bent copy of swept to it. A stroke is one line whose
+                 * drawn length is `stroke-dashoffset`, which is a number.
+                 * `pathLength="1"` makes that number the fraction itself.
+                 *
+                 * An arc's length, never a transform: a dial that scaled would
+                 * resample the numbers written across it.
+                 */
                 <path
-                  d={arcPath(centreX, centreY, outer, inner, from, filledTo)}
-                  fill={`var(--neba-${family}-fill)`}
-                  // An arc's length, never a transform: a dial that scaled would
-                  // resample the numbers written across it.
+                  d={ringPath(centreX, centreY, (outer + inner) / 2, from, to)}
+                  fill="none"
+                  stroke={`var(--neba-${family}-fill)`}
+                  strokeWidth={outer - inner}
+                  pathLength="1"
+                  strokeDasharray="1"
+                  strokeDashoffset={1 - fraction}
                   style={{
-                    transition: 'fill var(--neba-duration) var(--neba-ease)'
+                    transition:
+                      'stroke-dashoffset var(--neba-duration-fill) var(--neba-ease), stroke var(--neba-duration) var(--neba-ease)'
                   }}
                 />
               ) : null}
