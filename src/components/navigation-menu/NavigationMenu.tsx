@@ -14,6 +14,7 @@ import {
   iconClasses,
   metaTextClasses,
   paddingXClasses,
+  popupFadeStateClasses,
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
@@ -136,7 +137,7 @@ const popupClasses = [
   // Opacity and the viewport's own size only. A panel that slid in would drag a
   // page's worth of links across the screen.
   '[transition:opacity_var(--neba-duration)_var(--neba-ease),width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeStateClasses
 ].join(' ');
 
 const linkClasses = [

@@ -13,6 +13,7 @@ import {
   hasContent,
   iconClasses,
   metaTextClasses,
+  popupFadeClasses,
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
@@ -221,10 +222,7 @@ const popupClasses = [
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
   '[outline:none]',
-  // Opacity only. A menu that slides in has moved the row you were already
-  // reaching for, which is the one thing a menu must never do.
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 /**

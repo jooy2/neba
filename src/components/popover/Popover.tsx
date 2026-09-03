@@ -9,6 +9,7 @@ import {
   cx,
   hasContent,
   metaTextClasses,
+  popupFadeClasses,
   radiusClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
@@ -136,11 +137,7 @@ const popupClasses = [
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
   '[outline:none]',
-  // Opacity only. A popup that scales or slides in drags its own text across the
-  // screen for 200ms, which is the one thing the house style is against — and
-  // unlike a control, this one is full of text.
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 /** The wedge, at roughly a third of the sheet's corner radius per step. */

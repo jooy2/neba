@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { overlayMessages, useMessages } from '../../internal/i18n.js';
-import { cx, surfaceSlots } from '../../internal/styles.js';
+import { cx, popupFadeClasses, surfaceSlots } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -116,17 +116,6 @@ const insetClasses: Record<NebaSize, string> = {
 };
 
 /**
- * Opacity only, on both the scrim and the content. An overlay that scales or
- * slides drags whatever is written on it across the screen, which is the one
- * thing the house style is against — and unlike a control, this one is usually
- * carrying a sentence.
- */
-const fadeClasses = [
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
-].join(' ');
-
-/**
  * A sheet over the whole page that stops it being used.
  *
  * The difference from [Dialog](../surfaces/dialog) is what is *not* here: no
@@ -180,7 +169,7 @@ export function Overlay(rawProps: OverlayProps) {
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
         <BaseUIDialog.Backdrop
-          className={`neba-portal fixed inset-0 z-50 ${fadeClasses} ${toneClasses[tone]}`}
+          className={`neba-portal fixed inset-0 z-50 ${popupFadeClasses} ${toneClasses[tone]}`}
         />
 
         {/* The viewport is what the content is centred in, and it is also what
@@ -199,7 +188,7 @@ export function Overlay(rawProps: OverlayProps) {
             className={cx(
               'flex max-h-full max-w-full flex-col items-center justify-center',
               '[outline:none]',
-              fadeClasses,
+              popupFadeClasses,
               className ?? ''
             )}
             style={{ ...surfaceSlots(color, 0), ...style }}

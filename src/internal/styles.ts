@@ -378,6 +378,39 @@ export const transitionClasses = [
 export const pressTransitionClasses = 'active:[transition-duration:0ms]';
 
 /**
+ * The two ends of a popup's fade: not there yet, and not there any more.
+ *
+ * Split out from `popupFadeClasses` below for exactly one caller —
+ * NavigationMenu's popup also travels in width and height as the reader moves
+ * between two menus, so its `transition` shorthand has to name three properties
+ * and a second shorthand beside it would win or lose by stylesheet order rather
+ * than by intent. Everything else wants the whole thing.
+ */
+export const popupFadeStateClasses =
+  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0';
+
+/**
+ * How every floating surface in the library arrives and leaves.
+ *
+ * Opacity, and nothing else. A popup that scales or slides has spent 160ms
+ * dragging its own text across the screen — and unlike a control, a popup is
+ * mostly text: a menu row the pointer was already reaching for, a dialog
+ * somebody has started reading, a calendar cell under a finger that is already
+ * moving. The house rule against transforming a control is the same rule, and
+ * this is where it lands for the things that float.
+ *
+ * It is written here rather than in each of them because there were fourteen
+ * copies of it and the fifteenth and sixteenth — Select's popup and Combobox's —
+ * were never written at all, which is the failure mode a shared table exists to
+ * prevent. Base UI supplies the `data-starting-style` / `data-ending-style` pair
+ * on every popup, backdrop and toast, so the same two lines fit all of them.
+ */
+export const popupFadeClasses = [
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
+  popupFadeStateClasses
+].join(' ');
+
+/**
  * The focus ring, written as the `outline` shorthand rather than Tailwind's
  * `outline-2` + colour pair: the utilities route the style through
  * `--tw-outline-style`, which any `outline-none` on the element (ours or a

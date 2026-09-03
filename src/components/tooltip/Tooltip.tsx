@@ -7,6 +7,7 @@ import {
   cx,
   metaTextClasses,
   paddingXClasses,
+  popupFadeClasses,
   radiusClasses,
   surfaceClasses
 } from '../../internal/styles.js';
@@ -91,10 +92,7 @@ const popupClasses = [
   'max-w-64 text-(--n-on-solid) bg-(--n-fill)',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-solid)]',
   '[outline:none]',
-  // Opacity only, and fast: a tooltip that slides in has moved its own text
-  // while the reader was already looking at it.
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0',
+  popupFadeClasses,
   // Base UI sets this while the pointer is moving between grouped tooltips.
   // Fading in a tooltip that is meant to appear instantly is worse than not
   // fading at all — it reads as lag.

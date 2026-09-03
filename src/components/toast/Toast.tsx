@@ -12,6 +12,7 @@ import {
   hasContent,
   iconClasses,
   metaTextClasses,
+  popupFadeClasses,
   radiusClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
@@ -285,12 +286,10 @@ function ToastItem({
         sheetBodyClasses[size],
         rootClasses[variant],
         iconClasses,
-        // Opacity, and only opacity — the same restraint the Dialog shows, and
-        // for the same reason: this is a box full of text. Base UI still moves
-        // it while a finger is dragging it, which is the reader's hand rather
-        // than a state change, and it stops the moment the finger lifts.
-        '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-        'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0',
+        // Base UI still moves it while a finger is dragging it, which is the
+        // reader's hand rather than a state change, and it stops the moment the
+        // finger lifts.
+        popupFadeClasses,
         // A toast pushed out by the limit is kept in the DOM so it can come
         // back; it just has nothing to say while it waits.
         'data-[limited]:hidden',

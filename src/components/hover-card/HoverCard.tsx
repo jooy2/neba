@@ -7,6 +7,7 @@ import {
   cx,
   hasContent,
   metaTextClasses,
+  popupFadeClasses,
   radiusClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
@@ -99,8 +100,7 @@ const popupClasses = [
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
   '[outline:none]',
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 const arrowSizes: Record<NebaSize, number> = {

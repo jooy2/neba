@@ -12,6 +12,7 @@ import {
   cx,
   hasContent,
   metaTextClasses,
+  popupFadeClasses,
   radiusClasses,
   surfaceClasses,
   surfaceSlots,
@@ -114,8 +115,7 @@ export interface CommandPaletteProps extends Pick<NebaStyleProps, 'size' | 'colo
 const backdropClasses = [
   'fixed inset-0 z-50 bg-(--neba-scrim)',
   '[backdrop-filter:blur(2px)]',
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 const popupClasses = [
@@ -125,8 +125,7 @@ const popupClasses = [
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
   '[outline:none]',
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 const widthClasses: Record<NebaSize, string> = {

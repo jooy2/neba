@@ -16,6 +16,7 @@ import {
   iconClasses,
   metaTextClasses,
   paddingXClasses,
+  popupFadeClasses,
   radiusClasses,
   stackGapClasses,
   surfaceClasses,
@@ -96,10 +97,7 @@ export const pickerPopupClasses = [
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
   '[outline:none]',
-  // Opacity only. A calendar that slid into place would move the cell the
-  // pointer was already reaching for.
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
+  popupFadeClasses
 ].join(' ');
 
 /** The popup's own padding, one track tighter than a control's. */

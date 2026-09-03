@@ -9,6 +9,7 @@ import {
   cx,
   hasContent,
   metaTextClasses,
+  popupFadeClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
@@ -238,15 +239,10 @@ const panelClasses = [
 const overlayShadowClasses = '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]';
 const inlineShadowClasses = '[box-shadow:var(--neba-plate-glass)]';
 
-const fadeClasses = [
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0'
-].join(' ');
-
 const backdropClasses = [
   'fixed inset-0 z-50 bg-(--neba-scrim)',
   '[backdrop-filter:blur(2px)]',
-  fadeClasses
+  popupFadeClasses
 ].join(' ');
 
 /** The internal hairline: the same `--n-line` as the sheet's own edge. */
@@ -345,7 +341,7 @@ export function Drawer(rawProps: DrawerProps) {
     edgeClasses[side],
     rounded ? roundedClasses[side][size] : '',
     overlay ? overlayShadowClasses : inlineShadowClasses,
-    overlay ? fadeClasses : '',
+    overlay ? popupFadeClasses : '',
     along
       ? `h-full max-w-full ${extent === undefined ? extentClasses[size] : ''}`
       : `w-full ${extent === undefined ? 'max-h-[85%]' : ''}`,
