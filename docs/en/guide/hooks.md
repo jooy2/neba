@@ -35,7 +35,18 @@ const desktop = useBreakpoint('lg');
 
 `useBreakpoint('lg')` is `lg:` in a class name, asked in JavaScript — the widths are one table, so a component that branches here and a utility that branches in CSS change at the same pixel. `xs` is `0rem`, so it is always true.
 
-There is one live `MediaQueryList` per query string for the whole page, however many components ask. Both hooks answer `false` on a server, where there is no window: **a layout that must not flash belongs in CSS**, and these are for the decisions CSS cannot make — which component to render at all.
+There is one live `MediaQueryList` per query string for the whole page, however many components ask. Both hooks answer `false` on a server, where there is no window: **a layout that must not flash belongs in CSS**, and these are for the decisions CSS cannot make — which component to render at all. [Show](../components/layout/show) is the CSS half of the same question.
+
+## useCurrentBreakpoint · useBreakpointValue
+
+```tsx
+const current = useCurrentBreakpoint(); // 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
+```
+
+`useBreakpointValue` reads a per-breakpoint map exactly as the cascade behind `span`, `spacing` and `maxWidth` reads it: every entry is a floor, so the nearest one at or below the current width wins. That sameness is the point — the shape a component's responsive props take and the numbers you work out yourself should not need two mental models. A bare value comes back unchanged, and `undefined` means the map has said nothing yet at this width, which is why the `??` above is worth writing.
+
+It re-renders on a resize, which the CSS form does not. Reach for it when the value is one JavaScript has to see — how many items to fetch, what to hand a chart — and leave layout to the props that resolve in the stylesheet. [Breakpoints](../design/breakpoints) is where that line is drawn.
 
 ## usePrefersReducedMotion
 

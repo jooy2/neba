@@ -87,6 +87,33 @@ export function withBaseline<T>(
 }
 
 /**
+ * The value in force at one breakpoint: the nearest entry at or below it.
+ *
+ * The JavaScript half of what the CSS cascade does, and written to give the
+ * same answer — every entry is a floor, so `{ xs: 12, md: 6 }` is `6` at `lg`
+ * because `md` is the last thing said before it. `undefined` is a map that has
+ * said nothing yet at this width, which is a real answer rather than a
+ * failure: `{ lg: 4 }` at `xs` is the caller declining to have an opinion, and
+ * the CSS form falls through to its own default there for the same reason.
+ */
+export function valueAt<T>(
+  value: NebaResponsive<T> | undefined,
+  breakpoint: NebaBreakpoint
+): T | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'object') return value;
+
+  const map = value as Partial<Record<NebaBreakpoint, T>>;
+
+  for (let index = breakpoints.indexOf(breakpoint); index >= 0; index -= 1) {
+    const entry = map[breakpoints[index]];
+    if (entry !== undefined) return entry;
+  }
+
+  return undefined;
+}
+
+/**
  * One responsive value laid over another, the way a more specific CSS
  * declaration is laid over a general one.
  *

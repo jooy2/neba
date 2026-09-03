@@ -13,6 +13,8 @@ import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import {
   useBreakpoint,
+  useBreakpointValue,
+  useCurrentBreakpoint,
   useDisclosure,
   useElementSize,
   useMediaQuery,
@@ -133,6 +135,52 @@ describe('useMediaQuery and useBreakpoint', () => {
     const text = screen.getByText(/true|false/).element().textContent ?? '';
 
     expect(text.startsWith('true ')).toBe(true);
+  });
+
+  it('names the breakpoint the window is currently in', async () => {
+    // The width the test browser happens to be is not this suite's to decide,
+    // so what is asserted is the agreement between the two hooks: whichever
+    // step `useCurrentBreakpoint` names has to be one `useBreakpoint` also says
+    // the window has reached.
+    function Current() {
+      const current = useCurrentBreakpoint();
+
+      return <p>{`${current} ${useBreakpoint(current)}`}</p>;
+    }
+
+    const screen = await render(<Current />);
+    const text = screen.getByText(/xs|sm|md|lg|xl/).element().textContent ?? '';
+
+    expect(text).toMatch(/^(xs|sm|md|lg|xl) true$/);
+  });
+
+  it('resolves a responsive value the way the cascade does', async () => {
+    function Resolved() {
+      const current = useCurrentBreakpoint();
+      // Every entry is a floor, so a map naming only `xs` answers at every
+      // width, and one naming only `xl` answers nowhere below it.
+      const everywhere = useBreakpointValue({ xs: 'floor' });
+      const nowhere = useBreakpointValue({ xl: 'top' });
+
+      return <p>{`${everywhere} ${nowhere ?? 'none'} ${current}`}</p>;
+    }
+
+    const screen = await render(<Resolved />);
+    const text = screen.getByText(/floor/).element().textContent ?? '';
+    const [, resolved, current] = text.split(' ');
+
+    expect(text.startsWith('floor ')).toBe(true);
+    expect(resolved).toBe(current === 'xl' ? 'top' : 'none');
+  });
+
+  it('hands a bare value back at every width', async () => {
+    function Bare() {
+      return <p>{String(useBreakpointValue(6))}</p>;
+    }
+
+    const screen = await render(<Bare />);
+
+    await expect.element(screen.getByText('6')).toBeInTheDocument();
   });
 });
 

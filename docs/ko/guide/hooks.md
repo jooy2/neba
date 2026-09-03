@@ -35,7 +35,18 @@ const desktop = useBreakpoint('lg');
 
 `useBreakpoint('lg')`는 class name의 `lg:`를 JavaScript에서 묻는 것입니다. 너비 표가 하나이므로 여기서 갈라지는 컴포넌트와 CSS에서 갈라지는 utility가 같은 픽셀에서 바뀝니다. `xs`는 `0rem`이라 항상 참입니다.
 
-query 문자열 하나당 살아 있는 `MediaQueryList`가 페이지 전체에 하나뿐입니다. 몇 개의 컴포넌트가 묻든 그렇습니다. 두 hook 모두 서버에서는 `false`를 답합니다. 창이 없으니 정직한 답이 없기 때문입니다. **깜빡이면 안 되는 레이아웃은 CSS에 적으세요.** 이 hook들은 CSS가 내릴 수 없는 결정 — 애초에 어떤 컴포넌트를 렌더할지 — 을 위한 것입니다.
+query 문자열 하나당 살아 있는 `MediaQueryList`가 페이지 전체에 하나뿐입니다. 몇 개의 컴포넌트가 묻든 그렇습니다. 두 hook 모두 서버에서는 `false`를 답합니다. 창이 없으니 정직한 답이 없기 때문입니다. **깜빡이면 안 되는 레이아웃은 CSS에 적으세요.** 이 hook들은 CSS가 내릴 수 없는 결정 — 애초에 어떤 컴포넌트를 렌더할지 — 을 위한 것입니다. 같은 질문의 CSS 쪽 절반은 [Show](../components/layout/show)입니다.
+
+## useCurrentBreakpoint · useBreakpointValue
+
+```tsx
+const current = useCurrentBreakpoint(); // 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
+```
+
+`useBreakpointValue`는 breakpoint별 map을 `span`·`spacing`·`maxWidth` 뒤의 cascade와 정확히 같은 방식으로 읽습니다. 모든 항목이 바닥이므로 현재 너비의 이하에서 가장 가까운 항목이 이깁니다. 같다는 것이 핵심입니다 — 컴포넌트의 반응형 prop이 취하는 모양과 직접 계산하는 값이 서로 다른 사고 모델을 요구해서는 안 됩니다. 값 하나를 그냥 주면 그대로 돌아오고, `undefined`는 이 너비에서 map이 아직 아무 말도 하지 않았다는 뜻입니다. 위의 `??`를 적어 둘 만한 이유가 그것입니다.
+
+CSS 쪽과 달리 이 hook은 크기가 바뀔 때 다시 렌더합니다. JavaScript가 봐야만 하는 값 — 몇 개를 fetch할지, 차트에 무엇을 넘길지 — 에 쓰고, 레이아웃은 stylesheet에서 풀리는 prop에 맡기세요. 그 경계선은 [breakpoints](../design/breakpoints)에서 그립니다.
 
 ## usePrefersReducedMotion
 
