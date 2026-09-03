@@ -218,6 +218,43 @@ describe('Drawer', () => {
       expect(panel.parentElement).toHaveClass('justify-end');
     });
 
+    /**
+     * The one surface in the library that does not simply fade. Every other one
+     * appears where it will stay, so moving it drags text the reader is already
+     * on; a drawer has a home, and until it opens it is not on the screen at
+     * all. It used to fade, which threw away the only thing distinguishing it
+     * from a Dialog.
+     */
+    it('comes in from the edge it is attached to, whichever that is', async () => {
+      const screen = await render(<Drawer defaultOpen title="Navigation" />);
+      const panel = screen.getByRole('dialog').element();
+
+      expect(panel.className).toContain('transition:translate');
+      expect(panel).toHaveClass('data-[starting-style]:[translate:-100%_0]');
+      expect(panel).toHaveClass('data-[ending-style]:[translate:-100%_0]');
+      // The panel travels; the scrim behind it is what fades.
+      expect(panel.className).not.toContain('data-[starting-style]:opacity-0');
+    });
+
+    it('comes up from the bottom when that is where it lives', async () => {
+      const screen = await render(<Drawer defaultOpen side="bottom" title="Filters" />);
+
+      expect(screen.getByRole('dialog').element()).toHaveClass(
+        'data-[starting-style]:[translate:0_100%]'
+      );
+    });
+
+    /** An inline drawer is in the flow, and moving the page is not its to do. */
+    it('does not travel when it is inline', async () => {
+      const screen = await render(<Drawer mode="inline" defaultOpen title="Filters" />);
+      // An inline drawer is not a dialog and takes no forwarded props, so the
+      // panel is reached through the heading it drew.
+      const panel = screen.getByRole('heading', { name: 'Filters' }).element().closest('div')
+        ?.parentElement as HTMLElement;
+
+      expect(panel.className).not.toContain('transition:translate');
+    });
+
     it('squares every corner when rounded is off', async () => {
       const screen = await render(<Drawer defaultOpen rounded={false} title="Navigation" />);
 

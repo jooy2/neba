@@ -211,6 +211,38 @@ const edgeClasses: Record<NebaSide, string> = {
   bottom: 'border-t'
 };
 
+/**
+ * How an overlay drawer arrives: from the edge it is attached to.
+ *
+ * This is the one surface in the library that does not simply fade, and the
+ * exception is the whole of what a drawer is. Every other floating surface
+ * appears where it will stay — a menu at its trigger, a dialog in the middle of
+ * a page somebody is already reading — so moving it drags text the reader's eye
+ * is already on. A drawer has a *home*: `side` is a prop, the panel is pinned to
+ * that edge, and until it opens it is not on the screen at all. Sliding it moves
+ * nothing that was being read; fading it in throws away the only thing that
+ * distinguishes it from a Dialog.
+ *
+ * The scrim behind it still fades, which is the pairing every platform uses: the
+ * page dims while the sheet arrives.
+ *
+ * `translate` rather than the `transform` shorthand, for the reason the
+ * `Animate*` effects use it — a caller's own `transform` on the same element
+ * survives. The percentage is of the panel's own box, so it does not have to
+ * know how wide it was made or how wide `extent` made it. `--neba-duration`
+ * rather than the window ladder's 240ms, because that one is not zeroed under
+ * `prefers-reduced-motion` and this is exactly the motion somebody turning that
+ * on is asking not to see.
+ */
+const slideClasses = '[transition:translate_var(--neba-duration)_var(--neba-ease)]';
+
+const slideFromClasses: Record<NebaSide, string> = {
+  left: 'data-[starting-style]:[translate:-100%_0] data-[ending-style]:[translate:-100%_0]',
+  right: 'data-[starting-style]:[translate:100%_0] data-[ending-style]:[translate:100%_0]',
+  top: 'data-[starting-style]:[translate:0_-100%] data-[ending-style]:[translate:0_-100%]',
+  bottom: 'data-[starting-style]:[translate:0_100%] data-[ending-style]:[translate:0_100%]'
+};
+
 /** Which end of the viewport the panel is pushed to, and along which axis. */
 const viewportClasses: Record<NebaSide, string> = {
   left: 'flex-row justify-start',
@@ -341,7 +373,7 @@ export function Drawer(rawProps: DrawerProps) {
     edgeClasses[side],
     rounded ? roundedClasses[side][size] : '',
     overlay ? overlayShadowClasses : inlineShadowClasses,
-    overlay ? popupFadeClasses : '',
+    overlay ? `${slideClasses} ${slideFromClasses[side]}` : '',
     along
       ? `h-full max-w-full ${extent === undefined ? extentClasses[size] : ''}`
       : `w-full ${extent === undefined ? 'max-h-[85%]' : ''}`,
