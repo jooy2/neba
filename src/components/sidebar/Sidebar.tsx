@@ -385,6 +385,11 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
         aria-label={title ? undefined : (label ?? messages.sidebar)}
         className={className}
         style={style}
+        // The same spread the column below gets. Without it an `id`, a `data-*`
+        // or an `aria-*` a caller wrote survived on a wide screen and vanished
+        // on a narrow one — which is the worst shape that bug takes, because the
+        // screen it disappears on is the one nobody develops against.
+        {...props}
       >
         {children}
       </Drawer>

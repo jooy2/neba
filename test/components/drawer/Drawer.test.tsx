@@ -356,5 +356,32 @@ describe('Drawer', () => {
         .element(document.querySelector<HTMLElement>('[data-analytics="settings-panel"]')!)
         .toBeInTheDocument();
     });
+
+    /**
+     * Both modes, because they are one component and a caller does not choose
+     * which one they get — a Sidebar swaps them at a breakpoint. The inline
+     * panel was rendering none of them, so an `id`, a `data-*` or an `aria-*`
+     * survived on a wide screen and vanished on a narrow one.
+     */
+    it('passes an unknown prop to the inline panel too', async () => {
+      const screen = await render(
+        <Drawer mode="inline" title="Settings" data-analytics="settings-panel" />
+      );
+
+      await expect.element(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
+      expect(document.querySelector('[data-analytics="settings-panel"]')).not.toBeNull();
+    });
+
+    it('lets a caller name the inline panel for a label elsewhere on the page', async () => {
+      const screen = await render(
+        <Drawer mode="inline" title="Filters" id="filters" aria-describedby="hint" />
+      );
+
+      const panel = document.getElementById('filters');
+
+      await expect.element(screen.getByRole('heading', { name: 'Filters' })).toBeInTheDocument();
+      expect(panel).not.toBeNull();
+      expect(panel?.getAttribute('aria-describedby')).toBe('hint');
+    });
   });
 });

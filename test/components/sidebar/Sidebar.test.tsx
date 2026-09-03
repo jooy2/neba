@@ -216,6 +216,28 @@ describe('Sidebar', () => {
       await expect.element(screen.getByRole('complementary')).toBeInTheDocument();
     });
 
+    /**
+     * The worst shape a dropped prop takes: it survives on the wide screen the
+     * component was developed against and vanishes on the narrow one. The
+     * column spread what it was handed and the drawer did not, so a caller's
+     * `id`, `data-*` or `aria-*` was there until the window got small.
+     */
+    it('carries the props it was handed into the drawer, as the column does', async () => {
+      await widen(WIDE);
+      const screen = await render(
+        <Sidebar collapseBelow="md" defaultOpen id="nav" data-analytics="sidebar">
+          Navigation
+        </Sidebar>
+      );
+
+      await expect.element(screen.getByRole('complementary')).toHaveAttribute('id', 'nav');
+
+      await widen(NARROW);
+
+      await expect.element(screen.getByRole('dialog')).toHaveAttribute('id', 'nav');
+      expect(screen.getByRole('dialog').element()).toHaveAttribute('data-analytics', 'sidebar');
+    });
+
     it('reports the drawer opening and closing', async () => {
       await widen(NARROW);
       const onOpenChange = vi.fn();

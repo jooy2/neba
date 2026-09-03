@@ -470,7 +470,16 @@ export function Drawer(rawProps: DrawerProps) {
     }
 
     return (
-      <div className={panel} style={{ ...surfaceSlots(color, 0), ...sizeStyle, ...style }}>
+      <div
+        className={panel}
+        style={{ ...surfaceSlots(color, 0), ...sizeStyle, ...style }}
+        // The same spread the overlay panel gets, in the same place. It was
+        // missing here, so `id`, `data-*`, `aria-*` and every other attribute a
+        // caller wrote reached the panel in one mode and were dropped on the
+        // floor in the other — and the mode is exactly what a Sidebar swaps at a
+        // breakpoint, so the same drawer lost them by being on a narrow screen.
+        {...props}
+      >
         {contents}
       </div>
     );
