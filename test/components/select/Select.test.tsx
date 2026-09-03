@@ -173,6 +173,24 @@ describe('Select', () => {
       expect(popup.style.getPropertyValue('--n-panel-press')).toBe('var(--neba-panel-press)');
     });
 
+    /**
+     * Every other floating surface in the library fades in and out; this one did
+     * not, so a list of options arrived in one frame while the calendar hanging
+     * off the DatePicker beside it took 160ms.
+     */
+    it('fades in and out, the way every other popup does', async () => {
+      const screen = await render(<Select items={PLANS} label="Plan" />);
+
+      await screen.getByRole('combobox').click();
+      await expect.element(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const popup = screen.getByRole('listbox').element();
+
+      expect(popup.className).toContain('transition:opacity');
+      expect(popup).toHaveClass('data-[starting-style]:opacity-0');
+      expect(popup).toHaveClass('data-[ending-style]:opacity-0');
+    });
+
     it('follows the danger family into the popup when invalid', async () => {
       const screen = await render(<Select items={PLANS} label="Plan" error="Pick one" />);
 

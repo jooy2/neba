@@ -21,6 +21,7 @@ import {
   iconClasses,
   metaTextClasses,
   paddingXClasses,
+  popupFadeClasses,
   radiusClasses,
   stackGapClasses,
   surfaceClasses,
@@ -251,7 +252,8 @@ const popupClasses = [
   'w-[var(--anchor-width)] border bg-(--n-panel-press) p-1',
   '[border-color:var(--n-line)]',
   '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]'
+  '[outline:none]',
+  popupFadeClasses
 ].join(' ');
 
 const itemClasses = [

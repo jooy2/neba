@@ -341,6 +341,20 @@ describe('Combobox', () => {
       expect(popup.style.getPropertyValue('--n-panel-press')).toBe('var(--neba-panel-press)');
     });
 
+    /** The same missing fade Select had, and the same fix. */
+    it('fades in and out, the way every other popup does', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" />);
+
+      await screen.getByRole('combobox').click();
+      await expect.element(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const popup = screen.getByRole('listbox').element().closest('[style]') as HTMLElement;
+
+      expect(popup.className).toContain('transition:opacity');
+      expect(popup).toHaveClass('data-[starting-style]:opacity-0');
+      expect(popup).toHaveClass('data-[ending-style]:opacity-0');
+    });
+
     it('separates the query from the chips it follows, and only then', async () => {
       const screen = await render(
         <Combobox multiple items={FRAMEWORKS} label="Framework" placeholder="Add one" />
