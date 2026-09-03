@@ -149,8 +149,26 @@ const disabledDotClasses = [
   'data-[checked]:bg-(--neba-disabled-bg)'
 ].join(' ');
 
-/** The inner dot: `currentColor`, so it inherits the on-fill ink. */
-const indicatorClasses = 'rounded-full bg-current';
+/**
+ * The inner dot: `currentColor`, so it inherits the on-fill ink — and it grows
+ * into the ring rather than appearing whole inside it.
+ *
+ * The ring answers a click in colour over `--neba-duration-fill`; the dot did
+ * not answer at all, which left the one mark that says *which* option was
+ * chosen as the only part of the control that jumped. It grows from nothing at
+ * the centre, which is what the flex row above already puts it at.
+ *
+ * `width` and `height` rather than a `scale`, for the reason the house style
+ * gives everywhere else: nothing in this library is resampled to say something
+ * about its state. It is also what keeps the exit working — Base UI holds the
+ * element mounted for as long as `getAnimations()` on it reports something
+ * running, and these two are on the element itself.
+ */
+const indicatorClasses = [
+  'rounded-full bg-current',
+  '[transition:width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)]',
+  'data-[starting-style]:size-0 data-[ending-style]:size-0'
+].join(' ');
 
 /**
  * One option in a RadioGroup.

@@ -171,6 +171,23 @@ describe('RadioGroup', () => {
       );
     });
 
+    /**
+     * The ring answers a click in colour; the dot answered not at all, which
+     * left the one mark that says which option was chosen as the only part of
+     * the control that jumped. It is a size and never a `scale` — nothing in
+     * this library is resampled to say something about its state.
+     */
+    it('grows into the ring rather than appearing whole in it', async () => {
+      const screen = await render(<Plans label="Plan" defaultValue="team" />);
+      const dot = screen.getByRole('radio', { name: 'Team' }).element()
+        .firstElementChild as HTMLElement;
+
+      expect(dot.className).toContain('transition:width');
+      expect(dot).toHaveClass('data-[starting-style]:size-0');
+      expect(dot).toHaveClass('data-[ending-style]:size-0');
+      expect(dot.className).not.toContain('scale');
+    });
+
     it('wears no plate, chosen or not', async () => {
       const screen = await render(<Plans label="Plan" defaultValue="team" />);
 
