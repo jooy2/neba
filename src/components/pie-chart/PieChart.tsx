@@ -7,10 +7,11 @@ import {
   ChartStatus,
   ChartSurface,
   ChartTooltipPanel,
-  useMeasuredWidth,
-  useVisibility,
+  seriesDimClasses,
   type ChartBaseProps,
-  type ChartTooltipItem
+  type ChartTooltipItem,
+  useMeasuredWidth,
+  useVisibility
 } from '../../internal/chart-frame.js';
 import {
   arcPath,
@@ -340,7 +341,7 @@ export function PieChart(rawProps: PieChartProps) {
                   fill={values[arc.index].color ?? colors[arc.index]}
                   opacity={dimmed ? 0.32 : 1}
                   onPointerEnter={tooltipOff ? undefined : () => setActive(arc.index)}
-                  className="[transition:opacity_var(--neba-duration)_var(--neba-ease)]"
+                  className={seriesDimClasses}
                 />
               );
             })}

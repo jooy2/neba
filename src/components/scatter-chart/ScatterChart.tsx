@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   CartesianChart,
+  seriesDimClasses,
   type CartesianChartProps,
   type CartesianContext,
   type CartesianLayout,
@@ -260,6 +261,7 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
             stroke="var(--neba-chart-gap)"
             strokeWidth={markGap}
             opacity={dimmed ? 0.28 : 1}
+            className={seriesDimClasses}
           />
         );
       })}

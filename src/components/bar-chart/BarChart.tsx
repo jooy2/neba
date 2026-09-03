@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   CartesianChart,
+  seriesDimClasses,
   type CartesianChartProps,
   type CartesianContext
 } from '../../internal/chart-frame.js';
@@ -227,7 +228,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
         const dimmed = hovered !== null && hovered !== index;
 
         return (
-          <g key={index} opacity={dimmed ? 0.28 : 1}>
+          <g key={index} opacity={dimmed ? 0.28 : 1} className={seriesDimClasses}>
             {one.map((value: ChartValue, category: number) => {
               if (value.value === null) {
                 return null;

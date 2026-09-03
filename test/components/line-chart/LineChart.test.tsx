@@ -133,6 +133,51 @@ describe('LineChart', () => {
       await expect.element(screen.getByRole('button', { name: 'Mobile' })).toBeInTheDocument();
     });
 
+    /**
+     * Pointing at one entry drops every other series to 0.28. Only the pie ever
+     * did that over any time at all — everywhere else the whole picture snapped
+     * between two states on the frame the pointer crossed a row.
+     */
+    it('fades the other series down rather than switching them', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Web', data: [1, 2] },
+            { name: 'Mobile', data: [3, 4] }
+          ]}
+        />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Web' })).toBeInTheDocument();
+
+      const groups = [...screen.container.querySelectorAll('svg g[opacity]')];
+
+      expect(groups.length).toBeGreaterThan(0);
+      expect(
+        groups.every((g) => (g.getAttribute('class') ?? '').includes('transition:opacity'))
+      ).toBe(true);
+    });
+
+    /** The entry itself dims too, and the house transition does not name opacity. */
+    it('fades the legend entry it dims', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Web', data: [1, 2] },
+            { name: 'Mobile', data: [3, 4] }
+          ]}
+        />
+      );
+
+      const entry = screen.getByRole('button', { name: 'Web' }).element();
+
+      expect(entry.className).toContain('transition-property:background-color,color,opacity');
+    });
+
     it('hides a series when its entry is clicked, and keeps it in the list', async () => {
       const screen = await render(
         <LineChart

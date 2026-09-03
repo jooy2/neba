@@ -117,6 +117,20 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
  * would be two edges where the design language wants one. `variant="outline"`
  * is there for the chart that stands on the page by itself.
  */
+/**
+ * What a series that is not the one being pointed at fades to, and how long it
+ * takes to get there.
+ *
+ * Every chart in the library dims its other series when the legend is hovered,
+ * and until now only the pie did it over any time at all — on a line, a bar and
+ * a scatter the whole picture snapped between two states on the frame the
+ * pointer crossed a legend row, which reads as a redraw rather than as a
+ * highlight. It is the one place a chart is allowed to say something with
+ * `opacity`: nothing here is a control, and what is being said is "this is the
+ * one you asked about", not "this one is off".
+ */
+export const seriesDimClasses = '[transition:opacity_var(--neba-duration)_var(--neba-ease)]';
+
 export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
   /**
    * How tall the drawing is. A number is pixels; a string is any CSS length.
@@ -313,7 +327,7 @@ function ChartLegendBar({
             ) : (
               <span
                 aria-hidden="true"
-                className="size-2.5 shrink-0 rounded-[0.1875rem]"
+                className={`size-2.5 shrink-0 rounded-[0.1875rem] ${transitionClasses}`}
                 style={{ backgroundColor: ink }}
               />
             )}
@@ -338,7 +352,14 @@ function ChartLegendBar({
                 className={cx(
                   'flex min-w-0 cursor-pointer items-center gap-1.5 rounded-(--neba-radius-xs)',
                   'px-1 py-0.5 text-(--neba-fg)',
-                  transitionClasses,
+                  // Its own list rather than the house one: `transitionClasses`
+                  // names the four properties a control answers a pointer with,
+                  // and `opacity` — the only thing that changes when a *sibling*
+                  // row is hovered — is not among them, so the dimming below was
+                  // written down and never ran.
+                  '[transition-property:background-color,color,opacity]',
+                  '[transition-duration:var(--neba-duration)]',
+                  '[transition-timing-function:var(--neba-ease)]',
                   'hover:bg-(--n-soft)',
                   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
                   shown ? '' : 'text-(--neba-disabled-fg)',

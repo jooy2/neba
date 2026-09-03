@@ -15,6 +15,7 @@
 
 import * as React from 'react';
 import { areaPath, chartFontSizes, linePath, lineWidths, markerRadii, markGap } from './chart.js';
+import { seriesDimClasses } from './chart-frame.js';
 import type { CartesianContext } from './chart-frame.js';
 import type { NebaChartCurve, NebaChartValueLabels } from '../types.js';
 
@@ -178,7 +179,7 @@ export function LineSeries({
         const labelled = labelledPoints(one, valueLabels);
 
         return (
-          <g key={index} opacity={dimmed ? 0.28 : 1}>
+          <g key={index} opacity={dimmed ? 0.28 : 1} className={seriesDimClasses}>
             {filled ? (
               <path
                 d={areaPath(
