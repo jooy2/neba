@@ -86,6 +86,40 @@ describe('Transfer', () => {
       expect(onValueChange).toHaveBeenCalledWith([]);
     });
 
+    /**
+     * A press took the rows off one list and put them in the other, and both
+     * redrew in a single frame — so the only way to find out where they went was
+     * to read the whole panel again. The ones that landed say so.
+     */
+    it('fades up the rows that just arrived, and only those', async () => {
+      const screen = await render(<Transfer items={ITEMS} />);
+
+      await screen.getByText('Status').click();
+      await screen.getByRole('button', { name: 'Move to selected' }).click();
+
+      const arrived = screen.getByText('Status').element().closest('[class*="animation"]');
+      const stayed = screen.getByText('Commit').element().closest('[class*="animation"]');
+
+      expect(arrived).not.toBeNull();
+      expect(arrived?.className).toContain('neba-anim-fade');
+      expect(stayed).toBeNull();
+    });
+
+    /**
+     * The load-bearing half: `rows` also changes on every keystroke in the
+     * search box, and a filter that animates is a filter that feels slow.
+     */
+    it('does not fade a row the search box merely uncovered', async () => {
+      const screen = await render(<Transfer items={ITEMS} searchable />);
+
+      const box = screen.getByRole('textbox').first();
+
+      await box.fill('stat');
+      await box.fill('');
+
+      expect(screen.getByText('Status').element().closest('[class*="animation"]')).toBeNull();
+    });
+
     it('keeps the order of items whichever side a row is on', async () => {
       const onValueChange = vi.fn();
       const screen = await render(<Transfer items={ITEMS} onValueChange={onValueChange} />);

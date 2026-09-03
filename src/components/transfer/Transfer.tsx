@@ -79,10 +79,32 @@ const rowPadY: Record<NebaSize, string> = {
   xl: 'py-2'
 };
 
+/**
+ * A row that has just been sent here.
+ *
+ * A press on the arrow took three rows off one list and put them in the other,
+ * and both lists redrew in a single frame — so the only way to find out where
+ * they went was to read the whole panel again. They fade up now, at the pace a
+ * picture arrives rather than the pace a control answers a pointer, because
+ * what is being said is "these are the ones that moved" and not "this one is
+ * hovered".
+ *
+ * Keyed on the press rather than on the rows changing, which is the load-bearing
+ * part: `rows` also changes on every keystroke in the search box, and a filter
+ * that animates is a filter that feels slow. Typing narrows the list instantly,
+ * exactly as it did.
+ *
+ * An `animation` rather than a transition, because there is no previous frame —
+ * the row did not exist on this side until now.
+ */
+const arrivedClasses = '[animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]';
+
 /** What a caller sees of one side, so the two panels are literally one function. */
 interface PanelProps {
   title: React.ReactNode;
   rows: readonly TransferItem[];
+  /** The rows that arrived on this side on the last press, and nothing else. */
+  arrived: ReadonlySet<string>;
   ticked: ReadonlySet<string>;
   onTick: (value: string, ticked: boolean) => void;
   onTickAll: (ticked: boolean) => void;
@@ -100,6 +122,7 @@ interface PanelProps {
 function Panel({
   title,
   rows,
+  arrived,
   ticked,
   onTick,
   onTickAll,
@@ -176,7 +199,7 @@ function Panel({
                 key={row.value}
                 size={size}
                 color={color}
-                className={rowPadY[size]}
+                className={cx(rowPadY[size], arrived.has(row.value) ? arrivedClasses : '')}
                 label={row.label}
                 checked={ticked.has(row.value)}
                 disabled={disabled || row.disabled}
@@ -250,6 +273,8 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
     const selected = value ?? uncontrolled;
 
     const [ticked, setTicked] = React.useState<ReadonlySet<string>>(() => new Set());
+    /** What the last press moved, so the side it landed on can say which. */
+    const [arrived, setArrived] = React.useState<ReadonlySet<string>>(() => new Set());
     const [sourceSearch, setSourceSearch] = React.useState('');
     const [targetSearch, setTargetSearch] = React.useState('');
 
@@ -309,6 +334,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
         : selected.filter((item) => !ids.has(item));
 
       setTicked((current) => new Set([...current].filter((item) => !ids.has(item))));
+      setArrived(ids);
       commit(next);
     };
 
@@ -333,6 +359,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
         <Panel
           title={hasContent(sourceLabel) ? sourceLabel : messages.source}
           rows={sourceRows}
+          arrived={arrived}
           ticked={ticked}
           onTick={tick}
           onTickAll={(on) => tickAll(sourceRows, on)}
@@ -374,6 +401,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
         <Panel
           title={hasContent(targetLabel) ? targetLabel : messages.target}
           rows={targetRows}
+          arrived={arrived}
           ticked={ticked}
           onTick={tick}
           onTickAll={(on) => tickAll(targetRows, on)}
