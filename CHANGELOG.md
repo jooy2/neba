@@ -6,7 +6,7 @@ The release about the things that were already there and were not quite saying i
 
 Six of the items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
 
-Eleven more came out of asking the same question of every component in turn — when a state turns over, does anything _happen_, or is the second state simply drawn? Eleven answers were "simply drawn". Three of those were fades that had been written down and never ran.
+Fifteen more came out of asking the same question of every component in turn — when a state turns over, does anything _happen_, or is the second state simply drawn? Fifteen answers were "simply drawn". Three of those were fades that had been written down and never ran, and one was a rule the code had stopped describing.
 
 Three are new components: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
 
@@ -23,8 +23,8 @@ And the last group is the same complaint one level up. The library had a breakpo
 | a whole page shell            | 28.5 kB  | 28.7 kB  |
 | 12 components — a typical app | 68.2 kB  | 69.1 kB  |
 | 12 components, with Korean    | 70.7 kB  | 71.4 kB  |
-| 25 components — a large one   | 112.6 kB | 113.4 kB |
-| all exports                   | 248.1 kB | 251.4 kB |
+| 25 components — a large one   | 112.6 kB | 113.5 kB |
+| all exports                   | 248.1 kB | 251.6 kB |
 
 `Chip` is the row worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
 
@@ -201,6 +201,28 @@ It is a _stroke_ along the middle of the groove now, whose drawn length is `stro
 A branch was there on one frame and gone on the next, which on a tree deep enough to need one is the whole page jumping — while `Accordion` and `Collapsible`, which do the same thing, both travel. It is a grid row going from `0fr` to `1fr`, so nothing has to be measured, a branch that gains a row while it is open grows with it, and a nested branch opening inside this one is carried by the same track.
 
 The load-bearing part is what happens to a branch on its way shut. It has to stay in the document or there is nothing left to collapse, and for those 160ms its rows are visible but no longer _there_: they are marked `data-closing`, which keeps them out of the order the arrow keys walk, and they stop registering with the tree on the same render that shut the branch — so the tree's answer to "is the row holding the tab stop still on screen" turns over immediately rather than a sixth of a second later.
+
+### A drawer comes in from its edge
+
+The one surface in the library that does not simply fade, and the exception is the whole of what a drawer is. Every other floating surface appears where it will stay — a menu at its trigger, a dialog in the middle of a page somebody is already reading — so moving it drags text the reader's eye is already on. A drawer has a _home_: `side` is a prop, the panel is pinned to that edge, and until it opens it is not on the screen at all.
+
+It faded. Fading a drawer moves nothing and throws away the only thing that distinguishes it from a Dialog, and a `Sidebar` below its breakpoint _is_ a drawer, so the same thing happened to every collapsed page shell. The panel travels on `translate` now and the scrim behind it still fades, which is the pairing every platform uses.
+
+`--neba-duration` rather than the window ladder's 240ms, and that is not a rounding decision: `--neba-duration-window` is not zeroed under `prefers-reduced-motion`, and a drawer sliding across the screen is exactly what somebody turning that on is asking not to see. The [design language](https://neba.cdget.com/design/design-language) now states the exception beside the rule it breaks.
+
+### A chart's marks answer the pointer on one declaration
+
+`opacity` had two states that are the same sentence at two scales — a whole series at 0.28 when the legend is pointed at another, a single datum at 0.92 until the crosshair reaches it — and the datum half snapped everywhere the series half now fades. `r` and `scale` are the third: the mark under the crosshair is a pixel bigger than its neighbours, which a line's `<circle>` marker reaches through its radius and a scatter's arbitrary `<path>` could not reach at all, its size living inside `d`.
+
+The scatter mark grows on the independent `scale` property about _the point it is pinned to_, not the middle of its own bounding box, so a triangle grows where it stands instead of drifting as it grows. Measured: the mark's centre is identical to the pixel before and after.
+
+All three ride one `transition` shorthand — `markTransitionClasses` — and that is load-bearing rather than tidy. Two shorthands on one element are decided by their order in the generated stylesheet rather than by intent, so a mark carrying a fade _and_ a grow written separately keeps whichever Tailwind happened to emit last, which looks like the browser's fault.
+
+### Transfer says where the rows went
+
+A press on the arrow took three rows off one list and put them in the other, and both lists redrew in a single frame — so the only way to find out where they went was to read the whole panel again. The rows that landed fade up.
+
+Keyed on the press and not on the list changing, which is the load-bearing half: `rows` also changes on every keystroke in the search box, and a filter that animates is a filter that feels slow. Typing still narrows the list in one frame.
 
 ### And four more places where something changed and nothing moved
 

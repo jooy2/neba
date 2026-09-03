@@ -76,7 +76,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 113.4
+      "budget": 113.5
     },
     {
       "id": "page-shell",
@@ -108,7 +108,7 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 251.4
+      "budget": 251.6
     }
   ]
 }

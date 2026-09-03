@@ -221,6 +221,8 @@ It is one declaration and two state classes, written once in `internal/styles.ts
 
 The one thing that may travel besides opacity is the surface's own **size**, and only when the reader asked for it: a NavigationMenu's panel resizing between two menus of different heights is the panel staying still while its contents change, not the panel moving.
 
+**A Drawer is the exception, and the exception is the whole of what a drawer is.** Every other floating surface appears where it will stay, so moving it drags text the reader's eye is already on. A drawer has a _home_: `side` is a prop, the panel is pinned to that edge, and until it opens it is not on the screen at all. Sliding it moves nothing that was being read, and fading it in throws away the only thing that distinguishes it from a Dialog. So the panel comes in from its edge and the scrim behind it fades — the pairing every platform uses, and the one place in the library where the motion carries the meaning rather than decorating it.
+
 ### The pointer spotlight
 
 `.neba-glow::before` is a soft bloom trailing the cursor. The component writes `--n-mx`/`--n-my` straight to the element's inline style on `pointermove`.
