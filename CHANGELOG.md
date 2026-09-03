@@ -224,6 +224,14 @@ A press on the arrow took three rows off one list and put them in the other, and
 
 Keyed on the press and not on the list changing, which is the load-bearing half: `rows` also changes on every keystroke in the search box, and a filter that animates is a filter that feels slow. Typing still narrows the list in one frame.
 
+### A prop that survived a wide screen and vanished on a narrow one
+
+Not motion, but found under it. A `Drawer` is two shapes of one component — `overlay` when it is opened over the page, `inline` when it is part of the layout — and only the overlay one spread the props it was handed. So an `id`, a `data-*` or an `aria-*` a caller wrote reached the panel in one mode and was dropped on the floor in the other.
+
+`Sidebar` had the same gap one level up, and there it is worse: the mode is not the caller's choice, it is the window's. A sidebar below `collapseBelow` _is_ a drawer, so every attribute a caller put on it was there on the screen they developed against and gone on the screen they did not.
+
+A structural rule for this was tried and rejected. `resolution.test.ts` can ask reliably whether _one element_ both spreads and writes an attribute of its own; "every tree this component can return forwards what it was handed" is a question about branches, and every regex shape of it produced false positives on the ten components that legitimately forward onto an inner element rather than the root. It is three ordinary tests instead — both drawer modes, and a sidebar walked across its breakpoint with an `id` on it.
+
 ### And four more places where something changed and nothing moved
 
 A **`Rating`**'s fill jumped from one star to the next. It travels on `width` — the same width on the same element, so no glyph is scaled to say it.
