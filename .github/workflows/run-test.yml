@@ -105,8 +105,13 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Test module script
         # A cap of its own, so a wedged browser is reported as the test step
-        # timing out rather than as the job running out somewhere unnamed. The
-        # suite's slowest honest run is under three minutes.
+        # timing out rather than as the job running out somewhere unnamed.
+        #
+        # `npm test` is `scripts/run-tests.mjs`, which runs the suite in shards
+        # of at most fifty files so that no browser session is asked to hold the
+        # whole thing — chromium does not survive that, and had not finished a
+        # run on any runner for weeks. It is three browser start-ups rather than
+        # one; the slowest honest run is still well under four minutes.
         timeout-minutes: 10
         run: npm run test
         env:

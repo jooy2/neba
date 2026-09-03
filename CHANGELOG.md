@@ -232,6 +232,18 @@ Not motion, but found under it. A `Drawer` is two shapes of one component — `o
 
 A structural rule for this was tried and rejected. `resolution.test.ts` can ask reliably whether _one element_ both spreads and writes an attribute of its own; "every tree this component can return forwards what it was handed" is a question about branches, and every regex shape of it produced false positives on the ten components that legitimately forward onto an inner element rather than the root. It is three ordinary tests instead — both drawer modes, and a sidebar walked across its breakpoint with an `id` on it.
 
+### The suite finishes now
+
+`run-test` had been red on `main` for weeks — two green runs in the last twenty — and always the same way: the chromium jobs failed on every runner while firefox and webkit passed on all three. Locally it took two or three attempts to get a clean run.
+
+It is not a test. Every test that starts passes; chromium loses the browser somewhere past the hundredth file of a hundred and forty-six and everything still queued behind it never runs, which is why the _file_ count comes up short beside a full _test_ count. Vitest has the report open against browser mode.
+
+What was measured: twelve full runs, none finished, dying between the 99th file and the 125th, on a dozen different files. Nine runs of a third of the suite each, all green. Not memory, not a dependency re-optimizing mid-run, and the page is still alive enough to log its own lost connection. `browser.isolate: false` hangs outright; `server.hmr: false` went one green in five, which is inside the noise.
+
+The one lever that separated a run which finished from one which did not was how many files a single browser session was asked to hold. `npm test` is `scripts/run-tests.mjs` now, and it runs the suite in sessions of at most fifty files, each its own browser — `ceil(files / 50)`, so adding tests does not need the number touched. Eighteen sharded runs since, all green.
+
+Nothing is skipped and nothing is retried. A failing test still fails its shard and still fails the run, which is the whole difference between this and the `retry` the flake keeps inviting — checked by breaking a test on purpose and watching the runner name the shard and exit 1.
+
 ### And four more places where something changed and nothing moved
 
 A **`Rating`**'s fill jumped from one star to the next. It travels on `width` — the same width on the same element, so no glyph is scaled to say it.
