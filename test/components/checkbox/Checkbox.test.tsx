@@ -178,6 +178,29 @@ describe('Checkbox', () => {
       expect(row).toHaveClass('leading-[1.4]');
     });
 
+    /**
+     * The box answered a click in colour and the mark inside it answered not at
+     * all — it was there on one frame and gone on the next. It is drawn now,
+     * along its own length, which needs the path normalised so one dash number
+     * covers both the tick and the indeterminate dash.
+     */
+    it('draws the mark rather than switching it on', async () => {
+      const screen = await render(<Checkbox label="Tick" defaultChecked />);
+      const indicator = screen.getByRole('checkbox').element().querySelector('svg')
+        ?.parentElement as HTMLElement;
+
+      expect(indicator.className).toContain('stroke-dashoffset');
+      expect(indicator.className).toContain('data-[starting-style]:opacity-0');
+      expect(indicator.querySelector('path')?.getAttribute('pathLength')).toBe('1');
+    });
+
+    it('draws the indeterminate dash the same way', async () => {
+      const screen = await render(<Checkbox label="Tick" indeterminate />);
+      const path = screen.getByRole('checkbox').element().querySelector('path');
+
+      expect(path?.getAttribute('pathLength')).toBe('1');
+    });
+
     it('never applies a transform', async () => {
       const screen = await render(
         <Checkbox label="Tick" description="Note" error="Bad" indeterminate />

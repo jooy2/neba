@@ -124,14 +124,43 @@ const disabledTickClasses = [
   'data-[indeterminate]:bg-(--neba-disabled-bg)'
 ].join(' ');
 
-/** The mark is drawn at 70% of the box, so it never touches the corners. */
-const markClasses = 'flex size-[70%] items-center justify-center';
+/**
+ * The mark is drawn at 70% of the box, so it never touches the corners — and it
+ * is *drawn*, rather than switched on.
+ *
+ * The box already answers a click in colour, over `--neba-duration-fill`. The
+ * mark inside it did not answer at all: it was there on one frame and gone on
+ * the next, which is the one moment a checkbox has to be legible and the one
+ * moment it was hardest to read. A stroke that arrives along its own length is
+ * the transform-free way to say it — nothing moves, nothing is resampled, the
+ * line simply is not finished yet.
+ *
+ * `pathLength="1"` below is what makes it one number rather than two: the tick
+ * and the dash are different lengths, and normalising the path lets a single
+ * `stroke-dasharray` cover both without either having to be measured.
+ *
+ * The `opacity` transition on the indicator itself is not decoration. Base UI
+ * holds the element mounted for as long as `getAnimations()` on *that element*
+ * reports something running, and that call does not look into the subtree — a
+ * transition living only on the `path` would be cut off on the frame the
+ * checkbox was cleared, so the mark would draw itself in and then vanish.
+ */
+const markClasses = [
+  'flex size-[70%] items-center justify-center',
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
+  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0',
+  '[&_path]:[stroke-dasharray:1]',
+  '[&_path]:[transition:stroke-dashoffset_var(--neba-duration)_var(--neba-ease)]',
+  '[&[data-starting-style]_path]:[stroke-dashoffset:1]',
+  '[&[data-ending-style]_path]:[stroke-dashoffset:1]'
+].join(' ');
 
 function CheckMark() {
   return (
     <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" className="size-full">
       <path
         d="M2 6.2 4.6 8.8 10 3.4"
+        pathLength="1"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
@@ -144,7 +173,13 @@ function CheckMark() {
 function DashMark() {
   return (
     <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" className="size-full">
-      <path d="M2.5 6h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M2.5 6h7"
+        pathLength="1"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
