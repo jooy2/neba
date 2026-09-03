@@ -87,6 +87,21 @@ describe('Image', () => {
     expect(screen.container.querySelectorAll('[class*="animate"]').length).toBe(0);
   });
 
+  /*
+   * The fade was written down and never ran: the picture carried the house
+   * transition, whose property list is the four a control answers a pointer
+   * with, and `opacity` is not one of them. Held in the loading phase, because
+   * that is the end of the fade that is still visible.
+   */
+  it('fades the picture in on a transition that names opacity', async () => {
+    const screen = await render(<Image alt="A ridge" />);
+    const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+    expect(picture.className).toContain('transition:opacity');
+    expect(picture).toHaveClass('opacity-0');
+    expect(picture.className).not.toContain('transition-property:background-color');
+  });
+
   it('reserves a box for a ratio it was given', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" ratio="16 / 9" />);
     const framed = screen.container.querySelector('[style*="aspect-ratio"]');

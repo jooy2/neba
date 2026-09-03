@@ -4,7 +4,7 @@ import * as React from 'react';
 import { AspectRatio } from '../aspect-ratio/AspectRatio.js';
 import { Dialog } from '../dialog/Dialog.js';
 import { Skeleton } from '../skeleton/Skeleton.js';
-import { cx, radiusClasses, transitionClasses } from '../../internal/styles.js';
+import { cx, radiusClasses } from '../../internal/styles.js';
 import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
 import type { NebaSize, NebaSlots } from '../../types.js';
 
@@ -138,9 +138,17 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         'block size-full',
         objectFitClasses[fit],
         radius,
-        transitionClasses,
         // Faded in rather than swapped in: a picture that appears at full
         // strength the instant it decodes is the same jolt as one that resizes.
+        //
+        // Its own transition rather than the house one, which is what used to be
+        // here and did nothing at all: `transitionClasses` names the four
+        // properties a control answers a pointer with, and `opacity` is not one
+        // of them — so the fade was written down and never ran, on a `<img>` that
+        // has no background, no border and no shadow to transition either.
+        // A picture settles at the fill's pace rather than an edge's, because
+        // what is arriving is the whole surface.
+        '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]',
         phase === 'loaded' ? 'opacity-100' : 'opacity-0',
         classNames?.image
       )}
