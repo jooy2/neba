@@ -104,6 +104,21 @@ describe('Tabs', () => {
       await expect.element(screen.getByText('What this project is.')).not.toBeInTheDocument();
     });
 
+    /**
+     * The indicator under the bar already travels; the content under it changed
+     * in a single frame. The arriving panel fades up now — and only the arriving
+     * one, because a leaving panel is still in the flow and fading it out would
+     * put both in the layout for the length of it.
+     */
+    it('fades the arriving panel up, and gives the leaving one nothing to wait for', async () => {
+      const screen = await render(<Basic defaultValue="overview" />);
+      const panel = screen.getByRole('tabpanel').element();
+
+      expect(panel.className).toContain('transition:opacity');
+      expect(panel).toHaveClass('data-[starting-style]:opacity-0');
+      expect(panel.className).not.toContain('data-[ending-style]');
+    });
+
     it('reports the chosen value', async () => {
       const onValueChange = vi.fn();
       const screen = await render(<Basic defaultValue="overview" onValueChange={onValueChange} />);

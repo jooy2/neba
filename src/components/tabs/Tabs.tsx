@@ -316,6 +316,18 @@ export const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function
         // it is reachable by keyboard — and it gets the house ring rather than
         // the browser's.
         'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+        // The arriving panel fades up, and only the arriving one. The indicator
+        // under the bar already travels; the content under it changed in a
+        // single frame, which is what made a two-tab switch read as a page load.
+        //
+        // There is deliberately no `data-[ending-style]` half. Base UI holds a
+        // panel mounted for as long as `getAnimations()` on it reports something
+        // running, and a leaving panel is still in the flow — a fade out would
+        // put both panels in the layout for the length of it and make the whole
+        // sheet twice as tall on the way past. With nothing to wait for, the old
+        // one goes on the frame the new one arrives, exactly as it did before.
+        'data-[starting-style]:opacity-0',
+        '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
         radiusClasses[size],
         className ?? ''
       ]
