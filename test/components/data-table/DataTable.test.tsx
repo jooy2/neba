@@ -263,6 +263,73 @@ describe('DataTable', () => {
     });
   });
 
+  describe('row identity', () => {
+    /*
+     * A row's `<tr>` has to be keyed by the row and not by where the row
+     * currently sits, because where it sits is exactly what sorting, filtering
+     * and paging change. Keyed by position, React matches whatever now stands
+     * at index 0 to the node that used to be there and rewrites its attributes
+     * in place — so everything the DOM owns rather than React stays behind
+     * while its row moves away.
+     *
+     * Both tests below fail without a `key`, and the first is the shape a
+     * consumer meets it in.
+     */
+    const NOTES: DataTableColumn<Person>[] = [
+      ...HEADERS,
+      {
+        key: 'note',
+        label: 'Note',
+        // Uncontrolled on purpose: its value lives in the DOM node, which is
+        // the thing a reused node would leave in the wrong row.
+        render: (row) => <input aria-label={`Note for ${row.name}`} defaultValue="" />
+      }
+    ];
+
+    it('keeps what was typed in a row with that row when the table is sorted', async () => {
+      const screen = await render(
+        <DataTable headers={NOTES} items={ITEMS} getRowKey={key} sortable />
+      );
+
+      await screen.getByRole('textbox', { name: 'Note for Ada' }).fill('call back');
+
+      // Ada is in Seoul, so sorting by city ascending moves her from the first
+      // row to the last.
+      await screen.getByRole('button', { name: 'City' }).click();
+      expect(cellText(screen.container, 1)).toEqual(['Lisbon', 'Oslo', 'Seoul']);
+
+      await expect
+        .element(screen.getByRole('textbox', { name: 'Note for Ada' }))
+        .toHaveValue('call back');
+      await expect.element(screen.getByRole('textbox', { name: 'Note for Bo' })).toHaveValue('');
+    });
+
+    it('moves the row element rather than rewriting the one in its place', async () => {
+      const screen = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} sortable />
+      );
+      const ada = screen.container.querySelector('tbody tr[data-neba-row="a"]');
+
+      await screen.getByRole('button', { name: 'City' }).click();
+
+      expect(bodyRows(screen.container)[2]).toBe(ada);
+    });
+
+    it('keeps the row element across a filter that removes the ones above it', async () => {
+      const screen = await render(<DataTable headers={HEADERS} items={ITEMS} getRowKey={key} />);
+      const cy = screen.container.querySelector('tbody tr[data-neba-row="c"]');
+
+      await screen.rerender(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} search="Oslo" />
+      );
+
+      // `toBe`, not `toEqual`: two `<tr>`s holding the same text are
+      // structurally equal, which is exactly the thing being ruled out here.
+      expect(bodyRows(screen.container)).toHaveLength(1);
+      expect(bodyRows(screen.container)[0]).toBe(cy);
+    });
+  });
+
   describe('search and filter', () => {
     it('matches every searchable column, ignoring case and accents', async () => {
       const screen = await render(

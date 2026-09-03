@@ -1804,6 +1804,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * two ways: flat, and once per group. The second is what keeps a folded
    * group's heading on the screen — a heading drawn from the rows disappears
    * with them, and a group nobody can see is a group nobody can unfold.
+   *
+   * The `key` is `entry.key` and never `index`, and it is load-bearing rather
+   * than a warning silenced: the index is the row's place in the *sorted,
+   * filtered, paged* order, which is precisely what every one of those three
+   * changes. Keyed by it, React matches whatever now sits at position 3 to the
+   * `<tr>` that used to be there and rewrites the attributes in place instead
+   * of moving the node — so anything the DOM owns rather than React stays
+   * behind while its row moves away: the focus, the text selection, the scroll
+   * of an overflowing cell, and the value of any uncontrolled input a `render`
+   * put in one. `entry.key` is the caller's own `getRowKey`, which is already
+   * what selection, the active row and the open editor are tracked by.
    */
   const bodyRow = (entry: RowEntry<Row>, index: number) => {
     const isSelected = selectedKeys.has(entry.key);
@@ -1811,6 +1822,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
     return (
       <tr
+        key={entry.key}
         id={`${reactId}-${entry.key}`}
         aria-selected={selects ? isSelected : undefined}
         aria-rowindex={virtualized ? index + 2 : undefined}
