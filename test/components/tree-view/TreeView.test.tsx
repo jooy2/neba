@@ -123,12 +123,39 @@ describe('TreeView', () => {
       expect(onExpandedChange).toHaveBeenCalledWith(['src']);
     });
 
+    /*
+     * Off the page for good, not hidden. It is held for as long as the collapse
+     * runs — no test loads CSS, so here that is no time at all — and then it
+     * goes, which is what keeps a shut branch out of the document order the
+     * arrow keys read.
+     */
     it('takes a shut branch off the page rather than hiding it', async () => {
       const screen = await render(<Sample defaultExpanded={['src']} />);
 
       await screen.getByText('src').click();
 
       expect(screen.getByRole('treeitem', { name: /index\.ts/ }).query()).toBeNull();
+    });
+
+    /**
+     * A branch used to be there on one frame and gone on the next, which on a
+     * tree deep enough to need one is the whole page jumping. It opens at a
+     * height now, the way an Accordion's panel does — a grid row from `0fr` to
+     * `1fr`, so nothing has to be measured and a nested branch opening inside
+     * this one is carried by the same track.
+     */
+    it('opens and shuts a branch at a height', async () => {
+      const screen = await render(<Sample defaultExpanded={['src']} />);
+
+      const group = screen.container.querySelector('[role="group"]') as HTMLElement;
+      const track = group.parentElement as HTMLElement;
+
+      expect(track.className).toContain('transition:grid-template-rows');
+      expect(track).toHaveClass('[grid-template-rows:1fr]');
+      // The clipped half of the pair. Without it the rows are drawn at full
+      // height inside a track that says they are not.
+      expect(group).toHaveClass('overflow-hidden');
+      expect(group).toHaveClass('min-h-0');
     });
 
     it('stays shut when the caller controls it and does not answer', async () => {

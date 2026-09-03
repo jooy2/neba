@@ -82,6 +82,20 @@ const TreeViewContext = React.createContext<TreeViewContextValue>({
   register: () => () => {}
 });
 
+/**
+ * Whether a row is inside a branch that is on its way shut.
+ *
+ * A branch has to stay in the document while it collapses or there is nothing
+ * left to collapse, and for those 160ms its rows are visible but no longer
+ * *there*. This is how they know: a row that reads `true` does not register
+ * itself with the tree, so the tree's answer to "is the row holding the tab
+ * stop still on screen" turns over on the same render that shut the branch
+ * rather than a sixth of a second later. `treeRows` is the other half — the
+ * `data-closing` attribute keeps the same rows out of the order the arrow keys
+ * walk.
+ */
+const TreeClosingContext = React.createContext(false);
+
 export interface TreeViewProps
   extends
     NebaStyleProps,
@@ -261,9 +275,18 @@ const linesClasses: Record<TreeViewLines, string> = {
   folder: 'neba-tree-folder'
 };
 
-/** Every row in the tree, in the order the eye reads them. */
+/**
+ * Every row in the tree, in the order the eye reads them.
+ *
+ * A branch that is shutting is still in the document — it has to be, or there
+ * would be nothing left to collapse — and its rows must not be part of that
+ * order for the 160ms it takes. Arrow keys are the reason: without this, the
+ * row *below* a branch that was just closed is whatever was inside it.
+ */
 function treeRows(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>('[role="treeitem"]'));
+  return Array.from(root.querySelectorAll<HTMLElement>('[role="treeitem"]')).filter(
+    (row) => row.closest('[data-closing]') === null
+  );
 }
 
 const keyOf = (value: TreeViewValue) => String(value);
@@ -631,7 +654,62 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     if (!disabled && isParent) toggle(identity);
   };
 
-  React.useEffect(() => register(key, apiRef.current), [key, register]);
+  const closing = React.useContext(TreeClosingContext);
+
+  React.useEffect(
+    () => (closing ? undefined : register(key, apiRef.current)),
+    [closing, key, register]
+  );
+
+  /*
+   * A branch opens and shuts at a height, the way an Accordion's panel does —
+   * it used to be there on one frame and gone on the next, which on a tree deep
+   * enough to need one is the whole page jumping.
+   *
+   * The height is a grid row going from `0fr` to `1fr` rather than a measured
+   * pixel value: nothing has to be observed, a branch that gains a row while it
+   * is open grows with it, and a nested branch opening inside this one is
+   * carried by the same `1fr`.
+   *
+   * Two pieces of state and not one, because they change at different moments.
+   * `mounted` is whether the rows exist at all — it goes up with the branch and
+   * comes down only once the collapse has finished, which is what gives the
+   * transition something to run on. `open` is the row track, and it is flipped a
+   * frame *after* the mount, because a transition needs a previous value and an
+   * element that has never been laid out has none.
+   */
+  const [branchMounted, setBranchMounted] = React.useState(isExpanded);
+  const [branchOpen, setBranchOpen] = React.useState(isExpanded);
+  const branchRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (isExpanded) {
+      setBranchMounted(true);
+
+      const frame = requestAnimationFrame(() => setBranchOpen(true));
+      return () => cancelAnimationFrame(frame);
+    }
+
+    setBranchOpen(false);
+
+    /*
+     * A duration of zero fires no `transitionend` at all, so the branch would
+     * sit shut and mounted for good — and zero is exactly what a reduced-motion
+     * preference sets `--neba-duration` to, which is the reader least able to
+     * afford a tree full of rows that are not there. Asked of the element
+     * rather than assumed, since a consumer's own class can set it too.
+     */
+    const node = branchRef.current;
+    const instant =
+      node === null ||
+      getComputedStyle(node)
+        .transitionDuration.split(',')
+        .every((one) => parseFloat(one) === 0);
+
+    if (instant) setBranchMounted(false);
+
+    return undefined;
+  }, [isExpanded]);
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
     // Every row is inside every row above it, so a click that has been answered
@@ -765,10 +843,35 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
         ) : null}
       </div>
 
-      {isParent && isExpanded && branch.length > 0 ? (
-        <ul role="group" className="list-none ps-(--n-tree-indent)">
-          {children}
-        </ul>
+      {isParent && branchMounted && branch.length > 0 ? (
+        <div
+          ref={branchRef}
+          // The hook `treeRows` reads to leave a shutting branch out of the
+          // order the arrow keys walk. `pointer-events` goes with it: a row on
+          // its way out must not answer the click that closed it.
+          data-closing={isExpanded ? undefined : ''}
+          className={cx(
+            'grid [transition:grid-template-rows_var(--neba-duration)_var(--neba-ease)]',
+            branchOpen ? '[grid-template-rows:1fr]' : '[grid-template-rows:0fr] pointer-events-none'
+          )}
+          onTransitionEnd={(event) => {
+            // The row track and this element only — every row inside it is
+            // transitioning a colour of its own on the way past.
+            if (
+              event.target === event.currentTarget &&
+              event.propertyName === 'grid-template-rows' &&
+              !isExpanded
+            ) {
+              setBranchMounted(false);
+            }
+          }}
+        >
+          <ul role="group" className="min-h-0 list-none overflow-hidden ps-(--n-tree-indent)">
+            <TreeClosingContext.Provider value={closing || !isExpanded}>
+              {children}
+            </TreeClosingContext.Provider>
+          </ul>
+        </div>
       ) : null}
     </li>
   );
