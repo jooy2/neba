@@ -4,9 +4,11 @@
 
 The release about the things that were already there and were not quite saying it.
 
-Six of the nine items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
+Six of the items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
 
-The other three are new: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
+Three are new components: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
+
+And the last group is the same complaint one level up. The library had a breakpoint system — five widths, a per-breakpoint map, a cascade that resolves it without React hearing about it — and it reached exactly two props on two components. There was no way to draw something at one width and not another, no way to say "a row here, a column there", no way to move the widths, and no page that wrote any of it down.
 
 ### Where the bytes went
 
@@ -16,11 +18,11 @@ The other three are new: a `Stack`, seventeen `Animate*` where there were eleven
 | `Chip`                        | 3.2 kB   | 3.3 kB   |
 | `LineChart`                   | 11.4 kB  | 11.5 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
-| a whole page shell            | 28.5 kB  | 28.5 kB  |
+| a whole page shell            | 28.5 kB  | 28.7 kB  |
 | 12 components — a typical app | 68.2 kB  | 68.9 kB  |
 | 12 components, with Korean    | 70.7 kB  | 71.2 kB  |
 | 25 components — a large one   | 112.6 kB | 113.3 kB |
-| all exports                   | 248.1 kB | 250.4 kB |
+| all exports                   | 248.1 kB | 251.0 kB |
 
 `Chip` is the row worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
 
@@ -87,11 +89,92 @@ The three that animate text put the whole string in the document once for a scre
 
 `timeline="view"` is the cheapest thing here and reaches furthest: two declarations behind an `@supports`, and every one of the nine keyframe effects can be driven by how far the element has travelled through the viewport instead of by the clock. It costs `duration`, `delay`, `repeat` and every `trigger`, and falls back to running once on mount where the browser has no `animation-timeline`.
 
-### And two things found on the way
+### Show, and the width something is drawn at
+
+```tsx
+<Show above="md">
+  <Sidebar />
+</Show>
+<Show below="md">
+  <SidebarTrigger />
+</Show>
+```
+
+`above` is an inclusive floor and `below` an exclusive ceiling, so the same breakpoint in both covers every width exactly once — no gap, no overlap, which is the shape the common case actually has. Given together they bound a range: `above="sm" below="lg"` is drawn from 40rem up to but not including 64rem.
+
+The children are **always rendered**, and what changes is `display`. That is what makes the answer right in the first frame the browser paints, the same answer on a server, and free on a resize — a repaint rather than a React render. What it deliberately cannot do is stop something running, and `useBreakpoint` already could:
+
+```tsx
+{
+  useBreakpoint('md') ? <Map /> : <StaticImage />;
+}
+```
+
+The wrapper is `display: contents`, so a `Show` between a `GridContainer` and a `Grid` leaves the cell a cell. Nothing given to it to style has anywhere to land; `render` names the element where a `<div>` is not allowed.
+
+### Flex, a row that becomes a column
+
+```tsx
+<Flex direction={{ xs: 'vertical', md: 'horizontal' }} spacing={3}>
+  <Card />
+  <Card />
+</Flex>
+```
+
+The commonest responsive decision there is had no home. "Side by side on a desktop, stacked on a phone" is half of what a responsive layout is, and the only way to say it was a `GridContainer` with a `Grid` around each child — two components and a column count to describe a row of two things. `Stack` is not that component either: this library's Stack is a pile of things laid _over_ each other.
+
+`direction` is `horizontal`/`vertical` rather than CSS's four values, so a Flex and a Stack say the same thing the same way, and `reverse` turns whichever axis was chosen around. `spacing`, `rowSpacing` and `columnSpacing` are a `GridContainer`'s props on its scale through its slot, so a gutter is one number across the two.
+
+It draws nothing at all, not even a gutter unless asked, and `wrap` is **off** by default — the opposite of a grid on both counts. A grid is a page's own arrangement; a Flex goes inside everything, and a wrapper that changed how its children looked would make `direction` a visual decision.
+
+### maxWidth takes a length, and changes at a breakpoint
+
+```tsx
+<Container maxWidth={{ xs: 'none', md: 'md', lg: 'lg' }} />
+<Container maxWidth="60ch" />
+<Container maxWidth={640} />
+```
+
+`Container`, `Header` and `Footer` had a copy each of the measure ladder and could only ever be one of its five values at one width. All three now read one table, take a per-breakpoint map, and pass anything that is not a step of the ladder straight to `max-width` — so `'60ch'` and `'min(90vw, 72rem)'` need no escape hatch, and a number is pixels.
+
+The ladder is named `NebaMeasure` rather than left as `NebaSize`, because it shares five names with `NebaBreakpoint` and only four of its five values: `maxWidth="md"` holds content to the width at which a `md:` variant starts, and `xs` is the step that is not a breakpoint floor, since a measure of zero is not a thing.
+
+### The widths follow your own theme
+
+`@media` cannot read a custom property, so a breakpoint is a build-time decision and no provider prop could ever move one — it would move the JavaScript and leave the CSS where it was. What it can be is a decision you take part in.
+
+```css
+@import 'tailwindcss';
+@import 'neba/tailwind.css';
+
+@theme {
+  --breakpoint-md: 50rem;
+}
+```
+
+The library's media queries are `theme(--breakpoint-*)` now, which resolves in whichever Tailwind build compiles the stylesheet. That moves the library's own rules, the `md:` variants its components spell out, and its JavaScript — which reads the resolved widths back off the document rather than holding a second copy. Before this, redeclaring `--breakpoint-md` moved your utilities and left Neba at 48rem in both places.
+
+A project on `neba/styles.css` gets the widths baked in, since that sheet is compiled here. That is the one thing the Tailwind path buys that the standalone path does not.
+
+### useBreakpointValue
+
+```tsx
+const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
+```
+
+`span` and `spacing` take that map and resolve it in the cascade; a caller working out a number for themselves had no way to say the same thing, and hand-rolling it from `useBreakpoint` gets the floor rule subtly wrong. It reads a map exactly as the cascade does, `useCurrentBreakpoint` names the step the window is in, and `undefined` is a real answer — a map that has said nothing yet at this width is an opinion declined, which is what the CSS fallback says there too.
+
+There is now a [breakpoints](https://neba.cdget.com/design/breakpoints) page, which is where the rule that every entry is a floor, the table of which props are responsive, and the reason `size` and `variant` are not among them all live.
+
+### And four things found on the way
 
 `npm run build` empties `dist/` first. It never did, and `tsc` only ever writes — so a component deleted from `src/` stayed in `dist/` and shipped. Removing `AvatarGroup` is what surfaced it.
 
 `ScrollZone`'s `buttons="auto"` disables an inline button that has nowhere to go rather than hiding it. The lane is held open either way, so an emptied one was not a lighter row — it was the same row reading as stray padding at the leading edge, which is the state every reader meets first.
+
+**`GridContainer`'s axis gutters took their prop whole.** `spacing={2} columnSpacing={{ md: 6 }}` left the row with no column gutter at all below 48rem: the map says nothing there, and the baseline it fell back to was the prop's own default rather than the `spacing` beside it. The two are walked together now — the override wins from wherever it first speaks and keeps winning above, being the more specific of the pair — and `Flex` uses the same fold.
+
+**`npm run docs:build` needed more heap than Node gives by default.** A hundred and thirty-nine pages with two hundred React demos behind them is past 4.3 GB, and it failed as a V8 `Abort trap: 6` inside Rollup that named no page at all.
 
 ## 1.11.0 (2026-08-31)
 

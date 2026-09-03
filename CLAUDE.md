@@ -216,14 +216,14 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB                      |
 | 12 components — a typical app | 68.9 kB  | 11.8 kB                     |
 | 25 components — a large one   | 113.3 kB | 17.9 kB                     |
-| a whole page shell            | 28.5 kB  | 8.9 kB                      |
-| all 170 exports               | 250.4 kB | 123.2 kB                    |
+| a whole page shell            | 28.7 kB  | 9.1 kB                      |
+| all 174 exports               | 251.0 kB | 123.8 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
 
-Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 20.8 kB gzipped and very nearly fixed: a single `Button` needs 10.8 kB of it, so the marginal cost of a component is about 0.07 kB. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 21.9 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 CodeBlock's eight ported themes are the one deliberate exception to that marginal cost: they are 0.8 kB gzipped of the sheet, which everybody carries and only a CodeBlock user sees. The alternative was measured too — ship them as JS token objects and tree-shake per theme — and rejected, because it costs the two things that make the CSS form worth having: `theme` stays a string, and a consumer's own `[data-code-theme='ours']` block is a theme with nothing to import and nothing to register. The derived slots are what keep the number to 0.8: `dim`, `rule`, `hover` and the two a marked line uses are mixed from each theme's own `bg` and `fg`, so a theme is fourteen declarations rather than nineteen.
 

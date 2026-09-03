@@ -82,7 +82,7 @@
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 28.5
+      "budget": 28.7
     },
     {
       "id": "app-12-ko",
@@ -108,7 +108,7 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 250.4
+      "budget": 251
     }
   ]
 }
