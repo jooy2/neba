@@ -175,4 +175,23 @@ describe('Rating', () => {
       expect(parseFloat(fills[4].style.width)).toBeCloseTo(30);
     });
   });
+
+  describe('the fill', () => {
+    /**
+     * The one thing on the control that says how far the reader has got, and it
+     * used to jump from one star to the next. It travels on `width` — the same
+     * width on the same element — so no glyph is ever scaled to say it.
+     */
+    it('travels rather than jumping', async () => {
+      const screen = await render(<Rating value={3} readOnly data-testid="rating" />);
+
+      const fill = screen
+        .getByTestId('rating')
+        .element()
+        .querySelector('span[aria-hidden="true"]') as HTMLElement;
+
+      expect(fill.className).toContain('transition:width');
+      expect(fill.className).not.toContain('scale');
+    });
+  });
 });

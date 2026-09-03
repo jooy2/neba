@@ -215,10 +215,19 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
         {/* The filled copy, clipped to the fraction. `inset-inline-start` and a
             width, rather than a `clip-path` with a percentage in it, because
             the inner star has to keep its own full width or the glyph would be
-            squashed into the visible part instead of cropped by it. */}
+            squashed into the visible part instead of cropped by it.
+
+            The width travels rather than jumping. It is the same width on the
+            same element either way — nothing is scaled and no glyph is
+            resampled — so the fill wipes across the star the pointer is on and
+            the ones it passed on the way, which is the only thing on the control
+            that says how far the reader has got. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 start-0 overflow-hidden"
+          className={cx(
+            'pointer-events-none absolute inset-y-0 start-0 overflow-hidden',
+            '[transition:width_var(--neba-duration)_var(--neba-ease)]'
+          )}
           style={{ width: `${fill * 100}%` }}
         >
           <span
