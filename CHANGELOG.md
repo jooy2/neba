@@ -6,6 +6,8 @@ The release about the things that were already there and were not quite saying i
 
 Six of the items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
 
+Eleven more came out of asking the same question of every component in turn — when a state turns over, does anything _happen_, or is the second state simply drawn? Eleven answers were "simply drawn". Three of those were fades that had been written down and never ran.
+
 Three are new components: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
 
 And the last group is the same complaint one level up. The library had a breakpoint system — five widths, a per-breakpoint map, a cascade that resolves it without React hearing about it — and it reached exactly two props on two components. There was no way to draw something at one width and not another, no way to say "a row here, a column there", no way to move the widths, and no page that wrote any of it down.
@@ -16,13 +18,13 @@ And the last group is the same complaint one level up. The library had a breakpo
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.1 kB   | 5.1 kB   |
 | `Chip`                        | 3.2 kB   | 3.3 kB   |
-| `LineChart`                   | 11.4 kB  | 11.5 kB  |
+| `LineChart`                   | 11.4 kB  | 11.6 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
 | a whole page shell            | 28.5 kB  | 28.7 kB  |
-| 12 components — a typical app | 68.2 kB  | 68.9 kB  |
-| 12 components, with Korean    | 70.7 kB  | 71.2 kB  |
-| 25 components — a large one   | 112.6 kB | 113.3 kB |
-| all exports                   | 248.1 kB | 251.0 kB |
+| 12 components — a typical app | 68.2 kB  | 69.1 kB  |
+| 12 components, with Korean    | 70.7 kB  | 71.4 kB  |
+| 25 components — a large one   | 112.6 kB | 113.4 kB |
+| all exports                   | 248.1 kB | 251.4 kB |
 
 `Chip` is the row worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
 
@@ -165,6 +167,50 @@ const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
 `span` and `spacing` take that map and resolve it in the cascade; a caller working out a number for themselves had no way to say the same thing, and hand-rolling it from `useBreakpoint` gets the floor rule subtly wrong. It reads a map exactly as the cascade does, `useCurrentBreakpoint` names the step the window is in, and `undefined` is a real answer — a map that has said nothing yet at this width is an opinion declined, which is what the CSS fallback says there too.
 
 There is now a [breakpoints](https://neba.cdget.com/design/breakpoints) page, which is where the rule that every entry is a floor, the table of which props are responsive, and the reason `size` and `variant` are not among them all live.
+
+### A tick that is drawn, and a dot that grows
+
+A Checkbox answered a click in colour over 340ms and the mark inside it did not answer at all — it was there on one frame and gone on the next, at exactly the moment a checkbox has to be legible. The tick draws itself along its own length now, on `stroke-dashoffset` over a path normalised with `pathLength="1"` so one number covers both the tick and the indeterminate dash. A Radio's dot grows out of the centre of its ring on `width` and `height`.
+
+Neither of them scales, and that is the point rather than an implementation note. The house rule against transforming a control is about a label being resampled under the cursor; the mark _inside_ a control carries no text, and it is the whole of what the state says. The [design language](https://neba.cdget.com/design/design-language) now names the four things allowed to travel — a Switch's thumb, a Checkbox's tick, a Radio's dot, a Rating's fill — and says that the list is closed.
+
+### The two popups nobody had given a fade
+
+A Select's list of options and a Combobox's arrived in one frame while the calendar hanging off the DatePicker beside them took 160ms. Menu's own source called its popup "the Select popup to the pixel", which was true of everything except this.
+
+The fade was fourteen identical copies of one declaration and two state classes. It is `popupFadeClasses` in `internal/styles.ts` now, and the two that were missing it got it by being written the same way as the rest — which is the whole argument for a shared table, stated by the bug it would have prevented. Sixteen surfaces read it: every popup, panel, sheet, backdrop and toast. NavigationMenu is the one exception and keeps its own `transition`, because its panel also changes size between two menus and a second shorthand beside its own would win or lose by stylesheet order.
+
+### Three fades that were written down and never ran
+
+`transitionClasses` is the house transition, and its property list is the four a control answers a pointer with: `background-color`, `border-color`, `box-shadow`, `color`. `opacity` is not one of them. Three places toggled an opacity next to it and expected a fade:
+
+**`Image`** carried a comment saying the picture is "faded in rather than swapped in" over a transition that could not fade it. It has its own now — and only its own, since an `<img>` has no background, border or shadow to transition either.
+
+**A chart's legend** dims every entry but the one being pointed at. That dimming switched.
+
+**A chart's other series** dropped to 0.28 the frame the pointer crossed a legend row, which reads as a redraw rather than as a highlight. Only `PieChart` had ever faded; `LineChart`, `AreaChart`, `BarChart` and `ScatterChart` now read the same `seriesDimClasses`.
+
+### A gauge sweeps to its reading
+
+`GaugeChart` drew its reading as a wedge filling part of the groove — and a wedge is a closed shape, so moving the value rewrites its `d`, which is not a property CSS can travel along. The dial jumped to each new number while the `Meter` it is a bent copy of swept to it, and so did all three progress indicators.
+
+It is a _stroke_ along the middle of the groove now, whose drawn length is `stroke-dashoffset` — the same technique `ProgressCircular` already used, bent to an arbitrary span. `pathLength="1"` makes the offset the fraction itself. The shape on screen is identical; only `fill` moved to `stroke`.
+
+### A TreeView branch opens at a height
+
+A branch was there on one frame and gone on the next, which on a tree deep enough to need one is the whole page jumping — while `Accordion` and `Collapsible`, which do the same thing, both travel. It is a grid row going from `0fr` to `1fr`, so nothing has to be measured, a branch that gains a row while it is open grows with it, and a nested branch opening inside this one is carried by the same track.
+
+The load-bearing part is what happens to a branch on its way shut. It has to stay in the document or there is nothing left to collapse, and for those 160ms its rows are visible but no longer _there_: they are marked `data-closing`, which keeps them out of the order the arrow keys walk, and they stop registering with the tree on the same render that shut the branch — so the tree's answer to "is the row holding the tab stop still on screen" turns over immediately rather than a sixth of a second later.
+
+### And four more places where something changed and nothing moved
+
+A **`Rating`**'s fill jumped from one star to the next. It travels on `width` — the same width on the same element, so no glyph is scaled to say it.
+
+A **`Tab`** panel's content changed in a single frame under an indicator that was already travelling, which made a two-tab switch read as a page load. The arriving panel fades up, and only the arriving one: a leaving panel is still in the flow, and fading it out would put both in the layout for the length of it and make the sheet twice as tall on the way past.
+
+An **`Avatar`**'s picture mounts only once the file has decoded, so the swap from initials to a face happened in one frame — on a list of forty avatars, forty separate flickers as the network answers. It fades up, on its own clock rather than through the `--n-anim-*` slots, which belong to the entrance the caller asked for.
+
+A **`FloatingActionButton`**'s dial arrived in one frame, which on a corner of the screen reads as something having gone wrong rather than as something having opened.
 
 ### And four things found on the way
 

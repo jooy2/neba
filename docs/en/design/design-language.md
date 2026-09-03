@@ -205,6 +205,22 @@ The colour lands on the frame of the press and then takes 340ms to drain back ou
 }
 ```
 
+### The indicator is the one thing inside a control that may travel
+
+The rule above is about the control — the box with the label on it. The mark _inside_ it is a different object: it carries no text, nothing about it is resampled, and it is the whole of what the state says. Those are allowed to move, and they move on a real property rather than on a `transform`.
+
+There are four of them, and they are the whole list. A Switch's thumb travels on `left`. A Checkbox's tick draws itself along its own length, on `stroke-dashoffset` over a path normalised with `pathLength="1"`. A Radio's dot grows out of the centre of its ring, on `width` and `height`. A Rating's fill sweeps across the star the pointer is on, on `width`.
+
+What none of them does is scale. A mark that arrived at 1.4× and settled would be resampled twice on the way, which is the same objection the control's own rule makes.
+
+### A floating surface arrives and leaves in opacity, and nothing else
+
+Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ — a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving — so a surface that travels drags all of it across the screen for the length of the journey.
+
+It is one declaration and two state classes, written once in `internal/styles.ts` and read by all sixteen. A component that grows its own is a seventeenth chance for one popup to behave unlike the rest.
+
+The one thing that may travel besides opacity is the surface's own **size**, and only when the reader asked for it: a NavigationMenu's panel resizing between two menus of different heights is the panel staying still while its contents change, not the panel moving.
+
 ### The pointer spotlight
 
 `.neba-glow::before` is a soft bloom trailing the cursor. The component writes `--n-mx`/`--n-my` straight to the element's inline style on `pointermove`.
