@@ -234,16 +234,39 @@ function DotIcon() {
   );
 }
 
-/** One drawing, five shapes: the survey's tiles differ by ratio, not by file. */
-const SURVEY =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" preserveAspectRatio="none">
-      <rect width="240" height="240" fill="#264653"/>
-      <path d="M0 168 L72 108 L132 152 L196 96 L240 128 L240 240 L0 240 Z" fill="#2a9d8f"/>
-      <circle cx="192" cy="52" r="22" fill="#e9c46a"/>
-    </svg>`
-  );
+/** The wall the Gallery below hangs: five files, three shapes between them. */
+const SURVEY = [
+  {
+    src: '/samples/photos/misty-tea-terraces-sunrise.jpg',
+    alt: 'Terraced tea fields under morning mist',
+    title: 'Terraces at sunrise',
+    ratio: '3 / 2'
+  },
+  {
+    src: '/samples/photos/concrete-stairway-geometric-shadows.jpg',
+    alt: 'A concrete stairway cut by hard geometric shadows',
+    title: 'Stair core',
+    ratio: '2 / 3'
+  },
+  {
+    src: '/samples/photos/ceramic-bowl-citrus.jpg',
+    alt: 'Citrus fruit in a glazed ceramic bowl',
+    title: 'Studio still life',
+    ratio: '1 / 1'
+  },
+  {
+    src: '/samples/photos/alpine-lake-dawn.jpg',
+    alt: 'A still alpine lake with the first light on the far ridge',
+    title: 'The far lake',
+    ratio: '3 / 2'
+  },
+  {
+    src: '/samples/photos/curved-wood-reading-nook.jpg',
+    alt: 'A curved wooden reading nook lit from one side',
+    title: 'Reading nook',
+    ratio: '2 / 3'
+  }
+];
 
 const STATS = [
   {
@@ -677,13 +700,13 @@ function ShowcaseBody() {
                   ring
                   overflow={(hidden) => <Avatar size="sm" initials={`+${hidden}`} />}
                 >
-                  <Avatar size="sm" name="Kim Minji" />
-                  <Avatar size="sm" name="Alex Park" />
-                  <Avatar size="sm" name="Sam Lee" />
-                  <Avatar size="sm" name="Noa Cohen" />
+                  <Avatar size="sm" src="/samples/people/anya-sol.jpg" name="Anya Sol" />
+                  <Avatar size="sm" src="/samples/people/theo-quinn.jpg" name="Theo Quinn" />
+                  <Avatar size="sm" src="/samples/people/lucas-adebayo.jpg" name="Lucas Adebayo" />
+                  <Avatar size="sm" src="/samples/people/noa-marin.jpg" name="Noa Marin" />
                 </Stack>
                 <Badge dot color="success" overlap="circle" label="Online">
-                  <Avatar size="sm" name="Jane Doe" />
+                  <Avatar size="sm" src="/samples/people/joon-mercer.jpg" name="Joon Mercer" />
                 </Badge>
               </>
             }
@@ -1839,8 +1862,10 @@ function ShowcaseBody() {
               <div className="flex flex-col gap-3">
                 <ChatBubble
                   size="sm"
-                  avatar={<Avatar size="xs" name="Jane Doe" />}
-                  name="Jane"
+                  avatar={
+                    <Avatar size="xs" src="/samples/people/farah-wells.jpg" name="Farah Wells" />
+                  }
+                  name="Farah"
                   time="09:41"
                 >
                   The deploy went out but the cache never warmed.
@@ -1859,7 +1884,13 @@ function ShowcaseBody() {
                 >
                   Found it — the hook ran before the build finished.
                 </ChatBubble>
-                <ChatBubble size="sm" avatar={<Avatar size="xs" name="Jane Doe" />} typing />
+                <ChatBubble
+                  size="sm"
+                  avatar={
+                    <Avatar size="xs" src="/samples/people/farah-wells.jpg" name="Farah Wells" />
+                  }
+                  typing
+                />
               </div>
             </Card>
 
@@ -1953,13 +1984,7 @@ function ShowcaseBody() {
               hover="zoom"
               preview
               label="Site survey"
-              items={[
-                { src: SURVEY, alt: 'The east elevation', title: 'East elevation', ratio: '3 / 2' },
-                { src: SURVEY, alt: 'The stair core', title: 'Stair core', ratio: '2 / 3' },
-                { src: SURVEY, alt: 'The roof deck', title: 'Roof deck', ratio: '1 / 1' },
-                { src: SURVEY, alt: 'The north yard', title: 'North yard', ratio: '3 / 2' },
-                { src: SURVEY, alt: 'The plant room', title: 'Plant room', ratio: '2 / 3' }
-              ]}
+              items={SURVEY}
             />
           </Card>
         </section>
