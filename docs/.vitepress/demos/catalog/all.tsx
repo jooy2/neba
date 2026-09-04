@@ -153,16 +153,15 @@ import {
 } from 'neba';
 import { DEFAULT_LOCALE, type Locale } from '../../data/i18n';
 
-/** A drawn ridge, so the gallery needs no network. */
-const GALLERY_RIDGE =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
-      <rect width="320" height="180" fill="#f5b971"/>
-      <circle cx="232" cy="58" r="22" fill="#fff3d6"/>
-      <path d="M0 140 L74 92 L128 128 L196 74 L262 118 L320 88 L320 180 L0 180 Z" fill="#7a3f52"/>
-    </svg>`
-  );
+/** The sample photographs, in `docs/public/samples/photos`. */
+const PHOTOS = [
+  'alpine-lake-dawn',
+  'misty-tea-terraces-sunrise',
+  'ceramic-bowl-citrus',
+  'hand-dyed-wool-yarn',
+  'frosted-pinecones-moss',
+  'artisan-bread-wooden-rack'
+].map((name) => `/samples/photos/${name}.jpg`);
 
 /**
  * The component index: one card per component, each holding a live instance of
@@ -1319,7 +1318,10 @@ const GROUPS: Group[] = [
         path: '/components/surfaces/chat-bubble',
         preview: (
           <div className="flex w-full max-w-56 flex-col gap-2">
-            <ChatBubble size="sm" avatar={<Avatar name="Jane Doe" size="xs" />}>
+            <ChatBubble
+              size="sm"
+              avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="xs" />}
+            >
               Still on for 3?
             </ChatBubble>
             <ChatBubble size="sm" side="end" variant="solid" status="read">
@@ -1514,7 +1516,7 @@ const GROUPS: Group[] = [
         path: '/components/display/app-logo',
         preview: (
           <div className="flex items-center gap-4">
-            <AppLogo name="Neba" />
+            <AppLogo name="Acme Compass" src="/samples/logos/compass.png" />
             <AppLogo name="Neba" shape="app" />
             <AppLogo name="Neba" shape="circle" color="secondary" />
           </div>
@@ -1529,7 +1531,7 @@ const GROUPS: Group[] = [
         path: '/components/display/image',
         preview: (
           <div className="grid w-full max-w-56 grid-cols-2 gap-2">
-            <Image src={GALLERY_RIDGE} alt="A ridge of hills" ratio="4 / 3" rounded />
+            <Image src={PHOTOS[0]} alt="An alpine lake at dawn" ratio="4 / 3" rounded />
             <Image src="/does-not-exist.png" alt="Did not load" ratio="4 / 3" rounded />
           </div>
         )
@@ -1547,14 +1549,7 @@ const GROUPS: Group[] = [
             columns={3}
             gap="xs"
             ratio="1 / 1"
-            items={[
-              { src: GALLERY_RIDGE, alt: 'A ridge of hills' },
-              { src: GALLERY_RIDGE, alt: 'The same ridge, later' },
-              { src: GALLERY_RIDGE, alt: 'The same ridge, later still' },
-              { src: GALLERY_RIDGE, alt: 'A fourth frame' },
-              { src: GALLERY_RIDGE, alt: 'A fifth frame' },
-              { src: GALLERY_RIDGE, alt: 'A sixth frame' }
-            ]}
+            items={PHOTOS.map((src) => ({ src, alt: '' }))}
           />
         )
       },
@@ -1713,7 +1708,7 @@ const GROUPS: Group[] = [
               </Button>
             </Badge>
             <Badge dot color="success" overlap="circle" label="Online">
-              <Avatar name="Jane Doe" />
+              <Avatar src="/samples/people/joon-mercer.jpg" name="Joon Mercer" />
             </Badge>
           </div>
         )
@@ -1727,7 +1722,7 @@ const GROUPS: Group[] = [
         path: '/components/display/avatar',
         preview: (
           <div className="flex items-center gap-3">
-            <Avatar name="Jane Doe" size="lg" />
+            <Avatar src="/samples/people/nadia-rowan.jpg" name="Nadia Rowan" size="lg" />
             <Avatar name="Sam Park" size="lg" variant="solid" color="success" />
             <Avatar name="홍길동" size="lg" variant="outline" color="info" />
             <Avatar size="lg" shape="square" color="secondary" />
@@ -1879,10 +1874,10 @@ const GROUPS: Group[] = [
             ring
             overflow={(n) => <Avatar size="sm" initials={`+${n}`} />}
           >
-            <Avatar size="sm" name="Jane Doe" />
-            <Avatar size="sm" name="Kim Minji" />
-            <Avatar size="sm" name="Alex Park" />
-            <Avatar size="sm" name="Sam Lee" />
+            <Avatar size="sm" src="/samples/people/anya-sol.jpg" name="Anya Sol" />
+            <Avatar size="sm" src="/samples/people/theo-quinn.jpg" name="Theo Quinn" />
+            <Avatar size="sm" src="/samples/people/lucas-adebayo.jpg" name="Lucas Adebayo" />
+            <Avatar size="sm" src="/samples/people/helen-voss.jpg" name="Helen Voss" />
           </Stack>
         )
       },
