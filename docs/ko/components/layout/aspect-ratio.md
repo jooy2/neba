@@ -13,7 +13,7 @@ order: 8
 import { AspectRatio } from 'neba';
 
 <AspectRatio ratio={16 / 9} rounded>
-  <img src={src} alt="낮은 해 아래의 능선" />
+  <img src={src} alt="동틀 녘의 잔잔한 호수" />
 </AspectRatio>;
 ```
 

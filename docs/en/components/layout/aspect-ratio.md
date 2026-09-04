@@ -13,7 +13,7 @@ order: 8
 import { AspectRatio } from 'neba';
 
 <AspectRatio ratio={16 / 9} rounded>
-  <img src={src} alt="A ridge of hills under a low sun" />
+  <img src={src} alt="A still alpine lake at dawn" />
 </AspectRatio>;
 ```
 

@@ -1,10 +1,12 @@
 import { AspectRatio } from 'neba';
-import { photo } from './photo';
 
 export default function AspectRatioHero() {
   return (
     <AspectRatio ratio={16 / 9} rounded className="max-w-96">
-      <img src={photo(212)} alt="A ridge of hills under a low sun" />
+      <img
+        src="/samples/photos/alpine-lake-dawn.jpg"
+        alt="A still alpine lake with the first light on the far ridge"
+      />
     </AspectRatio>
   );
 }
