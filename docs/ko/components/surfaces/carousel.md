@@ -42,6 +42,16 @@ import { Carousel } from 'neba';
 
 </Demo>
 
+### 사진
+
+사진은 프레임을 가득 채우므로 안쪽 여백을 둘 것이 없고, 화살표는 사진 위에 놓입니다. 슬라이드마다 `ratio`를 준 [Image](../display/image) 하나씩이라, 파일이 오는 동안에도 스트립의 높이가 변하지 않습니다.
+
+<Demo src="carousel/photos">
+
+<<< @/.vitepress/demos/carousel/photos.tsx
+
+</Demo>
+
 ### value와 onValueChange
 
 controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수 있습니다. 사용자가 스와이프해서 슬라이드가 바뀐 경우에도 `onValueChange`가 호출됩니다.

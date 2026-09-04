@@ -42,6 +42,16 @@ The arrows are drawn **over** the frame, so a slide with text near its edges sho
 
 </Demo>
 
+### Photographs
+
+A picture fills the frame, so there is nothing to pad in and the arrows sit over the image. Each slide is one [Image](../display/image) with a `ratio`, which keeps the strip one height while the files load.
+
+<Demo src="carousel/photos">
+
+<<< @/.vitepress/demos/carousel/photos.tsx
+
+</Demo>
+
 ### value and onValueChange
 
 Controlled, the strip can be driven by something else on the page. `onValueChange` also fires when the slide changed because somebody swiped.
