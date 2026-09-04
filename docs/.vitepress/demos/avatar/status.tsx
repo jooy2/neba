@@ -1,11 +1,10 @@
 import { Avatar, Badge } from 'neba';
-import { portrait } from './portrait';
 
 export default function AvatarStatus() {
   return (
     <div className="flex flex-wrap items-center gap-6">
       <Badge dot color="success" overlap="circle" label="Online">
-        <Avatar size="xl" src={portrait(148)} name="Alex Kim" />
+        <Avatar size="xl" src="/samples/people/lucas-adebayo.jpg" name="Lucas Adebayo" />
       </Badge>
 
       <Badge dot color="warning" overlap="circle" label="Away">
@@ -13,7 +12,7 @@ export default function AvatarStatus() {
       </Badge>
 
       <Badge dot color="secondary" overlap="circle" placement="bottom-end" label="Offline">
-        <Avatar size="xl" src={portrait(30)} name="Jane Doe" />
+        <Avatar size="xl" src="/samples/people/helen-voss.jpg" name="Helen Voss" />
       </Badge>
 
       <Badge content={12} overlap="circle" label="12 unread messages">

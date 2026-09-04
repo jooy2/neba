@@ -1,5 +1,4 @@
 import { Avatar } from 'neba';
-import { portrait } from './portrait';
 
 function RobotIcon() {
   return (
@@ -24,7 +23,7 @@ export default function AvatarFallback() {
   return (
     <div className="flex flex-wrap items-center gap-6">
       {/* Loads, so nothing else is ever drawn. */}
-      <Avatar size="xl" src={portrait(262)} name="Jane Doe" />
+      <Avatar size="xl" src="/samples/people/noa-marin.jpg" name="Noa Marin" />
 
       {/* Fails, so the initials take over. */}
       <Avatar size="xl" src="/not-a-real-image.png" name="Jane Doe" color="danger" />
