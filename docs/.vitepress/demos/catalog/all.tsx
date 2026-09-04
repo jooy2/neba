@@ -905,7 +905,11 @@ const GROUPS: Group[] = [
               skipLink={false}
               mainId="gallery-page-layout"
               header={
-                <Header size="xs" padded brand={<AppLogo name="Neba" size="xs" showName />} />
+                <Header
+                  size="xs"
+                  padded
+                  brand={<AppLogo name="Neba" src="/128x128.png" size="xs" showName />}
+                />
               }
               sidebar={<Sidebar size="xs" width={64} label="Sections" />}
             >
@@ -927,7 +931,7 @@ const GROUPS: Group[] = [
               size="xs"
               position="static"
               className="rounded-lg"
-              brand={<AppLogo name="Neba" size="xs" showName />}
+              brand={<AppLogo name="Neba" src="/128x128.png" size="xs" showName />}
               actions={<Chip size="xs">Beta</Chip>}
             />
           </div>

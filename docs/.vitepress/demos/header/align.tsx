@@ -20,7 +20,7 @@ export default function HeaderAlign() {
       <Header
         align={align}
         position="static"
-        brand={<AppLogo name="Neba" showName shape="app" size="sm" />}
+        brand={<AppLogo name="Neba" src="/128x128.png" showName size="sm" />}
         actions={
           <Button size="sm" variant="outline">
             Sign in

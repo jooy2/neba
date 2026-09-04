@@ -24,7 +24,7 @@ export default function PageLayoutHero() {
             brand={
               <>
                 <SidebarTrigger />
-                <AppLogo name="Neba" shape="app" showName size="sm" />
+                <AppLogo name="Neba" src="/128x128.png" showName size="sm" />
               </>
             }
             actions={

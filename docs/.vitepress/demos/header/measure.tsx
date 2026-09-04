@@ -5,7 +5,7 @@ export default function HeaderMeasure() {
     <Header
       position="static"
       maxWidth="sm"
-      brand={<AppLogo name="Neba" showName size="sm" />}
+      brand={<AppLogo name="Neba" src="/128x128.png" showName size="sm" />}
       actions={
         <Button size="sm" variant="outline">
           Sign in

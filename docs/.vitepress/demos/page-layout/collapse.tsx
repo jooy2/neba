@@ -22,7 +22,7 @@ export default function PageLayoutCollapse() {
             brand={
               <>
                 <SidebarTrigger />
-                <AppLogo name="Neba" shape="app" size="sm" />
+                <AppLogo name="Neba" src="/128x128.png" size="sm" />
               </>
             }
           />

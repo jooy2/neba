@@ -8,7 +8,7 @@ export default function HeaderVariant() {
           key={variant}
           variant={variant}
           position="static"
-          brand={<AppLogo name="Neba" showName size="sm" />}
+          brand={<AppLogo name="Neba" src="/128x128.png" showName size="sm" />}
           actions={<span className="text-(--neba-muted-fg) text-xs">{variant}</span>}
           className="rounded-(--neba-radius-md)"
         />

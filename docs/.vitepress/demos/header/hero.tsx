@@ -4,7 +4,7 @@ export default function HeaderHero() {
   return (
     <Header
       position="static"
-      brand={<AppLogo name="Neba" shape="app" showName />}
+      brand={<AppLogo name="Neba" src="/128x128.png" showName />}
       actions={
         <>
           <Button variant="text" size="sm">

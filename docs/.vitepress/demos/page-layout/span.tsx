@@ -30,7 +30,7 @@ export default function PageLayoutSpan() {
           collapseBelow="none"
           headerSpan={span}
           mainId="page-layout-span"
-          header={<Header brand={<AppLogo name="Neba" showName size="sm" />} />}
+          header={<Header brand={<AppLogo name="Neba" src="/128x128.png" showName size="sm" />} />}
           sidebar={
             <Sidebar label="Sections" width={160}>
               <List variant="text" size="sm">

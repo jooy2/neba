@@ -11,7 +11,7 @@ export default function NavigationMenuHeader() {
   return (
     <Header
       className="w-full"
-      brand={<AppLogo name="Neba" size="sm" />}
+      brand={<AppLogo name="Neba" src="/128x128.png" size="sm" />}
       actions={
         <Button size="sm" variant="outline">
           Sign in
