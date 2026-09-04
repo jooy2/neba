@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import {
   Accordion,
   AccordionItem,
+  AppLogo,
   Avatar,
   Blockquote,
   Button,
@@ -153,7 +154,20 @@ function GithubIcon() {
 
 const NAV = ['Product', 'Integrations', 'Docs', 'Pricing'];
 
-const TRUSTED_BY = ['Northwind', 'Acme Rail', 'Kite & Co', 'Belltower', 'Ordinary Coffee'];
+const TRUSTED_BY = [
+  { name: 'Northwind', logo: '/samples/logos/compass.png' },
+  { name: 'Acme Rail', logo: '/samples/logos/bridge.png' },
+  { name: 'Kite & Co', logo: '/samples/logos/kite.png' },
+  { name: 'Belltower', logo: '/samples/logos/bell.png' },
+  { name: 'Ordinary Coffee', logo: '/samples/logos/seed-pod.png' }
+];
+
+const TEAM = [
+  { name: 'Anya Sol', photo: '/samples/people/anya-sol.jpg' },
+  { name: 'Theo Quinn', photo: '/samples/people/theo-quinn.jpg' },
+  { name: 'Lucas Adebayo', photo: '/samples/people/lucas-adebayo.jpg' },
+  { name: 'Nadia Rowan', photo: '/samples/people/nadia-rowan.jpg' }
+];
 
 const FEATURES = [
   {
@@ -388,12 +402,12 @@ export default function LandingConcept() {
             </div>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {['Ada Bell', 'Jun Park', 'Mira Osei', 'Tom Vale'].map((person) => (
+                {TEAM.map((person) => (
                   <Avatar
-                    key={person}
+                    key={person.name}
                     size="sm"
-                    name={person}
-                    color="secondary"
+                    name={person.name}
+                    src={person.photo}
                     className="ring-2 ring-(--neba-bg)"
                   />
                 ))}
@@ -412,10 +426,14 @@ export default function LandingConcept() {
               </Typography>
             </Divider>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-              {TRUSTED_BY.map((name) => (
-                <Typography key={name} level="h6" className="text-(--neba-muted-fg)">
-                  {name}
-                </Typography>
+              {TRUSTED_BY.map((brand) => (
+                <AppLogo
+                  key={brand.name}
+                  name={brand.name}
+                  src={brand.logo}
+                  showName
+                  color="secondary"
+                />
               ))}
             </div>
           </section>

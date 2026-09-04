@@ -535,7 +535,7 @@ function DashboardBody() {
                     </Badge>
                   </Tooltip>
                   <Badge dot color="success" overlap="circle" label="Online">
-                    <Avatar size="sm" name="Ada Bell" />
+                    <Avatar size="sm" src="/samples/people/helen-voss.jpg" name="Helen Voss" />
                   </Badge>
                 </>
               }

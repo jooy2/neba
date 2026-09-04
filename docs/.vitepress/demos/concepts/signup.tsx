@@ -149,6 +149,12 @@ const HEARD_FROM = [
 /** Short on purpose: a `ListItem` truncates rather than wrapping. */
 const PERKS = ['14 days of Team, then Free', 'Unlimited projects', 'Delete it all in one click'];
 
+const FOUNDERS = [
+  { name: 'Sam Arden', photo: '/samples/people/sam-arden.jpg' },
+  { name: 'Farah Wells', photo: '/samples/people/farah-wells.jpg' },
+  { name: 'Joon Mercer', photo: '/samples/people/joon-mercer.jpg' }
+];
+
 /** Roughly how strong a password is, on the four rules worth checking. */
 function strengthOf(password: string): {
   score: number;
@@ -554,12 +560,12 @@ export default function SignupConcept() {
 
               <div className="mt-auto flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {['Ada Bell', 'Mira Osei', 'Tom Vale'].map((person) => (
+                  {FOUNDERS.map((person) => (
                     <Avatar
-                      key={person}
+                      key={person.name}
                       size="sm"
-                      name={person}
-                      color="secondary"
+                      name={person.name}
+                      src={person.photo}
                       className="ring-2 ring-(--neba-bg)"
                     />
                   ))}
