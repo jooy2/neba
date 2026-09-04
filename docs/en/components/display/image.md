@@ -64,6 +64,54 @@ The picture becomes a `<button>` carrying the `alt` as its name, so `Tab` reache
 
 </Demo>
 
+### filter
+
+How the picture is coloured. Seven names — `grayscale`, `sepia`, `invert`, `saturate`, `mute`, `contrast`, and `none`, the default — or a CSS `filter` chain of your own for anything past them.
+
+The treatment travels on the same clock as the picture's own fade, so a `className` that changes it under the pointer is a thumbnail that comes back to life rather than one that snaps.
+
+<Demo src="image/filter">
+
+<<< @/.vitepress/demos/image/filter.tsx
+
+</Demo>
+
+### frame
+
+How the picture is mounted. A silhouette on its own — `frame="circle"` — or the whole arrangement written out: `shape`, `corner`, `border`, `borderColor`, `mat`, `background`, `elevation` and `feather`.
+
+The line is drawn as an inset shadow rather than a `border`, which is what lets it follow a cut corner or a circle and what keeps it out of the layout. `mat` is the one part that takes room: it is the mount between the line and the picture.
+
+<Demo src="image/frame">
+
+<<< @/.vitepress/demos/image/frame.tsx
+
+</Demo>
+
+### watermark
+
+A mark drawn over the picture. A string is placed once in the bottom corner; the options form takes `content`, `position`, `repeat`, `opacity`, `rotate`, `size` and `color`.
+
+`repeat` tiles the mark across the whole picture, which is the arrangement that actually deters a screenshot. It needs text — a node cannot be drawn into the tile, and is placed once instead.
+
+<Demo src="image/watermark">
+
+<<< @/.vitepress/demos/image/watermark.tsx
+
+</Demo>
+
+### protect
+
+Turns off the ways a picture is casually taken: the right-click menu, the drag that drops a copy into another window, the iOS long press, and the selection a Ctrl-A sweeps up. `protect` turns on all four; the options form takes `contextMenu`, `drag` and `select` separately.
+
+A deterrent and not a lock. The file is still one request away in the network tab, and a reader who wants it will have it — what this stops is the copy that gets made without thinking about it. Turning it on to protect a secret is turning it on for the wrong reason.
+
+<Demo src="image/protect">
+
+<<< @/.vitepress/demos/image/protect.tsx
+
+</Demo>
+
 ### onLoadingStatusChange
 
 Called with `'loading'`, `'loaded'` or `'failed'`. Useful for swapping to a `src` you control, or for counting what did not arrive.
@@ -73,3 +121,5 @@ Called with `'loading'`, `'loaded'` or `'failed'`. Useful for swapping to a `src
 - `alt` is the picture's accessible name. Write what the picture _says_, not what it is a picture of, and use `alt=""` when it says nothing the surrounding text does not.
 - With `preview`, the button takes its name from `alt` and nothing else. Two names for one thing is a screen reader reading the same sentence twice.
 - The placeholder and the fallback are not announced separately; the picture keeps its own name throughout.
+- A watermark is `aria-hidden` and takes no pointer events. What it says belongs in the text around the picture, or in the `alt`, where a reader who cannot see the mark still meets it.
+- `protect` takes away a browser affordance rather than adding one. Nothing it turns off is a keyboard path or a screen reader path, but "open image in new tab" goes with the context menu — so turn it on where the mark on the picture is the point, and not by default.

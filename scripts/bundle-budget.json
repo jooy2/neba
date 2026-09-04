@@ -28,6 +28,12 @@
       "budget": 5
     },
     {
+      "id": "image",
+      "label": "Image",
+      "imports": ["Image"],
+      "budget": 3.6
+    },
+    {
       "id": "app-12",
       "label": "12 components — a typical app",
       "imports": [
@@ -108,7 +114,7 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 251.6
+      "budget": 253.7
     }
   ]
 }

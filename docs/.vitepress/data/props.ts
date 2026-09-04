@@ -11163,6 +11163,40 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'filter',
+      type: "'none' | 'grayscale' | 'sepia' | 'invert' | 'saturate' | 'mute' | 'contrast' | string",
+      default: "'none'",
+      description: {
+        ko: '그림의 색조. 이름 붙은 일곱 가지, 또는 직접 쓴 CSS filter 체인. 전환이 걸려 있으므로 hover에서 바꾸면 스냅이 아니라 스며듭니다',
+        en: 'How the picture is coloured — one of seven names, or a CSS filter chain of your own. It travels, so changing it on hover fades rather than snaps'
+      }
+    },
+    {
+      name: 'frame',
+      type: "'rect' | 'rounded' | 'circle' | 'cut' | 'arch' | NebaImageFrameOptions",
+      description: {
+        ko: '그림이 놓이는 방식. 잘려 나갈 실루엣과, 그 둘레의 선 · 여백(mat) · 그림자 · 부드러운 가장자리',
+        en: 'How the picture is mounted: the silhouette it is cut to, and the line, the mat, the shadow and the softened edge around it'
+      }
+    },
+    {
+      name: 'watermark',
+      type: 'string | NebaImageWatermarkOptions',
+      description: {
+        ko: '그림 위에 그리는 표식 — 저작자 표시, 라이선스, DRAFT. repeat: true면 타일로 깔립니다. 자물쇠가 아니라 억지책입니다',
+        en: 'A mark drawn over the picture — a credit, a licence, the word DRAFT. repeat tiles it. A deterrent, not a lock'
+      }
+    },
+    {
+      name: 'protect',
+      type: 'boolean | { contextMenu?: boolean; drag?: boolean; select?: boolean }',
+      default: 'false',
+      description: {
+        ko: '무심코 가져가는 경로를 막습니다 — 우클릭 메뉴, 다른 창으로 끌어놓기, iOS 길게 누르기, 선택. 파일 자체는 여전히 요청 하나 거리에 있습니다',
+        en: 'Turns off the ways a picture is casually taken: the right-click menu, the drag, the iOS long press, the selection. The file itself is still one request away'
+      }
+    },
+    {
       name: 'onLoadingStatusChange',
       type: "(status: 'loading' | 'loaded' | 'failed') => void",
       description: {
@@ -11170,7 +11204,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Called as the status changes. A new src starts over at loading'
       }
     },
-    slotsProp('image', 'placeholder', 'fallback')
+    slotsProp('image', 'placeholder', 'fallback', 'frame', 'watermark')
   ],
 
   VisuallyHidden: [

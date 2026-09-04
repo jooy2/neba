@@ -20,13 +20,14 @@ And the last group is the same complaint one level up. The library had a breakpo
 | `Chip`                        | 3.2 kB   | 3.3 kB   |
 | `LineChart`                   | 11.4 kB  | 11.6 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
+| `Image`                       | 23.4 kB  | 3.6 kB   |
 | a whole page shell            | 28.5 kB  | 28.7 kB  |
 | 12 components — a typical app | 68.2 kB  | 69.1 kB  |
 | 12 components, with Korean    | 70.7 kB  | 71.4 kB  |
 | 25 components — a large one   | 112.6 kB | 113.5 kB |
-| all exports                   | 248.1 kB | 251.6 kB |
+| all exports                   | 248.1 kB | 253.7 kB |
 
-`Chip` is the row worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
+`Image` is the row that moved on purpose, and it is a new row because nothing had ever measured it: a `Dialog` nobody had opened was 20 kB of it. `Chip` is the one worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
 
 The two effects that did **not** go in are the reason it is only 0.1 kB. `AnimateFloat` and `AnimateShake` bring their own keyframe class instead of a row in the shared table: neither is an entrance, and a drift with no arrival in it should not be paid for by every Chip on every page that draws one.
 
@@ -199,6 +200,26 @@ The fade was fourteen identical copies of one declaration and two state classes.
 `GaugeChart` drew its reading as a wedge filling part of the groove — and a wedge is a closed shape, so moving the value rewrites its `d`, which is not a property CSS can travel along. The dial jumped to each new number while the `Meter` it is a bent copy of swept to it, and so did all three progress indicators.
 
 It is a _stroke_ along the middle of the groove now, whose drawn length is `stroke-dashoffset` — the same technique `ProgressCircular` already used, bent to an arbitrary span. `pathLength="1"` makes the offset the fraction itself. The shape on screen is identical; only `fill` moved to `stroke`.
+
+### An Image weighs 3.5 kB instead of 23.4
+
+A `Dialog` was most of what an `Image` cost — 20 kB of Base UI in the bundle of every page that drew a thumbnail — and `preview`, the only thing that opens one, is off by default. It is fetched on demand now, the way `CodeBlock` fetches a grammar: the chunk arrives once, after the first paint, on the pages that asked for it, and a page that never previews anything never sees it.
+
+### A picture that had already decoded stayed invisible
+
+An `<img>` fires `load` at whoever is listening at the time, and a data URI decodes inside the same task the element was inserted in — so the event went out before React had attached anything to catch it, the phase never left `loading`, and the picture sat at `opacity: 0` behind its own placeholder for good. Every data-URI example in these docs was doing it. It is asked after the fact now: `complete` says whether it finished and `naturalWidth` says which way, so a cached file and a data URI both settle on mount.
+
+### Four things an Image could not do
+
+None of them costs anything until it is asked for, which is the point: they are one declaration, one element, one element and four attributes respectively.
+
+**`filter`** colours the picture — `grayscale`, `sepia`, `invert`, `saturate`, `mute`, `contrast`, or a CSS `filter` chain of your own. It rides the same transition as the picture's own fade, so a thumbnail that comes back to life under the pointer travels rather than snapping.
+
+**`frame`** is how the picture is mounted: a silhouette on its own (`circle`, `cut`, `arch`, `rounded`, `rect`) or the whole arrangement — `corner`, `border`, `borderColor`, `mat`, `background`, `elevation`, `feather`. The line is drawn as an inset shadow on a layer over the picture rather than as a `border`, which is what lets it follow a chamfered corner or a circle and what keeps it out of the layout.
+
+**`watermark`** draws a mark over the picture, placed in a corner or tiled across the whole of it. The tile is one SVG background rather than a wall of elements, and the layer is turned as a whole so the tiling has no seam.
+
+**`protect`** turns off the right-click menu, the drag, the iOS long press and the selection. A deterrent and not a lock — the file is still one request away — and the docs say so where the prop is described.
 
 ### A gauge's reading stays inside the dial it is drawn in
 

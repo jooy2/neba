@@ -215,12 +215,15 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `Chip`                        | 3.3 kB   | 3.3 kB                      |
 | `LineChart`                   | 11.5 kB  | 10.0 kB                     |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB                      |
+| `Image`                       | 3.6 kB   | 3.5 kB                      |
 | 12 components — a typical app | 68.9 kB  | 11.8 kB                     |
 | 25 components — a large one   | 113.3 kB | 17.9 kB                     |
 | a whole page shell            | 28.7 kB  | 9.1 kB                      |
-| all 174 exports               | 251.0 kB | 123.8 kB                    |
+| all 174 exports               | 253.7 kB | 125.3 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
+
+The Image row is the same arrangement one step smaller, and it used to be 23.4 kB. `preview` opens a Dialog and is off by default, so a static import put 20 kB of Base UI into the bundle of every page that drew a thumbnail; it is `React.lazy` now, and the chunk is fetched after the first paint by the pages that turn the prop on.
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
 

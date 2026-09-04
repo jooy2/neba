@@ -131,6 +131,206 @@ describe('Image', () => {
     expect(screen.getByRole('button').query()).toBeNull();
   });
 
+  describe('filter', () => {
+    it('names the CSS a named filter stands for', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" filter="grayscale" />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture.style.filter).toBe('grayscale(1)');
+    });
+
+    it('passes a chain of its own straight through', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" filter="hue-rotate(40deg) contrast(1.1)" />
+      );
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture.style.filter).toBe('hue-rotate(40deg) contrast(1.1)');
+    });
+
+    // The fade and the treatment ride one declaration, so a filter a caller
+    // changes under the pointer travels rather than snapping.
+    it('travels on the same transition as the fade', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" filter="sepia" />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture.className).toContain('transition:opacity');
+      expect(picture.className).toContain('filter_var(--neba-duration-fill)');
+    });
+
+    it('writes nothing at all when it is none', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture.style.filter).toBe('');
+    });
+  });
+
+  describe('frame', () => {
+    // An Image with no frame is the two elements it has always been. The mount
+    // is drawn only for a caller who asked for one.
+    it('draws no extra element without one', async () => {
+      const plain = await render(<Image src={OK} alt="A ridge" data-testid="plain" />);
+      const before = plain.container.querySelectorAll('span').length;
+
+      await plain.rerender(<Image src={OK} alt="A ridge" frame="circle" data-testid="plain" />);
+
+      expect(plain.container.querySelectorAll('span').length).toBe(before + 1);
+    });
+
+    it('cuts the silhouette a shape names', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" frame="circle" classNames={{ frame: 'mount' }} />
+      );
+      const mount = screen.container.querySelector('.mount') as HTMLElement;
+
+      expect(mount.style.borderRadius).toBe('50%');
+    });
+
+    it('chamfers a cut corner with a clip path, which a radius cannot', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          alt="A ridge"
+          frame={{ shape: 'cut', corner: 12 }}
+          classNames={{ frame: 'mount' }}
+        />
+      );
+      const mount = screen.container.querySelector('.mount') as HTMLElement;
+
+      expect(mount.style.clipPath).toContain('polygon(12px 0');
+    });
+
+    /*
+     * The line is an inset shadow rather than a border — which is what lets it
+     * follow a cut corner or a circle, and what keeps it out of the layout —
+     * and it is on a layer over the picture rather than on the mount itself. An
+     * inset shadow paints under its own box's content, so on a frame with no
+     * `mat` the picture covers the whole element and the line goes with it.
+     */
+    it('draws the line over the picture and the shadow under the mount', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          alt="A ridge"
+          frame={{ border: 2, borderColor: 'red', elevation: 2 }}
+          classNames={{ frame: 'mount' }}
+        />
+      );
+      const mount = screen.container.querySelector('.mount') as HTMLElement;
+      const ring = mount.lastElementChild as HTMLElement;
+
+      expect(mount.style.boxShadow).toBe('var(--neba-shadow-2)');
+      // Normalized by the browser, which reorders the shadow's parts.
+      expect(ring.style.boxShadow).toContain('inset');
+      expect(ring.style.boxShadow).toContain('2px');
+      expect(ring.style.boxShadow).toContain('red');
+      expect(ring).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('takes the corner from rounded when the frame does not say', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" rounded="xl" frame={{}} classNames={{ frame: 'mount' }} />
+      );
+      const mount = screen.container.querySelector('.mount') as HTMLElement;
+
+      expect(mount.style.borderRadius).toBe('var(--neba-radius-xl)');
+    });
+  });
+
+  describe('watermark', () => {
+    it('draws a string as a mark the picture keeps to itself', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" watermark="© Neba" />);
+      const mark = screen.getByText('© Neba').element();
+
+      // Out of the accessibility tree and out of the way of the pointer: what
+      // it says belongs in the `alt`, not read twice.
+      expect(mark.closest('[aria-hidden="true"]')).not.toBeNull();
+      expect(mark.parentElement).toHaveClass('pointer-events-none');
+    });
+
+    it('tiles it instead when it is asked to repeat', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          alt="A ridge"
+          watermark={{ content: 'PROOF', repeat: true }}
+          classNames={{ watermark: 'mark' }}
+        />
+      );
+      const mark = screen.container.querySelector('.mark') as HTMLElement;
+
+      expect(mark.style.backgroundImage).toContain('data:image/svg+xml');
+      expect(decodeURIComponent(mark.style.backgroundImage)).toContain('>PROOF<');
+      // Turned as a whole layer rather than per tile, so the tiling has no seam.
+      expect(mark.style.transform).toBe('rotate(-24deg)');
+    });
+
+    it('places a node once rather than trying to tile it', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          alt="A ridge"
+          watermark={{ content: <b>Neba</b>, repeat: true }}
+          classNames={{ watermark: 'mark' }}
+        />
+      );
+      const mark = screen.container.querySelector('.mark') as HTMLElement;
+
+      expect(mark.style.backgroundImage).toBe('');
+      await expect.element(screen.getByText('Neba')).toBeInTheDocument();
+    });
+  });
+
+  describe('protect', () => {
+    it('takes the picture out of a drag and a selection', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" protect />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture).toHaveAttribute('draggable', 'false');
+      expect(picture).toHaveClass('select-none');
+      /*
+       * `-webkit-touch-callout: none` goes on with them and is the one that
+       * matters most on a phone — without it a long press offers "Save Image"
+       * whatever the context menu was told. It is not asserted here because it
+       * cannot be: the property is WebKit's alone, and every other engine drops
+       * it out of the CSSOM on the way in, so the assertion would be a test of
+       * which browser the suite happened to run in.
+       */
+    });
+
+    it('swallows the context menu', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" protect />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+      const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+
+      picture.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('leaves the parts it was told to leave', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" protect={{ select: false, drag: false }} />
+      );
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture).not.toHaveClass('select-none');
+      expect(picture).not.toHaveAttribute('draggable');
+    });
+
+    it('does none of it by default', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+      const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+
+      picture.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(picture).not.toHaveAttribute('draggable');
+    });
+  });
+
   it('keeps the class names it was handed, on the root and on the parts', async () => {
     const screen = await render(
       <Image

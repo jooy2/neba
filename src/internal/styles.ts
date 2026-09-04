@@ -150,6 +150,19 @@ export const metaTextClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * `metaTextClasses` as raw lengths, for text whose size has to travel in the
+ * same inline style object as the rest of what positions it — an Image's
+ * watermark, which is placed, tinted and turned inline. Keep the two in step.
+ */
+export const metaTextValues: Record<NebaSize, string> = {
+  xs: '0.625rem',
+  sm: '0.6875rem',
+  md: '0.75rem',
+  lg: '0.8125rem',
+  xl: '0.875rem'
+};
+
+/**
  * Horizontal padding, and the only thing `density` is allowed to touch. The two
  * tracks are roughly 2:1 so the difference is legible at a glance rather than a
  * two-pixel nudge.

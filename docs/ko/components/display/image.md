@@ -64,6 +64,54 @@ import { Image } from 'neba';
 
 </Demo>
 
+### filter
+
+그림의 색조입니다. 이름 붙은 일곱 가지 — `grayscale` · `sepia` · `invert` · `saturate` · `mute` · `contrast`, 그리고 기본값인 `none` — 또는 그 너머의 것을 위한 CSS `filter` 체인입니다.
+
+색조는 그림 자체의 fade와 같은 시계 위에서 움직입니다. 그래서 pointer 아래에서 `className`으로 값을 바꾸면 썸네일이 툭 튀는 대신 살아납니다.
+
+<Demo src="image/filter">
+
+<<< @/.vitepress/demos/image/filter.tsx
+
+</Demo>
+
+### frame
+
+그림이 놓이는 방식입니다. 실루엣 하나만 주거나 — `frame="circle"` — 전체를 적어 줍니다: `shape` · `corner` · `border` · `borderColor` · `mat` · `background` · `elevation` · `feather`.
+
+선은 `border`가 아니라 inset shadow로 그립니다. 잘린 모서리나 원을 따라갈 수 있는 것도, 레이아웃에서 자리를 차지하지 않는 것도 그 때문입니다. 자리를 차지하는 것은 `mat` 하나뿐이며, 선과 그림 사이의 여백입니다.
+
+<Demo src="image/frame">
+
+<<< @/.vitepress/demos/image/frame.tsx
+
+</Demo>
+
+### watermark
+
+그림 위에 그리는 표식입니다. 문자열은 아래 모서리에 하나 놓이고, 객체 형태는 `content` · `position` · `repeat` · `opacity` · `rotate` · `size` · `color`를 받습니다.
+
+`repeat`은 표식을 그림 전체에 타일로 깝니다. 화면 캡처를 실제로 망설이게 하는 쪽은 이쪽입니다. 텍스트여야 하며, 노드는 타일로 그릴 수 없어 한 번만 놓입니다.
+
+<Demo src="image/watermark">
+
+<<< @/.vitepress/demos/image/watermark.tsx
+
+</Demo>
+
+### protect
+
+무심코 가져가는 경로를 막습니다. 우클릭 메뉴, 다른 창으로 끌어놓기, iOS의 길게 누르기, Ctrl-A가 쓸어 담는 선택입니다. `protect` 하나면 넷 다 켜지고, 객체 형태는 `contextMenu` · `drag` · `select`를 따로 받습니다.
+
+자물쇠가 아니라 억지책입니다. 파일은 network 탭에서 요청 하나 거리에 그대로 있고, 가져가려는 사람은 결국 가져갑니다. 이것이 막는 것은 생각 없이 이루어지는 복사입니다. 비밀을 지키려고 켜는 것이라면 이유가 틀렸습니다.
+
+<Demo src="image/protect">
+
+<<< @/.vitepress/demos/image/protect.tsx
+
+</Demo>
+
 ### onLoadingStatusChange
 
 `'loading'` · `'loaded'` · `'failed'` 중 하나로 호출됩니다. 직접 관리하는 `src`로 바꿔치기하거나, 도착하지 못한 것을 세는 데 쓸 수 있습니다.
@@ -73,3 +121,5 @@ import { Image } from 'neba';
 - `alt`이 그림의 accessible name입니다. 무엇을 찍은 사진인지가 아니라 그 그림이 **무엇을 말하는지**를 쓰고, 주변 글이 이미 말하는 것뿐이라면 `alt=""`을 쓰세요.
 - `preview`가 켜지면 버튼은 `alt`에서만 이름을 가져옵니다. 한 사물에 이름이 둘이면 스크린 리더가 같은 문장을 두 번 읽습니다.
 - placeholder와 fallback은 따로 읽히지 않습니다. 그림은 그동안에도 자기 이름을 유지합니다.
+- watermark는 `aria-hidden`이고 pointer 이벤트를 받지 않습니다. 표식이 말하는 내용은 그림 주변의 글이나 `alt`에 두세요. 표식을 볼 수 없는 독자도 거기서는 만납니다.
+- `protect`는 무언가를 더하는 것이 아니라 브라우저가 주던 것을 뺍니다. 여기서 꺼지는 것 중 키보드 경로나 스크린 리더 경로는 없지만, "새 탭에서 이미지 열기"는 우클릭 메뉴와 함께 사라집니다. 그림 위의 표식이 요점인 곳에서만 켜고, 기본으로 켜지는 마세요.
