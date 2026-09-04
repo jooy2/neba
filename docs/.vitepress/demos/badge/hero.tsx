@@ -28,7 +28,7 @@ export default function BadgeHero() {
       </Badge>
 
       <Badge dot color="success" label="Online" overlap="circle">
-        <Avatar name="Jane Doe" size="lg" />
+        <Avatar src="/samples/people/nadia-rowan.jpg" name="Nadia Rowan" size="lg" />
       </Badge>
 
       <Badge content="NEW" size="sm" color="warning" placement="top-start">

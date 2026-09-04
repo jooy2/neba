@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Avatar, Button, Card, Stack, Typography } from 'neba';
 
-const TEAM = ['Jane Doe', 'Kim Minji', 'Alex Park', 'Sam Lee', 'Noa Cohen'];
+const TEAM = ['Anya Sol', 'Theo Quinn', 'Lucas Adebayo', 'Nadia Rowan', 'Noa Marin'].map(
+  (name) => ({ name, src: `/samples/people/${name.toLowerCase().replace(' ', '-')}.jpg` })
+);
 const CARDS = ['Alpha', 'Beta', 'Gamma', 'Delta'];
 
 export default function StackDealt() {
@@ -19,8 +21,8 @@ export default function StackDealt() {
             transition=&quot;fade&quot; · stagger=90
           </Typography>
           <Stack ring transition="fade" stagger={90}>
-            {TEAM.map((name) => (
-              <Avatar key={name} name={name} />
+            {TEAM.map((person) => (
+              <Avatar key={person.name} name={person.name} src={person.src} />
             ))}
           </Stack>
         </div>

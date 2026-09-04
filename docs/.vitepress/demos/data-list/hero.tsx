@@ -12,7 +12,7 @@ export default function DataListHero() {
         <DataListItem label="Region">Frankfurt · eu-central-1</DataListItem>
         <DataListItem label="Author">
           <span className="inline-flex items-center gap-2">
-            <Avatar size="xs" name="Kim Minji" />
+            <Avatar size="xs" src="/samples/people/anya-sol.jpg" name="Anya Sol" />
             Kim Minji
           </span>
         </DataListItem>
