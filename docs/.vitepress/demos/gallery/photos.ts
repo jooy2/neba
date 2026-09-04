@@ -5,12 +5,12 @@
  *
  * The proportions are written down rather than measured, which is what lets a
  * masonry and a justified row be right in the first frame. The files are in
- * `docs/public/samples/gallery`; see the README beside them for where they came
- * from.
+ * `docs/public/samples/photos`, which the rest of the documentation draws on
+ * too; see the README beside them for where they came from.
  */
 import type { NebaGalleryItem } from 'neba';
 
-const base = '/samples/gallery';
+const base = '/samples/photos';
 
 export const photos: NebaGalleryItem[] = [
   {
