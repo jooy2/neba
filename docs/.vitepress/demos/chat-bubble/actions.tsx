@@ -28,8 +28,8 @@ export default function ChatBubbleActions() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ChatBubble
-        avatar={<Avatar name="Jane Doe" size="sm" />}
-        name="Jane"
+        avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="sm" />}
+        name="Farah"
         actions={<MessageMenu />}
       >
         Hover this row, or tab into it.

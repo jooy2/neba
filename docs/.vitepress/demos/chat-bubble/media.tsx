@@ -1,22 +1,31 @@
 import { ChatBubble } from 'neba';
-import { shot } from './thread';
 
 export default function ChatBubbleMedia() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ChatBubble
-        name="Jane"
+        name="Farah"
         time="11:20"
-        media={<img src={shot(212, 'site-visit.jpg')} alt="The north elevation" />}
+        media={
+          <img
+            src="/samples/photos/curved-wood-reading-nook.jpg"
+            alt="The reading nook, lit from one side"
+          />
+        }
       >
-        Here is the north elevation.
+        The nook is in. Photograph from this morning.
       </ChatBubble>
 
       <ChatBubble
         side="end"
         variant="solid"
         status="delivered"
-        media={<img src={shot(28, 'plan.png')} alt="The revised plan" />}
+        media={
+          <img
+            src="/samples/photos/greenhouse-fern-shadows.jpg"
+            alt="Ferns throwing shadows across a glasshouse wall"
+          />
+        }
       />
     </div>
   );

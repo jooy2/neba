@@ -4,14 +4,16 @@ export default function ChatBubbleIdentity() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ChatBubble
-        avatar={<Avatar name="Sam Park" size="sm" color="success" />}
-        name="Sam Park"
+        avatar={<Avatar src="/samples/people/sam-arden.jpg" name="Sam Arden" size="sm" />}
+        name="Sam Arden"
         time="14:02"
       >
         Everything at once: an avatar, a name and a time.
       </ChatBubble>
 
-      <ChatBubble avatar={<Avatar name="Sam Park" size="sm" color="success" />}>
+      <ChatBubble
+        avatar={<Avatar src="/samples/people/sam-arden.jpg" name="Sam Arden" size="sm" />}
+      >
         A follow-up in the same run keeps the avatar and drops the header.
       </ChatBubble>
 

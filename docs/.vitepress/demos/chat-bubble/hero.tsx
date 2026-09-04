@@ -3,7 +3,11 @@ import { Avatar, ChatBubble } from 'neba';
 export default function ChatBubbleHero() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-4">
-      <ChatBubble avatar={<Avatar name="Jane Doe" size="sm" />} name="Jane" time="09:41">
+      <ChatBubble
+        avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="sm" />}
+        name="Farah"
+        time="09:41"
+      >
         Are we still on for the review at 3?
       </ChatBubble>
 
@@ -12,7 +16,7 @@ export default function ChatBubbleHero() {
       </ChatBubble>
 
       <ChatBubble
-        avatar={<Avatar name="Jane Doe" size="sm" />}
+        avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="sm" />}
         preview={{
           url: 'https://example.com/rfc-14',
           site: 'example.com',
@@ -23,7 +27,10 @@ export default function ChatBubbleHero() {
         Read this first
       </ChatBubble>
 
-      <ChatBubble avatar={<Avatar name="Jane Doe" size="sm" />} typing />
+      <ChatBubble
+        avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="sm" />}
+        typing
+      />
     </div>
   );
 }

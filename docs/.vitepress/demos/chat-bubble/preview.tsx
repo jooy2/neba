@@ -1,5 +1,4 @@
 import { ChatBubble } from 'neba';
-import { shot } from './thread';
 
 export default function ChatBubblePreview() {
   return (
@@ -13,7 +12,7 @@ export default function ChatBubblePreview() {
           title: 'Acrylic surfaces, one year on',
           description:
             'What survived contact with real products, what did not, and the two rules we would keep.',
-          image: shot(150, 'acrylic'),
+          image: '/samples/photos/concrete-stairway-geometric-shadows.jpg',
           newTab: true
         }}
       >

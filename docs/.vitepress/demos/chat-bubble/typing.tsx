@@ -13,7 +13,11 @@ export default function ChatBubbleTyping() {
 
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
-      <ChatBubble avatar={<Avatar name="Jane Doe" size="sm" />} name="Jane" typing={typing}>
+      <ChatBubble
+        avatar={<Avatar src="/samples/people/farah-wells.jpg" name="Farah Wells" size="sm" />}
+        name="Farah"
+        typing={typing}
+      >
         Found it — the alias was pointing at the old path.
       </ChatBubble>
     </div>
