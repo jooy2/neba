@@ -9,10 +9,15 @@ export default function MockupWallpaper() {
         wallpaper="linear-gradient(160deg, oklch(62% 0.19 262), oklch(48% 0.16 318))"
       />
       <Mockup
+        device="mobile"
+        width={128}
+        wallpaper="url(/samples/photos/lighthouse-cliff-wildflowers.jpg) center / cover"
+      />
+      <Mockup
         device="desktop"
         hardware="laptop"
         width={300}
-        wallpaper="radial-gradient(120% 120% at 20% 0%, oklch(72% 0.13 196), oklch(38% 0.12 262))"
+        wallpaper="url(/samples/photos/alpine-lake-dawn.jpg) center / cover"
       />
     </div>
   );
