@@ -1464,14 +1464,21 @@
  * ------------------------------------------------------------------------- */
 
 /* The two gutters, shared: a GridContainer and a Flex ask the same question
-   and `spacing` has to mean the same number on both. */
+   and `spacing` has to mean the same number on both.
+
+   `--n-cols` is shared with a Gallery one rule down for that same reason: how
+   many columns a row is cut into is one question, and a second cascade for it
+   would be four more media blocks saying the thing this one already says. The
+   `12` fallback is a grid's; a Gallery always emits its own `xs`, so it never
+   reaches. */
 .neba-grid,
 .neba-flex {
   --n-gap-x: var(--n-gap-x-xs, 0px);
   --n-gap-y: var(--n-gap-y-xs, 0px);
 }
 
-.neba-grid {
+.neba-grid,
+.neba-gallery {
   --n-cols: var(--n-cols-xs, 12);
 }
 
@@ -1520,7 +1527,8 @@
     --n-gap-y: var(--n-gap-y-sm, var(--n-gap-y-xs, 0px));
   }
 
-  .neba-grid {
+  .neba-grid,
+  .neba-gallery {
     --n-cols: var(--n-cols-sm, var(--n-cols-xs, 12));
   }
 
@@ -1545,7 +1553,8 @@
     --n-gap-y: var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px)));
   }
 
-  .neba-grid {
+  .neba-grid,
+  .neba-gallery {
     --n-cols: var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12)));
   }
 
@@ -1570,7 +1579,8 @@
     --n-gap-y: var(--n-gap-y-lg, var(--n-gap-y-md, var(--n-gap-y-sm, var(--n-gap-y-xs, 0px))));
   }
 
-  .neba-grid {
+  .neba-grid,
+  .neba-gallery {
     --n-cols: var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))));
   }
 
@@ -1610,7 +1620,8 @@
     );
   }
 
-  .neba-grid {
+  .neba-grid,
+  .neba-gallery {
     --n-cols: var(
       --n-cols-xl,
       var(--n-cols-lg, var(--n-cols-md, var(--n-cols-sm, var(--n-cols-xs, 12))))
@@ -1634,6 +1645,31 @@
       var(--n-offset-lg, var(--n-offset-md, var(--n-offset-sm, var(--n-offset-xs, 0))))
     );
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * A justified gallery's last row
+ *
+ * `layout="justified"` is a wrapping flex row where every tile grows in
+ * proportion to its own aspect ratio, which is what makes each row fill the
+ * width exactly and every tile in it come out the same height. The arithmetic
+ * is the browser's; nothing is measured and nothing re-renders on a resize.
+ *
+ * The one thing it gets wrong on its own is the last row, which has fewer tiles
+ * to share the same width and blows them up to fill it — five photographs
+ * ending in one the size of a poster. A generated box with an absurd
+ * `flex-grow` takes that leftover instead, so the last row keeps the height the
+ * rows above it have.
+ *
+ * It is `::after` rather than an element because the gallery is a `<ul>`, and a
+ * spacer `<span>` between the `<li>`s is markup that says a list item is
+ * something it is not.
+ * ------------------------------------------------------------------------- */
+
+.neba-gallery-justified::after {
+  content: '';
+  flex-grow: 1000000000;
+  min-inline-size: 0;
 }
 
 /* ---------------------------------------------------------------------------

@@ -82,6 +82,12 @@ export const ar: NebaLocale = {
     previous: 'الشريحة السابقة',
     next: 'الشريحة التالية'
   },
+  gallery: {
+    label: 'معرض صور',
+    item: 'الصورة {index} من {total}',
+    previous: 'الصورة السابقة',
+    next: 'الصورة التالية'
+  },
   chart: { label: 'رسم بياني' },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {

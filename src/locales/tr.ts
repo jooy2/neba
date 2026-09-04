@@ -82,6 +82,12 @@ export const tr: NebaLocale = {
     previous: 'Önceki slayt',
     next: 'Sonraki slayt'
   },
+  gallery: {
+    label: 'Galeri',
+    item: '{total} görselden {index}. görsel',
+    previous: 'Önceki görsel',
+    next: 'Sonraki görsel'
+  },
   chart: { label: 'Grafik' },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {

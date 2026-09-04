@@ -82,6 +82,12 @@ export const id: NebaLocale = {
     previous: 'Slide sebelumnya',
     next: 'Slide berikutnya'
   },
+  gallery: {
+    label: 'Galeri',
+    item: 'Gambar {index} dari {total}',
+    previous: 'Gambar sebelumnya',
+    next: 'Gambar berikutnya'
+  },
   chart: { label: 'Bagan' },
   scroll: {
     label: 'Konten yang dapat digulir',

@@ -150,12 +150,12 @@ type Phase = 'loading' | 'loaded' | 'failed';
 /**
  * The preview's dialog, fetched only if somebody turns `preview` on.
  *
- * A Dialog is most of what an Image weighs — 23.4 kB of the 23.9 it used to
- * cost, nearly all of it Base UI's own — and `preview` is off by default. A
- * static import puts every byte of that in the bundle of a page that draws a
- * thumbnail, so this is `CodeBlock`'s arrangement with the grammars, one step
- * smaller: the chunk is fetched once, after the first paint, by the pages that
- * asked for it.
+ * A Dialog was most of what an Image weighed — 23.4 kB, nearly all of it Base
+ * UI's own — and `preview` is off by default. A static import puts every byte
+ * of that in the bundle of a page that draws a thumbnail, so this is
+ * `CodeBlock`'s arrangement with the grammars, one step smaller: the chunk is
+ * fetched once, after the first paint, by the pages that asked for it. What a
+ * thumbnail costs is 6.5 kB now, and the other 19.8 waits to be wanted.
  */
 const PreviewDialog = React.lazy(() =>
   import('../dialog/Dialog.js').then((module) => ({ default: module.Dialog }))

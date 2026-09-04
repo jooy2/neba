@@ -85,6 +85,12 @@ export const zhHans: NebaLocale = {
     previous: '上一张',
     next: '下一张'
   },
+  gallery: {
+    label: '图库',
+    item: '第 {index} 张，共 {total} 张',
+    previous: '上一张图片',
+    next: '下一张图片'
+  },
   chart: { label: '图表' },
   scroll: { label: '可滚动内容', previous: '向前滚动', next: '向后滚动' },
   breadcrumb: {

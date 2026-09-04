@@ -11099,6 +11099,198 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
+  Gallery: [
+    {
+      name: 'items',
+      type: 'NebaGalleryItem[]',
+      required: true,
+      description: {
+        ko: '그려질 순서대로의 사진들',
+        en: 'The pictures, in the order they are drawn'
+      }
+    },
+    {
+      name: 'layout',
+      type: "'grid' | 'masonry' | 'justified' | 'quilted'",
+      default: "'grid'",
+      description: {
+        ko: '타일을 배치하는 방식. grid는 모두 같은 모양, masonry는 비율을 지키며 열에 쌓기, justified는 비율을 지키며 줄을 가장자리까지 채우기, quilted는 타일이 여러 칸을 차지하는 grid',
+        en: 'How the tiles are arranged. grid gives every tile one shape, masonry keeps the proportions and stacks columns, justified keeps them and fills every row to the edge, quilted lets a tile take more than one cell'
+      }
+    },
+    {
+      name: 'columns',
+      type: 'number | Partial<Record<NebaBreakpoint, number>>',
+      default: '{ xs: 2, sm: 3, lg: 4 }',
+      description: {
+        ko: '한 줄에 몇 장인지. grid · masonry · quilted가 읽고, justified는 rowHeight로 스스로 정합니다',
+        en: 'How many tiles across. Read by grid, masonry and quilted; justified decides for itself from rowHeight'
+      }
+    },
+    {
+      name: 'gap',
+      type: 'NebaSize | number | string',
+      default: "'md'",
+      description: {
+        ko: '타일 사이의 간격. 사다리의 한 단계, 픽셀 수, 또는 CSS 길이',
+        en: 'The space between tiles — a step of the ladder, a number in pixels, or a CSS length'
+      }
+    },
+    {
+      name: 'ratio',
+      type: 'number | string',
+      default: '1',
+      description: {
+        ko: 'grid에서 타일의 모양이자, 자기 ratio가 없는 항목이 다른 곳에서 되돌아가는 값',
+        en: 'The shape of a tile in grid, and what an item with no ratio of its own falls back to elsewhere'
+      }
+    },
+    {
+      name: 'rowHeight',
+      type: 'number',
+      default: '220',
+      description: {
+        ko: 'justified에서 한 줄이 노리는 높이이자 quilted에서 한 칸의 높이. justified의 줄은 마지막에 실제 너비에 맞춰 늘어나므로 정확히 이 값은 아닙니다',
+        en: 'How tall a row aims to be in justified and how tall one cell is in quilted. A justified row scales to the width it actually has, so it lands near this rather than on it'
+      }
+    },
+    {
+      name: 'rounded',
+      type: 'NebaSize | boolean',
+      default: "'md'",
+      description: { ko: '타일의 모서리를 둥글게', en: 'Rounds the tiles' }
+    },
+    {
+      name: 'caption',
+      type: "'none' | 'below' | 'overlay' | 'hover'",
+      default: "'none'",
+      description: {
+        ko: '항목의 title과 description이 놓이는 곳. below는 사진 아래, overlay는 사진 위 그러데이션, hover는 pointer와 함께 나타나는 overlay',
+        en: "Where an item's title and description go. below is under the picture, overlay is across the foot of it, hover is overlay that arrives with the pointer"
+      }
+    },
+    {
+      name: 'hover',
+      type: "'none' | 'lift' | 'dim' | 'zoom'",
+      default: "'lift'",
+      description: {
+        ko: 'pointer와 focus에 타일이 답하는 방식. lift는 그림자, dim은 어둡게, zoom은 액자 안의 사진만 확대',
+        en: 'What a tile does under the pointer and the focus. lift is depth, dim is colour, zoom scales the photograph inside a frame that does not move'
+      }
+    },
+    {
+      name: 'preview',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '타일을 누르면 원래 크기로 열고 나머지는 방향키로 넘깁니다. 이 화면은 필요할 때 내려받습니다',
+        en: 'Opens the picture full size on a click, with the rest of the set an arrow key away. The viewer is fetched on demand'
+      }
+    },
+    {
+      name: 'onItemSelect',
+      type: '(item: NebaGalleryItem, index: number) => void',
+      description: {
+        ko: '타일이 선택될 때. preview가 있든 없든 호출됩니다',
+        en: 'Called when a tile is chosen, whether or not there is a viewer'
+      }
+    },
+    {
+      name: 'filter · frame · watermark · protect',
+      type: 'see Image',
+      description: {
+        ko: '각 타일의 Image로 그대로 전달됩니다. watermark와 protect는 크게 보기 화면까지 따라갑니다',
+        en: "Passed straight through to every tile's Image. watermark and protect follow the picture into the viewer"
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '목록의 accessible name. 기본값은 locale의 낱말',
+        en: "The list's accessible name. Defaults to the locale's word for it"
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '크게 보기 화면의 버튼이 쓰이는 언어. BCP 47 태그',
+        en: "Which language the viewer's buttons are named in — a BCP 47 tag"
+      }
+    },
+    {
+      name: 'empty',
+      type: 'ReactNode',
+      description: {
+        ko: 'items가 비었을 때 그려지는 것. 기본값은 아무것도 아님',
+        en: 'What is drawn when items is empty. Nothing at all by default'
+      }
+    },
+    slotsProp('item', 'image', 'caption', 'title', 'description')
+  ],
+
+  NebaGalleryItem: [
+    {
+      name: 'src',
+      type: 'string',
+      required: true,
+      description: { ko: '그림의 주소', en: 'Where the picture is' }
+    },
+    {
+      name: 'alt',
+      type: 'string',
+      required: true,
+      description: {
+        ko: '그 그림이 말하는 것. Image가 요구하는 것과 같은 이유로 필수입니다',
+        en: 'What the picture says. Required for the reason Image requires it'
+      }
+    },
+    {
+      name: 'ratio',
+      type: 'number | string',
+      description: {
+        ko: '사진 자체의 비율. masonry와 justified가 이 값으로 배치를 계산하며, 그 계산은 파일이 도착하기 전에 끝납니다',
+        en: "The picture's own proportion. masonry and justified are laid out from it, before a single file has arrived"
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '캡션의 첫 줄', en: 'The first line of the caption' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '두 번째 줄. 한 단계 작고 흐립니다',
+        en: 'The second, one step down the scale and muted'
+      }
+    },
+    {
+      name: 'full',
+      type: 'string',
+      description: {
+        ko: '타일이 썸네일일 때 크게 보기 화면이 쓸 원본. 없으면 src',
+        en: 'A larger file for the viewer, when the tile is a thumbnail. Falls back to src'
+      }
+    },
+    {
+      name: 'cols · rows',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: 'quilted에서 타일이 차지하는 칸 수',
+        en: 'How many cells the tile takes in quilted'
+      }
+    },
+    {
+      name: 'id',
+      type: 'string',
+      description: { ko: '안정적인 식별자. 기본값은 src', en: 'A stable identity. Defaults to src' }
+    }
+  ],
+
   Image: [
     {
       name: 'src',

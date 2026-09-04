@@ -83,8 +83,43 @@ function entrySource({ imports, locales }) {
 }
 
 /**
- * One scenario, bundled and weighed — the entry chunk, and separately whatever
- * else the build emitted.
+/**
+ * The chunks the entry cannot start without: itself, and everything reachable
+ * from it through *static* imports.
+ *
+ * Rollup splits a module that is imported both statically and dynamically into
+ * a chunk of its own — `Dialog` is exactly that once `Image` and `Gallery`
+ * fetch it on demand — and a measurement that called every chunk but
+ * `bundle.js` deferred would count that one as free while the entry is still
+ * importing it at the top of the file. So the graph is walked instead. A
+ * dynamic specifier is `import("./x.js")` and never matches these, which is the
+ * whole distinction being drawn.
+ */
+function staticallyReachable(outDir) {
+  const seen = new Set(['bundle.js']);
+  const queue = ['bundle.js'];
+
+  while (queue.length > 0) {
+    const source = readFileSync(join(outDir, queue.pop()), 'utf8');
+
+    for (const pattern of [/\bfrom\s*["']([^"']+)["']/g, /\bimport\s*["']([^"']+)["']/g]) {
+      for (const [, specifier] of source.matchAll(pattern)) {
+        const name = specifier.replace(/^\.\//, '');
+
+        if (specifier.startsWith('.') && !seen.has(name)) {
+          seen.add(name);
+          queue.push(name);
+        }
+      }
+    }
+  }
+
+  return seen;
+}
+
+/**
+ * One scenario, bundled and weighed — what a page downloads to draw its first
+ * frame, and separately what it may fetch afterwards.
  *
  * The split exists for CodeBlock and for anything that follows it. A grammar
  * reached through `import()` is a chunk of its own, so it is not in the bundle
@@ -92,8 +127,8 @@ function entrySource({ imports, locales }) {
  * here is about, and the number that would go through the roof if the import
  * ever became a static one. But "not in the entry" is not "free", and a
  * measurement that only reported the entry would be quietly hiding a megabyte.
- * So the async total is printed beside it and nothing is budgeted against it:
- * the figure is the sum of *every* chunk, and a page fetches one of them.
+ * So the deferred total is printed beside it and nothing is budgeted against
+ * it: the figure is the sum of *every* chunk, and a page fetches one of them.
  */
 async function measure(scenario, work) {
   const entry = join(work, `${scenario.id}.js`);
@@ -126,12 +161,12 @@ async function measure(scenario, work) {
 
   const weigh = (name) => gzipSync(readFileSync(join(outDir, name)), { level: 9 }).length / 1024;
   const chunks = readdirSync(outDir).filter((name) => name.endsWith('.js'));
+  const upfront = staticallyReachable(outDir);
+  const sum = (names) => names.reduce((total, name) => total + weigh(name), 0);
 
   return {
-    entry: weigh('bundle.js'),
-    async: chunks
-      .filter((name) => name !== 'bundle.js')
-      .reduce((total, name) => total + weigh(name), 0)
+    entry: sum(chunks.filter((name) => upfront.has(name))),
+    async: sum(chunks.filter((name) => !upfront.has(name)))
   };
 }
 

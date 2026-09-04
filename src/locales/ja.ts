@@ -82,6 +82,12 @@ export const ja: NebaLocale = {
     previous: '前のスライド',
     next: '次のスライド'
   },
+  gallery: {
+    label: 'ギャラリー',
+    item: '{total} 枚中 {index} 枚目',
+    previous: '前の画像',
+    next: '次の画像'
+  },
   chart: { label: 'グラフ' },
   scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {

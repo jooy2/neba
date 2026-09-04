@@ -82,6 +82,12 @@ export const ru: NebaLocale = {
     previous: 'Предыдущий слайд',
     next: 'Следующий слайд'
   },
+  gallery: {
+    label: 'Галерея',
+    item: 'Изображение {index} из {total}',
+    previous: 'Предыдущее изображение',
+    next: 'Следующее изображение'
+  },
   chart: { label: 'Диаграмма' },
   scroll: {
     label: 'Прокручиваемая область',

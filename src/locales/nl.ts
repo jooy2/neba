@@ -82,6 +82,12 @@ export const nl: NebaLocale = {
     previous: 'Vorige dia',
     next: 'Volgende dia'
   },
+  gallery: {
+    label: 'Galerij',
+    item: 'Afbeelding {index} van {total}',
+    previous: 'Vorige afbeelding',
+    next: 'Volgende afbeelding'
+  },
   chart: { label: 'Grafiek' },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {

@@ -31,7 +31,13 @@
       "id": "image",
       "label": "Image",
       "imports": ["Image"],
-      "budget": 3.6
+      "budget": 6.5
+    },
+    {
+      "id": "gallery",
+      "label": "Gallery",
+      "imports": ["Gallery"],
+      "budget": 10.1
     },
     {
       "id": "app-12",
@@ -114,7 +120,7 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 253.7
+      "budget": 261.4
     }
   ]
 }

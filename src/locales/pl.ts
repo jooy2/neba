@@ -82,6 +82,12 @@ export const pl: NebaLocale = {
     previous: 'Poprzedni slajd',
     next: 'Następny slajd'
   },
+  gallery: {
+    label: 'Galeria',
+    item: 'Obraz {index} z {total}',
+    previous: 'Poprzedni obraz',
+    next: 'Następny obraz'
+  },
   chart: { label: 'Wykres' },
   scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
   breadcrumb: {

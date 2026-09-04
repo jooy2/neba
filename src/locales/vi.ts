@@ -82,6 +82,12 @@ export const vi: NebaLocale = {
     previous: 'Trang chiếu trước',
     next: 'Trang chiếu sau'
   },
+  gallery: {
+    label: 'Thư viện ảnh',
+    item: 'Ảnh {index} trên {total}',
+    previous: 'Ảnh trước',
+    next: 'Ảnh tiếp theo'
+  },
   chart: { label: 'Biểu đồ' },
   scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
   breadcrumb: {

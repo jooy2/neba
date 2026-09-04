@@ -183,5 +183,5 @@ Overriding with a class is only meaningful on the `neba/tailwind.css` path, wher
 6. `test/components/{name}/{Name}.test.tsx` — **in the same commit**
 7. Write `docs/{locale}/components/{group}/{name}.md` — title, lede, preview, props, examples. One page **per locale**
 8. Add its rows to `docs/.vitepress/data/props.ts` and its demos to `docs/.vitepress/demos/{name}/`
-9. Give it a card in `demos/gallery/all.tsx` and a place on `demos/showcase/app.tsx`
+9. Give it a card in `demos/catalog/all.tsx` and a place on `demos/showcase/app.tsx`
 10. `npm run typecheck && npm test && npm run lint` all pass

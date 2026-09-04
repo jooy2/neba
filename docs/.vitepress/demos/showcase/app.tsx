@@ -72,6 +72,7 @@ import {
   HowToSteps,
   Icon,
   IconButton,
+  Gallery,
   Image,
   List,
   ListItem,
@@ -232,6 +233,17 @@ function DotIcon() {
     </svg>
   );
 }
+
+/** One drawing, five shapes: the survey's tiles differ by ratio, not by file. */
+const SURVEY =
+  'data:image/svg+xml,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" preserveAspectRatio="none">
+      <rect width="240" height="240" fill="#264653"/>
+      <path d="M0 168 L72 108 L132 152 L196 96 L240 128 L240 240 L0 240 Z" fill="#2a9d8f"/>
+      <circle cx="192" cy="52" r="22" fill="#e9c46a"/>
+    </svg>`
+  );
 
 const STATS = [
   {
@@ -1925,6 +1937,31 @@ function ShowcaseBody() {
               </div>
             </Card>
           </div>
+        </section>
+
+        {/* Twelve files and the little that is known about them, arranged four
+            different ways by one prop. Nothing here is measured: each tile's
+            shape is the item's own `ratio`, so the wall is right in the first
+            frame and does not move as the pictures land. */}
+        <section className="flex flex-col gap-3">
+          <Caption>Gallery</Caption>
+          <Card size="sm" title="Site survey" subtitle="Justified, captioned on hover">
+            <Gallery
+              layout="justified"
+              rowHeight={120}
+              caption="hover"
+              hover="zoom"
+              preview
+              label="Site survey"
+              items={[
+                { src: SURVEY, alt: 'The east elevation', title: 'East elevation', ratio: '3 / 2' },
+                { src: SURVEY, alt: 'The stair core', title: 'Stair core', ratio: '2 / 3' },
+                { src: SURVEY, alt: 'The roof deck', title: 'Roof deck', ratio: '1 / 1' },
+                { src: SURVEY, alt: 'The north yard', title: 'North yard', ratio: '3 / 2' },
+                { src: SURVEY, alt: 'The plant room', title: 'Plant room', ratio: '2 / 3' }
+              ]}
+            />
+          </Card>
         </section>
 
         {/* The other half of the placeholder above. A skeleton is the shape of

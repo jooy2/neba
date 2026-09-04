@@ -85,6 +85,12 @@ export const zhHant: NebaLocale = {
     previous: '上一張',
     next: '下一張'
   },
+  gallery: {
+    label: '圖庫',
+    item: '第 {index} 張，共 {total} 張',
+    previous: '上一張圖片',
+    next: '下一張圖片'
+  },
   chart: { label: '圖表' },
   scroll: { label: '可捲動內容', previous: '向前捲動', next: '向後捲動' },
   breadcrumb: {

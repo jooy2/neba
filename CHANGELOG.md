@@ -20,12 +20,13 @@ And the last group is the same complaint one level up. The library had a breakpo
 | `Chip`                        | 3.2 kB   | 3.3 kB   |
 | `LineChart`                   | 11.4 kB  | 11.6 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
-| `Image`                       | 23.4 kB  | 3.6 kB   |
+| `Image`                       | 23.4 kB  | 6.5 kB   |
+| `Gallery`                     | —        | 10.1 kB  |
 | a whole page shell            | 28.5 kB  | 28.7 kB  |
 | 12 components — a typical app | 68.2 kB  | 69.1 kB  |
 | 12 components, with Korean    | 70.7 kB  | 71.4 kB  |
 | 25 components — a large one   | 112.6 kB | 113.5 kB |
-| all exports                   | 248.1 kB | 253.7 kB |
+| all exports                   | 248.1 kB | 261.4 kB |
 
 `Image` is the row that moved on purpose, and it is a new row because nothing had ever measured it: a `Dialog` nobody had opened was 20 kB of it. `Chip` is the one worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
 
@@ -201,9 +202,25 @@ The fade was fourteen identical copies of one declaration and two state classes.
 
 It is a _stroke_ along the middle of the groove now, whose drawn length is `stroke-dashoffset` — the same technique `ProgressCircular` already used, bent to an arbitrary span. `pathLength="1"` makes the offset the fraction itself. The shape on screen is identical; only `fill` moved to `stroke`.
 
-### An Image weighs 3.5 kB instead of 23.4
+### Gallery
+
+A set of pictures, arranged, and the arrangement is a prop rather than four components.
+
+`grid` is a contact sheet: every tile the same shape, whatever shape the files are. `masonry` keeps each picture's own proportion and stacks the columns. `justified` keeps the proportions **and** fills every row to the edge, scaling each row to a common height — the arrangement a photograph library uses, and the only one where nothing is cropped and nothing is left over. `quilted` is a grid whose tiles may take more than one cell.
+
+**None of them measures anything**, which is the part worth stating. A tile's shape is the item's own `ratio`, so the whole wall is right in the first frame the browser paints and does not move again as the files land — the bargain `Image`'s `ratio` already makes, one level up, and the reason a gallery of forty photographs does not reflow forty times. `justified` is a wrapping flex row where each tile grows in proportion to its own aspect ratio, so the browser does the row arithmetic and a resize re-runs it with React uninvolved; the last row is held to the height of the ones above it by a generated box with an absurd `flex-grow`, rather than being blown up to fill a width it has too few pictures for. `masonry` is the one layout that needs a number in JavaScript, and it deals each item into the _shortest_ column rather than filling the first one top to bottom — so the first row a reader meets is the first three pictures they were given, not the first three of column one.
+
+`columns` takes a breakpoint map and reads the same `--n-cols` cascade a `GridContainer` does, which is four media blocks the stylesheet already had. `gap` is a step, a number or a length. `caption` puts an item's `title` and `description` below the picture, across the foot of it, or under the pointer. `hover` answers with depth, colour or the one scale the design language allows.
+
+`preview` opens the picture full size with the rest of the set on the arrow keys, and the viewer is a chunk that is not fetched at all unless the prop is on. `filter`, `frame`, `watermark` and `protect` pass straight through to every tile's `Image`; the last two follow the picture into the viewer, because a mark that came off the moment somebody enlarged the picture would not be a mark.
+
+The `gallery` message namespace is new, in all eighteen languages.
+
+### An Image weighs 6.5 kB instead of 23.4
 
 A `Dialog` was most of what an `Image` cost — 20 kB of Base UI in the bundle of every page that drew a thumbnail — and `preview`, the only thing that opens one, is off by default. It is fetched on demand now, the way `CodeBlock` fetches a grammar: the chunk arrives once, after the first paint, on the pages that asked for it, and a page that never previews anything never sees it.
+
+`npm run size` learned to tell the difference while this was being measured. It called every chunk but the entry deferred, which was true while the only splits in the library were CodeBlock's grammars — and stopped being true the moment a module was imported both statically and dynamically, because rollup then splits it out and the entry still imports it at the top of the file. It walks the static import graph now, so a number in the table is what a page needs before it draws. That is why `all exports` went up rather than down: the same bytes, counted honestly, plus the boundaries the split itself costs.
 
 ### A picture that had already decoded stayed invisible
 

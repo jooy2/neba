@@ -75,6 +75,7 @@ import {
   HoverCard,
   HowToSteps,
   Icon,
+  Gallery,
   Image,
   IconButton,
   LineChart,
@@ -1531,6 +1532,30 @@ const GROUPS: Group[] = [
             <Image src={GALLERY_RIDGE} alt="A ridge of hills" ratio="4 / 3" rounded />
             <Image src="/does-not-exist.png" alt="Did not load" ratio="4 / 3" rounded />
           </div>
+        )
+      },
+      {
+        name: 'Gallery',
+        summary: {
+          ko: '여러 장의 사진을, 네 가지 배치로',
+          en: 'A set of pictures, in one of four arrangements'
+        },
+        path: '/components/display/gallery',
+        preview: (
+          <Gallery
+            className="w-full max-w-56"
+            columns={3}
+            gap="xs"
+            ratio="1 / 1"
+            items={[
+              { src: GALLERY_RIDGE, alt: 'A ridge of hills' },
+              { src: GALLERY_RIDGE, alt: 'The same ridge, later' },
+              { src: GALLERY_RIDGE, alt: 'The same ridge, later still' },
+              { src: GALLERY_RIDGE, alt: 'A fourth frame' },
+              { src: GALLERY_RIDGE, alt: 'A fifth frame' },
+              { src: GALLERY_RIDGE, alt: 'A sixth frame' }
+            ]}
+          />
         )
       },
       {

@@ -213,6 +213,12 @@ There are four of them, and they are the whole list. A Switch's thumb travels on
 
 What none of them does is scale. A mark that arrived at 1.4× and settled would be resampled twice on the way, which is the same objection the control's own rule makes.
 
+### A photograph in a frame that does not move is the one thing that may scale
+
+`Gallery`'s `hover="zoom"` is the exception, and it is opt-in rather than the default. What it moves is a photograph inside a tile whose own edges stay exactly where they were — the frame is `overflow: hidden` and never changes size, so nothing on the page shifts and nothing beside it is pushed. The objection the rule is made of does not apply either: a photograph carries no label, so there is no text to resample and none to shimmer under the cursor.
+
+The default is `lift`, which is depth, and `dim`, which is colour. Those are how everything else in the library answers a pointer, and a gallery that does not ask for a zoom does not get one.
+
 ### A floating surface arrives and leaves in opacity, and nothing else
 
 Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ — a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving — so a surface that travels drags all of it across the screen for the length of the journey.

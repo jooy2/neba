@@ -82,6 +82,12 @@ export const it: NebaLocale = {
     previous: 'Diapositiva precedente',
     next: 'Diapositiva successiva'
   },
+  gallery: {
+    label: 'Galleria',
+    item: 'Immagine {index} di {total}',
+    previous: 'Immagine precedente',
+    next: 'Immagine successiva'
+  },
   chart: { label: 'Grafico' },
   scroll: { label: 'Contenuto scorrevole', previous: 'Scorri indietro', next: 'Scorri avanti' },
   breadcrumb: {

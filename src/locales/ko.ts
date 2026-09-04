@@ -82,6 +82,12 @@ export const ko: NebaLocale = {
     previous: '이전 슬라이드',
     next: '다음 슬라이드'
   },
+  gallery: {
+    label: '갤러리',
+    item: '전체 {total}장 중 {index}장',
+    previous: '이전 이미지',
+    next: '다음 이미지'
+  },
   chart: { label: '차트' },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {

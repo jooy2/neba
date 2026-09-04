@@ -402,6 +402,33 @@ export const carouselMessages: MessageTable<CarouselMessages> = {
 };
 
 /**
+ * The gallery, and the viewer a tile opens into.
+ *
+ * A Carousel's words are next to these and are deliberately not reused: a
+ * carousel moves between *slides* and this moves between pictures, and a
+ * screen reader saying "next slide" over a wall of photographs is describing
+ * something the reader is not looking at.
+ */
+export interface GalleryMessages {
+  /** Names the list, when the caller did not. */
+  label: string;
+  /** One tile's position. `{index}` and `{total}` are replaced with the numbers. */
+  item: string;
+  previous: string;
+  next: string;
+}
+
+/** The `gallery` namespace, as Gallery and its viewer read it. */
+export const galleryMessages: MessageTable<GalleryMessages> = {
+  '': {
+    label: 'Gallery',
+    item: 'Image {index} of {total}',
+    previous: 'Previous image',
+    next: 'Next image'
+  }
+};
+
+/**
  * The charts.
  *
  * A chart is a `role="img"`, and an image without a name is a focus stop that
@@ -855,6 +882,8 @@ export interface NebaLocale {
   pagination?: Partial<PaginationMessages>;
   /** Carousel. */
   carousel?: Partial<CarouselMessages>;
+  /** Gallery. */
+  gallery?: Partial<GalleryMessages>;
   /** Chart. */
   chart?: Partial<ChartMessages>;
   /** Scroll. */
@@ -897,6 +926,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   number: numberMessages as MessageTable<never>,
   pagination: paginationMessages as MessageTable<never>,
   carousel: carouselMessages as MessageTable<never>,
+  gallery: galleryMessages as MessageTable<never>,
   chart: chartMessages as MessageTable<never>,
   scroll: scrollMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,

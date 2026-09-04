@@ -82,6 +82,12 @@ export const hi: NebaLocale = {
     previous: 'पिछली स्लाइड',
     next: 'अगली स्लाइड'
   },
+  gallery: {
+    label: 'गैलरी',
+    item: '{total} में से छवि {index}',
+    previous: 'पिछली छवि',
+    next: 'अगली छवि'
+  },
   chart: { label: 'चार्ट' },
   scroll: {
     label: 'स्क्रॉल करने योग्य सामग्री',

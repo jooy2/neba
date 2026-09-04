@@ -82,6 +82,12 @@ export const th: NebaLocale = {
     previous: 'สไลด์ก่อนหน้า',
     next: 'สไลด์ถัดไป'
   },
+  gallery: {
+    label: 'แกลเลอรี',
+    item: 'รูปที่ {index} จาก {total}',
+    previous: 'รูปก่อนหน้า',
+    next: 'รูปถัดไป'
+  },
   chart: { label: 'แผนภูมิ' },
   scroll: { label: 'เนื้อหาที่เลื่อนได้', previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
   breadcrumb: {

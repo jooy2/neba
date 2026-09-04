@@ -183,5 +183,5 @@ class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있�
 6. `test/components/{이름}/{Name}.test.tsx` — **같은 커밋에** 포함
 7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성 — 제목 · lede · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
 8. `docs/.vitepress/data/props.ts`에 props 테이블(로케일별 설명), `docs/.vitepress/demos/{이름}/`에 예시 데모 추가
-9. `docs/.vitepress/demos/gallery/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
+9. `docs/.vitepress/demos/catalog/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
 10. `npm run typecheck && npm test && npm run lint` 통과
