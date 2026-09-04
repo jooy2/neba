@@ -1405,8 +1405,8 @@ const GROUPS: Group[] = [
         preview: (
           <HoverCard
             size="sm"
-            trigger={<TextLink href="#jooy2">@jooy2</TextLink>}
-            title="Jooy Lee"
+            trigger={<TextLink href="#nadiarowan">@nadiarowan</TextLink>}
+            title="Nadia Rowan"
             description="Maintainer"
           >
             214 commits this year.

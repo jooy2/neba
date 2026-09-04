@@ -12,7 +12,7 @@ order: 16
 ```tsx
 import { HoverCard, TextLink } from 'neba';
 
-<HoverCard trigger={<TextLink href="/people/jooy2">@jooy2</TextLink>} title="Jooy Lee">
+<HoverCard trigger={<TextLink href="/people/nadiarowan">@nadiarowan</TextLink>} title="Nadia Rowan">
   Maintainer · 214 commits
 </HoverCard>;
 ```

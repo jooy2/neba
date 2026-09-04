@@ -5,12 +5,12 @@ export default function HoverCardHero() {
     <Typography level="body" className="max-w-md text-center">
       Reviewed by{' '}
       <HoverCard
-        trigger={<TextLink href="#jooy2">@jooy2</TextLink>}
-        title="Jooy Lee"
+        trigger={<TextLink href="#nadiarowan">@nadiarowan</TextLink>}
+        title="Nadia Rowan"
         description="Seoul · joined 2019"
       >
         <div className="flex items-center gap-3">
-          <Avatar name="Jooy Lee" size="lg" />
+          <Avatar src="/samples/people/nadia-rowan.jpg" name="Nadia Rowan" size="lg" />
           <div className="flex flex-wrap gap-1.5">
             <Chip size="xs">Maintainer</Chip>
             <Chip size="xs" color="info">
