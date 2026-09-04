@@ -7,10 +7,10 @@ export default function GaugeChartHero() {
         variant="outline"
         label="CPU"
         caption="CPU"
-        value={38}
+        value={0.38}
         format={{ style: 'percent', maximumFractionDigits: 0 }}
         min={0}
-        max={100}
+        max={1}
       />
       <GaugeChart
         variant="outline"

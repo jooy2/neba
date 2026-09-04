@@ -141,6 +141,59 @@ describe('GaugeChart', () => {
     });
   });
 
+  describe('fitting the box', () => {
+    /** The two ends used to be written from the arc's mid radius, which laid
+        them over the band on any dial thick enough, and ran them off the tile
+        whenever `format` spelled the number out. */
+    it('keeps the range labels inside the box', async () => {
+      const screen = await render(
+        <Tile value={0.38} min={0} max={1} format={{ style: 'percent' }} label="CPU" />
+      );
+      const svg = screen.getByRole('img').element().querySelector('svg');
+      const box = svg?.getBoundingClientRect();
+
+      expect(svg?.querySelectorAll('text')).toHaveLength(2);
+
+      for (const label of svg?.querySelectorAll('text') ?? []) {
+        const drawn = label.getBoundingClientRect();
+
+        expect(drawn.left).toBeGreaterThanOrEqual((box?.left ?? 0) - 0.5);
+        expect(drawn.right).toBeLessThanOrEqual((box?.right ?? 0) + 0.5);
+      }
+    });
+
+    it('writes no range on a closed ring, where the two ends are one point', async () => {
+      const screen = await render(<Tile value={64} sweep={360} label="CPU" />);
+
+      expect(screen.getByRole('img').element().querySelectorAll('text')).toHaveLength(0);
+    });
+
+    it('shrinks a long reading rather than running it over the arc', async () => {
+      // A dashboard tile rather than a card: on 320px even nine digits fit at
+      // the cap, and what this is about is the tile that cannot.
+      const narrow = (props: React.ComponentProps<typeof GaugeChart>) => (
+        <div style={{ width: 150 }}>
+          <GaugeChart {...props} />
+        </div>
+      );
+      const screen = await render(narrow({ value: 64, label: 'CPU' }));
+      const short = parseFloat(getComputedStyle(screen.getByText('64').element()).fontSize);
+
+      await screen.rerender(
+        narrow({
+          value: 1234567,
+          max: 2000000,
+          format: { maximumFractionDigits: 0 },
+          label: 'CPU'
+        })
+      );
+
+      const long = parseFloat(getComputedStyle(screen.getByText('1,234,567').element()).fontSize);
+
+      expect(long).toBeLessThan(short);
+    });
+  });
+
   describe('shape', () => {
     it('draws no marks unless it is asked for them', async () => {
       const screen = await render(<Tile value={40} label="CPU" />);

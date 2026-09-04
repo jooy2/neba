@@ -7,11 +7,13 @@ import {
   chartFontSizes,
   compactNumber,
   plotHeights,
-  ringPath
+  ringPath,
+  textWidth,
+  truncate
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { emptyMessages, useMessages } from '../../internal/i18n.js';
-import { cx, metaTextClasses } from '../../internal/styles.js';
+import { cx, hasContent, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -74,6 +76,30 @@ function thresholdColor(
   }
 
   return current;
+}
+
+/**
+ * The largest type size at which a line `units` ems long still sits inside a
+ * circle of radius `r`, given that its middle is `base` above the centre.
+ *
+ * Two things have to fit — half the line's width sideways, and how far its
+ * digits climb above that middle — and both grow with the size being solved
+ * for, so this is a quadratic rather than a division:
+ *
+ *     (units·size / 2·fill)² + (base + cap·size)² = r²
+ *
+ * Solved rather than iterated, because iterating oscillates: a size that does
+ * not fit shrinks, a shorter number climbs less, and the room that frees up
+ * allows a size that does not fit.
+ */
+function fitType(units: number, base: number, r: number, cap: number, fill: number): number {
+  const a = (units * units) / (4 * fill * fill) + cap * cap;
+  const b = 2 * base * cap;
+  const c = base * base - r * r;
+
+  if (a <= 0 || c >= 0) return 0;
+
+  return (Math.sqrt(b * b - 4 * a * c) - b) / (2 * a);
 }
 
 /** Degrees clockwise from twelve o'clock to a point on a circle of radius `r`. */
@@ -149,6 +175,8 @@ export function GaugeChart(rawProps: GaugeChartProps) {
   const plotHeight = typeof height === 'number' ? height : plotHeights[size];
   const fontSize = chartFontSizes[size];
 
+  const band = Math.min(0.9, Math.max(0.05, thickness));
+
   /*
    * How much room the arc needs, as multiples of its own radius.
    *
@@ -157,29 +185,146 @@ export function GaugeChart(rawProps: GaugeChartProps) {
    * centre, a 270° one drops most of a radius past it. Sizing against the box
    * rather than assuming a circle is what keeps a wide, short card from drawing
    * a thin band with an empty half above it.
+   *
+   * `endOut` is a third question the other two do not answer: which way the
+   * arc's two *ends* point, which is the direction the range labels are set
+   * along. On a half-dial that is straight out to the sides and it agrees with
+   * `sideFactor`; past that the arc keeps widening while its ends swing down
+   * and back in.
    */
-  const belowFactor = span >= 360 ? 1 : Math.max(0, -Math.cos((half * Math.PI) / 180));
-  const sideFactor = span >= 180 ? 1 : Math.sin((half * Math.PI) / 180);
+  const halfRadians = (half * Math.PI) / 180;
+  const belowFactor = span >= 360 ? 1 : Math.max(0, -Math.cos(halfRadians));
+  const sideFactor = span >= 180 ? 1 : Math.sin(halfRadians);
+  const endOutX = Math.sin(halfRadians);
+  const endOutY = -Math.cos(halfRadians);
 
-  const margin = fontSize * (showRange ? 1.6 : 0.6);
-  const outer = Math.max(
-    0,
-    Math.min(
-      (width - margin * 2) / (sideFactor * 2),
-      (plotHeight - margin * (belowFactor > 0 ? 2 : 1)) / (1 + belowFactor)
-    )
+  /*
+   * The range labels, cut to a share of the box before anything is sized
+   * against them.
+   *
+   * A `format` that spells a million out in full writes a label three times the
+   * width of the tile, and a dial sized to clear it is a hairline with two
+   * numbers beside it. Cut is the same answer an axis gives a category name too
+   * long for its slot, for the same reason: the dial is the thing being read.
+   *
+   * Past 330° there is no range to write. The two ends have come within a
+   * label's width of each other by then, and `0` and `100` set on top of each
+   * other at six o'clock is not a scale — it is a smudge.
+   */
+  const rangeText =
+    showRange && span < 330
+      ? ([min, max] as const).map((each) =>
+          truncate(formatValue(each), Math.max(0, width * 0.28), fontSize)
+        )
+      : [];
+  const labelWidth = rangeText.reduce(
+    (widest, each) => Math.max(widest, textWidth(each, fontSize)),
+    0
   );
-  const inner = outer * (1 - Math.min(0.9, Math.max(0.05, thickness)));
+
+  /*
+   * What reaches past the arc, and therefore what the box has to keep back.
+   *
+   * A range label goes with the end it names, in one of two arrangements
+   * rather than a blend of them. An end that points sideways — a half-dial's —
+   * has the whole empty width of the tile under it and only a label's width
+   * beside it, so the label is centred *under* the end. An end that already
+   * points downward carries the label on in that direction, clear of the band.
+   *
+   * Either way it is set from the arc's outer edge. Set from the *mid* radius,
+   * which is where these used to go, a label was laid over the band itself the
+   * moment half the band's thickness beat the gap — which a 270° dial was at
+   * every size, and a half-dial was past about 65px of radius.
+   */
+  const edge = fontSize * 0.35;
+  const tickReach = ticks === false ? 0 : fontSize * 0.85;
+  const labelUnder = endOutY <= 0.25;
+  const labelReach = labelUnder ? 0 : fontSize * 0.5;
+  const labelDrop = labelUnder ? fontSize : fontSize * (0.35 + endOutY * 0.55);
+  const labelBelow = rangeText.length > 0 ? endOutY * labelReach + labelDrop + fontSize * 0.25 : 0;
+
+  const sidePad = Math.max(edge, tickReach);
+  const topPad = Math.max(edge, tickReach);
+  const bottomPad = Math.max(edge, tickReach, labelBelow);
+
+  /*
+   * The radius, as the smallest of what each side of the box allows. The last
+   * term is the labels: how far out the ends point, and how much of a label
+   * hangs past its end — half of one centred under it, all of one set outward.
+   */
+  const limits = [
+    (width / 2 - sidePad) / Math.max(0.05, sideFactor),
+    (plotHeight - topPad - bottomPad) / (1 + belowFactor)
+  ];
+
+  if (labelWidth > 0 && endOutX > 0.05) {
+    const outboard = labelUnder ? labelWidth / 2 : labelWidth;
+
+    limits.push(Math.max(0, width / 2 - edge - outboard) / endOutX - labelReach);
+  }
+
+  const outer = Math.max(0, Math.min(...limits));
+  const inner = outer * (1 - band);
 
   const centreX = width / 2;
-  const centreY = margin + outer;
+  // Centred in what the box actually has rather than pinned under the top
+  // margin. A half-dial on a tile as tall as a line chart is a third of its own
+  // box, and the two thirds under it are not the dial's to hold.
+  const drawn = topPad + outer * (1 + belowFactor) + bottomPad;
+  const centreY = topPad + outer + Math.max(0, (plotHeight - drawn) / 2);
 
   const nothing = outer <= 0 || range === 0;
 
-  // The reading sits inside the arc rather than at the geometric centre: on a
-  // half-dial the centre is the bottom edge of the drawing, and text pinned
-  // there would hang out of the box.
-  const textY = centreY - outer + (outer * (1 + belowFactor)) / 2;
+  /*
+   * The reading sits in the middle of the hole the arc leaves, which is not the
+   * middle of the circle: a half-dial's hole stops at the horizontal, so its
+   * middle is half an inner radius up. Measured against `inner` rather than
+   * against the drawing, because what the reading has to stay clear of is the
+   * band and not the box.
+   *
+   * The *reading*, and not the reading and its caption together. A caption
+   * hangs off the number rather than sharing the hole with it, and centring the
+   * pair pushes the number up into the narrow top — which is what a dial
+   * writing `38%` across its own band was doing.
+   */
+  const captionRoom = hasContent(caption) ? fontSize * 1.85 : 0;
+  const textY = centreY - (inner * (1 - Math.min(1, belowFactor))) / 2;
+  const readingRise = Math.min(inner, Math.abs(centreY - textY));
+
+  // How wide the dial is on the row the block straddles, which on a half-dial
+  // is a chord well short of the diameter. It bounds the block, so a `center`
+  // of its own — a node this has no way to measure — is wrapped by the dial
+  // rather than laid out across the tile beside it.
+  const blockRise = Math.min(inner, Math.abs(centreY - textY - captionRoom / 2));
+  const room = Math.sqrt(Math.max(0, inner * inner - blockRise * blockRise)) * 2;
+
+  /*
+   * The reading, sized to the room it actually has rather than to a fixed
+   * multiple of the tick type.
+   *
+   * Twice the tick type is what a dial wants when the number is short, and it
+   * is the cap. What it cannot be is a constant: a reading is a number somebody
+   * formatted, and `38` and `10,000%` are the same prop. Below the tick size
+   * nothing is being read either, so that is the floor, and a number still too
+   * long there is left to run.
+   */
+  const reading = center ?? (value === null ? '—' : formatValue(value));
+  const readingUnits = typeof reading === 'string' ? textWidth(reading, 1) : 0;
+  const readingSize =
+    readingUnits > 0
+      ? Math.max(
+          fontSize,
+          Math.min(
+            fontSize * 2,
+            // 0.42 of the size above the middle is where a digit's top lands,
+            // and 0.86 of the chord is what it may fill. Both keep a little
+            // back, because `textWidth` is a *reservation* estimate and runs
+            // under on punctuation — a `%` is nearly a full em, not the 0.6 it
+            // is counted as.
+            fitType(readingUnits, readingRise, inner, 0.42, 0.86)
+          )
+        )
+      : fontSize * 2;
 
   const tickCount = ticks === false ? 0 : Math.max(2, Math.floor(ticks));
 
@@ -287,29 +432,28 @@ export function GaugeChart(rawProps: GaugeChartProps) {
                   })
                 : null}
 
-              {showRange
-                ? ([[min, from, 'start'] as const, [max, to, 'end'] as const] as const).map(
-                    ([each, at, which]) => {
-                      const [x, y] = pointAt(centreX, centreY, (outer + inner) / 2, at);
-                      // Pushed out along the axis the end actually points down,
-                      // so a half-dial's labels sit beside the arc and a 270°
-                      // dial's sit under it.
-                      const dx = which === 'start' ? -fontSize * 0.6 : fontSize * 0.6;
+              {rangeText.length > 0
+                ? (
+                    [
+                      [rangeText[0], from, 'start'],
+                      [rangeText[1], to, 'end']
+                    ] as const
+                  ).map(([each, at, which]) => {
+                    const [x, y] = pointAt(centreX, centreY, outer + labelReach, at);
 
-                      return (
-                        <text
-                          key={which}
-                          x={x + (span >= 300 ? 0 : dx)}
-                          y={y + fontSize * (span >= 300 ? 1.4 : 0.35)}
-                          textAnchor={span >= 300 ? 'middle' : which === 'start' ? 'end' : 'start'}
-                          fontSize={fontSize}
-                          fill="var(--neba-muted-fg)"
-                        >
-                          {formatValue(each)}
-                        </text>
-                      );
-                    }
-                  )
+                    return (
+                      <text
+                        key={which}
+                        x={x}
+                        y={y + labelDrop}
+                        textAnchor={labelUnder ? 'middle' : which === 'start' ? 'end' : 'start'}
+                        fontSize={fontSize}
+                        fill="var(--neba-muted-fg)"
+                      >
+                        {each}
+                      </text>
+                    );
+                  })
                 : null}
             </svg>
 
@@ -317,14 +461,23 @@ export function GaugeChart(rawProps: GaugeChartProps) {
                 chart is about, so it has to be selectable, findable and in the
                 accessibility tree. */}
             <div
-              className="pointer-events-none absolute inset-x-0 flex flex-col items-center gap-0.5"
-              style={{ top: textY, transform: 'translateY(-50%)' }}
+              className="pointer-events-none absolute inset-x-0 mx-auto flex flex-col items-center gap-0.5 text-center"
+              // Held to the chord it sits on, so a `center` of its own — a node
+              // this has no way to measure — is wrapped by the dial rather than
+              // laid out across the tile beside it.
+              // Offset by half the caption, so what lands on `textY` is the
+              // reading rather than the middle of the two.
+              style={{
+                top: textY + captionRoom / 2,
+                maxWidth: room,
+                transform: 'translateY(-50%)'
+              }}
             >
               <span
                 className="font-semibold tabular-nums text-(--neba-fg)"
-                style={{ fontSize: fontSize * 2 }}
+                style={{ fontSize: readingSize }}
               >
-                {center ?? (value === null ? '—' : formatValue(value))}
+                {reading}
               </span>
               {caption ? (
                 <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size])}>

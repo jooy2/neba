@@ -196,6 +196,18 @@ The fade was fourteen identical copies of one declaration and two state classes.
 
 It is a _stroke_ along the middle of the groove now, whose drawn length is `stroke-dashoffset` — the same technique `ProgressCircular` already used, bent to an arbitrary span. `pathLength="1"` makes the offset the fraction itself. The shape on screen is identical; only `fill` moved to `stroke`.
 
+### A gauge's reading stays inside the dial it is drawn in
+
+Three things about a `GaugeChart` were arithmetic that did not hold once the tile got narrow or the number got long.
+
+The reading was twice the tick type whatever it said, so `10,000%` was written straight across the band and out of the card. It is solved against the hole the arc leaves now — against a chord of the inner circle rather than the tile, because the hole in a half-dial is nothing like as wide as the dial — and it gives way from twice the tick type down to once before it is left to run. The number is also what is centred in the hole, rather than the number and its caption together: a caption underneath belongs to the number, and centring the pair pushed the number up into the narrow top.
+
+The two range labels were written from the arc's _mid_ radius, so a dial thick enough had them lying over its own band — a 270° one at every size, a half-dial past about 65px of radius. They are set from the outer edge now, and in the arrangement the end calls for: centred under an end that points sideways, carried outward from one that already points down. A dial closed past 330° writes no range at all, its two ends having become one point.
+
+And the dial is centred in the box rather than pinned under its top margin. A half-dial on a tile as tall as a line chart was a third of its own card, with the other two thirds empty underneath it.
+
+A `format` that spells a number out is cut to a share of the box before the dial is sized against it, the same answer an axis gives a category name too long for its slot.
+
 ### A TreeView branch opens at a height
 
 A branch was there on one frame and gone on the next, which on a tree deep enough to need one is the whole page jumping — while `Accordion` and `Collapsible`, which do the same thing, both travel. It is a grid row going from `0fr` to `1fr`, so nothing has to be measured, a branch that gains a row while it is open grows with it, and a nested branch opening inside this one is carried by the same track.
