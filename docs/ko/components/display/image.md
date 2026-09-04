@@ -12,7 +12,7 @@ order: 23
 ```tsx
 import { Image } from 'neba';
 
-<Image src={src} alt="낮은 해 아래 능선" ratio="16 / 9" rounded />;
+<Image src={src} alt="아침 안개가 내린 차밭" ratio="16 / 9" rounded />;
 ```
 
 ## Props

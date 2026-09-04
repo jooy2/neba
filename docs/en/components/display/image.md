@@ -12,7 +12,7 @@ order: 23
 ```tsx
 import { Image } from 'neba';
 
-<Image src={src} alt="A ridge of hills under a low sun" ratio="16 / 9" rounded />;
+<Image src={src} alt="Terraced tea fields under morning mist" ratio="16 / 9" rounded />;
 ```
 
 ## Props
