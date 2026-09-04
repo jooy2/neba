@@ -16,6 +16,7 @@ The files under this folder are what the documentation's previews draw on: a pho
 | --------- | ----------------------------------------------------------------------------- |
 | `photos/` | Photographs, at most 560px on the long edge, in the proportion they were shot |
 | `people/` | Head-and-shoulders portraits, 192px square, framed for an avatar              |
+| `logos/`  | Product marks, 128px square, transparent                                      |
 
 The people are fictional. Each was generated without a reference photograph, and the name on a file labels the file rather than standing for anyone.
 

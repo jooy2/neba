@@ -11,6 +11,7 @@ function Mark() {
 export default function AppLogoHero() {
   return (
     <div className="flex flex-wrap items-center gap-8">
+      <AppLogo name="Acme Compass" src="/samples/logos/compass.png" />
       <AppLogo name="Neba" />
       <AppLogo name="Neba" shape="app">
         <Mark />
