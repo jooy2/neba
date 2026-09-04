@@ -50,6 +50,10 @@ They used to move the selection with them, which meant that ticking a row and th
 
 The cover moved with it. It was an `absolute inset-0` layer, which contributes no height, so a cover taller than what it covered — a one-line spoiler under a two-line notice — lost its own reveal button off the bottom edge. It is a grid item spanning every row now, and the box grows to hold it.
 
+Which left the same jump one step further along, because that grid item still _left_ on the press. A cover is a notice over a button, and it is routinely taller than the line it is covering — the docs' own one-sentence example was 92px covered and 73px uncovered — so the box shrank under the press that revealed it and every word on the page below moved. The cover keeps its row now and gives up only the paint and the tab stop, the same answer the way-back lane one row down was already giving.
+
+`maxHeight` is the deliberate exception and stays one: the clamp is there so a long passage is not a page of blur, and releasing it on the reveal is the whole point. A box that kept the clamp would be a box with a scrollbar in it, which is answering a different question.
+
 ### A tab bar says when it has more bar
 
 It already scrolled. What it had no way of saying was that it had: the scrollbar is an overlay on macOS and furniture on Windows, so it is hidden on both and the ends fade instead — through the same two masks `ScrollArea` already uses, which is why there is no new CSS.

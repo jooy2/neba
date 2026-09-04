@@ -94,18 +94,42 @@ describe('Spoiler', () => {
       expect(content.style.filter).toBe('');
     });
 
-    it('takes the button away once the content is out', async () => {
-      const screen = await render(<Spoiler>Secret</Spoiler>);
+    /*
+     * The cover keeps its place in the grid once it is uncovered, and only
+     * gives up the paint and the tab stop. A cover is a notice and a button and
+     * is routinely taller than the line it covers, so one that leaves takes its
+     * own height with it — and the box shrinks under the press that revealed
+     * it, moving every word on the page below.
+     *
+     * Structure rather than pixels, for the reason the way-back lane below
+     * gives: a component test loads no CSS, so `invisible` does nothing here
+     * and only `inert` is observable.
+     */
+    it('holds the cover in place once the content is out', async () => {
+      const screen = await render(<Spoiler data-testid="spoiler">Secret</Spoiler>);
+      const root = screen.getByTestId('spoiler').element();
+      const cover = root.lastElementChild;
+
+      expect(cover).not.toHaveClass('invisible');
+      expect(cover).not.toHaveAttribute('inert');
 
       await screen.getByRole('button', { name: 'Reveal' }).click();
 
-      expect(screen.getByRole('button', { name: 'Reveal' }).query()).toBeNull();
+      expect(root.lastElementChild).toBe(cover);
+      expect(cover).toHaveClass('invisible');
+      expect(cover).toHaveAttribute('inert');
     });
 
     it('starts uncovered when it is told to', async () => {
-      const screen = await render(<Spoiler defaultRevealed>Secret</Spoiler>);
+      const screen = await render(
+        <Spoiler defaultRevealed data-testid="spoiler">
+          Secret
+        </Spoiler>
+      );
+      const root = screen.getByTestId('spoiler').element();
 
-      expect(screen.getByRole('button', { name: 'Reveal' }).query()).toBeNull();
+      expect(root.firstElementChild).not.toHaveAttribute('inert');
+      expect(root.lastElementChild).toHaveAttribute('inert');
     });
 
     it('reports the change', async () => {

@@ -275,35 +275,42 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
             </Button>
           </div>
         ) : null}
-        {open ? null : (
-          <div
-            className={[
-              'z-10 flex flex-col items-center justify-center gap-2 text-center',
-              boxPaddingClasses[density][size],
-              scrimClasses
-            ].join(' ')}
-            // Every row, so it covers the lane the hide button is holding open
-            // as well. `z-index` on a grid item needs no `position`.
-            style={{ gridRow: '1 / -1', gridColumn: '1' }}
-          >
-            {hasContent(notice) ? (
-              <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>
-            ) : null}
+        <div
+          className={cx(
+            'z-10 flex flex-col items-center justify-center gap-2 text-center',
+            boxPaddingClasses[density][size],
+            open ? 'invisible' : scrimClasses
+          )}
+          // Every row, so it covers the lane the hide button is holding open as
+          // well. `z-index` on a grid item needs no `position`.
+          //
+          // Kept in the grid once it is uncovered rather than unmounted, which
+          // is the same answer the hide button's lane gives one row down. A
+          // cover is a notice and a button, and it is routinely taller than the
+          // one line it is covering — so a cover that leaves takes its own
+          // height with it and the box shrinks under the press that revealed it,
+          // moving every word on the page below. `visibility: hidden` holds the
+          // space and gives up the paint; `inert` gives up the rest.
+          style={{ gridRow: '1 / -1', gridColumn: '1' }}
+          inert={open}
+        >
+          {hasContent(notice) ? (
+            <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>
+          ) : null}
 
-            {action ?? (
-              <Button
-                size={size}
-                color={color}
-                density={density}
-                onClick={() => change(true)}
-                aria-expanded={false}
-                aria-controls={contentId}
-              >
-                {label ?? messages.reveal}
-              </Button>
-            )}
-          </div>
-        )}
+          {action ?? (
+            <Button
+              size={size}
+              color={color}
+              density={density}
+              onClick={() => change(true)}
+              aria-expanded={false}
+              aria-controls={contentId}
+            >
+              {label ?? messages.reveal}
+            </Button>
+          )}
+        </div>
       </div>
     );
   }

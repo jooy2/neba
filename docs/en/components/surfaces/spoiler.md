@@ -29,9 +29,11 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### maxHeight
 
-Left out, the box is exactly as tall as what it holds — right for a paragraph or a picture. `maxHeight` clamps the covered box instead, and revealing lets go of the clamp so the content takes whatever height it needs. It takes a CSS length or a number in pixels.
+Left out, the box is exactly as tall as what it holds — right for a paragraph or a picture. The cover keeps its place once the content is out, so a notice and a button taller than the line they were covering do not shrink the box on the press, and nothing on the page below moves.
 
-`reversible` puts the cover back on afterwards, with a hide button under the content. Its row is held open while the content is still covered, so the box is the same height either way and nothing on the page moves when it is pressed.
+`maxHeight` is the one thing that does change the height. It clamps the covered box, and revealing lets go of the clamp so the content takes whatever height it needs; a clamp that stayed on would leave the reader a scrollbar instead. It takes a CSS length or a number in pixels.
+
+`reversible` puts the cover back on afterwards, with a hide button under the content. Its row is held open while the content is still covered, so the way back costs the box no height either.
 
 <Demo src="spoiler/clamped">
 
