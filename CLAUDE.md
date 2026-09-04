@@ -272,6 +272,7 @@ docs/.vitepress/
     styles/docs.css         # the docs' own furniture: Demo frame, props table, home
     custom.css              # the default theme's shell: sidebar, article and outline widths
 docs/public/                # served at `/` — the mark, the icons, llms.txt
+  samples/                  # the pictures the previews draw on: photos, people, logos
 docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
   guide/getting-started.md  # install and set up — the only page in Guide
@@ -310,6 +311,7 @@ Things that will bite:
 - **The locale routing is a three-way agreement.** `vitepress-i18n` puts the root locale in `locales.root` with no path prefix, `vitepress-sidebar` is told to resolve its links against `/`, and `rewrites` is what actually moves `docs/ko/**` to `/`. Change one and every sidebar link 404s — which is exactly what happened when `rewrites` still said `en/:rest*`. Other locales keep their folder as their URL prefix.
 - **A demo is referenced twice, by the same path.** `<Demo src="button/variants">` mounts `demos/button/variants.tsx`, and the `<<< @/.vitepress/demos/button/variants.tsx` snippet inside it is what gets displayed. That is deliberate — the code shown is the file that ran, so the two cannot drift. Blank lines around the `<<<` are required, or Markdown swallows it into the HTML block.
 - **Demos import from `'neba'`**, aliased to `src/index.ts`. The displayed source is then exactly what a consumer would write, and a component edit shows up without a rebuild.
+- **A demo that needs a picture links one out of `docs/public/samples`**, never a drawn SVG and never a remote URL. Photographs are in `photos/`, faces for an avatar in `people/`, product marks in `logos/`; the README beside them records where they came from and under which licence, and a file added there has to be added to that note. A stand-in drawn inline reads as a placeholder, which is the one thing a preview must not look like — and a `filter`, a `frame` or a blur has nothing to work on.
 - **Demos are written in English and shared by every locale** — they are code samples, and the repo writes code in English. Only the two that are documentation rather than sample code (`catalog/all.tsx`, and anything like it) take the `locale` prop `Demo.vue` passes in and localise themselves. Prose belongs in the Markdown around the preview.
 - **A props row carries both languages.** `data/props.ts` keys every description by locale, so a Korean and an English table cannot drift into listing different props.
 - **Tailwind ships without Preflight here.** Preflight resets `h1`…`p`, links and lists globally, which would flatten VitePress's own typography. `scope.css` re-applies only the parts the library depends on (above all `border: 0 solid`) inside `.neba-scope`. Utilities are imported _unlayered_ on purpose: VitePress's theme is unlayered, and a layered rule loses to an unlayered one no matter how specific.
