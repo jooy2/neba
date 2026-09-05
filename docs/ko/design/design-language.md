@@ -223,7 +223,7 @@ transition-duration: var(--neba-duration-fill), var(--neba-duration), …;  /* 3
 
 라이브러리의 모든 popup, panel, sheet, backdrop, toast는 fade합니다. 슬라이드도, 스케일도, 와이프도 없습니다. popup은 **대부분 글자**이기 때문입니다. 포인터가 향하고 있던 메뉴 행, 읽기 시작한 dialog, 손가락 아래의 달력 칸이 모두 글자이고, 표면이 이동하면 그 글자가 전부 함께 이동합니다.
 
-선언 하나와 상태 클래스 둘이며, `internal/styles.ts`에 한 번 쓰여 열여섯 곳이 읽습니다. 컴포넌트마다 따로 정의하면 popup 하나가 나머지와 다르게 동작할 여지가 생깁니다.
+선언 하나와 상태 클래스 둘이며, `internal/styles.ts`에 한 번 쓰여 모든 popup이 그것을 읽습니다. 컴포넌트마다 따로 정의하면 popup 하나가 나머지와 다르게 동작할 여지가 생깁니다.
 
 opacity 외에 바뀌어도 되는 것은 표면 자신의 **크기**뿐이며, 그것도 읽는 사람이 조작했을 때만입니다. 높이가 다른 두 메뉴 사이에서 NavigationMenu의 panel이 크기를 바꾸는 것은 panel이 제자리에 있으면서 내용만 바뀌는 경우입니다.
 

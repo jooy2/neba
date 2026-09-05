@@ -223,7 +223,7 @@ The default is `lift`, which is depth, and `dim`, which is colour. Those are how
 
 Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ (a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving), so a surface that travels drags all of it across the screen for the length of the journey.
 
-It is one declaration and two state classes, written once in `internal/styles.ts` and read by all sixteen. A component that grows its own is a seventeenth chance for one popup to behave unlike the rest.
+It is one declaration and two state classes, written once in `internal/styles.ts` and read by every one of them. A component that defines its own is one more chance for a popup to behave unlike the rest.
 
 The one thing that may travel besides opacity is the surface's own **size**, and only when the reader asked for it: a NavigationMenu's panel resizing between two menus of different heights is the panel staying still while its contents change, not the panel moving.
 

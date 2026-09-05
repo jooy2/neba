@@ -52,7 +52,7 @@ const layoutPaddingProps: PropRow[] = [
     shared: true,
     description: {
       ko: '여백의 크기. Box에서와 같이 높이도 타입 스케일도 건드리지 않으며, 거터를 정하는 spacing과는 별개입니다',
-      en: "The padding's scale. As on Box it never touches a height or the type scale, and it is not the gutter — that is spacing"
+      en: "The padding's scale. As on Box it never touches a height or the type scale, and it is not the gutter: that is spacing"
     }
   },
   {
@@ -187,8 +187,8 @@ function shortcutsProp(element: string, note: Text): PropRow {
     name: 'shortcuts',
     type: `NebaShortcuts<${element}>`,
     description: {
-      ko: `Shortcut이 그리는 그대로 쓴 키 조합과 그때 할 일 — { 'Mod+Enter': send }. Mod는 Mac에서 Command, 나머지에서 Control입니다. ${note.ko}`,
-      en: `Key combinations to act on, spelled the way Shortcut draws them — { 'Mod+Enter': send }. Mod is Command on a Mac and Control everywhere else. ${note.en}`
+      ko: `Shortcut이 그리는 그대로 쓴 키 조합과 그때 할 일. { 'Mod+Enter': send } 형태입니다. Mod는 Mac에서 Command, 나머지에서 Control입니다. ${note.ko}`,
+      en: `Key combinations to act on, spelled the way Shortcut draws them: { 'Mod+Enter': send }. Mod is Command on a Mac and Control everywhere else. ${note.en}`
     }
   };
 }
@@ -246,7 +246,7 @@ function sharedProps(options: SharedOptions): PropRow[] {
       shared: true,
       description: options.densityDescription ?? {
         ko: '여백만 바꿉니다. 높이와 글자 크기는 그대로',
-        en: 'Padding only — never the height, never the type scale'
+        en: 'Padding only: never the height, never the type scale'
       }
     },
     {
@@ -274,7 +274,7 @@ function progressProps(sizeDescription: Text): PropRow[] {
       default: 'null',
       description: {
         ko: 'min과 max 사이의 진행도. null(기본값)은 진행도를 아직 모르는 상태이며, 빈 막대가 아니라 미정 표시로 그려집니다',
-        en: 'How far along, between min and max. null — the default — is indeterminate: an indicator that has not been told a value should say so rather than draw an empty bar'
+        en: 'How far along, between min and max. null(the default) is indeterminate: an indicator that has not been told a value should say so rather than draw an empty bar'
       }
     },
     {
@@ -324,7 +324,7 @@ function progressProps(sizeDescription: Text): PropRow[] {
       name: 'format',
       type: 'Intl.NumberFormatOptions',
       description: {
-        ko: '값을 어떻게 쓸지. 없으면 min…max에 대한 백분율 — 설명되지 않은 범위에서 유일하게 성립하는 표기입니다',
+        ko: '값을 어떻게 쓸지. 없으면 min…max에 대한 백분율, 설명되지 않은 범위에서 유일하게 성립하는 표기입니다',
         en: 'How to write the value. Without it the value is a percentage of min…max, the only formatting that holds for a range nobody described'
       }
     }
@@ -420,7 +420,7 @@ function pickerProps(options: PickerOptions): PropRow[] {
       type: 'Partial<PickerLabels>',
       description: {
         ko: '스크린 리더가 읽는 문자열. 스무 개가 한 벌이라 prop 하나로 받습니다. 기본값은 locale의 표현이고, 날짜 이름은 Intl이 만듭니다',
-        en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set — they default to the locale’s wording, and the date names are not among them, those come from Intl'
+        en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set: they default to the locale’s wording, and the date names are not among them, those come from Intl'
       }
     },
     {
@@ -463,8 +463,8 @@ function calendarProps(minMax: Text): PropRow[] {
       name: 'shouldDisableDate',
       type: '(date: Date) => boolean',
       description: {
-        ko: '범위 안이지만 고를 수 없는 칸 — 주말, 공휴일, 이미 예약된 방. 셀은 그리드에 남은 채 비활성이 되고, 인자로는 그 칸이 만들 값이 들어옵니다',
-        en: 'Blocks individual cells inside the range — weekends, holidays, a room already booked. The cell stays in the grid, unavailable, and the callback is handed the value that cell would produce'
+        ko: '범위 안이지만 고를 수 없는 칸, 주말, 공휴일, 이미 예약된 방. 셀은 그리드에 남은 채 비활성이 되고, 인자로는 그 칸이 만들 값이 들어옵니다',
+        en: 'Blocks individual cells inside the range: weekends, holidays, a room already booked. The cell stays in the grid, unavailable, and the callback is handed the value that cell would produce'
       }
     },
     {
@@ -717,16 +717,16 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       variant: "'text'",
       size: options.size ?? "'md'",
       variantDescription: {
-        ko: '표면의 무게. 차트는 시트가 아니라 그림이므로 기본값이 text입니다 — Card 안에 넣으면 가장자리가 겹치지 않습니다. 혼자 서는 차트에는 outline을 주세요',
+        ko: '표면의 무게. 차트는 시트가 아니라 그림이므로 기본값이 text입니다. Card 안에 넣으면 가장자리가 겹치지 않습니다. 혼자 서는 차트에는 outline을 주세요',
         en: 'Weight of the surface. A chart is a drawing rather than a sheet, so this defaults to text and a chart inside a Card draws no second edge. Use outline for one that stands alone'
       },
       sizeDescription: {
         ko: '축 글자·선 두께·마커 크기, 그리고 height를 주지 않았을 때의 높이',
-        en: 'Axis type, line weight, marker size — and the height, when none is given'
+        en: 'Axis type, line weight, marker size, and the height, when none is given'
       },
       colorDescription: {
-        ko: '시트의 색 계열. series의 색은 여기서 오지 않습니다 — 팔레트나 series.color가 정합니다',
-        en: "The sheet's colour family. A series' colour does not come from here — the palette or series.color decides that"
+        ko: '시트의 색 계열. series의 색은 여기서 오지 않습니다. 팔레트나 series.color가 정합니다',
+        en: "The sheet's colour family. A series' colour does not come from here: the palette or series.color decides that"
       }
     }),
     {
@@ -744,15 +744,15 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       default: "locale's word",
       description: {
         ko: '차트의 접근 가능한 이름. 그림 대신 읽히고, 아래에 숨겨진 데이터 표의 caption이 됩니다. 없으면 locale의 일반 명사가 쓰이지만, 무엇에 대한 차트인지는 여기서만 말할 수 있습니다',
-        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it. Without it the locale's generic word stands in — but what the chart is *of* can only be said here"
+        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it. Without it the locale's generic word stands in, but what the chart is *of* can only be said here"
       }
     },
     {
       name: 'format',
       type: 'Intl.NumberFormatOptions',
       description: {
-        ko: '숫자가 나타나는 모든 곳의 표기 — 축·tooltip·값 라벨·표. 없으면 만 이상은 축약됩니다(12.4K)',
-        en: 'How numbers are written everywhere they appear — the axis, the tooltip, the value labels, the table. Without it, past ten thousand they are compacted (12.4K)'
+        ko: '숫자가 나타나는 모든 곳의 표기, 축·tooltip·값 라벨·표. 없으면 만 이상은 축약됩니다(12.4K)',
+        en: 'How numbers are written everywhere they appear: the axis, the tooltip, the value labels, the table. Without it, past ten thousand they are compacted (12.4K)'
       }
     },
     {
@@ -768,8 +768,8 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       type: 'boolean | NebaChartLegend',
       default: 'series ≥ 2',
       description: {
-        ko: 'series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다 — 색 하나짜리 범례는 제목을 반복할 뿐입니다',
-        en: 'Shown automatically from two series up and left off below that — a legend with one swatch restates the title'
+        ko: 'series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다. 색 하나짜리 범례는 제목을 반복할 뿐입니다',
+        en: 'Shown automatically from two series up and left off below that: a legend with one swatch restates the title'
       }
     },
     {
@@ -777,7 +777,7 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       type: 'boolean | NebaChartTooltip',
       default: 'true',
       description: {
-        ko: '포인터가 무엇을 드러낼지. tooltip에만 있는 값은 없습니다 — 모든 값이 숨겨진 표에도 있습니다',
+        ko: '포인터가 무엇을 드러낼지. tooltip에만 있는 값은 없습니다. 모든 값이 숨겨진 표에도 있습니다',
         en: 'What the pointer uncovers. It never carries a value that is not also in the hidden table'
       }
     },
@@ -830,8 +830,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '축을 그리지 않습니다 — 선도 눈금도 라벨도. 그 자리는 plot에 돌아갑니다',
-        en: 'Leaves the axis undrawn — its rule, its ticks and its labels. The band goes back to the plot'
+        ko: '축을 그리지 않습니다. 선도 눈금도 라벨도. 그 자리는 plot에 돌아갑니다',
+        en: 'Leaves the axis undrawn: its rule, its ticks and its labels. The band goes back to the plot'
       }
     },
     {
@@ -844,7 +844,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: '값 축은 true / true on the value axis',
       description: {
-        ko: '이 축이 plot을 가로질러 긋는 격자선. 값 축은 켜져 있고 category 축은 꺼져 있습니다 — 양쪽 다 켜면 모눈종이가 됩니다',
+        ko: '이 축이 plot을 가로질러 긋는 격자선. 값 축은 켜져 있고 category 축은 꺼져 있습니다. 양쪽 다 켜면 모눈종이가 됩니다',
         en: 'The gridlines this axis casts across the plot. On for the value axis and off for the category axis; both is graph paper'
       }
     },
@@ -882,7 +882,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'thickness',
       type: 'number',
       description: {
-        ko: '축이 눈금과 이름을 위해 잡아 두는 폭(px). 기본값은 눈금 글자에서 측정합니다 — 대시보드에서 두 차트의 plot을 맞출 때 쓰세요',
+        ko: '축이 눈금과 이름을 위해 잡아 두는 폭(px). 기본값은 눈금 글자에서 측정합니다. 대시보드에서 두 차트의 plot을 맞출 때 쓰세요',
         en: 'How much room the axis keeps for its ticks and label, in pixels. Measured from the ticks otherwise; set it to line two charts up on a dashboard'
       }
     }
@@ -977,7 +977,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '선을 같은 hue의 옅은 단계에서 시작해 끝에서 원래 색이 되게 합니다 — 최근 쪽이 진해집니다',
+        ko: '선을 같은 hue의 옅은 단계에서 시작해 끝에서 원래 색이 되게 합니다. 최근 쪽이 진해집니다',
         en: 'Fades the line from a paler step of its own hue at the start to the full colour at the end, so the recent end is the loud one'
       }
     },
@@ -986,8 +986,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: 'null에서 끊지 않고 이어 그립니다. 결측이 수집 과정의 문제일 때만 — 이어진 구간은 차트가 지어낸 숫자입니다',
-        en: 'Draws straight through a null instead of breaking at it. Only when the gap is an artefact of collection — a bridged gap is a number the chart made up'
+        ko: 'null에서 끊지 않고 이어 그립니다. 결측이 수집 과정의 문제일 때만, 이어진 구간은 차트가 지어낸 숫자입니다',
+        en: 'Draws straight through a null instead of breaking at it. Only when the gap is an artefact of collection: a bridged gap is a number the chart made up'
       }
     },
     {
@@ -1005,7 +1005,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: 'series를 쌓습니다. 선 차트에서는 드물고, 쌓을 것이라면 AreaChart가 읽히는 모양입니다',
-        en: 'Stacks the series. Rare on a line chart — an AreaChart is the shape that makes stacking legible'
+        en: 'Stacks the series. Rare on a line chart: an AreaChart is the shape that makes stacking legible'
       }
     },
     ...chartBaseProps({ height: 'size' })
@@ -1037,7 +1037,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'none'",
       description: {
         ko: '점 위의 dot. 채워진 밴드에는 이미 보이는 가장자리가 있으므로 기본이 none입니다',
-        en: 'Dots on the points. none by default — a filled band already has a visible edge'
+        en: 'Dots on the points. none by default: a filled band already has a visible edge'
       }
     },
     {
@@ -1051,7 +1051,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: 'null을 가로질러 이어 그립니다. 선보다 여기서 더 위험합니다 — 채움은 없는 숫자를 더 넓은 면적에 칠합니다',
+        ko: 'null을 가로질러 이어 그립니다. 선보다 여기서 더 위험합니다. 채움은 없는 숫자를 더 넓은 면적에 칠합니다',
         en: 'Draws through a null instead of breaking at it. It matters more here than on a line: a fill paints a made-up number over a larger area'
       }
     },
@@ -1066,7 +1066,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'vertical'",
       shared: true,
       description: {
-        ko: '막대가 자라는 방향. category 이름이 단어라면 horizontal이 정답입니다 — 세로 차트는 이름에 막대 하나만큼의 너비를 줍니다',
+        ko: '막대가 자라는 방향. category 이름이 단어라면 horizontal이 정답입니다. 세로 차트는 이름에 막대 하나만큼의 너비를 줍니다',
         en: 'Which way the bars run. horizontal is right whenever the category names are words: a vertical chart gives each name the width of one bar'
       }
     },
@@ -1084,7 +1084,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '막대의 값 쪽 끝만 둥글게 깎습니다. 기준선 쪽은 각진 채로 — 둥근 발은 축을 물결치게 만듭니다',
+        ko: '막대의 값 쪽 끝만 둥글게 깎습니다. 기준선 쪽은 각진 채로, 둥근 발은 축을 물결치게 만듭니다',
         en: 'Cuts the corners off the data end of each bar. The baseline end stays square; a rounded foot makes the axis look scalloped'
       }
     },
@@ -1132,7 +1132,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'NebaChartAxis',
       description: {
         ko: 'x 축. 여기서는 category 축이 아니라 두 번째 값 축이므로 눈금은 데이터가 아니라 반올림된 수에 놓이고, 격자선도 기본으로 켜집니다',
-        en: 'The x axis. Here it is a second value axis rather than a category axis, so it ticks at rounded numbers rather than at the data — and it casts a grid by default'
+        en: 'The x axis. Here it is a second value axis rather than a category axis, so it ticks at rounded numbers rather than at the data, and it casts a grid by default'
       }
     },
     {
@@ -1145,7 +1145,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'auto' | 'varied' | 'circle' | 'square' | 'triangle' | 'diamond' | 'cross'",
       default: "'auto'",
       description: {
-        ko: '마크의 모양. auto는 색만으로 구분되는 동안 원을, 네 번째 series부터는 series마다 다른 모양을 씁니다. varied는 항상 모양을 나눕니다 — 인쇄하거나 흑백으로 읽을 차트에',
+        ko: '마크의 모양. auto는 색만으로 구분되는 동안 원을, 네 번째 series부터는 series마다 다른 모양을 씁니다. varied는 항상 모양을 나눕니다. 인쇄하거나 흑백으로 읽을 차트에',
         en: 'What each mark is drawn as. auto is a circle while colour alone can carry identity and a shape per series from the fourth on; varied always separates them, which is what a chart that will be printed needs'
       }
     },
@@ -1163,7 +1163,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: 'plot 짧은 변의 1/12 / a twelfth of the plot',
       description: {
-        ko: '가장 큰 bubble의 반지름(px). 나머지는 반지름이 아니라 넓이로 그 아래에 맞춰집니다 — z를 반지름에 쓰면 두 배인 값이 네 배로 보입니다',
+        ko: '가장 큰 bubble의 반지름(px). 나머지는 반지름이 아니라 넓이로 그 아래에 맞춰집니다. z를 반지름에 쓰면 두 배인 값이 네 배로 보입니다',
         en: 'The radius of the largest bubble, in pixels. Everything else is scaled under it by area, not by radius: encode z as a radius and a value twice as large draws a mark four times the size'
       }
     },
@@ -1202,7 +1202,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'sequential' | 'diverging'",
       default: "'sequential'",
       description: {
-        ko: 'sequential은 한 hue의 옅음→진함, diverging은 중립 회색을 사이에 둔 두 hue입니다. diverging은 기준이 되는 0이 실제로 있을 때만 — 없으면 없는 경계를 만들어 냅니다',
+        ko: 'sequential은 한 hue의 옅음→진함, diverging은 중립 회색을 사이에 둔 두 hue입니다. diverging은 기준이 되는 0이 실제로 있을 때만, 없으면 없는 경계를 만들어 냅니다',
         en: 'sequential is one hue pale to deep; diverging is two hues either side of a neutral grey. Reach for diverging only when there is a real zero to diverge about'
       }
     },
@@ -1219,7 +1219,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'min',
       type: 'number',
       description: {
-        ko: '스케일이 시작하는 값. 생략하면 데이터에서 옵니다 — 두 차트를 비교하려면 같은 범위를 주어야 합니다',
+        ko: '스케일이 시작하는 값. 생략하면 데이터에서 옵니다. 두 차트를 비교하려면 같은 범위를 주어야 합니다',
         en: 'Where the scale starts. Taken from the data otherwise, so two charts are not comparable until they are given the same bounds'
       }
     },
@@ -1242,7 +1242,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean | { side, align }',
       default: 'true',
       description: {
-        ko: '양 끝에 값이 붙은 스케일 막대. swatch 목록이 아닙니다 — 여기에는 이름을 가진 것이 없고 순서가 곧 의미입니다',
+        ko: '양 끝에 값이 붙은 스케일 막대. swatch 목록이 아닙니다. 여기에는 이름을 가진 것이 없고 순서가 곧 의미입니다',
         en: 'A scale bar with its ends labelled, not a list of swatches: nothing here has a name and the order is the meaning'
       }
     },
@@ -1336,7 +1336,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: 'span의 양쪽 끝을 둥글게. BarChart와 달리 양쪽 다입니다 — span은 0에서 자라지 않으므로 기준이 되는 끝이 없습니다',
+        ko: 'span의 양쪽 끝을 둥글게. BarChart와 달리 양쪽 다입니다. span은 0에서 자라지 않으므로 기준이 되는 끝이 없습니다',
         en: 'Cuts the corners off a span. Both ends, unlike a BarChart: a span grows from nothing, so neither end is a baseline'
       }
     },
@@ -1349,7 +1349,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'NebaChartDatum[]',
       required: true,
       description: {
-        ko: '조각들. pie는 series가 하나이므로 series 배열이 아니라 값의 배열을 받습니다 — 여기서 정체성을 갖는 것은 조각입니다',
+        ko: '조각들. pie는 series가 하나이므로 series 배열이 아니라 값의 배열을 받습니다. 여기서 정체성을 갖는 것은 조각입니다',
         en: 'The slices. A pie has one series, so it takes the values directly: the slices are the entities here'
       }
     },
@@ -1375,7 +1375,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: '0',
       description: {
-        ko: '첫 조각이 시작하는 각도 — 12시 방향에서 시계 방향으로. semi는 무시합니다',
+        ko: '첫 조각이 시작하는 각도, 12시 방향에서 시계 방향으로. semi는 무시합니다',
         en: 'Where the first slice starts, in degrees clockwise from twelve o’clock. Ignored by semi'
       }
     },
@@ -1439,7 +1439,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: `${COLOR} | string`,
       default: '첫 번째 chart slot / the first chart slot',
       description: {
-        ko: '마크의 색. 전체 차트와 달리 색을 직접 받습니다 — series가 하나이고 팔레트가 나눠 줄 범례도 없기 때문입니다',
+        ko: '마크의 색. 전체 차트와 달리 색을 직접 받습니다. series가 하나이고 팔레트가 나눠 줄 범례도 없기 때문입니다',
         en: "The mark's colour, taken directly unlike the full charts: a sparkline has one series and no legend for a palette to hand out"
       }
     },
@@ -1449,23 +1449,23 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '마지막 점에 dot을 찍습니다. 이만한 크기가 담을 수 있는 유일한 직접 라벨입니다',
-        en: 'Puts a dot on the last point — the one direct label a strip this small has room for'
+        en: 'Puts a dot on the last point: the one direct label a strip this small has room for'
       }
     },
     {
       name: 'baseline',
       type: 'number',
       description: {
-        ko: '이 값의 자리에 가로선을 긋습니다 — 목표, 예산, 작년 평균',
-        en: "Draws a rule across the strip at this value — a target, a budget, last year's average"
+        ko: '이 값의 자리에 가로선을 긋습니다. 목표, 예산, 작년 평균',
+        en: "Draws a rule across the strip at this value: a target, a budget, last year's average"
       }
     },
     {
       name: 'min',
       type: 'number',
       description: {
-        ko: '축의 아래 끝. 생략하면 자기 데이터로 띠를 가득 채웁니다 — 나란히 놓인 둘을 비교하려면 같은 값을 주어야 합니다',
-        en: 'The bottom of the scale. Left out, the strip fills itself with its own range — two side by side are only comparable if both are given the same one'
+        ko: '축의 아래 끝. 생략하면 자기 데이터로 띠를 가득 채웁니다. 나란히 놓인 둘을 비교하려면 같은 값을 주어야 합니다',
+        en: 'The bottom of the scale. Left out, the strip fills itself with its own range: two side by side are only comparable if both are given the same one'
       }
     },
     {
@@ -1533,7 +1533,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '비활성이되 흐려지지 않음. 액션은 존재하지만 여기서는 쓸 수 없다는 뜻',
-        en: 'Inert but not dimmed — the action exists, it just is not available here'
+        en: 'Inert but not dimmed: the action exists, it just is not available here'
       }
     },
     {
@@ -1578,8 +1578,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: "Height and type scale. The same heights as Button, so a row's baseline holds"
       },
       variantDescription: {
-        ko: '표면의 무게. solid도 색으로 채우지 않습니다 — 필드가 담는 것은 사용자 데이터입니다',
-        en: 'Weight of the surface. Even solid is not flooded with colour — a field holds user data'
+        ko: '표면의 무게. solid도 색으로 채우지 않습니다. 필드가 담는 것은 사용자 데이터입니다',
+        en: 'Weight of the surface. Even solid is not flooded with colour: a field holds user data'
       },
       colorDescription: {
         ko: '의미론적 색 역할. 표면은 흰색이므로 가장자리와 포커스 링, 캐럿에만 나타납니다',
@@ -1587,7 +1587,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       elevationDescription: {
         ko: '그림자 깊이. 필드는 떠 있는 표면이 아니므로 거의 올리지 않습니다',
-        en: 'Drop shadow depth. A field is a well, not a surface that floats — rarely raised'
+        en: 'Drop shadow depth. A field is a well, not a surface that floats: rarely raised'
       }
     }),
     {
@@ -1688,6 +1688,14 @@ export const propTables: Record<string, PropRow[]> = {
       ko: '컨트롤에 붙으므로 event.currentTarget이 input 또는 textarea입니다. onKeyDown보다 먼저 실행되고 그것을 대체하지 않으며, 대신 preventDefault를 해 주지도 않습니다',
       en: 'Bound to the control, so event.currentTarget is the input or the textarea. It runs before onKeyDown and does not replace it, and nothing is prevented on your behalf'
     }),
+    {
+      name: 'onChange',
+      type: 'ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>',
+      description: {
+        ko: '네이티브 change 이벤트. 값만 필요하면 `onValueChange`를 쓰세요',
+        en: 'The native change event. Reach for `onValueChange` when only the value matters'
+      }
+    },
     slotsProp('label', 'shell', 'control', 'description', 'error')
   ],
 
@@ -1697,11 +1705,11 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       variantDescription: {
         ko: '표면의 무게. 시트는 염색되지 않으며, solid와 outline은 불투명도와 하이라인으로 갈립니다',
-        en: 'Weight of the surface. The sheet is never dyed — solid and outline differ in opacity and hairline'
+        en: 'Weight of the surface. The sheet is never dyed: solid and outline differ in opacity and hairline'
       },
       colorDescription: {
         ko: '의미론적 색 역할. 표면은 흰색이므로 하이라인에만 나타납니다 (solid에는 테두리가 없어 보이지 않습니다)',
-        en: 'Semantic colour role. The surface is white, so it reaches the hairline only — invisible on solid, which has no border'
+        en: 'Semantic colour role. The surface is white, so it reaches the hairline only: invisible on solid, which has no border'
       },
       sizeDescription: {
         ko: '모서리 반경과 안쪽 여백. 높이도 글자 크기도 건드리지 않습니다',
@@ -1718,7 +1726,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: '안쪽 여백. 이미지·표처럼 가장자리까지 채우는 콘텐츠는 끄세요',
-        en: 'Inner padding. Turn it off for full-bleed content — an image, a table'
+        en: 'Inner padding. Turn it off for full-bleed content: an image, a table'
       }
     },
     {
@@ -1776,7 +1784,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'full'",
       description: {
         ko: 'header와 sidebar 중 어느 쪽이 위쪽 모서리를 차지하는지. full은 헤더가 전체 너비를 가로지르고 사이드바가 그 아래에서 시작하는 웹사이트 배치, content는 사이드바가 창 높이를 다 쓰고 헤더가 그 사이에 놓이는 애플리케이션 배치',
-        en: 'Which of the header and the sidebars takes the top corner. full spans the whole width with the sidebars beginning underneath it — a website; content runs the sidebars the full height with the header between them — an application'
+        en: 'Which of the header and the sidebars takes the top corner. full spans the whole width with the sidebars beginning underneath it(a website; content runs the sidebars the full height with the header between them) an application'
       }
     },
     {
@@ -1803,7 +1811,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'viewport'",
       description: {
         ko: '레이아웃의 높이. viewport는 창 높이, auto는 부모 높이(Mockup 화면 안의 앱 셸이나 미리보기용), 길이를 주면 그 값. 숫자는 픽셀',
-        en: "How tall the layout is. viewport is the window's, auto is its parent's — an app shell inside a Mockup's screen, a preview — and a length is exactly that. Numbers are pixels"
+        en: "How tall the layout is. viewport is the window's, auto is its parent's(an app shell inside a Mockup's screen, a preview) and a length is exactly that. Numbers are pixels"
       }
     },
     {
@@ -1859,7 +1867,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: '문서 맨 앞에 “본문으로 건너뛰기” 링크를 둡니다. focus를 받을 때만 그려지므로 눈으로 보는 독자에게는 비용이 없습니다',
-        en: 'Puts a "Skip to content" link first in the document, drawn only while it holds the focus — so it costs a sighted reader nothing'
+        en: 'Puts a "Skip to content" link first in the document, drawn only while it holds the focus, so it costs a sighted reader nothing'
       }
     },
     {
@@ -1883,8 +1891,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'mainProps',
       type: "Omit<ComponentPropsWithoutRef<'main'>, 'id' | 'children'>",
       description: {
-        ko: 'main에 더 넘길 것들 — className, aria-label',
-        en: 'Anything else the main needs — a className, an aria-label'
+        ko: 'main에 더 넘길 것들, className, aria-label',
+        en: 'Anything else the main needs: a className, an aria-label'
       }
     },
     {
@@ -1918,20 +1926,20 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'brand',
       type: 'ReactNode',
       description: {
-        ko: '앞쪽 자리 — 로고, 제품 이름, 모든 페이지에서 같은 것. 보통 AppLogo',
+        ko: '앞쪽 자리, 로고, 제품 이름, 모든 페이지에서 같은 것. 보통 AppLogo',
         en: "The leading slot: the logo, the product's name, the thing that is the same on every page. An AppLogo, usually"
       }
     },
     {
       name: 'children',
       type: 'ReactNode',
-      description: { ko: '가운데 자리 — 대개 탐색', en: 'The middle slot, usually the navigation' }
+      description: { ko: '가운데 자리, 대개 탐색', en: 'The middle slot, usually the navigation' }
     },
     {
       name: 'actions',
       type: 'ReactNode',
       description: {
-        ko: '뒤쪽 자리 — 계정 메뉴, 테마 전환, 주요 행동. 끝에 붙여 배치되므로 버튼 여러 개를 감쌀 필요가 없습니다',
+        ko: '뒤쪽 자리, 계정 메뉴, 테마 전환, 주요 행동. 끝에 붙여 배치되므로 버튼 여러 개를 감쌀 필요가 없습니다',
         en: 'The trailing slot: the account menu, the theme switch, the call to action. Laid out end-aligned, so a row of buttons needs no wrapper'
       }
     },
@@ -1941,7 +1949,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'start'",
       shared: true,
       description: {
-        ko: '가운데 자리가 어디에 놓이는지. center는 남는 공간이 아니라 바 자체의 중심선에 놓습니다 — 그러려고 양끝에 같은 몫을 줍니다',
+        ko: '가운데 자리가 어디에 놓이는지. center는 남는 공간이 아니라 바 자체의 중심선에 놓습니다. 그러려고 양끝에 같은 몫을 줍니다',
         en: "Where the middle slot sits. center puts it on the bar's own midline rather than in the space left over, which is what giving both ends an equal share is for"
       }
     },
@@ -2008,8 +2016,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '안에 들어가는 모든 것. 링크 열, 저작권 줄, 로고 — 컴포넌트가 짐작할 수 없는 것들이라 자리를 나누지 않습니다',
-        en: 'Everything in it — columns of links, a copyright line, a logo. None of it something a component could guess at, which is why this one has slots for nothing'
+        ko: '안에 들어가는 모든 것. 링크 열, 저작권 줄, 로고, 컴포넌트가 짐작할 수 없는 것들이라 자리를 나누지 않습니다',
+        en: 'Everything in it: columns of links, a copyright line, a logo. None of it something a component could guess at, which is why this one has slots for nothing'
       }
     },
     {
@@ -2075,7 +2083,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '안에 들어가는 것 — 탐색, 필터 패널, 목차',
+        ko: '안에 들어가는 것, 탐색, 필터 패널, 목차',
         en: 'Everything in it: a nav, a filter panel, a table of contents'
       }
     },
@@ -2095,7 +2103,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'size',
       description: {
         ko: '열의 너비. 숫자는 픽셀. resizable일 때는 시작 너비이며, 드래그가 이 값을 덮어씁니다',
-        en: 'How wide the column is. Numbers are pixels. With resizable it is only the width the sidebar starts at — dragging writes over it'
+        en: 'How wide the column is. Numbers are pixels. With resizable it is only the width the sidebar starts at: dragging writes over it'
       }
     },
     {
@@ -2149,7 +2157,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       description: {
         ko: 'drawer가 열려 있는지. 접힌 뒤에만 의미가 있습니다. PageLayout 안에서는 레이아웃이 이 상태를 가지므로 거기서 다루세요',
-        en: 'Whether the drawer is open — only meaningful once it has collapsed. Inside a PageLayout the layout owns this, so control it there'
+        en: 'Whether the drawer is open: only meaningful once it has collapsed. Inside a PageLayout the layout owns this, so control it there'
       }
     },
     {
@@ -2175,7 +2183,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: '페이지가 지나가는 동안 자리를 지키는지. 헤더 아래에서 시작해 남은 창 높이만큼인 sticky 열이 됩니다',
-        en: 'Whether the column holds its place while the page scrolls past it — a sticky column as tall as what is left of the window under the header'
+        en: 'Whether the column holds its place while the page scrolls past it: a sticky column as tall as what is left of the window under the header'
       }
     },
     {
@@ -2219,7 +2227,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       default: "locale('Sidebar')",
       description: {
-        ko: '영역의 이름. 사이드바가 둘인 페이지는 반드시 써야 합니다 — 아니면 스크린 리더가 “complementary”라는 영역 두 개를 내놓습니다',
+        ko: '영역의 이름. 사이드바가 둘인 페이지는 반드시 써야 합니다. 아니면 스크린 리더가 “complementary”라는 영역 두 개를 내놓습니다',
         en: 'The name the region is announced by. A page with two sidebars must have one, or a screen reader offers two regions called "complementary"'
       }
     },
@@ -2251,7 +2259,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'PageLayout',
       description: {
         ko: '버튼이 나타나는 너비. 사이드바가 접히는 그 너비이며, PageLayout에서 정하는 것이 맞습니다',
-        en: 'The width below which the button appears — the same one the sidebar collapses at. Inherited from the PageLayout, which is where it should be set'
+        en: 'The width below which the button appears: the same one the sidebar collapses at. Inherited from the PageLayout, which is where it should be set'
       }
     },
     {
@@ -2285,8 +2293,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '마크를 마크업으로. 대개 인라인 svg이며, src보다 우선합니다 — 문서의 일부가 된 마크는 페이지의 색을 따르고, 요청이 하나 줄고, 늦게 도착할 수 없습니다',
-        en: "The artwork as markup — an inline svg, usually. It beats src: a mark that is part of the document takes the page's own colours, needs no second request, and cannot arrive late"
+        ko: '마크를 마크업으로. 대개 인라인 svg이며, src보다 우선합니다. 문서의 일부가 된 마크는 페이지의 색을 따르고, 요청이 하나 줄고, 늦게 도착할 수 없습니다',
+        en: "The artwork as markup: an inline svg, usually. It beats src: a mark that is part of the document takes the page's own colours, needs no second request, and cannot arrive late"
       }
     },
     {
@@ -2309,7 +2317,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'name',
       type: 'string',
       description: {
-        ko: '제품 이름. 한 prop이 세 가지 일을 합니다 — 마크의 이름이 되고, 마크가 아예 없으면 로고타이프로 그려지고, 타일에서는 이니셜의 출처가 됩니다',
+        ko: '제품 이름. 한 prop이 세 가지 일을 합니다. 마크의 이름이 되고, 마크가 아예 없으면 로고타이프로 그려지고, 타일에서는 이니셜의 출처가 됩니다',
         en: "The product's name. One prop doing three jobs: it names the artwork, it is drawn as the logotype when there is no artwork at all, and its initials are what a tile falls back to"
       }
     },
@@ -2343,7 +2351,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'bare'",
       description: {
         ko: '마크를 두르는 방식. bare는 준 그대로(배경도 자르기도 여백도 없음), app은 모서리를 깎은 채워진 타일 안에 넣은 앱 아이콘, circle은 같은 타일을 둥글게',
-        en: 'How the artwork is framed. bare draws it as it was given — no plate, no crop, no padding; app is an app icon, a filled tile with the artwork inset and the corners cut off; circle is the same tile, round'
+        en: 'How the artwork is framed. bare draws it as it was given: no plate, no crop, no padding; app is an app icon, a filled tile with the artwork inset and the corners cut off; circle is the same tile, round'
       }
     },
     ...sharedProps({
@@ -2355,8 +2363,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Weight of the tile behind the artwork. Nothing at all on bare, which draws no tile'
       },
       sizeDescription: {
-        ko: '마크의 높이 — 컨트롤 높이 사다리라, 헤더에서 로고와 옆의 버튼이 같은 높이가 됩니다. bare는 높이만 정하고 너비는 마크의 비율대로',
-        en: "How tall the mark is — the control heights, so a logo and the button beside it in a header are the same height. On bare only the height is set and the width follows the artwork's own proportions"
+        ko: '마크의 높이, 컨트롤 높이 사다리라, 헤더에서 로고와 옆의 버튼이 같은 높이가 됩니다. bare는 높이만 정하고 너비는 마크의 비율대로',
+        en: "How tall the mark is: the control heights, so a logo and the button beside it in a header are the same height. On bare only the height is set and the width follows the artwork's own proportions"
       }
     }),
     {
@@ -2365,7 +2373,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: '앱 아이콘의 글리프처럼 마크를 타일 가장자리에서 안쪽으로 들입니다. 타일을 꽉 채우도록 그린 마크(파비콘, 사진)면 끕니다',
-        en: "Insets the artwork from the tile's edge, the way an app icon's glyph is. Turn it off for a mark drawn to fill the tile — a favicon, a photograph"
+        en: "Insets the artwork from the tile's edge, the way an app icon's glyph is. Turn it off for a mark drawn to fill the tile: a favicon, a photograph"
       }
     },
     {
@@ -2388,8 +2396,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'imageProps',
       type: "Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'srcSet' | 'alt'>",
       description: {
-        ko: 'img에 더 넘길 것들 — loading, decoding, crossOrigin',
-        en: 'Anything else the img needs — loading, decoding, crossOrigin'
+        ko: 'img에 더 넘길 것들, loading, decoding, crossOrigin',
+        en: 'Anything else the img needs: loading, decoding, crossOrigin'
       }
     },
     renderProp('render={<h1 />}')
@@ -2401,8 +2409,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: RESPONSIVE_MEASURE,
       default: "'none'",
       description: {
-        ko: '내용이 넓어질 수 있는 한계. 사다리 한 단계(xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem)이거나 직접 쓴 길이 — 60ch, min(90vw, 72rem), 숫자는 px — 이며, { xs: "none", lg: "xl" }처럼 breakpoint별로 줄 수 있습니다. 기본값 none은 제한 없음',
-        en: 'How wide the content may get. A step of the measure ladder (xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem) or a length of your own — 60ch, min(90vw, 72rem), a number for pixels — and it may change at a breakpoint: { xs: "none", lg: "xl" }. The default, none, is no limit'
+        ko: '내용이 넓어질 수 있는 한계. 사다리 한 단계(xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem)이거나 직접 쓴 길이(60ch, min(90vw, 72rem), 숫자는 px)이며, { xs: "none", lg: "xl" }처럼 breakpoint별로 줄 수 있습니다. 기본값 none은 제한 없음',
+        en: 'How wide the content may get. A step of the measure ladder (xs 30rem, sm 40rem, md 48rem, lg 64rem, xl 80rem) or a length of your own(60ch, min(90vw, 72rem), a number for pixels) and it may change at a breakpoint: { xs: "none", lg: "xl" }. The default, none, is no limit'
       }
     },
     {
@@ -2421,7 +2429,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: 'maxWidth가 페이지보다 좁을 때 가운데로 놓습니다. maxWidth가 none이면 남는 공간이 없으므로 아무 일도 하지 않습니다',
-        en: 'Centres the content once maxWidth is narrower than the page. No effect while maxWidth is none — there is nothing left over to centre in'
+        en: 'Centres the content once maxWidth is narrower than the page. No effect while maxWidth is none: there is nothing left over to centre in'
       }
     },
     renderProp('<main />'),
@@ -2448,7 +2456,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '2',
       description: {
         ko: '항목 사이의 거터. Tailwind 간격 스케일이라 4는 1rem이며, 소수점도 받습니다 (1.5 → 0.375rem)',
-        en: "The gutter between items, on Tailwind's spacing scale — 4 is 1rem. Fractions are allowed: 1.5 is 0.375rem"
+        en: "The gutter between items, on Tailwind's spacing scale: 4 is 1rem. Fractions are allowed: 1.5 is 0.375rem"
       }
     },
     {
@@ -2467,7 +2475,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'justifyContent',
       type: JUSTIFY_CONTENT,
       description: {
-        ko: '한 줄이 쓰고 남은 공간을 어떻게 나눌지. prop으로 직접 받습니다 — sx도 className도 필요 없습니다',
+        ko: '한 줄이 쓰고 남은 공간을 어떻게 나눌지. prop으로 직접 받습니다. sx도 className도 필요 없습니다',
         en: 'How a row distributes the space its items did not use. A prop of its own, not something to reach for sx or className for'
       }
     },
@@ -2502,8 +2510,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '안쪽 여백. 이미 여백을 가진 것 안에 있다면 끄세요 — Container, Card, 또 다른 그리드',
-        en: 'Inner padding. Turn it off when the grid already sits inside something that pads — a Container, a Card, another grid'
+        ko: '안쪽 여백. 이미 여백을 가진 것 안에 있다면 끄세요. Container, Card, 또 다른 그리드',
+        en: 'Inner padding. Turn it off when the grid already sits inside something that pads: a Container, a Card, another grid'
       }
     },
     ...layoutPaddingProps,
@@ -2521,7 +2529,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: RESPONSIVE,
       default: 'a full row',
       description: {
-        ko: '컨테이너의 칸을 몇 개 차지할지. 브레이크포인트마다 다르게 줄 수 있습니다 — { xs: 12, md: 6 }. 줄보다 넓은 span은 넘치지 않고 줄에 맞춰 잘립니다',
+        ko: '컨테이너의 칸을 몇 개 차지할지. 브레이크포인트마다 다르게 줄 수 있습니다. { xs: 12, md: 6 }. 줄보다 넓은 span은 넘치지 않고 줄에 맞춰 잘립니다',
         en: "How many of the container's columns the item takes. Per-breakpoint as { xs: 12, md: 6 }. A span wider than the row is clamped to the row rather than overflowing"
       }
     },
@@ -2531,7 +2539,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '0',
       description: {
         ko: '항목 앞에 밀어 넣는 빈 칸 수. 줄의 시작에서 센 절대 위치가 아니라 항목 앞에 들어가는 공간입니다',
-        en: 'Columns left empty ahead of the item — space pushed in before it, not an absolute position counted from the start of the row'
+        en: 'Columns left empty ahead of the item: space pushed in before it, not an absolute position counted from the start of the row'
       }
     },
     {
@@ -2588,7 +2596,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '헤더 행 끝에 고정되는 내용. 메뉴 버튼이나 상태 칩',
-        en: 'Content pinned to the end of the header row — a menu button, a status chip'
+        en: 'Content pinned to the end of the header row: a menu button, a status chip'
       }
     },
     {
@@ -2875,7 +2883,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       required: true,
       description: {
-        ko: '측정된 양. 필수이며, 이것이 ProgressLinear와의 차이입니다 — meter는 이미 알려진 양을 보고하므로 미정 상태가 없습니다',
+        ko: '측정된 양. 필수이며, 이것이 ProgressLinear와의 차이입니다. meter는 이미 알려진 양을 보고하므로 미정 상태가 없습니다',
         en: 'How much there is. Required, and that is the difference from ProgressLinear: a meter reports a quantity that is already known, so there is no indeterminate case'
       }
     },
@@ -3115,7 +3123,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'vertical'",
       shared: true,
       description: {
-        ko: '스크롤할 수 있는 축. NebaOrientation에 값 하나를 더한 형태입니다 — both는 그 타입을 쓰는 다른 컴포넌트에서는 의미가 없습니다',
+        ko: '스크롤할 수 있는 축. NebaOrientation에 값 하나를 더한 형태입니다. both는 그 타입을 쓰는 다른 컴포넌트에서는 의미가 없습니다',
         en: "Which axes may scroll. NebaOrientation plus a third value: 'both' means nothing anywhere else that type is used"
       }
     },
@@ -3193,7 +3201,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'errors',
       type: 'Record<string, string | string[]>',
       description: {
-        ko: '브라우저 바깥에서 온 오류 — 서버, form action, 스키마 — 를 field의 name으로 키를 잡아 전달합니다. 해당 field에 표시되고 그 field가 바뀌면 사라집니다',
+        ko: '브라우저 바깥에서 온 오류(서버, form action, 스키마)를 field의 name으로 키를 잡아 전달합니다. 해당 field에 표시되고 그 field가 바뀌면 사라집니다',
         en: "Errors from outside the browser's own validation, keyed by the name of the field each belongs to. Shown on that field and cleared as soon as it changes"
       }
     },
@@ -3483,7 +3491,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'rel',
       type: 'string',
       description: {
-        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다 — nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다. nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
         en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
       }
     },
@@ -3523,7 +3531,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '패널의 내용. 보통 NavigationMenuLink들입니다',
-        en: "The panel's contents — usually NavigationMenuLinks"
+        en: "The panel's contents: usually NavigationMenuLinks"
       }
     }
   ],
@@ -3649,7 +3657,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '각 항목 둘레에 페이지 표면색 실선을 그립니다. 비슷한 톤의 형태 둘이 겹치면 그 사이에 경계가 전혀 없기 때문입니다',
-        en: 'Draws a hairline in the page own surface colour around each item — two shapes of similar tone laid over each other have no edge between them at all'
+        en: 'Draws a hairline in the page own surface colour around each item: two shapes of similar tone laid over each other have no edge between them at all'
       }
     },
     {
@@ -3668,7 +3676,7 @@ export const propTables: Record<string, PropRow[]> = {
       shared: true,
       description: {
         ko: '항목마다 더해지는 지연(ms). 더미가 나타나는 대신 한 장씩 놓이게 만드는 값입니다',
-        en: 'Milliseconds added to each item delay in turn — what makes the pile look dealt rather than appeared'
+        en: 'Milliseconds added to each item delay in turn: what makes the pile look dealt rather than appeared'
       }
     },
     {
@@ -3876,7 +3884,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       required: true,
       description: {
-        ko: '가리키는 fragment — #getting-started. 여기 적힌 id를 목록이 지켜봅니다',
+        ko: '가리키는 fragment, #getting-started. 여기 적힌 id를 목록이 지켜봅니다',
         en: 'The fragment it points at. The id it names is what the list watches'
       }
     },
@@ -4362,8 +4370,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'description',
       type: 'ReactNode',
       description: {
-        ko: '라벨 아래 한 줄 — 어디로 가는지, 무엇을 바꾸는지',
-        en: 'A second line under it — where the command goes, or what it changes'
+        ko: '라벨 아래 한 줄, 어디로 가는지, 무엇을 바꾸는지',
+        en: 'A second line under it: where the command goes, or what it changes'
       }
     },
     {
@@ -4453,7 +4461,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'readonly NebaThreshold[]',
       description: {
         ko: '호의 색이 바뀌는 지점들. Meter와 같은 { from, color } 항목이고 규칙도 같습니다',
-        en: 'Where the arc changes colour — the same { from, color } entries a Meter takes, with the same rule'
+        en: 'Where the arc changes colour: the same { from, color } entries a Meter takes, with the same rule'
       }
     },
     {
@@ -4486,7 +4494,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'caption',
       type: 'ReactNode',
       description: {
-        ko: '값 아래 한 줄 — 단위, 또는 무엇을 재고 있는지',
+        ko: '값 아래 한 줄, 단위, 또는 무엇을 재고 있는지',
         en: 'A line under the value: the unit, or what is being measured'
       }
     },
@@ -4562,7 +4570,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '켜짐도 꺼짐도 아닌 중간 상태. 하위 항목 일부만 체크된 부모 체크박스',
-        en: 'Neither ticked nor unticked — a parent whose children disagree'
+        en: 'Neither ticked nor unticked: a parent whose children disagree'
       }
     },
     {
@@ -4640,8 +4648,8 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'vertical'",
       shared: true,
       description: {
-        ko: '옵션이 쌓이는 방향. 세로가 기본입니다 — 가로는 라벨이 길어지는 순간 읽을 수 없어집니다',
-        en: 'Which way the options stack. Vertical by default — a row breaks the moment one label is long'
+        ko: '옵션이 쌓이는 방향. 세로가 기본입니다. 가로는 라벨이 길어지는 순간 읽을 수 없어집니다',
+        en: 'Which way the options stack. Vertical by default: a row breaks the moment one label is long'
       }
     },
     ...fieldProps,
@@ -4789,6 +4797,14 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Identifies the field when a form is submitted'
       }
     },
+    {
+      name: 'required',
+      type: 'boolean',
+      description: {
+        ko: '폼을 제출하기 전에 값을 골라야 하는지',
+        en: 'Whether a value must be chosen before the form is submitted'
+      }
+    },
     ...inertProps,
     slotsProp('label', 'control', 'description', 'error', 'popup', 'item')
   ],
@@ -4825,7 +4841,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(value: TreeViewValue[]) => void',
       description: {
         ko: '선택이 바뀔 때. single에서도 배열로 옵니다',
-        en: 'Called when the selection changes — an array even in single mode'
+        en: 'Called when the selection changes: an array even in single mode'
       }
     },
     {
@@ -4848,7 +4864,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '트리를 거르는 필드를 위에 붙입니다. 일치한 노드는 조상과 함께 남고 남은 가지는 펼쳐집니다 — 조상 없는 일치는 목록이고, 접힌 일치는 보여 주지 않은 일치입니다',
+        ko: '트리를 거르는 필드를 위에 붙입니다. 일치한 노드는 조상과 함께 남고 남은 가지는 펼쳐집니다. 조상 없는 일치는 목록이고, 접힌 일치는 보여 주지 않은 일치입니다',
         en: 'Adds a field above the tree that filters it. A match keeps its ancestors and every kept branch is opened: a match without them is a list, and a folded one was not shown'
       }
     },
@@ -4905,7 +4921,56 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '폼 제출 시의 필드 이름. 값 하나당 hidden input 하나로 나갑니다',
-        en: 'Identifies the field when a form is submitted — one hidden input per value'
+        en: 'Identifies the field when a form is submitted: one hidden input per value'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열려 있는지. `onOpenChange`와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the popup is open. Use with `onOpenChange` for a controlled popup'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열린 채로 시작할지',
+        en: 'Whether the popup starts open'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '팝업이 열리거나 닫힐 때',
+        en: 'Called when the popup opens or closes'
+      }
+    },
+    {
+      name: 'placeholder',
+      type: 'ReactNode',
+      description: {
+        ko: '아무것도 고르지 않았을 때 트리거에 보이는 내용',
+        en: 'Shown in the trigger while nothing is chosen'
+      }
+    },
+    {
+      name: 'clearable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '값을 비우는 ×를 트리거에 답니다',
+        en: 'Offers the × that empties the control'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '이 컴포넌트가 스스로 쓰는 문자열의 BCP 47 태그',
+        en: 'BCP 47 tag deciding the strings it draws on its own behalf'
       }
     },
     slotsProp('popup', 'tree', 'item', 'empty'),
@@ -4966,11 +5031,11 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       sizeDescription: {
         ko: '칸의 높이와 타입 스케일. md에서 32px로 Button·TextField와 같은 사다리입니다',
-        en: 'The height of a cell and the type scale — 32px at md, the same ladder as a Button'
+        en: 'The height of a cell and the type scale: 32px at md, the same ladder as a Button'
       },
       elevationDescription: {
         ko: '그림자 깊이. 페이지 안에 앉은 달력은 떠 있지 않으므로 기본값은 0입니다',
-        en: 'Drop shadow depth. 0 by default — a calendar sitting in a page is not floating'
+        en: 'Drop shadow depth. 0 by default: a calendar sitting in a page is not floating'
       }
     }).filter((row) => row.name !== 'variant' && row.name !== 'density'),
     {
@@ -4978,8 +5043,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'single' | 'multiple' | 'range'",
       default: "'single'",
       description: {
-        ko: '값이 무엇인지를 정합니다 — 하루, 날들의 배열, { start, end } 구간',
-        en: 'Decides what the value is — one day, an array of them, or a { start, end } span'
+        ko: '값이 무엇인지를 정합니다. 하루, 날들의 배열, { start, end } 구간',
+        en: 'Decides what the value is: one day, an array of them, or a { start, end } span'
       }
     },
     {
@@ -5026,7 +5091,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'day' | 'month' | 'year'",
       default: "'day'",
       description: {
-        ko: '클릭이 무엇을 고르는지 — 하루, 한 달, 한 해. DatePicker와 같습니다',
+        ko: '클릭이 무엇을 고르는지, 하루, 한 달, 한 해. DatePicker와 같습니다',
         en: 'Which unit a click chooses: a day, a whole month, a whole year. The same as on DatePicker'
       }
     },
@@ -5034,8 +5099,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'renderDay',
       type: '(date: Date) => ReactNode',
       description: {
-        ko: '날짜 칸이 숫자 아래에 그리는 것 — 점, 개수, 막대. 하루치 일정을 담을 자리가 아닙니다',
-        en: 'What a day cell draws under its number — a dot, a count, a bar. Not room for a day of entries'
+        ko: '날짜 칸이 숫자 아래에 그리는 것, 점, 개수, 막대. 하루치 일정을 담을 자리가 아닙니다',
+        en: 'What a day cell draws under its number: a dot, a count, a bar. Not room for a day of entries'
       }
     },
     {
@@ -5087,8 +5152,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Weight of the surface. The same shell as a TextField and a Select'
       },
       sizeDescription: {
-        ko: '높이와 타입 스케일. 달력의 한 칸도 같은 사다리를 씁니다 — md는 32px',
-        en: 'Height and type scale. A day cell is on the same ladder — 32px at md'
+        ko: '높이와 타입 스케일. 달력의 한 칸도 같은 사다리를 씁니다. md는 32px',
+        en: 'Height and type scale. A day cell is on the same ladder: 32px at md'
       },
       elevationDescription: {
         ko: '트리거의 그림자 깊이. 팝업은 자기 그림자를 따로 가집니다',
@@ -5118,7 +5183,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'day' | 'month' | 'year'",
       default: "'day'",
       description: {
-        ko: '무엇을 묻는지 — 하루, 한 달, 한 해. month와 year는 그 그리드에서 열려 거기서 끝나고, 값은 고른 단위의 첫날(3월 1일, 1월 1일)이 됩니다. format 기본값과 푸터 버튼, name이 제출하는 문자열, 아래 세 프롭이 읽는 단위가 모두 여기를 따릅니다',
+        ko: '무엇을 묻는지, 하루, 한 달, 한 해. month와 year는 그 그리드에서 열려 거기서 끝나고, 값은 고른 단위의 첫날(3월 1일, 1월 1일)이 됩니다. format 기본값과 푸터 버튼, name이 제출하는 문자열, 아래 세 프롭이 읽는 단위가 모두 여기를 따릅니다',
         en: 'Which unit the picker asks for: a day, a whole month, a whole year. At month and year the calendar opens on that grid and stops there, and the value is the first day of what was chosen. The default format, the footer button, what name submits and the unit the three props below are read at all follow it'
       }
     },
@@ -5131,8 +5196,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '푸터에 지금 단위로 가는 단축 버튼 — granularity에 따라 오늘·이번 달·올해',
-        en: 'Offers the shortcut to the current unit in the footer — today, this month or this year'
+        ko: '푸터에 지금 단위로 가는 단축 버튼, granularity에 따라 오늘·이번 달·올해',
+        en: 'Offers the shortcut to the current unit in the footer: today, this month or this year'
       }
     },
     ...pickerProps({
@@ -5143,7 +5208,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       submitted: {
         ko: '폼 제출 시의 필드 이름. 값은 granularity를 따라 YYYY-MM-DD · YYYY-MM · YYYY로, UTC가 아니라 로컬 기준입니다',
-        en: 'Identifies the field when a form is submitted, written at granularity — YYYY-MM-DD, YYYY-MM or YYYY, local rather than UTC'
+        en: 'Identifies the field when a form is submitted, written at granularity: YYYY-MM-DD, YYYY-MM or YYYY, local rather than UTC'
       }
     })
   ],
@@ -5161,8 +5226,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'value',
       type: 'Date | null',
       description: {
-        ko: '선택된 시각. Date이므로 날짜도 함께 지닙니다 — referenceDate를 보세요',
-        en: 'The chosen time. A Date, so it carries a day as well — see referenceDate'
+        ko: '선택된 시각. Date이므로 날짜도 함께 지닙니다. referenceDate를 보세요',
+        en: 'The chosen time. A Date, so it carries a day as well: see referenceDate'
       }
     },
     {
@@ -5189,7 +5254,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'Date | null',
       description: {
         ko: '고를 수 있는 가장 이른 시각. 날짜는 무시하고 시계만 읽습니다. 열이 그리는 범위 단위로 비교하므로 09:30이면 9시는 남고 그 앞의 분들이 빠집니다',
-        en: 'The earliest time of day that may be chosen — only the clock is read. Compared against the span a row stands for, so 09:30 keeps the hour 9 and greys out the minutes before it'
+        en: 'The earliest time of day that may be chosen: only the clock is read. Compared against the span a row stands for, so 09:30 keeps the hour 9 and greys out the minutes before it'
       }
     },
     {
@@ -5210,7 +5275,7 @@ export const propTables: Record<string, PropRow[]> = {
     ...pickerProps({
       closeOnSelect: 'false',
       closeOnSelectDescription: {
-        ko: '열을 건드리는 즉시 닫습니다. DatePicker와 달리 기본값이 false입니다 — 시각은 답이 둘이라, 첫 번째에서 닫으면 9시 30분을 고르는 데 팝업을 두 번 열어야 합니다',
+        ko: '열을 건드리는 즉시 닫습니다. DatePicker와 달리 기본값이 false입니다. 시각은 답이 둘이라, 첫 번째에서 닫으면 9시 30분을 고르는 데 팝업을 두 번 열어야 합니다',
         en: 'Closes the popup as soon as a column is touched. False by default, unlike DatePicker: a time is two answers, and closing after the first would make choosing 9:30 a matter of opening the popup twice'
       },
       submitted: {
@@ -5241,7 +5306,7 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '선택이 바뀔 때', en: 'Called when the chosen moment changes' }
     },
     ...calendarProps({
-      ko: '고를 수 있는 가장 이른 순간. DatePicker와 달리 시각까지 읽습니다 — 그 날은 달력에 남고, 시계에서 그 앞 시간들이 빠집니다',
+      ko: '고를 수 있는 가장 이른 순간. DatePicker와 달리 시각까지 읽습니다. 그 날은 달력에 남고, 시계에서 그 앞 시간들이 빠집니다',
       en: "The earliest moment that may be chosen. Unlike DatePicker's this is read at full precision: the day stays selectable in the calendar and the clock blocks the hours before it"
     }),
     ...clockProps,
@@ -5262,7 +5327,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       submitted: {
         ko: '폼 제출 시의 필드 이름. 값은 YYYY-MM-DDTHH:MM, 로컬 기준입니다',
-        en: 'Identifies the field when a form is submitted, as YYYY-MM-DDTHH:MM — local, not UTC'
+        en: 'Identifies the field when a form is submitted, as YYYY-MM-DDTHH:MM. Local, not UTC'
       }
     })
   ],
@@ -5320,8 +5385,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'presets',
       type: 'readonly DateRangePreset[]',
       description: {
-        ko: '달력 옆에 놓이는 단축 범위들 — "최근 7일", "이번 달". value가 함수면 눌린 시점에 계산됩니다',
-        en: 'Shortcuts listed beside the calendars — "Last 7 days", "This month". A function value is computed when it is pressed'
+        ko: '달력 옆에 놓이는 단축 범위들, "최근 7일", "이번 달". value가 함수면 눌린 시점에 계산됩니다',
+        en: 'Shortcuts listed beside the calendars: "Last 7 days", "This month". A function value is computed when it is pressed'
       }
     },
     ...pickerProps({
@@ -5429,7 +5494,7 @@ export const propTables: Record<string, PropRow[]> = {
       shared: true,
       description: {
         ko: '선이 놓이는 방향. 세로 선은 자기 높이가 없고 flex 부모에 맞춰 늘어납니다',
-        en: 'Which way the line runs. A vertical rule has no height of its own — it stretches to its flex parent'
+        en: 'Which way the line runs. A vertical rule has no height of its own: it stretches to its flex parent'
       }
     },
     {
@@ -5456,8 +5521,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'length',
       type: 'number | string',
       description: {
-        ko: '선이 뻗는 길이 — 가로 divider의 너비, 세로 divider의 높이. 숫자는 px, 문자열은 임의의 CSS 길이입니다. 생략하면 가로는 컨테이너의 100%, 세로는 flex 행 높이만큼 늘어납니다',
-        en: 'How far the rule runs — the width of a horizontal divider, the height of a vertical one. A number is pixels, a string is any CSS length. Left out, a horizontal rule is the full width of its container and a vertical one stretches to its flex row'
+        ko: '선이 뻗는 길이, 가로 divider의 너비, 세로 divider의 높이. 숫자는 px, 문자열은 임의의 CSS 길이입니다. 생략하면 가로는 컨테이너의 100%, 세로는 flex 행 높이만큼 늘어납니다',
+        en: 'How far the rule runs: the width of a horizontal divider, the height of a vertical one. A number is pixels, a string is any CSS length. Left out, a horizontal rule is the full width of its container and a vertical one stretches to its flex row'
       }
     },
     {
@@ -5501,8 +5566,8 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       sizeDescription: {
-        ko: '높이와 타입 스케일. 같은 size의 컨트롤보다 한 단계 낮습니다 — md 칩은 sm 컨트롤입니다',
-        en: 'Height and type scale, one step below the control of the same size — a md chip is a sm control'
+        ko: '높이와 타입 스케일. 같은 size의 컨트롤보다 한 단계 낮습니다. md 칩은 sm 컨트롤입니다',
+        en: 'Height and type scale, one step below the control of the same size: a md chip is a sm control'
       },
       elevationDescription: {
         ko: '그림자 깊이. 칩은 다른 것 위에 얹힌 토큰이라 거의 올리지 않습니다',
@@ -5513,8 +5578,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 앞에 놓이는 내용 — 아이콘, 상태 점, 아바타',
-        en: 'Content before the label — an icon, a status dot, an avatar'
+        ko: '라벨 앞에 놓이는 내용, 아이콘, 상태 점, 아바타',
+        en: 'Content before the label: an icon, a status dot, an avatar'
       }
     },
     {
@@ -5546,7 +5611,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(event) => void',
       description: {
         ko: '넘기면 삭제 버튼이 나타납니다. onClick과 별개의 버튼입니다',
-        en: 'Passing it adds the delete button — its own button, separate from onClick'
+        en: 'Passing it adds the delete button: its own button, separate from onClick'
       }
     },
     {
@@ -5582,7 +5647,7 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '표면의 무게. Box에 그대로 전달됩니다 — text로 두면 시트 없이 행만 남습니다',
+        ko: '표면의 무게. Box에 그대로 전달됩니다. text로 두면 시트 없이 행만 남습니다',
         en: 'Weight of the surface, passed straight to the Box. `text` leaves the rows with no sheet'
       },
       sizeDescription: {
@@ -5663,6 +5728,14 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(row, index) => void',
       description: { ko: '행을 누를 수 있게 만듭니다', en: 'Makes the rows activatable' }
     },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '이 컴포넌트가 스스로 쓰는 문자열의 BCP 47 태그. 기본 정렬이 문자열을 비교할 때 쓰는 locale이기도 합니다',
+        en: 'BCP 47 tag deciding the strings it draws on its own behalf, and the locale the default sort compares strings in'
+      }
+    },
     slotsProp('table', 'caption', 'head', 'headCell', 'body', 'row', 'cell', 'empty')
   ],
 
@@ -5690,7 +5763,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '헤더를 끌어 열을 옮길 수 있게 합니다. 기본값이 꺼짐인 이유는 헤더가 컨트롤이기 때문 — 정렬하려던 손짓에 열이 움직이는 표는 안 움직이는 표보다 나쁩니다',
+        ko: '헤더를 끌어 열을 옮길 수 있게 합니다. 기본값이 꺼짐인 이유는 헤더가 컨트롤이기 때문, 정렬하려던 손짓에 열이 움직이는 표는 안 움직이는 표보다 나쁩니다',
         en: 'Lets a header be dragged to move its column. Off by default because a header is a control: a table whose columns move when a reader meant to sort is worse than one whose columns do not move'
       }
     },
@@ -5698,7 +5771,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onCellEdit',
       type: '(row, column, value: string | number) => void',
       description: {
-        ko: '편집한 셀이 확정될 때. 이것이 없으면 아무것도 편집되지 않습니다 — 표는 행의 사본을 갖지 않고 새 값을 넘긴 뒤 items로 돌아온 것을 그립니다',
+        ko: '편집한 셀이 확정될 때. 이것이 없으면 아무것도 편집되지 않습니다. 표는 행의 사본을 갖지 않고 새 값을 넘긴 뒤 items로 돌아온 것을 그립니다',
         en: 'Called when an edited cell is committed. Nothing is editable without it: the table holds no copy of the rows, it hands the value over and draws what comes back in items'
       }
     },
@@ -5727,7 +5800,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '행을 CSV로 쓰는 버튼을 붙입니다. 지금 보고 있는 페이지가 아니라 검색과 정렬이 남긴 모든 행입니다',
-        en: 'Adds a button that writes the rows out as CSV — every row the search and the sort left, not the page the reader is on'
+        en: 'Adds a button that writes the rows out as CSV: every row the search and the sort left, not the page the reader is on'
       }
     },
     {
@@ -5757,8 +5830,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: "Type scale and padding of the cells, and the default rowHeight. One step tighter than Table's"
       },
       densityDescription: {
-        ko: '여백만 바꿉니다 — 다만 여기서는 rowHeight의 기본값도 함께 내려갑니다',
-        en: 'Padding only — though here it also lowers the default rowHeight'
+        ko: '여백만 바꿉니다. 다만 여기서는 rowHeight의 기본값도 함께 내려갑니다',
+        en: 'Padding only: though here it also lowers the default rowHeight'
       },
       colorDescription: {
         ko: '의미론적 색 역할. 시트는 흰색이므로 하이라인·선택된 행·정렬된 열에만 나타납니다',
@@ -5771,7 +5844,7 @@ export const propTables: Record<string, PropRow[]> = {
       required: true,
       description: {
         ko: '열 정의. 아래 DataTableColumn을 참고하세요',
-        en: 'The columns — see DataTableColumn below'
+        en: 'The columns: see DataTableColumn below'
       }
     },
     {
@@ -5952,7 +6025,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(keys: Key[], rows: Row[]) => void',
       description: {
         ko: 'key와 그 뒤의 행. 다른 페이지의 행도 포함합니다',
-        en: 'The keys, and the rows behind them — including rows on other pages'
+        en: 'The keys, and the rows behind them: including rows on other pages'
       }
     },
     {
@@ -5977,7 +6050,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(row, index) => void',
       description: {
         ko: '더블클릭과 Enter. 행을 여는 동작입니다',
-        en: 'Fires on a double-click and on Enter — opening the row is what this is'
+        en: 'Fires on a double-click and on Enter: opening the row is what this is'
       }
     },
     {
@@ -6108,8 +6181,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'pinned',
       type: "'start' | 'end'",
       description: {
-        ko: '나머지가 지나가는 동안 그 가장자리에 얼려 둡니다. 열을 옮기기도 합니다 — start는 맨 앞, end는 맨 뒤. width를 주세요. sticky offset은 앞선 너비의 합이라 너비 없는 열은 더할 숫자가 없습니다',
-        en: 'Freezes the column against that edge while the rest scroll past. It also moves it — start first, end last. Give it a width: the sticky offsets are the sum of the widths before them, and a column with none has no number to add'
+        ko: '나머지가 지나가는 동안 그 가장자리에 얼려 둡니다. 열을 옮기기도 합니다. start는 맨 앞, end는 맨 뒤. width를 주세요. sticky offset은 앞선 너비의 합이라 너비 없는 열은 더할 숫자가 없습니다',
+        en: 'Freezes the column against that edge while the rest scroll past. It also moves it: start first, end last. Give it a width: the sticky offsets are the sum of the widths before them, and a column with none has no number to add'
       }
     },
     {
@@ -6133,15 +6206,15 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'aggregate',
       type: '(rows: Row[]) => ReactNode',
       description: {
-        ko: '그룹 하나를 대표하는 값. 그룹 제목 줄의 자기 열에 그려집니다 — 합계는 그것이 합계인 숫자와 같은 열에 있어야 합니다',
-        en: 'The one value that stands for a group, drawn in the heading row in its own column — a total belongs in the column of the numbers it is a total of'
+        ko: '그룹 하나를 대표하는 값. 그룹 제목 줄의 자기 열에 그려집니다. 합계는 그것이 합계인 숫자와 같은 열에 있어야 합니다',
+        en: 'The one value that stands for a group, drawn in the heading row in its own column: a total belongs in the column of the numbers it is a total of'
       }
     },
     {
       name: 'exportValue',
       type: '(row: Row) => unknown',
       description: {
-        ko: '내보내기가 이 셀에 쓰는 값. render와 별개입니다 — Chip을 그리는 셀에는 파일에 넣을 글자가 없습니다',
+        ko: '내보내기가 이 셀에 쓰는 값. render와 별개입니다. Chip을 그리는 셀에는 파일에 넣을 글자가 없습니다',
         en: 'What an export writes for this cell. Separate from render: a cell that draws a Chip has no text to put in a file'
       }
     },
@@ -6228,7 +6301,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(row) => unknown',
       default: 'row[key]',
       description: {
-        ko: '셀 뒤의 값 — 정렬되고 검색되는 것',
+        ko: '셀 뒤의 값, 정렬되고 검색되는 것',
         en: 'The value behind the cell: what is sorted, and what the search is matched against'
       }
     },
@@ -6265,14 +6338,14 @@ export const propTables: Record<string, PropRow[]> = {
       color: "'info'",
       colorDescription: {
         ko: '심각도. 표면과 글리프를 함께 정합니다. 기본값이 primary가 아닌 info인 이유는, 심각도를 말하지 않은 알림은 정보 알림이기 때문입니다',
-        en: 'The severity: it picks the surface and the glyph together. The default is info rather than primary — an alert with no severity named is an informational one'
+        en: 'The severity: it picks the surface and the glyph together. The default is info rather than primary. An alert with no severity named is an informational one'
       },
       variantDescription: {
         ko: '표면의 무게. 알림은 색이 입혀지는 대상이므로 시트가 실제로 물듭니다. text는 폼 안에 놓을 때',
         en: 'Weight of the surface. An alert *is* the thing being coloured, so the sheet takes the tint. Reach for text inside a form'
       },
       elevationDescription: {
-        ko: '그림자 깊이. 알림은 페이지 흐름 안에 있습니다 — 떠 있는 쪽은 Toast입니다',
+        ko: '그림자 깊이. 알림은 페이지 흐름 안에 있습니다. 떠 있는 쪽은 Toast입니다',
         en: 'Drop shadow depth. An alert sits in the flow of the page; the one that floats is a Toast'
       }
     }),
@@ -6296,7 +6369,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'action',
       type: 'ReactNode',
       description: {
-        ko: '행 끝에 고정되는 내용 — 재시도 버튼, 링크. 본문이 줄바꿈되어도 첫 줄에 남습니다',
+        ko: '행 끝에 고정되는 내용, 재시도 버튼, 링크. 본문이 줄바꿈되어도 첫 줄에 남습니다',
         en: 'Content pinned to the end of the row. Stays on the first line while the message wraps'
       }
     },
@@ -6383,8 +6456,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'trigger',
       type: 'ReactElement',
       description: {
-        ko: '다이얼로그를 여는 요소. Base UI가 연결합니다. 선택 사항 — 다른 곳에서 여는 제어 다이얼로그에는 필요 없습니다',
-        en: 'The element that opens it, wired up by Base UI. Optional — a controlled dialog opened elsewhere needs none'
+        ko: '다이얼로그를 여는 요소. Base UI가 연결합니다. 선택 사항, 다른 곳에서 여는 제어 다이얼로그에는 필요 없습니다',
+        en: 'The element that opens it, wired up by Base UI. Optional: a controlled dialog opened elsewhere needs none'
       }
     },
     {
@@ -6425,7 +6498,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '모서리의 ×. 라이브러리의 다른 불리언과 달리 기본이 켜짐입니다 — 모달은 답할 때까지 페이지를 가져가므로 나가는 길이 보여야 합니다',
+        ko: '모서리의 ×. 라이브러리의 다른 불리언과 달리 기본이 켜짐입니다. 모달은 답할 때까지 페이지를 가져가므로 나가는 길이 보여야 합니다',
         en: 'The × in the corner. On by default, unlike most booleans here: a modal takes the page away, and the way out should be visible'
       }
     },
@@ -6447,7 +6520,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: 'size가 허용하는 너비를 가득 채웁니다. 다른 컴포넌트와 반대로 기본이 켜짐입니다 — 다이얼로그의 컨테이너는 뷰포트입니다',
+        ko: 'size가 허용하는 너비를 가득 채웁니다. 다른 컴포넌트와 반대로 기본이 켜짐입니다. 다이얼로그의 컨테이너는 뷰포트입니다',
         en: 'Takes the full width its size allows. On by default, the other way round from everywhere else: a dialog’s container is the viewport'
       }
     },
@@ -6480,7 +6553,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '본문. 스크롤되는 유일한 구역입니다',
-        en: 'The body — the only part that scrolls'
+        en: 'The body: the only part that scrolls'
       }
     },
     slotsProp('backdrop', 'viewport', 'title', 'description', 'close', 'body', 'actions')
@@ -6531,7 +6604,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '`top-${Align}` | `bottom-${Align}`',
       default: "'bottom-end'",
       description: {
-        ko: '스택이 놓이는 자리. 위·아래 두 값과 공용 Align의 조합입니다 — 화면 한복판을 세로로 가르는 스택은 만들 수 없습니다',
+        ko: '스택이 놓이는 자리. 위·아래 두 값과 공용 Align의 조합입니다. 화면 한복판을 세로로 가르는 스택은 만들 수 없습니다',
         en: 'Where the stack is pinned: top or bottom, times the shared Align. There is deliberately no way to ask for a column down the middle'
       }
     },
@@ -6669,7 +6742,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       required: true,
       description: {
-        ko: '툴팁이 하는 말. 짧은 구절이어야 합니다 — 툴팁은 터치로 닿을 수 없고 안의 무엇도 누를 수 없습니다',
+        ko: '툴팁이 하는 말. 짧은 구절이어야 합니다. 툴팁은 터치로 닿을 수 없고 안의 무엇도 누를 수 없습니다',
         en: 'What it says. A short phrase: a tooltip cannot be reached by touch and nothing inside it can be clicked'
       }
     },
@@ -6781,8 +6854,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '트리거는 그대로 두고 툴팁만 열리지 않게 합니다 — 라벨이 잘렸을 때만 뜨는 툴팁 같은 경우',
-        en: 'Stops it opening without disabling the trigger — for the tooltip that only exists while a label is truncated'
+        ko: '트리거는 그대로 두고 툴팁만 열리지 않게 합니다. 라벨이 잘렸을 때만 뜨는 툴팁 같은 경우',
+        en: 'Stops it opening without disabling the trigger: for the tooltip that only exists while a label is truncated'
       }
     }
   ],
@@ -6818,8 +6891,8 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '표면의 무게. 담는 쪽이므로 시트는 물들지 않습니다. Card 안에서는 text를 쓰세요 — 카드가 이미 시트입니다',
-        en: 'Weight of the surface. The sheet is never dyed, as on Box. Reach for text inside a Card — the card is already a sheet'
+        ko: '표면의 무게. 담는 쪽이므로 시트는 물들지 않습니다. Card 안에서는 text를 쓰세요. 카드가 이미 시트입니다',
+        en: 'Weight of the surface. The sheet is never dyed, as on Box. Reach for text inside a Card: the card is already a sheet'
       },
       sizeDescription: {
         ko: '행의 타입 스케일과 여백. 항목이 아니라 목록이 가지는 축입니다',
@@ -6831,7 +6904,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '행 사이를 여백 대신 하이라인으로 나눕니다. 들리는 것보다 많이 바뀝니다 — 선이 시트 양끝까지 닿아야 하므로 목록은 안쪽 여백을, 행은 둥근 모서리를 내놓습니다',
+        ko: '행 사이를 여백 대신 하이라인으로 나눕니다. 들리는 것보다 많이 바뀝니다. 선이 시트 양끝까지 닿아야 하므로 목록은 안쪽 여백을, 행은 둥근 모서리를 내놓습니다',
         en: 'Separates the rows with a hairline instead of space. It changes more than it sounds like: the rules have to reach both edges, so the list gives up its inner padding and the rows give up their corners'
       }
     },
@@ -6839,8 +6912,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'render',
       type: 'useRender.RenderProp',
       description: {
-        ko: 'ul 대신 다른 것으로 — 순서가 의미를 가지면 render={<ol />}',
-        en: 'Renders something other than a ul — render={<ol />} when the order is the point'
+        ko: 'ul 대신 다른 것으로, 순서가 의미를 가지면 render={<ol />}',
+        en: 'Renders something other than a ul: render={<ol />} when the order is the point'
       }
     },
     {
@@ -6855,8 +6928,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 앞 내용 — 아이콘, 아바타, 상태 점',
-        en: 'Content before the label — an icon, an avatar, a status dot'
+        ko: '라벨 앞 내용, 아이콘, 아바타, 상태 점',
+        en: 'Content before the label: an icon, an avatar, a status dot'
       }
     },
     {
@@ -6876,8 +6949,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'action',
       type: 'ReactNode',
       description: {
-        ko: '행 끝에 고정되는 컨트롤 — 스위치, 메뉴 버튼. 일부러 누를 수 있는 영역 바깥입니다: 버튼 안의 버튼은 브라우저가 파싱하면서 고쳐 쓰는 마크업입니다',
-        en: 'A control pinned to the end of the row. Deliberately outside the pressable area — a button inside a button is markup the browser rewrites on parse'
+        ko: '행 끝에 고정되는 컨트롤, 스위치, 메뉴 버튼. 일부러 누를 수 있는 영역 바깥입니다: 버튼 안의 버튼은 브라우저가 파싱하면서 고쳐 쓰는 마크업입니다',
+        en: 'A control pinned to the end of the row. Deliberately outside the pressable area: a button inside a button is markup the browser rewrites on parse'
       }
     },
     {
@@ -6901,8 +6974,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '고른 행 — 열려 있는 페이지, 켜진 필터. 링크에는 aria-current="page"가, 버튼에는 aria-current="true"가 붙습니다',
-        en: 'The chosen row — the open page, the current filter. A link gets aria-current="page" and a button aria-current="true"'
+        ko: '고른 행, 열려 있는 페이지, 켜진 필터. 링크에는 aria-current="page"가, 버튼에는 aria-current="true"가 붙습니다',
+        en: 'The chosen row: the open page, the current filter. A link gets aria-current="page" and a button aria-current="true"'
       }
     },
     {
@@ -6928,7 +7001,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'body'",
       description: {
         ko: '타입 스케일과 렌더링할 요소를 함께 정합니다. variant라고 부르지 않는 이유는 이 라이브러리에서 variant가 이미 표면의 무게를 뜻하기 때문입니다',
-        en: 'The type scale, and the element that carries it. Not called `variant` — that word already means the weight of a surface here'
+        en: 'The type scale, and the element that carries it. Not called `variant`: that word already means the weight of a surface here'
       }
     },
     {
@@ -6936,7 +7009,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: COLOR,
       shared: true,
       description: {
-        ko: '의미론적 색 역할. 다른 컴포넌트와 달리 기본값이 없습니다 — 지정하지 않으면 페이지의 글자색을 그대로 씁니다',
+        ko: '의미론적 색 역할. 다른 컴포넌트와 달리 기본값이 없습니다. 지정하지 않으면 페이지의 글자색을 그대로 씁니다',
         en: 'Semantic colour role. Unlike every other component this has no default: unset means the page’s own colour'
       }
     },
@@ -6992,7 +7065,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '그림. 로딩되기 전까지, 그리고 실패하면 계속 fallback이 그려집니다',
-        en: 'The picture. Until it loads — and forever, if it fails — the fallback is what is drawn'
+        en: 'The picture. Until it loads(and forever, if it fails) the fallback is what is drawn'
       }
     },
     {
@@ -7046,7 +7119,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       sizeDescription: {
         ko: '그림이 그려지는 상자. 컨트롤 높이 사다리라서 옆에 놓인 Button과 높이가 맞습니다',
-        en: 'The box the picture is drawn in — the control heights, so an avatar and the button beside it are the same height'
+        en: 'The box the picture is drawn in: the control heights, so an avatar and the button beside it are the same height'
       }
     }).filter((row) => row.name !== 'density'),
     {
@@ -7061,8 +7134,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'imageProps',
       type: "Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'srcSet' | 'alt'>",
       description: {
-        ko: 'img에 필요한 나머지 속성 — loading, crossOrigin, referrerPolicy',
-        en: 'Anything else the img needs — loading, crossOrigin, referrerPolicy'
+        ko: 'img에 필요한 나머지 속성, loading, crossOrigin, referrerPolicy',
+        en: 'Anything else the img needs: loading, crossOrigin, referrerPolicy'
       }
     },
     {
@@ -7089,7 +7162,7 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'solid'",
       size: "'md'",
       sizeDescription: {
-        ko: '표식의 크기. 컨트롤 사다리와 별개입니다 — 배지는 무언가의 모서리에 걸리는 것이라 줄을 맞출 상대가 없습니다',
+        ko: '표식의 크기. 컨트롤 사다리와 별개입니다. 배지는 무언가의 모서리에 걸리는 것이라 줄을 맞출 상대가 없습니다',
         en: 'The size of the mark, on a ladder of its own: a badge hangs off a corner, so it lines up with nothing'
       },
       densityDescription: {
@@ -7102,7 +7175,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '표식이 말하는 것. 보통 숫자, 가끔 단어. 없으면 점이 됩니다',
-        en: 'What the badge says — usually a count. Omit it and the badge draws a dot'
+        en: 'What the badge says: usually a count. Omit it and the badge draws a dot'
       }
     },
     {
@@ -7129,7 +7202,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '0도 보여 줍니다. 기본이 꺼짐인 이유는 읽지 않은 메시지 0개는 소식이 아니기 때문입니다',
-        en: 'Shows a count of zero. Off by default — zero unread messages is not news'
+        en: 'Shows a count of zero. Off by default: zero unread messages is not news'
       }
     },
     {
@@ -7157,7 +7230,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'square'",
       description: {
         ko: '아래에 있는 것의 모양. 원의 모서리는 사각형보다 중심에서 멀기 때문에 파고드는 깊이가 다릅니다',
-        en: "The shape underneath, which decides how far the mark tucks in — a circle's corner is further out than a square's"
+        en: "The shape underneath, which decides how far the mark tucks in: a circle's corner is further out than a square's"
       }
     },
     {
@@ -7165,7 +7238,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '스크린 리더가 숫자 대신 읽을 문장. 종 옆의 "3"은 아무 뜻도 없습니다',
-        en: 'What a screen reader hears instead of the raw count — "3" beside a bell means nothing'
+        en: 'What a screen reader hears instead of the raw count: "3" beside a bell means nothing'
       }
     },
     {
@@ -7281,7 +7354,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '행들. MenuItem, MenuGroup, MenuSeparator, MenuSubmenu 등',
-        en: 'The rows — MenuItem, MenuGroup, MenuSeparator, MenuSubmenu and the rest'
+        en: 'The rows: MenuItem, MenuGroup, MenuSeparator, MenuSubmenu and the rest'
       }
     }
   ],
@@ -7312,7 +7385,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'rel',
       type: 'string',
       description: {
-        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다 — nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다. nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
         en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
       }
     },
@@ -7333,7 +7406,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'shortcut',
       type: 'ReactNode',
       description: {
-        ko: '같은 일을 하는 단축키. 행 끝에 흐리게 놓입니다 — 표시만 하고 바인딩하지는 않습니다',
+        ko: '같은 일을 하는 단축키. 행 끝에 흐리게 놓입니다. 표시만 하고 바인딩하지는 않습니다',
         en: 'The keystroke that does the same thing, set muted at the end. Shown, never bound'
       }
     },
@@ -7348,7 +7421,7 @@ export const propTables: Record<string, PropRow[]> = {
       shared: true,
       description: {
         ko: '이 행만 다른 색 계열로. 지우는 행에 danger. 기본값은 메뉴의 색입니다',
-        en: "Re-points this row's colour family — danger for the one that deletes. Defaults to the menu's own"
+        en: "Re-points this row's colour family: danger for the one that deletes. Defaults to the menu's own"
       }
     },
     {
@@ -7419,7 +7492,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '중첩된 행들. 그 안에 또 MenuSubmenu를 넣을 수 있고, 깊이 제한은 없습니다',
-        en: 'The nested rows — one of which may be another MenuSubmenu, to any depth'
+        en: 'The nested rows: one of which may be another MenuSubmenu, to any depth'
       }
     }
   ],
@@ -7458,6 +7531,23 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(open: boolean) => void',
       description: { ko: '열리거나 닫힐 때', en: 'Called when it opens or closes' }
     },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      description: {
+        ko: '우클릭과 길게 누르기에 반응하지 않게 합니다',
+        en: 'Stops it answering a right-click or a long press'
+      }
+    },
+    {
+      name: 'loopFocus',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '마지막 행에서 방향키를 누르면 첫 행으로 돌아갈지',
+        en: 'Whether the arrow keys wrap from the last row back to the first'
+      }
+    },
     ...scaleProps("'md'"),
     {
       name: 'density',
@@ -7474,7 +7564,7 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       sizeDescription: {
         ko: '시트의 반경과 각 섹션의 여백. Box와 같은 뜻입니다',
-        en: "The sheet's radius and each section's padding — the same thing size means on Box"
+        en: "The sheet's radius and each section's padding: the same thing size means on Box"
       }
     }),
     {
@@ -7575,8 +7665,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'action',
       type: 'ReactNode',
       description: {
-        ko: '헤더 끝에 고정되는 컨트롤. 접는 버튼 바깥에 놓입니다 — 버튼 안의 버튼은 브라우저가 고쳐 씁니다',
-        en: 'A control pinned to the end of the header, outside the folding button — a button inside a button is markup the browser rewrites'
+        ko: '헤더 끝에 고정되는 컨트롤. 접는 버튼 바깥에 놓입니다. 버튼 안의 버튼은 브라우저가 고쳐 씁니다',
+        en: 'A control pinned to the end of the header, outside the folding button: a button inside a button is markup the browser rewrites'
       }
     },
     {
@@ -7605,7 +7695,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       sizeDescription: {
         ko: '탭의 높이와 타입 스케일. Button과 같은 사다리라 툴바에 섞어 놓아도 기준선이 맞습니다',
-        en: "The tabs' height and type scale, on Button's own ladder — so a tab bar keeps its baseline in a toolbar"
+        en: "The tabs' height and type scale, on Button's own ladder, so a tab bar keeps its baseline in a toolbar"
       }
     }).filter((row) => row.name !== 'elevation'),
     {
@@ -7706,8 +7796,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'endIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 뒤의 내용 — 개수, Badge, 상태 점',
-        en: 'Content after the label — a count, a Badge, a status dot'
+        ko: '라벨 뒤의 내용, 개수, Badge, 상태 점',
+        en: 'Content after the label: a count, a Badge, a status dot'
       }
     },
     {
@@ -7751,8 +7841,8 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '표면의 무게. 셋 다 점선 테두리는 공유합니다 — 라이브러리에서 실선이 아닌 선을 긋는 유일한 곳이고, 장식이 아니라 "여기에 놓을 수 있다"는 관례이기 때문입니다',
-        en: 'Weight of the surface. All three share the dashed edge — the one place the library draws a line that is not solid, because a dashed rectangle is the established sign for a drop target'
+        ko: '표면의 무게. 셋 다 점선 테두리는 공유합니다. 라이브러리에서 실선이 아닌 선을 긋는 유일한 곳이고, 장식이 아니라 "여기에 놓을 수 있다"는 관례이기 때문입니다',
+        en: 'Weight of the surface. All three share the dashed edge: the one place the library draws a line that is not solid, because a dashed rectangle is the established sign for a drop target'
       },
       sizeDescription: {
         ko: '상자의 여백과 글자 크기. 상자는 안에 쓰인 글이 아니라 받아 내야 할 제스처에 맞춰 커집니다',
@@ -7763,8 +7853,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'accept',
       type: 'string',
       description: {
-        ko: "브라우저 파일 창이 보여 줄 종류 — 'image/*,.pdf'. 드롭된 파일도 같은 문자열로 검사합니다. 브라우저는 그렇게 하지 않습니다",
-        en: "Which files the browser's own picker offers — 'image/*,.pdf'. Dropped files are checked against it too, which the attribute alone does not do"
+        ko: "브라우저 파일 창이 보여 줄 종류, 'image/*,.pdf'. 드롭된 파일도 같은 문자열로 검사합니다. 브라우저는 그렇게 하지 않습니다",
+        en: "Which files the browser's own picker offers: 'image/*,.pdf'. Dropped files are checked against it too, which the attribute alone does not do"
       }
     },
     {
@@ -7789,7 +7879,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       description: {
         ko: '한 번에 들고 있을 수 있는 개수. 한 번의 드롭이 아니라 이미 들고 있는 것과 합쳐서 셉니다',
-        en: 'How many files may be held at once — counted against what is already chosen, not against one drop'
+        en: 'How many files may be held at once: counted against what is already chosen, not against one drop'
       }
     },
     {
@@ -7827,8 +7917,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'hint',
       type: 'ReactNode',
       description: {
-        ko: '그 아래 줄 — 무엇을, 얼마나 크게, 몇 개까지',
-        en: 'The line under it — what is accepted, how big, how many'
+        ko: '그 아래 줄, 무엇을, 얼마나 크게, 몇 개까지',
+        en: 'The line under it: what is accepted, how big, how many'
       }
     },
     {
@@ -7898,7 +7988,7 @@ export const propTables: Record<string, PropRow[]> = {
       density: "'compact'",
       variantDescription: {
         ko: '쉬고 있는 페이지 버튼의 무게. 기본값은 text이며, 현재 페이지는 언제나 solid로 그려집니다',
-        en: 'How the pages look at rest. The current page is always solid — the one thing the row has to say without being read, which is also why the default here is text: nine filled buttons in a row say all nine are the primary action'
+        en: 'How the pages look at rest. The current page is always solid: the one thing the row has to say without being read, which is also why the default here is text: nine filled buttons in a row say all nine are the primary action'
       },
       sizeDescription: {
         ko: '버튼의 높이와 타입 스케일. 실제로 Button이므로 옆에 놓인 같은 size의 버튼과 줄이 맞습니다',
@@ -7910,7 +8000,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       required: true,
       description: {
-        ko: '전체 페이지 수. 둘보다 적으면 아무것도 그리지 않습니다 — 할 일이 없다고 광고하는 컨트롤은 컨트롤이 아닙니다',
+        ko: '전체 페이지 수. 둘보다 적으면 아무것도 그리지 않습니다. 할 일이 없다고 광고하는 컨트롤은 컨트롤이 아닙니다',
         en: 'How many pages there are. Fewer than two and the whole control renders nothing: a row advertising that it has nothing to do is not a control'
       }
     },
@@ -8059,7 +8149,7 @@ export const propTables: Record<string, PropRow[]> = {
       required: true,
       description: {
         ko: '옵션 목록. { value, label?, disabled? } 배열이고, label은 ReactNode가 아니라 string입니다',
-        en: 'The options, as an array of { value, label?, disabled? } — label is a string, not a ReactNode'
+        en: 'The options, as an array of { value, label?, disabled? }: label is a string, not a ReactNode'
       }
     },
     {
@@ -8076,7 +8166,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string | number | (string | number)[] | null',
       description: {
         ko: '선택된 값. multiple이면 배열입니다. onValueChange와 함께 제어 컴포넌트로 씁니다',
-        en: 'The chosen value — an array when multiple. Use with onValueChange for a controlled combobox'
+        en: 'The chosen value: an array when multiple. Use with onValueChange for a controlled combobox'
       }
     },
     {
@@ -8094,7 +8184,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(inputValue: string) => void',
       description: {
         ko: '입력란의 글자가 바뀔 때. 값이 아니라 필터 질의입니다',
-        en: 'Called as the text in the input changes — the filter query, not the value'
+        en: 'Called as the text in the input changes: the filter query, not the value'
       }
     },
     {
@@ -8102,8 +8192,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '목록에 없는 값을 확정할 수 있는지. 입력한 글자가 목록 맨 끝에 자기 행으로 제안됩니다 — 검색되는 select와 combobox를 가르는 지점입니다',
-        en: 'Whether a value the list does not contain may be committed. The typed text is offered as its own row at the end of the list — what separates this from a searchable select'
+        ko: '목록에 없는 값을 확정할 수 있는지. 입력한 글자가 목록 맨 끝에 자기 행으로 제안됩니다. 검색되는 select와 combobox를 가르는 지점입니다',
+        en: 'Whether a value the list does not contain may be committed. The typed text is offered as its own row at the end of the list: what separates this from a searchable select'
       }
     },
     {
@@ -8182,9 +8272,49 @@ export const propTables: Record<string, PropRow[]> = {
     },
     ...inertProps,
     shortcutsProp('HTMLInputElement', {
-      ko: 'Combobox에서는 이것이 유일한 통로입니다 — 화살표·Escape·Enter는 목록의 키라서 root의 onKeyDown에는 아예 오지 않습니다. 목록보다 먼저 실행되지만 목록이 하는 일을 대신하지는 않습니다',
+      ko: 'Combobox에서는 이것이 유일한 통로입니다. 화살표·Escape·Enter는 목록의 키라서 root의 onKeyDown에는 아예 오지 않습니다. 목록보다 먼저 실행되지만 목록이 하는 일을 대신하지는 않습니다',
       en: "On a Combobox this is the only way in: the arrows, Escape and Enter are the list's keys and never reach an onKeyDown on the root at all. It runs before the list acts, and does not replace what the list does"
     }),
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열려 있는지. `onOpenChange`와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the popup is open. Use with `onOpenChange` for a controlled popup'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열린 채로 시작할지',
+        en: 'Whether the popup starts open'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '팝업이 열리거나 닫힐 때',
+        en: 'Called when the popup opens or closes'
+      }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      description: {
+        ko: '폼을 제출하기 전에 값을 골라야 하는지',
+        en: 'Whether a value must be chosen before the form is submitted'
+      }
+    },
+    {
+      name: 'inputRef',
+      type: 'Ref<HTMLInputElement>',
+      description: {
+        ko: '글자를 입력하는 `<input>`을 가리키는 ref',
+        en: 'A ref to the text input the reader types into'
+      }
+    },
     slotsProp('label', 'shell', 'control', 'description', 'error', 'chip', 'popup', 'item')
   ],
 
@@ -8209,8 +8339,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'value',
       type: 'number | null',
       description: {
-        ko: '값. null이 비어 있음입니다 — 파싱해야 하는 문자열이 아닙니다',
-        en: 'The number. null means empty — never a string you have to parse'
+        ko: '값. null이 비어 있음입니다. 파싱해야 하는 문자열이 아닙니다',
+        en: 'The number. null means empty: never a string you have to parse'
       }
     },
     {
@@ -8222,8 +8352,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onValueChange',
       type: '(value: number | null) => void',
       description: {
-        ko: '값이 바뀔 때마다 — 타이핑, 스테핑, 휠',
-        en: 'Called on every change — typing, stepping, the wheel'
+        ko: '값이 바뀔 때마다. 타이핑, 스테핑, 휠',
+        en: 'Called on every change: typing, stepping, the wheel'
       }
     },
     {
@@ -8287,8 +8417,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'format',
       type: 'Intl.NumberFormatOptions',
       description: {
-        ko: '숫자를 어떻게 쓸지 — 통화, 백분율, 소수 자릿수. 필드는 $1,240을 보여 주고 값으로는 1240을 보고합니다',
-        en: 'How the number is written — currency, percent, decimal places. The field shows $1,240 and still reports 1240'
+        ko: '숫자를 어떻게 쓸지, 통화, 백분율, 소수 자릿수. 필드는 $1,240을 보여 주고 값으로는 1240을 보고합니다',
+        en: 'How the number is written: currency, percent, decimal places. The field shows $1,240 and still reports 1240'
       }
     },
     {
@@ -8313,8 +8443,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '숫자 앞에 놓이는 내용 — 통화 기호, 단위',
-        en: 'Content before the number — a currency mark, a unit'
+        ko: '숫자 앞에 놓이는 내용, 통화 기호, 단위',
+        en: 'Content before the number: a currency mark, a unit'
       }
     },
     {
@@ -8351,9 +8481,25 @@ export const propTables: Record<string, PropRow[]> = {
     },
     ...inertProps,
     shortcutsProp('HTMLInputElement', {
-      ko: 'root가 아니라 input에 붙습니다 — onKeyDown은 라벨과 메시지가 함께 있는 열에 떨어지므로 currentTarget이 필드가 아닙니다',
+      ko: 'root가 아니라 input에 붙습니다. onKeyDown은 라벨과 메시지가 함께 있는 열에 떨어지므로 currentTarget이 필드가 아닙니다',
       en: 'Bound to the input rather than to the root: a plain onKeyDown lands on the column holding the label and the messages, so its currentTarget is not the field'
     }),
+    {
+      name: 'placeholder',
+      type: 'string',
+      description: {
+        ko: '값이 없을 때 필드에 보이는 글자',
+        en: 'Shown in the field while it is empty'
+      }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      description: {
+        ko: '폼을 제출하기 전에 값이 있어야 하는지',
+        en: 'Whether a value is required before the form is submitted'
+      }
+    },
     slotsProp('label', 'shell', 'control', 'description', 'error', 'stepper')
   ],
 
@@ -8399,7 +8545,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '클릭이나 Escape로 닫히는지. Dialog와 반대로 꺼져 있습니다 — 오버레이는 묻지 않고 기다리라고 말하며, 빗나간 클릭으로 사라지는 저장은 끝났다고 믿게 되는 저장입니다',
+        ko: '클릭이나 Escape로 닫히는지. Dialog와 반대로 꺼져 있습니다. 오버레이는 묻지 않고 기다리라고 말하며, 빗나간 클릭으로 사라지는 저장은 끝났다고 믿게 되는 저장입니다',
         en: 'Whether a click or Escape closes it. Off, the other way round from Dialog: an overlay is not asking anything, and a save dismissed by a stray click is a save the user will believe finished'
       }
     },
@@ -8451,8 +8597,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '스크림 위에 앉는 것 — 스피너, 한 줄, 작은 카드',
-        en: 'What sits on top of the scrim — a spinner, a line of text, a small card'
+        ko: '스크림 위에 앉는 것, 스피너, 한 줄, 작은 카드',
+        en: 'What sits on top of the scrim: a spinner, a line of text, a small card'
       }
     }
   ],
@@ -8464,7 +8610,7 @@ export const propTables: Record<string, PropRow[]> = {
       required: true,
       description: {
         ko: '그릴 글리프. svg, img, 아이콘 세트의 컴포넌트, 문자를 받습니다. children이 아니라 prop이라서 크기와 색을 컴포넌트가 정할 수 있습니다',
-        en: 'The glyph — an svg, an img, a component from an icon set, a character. A prop and not children because the two things you always want to change about an icon somebody else drew are the two you cannot reach once it is a child'
+        en: 'The glyph: an svg, an img, a component from an icon set, a character. A prop and not children because the two things you always want to change about an icon somebody else drew are the two you cannot reach once it is a child'
       }
     },
     {
@@ -8473,8 +8619,8 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '글리프가 그려지는 상자: 14 / 16 / 20 / 24 / 28px. 컨트롤 높이가 아니라 자체 사다리입니다 — 아이콘은 컨트롤이 아니고, 32px짜리 md 글리프는 자기가 들어앉을 버튼만 해집니다',
-        en: 'The box the glyph is drawn in: 14 / 16 / 20 / 24 / 28px. Its own ladder rather than the control heights — an icon is not a control, and a 32px md glyph would be the size of the button it sits in'
+        ko: '글리프가 그려지는 상자: 14 / 16 / 20 / 24 / 28px. 컨트롤 높이가 아니라 자체 사다리입니다. 아이콘은 컨트롤이 아니고, 32px짜리 md 글리프는 자기가 들어앉을 버튼만 해집니다',
+        en: 'The box the glyph is drawn in: 14 / 16 / 20 / 24 / 28px. Its own ladder rather than the control heights. An icon is not a control, and a 32px md glyph would be the size of the button it sits in'
       }
     },
     {
@@ -8491,8 +8637,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '아이콘이 하는 말. 없으면 접근성 트리에서 완전히 숨깁니다 — 대부분의 아이콘 옆에는 같은 말을 하는 단어가 이미 있고, 둘 다 읽는 것은 하나만 읽는 것보다 나쁩니다',
-        en: 'What the icon says. Without it the icon is hidden from the accessibility tree entirely — most icons sit next to a word that already says the same thing, and reading both out loud is worse than reading one'
+        ko: '아이콘이 하는 말. 없으면 접근성 트리에서 완전히 숨깁니다. 대부분의 아이콘 옆에는 같은 말을 하는 단어가 이미 있고, 둘 다 읽는 것은 하나만 읽는 것보다 나쁩니다',
+        en: 'What the icon says. Without it the icon is hidden from the accessibility tree entirely: most icons sit next to a word that already says the same thing, and reading both out loud is worse than reading one'
       }
     },
     transitionProp('transition="fade"')
@@ -8525,7 +8671,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: "Button's own height ladder, so a disc drops into a row of buttons without the row losing its baseline"
       },
       densityDescription: {
-        ko: '전달은 되지만 눈에 보이지 않습니다 — 아이콘 전용 컨트롤은 정사각형이라 가로 여백이 0입니다',
+        ko: '전달은 되지만 눈에 보이지 않습니다. 아이콘 전용 컨트롤은 정사각형이라 가로 여백이 0입니다',
         en: 'Passed through but invisible: an icon-only control is square, so its horizontal padding is zero'
       }
     }),
@@ -8543,8 +8689,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '흐려지지 않은 채 반응만 멈춤 — 액션은 존재하지만 여기서는 쓸 수 없습니다',
-        en: 'Inert but not dimmed — the action exists, it just is not available here'
+        ko: '흐려지지 않은 채 반응만 멈춤, 액션은 존재하지만 여기서는 쓸 수 없습니다',
+        en: 'Inert but not dimmed: the action exists, it just is not available here'
       }
     },
     {
@@ -8564,7 +8710,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '숫자의 이름. Card가 title이라 부르는 자리지만, 여기 있는 것은 *값*의 이름이고 그것은 라이브러리가 이미 label이라 쓰고 있는 것입니다',
-        en: 'The name of the number. Card calls the same slot `title`, but what this names is a *value* — which is the thing the library already spells `label` on every field it has'
+        en: 'The name of the number. Card calls the same slot `title`, but what this names is a *value*: which is the thing the library already spells `label` on every field it has'
       }
     },
     {
@@ -8572,8 +8718,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       required: true,
       description: {
-        ko: '수치. 숫자는 형식이 적용되고, 그 밖의 것은 그대로 렌더링됩니다 — 숫자가 아닌 값("3h 42m", "A+")이나, AnimateCounter처럼 들어오는 길에 무언가를 하는 노드를 위해서',
-        en: 'The figure. A number is formatted; anything else is rendered exactly as given — a string for the values that are not numbers, or a node such as an AnimateCounter'
+        ko: '수치. 숫자는 형식이 적용되고, 그 밖의 것은 그대로 렌더링됩니다. 숫자가 아닌 값("3h 42m", "A+")이나, AnimateCounter처럼 들어오는 길에 무언가를 하는 노드를 위해서',
+        en: 'The figure. A number is formatted; anything else is rendered exactly as given: a string for the values that are not numbers, or a node such as an AnimateCounter'
       }
     },
     {
@@ -8581,7 +8727,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'Intl.NumberFormatOptions',
       description: {
         ko: '숫자를 어떻게 쓸지. 진행 표시기가 받는 것과 같은 prop이고, 없으면 읽는 사람의 로케일대로 자릿수만 끊습니다',
-        en: 'How to write a numeric value — the same prop the progress indicators take. Without it a number is grouped by the reader’s own locale and otherwise left alone'
+        en: 'How to write a numeric value: the same prop the progress indicators take. Without it a number is grouped by the reader’s own locale and otherwise left alone'
       }
     },
     {
@@ -8589,21 +8735,21 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       default: "the reader's",
       description: {
-        ko: '수치를 어떤 언어로 쓸지. 모든 차트가 받는 것과 같은 prop입니다 — 대시보드에서 Statistic은 차트들 옆에 서므로 한쪽에 걸 수 있는 로케일은 다른 쪽에도 걸 수 있어야 합니다',
-        en: 'Which language the figure is written in — the same prop every chart takes. A Statistic sits next to the charts in a dashboard, so a locale set on one of them has to be settable on all'
+        ko: '수치를 어떤 언어로 쓸지. 모든 차트가 받는 것과 같은 prop입니다. 대시보드에서 Statistic은 차트들 옆에 서므로 한쪽에 걸 수 있는 로케일은 다른 쪽에도 걸 수 있어야 합니다',
+        en: 'Which language the figure is written in: the same prop every chart takes. A Statistic sits next to the charts in a dashboard, so a locale set on one of them has to be settable on all'
       }
     },
     {
       name: 'prefix',
       type: 'ReactNode',
-      description: { ko: '수치 앞 — 통화 기호', en: 'Set before the figure — a currency sign' }
+      description: { ko: '수치 앞, 통화 기호', en: 'Set before the figure: a currency sign' }
     },
     {
       name: 'unit',
       type: 'ReactNode',
       description: {
-        ko: '수치 뒤 — %, MB, 명. prefix와 따로인 이유는 둘이 조판상 다른 것이기 때문입니다: 통화 기호는 숫자 앞에 서고 단위는 뒤에 섭니다',
-        en: 'Set after the figure — %, MB, 명. A second slot rather than one adornment with a side, because a currency symbol leads its number and a unit follows it'
+        ko: '수치 뒤, %, MB, 명. prefix와 따로인 이유는 둘이 조판상 다른 것이기 때문입니다: 통화 기호는 숫자 앞에 서고 단위는 뒤에 섭니다',
+        en: 'Set after the figure: %, MB, 명. A second slot rather than one adornment with a side, because a currency symbol leads its number and a unit follows it'
       }
     },
     {
@@ -8615,8 +8761,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'previousValue',
       type: 'number',
       description: {
-        ko: '비교 대상이 되는 수치 — 지난달 값, 목표치. 이 값을 주는 것이 차이 표시를 켜는 스위치입니다',
-        en: 'The figure this one is compared against — last month’s, the target. Passing it is what makes the delta appear'
+        ko: '비교 대상이 되는 수치, 지난달 값, 목표치. 이 값을 주는 것이 차이 표시를 켜는 스위치입니다',
+        en: 'The figure this one is compared against: last month’s, the target. Passing it is what makes the delta appear'
       }
     },
     {
@@ -8641,8 +8787,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'caption',
       type: 'ReactNode',
       description: {
-        ko: '수치 아래 한 줄 — "지난달 대비"',
-        en: 'A line under the figure — "vs. last month"'
+        ko: '수치 아래 한 줄, "지난달 대비"',
+        en: 'A line under the figure: "vs. last month"'
       }
     },
     {
@@ -8659,8 +8805,8 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '표면의 무게. Box의 것 그대로 — Statistic은 배치가 얹힌 Box입니다',
-        en: 'Weight of the surface — Box’s own, because a Statistic is a Box with an arrangement on it'
+        ko: '표면의 무게. Box의 것 그대로, Statistic은 배치가 얹힌 Box입니다',
+        en: 'Weight of the surface: Box’s own, because a Statistic is a Box with an arrangement on it'
       },
       sizeDescription: {
         ko: '수치의 타입 스케일과 시트의 여백·모서리',
@@ -8671,7 +8817,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: 'caption 아래 무엇이든 — 스파크라인, 목표 대비 ProgressLinear',
+        ko: 'caption 아래 무엇이든, 스파크라인, 목표 대비 ProgressLinear',
         en: 'Anything below the caption: a sparkline, a ProgressLinear against a target'
       }
     },
@@ -8691,8 +8837,8 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '프레임의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 캐러셀은 남의 사진을 담습니다. 사진에 이미 테두리가 있으면 text',
-        en: 'Weight of the frame, said the way a container says it — the sheet is never dyed, because a carousel holds other people’s pictures. `text` when they have edges of their own'
+        ko: '프레임의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다. 캐러셀은 남의 사진을 담습니다. 사진에 이미 테두리가 있으면 text',
+        en: 'Weight of the frame, said the way a container says it: the sheet is never dyed, because a carousel holds other people’s pictures. `text` when they have edges of their own'
       },
       sizeDescription: {
         ko: '프레임의 모서리, 화살표의 크기와 안쪽 여백, 점의 크기',
@@ -8715,7 +8861,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(index: number) => void',
       description: {
         ko: '슬라이드가 바뀔 때. 손가락으로 밀어서 바뀐 경우에도 불립니다',
-        en: 'Called when the slide changes — including when it changed because somebody swiped'
+        en: 'Called when the slide changes: including when it changed because somebody swiped'
       }
     },
     {
@@ -8723,7 +8869,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '끝에서 처음으로 돌아갈지. 끄면 양 끝에서 화살표가 죽습니다 — 시작과 끝이 있는 묶음에는 그쪽이 정직합니다',
+        ko: '끝에서 처음으로 돌아갈지. 끄면 양 끝에서 화살표가 죽습니다. 시작과 끝이 있는 묶음에는 그쪽이 정직합니다',
         en: 'Whether the arrows wrap from the last slide back to the first. With it off they go inert at the ends instead, which is the honest thing for a set that has a beginning and an end'
       }
     },
@@ -8733,7 +8879,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '스스로 넘어갑니다. 기본값은 꺼짐이며, 켜면 hover·포커스·백그라운드 탭에서 멈추고 프레임 아래에 멈춤 버튼이 그려집니다. 모션을 줄이도록 설정한 환경에서는 시작하지 않습니다',
-        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab — and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, under the frame'
+        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab, and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, under the frame'
       }
     },
     {
@@ -8761,7 +8907,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '캐러셀의 접근성 이름. 선택이 아니라 기본값입니다 — 이름 없는 region은 건너뛸 수도 없습니다',
+        ko: '캐러셀의 접근성 이름. 선택이 아니라 기본값입니다. 이름 없는 region은 건너뛸 수도 없습니다',
         en: 'The accessible name. It has a default rather than being optional: a region with no name is a region nobody can skip'
       }
     },
@@ -8779,8 +8925,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'pauseLabel · playLabel',
       type: 'string',
       description: {
-        ko: '멈춤 버튼의 두 이름 — 슬라이드가 넘어가는 동안, 그리고 멈춘 뒤. 기본값은 locale의 표현',
-        en: "The rotation control's two names — while the slides are advancing, and once they have been stopped. Default to the locale's wording"
+        ko: '멈춤 버튼의 두 이름, 슬라이드가 넘어가는 동안, 그리고 멈춘 뒤. 기본값은 locale의 표현',
+        en: "The rotation control's two names: while the slides are advancing, and once they have been stopped. Default to the locale's wording"
       }
     },
     {
@@ -8795,8 +8941,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '슬라이드들. 최상위 자식 하나가 슬라이드 하나가 됩니다 — 스냅 지점, 폭, role을 감싸는 쪽이 붙이므로 사진 한 장에 그것들을 붙일 일이 없습니다',
-        en: 'The slides. Every top-level child becomes one — the wrapper carries the snap point, the width and the roles, none of which anybody should have to put on a photograph'
+        ko: '슬라이드들. 최상위 자식 하나가 슬라이드 하나가 됩니다. 스냅 지점, 폭, role을 감싸는 쪽이 붙이므로 사진 한 장에 그것들을 붙일 일이 없습니다',
+        en: 'The slides. Every top-level child becomes one: the wrapper carries the snap point, the width and the roles, none of which anybody should have to put on a photograph'
       }
     }
   ],
@@ -8808,11 +8954,11 @@ export const propTables: Record<string, PropRow[]> = {
       color: "'secondary'",
       elevation: '2',
       variantDescription: {
-        ko: '표면의 무게. *컨트롤*의 방식대로 표면 자체가 색을 받습니다 — Button, Chip과 같습니다',
+        ko: '표면의 무게. *컨트롤*의 방식대로 표면 자체가 색을 받습니다. Button, Chip과 같습니다',
         en: 'Weight of the surface, said the way a *control* says it: the surface takes the tint, as on Button and Chip'
       },
       colorDescription: {
-        ko: '의미론적 색 역할. 여기서만 기본이 secondary입니다 — 이 모양이 흉내 내는 물건이 거의 중립인 검정이기 때문입니다',
+        ko: '의미론적 색 역할. 여기서만 기본이 secondary입니다. 이 모양이 흉내 내는 물건이 거의 중립인 검정이기 때문입니다',
         en: 'Semantic colour role. `secondary` here rather than `primary`, because the object this shape is borrowed from is very nearly neutral black'
       },
       elevationDescription: {
@@ -8824,16 +8970,16 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '앞자리 — 글리프, 아바타, 상태 점, 사진. 정사각형 상자를 받아 원형으로 잘리므로 img도 icon과 똑같이 들어갑니다',
-        en: 'The leading slot — a glyph, an avatar, a status dot, a photo. It is given a square box of its own and clipped to a circle, so an `<img>` lands in it as readily as an icon does'
+        ko: '앞자리, 글리프, 아바타, 상태 점, 사진. 정사각형 상자를 받아 원형으로 잘리므로 img도 icon과 똑같이 들어갑니다',
+        en: 'The leading slot: a glyph, an avatar, a status dot, a photo. It is given a square box of its own and clipped to a circle, so an `<img>` lands in it as readily as an icon does'
       }
     },
     {
       name: 'title',
       type: 'ReactNode',
       description: {
-        ko: '가운데의 제목 — 지금 이 pill이 무엇에 관한 것인지. 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다',
-        en: 'The headline in the middle — what the pill is currently about. Centred, with generous room either side of it'
+        ko: '가운데의 제목, 지금 이 pill이 무엇에 관한 것인지. 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다',
+        en: 'The headline in the middle: what the pill is currently about. Centred, with generous room either side of it'
       }
     },
     {
@@ -8856,7 +9002,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'details',
       type: 'ReactNode',
       description: {
-        ko: 'expanded일 때 드러나는 나머지 절반. 다른 모양으로 바뀌는 것이 아니라 아래로 자랍니다 — 하나의 물건이 더 말하는 것, 여기서 빌려 온 것이 그것입니다',
+        ko: 'expanded일 때 드러나는 나머지 절반. 다른 모양으로 바뀌는 것이 아니라 아래로 자랍니다. 하나의 물건이 더 말하는 것, 여기서 빌려 온 것이 그것입니다',
         en: 'The second half, revealed when `expanded`. The pill grows downward into it rather than swapping to a different shape: one object saying more, which is the whole idea being borrowed'
       }
     },
@@ -8872,7 +9018,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'static'",
       shared: true,
       description: {
-        ko: '페이지 스크롤 안에서 어떻게 앉는지. fixed는 뷰포트에 고정하고 가로로 가운데에 둡니다 — 이 모양이 존재하는 이유가 그 배치입니다',
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. fixed는 뷰포트에 고정하고 가로로 가운데에 둡니다. 이 모양이 존재하는 이유가 그 배치입니다',
         en: 'How it sits in the page’s scroll. `fixed` pins it against the viewport and centres it horizontally, which is the arrangement this shape exists for'
       }
     },
@@ -8890,7 +9036,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onClick',
       type: 'MouseEventHandler',
       description: {
-        ko: '주면 가운데 줄이 진짜 button이 됩니다. endIcon은 그 바깥에 남습니다 — button 안의 button은 브라우저가 파싱 때 풀어 버리는 마크업입니다',
+        ko: '주면 가운데 줄이 진짜 button이 됩니다. endIcon은 그 바깥에 남습니다. button 안의 button은 브라우저가 파싱 때 풀어 버리는 마크업입니다',
         en: 'Passing it makes the row a real button. `endIcon` stays outside it: a `<button>` inside a `<button>` is markup the browser rewrites on parse'
       }
     },
@@ -8898,7 +9044,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '가운데 — 한 줄, 작은 읽을거리 한둘',
+        ko: '가운데, 한 줄, 작은 읽을거리 한둘',
         en: 'The middle: a line of text, a pair of small readouts'
       }
     }
@@ -8909,19 +9055,19 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 툴바는 남의 컨트롤을 담고, 그 컨트롤들은 자기 색을 가지고 옵니다',
-        en: 'Weight of the bar, said the way a container says it — the sheet is never dyed, because a toolbar holds other people’s controls and those arrive with colours of their own'
+        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다. 툴바는 남의 컨트롤을 담고, 그 컨트롤들은 자기 색을 가지고 옵니다',
+        en: 'Weight of the bar, said the way a container says it: the sheet is never dyed, because a toolbar holds other people’s controls and those arrive with colours of their own'
       },
       sizeDescription: {
-        ko: '여백과 모서리의 스케일. 높이는 아닙니다 — 툴바는 안에 든 컨트롤 높이에 여백을 더한 만큼 높습니다',
+        ko: '여백과 모서리의 스케일. 높이는 아닙니다. 툴바는 안에 든 컨트롤 높이에 여백을 더한 만큼 높습니다',
         en: 'The scale of the padding and the radius. Not a height: a toolbar is as tall as the controls in it plus its padding'
       },
       densityDescription: {
         ko: '여백만 바꿉니다. 별도의 dense prop이 없는 이유가 이것입니다',
-        en: 'Padding only — which is why there is no separate `dense` prop meaning the same thing'
+        en: 'Padding only: which is why there is no separate `dense` prop meaning the same thing'
       },
       elevationDescription: {
-        ko: '그림자 깊이. 고정된 바에서도 기본이 0입니다 — 헤더 밑의 그림자는 "아래에 내용이 있다"는 말이고, 그것은 페이지를 스크롤한 뒤에야 참입니다',
+        ko: '그림자 깊이. 고정된 바에서도 기본이 0입니다. 헤더 밑의 그림자는 "아래에 내용이 있다"는 말이고, 그것은 페이지를 스크롤한 뒤에야 참입니다',
         en: 'Drop shadow depth. `0` even when the bar is pinned: a shadow under a header says "there is content beneath this", and that is only true once the page has been scrolled'
       }
     }),
@@ -8950,22 +9096,22 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '내용을 마주 보는 쪽 가장자리에 헤어라인을 긋습니다 — top 바는 아래, bottom 바는 위',
-        en: 'Draws a hairline along the edge that faces the content — under a `top` bar, over a `bottom` one'
+        ko: '내용을 마주 보는 쪽 가장자리에 헤어라인을 긋습니다. top 바는 아래, bottom 바는 위',
+        en: 'Draws a hairline along the edge that faces the content: under a `top` bar, over a `bottom` one'
       }
     },
     {
       name: 'start',
       type: 'ReactNode',
       description: {
-        ko: '바의 앞쪽에 고정 — 로고, 제목, 뒤로 가기',
+        ko: '바의 앞쪽에 고정, 로고, 제목, 뒤로 가기',
         en: 'Pinned to the start of the bar: a logo, a title, a back button'
       }
     },
     {
       name: 'end',
       type: 'ReactNode',
-      description: { ko: '뒤쪽에 고정 — 액션들', en: 'Pinned to the end: the actions' }
+      description: { ko: '뒤쪽에 고정, 액션들', en: 'Pinned to the end: the actions' }
     },
     renderProp('render={<header />}'),
     {
@@ -8983,7 +9129,7 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'text'",
       size: "'md'",
       variantDescription: {
-        ko: '인용을 얹을 시트의 무게. text가 기본이며 여백의 선 하나뿐입니다 — 표면이 생기기 훨씬 전부터 인용은 그렇게 생겼습니다. 어느 쪽이든 강조선은 그대로 남습니다',
+        ko: '인용을 얹을 시트의 무게. text가 기본이며 여백의 선 하나뿐입니다. 표면이 생기기 훨씬 전부터 인용은 그렇게 생겼습니다. 어느 쪽이든 강조선은 그대로 남습니다',
         en: 'Weight of the sheet under the quote. `text` is the default and is a rule in the margin and nothing else. The accent rule stays in all three'
       },
       sizeDescription: {
@@ -8991,7 +9137,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: "The quote's type scale and the sheet's padding. One step above body copy, with the leading a paragraph needs"
       },
       colorDescription: {
-        ko: '의미론적 색 역할. 시트에는 물들지 않습니다 — 색은 여백의 선과 인용부호에만 나타납니다',
+        ko: '의미론적 색 역할. 시트에는 물들지 않습니다. 색은 여백의 선과 인용부호에만 나타납니다',
         en: 'Semantic colour role. The sheet is never dyed; the family shows up in the rule and the mark'
       },
       elevationDescription: {
@@ -9003,7 +9149,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'author',
       type: 'ReactNode',
       description: {
-        ko: '말한 사람. 이 값이 있으면 전체가 figure + figcaption이 됩니다 — 출처는 인용문 **바깥**에 있어야 한다는 것이 명세의 요구입니다',
+        ko: '말한 사람. 이 값이 있으면 전체가 figure + figcaption이 됩니다. 출처는 인용문 **바깥**에 있어야 한다는 것이 명세의 요구입니다',
         en: 'Who said it. Its presence turns the whole thing into a figure with a figcaption, because the spec puts the attribution outside the quote'
       }
     },
@@ -9011,8 +9157,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'source',
       type: 'ReactNode',
       description: {
-        ko: '어디서 나온 말인지 — 책, 강연, 문서. cite 요소로 렌더링됩니다. cite는 작품의 제목을 위한 것이지 사람 이름을 위한 것이 아닙니다',
-        en: 'Where it is from — a book, a talk, a page. Rendered in a `<cite>`, which is for the title of a work and never for a person'
+        ko: '어디서 나온 말인지, 책, 강연, 문서. cite 요소로 렌더링됩니다. cite는 작품의 제목을 위한 것이지 사람 이름을 위한 것이 아닙니다',
+        en: 'Where it is from: a book, a talk, a page. Rendered in a `<cite>`, which is for the title of a work and never for a person'
       }
     },
     {
@@ -9046,7 +9192,7 @@ export const propTables: Record<string, PropRow[]> = {
       required: true,
       description: {
         ko: "키들. 문자열은 +로 나뉩니다('Mod+Shift+P'). 키 자체가 +인 경우에만 배열형을 씁니다",
-        en: "The keys. A string is split on `+` — 'Mod+Shift+P'. The array form is for a shortcut whose key is itself a plus"
+        en: "The keys. A string is split on `+`: 'Mod+Shift+P'. The array form is for a shortcut whose key is itself a plus"
       }
     },
     {
@@ -9062,7 +9208,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'separator',
       type: 'ReactNode',
       description: {
-        ko: '키 사이에 오는 것. 생략하면 플랫폼의 관례를 따릅니다 — Windows/Linux는 +, macOS는 아무것도 없이 ⇧⌘P',
+        ko: '키 사이에 오는 것. 생략하면 플랫폼의 관례를 따릅니다. Windows/Linux는 +, macOS는 아무것도 없이 ⇧⌘P',
         en: "What goes between two keys. Omit it for the platform's own convention: a `+` off a Mac, and nothing at all on one"
       }
     },
@@ -9071,11 +9217,11 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       color: "'secondary'",
       variantDescription: {
-        ko: '키캡의 무게. outline이 기본입니다 — 지금까지 인쇄된 모든 설명서에서 키캡은 얇은 선의 상자였습니다',
+        ko: '키캡의 무게. outline이 기본입니다. 지금까지 인쇄된 모든 설명서에서 키캡은 얇은 선의 상자였습니다',
         en: 'Weight of the key cap. `outline` is the default: a key cap is a hairline box, which is what it has looked like in every manual ever printed'
       },
       sizeDescription: {
-        ko: '키캡의 높이와 타입 스케일. Chip처럼 컨트롤 사다리에서 한 단계 아래입니다 — md 키캡은 sm 컨트롤입니다',
+        ko: '키캡의 높이와 타입 스케일. Chip처럼 컨트롤 사다리에서 한 단계 아래입니다. md 키캡은 sm 컨트롤입니다',
         en: 'Height and type scale of the caps. One step below the control of the same size, exactly as a Chip is'
       },
       colorDescription: {
@@ -9089,7 +9235,7 @@ export const propTables: Record<string, PropRow[]> = {
       },
       elevationDescription: {
         ko: '그림자 깊이. 이것은 키가 아니라 키의 그림이므로 올리고 싶은 마음이 드는 것이 함정입니다',
-        en: 'Drop shadow depth. This is a picture of a key, not a key — which is exactly why raising it is tempting and wrong'
+        en: 'Drop shadow depth. This is a picture of a key, not a key: which is exactly why raising it is tempting and wrong'
       }
     })
   ],
@@ -9100,7 +9246,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string | string[] | RegExp',
       required: true,
       description: {
-        ko: '무엇을 찾을지. 배열은 긴 것부터 시도하므로 database가 data보다 먼저 잡힙니다. RegExp는 그대로 쓰이며 global 플래그만 강제됩니다 — 이때 caseSensitive와 wholeWord는 무시됩니다',
+        ko: '무엇을 찾을지. 배열은 긴 것부터 시도하므로 database가 data보다 먼저 잡힙니다. RegExp는 그대로 쓰이며 global 플래그만 강제됩니다. 이때 caseSensitive와 wholeWord는 무시됩니다',
         en: 'What to find. An array tries the longest term first, so `database` wins over `data`. A RegExp is used as written with the global flag forced on, and then caseSensitive and wholeWord are ignored'
       }
     },
@@ -9120,7 +9266,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'warning'",
       shared: true,
       description: {
-        ko: '의미론적 색 역할. warning이 기본인 것은 임의가 아닙니다 — 채움이 밝고 잉크가 어두운 유일한 계열이라, solid warning 표식이 실제로 노란 형광펜처럼 보입니다',
+        ko: '의미론적 색 역할. warning이 기본인 것은 임의가 아닙니다. 채움이 밝고 잉크가 어두운 유일한 계열이라, solid warning 표식이 실제로 노란 형광펜처럼 보입니다',
         en: 'Semantic colour role. `warning` by default and not arbitrarily: it is the one family whose fill is light with dark ink, so a solid mark is a yellow highlighter over black text'
       }
     },
@@ -9139,7 +9285,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '단어 전체일 때만 잡을지. cat이 "cat"은 잡고 "concatenate"는 잡지 않습니다. 단어는 글자·숫자·밑줄의 연속이므로, 띄어쓰기로 단어를 나누지 않는 글에서는 효과가 거의 없습니다',
-        en: 'Whether a term has to be a word on its own — `cat` marking "cat" but not "concatenate". A word is a run of letters, digits and underscores in any script, which means very little for text that is not delimited by spaces'
+        en: 'Whether a term has to be a word on its own: `cat` marking "cat" but not "concatenate". A word is a run of letters, digits and underscores in any script, which means very little for text that is not delimited by spaces'
       }
     },
     {
@@ -9155,7 +9301,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'weight',
       type: "'regular' | 'medium' | 'semibold' | 'bold'",
       description: {
-        ko: '표식의 굵기. 생략하면 주변 글과 같습니다 — 표면이 이미 "이것"이라고 말하고 있고, 문장 안에서 한 단어만 굵어지면 줄 전체의 리듬이 바뀝니다',
+        ko: '표식의 굵기. 생략하면 주변 글과 같습니다. 표면이 이미 "이것"이라고 말하고 있고, 문장 안에서 한 단어만 굵어지면 줄 전체의 리듬이 바뀝니다',
         en: 'Weight of the mark. Omit it and it is the weight of the text around it: the surface already says "this one", and a bolded word changes the rhythm of the whole line'
       }
     },
@@ -9263,8 +9409,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'endIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 뒤의 내용 — 개수, 상태 점',
-        en: 'Content after the label — a count, a status dot'
+        ko: '라벨 뒤의 내용, 개수, 상태 점',
+        en: 'Content after the label: a count, a status dot'
       }
     },
     {
@@ -9334,15 +9480,15 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'meta',
       type: 'ReactNode',
       description: {
-        ko: '언제 일어났는지 — 날짜, 소요 시간, 이름',
-        en: 'When it happened — a date, a duration, a name'
+        ko: '언제 일어났는지, 날짜, 소요 시간, 이름',
+        en: 'When it happened: a date, a duration, a name'
       }
     },
     {
       name: 'bullet',
       type: 'ReactNode',
       description: {
-        ko: '불릿 안에 들어가는 것 — 번호, 아이콘, 아바타. 생략하면 그냥 원입니다',
+        ko: '불릿 안에 들어가는 것, 번호, 아이콘, 아바타. 생략하면 그냥 원입니다',
         en: 'What goes inside the bullet: a number, an icon, an avatar. Omit it and the bullet is a plain disc'
       }
     },
@@ -9350,8 +9496,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'status',
       type: "'complete' | 'current' | 'upcoming'",
       description: {
-        ko: '타임라인의 active가 계산한 값을 이 항목에 한해 덮어씁니다 — 실패해서 멈춘 단계, 건너뛴 단계',
-        en: "Overrides what the timeline's `active` computed for this item — a step that failed and stopped the sequence, a step that was skipped"
+        ko: '타임라인의 active가 계산한 값을 이 항목에 한해 덮어씁니다. 실패해서 멈춘 단계, 건너뛴 단계',
+        en: "Overrides what the timeline's `active` computed for this item: a step that failed and stopped the sequence, a step that was skipped"
       }
     },
     {
@@ -9397,7 +9543,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'none' | 'simple' | 'folder'",
       default: "'simple'",
       description: {
-        ko: '계층을 어떻게 그릴지. none은 들여쓰기만, simple은 레벨마다 세로선 하나, folder는 거기에 각 행으로 꺾여 들어가는 선까지 — 마지막 자식의 세로선은 그 행에서 끊깁니다',
+        ko: '계층을 어떻게 그릴지. none은 들여쓰기만, simple은 레벨마다 세로선 하나, folder는 거기에 각 행으로 꺾여 들어가는 선까지, 마지막 자식의 세로선은 그 행에서 끊깁니다',
         en: 'How the hierarchy is drawn. `none` is indentation alone, `simple` is one rail per level, and `folder` adds an elbow into every row and stops the rail under a last child'
       }
     },
@@ -9423,8 +9569,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'selected',
       type: '(string | number)[]',
       description: {
-        ko: '선택된 행들. multiple이 꺼져 있어도 배열입니다 — Accordion의 value와 같은 모양이라, multiple을 켜도 값의 타입은 바뀌지 않습니다',
-        en: "Which rows are chosen. An array even with multiple off — the same shape Accordion's value takes, so turning multiple on does not change the type of the value"
+        ko: '선택된 행들. multiple이 꺼져 있어도 배열입니다. Accordion의 value와 같은 모양이라, multiple을 켜도 값의 타입은 바뀌지 않습니다',
+        en: "Which rows are chosen. An array even with multiple off: the same shape Accordion's value takes, so turning multiple on does not change the type of the value"
       }
     },
     {
@@ -9491,23 +9637,23 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 앞의 내용 — 폴더 글리프, 파일 종류, 상태 점',
-        en: 'Content before the label — a folder glyph, a file type, a status dot'
+        ko: '라벨 앞의 내용, 폴더 글리프, 파일 종류, 상태 점',
+        en: 'Content before the label: a folder glyph, a file type, a status dot'
       }
     },
     {
       name: 'endIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 뒤의 내용 — 개수, 배지',
-        en: 'Content after the label — a count, a badge'
+        ko: '라벨 뒤의 내용, 개수, 배지',
+        en: 'Content after the label: a count, a badge'
       }
     },
     {
       name: 'action',
       type: 'ReactNode',
       description: {
-        ko: '행 끝에 고정되는 컨트롤. 누를 수 있는 영역 바깥에 놓입니다 — 열리기도 하고 메뉴 버튼도 가진 행은 누를 것이 두 개입니다',
+        ko: '행 끝에 고정되는 컨트롤. 누를 수 있는 영역 바깥에 놓입니다. 열리기도 하고 메뉴 버튼도 가진 행은 누를 것이 두 개입니다',
         en: 'A control pinned to the end of the row, outside the pressable area: a row that both opens and holds a menu button has two things to press'
       }
     },
@@ -9531,8 +9677,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'expandable',
       type: 'boolean',
       description: {
-        ko: '아직 children이 없는 행에도 펼침 화살표를 그립니다 — 처음 열 때 가져오는 가지',
-        en: 'Forces the disclosure arrow onto a row with no children yet — the branch fetched the first time it is opened'
+        ko: '아직 children이 없는 행에도 펼침 화살표를 그립니다. 처음 열 때 가져오는 가지',
+        en: 'Forces the disclosure arrow onto a row with no children yet: the branch fetched the first time it is opened'
       }
     },
     {
@@ -9566,7 +9712,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: '6',
       description: {
-        ko: '코드의 자리수. 2–12로 잘립니다 — 한 칸짜리는 TextField이고, 열두 칸을 넘기면 휴대폰 화면에 들어가지 않습니다',
+        ko: '코드의 자리수. 2–12로 잘립니다. 한 칸짜리는 TextField이고, 열두 칸을 넘기면 휴대폰 화면에 들어가지 않습니다',
         en: 'How many characters the code has. Clamped to 2–12: a single box is a TextField, and past twelve the row stops fitting a phone'
       }
     },
@@ -9625,7 +9771,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '(value: string) => void',
       description: {
         ko: '모든 칸이 찼을 때. 코드를 검증할 시점입니다',
-        en: 'Fires once every slot is filled — the moment to verify the code'
+        en: 'Fires once every slot is filled: the moment to verify the code'
       }
     },
     {
@@ -9692,7 +9838,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '1',
       description: {
         ko: '가로 zone이 새 열로 넘어가기 전까지 쓰는 줄 수(세로 zone에서는 열 수). 2는 같은 너비에 두 배를 담는 선반입니다',
-        en: 'How many rows a horizontal zone uses before it starts a new column — columns, in a vertical one. 2 is the shelf that holds twice as much in the same width'
+        en: 'How many rows a horizontal zone uses before it starts a new column: columns, in a vertical one. 2 is the shelf that holds twice as much in the same width'
       }
     },
     {
@@ -9719,7 +9865,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'inline'",
       description: {
         ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼에 가리지 않고, 더 스크롤할 곳이 없을 때 버튼은 사라지지 않고 disabled가 됩니다',
-        en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go, which is why an auto button is disabled there rather than removed'
+        en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it, and the lane is kept even while that button has nowhere to go, which is why an auto button is disabled there rather than removed'
       }
     },
     {
@@ -9727,7 +9873,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'item' | 'page' | 'hold'",
       default: "'item'",
       description: {
-        ko: '버튼을 눌렀을 때 하는 일. item은 다음 자식으로, page는 지금 보이는 만큼, hold는 누르고 있는 동안 계속 — hold에서 짧게 누르면 item 한 칸입니다',
+        ko: '버튼을 눌렀을 때 하는 일. item은 다음 자식으로, page는 지금 보이는 만큼, hold는 누르고 있는 동안 계속, hold에서 짧게 누르면 item 한 칸입니다',
         en: 'What pressing a button does: item moves to the next child, page moves by everything on screen, hold scrolls for as long as it is held. A press too short to be a hold falls back to one item'
       }
     },
@@ -9755,7 +9901,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '멈출 때 가장 가까운 자식을 시작 가장자리에 맞춥니다. 버튼뿐 아니라 드래그와 휠에도 적용됩니다',
-        en: 'Snaps the nearest child to the leading edge when the scrolling stops — dragging and the wheel included, not only the buttons'
+        en: 'Snaps the nearest child to the leading edge when the scrolling stops: dragging and the wheel included, not only the buttons'
       }
     },
     {
@@ -9763,7 +9909,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '마우스나 펜으로도 끌어서 스크롤합니다. 손가락은 브라우저 자신의 스크롤에 맡깁니다 — 관성과 스크롤바가 딸려 오기 때문입니다',
+        ko: '마우스나 펜으로도 끌어서 스크롤합니다. 손가락은 브라우저 자신의 스크롤에 맡깁니다. 관성과 스크롤바가 딸려 오기 때문입니다',
         en: 'Lets a mouse or a pen drag the strip along, the way a finger already does. Touch is left to the browser, whose own scrolling brings momentum and a scrollbar with it'
       }
     },
@@ -9824,7 +9970,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '버튼이 자기 이름을 말하는 언어(BCP 47). 지원하지 않는 태그는 영어로 돌아갑니다',
-        en: 'Which language the buttons name themselves in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the buttons name themselves in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     {
@@ -9832,8 +9978,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       default: "locale's word",
       description: {
-        ko: '스크롤 영역의 이름 — "Categories", "Recent files". 띠는 키보드로 움직일 수 있어야 하므로 언제나 tab 정거장이며, 이름을 주지 않으면 locale의 일반 명사가 대신 쓰입니다',
-        en: 'What the scrollable region is called — "Categories", "Recent files". The strip is always a tab stop, because a reader with no pointer has to be able to move it; without a name the locale\'s generic word stands in'
+        ko: '스크롤 영역의 이름, "Categories", "Recent files". 띠는 키보드로 움직일 수 있어야 하므로 언제나 tab 정거장이며, 이름을 주지 않으면 locale의 일반 명사가 대신 쓰입니다',
+        en: 'What the scrollable region is called: "Categories", "Recent files". The strip is always a tab stop, because a reader with no pointer has to be able to move it; without a name the locale\'s generic word stands in'
       }
     },
     {
@@ -9916,7 +10062,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: 'Pane들. 크기 제약은 자식의 props에서 읽으므로 직접 자식이 Pane이어야 합니다 — 무언가로 감싼 Pane은 최소 크기가 없는 pane이 됩니다',
+        ko: 'Pane들. 크기 제약은 자식의 props에서 읽으므로 직접 자식이 Pane이어야 합니다. 무언가로 감싼 Pane은 최소 크기가 없는 pane이 됩니다',
         en: 'The Panes. The constraints are read off the children’s props, so the direct children have to be Panes: a Pane wrapped in something else is a pane with no minimum'
       }
     }
@@ -10042,8 +10188,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'baseUrl',
       type: 'string',
       description: {
-        ko: 'structuredData에서 상대 href를 절대 URL로 만들 기준 — 사이트의 origin',
-        en: "What relative hrefs are resolved against for structuredData — the site's origin"
+        ko: 'structuredData에서 상대 href를 절대 URL로 만들 기준, 사이트의 origin',
+        en: "What relative hrefs are resolved against for structuredData: the site's origin"
       }
     },
     {
@@ -10071,8 +10217,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '라벨 앞의 내용 — 홈 글리프, 저장소 아바타',
-        en: 'Content before the label — a home glyph, a repository avatar'
+        ko: '라벨 앞의 내용, 홈 글리프, 저장소 아바타',
+        en: 'Content before the label: a home glyph, a repository avatar'
       }
     },
     {
@@ -10085,7 +10231,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       description: {
         ko: '지금 보고 있는 페이지로 표시하고 링크를 걷어냅니다. 마지막 단계는 지정하지 않아도 현재이며, 다른 단계에 지정하면 마지막 단계에서 표시가 걷힙니다. 한 트레일에 현재는 하나뿐입니다',
-        en: 'Marks this step as the page you are on, which stops it being a link. The last step is the current one on its own, so this is only needed for a trail that ends somewhere the reader is not — and setting it anywhere takes the mark off the last step, because only one step in a trail can be it'
+        en: 'Marks this step as the page you are on, which stops it being a link. The last step is the current one on its own, so this is only needed for a trail that ends somewhere the reader is not, and setting it anywhere takes the mark off the last step, because only one step in a trail can be it'
       }
     },
     {
@@ -10116,7 +10262,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'always' | 'hover' | 'none'",
       default: "'always'",
       description: {
-        ko: '밑줄을 언제 그릴지. color가 기본적으로 없으므로 always가 기본값입니다 — 선이 없으면 문장 속에서 링크를 구분할 단서가 남지 않습니다',
+        ko: '밑줄을 언제 그릴지. color가 기본적으로 없으므로 always가 기본값입니다. 선이 없으면 문장 속에서 링크를 구분할 단서가 남지 않습니다',
         en: 'When the underline is drawn. always is the default because color is not: with no line there is nothing telling a link from the sentence around it'
       }
     },
@@ -10125,8 +10271,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: COLOR,
       shared: true,
       description: {
-        ko: '의미론적 색 역할. 기본값이 없습니다 — 문단 안의 링크는 대개 그 문단의 색을 그대로 씁니다',
-        en: 'Semantic colour role. No default — a link in a paragraph is usually the paragraph’s own colour'
+        ko: '의미론적 색 역할. 기본값이 없습니다. 문단 안의 링크는 대개 그 문단의 색을 그대로 씁니다',
+        en: 'Semantic colour role. No default: a link in a paragraph is usually the paragraph’s own colour'
       }
     },
     {
@@ -10162,15 +10308,15 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: 'screen reader용 문장의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the line for a screen reader is written in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the line for a screen reader is written in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     {
       name: 'render',
       type: 'useRender.RenderProp',
       description: {
-        ko: 'a 대신 다른 요소로 렌더링합니다 — 대개 router가 주는 Link. href는 그대로 전달되므로 한 번만 쓰면 됩니다',
-        en: 'Renders something other than an a — the Link a router brings, most of the time. href still goes through, so it is written once'
+        ko: 'a 대신 다른 요소로 렌더링합니다. 대개 router가 주는 Link. href는 그대로 전달되므로 한 번만 쓰면 됩니다',
+        en: 'Renders something other than an a: the Link a router brings, most of the time. href still goes through, so it is written once'
       }
     },
     {
@@ -10204,8 +10350,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'avatar',
       type: 'ReactNode',
       description: {
-        ko: '보낸 사람의 그림 — 보통 Avatar. 없으면 말풍선이 줄 전체를 씁니다',
-        en: 'The sender’s picture — an Avatar. Left out, the bubble takes the whole row'
+        ko: '보낸 사람의 그림, 보통 Avatar. 없으면 말풍선이 줄 전체를 씁니다',
+        en: 'The sender’s picture: an Avatar. Left out, the bubble takes the whole row'
       }
     },
     {
@@ -10238,7 +10384,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '사진·영상·지도. 텍스트 위에 가장자리까지 채워 그려지고 말풍선의 모서리가 잘라 냅니다',
-        en: 'A picture, a video, a map — drawn edge to edge above the text, cropped by the bubble’s corners'
+        en: 'A picture, a video, a map: drawn edge to edge above the text, cropped by the bubble’s corners'
       }
     },
     {
@@ -10253,8 +10399,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'actions',
       type: 'ReactNode',
       description: {
-        ko: '메시지의 액션 — 보통 Menu의 trigger. 말풍선 옆에 놓이고, 줄에 hover나 focus가 오기 전까지는 비켜서 있습니다',
-        en: 'The message’s own actions — usually a Menu trigger. Sits beside the bubble and stays out of the way until the row is hovered or focused'
+        ko: '메시지의 액션, 보통 Menu의 trigger. 말풍선 옆에 놓이고, 줄에 hover나 focus가 오기 전까지는 비켜서 있습니다',
+        en: 'The message’s own actions: usually a Menu trigger. Sits beside the bubble and stays out of the way until the row is hovered or focused'
       }
     },
     {
@@ -10263,7 +10409,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: '표식을 읽어 주는 언어. BCP 47 태그. 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the marks are read out in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the marks are read out in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     ...sharedProps({
@@ -10317,7 +10463,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: '기본 라벨과 안내 문구의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the default label and notice are written in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the default label and notice are written in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     {
@@ -10366,7 +10512,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number | string',
       description: {
         ko: '가려진 상자의 높이를 제한합니다. CSS 길이 또는 픽셀 수. 열면 풀립니다',
-        en: 'Clamps the covered box to this height — a CSS length, or a number in pixels. Revealing releases it'
+        en: 'Clamps the covered box to this height: a CSS length, or a number in pixels. Revealing releases it'
       }
     },
     {
@@ -10421,7 +10567,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: SIDE,
       default: "'left'",
       description: {
-        ko: '패널이 붙는 창의 변. NebaSide가 어디서나 그렇듯 물리적입니다 — 창 위쪽의 drawer는 어떤 쓰기 방향에서도 위쪽입니다',
+        ko: '패널이 붙는 창의 변. NebaSide가 어디서나 그렇듯 물리적입니다. 창 위쪽의 drawer는 어떤 쓰기 방향에서도 위쪽입니다',
         en: 'Which edge of the window the panel is attached to. Physical, as NebaSide is everywhere'
       }
     },
@@ -10431,7 +10577,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'overlay'",
       description: {
         ko: 'overlay는 스크림 위에 뜨고 focus를 가두며 닫을 수 있습니다. inline은 레이아웃의 일부이며 스크림도, portal도, 닫을 것도 없습니다',
-        en: 'overlay floats on a scrim, holds focus and is dismissed. inline is part of the layout — no scrim, no portal, nothing to dismiss'
+        en: 'overlay floats on a scrim, holds focus and is dismissed. inline is part of the layout: no scrim, no portal, nothing to dismiss'
       }
     },
     {
@@ -10473,7 +10619,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'defaultOpen',
       type: 'boolean',
       description: {
-        ko: '비제어 drawer의 초기 상태. overlay에서는 false, inline에서는 true가 기본입니다 — 열어야 나타나는 고정 사이드바는 고정 사이드바가 아니기 때문입니다',
+        ko: '비제어 drawer의 초기 상태. overlay에서는 false, inline에서는 true가 기본입니다. 열어야 나타나는 고정 사이드바는 고정 사이드바가 아니기 때문입니다',
         en: 'The initial state of an uncontrolled drawer. false in overlay mode, true in inline mode: a fixed sidebar that had to be opened would not be fixed'
       }
     },
@@ -10486,8 +10632,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'trigger',
       type: 'ReactElement',
       description: {
-        ko: 'drawer를 여는 요소. Base UI가 연결합니다. overlay 전용 — inline drawer는 열 것이 없으므로 렌더링되지 않습니다',
-        en: 'The element that opens it, wired up by Base UI. overlay only — an inline drawer has nothing to open, so it is not rendered'
+        ko: 'drawer를 여는 요소. Base UI가 연결합니다. overlay 전용, inline drawer는 열 것이 없으므로 렌더링되지 않습니다',
+        en: 'The element that opens it, wired up by Base UI. overlay only: an inline drawer has nothing to open, so it is not rendered'
       }
     },
     {
@@ -10527,7 +10673,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'showClose',
       type: 'boolean',
       description: {
-        ko: '모서리의 ×. overlay에서는 켜짐, inline에서는 꺼짐이 기본입니다 — 다시 열 방법 없이 고정 사이드바를 닫는 ×는 되돌릴 수 없는 문입니다',
+        ko: '모서리의 ×. overlay에서는 켜짐, inline에서는 꺼짐이 기본입니다. 다시 열 방법 없이 고정 사이드바를 닫는 ×는 되돌릴 수 없는 문입니다',
         en: 'The × in the corner. On in overlay mode, off in inline mode: a × that closes a fixed sidebar with nothing to reopen it is a one-way door'
       }
     },
@@ -10540,7 +10686,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'extent',
       type: 'number | string',
       description: {
-        ko: '패널이 자기 변에서 얼마나 들어오는지 — left/right에서는 너비, top/bottom에서는 높이입니다. 숫자는 픽셀입니다',
+        ko: '패널이 자기 변에서 얼마나 들어오는지, left/right에서는 너비, top/bottom에서는 높이입니다. 숫자는 픽셀입니다',
         en: 'How far the panel reaches in from its edge: a width for left and right, a height for top and bottom. Numbers are pixels'
       }
     },
@@ -10576,7 +10722,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '본문. 스크롤되는 유일한 부분입니다',
-        en: 'The body — the only part that scrolls'
+        en: 'The body: the only part that scrolls'
       }
     }
   ],
@@ -10594,8 +10740,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'trigger',
       type: 'ReactElement',
       description: {
-        ko: 'popup이 매달리고 또 popup을 여는 요소. ref를 받고 props를 펼치는 요소 하나여야 합니다 — 모든 Neba 컴포넌트가 그렇습니다',
-        en: 'The element the popup hangs off and that opens it. One element that accepts a ref and spreads props — every Neba component does'
+        ko: 'popup이 매달리고 또 popup을 여는 요소. ref를 받고 props를 펼치는 요소 하나여야 합니다. 모든 Neba 컴포넌트가 그렇습니다',
+        en: 'The element the popup hangs off and that opens it. One element that accepts a ref and spreads props: every Neba component does'
       }
     },
     {
@@ -10678,7 +10824,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '트리거를 가리키는 작은 쐐기. Tooltip과 달리 기본이 꺼짐입니다 — 이 표면은 반투명이고, popup의 상자 밖으로 튀어나온 쐐기는 그 backdrop을 함께 가져갈 수 없습니다',
+        ko: '트리거를 가리키는 작은 쐐기. Tooltip과 달리 기본이 꺼짐입니다. 이 표면은 반투명이고, popup의 상자 밖으로 튀어나온 쐐기는 그 backdrop을 함께 가져갈 수 없습니다',
         en: 'The little wedge pointing at the trigger. Off by default, unlike Tooltip: this surface is translucent, and a wedge outside the popup cannot carry that backdrop with it'
       }
     },
@@ -10709,7 +10855,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "boolean | 'trap-focus'",
       default: 'false',
       description: {
-        ko: '뒤 페이지를 가져갈지. 기본이 꺼짐인 것이 popover와 Dialog를 가릅니다 — popover는 페이지 대신이 아니라 페이지 옆의 한 부분입니다',
+        ko: '뒤 페이지를 가져갈지. 기본이 꺼짐인 것이 popover와 Dialog를 가릅니다. popover는 페이지 대신이 아니라 페이지 옆의 한 부분입니다',
         en: 'Whether the page behind is taken away. Off by default, and that is what separates a popover from a Dialog: it sits beside the page, not instead of it'
       }
     },
@@ -10749,7 +10895,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'line' | 'rect' | 'circle'",
       default: "'line'",
       description: {
-        ko: '무엇을 대신하는지 — 글줄, 블록(이미지·차트·카드), 원형(avatar)',
+        ko: '무엇을 대신하는지, 글줄, 블록(이미지·차트·카드), 원형(avatar)',
         en: 'What it stands in for: a run of text, a block (image, chart, card), or something round (an avatar)'
       }
     },
@@ -10768,7 +10914,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '대신하는 것의 크기 — line은 타입 스케일, circle은 지름, rect는 기본 블록 높이',
+        ko: '대신하는 것의 크기, line은 타입 스케일, circle은 지름, rect는 기본 블록 높이',
         en: 'The scale of the thing being stood in for: the type scale for a line, the diameter for a circle, the default block height for a rect'
       }
     },
@@ -10778,7 +10924,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'secondary'",
       shared: true,
       description: {
-        ko: '색 계열. 그대로 두는 편이 좋습니다 — 아직 도착하지 않은 내용에 대해 의미론적 색을 입히는 것은 없는 것을 말하는 셈입니다',
+        ko: '색 계열. 그대로 두는 편이 좋습니다. 아직 도착하지 않은 내용에 대해 의미론적 색을 입히는 것은 없는 것을 말하는 셈입니다',
         en: 'Colour family. Worth leaving alone: a placeholder carrying a semantic colour is saying something about content that has not arrived'
       }
     },
@@ -10825,18 +10971,18 @@ export const propTables: Record<string, PropRow[]> = {
       color: "'secondary'",
       variantDescription: {
         ko: '표면의 무게. 빈 상태는 대개 Card의 본문이나 Table의 아래처럼 이미 표면이 있는 자리에 놓이므로 기본값이 text입니다',
-        en: 'Weight of the surface. text is the default here and nowhere else: an empty state is nearly always already inside something — a Card body, a Table — and a second rectangle drawn inside the first is one rectangle too many'
+        en: 'Weight of the surface. text is the default here and nowhere else: an empty state is nearly always already inside something(a Card body, a Table) and a second rectangle drawn inside the first is one rectangle too many'
       },
       sizeDescription: {
         ko: '타입 스케일과 글리프 크기, 그리고 상태가 차지하는 세로 여백',
         en: 'The type scale, the glyph, and how much room the state takes vertically'
       },
       colorDescription: {
-        ko: '색 계열. 시트는 물들지 않고 하이라인과 focus ring까지만 닿습니다. secondary에서 옮길 만한 때는 비어 있다는 사실 자체가 문제일 때입니다 — 불러오지 못한 영역의 danger처럼',
-        en: 'Colour family. The sheet is never dyed; it reaches the hairline and the focus ring and stops. Worth moving off secondary only when the emptiness is itself a problem — danger on a region that failed to load'
+        ko: '색 계열. 시트는 물들지 않고 하이라인과 focus ring까지만 닿습니다. secondary에서 옮길 만한 때는 비어 있다는 사실 자체가 문제일 때입니다. 불러오지 못한 영역의 danger처럼',
+        en: 'Colour family. The sheet is never dyed; it reaches the hairline and the focus ring and stops. Worth moving off secondary only when the emptiness is itself a problem: danger on a region that failed to load'
       },
       elevationDescription: {
-        ko: '그림자 깊이. 0이 거의 언제나 맞습니다 — 빈 상태는 이미 있는 표면에 뚫린 구멍이지 그 자체로 한 장의 시트가 아닙니다',
+        ko: '그림자 깊이. 0이 거의 언제나 맞습니다. 빈 상태는 이미 있는 표면에 뚫린 구멍이지 그 자체로 한 장의 시트가 아닙니다',
         en: 'Drop shadow depth. 0 is almost always right: an empty state is a hole in a surface that already exists rather than a sheet of its own'
       }
     }),
@@ -10854,15 +11000,15 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode | false',
       description: {
         ko: '제목 위의 글리프. 기본값은 빈 트레이, false면 생략. svg는 size 사다리에 맞춰지고 그 밖의 것(일러스트, 브랜드 마크)은 원래 크기 그대로입니다',
-        en: 'The glyph above the headline. Defaults to the empty tray; false drops it. An svg is sized off the size ladder, and anything else — an illustration, a brand mark — is left at the size it came in at'
+        en: 'The glyph above the headline. Defaults to the empty tray; false drops it. An svg is sized off the size ladder, and anything else(an illustration, a brand mark) is left at the size it came in at'
       }
     },
     {
       name: 'action',
       type: 'ReactNode',
       description: {
-        ko: '본문 아래에 놓이는 다음 할 일 — “첫 항목 만들기” 버튼, “필터 지우기” 링크. 여럿이면 한 줄에 놓이고 함께 줄바꿈됩니다',
-        en: 'What to do about it, under the text — a "Create the first one" button, a "Clear filters" link. Several sit in a row and wrap together'
+        ko: '본문 아래에 놓이는 다음 할 일, “첫 항목 만들기” 버튼, “필터 지우기” 링크. 여럿이면 한 줄에 놓이고 함께 줄바꿈됩니다',
+        en: 'What to do about it, under the text: a "Create the first one" button, a "Clear filters" link. Several sit in a row and wrap together'
       }
     },
     {
@@ -10871,14 +11017,14 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: '기본 제목의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). title을 주면 무시되고, 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the default headline is written in — a BCP 47 tag. Ignored once title is given, and unsupported tags fall back to English'
+        en: 'Which language the default headline is written in: a BCP 47 tag. Ignored once title is given, and unsupported tags fall back to English'
       }
     },
     {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '제목 아래 한 문장 — 왜 비어 있는지, 다음에 무엇을 할지',
+        ko: '제목 아래 한 문장, 왜 비어 있는지, 다음에 무엇을 할지',
         en: 'The sentence under the headline: why it is empty, or what to do next'
       }
     },
@@ -10891,8 +11037,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'trigger',
       type: 'ReactElement',
       description: {
-        ko: '질문이 매달리고, 질문을 띄우는 컨트롤. ref와 props spread를 받는 element 하나 — Neba 컴포넌트는 모두 됩니다',
-        en: 'The control the question hangs off and that raises it. One element that accepts a ref and spreads props — every Neba component does'
+        ko: '질문이 매달리고, 질문을 띄우는 컨트롤. ref와 props spread를 받는 element 하나, Neba 컴포넌트는 모두 됩니다',
+        en: 'The control the question hangs off and that raises it. One element that accepts a ref and spreads props: every Neba component does'
       }
     },
     {
@@ -10905,22 +11051,22 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '답의 대가. 제목을 다시 쓰는 자리가 아니라 결과를 적는 자리입니다',
-        en: 'What answering costs — the consequence, not a restatement of the title'
+        en: 'What answering costs: the consequence, not a restatement of the title'
       }
     },
     {
       name: 'onConfirm',
       type: '() => void | Promise<unknown>',
       description: {
-        ko: '확인했을 때. promise를 반환하면 그것이 settle될 때까지 버블이 떠 있고 확인 버튼이 busy로 남습니다 — 답이 닿기 전에 사라진 질문은 전달됐는지 알 수 없는 질문입니다',
-        en: 'Called when the reader confirms. Return a promise and the bubble stays up, its confirming button busy, until it settles — a question that vanished before its answer landed is one the reader cannot know was heard'
+        ko: '확인했을 때. promise를 반환하면 그것이 settle될 때까지 버블이 떠 있고 확인 버튼이 busy로 남습니다. 답이 닿기 전에 사라진 질문은 전달됐는지 알 수 없는 질문입니다',
+        en: 'Called when the reader confirms. Return a promise and the bubble stays up, its confirming button busy, until it settles: a question that vanished before its answer landed is one the reader cannot know was heard'
       }
     },
     {
       name: 'onCancel',
       type: '() => void',
       description: {
-        ko: '취소했을 때. Escape나 바깥 클릭으로 닫는 것은 여기 해당하지 않습니다 — 물러나는 것과 아니오라고 답하는 것은 다른 행동입니다',
+        ko: '취소했을 때. Escape나 바깥 클릭으로 닫는 것은 여기 해당하지 않습니다. 물러나는 것과 아니오라고 답하는 것은 다른 행동입니다',
         en: 'Called when the reader cancels. Dismissing with Escape or a click outside does not: walking away from a question is not the same act as answering no'
       }
     },
@@ -10960,7 +11106,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode | false',
       default: 'true',
       description: {
-        ko: '색 계열의 severity 마크를 질문 옆에 그립니다. 장식이 아니라 의미를 모양으로도 말하는 것 — 빨간색으로만 말하면 일부 독자에게만 말하는 셈입니다',
+        ko: '색 계열의 severity 마크를 질문 옆에 그립니다. 장식이 아니라 의미를 모양으로도 말하는 것, 빨간색으로만 말하면 일부 독자에게만 말하는 셈입니다',
         en: "Draws the colour family's severity mark beside the question. Not decoration: saying it only in red says it only to some readers, so the shape carries the meaning too"
       }
     },
@@ -11040,7 +11186,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '질문. dialog의 제목이자 스크린 리더가 읽는 이름입니다',
-        en: "The question — the dialog's heading, and what a screen reader announces"
+        en: "The question: the dialog's heading, and what a screen reader announces"
       }
     },
     {
@@ -11048,7 +11194,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '답의 대가. 제목을 다시 쓰는 자리가 아니라 결과를 적는 자리입니다',
-        en: 'What answering costs — the consequence, not a restatement of the title'
+        en: 'What answering costs: the consequence, not a restatement of the title'
       }
     },
     {
@@ -11069,7 +11215,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'NebaColor',
       default: "'primary'",
       description: {
-        ko: '색 계열. 무언가를 없애는 질문이라면 danger — confirm의 대부분이 그렇습니다',
+        ko: '색 계열. 무언가를 없애는 질문이라면 danger, confirm의 대부분이 그렇습니다',
         en: 'The colour family. danger for anything that destroys something, which is most of them'
       }
     },
@@ -11084,8 +11230,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '취소 버튼을 없애 나가는 길을 하나만 남깁니다. 묻는 게 아니라 알리는 경우 — 그래도 항상 true로 resolve하므로 같은 await가 쓰입니다',
-        en: 'Drops the cancelling button, leaving one way out — for telling rather than asking. It still resolves, always true, so the same await works either way'
+        ko: '취소 버튼을 없애 나가는 길을 하나만 남깁니다. 묻는 게 아니라 알리는 경우, 그래도 항상 true로 resolve하므로 같은 await가 쓰입니다',
+        en: 'Drops the cancelling button, leaving one way out: for telling rather than asking. It still resolves, always true, so the same await works either way'
       }
     },
     {
@@ -11093,8 +11239,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: 'Escape와 backdrop이 아니오로 답할지. 끄면 버튼으로만 답할 수 있습니다 — 나갈 길 없는 모달은 사람들이 제보하는 그것이니 거의 쓰지 마세요',
-        en: 'Whether Escape and the backdrop answer no. Off makes a question the reader has to answer with a button — use it rarely, since a modal with no way out is the thing people report'
+        ko: 'Escape와 backdrop이 아니오로 답할지. 끄면 버튼으로만 답할 수 있습니다. 나갈 길 없는 모달은 사람들이 제보하는 그것이니 거의 쓰지 마세요',
+        en: 'Whether Escape and the backdrop answer no. Off makes a question the reader has to answer with a button: use it rarely, since a modal with no way out is the thing people report'
       }
     },
     {
@@ -11149,7 +11295,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       description: {
         ko: '타일 사이의 간격. 사다리의 한 단계, 픽셀 수, 또는 CSS 길이',
-        en: 'The space between tiles — a step of the ladder, a number in pixels, or a CSS length'
+        en: 'The space between tiles: a step of the ladder, a number in pixels, or a CSS length'
       }
     },
     {
@@ -11232,7 +11378,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '크게 보기 화면의 버튼이 쓰이는 언어. BCP 47 태그',
-        en: "Which language the viewer's buttons are named in — a BCP 47 tag"
+        en: "Which language the viewer's buttons are named in: a BCP 47 tag"
       }
     },
     {
@@ -11317,8 +11463,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'alt',
       type: 'string',
       description: {
-        ko: '필수입니다 — 타입 수준에서. alt이 없는 것과 빈 것은 뜻이 다르고("아무도 쓰지 않았다" · "이 그림은 말하는 바가 없다") 옳은 쪽은 두 번째뿐이라, 어느 쪽인지 직접 쓰게 합니다',
-        en: 'Required, by the type. A missing alt and an empty one mean different things — "nobody wrote this" and "this says nothing a reader needs" — and only the second is ever correct, so you are made to say which'
+        ko: '필수입니다. 타입 수준에서. alt이 없는 것과 빈 것은 뜻이 다르고("아무도 쓰지 않았다" · "이 그림은 말하는 바가 없다") 옳은 쪽은 두 번째뿐이라, 어느 쪽인지 직접 쓰게 합니다',
+        en: 'Required, by the type. A missing alt and an empty one mean different things("nobody wrote this" and "this says nothing a reader needs") and only the second is ever correct, so you are made to say which'
       }
     },
     {
@@ -11326,15 +11472,15 @@ export const propTables: Record<string, PropRow[]> = {
       type: "number | string | 'auto'",
       default: "'auto'",
       description: {
-        ko: '파일이 도착하는 동안 지킬 비율. 이것을 쓰는 주된 이유입니다 — 자리를 잡아 두지 않은 그림은 도착할 때 페이지를 밀어냅니다',
-        en: 'The proportion to hold while the file is arriving — the main reason to use this: an unreserved picture pushes the page down when it lands'
+        ko: '파일이 도착하는 동안 지킬 비율. 이것을 쓰는 주된 이유입니다. 자리를 잡아 두지 않은 그림은 도착할 때 페이지를 밀어냅니다',
+        en: 'The proportion to hold while the file is arriving: the main reason to use this: an unreserved picture pushes the page down when it lands'
       }
     },
     {
       name: 'width · height',
       type: 'number | string',
       description: {
-        ko: '파일 자체의 픽셀 크기. img가 받는 그대로 전달되고, 둘 다 주면 auto 비율이 그 비율이 됩니다 — 1200×800이 3/2라는 걸 직접 계산할 필요가 없습니다',
+        ko: '파일 자체의 픽셀 크기. img가 받는 그대로 전달되고, 둘 다 주면 auto 비율이 그 비율이 됩니다. 1200×800이 3/2라는 걸 직접 계산할 필요가 없습니다',
         en: "The file's own pixel dimensions, passed to the img as they are. Give both and an auto ratio becomes their proportion, so nobody has to work out that 1200 by 800 is 3/2"
       }
     },
@@ -11365,7 +11511,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'fallback',
       type: 'ReactNode',
       description: {
-        ko: '도착하지 못했을 때 그려지는 것. 기본값은 alt을 담은 상자 — 브라우저의 찢어진 종이 글리프는 파일 하나가 아니라 사이트가 고장 났다고 말합니다',
+        ko: '도착하지 못했을 때 그려지는 것. 기본값은 alt을 담은 상자, 브라우저의 찢어진 종이 글리프는 파일 하나가 아니라 사이트가 고장 났다고 말합니다',
         en: "Drawn instead when it does not arrive. A box carrying the alt by default: the browser's own torn-page glyph says the site is broken rather than one file"
       }
     },
@@ -11384,7 +11530,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'none'",
       description: {
         ko: '그림의 색조. 이름 붙은 일곱 가지, 또는 직접 쓴 CSS filter 체인. 전환이 걸려 있으므로 hover에서 바꾸면 스냅이 아니라 스며듭니다',
-        en: 'How the picture is coloured — one of seven names, or a CSS filter chain of your own. It travels, so changing it on hover fades rather than snaps'
+        en: 'How the picture is coloured: one of seven names, or a CSS filter chain of your own. It travels, so changing it on hover fades rather than snaps'
       }
     },
     {
@@ -11399,8 +11545,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'watermark',
       type: 'string | NebaImageWatermarkOptions',
       description: {
-        ko: '그림 위에 그리는 표식 — 저작자 표시, 라이선스, DRAFT. repeat: true면 타일로 깔립니다. 자물쇠가 아니라 억지책입니다',
-        en: 'A mark drawn over the picture — a credit, a licence, the word DRAFT. repeat tiles it. A deterrent, not a lock'
+        ko: '그림 위에 그리는 표식, 저작자 표시, 라이선스, DRAFT. repeat: true면 타일로 깔립니다. 자물쇠가 아니라 억지책입니다',
+        en: 'A mark drawn over the picture: a credit, a licence, the word DRAFT. repeat tiles it. A deterrent, not a lock'
       }
     },
     {
@@ -11408,7 +11554,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean | { contextMenu?: boolean; drag?: boolean; select?: boolean }',
       default: 'false',
       description: {
-        ko: '무심코 가져가는 경로를 막습니다 — 우클릭 메뉴, 다른 창으로 끌어놓기, iOS 길게 누르기, 선택. 파일 자체는 여전히 요청 하나 거리에 있습니다',
+        ko: '무심코 가져가는 경로를 막습니다. 우클릭 메뉴, 다른 창으로 끌어놓기, iOS 길게 누르기, 선택. 파일 자체는 여전히 요청 하나 거리에 있습니다',
         en: 'Turns off the ways a picture is casually taken: the right-click menu, the drag, the iOS long press, the selection. The file itself is still one request away'
       }
     },
@@ -11445,7 +11591,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '화면에는 없고 accessibility tree에는 있는 내용',
-        en: 'The content — in the accessibility tree, and not on the screen'
+        en: 'The content: in the accessibility tree, and not on the screen'
       }
     },
     {
@@ -11453,16 +11599,16 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '숨김을 걷어내어 평범하게 그립니다. skip link가 focus를 받았을 때 필요한 것 — 1px 상자를 완전히 벗어나야 하므로 focus-visible: 만으로는 표현할 수 없습니다',
-        en: 'Takes the hiding off and draws it like anything else — what a skip link needs once it has the focus. focus-visible: cannot express it alone, because the element has to leave the 1px box entirely'
+        ko: '숨김을 걷어내어 평범하게 그립니다. skip link가 focus를 받았을 때 필요한 것, 1px 상자를 완전히 벗어나야 하므로 focus-visible: 만으로는 표현할 수 없습니다',
+        en: 'Takes the hiding off and draws it like anything else: what a skip link needs once it has the focus. focus-visible: cannot express it alone, because the element has to leave the 1px box entirely'
       }
     },
     {
       name: 'render',
       type: 'ReactElement | (props, state) => ReactElement',
       description: {
-        ko: 'span 대신 다른 것을 그립니다 — div, a, caption',
-        en: 'Renders something other than a span — a div, an a, a caption'
+        ko: 'span 대신 다른 것을 그립니다. div, a, caption',
+        en: 'Renders something other than a span: a div, an a, a caption'
       }
     }
   ],
@@ -11487,7 +11633,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: 'portal 대신 제자리에 그립니다. 마운트 시점에 한 번만 정하세요 — 뒤집으면 안의 모든 것이 remount되고 그 안에 있던 상태가 사라집니다',
+        ko: 'portal 대신 제자리에 그립니다. 마운트 시점에 한 번만 정하세요. 뒤집으면 안의 모든 것이 remount되고 그 안에 있던 상태가 사라집니다',
         en: 'Renders in place instead of portalling. Decide it once, at mount: flipping it remounts everything inside and throws away the state that was in it'
       }
     }
@@ -11499,8 +11645,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'horizontal' | 'vertical' | Partial<Record<NebaBreakpoint, 'horizontal' | 'vertical'>>",
       default: "'horizontal'",
       description: {
-        ko: "줄이 흐르는 방향. horizontal은 row, vertical은 column입니다. 반응형이며, 이 컴포넌트가 존재하는 이유이기도 합니다 — { xs: 'vertical', md: 'horizontal' }",
-        en: "Which way the row runs — horizontal is a row, vertical a column. Responsive, and the prop the component exists for: { xs: 'vertical', md: 'horizontal' }"
+        ko: "줄이 흐르는 방향. horizontal은 row, vertical은 column입니다. 반응형이며, 이 컴포넌트가 존재하는 이유이기도 합니다. { xs: 'vertical', md: 'horizontal' }",
+        en: "Which way the row runs: horizontal is a row, vertical a column. Responsive, and the prop the component exists for: { xs: 'vertical', md: 'horizontal' }"
       }
     },
     {
@@ -11509,7 +11655,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: 'direction이 고른 축을 따라 children을 반대로 흐르게 합니다. 모든 breakpoint에 한 번에 적용되며, 시각적 순서만 바꾸므로 DOM 순서는 그대로입니다',
-        en: 'Runs the children the other way along whichever axis direction chose. Applies to every breakpoint at once, and is a visual order only — the DOM order is unchanged'
+        en: 'Runs the children the other way along whichever axis direction chose. Applies to every breakpoint at once, and is a visual order only: the DOM order is unchanged'
       }
     },
     {
@@ -11518,7 +11664,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '0',
       description: {
         ko: 'children 사이의 거터. Tailwind의 spacing 스케일이라 spacing={4}는 1rem이며, GridContainer와 같은 prop·같은 스케일·같은 슬롯입니다',
-        en: "The gutter between children, on Tailwind's spacing scale — spacing={4} is 1rem. The same prop, scale and slot a GridContainer uses"
+        en: "The gutter between children, on Tailwind's spacing scale: spacing={4} is 1rem. The same prop, scale and slot a GridContainer uses"
       }
     },
     {
@@ -11569,7 +11715,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '폭이 모자란 줄이 다음 줄로 이어질지. GridContainer와 반대로 기본이 꺼짐입니다 — Flex는 대개 한 줄에 머물러야 하는 툴바나 필드 줄입니다',
+        ko: '폭이 모자란 줄이 다음 줄로 이어질지. GridContainer와 반대로 기본이 꺼짐입니다. Flex는 대개 한 줄에 머물러야 하는 툴바나 필드 줄입니다',
         en: 'Whether a row that runs out of width continues on the next line. Off by default, the opposite of a GridContainer: a Flex is most often a toolbar or a field row that should stay on one line'
       }
     },
@@ -11604,7 +11750,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: BREAKPOINT,
       description: {
         ko: 'children이 그려지기를 멈추는 너비. 이 값을 포함하지 않으므로 같은 breakpoint의 above와 정확히 짝이 되어 모든 너비를 한 번씩 덮습니다. below="xs"는 아무 데서도 그리지 않습니다',
-        en: 'The width at which the children stop being drawn, exclusive — so it pairs with above at the same breakpoint to cover every width exactly once. below="xs" draws nothing at all'
+        en: 'The width at which the children stop being drawn, exclusive, so it pairs with above at the same breakpoint to cover every width exactly once. below="xs" draws nothing at all'
       }
     },
     renderProp('render={<td />}'),
@@ -11624,8 +11770,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number | string',
       default: '1',
       description: {
-        ko: "상자가 지키는 비율. CSS가 쓰는 그대로 — 숫자(1.5)나 비('16 / 9')가 aspect-ratio에 그대로 전달됩니다",
-        en: "The proportion the box holds, written the way CSS writes it — a number (1.5) or a ratio ('16 / 9'), reaching aspect-ratio untouched"
+        ko: "상자가 지키는 비율. CSS가 쓰는 그대로, 숫자(1.5)나 비('16 / 9')가 aspect-ratio에 그대로 전달됩니다",
+        en: "The proportion the box holds, written the way CSS writes it: a number (1.5) or a ratio ('16 / 9'), reaching aspect-ratio untouched"
       }
     },
     {
@@ -11670,7 +11816,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'macos' | 'macosx' | 'windows11' | 'windows10' | 'windows8' | 'windows7' | 'windowsxp' | 'linux'",
       default: "'macos'",
       description: {
-        ko: '어느 시스템의 창인지. 컨트롤의 위치와 모양, 제목표시줄의 높이와 색, 테두리의 두께와 모서리를 정합니다. 제목표시줄이 달라진 버전마다 별도 항목입니다 — XP는 Luna 블루와 그 색의 테두리, 7은 아크릴 유리, 8은 납작한 사각형, 10은 바 아래의 선, 11은 둥근 모서리, macosx는 Aqua입니다',
+        ko: '어느 시스템의 창인지. 컨트롤의 위치와 모양, 제목표시줄의 높이와 색, 테두리의 두께와 모서리를 정합니다. 제목표시줄이 달라진 버전마다 별도 항목입니다. XP는 Luna 블루와 그 색의 테두리, 7은 아크릴 유리, 8은 납작한 사각형, 10은 바 아래의 선, 11은 둥근 모서리, macosx는 Aqua입니다',
         en: 'Whose window this is a picture of. Decides where the controls sit and how they are drawn, how tall the title bar is and what colour, and how thick the frame is and how its corners are cut. A version is its own entry wherever the title bar is what changed: XP painted it Luna blue and framed the window in it, 7 made it glass, 8 threw both away, 10 ruled it off from the body, 11 rounded the corners, and macosx is Aqua'
       }
     },
@@ -11686,8 +11832,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'icon',
       type: 'ReactNode',
       description: {
-        ko: '제목 옆의 글리프 — 앱의 마크',
-        en: 'A glyph beside the title — the app’s mark'
+        ko: '제목 옆의 글리프, 앱의 마크',
+        en: 'A glyph beside the title: the app’s mark'
       }
     },
     {
@@ -11703,7 +11849,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "boolean | ('minimize' | 'maximize' | 'close')[]",
       default: 'true',
       description: {
-        ko: '어떤 버튼을 둘지. 순서는 배열이 아니라 시스템이 정합니다 — macOS는 닫기가 앞, Windows는 뒤입니다',
+        ko: '어떤 버튼을 둘지. 순서는 배열이 아니라 시스템이 정합니다. macOS는 닫기가 앞, Windows는 뒤입니다',
         en: 'Which of the three buttons the title bar has. The order is the system’s rather than the array’s: macOS puts close first and Windows puts it last'
       }
     },
@@ -11713,8 +11859,8 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '크롬의 스케일 — 제목표시줄 높이, 버튼, 글자. 내용은 건드리지 않습니다',
-        en: 'The scale of the chrome — the title bar’s height, its buttons and its type. It does not touch the content'
+        ko: '크롬의 스케일, 제목표시줄 높이, 버튼, 글자. 내용은 건드리지 않습니다',
+        en: 'The scale of the chrome: the title bar’s height, its buttons and its type. It does not touch the content'
       }
     },
     {
@@ -11742,7 +11888,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '0',
       description: {
         ko: '0에서 1 사이. 제목표시줄과 본문의 바탕, 테두리에만 적용되며 내용에는 적용되지 않습니다. 0보다 크면 아크릴(블러)이 함께 켜집니다',
-        en: 'From 0 to 1. It applies to the title bar, the body’s own fill and the border — never to the content. Anything above 0 also turns the acrylic on'
+        en: 'From 0 to 1. It applies to the title bar, the body’s own fill and the border: never to the content. Anything above 0 also turns the acrylic on'
       }
     },
     {
@@ -11750,7 +11896,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       description: {
         ko: '앞에 있는 창인지. 생략하면 다른 WindowPane이 눌릴 때까지 앞에 둡니다. 뒤에 있는 창은 흐려지지 않고 강조만 잃습니다(회색 신호등, 강조색 없는 제목표시줄, 한 단계 낮은 그림자)',
-        en: 'Whether this is the window in front. Left out, the window works it out for itself: it is in front until another WindowPane on the page is pressed or takes the focus, and a press on the page *around* the windows changes nothing. A window behind keeps its shape and loses its emphasis — grey traffic lights, no accent, one step less shadow — never its opacity'
+        en: 'Whether this is the window in front. Left out, the window works it out for itself: it is in front until another WindowPane on the page is pressed or takes the focus, and a press on the page *around* the windows changes nothing. A window behind keeps its shape and loses its emphasis(grey traffic lights, no accent, one step less shadow) never its opacity'
       }
     },
     {
@@ -11922,7 +12068,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '제목표시줄 버튼이 자기 이름을 말하는 언어(BCP 47)',
-        en: 'Which language the title bar’s buttons name themselves in — a BCP 47 tag'
+        en: 'Which language the title bar’s buttons name themselves in: a BCP 47 tag'
       }
     },
     {
@@ -11995,7 +12141,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'monitor' | 'laptop'",
       default: "'monitor'",
       description: {
-        ko: '데스크톱 화면을 받치는 것 — 아래의 받침대인지 앞의 키보드인지. 태블릿과 휴대폰에서는 무시됩니다',
+        ko: '데스크톱 화면을 받치는 것, 아래의 받침대인지 앞의 키보드인지. 태블릿과 휴대폰에서는 무시됩니다',
         en: 'What holds a desktop screen up: a stand under it, or a keyboard in front of it. Ignored on a tablet and a phone'
       }
     },
@@ -12005,7 +12151,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '기기의 크기 — 기기별 실제 해상도 다섯 단계. Box에서처럼 높이도 타입 스케일도 아닙니다',
+        ko: '기기의 크기, 기기별 실제 해상도 다섯 단계. Box에서처럼 높이도 타입 스케일도 아닙니다',
         en: 'How big the device is, on a five-step ladder of real resolutions per device. As on Box, it is neither a height nor a type scale'
       }
     },
@@ -12058,7 +12204,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '시스템 자신의 바 — 상태바와 home indicator, 메뉴 바와 dock, 작업 표시줄. 각 바는 내용을 덮지 않고 자기 자리를 차지합니다',
+        ko: '시스템 자신의 바, 상태바와 home indicator, 메뉴 바와 dock, 작업 표시줄. 각 바는 내용을 덮지 않고 자기 자리를 차지합니다',
         en: "The system's own bars: a status bar and a home indicator, a menu bar and a dock, a taskbar. Each takes its own space rather than covering the content"
       }
     },
@@ -12077,7 +12223,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '페이지의 surface 색',
       description: {
         ko: '내용 뒤에 놓이는 것. 색, gradient, url() 등 임의의 CSS background 값',
-        en: 'What is behind the content: any CSS background value — a colour, a gradient, a url()'
+        en: 'What is behind the content: any CSS background value. A colour, a gradient, a url()'
       }
     },
     {
@@ -12085,7 +12231,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       default: "'9:41'",
       description: {
-        ko: '상태바나 작업 표시줄의 시계이자 크롬이 그리는 유일한 글자. Date가 아니라 문자열입니다 — 진짜 시각을 읽으면 서버와 브라우저가 어긋납니다',
+        ko: '상태바나 작업 표시줄의 시계이자 크롬이 그리는 유일한 글자. Date가 아니라 문자열입니다. 진짜 시각을 읽으면 서버와 브라우저가 어긋납니다',
         en: 'The clock in the status bar or the taskbar, and the only text the chrome draws. A string rather than a Date: reading the real one would differ between the server and the browser'
       }
     },
@@ -12112,7 +12258,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'primary'",
       shared: true,
       description: {
-        ko: '크롬의 강조색 — dock이나 작업 표시줄의 첫 아이콘',
+        ko: '크롬의 강조색, dock이나 작업 표시줄의 첫 아이콘',
         en: "The accent in the chrome: a dock's first icon, a taskbar's"
       }
     },
@@ -12232,15 +12378,15 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: '접근성 이름들의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the accessible names are written in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the accessible names are written in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     {
       name: 'labels',
       type: 'Partial<ColorPickerLabels>',
       description: {
-        ko: '그 이름들을 하나씩 덮어씁니다. 색 사각형, 두 레일, 입력란, 스와치 묶음 — 글자가 없는 부분들의 이름입니다',
-        en: 'Overrides for those names, one at a time — the square, the two rails, the field and the swatch grid all have no text on them'
+        ko: '그 이름들을 하나씩 덮어씁니다. 색 사각형, 두 레일, 입력란, 스와치 묶음, 글자가 없는 부분들의 이름입니다',
+        en: 'Overrides for those names, one at a time: the square, the two rails, the field and the swatch grid all have no text on them'
       }
     },
     {
@@ -12267,7 +12413,15 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '테두리와 focus ring의 색 역할입니다. 고르는 색과는 무관합니다',
         en: 'The family of the edge and the focus ring. Nothing to do with the colour being chosen'
       }
-    })
+    }),
+    {
+      name: 'required',
+      type: 'boolean',
+      description: {
+        ko: '폼을 제출하기 전에 값이 있어야 하는지',
+        en: 'Whether a value is required before the form is submitted'
+      }
+    }
   ],
 
   Collapsible: [
@@ -12276,7 +12430,7 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       variantDescription: {
         ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않습니다. text는 상자를 아예 그리지 않으므로 본문 속이나 Card 안의 fold에 맞습니다',
-        en: 'Weight of the sheet, said the way a container says it — never dyed. `text` draws no sheet at all, which is what a fold inside running prose or inside a Card wants'
+        en: 'Weight of the sheet, said the way a container says it: never dyed. `text` draws no sheet at all, which is what a fold inside running prose or inside a Card wants'
       },
       sizeDescription: {
         ko: '여백과 모서리, 그리고 제목과 본문의 타입 스케일',
@@ -12325,8 +12479,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
-        ko: '제목 앞의 내용 — 아이콘, 상태 점, 개수',
-        en: 'Content before the title — an icon, a status dot, a count'
+        ko: '제목 앞의 내용, 아이콘, 상태 점, 개수',
+        en: 'Content before the title: an icon, a status dot, a count'
       }
     },
     {
@@ -12435,7 +12589,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: '1',
       description: {
         ko: '고를 수 있는 최소 단위. 0.5면 반 개씩입니다. 고르는 범위만 정할 뿐, 4.3 같은 평균값은 언제나 그대로 그려집니다',
-        en: 'The smallest step that can be chosen — 0.5 gives half stars. It bounds what a reader can pick and nothing else: a value of 4.3 is drawn as 4.3 at every precision'
+        en: 'The smallest step that can be chosen: 0.5 gives half stars. It bounds what a reader can pick and nothing else: a value of 4.3 is drawn as 4.3 at every precision'
       }
     },
     {
@@ -12465,8 +12619,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '바꿀 수 없는 점수 — 평균 별점, 남이 남긴 평가. input이 사라지고 role="img" 하나만 남으며, 라이브러리에서 유일하게 채도를 빼지 않는 readOnly입니다',
-        en: 'Shows the score without letting it be changed — an average, somebody else’s rating. The inputs go and one role="img" is left; the one readOnly in the library that does not drain the saturation'
+        ko: '바꿀 수 없는 점수, 평균 별점, 남이 남긴 평가. input이 사라지고 role="img" 하나만 남으며, 라이브러리에서 유일하게 채도를 빼지 않는 readOnly입니다',
+        en: 'Shows the score without letting it be changed: an average, somebody else’s rating. The inputs go and one role="img" is left; the one readOnly in the library that does not drain the saturation'
       }
     },
     {
@@ -12496,8 +12650,8 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...scaleProps("'md'", "'warning'", {
-      ko: '의미론적 색 역할. 기본값이 warning인 유일한 컴포넌트입니다 — 별에 기대되는 호박색이기 때문입니다',
-      en: 'Semantic colour role. warning by default — the amber a star is expected to be — which makes this the one component whose default colour is chosen by what the object is'
+      ko: '의미론적 색 역할. 기본값이 warning인 유일한 컴포넌트입니다. 별에 기대되는 호박색이기 때문입니다',
+      en: 'Semantic colour role. warning by default(the amber a star is expected to be) which makes this the one component whose default colour is chosen by what the object is'
     }),
     {
       name: 'locale',
@@ -12505,7 +12659,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'en'",
       description: {
         ko: '접근성 이름의 언어. BCP 47 태그(ko, pt-BR, zh-Hant). 모르는 태그는 영어로 돌아갑니다',
-        en: 'Which language the accessible names are written in — a BCP 47 tag. Unsupported tags fall back to English'
+        en: 'Which language the accessible names are written in: a BCP 47 tag. Unsupported tags fall back to English'
       }
     },
     {
@@ -12531,15 +12685,15 @@ export const propTables: Record<string, PropRow[]> = {
       variant: "'outline'",
       size: "'md'",
       variantDescription: {
-        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다 — 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다',
-        en: 'Weight of the bar, said the way a container says it — the sheet is never dyed. What carries the colour family is the one item that is current'
+        ko: '바의 무게. 컨테이너의 방식대로 시트에 색을 들이지 않습니다. 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다',
+        en: 'Weight of the bar, said the way a container says it: the sheet is never dyed. What carries the colour family is the one item that is current'
       },
       sizeDescription: {
         ko: '행의 최소 높이와 글리프, 이름의 스케일. md는 56px입니다',
         en: 'The row’s floor and the scale of the glyph and the name. md is 56px'
       },
       elevationDescription: {
-        ko: '그림자 깊이. 기본이 0입니다 — 바는 창 가장자리에 붙어 있지 떠 있지 않고, 내용과의 구분은 divider가 합니다',
+        ko: '그림자 깊이. 기본이 0입니다. 바는 창 가장자리에 붙어 있지 떠 있지 않고, 내용과의 구분은 divider가 합니다',
         en: 'Drop shadow depth. 0 by default: the bar is attached to the edge of the window rather than floating over it, and divider is what separates it from the content'
       }
     }),
@@ -12573,7 +12727,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'fixed'",
       shared: true,
       description: {
-        ko: '페이지 스크롤 안에서 어떻게 앉는지. 다른 컴포넌트와 달리 fixed가 기본입니다 — 하단 내비게이션은 창 아래 가장자리에 고정되는 것이기 때문입니다',
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. 다른 컴포넌트와 달리 fixed가 기본입니다. 하단 내비게이션은 창 아래 가장자리에 고정되는 것이기 때문입니다',
         en: 'How the bar sits in the page’s scroll. fixed by default, against the static everything else defaults to: a bottom navigation is held against the bottom edge of the window'
       }
     },
@@ -12614,15 +12768,15 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '바가 읽히는 이름 — "Main", "Sections"',
-        en: 'The name the bar is announced by — "Main", "Sections"'
+        ko: '바가 읽히는 이름, "Main", "Sections"',
+        en: 'The name the bar is announced by: "Main", "Sections"'
       }
     },
     {
       name: 'render',
       type: 'useRender.RenderProp',
       description: {
-        ko: 'nav 대신 다른 요소로 렌더링합니다 (render={<footer />}). Base UI의 render prop 그대로이며, 여기서는 거의 필요하지 않습니다 — 목적지의 줄은 내비게이션입니다',
+        ko: 'nav 대신 다른 요소로 렌더링합니다 (render={<footer />}). Base UI의 render prop 그대로이며, 여기서는 거의 필요하지 않습니다. 목적지의 줄은 내비게이션입니다',
         en: 'Renders something other than a nav (render={<footer />}). Base UI’s own escape hatch, and rarely what you want here: a row of destinations is navigation'
       }
     },
@@ -12698,14 +12852,14 @@ export const propTables: Record<string, PropRow[]> = {
       elevation: '2',
       variantDescription: {
         ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않으며, 페이지 위에 떠 있는 만큼 헤어라인이 있는 outline이 기본입니다',
-        en: 'Weight of the sheet, said the way a container says it — never dyed. outline is the default here because the bar is over the page rather than against its edge'
+        en: 'Weight of the sheet, said the way a container says it: never dyed. outline is the default here because the bar is over the page rather than against its edge'
       },
       sizeDescription: {
         ko: '행의 최소 높이와 글리프, 이름의 스케일. BottomNavigation과 같은 사다리로, md는 56px입니다',
         en: 'The row’s floor and the scale of the glyph and the name. The same ladder BottomNavigation is on: md is 56px'
       },
       elevationDescription: {
-        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다 — 이 바는 페이지의 일부가 아니라 그 위에 떠 있습니다',
+        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다. 이 바는 페이지의 일부가 아니라 그 위에 떠 있습니다',
         en: 'Drop shadow depth. 2 for the reason Pill’s is: this bar is not part of the page, it hovers over it'
       }
     }),
@@ -12739,8 +12893,8 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'fixed'",
       shared: true,
       description: {
-        ko: '페이지 스크롤 안에서 어떻게 앉는지. absolute는 창이 아니라 가장 가까운 positioned 조상에 붙입니다 — FloatingActionButton과 같은 확장입니다',
-        en: 'How the bar sits in the page’s scroll. absolute holds it against the nearest positioned ancestor rather than the window — the same addition FloatingActionButton makes'
+        ko: '페이지 스크롤 안에서 어떻게 앉는지. absolute는 창이 아니라 가장 가까운 positioned 조상에 붙입니다. FloatingActionButton과 같은 확장입니다',
+        en: 'How the bar sits in the page’s scroll. absolute holds it against the nearest positioned ancestor rather than the window: the same addition FloatingActionButton makes'
       }
     },
     {
@@ -12748,7 +12902,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number | string',
       default: '16',
       description: {
-        ko: '아래 가장자리에서 얼마나 떠 있는지. BottomNavigation과의 차이 전부가 여기서 나옵니다 — 그 아래로 페이지가 계속 이어집니다',
+        ko: '아래 가장자리에서 얼마나 떠 있는지. BottomNavigation과의 차이 전부가 여기서 나옵니다. 그 아래로 페이지가 계속 이어집니다',
         en: 'How far the bar floats above the bottom edge. This is the whole difference from BottomNavigation: the page keeps going underneath'
       }
     },
@@ -12757,7 +12911,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'all' | 'selected' | 'none'",
       default: "'selected'",
       description: {
-        ko: '어떤 이름을 그릴지. 전체 너비 바의 all과 달리 기본이 selected입니다 — 담긴 것만큼만 넓은 바에서 이름 다섯 개는 화면을 가로지릅니다. 그리지 않은 이름도 문서에는 남습니다',
+        ko: '어떤 이름을 그릴지. 전체 너비 바의 all과 달리 기본이 selected입니다. 담긴 것만큼만 넓은 바에서 이름 다섯 개는 화면을 가로지릅니다. 그리지 않은 이름도 문서에는 남습니다',
         en: 'Which names are drawn. selected here, against the all a full-width bar defaults to: this bar is only as wide as what is in it. An undrawn name is still in the document'
       }
     },
@@ -12766,7 +12920,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: 'offset에 env(safe-area-inset-bottom)을 더합니다. 시트 전체가 올라갑니다 — 아래에 덮어야 할 것이 없기 때문입니다',
+        ko: 'offset에 env(safe-area-inset-bottom)을 더합니다. 시트 전체가 올라갑니다. 아래에 덮어야 할 것이 없기 때문입니다',
         en: 'Adds env(safe-area-inset-bottom) to offset. The whole sheet moves up: there is nothing under it to keep covered'
       }
     },
@@ -12780,8 +12934,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '바가 읽히는 이름 — "Main", "Sections"',
-        en: 'The name the bar is announced by — "Main", "Sections"'
+        ko: '바가 읽히는 이름, "Main", "Sections"',
+        en: 'The name the bar is announced by: "Main", "Sections"'
       }
     },
     {
@@ -12796,7 +12950,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: 'BottomNavigationItem들 — 두 바가 같은 항목을 씁니다',
+        ko: 'BottomNavigationItem들, 두 바가 같은 항목을 씁니다',
         en: 'The BottomNavigationItems. The same item both bars take'
       }
     }
@@ -12808,11 +12962,11 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'lg'",
       elevation: '2',
       sizeDescription: {
-        ko: '높이. 사다리는 Button과 같고 시작점만 한 칸 위입니다 — 보지 않고 엄지로 찾아 누르는 유일한 컨트롤이기 때문입니다',
+        ko: '높이. 사다리는 Button과 같고 시작점만 한 칸 위입니다. 보지 않고 엄지로 찾아 누르는 유일한 컨트롤이기 때문입니다',
         en: 'Height. The same ladder a Button is on, started a step up: this is the one control that has to be found and hit with a thumb without being looked at'
       },
       elevationDescription: {
-        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다 — 이 버튼은 페이지의 일부가 아니라 그 위에 떠 있습니다',
+        ko: '그림자 깊이. Pill과 같은 이유로 기본이 2입니다. 이 버튼은 페이지의 일부가 아니라 그 위에 떠 있습니다',
         en: 'Drop shadow depth. 2 for the reason Pill’s is: this button is not part of the page, it hovers over it'
       }
     }),
@@ -12827,7 +12981,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       required: true,
       description: {
-        ko: '버튼이 무엇을 하는지, 말로. 필수입니다 — 그림만으로 된 버튼은 접근성 이름이 아예 없습니다. extended일 때는 버튼에 쓰이는 말이기도 합니다',
+        ko: '버튼이 무엇을 하는지, 말로. 필수입니다. 그림만으로 된 버튼은 접근성 이름이 아예 없습니다. extended일 때는 버튼에 쓰이는 말이기도 합니다',
         en: 'What the button does, in words. Required: a button whose whole label is a drawing has no accessible name at all. With extended it is also the word written on it'
       }
     },
@@ -13017,7 +13171,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'center'",
       description: {
         ko: '펼쳐지는 기준점. CSS transform-origin 그대로입니다',
-        en: 'Which point stays put while the rest moves — any CSS transform-origin'
+        en: 'Which point stays put while the rest moves: any CSS transform-origin'
       }
     },
     {
@@ -13079,8 +13233,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number | string',
       default: "'100%'",
       description: {
-        ko: '이동 거리 — CSS 길이 또는 픽셀 수. 100%는 자기 자신의 크기입니다',
-        en: "How far it travels — a CSS length, or a number in pixels. '100%' is the element's own size"
+        ko: '이동 거리, CSS 길이 또는 픽셀 수. 100%는 자기 자신의 크기입니다',
+        en: "How far it travels: a CSS length, or a number in pixels. '100%' is the element's own size"
       }
     },
     {
@@ -13123,7 +13277,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'center'",
       description: {
         ko: '회전축. CSS transform-origin 그대로입니다',
-        en: 'Which point it turns about — any CSS transform-origin'
+        en: 'Which point it turns about: any CSS transform-origin'
       }
     },
     {
@@ -13320,10 +13474,34 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: {
         ko: '단어와 글자 경계를 찾을 언어. 일본어·태국어·중국어에서 단어 경계는 공백이 아닙니다',
-        en: 'Which language the text is in, for the word and character boundaries — a word boundary is not a space in Japanese, Thai or Chinese'
+        en: 'Which language the text is in, for the word and character boundaries: a word boundary is not a space in Japanese, Thai or Chinese'
       }
     },
-    ...animateProps({ duration: '520', mode: false, stagger: '45' }),
+    {
+      name: 'scale',
+      type: 'number',
+      description: {
+        ko: '`grow`나 `zoom` 조각이 시작하는 배율',
+        en: 'Where a `grow` or `zoom` piece starts, as a multiple of its final size'
+      }
+    },
+    {
+      name: 'angle',
+      type: 'number',
+      description: {
+        ko: '`rotate` 조각이 돌기 시작하는 각도(도)',
+        en: 'How far a `rotate` piece turns from, in degrees'
+      }
+    },
+    {
+      name: 'side',
+      type: SIDE,
+      description: {
+        ko: '`reveal` 조각이 닦여 나오는 변',
+        en: 'Which edge a `reveal` piece is wiped from'
+      }
+    },
+
     renderProp('render={<h1 />}'),
     {
       name: 'children',
@@ -13367,7 +13545,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'Intl.NumberFormatOptions',
       description: {
         ko: '숫자를 쓰는 방식. 통화·백분율·compact 표기가 콜백이 아니라 prop입니다',
-        en: 'How the number is written — Intl.NumberFormat options, so a currency, a percentage or a compact 1.2M is a prop rather than a callback'
+        en: 'How the number is written: Intl.NumberFormat options, so a currency, a percentage or a compact 1.2M is a prop rather than a callback'
       }
     },
     {
@@ -13523,8 +13701,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '타이핑할 텍스트. 텍스트만 타이핑됩니다 — 자식 중 요소가 있으면 그 안의 글자만 쓰이고 마크업은 무시됩니다',
-        en: 'The text to type. Only text is typed — an element among the children contributes its text and nothing about its markup'
+        ko: '타이핑할 텍스트. 텍스트만 타이핑됩니다. 자식 중 요소가 있으면 그 안의 글자만 쓰이고 마크업은 무시됩니다',
+        en: 'The text to type. Only text is typed: an element among the children contributes its text and nothing about its markup'
       }
     }
   ],
@@ -13611,7 +13789,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'false',
       description: {
         ko: '반대 방향으로 흐릅니다',
-        en: 'Runs it the other way — left to right, or bottom to top'
+        en: 'Runs it the other way: left to right, or bottom to top'
       }
     },
     {
@@ -13722,7 +13900,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       required: true,
       description: {
-        ko: '코드 자체. 문자열이라서 children이 아닌 prop입니다 — 템플릿 리터럴은 자기 들여쓰기를 유지하지만 JSX는 그것을 뭉갭니다. 끝의 빈 줄만 잘라냅니다',
+        ko: '코드 자체. 문자열이라서 children이 아닌 prop입니다. 템플릿 리터럴은 자기 들여쓰기를 유지하지만 JSX는 그것을 뭉갭니다. 끝의 빈 줄만 잘라냅니다',
         en: 'The code itself. A prop rather than children because it is a string: a template literal keeps its own indentation and JSX would collapse it. Only trailing blank lines are trimmed'
       }
     },
@@ -13730,8 +13908,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'language',
       type: 'string',
       description: {
-        ko: '무엇으로 쓰였는지 — ts, bash, yml, dockerfile. 흔한 표기와 파일 확장자를 알아듣습니다. 모르는 이름은 거부하지 않고 하이라이팅 없이 그립니다',
-        en: 'What it is written in — ts, bash, yml, dockerfile. Common spellings and file extensions are understood; a name nothing here knows is drawn plain rather than refused'
+        ko: '무엇으로 쓰였는지, ts, bash, yml, dockerfile. 흔한 표기와 파일 확장자를 알아듣습니다. 모르는 이름은 거부하지 않고 하이라이팅 없이 그립니다',
+        en: 'What it is written in: ts, bash, yml, dockerfile. Common spellings and file extensions are understood; a name nothing here knows is drawn plain rather than refused'
       }
     },
     {
@@ -13740,7 +13918,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'dark'",
       description: {
         ko: "블록의 팔레트. 라이브러리가 직접 만든 넷(dark, light, auto, mono)과 공개된 값을 그대로 옮겨 온 여덟(one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light)입니다. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. 아무 문자열이나 받으므로, [data-code-theme='ours']에 --n-code-* 를 써 두면 그것이 곧 테마가 됩니다",
-        en: "The palette it wears. Four of the library's own — dark, light, auto, mono — and eight ports kept at their published values: one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. Independent of the page's light and dark except on auto. Any string works, so writing --n-code-* under [data-code-theme='ours'] in your own CSS is a theme"
+        en: "The palette it wears. Four of the library's own(dark, light, auto, mono) and eight ports kept at their published values: one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. Independent of the page's light and dark except on auto. Any string works, so writing --n-code-* under [data-code-theme='ours'] in your own CSS is a theme"
       }
     },
     {
@@ -13749,7 +13927,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: '타입 스케일과 여백. 어느 단계에서든 본문보다 한 칸 작습니다 — 고정폭 서체는 같은 크기여도 한 치수 커 보입니다',
+        ko: '타입 스케일과 여백. 어느 단계에서든 본문보다 한 칸 작습니다. 고정폭 서체는 같은 크기여도 한 치수 커 보입니다',
         en: 'The type scale and the padding. One step under the running text at every size: a monospace face at the same nominal size reads a size larger'
       }
     },
@@ -13759,7 +13937,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'primary'",
       shared: true,
       description: {
-        ko: '코드에는 닿지 않습니다. focus ring만 이 색을 씁니다 — 코드의 색은 theme의 것입니다',
+        ko: '코드에는 닿지 않습니다. focus ring만 이 색을 씁니다. 코드의 색은 theme의 것입니다',
         en: "It does not reach the code. Only the focus ring takes it: the code's colours are the theme's"
       }
     },
@@ -13785,8 +13963,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '코드에 색을 입힙니다. 꺼두면 아무것도 내려받지 않습니다 — 문법 엔진이 dynamic import 뒤에 있습니다. 켜져 있으면 첫 프레임은 색 없이 그려지고 문법이 도착하면 스스로 칠합니다',
-        en: 'Colours the code. Off, nothing is fetched at all — the grammar engine is behind a dynamic import. On, the block draws plain on the first frame and colours itself when the grammar lands'
+        ko: '코드에 색을 입힙니다. 꺼두면 아무것도 내려받지 않습니다. 문법 엔진이 dynamic import 뒤에 있습니다. 켜져 있으면 첫 프레임은 색 없이 그려지고 문법이 도착하면 스스로 칠합니다',
+        en: 'Colours the code. Off, nothing is fetched at all: the grammar engine is behind a dynamic import. On, the block draws plain on the first frame and colours itself when the grammar lands'
       }
     },
     {
@@ -13803,7 +13981,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '바 맨 앞의 이름. 대개 파일 경로이며, 스크롤 영역의 접근성 이름이 되기도 합니다',
-        en: "A name at the start of the bar — a file path, usually. It also becomes the scrollable region's accessible name"
+        en: "A name at the start of the bar: a file path, usually. It also becomes the scrollable region's accessible name"
       }
     },
     {
@@ -13820,8 +13998,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '코드를 클립보드에 넣는 버튼. 클립보드가 거부하면 그렇게 말합니다 — 평문 HTTP로 서빙되는 페이지가 대표적입니다',
-        en: 'The button that puts the code on the clipboard. It says so when the clipboard refuses — a page served over plain HTTP, mostly'
+        ko: '코드를 클립보드에 넣는 버튼. 클립보드가 거부하면 그렇게 말합니다. 평문 HTTP로 서빙되는 페이지가 대표적입니다',
+        en: 'The button that puts the code on the clipboard. It says so when the clipboard refuses: a page served over plain HTTP, mostly'
       }
     },
     {
@@ -13856,15 +14034,15 @@ export const propTables: Record<string, PropRow[]> = {
       default: '1',
       description: {
         ko: '첫 줄에 매길 번호. 발췌한 코드가 실제로 시작하는 자리',
-        en: 'What the first line is numbered — where an excerpt actually starts'
+        en: 'What the first line is numbered: where an excerpt actually starts'
       }
     },
     {
       name: 'prompt',
       type: 'string',
       description: {
-        ko: '내용이 있는 줄 앞의 셸 기호 — $, #, C:\\>, >>>. 그려지되 거기 있지는 않습니다: 생성된 콘텐츠라 선택도, 페이지 내 찾기도, 복사도 되지 않습니다',
-        en: 'A shell symbol in front of every line that has something on it — $, #, C:\\>, >>>. Drawn but never present: it is generated content, so it cannot be selected, found or copied'
+        ko: '내용이 있는 줄 앞의 셸 기호, $, #, C:\\>, >>>. 그려지되 거기 있지는 않습니다: 생성된 콘텐츠라 선택도, 페이지 내 찾기도, 복사도 되지 않습니다',
+        en: 'A shell symbol in front of every line that has something on it: $, #, C:\\>, >>>. Drawn but never present: it is generated content, so it cannot be selected, found or copied'
       }
     },
     {
@@ -13967,7 +14145,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: '2 | 3 | 4 | 5',
       default: '3',
       description: {
-        ko: 'title이 쓰이는 heading 레벨. 단계의 제목은 그보다 한 단계 아래입니다. 레벨은 컴포넌트가 아니라 페이지에 대한 주장이므로 — h1 아래의 안내서는 h2이고 섹션 안의 같은 안내서는 h4입니다',
+        ko: 'title이 쓰이는 heading 레벨. 단계의 제목은 그보다 한 단계 아래입니다. 레벨은 컴포넌트가 아니라 페이지에 대한 주장이므로, h1 아래의 안내서는 h2이고 섹션 안의 같은 안내서는 h4입니다',
         en: "Which heading level title is written at, with a step's title one below it. A level is a claim about the page rather than about the component: a guide under an h1 is an h2, and the same guide inside a section is an h4"
       }
     },
@@ -14053,8 +14231,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '본문 아래의 버튼 줄. 꺼두면 목록이 유일한 이동 수단이 됩니다 — 자체 내비게이션을 가진 페이지 안에 넣을 때',
-        en: 'The row of buttons under the body. Off, the list is the only way to move — for a guide inside a page that has navigation of its own'
+        ko: '본문 아래의 버튼 줄. 꺼두면 목록이 유일한 이동 수단이 됩니다. 자체 내비게이션을 가진 페이지 안에 넣을 때',
+        en: 'The row of buttons under the body. Off, the list is the only way to move: for a guide inside a page that has navigation of its own'
       }
     },
     {
@@ -14063,7 +14241,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: 'true',
       description: {
         ko: '목록과 본문 사이의 얇은 선. 두 열일 때는 안쪽 모서리를 따라, 쌓인 뒤에는 목록 아래를 따라 그려집니다',
-        en: 'A hairline between the list and the body — down the inner edge while they are two columns, along the bottom of the list once they have stacked'
+        en: 'A hairline between the list and the body: down the inner edge while they are two columns, along the bottom of the list once they have stacked'
       }
     },
     {
@@ -14097,7 +14275,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'outline'",
       shared: true,
       description: {
-        ko: '시트의 weight, 컨테이너가 말하는 방식으로. 시트는 물들지 않습니다 — 색을 지니는 것은 번호와 연결선과 버튼입니다',
+        ko: '시트의 weight, 컨테이너가 말하는 방식으로. 시트는 물들지 않습니다. 색을 지니는 것은 번호와 연결선과 버튼입니다',
         en: 'Weight of the sheet, said the way a container says it. The sheet is never dyed: what carries the family is the numbers, the connector and the buttons'
       }
     },
@@ -14169,7 +14347,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'icon',
       type: 'ReactNode',
       description: {
-        ko: '그 단계 본문의 제목 앞에 그려지는 glyph. 목록에는 그리지 않습니다 — 거기에는 이미 번호가 붙은 원이 있고, 옆의 glyph는 같은 말을 두 번 합니다',
+        ko: '그 단계 본문의 제목 앞에 그려지는 glyph. 목록에는 그리지 않습니다. 거기에는 이미 번호가 붙은 원이 있고, 옆의 glyph는 같은 말을 두 번 합니다',
         en: "A glyph before the title over the step's own body. Not in the list: a row there already carries a numbered disc, and a glyph beside it is a second mark making the same claim"
       }
     },
@@ -14178,7 +14356,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: {
         ko: '독자가 해야 하는 일. 문장이든 CodeBlock이든 폼이든',
-        en: 'What the reader has to do — prose, a CodeBlock, a form'
+        en: 'What the reader has to do: prose, a CodeBlock, a form'
       }
     },
     {
