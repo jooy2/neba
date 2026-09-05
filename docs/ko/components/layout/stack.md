@@ -22,7 +22,7 @@ import { Avatar, Stack } from 'neba';
 
 <PropsTable name="Stack" />
 
-모든 네이티브 `<div>` 속성이 그대로 전달됩니다. 자체 표면을 그리지 않으므로 `variant`, `color`, `elevation`은 없습니다. 그건 쌓이는 대상의 몫입니다.
+모든 네이티브 `<div>` 속성이 그대로 전달됩니다. 자체 표면을 그리지 않으므로 `variant`, `color`, `elevation`은 없습니다. 그것은 쌓이는 대상의 몫입니다.
 
 겹침은 translate가 아니라 margin이라, 상자 크기가 내용과 정확히 일치하고 Stack 뒤에 오는 내용도 올바른 너비를 기준으로 배치됩니다. `size`는 `overlap`의 기본값을 정할 때에만 읽습니다.
 

@@ -16,7 +16,7 @@ aside: false
 | --- | --- | --- |
 | 헤더 | `Toolbar` `Icon` `IconButton` `Pill` | `render={<header />}`로 실제 landmark가 되고, 계속 갱신되는 빌드 상태는 그 용도로 만들어진 `Pill`에 담겨 있습니다 |
 | 컨트롤 줄 | `Button` `ButtonGroup` `SegmentedButton` `TextField` `Select` | 같은 `size`에서 버튼과 필드와 셀렉트와 세그먼트는 높이가 같아서 한 줄의 기준선이 유지됩니다 |
-| 통계 | `Statistic` `Grid` | 떨어진 수치가 초록으로 나오게 만드는 것이 `betterWhen`입니다 — 실패한 빌드가 줄어든 것은 좋은 소식이니까요 |
+| 통계 | `Statistic` `Grid` | `betterWhen`이 떨어진 수치를 초록으로 표시합니다. 실패한 빌드가 줄어든 것은 좋은 소식이기 때문입니다 |
 | 새 소식 | `Carousel` | scroll snap 기반이라 모바일에서 스와이프가 되고 RTL에서 방향이 뒤집힙니다 |
 | 배포 | `Table` `Chip` | 표는 열 목록으로 그려지므로 머리글과 셀이 서로 어긋날 수 없습니다 |
 | 프로필 폼 | `Card` `TextField` `Divider` `Chip` `Checkbox` `Button` | 저장은 `loading`을 켜고, 잘못된 주소는 필드에 `error`를 답니다 |

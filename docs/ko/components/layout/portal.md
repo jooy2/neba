@@ -25,11 +25,11 @@ import { Portal } from 'neba';
 
 ### `createPortal`을 직접 쓰지 않는 이유
 
-두 가지를 더합니다. 첫 번째가 이걸 쓰는 이유입니다.
+두 가지를 더합니다. 첫 번째가 이 컴포넌트를 쓰는 이유입니다.
 
 wrapper가 **`neba-portal`**을 답니다. portal된 subtree는 페이지가 스타일을 scope해 둔 element를 벗어나므로 scoped stylesheet가 그것을 놓칩니다. 이 class가 다시 찾는 방법입니다. 이 라이브러리의 팝업들도 이미 이 class를 달고 있고, 이 문서 사이트도 `.neba-scope` 바깥에 reset을 다시 적용하는 데 씁니다.
 
-두 번째는 서버입니다. 서버에는 `document`가 없으므로 portal은 마운트되기 전까지 아무것도 그리지 않고, 배포되는 마크업에 portal된 subtree는 들어 있지 않습니다. 이건 우회할 한계가 아니라 portal이 **무엇인지**의 문제입니다. 서버 HTML에 반드시 있어야 하는 것은 portal에 넣으면 안 됩니다.
+두 번째는 서버입니다. 서버에는 `document`가 없으므로 portal은 마운트되기 전까지 아무것도 그리지 않고, 배포되는 마크업에 portal된 subtree는 들어 있지 않습니다. 이것은 우회할 수 있는 한계가 아니라 portal의 정의에서 따라 나오는 결과입니다. 서버 HTML에 반드시 있어야 하는 것은 portal에 넣으면 안 됩니다.
 
 ## 예시
 

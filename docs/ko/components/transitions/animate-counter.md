@@ -21,7 +21,7 @@ import { AnimateCounter, Statistic } from 'neba';
 
 나머지 `<div>` 속성은 루트로 그대로 전달됩니다. `easing`, `repeat`, `alternate`는 없습니다. 숫자는 한쪽에서만 값에 다가갈 수 있으므로 곡선은 고정된 ease-out이고, 반복되는 카운트라는 것은 존재하지 않습니다.
 
-[Statistic](../charts/statistic)과 짝을 이룹니다. 그쪽 `value`가 바로 이걸 위해 노드를 받습니다. 숫자는 즉시 그리면서 그 주변만 애니메이션하는 대시보드는 강조를 정확히 반대로 둔 것입니다.
+[Statistic](../charts/statistic)과 짝을 이룹니다. Statistic의 `value`가 노드를 받는 것이 이 조합을 위해서입니다. 숫자는 즉시 그리면서 그 주변만 애니메이션하는 대시보드는 강조를 정확히 반대로 둔 것입니다.
 
 ## 예시
 
