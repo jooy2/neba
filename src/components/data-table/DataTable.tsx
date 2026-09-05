@@ -1457,11 +1457,9 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * A drag in progress: where the pointer is, how fast the body is running
    * under it, and the frame that keeps doing both.
    *
-   * `stop` is stored beside them rather than rebuilt, because the listeners a
-   * drag installs have to be removed with the *same* function objects. A
-   * `useCallback` cannot promise that — a re-render mid-drag (and the selection
-   * changing is one) would hand back a new identity and leave the old listener
-   * on the window for the rest of the page's life.
+   * `stop` is stored beside them rather than rebuilt: it is what an unmount
+   * calls, and a `useCallback` cannot promise the identity the running gesture
+   * was started with.
    */
   const dragRef = React.useRef<{
     y: number;
@@ -1485,9 +1483,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   );
 
   const dragToRef = React.useRef(dragTo);
-  // The two window listeners a drag installs must not be re-bound while it is
-  // running, or the drag tears in half. They read the latest callback through
-  // this instead. Nothing renders from it, so a stale read shows nothing stale.
+  // The listeners a drag installs must not be re-bound while it is running, or
+  // the drag tears in half — and a re-render mid-drag is the ordinary case
+  // here, since the selection is what changes. They read the latest callback
+  // through this instead. Nothing renders from it, so a stale read shows
+  // nothing stale.
   // eslint-disable-next-line react-hooks/refs
   dragToRef.current = dragTo;
 
@@ -1499,10 +1499,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * want is longer than the viewport. The speed is how far past the edge the
    * pointer is, capped, so easing off slows the scroll instead of stopping it.
    */
-  const startDrag = (clientY: number) => {
-    if (dragRef.current) {
+  const startDrag = (event: React.PointerEvent<HTMLTableRowElement>) => {
+    const table = tableRef.current;
+
+    if (dragRef.current || !table) {
       return;
     }
+
+    const clientY = event.clientY;
 
     const move = (event: PointerEvent) => {
       const drag = dragRef.current;
@@ -1549,6 +1553,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       drag.frame = requestAnimationFrame(step);
     };
 
+    let release = () => {};
+
     const stop = () => {
       const drag = dragRef.current;
 
@@ -1557,19 +1563,34 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       }
 
       dragRef.current = null;
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', stop);
-      window.removeEventListener('pointercancel', stop);
+      release();
     };
 
     dragRef.current = { y: clientY, speed: 0, frame: null, stop };
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', stop);
-    window.addEventListener('pointercancel', stop);
+
+    /*
+     * Captured to the table rather than to the row that was pressed: a virtual
+     * body unmounts a row the moment it scrolls away, and this is the one drag
+     * whose whole point is to scroll the body past where it started.
+     *
+     * The auto-scroll frame below stays here and is deliberately not something
+     * `beginPointerDrag` grew an option for. That helper has no
+     * `requestAnimationFrame` in it because coalescing `pointermove` would cost
+     * a frame of latency for nothing; this loop runs when the pointer is *not*
+     * moving, which is the opposite case and belongs to the one gesture that
+     * has it.
+     */
+    release = beginPointerDrag({
+      target: table,
+      pointerId: event.pointerId,
+      onMove: move,
+      onEnd: stop,
+      mark: false
+    });
   };
 
-  // A table that unmounts mid-drag would otherwise leave both listeners and a
-  // running frame behind.
+  // A table that unmounts mid-drag would otherwise leave the listeners, the
+  // page's text selection and a running frame behind.
   React.useEffect(() => () => dragRef.current?.stop(), []);
 
   /* -- Pressing a row ------------------------------------------------------ */
@@ -1627,7 +1648,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     selectOnly(entry.key);
 
     if (multiple) {
-      startDrag(event.clientY);
+      startDrag(event);
     }
   }
 

@@ -48,6 +48,8 @@ The Korean row is the other one worth a sentence. Registering a language ships t
 
 ### Fixed
 
+- **Dragging a run of rows in a `DataTable` no longer selects the text it crosses.** It was the last drag in the library written by hand, and it had the hole the column resize used to have: no text-selection suppression, over every cell the pointer passed rather than the two beside a boundary. It goes through `beginPointerDrag` now — captured to the table rather than to the row that was pressed, since a virtual body unmounts a row the moment it scrolls away. The auto-scroll at the edge stays where it is.
+
 - **A `TreeSelect`'s clear button says "Clear" in every language no longer.** It was named out of the pickers' English defaults — a set it has nothing else to do with — rather than out of the same `action` messages the identical × on a `Combobox` reads. It takes a `clearLabel` like `Combobox` does, too.
 
 - **A pointer drag starts even when the pointer cannot be captured.** `setPointerCapture` throws for a pointer that is no longer active — one lifted between the `pointerdown` and the handler — and the exception escaped into React's event handler, which takes the page down. Capture is an optimisation and the three listeners work without it, so it is taken where it can be and skipped where it cannot.

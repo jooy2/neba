@@ -3,17 +3,19 @@
  * that gives all of it back.
  *
  * Five components drag something: a Sidebar's edge, a Panes boundary, a
- * WindowPane by its bar or its corner, a ScrollZone's strip, a DataTable's
- * column rule. The arithmetic differs in every one of them and stays where it
- * is. What was written five times and had already drifted is the scaffold
- * around it — three listeners, a `dataset.dragging`, the document's text
- * selection, and a teardown an unmount can call.
+ * WindowPane by its bar or its corner, a ScrollZone's strip, and a DataTable's
+ * column rule, its column headers and a run of its rows. The arithmetic differs
+ * in every one of them and stays where it is. What was written six times and
+ * had already drifted is the scaffold around it — three listeners, a
+ * `dataset.dragging`, the document's text selection, and a teardown an unmount
+ * can call.
  *
  * The drift is the reason this exists rather than the repetition. A DataTable's
  * column resize was the one copy with no selection suppression in it, so
  * dragging a column boundary in Safari selected the text of every cell the
  * pointer crossed; and it was the one with no unmount teardown, so a table that
- * went away mid-drag left two listeners on a detached node.
+ * went away mid-drag left two listeners on a detached node. Its row-range drag
+ * was the last copy and had the same hole in it, over more cells.
  *
  * There is deliberately **no requestAnimationFrame in here.** A `pointermove`
  * is already delivered once per frame in every browser the library supports —

@@ -609,6 +609,35 @@ describe('DataTable', () => {
       expect(onSelectedChange).toHaveBeenLastCalledWith(['c'], [ITEMS[2]]);
     });
 
+    /*
+     * Dragging a run of rows was the last copy of the drag scaffold written by
+     * hand, and it had the same hole the column resize had: no selection
+     * suppression, over every cell the pointer crossed rather than the few
+     * beside a boundary.
+     */
+    it('takes the page\u2019s text selection while a run of rows is dragged', async () => {
+      const screen = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />
+      );
+
+      const table = screen.container.querySelector<HTMLTableElement>('table')!;
+      const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="a"]')!;
+      const held = () => document.body.style.getPropertyValue('-webkit-user-select');
+
+      expect(held()).toBe('');
+
+      table.setPointerCapture = () => {};
+      row.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, clientY: 10, pointerId: 1, button: 0 })
+      );
+
+      expect(held()).toBe('none');
+
+      table.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+      expect(held()).toBe('');
+    });
+
     it('walks the rows with the arrow keys, choosing as it goes', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />
