@@ -45,7 +45,7 @@ import { TextField } from 'neba';
 
 ### multiline · rows · resize
 
-`multiline`은 `<textarea>`로 렌더링하고 나머지 축은 그대로 유지합니다. `rows={1}`은 한 줄 필드와 정확히 같은 높이입니다. `resize`의 기본값은 세로 방향만 허용합니다 — 가로 리사이즈는 폼의 열 정렬을 깨뜨립니다.
+`multiline`은 `<textarea>`로 렌더링하고 나머지 축은 그대로 유지합니다. `rows={1}`은 한 줄 필드와 정확히 같은 높이입니다. `resize`의 기본값은 세로 방향만 허용합니다. 가로 리사이즈는 폼의 열 정렬을 깨뜨립니다.
 
 <Demo src="text-field/multiline">
 
@@ -85,7 +85,7 @@ native `<input>`과 동일하게 동작합니다.
 
 ### shortcuts
 
-`shortcuts`는 키 조합에서 할 일로 가는 map이고, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다 — 폼이 사용자에게 **보여 주는** 키와 실제로 **바인딩하는** 키가 같은 문자열이 됩니다.
+`shortcuts`는 키 조합에서 할 일로 가는 map이고, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다. 폼이 사용자에게 **보여 주는** 키와 실제로 **바인딩하는** 키가 같은 문자열이 됩니다.
 
 ```tsx
 <TextField
@@ -113,7 +113,7 @@ control에 붙기 때문에 `event.currentTarget`이 `<input>` 또는 `<textarea
 
 ### classNames
 
-`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙습니다. `<input>` 자체는 `classNames`로 갑니다. `root` 키는 없습니다. 그것이 이미 `className`이기 때문입니다.
+`className`은 루트(라벨과 shell, 그 아래 두 줄을 담는 열)에 붙습니다. `<input>` 자체는 `classNames`로 갑니다. `root` 키는 없습니다. 그것이 이미 `className`이기 때문입니다.
 
 ```tsx
 <TextField

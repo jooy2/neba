@@ -50,9 +50,9 @@ interface NebaChartPoint {
 }
 ```
 
-**`null`은 0이 아니라 결측입니다.** 센서가 꺼져 있던 달과 매출이 0이었던 달은 다른 사실이고, 차트도 다르게 그립니다 — `null`에서 선이 끊기고 점은 그리지 않습니다. `connectNulls`가 그 사이를 잇지만, 결측이 수집 과정의 문제일 때만 쓰세요.
+**`null`은 0이 아니라 결측입니다.** 센서가 꺼져 있던 달과 매출이 0이었던 달은 다른 사실이고, 차트도 다르게 그립니다. `null`에서 선이 끊기고 점은 그리지 않습니다. `connectNulls`가 그 사이를 잇지만, 결측이 수집 과정의 문제일 때만 쓰세요.
 
-`categories`는 x 축의 위치 이름입니다. 대신 각 점이 `x`를 직접 들고 있어도 됩니다 — 데이터가 이미 갖고 있는 모양을 그대로 쓰면 됩니다.
+`categories`는 x 축의 위치 이름입니다. 대신 각 점이 `x`를 직접 들고 있어도 됩니다. 데이터가 이미 갖고 있는 모양을 그대로 쓰면 됩니다.
 
 <Demo src="line-chart/data">
 
@@ -114,7 +114,7 @@ LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 �
 
 ### valueLabels · gradient · markers
 
-`valueLabels`는 선 위에 숫자를 씁니다. `last`는 각 series가 도달한 값을, `extremes`는 series의 최고·최저를, `all`은 모든 점을 표시합니다. 기본값은 `none`입니다 — 모든 점 옆에 숫자를 쓰는 것이 차트를 읽을 수 없게 만드는 가장 확실한 방법입니다.
+`valueLabels`는 선 위에 숫자를 씁니다. `last`는 각 series가 도달한 값을, `extremes`는 series의 최고·최저를, `all`은 모든 점을 표시합니다. 기본값은 `none`입니다. 모든 점 옆에 숫자를 쓰는 것이 차트를 읽을 수 없게 만드는 가장 확실한 방법입니다.
 
 `markers`는 점 위에 dot을 그립니다. `auto`는 점이 열네 개 이하일 때만 그리고, 포인터가 올라간 점에는 설정과 무관하게 항상 그립니다.
 
@@ -138,7 +138,7 @@ LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 �
 
 ### 색
 
-series는 넘긴 순서대로 팔레트 slot을 가져갑니다 — 여덟 개의 색이 고정된 순서로 배정되고 순환하지 않습니다. 아홉 번째 series는 아홉 번째 색이 아닙니다. 나머지를 "기타" series로 묶거나 차트를 하나 더 그리세요.
+series는 넘긴 순서대로 팔레트 slot을 가져갑니다. 여덟 개의 색이 고정된 순서로 배정되고 순환하지 않습니다. 아홉 번째 series는 아홉 번째 색이 아닙니다. 나머지를 "기타" series로 묶거나 차트를 하나 더 그리세요.
 
 `series.color`는 그 slot을 `NebaColor` 이름이나 임의의 CSS 색으로 덮어쓰고, 점의 `color`는 그 점 하나만 덮어씁니다. 색 계열이 무엇을 만족시키도록 만들어졌는지는 [색](../../design/color)에 있습니다.
 
@@ -153,7 +153,7 @@ series는 넘긴 순서대로 팔레트 slot을 가져갑니다 — 여덟 개�
 
 ### format
 
-`format`은 `Intl.NumberFormat` 옵션을 받아 숫자가 나타나는 모든 곳에 적용됩니다 — 축, tooltip, 값 라벨, 표. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`).
+`format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`).
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }} … />

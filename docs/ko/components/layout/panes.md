@@ -28,7 +28,7 @@ import { Pane, Panes } from 'neba';
 
 <PropsTable name="Panes" />
 
-나머지 `<div>` 속성은 그대로 전달됩니다. 직접 자식은 `Pane`이어야 합니다 — 크기 제약을 그 props에서 읽기 때문입니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<div>` 속성은 그대로 전달됩니다. 직접 자식은 `Pane`이어야 합니다. 크기 제약을 그 props에서 읽기 때문입니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 ### Pane
 
@@ -50,7 +50,7 @@ import { Pane, Panes } from 'neba';
 
 ### defaultSize · minSize · maxSize
 
-셋 다 숫자(퍼센트로 읽습니다)나 CSS 길이 — `'240px'`, `'15rem'`, `'20%'` — 를 받습니다. `defaultSize`가 없는 pane들은 남은 자리를 똑같이 나눠 갖습니다. 어떤 pane의 `minSize`는 이웃 pane의 최대치이기도 하므로, 끌기는 먼저 닿는 한계에서 멈춥니다.
+셋 다 숫자(퍼센트로 읽습니다)나 CSS 길이(`'240px'`, `'15rem'`, `'20%'`)를 받습니다. `defaultSize`가 없는 pane들은 남은 자리를 똑같이 나눠 갖습니다. 어떤 pane의 `minSize`는 이웃 pane의 최대치이기도 하므로, 끌기는 먼저 닿는 한계에서 멈춥니다.
 
 `onResize`는 바가 움직이는 동안 모든 pane의 비율(%)을 알려주고, `onResizeEnd`는 바를 놓았을 때 한 번 호출됩니다.
 
@@ -90,5 +90,5 @@ import { Pane, Panes } from 'neba';
 
 - 각 바는 `separator`이며, 앞에 있는 pane의 비율(%)을 `aria-valuenow`로 실어 나릅니다.
 - 바는 focus를 받습니다. 세로 바는 ArrowLeft·ArrowRight로, 가로 바는 ArrowUp·ArrowDown으로 움직입니다.
-- `aria-orientation`은 pane이 아니라 바를 설명합니다 — 좌우로 놓인 pane 사이의 세로 바는 `vertical`입니다.
+- `aria-orientation`은 pane이 아니라 바를 설명합니다. 좌우로 놓인 pane 사이의 세로 바는 `vertical`입니다.
 - RTL에서도 끌기는 포인터가 간 방향으로 경계를 옮깁니다.

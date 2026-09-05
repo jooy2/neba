@@ -63,7 +63,7 @@ import { FloatingActionButton } from 'neba';
 
 ### variant, size, color
 
-버튼 자체는 [Button](./button)이고, 변형과 elevation 사다리, 포인터 조명, 누름의 거동이 모두 그대로입니다. `size`만 한 칸 위에서 시작해 `lg`가 기본입니다 — 보지 않고 엄지로 찾아 누르는 유일한 컨트롤이기 때문입니다. 액션들은 다시 한 칸 아래에서 그려집니다.
+버튼 자체는 [Button](./button)이고, 변형과 elevation 사다리, 포인터 조명, 누름의 거동이 모두 그대로입니다. `size`만 한 칸 위에서 시작해 `lg`가 기본입니다. 보지 않고 엄지로 찾아 누르는 유일한 컨트롤이기 때문입니다. 액션들은 다시 한 칸 아래에서 그려집니다.
 
 <Demo src="floating-action-button/appearance" minHeight="260">
 
@@ -86,7 +86,7 @@ const [open, setOpen] = useState(false);
 ## 접근성
 
 - `label`은 필수입니다. 그림만으로 된 버튼은 접근성 이름이 아예 없습니다.
-- 액션이 있으면 버튼에 `aria-expanded`와, 펼쳐진 묶음을 가리키는 `aria-controls`가 붙습니다. `role="menu"`는 아닙니다 — 메뉴는 세트 전체에 tab 정지점 하나와 방향키 이동, typeahead를 약속하고, 그것이 필요하면 [Menu](./menu)가 그것입니다.
+- 액션이 있으면 버튼에 `aria-expanded`와, 펼쳐진 묶음을 가리키는 `aria-controls`가 붙습니다. `role="menu"`는 아닙니다. 메뉴는 세트 전체에 tab 정지점 하나와 방향키 이동, typeahead를 약속하고, 그것이 필요하면 [Menu](./menu)가 그것입니다.
 - 액션들은 버튼 바로 다음 순서의 평범한 버튼이므로 tab으로 닿습니다.
 - Escape는 다이얼을 닫고 focus를 버튼으로 되돌립니다. 바깥을 누르면 닫힙니다.
 - 액션 옆 로젠지는 `aria-hidden`입니다. 같은 문자열이 이미 버튼의 이름이므로 두 번 읽히지 않게 합니다.

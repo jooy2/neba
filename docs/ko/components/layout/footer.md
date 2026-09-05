@@ -27,7 +27,7 @@ import { Footer } from 'neba';
 
 ### position
 
-기본값은 `static`으로 Header와 반대입니다. footer는 스크롤해서 닿는 문서의 끝이기 때문입니다. `sticky`는 창 아래에 붙이고, `fixed`는 흐름에서 빼냅니다 — [PageLayout](./page-layout) 안에서는 그 높이만큼 자리가 비워지므로 마지막 문단 위에 겹치지 않습니다.
+기본값은 `static`으로 Header와 반대입니다. footer는 스크롤해서 닿는 문서의 끝이기 때문입니다. `sticky`는 창 아래에 붙이고, `fixed`는 흐름에서 빼냅니다. [PageLayout](./page-layout) 안에서는 그 높이만큼 자리가 비워지므로 마지막 문단 위에 겹치지 않습니다.
 
 ### variant
 

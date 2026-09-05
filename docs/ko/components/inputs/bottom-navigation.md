@@ -36,7 +36,7 @@ import { BottomNavigation, BottomNavigationItem } from 'neba';
 
 ### position
 
-기본값은 `fixed`입니다. 라이브러리의 다른 컴포넌트가 모두 `static`을 기본으로 두는 것과 반대이고, 그것이 이 컴포넌트가 하는 일입니다 — 페이지가 무엇을 하든 창의 아래 가장자리에 붙어 있습니다. 그러면 페이지는 첫 화면이 바 뒤에 깔리지 않도록 스스로 아래쪽 여백을 마련해야 합니다.
+기본값은 `fixed`입니다. 라이브러리의 다른 컴포넌트가 모두 `static`을 기본으로 두는 것과 반대이고, 그것이 이 컴포넌트가 하는 일입니다. 페이지가 무엇을 하든 창의 아래 가장자리에 붙어 있습니다. 그러면 페이지는 첫 화면이 바 뒤에 깔리지 않도록 스스로 아래쪽 여백을 마련해야 합니다.
 
 `sticky`는 바를 흐름 안에 두되 스크롤 영역의 아래 가장자리에서 멈추게 합니다. `static`은 그냥 흐름 안의 시트입니다.
 
@@ -70,7 +70,7 @@ import { BottomNavigation, BottomNavigationItem } from 'neba';
 
 ### variant, divider, safeArea
 
-`variant`는 다른 컨테이너에서와 같은 말을 합니다 — 시트에는 색이 들지 않고, 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다. `divider`는 내용을 마주 보는 위쪽 가장자리의 헤어라인이고 기본이 켜짐입니다. `safeArea`는 `env(safe-area-inset-bottom)`만큼 아래를 띄워 홈 인디케이터를 피하되, 시트 자체는 화면 아래 끝까지 그대로 닿습니다.
+`variant`는 다른 컨테이너에서와 같은 말을 합니다. 시트에는 색이 들지 않고, 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다. `divider`는 내용을 마주 보는 위쪽 가장자리의 헤어라인이고 기본이 켜짐입니다. `safeArea`는 `env(safe-area-inset-bottom)`만큼 아래를 띄워 홈 인디케이터를 피하되, 시트 자체는 화면 아래 끝까지 그대로 닿습니다.
 
 <Demo src="bottom-navigation/appearance" minHeight="360">
 
@@ -92,7 +92,7 @@ import { BottomNavigation, BottomNavigationItem } from 'neba';
 
 ## 접근성
 
-- 루트는 `<nav>`이고 `label`이 그 이름이 됩니다. `role="tablist"`가 아닙니다 — 탭 목록은 세트 전체에 tab 정지점 하나와 그 안의 방향키 이동을 약속하고, 하단 내비게이션은 패널이 아니라 페이지를 바꿉니다.
+- 루트는 `<nav>`이고 `label`이 그 이름이 됩니다. `role="tablist"`가 아닙니다. 탭 목록은 세트 전체에 tab 정지점 하나와 그 안의 방향키 이동을 약속하고, 하단 내비게이션은 패널이 아니라 페이지를 바꿉니다.
 - 지금 있는 목적지에는 `aria-current="page"`가 붙습니다.
 - 각 목적지는 진짜 `<button>`이거나, `href`가 있으면 진짜 `<a>`입니다.
 - `labels`가 이름을 그리지 않아도 그 이름은 문서에 남아 목적지의 접근성 이름이 됩니다.

@@ -41,7 +41,7 @@ import { Timeline, TimelineItem } from 'neba';
 
 `bullet`에는 어떤 node든 넣을 수 있습니다. 번호는 사용자를 안내하는 절차에, 아이콘은 이미 일어난 사건에 어울립니다. 생략하면 원이 그려집니다.
 
-세 상태는 각각 다른 모양을 씁니다 — 채워진 원(`complete`), 후광이 둘린 채워진 원(`current`), 빈 원(`upcoming`). 색을 구분하지 못해도 상태가 전달됩니다.
+세 상태는 각각 다른 모양을 씁니다. `complete`는 채워진 원, `current`는 후광이 둘린 채워진 원, `upcoming`은 빈 원입니다. 색을 구분하지 못해도 상태가 전달됩니다.
 
 <Demo src="timeline/bullets">
 

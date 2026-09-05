@@ -33,7 +33,7 @@ Neba는 임의의 색상값을 받지 않습니다. `color`는 `#4072cd`가 아�
 --neba-{color}-accent         /* 표면 위에서 읽히는 색 (text/outline 변형용) */
 ```
 
-`solid`와 `accent`는 역할이 다릅니다. `solid`는 **글자를 얹을 배경**이고, `accent`는 **배경 위에 얹을 글자**입니다. 그래서 같은 계열이라도 `accent`가 더 밝고 채도가 높습니다 — 흰 배경 위에서 대비를 확보해야 하는 쪽은 `accent`이기 때문입니다.
+`solid`와 `accent`는 역할이 다릅니다. `solid`는 **글자를 얹을 배경**이고, `accent`는 **배경 위에 얹을 글자**입니다. 그래서 같은 계열이라도 `accent`가 더 밝고 채도가 높습니다. 흰 배경 위에서 대비를 확보해야 하는 쪽은 `accent`이기 때문입니다.
 
 ### 파생되는 나머지
 
@@ -104,7 +104,7 @@ Neba의 다크 테마는 `prefers-color-scheme`을 따르고, `.dark` / `[data-t
 
 ### 일부 트리에만 적용하려면 테마 루트로 만드세요
 
-앱 전체가 아니라 특정 영역에만 다른 계열 색을 쓰고 싶다면, 그 요소가 **테마 루트여야** 합니다 — 즉 `.dark` / `.light` / `[data-theme='…']` 중 하나를 달아야 합니다.
+앱 전체가 아니라 특정 영역에만 다른 계열 색을 쓰고 싶다면, 그 요소가 **테마 루트여야** 합니다. 즉 `.dark` / `.light` / `[data-theme='…']` 중 하나를 달아야 합니다.
 
 ```html
 <!-- 동작하지 않습니다: 버튼 색이 그대로입니다 -->
@@ -128,7 +128,7 @@ Neba의 다크 테마는 `prefers-color-scheme`을 따르고, `.dark` / `[data-t
 
 ## 계열 추가하기
 
-라이브러리에 새 계열을 넣는 것은 두 군데를 고치는 일입니다 — [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)의 `NebaColor` 유니언과 `styles.css`의 다섯 줄(테마마다). 나머지는 파생 블록이 계산합니다.
+라이브러리에 새 계열을 넣는 것은 두 군데를 고치는 일입니다. [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)의 `NebaColor` 유니언과 `styles.css`의 다섯 줄(테마마다). 나머지는 파생 블록이 계산합니다.
 
 소비자 쪽에서는 `NebaColor`가 닫힌 유니언이라 새 이름을 넘길 수 없습니다. 계열이 하나 더 필요하다면 이슈로 올려 주세요.
 

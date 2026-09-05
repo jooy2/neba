@@ -42,7 +42,7 @@ interface SelectOption {
 }
 ```
 
-`value`는 문자열이나 숫자입니다. 폼과 함께 제출되는 값이므로 객체는 받지 않습니다 — 식별자만 넘기고 객체는 호출부에서 찾으세요.
+`value`는 문자열이나 숫자입니다. 폼과 함께 제출되는 값이므로 객체는 받지 않습니다. 식별자만 넘기고 객체는 호출부에서 찾으세요.
 
 ## 예시
 
@@ -78,7 +78,7 @@ interface SelectOption {
 
 ### classNames
 
-`className`은 루트 — 라벨과 trigger, 그 아래 두 줄을 담는 열 — 에 붙고, trigger 자체는 `classNames.control`로 갑니다.
+`className`은 루트(라벨과 trigger, 그 아래 두 줄을 담는 열)에 붙고, trigger 자체는 `classNames.control`로 갑니다.
 
 ```tsx
 <Select

@@ -27,7 +27,7 @@ import { Divider } from 'neba';
 
 ### length와 thickness
 
-`length`는 선이 뻗는 길이입니다 — 가로 divider에서는 너비, 세로 divider에서는 높이입니다. `thickness`는 선의 두께입니다. 둘 다 숫자(px) 또는 임의의 CSS 길이 문자열을 받습니다. 생략하면 가로 선은 컨테이너를 가득 채우고, 세로 선은 자신이 놓인 flex 행의 높이에 맞춰 늘어납니다.
+`length`는 선이 뻗는 길이입니다. 가로 divider에서는 너비, 세로 divider에서는 높이입니다. `thickness`는 선의 두께입니다. 둘 다 숫자(px) 또는 임의의 CSS 길이 문자열을 받습니다. 생략하면 가로 선은 컨테이너를 가득 채우고, 세로 선은 자신이 놓인 flex 행의 높이에 맞춰 늘어납니다.
 
 <Demo src="divider/size">
 
@@ -68,4 +68,4 @@ import { Divider } from 'neba';
 ## 접근성
 
 - `role="separator"`로 렌더링됩니다.
-- `separator`는 내용에서 accessible name을 가져오는 role이 아니므로, **문자열** 라벨은 `aria-label`로도 함께 전달됩니다. node를 넘긴 경우에는 그중 무엇이 이름인지 알 수 없으므로 그대로 둡니다 — 필요하면 `aria-label`을 직접 지정하세요.
+- `separator`는 내용에서 accessible name을 가져오는 role이 아니므로, **문자열** 라벨은 `aria-label`로도 함께 전달됩니다. node를 넘긴 경우에는 그중 무엇이 이름인지 알 수 없으므로 그대로 둡니다. 필요하면 `aria-label`을 직접 지정하세요.

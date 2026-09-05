@@ -21,7 +21,7 @@ import { Toggle } from 'neba';
 
 `<button>`의 모든 속성이 그대로 전달됩니다. 예외는 [ToggleGroup](./toggle-group) 안에서 토글을 식별하는 `value`와 의미론적 색 역할인 `color`뿐입니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에 정리되어 있습니다.
 
-[Switch](./switch)는 설정을 바꾸고 그 변화 자체가 목적이며, [Checkbox](./checkbox)는 폼과 함께 제출되는 답변입니다. Toggle은 둘 다 아닙니다 — 옆에 있는 대상에 작용하는 컨트롤입니다.
+[Switch](./switch)는 설정을 바꾸고 그 변화 자체가 목적이며, [Checkbox](./checkbox)는 폼과 함께 제출되는 답변입니다. Toggle은 둘 다 아닙니다. 옆에 있는 대상에 작용하는 컨트롤입니다.
 
 ## 예시
 

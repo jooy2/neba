@@ -48,7 +48,7 @@ import { Radio, RadioGroup } from 'neba';
 
 ### orientation
 
-기본값은 `vertical`입니다. `horizontal`은 라벨이 짧을 때만 쓰세요 — 라벨 하나가 길어지면 줄이 읽기 어려워집니다.
+기본값은 `vertical`입니다. `horizontal`은 라벨이 짧을 때만 쓰세요. 라벨 하나가 길어지면 줄이 읽기 어려워집니다.
 
 <Demo src="radio-group/orientation">
 

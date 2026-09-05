@@ -38,7 +38,7 @@ import { Accordion, AccordionItem } from 'neba';
 
 ### variant
 
-sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때는 `text`를 쓰세요 — Card가 이미 sheet이므로 테두리가 겹치지 않습니다.
+sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때는 `text`를 쓰세요. Card가 이미 sheet이므로 테두리가 겹치지 않습니다.
 
 <Demo src="accordion/variants">
 
@@ -73,5 +73,5 @@ sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때�
 ## 접근성
 
 - 헤더 버튼과 패널이 `aria-controls` · `aria-expanded`로 연결됩니다.
-- `title`에 실제 heading을 넘기면 문서 개요에 들어갑니다 — `title={<h3>결제</h3>}`. 넘긴 heading은 Accordion의 타입 스케일을 물려받습니다.
+- `title`에 `title={<h3>결제</h3>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 Accordion의 타입 스케일을 물려받습니다.
 - 패널은 `height`를 애니메이션하며 열립니다. 내용이 패널 안에서 이동하지는 않습니다.

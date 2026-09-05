@@ -29,11 +29,11 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### brand · children · actions
 
-세 자리입니다. `brand`는 앞쪽 — 로고나 제품 이름, `children`은 가운데로 대개 탐색, `actions`는 뒤쪽이며 끝에 붙여 배치되므로 버튼 여러 개를 따로 감쌀 필요가 없습니다. 아무것도 주지 않은 자리는 그려지지 않습니다.
+세 자리입니다. `brand`는 앞쪽으로 로고나 제품 이름이 들어가고, `children`은 가운데로 대개 탐색이 들어가며, `actions`는 뒤쪽입니다. 끝에 붙여 배치되므로 버튼 여러 개를 따로 감쌀 필요가 없습니다. 아무것도 주지 않은 자리는 그려지지 않습니다.
 
 ### align
 
-가운데 자리가 어디에 놓이는지 정합니다. 기본값 `start`는 brand 바로 다음에 붙이고, `center`는 남는 공간이 아니라 바 자체의 중심선에 놓습니다 — 그러려고 양끝에 같은 몫을 줍니다. `end`는 actions 쪽에 붙입니다.
+가운데 자리가 어디에 놓이는지 정합니다. 기본값 `start`는 brand 바로 다음에 붙이고, `center`는 남는 공간이 아니라 바 자체의 중심선에 놓습니다. 그러려고 양끝에 같은 몫을 줍니다. `end`는 actions 쪽에 붙입니다.
 
 <Demo src="header/align" minHeight="180">
 
@@ -47,7 +47,7 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### variant
 
-세 가지 무게는 다른 곳에서와 같은 뜻입니다 — 채움, 헤어라인, 없음. 바는 `color`로 물들지 않습니다. 위에 놓이는 것들이 자기 색을 갖고 오기 때문이며, 색 계열은 헤어라인과 focus 링에서 드러납니다.
+세 가지 무게는 다른 곳에서와 같은 뜻으로, 각각 채움과 헤어라인, 없음입니다. 바는 `color`로 물들지 않습니다. 위에 놓이는 것들이 자기 색을 갖고 오기 때문이며, 색 계열은 헤어라인과 focus 링에서 드러납니다.
 
 <Demo src="header/variant" minHeight="220">
 
@@ -72,5 +72,5 @@ import { AppLogo, Button, Header } from 'neba';
 ## 접근성
 
 - `<header>`를 렌더링하며, `<article>`이나 `<section>` 안이 아니라면 `banner` 랜드마크입니다.
-- 한 페이지에 `<header>`가 둘 이상일 때 — 글 자체의 header와 사이트의 header — `label`을 주세요. 그러지 않으면 랜드마크 목록이 어느 쪽도 구분해 주지 못합니다.
+- 한 페이지에 `<header>`가 둘 이상일 때(글 자체의 header와 사이트의 header) `label`을 주세요. 그러지 않으면 랜드마크 목록이 어느 쪽도 구분해 주지 못합니다.
 - 가운데 자리의 탐색은 직접 `<nav>`로 감싸고, 한 페이지에 `<nav>`가 둘 이상이면 각각에 접근성 이름을 주세요.

@@ -5,7 +5,7 @@ order: 16
 
 # HoverCard
 
-<p class="neba-lede">포인터가 어떤 대상 위에 머무를 때 열려, 그 너머에 있는 것을 미리 보여주는 카드입니다 — 멘션 뒤의 사람, 링크 뒤의 저장소, id 뒤의 배포.</p>
+<p class="neba-lede">포인터가 어떤 대상 위에 머무를 때 열려, 그 너머에 있는 것을 미리 보여주는 카드입니다. 멘션 뒤의 사람, 링크 뒤의 저장소, id 뒤의 배포.</p>
 
 <Demo src="hover-card/hero" />
 
@@ -21,9 +21,9 @@ import { HoverCard, TextLink } from 'neba';
 
 <PropsTable name="HoverCard" />
 
-`<div>`의 기본 속성은 popup으로 전달됩니다. 컴포넌트가 직접 소유하는 `color`, `title`, `children`만 예외입니다. [Popover](./popover)와 같은 이유로 `variant`도 `elevation`도 없습니다 — hover를 거쳐야 나타나는 표면은 이미 자기 존재를 주장한 것이고, 페이지 위에 떠 있는 카드를 평평하게 눕힐 수는 없습니다.
+`<div>`의 기본 속성은 popup으로 전달됩니다. 컴포넌트가 직접 소유하는 `color`, `title`, `children`만 예외입니다. [Popover](./popover)와 같은 이유로 `variant`도 `elevation`도 없습니다. hover를 거쳐야 나타나는 표면은 이미 자기 존재를 주장한 것이고, 페이지 위에 떠 있는 카드를 평평하게 눕힐 수는 없습니다.
 
-이 컴포넌트는 라이브러리의 다른 두 popup 사이에 있습니다. [Tooltip](../feedback/tooltip)은 한 줄짜리 라벨이고 포인터가 그 안까지 닿지 않습니다. Popover는 누름으로써 _요청된_ 패널이라 폼도 담을 수 있습니다. HoverCard는 tooltip처럼 요청되지 않았고 popover처럼 닿을 수 있습니다 — 포인터가 안으로 들어올 수 있고, 안에 있는 링크를 따라갈 수 있습니다.
+이 컴포넌트는 라이브러리의 다른 두 popup 사이에 있습니다. [Tooltip](../feedback/tooltip)은 한 줄짜리 라벨이고 포인터가 그 안까지 닿지 않습니다. Popover는 누름으로써 _요청된_ 패널이라 폼도 담을 수 있습니다. HoverCard는 tooltip처럼 요청되지 않았고 popover처럼 닿을 수 있습니다. 포인터가 안으로 들어올 수 있고, 안에 있는 링크를 따라갈 수 있습니다.
 
 ## 예시
 

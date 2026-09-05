@@ -27,7 +27,7 @@ import { CodeBlock } from 'neba';
 
 ### language
 
-문법의 이름입니다 — `ts`, `bash`, `yml`, `dockerfile`. 흔히 쓰는 표기와 파일 확장자를 알아듣기 때문에 fenced code block에서 그대로 복사한 값이 바로 동작합니다. `jsx`와 `mjs`는 JavaScript, `yml`은 YAML, `html`과 `vue`는 XML로 해석됩니다. 모르는 이름은 거부하지 않고 하이라이팅 없이 그립니다.
+문법의 이름이며 `ts`, `bash`, `yml`, `dockerfile`처럼 씁니다. 흔히 쓰는 표기와 파일 확장자를 알아듣기 때문에 fenced code block에서 그대로 복사한 값이 바로 동작합니다. `jsx`와 `mjs`는 JavaScript, `yml`은 YAML, `html`과 `vue`는 XML로 해석됩니다. 모르는 이름은 거부하지 않고 하이라이팅 없이 그립니다.
 
 <Demo src="code-block/language" minHeight="320">
 
@@ -48,7 +48,7 @@ registerLanguage('elixir', elixir);
 
 블록이 입는 팔레트이며, 페이지의 light·dark와는 별개입니다.
 
-넷은 라이브러리 자신의 것입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 페이지를 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다. 여기에 공개된 값을 그대로 옮겨 온 여덟 개가 더 있습니다 — `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github`, `solarized-light`.
+넷은 라이브러리 자신의 것입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 페이지를 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다. 여기에 공개된 값을 그대로 옮겨 온 여덟 개가 더 있습니다. `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github`, `solarized-light`입니다.
 
 <Demo src="code-block/theme" minHeight="480">
 
@@ -73,7 +73,7 @@ registerLanguage('elixir', elixir);
 
 ### highlightLines
 
-특정 줄을 배경색과 시작 모서리의 선으로 표시합니다. 숫자는 한 줄, 문자열은 줄과 범위의 목록 — `'4'`, `'4-9'`, `'1,4-9,12'` — 배열은 둘을 섞은 것입니다. 번호는 거터가 세는 방식 그대로이므로, `startLine={286}`일 때 거터가 288이라고 부르는 줄은 `highlightLines={288}`입니다.
+특정 줄을 배경색과 시작 모서리의 선으로 표시합니다. 숫자는 한 줄이고, 문자열은 `'4'`, `'4-9'`, `'1,4-9,12'`처럼 줄과 범위의 목록이며, 배열은 둘을 섞은 것입니다. 번호는 거터가 세는 방식 그대로이므로, `startLine={286}`일 때 거터가 288이라고 부르는 줄은 `highlightLines={288}`입니다.
 
 틴트는 페이지의 색 계열이 아니라 그 테마 자신의 잉크에서 섞여 나오므로 열두 팔레트 어디에서나 읽힙니다.
 
@@ -105,7 +105,7 @@ registerLanguage('elixir', elixir);
 
 ### prompt
 
-내용이 있는 줄 앞에 붙는 셸 기호입니다 — `$`, `#`, `C:\>`, `>>>`. 그려지기는 하지만 실제로 거기 있지는 않습니다. 기호가 생성된 콘텐츠라서 블록을 드래그해도 선택되지 않고, 페이지 내 찾기에도 걸리지 않으며, 복사 버튼으로도 직접 복사해도 클립보드에 들어가지 않습니다.
+내용이 있는 줄 앞에 붙는 셸 기호로, `$`, `#`, `C:\>`, `>>>` 같은 값을 받습니다. 그려지기는 하지만 실제로 거기 있지는 않습니다. 기호가 생성된 콘텐츠라서 블록을 드래그해도 선택되지 않고, 페이지 내 찾기에도 걸리지 않으며, 복사 버튼으로도 직접 복사해도 클립보드에 들어가지 않습니다.
 
 <Demo src="code-block/prompt" minHeight="360">
 
@@ -125,7 +125,7 @@ registerLanguage('elixir', elixir);
 
 ### fontFamily · fontSize · lineHeight · letterSpacing
 
-`size`는 다른 곳에서와 마찬가지로 타입 스케일과 여백을 함께 옮깁니다. 네 개의 override는 `size`가 닿지 못하는 경우를 위한 것입니다 — 라이선스를 산 서체, 스크린샷과 맞춰야 하는 고정 픽셀 크기, 소리 내어 읽기 위해 넉넉하게 벌린 행간 같은 것들입니다.
+`size`는 다른 곳에서와 마찬가지로 타입 스케일과 여백을 함께 옮깁니다. 네 개의 override는 `size`가 닿지 못하는 경우를 위한 것입니다. 라이선스를 산 서체, 스크린샷과 맞춰야 하는 고정 픽셀 크기, 소리 내어 읽기 위해 넉넉하게 벌린 행간 같은 것들입니다.
 
 <Demo src="code-block/typography" minHeight="320">
 

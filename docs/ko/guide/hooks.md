@@ -11,7 +11,7 @@ order: 2
 import { useDisclosure, useMediaQuery, useShortcut } from 'neba/hooks';
 ```
 
-여기 있는 것은 전부 라이브러리가 스스로 쓰려고 만든 hook입니다. 선정 기준은 그것 하나뿐입니다. 범용 hook 모음은 여기 없고 앞으로도 없습니다 — debounce나 `localStorage` 래퍼는 컴포넌트 라이브러리의 일이 아닙니다.
+여기 있는 것은 전부 라이브러리가 스스로 쓰려고 만든 hook입니다. 선정 기준은 그것 하나뿐입니다. 범용 hook 모음은 여기 없고 앞으로도 없습니다. debounce나 `localStorage` 래퍼는 컴포넌트 라이브러리의 일이 아닙니다.
 
 ## useDisclosure
 

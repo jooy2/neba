@@ -28,7 +28,7 @@ import { CommandPalette } from 'neba';
 
 <PropsTable name="CommandItem" />
 
-[Menu](./menu)가 아닙니다 — 메뉴는 한자리에 있는 짧은 목록이고, 찾기 전에 이미 모든 행이 보입니다. [Combobox](./combobox)도 아닙니다. 돌아오는 것은 값이 아니라 벌어지는 일입니다.
+[Menu](./menu)가 아닙니다. 메뉴는 한자리에 있는 짧은 목록이고, 찾기 전에 이미 모든 행이 보입니다. [Combobox](./combobox)도 아닙니다. 돌아오는 것은 값이 아니라 벌어지는 일입니다.
 
 ## 예시
 
@@ -48,7 +48,7 @@ import { CommandPalette } from 'neba';
 
 ### shortcut
 
-팔레트를 여는 키이며 window에 바인딩됩니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control입니다 — [Shortcut](../display/shortcut)이 그리는 것과 같은 표기를, 쓰는 대신 읽습니다. `false`는 아무것도 바인딩하지 않습니다. 키보드를 직접 관리하는 애플리케이션을 위한 것입니다.
+팔레트를 여는 키이며 window에 바인딩됩니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control입니다. [Shortcut](../display/shortcut)이 그리는 것과 같은 표기를, 쓰는 대신 읽습니다. `false`는 아무것도 바인딩하지 않습니다. 키보드를 직접 관리하는 애플리케이션을 위한 것입니다.
 
 ### onSelect
 
@@ -66,7 +66,7 @@ import { CommandPalette } from 'neba';
 
 ### className · classNames
 
-`className`은 시트 — 검색 필드와 행이 놓이는 판 — 에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
+`className`은 시트(검색 필드와 행이 놓이는 판)에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
 
 ```tsx
 <CommandPalette

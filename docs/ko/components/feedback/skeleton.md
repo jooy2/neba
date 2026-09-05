@@ -27,7 +27,7 @@ import { Skeleton } from 'neba';
 
 ### shape
 
-세 가지 shape은 레이아웃을 이루는 세 가지입니다. `line`은 글줄이며 타입 스케일에 맞춰 크기가 정해지므로 `md` 줄은 `md` 글자와 같은 높이입니다. `rect`는 블록 — 이미지, 차트, 카드 — 이고 `height`를 주지 않으면 썸네일 높이로 떨어집니다. `circle`은 [Avatar](../display/avatar)와 같은 사다리 위에서 그려지므로 같은 `size`에서 정확히 같은 크기입니다.
+세 가지 shape은 레이아웃을 이루는 세 가지입니다. `line`은 글줄이며 타입 스케일에 맞춰 크기가 정해지므로 `md` 줄은 `md` 글자와 같은 높이입니다. `rect`는 블록(이미지, 차트, 카드)이고 `height`를 주지 않으면 썸네일 높이로 떨어집니다. `circle`은 [Avatar](../display/avatar)와 같은 사다리 위에서 그려지므로 같은 `size`에서 정확히 같은 크기입니다.
 
 <Demo src="skeleton/shapes">
 

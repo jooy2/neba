@@ -27,7 +27,7 @@ import { Show } from 'neba';
 
 ### above와 below
 
-`above`는 그 값을 포함하고 `below`는 포함하지 않습니다. 그래서 같은 breakpoint를 양쪽에 쓰면 빈틈도 겹침도 없이 모든 너비를 정확히 한 번씩 덮습니다. 이 짝이 가장 흔한 경우입니다 — 폰용 배치 하나, 나머지 전부를 위한 배치 하나.
+`above`는 그 값을 포함하고 `below`는 포함하지 않습니다. 그래서 같은 breakpoint를 양쪽에 쓰면 빈틈도 겹침도 없이 모든 너비를 정확히 한 번씩 덮습니다. 폰용 배치 하나와 나머지 전부를 위한 배치 하나를 두는 이 짝이 가장 흔한 경우입니다.
 
 <Demo src="show/pair">
 
@@ -59,7 +59,7 @@ wrapper는 `display: contents`입니다. 그래서 [GridContainer](./grid)와 [G
 
 children은 언제나 렌더되고, 바뀌는 것은 `display`입니다. 그래서 브라우저가 그리는 첫 프레임부터 답이 맞고, 서버에서도 같은 답이 나옵니다.
 
-어떤 너비 아래에서는 아예 _실행되면 안 되는_ 것 — fetch를 하거나 지도를 mount하는 컴포넌트 — 은 CSS가 내릴 수 없는 결정이며, 그것은 `useBreakpoint`가 합니다. 서버에서도 클라이언트의 첫 렌더에서도 `false`이므로, 이것이 제어하는 것은 hydration 이후에 도착합니다.
+어떤 너비 아래에서는 아예 _실행되면 안 되는_ 것(fetch를 하거나 지도를 mount하는 컴포넌트)은 CSS가 내릴 수 없는 결정이며, 그것은 `useBreakpoint`가 합니다. 서버에서도 클라이언트의 첫 렌더에서도 `false`이므로, 이것이 제어하는 것은 hydration 이후에 도착합니다.
 
 ```tsx
 import { useBreakpoint } from 'neba';
@@ -85,4 +85,4 @@ return wide ? <Map /> : <StaticImage />;
 ## 접근성
 
 - 숨겨진 쪽은 `display: none`이므로 화면에서만이 아니라 접근성 트리와 탭 순서에서도 빠집니다. 무엇도 두 번 읽히지 않습니다.
-- `above`/`below` 짝의 양쪽은 모든 너비에서 DOM에 있습니다. 그러므로 중복되면 안 되는 것 — `id`, form control의 `name`, heading — 은 둘 사이에서 달라야 하거나 짝 바깥에 있어야 합니다.
+- `above`/`below` 짝의 양쪽은 모든 너비에서 DOM에 있습니다. 그러므로 중복되면 안 되는 것(`id`, form control의 `name`, heading)은 둘 사이에서 달라야 하거나 짝 바깥에 있어야 합니다.

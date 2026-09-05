@@ -34,11 +34,11 @@ import { List, ListItem, Sidebar } from 'neba';
 
 ### width · size
 
-`size`가 열의 기본 너비를 정하고 — `md`는 16rem — `width`가 픽셀 숫자나 CSS 길이로 그것을 덮어씁니다.
+`size`가 열의 기본 너비를 정하고(`md`는 16rem), `width`가 픽셀 숫자나 CSS 길이로 그것을 덮어씁니다.
 
 ### resizable
 
-안쪽 가장자리를 끌 수 있게 합니다. `minWidth`와 `maxWidth`가 범위를 정하고, `onResize`는 끄는 동안 매 걸음, `onResizeEnd`는 놓을 때 한 번 호출됩니다 — 너비를 저장해 둘 자리입니다. 핸들은 focus를 받는 `role="separator"`라 좌우 화살표로도 같은 일을 할 수 있습니다.
+안쪽 가장자리를 끌 수 있게 합니다. `minWidth`와 `maxWidth`가 범위를 정하고, `onResize`는 끄는 동안 매 걸음, `onResizeEnd`는 놓을 때 한 번 호출됩니다. 너비를 저장해 둘 자리입니다. 핸들은 focus를 받는 `role="separator"`라 좌우 화살표로도 같은 일을 할 수 있습니다.
 
 <Demo src="sidebar/resizable" minHeight="300">
 
@@ -58,7 +58,7 @@ import { List, ListItem, Sidebar } from 'neba';
 
 ### collapseBelow
 
-열이 scrim 위의 [Drawer](../feedback/dialog)가 되는 너비입니다. focus가 안에 갇히고, Escape로 닫히며, 닫으면 focus가 trigger로 돌아갑니다. 어느 모습이든 children은 문서에 한 번만 존재합니다. `title`은 drawer일 때만 그려집니다 — 열에는 주위의 페이지가 그것이 무엇인지 말해 주지만, 페이지를 덮은 패널에는 없기 때문입니다.
+열이 scrim 위의 [Drawer](../feedback/dialog)가 되는 너비입니다. focus가 안에 갇히고, Escape로 닫히며, 닫으면 focus가 trigger로 돌아갑니다. 어느 모습이든 children은 문서에 한 번만 존재합니다. `title`은 drawer일 때만 그려집니다. 열에는 주위의 페이지가 그것이 무엇인지 말해 주지만, 페이지를 덮은 패널에는 없기 때문입니다.
 
 기본값은 PageLayout의 값이며 레이아웃 밖에서는 `none`입니다. 되돌릴 방법이 없는 채로 접힌 사이드바는 독자가 잃어버린 사이드바이기 때문입니다.
 
@@ -84,7 +84,7 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 
 ## 접근성
 
-- `<aside>` — `complementary` 랜드마크 — 를 렌더링하고, `label`이 없으면 `locale`의 “사이드바”에 해당하는 단어로 스스로를 이름 짓습니다. 사이드바가 둘인 페이지는 반드시 둘 다 이름을 주어야 합니다.
+- `<aside>`(`complementary` 랜드마크)를 렌더링하고, `label`이 없으면 `locale`의 “사이드바”에 해당하는 단어로 스스로를 이름 짓습니다. 사이드바가 둘인 페이지는 반드시 둘 다 이름을 주어야 합니다.
 - 접힌 상태는 modal dialog입니다. focus가 안에 갇히고, Escape로 닫히며, focus는 trigger로 돌아갑니다.
 - 크기 조절 핸들은 `tabindex="0"`인 `role="separator"`이며 `locale`이 이름을 붙입니다. 좌우 화살표가 16px씩 움직입니다.
 - `locale`은 PageLayout에서 물려받으므로 페이지당 한 번만 씁니다.

@@ -59,7 +59,7 @@ await confirm({
 
 ### alert
 
-취소 버튼을 없애고 나가는 길을 하나만 남깁니다 — 묻는 것이 아니라 알리는 경우입니다. 그래도 resolve하며 값은 항상 `true`이므로 같은 `await`가 양쪽에 그대로 쓰입니다.
+취소 버튼을 없애고 나가는 길을 하나만 남깁니다. 묻는 것이 아니라 알리는 경우입니다. 그래도 resolve하며 값은 항상 `true`이므로 같은 `await`가 양쪽에 그대로 쓰입니다.
 
 ```tsx
 await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
@@ -67,7 +67,7 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 
 ### dismissible
 
-`false`면 버튼으로만 답할 수 있는 질문이 됩니다. `Escape`와 backdrop이 동작하지 않습니다. 실수로 닫는 것이 비싼 답이 되는 경우에만 쓰고, 그 밖에는 거의 쓰지 마세요 — 나갈 길이 없는 모달은 사람들이 제보하는 바로 그것입니다.
+`false`면 버튼으로만 답할 수 있는 질문이 됩니다. `Escape`와 backdrop이 동작하지 않습니다. 실수로 닫는 것이 비싼 답이 되는 경우에만 쓰고, 그 밖에는 거의 쓰지 마세요. 나갈 길이 없는 모달은 사람들이 제보하는 바로 그것입니다.
 
 ### defaults
 
@@ -85,6 +85,6 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 
 ## 접근성
 
-- [Dialog](./dialog)를 그리므로 Dialog가 가진 것이 전부 여기에도 있습니다 — focus trap, 스크롤 잠금, 뒤쪽 페이지의 inert 처리, 그리고 질문을 띄운 곳으로 돌아가는 focus.
+- [Dialog](./dialog)를 그리므로 Dialog의 기능이 전부 여기에도 있습니다. focus trap과 스크롤 잠금, 뒤쪽 페이지의 inert 처리, 그리고 질문을 띄운 곳으로 돌아가는 focus입니다.
 - 시트가 열리면 확인 버튼이 focus를 받으므로 `Enter`가 예, `Escape`가 아니오입니다.
 - `title`이 dialog의 accessible name이 되고 `description`이 `aria-describedby`가 됩니다. 둘 다 없는 질문은 스크린 리더가 아무것도 읽어 주지 않는 dialog입니다. 최소한 `title`은 항상 넘기세요.

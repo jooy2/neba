@@ -41,7 +41,7 @@ import { Button, Popover } from 'neba';
 
 ### popup 안의 form
 
-popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 작은 form, 색 선택기는 [Dialog](../feedback/dialog)가 아니라 여기에 들어갑니다 — form을 채우는 동안 뒤 페이지가 계속 읽힙니다. 내용이 너비를 정해야 할 때는 `width`로 상한을 둡니다.
+popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 작은 form, 색 선택기는 [Dialog](../feedback/dialog)가 아니라 여기에 들어갑니다. form을 채우는 동안 뒤 페이지가 계속 읽힙니다. 내용이 너비를 정해야 할 때는 `width`로 상한을 둡니다.
 
 <Demo src="popover/form">
 

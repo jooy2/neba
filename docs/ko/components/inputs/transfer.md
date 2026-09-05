@@ -62,10 +62,10 @@ import { Transfer } from 'neba';
 
 ### locale · sourceLabel · targetLabel
 
-제목과 버튼과 필터의 문구는 `locale`에서 옵니다. `sourceLabel`과 `targetLabel`은 두 제목을 직접 씁니다. 대개는 이쪽을 쓰게 됩니다 — "선택 가능"과 "선택함"이 그 두 목록의 실제 이름인 경우는 드뭅니다.
+제목과 버튼과 필터의 문구는 `locale`에서 옵니다. `sourceLabel`과 `targetLabel`은 두 제목을 직접 씁니다. 대개는 이쪽을 쓰게 됩니다. "선택 가능"과 "선택함"이 그 두 목록의 실제 이름인 경우는 드뭅니다.
 
 ## 접근성
 
 - 모든 행이 라벨과 연결된 진짜 checkbox이므로 Tab과 Space만으로 전부 조작할 수 있습니다.
 - 각 목록 위의 체크는 그 목록의 `Select all`이며, 일부만 체크된 동안에는 mixed 상태를 알립니다.
-- 두 버튼 모두 이름을 가지며 — "Move to selected", "Move to available" — 옮길 것이 없으면 사용 불가가 됩니다.
+- 두 버튼 모두 "Move to selected", "Move to available"이라는 이름을 가지며, 옮길 것이 없으면 사용 불가가 됩니다.

@@ -96,11 +96,11 @@ plate는 1px짜리 선이므로, 그것이 표면에서 차지하는 비중은 �
 --neba-{color}-accent         표면 위에서 읽히는 색 (text/outline 변형용)
 ```
 
-나머지(`-fill`, `-panel`, `-soft`, `-line`, `-ring`)는 파생 블록에서 `color-mix()`로 계산됩니다. **색 계열을 추가할 때 손댈 곳은 두 군데뿐입니다** — `NebaColor` 유니언과 `styles.css`의 5줄.
+나머지(`-fill`, `-panel`, `-soft`, `-line`, `-ring`)는 파생 블록에서 `color-mix()`로 계산됩니다. **색 계열을 추가할 때 손댈 곳은 두 군데뿐입니다.** `NebaColor` 유니언과 `styles.css`의 5줄입니다.
 
 ### 채도는 gamut 한계까지, 명도는 대비가 허락하는 만큼만
 
-계열이 칙칙해 보일 때 원인은 대개 명도가 아니라 **채도**입니다. sRGB에서 `oklch()`의 chroma 상한은 색조와 명도마다 다르고, 그 상한을 한참 밑돌면 같은 밝기에서도 회색에 가깝게 읽힙니다. Neba의 chroma는 각 계열의 명도에서 **gamut 상한의 90% 근처**에 둡니다 — 선명하되 브라우저가 clip할 일은 없는 지점입니다.
+계열이 칙칙해 보일 때 원인은 대개 명도가 아니라 **채도**입니다. sRGB에서 `oklch()`의 chroma 상한은 색조와 명도마다 다르고, 그 상한을 한참 밑돌면 같은 밝기에서도 회색에 가깝게 읽힙니다. Neba의 chroma는 각 계열의 명도에서 **gamut 상한의 90% 근처**에 둡니다. 선명하되 브라우저가 clip할 일은 없는 지점입니다.
 
 명도는 그만큼 자유롭지 않습니다. `on-solid`가 흰 글자이고 채움이 88%라면, 흰 페이지 위에서 4.5:1을 지킬 수 있는 채움 명도는 50% 안팎의 좁은 구간으로 묶입니다. **채움을 더 밝히고 싶다면 글자를 어둡게 바꾸는 수밖에 없습니다.** `warning`이 실제로 그렇게 하는 유일한 계열입니다. hover와 active 단계까지 모두 같은 기준으로 검증합니다.
 
@@ -120,7 +120,7 @@ plate는 1px짜리 선이므로, 그것이 표면에서 차지하는 비중은 �
 
 ## 3. 크기와 밀도
 
-### size — 높이와 타입 스케일
+### size: 높이와 타입 스케일
 
 |      | xs   | sm   | md       | lg   | xl   |
 | ---- | ---- | ---- | -------- | ---- | ---- |
@@ -144,7 +144,7 @@ tick, switch, Chip의 ×는 높이 사다리 위에 있지 않습니다. 옆에 
 
 50%면 알약이 됩니다. 45%에서 멈추면 위아래에 직선 구간이 남고, 그것이 "모서리를 깎아낸 판"으로 읽히게 합니다.
 
-### density — 여백만 바꿉니다
+### density: 여백만 바꿉니다
 
 ```
 default   10 / 12 / 16 / 20 / 24px
@@ -179,7 +179,7 @@ type NebaElevation = 0 | 1 | 2 | 3;
 
 이 비대칭이 Neba 인터랙션의 핵심 장치입니다. 같은 원리를 두 곳에서 씁니다.
 
-**채움 색** — 속성별 duration을 주고, `:active`에서 전부 0ms로 덮습니다.
+**채움 색**: 속성별 duration을 주고, `:active`에서 전부 0ms로 덮습니다.
 
 ```
 transition-property: background-color, border-color, box-shadow, color;
@@ -192,7 +192,7 @@ transition-duration: var(--neba-duration-fill), var(--neba-duration), …;  /* 3
 
 누르는 프레임에 색이 확 들어가고, 떼면 340ms에 걸쳐 빠져나갑니다.
 
-**잔광 레이어** — 같은 방식으로 `opacity`에 적용합니다. JavaScript도 ripple 엘리먼트도 타이머도 없습니다.
+**잔광 레이어**: 같은 방식으로 `opacity`에 적용합니다. JavaScript도 ripple 엘리먼트도 타이머도 없습니다.
 
 ```css
 .neba-glow::after {

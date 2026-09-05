@@ -34,7 +34,7 @@ interface DateRange {
 
 첫 클릭과 두 번째 클릭 사이의 절반 상태는 `{ start, end: null }`로 보고되고, 두 번째 클릭 없이 팝업을 닫으면 버려집니다. 두 번째 클릭이 첫 번째보다 앞선 날짜여도 오류가 아니라 순서를 바꿔 말한 같은 범위로 보고 정렬합니다.
 
-나머지 prop — `minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size` — 은 [DatePicker](./date-picker)와 동일하게 동작합니다.
+나머지 prop(`minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size`)은 [DatePicker](./date-picker)와 동일하게 동작합니다.
 
 ## 예시
 
@@ -52,7 +52,7 @@ interface DateRange {
 
 ### presets
 
-자주 쓰는 기간을 팝업 옆에 버튼으로 놓습니다. 프리셋의 `value`는 범위 객체이거나 범위를 반환하는 함수입니다. 함수 쪽을 쓰세요 — 렌더 시점에 한 번 계산된 범위는 탭을 오래 열어 둔 사용자에게 틀린 값이 됩니다.
+자주 쓰는 기간을 팝업 옆에 버튼으로 놓습니다. 프리셋의 `value`는 범위 객체이거나 범위를 반환하는 함수입니다. 함수 쪽을 쓰세요. 렌더 시점에 한 번 계산된 범위는 탭을 오래 열어 둔 사용자에게 틀린 값이 됩니다.
 
 <Demo src="date-range-picker/presets">
 

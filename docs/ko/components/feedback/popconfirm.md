@@ -59,7 +59,7 @@ Popconfirm은 자기를 띄운 것에 붙어 있으므로 독자가 지우려는
 
 ### side와 align
 
-버블이 trigger에 대해 어디에 앉을지를, [Popover](../surfaces/popover) · [Tooltip](./tooltip)과 같은 어휘로 정합니다. 기본값은 `top` — 어떤 줄에 대한 질문은 아래 줄들을 덮는 것보다 그 위에 있는 편이 읽기 쉽습니다.
+버블이 trigger에 대해 어디에 앉을지를, [Popover](../surfaces/popover) · [Tooltip](./tooltip)과 같은 어휘로 정합니다. 기본값은 `top`입니다. 어떤 줄에 관한 질문은 아래 줄을 덮는 것보다 그 위에 있는 편이 읽기 쉽기 때문입니다.
 
 ## 접근성
 

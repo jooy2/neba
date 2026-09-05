@@ -19,7 +19,7 @@ import { GaugeChart } from 'neba';
 
 <PropsTable name="GaugeChart" />
 
-[Box](../surfaces/box)의 모든 prop이 전달되므로 계기판 자체가 카드가 될 수 있습니다. `legend`도 `tooltip`도 없습니다. 값이 하나이면 구분할 것도, 드러낼 것도 없습니다 — 숫자는 가운데에 쓰여 있습니다.
+[Box](../surfaces/box)의 모든 prop이 전달되므로 계기판 자체가 카드가 될 수 있습니다. `legend`도 `tooltip`도 없습니다. 값이 하나이면 구분할 것도, 드러낼 것도 없습니다. 숫자는 가운데에 쓰여 있습니다.
 
 [Meter](../feedback/meter)를 호로 구부린 것이며, 의도적으로 같은 컴포넌트의 두 가지 모양입니다. `value`, `min`, `max`, `thresholds`는 그쪽에서와 같은 뜻이므로, 하나의 값을 막대에서 계기판으로 옮겨도 말하는 바가 달라지지 않습니다.
 
@@ -53,7 +53,7 @@ import { GaugeChart } from 'neba';
 
 ### ticks · thickness · showRange
 
-`ticks`는 양 끝을 포함해 계기판 둘레에 눈금을 그립니다. 기본은 꺼짐입니다 — 대시보드 위의 계기판은 비율로 읽히고, 눈금은 거기서 *숫자*를 읽어내는 계기의 것이기 때문입니다. `thickness`는 반지름에 대한 호의 두께이고, `showRange`는 양 끝에 `min`과 `max`를 씁니다.
+`ticks`는 양 끝을 포함해 계기판 둘레에 눈금을 그립니다. 기본은 꺼짐입니다. 대시보드 위의 계기판은 비율로 읽히고, 눈금은 거기서 *숫자*를 읽어내는 계기의 것이기 때문입니다. `thickness`는 반지름에 대한 호의 두께이고, `showRange`는 양 끝에 `min`과 `max`를 씁니다.
 
 <Demo src="gauge-chart/ticks">
 
@@ -63,7 +63,7 @@ import { GaugeChart } from 'neba';
 
 ### center · caption
 
-가운데의 값은 진짜 텍스트입니다 — 선택되고, 찾아지고, 접근성 트리에 들어갑니다. `center`는 그것을 대체하며 읽는 값이 단어인 계기판을 위한 것이고, `caption`은 그 아래 단위를 적는 한 줄입니다.
+가운데의 값은 진짜 텍스트입니다. 선택되고, 찾아지고, 접근성 트리에 들어갑니다. `center`는 그것을 대체하며 읽는 값이 단어인 계기판을 위한 것이고, `caption`은 그 아래 단위를 적는 한 줄입니다.
 
 ## 접근성
 

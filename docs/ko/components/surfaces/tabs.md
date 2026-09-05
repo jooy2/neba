@@ -43,9 +43,9 @@ import { Tab, TabPanel, Tabs } from 'neba';
 
 `variant`는 패널이 아니라 탭 **바**의 무게입니다.
 
-- `solid` — 홈통 안에서 채워진 타일이 탭 사이를 움직입니다.
-- `outline` — 바 가장자리의 선 위에 표시자가 올라갑니다.
-- `text` — 선 없이 표시자만 남습니다. 이미 테두리가 있는 [Card](./card) 안에 넣을 때 씁니다.
+- `solid`: 홈통 안에서 채워진 타일이 탭 사이를 움직입니다.
+- `outline`: 바 가장자리의 선 위에 표시자가 올라갑니다.
+- `text`: 선 없이 표시자만 남습니다. 이미 테두리가 있는 [Card](./card) 안에 넣을 때 씁니다.
 
 <Demo src="tabs/variants">
 

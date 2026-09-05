@@ -21,7 +21,7 @@ import { TimePicker } from 'neba';
 
 `<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
 
-`value`의 타입은 `Date | null`입니다. `referenceDate`는 값이 아직 비어 있을 때 고른 시각이 얹힐 날짜로, 기본값은 오늘이며 컴포넌트가 마운트되어 있는 동안 고정됩니다 — 자정을 넘겨 열어 둔 팝업이 값을 다음 날로 옮기지 않게 하기 위한 것입니다.
+`value`의 타입은 `Date | null`입니다. `referenceDate`는 값이 아직 비어 있을 때 고른 시각이 얹힐 날짜로, 기본값은 오늘이며 컴포넌트가 마운트되어 있는 동안 고정됩니다. 자정을 넘겨 열어 둔 팝업이 값을 다음 날로 옮기지 않게 하기 위한 것입니다.
 
 `closeOnSelect`의 기본값은 `false`입니다. 시와 분 두 가지를 골라야 하므로 첫 선택에서 닫히지 않고, 푸터에 완료 버튼이 있습니다.
 

@@ -64,7 +64,7 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 </Show>
 ```
 
-**`useBreakpoint`와 `useBreakpointValue`**는 JavaScript에서 정하고, CSS가 할 수 없는 한 가지를 할 수 있습니다 — 아예 렌더하지 않기. 서버에서도 클라이언트의 첫 렌더에서도 `false`와 `xs`를 답하므로, 이들이 제어하는 것은 hydration 이후에 도착합니다. 레이아웃을 이 값으로 정하면 화면이 한 번 깜빡이지만, 애초에 실행되면 안 되는 컴포넌트를 거르는 용도라면 이 동작이 맞습니다.
+**`useBreakpoint`와 `useBreakpointValue`**는 JavaScript에서 정하고, CSS가 할 수 없는 한 가지를 할 수 있습니다. 아예 렌더하지 않기. 서버에서도 클라이언트의 첫 렌더에서도 `false`와 `xs`를 답하므로, 이들이 제어하는 것은 hydration 이후에 도착합니다. 레이아웃을 이 값으로 정하면 화면이 한 번 깜빡이지만, 애초에 실행되면 안 되는 컴포넌트를 거르는 용도라면 이 동작이 맞습니다.
 
 ```tsx
 const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;

@@ -38,7 +38,7 @@ import { Alert } from 'neba';
 
 ### variant
 
-Alert는 색이 입혀지는 대상이므로 [Box](../surfaces/box)와 달리 sheet 자체가 물듭니다. 폼 안에 넣을 때는 `text`를 쓰세요 — 입력 필드 사이에 테두리 사각형이 하나 더 생기지 않습니다.
+Alert는 색이 입혀지는 대상이므로 [Box](../surfaces/box)와 달리 sheet 자체가 물듭니다. 폼 안에 넣을 때는 `text`를 쓰세요. 입력 필드 사이에 테두리 사각형이 하나 더 생기지 않습니다.
 
 <Demo src="alert/variants">
 

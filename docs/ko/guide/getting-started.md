@@ -13,7 +13,7 @@ Neba는 React 컴포넌트 라이브러리입니다. 동작과 접근성은 [Bas
 npm install neba
 ```
 
-`react`와 `react-dom`은 peer dependency입니다 — **React 18 또는 19**. 프로젝트에 이미 있다면 그 사본을 그대로 쓰고, 없다면 npm 7 이상이 알아서 함께 설치합니다. 그 외의 의존성은 패키지가 직접 가져옵니다.
+`react`와 `react-dom`은 peer dependency이며 **React 18 또는 19**를 받습니다. 프로젝트에 이미 있다면 그 사본을 그대로 쓰고, 없다면 npm 7 이상이 알아서 함께 설치합니다. 그 외의 의존성은 패키지가 직접 가져옵니다.
 
 ## 스타일시트 연결
 
@@ -29,7 +29,7 @@ CSS 진입점에 한 줄을 추가하면 끝입니다.
 import 'neba/styles.css';
 ```
 
-`neba/styles.css`는 **완성된 CSS**입니다 — 디자인 토큰(색·반경·입체·모션), `.neba-glow` 레이어, 컴포넌트가 쓰는 유틸리티 클래스의 실제 규칙, 그리고 최소한의 reset이 모두 들어 있습니다. 빌드 설정도, PostCSS 플러그인도, `@source`도 필요 없습니다.
+`neba/styles.css`는 **완성된 CSS**입니다. 디자인 토큰(색·반경·입체·모션), `.neba-glow` 레이어, 컴포넌트가 쓰는 유틸리티 클래스의 실제 규칙, 그리고 최소한의 reset이 모두 들어 있습니다. 빌드 설정도, PostCSS 플러그인도, `@source`도 필요 없습니다.
 
 ### 함께 들어 있는 reset
 
@@ -121,7 +121,7 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 ### 그 밖의 환경
 
-`'use client'`는 파일 맨 위에 있는 문자열입니다. Server Components를 구현하지 않는 bundler — Vite, webpack, Remix, Astro, Parcel, 순수 React — 는 이를 무시하므로, 위 내용이 그런 프로젝트에서의 동작을 바꾸지는 않습니다.
+`'use client'`는 파일 맨 위에 있는 문자열입니다. Server Components를 구현하지 않는 bundler(Vite, webpack, Remix, Astro, Parcel, 순수 React)는 이를 무시하므로, 위 내용이 그런 프로젝트에서의 동작을 바꾸지는 않습니다.
 
 ## 다크 모드
 
@@ -135,10 +135,10 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 ## 다음으로
 
-- [모든 컴포넌트](../components/) — 배포된 컴포넌트를 한 페이지에서
-- [예제](../examples/overview) — 한 화면 안에서 함께 쓰인 모습
-- [Prop 규약](../design/prop-conventions) — 모든 컴포넌트가 공유하는 prop의 의미
-- [디자인 언어](../design/design-language) — 표면·색·모션이 왜 이렇게 생겼는지
+- [모든 컴포넌트](../components/): 배포된 컴포넌트를 한 페이지에서
+- [예제](../examples/overview): 한 화면 안에서 함께 쓰인 모습
+- [Prop 규약](../design/prop-conventions): 모든 컴포넌트가 공유하는 prop의 의미
+- [디자인 언어](../design/design-language): 표면·색·모션이 왜 이렇게 생겼는지
 
 ## 브라우저 요구사항
 

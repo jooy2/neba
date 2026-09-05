@@ -20,7 +20,7 @@ import { Typography } from 'neba';
 
 <PropsTable name="Typography" />
 
-다른 컴포넌트와 두 가지가 다릅니다. 타입 스케일을 고르는 prop은 `variant`가 아니라 `level`입니다 — `variant`는 라이브러리 전체에서 표면의 무게를 뜻하기 때문입니다. 그리고 `color`에 기본값이 없어서, 지정하지 않으면 주변 텍스트 색을 물려받습니다.
+다른 컴포넌트와 두 가지가 다릅니다. 타입 스케일을 고르는 prop은 `variant`가 아니라 `level`입니다. `variant`는 라이브러리 전체에서 표면의 무게를 뜻하기 때문입니다. 그리고 `color`에 기본값이 없어서, 지정하지 않으면 주변 텍스트 색을 물려받습니다.
 
 ## 예시
 

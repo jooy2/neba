@@ -25,7 +25,7 @@ aside: false
 | 필터 | `TextField` `Select` `DateRangePicker` | 같은 `size`에서 셋의 높이가 같아서 한 줄의 기준선이 유지됩니다 |
 | 일괄 동작 | `Button` `Dialog` `Toast` | 선택이 있을 때만 나타나고, 파괴적인 쪽은 `Dialog`로 먼저 확인합니다 |
 | 표 | `Tabs` `Table` `Checkbox` `Chip` `Menu` `ContextMenu` `Pagination` | 전체 선택은 머리글 칸에 놓인 `indeterminate` 체크박스입니다. 행마다 `Menu`가, 표 전체에는 `ContextMenu`가 붙습니다 |
-| 하단 줄 | `Card` `ProgressLinear` `Timeline` `Switch` `ProgressCircular` | 같은 그리드 위의 카드 셋 — 부족한 것, 있었던 일, 설정된 것 |
+| 하단 줄 | `Card` `ProgressLinear` `Timeline` `Switch` `ProgressCircular` | 같은 그리드 위의 카드 셋: 부족한 것, 있었던 일, 설정된 것 |
 
 ## 참고
 

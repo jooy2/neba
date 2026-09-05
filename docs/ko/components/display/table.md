@@ -56,7 +56,7 @@ interface TableColumn<Row> {
 
 ### striped · hoverable · onRowClick
 
-`striped`는 행마다 배경을 번갈아 칠합니다 — 눈이 가로로 길게 이동해야 하는 넓은 표에 유용합니다. `onRowClick`은 행을 누를 수 있게 만들고 hover 처리도 함께 켭니다.
+`striped`는 행마다 배경을 번갈아 칠합니다. 눈이 가로로 길게 이동해야 하는 넓은 표에 유용합니다. `onRowClick`은 행을 누를 수 있게 만들고 hover 처리도 함께 켭니다.
 
 `getRowKey`의 기본값은 행 인덱스입니다. 정렬이나 필터로 행 순서가 바뀔 수 있다면 직접 넘기세요.
 
@@ -82,7 +82,7 @@ interface TableColumn<Row> {
 
 ### classNames
 
-`className`은 sheet — table이 가로로 스크롤되는 Box — 이고, `<table>`과 그 안의 모든 것은 `classNames`로 갑니다.
+`className`은 sheet(table이 가로로 스크롤되는 Box)이고, `<table>`과 그 안의 모든 것은 `classNames`로 갑니다.
 
 ```tsx
 <Table
@@ -94,7 +94,7 @@ interface TableColumn<Row> {
 
 slot은 `table`, `caption`, `head`, `headCell`, `body`, `row`, `cell`, `empty`입니다.
 
-`cell`을 쓰기 전에 알아 둘 것이 하나 있습니다. cell의 padding과 정렬, 배경은 utility가 아니라 inline style로 쓰여 있습니다. host stylesheet의 `td` 규칙이 한 개짜리 utility를 이기기 때문입니다. `headCell`·`cell`·`empty`에 넘긴 class는 컴포넌트가 inline으로 정하지 않은 것 — 색, 폰트, 테두리 — 은 무엇이든 더할 수 있지만, 저 셋을 바꾸려면 important utility(`p-4!`)여야 합니다. [prop 규약](../../design/prop-conventions)을 보세요.
+`cell`을 쓰기 전에 알아 둘 것이 하나 있습니다. cell의 padding과 정렬, 배경은 utility가 아니라 inline style로 쓰여 있습니다. host stylesheet의 `td` 규칙이 한 개짜리 utility를 이기기 때문입니다. `headCell`·`cell`·`empty`에 넘긴 class는 컴포넌트가 inline으로 정하지 않은 것(색, 폰트, 테두리)은 무엇이든 더할 수 있지만, 저 셋을 바꾸려면 important utility(`p-4!`)여야 합니다. [prop 규약](../../design/prop-conventions)을 보세요.
 
 ## 접근성
 

@@ -61,7 +61,7 @@ import { Pill } from 'neba';
 
 ### variant와 size
 
-색에 관해서 Pill은 컨테이너가 아니라 컨트롤입니다 — [Button](../inputs/button)이나 [Chip](../display/chip)처럼 표면 자체가 색을 갖습니다.
+색에 관해서 Pill은 컨테이너가 아니라 컨트롤입니다. [Button](../inputs/button)이나 [Chip](../display/chip)처럼 표면 자체가 색을 갖습니다.
 
 <Demo src="pill/variants">
 

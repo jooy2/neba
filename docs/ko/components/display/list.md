@@ -58,7 +58,7 @@ import { List, ListItem } from 'neba';
 
 ### onClick · href · action
 
-`onClick`이나 `href`를 주면 행 전체가 각각 `<button>` 또는 `<a>`가 됩니다. `action`은 그 클릭 영역 **바깥**에 놓이는 별도의 컨트롤 자리입니다 — 행을 눌러 이동하면서 오른쪽 스위치는 따로 조작해야 하는 경우를 위한 것입니다.
+`onClick`이나 `href`를 주면 행 전체가 각각 `<button>` 또는 `<a>`가 됩니다. `action`은 그 클릭 영역 **바깥**에 놓이는 별도의 컨트롤 자리입니다. 행을 눌러 이동하면서 오른쪽 스위치는 따로 조작해야 하는 경우를 위한 것입니다.
 
 <Demo src="list/interactive">
 

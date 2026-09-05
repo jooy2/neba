@@ -48,7 +48,7 @@ import { Blockquote } from 'neba';
 
 ### author와 source
 
-`author`만, `source`만, 또는 둘 다 줄 수 있습니다. `cite`는 인용 출처 문서의 URL이며 `<blockquote>`의 `cite` 속성으로 전달됩니다 — 화면에는 나타나지 않고 기계만 읽습니다.
+`author`만, `source`만, 또는 둘 다 줄 수 있습니다. `cite`는 인용 출처 문서의 URL이며 `<blockquote>`의 `cite` 속성으로 전달됩니다. 화면에는 나타나지 않고 기계만 읽습니다.
 
 <Demo src="blockquote/attribution">
 

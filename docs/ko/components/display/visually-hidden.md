@@ -30,20 +30,20 @@ import { VisuallyHidden } from 'neba';
 
 |  | 무엇이 잘못되나 |
 | --- | --- |
-| `hidden` · `display: none` | 화면과 함께 accessibility tree에서도 사라집니다 — 목적의 정반대 |
+| `hidden` · `display: none` | 화면과 함께 accessibility tree에서도 사라집니다: 목적의 정반대 |
 | `opacity: 0` · `visibility: hidden` | 글자 크기만 한 클릭 가능한 유령이 남고, 포인터가 그것을 찾습니다 |
 | `text-indent: -9999px` | 그만큼 넓은 상자와 가로 스크롤바가 생깁니다 |
 | `font-size: 0` | 일부 스크린 리더가 아예 읽지 않습니다 |
 
 내용을 clip한 1px 상자만이 보는 사람에게는 보이지 않고 나머지 모든 방식의 독자에게는 존재합니다. 이 컴포넌트가 그리는 것이 그것입니다.
 
-이것은 한 쌍의 반쪽입니다. `aria-hidden="true"`는 **보이지만 읽히지 않는** 쪽이고 — 위 예시의 글리프 — 컴포넌트가 아니라 속성으로 남습니다. 이미 그려지고 있는 element에 붙는 것이기 때문입니다.
+이것은 한 쌍의 반쪽입니다. 위 예시의 글리프처럼 **보이지만 읽히지 않는** 쪽은 `aria-hidden="true"`이며, 컴포넌트가 아니라 속성으로 남습니다. 이미 그려지고 있는 element에 붙는 것이기 때문입니다.
 
 ## 예시
 
 ### visible
 
-숨김을 걷어내어 다른 것들처럼 그립니다. skip link가 필요로 하는 것이 이것입니다 — focus를 받기 전까지는 숨어 있다가, 받으면 독자가 직접 보고 누르는 진짜 컨트롤이 됩니다.
+숨김을 걷어내어 다른 것들처럼 그립니다. skip link가 필요로 하는 것이 이것입니다. focus를 받기 전까지는 숨어 있다가, 받으면 독자가 직접 보고 누르는 진짜 컨트롤이 됩니다.
 
 `focus-visible:`만으로는 표현할 수 없습니다. element가 1px 상자를 **완전히** 벗어나야 하기 때문입니다. 그래서 그것을 되돌리는 class를 컴포넌트에 붙입니다.
 
@@ -55,7 +55,7 @@ import { VisuallyHidden } from 'neba';
 
 ### render
 
-`<span>` 대신 다른 것을 그립니다 — 블록 내용에는 `<div>`, skip link에는 `<a>`, 제목 없이 설명만 있는 표에는 `<caption>`.
+`<span>` 대신 다른 것을 그립니다. 블록 내용에는 `<div>`, skip link에는 `<a>`, 제목 없이 설명만 있는 표에는 `<caption>`을 씁니다.
 
 ```tsx
 <VisuallyHidden render={<caption />}>분기별 매출, 백만 원 단위</VisuallyHidden>

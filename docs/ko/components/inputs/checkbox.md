@@ -31,7 +31,7 @@ import { Checkbox } from 'neba';
 
 ### disabled · readOnly · error
 
-`error`에 메시지를 주면 invalid 상태가 함께 켜지고 색 계열이 `danger`로 옮겨갑니다 — 체크 표시와 focus ring, 메시지가 한꺼번에 바뀝니다.
+`error`에 메시지를 주면 invalid 상태가 함께 켜지고 색 계열이 `danger`로 옮겨갑니다. 체크 표시와 focus ring, 메시지가 한꺼번에 바뀝니다.
 
 <Demo src="checkbox/states">
 
@@ -65,7 +65,7 @@ import { Checkbox } from 'neba';
 <Checkbox label="I agree" classNames={{ control: 'rounded-full', label: 'font-medium' }} />
 ```
 
-slot은 `label`, `control`, `indicator`, `description`, `error`입니다. `control`은 tick 자체 — 체크되면 채워지는 테두리 상자 — 이고 `indicator`는 그 안의 표시입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+slot은 `label`, `control`, `indicator`, `description`, `error`입니다. `control`은 tick 자체(체크되면 채워지는 테두리 상자)이고 `indicator`는 그 안의 표시입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
 ## 접근성
 

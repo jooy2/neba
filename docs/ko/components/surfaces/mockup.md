@@ -89,7 +89,7 @@ import { Mockup } from 'neba';
 
 ### bezel
 
-`bezel`은 화면을 둘러싼 하드웨어의 양입니다. `none`은 더 얇은 테두리가 아니라 하드웨어가 아예 없는 것 — 모서리만 깎인 화면 그 자체입니다. `thick`은 옛날 기기입니다. 옆은 좁고 위아래가 넓습니다.
+`bezel`은 화면을 둘러싼 하드웨어의 양입니다. `none`은 더 얇은 테두리가 아니라 하드웨어가 아예 없는 상태, 즉 모서리만 깎인 화면 그 자체입니다. `thick`은 옛날 기기입니다. 옆은 좁고 위아래가 넓습니다.
 
 <Demo src="mockup/bezel" minHeight="300">
 
@@ -109,7 +109,7 @@ import { Mockup } from 'neba';
 
 ### notch
 
-`notch`는 카메라 구멍입니다. `dynamic-island`, `notch`, 동그란 `punch-hole`, 그리고 `none`이 있습니다. 기본값은 그 기기가 실제로 가졌을 것 — iOS 휴대폰은 island, Android 휴대폰은 punch hole, 태블릿과 데스크톱은 없음입니다.
+`notch`는 카메라 구멍입니다. `dynamic-island`, `notch`, 동그란 `punch-hole`, 그리고 `none`이 있습니다. 기본값은 그 기기가 실제로 가진 형태입니다. iOS 휴대폰은 island, Android 휴대폰은 punch hole, 태블릿과 데스크톱은 없음입니다.
 
 크롬이 아니라 하드웨어이므로 `systemUi`를 껐든 켰든 그려지며, landscape에서는 시작 모서리로 옮겨 갑니다.
 
@@ -169,7 +169,7 @@ import { Mockup } from 'neba';
 
 ## 접근성
 
-- 기기의 모든 부분 — 테두리, 바, 구멍 — 은 `aria-hidden`입니다. screen reader가 닿는 것은 `children`뿐이며, 목업이란 곧 실제 내용을 둘러싼 그림이라는 뜻입니다.
+- 기기의 모든 부분(테두리, 바, 구멍)은 `aria-hidden`입니다. screen reader가 닿는 것은 `children`뿐이며, 목업이란 곧 실제 내용을 둘러싼 그림이라는 뜻입니다.
 - 시계는 장식이며 읽히지 않습니다. 크롬이 그리는 유일한 글자입니다.
 - 목업은 스스로 role도 이름도 만들지 않습니다. 그림 자체가 페이지에서 의미를 가진다면 `aria-label`을 주거나, `render`로 캡션이 있는 `<figure>`로 바꾸어 이름을 주십시오.
 - 안의 내용은 그대로 조작할 수 있고 focus도 갑니다. 4분의 1로 축소된 기기는 컨트롤도 4분의 1 크기라는 점은, 그 안에 form을 넣기 전에 알아 둘 만합니다.

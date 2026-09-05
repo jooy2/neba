@@ -43,7 +43,7 @@ import { Spoiler } from 'neba';
 
 ### locale
 
-이 컴포넌트가 스스로 지어내는 말은 버튼과 그 위의 한 줄뿐이고, `locale`은 그 말들의 언어를 정합니다. `ko`, `pt-BR`, `zh-Hant` 같은 BCP 47 태그를 받습니다. 번역이 없는 태그는 영어로 돌아가고, 지역 태그는 언어로 해석됩니다 — `ko-KR`은 `ko`, `zh-TW`는 번체입니다.
+이 컴포넌트가 스스로 지어내는 말은 버튼과 그 위의 한 줄뿐이고, `locale`은 그 말들의 언어를 정합니다. `ko`, `pt-BR`, `zh-Hant` 같은 BCP 47 태그를 받습니다. 번역이 없는 태그는 영어로 돌아가고, 지역 태그는 언어로 해석됩니다. `ko-KR`은 `ko`, `zh-TW`는 번체입니다.
 
 <Demo src="spoiler/locale">
 

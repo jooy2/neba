@@ -95,7 +95,7 @@ root가 아니라 `<input>`에 붙는다는 점이 여기서는 중요합니다.
 
 ### classNames
 
-`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
+`className`은 루트(라벨과 shell, 그 아래 두 줄을 담는 열)에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
 
 ```tsx
 <NumberField label="Seats" classNames={{ control: 'text-right', stepper: 'rounded-none' }} />
@@ -109,4 +109,4 @@ slot은 `label`, `shell`, `control`, `description`, `error`, `stepper`입니다.
 - `label`이 accessible name이 되고, stepper 버튼의 이름은 `incrementLabel`과 `decrementLabel`이 정합니다.
 - stepper는 tab 순서에서 빠져 있습니다. 필드의 방향키가 같은 일을 합니다.
 - `min`이나 `max`에 도달한 stepper는 `disabled`가 됩니다.
-- 두 스테퍼의 접근성 이름은 `locale`이 정합니다 — BCP 47 문자열을 넘기면 숫자와 버튼이 같은 언어로 읽힙니다.
+- 두 스테퍼의 접근성 이름은 `locale`이 정합니다. BCP 47 문자열을 넘기면 숫자와 버튼이 같은 언어로 읽힙니다.

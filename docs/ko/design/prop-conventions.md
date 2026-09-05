@@ -55,7 +55,7 @@ export interface ButtonProps
 
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.
 
-`transition`은 mount 시 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 컴포넌트들이 받습니다 — Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
+`transition`은 mount 시 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
 
 ```ts
 type NebaAnimation =
@@ -83,7 +83,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 | `mode` | `'in'` 또는 `'out'`. `out`은 같은 애니메이션을 거꾸로 재생하고 끝에서 멈춥니다 |
 | `trigger` | `'mount'`(기본값), `'visible'`, `'hover'`, `'manual'` |
 | `play` | `manual`을 재생합니다. `false` → `true`마다 처음부터 다시 |
-| `once` / `threshold` | `'visible'`용 — 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
+| `once` / `threshold` | `'visible'`용: 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
 | `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
 
 움직임이 요소 자신에게 걸린 `@keyframes` 하나인 아홉 개는 두 가지를 더 받습니다. AnimateAppear의 자체 stagger와 AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline, AnimateLighting은 움직임이 다른 곳에 쓰여 있어 해당되지 않습니다.
@@ -114,7 +114,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 세 가지 통로가 있고, 무엇을 바꾸려는지에 따라 고르면 됩니다.
 
-### `className` — 루트
+### `className`: 루트
 
 모든 컴포넌트가 받고, 컴포넌트 자신이 쓴 class를 **대체하지 않고 합칩니다**. 붙는 곳은 컴포넌트의 **루트**입니다. field라면 라벨과 control, 그 아래 두 줄을 담는 열이고, Dialog·Tour·CommandPalette라면 시트입니다.
 
@@ -124,7 +124,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 [ToastProvider](../components/feedback/toast) 하나만 받지 않습니다. 자기 요소를 그리지 않으므로 루트 class가 붙을 곳이 없기 때문입니다.
 
-### `classNames` — 그 뒤의 파트들
+### `classNames`: 그 뒤의 파트들
 
 요소 하나를 그리는 컴포넌트에는 더 필요한 것이 없습니다. 라벨과 shell, control, 그리고 글 두 줄로 이루어진 field처럼 여러 요소를 그리는 컴포넌트에는, 눈에 보이지만 가리킬 이름이 없는 파트가 생깁니다. `classNames`가 그 파트마다 이름을 하나씩 줍니다.
 
@@ -180,8 +180,8 @@ class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있�
 3. `src/index.ts`에서 배럴을 re-export
 4. 동작·접근성은 Base UI 프리미티브에 위임
 5. 공용 어휘에서 필요한 축을 가져오고, 없는 개념만 새로 정의
-6. `test/components/{이름}/{Name}.test.tsx` — **같은 커밋에** 포함
-7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성 — 제목 · lede · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
+6. `test/components/{이름}/{Name}.test.tsx`: **같은 커밋에** 포함
+7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성: 제목 · lede · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
 8. `docs/.vitepress/data/props.ts`에 props 테이블(로케일별 설명), `docs/.vitepress/demos/{이름}/`에 예시 데모 추가
 9. `docs/.vitepress/demos/catalog/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
 10. `npm run typecheck && npm test && npm run lint` 통과

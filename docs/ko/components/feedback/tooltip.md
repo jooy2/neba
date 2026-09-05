@@ -23,7 +23,7 @@ import { Button, Tooltip } from 'neba';
 
 `<div>`의 native 속성은 popup으로 전달됩니다. `color` · `content` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
 
-trigger는 별도의 box를 만들지 않고 `children`에 병합되므로 레이아웃에 영향을 주지 않습니다. `children`은 ref를 받고 props를 펼칠 수 있는 요소 하나여야 합니다 — Neba 컴포넌트는 모두 해당합니다.
+trigger는 별도의 box를 만들지 않고 `children`에 병합되므로 레이아웃에 영향을 주지 않습니다. `children`은 ref를 받고 props를 펼칠 수 있는 요소 하나여야 합니다. Neba 컴포넌트는 모두 해당합니다.
 
 ## 예시
 

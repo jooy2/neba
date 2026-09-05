@@ -155,11 +155,11 @@ const headers: DataTableColumn<Build>[] = [
 />
 ```
 
-어느 하나만으로는 동작하지 않습니다. 위에 핸들러가 없는 열은 `editable`을 어떻게 두든 편집되지 않습니다. 표가 **행의 사본을 갖지 않기** 때문입니다 — 새 값을 넘기고, `items`로 돌아온 것을 그립니다. 자기 사본에 써 넣는 표는 애플리케이션이 모르는 것을 보여 주는 표입니다.
+어느 하나만으로는 동작하지 않습니다. 위에 핸들러가 없는 열은 `editable`을 어떻게 두든 편집되지 않습니다. 표가 **행의 사본을 갖지 않기** 때문입니다. 새 값을 넘기고, `items`로 돌아온 것을 그립니다. 자기 사본에 써 넣는 표는 애플리케이션이 모르는 것을 보여 주는 표입니다.
 
 `editable`은 함수일 수 있습니다. 잠긴 레코드나 계산된 필드를 위해서입니다. `editType: 'number'`는 휴대폰에서 숫자 키패드를 유지하고 문자열이 아니라 숫자를 돌려줍니다.
 
-더블 클릭이 에디터를 열고, blur와 `Enter`가 확정하고 `Escape`가 취소합니다. 에디터를 연 셀에서는 `onRowActivate`가 **함께 발동하지 않습니다** — 그 더블 클릭에는 셀이 이미 답했습니다.
+더블 클릭이 에디터를 열고, blur와 `Enter`가 확정하고 `Escape`가 취소합니다. 에디터를 연 셀에서는 `onRowActivate`가 **함께 발동하지 않습니다**. 그 더블 클릭에는 셀이 이미 답했기 때문입니다.
 
 ### 그룹과 집계
 
@@ -176,7 +176,7 @@ const headers: DataTableColumn<Build>[] = [
 />
 ```
 
-그룹화는 검색과 정렬 **다음에** 일어납니다. 정렬된 표는 각 그룹 안에서 정렬을 유지하고, 걸러진 표는 남은 것만 묶습니다. 그룹은 첫 행이 나타난 순서를 지킵니다 — `groupBy`가 `undefined`를 돌려준 행들만 예외로 맨 위에 갑니다. 아무 말도 하지 않는 제목은 독자에게 해석을 요구할 수 있는 제목이 아니기 때문입니다.
+그룹화는 검색과 정렬 **다음에** 일어납니다. 정렬된 표는 각 그룹 안에서 정렬을 유지하고, 걸러진 표는 남은 것만 묶습니다. 그룹은 첫 행이 나타난 순서를 지킵니다. `groupBy`가 `undefined`를 돌려준 행들만 예외로 맨 위에 갑니다. 아무 말도 하지 않는 제목은 독자에게 해석을 요구할 수 있는 제목이 아니기 때문입니다.
 
 `aggregate`는 그룹 제목 줄의 **자기 열에** 그려집니다. 그것이 요점입니다. 그룹의 합계는 그것이 합계인 숫자들과 같은 열에 있어야 합니다. `'sum' | 'avg'` 같은 축약형은 없습니다. 가중 평균이나 고유 개수가 필요한 열이 하나 생기는 순간, 절반은 함수이고 절반은 문자열이 됩니다.
 
@@ -188,7 +188,7 @@ const headers: DataTableColumn<Build>[] = [
 
 **지금 보고 있는 페이지가 아니라 지금 보고 있는 모든 행입니다.** 검색과 정렬은 적용되고 페이징은 적용되지 않습니다. 3페이지짜리 파일은 아무도 요청하지 않은 파일이기 때문입니다.
 
-열의 `exportValue`가 파일에 들어가는 값이고, `render`와 별개인 것은 의도입니다 — Chip이나 Avatar나 진행 막대를 그리는 셀에는 파일에 넣을 글자가 없습니다. 열의 `exportable: false`는 그 열을 빼냅니다.
+열의 `exportValue`가 파일에 들어가는 값이고, `render`와 별개인 것은 의도입니다. Chip이나 Avatar나 진행 막대를 그리는 셀에는 파일에 넣을 글자가 없습니다. 열의 `exportable: false`는 그 열을 빼냅니다.
 
 파일은 byte-order mark로 시작하며, 이것은 장식이 아닙니다. Excel은 BOM 없는 UTF-8 CSV를 로컬 코드 페이지로 읽어서 ASCII가 아닌 이름이 전부 깨져 도착합니다.
 
@@ -196,7 +196,7 @@ const headers: DataTableColumn<Build>[] = [
 
 ### 크기와 밀도
 
-`size`는 타입 스케일과 셀 여백, 그리고 `rowHeight`의 기본값을 정합니다. `density`는 여백을 바꾸고, 이 컴포넌트에서만은 그 기본값도 함께 내립니다. 사다리는 라이브러리의 나머지보다 한 단계 아래에 있습니다 — `md` 행은 32px이고, 같은 `md` Button은 높이 32px에 자기 여백이 더해집니다.
+`size`는 타입 스케일과 셀 여백, 그리고 `rowHeight`의 기본값을 정합니다. `density`는 여백을 바꾸고, 이 컴포넌트에서만은 그 기본값도 함께 내립니다. 사다리는 라이브러리의 나머지보다 한 단계 아래에 있습니다. `md` 행은 32px이고, 같은 `md` Button은 높이 32px에 자기 여백이 더해집니다.
 
 <Demo src="data-table/density" minHeight="360">
 
@@ -216,7 +216,7 @@ const headers: DataTableColumn<Build>[] = [
 
 ## Accessibility
 
-- `selectionMode`가 있으면 표는 tab stop이 하나인 `grid`가 되고 `aria-activedescendant`로 현재 행을 가리킵니다. virtual한 행은 focus를 들고 있을 수 없기 때문입니다 — 스크롤되어 나가는 순간 그 행은 unmount됩니다. 각 행은 `aria-selected`를 답니다.
+- `selectionMode`가 있으면 표는 tab stop이 하나인 `grid`가 되고 `aria-activedescendant`로 현재 행을 가리킵니다. virtual한 행은 focus를 들고 있을 수 없기 때문입니다. 스크롤되어 나가는 순간 그 행은 unmount됩니다. 각 행은 `aria-selected`를 답니다.
 - `selectionMode`가 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
 - 정렬 가능한 머리글은 진짜 `<button>`이고, 그것을 감싼 `<th>`가 `aria-sort`를 답니다.
 - 표에 `caption`이나 `label`을 주세요. 둘 다 없으면 screen reader는 이름 없는 grid라고 읽습니다.

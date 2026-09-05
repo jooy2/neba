@@ -19,13 +19,13 @@ import { Image } from 'neba';
 
 <PropsTable name="Image" />
 
-`<img>`의 native 속성은 그림 자체로 전달됩니다 — `loading` · `decoding` · `srcSet` · `sizes` · `referrerPolicy`, 그리고 `width`와 `height`도 함께.
+`<img>`의 native 속성은 그림 자체로 전달됩니다. `loading`, `decoding`, `srcSet`, `sizes`, `referrerPolicy`는 물론 `width`와 `height`도 그대로 넘어갑니다.
 
 ### `alt`는 필수입니다
 
 타입 수준에서 그렇고, 이것이 감싸는 태그보다 이 컴포넌트가 엄격한 유일한 지점입니다.
 
-`alt`가 없는 것과 빈 것은 서로 다른 뜻입니다 — "아무도 쓰지 않았다"와 "이 그림은 독자가 알아야 할 것을 말하지 않는다" — 그리고 옳은 쪽은 두 번째뿐입니다. `alt=""`을 직접 쓰게 하는 것은 둘 중 어느 쪽인지 말하게 하는 것입니다.
+`alt`가 없는 것은 "아무도 쓰지 않았다"는 뜻이고, 빈 것은 "이 그림은 독자가 알아야 할 것을 말하지 않는다"는 뜻입니다. 옳은 쪽은 두 번째뿐입니다. `alt=""`을 직접 쓰게 하는 것은 둘 중 어느 쪽인지 말하게 하는 것입니다.
 
 ## 예시
 
@@ -52,7 +52,7 @@ import { Image } from 'neba';
 
 ### fit과 rounded
 
-`fit`은 `object-fit`입니다 — `cover`(기본값) · `contain` · `fill` · `none`. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
+`fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none` 중 하나를 받습니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
 
 ### placeholder와 fallback
 
@@ -76,7 +76,7 @@ import { Image } from 'neba';
 
 ### filter
 
-그림의 색조입니다. 이름 붙은 일곱 가지 — `grayscale` · `sepia` · `invert` · `saturate` · `mute` · `contrast`, 그리고 기본값인 `none` — 또는 그 너머의 것을 위한 CSS `filter` 체인입니다.
+그림의 색조입니다. 이름 붙은 일곱 가지(`grayscale` · `sepia` · `invert` · `saturate` · `mute` · `contrast`, 그리고 기본값인 `none`) 또는 그 너머의 것을 위한 CSS `filter` 체인입니다.
 
 색조는 그림 자체의 fade와 같은 시계 위에서 움직입니다. 그래서 pointer 아래에서 `className`으로 값을 바꾸면 썸네일이 툭 튀는 대신 살아납니다.
 
@@ -88,7 +88,7 @@ import { Image } from 'neba';
 
 ### frame
 
-그림이 놓이는 방식입니다. 실루엣 하나만 주거나 — `frame="circle"` — 전체를 적어 줍니다: `shape` · `corner` · `border` · `borderColor` · `mat` · `background` · `elevation` · `feather`.
+그림이 놓이는 방식입니다. 실루엣 하나만 주거나(`frame="circle"`) 전체를 적어 줍니다: `shape` · `corner` · `border` · `borderColor` · `mat` · `background` · `elevation` · `feather`.
 
 선은 `border`가 아니라 inset shadow로 그립니다. 잘린 모서리나 원을 따라갈 수 있는 것도, 레이아웃에서 자리를 차지하지 않는 것도 그 때문입니다. 자리를 차지하는 것은 `mat` 하나뿐이며, 선과 그림 사이의 여백입니다.
 

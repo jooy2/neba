@@ -37,7 +37,7 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 ### separator
 
-`separator`는 네 가지 이름 — `chevron`·`arrow`·`slash`·`dot` — 중 하나이거나 아무 노드나 받습니다. 방향을 가리키는 둘은 RTL에서 반대로 돌아갑니다.
+`separator`는 네 가지 이름(`chevron`·`arrow`·`slash`·`dot`) 중 하나이거나 아무 노드나 받습니다. 방향을 가리키는 둘은 RTL에서 반대로 돌아갑니다.
 
 <Demo src="breadcrumb/separators">
 
@@ -79,7 +79,7 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 ### structuredData
 
-검색 결과 아래에 경로가 표시되려면 마크업만으로는 부족하고 구조화 데이터가 필요합니다. `structuredData`를 켜면 schema.org의 `BreadcrumbList`가 `<script type="application/ld+json">`으로 함께 나갑니다. `baseUrl`은 상대 `href`를 절대 URL로 만드는 기준입니다 — 검색엔진은 절대 URL을 원합니다.
+검색 결과 아래에 경로가 표시되려면 마크업만으로는 부족하고 구조화 데이터가 필요합니다. `structuredData`를 켜면 schema.org의 `BreadcrumbList`가 `<script type="application/ld+json">`으로 함께 나갑니다. `baseUrl`은 상대 `href`를 절대 URL로 만드는 기준입니다. 검색엔진은 절대 URL을 원합니다.
 
 `maxItems`로 접힌 단계도 모두 들어갑니다. 무엇을 접을지는 줄에 자리가 얼마나 있느냐의 문제이고, 경로는 어느 쪽이든 같은 경로이기 때문입니다. `href`가 없는 단계는 `item` 없이 나가는데, 마지막 단계가 대개 그렇습니다.
 

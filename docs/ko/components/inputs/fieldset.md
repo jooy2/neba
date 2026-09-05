@@ -28,7 +28,7 @@ import { Fieldset, TextField } from 'neba';
 
 ### legend · description
 
-legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다. 그래서 각 컨트롤 앞에 붙여 읽어도 말이 되는 구절이어야 합니다 — "Where should we send it?"이 아니라 "Billing address"입니다. `description`은 그 아래 한 줄입니다.
+legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다. 그래서 각 컨트롤 앞에 붙여 읽어도 말이 되는 구절이어야 합니다. "Where should we send it?"이 아니라 "Billing address"입니다. `description`은 그 아래 한 줄입니다.
 
 ### disabled
 
@@ -42,7 +42,7 @@ legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다
 
 ### size
 
-`size`는 legend의 타입 스케일과 컨트롤이 놓이는 간격입니다. 컨트롤 자체에는 닿지 않습니다 — `sm` field들의 묶음은 `sm` field로 직접 쓰면 됩니다.
+`size`는 legend의 타입 스케일과 컨트롤이 놓이는 간격입니다. 컨트롤 자체에는 닿지 않습니다. `sm` field들의 묶음은 `sm` field로 직접 쓰면 됩니다.
 
 <Demo src="fieldset/sizes">
 

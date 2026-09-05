@@ -61,7 +61,7 @@ import { Switch } from 'neba';
 <Switch label="Email alerts" classNames={{ control: 'w-14', thumb: 'rounded-sm' }} />
 ```
 
-slot은 `label`, `control`, `thumb`, `description`, `error`입니다. `control`은 track — 켜지면 채워지는 알약 — 이고 `thumb`은 그 위를 오가는 원입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+slot은 `label`, `control`, `thumb`, `description`, `error`입니다. `control`은 track(켜지면 채워지는 알약)이고 `thumb`은 그 위를 오가는 원입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
 ## 접근성
 

@@ -29,7 +29,7 @@ import { Rating } from 'neba';
 
 `count`는 별의 개수이자 만점이고, `precision`은 고를 수 있는 최소 단위입니다. `0.5`면 별 하나가 두 개의 hit area로 나뉘어 반 개씩 고를 수 있습니다.
 
-`precision`은 **고르는** 범위만 정합니다. `value`가 `4.3`이면 어떤 `precision`에서도 별 네 개와 3분의 1로 그려집니다 — 평균은 선택이 아니고, 그것을 반올림하는 것은 받은 것과 다른 수를 보고하는 일이기 때문입니다.
+`precision`은 **고르는** 범위만 정합니다. `value`가 `4.3`이면 어떤 `precision`에서도 별 네 개와 3분의 1로 그려집니다. 평균은 선택이 아니고, 그것을 반올림하는 것은 받은 것과 다른 수를 보고하는 일이기 때문입니다.
 
 <Demo src="rating/precision">
 
@@ -51,7 +51,7 @@ import { Rating } from 'neba';
 
 ### size, color
 
-`size`는 별 하나의 높이를 독립 글리프 사다리에서 가져옵니다. `color`는 라이브러리에서 유일하게 `warning`이 기본값인 자리입니다 — 별에 기대되는 호박색이기 때문입니다.
+`size`는 별 하나의 높이를 독립 글리프 사다리에서 가져옵니다. `color`는 라이브러리에서 유일하게 `warning`이 기본값인 자리입니다. 별에 기대되는 호박색이기 때문입니다.
 
 <Demo src="rating/appearance">
 

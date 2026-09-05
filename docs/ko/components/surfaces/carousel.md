@@ -26,7 +26,7 @@ import { Carousel } from 'neba';
 
 `<div>`의 native 속성은 그대로 전달됩니다.
 
-내부 구현은 CSS scroll snap이 걸린 스크롤 컨테이너입니다. 그래서 스와이프가 브라우저 기본 동작으로 처리되고, RTL에서 방향이 자동으로 뒤집히며, 전환은 `scroll-behavior: smooth`를 씁니다 — `prefers-reduced-motion`에서는 같은 경로로 즉시 전환됩니다.
+내부 구현은 CSS scroll snap이 걸린 스크롤 컨테이너입니다. 그래서 스와이프가 브라우저 기본 동작으로 처리되고, RTL에서 방향이 자동으로 뒤집히며, 전환은 `scroll-behavior: smooth`를 씁니다. `prefers-reduced-motion`에서는 같은 경로로 즉시 전환됩니다.
 
 ## 예시
 
@@ -34,7 +34,7 @@ import { Carousel } from 'neba';
 
 `loop`를 끄면 화살표가 양 끝에서 비활성화됩니다. 처음과 끝이 있는 묶음에 적합합니다. `arrows`와 `indicators`는 각각 좌우 화살표와 하단 인디케이터를 표시합니다.
 
-화살표는 프레임 **위에** 그려집니다. 가장자리 근처에 텍스트가 있는 슬라이드는 화살표를 피할 만큼 안쪽 여백을 두세요 — `size="md"`에서 3.5rem 정도입니다.
+화살표는 프레임 **위에** 그려집니다. 가장자리 근처에 텍스트가 있는 슬라이드는 화살표를 피할 만큼 안쪽 여백을 두세요. `size="md"`에서 3.5rem 정도입니다.
 
 <Demo src="carousel/options">
 
@@ -78,7 +78,7 @@ controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수
 
 ## 제공하지 않는 것
 
-- **한 화면에 여러 장** — `overflow-x-auto`를 얹은 [Grid](../layout/grid)를 쓰세요.
-- **세로 방향** — 스크롤되는 목록이면 충분합니다.
-- **fade 전환** — 스크롤 기반 구현과 함께 쓸 수 없습니다.
+- **한 화면에 여러 장**: `overflow-x-auto`를 얹은 [Grid](../layout/grid)를 쓰세요.
+- **세로 방향**: 스크롤되는 목록이면 충분합니다.
+- **fade 전환**: 스크롤 기반 구현과 함께 쓸 수 없습니다.
 - region 이름, 화살표, 각 슬라이드의 이름을 `locale`이 정합니다. `label`과 `slideLabel`로 직접 쓸 수도 있습니다.

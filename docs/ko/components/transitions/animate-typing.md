@@ -37,7 +37,7 @@ import { AnimateTyping } from 'neba';
 
 ### repeat, hold, erase
 
-`repeat`은 몇 번 반복하는지, `hold`는 다 쓴 글이 다음 반복까지 얼마나 머무는지입니다. `erase` 없이 반복하면 한 프레임에 지워지는데, 교체되는 줄에는 그쪽이 맞습니다. 켜면 `eraseSpeed`로 한 글자씩 지웁니다 — 기본값은 `speed`의 두 배이고, 사람이 실제로 그렇게 합니다.
+`repeat`은 몇 번 반복하는지, `hold`는 다 쓴 글이 다음 반복까지 얼마나 머무는지입니다. `erase` 없이 반복하면 한 프레임에 지워지는데, 교체되는 줄에는 그쪽이 맞습니다. 켜면 `eraseSpeed`로 한 글자씩 지웁니다. 기본값은 `speed`의 두 배이고, 사람이 실제로 그렇게 합니다.
 
 <Demo src="animate-typing/loop">
 
@@ -57,7 +57,7 @@ import { AnimateTyping } from 'neba';
 
 ### caret
 
-글자 뒤의 커서로, 기본으로 켜져 있습니다. `caretChar`가 그 모양을 정합니다 — `▌`, `_`, 무엇이든 됩니다.
+글자 뒤의 커서로, 기본으로 켜져 있습니다. `caretChar`가 그 모양을 정합니다. `▌`, `_`, 무엇이든 됩니다.
 
 ```tsx
 <AnimateTyping caretChar="▌" caret={false}>

@@ -30,7 +30,7 @@ import { Anchor } from 'neba';
 
 <PropsTable name="AnchorItem" />
 
-제목은 문서에서 긁어오는 대신 직접 전달합니다. 이 목록을 만들어내는 쪽 — MDX 파이프라인, CMS, 라우트의 frontmatter — 은 이미 id를 알고 있고, 컴포넌트가 직접 찾아 나선다면 어느 제목이 본문이고 어느 것이 chrome인지 추측해야 합니다.
+제목은 문서에서 긁어오는 대신 직접 전달합니다. 이 목록을 만들어내는 쪽(MDX 파이프라인, CMS, 라우트의 frontmatter)은 이미 id를 알고 있고, 컴포넌트가 직접 찾아 나선다면 어느 제목이 본문이고 어느 것이 chrome인지 추측해야 합니다.
 
 ## 예시
 

@@ -29,7 +29,7 @@ import { Collapsible } from 'neba';
 
 ### title, subtitle, startIcon, action
 
-`title`은 헤더의 제목, `subtitle`은 그 아래 한 줄입니다. `startIcon`은 제목 앞에 놓이고, `action`은 헤더 끝에 놓이되 trigger 바깥입니다 — 접는 헤더와 그 위의 스위치는 누를 것이 둘이므로, 하나가 다른 하나 안에 들어갈 수 없습니다.
+`title`은 헤더의 제목, `subtitle`은 그 아래 한 줄입니다. `startIcon`은 제목 앞에 놓이고, `action`은 헤더 끝에 놓이되 trigger 바깥입니다. 접는 헤더와 그 위의 스위치는 누를 것이 둘이므로, 하나가 다른 하나 안에 들어갈 수 없습니다.
 
 `indicator={false}`는 chevron을 지웁니다. 그러면 헤더는 색으로만 상태를 말합니다.
 

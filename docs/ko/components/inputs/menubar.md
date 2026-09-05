@@ -5,7 +5,7 @@ order: 29
 
 # Menubar
 
-<p class="neba-lede">애플리케이션 상단에 놓이는 단어들의 띠입니다 — File, Edit, View — 각각이 메뉴를 엽니다. 하나가 열린 뒤에는 띠 위를 지나가면 방금 있던 메뉴가 닫히는 대신 옆 메뉴로 넘어갑니다.</p>
+<p class="neba-lede">File, Edit, View처럼 애플리케이션 상단에 놓이는 단어의 띠이고, 각각이 메뉴를 엽니다. 하나가 열린 뒤에는 띠 위를 지나가면 방금 있던 메뉴가 닫히는 대신 옆 메뉴로 넘어갑니다.</p>
 
 <Demo src="menubar/hero" />
 
@@ -27,7 +27,7 @@ import { Menubar, MenubarMenu, MenuItem, MenuSeparator } from 'neba';
 
 `<div>`의 모든 속성이 `color`를 제외하고 그대로 전달됩니다.
 
-자기 표면은 그리지 않습니다. 메뉴 바는 무언가 _위에_ 놓입니다 — [Toolbar](../surfaces/toolbar), [WindowPane](../surfaces/window-pane)의 타이틀 바, [Header](../layout/header) — 이미 시트 위에 있는 띠 아래에 시트를 한 장 더 깔면 시트가 둘이 됩니다.
+자기 표면은 그리지 않습니다. 메뉴 바는 [Toolbar](../surfaces/toolbar)나 [WindowPane](../surfaces/window-pane)의 타이틀 바, [Header](../layout/header)처럼 무언가 _위에_ 놓입니다. 이미 시트 위에 있는 띠 아래에 시트를 한 장 더 깔면 시트가 둘이 됩니다.
 
 ### MenubarMenu
 
@@ -39,7 +39,7 @@ import { Menubar, MenubarMenu, MenuItem, MenuSeparator } from 'neba';
 
 ### 중첩된 행과 선택되는 행
 
-Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다 — 서브메뉴, 그룹, 체크박스 행, 라디오 행.
+Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. 서브메뉴와 그룹, 체크박스 행, 라디오 행이 모두 들어갑니다.
 
 ### size
 

@@ -27,7 +27,7 @@ import { TimelineChart } from 'neba';
 
 ## 데이터 형식
 
-행 하나가 series이고 그 안의 datum 하나가 span입니다. 다만 span은 `NebaChartPoint`가 아닙니다 — 축 위에 자리가 하나가 아니라 둘이므로 자기 타입을 따로 가집니다.
+행 하나가 series이고 그 안의 datum 하나가 span입니다. 다만 span은 `NebaChartPoint`가 아닙니다. 축 위에 자리가 하나가 아니라 둘이므로 자기 타입을 따로 가집니다.
 
 ```ts
 { start: new Date('2026-03-02'), end: new Date('2026-03-16'), label: 'Wireframes' }
@@ -43,7 +43,7 @@ import { TimelineChart } from 'neba';
 
 <PropsTable name="TimelineChart" />
 
-`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`는 없습니다 — Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`는 없습니다. Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
 
 ## 예시
 
@@ -51,7 +51,7 @@ import { TimelineChart } from 'neba';
 
 그냥 두면 축은 span들에서 정해지고, 달력이 이름을 가진 날짜로 바깥쪽으로 반올림됩니다. `min`·`max`로 분기·스프린트·근무 시간에 고정할 수 있고, 축 밖으로 나가는 span은 축을 늘리는 대신 가장자리에서 잘립니다.
 
-눈금 단위는 범위를 따라갑니다 — 초·분·시·일·주·월·분기·연. 하루짜리 차트는 정시마다 눈금을 찍습니다.
+눈금 단위는 범위에 따라 초, 분, 시, 일, 주, 월, 분기, 연으로 바뀝니다. 하루짜리 차트는 정시마다 눈금을 찍습니다.
 
 <Demo src="timeline-chart/range">
 
@@ -61,7 +61,7 @@ import { TimelineChart } from 'neba';
 
 ### barSize · rounded · density
 
-`barSize`는 막대가 두꺼워질 수 있는 한계이고, 그 아래에서는 막대가 행의 몫을 채웁니다. `density`는 그 몫만 바꿉니다. `rounded`는 span의 모서리를 깎는데, [BarChart](./bar-chart)와 달리 **양쪽 끝** 모두입니다 — span은 0에서 자라지 않으므로 기준이 되는 끝이 없습니다.
+`barSize`는 막대가 두꺼워질 수 있는 한계이고, 그 아래에서는 막대가 행의 몫을 채웁니다. `density`는 그 몫만 바꿉니다. `rounded`는 span의 모서리를 깎는데, [BarChart](./bar-chart)와 달리 **양쪽 끝** 모두입니다. span은 0에서 자라지 않으므로 기준이 되는 끝이 없습니다.
 
 <Demo src="timeline-chart/bars">
 
@@ -71,7 +71,7 @@ import { TimelineChart } from 'neba';
 
 ### xAxis · yAxis
 
-`xAxis`가 행 축이고 `yAxis`가 시간 축입니다. 모든 차트가 따르는 규칙과 같습니다 — 어느 방향으로 그리든 `xAxis`가 category 축, `yAxis`가 값 축입니다. 여기서 시간 축은 아래쪽에 그려지지만 여전히 `yAxis`입니다.
+`xAxis`가 행 축이고 `yAxis`가 시간 축입니다. 모든 차트가 따르는 규칙과 같습니다. 어느 방향으로 그리든 `xAxis`가 category 축, `yAxis`가 값 축입니다. 여기서 시간 축은 아래쪽에 그려지지만 여전히 `yAxis`입니다.
 
 `yAxis.tickFormat`으로 눈금을 쓰고, `yAxis.tickCount`로 대략의 개수를 요청하며, `xAxis.hidden`으로 행 이름을 지웁니다.
 
@@ -81,7 +81,7 @@ import { TimelineChart } from 'neba';
 
 ### 색
 
-행의 팔레트 자리는 `series` 배열에서의 위치로 정해집니다. `series.color`는 그 자리를 [색 계열](../../design/color)이나 임의의 CSS 색으로 덮어쓰고, span 자신의 `color`는 그 막대 하나만 덮어씁니다 — 일정이 밀린 하나가 스스로 그렇다고 말하는 방법입니다.
+행의 팔레트 자리는 `series` 배열에서의 위치로 정해집니다. `series.color`는 그 자리를 [색 계열](../../design/color)이나 임의의 CSS 색으로 덮어쓰고, span 자신의 `color`는 그 막대 하나만 덮어씁니다. 일정이 밀린 하나가 스스로 그렇다고 말하는 방법입니다.
 
 ## 접근성
 

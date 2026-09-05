@@ -28,7 +28,7 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 <PropsTable name="FloatingBottomNavigation" />
 
-`onChange`를 빼면 나머지 `<nav>` 속성은 그대로 루트에 전달됩니다 — 들을 만한 변화는 `onValueChange`입니다. 공용 축(`variant` `size` `color` `density` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+`onChange`를 빼면 나머지 `<nav>` 속성은 그대로 루트에 전달됩니다. 들을 만한 변화는 `onValueChange`입니다. 공용 축(`variant` `size` `color` `density` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 
@@ -66,7 +66,7 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 ### 하이라이트
 
-하이라이트는 지금 선택된 목적지가 아니라 바의 것입니다. 그래서 움직일 수 있습니다 — `aria-current`를 단 항목을 재어 `left`, `top`, `width`, `height`를 다음 항목까지 애니메이션합니다. transform은 쓰지 않으므로 그 위에 올라탄 이름이 다시 샘플링되는 일은 없습니다.
+하이라이트는 지금 선택된 목적지가 아니라 바의 것입니다. 그래서 움직일 수 있습니다. `aria-current`를 단 항목을 재어 `left`, `top`, `width`, `height`를 다음 항목까지 애니메이션합니다. transform은 쓰지 않으므로 그 위에 올라탄 이름이 다시 샘플링되는 일은 없습니다.
 
 `labels`가 그리지 않는 이름은 잘리는 대신 접힙니다. 그 이름이 든 상자가 0과 글자 너비 사이를 오가므로, 목적지를 누르면 바가 새 배치로 튀는 대신 그 목적지를 중심으로 모양을 다시 잡습니다. 이름이 자라고, 옆의 것들이 비켜서고, 하이라이트가 그 아래로 미끄러져 들어오는 일이 같은 시계 위에서 일어납니다. 움직임을 줄여 달라고 한 사용자에게는 여정 없이 결과만 주어집니다.
 
@@ -94,8 +94,8 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 ## 접근성
 
-- 루트는 `<nav>`이고 `label`이 그 이름입니다. `role="tablist"`가 아닙니다 — tab list는 전체에 tab stop 하나와 그 안의 방향키 이동을 약속하지만, 하단 내비게이션은 패널이 아니라 페이지를 바꿉니다.
+- 루트는 `<nav>`이고 `label`이 그 이름입니다. `role="tablist"`가 아닙니다. tab list는 전체에 tab stop 하나와 그 안의 방향키 이동을 약속하지만, 하단 내비게이션은 패널이 아니라 페이지를 바꿉니다.
 - 지금 있는 목적지는 `aria-current="page"`를 답니다.
 - 각 목적지는 진짜 `<button>`이며, `href`를 주면 진짜 `<a>`입니다.
-- `labels`가 그리지 않은 이름도 문서에는 남아 목적지의 접근성 이름이 됩니다 — 글리프뿐인 항목에게는 그것이 이름의 전부입니다.
+- `labels`가 그리지 않은 이름도 문서에는 남아 목적지의 접근성 이름이 됩니다. 글리프뿐인 항목에게는 그것이 이름의 전부입니다.
 - `position="fixed"`일 때는 페이지 아래쪽에 바의 높이와 `offset`만큼 여백을 두세요. 그렇지 않으면 마지막 줄이 가려집니다.

@@ -27,7 +27,7 @@ import { AnimateRotate } from 'neba';
 
 ### from과 to
 
-`from`만 있으면 도착입니다. 무언가 돌아 들어와 멈춥니다. `from`과 `to`를 함께 쓰고 `repeat="infinite"`, `easing="linear"`, `fade={false}`를 더하면 끝내 착지하지 않는 회전이 됩니다 — 작업 중 표시, 장식용 글리프 같은 것들입니다. 음수 각도는 반시계 방향입니다.
+`from`만 있으면 도착입니다. 무언가 돌아 들어와 멈춥니다. `from`과 `to`를 함께 쓰고 `repeat="infinite"`, `easing="linear"`, `fade={false}`를 더하면 끝내 착지하지 않는 회전이 됩니다. 작업 중 표시, 장식용 글리프 같은 것들입니다. 음수 각도는 반시계 방향입니다.
 
 <Demo src="animate-rotate/spin">
 

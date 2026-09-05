@@ -116,7 +116,7 @@ Combobox에서는 이것이 유일한 통로입니다. 화살표는 highlight를
 
 ### classNames
 
-`className`은 루트 — 라벨과 shell, 그 아래 두 줄을 담는 열 — 에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
+`className`은 루트(라벨과 shell, 그 아래 두 줄을 담는 열)에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
 
 ```tsx
 <Combobox

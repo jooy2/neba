@@ -50,7 +50,7 @@ import { Grid, GridContainer } from 'neba';
 
 `span`에 객체를 주면 폭마다 다른 값을 적용합니다. 각 항목은 **그 breakpoint 이상**에 적용되는 하한이므로 두 개만 적어도 레이아웃 하나가 정의됩니다.
 
-폭은 Tailwind 기본값과 같습니다 — `sm` 40rem · `md` 48rem · `lg` 64rem · `xl` 80rem. `xs`는 0이며 media query가 붙지 않습니다. Grid와 `md:` 유틸리티가 같은 지점에서 바뀝니다.
+폭은 Tailwind 기본값과 같아서 `sm`이 40rem, `md`가 48rem, `lg`가 64rem, `xl`이 80rem입니다. `xs`는 0이며 media query가 붙지 않습니다. Grid와 `md:` 유틸리티가 같은 지점에서 바뀝니다.
 
 `columns` · `spacing` · `rowSpacing` · `columnSpacing` · `offset`도 모두 같은 방식으로 반응형 값을 받습니다.
 

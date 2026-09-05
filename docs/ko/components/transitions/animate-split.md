@@ -5,7 +5,7 @@ order: 9
 
 # AnimateSplit
 
-<p class="neba-lede">한 줄의 글이 단어씩 — 또는 글자씩 — 도착합니다. AnimateAppear가 목록을 자식 하나씩 내려간다면, 이것은 문장을 따라 걸어갑니다.</p>
+<p class="neba-lede">한 줄의 글이 단어씩, 또는 글자씩 도착합니다. AnimateAppear가 목록을 자식 하나씩 내려간다면, 이 컴포넌트는 문장을 따라 진행합니다.</p>
 
 <Demo src="animate-split/hero" minHeight="140" />
 

@@ -19,7 +19,7 @@ import { OtpField } from 'neba';
 
 <PropsTable name="OtpField" />
 
-나머지 `<div>` 속성은 그대로 칸들의 행에 전달됩니다. `color`·`size`·`onChange`는 제외됩니다 — 앞의 둘은 Neba prop이고, 값은 `onValueChange`가 알려줍니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<div>` 속성은 그대로 칸들의 행에 전달됩니다. `color`·`size`·`onChange`는 제외됩니다. 앞의 둘은 Neba prop이고, 값은 `onValueChange`가 알려줍니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 

@@ -23,7 +23,7 @@ import { AnimateFade } from 'neba';
 
 나머지 `<div>` 속성은 모두 루트로 전달됩니다.
 
-모든 `Animate*`가 공유하는 설정 — `duration`, `delay`, `easing`, `repeat`, `alternate`, `trigger`, `play`, `once`, `threshold`, `paused` — 은 어디서나 같은 뜻이며 [Prop 규약](../../design/prop-conventions)에 정리되어 있습니다.
+모든 `Animate*`가 공유하는 설정(`duration`, `delay`, `easing`, `repeat`, `alternate`, `trigger`, `play`, `once`, `threshold`, `paused`)은 어디서나 같은 뜻이며 [Prop 규약](../../design/prop-conventions)에 정리되어 있습니다.
 
 ## 예시
 
@@ -39,7 +39,7 @@ import { AnimateFade } from 'neba';
 
 ### trigger
 
-`mount`가 기본값이고 아무것도 요구하지 않습니다. `visible`은 화면에 들어올 때까지 기다립니다 — `once`를 끄지 않는 한 한 번만이고, `threshold`가 얼마나 들어와야 하는지를 정합니다. `hover`는 포인터가 올라가 있는 동안 재생하며 들어올 때마다 처음부터 다시 시작하고, 키보드 focus도 포인터로 셉니다. `manual`은 `play`가 말하기 전까지 아무것도 하지 않으며, `false` → `true`가 될 때마다 다시 시작합니다.
+`mount`가 기본값이고 아무것도 요구하지 않습니다. `visible`은 화면에 들어올 때까지 기다립니다. `once`를 끄지 않는 한 한 번만이고, `threshold`가 얼마나 들어와야 하는지를 정합니다. `hover`는 포인터가 올라가 있는 동안 재생하며 들어올 때마다 처음부터 다시 시작하고, 키보드 focus도 포인터로 셉니다. `manual`은 `play`가 말하기 전까지 아무것도 하지 않으며, `false` → `true`가 될 때마다 다시 시작합니다.
 
 <Demo src="animate-fade/triggers">
 

@@ -54,7 +54,7 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 ### dismissible
 
-`dismissible={false}`는 Esc와 바깥 클릭을 함께 막습니다. `actions`에 답할 수 있는 버튼이 있을 때만 끄세요 — 그 외에는 나갈 방법이 없습니다.
+`dismissible={false}`는 Esc와 바깥 클릭을 함께 막습니다. `actions`에 답할 수 있는 버튼이 있을 때만 끄세요. 그 외에는 나갈 방법이 없습니다.
 
 <Demo src="dialog/controlled">
 
@@ -77,7 +77,7 @@ actions={
 
 ### classNames
 
-`className`은 popup — sheet 자체이며, 부르는 사람이 "dialog"라고 할 때 가리키는 것 — 에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
+`className`은 popup(sheet 자체이며, 부르는 사람이 "dialog"라고 할 때 가리키는 것)에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 갑니다.
 
 ```tsx
 <Dialog

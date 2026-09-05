@@ -39,7 +39,7 @@ import { Box } from 'neba';
 
 ### color
 
-표면이 흰색이므로 `color`는 **테두리에만** 나타납니다. 아래 예시가 `outline`인 것은 그 때문입니다 — 테두리가 없는 `solid` Box에서는 `color`가 보이는 변화를 만들지 않습니다.
+표면이 흰색이므로 `color`는 **테두리에만** 나타납니다. 아래 예시가 `outline`인 것은 그 때문입니다. 테두리가 없는 `solid` Box에서는 `color`가 보이는 변화를 만들지 않습니다.
 
 <Demo src="box/colors">
 

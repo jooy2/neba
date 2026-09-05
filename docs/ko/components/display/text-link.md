@@ -21,17 +21,17 @@ import { TextLink } from 'neba';
 
 <PropsTable name="TextLink" />
 
-나머지 `<a>` 속성은 모두 전달됩니다. `rel`만 예외로, 덮어쓰는 대신 합쳐집니다 — 아래 `newTab`을 보세요.
+나머지 `<a>` 속성은 모두 전달됩니다. `rel`만 예외로, 덮어쓰는 대신 합쳐집니다. 아래 `newTab`을 보세요.
 
 공통 축 가운데 `color`와 `size`에는 기본값이 없습니다. 문단 안의 링크는 그 문단의 색이자 그 문단의 크기이기 때문입니다. 나머지 어휘는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
-루트에는 `neba-link` 클래스가 붙습니다. `a`를 태그 이름으로 스타일링하는 스타일시트 — `.prose a`를 비롯한 대부분의 CSS 프레임워크 — 가 예외로 빼낼 수 있는 후크입니다. `.prose a:not(.neba-link) { … }`처럼 씁니다.
+루트에는 `neba-link` 클래스가 붙습니다. `a`를 태그 이름으로 스타일링하는 스타일시트(`.prose a`를 비롯한 대부분의 CSS 프레임워크)가 예외로 빼낼 수 있는 후크입니다. `.prose a:not(.neba-link) { … }`처럼 씁니다.
 
 ## 예시
 
 ### underline
 
-기본값은 `always`입니다. `hover`는 포인터가 올라갔을 때만 선을 긋고, `none`은 아예 긋지 않습니다. `none`은 링크임을 이미 다른 것이 말해 주고 있을 때 — nav 바, footer, 제목 아래 나란히 놓인 줄 — 씁니다.
+기본값은 `always`입니다. `hover`는 포인터가 올라갔을 때만 선을 긋고, `none`은 아예 긋지 않습니다. `none`은 링크임을 이미 다른 것이 말해 주고 있을 때(nav 바, footer, 제목 아래 나란히 놓인 줄) 씁니다.
 
 <Demo src="text-link/underline">
 
@@ -65,7 +65,7 @@ hover는 선만 바꾸고 글자 색은 건드리지 않습니다. 포인터 아
 
 `newTab`은 `target="_blank"`와, 새 페이지가 `window.opener`로 되돌아오지 못하게 하는 `rel`을 함께 붙입니다. 동시에 `icon`을 켭니다. 독자 아래에서 창이 바뀌는 것은 링크에서 유일하게 벌어지고 난 뒤에야 알 수 있는 일이기 때문입니다.
 
-`rel`을 직접 넘기면 덮어쓰는 대신 합쳐집니다. `rel="nofollow"`는 SEO 결정이지 보안 결정이 아니므로, 그것 때문에 `noopener`가 빠지는 일은 없습니다 — `newTab rel="nofollow"`는 `nofollow noopener noreferrer`가 됩니다. 같은 탭 링크의 `rel`은 그대로 둡니다.
+`rel`을 직접 넘기면 덮어쓰는 대신 합쳐집니다. `rel="nofollow"`는 SEO 결정이지 보안 결정이 아니므로, 그것 때문에 `noopener`가 빠지는 일은 없습니다. `newTab rel="nofollow"`는 `nofollow noopener noreferrer`가 됩니다. 같은 탭 링크의 `rel`은 그대로 둡니다.
 
 `icon`은 양쪽 모두를 덮어씁니다. 새 탭 링크에 표식을 없애려면 `false`, 같은 탭 링크에 표식을 붙이려면 `true`, 글리프 자체를 바꾸려면 노드를 넘깁니다.
 
@@ -77,7 +77,7 @@ hover는 선만 바꾸고 글자 색은 건드리지 않습니다. 포인터 아
 
 ### locale
 
-`newTab`은 그려지지 않고 읽히기만 하는 문장 — "(새 창에서 열림)" — 을 덧붙입니다. `locale`은 그 문장을 어느 언어로 쓸지를 정하며, `ko`, `pt-BR`, `zh-Hant` 같은 BCP 47 태그를 받습니다. 번역이 없는 태그는 영어로 돌아갑니다.
+`newTab`은 화면에 그려지지 않고 읽히기만 하는 "(새 창에서 열림)" 문장을 덧붙입니다. `locale`은 그 문장을 어느 언어로 쓸지를 정하며, `ko`, `pt-BR`, `zh-Hant` 같은 BCP 47 태그를 받습니다. 번역이 없는 태그는 영어로 돌아갑니다.
 
 ```tsx
 <TextLink href="https://neba.cdget.com/components/" newTab locale="ko">
