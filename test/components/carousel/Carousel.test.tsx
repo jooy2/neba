@@ -186,7 +186,133 @@ describe('Carousel', () => {
     });
   });
 
+  /*
+   * WCAG 2.2.2 asks for a mechanism to stop anything that starts moving on its
+   * own, and hover and focus are not one: neither exists for a reader holding a
+   * phone, and a magnified reader may never put the pointer over the strip at
+   * all. So `autoPlay` draws a button, and the button is the first thing in the
+   * frame.
+   */
+  describe('autoPlay', () => {
+    it('draws no rotation control when it is not rotating', async () => {
+      const screen = await render(<Carousel>{slides}</Carousel>);
+
+      expect(screen.getByRole('button', { name: 'Pause slide show' }).query()).toBeNull();
+    });
+
+    // A strip of one has nowhere to go, so a button claiming to stop it would
+    // have nothing behind it.
+    it('draws none for a single slide', async () => {
+      const screen = await render(<Carousel autoPlay>{slides.slice(0, 1)}</Carousel>);
+
+      expect(screen.getByRole('button', { name: 'Pause slide show' }).query()).toBeNull();
+    });
+
+    it('draws one that says what it will do', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Pause slide show' }))
+        .toBeInTheDocument();
+    });
+
+    it('swaps its name once the slides have been stopped', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      await screen.getByRole('button', { name: 'Pause slide show' }).click();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Play slide show' }))
+        .toBeInTheDocument();
+    });
+
+    /*
+     * First in the frame and therefore first in the tab order, so a reader on a
+     * keyboard meets the way to stop the slides before they meet the slides.
+     * Read off DOM order rather than by tabbing, since the strip's own arrows
+     * sit between the two.
+     */
+    it('puts the control before the strip', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      const control = screen.getByRole('button', { name: 'Pause slide show' }).element();
+      const strip = screen.getByRole('group', { name: 'Carousel' }).element();
+
+      expect(control.compareDocumentPosition(strip)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    /*
+     * The pointer and the focus each pause the strip on their own, so a test
+     * about the timer has to keep both off it — including after the click that
+     * stops it, which puts both back. The button beside the carousel is
+     * somewhere to park them; without it this passes whether or not the control
+     * does anything, because a carousel under the pointer was never advancing.
+     */
+    it('advances on its own, and stops for good when it is told to', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <>
+          <button type="button">Away</button>
+          <Carousel autoPlay interval={80} onValueChange={onValueChange}>
+            {slides}
+          </Carousel>
+        </>
+      );
+
+      const away = screen.getByRole('button', { name: 'Away' });
+
+      await away.click();
+      await vi.waitFor(() => expect(onValueChange).toHaveBeenCalled());
+
+      await screen.getByRole('button', { name: 'Pause slide show' }).click();
+      await away.click();
+      onValueChange.mockClear();
+
+      await new Promise((resolve) => setTimeout(resolve, 260));
+
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    // The live region is silent while the slides move on their own, because one
+    // that names a slide every five seconds is what makes a page unusable with a
+    // screen reader. Stopping them is what turns it back on.
+    it('starts announcing the slide again once it is stopped', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      const region = screen.getByRole('region').element();
+      const live = () => region.querySelector('[aria-live]');
+
+      expect(live()?.getAttribute('aria-live')).toBe('off');
+
+      await screen.getByRole('button', { name: 'Pause slide show' }).click();
+
+      expect(live()?.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('takes words of its own over the locale', async () => {
+      const screen = await render(
+        <Carousel autoPlay locale="ko" pauseLabel="Hold">
+          {slides}
+        </Carousel>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Hold' })).toBeInTheDocument();
+    });
+  });
+
   describe('locale', () => {
+    it('names the control in the language it was given', async () => {
+      const screen = await render(
+        <Carousel autoPlay locale="ko">
+          {slides}
+        </Carousel>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: '슬라이드 쇼 일시정지' }))
+        .toBeInTheDocument();
+    });
+
     it('names the region, the arrows and every slide in the language it was given', async () => {
       const screen = await render(<Carousel locale="ko">{slides}</Carousel>);
 

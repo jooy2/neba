@@ -41,7 +41,7 @@ export default function CarouselOptions() {
 
       <div className="flex flex-col gap-2">
         <Typography level="caption">
-          autoPlay — pauses on hover, on focus, and in a background tab
+          autoPlay — a button to stop it, and it pauses on hover, on focus and in a background tab
         </Typography>
         <Carousel label="Auto playing" autoPlay interval={2500} indicators variant="text">
           {[0, 1, 2, 3].map((index) => (

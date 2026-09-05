@@ -80,7 +80,9 @@ export const ar: NebaLocale = {
     label: 'شريط عرض',
     slide: 'الشريحة {index} من {total}',
     previous: 'الشريحة السابقة',
-    next: 'الشريحة التالية'
+    next: 'الشريحة التالية',
+    pause: 'إيقاف عرض الشرائح مؤقتًا',
+    play: 'تشغيل عرض الشرائح'
   },
   gallery: {
     label: 'معرض صور',

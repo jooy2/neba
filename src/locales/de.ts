@@ -80,7 +80,9 @@ export const de: NebaLocale = {
     label: 'Karussell',
     slide: 'Folie {index} von {total}',
     previous: 'Vorherige Folie',
-    next: 'Nächste Folie'
+    next: 'Nächste Folie',
+    pause: 'Diashow anhalten',
+    play: 'Diashow abspielen'
   },
   gallery: {
     label: 'Galerie',

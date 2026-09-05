@@ -80,7 +80,9 @@ export const th: NebaLocale = {
     label: 'ภาพเลื่อน',
     slide: 'สไลด์ {index} จาก {total}',
     previous: 'สไลด์ก่อนหน้า',
-    next: 'สไลด์ถัดไป'
+    next: 'สไลด์ถัดไป',
+    pause: 'หยุดสไลด์โชว์ชั่วคราว',
+    play: 'เล่นสไลด์โชว์'
   },
   gallery: {
     label: 'แกลเลอรี',

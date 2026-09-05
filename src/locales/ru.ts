@@ -80,7 +80,9 @@ export const ru: NebaLocale = {
     label: 'Карусель',
     slide: 'Слайд {index} из {total}',
     previous: 'Предыдущий слайд',
-    next: 'Следующий слайд'
+    next: 'Следующий слайд',
+    pause: 'Приостановить слайд-шоу',
+    play: 'Запустить слайд-шоу'
   },
   gallery: {
     label: 'Галерея',

@@ -80,7 +80,9 @@ export const ja: NebaLocale = {
     label: 'カルーセル',
     slide: '{total} 枚中 {index} 枚目',
     previous: '前のスライド',
-    next: '次のスライド'
+    next: '次のスライド',
+    pause: 'スライドショーを一時停止',
+    play: 'スライドショーを再生'
   },
   gallery: {
     label: 'ギャラリー',

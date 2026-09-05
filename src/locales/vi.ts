@@ -80,7 +80,9 @@ export const vi: NebaLocale = {
     label: 'Băng chuyền',
     slide: 'Trang chiếu {index} trên {total}',
     previous: 'Trang chiếu trước',
-    next: 'Trang chiếu sau'
+    next: 'Trang chiếu sau',
+    pause: 'Tạm dừng trình chiếu',
+    play: 'Phát trình chiếu'
   },
   gallery: {
     label: 'Thư viện ảnh',

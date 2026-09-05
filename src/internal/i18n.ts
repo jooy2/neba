@@ -390,6 +390,17 @@ export interface CarouselMessages {
   slide: string;
   previous: string;
   next: string;
+  /**
+   * The button that stops the slides advancing on their own, and the same
+   * button once they have been stopped.
+   *
+   * It says what it will do rather than what the carousel is doing, which is
+   * what a button's name is for — and it names the object, because a lone
+   * "Pause" tells a screen reader's element list nothing about which of the
+   * things on the page it would pause.
+   */
+  pause: string;
+  play: string;
 }
 
 /** The `carousel` namespace, as Carousel read it. */
@@ -398,7 +409,9 @@ export const carouselMessages: MessageTable<CarouselMessages> = {
     label: 'Carousel',
     slide: 'Slide {index} of {total}',
     previous: 'Previous slide',
-    next: 'Next slide'
+    next: 'Next slide',
+    pause: 'Pause slide show',
+    play: 'Play slide show'
   }
 };
 

@@ -83,7 +83,9 @@ export const zhHant: NebaLocale = {
     label: '輪播',
     slide: '第 {index} 張，共 {total} 張',
     previous: '上一張',
-    next: '下一張'
+    next: '下一張',
+    pause: '暫停投影片播放',
+    play: '播放投影片'
   },
   gallery: {
     label: '圖庫',

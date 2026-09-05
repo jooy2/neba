@@ -26,6 +26,8 @@ The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same ma
 
 - **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
 
+- **A `Carousel` with `autoPlay` draws the button that stops it.** It paused on hover, on focus and in a background tab, and it never started for a reader who had asked for less motion — but a reader holding a phone hovers nothing, and one running a magnifier may never put a pointer over the strip at all. WCAG 2.2.2 asks for a mechanism, and those were not one. The control sits in the frame's top corner and first in the tab order, so a keyboard reader meets the way to stop the slides before they meet the slides; `pauseLabel` and `playLabel` name it, and it is translated in all nineteen languages. There is no prop to take it away — a caller who wants a control of their own can drive `value` and leave `autoPlay` off.
+
 ### Changed
 
 - **An `Anchor` finds its headings once instead of on every frame of a scroll.** It ran a `document.getElementById` for each row of the trail on every scroll frame, for an answer that changes only when the document does. The elements are kept and checked against `isConnected`, so a heading that arrives after the trail is still found.

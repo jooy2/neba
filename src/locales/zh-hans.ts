@@ -83,7 +83,9 @@ export const zhHans: NebaLocale = {
     label: '轮播',
     slide: '第 {index} 张，共 {total} 张',
     previous: '上一张',
-    next: '下一张'
+    next: '下一张',
+    pause: '暂停幻灯片播放',
+    play: '播放幻灯片'
   },
   gallery: {
     label: '图库',

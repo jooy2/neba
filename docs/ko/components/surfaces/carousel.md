@@ -64,13 +64,16 @@ controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수
 
 ### autoPlay와 interval
 
-`autoPlay`의 기본값은 꺼짐입니다. 켜더라도 hover, 내부 focus, 백그라운드 탭에서 멈추고, `prefers-reduced-motion`에서는 시작하지 않습니다. 자동 재생 중에는 현재 슬라이드를 알리는 live region도 침묵합니다.
+`autoPlay`의 기본값은 꺼짐입니다. 켜더라도 hover, 내부 focus, 백그라운드 탭에서 멈추고, `prefers-reduced-motion`에서는 시작하지 않습니다. 자동 재생 중에는 현재 슬라이드를 알리는 live region도 침묵하고, 멈추면 다시 알립니다.
+
+켜면 회전을 멈추는 버튼이 프레임 왼쪽 위, tab 순서의 맨 앞에 그려집니다. 이 버튼을 없애는 prop은 없습니다. hover와 focus는 휴대폰을 든 독자나 화면 확대를 쓰는 독자에게는 멈출 방법이 되지 못하기 때문입니다. 이름은 `pauseLabel`과 `playLabel`로 지정합니다.
 
 모든 슬라이드가 반드시 읽혀야 하는 내용이라면 [Tabs](./tabs)나 세로 나열을 고려하세요.
 
 ## 접근성
 
-- `label`이 캐러셀의 accessible name이 됩니다. `previousLabel` · `nextLabel` · `slideLabel`로 컨트롤 이름을 지정합니다.
+- `label`이 캐러셀의 accessible name이 됩니다. `previousLabel` · `nextLabel` · `pauseLabel` · `playLabel` · `slideLabel`로 컨트롤 이름을 지정합니다.
+- `autoPlay`는 회전을 멈추는 버튼을 프레임 맨 앞에 함께 그립니다. hover도 tab도 쓰지 않는 독자가 멈출 수 있어야 하기 때문입니다.
 - 각 슬라이드는 `role="group"`과 `aria-roledescription="slide"`를 갖습니다.
 
 ## 제공하지 않는 것

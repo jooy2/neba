@@ -80,7 +80,9 @@ export const hi: NebaLocale = {
     label: 'कैरोसेल',
     slide: '{total} में से स्लाइड {index}',
     previous: 'पिछली स्लाइड',
-    next: 'अगली स्लाइड'
+    next: 'अगली स्लाइड',
+    pause: 'स्लाइड शो रोकें',
+    play: 'स्लाइड शो चलाएँ'
   },
   gallery: {
     label: 'गैलरी',

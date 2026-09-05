@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.js';
-import { ChevronIcon } from '../../internal/icons.js';
+import { ChevronIcon, PauseIcon, PlayIcon } from '../../internal/icons.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
 import {
   cx,
@@ -45,6 +45,12 @@ export interface CarouselProps
    * read is the most complained-about pattern on the web. It pauses on hover,
    * on focus anywhere inside it, while the tab is in the background, and it does
    * not start at all for a reader who has asked for reduced motion.
+   *
+   * Turning it on draws a button that stops it, first in the frame and first in
+   * the tab order. There is no prop to take that button away: hover and focus
+   * are not a mechanism for a reader holding a phone or a magnifier, and a
+   * caller who wants a control of their own can drive `value` and leave this
+   * off.
    * @default false
    */
   autoPlay?: boolean;
@@ -66,6 +72,13 @@ export interface CarouselProps
   label?: string;
   previousLabel?: string;
   nextLabel?: string;
+  /**
+   * The rotation control's two names — what it says while the slides are
+   * advancing, and what it says once they have been stopped. Default to the
+   * `locale`'s wording.
+   */
+  pauseLabel?: string;
+  playLabel?: string;
   /**
    * How one slide is named to a screen reader, and how its dot is labelled.
    * Defaults to the `locale`'s wording.
@@ -96,13 +109,17 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   text: 'text-(--neba-fg) bg-transparent'
 };
 
-/** How far the arrows sit in from the frame's edge. */
-const arrowInsetClasses: Record<NebaSize, string> = {
-  xs: 'start-1 end-1',
-  sm: 'start-1.5 end-1.5',
-  md: 'start-2 end-2',
-  lg: 'start-3 end-3',
-  xl: 'start-4 end-4'
+/**
+ * How far the overlaid controls sit in from the frame's edges — the arrows down
+ * both sides, the rotation control in the top corner. One table rather than
+ * two, so the two cannot drift into different margins at the same size.
+ */
+const insetClasses: Record<NebaSize, { arrows: string; rotation: string }> = {
+  xs: { arrows: 'start-1 end-1', rotation: 'top-1 start-1' },
+  sm: { arrows: 'start-1.5 end-1.5', rotation: 'top-1.5 start-1.5' },
+  md: { arrows: 'start-2 end-2', rotation: 'top-2 start-2' },
+  lg: { arrows: 'start-3 end-3', rotation: 'top-3 start-3' },
+  xl: { arrows: 'start-4 end-4', rotation: 'top-4 start-4' }
 };
 
 /**
@@ -160,6 +177,8 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       label,
       previousLabel,
       nextLabel,
+      pauseLabel,
+      playLabel,
       slideLabel,
       className,
       style,
@@ -193,6 +212,10 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     // as the reader landing on slide 1.
     const settling = React.useRef(false);
     const [paused, setPaused] = React.useState(false);
+    // Two ways of not advancing, and they have to stay apart. `paused` is the
+    // pointer or the focus and lasts as long as they do; `stopped` is the reader
+    // pressing the button and lasts until they press it again.
+    const [stopped, setStopped] = React.useState(false);
 
     const go = React.useCallback(
       (next: number, viaScroll = false) => {
@@ -269,7 +292,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
     React.useEffect(() => {
       // A reader who has asked for less motion has asked for this in particular.
-      if (!autoPlay || paused || reduced || count < 2) {
+      if (!autoPlay || stopped || paused || reduced || count < 2) {
         return;
       }
 
@@ -281,10 +304,19 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       }, interval);
 
       return () => window.clearInterval(timer);
-    }, [autoPlay, paused, reduced, count, interval, index, go]);
+    }, [autoPlay, stopped, paused, reduced, count, interval, index, go]);
 
     const atStart = index <= 0;
     const atEnd = index >= count - 1;
+
+    /*
+     * Whether this carousel rotates at all — which is the question the control
+     * and the live region both turn on, and it is not the same as `autoPlay`. A
+     * strip of one slide has nowhere to go, and a reader who has asked for less
+     * motion is never going to see it move, so drawing a button that claims to
+     * stop it would be a control with nothing behind it.
+     */
+    const rotates = autoPlay && !reduced && count > 1;
 
     return (
       <div
@@ -310,6 +342,27 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
             transitionClasses
           ].join(' ')}
         >
+          {rotates ? (
+            /*
+             * Drawn before the strip, and therefore reached before it: a reader
+             * on a keyboard meets the way to stop the slides before they meet
+             * the slides. Hover and focus already pause it for them, which is
+             * exactly what they do not do for a reader holding a phone or
+             * running a magnifier — this is the mechanism those two have.
+             */
+            <IconButton
+              variant="solid"
+              size={size}
+              color={color}
+              density={density}
+              elevation={1}
+              label={stopped ? (playLabel ?? messages.play) : (pauseLabel ?? messages.pause)}
+              className={`absolute z-10 ${insetClasses[size].rotation}`}
+              icon={stopped ? <PlayIcon /> : <PauseIcon />}
+              onClick={() => setStopped((was) => !was)}
+            />
+          ) : null}
+
           <div
             ref={trackRef}
             // Focusable, so the strip can be scrolled with the arrow keys by
@@ -354,7 +407,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
           {arrows && count > 1 ? (
             <div
-              className={`pointer-events-none absolute inset-y-0 flex items-center ${arrowInsetClasses[size]}`}
+              className={`pointer-events-none absolute inset-y-0 flex items-center ${insetClasses[size].arrows}`}
             >
               <IconButton
                 variant="solid"
@@ -425,8 +478,10 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         {/* Where the reader is, as a sentence rather than as a highlighted dot.
           Silent while the carousel is advancing on its own: a live region that
           says a new slide's name every five seconds is what makes a screen
-          reader unusable on a page that has one. */}
-        <span className={srOnlyClasses} aria-live={autoPlay ? 'off' : 'polite'}>
+          reader unusable on a page that has one. Stopping it is what turns the
+          announcements back on, since from then on the only thing that moves
+          the strip is the reader. */}
+        <span className={srOnlyClasses} aria-live={rotates && !stopped ? 'off' : 'polite'}>
           {count > 0 ? nameSlide(index + 1, count) : ''}
         </span>
       </div>

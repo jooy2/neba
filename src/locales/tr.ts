@@ -80,7 +80,9 @@ export const tr: NebaLocale = {
     label: 'Karusel',
     slide: '{total} slayttan {index}. slayt',
     previous: 'Önceki slayt',
-    next: 'Sonraki slayt'
+    next: 'Sonraki slayt',
+    pause: 'Slayt gösterisini duraklat',
+    play: 'Slayt gösterisini oynat'
   },
   gallery: {
     label: 'Galeri',

@@ -80,7 +80,9 @@ export const pt: NebaLocale = {
     label: 'Carrossel',
     slide: 'Slide {index} de {total}',
     previous: 'Slide anterior',
-    next: 'Próximo slide'
+    next: 'Próximo slide',
+    pause: 'Pausar a apresentação',
+    play: 'Reproduzir a apresentação'
   },
   gallery: {
     label: 'Galeria',

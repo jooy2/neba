@@ -8724,8 +8724,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '스스로 넘어갑니다. 기본이 꺼짐인 이유는 읽는 중에 움직이는 캐러셀이 웹에서 가장 많은 불평을 듣는 패턴이기 때문입니다. 켜도 hover·포커스·백그라운드 탭에서 멈추고, 모션을 줄여 달라고 한 독자에게는 아예 시작하지 않습니다',
-        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab — and does not start at all for a reader who asked for reduced motion'
+        ko: '스스로 넘어갑니다. 기본이 꺼짐인 이유는 읽는 중에 움직이는 캐러셀이 웹에서 가장 많은 불평을 듣는 패턴이기 때문입니다. 켜도 hover·포커스·백그라운드 탭에서 멈추고, 모션을 줄여 달라고 한 독자에게는 아예 시작하지 않습니다. 켜면 프레임 첫머리에 멈춤 버튼이 그려집니다',
+        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab — and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, first in the frame'
       }
     },
     {
@@ -8766,6 +8766,14 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'nextLabel',
       type: 'string',
       description: { ko: '다음 버튼의 이름', en: 'The next button’s name' }
+    },
+    {
+      name: 'pauseLabel · playLabel',
+      type: 'string',
+      description: {
+        ko: '멈춤 버튼의 두 이름 — 슬라이드가 넘어가는 동안, 그리고 멈춘 뒤. 기본값은 locale의 표현',
+        en: "The rotation control's two names — while the slides are advancing, and once they have been stopped. Default to the locale's wording"
+      }
     },
     {
       name: 'slideLabel',

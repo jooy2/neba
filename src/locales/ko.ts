@@ -80,7 +80,9 @@ export const ko: NebaLocale = {
     label: '캐러셀',
     slide: '전체 {total}장 중 {index}장',
     previous: '이전 슬라이드',
-    next: '다음 슬라이드'
+    next: '다음 슬라이드',
+    pause: '슬라이드 쇼 일시정지',
+    play: '슬라이드 쇼 재생'
   },
   gallery: {
     label: '갤러리',

@@ -80,7 +80,9 @@ export const id: NebaLocale = {
     label: 'Korsel',
     slide: 'Slide {index} dari {total}',
     previous: 'Slide sebelumnya',
-    next: 'Slide berikutnya'
+    next: 'Slide berikutnya',
+    pause: 'Jeda tayangan slide',
+    play: 'Putar tayangan slide'
   },
   gallery: {
     label: 'Galeri',

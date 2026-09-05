@@ -335,6 +335,32 @@ export function RestartIcon() {
 }
 
 /**
+ * Stop and start, as the pair a rotation control switches between.
+ *
+ * Drawn as solids rather than as outlines, and at the same optical weight as
+ * each other: they sit in one button that swaps between them, so a pair that
+ * did not match in weight would read as the button changing size. The triangle
+ * is inset a little further than the bars because a shape that tapers to a
+ * point looks larger than a rectangle covering the same box.
+ */
+export function PauseIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <rect x="4" y="3" width="2.75" height="10" rx="1" />
+      <rect x="9.25" y="3" width="2.75" height="10" rx="1" />
+    </svg>
+  );
+}
+
+export function PlayIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <path d="M5.5 3.6a1 1 0 0 1 1.53-.85l6.1 3.9a1.2 1.2 0 0 1 0 2.02l-6.1 3.9a1 1 0 0 1-1.53-.85V3.6Z" />
+    </svg>
+  );
+}
+
+/**
  * The three dots that stand for what has been left out.
  *
  * Drawn rather than typed: `…` is a single glyph whose dots are spaced by

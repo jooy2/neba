@@ -80,7 +80,9 @@ export const nl: NebaLocale = {
     label: 'Carrousel',
     slide: 'Dia {index} van {total}',
     previous: 'Vorige dia',
-    next: 'Volgende dia'
+    next: 'Volgende dia',
+    pause: 'Diavoorstelling pauzeren',
+    play: 'Diavoorstelling afspelen'
   },
   gallery: {
     label: 'Galerij',
