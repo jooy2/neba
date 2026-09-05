@@ -36,6 +36,31 @@ describe('AnimateScramble', () => {
     expect(shown(screen.getByTestId('s').element())).toBe('####');
   });
 
+  /*
+   * The noise is picked during the render, so with a random source every
+   * re-render from anywhere above — a parent's state, a route change, a resize
+   * — reshuffled every unsettled letter at whatever moment that render landed.
+   * The effect is a clock and was answering to the whole page.
+   */
+  it('does not reshuffle on a render that is not a tick', async () => {
+    const screen = await render(
+      <AnimateScramble text="ABCDEFGH" tick={100000} duration={100000} data-testid="s" />
+    );
+    const before = shown(screen.getByTestId('s').element());
+
+    await screen.rerender(
+      <AnimateScramble
+        text="ABCDEFGH"
+        tick={100000}
+        duration={100000}
+        data-testid="s"
+        className="a-change-that-is-not-a-tick"
+      />
+    );
+
+    expect(shown(screen.getByTestId('s').element())).toBe(before);
+  });
+
   it('tells a screen reader the finished text', async () => {
     const screen = await render(<AnimateScramble text="NEBA" duration={4000} data-testid="s" />);
 

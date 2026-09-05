@@ -43,6 +43,31 @@ export interface AnimateScrambleProps
 const DEFAULT_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@*';
 
 /**
+ * Which glyph an unsettled position shows on a given tick.
+ *
+ * A mix of the two numbers rather than `Math.random()`, and the difference is
+ * what happens on a render this component did not ask for. The noise is picked
+ * during the render, so with a random source every re-render from anywhere
+ * above — a parent's state, a route change, a resize — reshuffled every letter
+ * that had not settled yet, at whatever moment that render happened to land.
+ * The effect is meant to be a clock, and it was answering to the whole page.
+ *
+ * Keyed on the tick and the position, the same pair always gives the same
+ * glyph: a render that is not a tick redraws exactly what was already there.
+ * It also settles the one hydration mismatch this component had, since the
+ * server and the browser now pick the same opening frame.
+ */
+function glyphAt(tick: number, index: number, size: number): number {
+  let mixed = Math.imul(tick + 1, 0x85ebca6b) ^ Math.imul(index + 1, 0xc2b2ae35);
+
+  mixed ^= mixed >>> 15;
+  mixed = Math.imul(mixed, 0x2545f491);
+  mixed ^= mixed >>> 13;
+
+  return (mixed >>> 0) % size;
+}
+
+/**
  * Text arriving through noise, one character at a time.
  *
  * `AnimateTyping`'s sibling: a typewriter reveals a string from an empty line,
@@ -98,9 +123,10 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
 
     // How many characters have settled, counted from the left.
     const [settled, setSettled] = React.useState(0);
-    // Bumped on every tick, only to redraw the noise. The glyphs themselves are
-    // picked during the render, so nothing about them has to be state.
-    const [, redraw] = React.useReducer((n: number) => n + 1, 0);
+    // Bumped on every tick. It is both the redraw and the seed the glyphs are
+    // picked with, which is what keeps a render that is not a tick from
+    // reshuffling letters the clock has not reached yet.
+    const [noise, redraw] = React.useReducer((n: number) => n + 1, 0);
 
     const settleDelay = React.useMemo(() => {
       // `duration` wins when it is given: it is the whole run, so the per
@@ -156,7 +182,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
           return grapheme;
         }
 
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pool[glyphAt(noise, index, pool.length)];
       })
       .join('');
 

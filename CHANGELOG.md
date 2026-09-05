@@ -22,6 +22,8 @@
 
 ### Fixed
 
+- **An `AnimateScramble` redraws on its own tick and not on every render above it.** The noise glyphs were picked with `Math.random()` during the render, so any re-render from anywhere in the tree reshuffled every unsettled letter at whatever moment it happened to land — an effect meant to be a clock, answering to the whole page. They are picked from the tick counter and the position now, which also settles the hydration mismatch the random source caused on a server-rendered page.
+
 - **A `CodeBlock`'s copy button keeps the focus when the clipboard falls back.** On a page without a secure context the copy goes through `execCommand` against an off-screen textarea, and selecting that textarea took the focus — so a reader who pressed the button with a keyboard was left on `<body>`, having lost their place in the page as the reward for copying.
 
 - **An `Anchor`, an `Image` and a `Panes` write their refs in an effect rather than during a render.** A ref written while rendering is a ref that lies when React throws that render away, which is a live hazard under concurrent rendering and is the rule `useShortcut` had already written down. None of the three reads the value during a render, so nothing about their behaviour changes.
