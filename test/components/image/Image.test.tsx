@@ -46,6 +46,24 @@ describe('Image', () => {
     await expect.element(screen.getByText('Could not load')).toBeInTheDocument();
   });
 
+  /*
+   * An empty `alt` says the picture carries nothing a reader needs, so the box
+   * has to invent a word — and a word the library invents is a word it has to
+   * be able to say in the reader's language. English is what it says when the
+   * page has not registered one.
+   */
+  it('names its own absence when there is no alt to put there', async () => {
+    const screen = await render(<Image src={BROKEN} alt="" />);
+
+    await expect.element(screen.getByText('Image unavailable')).toBeInTheDocument();
+  });
+
+  it('takes a wording of its own over the locale', async () => {
+    const screen = await render(<Image src={BROKEN} alt="" unavailableLabel="Gone" />);
+
+    await expect.element(screen.getByText('Gone')).toBeInTheDocument();
+  });
+
   it('starts over when the src changes', async () => {
     // Without this a second file inherits the first one's success and never
     // shows a placeholder — and a second file that fails inherits it too.

@@ -88,6 +88,7 @@ export const ja: NebaLocale = {
     previous: '前の画像',
     next: '次の画像'
   },
+  image: { unavailable: '画像を表示できません' },
   chart: { label: 'グラフ' },
   scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {

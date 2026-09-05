@@ -88,6 +88,7 @@ export const th: NebaLocale = {
     previous: 'รูปก่อนหน้า',
     next: 'รูปถัดไป'
   },
+  image: { unavailable: 'ไม่พบรูปภาพ' },
   chart: { label: 'แผนภูมิ' },
   scroll: { label: 'เนื้อหาที่เลื่อนได้', previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
   breadcrumb: {

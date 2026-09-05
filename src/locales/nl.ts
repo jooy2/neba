@@ -88,6 +88,7 @@ export const nl: NebaLocale = {
     previous: 'Vorige afbeelding',
     next: 'Volgende afbeelding'
   },
+  image: { unavailable: 'Afbeelding niet beschikbaar' },
   chart: { label: 'Grafiek' },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {

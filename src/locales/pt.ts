@@ -88,6 +88,7 @@ export const pt: NebaLocale = {
     previous: 'Imagem anterior',
     next: 'Próxima imagem'
   },
+  image: { unavailable: 'Imagem indisponível' },
   chart: { label: 'Gráfico' },
   scroll: { label: 'Conteúdo rolável', previous: 'Rolar para trás', next: 'Rolar para a frente' },
   breadcrumb: {

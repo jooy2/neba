@@ -11396,6 +11396,22 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Called as the status changes. A new src starts over at loading'
       }
     },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '파일이 도착하지 못하고 alt도 비었을 때 쓰는 한 문장의 언어. BCP 47 태그',
+        en: 'The language of the one sentence used when the file fails and alt is empty. A BCP 47 tag'
+      }
+    },
+    {
+      name: 'unavailableLabel',
+      type: 'string',
+      description: {
+        ko: '그 문장을 직접 씁니다. 기본값은 locale의 표현',
+        en: "Writes that sentence out instead. Defaults to the locale's wording"
+      }
+    },
     slotsProp('image', 'placeholder', 'fallback', 'frame', 'watermark')
   ],
 

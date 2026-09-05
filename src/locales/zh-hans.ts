@@ -91,6 +91,7 @@ export const zhHans: NebaLocale = {
     previous: '上一张图片',
     next: '下一张图片'
   },
+  image: { unavailable: '图片不可用' },
   chart: { label: '图表' },
   scroll: { label: '可滚动内容', previous: '向前滚动', next: '向后滚动' },
   breadcrumb: {

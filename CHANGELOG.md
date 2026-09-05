@@ -22,6 +22,8 @@
 
 ### Fixed
 
+- **An `Image` says its own absence in the reader's language.** A picture that failed with an empty `alt` printed a hardcoded `Image unavailable`, which was the one string the library invented and could not translate. There is an `image` message namespace now, in all eighteen languages, and `Image` takes a `locale` and an `unavailableLabel` like every other component that has to invent a word.
+
 - **A message lookup reads a table's own keys and not its prototype's.** A `locale` a caller took from a URL, or a `{placeholder}` a translation happened to name after a member of `Object`, resolved up the prototype chain — so `locale="constructor"` was spread over English as though it were a table of messages, and `{constructor}` in a translation wrote `function Object() { [native code] }` into the middle of a sentence.
 
 - **An `AppLogo` and a `BottomNavigationItem` merge `noopener noreferrer` into a link that leaves this tab.** `safeRel` reached four of the six components that let a `target` through to an `<a>`; these two handed the page they opened a `window.opener` pointing back at the one that opened it, and a `Referer` header naming it. A `rel` written by hand — `nofollow`, `sponsored` — is merged rather than replaced, as everywhere else.

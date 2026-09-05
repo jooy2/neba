@@ -88,6 +88,7 @@ export const ru: NebaLocale = {
     previous: 'Предыдущее изображение',
     next: 'Следующее изображение'
   },
+  image: { unavailable: 'Изображение недоступно' },
   chart: { label: 'Диаграмма' },
   scroll: {
     label: 'Прокручиваемая область',

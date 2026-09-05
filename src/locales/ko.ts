@@ -88,6 +88,7 @@ export const ko: NebaLocale = {
     previous: '이전 이미지',
     next: '다음 이미지'
   },
+  image: { unavailable: '이미지를 불러올 수 없습니다' },
   chart: { label: '차트' },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {

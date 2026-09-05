@@ -91,6 +91,7 @@ export const zhHant: NebaLocale = {
     previous: '上一張圖片',
     next: '下一張圖片'
   },
+  image: { unavailable: '圖片無法顯示' },
   chart: { label: '圖表' },
   scroll: { label: '可捲動內容', previous: '向前捲動', next: '向後捲動' },
   breadcrumb: {

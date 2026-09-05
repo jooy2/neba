@@ -88,6 +88,7 @@ export const id: NebaLocale = {
     previous: 'Gambar sebelumnya',
     next: 'Gambar berikutnya'
   },
+  image: { unavailable: 'Gambar tidak tersedia' },
   chart: { label: 'Bagan' },
   scroll: {
     label: 'Konten yang dapat digulir',

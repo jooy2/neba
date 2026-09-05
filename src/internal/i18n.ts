@@ -428,6 +428,18 @@ export const galleryMessages: MessageTable<GalleryMessages> = {
   }
 };
 
+export interface ImageMessages {
+  /**
+   * What stands where the picture was, when the file did not arrive and the
+   * caller gave no `alt` to say what it was.
+   */
+  unavailable: string;
+}
+
+export const imageMessages: MessageTable<ImageMessages> = {
+  '': { unavailable: 'Image unavailable' }
+};
+
 /**
  * The charts.
  *
@@ -901,6 +913,8 @@ export interface NebaLocale {
   carousel?: Partial<CarouselMessages>;
   /** Gallery. */
   gallery?: Partial<GalleryMessages>;
+  /** Image. */
+  image?: Partial<ImageMessages>;
   /** Chart. */
   chart?: Partial<ChartMessages>;
   /** Scroll. */
@@ -944,6 +958,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   pagination: paginationMessages as MessageTable<never>,
   carousel: carouselMessages as MessageTable<never>,
   gallery: galleryMessages as MessageTable<never>,
+  image: imageMessages as MessageTable<never>,
   chart: chartMessages as MessageTable<never>,
   scroll: scrollMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,

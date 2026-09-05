@@ -88,6 +88,7 @@ export const tr: NebaLocale = {
     previous: 'Önceki görsel',
     next: 'Sonraki görsel'
   },
+  image: { unavailable: 'Görsel kullanılamıyor' },
   chart: { label: 'Grafik' },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {

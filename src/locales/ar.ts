@@ -88,6 +88,7 @@ export const ar: NebaLocale = {
     previous: 'الصورة السابقة',
     next: 'الصورة التالية'
   },
+  image: { unavailable: 'الصورة غير متاحة' },
   chart: { label: 'رسم بياني' },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {

@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { AspectRatio } from '../aspect-ratio/AspectRatio.js';
 import { Skeleton } from '../skeleton/Skeleton.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
+import { imageMessages, useMessages } from '../../internal/i18n.js';
 import { cx, metaTextValues, radiusClasses, toLength } from '../../internal/styles.js';
 import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
 import type { NebaCorner, NebaElevation, NebaSize, NebaSlots } from '../../types.js';
@@ -237,6 +239,19 @@ export interface ImageProps extends Omit<
    * @default false
    */
   protect?: boolean | NebaImageProtection;
+  /**
+   * Which language the picture names its own absence in — a BCP 47 tag such as
+   * `ko`, `pt-BR` or `zh-Hant`. Unsupported tags fall back to English.
+   *
+   * It is read for one string, and only when a file fails and there is no `alt`
+   * to put in its place. `unavailableLabel` writes the words out instead.
+   */
+  locale?: string;
+  /**
+   * What the box says when the file does not arrive and `alt` is empty.
+   * Defaults to the `locale`'s wording.
+   */
+  unavailableLabel?: string;
   /** Class names for the parts behind the root. */
   classNames?: NebaSlots<ImageSlot>;
 }
@@ -366,8 +381,8 @@ function markTile(text: string, color: string): { uri: string; width: number; he
  * `filter` is one declaration, `frame` is one element, `watermark` is one, and
  * `preview` is a chunk that is not fetched at all unless it is on.
  */
-export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(
-  {
+export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(rawProps, ref) {
+  const {
     alt,
     ratio = 'auto',
     fit = 'cover',
@@ -380,14 +395,16 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     frame,
     watermark,
     protect = false,
+    locale,
+    unavailableLabel,
     className,
     classNames,
     style,
     src,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['locale']);
+
+  const messages = useMessages(imageMessages, locale);
   const [phase, setPhase] = React.useState<Phase>('loading');
   const [open, setOpen] = React.useState(false);
 
@@ -516,7 +533,11 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           classNames?.fallback
         )}
       >
-        {fallback ?? <span className="px-2 text-center text-sm">{alt || 'Image unavailable'}</span>}
+        {fallback ?? (
+          <span className="px-2 text-center text-sm">
+            {alt || unavailableLabel || messages.unavailable}
+          </span>
+        )}
       </span>
     ) : phase === 'loading' && placeholder !== false ? (
       <span className={cx('absolute inset-0', classNames?.placeholder)}>

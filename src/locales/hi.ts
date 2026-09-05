@@ -88,6 +88,7 @@ export const hi: NebaLocale = {
     previous: 'पिछली छवि',
     next: 'अगली छवि'
   },
+  image: { unavailable: 'छवि उपलब्ध नहीं है' },
   chart: { label: 'चार्ट' },
   scroll: {
     label: 'स्क्रॉल करने योग्य सामग्री',

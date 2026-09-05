@@ -88,6 +88,7 @@ export const vi: NebaLocale = {
     previous: 'Ảnh trước',
     next: 'Ảnh tiếp theo'
   },
+  image: { unavailable: 'Không tải được hình ảnh' },
   chart: { label: 'Biểu đồ' },
   scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
   breadcrumb: {
