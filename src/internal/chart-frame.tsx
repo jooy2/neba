@@ -1200,10 +1200,14 @@ export function CartesianChart({
   /**
    * The mark nearest the pointer, or `null` if it is not near one.
    *
-   * A plain squared-distance sweep over the visible marks. The textbook answer
-   * is a Voronoi layer, and at the sizes a chart in a card is drawn at — a few
+   * A plain distance sweep over the visible marks. The textbook answer is a
+   * Voronoi layer, and at the sizes a chart in a card is drawn at — a few
    * hundred marks, recomputed only while a pointer is actually moving over it —
    * building one costs more than it saves.
+   *
+   * `Math.sqrt` of the sum rather than `Math.hypot`, which is the same number
+   * here and several times the work: `hypot` scales its inputs to survive an
+   * overflow that two pixel offsets inside one chart cannot produce.
    *
    * The cap is the mark's own radius plus `markRadius`, so a bubble is easier
    * to hit than a dot and neither is as small as it looks: an 8px dot is not
@@ -1228,17 +1232,22 @@ export function CartesianChart({
     // place that knows which of its own marks belong to a hidden row, and a
     // chart whose rows are not the frame's series has no `visible` to consult.
     markList.forEach((mark, at) => {
-      const toCentre = Math.hypot(mark.x - x, mark.y - y);
+      const dx = mark.x - x;
+      const dy = mark.y - y;
+      const toCentre = Math.sqrt(dx * dx + dy * dy);
       // How far the pointer is from the mark's *edge*, which is zero anywhere
       // inside it. Ranking on this rather than on the centre is what stops a
       // small mark next door winning a hover the pointer is making on a big one.
-      const body =
-        mark.rx === undefined
-          ? Math.max(0, toCentre - mark.r)
-          : Math.hypot(
-              Math.max(0, Math.abs(mark.x - x) - mark.rx),
-              Math.max(0, Math.abs(mark.y - y) - (mark.ry ?? mark.rx))
-            );
+      let body: number;
+
+      if (mark.rx === undefined) {
+        body = Math.max(0, toCentre - mark.r);
+      } else {
+        const outX = Math.max(0, Math.abs(dx) - mark.rx);
+        const outY = Math.max(0, Math.abs(dy) - (mark.ry ?? mark.rx));
+
+        body = Math.sqrt(outX * outX + outY * outY);
+      }
 
       // Inside two overlapping marks the edge distance is zero for both, and
       // the nearer centre is the one being pointed at.
