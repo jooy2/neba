@@ -248,6 +248,23 @@ describe('Carousel', () => {
      * somewhere to park them; without it this passes whether or not the control
      * does anything, because a carousel under the pointer was never advancing.
      */
+    /*
+     * The control is positioned by a wrapper, and it has to be. Every Button
+     * root carries `relative`, Tailwind emits `.relative` after `.absolute`,
+     * and two utilities of equal specificity are decided by the stylesheet
+     * rather than by the class attribute — so an `absolute` written on the
+     * button itself loses, and loses silently: the control stays in the flow
+     * and pushes the whole strip down by its own height.
+     */
+    it('positions the control from a wrapper and not from the button', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      const control = screen.getByRole('button', { name: 'Pause slide show' }).element();
+
+      expect(control.className).not.toContain('absolute');
+      expect(control.parentElement?.className).toContain('absolute');
+    });
+
     it('advances on its own, and stops for good when it is told to', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

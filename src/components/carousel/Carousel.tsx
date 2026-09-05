@@ -349,18 +349,26 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
              * the slides. Hover and focus already pause it for them, which is
              * exactly what they do not do for a reader holding a phone or
              * running a magnifier — this is the mechanism those two have.
+             *
+             * Positioned by a wrapper rather than by a class on the button, for
+             * the reason the arrows are: every Button root carries `relative`,
+             * Tailwind emits `.relative` after `.absolute`, and two utilities of
+             * equal specificity are decided by the stylesheet and not by the
+             * class attribute. An `absolute` written on the button loses — and
+             * loses silently, leaving it in the flow above the strip.
              */
-            <IconButton
-              variant="solid"
-              size={size}
-              color={color}
-              density={density}
-              elevation={1}
-              label={stopped ? (playLabel ?? messages.play) : (pauseLabel ?? messages.pause)}
-              className={`absolute z-10 ${insetClasses[size].rotation}`}
-              icon={stopped ? <PlayIcon /> : <PauseIcon />}
-              onClick={() => setStopped((was) => !was)}
-            />
+            <span className={`absolute z-10 flex ${insetClasses[size].rotation}`}>
+              <IconButton
+                variant="solid"
+                size={size}
+                color={color}
+                density={density}
+                elevation={1}
+                label={stopped ? (playLabel ?? messages.play) : (pauseLabel ?? messages.pause)}
+                icon={stopped ? <PlayIcon /> : <PauseIcon />}
+                onClick={() => setStopped((was) => !was)}
+              />
+            </span>
           ) : null}
 
           <div
