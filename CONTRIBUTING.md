@@ -1,6 +1,6 @@
-# Contributing to Project
+# Contributing to Neba
 
-Thank you for contributing to the project. Your contributions will help us take the project to the next level.
+Thank you for contributing to the project. Your contributions help make it better.
 
 This project adheres to the Contributor Covenant code of conduct. Your contribution implies that you have read and agree to this policy. Any behavior that undermines the quality of the project community, including this policy, will be warned or restricted by the maintainers.
 
@@ -27,7 +27,7 @@ Here's the process for contributing to the project:
 
 1. Clone the project (or rebase to the latest commit in the main branch)
 2. Install the package (if the package manager exists)
-3. Setting up lint or code formatter in the IDE (if your project includes a linter) and installing the relevant plugins. Some projects may use specific commands to check rules and perform formatting after module installation and before committing.
+3. Set up the linter and formatter in your IDE and install the matching plugins, if the project includes them. Some projects use a specific command to check the rules and format the code after installing modules and before committing.
 4. Write the code that needs to be fixed
 5. Update the documentation (if it exists) or create a new one. If your project supports multilingual documentation, update the documentation for all languages. You can fill in the content in your own language and not translate it.
 6. Add or modify tests as needed (if test code exists). You should also verify that existing tests pass.
@@ -42,9 +42,9 @@ While we don't have strict restrictions on commit messages, we recommend that yo
 - The message includes a summary of what was modified.
 - It's a good idea to separate multiple modifications into their own commit messages.
 
-It is recommended that you include a tag at the beginning of the commit message. Between the tag and the message, use `: ` between the tag and the message.
+Include a tag at the beginning of the commit message, and separate the tag from the message with `: `.
 
-tags conform to the ["Udacity Git Commit Message Style Guide"](https://udacity.github.io/git-styleguide). However, you are welcome to use tags not listed here for additional situations.
+Tags conform to the ["Udacity Git Commit Message Style Guide"](https://udacity.github.io/git-styleguide). However, you are welcome to use tags not listed here for additional situations.
 
 - `feat`: A new feature
 - `fix`: A bug fix

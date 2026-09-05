@@ -21,7 +21,7 @@ You install one package, add one line to your CSS, and import components. There 
 - **Accessible by construction** — real roles, labels, focus management and keyboard support, not `div`s with click handlers.
 - **Dark mode with no work** — follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file** — a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
-- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable — every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~67 kB; the whole library, all one hundred and twenty-six exports at once, is ~215 kB.
+- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable — every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~70 kB; the whole library, all one hundred and seventy-five exports at once, is ~265 kB.
 - **Two runtime dependencies** — Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later.
 
 ## Documentation
@@ -101,7 +101,7 @@ import { Button } from 'neba/button';
 import { TextField } from 'neba/text-field';
 ```
 
-Both forms produce the same bundle. The root barrel is the one to reach for; the subpath is there for a build that would rather not parse a hundred and ninety-eight modules to keep five, and as an escape hatch for a bundler that does not honour `sideEffects`.
+Both forms produce the same bundle. The root barrel is the one to reach for; the subpath is there for a build that would rather not parse three hundred modules to keep five, and as an escape hatch for a bundler that does not honour `sideEffects`.
 
 ### Languages
 
@@ -190,7 +190,7 @@ Placement props are logical, not physical — `start`/`end` rather than `left`/`
 
 **Transitions** — AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit, AnimateTyping, AnimateScramble, AnimateCounter, AnimateLighting, AnimateMarquee, AnimateHeadline
 
-**Recently added** — Gallery, Flex, Show, the six new `Animate*` (Reveal, Float, Shake, Split, Counter, Scramble), Stack, TreeSelect, Calendar, Image, Confirm, Popconfirm, VisuallyHidden, Portal, GaugeChart, CommandPalette, Tour, Transfer, Anchor, DataList, NavigationMenu, Menubar, Form (with Fieldset), ScrollArea, HoverCard, Meter, Toggle (with ToggleGroup), CodeBlock, HowToSteps, ScrollZone, FloatingBottomNavigation, WindowPane, Collapsible, Rating, BottomNavigation, FloatingActionButton, the charts (Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart), DataTable, Empty, Mockup, the `Animate*` wrappers, ColorPicker, Drawer, Popover, Skeleton, AspectRatio
+**Added in the last two releases** — Gallery, Flex, Show, Stack and the six new `Animate*` (Reveal, Float, Shake, Split, Counter, Scramble) in 1.12.0; Calendar, TreeSelect, Image, Confirm, Popconfirm and VisuallyHidden in 1.11.0. The [changelog](https://neba.cdget.com/changelog) has the rest.
 
 Each one has its own page — live previews, every prop, and the variations worth seeing — under [**All components**](https://neba.cdget.com/components/).
 

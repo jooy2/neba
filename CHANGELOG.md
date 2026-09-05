@@ -18,11 +18,11 @@
 | 25 components — a large one   | 115.7 kB | 115.7 kB |
 | all exports                   | 263.9 kB | 264.7 kB |
 
-`Image` is the row that moved, and 0.5 kB of it is what translating one string costs on the smallest component that needed it. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts` — resolution machinery every other translated component was already carrying. Which is why the twelve-component row went _down_: on any page that already draws one of them the marginal cost is nothing, and the shared helpers that shrank are what is left. The last 0.1 kB is `width` and `height`, and `Gallery` carries it because it draws an `Image`.
+`Image` is the row that moved. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts`, which costs it 0.5 kB. The twelve-component row went _down_ because those helpers are shared and they shrank. The last 0.1 kB is `width` and `height`, which `Gallery` also carries because it draws an `Image`.
 
 The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups, and a shared bound under the memos in `internal/`.
 
-The Korean row is the other one worth a sentence. Registering a language ships that language's whole module, so the twenty picker strings and the two a Carousel's stop button needs land in it whether or not the page draws either — 2.8 kB now against 2.4 kB before. It is the price of the thing being fixed: those twenty were hardcoded English, and a Korean product had no way to reach them but to write all twenty out.
+Registering a language ships that language's whole module, so the twenty picker strings and the two a Carousel's stop button needs land in it whether or not the page draws either: 2.8 kB now against 2.4 kB before. Those twenty used to be hardcoded English, which a Korean product could not reach at all.
 
 ### Added
 
