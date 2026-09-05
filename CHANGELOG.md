@@ -2,6 +2,10 @@
 
 ## vNext
 
+### Added
+
+- **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
+
 ### Changed
 
 - **An `Anchor` finds its headings once instead of on every frame of a scroll.** It ran a `document.getElementById` for each row of the trail on every scroll frame, for an answer that changes only when the document does. The elements are kept and checked against `isConnected`, so a heading that arrives after the trail is still found.

@@ -100,6 +100,16 @@ export interface BottomNavigationItemProps extends Omit<
   icon?: React.ReactNode;
   /** Renders the item as a link rather than as a button. */
   href?: string;
+  /**
+   * Where an `href` opens. Meaningless without one.
+   *
+   * Anything other than this tab gets `noopener noreferrer` merged into `rel`,
+   * so a destination that opens a new window cannot hand it a handle back to
+   * the page that opened it.
+   */
+  target?: string;
+  /** The link's `rel`. Merged with the two tokens above rather than replaced. */
+  rel?: string;
   /** Unavailable, but still part of the set. */
   disabled?: boolean;
   /** The destination's name. Read out even when `labels` keeps it undrawn. */
@@ -270,18 +280,20 @@ export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationPr
  */
 export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigationItemProps>(
   function BottomNavigationItem(
-    { value, icon, href, disabled: disabledProp = false, className, children, onClick, ...props },
+    {
+      value,
+      icon,
+      href,
+      target,
+      rel,
+      disabled: disabledProp = false,
+      className,
+      children,
+      onClick,
+      ...props
+    },
     ref
   ) {
-    /*
-     * A destination that opens somewhere other than this tab hands the page it
-     * opens a `window.opener` pointing back at this one. The props are typed
-     * against a `<button>` and cast to an `<a>` below, so `target` reaches the
-     * anchor at runtime whether or not TypeScript let it through — which makes
-     * this the same merge `TextLink` and a `Menu` row make, and not a special
-     * case for this component.
-     */
-    const anchorProps = props as React.ComponentPropsWithoutRef<'a'>;
     const bar = React.useContext(BottomNavigationContext);
     const disabled = disabledProp || bar.disabled;
     const selected = bar.value !== null && bar.value === value;
@@ -413,8 +425,12 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
           aria-disabled={disabled || undefined}
           className={classNames}
           onClick={press}
-          {...anchorProps}
-          rel={safeRel(anchorProps.target, anchorProps.rel)}
+          target={target}
+          // A destination that opens somewhere other than this tab hands the
+          // page it opens a `window.opener` pointing back at this one. The same
+          // merge `TextLink` and a `Menu` row make, and not a special case here.
+          rel={safeRel(target, rel)}
+          {...(props as React.ComponentPropsWithoutRef<'a'>)}
         >
           {body}
         </a>

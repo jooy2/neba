@@ -12617,6 +12617,22 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: 'href가 열리는 곳. 이 탭이 아니면 rel에 noopener noreferrer가 합쳐집니다',
+        en: 'Where an href opens. Anything but this tab gets noopener noreferrer merged into rel'
+      }
+    },
+    {
+      name: 'rel',
+      type: 'string',
+      description: {
+        ko: '링크의 rel. 위 두 토큰과 합쳐지며 덮어쓰지 않습니다',
+        en: 'The link’s rel. Merged with the two tokens above rather than replaced'
+      }
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       default: 'false',
