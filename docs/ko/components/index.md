@@ -6,7 +6,7 @@ aside: false
 
 # 모든 컴포넌트
 
-<p class="neba-lede">현재 배포된 컴포넌트 전부입니다. 각 카드 안의 미리보기는 그림이 아니라 실제로 동작하는 컴포넌트입니다.</p>
+<p class="neba-lede">현재 배포된 컴포넌트 129개 전부입니다. 각 카드 안의 미리보기는 실제로 동작하는 컴포넌트입니다.</p>
 
 <Demo src="catalog/all" plain />
 

@@ -3,12 +3,12 @@ layout: home
 
 title: Neba
 titleTemplate: The React component library
-description: A React component library of fifty-odd accessible, themeable components. Dark mode, TypeScript types and one shared prop vocabulary, in a single install.
+description: About 130 React components that already agree with each other. Accessible, dark-mode ready and typed, from one install and one line of CSS.
 
 hero:
   name: Neba
-  text: A React component library at home on the web and in your app
-  tagline: Fifty-odd components, one line to install. Dark mode, accessibility and types are already in the box.
+  text: Every piece a React screen needs
+  tagline: About 130 components that already look and behave alike. One install, one line of CSS, and no theme to assemble.
   actions:
     - theme: brand
       text: Get started
@@ -24,16 +24,16 @@ hero:
     alt: Neba
 
 features:
-  - title: Fifty-odd components
-    details: Buttons and inputs through Dialog, Table, DatePicker and Toast. Enough to build a whole screen without leaving.
+  - title: About 130 components
+    details: Buttons and fields through Dialog, Table, DatePicker, Toast and the charts. Enough to finish a screen.
     link: /components/
     linkText: Browse
   - title: TypeScript first
-    details: Declarations ship with the package. Your editor knows the prop names and the values they take before you do.
+    details: Types ship with the package, so your editor knows every prop and the values it takes.
   - title: Dark mode built in
-    details: One class on an ancestor and every component follows. No second theme to write, no colours to redeclare.
+    details: One class on an ancestor and the whole library follows. Nothing to redeclare.
   - title: One shared vocabulary
-    details: size, color, variant, density, elevation. An md means the same thing on every component.
+    details: size, color, variant, density, elevation. An md is the same md everywhere.
     link: /design/prop-conventions
     linkText: Prop conventions
 ---
@@ -42,35 +42,35 @@ features:
 
 <div class="neba-why">
   <div class="neba-why-card">
-    <h3>Tested, not asserted</h3>
-    <p>Every component carries its own tests, run in a real browser across three operating systems and three engines on every change.</p>
+    <h3>Tested in a real browser</h3>
+    <p>Every component ships with its own tests, run across three operating systems and three engines on every change.</p>
   </div>
   <div class="neba-why-card">
     <h3>Accessible by default</h3>
-    <p>Roles, labels, keyboard operation and focus management live inside the components rather than being bolted on later.</p>
+    <p>Roles, labels, keyboard operation and focus management are inside the components, not left to you.</p>
   </div>
   <div class="neba-why-card">
-    <h3>Markup crawlers can read</h3>
-    <p>Semantic elements, and the same output under SSR. What the crawler sees is what the user sees.</p>
+    <h3>Markup a crawler can read</h3>
+    <p>Semantic elements, and the same output from the server. What the crawler sees is what the reader sees.</p>
   </div>
   <div class="neba-why-card">
-    <h3>Platform agnostic</h3>
-    <p>Web, hybrid apps, Electron. The same code draws the same screen in any React environment.</p>
+    <h3>Runs wherever React runs</h3>
+    <p>Web, hybrid apps, Electron. The same code draws the same screen.</p>
   </div>
   <div class="neba-why-card">
-    <h3>Built for a modern front end</h3>
-    <p>Published as ESM and tree-shakeable, so only what you import ends up in the bundle.</p>
+    <h3>Only what you import</h3>
+    <p>Published as ESM and tree-shakeable, so a page that uses five components ships five.</p>
   </div>
   <div class="neba-why-card">
     <h3>Ready for coding agents</h3>
-    <p>Prop names are consistent across components and the documentation is structured, so an agent has little left to guess.</p>
+    <p>Prop names are consistent and every component has a structured page, so an agent has little left to guess.</p>
   </div>
 </div>
 
-## Component preview
+## See it running
 
-What follows is running inside this page. Type into it, and press save.
+This is not a screenshot. Type into it, and press save.
 
 <Demo src="showcase/app" />
 
-Per-component props and examples are under [Components](./components/); the same screen is explained block by block under [Examples](./examples/overview). Installing and wiring it up is one page: [Getting started](./guide/getting-started).
+[Getting started](./guide/getting-started) installs it in one page. [Components](./components/) has the props and examples for each one, and [Examples](./examples/overview) explains the screen above, block by block.
