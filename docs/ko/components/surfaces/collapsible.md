@@ -41,7 +41,7 @@ import { Collapsible } from 'neba';
 
 ### trigger
 
-`trigger`는 헤더를 여러분의 컨트롤로 통째로 갈아 끼웁니다. 넘긴 요소가 곧 trigger가 되어 클릭 핸들러와 `aria-expanded`, 패널을 가리키는 `aria-controls`를 받으므로 따로 연결할 것이 없습니다.
+`trigger`는 헤더를 직접 만든 컨트롤로 통째로 갈아 끼웁니다. 넘긴 요소가 곧 trigger가 되어 클릭 핸들러와 `aria-expanded`, 패널을 가리키는 `aria-controls`를 받으므로 따로 연결할 것이 없습니다.
 
 <Demo src="collapsible/trigger">
 

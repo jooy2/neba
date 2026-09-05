@@ -50,7 +50,7 @@ Tailwind only ever sees class names written out literally, so a per-breakpoint c
 | `direction` on [Flex](../components/layout/flex) | `color` |
 | `maxWidth` on [Container](../components/layout/container), [Header](../components/layout/header) and [Footer](../components/layout/footer) | `elevation` |
 
-The list on the left is short on purpose. Each slot is four media blocks that cannot be generated, so adding one is a decision rather than a convenience.
+The list on the left is short on purpose. Each slot needs four hand-written media blocks that every page then downloads, so adding an axis is not a decision taken lightly.
 
 ## Deciding in CSS or in JavaScript
 
@@ -64,7 +64,7 @@ Both are available and they are not interchangeable.
 </Show>
 ```
 
-**`useBreakpoint` and `useBreakpointValue`** decide in JavaScript, and can do the one thing CSS cannot: not render something at all. They answer `false` and `xs` on a server and on the first client render, so what they control arrives after hydration — which is a flash if it is a layout, and correct if it is a component that must not run.
+**`useBreakpoint` and `useBreakpointValue`** decide in JavaScript, and can do the one thing CSS cannot: not render something at all. They answer `false` and `xs` on a server and on the first client render, so what they control arrives after hydration. For a layout that means one flash; for a component that must not run at all, it is the behaviour you want.
 
 ```tsx
 const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
@@ -91,4 +91,4 @@ What it can be is a decision you take part in. The library's media queries are w
 
 This needs the Tailwind path. A project on `neba/styles.css` gets a stylesheet that was compiled here, with the five widths already baked into it; the names still work, but the numbers are the ones in the table above. If you need to move them, run Tailwind — [getting started](../guide/getting-started) has both setups.
 
-Changing the _names_ is not supported on either path. Five is what the type says, what the class tables are written out to, and what the cascades in the stylesheet resolve through.
+Changing the _names_ is not supported on either path. The five names are written into the type, into the class tables literally, and into the cascades the stylesheet resolves through.

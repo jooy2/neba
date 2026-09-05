@@ -39,7 +39,7 @@ import { AnimateHeadline } from 'neba';
 
 ### 제어하기
 
-`index`를 넘기면 릴은 스스로 돌지 않습니다. 대신 다른 무언가가 정하는 줄 사이의 이동 수단이 됩니다 — 폼의 단계, tab, 여러분이 만든 타이머 같은 것들입니다. `onIndexChange`는 방금 올라온 줄을 알립니다.
+`index`를 넘기면 릴은 스스로 돌지 않고, 넘긴 값에 따라 줄을 바꿉니다. 폼의 단계나 tab, 직접 만든 타이머가 그 값을 정합니다. `onIndexChange`는 방금 올라온 줄을 알립니다.
 
 <Demo src="animate-headline/controlled">
 

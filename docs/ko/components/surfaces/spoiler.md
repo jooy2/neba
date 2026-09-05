@@ -55,7 +55,7 @@ import { Spoiler } from 'neba';
 
 `label`은 버튼의 말을, `description`은 그 위의 줄을 바꿉니다. `description={false}`면 덮개에 아무것도 쓰지 않습니다. `blur`는 흐림의 세기를 픽셀로 정합니다.
 
-`action`은 버튼을 통째로 갈아 끼웁니다. 이때 그 버튼을 움직이는 것은 여러분의 몫이고, `revealed`와 `onRevealedChange`로 연결합니다.
+`action`은 버튼을 통째로 갈아 끼웁니다. 이때 버튼의 동작은 직접 연결해야 하며, `revealed`와 `onRevealedChange`를 씁니다.
 
 <Demo src="spoiler/words">
 
