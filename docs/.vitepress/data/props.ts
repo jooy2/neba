@@ -273,7 +273,7 @@ function progressProps(sizeDescription: Text): PropRow[] {
       type: 'number | null',
       default: 'null',
       description: {
-        ko: 'min과 max 사이의 진행도. null(기본값)은 미정 상태입니다 — 값을 듣지 못한 표시기는 빈 막대를 그리는 대신 모른다고 말해야 합니다',
+        ko: 'min과 max 사이의 진행도. null(기본값)은 진행도를 아직 모르는 상태이며, 빈 막대가 아니라 미정 표시로 그려집니다',
         en: 'How far along, between min and max. null — the default — is indeterminate: an indicator that has not been told a value should say so rather than draw an empty bar'
       }
     },
@@ -472,7 +472,7 @@ function calendarProps(minMax: Text): PropRow[] {
       type: WEEKDAY,
       shared: true,
       description: {
-        ko: '주가 시작하는 요일. 일요일이 0입니다. 기본값은 로케일이 말하는 것',
+        ko: '주가 시작하는 요일. 일요일이 0이며, 기본값은 로케일을 따릅니다',
         en: 'Which day the week starts on, Sunday being 0. Defaults to whatever the locale says'
       }
     }
@@ -485,7 +485,7 @@ const clockProps: PropRow[] = [
     name: 'hour12',
     type: 'boolean',
     description: {
-      ko: '12시간 다이얼과 오전/오후 열. 기본값은 로케일이 하는 대로',
+      ko: '12시간 다이얼과 오전/오후 열. 기본값은 로케일을 따릅니다',
       en: 'A 12-hour dial with an AM/PM column. Defaults to whatever the locale does'
     }
   },
@@ -734,7 +734,7 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       type: 'number | string',
       default: options.height,
       description: {
-        ko: '그림의 높이. 축 라벨은 이 안에 그려지므로, 차트에 맞춘 카드는 차트가 들어가는 카드입니다',
+        ko: '그림의 높이. 축 라벨도 이 높이 안에 그려집니다',
         en: 'How tall the drawing is. The axis labels are drawn inside it, so a card sized to the chart is a card the chart fits in'
       }
     },
@@ -1784,7 +1784,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'full' | 'content'",
       default: "'full'",
       description: {
-        ko: 'footer에 대한 같은 질문. 따로 답할 수 있는 이유는, 전체 높이 레일을 쓰는 대시보드도 저작권 줄은 대개 레일 아래가 아니라 콘텐츠 아래에 두기 때문',
+        ko: 'footer에도 같은 것을 정하며, header와 따로 답할 수 있습니다. 전체 높이 레일을 쓰는 대시보드도 저작권 줄은 대개 콘텐츠 아래에 두기 때문입니다',
         en: 'The same question for the footer, and worth answering separately: a dashboard with a full-height rail still usually wants its copyright line under the content rather than under the rail'
       }
     },
@@ -1960,7 +1960,7 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       elevation: '0',
       variantDescription: {
-        ko: '면의 무게. 바는 색으로 물들지 않습니다 — 위에 놓이는 것들이 자기 색을 갖고 오기 때문',
+        ko: '면의 무게. 바는 색으로 물들지 않습니다. 위에 놓이는 것이 이미 자기 색을 갖고 오기 때문입니다',
         en: 'Weight of the sheet. The bar is never dyed, because what is on it arrives with colours of its own'
       },
       sizeDescription: {
@@ -2140,7 +2140,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: `${BREAKPOINT} | 'none'`,
       default: 'PageLayout',
       description: {
-        ko: '이 너비보다 좁아지면 열이 아니라 drawer가 됩니다. PageLayout의 값을 물려받고, 밖에서는 none — 되돌릴 방법이 없는 채로 접히면 독자가 사이드바를 잃기 때문',
+        ko: '이 너비보다 좁아지면 열이 아니라 drawer가 됩니다. PageLayout의 값을 물려받으며, PageLayout 밖에서는 none입니다. 여는 버튼 없이 접히면 사이드바에 닿을 방법이 없기 때문입니다',
         en: "The width below which it stops being a column and becomes a drawer. Defaults to the PageLayout's own, and to none outside one: a sidebar that collapsed with nothing able to bring it back is a sidebar the reader has lost"
       }
     },
@@ -4839,7 +4839,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '자식이 있는 노드도 고를 수 있는지. 기본값이 꺼짐인 이유는 대부분의 트리에서 가지가 분류 체계이고 잎이 답이기 때문 — France 옆에서 고를 수 있는 Europe은 보통 아무도 의도하지 않은 모델입니다',
+        ko: '자식이 있는 노드도 고를 수 있는지. 기본값은 꺼짐이며, 가지는 분류에 쓰고 잎만 고르게 됩니다',
         en: 'Whether a node with children may itself be chosen. Off by default because in most of these trees the branches are the taxonomy and the leaves are the answers: a Europe choosable alongside France is a data model nobody meant'
       }
     },
@@ -5770,7 +5770,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'readonly DataTableColumn[]',
       required: true,
       description: {
-        ko: '열 정의. 아래 DataTableColumn 참고',
+        ko: '열 정의. 아래 DataTableColumn을 참고하세요',
         en: 'The columns — see DataTableColumn below'
       }
     },
@@ -7897,7 +7897,7 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       density: "'compact'",
       variantDescription: {
-        ko: '쉬고 있는 페이지 버튼의 무게. 현재 페이지는 언제나 solid입니다 — 읽지 않고도 보여야 하는 유일한 정보이고, 기본값이 text인 이유도 그것입니다. 채워진 버튼 아홉 개가 한 줄에 있으면 아홉 개 모두가 주된 액션이라는 뜻이 됩니다',
+        ko: '쉬고 있는 페이지 버튼의 무게. 기본값은 text이며, 현재 페이지는 언제나 solid로 그려집니다',
         en: 'How the pages look at rest. The current page is always solid — the one thing the row has to say without being read, which is also why the default here is text: nine filled buttons in a row say all nine are the primary action'
       },
       sizeDescription: {
@@ -8463,7 +8463,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       required: true,
       description: {
-        ko: '그릴 글리프. svg, img, 아이콘 세트의 컴포넌트, 문자 — children이 아니라 prop인 이유는 남이 그린 요소에서 정작 바꾸고 싶은 두 가지(크기와 색)가 자식으로 들어간 뒤에는 손이 닿지 않기 때문입니다',
+        ko: '그릴 글리프. svg, img, 아이콘 세트의 컴포넌트, 문자를 받습니다. children이 아니라 prop이라서 크기와 색을 컴포넌트가 정할 수 있습니다',
         en: 'The glyph — an svg, an img, a component from an icon set, a character. A prop and not children because the two things you always want to change about an icon somebody else drew are the two you cannot reach once it is a child'
       }
     },
@@ -8483,7 +8483,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'inherit'",
       shared: true,
       description: {
-        ko: '의미론적 색 역할, 또는 감싼 것의 색을 그대로 받는 inherit. 라이브러리에서 기본값이 primary가 아닌 유일한 color입니다 — 아이콘은 콘텐츠이고, 대부분은 이미 색을 정한 무언가 안에 들어갑니다',
+        ko: '의미론적 색 역할, 또는 감싼 것의 색을 그대로 받는 inherit. 라이브러리에서 기본값이 primary가 아닌 유일한 color입니다',
         en: 'Semantic colour role, or `inherit` to take the colour of whatever it sits in. The one `color` in the library that does not default to `primary`: an icon is content, and it nearly always sits inside something that has already decided'
       }
     },
@@ -8513,7 +8513,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       required: true,
       description: {
-        ko: '버튼이 하는 일을 말로. 여기서 유일한 필수 prop입니다 — 라벨이 그림뿐인 버튼은 접근 가능한 이름이 아예 없고, 그것이 컴포넌트 라이브러리가 가장 흔히 내보내는 접근성 결함입니다',
+        ko: '버튼이 하는 일을 설명하는 접근성 이름. 이 컴포넌트의 유일한 필수 prop이며, 없으면 글리프뿐인 버튼에 이름이 생기지 않습니다',
         en: 'What the button does, in words. The one required prop here: a button whose whole label is a drawing has no accessible name at all, and that is the single most common accessibility defect a component library ships'
       }
     },
@@ -8633,7 +8633,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'up' | 'down'",
       default: "'up'",
       description: {
-        ko: '어느 쪽이 좋은 방향인지, 그래서 차이를 어느 색으로 칠할지. 매출은 up, 이탈률·오류율·페이지 용량은 down. 장식이 아닙니다 — 이탈률이 올랐는데 초록이면 보고서가 뜻과 반대로 말하고, 하필 훑어보는 독자에게 그렇게 말합니다',
+        ko: '어느 쪽이 좋은 방향인지, 그래서 차이를 어느 색으로 칠할지. 매출은 up, 이탈률·오류율·페이지 용량은 down입니다',
         en: 'Which direction counts as good, and so which way the delta is coloured. `up` for revenue, `down` for churn and error rate and page weight. Not decoration: green-for-larger on a bounce rate says the opposite of what the report means, and says it to exactly the reader who is skimming'
       }
     },
@@ -8732,7 +8732,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '스스로 넘어갑니다. 기본이 꺼짐인 이유는 읽는 중에 움직이는 캐러셀이 웹에서 가장 많은 불평을 듣는 패턴이기 때문입니다. 켜도 hover·포커스·백그라운드 탭에서 멈추고, 모션을 줄여 달라고 한 독자에게는 아예 시작하지 않습니다. 켜면 프레임 아래에 멈춤 버튼이 그려집니다',
+        ko: '스스로 넘어갑니다. 기본값은 꺼짐이며, 켜면 hover·포커스·백그라운드 탭에서 멈추고 프레임 아래에 멈춤 버튼이 그려집니다. 모션을 줄이도록 설정한 환경에서는 시작하지 않습니다',
         en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab — and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, under the frame'
       }
     },
@@ -8816,7 +8816,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Semantic colour role. `secondary` here rather than `primary`, because the object this shape is borrowed from is very nearly neutral black'
       },
       elevationDescription: {
-        ko: '그림자 깊이. 다른 모든 것이 0인데 여기만 2인 것은 일관성이 깨진 것이 아닙니다 — Pill은 페이지의 일부가 아닌 것으로 정의되고, 자기가 떠 있는 내용 위에 납작하게 붙은 로젠지는 실수처럼 보입니다',
+        ko: '그림자 깊이. 페이지 위에 떠 있는 표면이라 기본값이 2입니다',
         en: 'Drop shadow depth. `2` against the `0` everything else defaults to, and not an inconsistency: a Pill is defined by not being part of the page, and a lozenge floating flat on the content it floats over reads as a mistake'
       }
     }),
@@ -9138,7 +9138,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '단어 전체일 때만 잡을지 — cat이 "cat"은 잡고 "concatenate"는 잡지 않습니다. 여기서 단어는 어떤 문자 체계든 글자·숫자·밑줄의 연속이므로 한국어처럼 띄어쓰기로 구획되지 않는 글에서는 의미가 거의 없습니다',
+        ko: '단어 전체일 때만 잡을지. cat이 "cat"은 잡고 "concatenate"는 잡지 않습니다. 단어는 글자·숫자·밑줄의 연속이므로, 띄어쓰기로 단어를 나누지 않는 글에서는 효과가 거의 없습니다',
         en: 'Whether a term has to be a word on its own — `cat` marking "cat" but not "concatenate". A word is a run of letters, digits and underscores in any script, which means very little for text that is not delimited by spaces'
       }
     },
@@ -9288,7 +9288,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'active',
       type: 'number',
       description: {
-        ko: '지금 진행 중인 항목의 인덱스. 그 앞은 전부 complete, 뒤는 전부 upcoming이 됩니다. 값이 아니라 인덱스인 이유는 타임라인에 선택이 없기 때문입니다 — 아무것도 고르는 것이 없고, 물어볼 것은 어디까지 왔는가뿐입니다. 생략하면 전부 upcoming, 항목 수를 넘기면 전부 complete',
+        ko: '지금 진행 중인 항목의 인덱스. 그 앞은 전부 complete, 뒤는 전부 upcoming이 됩니다. 생략하면 전부 upcoming이고, 항목 수를 넘기면 전부 complete입니다',
         en: 'The index of the item being worked on now: everything before it is complete, everything after it is still to come. An index rather than a value, because a timeline has no selection. Omit it and every item is upcoming; pass the item count to mark the whole sequence done'
       }
     },
@@ -9575,7 +9575,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'numeric' | 'alpha' | 'alphanumeric' | 'any'",
       default: "'numeric'",
       description: {
-        ko: '입력할 수 있는 문자. 거부된 문자는 표시되지 않고 버려지며 onValueInvalid로 알려집니다. numeric이 기본인 이유는 문자로 오는 코드가 그렇기도 하고, 휴대폰에 숫자 키패드를 띄우기 때문입니다',
+        ko: '입력할 수 있는 문자. 거부된 문자는 표시되지 않고 버려지며 onValueInvalid로 알려집니다. 기본값 numeric은 휴대폰에서 숫자 키패드를 띄웁니다',
         en: 'What may be typed. Rejected characters are dropped rather than shown, and reported through onValueInvalid. numeric is the default because that is what a texted code is, and because it puts a number pad in front of a phone'
       }
     },
@@ -9718,7 +9718,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'inline' | 'overlay'",
       default: "'inline'",
       description: {
-        ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼 밑으로 숨는 대신 그 가장자리에서 잘립니다. 버튼이 갈 곳이 없어도 그 자리는 유지되고, 그래서 auto일 때 지워지는 대신 disabled가 됩니다',
+        ko: '버튼이 스트립 옆에 설지, 위에 겹칠지. inline이면 스크롤 영역이 버튼 앞에서 끝나므로 항목이 버튼에 가리지 않고, 더 스크롤할 곳이 없을 때 버튼은 사라지지 않고 disabled가 됩니다',
         en: 'Whether the buttons sit beside the strip or over it. inline stops the scroller where the button starts, so an item is cut off at its edge rather than sliding under it — and the lane is kept even while that button has nowhere to go, which is why an auto button is disabled there rather than removed'
       }
     },
@@ -10084,7 +10084,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'current',
       type: 'boolean',
       description: {
-        ko: '지금 보고 있는 페이지로 표시하고 링크를 걷어냅니다. 마지막 단계는 그냥 두어도 현재이므로, 트레일이 독자가 있는 곳에서 끝나지 않을 때만 필요합니다 — 어디든 한 번 지정하면 마지막 단계에서 표시가 걷힙니다. 한 트레일에 현재는 하나뿐이기 때문입니다',
+        ko: '지금 보고 있는 페이지로 표시하고 링크를 걷어냅니다. 마지막 단계는 지정하지 않아도 현재이며, 다른 단계에 지정하면 마지막 단계에서 표시가 걷힙니다. 한 트레일에 현재는 하나뿐입니다',
         en: 'Marks this step as the page you are on, which stops it being a link. The last step is the current one on its own, so this is only needed for a trail that ends somewhere the reader is not — and setting it anywhere takes the mark off the last step, because only one step in a trail can be it'
       }
     },
@@ -10824,7 +10824,7 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       color: "'secondary'",
       variantDescription: {
-        ko: '표면의 무게. 기본이 text인 곳은 여기뿐입니다 — 빈 상태는 거의 언제나 이미 무언가(Card의 본문, Table의 아래) 안에 놓이고, 사각형 안에 사각형을 하나 더 그리는 것은 하나가 더 많은 것입니다',
+        ko: '표면의 무게. 빈 상태는 대개 Card의 본문이나 Table의 아래처럼 이미 표면이 있는 자리에 놓이므로 기본값이 text입니다',
         en: 'Weight of the surface. text is the default here and nowhere else: an empty state is nearly always already inside something — a Card body, a Table — and a second rectangle drawn inside the first is one rectangle too many'
       },
       sizeDescription: {
@@ -11749,7 +11749,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'active',
       type: 'boolean',
       description: {
-        ko: '앞에 있는 창인지. 넘기지 않으면 스스로 판단합니다 — 페이지의 다른 WindowPane이 눌리거나 포커스를 가져갈 때까지 앞에 있습니다. 창들 *주변*의 페이지를 누르는 것은 아무것도 바꾸지 않습니다. 뒤에 있는 창은 모양을 지키고 강조만 잃으며(회색 신호등, 강조색 없는 제목표시줄, 한 단계 낮은 그림자) 흐려지지는 않습니다',
+        ko: '앞에 있는 창인지. 생략하면 다른 WindowPane이 눌릴 때까지 앞에 둡니다. 뒤에 있는 창은 흐려지지 않고 강조만 잃습니다(회색 신호등, 강조색 없는 제목표시줄, 한 단계 낮은 그림자)',
         en: 'Whether this is the window in front. Left out, the window works it out for itself: it is in front until another WindowPane on the page is pressed or takes the focus, and a press on the page *around* the windows changes nothing. A window behind keeps its shape and loses its emphasis — grey traffic lights, no accent, one step less shadow — never its opacity'
       }
     },
@@ -13950,7 +13950,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'HowToStep[]',
       required: true,
       description: {
-        ko: '해야 하는 순서대로의 단계들. children이 아니라 배열인 이유는, 옆의 목록과 본문이 같은 데이터를 두 번 그린 것이고 본문 높이가 지금 보이는 단계가 아니라 모든 단계에 맞춰 정해지기 때문',
+        ko: '해야 하는 순서대로의 단계. children이 아니라 배열로 받습니다. 옆의 목록과 본문이 같은 데이터를 함께 쓰고, 본문 높이가 모든 단계에 맞춰 정해지기 때문입니다',
         en: 'The steps, in the order they are to be done. An array rather than children because the list beside the body and the body itself are two renderings of the same data, and the panel is sized against every step rather than the one showing'
       }
     },
