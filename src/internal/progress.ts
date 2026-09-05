@@ -17,7 +17,35 @@
  */
 
 import type * as React from 'react';
-import type { NebaColor, NebaSize } from '../types.js';
+import type { NebaColor, NebaSize, NebaThreshold } from '../types.js';
+
+/**
+ * Which family a reading has earned.
+ *
+ * A `Meter` and a `GaugeChart` both answer this and had a copy each, which is
+ * the arrangement this folder exists to end: two implementations of "which band
+ * is this number in" is two chances to disagree about a boundary, on the two
+ * components a dashboard is most likely to draw side by side.
+ *
+ * Written as a scan rather than a sort so the array is read in the order it was
+ * given: thresholds are meant to be listed in ascending order, and silently
+ * reordering them would hide the one call site that did not.
+ */
+export function thresholdColor(
+  value: number,
+  color: NebaColor,
+  thresholds: readonly NebaThreshold[] | undefined
+): NebaColor {
+  if (!thresholds || thresholds.length === 0) return color;
+
+  let current = color;
+
+  for (const threshold of thresholds) {
+    if (value >= threshold.from) current = threshold.color;
+  }
+
+  return current;
+}
 
 /**
  * The props all three indicators take.

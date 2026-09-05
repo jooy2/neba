@@ -13,8 +13,9 @@ import {
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { emptyMessages, useMessages } from '../../internal/i18n.js';
+import { thresholdColor } from '../../internal/progress.js';
 import { cx, hasContent, metaTextClasses } from '../../internal/styles.js';
-import type { NebaColor, NebaThreshold } from '../../types.js';
+import type { NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface GaugeChartProps extends Omit<ChartBaseProps, 'legend' | 'tooltip'> {
@@ -59,23 +60,6 @@ export interface GaugeChartProps extends Omit<ChartBaseProps, 'legend' | 'toolti
   center?: React.ReactNode;
   /** A line under the value: the unit, or what is being measured. */
   caption?: React.ReactNode;
-}
-
-/** Which family the reading has earned. `Meter`'s rule, on a different shape. */
-function thresholdColor(
-  value: number,
-  color: NebaColor,
-  thresholds: readonly NebaThreshold[] | undefined
-): NebaColor {
-  if (!thresholds || thresholds.length === 0) return color;
-
-  let current = color;
-
-  for (const threshold of thresholds) {
-    if (value >= threshold.from) current = threshold.color;
-  }
-
-  return current;
 }
 
 /**

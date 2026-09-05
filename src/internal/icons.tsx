@@ -385,6 +385,33 @@ export function StarOutlineIcon() {
   );
 }
 
+/**
+ * The ring a control that is working draws in place of its own start icon.
+ *
+ * Two components draw it, and it is here rather than in either of them because
+ * a Button that is submitting and a TextField that is checking what was typed
+ * have to read as the same object in motion — the same ring at the same weight
+ * turning at the same rate. Two drawings would be two objects, and the second
+ * one would drift the first time either was touched.
+ *
+ * The arc is a quarter of the circle behind it, and both are stroked at 2 rather
+ * than the 1.5 every other glyph here uses: a ring that turns is read as a
+ * shape rather than as a line, and at 1.5 it reads as a smudge.
+ */
+export function SpinnerIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="animate-spin">
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
+      <path
+        d="M14.5 8A6.5 6.5 0 0 0 8 1.5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** The filled dot: the chosen one of a set, where a tick would say "and". */
 export function DotIcon() {
   return (

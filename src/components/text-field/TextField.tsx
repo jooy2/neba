@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
+import { SpinnerIcon } from '../../internal/icons.js';
 import {
   controlHeightClasses,
   controlTextLeadingClasses,
@@ -188,21 +189,6 @@ const shellBaseClasses = [
 const restClasses = fieldRestClasses;
 const readOnlyClasses = fieldReadOnlyClasses;
 
-/** Mirrors Button's spinner so the two read as the same object in motion. */
-function Spinner() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="animate-spin">
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
-      <path
-        d="M14.5 8A6.5 6.5 0 0 0 8 1.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
   function TextField(rawProps, ref) {
     const {
@@ -345,7 +331,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
 
           {loading ? (
             <span className={adornmentClasses}>
-              <Spinner />
+              <SpinnerIcon />
             </span>
           ) : endIcon ? (
             <span className={adornmentClasses}>{endIcon}</span>

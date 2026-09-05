@@ -2,7 +2,12 @@
 
 import * as React from 'react';
 import { Meter as BaseUIMeter } from '@base-ui/react/meter';
-import { barThicknessClasses, progressFraction, progressSlots } from '../../internal/progress.js';
+import {
+  barThicknessClasses,
+  progressFraction,
+  progressSlots,
+  thresholdColor
+} from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -48,29 +53,6 @@ export interface MeterProps extends Omit<
 
 /** The same groove a ProgressLinear cuts, because they are the same object. */
 const trackClasses = 'relative w-full overflow-hidden rounded-full bg-(--n-soft)';
-
-/**
- * Which family the value has earned.
- *
- * Written as a scan rather than a sort so the array is read in the order it was
- * given: thresholds are meant to be listed in ascending order, and silently
- * reordering them would hide the one call site that did not.
- */
-function thresholdColor(
-  value: number,
-  color: NebaColor,
-  thresholds: readonly NebaThreshold[] | undefined
-): NebaColor {
-  if (!thresholds || thresholds.length === 0) return color;
-
-  let current = color;
-
-  for (const threshold of thresholds) {
-    if (value >= threshold.from) current = threshold.color;
-  }
-
-  return current;
-}
 
 /**
  * How much of something there is, on a scale that is known in advance — disk

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Button as BaseUIButton } from '@base-ui/react/button';
 import { useRender } from '@base-ui/react/use-render';
 import { ButtonGroupContext } from '../../internal/button-group.js';
+import { SpinnerIcon } from '../../internal/icons.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -155,20 +156,6 @@ const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = 
   text: `${readOnlyFilterClasses} cursor-default text-(--n-accent) bg-transparent`
 };
 
-function Spinner() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="animate-spin">
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
-      <path
-        d="M14.5 8A6.5 6.5 0 0 0 8 1.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(rawProps, ref) {
     const {
@@ -278,7 +265,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ...props,
         children: (
           <>
-            {loading ? <Spinner /> : startIcon}
+            {loading ? <SpinnerIcon /> : startIcon}
             {children}
             {endIcon}
           </>
