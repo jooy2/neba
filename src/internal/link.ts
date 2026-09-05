@@ -5,10 +5,11 @@
  * pointing back at this one, and a `Referer` header naming it. Modern browsers
  * imply `noopener` for `target="_blank"`; none of them implies `noreferrer`,
  * and neither is implied for a named target. So the two tokens are added
- * wherever a component lets a caller choose where a link opens — TextLink,
- * a Menu row, a NavigationMenu link — and they are added the same way in all
- * three, because a library where only one of them is safe is a library whose
- * users cannot tell which.
+ * wherever a component lets a caller choose where a link opens — TextLink, a
+ * Menu row, a NavigationMenu link, a ChatBubble's link, an AppLogo, a
+ * BottomNavigation destination — and they are added the same way in all of
+ * them, because a library where only some are safe is a library whose users
+ * cannot tell which.
  *
  * It is a *merge* and not an override, and that is the whole reason this is a
  * function rather than a string. The common reason to write a `rel` by hand is

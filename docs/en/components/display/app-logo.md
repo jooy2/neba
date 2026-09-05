@@ -73,7 +73,7 @@ The weight of the tile behind the artwork, and the family it takes. Neither does
 
 ### href · height · render
 
-`href` makes the whole lockup a link, which is what a logo in a [Header](../layout/header) nearly always is. `height` overrides `size` with an exact number of pixels or a CSS length. `render` changes the element — `render={<h1 />}` for the one page where the product's name is the page's heading, or a router's own link component.
+`href` makes the whole lockup a link, which is what a logo in a [Header](../layout/header) nearly always is. A `target` that leaves this tab gets `rel="noopener noreferrer"` merged into whatever `rel` you wrote. `height` overrides `size` with an exact number of pixels or a CSS length. `render` changes the element — `render={<h1 />}` for the one page where the product's name is the page's heading, or a router's own link component.
 
 <Demo src="app-logo/link" minHeight="120">
 

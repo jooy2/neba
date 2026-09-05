@@ -196,6 +196,33 @@ describe('AppLogo', () => {
 
       expect(screen.getByTestId('logo').element().tagName).toBe('SPAN');
     });
+
+    // The mark in a header is very often the link to the marketing site, and
+    // that link is very often `target="_blank"`. The same merge a TextLink and
+    // a Menu row make.
+    it('merges noopener into a link that leaves this tab', async () => {
+      const screen = await render(
+        <AppLogo name="Neba" href="https://example.com" target="_blank" />
+      );
+      const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
+    });
+
+    it('keeps a rel the caller wrote alongside it', async () => {
+      const screen = await render(
+        <AppLogo name="Neba" href="https://example.com" target="_blank" rel="nofollow" />
+      );
+      const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
+    });
+
+    it('leaves a link that stays in this tab alone', async () => {
+      const screen = await render(<AppLogo name="Neba" href="/" />);
+
+      expect(screen.getByRole('link').element()).not.toHaveAttribute('rel');
+    });
   });
 
   describe('height', () => {

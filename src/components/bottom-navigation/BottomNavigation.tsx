@@ -7,6 +7,7 @@ import type {
   BottomNavigationLabels,
   BottomNavigationValue
 } from '../../internal/bottom-navigation.js';
+import { safeRel } from '../../internal/link.js';
 import {
   cx,
   hasContent,
@@ -272,6 +273,15 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
     { value, icon, href, disabled: disabledProp = false, className, children, onClick, ...props },
     ref
   ) {
+    /*
+     * A destination that opens somewhere other than this tab hands the page it
+     * opens a `window.opener` pointing back at this one. The props are typed
+     * against a `<button>` and cast to an `<a>` below, so `target` reaches the
+     * anchor at runtime whether or not TypeScript let it through — which makes
+     * this the same merge `TextLink` and a `Menu` row make, and not a special
+     * case for this component.
+     */
+    const anchorProps = props as React.ComponentPropsWithoutRef<'a'>;
     const bar = React.useContext(BottomNavigationContext);
     const disabled = disabledProp || bar.disabled;
     const selected = bar.value !== null && bar.value === value;
@@ -403,7 +413,8 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
           aria-disabled={disabled || undefined}
           className={classNames}
           onClick={press}
-          {...(props as React.ComponentPropsWithoutRef<'a'>)}
+          {...anchorProps}
+          rel={safeRel(anchorProps.target, anchorProps.rel)}
         >
           {body}
         </a>

@@ -73,7 +73,7 @@ import { AppLogo } from 'neba';
 
 ### href · height · render
 
-`href`는 전체를 링크로 만듭니다. [Header](../layout/header)의 로고는 거의 언제나 그렇습니다. `height`는 `size` 대신 정확한 픽셀 값이나 CSS 길이를 씁니다. `render`는 요소를 바꿉니다 — 제품 이름이 곧 페이지 제목인 한 페이지를 위한 `render={<h1 />}`, 또는 라우터의 링크 컴포넌트.
+`href`는 전체를 링크로 만듭니다. [Header](../layout/header)의 로고는 거의 언제나 그렇습니다. 이 탭을 벗어나는 `target`을 주면 직접 쓴 `rel`에 `rel="noopener noreferrer"`가 합쳐집니다. `height`는 `size` 대신 정확한 픽셀 값이나 CSS 길이를 씁니다. `render`는 요소를 바꿉니다 — 제품 이름이 곧 페이지 제목인 한 페이지를 위한 `render={<h1 />}`, 또는 라우터의 링크 컴포넌트.
 
 <Demo src="app-logo/link" minHeight="120">
 

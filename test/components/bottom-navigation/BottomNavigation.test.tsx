@@ -30,6 +30,23 @@ describe('BottomNavigation', () => {
         .toHaveAttribute('href', '/home');
     });
 
+    // The props are typed against a `<button>` and cast to an `<a>`, so a
+    // `target` reaches the anchor at runtime whether or not TypeScript let it
+    // through — and a destination opening in a new tab has to carry the same
+    // `rel` a TextLink or a Menu row would give it.
+    it('merges noopener into a destination that leaves this tab', async () => {
+      const screen = await render(
+        <BottomNavigation>
+          <BottomNavigationItem value="docs" href="https://example.com" target="_blank">
+            Docs
+          </BottomNavigationItem>
+        </BottomNavigation>
+      );
+      const rel = screen.getByRole('link', { name: 'Docs' }).element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
+    });
+
     it('reflects a changed name on re-render', async () => {
       const screen = await render(
         <BottomNavigation>

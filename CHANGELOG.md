@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **An `AppLogo` and a `BottomNavigationItem` merge `noopener noreferrer` into a link that leaves this tab.** `safeRel` reached four of the six components that let a `target` through to an `<a>`; these two handed the page they opened a `window.opener` pointing back at the one that opened it, and a `Referer` header naming it. A `rel` written by hand — `nofollow`, `sponsored` — is merged rather than replaced, as everywhere else.
+
 - **`colorSchemeScript` escapes `<` in the values it writes.** The string is inlined inside a `<script>` element, and a browser stops parsing that element at the first `</script` in it however the JavaScript around it is quoted — so a `storageKey` holding one would have ended the tag and handed the rest to the HTML parser as markup. `Breadcrumb` already wrote its structured data out this way.
 
 - **An `AnimateMarquee` stops for the focus as well as for the pointer.** `pauseOnHover` was `:hover` alone, so a link on a moving strip could be aimed at with a mouse and not reached with a keyboard — tabbing to it left it travelling off the screen while it was being read.

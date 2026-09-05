@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { initialsOf } from '../../internal/initials.js';
+import { safeRel } from '../../internal/link.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -254,6 +255,8 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
     padded = true,
     height,
     href,
+    target,
+    rel: relProp,
     imageProps,
     render,
     className,
@@ -363,6 +366,12 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
     ref,
     props: {
       href,
+      target,
+      // The mark in a header is very often the link to the marketing site, and
+      // that link is very often `target="_blank"`. `safeRel` is where the merge
+      // lives, so a TextLink, a Menu row and this one cannot disagree about what
+      // a link that leaves this tab is allowed to hand the page it opens.
+      rel: safeRel(target, relProp),
       className: cx(
         'inline-flex max-w-full min-w-0 items-center align-middle',
         'text-(--neba-fg) no-underline select-none',
