@@ -98,10 +98,24 @@ export function colorSchemeScript(
   const fallback = options.defaultColorScheme ?? 'system';
 
   return (
-    `(function(){try{var s=localStorage.getItem(${JSON.stringify(key)})||${JSON.stringify(fallback)};` +
+    `(function(){try{var s=localStorage.getItem(${embed(key)})||${embed(fallback)};` +
     `if(s==='system'){s=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}` +
     `document.documentElement.setAttribute('data-theme',s)}catch(e){}})()`
   );
+}
+
+/**
+ * A string, as a literal safe to write inside a `<script>` element.
+ *
+ * `JSON.stringify` closes the quotes and nothing else, and the browser stops
+ * parsing the element at the first `</script` in it however that sequence is
+ * quoted — so a `storageKey` holding one would end the tag and hand the rest of
+ * this to the HTML parser as markup. `<` is escaped to `\u003c`, which the
+ * JavaScript parser reads back as the same character. The same escape
+ * `Breadcrumb` writes its `BreadcrumbList` out with, for the same reason.
+ */
+function embed(value: string): string {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
 /**

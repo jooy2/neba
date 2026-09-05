@@ -288,4 +288,30 @@ describe('colorSchemeScript', () => {
     expect(() => new Function(colorSchemeScript())()).not.toThrow();
     root().removeAttribute('data-theme');
   });
+
+  /*
+   * The string is written inside a `<script>` element, and a browser stops
+   * parsing that element at the first `</script` in it however the JavaScript
+   * around it is quoted. `JSON.stringify` closes the quotes and does not touch
+   * that, so the `<` is escaped separately — and the escape has to read back as
+   * the same character, or the key the script looks up would not be the key the
+   * provider writes.
+   */
+  it('cannot end the script element it is written into', () => {
+    const script = colorSchemeScript({ storageKey: 'a</script><img src=x>' });
+
+    expect(script).not.toContain('</script');
+    expect(script).toContain('\\u003c');
+  });
+
+  it('still reads back as the key it was given', () => {
+    const key = 'a<b';
+    const script = colorSchemeScript({ storageKey: key });
+    const literal = script.slice(
+      script.indexOf('localStorage.getItem(') + 'localStorage.getItem('.length,
+      script.indexOf(')||')
+    );
+
+    expect(new Function(`return ${literal}`)()).toBe(key);
+  });
 });

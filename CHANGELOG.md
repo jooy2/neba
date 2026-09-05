@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **`colorSchemeScript` escapes `<` in the values it writes.** The string is inlined inside a `<script>` element, and a browser stops parsing that element at the first `</script` in it however the JavaScript around it is quoted — so a `storageKey` holding one would have ended the tag and handed the rest to the HTML parser as markup. `Breadcrumb` already wrote its structured data out this way.
+
 - **An `AnimateMarquee` stops for the focus as well as for the pointer.** `pauseOnHover` was `:hover` alone, so a link on a moving strip could be aimed at with a mouse and not reached with a keyboard — tabbing to it left it travelling off the screen while it was being read.
 
 ## 1.12.0 (2026-09-05)
