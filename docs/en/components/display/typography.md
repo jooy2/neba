@@ -54,7 +54,7 @@ Two props differ from the rest of the library. The type scale is chosen with `le
 
 ### render
 
-Use `render` when the element `level` implies is not the element you need — a subheading that should stay out of the document outline, or a `<p>` that has to look like a heading.
+Use `render` when the element `level` implies is not the element you need: a subheading that should stay out of the document outline, or a `<p>` that has to look like a heading.
 
 ```tsx
 <Typography level="h3" render={<p />}>

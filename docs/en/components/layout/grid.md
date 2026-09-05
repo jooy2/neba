@@ -48,7 +48,7 @@ The width is `(100% + gutter) × span / columns − gutter`, so twelve `span={1}
 
 ### breakpoints
 
-Give `span` an object and it uses a different value per width. Every entry applies **from its own breakpoint up** — it is a floor, not a band — which is what makes two of them enough to describe a whole layout.
+Give `span` an object and it uses a different value per width. Every entry applies **from its own breakpoint up** (it is a floor, not a band), which is what makes two of them enough to describe a whole layout.
 
 The widths are Tailwind's own defaults: `sm` 40rem · `md` 48rem · `lg` 64rem · `xl` 80rem. `xs` is 0, the value with no media query around it, so a grid and a `md:` utility change at the same moment.
 
@@ -84,7 +84,7 @@ The column count. Twelve is the default, but it does not divide by five, so valu
 
 ### offset
 
-Empty columns pushed in **ahead of** the item — space inserted in front of it rather than an absolute position counted from the start of the row. After an item that already took columns, the offset pushes on from there.
+Empty columns pushed in **ahead of** the item: space inserted in front of it rather than an absolute position counted from the start of the row. After an item that already took columns, the offset pushes on from there.
 
 <Demo src="grid/offset">
 

@@ -48,7 +48,7 @@ With no attribution it renders a single `<blockquote>`. Given either `author` or
 
 ### author and source
 
-Pass `author` on its own, `source` on its own, or both. `cite` is the URL of the document the quote came from and lands on the `<blockquote>`'s `cite` attribute — it never appears on screen, only machines read it.
+Pass `author` on its own, `source` on its own, or both. `cite` is the URL of the document the quote came from and lands on the `<blockquote>`'s `cite` attribute: it never appears on screen, only machines read it.
 
 <Demo src="blockquote/attribution">
 

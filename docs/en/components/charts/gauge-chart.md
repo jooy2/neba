@@ -19,11 +19,11 @@ import { GaugeChart } from 'neba';
 
 <PropsTable name="GaugeChart" />
 
-Every [Box](../surfaces/box) prop passes through, so the dial can be a card of its own. There is no `legend` and no `tooltip`: one value has nothing to distinguish and nothing to uncover — the number is written in the middle.
+Every [Box](../surfaces/box) prop passes through, so the dial can be a card of its own. There is no `legend` and no `tooltip`: one value has nothing to distinguish and nothing to uncover. The number is written in the middle.
 
 It is a [Meter](../feedback/meter) bent into an arc, and deliberately the same component in two shapes: `value`, `min`, `max` and `thresholds` mean what they mean there, so a reading can move from a bar to a dial without changing what it says.
 
-It is not a [PieChart](./pie-chart) with `shape="semi"`. A pie is parts of a whole and every slice is a category; this is one value against a scale, and the unfilled part of the arc is not a second category — it is the rest of the dial.
+It is not a [PieChart](./pie-chart) with `shape="semi"`. A pie is parts of a whole and every slice is a category; this is one value against a scale, and the unfilled part of the arc is not a second category: it is the rest of the dial.
 
 ## Examples
 
@@ -63,7 +63,7 @@ How far round the dial goes, opened symmetrically about twelve o'clock. `180` is
 
 ### center · caption
 
-The value in the middle is real text — selectable, findable, and in the accessibility tree. `center` replaces it, for the dial whose reading is a word; `caption` is a line under it for the unit.
+The value in the middle is real text: selectable, findable, and in the accessibility tree. `center` replaces it, for the dial whose reading is a word; `caption` is a line under it for the unit.
 
 ## Accessibility
 

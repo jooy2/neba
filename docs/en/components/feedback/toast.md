@@ -58,7 +58,7 @@ Where the stack is pinned, given as one word combining the vertical edge (`top`/
 
 ### update and promise
 
-Calling `update` with the `id` that `add` returned refreshes that toast in place and restarts its timer — for a single toast that changes state, like "uploading → uploaded".
+Calling `update` with the `id` that `add` returned refreshes that toast in place and restarts its timer: for a single toast that changes state, like "uploading → uploaded".
 
 ```tsx
 const toast = useToast();
@@ -76,7 +76,7 @@ toast.update(id, { color: 'success', title: 'Restored' });
 
 ### classNames
 
-A ToastProvider renders no element of its own — it wraps the app and puts a portalled stack on the page — so there is no `className` here and no `root` slot for one to land on. Every part of the stack is named instead.
+A ToastProvider renders no element of its own (it wraps the app and puts a portalled stack on the page), so there is no `className` here and no `root` slot for one to land on. Every part of the stack is named instead.
 
 ```tsx
 <ToastProvider classNames={{ viewport: 'p-8', toast: 'font-mono' }}>

@@ -5,7 +5,7 @@ order: 17
 
 # DateTimePicker
 
-<p class="neba-lede">Chooses a day and a time in one popup. Use it where the two together make a single moment — a scheduled send, a publish time.</p>
+<p class="neba-lede">Chooses a day and a time in one popup. Use it where the two together make a single moment: a scheduled send, a publish time.</p>
 
 <Demo src="date-time-picker/hero" />
 

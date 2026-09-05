@@ -5,7 +5,7 @@ order: 1
 
 # Alert
 
-<p class="neba-lede">A message about something that just happened, set into the page. Use it for notices that stay on screen — a save confirmation, a validation error, a setting that needs attention.</p>
+<p class="neba-lede">A message about something that just happened, set into the page. Use it for notices that stay on screen: a save confirmation, a validation error, a setting that needs attention.</p>
 
 <Demo src="alert/hero" />
 

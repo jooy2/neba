@@ -33,7 +33,7 @@ The value is an array in both the single and the multiple case, so turning `mult
 
 ### multiple
 
-Off — the default — turning one toggle on turns the last one off. If what is being chosen is a _value_ rather than a set of states, [SegmentedButton](./segmented-button) or [RadioGroup](./radio-group) is the component that says so.
+Off, which is the default, means turning one toggle on turns the last one off. If what is being chosen is a _value_ rather than a set of states, [SegmentedButton](./segmented-button) or [RadioGroup](./radio-group) is the component that says so.
 
 <Demo src="toggle-group/multiple">
 
@@ -74,4 +74,4 @@ Stretches to the container and divides the width evenly between the toggles.
 ## Accessibility
 
 - The set is one tab stop; the arrow keys move between the toggles and `loopFocus` decides whether they wrap at the ends.
-- A group has no name of its own — give it an `aria-label`.
+- A group has no name of its own: give it an `aria-label`.

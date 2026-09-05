@@ -20,7 +20,7 @@ import { BarChart } from 'neba';
 />;
 ```
 
-The data model is the one every chart shares — `series`, `categories`, and a `null` that means a gap rather than a zero. It is written out on the [LineChart](./line-chart#the-data) page.
+The data model is the one every chart shares: `series`, `categories`, and a `null` that means a gap rather than a zero. It is written out on the [LineChart](./line-chart#the-data) page.
 
 A bar's **length** is its value, which is why its axis starts at zero and cannot be talked out of it: crop the scale and a bar twice as long stops meaning twice as much. Where the categories have a natural order and the shape of the change is the point, a [LineChart](./line-chart) is the better mark.
 
@@ -44,7 +44,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### stacked
 
-Grouped bars answer "which series is bigger here". Stacked bars answer "what is this total made of". `'full'` normalises every bar to the same length, which asks about the mix instead — the value axis becomes a percentage, and the tooltip keeps the original number.
+Grouped bars answer "which series is bigger here". Stacked bars answer "what is this total made of". `'full'` normalises every bar to the same length, which asks about the mix instead: the value axis becomes a percentage, and the tooltip keeps the original number.
 
 They are different questions and a chart should be asked only one at a time.
 
@@ -56,7 +56,7 @@ They are different questions and a chart should be asked only one at a time.
 
 ### Negative values
 
-A bar that goes the other way grows down from the same zero the others grow up from — the baseline is drawn where zero is, not at the bottom of the plot.
+A bar that goes the other way grows down from the same zero the others grow up from: the baseline is drawn where zero is, not at the bottom of the plot.
 
 A point's own `color` overrides its series' for one bar, which is how a single value is marked without spending a second series on it.
 
@@ -68,9 +68,9 @@ A point's own `color` overrides its series' for one bar, which is how a single v
 
 ### valueLabels · rounded · barSize
 
-`valueLabels="all"` is defensible here in a way it is not on a line chart: eight bars with their numbers on them is a chart and a table at once. Past about a dozen it stops being either, and `extremes` — the series' own high and low — is the one to reach for.
+`valueLabels="all"` is defensible here in a way it is not on a line chart: eight bars with their numbers on them is a chart and a table at once. Past about a dozen it stops being either, and `extremes` (the series' own high and low) is the one to reach for.
 
-`rounded` cuts the corners off the **data end** of each bar; the baseline end stays square. `barSize` caps the thickness in pixels — below the cap bars fill their share of the band, above it the leftover stays as air. `density="compact"` widens that share.
+`rounded` cuts the corners off the **data end** of each bar; the baseline end stays square. `barSize` caps the thickness in pixels: below the cap bars fill their share of the band, above it the leftover stays as air. `density="compact"` widens that share.
 
 ```tsx
 <BarChart valueLabels="extremes" rounded={false} barSize={12} density="compact" … />

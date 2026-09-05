@@ -29,7 +29,7 @@ Whitespace is never scrambled. A space that flickered into a letter and back wou
 
 ### speed, duration and tick
 
-`speed` is how many characters settle per second; `duration` is the whole run and wins when it is given, so the per-character delay falls out of it rather than being asked for twice. `tick` is how often an unsettled character is redrawn — below about 30 milliseconds it stops reading as characters at all.
+`speed` is how many characters settle per second; `duration` is the whole run and wins when it is given, so the per-character delay falls out of it rather than being asked for twice. `tick` is how often an unsettled character is redrawn: below about 30 milliseconds it stops reading as characters at all.
 
 <Demo src="animate-scramble/pool" minHeight="240">
 

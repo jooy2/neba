@@ -25,7 +25,7 @@ import { Avatar, ChatBubble } from 'neba';
 
 <PropsTable name="ChatBubble" />
 
-Every other `<div>` attribute passes through to the row, except `title` — a bubble has no headline, and the browser's tooltip on a whole message is rarely what anyone wants.
+Every other `<div>` attribute passes through to the row, except `title`: a bubble has no headline, and the browser's tooltip on a whole message is rarely what anyone wants.
 
 The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -33,7 +33,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### side
 
-`start` is the default and `end` is the other party. It runs the row the other way — avatar, bubble and actions all flip — and cuts the corner nearest the speaker short, which is what says where the message came from without hanging a tail off the sheet.
+`start` is the default and `end` is the other party. It runs the row the other way (avatar, bubble and actions all flip), and cuts the corner nearest the speaker short, which is what says where the message came from without hanging a tail off the sheet.
 
 `variant` is what tells your own messages from everyone else's, and it is deliberately not tied to `side`: filling the trailing column is a convention, not a law.
 
@@ -55,7 +55,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### status
 
-Five steps: `sending`, `sent`, `delivered`, `read` and `failed`. Only the last two carry a colour — a thread where every message is marked in colour is a thread where the colour has stopped meaning anything.
+Five steps: `sending`, `sent`, `delivered`, `read` and `failed`. Only the last two carry a colour: a thread where every message is marked in colour is a thread where the colour has stopped meaning anything.
 
 The mark is the whole of what is drawn. The word behind it is read out but never shown; `statusLabel` replaces it.
 
@@ -69,7 +69,7 @@ The mark is the whole of what is drawn. The word behind it is read out but never
 
 `typing` draws three dots in place of the message. `children` is left alone, so the same bubble goes back to the message the moment it arrives.
 
-The dots light in sequence and never move — colour is the axis every indeterminate indicator in the library uses, and something bouncing in the corner of a thread being read is exactly what the design language has no time for.
+The dots light in sequence and never move: colour is the axis every indeterminate indicator in the library uses, and something bouncing in the corner of a thread being read is exactly what the design language has no time for.
 
 <Demo src="chat-bubble/typing">
 
@@ -99,7 +99,7 @@ The dots light in sequence and never move — colour is the axis every indetermi
 
 ### actions
 
-`actions` sits beside the bubble — a [Menu](../inputs/menu) trigger, most of the time. It stays out of the way until the row is hovered or something in it takes focus, and is simply always there on a pointer that cannot hover.
+`actions` sits beside the bubble: a [Menu](../inputs/menu) trigger, most of the time. It stays out of the way until the row is hovered or something in it takes focus, and is simply always there on a pointer that cannot hover.
 
 <Demo src="chat-bubble/actions">
 
@@ -109,7 +109,7 @@ The dots light in sequence and never move — colour is the axis every indetermi
 
 ### locale
 
-The delivery marks and the typing dots are read out as words, and `locale` is which language those words are in — a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English.
+The delivery marks and the typing dots are read out as words, and `locale` is which language those words are in: a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English.
 
 ```tsx
 <ChatBubble side="end" status="read" locale="ko">
@@ -120,5 +120,5 @@ The delivery marks and the typing dots are read out as words, and `locale` is wh
 ## Accessibility
 
 - The status mark is a glyph with the word behind it in text only a screen reader reaches. Set `locale`, or write the word out in `statusLabel`.
-- A ChatBubble is one message, not a thread. Wrap the conversation in the markup the page needs — a list, or a container with `role="log"` for one that keeps updating.
+- A ChatBubble is one message, not a thread. Wrap the conversation in the markup the page needs: a list, or a container with `role="log"` for one that keeps updating.
 - `media` carries no `alt` of its own: pass a real `<img alt="…">`, or an empty one where the text beside it already says what the picture is.

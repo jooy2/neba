@@ -28,13 +28,13 @@ import { CommandPalette } from 'neba';
 
 <PropsTable name="CommandItem" />
 
-It is not a [Menu](./menu) — a menu is a short list in one place and every row is visible before you look for it. It is not a [Combobox](./combobox) either: what comes back is not a value, it is something happening.
+A [Menu](./menu) is a short list in one place, with every row visible before you look for it. A [Combobox](./combobox) returns a value. This returns an action that runs.
 
 ## Examples
 
 ### items · group
 
-Commands are drawn in the order they are given, and a heading is drawn each time `group` changes — so a group's commands have to be listed together. `icon` and `shortcut` fill in the two ends of a row, and `description` a second line under the label.
+Commands are drawn in the order they are given, and a heading is drawn each time `group` changes, so a group's commands have to be listed together. `icon` and `shortcut` fill in the two ends of a row, and `description` a second line under the label.
 
 <Demo src="command-palette/groups">
 
@@ -48,7 +48,7 @@ Extra words the query is matched against but that are never drawn: the name some
 
 ### shortcut
 
-The keystroke that opens the palette, bound on the window. `Mod` is Command on a Mac and Control everywhere else — the same spelling [Shortcut](../display/shortcut) draws, read rather than written. `false` binds nothing, for an application that owns its own keyboard.
+The keystroke that opens the palette, bound on the window. `Mod` is Command on a Mac and Control everywhere else: the same spelling [Shortcut](../display/shortcut) draws, read rather than written. `false` binds nothing, for an application that owns its own keyboard.
 
 ### onSelect
 
@@ -66,7 +66,7 @@ Each command may carry its own `onSelect`; the palette's runs after it, with the
 
 ### className · classNames
 
-`className` lands on the sheet — the panel the search field and the rows sit on. Everything around and inside it is reached through `classNames`.
+`className` lands on the sheet: the panel the search field and the rows sit on. Everything around and inside it is reached through `classNames`.
 
 ```tsx
 <CommandPalette
@@ -83,4 +83,4 @@ The slots are `backdrop`, `viewport`, `input`, `list`, `group`, `item` and `empt
 - The sheet is a modal dialog named by `label`, which has no visible title of its own. Focus moves into the field as it opens and back to wherever the reader was as it closes.
 - The field is a `combobox` over a `listbox`, with the highlighted row reported through `aria-activedescendant`; the pointer and the arrow keys move the same highlight, so Enter never runs a row other than the marked one.
 - Escape closes it.
-- A palette is never the only way to a command. Everything in it has to be reachable some other way — a reader who does not know it exists gets no other showing.
+- A palette is never the only way to a command. Everything in it has to be reachable some other way: a reader who does not know it exists gets no other showing.

@@ -24,7 +24,7 @@ import { HeatmapChart } from 'neba';
 
 ## The data
 
-The `series` shape is the one every chart shares — see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid or a **group** of the treemap, `y` is the magnitude, and `x` names the column or the tile.
+The `series` shape is the one every chart shares: see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid or a **group** of the treemap, `y` is the magnitude, and `x` names the column or the tile.
 
 A `null` is a gap and the cell is left as surface. It is not drawn as the bottom of the scale, because "nothing happened" and "the least of anything" are two different readings and only one of them is in the data.
 
@@ -40,11 +40,11 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### shape
 
-`grid` is the shape for two categorical axes and one number — hours against weekdays, a cohort against a week. `treemap` packs a tile per datum, sized by its share, and fills the box.
+`grid` is the shape for two categorical axes and one number: hours against weekdays, a cohort against a week. `treemap` packs a tile per datum, sized by its share, and fills the box.
 
 A treemap is squarified rather than sliced: tiles are laid in rows and each row is closed the moment its aspect ratios stop improving. Sliced, twenty values end as slivers a pixel wide, and a sliver's area is unreadable however exact it is.
 
-A treemap has no axes — every tile is named on its own face — and a negative value has no area to be, so it stays in the table and off the picture.
+A treemap has no axes (every tile is named on its own face), and a negative value has no area to be, so it stays in the table and off the picture.
 
 <Demo src="heatmap-chart/treemap">
 
@@ -70,7 +70,7 @@ Neither ramp is the eight-slot [categorical palette](../../design/color): colour
 
 `valueLabels="all"` writes each value on its cell, where the cell is big enough for the text with room either side; a label that does not fit is dropped rather than clipped. Inside a filled cell the label picks its ink from the step underneath it, so it stays readable at both ends of the ramp.
 
-`min` and `max` pin the scale. Left out, the ends come from the data — which means two charts of different data are not comparable until they are given the same bounds.
+`min` and `max` pin the scale. Left out, the ends come from the data: which means two charts of different data are not comparable until they are given the same bounds.
 
 <Demo src="heatmap-chart/labels">
 
@@ -80,7 +80,7 @@ Neither ramp is the eight-slot [categorical palette](../../design/color): colour
 
 ### legend
 
-The legend is a scale bar with its two ends labelled, not a list of swatches — nothing here has a name, and the order is the meaning. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
+The legend is a scale bar with its two ends labelled, not a list of swatches: nothing here has a name, and the order is the meaning. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
 
 ## Accessibility
 

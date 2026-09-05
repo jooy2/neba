@@ -23,7 +23,7 @@ It is not a real window: there is no desktop, no z-order and nothing outside the
 
 <PropsTable name="WindowPane" />
 
-Every other `<div>` attribute passes through to the root, except `title` — here it is the window's name and a `ReactNode` — and `onResize`, which reports pixels rather than a DOM event. The shared axes (`size` `color` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
+Every other `<div>` attribute passes through to the root, except `title` (here it is the window's name and a `ReactNode`), and `onResize`, which reports pixels rather than a DOM event. The shared axes (`size` `color` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 
@@ -34,19 +34,19 @@ Eight systems, and a version is its own entry wherever the title bar is what cha
 | `os` | What it draws |
 | --- | --- |
 | `macos` | Three coloured dots on the left, the title centred over the whole window, one flat sheet |
-| `macosx` | Aqua — a short striped bar, glossy lights, a bold embossed title, square bottom corners |
+| `macosx` | Aqua: a short striped bar, glossy lights, a bold embossed title, square bottom corners |
 | `windows11` | Three rectangles hard against a rounded top-right corner, bar and body one Mica sheet |
 | `windows10` | The same three over square corners, a shorter bar, and a rule under it |
 | `windows8` | Flat and square, no rule, and a band of colour around the whole window |
-| `windows7` | Aero — a sheet of glass with the content sunk into it, the page blurred through the band as well as the caption, a glowing title and a wider close |
-| `windowsxp` | Luna — the glossy blue caption curve, a band of the same blue down the sides and along the bottom, coloured button plates |
+| `windows7` | Aero: a sheet of glass with the content sunk into it, the page blurred through the band as well as the caption, a glowing title and a wider close |
+| `windowsxp` | Luna: the glossy blue caption curve, a band of the same blue down the sides and along the bottom, coloured button plates |
 | `linux` | A GNOME header bar: taller, with circular buttons and a centred title |
 
-The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark — the same choice [Mockup](./mockup)'s finishes make, because hardware and system chrome are not the theme.
+The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark: the same choice [Mockup](./mockup)'s finishes make, because hardware and system chrome are not the theme.
 
 XP and Aero are also the two that have a **band** rather than a hairline: the content is sunk into a stretch of the system's own material down both sides and along the bottom, which is most of what makes either of them recognisable. `accent` dyes the band with the caption, so a window in your own colour is framed in it too.
 
-The buttons carry no other party's marks — a minimize is a line, a maximize is a box, a close is a cross — and none of the chrome writes a word except the title you gave it.
+The buttons carry no other party's marks (a minimize is a line, a maximize is a box, a close is a cross), and none of the chrome writes a word except the title you gave it.
 
 <Demo src="window-pane/os" minHeight="760">
 
@@ -68,7 +68,7 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 ### draggable and resizable
 
-`draggable` moves the window on `left` and `top` — never a transform, so no glyph is resampled for the length of the drag — and reports where it went through `onOffsetChange`. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
+`draggable` moves the window on `left` and `top` (never a transform, so no glyph is resampled for the length of the drag), and reports where it went through `onOffsetChange`. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
 
 Both need somewhere to move: give the window `position="absolute"` and a positioned ancestor, or `position="fixed"`.
 
@@ -80,9 +80,9 @@ Both need somewhere to move: give the window `position="absolute"` and a positio
 
 ### Which window is in front
 
-Left out, `active` looks after itself: a window is in front until another WindowPane on the page is pressed or takes the focus. A press on the page _around_ the windows changes nothing — a paragraph is not a desktop.
+Left out, `active` looks after itself: a window is in front until another WindowPane on the page is pressed or takes the focus. A press on the page _around_ the windows changes nothing: a paragraph is not a desktop.
 
-Being in front is drawn the way each system draws it: coloured traffic lights against grey ones on macOS, an accent title bar and an accent border on Windows 10, a tinted header bar on GNOME — and, on all four, one step more shadow than the windows behind it. Pass `active` to drive that yourself, which is what a caller keeping its own z-order wants.
+Being in front is drawn the way each system draws it: coloured traffic lights against grey ones on macOS, an accent title bar and an accent border on Windows 10, a tinted header bar on GNOME. And, on all four, one step more shadow than the windows behind it. Pass `active` to drive that yourself, which is what a caller keeping its own z-order wants.
 
 ### Motion
 
@@ -92,7 +92,7 @@ A rolled-up window keeps its body in the tree, `inert` and clipped, which is wha
 
 ### accent, transparency, active
 
-`accent` dyes the title bar with `color`, the way Windows offers to — and on `windows10` it takes the window's border with it, which is what that version does. `transparency` is how much of the page shows through the chrome, from `0` to `1`; it applies to the title bar, the body's own fill and the border, never to the content on them, and anything above `0` also turns the acrylic on so what is behind is blurred rather than merely visible. `active={false}` pins the window behind whatever else is on the page.
+`accent` dyes the title bar with `color`, the way Windows offers to, and on `windows10` it takes the window's border with it, which is what that version does. `transparency` is how much of the page shows through the chrome, from `0` to `1`; it applies to the title bar, the body's own fill and the border, never to the content on them, and anything above `0` also turns the acrylic on so what is behind is blurred rather than merely visible. `active={false}` pins the window behind whatever else is on the page.
 
 <Demo src="window-pane/appearance" minHeight="420">
 
@@ -104,5 +104,5 @@ A rolled-up window keeps its body in the tree, `inert` and clipped, which is wha
 
 - The root is a `role="group"` labelled by its own title, so a screen reader reads the window's name before its contents.
 - The three title bar buttons are real `<button>`s with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized.
-- One resize handle — the bottom-right corner — is reachable from the keyboard and resizes with the arrow keys. The other seven are pointer affordances and are hidden from the accessibility tree; a keyboard reader has the same range through `maximize`.
+- One resize handle (the bottom-right corner) is reachable from the keyboard and resizes with the arrow keys. The other seven are pointer affordances and are hidden from the accessibility tree; a keyboard reader has the same range through `maximize`.
 - Dragging is a pointer affordance as well. A window that must be movable without one should be given its `offset` by the caller.

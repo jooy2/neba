@@ -29,7 +29,7 @@ It is often used with [Grid](./grid), but the two are separate: a Container deci
 
 ### maxWidth
 
-The default is `none` — gutters with no width limit.
+The default is `none`: gutters with no width limit.
 
 Given a value it takes a step of the measure ladder: `xs` 30rem, `sm` 40rem, `md` 48rem, `lg` 64rem, `xl` 80rem. The four upper steps are the [breakpoint](../../design/breakpoints) floors, so `maxWidth="lg"` holds the content to exactly the width at which a `lg:` variant starts. `xs` is the one that is not, because a measure of zero is not a thing.
 
@@ -51,7 +51,7 @@ Anything that is not a step of the ladder is passed to `max-width` untouched, so
 
 ### Changing at a breakpoint
 
-`maxWidth` takes a per-breakpoint map, and every entry applies from its own breakpoint up — so two of them describe a whole page. [Header](./header) and [Footer](./footer) take the same prop in the same shape, which is how a bar and the content under it stay on one edge.
+`maxWidth` takes a per-breakpoint map, and every entry applies from its own breakpoint up, so two of them describe a whole page. [Header](./header) and [Footer](./footer) take the same prop in the same shape, which is how a bar and the content under it stay on one edge.
 
 <Demo src="container/responsive">
 

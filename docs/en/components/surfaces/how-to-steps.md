@@ -47,7 +47,7 @@ The steps are an array rather than children, which is the one place this compone
 
 ### maxHeight
 
-How tall the guide may get before it scrolls — a number is pixels. The list and the body scroll inside it rather than the sheet growing, and the current row is kept in view as the step changes.
+How tall the guide may get before it scrolls: a number is pixels. The list and the body scroll inside it rather than the sheet growing, and the current row is kept in view as the step changes.
 
 <Demo src="how-to-steps/scrolling" minHeight="400">
 
@@ -57,7 +57,7 @@ How tall the guide may get before it scrolls — a number is pixels. The list an
 
 ### step · completed
 
-Both states are controllable. Pass `step` with `onStepChange` to keep the position yourself — in a URL, in a form's state — and `completed` with `onCompletedChange` for the end.
+Both states are controllable. Pass `step` with `onStepChange` to keep the position yourself (in a URL, in a form's state), and `completed` with `onCompletedChange` for the end.
 
 <Demo src="how-to-steps/controlled" minHeight="380">
 
@@ -67,7 +67,7 @@ Both states are controllable. Pass `step` with `onStepChange` to keep the positi
 
 ### icon
 
-Each step takes a glyph, drawn before the title over its own body. Only there: a row in the list already carries a numbered disc, and a glyph beside it is a second mark making the same claim. What an icon is good for is saying what _kind_ of step this is — a terminal, a file, a warning.
+Each step takes a glyph, drawn before the title over its own body. Only there: a row in the list already carries a numbered disc, and a glyph beside it is a second mark making the same claim. What an icon is good for is saying what _kind_ of step this is: a terminal, a file, a warning.
 
 ```tsx
 { title: 'Open your crontab', icon: <TerminalIcon />, content: … }
@@ -75,7 +75,7 @@ Each step takes a glyph, drawn before the title over its own body. Only there: a
 
 ### divider
 
-A hairline between the list and the body — down the inner edge while they are two columns, along the bottom of the list once they have stacked. On by default: the two are different kinds of thing, and space alone leaves that to a gap a narrow screen is about to take away.
+A hairline between the list and the body: down the inner edge while they are two columns, along the bottom of the list once they have stacked. On by default: the two are different kinds of thing, and space alone leaves that to a gap a narrow screen is about to take away.
 
 <Demo src="how-to-steps/divider" minHeight="320">
 
@@ -85,7 +85,7 @@ A hairline between the list and the body — down the inner edge while they are 
 
 ### transition
 
-How a step arrives when the reader moves to it, from the same vocabulary [`transition`](../../design/prop-conventions) uses everywhere — an effect name, or the object form for the duration, the easing, the direction. `'none'` turns it off, and a reduced-motion preference does too.
+How a step arrives when the reader moves to it, from the same vocabulary [`transition`](../../design/prop-conventions) uses everywhere: an effect name, or the object form for the duration, the easing, the direction. `'none'` turns it off, and a reduced-motion preference does too.
 
 It runs on the panel and never on anything that is pressed: the buttons and the list rows hold still, and what animates is the content they changed.
 
@@ -107,7 +107,7 @@ It runs on the panel and never on anything that is pressed: the buttons and the 
 
 ### variant · size · color
 
-The three weights say what they say everywhere, and the sheet is never dyed by `color` — what carries the family is the numbers, the connector and the buttons. `text` is the one to reach for inside a [Card](./card), which is already a sheet.
+The three weights say what they say everywhere, and the sheet is never dyed by `color`: what carries the family is the numbers, the connector and the buttons. `text` is the one to reach for inside a [Card](./card), which is already a sheet.
 
 ### headingLevel
 
@@ -119,11 +119,11 @@ The three weights say what they say everywhere, and the sheet is never dyed by `
 
 ### Steps with anything in them
 
-`content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it — and nothing is remounted as the step changes, so a form halfway through a guide still holds what was typed into it.
+`content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so a step with a code block in it does not resize the card when the reader reaches it, and nothing is remounted as the step changes, so a form halfway through a guide still holds what was typed into it.
 
 ## Accessibility
 
 - The list is a list of buttons, not a tablist. The current row carries `aria-current="step"`, which says the panels are ordered and the reader is expected to arrive at them in that order.
-- Each row is read as "Step 3: Use it" — the disc is decoration, and a number drawn beside a title is not a number a screen reader announces. A `title` that is a node is read as itself instead, there being no string to build that sentence out of.
+- Each row is read as "Step 3: Use it". The disc is decoration, and a number drawn beside a title is not a number a screen reader announces. A `title` that is a node is read as itself instead, there being no string to build that sentence out of.
 - The steps that are not showing stay in the document so the panel can keep its height, and are `inert`: out of the tab order, off the accessibility tree, and out of a find-in-page.
 - Give the guide a `title` when a page has more than one.

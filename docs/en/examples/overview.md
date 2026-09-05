@@ -16,7 +16,7 @@ aside: false
 | --- | --- | --- |
 | Header | `Toolbar` `Icon` `IconButton` `Pill` | `render={<header />}` makes it a real landmark, and the build status that keeps updating sits in the `Pill` built for exactly that |
 | Controls | `Button` `ButtonGroup` `SegmentedButton` `TextField` `Select` | At the same `size` a button, a field, a select and a segment are the same height, so the row keeps its baseline |
-| Stats | `Statistic` `Grid` | `betterWhen` is what makes a figure that fell come out green — fewer failing builds is good news |
+| Stats | `Statistic` `Grid` | `betterWhen` is what makes a figure that fell come out green: fewer failing builds is good news |
 | What's new | `Carousel` | Built on scroll snap, so it swipes on mobile and reverses direction under RTL |
 | Deploys | `Table` `Chip` | The table is rendered from a column list, so the headings and the cells cannot drift apart |
 | Profile form | `Card` `TextField` `Divider` `Chip` `Checkbox` `Button` | Save turns on `loading`; a bad address puts an `error` on the field |

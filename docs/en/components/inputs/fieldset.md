@@ -28,7 +28,7 @@ Every native `<fieldset>` attribute passes through, apart from `color`. The brow
 
 ### legend · description
 
-The legend becomes the accessible name of every control inside, so it has to be a phrase that still reads correctly in front of each of them — "Billing address", not "Where should we send it?". `description` is a line under it.
+The legend becomes the accessible name of every control inside, so it has to be a phrase that still reads correctly in front of each of them: "Billing address", not "Where should we send it?". `description` is a line under it.
 
 ### disabled
 
@@ -42,7 +42,7 @@ The one thing only a real `<fieldset>` can do: it reaches every control inside, 
 
 ### size
 
-`size` is the type scale of the legend and the gap the controls stand at. It does not reach the controls themselves — a group of `sm` fields is written as `sm` fields.
+`size` is the type scale of the legend and the gap the controls stand at. It does not reach the controls themselves: a group of `sm` fields is written as `sm` fields.
 
 <Demo src="fieldset/sizes">
 

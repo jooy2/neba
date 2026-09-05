@@ -54,7 +54,7 @@ How many columns the panel lays its links out in. One is right for a short list;
 
 ### orientation
 
-`vertical` stacks the items and opens the panels beside them — a nav rail rather than a bar.
+`vertical` stacks the items and opens the panels beside them: a nav rail rather than a bar.
 
 <Demo src="navigation-menu/orientation">
 

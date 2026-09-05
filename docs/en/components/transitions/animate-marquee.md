@@ -29,7 +29,7 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 ### speed and reverse
 
-Pixels per second, measured against the strip's own width — so four logos and forty move at the same pace instead of the long one becoming a blur. `duration` is still accepted and overrides the measurement. `reverse` runs it the other way.
+Pixels per second, measured against the strip's own width, so four logos and forty move at the same pace instead of the long one becoming a blur. `duration` is still accepted and overrides the measurement. `reverse` runs it the other way.
 
 <Demo src="animate-marquee/speed">
 
@@ -59,7 +59,7 @@ On by default, and not decoration: content moving past a pointer cannot be click
 
 ### copies and gap
 
-`gap` is the space between items, and also between the last item of one pass and the first of the next. `copies` is how many times the content is laid end to end — two is enough for anything at least as wide as its container, and raising it is the fix for content short enough to leave a hole behind itself.
+`gap` is the space between items, and also between the last item of one pass and the first of the next. `copies` is how many times the content is laid end to end: two is enough for anything at least as wide as its container, and raising it is the fix for content short enough to leave a hole behind itself.
 
 ```tsx
 <AnimateMarquee copies={4} gap="3rem">

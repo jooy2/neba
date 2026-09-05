@@ -21,7 +21,7 @@ import { Box } from 'neba';
 
 Every native `<div>` attribute passes through, `color` excepted.
 
-When structure is needed — a title, a footer, dividers — use [Card](./card), which is a Box with those sections laid out on it.
+When structure is needed (a title, a footer, dividers), use [Card](./card), which is a Box with those sections laid out on it.
 
 ## Examples
 
@@ -49,7 +49,7 @@ The surface is white, so `color` reaches **the border only**. That is why the ex
 
 ### size
 
-On a Box, `size` sets neither a height nor a type scale but the size of the **sheet** — its radius and its padding. A Box is as tall as what it holds, and its children bring their own typography.
+On a Box, `size` sets neither a height nor a type scale but the size of the **sheet**: its radius and its padding. A Box is as tall as what it holds, and its children bring their own typography.
 
 <Demo src="box/sizes">
 
@@ -67,7 +67,7 @@ On a Box, `size` sets neither a height nor a type scale but the size of the **sh
 
 ### padded and render
 
-`padded={false}` is for full-bleed content — an image, a table, a list that draws its own rows. `render` renders the Box as an element other than a `<div>`.
+`padded={false}` is for full-bleed content: an image, a table, a list that draws its own rows. `render` renders the Box as an element other than a `<div>`.
 
 <Demo src="box/unpadded">
 

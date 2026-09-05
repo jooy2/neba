@@ -5,7 +5,7 @@ order: 8
 
 # Overlay
 
-<p class="neba-lede">A sheet over the whole page that blocks interaction. Use it while the user has to wait with nothing to answer — a save, a load, a replacement in progress.</p>
+<p class="neba-lede">A sheet over the whole page that blocks interaction. Use it while the user has to wait with nothing to answer: a save, a load, a replacement in progress.</p>
 
 <Demo src="overlay/hero" />
 
@@ -56,7 +56,7 @@ Off by default, which is the other way round from [Dialog](./dialog). An Overlay
 
 ### modal
 
-`modal="trap-focus"` leaves the page scrollable and clickable while holding focus inside the overlay — a good fit with the `clear` tone.
+`modal="trap-focus"` leaves the page scrollable and clickable while holding focus inside the overlay: a good fit with the `clear` tone.
 
 ## Accessibility
 

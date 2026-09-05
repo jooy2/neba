@@ -5,7 +5,7 @@ order: 12
 
 # Timeline
 
-<p class="neba-lede">Lists ordered steps along a sequence of time. Use it where the order is itself the information — an order's fulfilment status, a deployment history.</p>
+<p class="neba-lede">Lists ordered steps along a sequence of time. Use it where the order is itself the information: an order's fulfilment status, a deployment history.</p>
 
 <Demo src="timeline/hero" />
 
@@ -21,7 +21,7 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
-This is not [TimelineChart](../charts/timeline-chart). That one draws spans against a calendar — a Gantt — for how long each piece of work took. This one is a list of steps, and the gaps between them are not to scale.
+This is not [TimelineChart](../charts/timeline-chart). That one draws spans against a calendar (a Gantt) for how long each piece of work took. This one is a list of steps, and the gaps between them are not to scale.
 
 ## Props
 
@@ -41,7 +41,7 @@ This is not [TimelineChart](../charts/timeline-chart). That one draws spans agai
 
 `bullet` takes any node. Numbers suit a procedure a user is walked through; icons suit events that already happened. Omit it and a disc is drawn.
 
-The three states each use a different shape — a filled disc (`complete`), a filled disc with a halo (`current`), an empty ring (`upcoming`) — so the state carries even for a reader who cannot tell the colours apart.
+The three states each use a different shape (a filled disc (`complete`), a filled disc with a halo (`current`), an empty ring (`upcoming`)), so the state carries even for a reader who cannot tell the colours apart.
 
 <Demo src="timeline/bullets">
 
@@ -51,7 +51,7 @@ The three states each use a different shape — a filled disc (`complete`), a fi
 
 ### status and color
 
-`active` describes a sequence that is going to plan. A state an index cannot express — a step that failed and stopped — is set per item with `status` and `color`.
+`active` describes a sequence that is going to plan. A state an index cannot express (a step that failed and stopped) is set per item with `status` and `color`.
 
 `connector` is the shape of the line to the next item. The line belongs to the step it leaves rather than the one it arrives at, so it is coloured by that step's state. `none` removes it, which is how you group items inside one Timeline.
 

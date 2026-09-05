@@ -41,8 +41,8 @@ A Toolbar has no height of its own. It is as tall as the controls in it plus its
 
 `position` is CSS's own three values, spelled the way CSS spells them.
 
-- `sticky` — what an application header usually wants. It takes up its own space, so nothing underneath needs padding around it.
-- `fixed` — leaves the flow, so the page needs padding of its own or the first screenful sits behind the bar.
+- `sticky`: what an application header usually wants. It takes up its own space, so nothing underneath needs padding around it.
+- `fixed`: leaves the flow, so the page needs padding of its own or the first screenful sits behind the bar.
 
 `side` is the edge the bar pins to. A pinned bar drops its radius, because a rounded corner against the edge of the screen is a gap with nothing behind it.
 

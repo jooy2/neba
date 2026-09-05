@@ -5,7 +5,7 @@ order: 5
 
 # PieChart
 
-<p class="neba-lede">Shows parts of a whole as slices of a circle. It answers one question well — is one of these most of it? — and everything finer than that belongs in a bar chart.</p>
+<p class="neba-lede">Shows parts of a whole as slices of a circle. It answers one question well (is one of these most of it?), and everything finer than that belongs in a bar chart.</p>
 
 <Demo src="pie-chart/hero" />
 
@@ -22,7 +22,7 @@ import { PieChart } from 'neba';
 
 ## The data
 
-A pie has one series, so it takes `data` directly rather than an array of series. The slices are the entities here — each one takes a palette slot of its own, and the legend lists them.
+A pie has one series, so it takes `data` directly rather than an array of series. The slices are the entities here: each one takes a palette slot of its own, and the legend lists them.
 
 `data` is an array of `NebaChartDatum`: a number, a `null`, or a point that carries its own name and colour. `categories` names the slices; points may carry their own `x` instead.
 
@@ -67,11 +67,11 @@ Whatever goes in the hole of a `donut` or a `semi`. A ring with nothing in the m
 
 ### valueLabels
 
-`all` writes each slice's **share** on it — a share is what a pie is a picture of, and the value is one hover away. A label is only drawn where the slice is wide enough for the text with room on both sides; one that does not fit is dropped rather than clipped, and the tooltip and the table still have it.
+`all` writes each slice's **share** on it: a share is what a pie is a picture of, and the value is one hover away. A label is only drawn where the slice is wide enough for the text with room on both sides; one that does not fit is dropped rather than clipped, and the tooltip and the table still have it.
 
 ### Colour
 
-Slices take palette slots in the order they are passed. A point's own `color` overrides that, which is the right move when the slices _mean_ something — passed and failed are not "series one" and "series two".
+Slices take palette slots in the order they are passed. A point's own `color` overrides that, which is the right move when the slices _mean_ something: passed and failed are not "series one" and "series two".
 
 <Demo src="pie-chart/colors">
 

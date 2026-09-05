@@ -32,7 +32,7 @@ const headers: DataTableColumn<Build>[] = [
 
 <PropsTable name="DataTable" />
 
-The outer sheet is a [Box](../surfaces/box): `variant` · `size` · `color` · `density` · `elevation` all pass straight through. Everything else a `<div>` takes — `id`, `data-*`, `onContextMenu` — lands on it too.
+The outer sheet is a [Box](../surfaces/box): `variant` · `size` · `color` · `density` · `elevation` all pass straight through. Everything else a `<div>` takes (`id`, `data-*`, `onContextMenu`) lands on it too.
 
 Define `headers` outside the component, or memoise it. The search and the sort are keyed on that array's identity, and an inline literal is a new array on every render.
 
@@ -46,7 +46,7 @@ Define `headers` outside the component, or memoise it. The search and the sort a
 
 ### Virtual scrolling
 
-Set a `height` (or a `maxHeight`) and the body scrolls with only the visible rows in the DOM. Without one there is nothing to measure against, so every row is rendered whatever `virtual` says — and `virtual={false}` turns it off for a table small enough that find-in-page matters more than the DOM count.
+Set a `height` (or a `maxHeight`) and the body scrolls with only the visible rows in the DOM. Without one there is nothing to measure against, so every row is rendered whatever `virtual` says, and `virtual={false}` turns it off for a table small enough that find-in-page matters more than the DOM count.
 
 Every row is `rowHeight` tall and cells truncate rather than wrap, which is what makes the scroll offset arithmetic. Raise `rowHeight` for cells holding an Avatar or two lines.
 
@@ -67,7 +67,7 @@ Every row is `rowHeight` tall and cells truncate rather than wrap, which is what
 | <kbd>Shift</kbd> + click | takes the run from the last row chosen |
 | Click and drag | takes the run under the pointer, scrolling at the edges |
 | <kbd>↑</kbd> <kbd>↓</kbd> | move and choose |
-| <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | scroll only — what is chosen stays chosen |
+| <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | scroll only: what is chosen stays chosen |
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + arrows | move without choosing |
 | <kbd>Shift</kbd> + arrows | extend the run |
 | <kbd>Space</kbd> | choose the row the focus is on; with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>, toggle it |
@@ -135,11 +135,11 @@ Adjacent columns carrying the same `group` string are merged under one heading i
 
 Pinning also **moves** the column: everything pinned to the start is drawn first and everything pinned to the end last, whatever `columnOrder` said. A frozen column in the middle of the scrolling ones would slide over its neighbours instead of holding still.
 
-Give a pinned column a `width`. The offsets the sticky cells sit at are the sum of the widths before them, and a column that has not said how wide it is has no number to add — it is measured at the default instead, which is a guess.
+Give a pinned column a `width`. The offsets the sticky cells sit at are the sum of the widths before them, and a column that has not said how wide it is has no number to add: it is measured at the default instead, which is a guess.
 
 ### Column order and reordering
 
-`columnOrder` is a list of keys. **A key it does not mention keeps its place**, so an order that names two columns moves those two and leaves the rest alone — and a column added to `headers` later appears without the stored order having to be migrated.
+`columnOrder` is a list of keys. **A key it does not mention keeps its place**, so an order that names two columns moves those two and leaves the rest alone, and a column added to `headers` later appears without the stored order having to be migrated.
 
 `reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable, since where they sit is what pinning decided.
 
@@ -159,7 +159,7 @@ Neither works alone. A column with no handler above it is not editable however `
 
 `editable` may be a function, for a locked record or a computed field. `editType: 'number'` keeps the keypad on a phone and hands back a number rather than a string.
 
-A double-click opens the editor; blur and `Enter` commit, `Escape` cancels. `onRowActivate` does **not** also fire for a cell that opened an editor — the cell answered the double-click.
+A double-click opens the editor; blur and `Enter` commit, `Escape` cancels. `onRowActivate` does **not** also fire for a cell that opened an editor: the cell answered the double-click.
 
 ### Grouping and aggregates
 
@@ -176,9 +176,9 @@ A double-click opens the editor; blur and `Enter` commit, `Escape` cancels. `onR
 />
 ```
 
-The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in — except rows `groupBy` returned `undefined` for, which go above everything, because a heading that says nothing is not one a reader can interpret.
+The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in: except rows `groupBy` returned `undefined` for, which go above everything, because a heading that says nothing is not one a reader can interpret.
 
-`aggregate` draws in the group heading, in its own column, which is the whole point: a group's total belongs in the same column as the numbers it is a total of. There is no `'sum' | 'avg'` shorthand — the moment a table has one column needing a weighted mean or a distinct count, half the columns are functions and half are strings.
+`aggregate` draws in the group heading, in its own column, which is the whole point: a group's total belongs in the same column as the numbers it is a total of. There is no `'sum' | 'avg'` shorthand: the moment a table has one column needing a weighted mean or a distinct count, half the columns are functions and half are strings.
 
 Grouping turns **virtual scrolling off**. The window arithmetic counts every child of the body as one row of `rowHeight`, and a heading row is one more than that.
 
@@ -190,13 +190,13 @@ Grouping turns **virtual scrolling off**. The window arithmetic counts every chi
 
 `exportValue` on a column is what the file gets, separate from `render` on purpose: a cell that draws a Chip, an Avatar or a progress bar has no text to put in a file. `exportable: false` on a column leaves it out.
 
-The file leads with a byte-order mark, and that is not decoration — Excel reads a UTF-8 CSV without one as the local code page, so every non-ASCII name in it arrives as mojibake.
+The file leads with a byte-order mark, and that is not decoration: Excel reads a UTF-8 CSV without one as the local code page, so every non-ASCII name in it arrives as mojibake.
 
 `onExport` takes the CSV instead of downloading it.
 
 ### Size and density
 
-`size` sets the type scale, the cell padding and the default `rowHeight`; `density` changes the padding and, here alone, lowers that default with it. The ladder sits one step below the rest of the library — a `md` row is 32px against a Button's 32px height plus its own padding.
+`size` sets the type scale, the cell padding and the default `rowHeight`; `density` changes the padding and, here alone, lowers that default with it. The ladder sits one step below the rest of the library: a `md` row is 32px against a Button's 32px height plus its own padding.
 
 <Demo src="data-table/density" minHeight="360">
 
@@ -206,7 +206,7 @@ The file leads with a byte-order mark, and that is not decoration — Excel read
 
 ### Rows from a server
 
-`manual` names the stages the caller has already done — `'sort'`, `'filter'`, `'pages'`, or `true` for all three. The table then draws `items` as they arrive and only reports what was asked for. With `'pages'` in the list, `items` is one page and `rowCount` is how many rows there are altogether.
+`manual` names the stages the caller has already done: `'sort'`, `'filter'`, `'pages'`, or `true` for all three. The table then draws `items` as they arrive and only reports what was asked for. With `'pages'` in the list, `items` is one page and `rowCount` is how many rows there are altogether.
 
 <Demo src="data-table/manual" minHeight="420">
 
@@ -216,9 +216,9 @@ The file leads with a byte-order mark, and that is not decoration — Excel read
 
 ## Accessibility
 
-- With a `selectionMode` the table is a `grid` with one tab stop and `aria-activedescendant`, because a virtual row cannot hold the focus — the row that had it is unmounted the moment it scrolls away. Rows carry `aria-selected`.
+- With a `selectionMode` the table is a `grid` with one tab stop and `aria-activedescendant`, because a virtual row cannot hold the focus: the row that had it is unmounted the moment it scrolls away. Rows carry `aria-selected`.
 - Without one it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
-- The resize handles are pointer-only and hidden from assistive technology. Column widths are a preference, not information — nothing in the table is unreachable without them.
+- The resize handles are pointer-only and hidden from assistive technology. Column widths are a preference, not information: nothing in the table is unreachable without them.
 - Pass `locale` when the markup is rendered on a server: it is what the default sort compares strings with, and a server that disagrees with the browser about the runtime locale produces two different row orders for the same table.

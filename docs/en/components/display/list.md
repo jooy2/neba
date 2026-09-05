@@ -5,7 +5,7 @@ order: 5
 
 # List
 
-<p class="neba-lede">Stacks rows of the same shape vertically. Use it for navigation, settings, search results — anything that repeats.</p>
+<p class="neba-lede">Stacks rows of the same shape vertically. Use it for navigation, settings, search results: anything that repeats.</p>
 
 <Demo src="list/hero" />
 
@@ -58,7 +58,7 @@ Use `variant="text"` inside a [Card](../surfaces/card). The card is already a sh
 
 ### onClick · href · action
 
-`onClick` or `href` makes the whole row a `<button>` or an `<a>` respectively. `action` is a separate control slot **outside** that pressable area — for a row that navigates when pressed but also carries a switch of its own.
+`onClick` or `href` makes the whole row a `<button>` or an `<a>` respectively. `action` is a separate control slot **outside** that pressable area: for a row that navigates when pressed but also carries a switch of its own.
 
 <Demo src="list/interactive">
 
@@ -70,4 +70,4 @@ Use `variant="text"` inside a [Card](../surfaces/card). The card is already a sh
 
 - `List` sets `role="list"` explicitly, because Tailwind's reset removes the bullets from `<ul>` and Safari drops the list semantics with them.
 - A `ListItem` shell is always an `<li>`, with a `<button>` or an `<a>` inside it depending on `onClick` and `href`.
-- `selected` puts `aria-current="page"` on a link and `aria-current="true"` on a button. Not `aria-pressed` — a selected row is not a toggle.
+- `selected` puts `aria-current="page"` on a link and `aria-current="true"` on a button. Not `aria-pressed`: a selected row is not a toggle.

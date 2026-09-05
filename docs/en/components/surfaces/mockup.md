@@ -5,7 +5,7 @@ order: 12
 
 # Mockup
 
-<p class="neba-lede">A device with a screen you can put anything on — a phone, a tablet, a monitor or a laptop, with the system's own status bar, dock or taskbar drawn on it. The screen is a viewport at the device's real resolution, so the content inside is laid out against a phone rather than against the page.</p>
+<p class="neba-lede">A device with a screen you can put anything on: a phone, a tablet, a monitor or a laptop, with the system's own status bar, dock or taskbar drawn on it. The screen is a viewport at the device's real resolution, so the content inside is laid out against a phone rather than against the page.</p>
 
 <Demo src="mockup/hero" align="center" minHeight="440" />
 
@@ -39,7 +39,7 @@ Three props belong to one device and are ignored on the others: `hardware` is a 
 
 ### Sizing the mockup
 
-`width` and `height` set how big the device is drawn on the page — a number in pixels, or any CSS length. Given one, the other follows the device's proportion; given neither, it fills the width it is in. Whatever it comes to, the screen inside stays at its own resolution and the whole device is scaled to fit.
+`width` and `height` set how big the device is drawn on the page: a number in pixels, or any CSS length. Given one, the other follows the device's proportion; given neither, it fills the width it is in. Whatever it comes to, the screen inside stays at its own resolution and the whole device is scaled to fit.
 
 ```tsx
 <Mockup device="mobile" width={260} />
@@ -49,7 +49,7 @@ Three props belong to one device and are ignored on the others: `hardware` is a 
 
 ### size and resolution
 
-`size` is a five-step ladder of real resolutions per device — a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920. `resolution` takes a `{ width, height }` pair and overrides it.
+`size` is a five-step ladder of real resolutions per device: a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920. `resolution` takes a `{ width, height }` pair and overrides it.
 
 Because the screen is a container named `neba-screen`, content inside can answer to the device with a container query rather than to the window. Both mockups below are 300 pixels wide on the page; only the screens behind them differ.
 
@@ -61,7 +61,7 @@ Because the screen is a container named `neba-screen`, content inside can answer
 
 ### os
 
-`os` decides which bars are drawn and where: a menu bar and a floating dock, a centred taskbar, a top bar with a dock down the leading edge. The chrome is an impression rather than a copy — abstract shapes in Neba's own tokens, with the clock as the only text.
+`os` decides which bars are drawn and where: a menu bar and a floating dock, a centred taskbar, a top bar with a dock down the leading edge. The chrome is an impression rather than a copy: abstract shapes in Neba's own tokens, with the clock as the only text.
 
 <Demo src="mockup/os" minHeight="300">
 
@@ -89,7 +89,7 @@ On a desktop, `hardware` is what holds the screen up: a stand under it, or a key
 
 ### bezel
 
-`bezel` is how much hardware there is around the screen. `none` is not a thinner frame but no hardware at all — the screen on its own with its corners cut. `thick` is an older device: narrow sides with a forehead and a chin.
+`bezel` is how much hardware there is around the screen. `none` is not a thinner frame but no hardware at all: the screen on its own with its corners cut. `thick` is an older device: narrow sides with a forehead and a chin.
 
 <Demo src="mockup/bezel" minHeight="300">
 
@@ -109,7 +109,7 @@ On a desktop, `hardware` is what holds the screen up: a stand under it, or a key
 
 ### notch
 
-`notch` is the camera cut-out: a `dynamic-island`, a `notch`, a round `punch-hole`, or `none`. It defaults to what the device would have — an island on an iOS phone, a punch hole on an Android one, nothing on a tablet or a desktop.
+`notch` is the camera cut-out: a `dynamic-island`, a `notch`, a round `punch-hole`, or `none`. It defaults to what the device would have: an island on an iOS phone, a punch hole on an Android one, nothing on a tablet or a desktop.
 
 It is hardware rather than chrome, so it is drawn whether or not `systemUi` is on, and it moves to the leading edge in landscape.
 
@@ -151,7 +151,7 @@ Content taller than the screen is clipped by default, which is what a still pict
 
 ### wallpaper
 
-`wallpaper` is what sits behind the content: any CSS `background` value — a colour, a gradient, a `url()`. It defaults to the page's own surface colour.
+`wallpaper` is what sits behind the content: any CSS `background` value. A colour, a gradient, a `url()`. It defaults to the page's own surface colour.
 
 <Demo src="mockup/wallpaper" minHeight="300">
 
@@ -169,7 +169,7 @@ Content taller than the screen is clipped by default, which is what a still pict
 
 ## Accessibility
 
-- Every part of the device is `aria-hidden` — the frame, the bars and the cut-out. What a screen reader reaches is `children` and nothing else, which is what a mockup is: a picture around real content.
+- Every part of the device is `aria-hidden`: the frame, the bars and the cut-out. What a screen reader reaches is `children` and nothing else, which is what a mockup is: a picture around real content.
 - The clock is decoration and is not read out. It is the only text the chrome draws.
-- The mockup adds no role and no name of its own. Give it one — `aria-label`, or a `<figure>` with a caption through `render` — when the picture itself carries meaning on the page.
+- The mockup adds no role and no name of its own. Give it one (`aria-label`, or a `<figure>` with a caption through `render`) when the picture itself carries meaning on the page.
 - Content inside stays interactive and focusable. A device scaled to a quarter of its size has controls a quarter of the size, which is worth knowing before putting a form in one.

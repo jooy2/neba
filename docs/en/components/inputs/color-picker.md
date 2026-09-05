@@ -21,7 +21,7 @@ const [color, setColor] = useState('#1a58d1');
 
 <PropsTable name="ColorPicker" />
 
-Every other `<div>` attribute passes through to the root, except `onChange` — the change worth listening for is `onValueChange`.
+Every other `<div>` attribute passes through to the root, except `onChange`: the change worth listening for is `onValueChange`.
 
 The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions). Note that `color` is the family of the control's own edge and focus ring; it has nothing to do with the colour being chosen.
 
@@ -29,7 +29,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### inline
 
-By default the panel lives in a popup hanging off a trigger, which is what a form wants. `inline` draws the panel straight into the page with no trigger at all — for a settings pane, a toolbar, or anywhere the picker is the point of the screen rather than one field on it.
+By default the panel lives in a popup hanging off a trigger, which is what a form wants. `inline` draws the panel straight into the page with no trigger at all: for a settings pane, a toolbar, or anywhere the picker is the point of the screen rather than one field on it.
 
 <Demo src="color-picker/inline">
 
@@ -39,7 +39,7 @@ By default the panel lives in a popup hanging off a trigger, which is what a for
 
 ### format
 
-`format` decides the notation the value comes back in: `hex` (the default), `rgb` or `hsl`. It only affects what is written out — a `value` in any of the three is read correctly whatever `format` says.
+`format` decides the notation the value comes back in: `hex` (the default), `rgb` or `hsl`. It only affects what is written out: a `value` in any of the three is read correctly whatever `format` says.
 
 <Demo src="color-picker/format">
 
@@ -59,7 +59,7 @@ By default the panel lives in a popup hanging off a trigger, which is what a for
 
 ### swatches
 
-`swatches` takes an array of CSS colour strings and replaces the built-in set — the place to put the handful of colours a product actually uses. `swatches={false}` draws none, and `editable={false}` drops the text field, which together leave the panel as nothing but the square and the rails.
+`swatches` takes an array of CSS colour strings and replaces the built-in set: the place to put the handful of colours a product actually uses. `swatches={false}` draws none, and `editable={false}` drops the text field, which together leave the panel as nothing but the square and the rails.
 
 <Demo src="color-picker/swatches">
 

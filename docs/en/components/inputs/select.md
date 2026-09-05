@@ -42,7 +42,7 @@ interface SelectOption {
 }
 ```
 
-`value` is a string or a number. It is what gets submitted with a form, so objects are not accepted — keep the identifier here and look the object up at the call site.
+`value` is a string or a number. It is what gets submitted with a form, so objects are not accepted: keep the identifier here and look the object up at the call site.
 
 ## Examples
 
@@ -78,7 +78,7 @@ The popup renders in a portal at the end of `<body>`, so it leaves any subtree y
 
 ### classNames
 
-`className` lands on the root — the column holding the label, the trigger and the two lines under it — so the trigger is reached through `classNames.control`.
+`className` lands on the root (the column holding the label, the trigger and the two lines under it), so the trigger is reached through `classNames.control`.
 
 ```tsx
 <Select

@@ -3,7 +3,7 @@ layout: home
 
 title: Neba
 titleTemplate: The React component library
-description: A React component library of fifty-odd accessible, themeable components — dark mode, TypeScript types and one shared prop vocabulary, in a single install.
+description: A React component library of fifty-odd accessible, themeable components. Dark mode, TypeScript types and one shared prop vocabulary, in a single install.
 
 hero:
   name: Neba

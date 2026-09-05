@@ -6,11 +6,11 @@ aside: false
 
 # Admin dashboard
 
-<p class="neba-lede">The back office of Grange, a shop that does not exist. A nav rail, a filter row, four figures, a table with an action on every row and a drawer of settings — all on one screen and all at the same size, which is the arrangement that shows whether a size ladder actually holds.</p>
+<p class="neba-lede">The back office of Grange, a shop that does not exist. A nav rail, a filter row, four figures, a table with an action on every row and a drawer of settings: all on one screen and all at the same size, which is the arrangement that shows whether a size ladder actually holds.</p>
 
 <Demo src="concepts/dashboard" min-height="736px" />
 
-The source is one file: `docs/.vitepress/demos/concepts/dashboard.tsx`. The table is live — search, filter by channel, select rows, and the bulk actions appear.
+The source is one file: `docs/.vitepress/demos/concepts/dashboard.tsx`. The table is live: search, filter by channel, select rows, and the bulk actions appear.
 
 ## What it is made of
 

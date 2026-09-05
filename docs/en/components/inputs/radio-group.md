@@ -30,7 +30,7 @@ import { Radio, RadioGroup } from 'neba';
 
 <PropsTable name="Radio" />
 
-A `Radio` has no `size` and no `color` of its own — set them on `RadioGroup` and they reach every option.
+A `Radio` has no `size` and no `color` of its own: set them on `RadioGroup` and they reach every option.
 
 With many options to fit into little space, use [Select](./select); to join two or three into one control, use [SegmentedButton](./segmented-button).
 
@@ -48,7 +48,7 @@ Each option can carry a sentence. However many lines the description takes, the 
 
 ### orientation
 
-`vertical` by default. Use `horizontal` only with short labels — one long label makes the row hard to read.
+`vertical` by default. Use `horizontal` only with short labels: one long label makes the row hard to read.
 
 <Demo src="radio-group/orientation">
 
@@ -68,7 +68,7 @@ Both can be set on the group or on an individual `Radio`. On the group, they rea
 
 ### classNames
 
-The group and one option are styled separately, because they are two components. On RadioGroup, `classNames` takes `label`, `control`, `description` and `error`, where `control` is the element holding the options — the one carrying the row or column direction. On Radio it takes `label`, `control`, `indicator` and `description`, where `control` is the dot.
+The group and one option are styled separately, because they are two components. On RadioGroup, `classNames` takes `label`, `control`, `description` and `error`, where `control` is the element holding the options: the one carrying the row or column direction. On Radio it takes `label`, `control`, `indicator` and `description`, where `control` is the dot.
 
 ```tsx
 <RadioGroup label="Plan" classNames={{ control: 'gap-6' }}>

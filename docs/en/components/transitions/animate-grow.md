@@ -47,7 +47,7 @@ Any CSS `transform-origin`: the point that stays put while the rest moves. `top`
 
 ### mode
 
-`out` folds it away again — the same animation backwards, held at the end.
+`out` folds it away again: the same animation backwards, held at the end.
 
 ```tsx
 <AnimateGrow mode="out" origin="top">

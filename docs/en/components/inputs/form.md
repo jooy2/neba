@@ -34,7 +34,7 @@ Called only when every field is valid, with the form's values keyed by each fiel
 
 ### validationMode
 
-`onSubmit` is the default and the only one that does not tell somebody their email is wrong while they are still typing it — after the first submit, fields re-validate on change. `onBlur` validates when a field loses focus, `onChange` on every keystroke.
+`onSubmit` is the default and the only one that does not tell somebody their email is wrong while they are still typing it: after the first submit, fields re-validate on change. `onBlur` validates when a field loses focus, `onChange` on every keystroke.
 
 <Demo src="form/validation-mode">
 
@@ -44,7 +44,7 @@ Called only when every field is valid, with the form's values keyed by each fiel
 
 ### errors
 
-Errors from outside the browser's own validation — a server, a form action, a schema — keyed by the `name` of the field each belongs to. They render on that field and clear as soon as it changes.
+Errors from outside the browser's own validation (a server, a form action, a schema) keyed by the `name` of the field each belongs to. They render on that field and clear as soon as it changes.
 
 <Demo src="form/errors">
 

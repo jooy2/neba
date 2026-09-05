@@ -27,7 +27,7 @@ Only text is typed. Pass a string, or strings; an element among the children con
 
 ### speed
 
-Characters per second. A speed rather than a duration, because a long line and a short one should be typed at the same pace rather than in the same time — though `duration` is still accepted, and means the time for the whole string.
+Characters per second. A speed rather than a duration, because a long line and a short one should be typed at the same pace rather than in the same time: though `duration` is still accepted, and means the time for the whole string.
 
 <Demo src="animate-typing/speed">
 
@@ -37,7 +37,7 @@ Characters per second. A speed rather than a duration, because a long line and a
 
 ### repeat, hold and erase
 
-`repeat` is how many passes it makes and `hold` is how long the finished text stays up between them. Without `erase` a repeat clears in one frame, which is right for a line being replaced; with it the text is deleted a character at a time, at `eraseSpeed` — twice `speed` by default, which is what a person actually does.
+`repeat` is how many passes it makes and `hold` is how long the finished text stays up between them. Without `erase` a repeat clears in one frame, which is right for a line being replaced; with it the text is deleted a character at a time, at `eraseSpeed`: twice `speed` by default, which is what a person actually does.
 
 <Demo src="animate-typing/loop">
 
@@ -57,7 +57,7 @@ Milliseconds before it starts. A delay per line is what turns a stack of typewri
 
 ### caret
 
-The block after the text, on by default. `caretChar` is what it is drawn as — `▌`, `_`, anything.
+The block after the text, on by default. `caretChar` is what it is drawn as: `▌`, `_`, anything.
 
 ```tsx
 <AnimateTyping caretChar="▌" caret={false}>

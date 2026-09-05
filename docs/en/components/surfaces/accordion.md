@@ -38,7 +38,7 @@ import { Accordion, AccordionItem } from 'neba';
 
 ### variant
 
-The sheet is never filled with colour. Use `text` inside a [Card](./card) — the card is already a sheet, so the borders do not double up.
+The sheet is never filled with colour. Use `text` inside a [Card](./card): the card is already a sheet, so the borders do not double up.
 
 <Demo src="accordion/variants">
 
@@ -68,10 +68,10 @@ The sheet is never filled with colour. Use `text` inside a [Card](./card) — th
 
 ### hiddenUntilFound and keepMounted
 
-`hiddenUntilFound` keeps closed panels in the DOM so the browser's find-on-page can locate and open them — worth turning on for an FAQ. `keepMounted` keeps a closed panel's React tree alive.
+`hiddenUntilFound` keeps closed panels in the DOM so the browser's find-on-page can locate and open them: worth turning on for an FAQ. `keepMounted` keeps a closed panel's React tree alive.
 
 ## Accessibility
 
 - The header button and its panel are wired together with `aria-controls` and `aria-expanded`.
-- Pass a real heading as `title` to put the section in the document outline — `title={<h3>Billing</h3>}`. It inherits the Accordion's type scale.
+- Pass a real heading as `title` to put the section in the document outline: `title={<h3>Billing</h3>}`. It inherits the Accordion's type scale.
 - The panel opens by animating its `height`; the content does not shift inside the panel.

@@ -27,17 +27,17 @@ Four axes: `size`, `density`, `variant` and `locale`. Writing `size="sm"` at fou
 
 </Demo>
 
-A call site still wins. The order is **the caller, then the provider, then the component's own default** — so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched.
+A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched.
 
 ### The four axes
 
 |  |  |
 | --- | --- |
 | `size` `density` `variant` `locale` | The right value is a property of the product. A dense application is dense everywhere; a Korean one is Korean everywhere. |
-| `color` | **Not defaultable.** A component's colour default is often semantic — an [Alert](../components/feedback/alert) is `info`, a [Popconfirm](../components/feedback/popconfirm) is `danger`, severity carries meaning — and one global override would silently repaint those into something that means something else. |
+| `color` | **Not defaultable.** A component's colour default is often semantic: an [Alert](../components/feedback/alert) is `info`, a [Popconfirm](../components/feedback/popconfirm) is `danger`, severity carries meaning: and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 
-Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node — and `size` on an `<input>` is a real attribute that would quietly resize the field.
+Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node, and `size` on an `<input>` is a real attribute that would quietly resize the field.
 
 ## Colour scheme
 
@@ -47,7 +47,7 @@ Each component is filled only on the axes it actually declares. A key a componen
 
 The provider writes `data-theme` and `color-scheme` onto `<html>`, remembers the choice in `localStorage`, and hands the state to `useColorScheme()`.
 
-`color-scheme` matters as much as the attribute: it is what turns the browser's own furniture over — the scrollbars, the form controls it still draws itself, the canvas behind an overscroll. A page that changes only its own colours keeps a white scrollbar down the side of a dark one.
+`color-scheme` matters as much as the attribute: it is what turns the browser's own furniture over. The scrollbars, the form controls it still draws itself, the canvas behind an overscroll. A page that changes only its own colours keeps a white scrollbar down the side of a dark one.
 
 <Demo src="provider/color-scheme">
 
@@ -85,7 +85,7 @@ Inline it in `<head>`, above everything. It reads the same key and writes the sa
 
 Sets `dir` on `<html>` and wraps the tree in Base UI's own `DirectionProvider`, so its primitives flip their keyboard handling and their positioning with the page.
 
-It is **left alone when it is not given**, so a document that already sets `dir` itself — most localised applications do, in the server-rendered HTML — is not fought over.
+It is **left alone when it is not given**, so a document that already sets `dir` itself (most localised applications do, in the server-rendered HTML) is not fought over.
 
 The components are built on logical properties (`margin-inline-start` and the rest) rather than physical ones, so the layout follows on its own. What needs `dir` is the handful of places a glyph has to turn: the calendar's steppers, a Breadcrumb's separators, a Carousel's arrows, a TreeView's disclosure.
 
@@ -93,4 +93,4 @@ The components are built on logical properties (`margin-inline-start` and the re
 
 Providers nest, and the nearest one wins. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree.
 
-Two things are **not** scoped, because they are attributes on `<html>`: the colour scheme and the direction. A nested provider that wants to repaint only its own subtree points `colorSchemeElement` at an element of its own — which is exactly what the preview above does, and why that prop is a function rather than an element.
+Two things are **not** scoped, because they are attributes on `<html>`: the colour scheme and the direction. A nested provider that wants to repaint only its own subtree points `colorSchemeElement` at an element of its own: which is exactly what the preview above does, and why that prop is a function rather than an element.

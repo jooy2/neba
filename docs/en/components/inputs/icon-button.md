@@ -5,7 +5,7 @@ order: 14
 
 # IconButton
 
-<p class="neba-lede">A round button holding a single glyph. Use it where there is no room for a label — a toolbar, a list row.</p>
+<p class="neba-lede">A round button holding a single glyph. Use it where there is no room for a label: a toolbar, a list row.</p>
 
 <Demo src="icon-button/hero" />
 

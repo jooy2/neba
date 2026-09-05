@@ -19,7 +19,7 @@ import { Rating } from 'neba';
 
 <PropsTable name="Rating" />
 
-Every other `<div>` attribute passes through to the root, except `onChange` — the change worth listening for is `onValueChange`.
+Every other `<div>` attribute passes through to the root, except `onChange`: the change worth listening for is `onValueChange`.
 
 The shared axes (`size` `color`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -29,7 +29,7 @@ The shared axes (`size` `color`) are defined in [prop conventions](../../design/
 
 `count` is how many stars there are and therefore the highest score. `precision` is the smallest step that can be chosen: at `0.5` each star is split into two hit areas and half stars can be picked.
 
-`precision` bounds what can be **chosen** and nothing else. A `value` of `4.3` is drawn as four stars and a third at every precision — an average is not a choice, and rounding it to the nearest half would be reporting a different number from the one it was handed.
+`precision` bounds what can be **chosen** and nothing else. A `value` of `4.3` is drawn as four stars and a third at every precision: an average is not a choice, and rounding it to the nearest half would be reporting a different number from the one it was handed.
 
 <Demo src="rating/precision">
 
@@ -51,7 +51,7 @@ It is also the one `readOnly` in the library that does not drain the saturation:
 
 ### size, color
 
-`size` takes the height of one star from the standalone-glyph ladder. `color` is the one place in the library where the default is `warning` — the amber a star is expected to be.
+`size` takes the height of one star from the standalone-glyph ladder. `color` is the one place in the library where the default is `warning`: the amber a star is expected to be.
 
 <Demo src="rating/appearance">
 

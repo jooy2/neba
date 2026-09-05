@@ -27,7 +27,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The shar
 
 ### title
 
-The headline defaults to the `locale`'s way of saying that there is nothing here, so an Empty with no props at all still says something. Pass `title` for the version that names what is missing — which is nearly always worth doing — or `title={false}` for a state that is a glyph and a sentence with no heading over them.
+The headline defaults to the `locale`'s way of saying that there is nothing here, so an Empty with no props at all still says something. Pass `title` for the version that names what is missing (which is nearly always worth doing), or `title={false}` for a state that is a glyph and a sentence with no heading over them.
 
 <Demo src="empty/title" minHeight="200">
 
@@ -47,7 +47,7 @@ The headline defaults to the `locale`'s way of saying that there is nothing here
 
 ### action
 
-`action` sits under the text and is where the state stops being a dead end — a button that creates the first record, a link that clears the filter that matched nothing. Pass a fragment for more than one and they lay out in a row that wraps together.
+`action` sits under the text and is where the state stops being a dead end: a button that creates the first record, a link that clears the filter that matched nothing. Pass a fragment for more than one and they lay out in a row that wraps together.
 
 <Demo src="empty/action" minHeight="220">
 
@@ -77,7 +77,7 @@ The headline defaults to the `locale`'s way of saying that there is nothing here
 
 ### color
 
-The sheet is never dyed — `color` reaches the hairline and the focus ring and stops there. `secondary` is the default because an empty state arriving in the accent colour is making a claim about content that does not exist. Move it when the emptiness is itself a problem.
+The sheet is never dyed: `color` reaches the hairline and the focus ring and stops there. `secondary` is the default because an empty state arriving in the accent colour is making a claim about content that does not exist. Move it when the emptiness is itself a problem.
 
 <Demo src="empty/color" minHeight="220">
 

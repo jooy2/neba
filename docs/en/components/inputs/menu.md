@@ -56,7 +56,7 @@ Rows are written as components rather than passed as an array, because each carr
 
 ### MenuSubmenu
 
-There is no depth limit — a submenu's children are menu rows too, so one of them can be another `MenuSubmenu`. They open on hover, and moving the pointer diagonally into an open submenu does not close it.
+There is no depth limit: a submenu's children are menu rows too, so one of them can be another `MenuSubmenu`. They open on hover, and moving the pointer diagonally into an open submenu does not close it.
 
 <Demo src="menu/nested">
 

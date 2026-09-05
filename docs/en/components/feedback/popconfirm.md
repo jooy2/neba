@@ -33,7 +33,7 @@ The difference from [Confirm](./confirm) is **reach**, not danger and not size.
 | The consequence is this row, this file, this tag | Popconfirm           |
 | The consequence reaches past what is on screen   | [Confirm](./confirm) |
 
-A Popconfirm stays anchored to what raised it, so the reader can still see the thing they are about to delete — and losing that is most of what makes a modal feel heavy for a small act. A Confirm takes the page away, which is right when what is about to happen is bigger than the page.
+A Popconfirm stays anchored to what raised it, so the reader can still see the thing they are about to delete, and losing that is most of what makes a modal feel heavy for a small act. A Confirm takes the page away, which is right when what is about to happen is bigger than the page.
 
 ## Examples
 
@@ -59,7 +59,7 @@ The mark is on by default and it is not decoration: a question that says "this i
 
 ### side and align
 
-Where the bubble sits against its trigger, from the same vocabulary as [Popover](../surfaces/popover) and [Tooltip](./tooltip). `top` by default — a question about a row is easier to read above it than over the rows below.
+Where the bubble sits against its trigger, from the same vocabulary as [Popover](../surfaces/popover) and [Tooltip](./tooltip). `top` by default: a question about a row is easier to read above it than over the rows below.
 
 ## Accessibility
 

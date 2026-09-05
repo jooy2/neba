@@ -27,7 +27,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The shar
 
 ### shape
 
-The three shapes are the three things a layout is made of. `line` is a run of text, sized off the type scale, so a `md` line is as tall as `md` type. `rect` is a block — an image, a chart, a card — and falls back to a thumbnail height when no `height` is given. `circle` is drawn on the same ladder an [Avatar](../display/avatar) uses, so the two are exactly the same size at the same `size`.
+The three shapes are the three things a layout is made of. `line` is a run of text, sized off the type scale, so a `md` line is as tall as `md` type. `rect` is a block (an image, a chart, a card), and falls back to a thumbnail height when no `height` is given. `circle` is drawn on the same ladder an [Avatar](../display/avatar) uses, so the two are exactly the same size at the same `size`.
 
 <Demo src="skeleton/shapes">
 
@@ -37,7 +37,7 @@ The three shapes are the three things a layout is made of. `line` is a run of te
 
 ### lines
 
-`lines` draws a stack of bars with the leading of the type scale between them, and the last one short — the way the last line of a paragraph is. It applies to `shape="line"` and is ignored by the other two.
+`lines` draws a stack of bars with the leading of the type scale between them, and the last one short: the way the last line of a paragraph is. It applies to `shape="line"` and is ignored by the other two.
 
 <Demo src="skeleton/lines">
 

@@ -21,17 +21,17 @@ import { TextLink } from 'neba';
 
 <PropsTable name="TextLink" />
 
-Every other `<a>` attribute passes through. `rel` is the one exception: it is merged rather than replaced — see `newTab` below.
+Every other `<a>` attribute passes through. `rel` is the one exception: it is merged rather than replaced. See `newTab` below.
 
 `color` and `size` are the two shared axes with no default: a link inside a paragraph is the colour and the size of that paragraph. The rest of the vocabulary is in [prop conventions](../../design/prop-conventions).
 
-The root carries the class `neba-link`. It is the hook a stylesheet that styles `a` by name — `.prose a`, and most CSS frameworks — can exempt: `.prose a:not(.neba-link) { … }`.
+The root carries the class `neba-link`. It is the hook a stylesheet that styles `a` by name (`.prose a`, and most CSS frameworks) can exempt: `.prose a:not(.neba-link) { … }`.
 
 ## Examples
 
 ### underline
 
-`always` is the default, `hover` draws the line only under the pointer, and `none` draws none at all. Reach for `none` where something else is already saying "this is a link" — a nav bar, a footer, a row of them under a heading.
+`always` is the default, `hover` draws the line only under the pointer, and `none` draws none at all. Reach for `none` where something else is already saying "this is a link": a nav bar, a footer, a row of them under a heading.
 
 <Demo src="text-link/underline">
 
@@ -53,7 +53,7 @@ With no `color` the link takes whatever colour the text around it has. Passing o
 
 ### size
 
-Also unset by default — a link in a sentence is the size of the sentence. Set `size` for one standing on its own, and it takes the library's type scale with the leading a wrapping line needs.
+Also unset by default: a link in a sentence is the size of the sentence. Set `size` for one standing on its own, and it takes the library's type scale with the leading a wrapping line needs.
 
 <Demo src="text-link/sizes">
 
@@ -77,7 +77,7 @@ A `rel` of your own is merged with that rather than replacing it. `rel="nofollow
 
 ### locale
 
-`newTab` adds a line that is read out and never drawn — "(opens in a new tab)". `locale` is which language it is written in: a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English.
+`newTab` adds a line that is read out and never drawn: "(opens in a new tab)". `locale` is which language it is written in: a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English.
 
 ```tsx
 <TextLink href="https://neba.cdget.com/components/" newTab locale="ko">
@@ -87,7 +87,7 @@ A `rel` of your own is merged with that rather than replacing it. `rel="nofollow
 
 ### render
 
-`render` swaps the element without changing anything else — the `Link` a router brings, most of the time. `href` still goes on the TextLink, so it is written once.
+`render` swaps the element without changing anything else: the `Link` a router brings, most of the time. `href` still goes on the TextLink, so it is written once.
 
 ```tsx
 import Link from 'next/link';
@@ -101,4 +101,4 @@ import Link from 'next/link';
 
 - A link that opens a new tab carries the notice in its accessible name. Set `locale` so it is read out in the page's own language.
 - `underline="none"` leaves colour as the only thing marking the link, and colour alone is not enough for every reader. Use it where the surrounding layout already says what the element is.
-- The focus ring is drawn even with no `color` — it falls back to the primary ring rather than disappearing.
+- The focus ring is drawn even with no `color`: it falls back to the primary ring rather than disappearing.

@@ -5,7 +5,7 @@ order: 11
 
 # Stack
 
-<p class="neba-lede">Lays things over each other so a set reads as a pile rather than a row. Faces on a shared task, cards in a deck, sheets on a desk — anything where the count matters more than each item does.</p>
+<p class="neba-lede">Lays things over each other so a set reads as a pile rather than a row. Faces on a shared task, cards in a deck, sheets on a desk: anything where the count matters more than each item does.</p>
 
 <Demo src="stack/hero" />
 
@@ -22,11 +22,11 @@ import { Avatar, Stack } from 'neba';
 
 <PropsTable name="Stack" />
 
-Every native `<div>` attribute passes through. It draws no surface of its own, so there is no `variant`, `color` or `elevation` — those belong to whatever is being stacked.
+Every native `<div>` attribute passes through. It draws no surface of its own, so there is no `variant`, `color` or `elevation`: those belong to whatever is being stacked.
 
 The overlap is a margin rather than a translate, so the box is exactly as big as what is in it and the content after a Stack is laid out against the right width. `size` is read only to pick the default `overlap`.
 
-Each item is drawn into a wrapper of its own and the child is passed through untouched, so anything can be stacked — including a [Tooltip](../feedback/tooltip) around an avatar, or anything produced by another component's `.map()`. `ring` is the one thing written onto the children themselves, because a hairline has to follow the shape it is around.
+Each item is drawn into a wrapper of its own and the child is passed through untouched, so anything can be stacked: including a [Tooltip](../feedback/tooltip) around an avatar, or anything produced by another component's `.map()`. `ring` is the one thing written onto the children themselves, because a hairline has to follow the shape it is around.
 
 See [prop conventions](../../design/prop-conventions) for the shared axes.
 
@@ -34,7 +34,7 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ### direction
 
-`horizontal` — the default — runs the pile along the inline axis and `vertical` runs it down the page. `diagonal` flows sideways like `horizontal` and drops each item by `drop` as it goes, which is the fanned deck.
+`horizontal` (the default) runs the pile along the inline axis and `vertical` runs it down the page. `diagonal` flows sideways like `horizontal` and drops each item by `drop` as it goes, which is the fanned deck.
 
 <Demo src="stack/direction" minHeight="260">
 
@@ -44,7 +44,7 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ### overlap and drop
 
-`overlap` is how far each item sits under the one before it, along the axis the stack flows on: a CSS length, or a number of pixels. Left out it is a fraction of `size`. `drop` is the other axis, and only `diagonal` moves on two — it defaults to `overlap`.
+`overlap` is how far each item sits under the one before it, along the axis the stack flows on: a CSS length, or a number of pixels. Left out it is a fraction of `size`. `drop` is the other axis, and only `diagonal` moves on two: it defaults to `overlap`.
 
 ### scaleStep, opacityStep and front
 
@@ -76,5 +76,5 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ## Accessibility
 
-- A Stack is a `<div>` and announces nothing. When the pile stands for a group — the people on a task, the files in a folder — give it a `role` and an accessible name, or put the count in text beside it.
+- A Stack is a `<div>` and announces nothing. When the pile stands for a group (the people on a task, the files in a folder), give it a `role` and an accessible name, or put the count in text beside it.
 - The overflow marker is drawn as an ordinary item, so whatever it renders is what a screen reader reads. `+38` on its own says very little; an `aria-label` on it says the rest.

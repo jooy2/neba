@@ -43,9 +43,9 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 `variant` is the weight of the tab **bar**, not of the panels under it.
 
-- `solid` — a filled tile moves between the tabs inside a trough.
-- `outline` — the indicator rides on a rule along the edge of the bar.
-- `text` — the indicator with no rule, for tabs inside a [Card](./card) that already has an edge.
+- `solid`: a filled tile moves between the tabs inside a trough.
+- `outline`: the indicator rides on a rule along the edge of the bar.
+- `text`: the indicator with no rule, for tabs inside a [Card](./card) that already has an edge.
 
 <Demo src="tabs/variants">
 
@@ -65,7 +65,7 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 ### overflow and lines
 
-`overflow` says what a bar with more tabs than room does about it. `scroll` — the default — keeps the bar on one line and scrolls along it; the ends fade while there is more bar in that direction, and the scrollbar itself is hidden. `wrap` takes as many lines as the tabs need, and the rule under the chosen tab moves onto the line that tab is on.
+`overflow` says what a bar with more tabs than room does about it. `scroll` (the default) keeps the bar on one line and scrolls along it; the ends fade while there is more bar in that direction, and the scrollbar itself is hidden. `wrap` takes as many lines as the tabs need, and the rule under the chosen tab moves onto the line that tab is on.
 
 `lines` caps a wrapping bar at that many tab-rows and scrolls past the cap. It is read only when `overflow` is `wrap`.
 

@@ -39,7 +39,7 @@ The scale it starts at. Well below `1` it comes up out of nothing; above `1` it 
 
 ### trigger="visible"
 
-The most common use of a zoom is a figure that lands as the reader reaches it. `threshold` is how much of the element has to be on screen first, from `0` to `1`, and `once` — on by default — is what stops it replaying every time the page scrolls back.
+The most common use of a zoom is a figure that lands as the reader reaches it. `threshold` is how much of the element has to be on screen first, from `0` to `1`, and `once` (on by default) is what stops it replaying every time the page scrolls back.
 
 <Demo src="animate-zoom/visible">
 

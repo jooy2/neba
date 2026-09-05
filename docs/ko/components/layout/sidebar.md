@@ -84,7 +84,7 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 
 ## 접근성
 
-- `<aside>`(`complementary` 랜드마크)를 렌더링하고, `label`이 없으면 `locale`의 “사이드바”에 해당하는 단어로 스스로를 이름 짓습니다. 사이드바가 둘인 페이지는 반드시 둘 다 이름을 주어야 합니다.
+- `<aside>`(`complementary` 랜드마크)를 렌더링하고, `label`이 없으면 `locale`의 "사이드바"에 해당하는 단어로 스스로를 이름 짓습니다. 사이드바가 둘인 페이지는 반드시 둘 다 이름을 주어야 합니다.
 - 접힌 상태는 modal dialog입니다. focus가 안에 갇히고, Escape로 닫히며, focus는 trigger로 돌아갑니다.
 - 크기 조절 핸들은 `tabindex="0"`인 `role="separator"`이며 `locale`이 이름을 붙입니다. 좌우 화살표가 16px씩 움직입니다.
 - `locale`은 PageLayout에서 물려받으므로 페이지당 한 번만 씁니다.

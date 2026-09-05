@@ -27,7 +27,7 @@ When an exact number has to be typed, use [NumberField](./number-field).
 
 ### An array value makes it a range
 
-Pass an array of numbers as the `value` and you get that many thumbs — a range slider. There is no separate prop for it.
+Pass an array of numbers as the `value` and you get that many thumbs: a range slider. There is no separate prop for it.
 
 <Demo src="slider/range">
 
@@ -41,7 +41,7 @@ Pass an array of numbers as the `value` and you get that many thumbs — a range
 
 ### size
 
-The thumb is drawn larger than the track — it is the part you actually hit, so it needs a real touch target.
+The thumb is drawn larger than the track: it is the part you actually hit, so it needs a real touch target.
 
 <Demo src="slider/sizes">
 

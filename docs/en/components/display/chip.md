@@ -5,7 +5,7 @@ order: 3
 
 # Chip
 
-<p class="neba-lede">A compact token holding one short value — a tag, a filter, a status. It can also be made clickable or deletable.</p>
+<p class="neba-lede">A compact token holding one short value: a tag, a filter, a status. It can also be made clickable or deletable.</p>
 
 <Demo src="chip/hero" />
 
@@ -64,5 +64,5 @@ Chip's `size` sits one step below the control heights: an `md` Chip is 26px, the
 ## Accessibility
 
 - The shell is always a `<span>`. `onClick` adds a `<button>` around the content; `onDelete` adds a second `<button>` beside it. Neither is nested inside the other, so both are reachable by keyboard.
-- With more than one chip on screen, give the delete button a `deleteLabel` naming what is being removed — the default label leaves them indistinguishable.
+- With more than one chip on screen, give the delete button a `deleteLabel` naming what is being removed: the default label leaves them indistinguishable.
 - `locale` decides the delete button's accessible name; `deleteLabel` writes it out instead.

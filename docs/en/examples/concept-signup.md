@@ -6,17 +6,17 @@ aside: false
 
 # Sign-up page
 
-<p class="neba-lede">Registration for Kestrel, in three steps. This is the library's fields with nothing else in the way — every kind of answer a form can ask for, and the states around them: <code>label</code>, <code>description</code> and <code>error</code> are the same three slots on all of them.</p>
+<p class="neba-lede">Registration for Kestrel, in three steps. This is the library's fields with nothing else in the way: every kind of answer a form can ask for, and the states around them: <code>label</code>, <code>description</code> and <code>error</code> are the same three slots on all of them.</p>
 
 <Demo src="concepts/signup" min-height="620px" />
 
-The source is one file: `docs/.vitepress/demos/concepts/signup.tsx`. The flow works — fill the first step in and Continue turns on.
+The source is one file: `docs/.vitepress/demos/concepts/signup.tsx`. The flow works: fill the first step in and Continue turns on.
 
 ## Which field asks what
 
 | Question | Component | Worth noticing |
 | --- | --- | --- |
-| Personal or team | `SegmentedButton` | One of a small, visible set — no popup to open |
+| Personal or team | `SegmentedButton` | One of a small, visible set: no popup to open |
 | Name, email, password | `TextField` | `type="password"`, `autoComplete` and `startIcon` all pass through to the native control |
 | Password strength | `ProgressLinear` | `max={4}` with a colour per band; it appears only once something has been typed |
 | Date of birth | `DatePicker` | `maxDate={new Date()}` makes a future date unselectable rather than an error afterwards |
@@ -32,6 +32,6 @@ The source is one file: `docs/.vitepress/demos/concepts/signup.tsx`. The flow wo
 ## Notes
 
 - Errors appear on blur, not on every keystroke, so a field is never red before it has been left.
-- The step buttons are gated on the fields of that step alone — `Continue` stays disabled until the step is valid, and the last step also needs the code and the terms.
+- The step buttons are gated on the fields of that step alone: `Continue` stays disabled until the step is valid, and the last step also needs the code and the terms.
 - The right-hand column is `Card`, `List`, `Timeline` and `Blockquote`: what the trial includes, what happens next, and one quote.
 - Layout is `GridContainer` and `Grid` at `md`, so the two columns become one on a phone with nothing to configure.

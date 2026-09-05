@@ -37,7 +37,7 @@ Every other `<li>` attribute passes through to the step.
 
 ### separator
 
-`separator` takes one of four names — `chevron`, `arrow`, `slash`, `dot` — or any node. The two that point turn back under RTL.
+`separator` takes one of four names (`chevron`, `arrow`, `slash`, `dot`), or any node. The two that point turn back under RTL.
 
 <Demo src="breadcrumb/separators">
 
@@ -79,7 +79,7 @@ The last step is the page you are on, so it is not a link even when it is given 
 
 ### structuredData
 
-Correct markup alone is not what puts a path under a search result — the structured data is. Turning `structuredData` on emits a schema.org `BreadcrumbList` in a `<script type="application/ld+json">` beside the trail. `baseUrl` is what relative `href`s are resolved against, since a search engine wants an absolute URL.
+Correct markup alone is not what puts a path under a search result: the structured data is. Turning `structuredData` on emits a schema.org `BreadcrumbList` in a `<script type="application/ld+json">` beside the trail. `baseUrl` is what relative `href`s are resolved against, since a search engine wants an absolute URL.
 
 Every step goes in, including the ones a `maxItems` fold is hiding: what is collapsed is a matter of how much room the row has, and the path is the path either way. A step with no `href` is emitted without an `item`, which is the last step's usual case.
 

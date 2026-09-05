@@ -61,7 +61,7 @@ If there is a Save button underneath and the value is submitted with a form, use
 <Switch label="Email alerts" classNames={{ control: 'w-14', thumb: 'rounded-sm' }} />
 ```
 
-The slots are `label`, `control`, `thumb`, `description` and `error`. `control` is the track — the pill that fills when the switch is on — and `thumb` is the disc that travels across it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+The slots are `label`, `control`, `thumb`, `description` and `error`. `control` is the track (the pill that fills when the switch is on), and `thumb` is the disc that travels across it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
 
 ## Accessibility
 

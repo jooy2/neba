@@ -26,7 +26,7 @@ Every top-level child becomes one slide. There is no slide sub-component: the sn
 
 Every native `<div>` attribute passes through.
 
-Underneath it is a scroll container with CSS scroll snapping. That is what makes swiping the browser's own behaviour, flips the direction automatically under RTL, and puts the transition on `scroll-behavior: smooth` — which becomes an instant cut under `prefers-reduced-motion` through the same code path.
+Underneath it is a scroll container with CSS scroll snapping. That is what makes swiping the browser's own behaviour, flips the direction automatically under RTL, and puts the transition on `scroll-behavior: smooth`. Which becomes an instant cut under `prefers-reduced-motion` through the same code path.
 
 ## Examples
 
@@ -34,7 +34,7 @@ Underneath it is a scroll container with CSS scroll snapping. That is what makes
 
 Without `loop`, the arrows go inert at the ends, which suits a set that has a first and a last. `arrows` and `indicators` draw the side arrows and the dots beneath.
 
-The arrows are drawn **over** the frame, so a slide with text near its edges should pad far enough in to clear them — about 3.5rem at `size="md"`.
+The arrows are drawn **over** the frame, so a slide with text near its edges should pad far enough in to clear them: about 3.5rem at `size="md"`.
 
 <Demo src="carousel/options">
 
@@ -78,7 +78,7 @@ If every slide has to be read, consider [Tabs](./tabs) or a plain vertical stack
 
 ## What is not offered
 
-- **More than one slide in view** — use [Grid](../layout/grid) with `overflow-x-auto`.
-- **Vertical** — a scrolling list already does that.
-- **Fade** — it cannot be combined with a scroll-based implementation.
+- **More than one slide in view**: use [Grid](../layout/grid) with `overflow-x-auto`.
+- **Vertical**: a scrolling list already does that.
+- **Fade**: it cannot be combined with a scroll-based implementation.
 - `locale` decides the region name, the arrows and every slide name; `label` and `slideLabel` write them out instead.

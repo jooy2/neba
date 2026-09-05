@@ -32,9 +32,9 @@ interface DateRange {
 
 `onValueChange` is always called with an object, so a cleared range is `{ start: null, end: null }` and there is never a second kind of empty to test for.
 
-The half state between the first and second click is reported as `{ start, end: null }`, and closing the popup without a second click throws it away. A second click that lands before the first is not an error — it is the same range in the other order, so the ends are sorted.
+The half state between the first and second click is reported as `{ start, end: null }`, and closing the popup without a second click throws it away. A second click that lands before the first is not an error: it is the same range in the other order, so the ends are sorted.
 
-The remaining props — `minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size` — behave as they do on [DatePicker](./date-picker).
+The remaining props (`minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size`) behave as they do on [DatePicker](./date-picker).
 
 ## Examples
 
@@ -52,7 +52,7 @@ With two panels, the leading and trailing days of neighbouring months are not dr
 
 ### presets
 
-Puts common spans beside the popup as buttons. A preset's `value` may be a range object or a function returning one. Prefer the function — a range computed once at render time is wrong for anyone who left the tab open.
+Puts common spans beside the popup as buttons. A preset's `value` may be a range object or a function returning one. Prefer the function: a range computed once at render time is wrong for anyone who left the tab open.
 
 <Demo src="date-range-picker/presets">
 

@@ -104,7 +104,7 @@ Identical to [Select](./select)'s: portalled to the end of `<body>`, with `neba-
 
 ### shortcuts
 
-On a Combobox this is the only way in. The arrows move the highlight, `Escape` closes the popup and `Enter` commits — those keys belong to the list, and they never reach an `onKeyDown` written on the root at all.
+On a Combobox this is the only way in. The arrows move the highlight, `Escape` closes the popup and `Enter` commits: those keys belong to the list, and they never reach an `onKeyDown` written on the root at all.
 
 ```tsx
 <Combobox label="Framework" items={frameworks} shortcuts={{ 'Mod+Enter': createAndOpen }} />
@@ -112,11 +112,11 @@ On a Combobox this is the only way in. The arrows move the highlight, `Escape` c
 
 Combinations are written the way [Shortcut](../display/shortcut) draws them, `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly.
 
-It is bound to the `<input>` and runs before the list acts on the key — but it does not _replace_ what the list does. A shortcut on `Enter` fires alongside the commit, not instead of it. Bind a combination the list has no opinion about when you need the key to itself.
+It is bound to the `<input>` and runs before the list acts on the key, but it does not _replace_ what the list does. A shortcut on `Enter` fires alongside the commit, not instead of it. Bind a combination the list has no opinion about when you need the key to itself.
 
 ### classNames
 
-`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames.control`.
+`className` lands on the root (the column holding the label, the shell and the two lines under it), so the `<input>` is reached through `classNames.control`.
 
 ```tsx
 <Combobox

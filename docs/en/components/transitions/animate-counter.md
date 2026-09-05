@@ -5,7 +5,7 @@ order: 9
 
 # AnimateCounter
 
-<p class="neba-lede">A number counted up to its value. The one animation in the library whose subject is the content rather than the box around it — a value being interpolated and formatted on every frame, which is not something a keyframe can do.</p>
+<p class="neba-lede">A number counted up to its value. The one animation in the library whose subject is the content rather than the box around it: a value being interpolated and formatted on every frame, which is not something a keyframe can do.</p>
 
 <Demo src="animate-counter/hero" minHeight="140" />
 
@@ -27,7 +27,7 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 
 ### format and locale
 
-`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback — the same prop [Statistic](../charts/statistic) and the progress indicators take.
+`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback: the same prop [Statistic](../charts/statistic) and the progress indicators take.
 
 <Demo src="animate-counter/formats" minHeight="240">
 

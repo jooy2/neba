@@ -5,7 +5,7 @@ order: 6
 
 # Pill
 
-<p class="neba-lede">A lozenge that floats an in-progress status over the page. Use it for information that keeps updating — a recording timer, a build still running.</p>
+<p class="neba-lede">A lozenge that floats an in-progress status over the page. Use it for information that keeps updating: a recording timer, a build still running.</p>
 
 <Demo src="pill/hero" />
 
@@ -21,9 +21,9 @@ import { Pill } from 'neba';
 
 Every native `<div>` attribute passes through except `title`, which here is the pill's headline rather than the browser's tooltip.
 
-The row has three parts: `startIcon` on the leading edge, `endIcon` on the trailing one, and the middle — `title`, `description` and anything in `children` — centred between them with generous padding either side.
+The row has three parts: `startIcon` on the leading edge, `endIcon` on the trailing one, and the middle (`title`, `description` and anything in `children`) centred between them with generous padding either side.
 
-`color` defaults to `secondary` and `elevation` to `2` — it is meant to float, so the shadow is on by default.
+`color` defaults to `secondary` and `elevation` to `2`: it is meant to float, so the shadow is on by default.
 
 ## Examples
 
@@ -61,7 +61,7 @@ The details area is `inert` while closed. Focus can still enter a zero-height el
 
 ### variant and size
 
-As far as colour goes a Pill is a control rather than a container — like a [Button](../inputs/button) or a [Chip](../display/chip), the surface itself takes the colour.
+As far as colour goes a Pill is a control rather than a container: like a [Button](../inputs/button) or a [Chip](../display/chip), the surface itself takes the colour.
 
 <Demo src="pill/variants">
 
@@ -85,6 +85,6 @@ The same vocabulary [Toolbar](./toolbar) uses. `fixed` pins it against the viewp
 
 ## When to use something else
 
-- A token inside a run of content — a tag, a filter, a status — is a [Chip](../display/chip).
+- A token inside a run of content (a tag, a filter, a status) is a [Chip](../display/chip).
 - A bar of controls along the top of a page is a [Toolbar](./toolbar).
 - Something the reader has to wait on and cannot dismiss is an [Overlay](../feedback/overlay); something they can dismiss is a [Toast](../feedback/toast).

@@ -5,7 +5,7 @@ order: 23
 
 # FloatingActionButton
 
-<p class="neba-lede">The one action a screen is about, as a round button floating over it — a FAB. Give it FloatingActions as children and it becomes a small set that fans out when it is pressed.</p>
+<p class="neba-lede">The one action a screen is about, as a round button floating over it: a FAB. Give it FloatingActions as children and it becomes a small set that fans out when it is pressed.</p>
 
 <Demo src="floating-action-button/hero" minHeight="220" />
 
@@ -29,7 +29,7 @@ The shared axes (`variant` `size` `color` `density` `elevation` `corner`) are de
 
 ### Fanning out actions
 
-Give it `FloatingAction` children and the button becomes a dial: pressing it — or resting a mouse on it — fans the actions out and swaps the glyph for a ×. Each action's name is drawn on a lozenge beside it.
+Give it `FloatingAction` children and the button becomes a dial: pressing it (or resting a mouse on it) fans the actions out and swaps the glyph for a ×. Each action's name is drawn on a lozenge beside it.
 
 `closeOnAction` decides whether the dial goes away once an action is pressed, `showLabels` whether the names are drawn, and `openOnHover` whether a resting mouse opens it.
 
@@ -41,7 +41,7 @@ Give it `FloatingAction` children and the button becomes a dial: pressing it —
 
 ### extended
 
-`extended` writes `label` beside the glyph, which turns the disc into a stadium — the shape to use when a drawing alone does not say what the screen is for. `label` is the accessible name either way, so the word that is drawn and the word that is read can never differ.
+`extended` writes `label` beside the glyph, which turns the disc into a stadium: the shape to use when a drawing alone does not say what the screen is for. `label` is the accessible name either way, so the word that is drawn and the word that is read can never differ.
 
 <Demo src="floating-action-button/extended" minHeight="120">
 
@@ -51,7 +51,7 @@ Give it `FloatingAction` children and the button becomes a dial: pressing it —
 
 ### position, corner, offset
 
-`position` defaults to `fixed`, which pins the button to a corner of the window. `absolute` pins it to a corner of the nearest positioned ancestor — a card, a map, the screen of a Mockup — and `static` puts it back in the flow.
+`position` defaults to `fixed`, which pins the button to a corner of the window. `absolute` pins it to a corner of the nearest positioned ancestor (a card, a map, the screen of a Mockup), and `static` puts it back in the flow.
 
 `corner` picks one of the four corners and `offset` is the distance from both edges. Which way the actions fan out follows from `corner`, and `direction` overrides it.
 

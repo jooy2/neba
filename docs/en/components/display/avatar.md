@@ -23,13 +23,13 @@ import { Avatar } from 'neba';
 
 Every other `<span>` attribute passes through to the root. The `<img>` takes `src`, `srcSet` and `alt` directly; anything else it needs goes in `imageProps`.
 
-The shared axes (`variant` `size` `color` `elevation`) are defined in [prop conventions](../../design/prop-conventions). `density` is not offered — an avatar has no padding to change.
+The shared axes (`variant` `size` `color` `elevation`) are defined in [prop conventions](../../design/prop-conventions). `density` is not offered: an avatar has no padding to change.
 
 ## Examples
 
 ### variant and color
 
-`solid` is a filled circle, `outline` a hairline over a faint panel, `text` — the default — a tinted plate with no edge. `color` picks one of the six role colours. All three are invisible behind a loaded picture, apart from the edge they keep.
+`solid` is a filled circle, `outline` a hairline over a faint panel, `text` (the default) a tinted plate with no edge. `color` picks one of the six role colours. All three are invisible behind a loaded picture, apart from the edge they keep.
 
 <Demo src="avatar/variants">
 
@@ -49,7 +49,7 @@ The control height ladder, so an avatar and the [Button](../inputs/button) besid
 
 ### shape
 
-`circle` is the default crop. `square` cuts the corners off instead, at roughly 28% of the box — use it for a logo or a repository icon, which are drawn to the edges of a rectangle and lose those edges to a round crop.
+`circle` is the default crop. `square` cuts the corners off instead, at roughly 28% of the box: use it for a logo or a repository icon, which are drawn to the edges of a rectangle and lose those edges to a round crop.
 
 <Demo src="avatar/shape">
 
@@ -61,7 +61,7 @@ The control height ladder, so an avatar and the [Button](../inputs/button) besid
 
 `name` does three things: it becomes the picture's `alt`, the initials are derived from it, and a screen reader hears it instead of them.
 
-The rule is the first character of the first word plus the first character of the last — `Jane Doe` is `JD`, `jane miriam van doe` is `JD`, `홍길동` is `홍`. Decomposed accents are recomposed first, so `Ängela` is `Ä` and not `A`. When the rule picks the wrong letters, write them out in `initials`.
+The rule is the first character of the first word plus the first character of the last: `Jane Doe` is `JD`, `jane miriam van doe` is `JD`, `홍길동` is `홍`. Decomposed accents are recomposed first, so `Ängela` is `Ä` and not `A`. When the rule picks the wrong letters, write them out in `initials`.
 
 <Demo src="avatar/initials">
 
@@ -95,4 +95,4 @@ An avatar carries no status dot of its own. Wrap it in a [Badge](./badge) with `
 
 - `JD` read out loud is two letters, not a person. Given a `name`, the initials are hidden from the accessibility tree and the name becomes the fallback's accessible name instead.
 - With neither `name` nor `alt` the `<img>` gets an empty `alt`, so it is skipped rather than read out as a file name. That is the right default for an avatar sitting next to the person's own name; pass `alt` when the picture is the only thing identifying them.
-- A `children` glyph with no `name` says nothing. Give the avatar a `name` — or an `aria-label` on whatever wraps it — when the glyph is carrying the meaning on its own.
+- A `children` glyph with no `name` says nothing. Give the avatar a `name` (or an `aria-label` on whatever wraps it) when the glyph is carrying the meaning on its own.

@@ -27,7 +27,7 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 ### from and to
 
-`from` alone is an arrival: something swings into place and stops. `from` and `to` together with `repeat="infinite"`, `easing="linear"` and `fade={false}` is a spin that never lands — a working mark, a decorative glyph. Negative angles turn anticlockwise.
+`from` alone is an arrival: something swings into place and stops. `from` and `to` together with `repeat="infinite"`, `easing="linear"` and `fade={false}` is a spin that never lands: a working mark, a decorative glyph. Negative angles turn anticlockwise.
 
 <Demo src="animate-rotate/spin">
 

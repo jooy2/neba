@@ -5,7 +5,7 @@ order: 13
 
 # TreeSelect
 
-<p class="neba-lede">A value chosen from a tree rather than from a list. For a category, a folder, a region or an org-chart node — the things a flat list flattens away.</p>
+<p class="neba-lede">A value chosen from a tree rather than from a list. For a category, a folder, a region or an org-chart node: the things a flat list flattens away.</p>
 
 <Demo src="tree-select/hero" />
 
@@ -23,7 +23,7 @@ import { TreeSelect } from 'neba';
 
 <PropsTable name="TreeSelectItem" />
 
-`value` must be unique across the whole tree, not just among siblings — it is what the component looks a node up by.
+`value` must be unique across the whole tree, not just among siblings: it is what the component looks a node up by.
 
 ### Which one to use
 
@@ -40,7 +40,7 @@ import { TreeSelect } from 'neba';
 
 Off by default, and that default carries weight: in most of these trees the branches are the taxonomy and the leaves are the answers. A "Europe" that can be chosen alongside "France" is usually a data model nobody meant.
 
-A branch still expands and collapses when it cannot be chosen. An item's own `selectable` overrides the setting either way, which is how you get one choosable branch in a tree of headings — or one heading in a tree of choosable nodes.
+A branch still expands and collapses when it cannot be chosen. An item's own `selectable` overrides the setting either way, which is how you get one choosable branch in a tree of headings, or one heading in a tree of choosable nodes.
 
 ### multiple
 
@@ -50,7 +50,7 @@ Holds any number, and the trigger writes them comma-joined unless `format` says 
 
 Adds a field above the tree that filters it.
 
-**A match keeps its ancestors**, and every branch the filter kept is opened. Both halves matter: a tree filtered to bare matches is a list, and a list of leaves is exactly what a tree was chosen over — "Seoul" with nothing above it does not say which taxonomy it came from, and a match folded inside a closed parent is a match the reader was not shown.
+**A match keeps its ancestors**, and every branch the filter kept is opened. Both halves matter: a tree filtered to bare matches is a list, and a list of leaves is exactly what a tree was chosen over. "Seoul" with nothing above it does not say which taxonomy it came from, and a match folded inside a closed parent is a match the reader was not shown.
 
 `searchLabel` is what a node is matched against when its `label` is a node rather than a string.
 

@@ -36,7 +36,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### Inside a control
 
-The ring sits one step under the control height at every size — an `md` ring is 20px inside a 32px control — so dropping one into a button, a field or a table row never makes the row taller.
+The ring sits one step under the control height at every size (an `md` ring is 20px inside a 32px control), so dropping one into a button, a field or a table row never makes the row taller.
 
 <Demo src="progress-circular/inline">
 

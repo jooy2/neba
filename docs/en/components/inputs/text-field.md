@@ -45,7 +45,7 @@ The same heights as [Button](./button), so a field and a button in one row share
 
 ### multiline · rows · resize
 
-`multiline` renders a `<textarea>` and leaves every other axis alone. `rows={1}` is exactly as tall as the single-line field. `resize` defaults to the vertical axis only — horizontal resizing breaks a form's column alignment.
+`multiline` renders a `<textarea>` and leaves every other axis alone. `rows={1}` is exactly as tall as the single-line field. `resize` defaults to the vertical axis only: horizontal resizing breaks a form's column alignment.
 
 <Demo src="text-field/multiline">
 
@@ -55,7 +55,7 @@ The same heights as [Button](./button), so a field and a button in one row share
 
 ### startIcon · endIcon · loading
 
-`loading` puts a spinner in the `endIcon` slot and marks the field busy, but typing is still allowed — a field is usually loading because of what was just typed into it.
+`loading` puts a spinner in the `endIcon` slot and marks the field busy, but typing is still allowed: a field is usually loading because of what was just typed into it.
 
 <Demo src="text-field/icons">
 
@@ -85,7 +85,7 @@ Identical to the native `<input>`.
 
 ### shortcuts
 
-`shortcuts` is a map from a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it — so the key a form shows a reader and the key it binds are the same string.
+`shortcuts` is a map from a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it, so the key a form shows a reader and the key it binds are the same string.
 
 ```tsx
 <TextField
@@ -103,7 +103,7 @@ Identical to the native `<input>`.
 
 `Mod` is Command on a Mac and Control everywhere else. The modifiers are matched exactly, so `Enter` and `Mod+Enter` are two entries that never both fire.
 
-It is bound to the control, so `event.currentTarget` is the `<input>` or the `<textarea>` and `event.currentTarget.value` is what was typed. Nothing is prevented for you: a `Mod+Enter` that must not also insert a newline calls `preventDefault` itself. `onKeyDown` still sees every keystroke and runs after the map — neither prop replaces the other.
+It is bound to the control, so `event.currentTarget` is the `<input>` or the `<textarea>` and `event.currentTarget.value` is what was typed. Nothing is prevented for you: a `Mod+Enter` that must not also insert a newline calls `preventDefault` itself. `onKeyDown` still sees every keystroke and runs after the map: neither prop replaces the other.
 
 <Demo src="text-field/shortcuts">
 
@@ -113,7 +113,7 @@ It is bound to the control, so `event.currentTarget` is the `<input>` or the `<t
 
 ### classNames
 
-`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames` instead. There is no `root` key; that is what `className` already is.
+`className` lands on the root (the column holding the label, the shell and the two lines under it), so the `<input>` is reached through `classNames` instead. There is no `root` key; that is what `className` already is.
 
 ```tsx
 <TextField

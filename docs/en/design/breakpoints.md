@@ -33,7 +33,7 @@ A responsive prop takes a bare value or a partial map, and **each entry applies 
 <Grid span={{ xs: 12, md: 6 }} />
 ```
 
-Full width until 48rem, half from there on — including at `lg` and `xl`, which the map never mentions. There is no value that means "only at this width", which is what makes two entries enough to describe most layouts.
+Full width until 48rem, half from there on: including at `lg` and `xl`, which the map never mentions. There is no value that means "only at this width", which is what makes two entries enough to describe most layouts.
 
 The other half of the rule is that a map **narrows** a prop rather than replacing it. A `spacing` of `{ md: 4 }` keeps the documented default of `2` below 48rem rather than falling through to nothing; naming one breakpoint never silently takes the value away everywhere else. The same holds when two props overlap: `columnSpacing` is laid over `spacing`, and overrides it from the breakpoint it first names.
 
@@ -76,9 +76,9 @@ return useBreakpoint('md') ? <Map /> : <StaticImage />;
 
 ## Changing the widths
 
-A breakpoint is a **build-time** decision. `@media` cannot read a custom property, so no amount of runtime configuration — a provider prop, a context — can move one, and anything that appeared to would move the JavaScript while leaving the CSS where it was.
+A breakpoint is a **build-time** decision. `@media` cannot read a custom property, so no amount of runtime configuration (a provider prop, a context) can move one, and anything that appeared to would move the JavaScript while leaving the CSS where it was.
 
-What it can be is a decision you take part in. The library's media queries are written as `theme(--breakpoint-*)`, which resolves in whichever Tailwind build compiles the stylesheet, so redeclaring them in your own theme moves everything at once — the library's own rules, the `md:` variants its components spell out, and the JavaScript, which reads the resolved widths back off the document.
+What it can be is a decision you take part in. The library's media queries are written as `theme(--breakpoint-*)`, which resolves in whichever Tailwind build compiles the stylesheet, so redeclaring them in your own theme moves everything at once: the library's own rules, the `md:` variants its components spell out, and the JavaScript, which reads the resolved widths back off the document.
 
 ```css
 @import 'tailwindcss';
@@ -89,6 +89,6 @@ What it can be is a decision you take part in. The library's media queries are w
 }
 ```
 
-This needs the Tailwind path. A project on `neba/styles.css` gets a stylesheet that was compiled here, with the five widths already baked into it; the names still work, but the numbers are the ones in the table above. If you need to move them, run Tailwind — [getting started](../guide/getting-started) has both setups.
+This needs the Tailwind path. A project on `neba/styles.css` gets a stylesheet that was compiled here, with the five widths already baked into it; the names still work, but the numbers are the ones in the table above. If you need to move them, run Tailwind: [getting started](../guide/getting-started) has both setups.
 
 Changing the _names_ is not supported on either path. The five names are written into the type, into the class tables literally, and into the cascades the stylesheet resolves through.

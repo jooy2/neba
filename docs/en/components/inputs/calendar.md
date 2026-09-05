@@ -5,7 +5,7 @@ order: 16
 
 # Calendar
 
-<p class="neba-lede">A month, inline, with the days it is holding lit up. The same grid the four pickers open, without a popup around it — for a page where the dates are always visible.</p>
+<p class="neba-lede">A month, inline, with the days it is holding lit up. The same grid the four pickers open, without a popup around it: for a page where the dates are always visible.</p>
 
 <Demo src="calendar/hero" align="center" />
 
@@ -23,7 +23,7 @@ Native `<div>` attributes pass through to the root. The shared axes are describe
 
 ### What it is not
 
-A scheduler. The cells are the control ladder's heights — 32px at `md` — so `renderDay` is room for a dot, a count or a bar under the number, and not for a day's worth of entries. A component that drew those would need a different grid, and calling this one that would be a promise the sizes cannot keep.
+A scheduler. The cells are the control ladder's heights (32px at `md`), so `renderDay` is room for a dot, a count or a bar under the number, and not for a day's worth of entries. A component that drew those would need a different grid, and calling this one that would be a promise the sizes cannot keep.
 
 Use it for choosing, filtering and marking. Reach for [DatePicker](./date-picker) when the date should be behind a field instead.
 
@@ -39,7 +39,7 @@ Use it for choosing, filtering and marking. Reach for [DatePicker](./date-picker
 | `multiple`         | `Date[]`                                     |
 | `range`            | `{ start: Date \| null, end: Date \| null }` |
 
-In `multiple`, clicking a day that is already held takes it back out — the only way a pointer can undo one.
+In `multiple`, clicking a day that is already held takes it back out: the only way a pointer can undo one.
 
 In `range`, the first click sets the start and the second sets the end. A click **below** the start begins a new span rather than inverting the old one, because inverting is the behaviour that makes a reader believe they mis-clicked. Once a span is finished, the next click starts another.
 
@@ -71,7 +71,7 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 
 ### bordered and elevation
 
-`bordered` draws the sheet the picker's popup draws. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` is `0` by default — a calendar sitting in a page is not floating.
+`bordered` draws the sheet the picker's popup draws. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` is `0` by default: a calendar sitting in a page is not floating.
 
 ## Keyboard
 
@@ -79,7 +79,7 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 | --------------------- | --------------------------------------------------------- |
 | `←` `→` `↑` `↓`       | Moves by a day or a week, stepping the month at the edges |
 | `Home` / `End`        | To the start or the end of the week                       |
-| `PageUp` / `PageDown` | By a month — with `Shift`, by a year                      |
+| `PageUp` / `PageDown` | By a month: with `Shift`, by a year                       |
 
 The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
 

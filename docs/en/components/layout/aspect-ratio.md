@@ -5,7 +5,7 @@ order: 8
 
 # AspectRatio
 
-<p class="neba-lede">A box that keeps a proportion whatever width it is given. It draws nothing of its own — it reserves the space and holds what is inside it to the shape.</p>
+<p class="neba-lede">A box that keeps a proportion whatever width it is given. It draws nothing of its own: it reserves the space and holds what is inside it to the shape.</p>
 
 <Demo src="aspect-ratio/hero" align="center" />
 
@@ -37,7 +37,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The shar
 
 ### fit
 
-`fit` is `object-fit` applied to a single piece of media that is a direct child — an `img`, a `video`, a `canvas`, an `svg` or an `iframe`. The media is stretched to the box first, which is the pair of declarations every use of this component would otherwise start with. `cover` crops, `contain` letterboxes, `fill` squashes.
+`fit` is `object-fit` applied to a single piece of media that is a direct child: an `img`, a `video`, a `canvas`, an `svg` or an `iframe`. The media is stretched to the box first, which is the pair of declarations every use of this component would otherwise start with. `cover` crops, `contain` letterboxes, `fill` squashes.
 
 <Demo src="aspect-ratio/fit">
 
@@ -57,7 +57,7 @@ The proportion holds whether or not the content has arrived, so a [Skeleton](../
 
 ### rounded
 
-`rounded` cuts the corners to the `size` step of the house radius ladder. It is off by default — a layout component draws nothing — and it is the one exception, because a photograph in a card almost always wants it.
+`rounded` cuts the corners to the `size` step of the house radius ladder. It is off by default (a layout component draws nothing), and it is the one exception, because a photograph in a card almost always wants it.
 
 ```tsx
 <AspectRatio ratio={4 / 3} rounded size="lg">

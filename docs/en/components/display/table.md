@@ -56,7 +56,7 @@ Numeric columns usually want `align: 'end'` so their digits line up.
 
 ### striped · hoverable · onRowClick
 
-`striped` alternates the row background — useful on a wide table where the eye has to track across; on a narrow one it is noise. `onRowClick` makes rows activatable and turns the hover treatment on with it.
+`striped` alternates the row background: useful on a wide table where the eye has to track across; on a narrow one it is noise. `onRowClick` makes rows activatable and turns the hover treatment on with it.
 
 `getRowKey` defaults to the row index. Pass it whenever sorting or filtering can reorder the rows.
 
@@ -82,7 +82,7 @@ Pins the header row while the body scrolls. It only does anything if something a
 
 ### classNames
 
-`className` is the sheet — the Box the table scrolls horizontally inside — so the `<table>` and everything in it are reached through `classNames`.
+`className` is the sheet (the Box the table scrolls horizontally inside), so the `<table>` and everything in it are reached through `classNames`.
 
 ```tsx
 <Table
@@ -94,7 +94,7 @@ Pins the header row while the body scrolls. It only does anything if something a
 
 The slots are `table`, `caption`, `head`, `headCell`, `body`, `row`, `cell` and `empty`.
 
-One thing to know before reaching for `cell`: a cell's padding, alignment and background are written as inline styles rather than as utilities, because a host stylesheet's `td` rule outranks any one-class utility. A class you hand to `headCell`, `cell` or `empty` can add anything the component does not already set inline — a colour, a font, a border — but changing one of those three needs an important utility (`p-4!`). See [prop conventions](../../design/prop-conventions).
+One thing to know before reaching for `cell`: a cell's padding, alignment and background are written as inline styles rather than as utilities, because a host stylesheet's `td` rule outranks any one-class utility. A class you hand to `headCell`, `cell` or `empty` can add anything the component does not already set inline (a colour, a font, a border), but changing one of those three needs an important utility (`p-4!`). See [prop conventions](../../design/prop-conventions).
 
 ## Accessibility
 

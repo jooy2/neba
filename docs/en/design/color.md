@@ -33,7 +33,7 @@ A family is a set of `--neba-{family}-{role}` tokens.
 --neba-{color}-accent         /* readable on a surface (for text/outline variants) */
 ```
 
-`solid` and `accent` are not two shades of one idea. `solid` is **a background to put text on**; `accent` is **text to put on a background**. That is why `accent` is the lighter and more saturated of the two — it is the one that has to hold contrast against a white page.
+`solid` and `accent` are not two shades of one idea. `solid` is **a background to put text on**; `accent` is **text to put on a background**. That is why `accent` is the lighter and more saturated of the two: it is the one that has to hold contrast against a white page.
 
 ### The rest, derived
 
@@ -64,7 +64,7 @@ Only **controls** let a family flood their surface. Box, Card and TextField read
 --neba-panel-press  /* white 92% (dark 13%) */
 ```
 
-What a container holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. Tinting the sheet underneath puts every one of them on a background they were not chosen against. So **the family stops at the hairline, the focus ring and the caret, and the sheet stays white.** A Button is the opposite case — its surface _is_ the thing being coloured — so it keeps the family fill.
+What a container holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. Tinting the sheet underneath puts every one of them on a background they were not chosen against. So **the family stops at the hairline, the focus ring and the caret, and the sheet stays white.** A Button is the opposite case (its surface _is_ the thing being coloured), so it keeps the family fill.
 
 <Demo src="color/surfaces">
 
@@ -78,9 +78,9 @@ It is also why the three steps rise in **opacity** rather than lightness: an eng
 
 ## Contrast
 
-Every colour is defined in `oklch()`, because its lightness axis matches perception — which is what lets all six families be pinned to the same number.
+Every colour is defined in `oklch()`, because its lightness axis matches perception: which is what lets all six families be pinned to the same number.
 
-- **Text on a fill holds 4.5:1.** All three steps — `solid`, `hover`, `active` — checked against the 88%-opaque fill over a white page.
+- **Text on a fill holds 4.5:1.** All three steps (`solid`, `hover`, `active`) checked against the 88%-opaque fill over a white page.
 - **`accent` clears 5:1 on white**, with the margin sized so it still clears 4.5:1 on the faintly tinted `panel`.
 - **Chroma sits near 90% of the sRGB gamut ceiling.** Well under it and the colour reads grey at the very same brightness; over it and the browser clips.
 
@@ -104,7 +104,7 @@ Neba's dark theme follows `prefers-color-scheme` and can be forced either way wi
 
 ### To scope an override, make the element a theme root
 
-For a different family colour in one part of the app rather than all of it, the wrapper has to **be a theme root** — it needs `.dark`, `.light` or `[data-theme='…']` on it.
+For a different family colour in one part of the app rather than all of it, the wrapper has to **be a theme root**: it needs `.dark`, `.light` or `[data-theme='…']` on it.
 
 ```html
 <!-- Does nothing: the buttons keep their old colour -->
@@ -128,7 +128,7 @@ The two panels below are exactly the same markup. Only the right one is wrapped 
 
 ## Adding a family
 
-Adding one to the library is two edits — the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts) and five lines in `styles.css` per theme. The derived block computes the rest.
+Adding one to the library is two edits: the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts) and five lines in `styles.css` per theme. The derived block computes the rest.
 
 From the consuming side, `NebaColor` is a closed union, so a new name cannot be passed in. If you need another family, please open an issue.
 

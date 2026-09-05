@@ -5,7 +5,7 @@ order: 9
 
 # AnimateSplit
 
-<p class="neba-lede">A line of text arriving a word — or a letter — at a time. AnimateAppear walks down a list a child at a time; this walks along a sentence.</p>
+<p class="neba-lede">A line of text arriving a word (or a letter) at a time. AnimateAppear walks down a list a child at a time; this walks along a sentence.</p>
 
 <Demo src="animate-split/hero" minHeight="140" />
 
@@ -23,13 +23,13 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 Only text is split. Pass a string, or `text`; an element among the children contributes its words and nothing about its markup, because there is no honest way to animate half of a link.
 
-Every piece is an `inline-block` — an inline box cannot be translated up — and each keeps the space that followed it, so a line still breaks between words and never inside the gap.
+Every piece is an `inline-block` (an inline box cannot be translated up), and each keeps the space that followed it, so a line still breaks between words and never inside the gap.
 
 ## Examples
 
 ### by and effect
 
-`by` is what one piece is: `word` by default, because a heading of eight words is eight boxes and the same heading by character is forty-six. `effect` is which animation each piece arrives on, in the library's own vocabulary — so a split heading's fade and an [AnimateFade](./animate-fade) are the same fade.
+`by` is what one piece is: `word` by default, because a heading of eight words is eight boxes and the same heading by character is forty-six. `effect` is which animation each piece arrives on, in the library's own vocabulary, so a split heading's fade and an [AnimateFade](./animate-fade) are the same fade.
 
 <Demo src="animate-split/by" minHeight="280">
 
@@ -39,7 +39,7 @@ Every piece is an `inline-block` — an inline box cannot be translated up — a
 
 ### stagger
 
-`stagger` is how long after one piece the next one starts, and it is what the effect is made of — `45` milliseconds by default. `durationStep` lengthens each successive piece and `reverse` runs the line from the end.
+`stagger` is how long after one piece the next one starts, and it is what the effect is made of: `45` milliseconds by default. `durationStep` lengthens each successive piece and `reverse` runs the line from the end.
 
 ### locale
 

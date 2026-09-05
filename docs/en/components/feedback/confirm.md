@@ -40,7 +40,7 @@ if (await confirm({ title: 'Delete the project?', color: 'danger' })) {
 
 It never rejects. A question answered _no_ is an answer, not a failure, and a promise that throws for it turns every call site into a `try`.
 
-Cancelling, `Escape` and a click on the backdrop all resolve `false` — they are the cancelling button by another route, so they answer the same way rather than leaving a promise pending forever.
+Cancelling, `Escape` and a click on the backdrop all resolve `false`: they are the cancelling button by another route, so they answer the same way rather than leaving a promise pending forever.
 
 ## Examples
 
@@ -59,7 +59,7 @@ await confirm({
 
 ### alert
 
-Drops the cancelling button, leaving one way out — for telling rather than asking. It still resolves, always `true`, so the same `await` works either way.
+Drops the cancelling button, leaving one way out: for telling rather than asking. It still resolves, always `true`, so the same `await` works either way.
 
 ```tsx
 await confirm({ title: 'Your export is ready.', alert: true });
@@ -67,7 +67,7 @@ await confirm({ title: 'Your export is ready.', alert: true });
 
 ### dismissible
 
-`false` makes a question the reader has to answer with a button: `Escape` and the backdrop stop working. Use it where an accidental dismissal is the expensive answer, and almost nowhere else — a modal with no way out is the thing people report.
+`false` makes a question the reader has to answer with a button: `Escape` and the backdrop stop working. Use it where an accidental dismissal is the expensive answer, and almost nowhere else: a modal with no way out is the thing people report.
 
 ### defaults
 
@@ -81,10 +81,10 @@ await confirm({ title: 'Your export is ready.', alert: true });
 
 **Questions queue.** Raising a second one while the first is up puts it behind the first; nothing is answered on the reader's behalf.
 
-That matters more than it looks. Resolving the older one `false` to make room would report an answer nobody gave — and at the call site, `false` reads as "they said no", so the code would take the cancelled branch for a question that was never shown.
+That matters more than it looks. Resolving the older one `false` to make room would report an answer nobody gave, and at the call site, `false` reads as "they said no", so the code would take the cancelled branch for a question that was never shown.
 
 ## Accessibility
 
 - It renders a [Dialog](./dialog), so everything that has is here: the focus trap, the scroll lock, the inert page behind, and focus returning to whatever raised the question.
 - The confirming button takes the focus when the sheet opens, so `Enter` answers yes and `Escape` answers no.
-- `title` becomes the dialog's accessible name and `description` its `aria-describedby`. A question with neither is a dialog a screen reader announces as nothing — always pass at least a `title`.
+- `title` becomes the dialog's accessible name and `description` its `aria-describedby`. A question with neither is a dialog a screen reader announces as nothing: always pass at least a `title`.

@@ -37,7 +37,7 @@ Its own steps rather than the control heights: 14 · 16 · 20 · 24 · 28px. The
 
 ### color
 
-`color` defaults to `inherit` — the one colour prop in the library that does not default to `primary`. Placed somewhere that has already decided its content colour, like a button label or inside an [Alert](../feedback/alert), the icon takes that colour. Name a role colour explicitly to override it.
+`color` defaults to `inherit`: the one colour prop in the library that does not default to `primary`. Placed somewhere that has already decided its content colour, like a button label or inside an [Alert](../feedback/alert), the icon takes that colour. Name a role colour explicitly to override it.
 
 <Demo src="icon/colors">
 
@@ -57,4 +57,4 @@ Without `label` the icon is `aria-hidden` and leaves the accessibility tree. Tha
 <Icon icon={<TrashIcon />} label="Delete" />
 ```
 
-For a glyph that is the whole control, use [IconButton](../inputs/icon-button) instead — there `label` is required.
+For a glyph that is the whole control, use [IconButton](../inputs/icon-button) instead: there `label` is required.

@@ -30,9 +30,9 @@ The animation is written onto the children themselves rather than onto wrappers 
 
 ### stagger
 
-How long after one child the next one starts, in milliseconds. This is the whole effect — everything else is what a single child does.
+How long after one child the next one starts, in milliseconds. This is the whole effect: everything else is what a single child does.
 
-The stagger is per _child_, which means what you pass matters: eight children are eight steps, and one child holding eight things is one step. That is also how to opt part of a list out — group it.
+The stagger is per _child_, which means what you pass matters: eight children are eight steps, and one child holding eight things is one step. That is also how to opt part of a list out: group it.
 
 <Demo src="animate-appear/stagger">
 
@@ -42,7 +42,7 @@ The stagger is per _child_, which means what you pass matters: eight children ar
 
 ### from, distance and reverse
 
-`from` is the edge each child drifts in from and `distance` is how far — short on purpose, because this is a settling rather than an entrance from off screen. `reverse` runs the list from the last child to the first.
+`from` is the edge each child drifts in from and `distance` is how far: short on purpose, because this is a settling rather than an entrance from off screen. `reverse` runs the list from the last child to the first.
 
 <Demo src="animate-appear/direction">
 
@@ -63,4 +63,4 @@ The natural pairing: a block of content that settles in as the reader reaches it
 ## Accessibility
 
 - A reduced-motion preference switches the animation off entirely and the whole list is simply there.
-- The wrapper adds no role and no name. Give it a real element with `render` — `render={<ul />}` — when the list is a list.
+- The wrapper adds no role and no name. Give it a real element with `render` (`render={<ul />}`) when the list is a list.

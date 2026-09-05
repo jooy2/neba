@@ -28,7 +28,7 @@ import { CommandPalette } from 'neba';
 
 <PropsTable name="CommandItem" />
 
-[Menu](./menu)가 아닙니다. 메뉴는 한자리에 있는 짧은 목록이고, 찾기 전에 이미 모든 행이 보입니다. [Combobox](./combobox)도 아닙니다. 돌아오는 것은 값이 아니라 벌어지는 일입니다.
+[Menu](./menu)는 한자리에 있는 짧은 목록이라 찾기 전에 이미 모든 행이 보입니다. [Combobox](./combobox)는 값을 돌려줍니다. 이 컴포넌트는 실행되는 동작을 돌려줍니다.
 
 ## 예시
 

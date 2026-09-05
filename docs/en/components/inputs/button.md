@@ -5,7 +5,7 @@ order: 1
 
 # Button
 
-<p class="neba-lede">A control that runs an action. Use it for anything the user deliberately triggers — submitting a form, saving, deleting.</p>
+<p class="neba-lede">A control that runs an action. Use it for anything the user deliberately triggers: submitting a form, saving, deleting.</p>
 
 <Demo src="button/hero" />
 
@@ -67,7 +67,7 @@ Sets the height and the type scale together: `xs` 22px · `sm` 26px · `md` 32px
 
 ### startIcon and endIcon
 
-Icons are drawn at `1.2em`, so they track the label and never need a size of their own. With icons but no `children` the button goes square, and then it needs an `aria-label` — for an icon-only control, [IconButton](./icon-button) requires `label` instead.
+Icons are drawn at `1.2em`, so they track the label and never need a size of their own. With icons but no `children` the button goes square, and then it needs an `aria-label`: for an icon-only control, [IconButton](./icon-button) requires `label` instead.
 
 <Demo src="button/icons">
 
@@ -113,7 +113,7 @@ Stretches to the width of the container.
 
 ### render
 
-Renders something other than a `<button>`. An action that navigates should be an `<a href>`: a crawler follows it, it appears in a screen reader's list of links, and the browser's own behaviour — open in a new tab, copy the address — keeps working. A router's `Link` goes in the same way.
+Renders something other than a `<button>`. An action that navigates should be an `<a href>`: a crawler follows it, it appears in a screen reader's list of links, and the browser's own behaviour (open in a new tab, copy the address) keeps working. A router's `Link` goes in the same way.
 
 The surface, the sizes and the press signature are unchanged. An `<a>` has no `disabled`, so a button that has to be unavailable stays a `<button>`.
 

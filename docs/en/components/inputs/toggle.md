@@ -5,7 +5,7 @@ order: 25
 
 # Toggle
 
-<p class="neba-lede">A button that stays down. It holds a state rather than running an action — bold on the selected words, the grid on the canvas, a filter on the list.</p>
+<p class="neba-lede">A button that stays down. It holds a state rather than running an action: bold on the selected words, the grid on the canvas, a filter on the list.</p>
 
 <Demo src="toggle/hero" />
 
@@ -21,7 +21,7 @@ import { Toggle } from 'neba';
 
 Every `<button>` attribute passes through except `value`, which identifies the toggle inside a [ToggleGroup](./toggle-group), and `color`, which is the semantic family. The shared axes are described in [prop conventions](../../design/prop-conventions).
 
-A [Switch](./switch) changes a setting and the change itself is the point; a [Checkbox](./checkbox) is an answer that goes in a form. This is neither — it is a control that acts on whatever is beside it.
+A [Switch](./switch) changes a setting and the change itself is the point; a [Checkbox](./checkbox) is an answer that goes in a form. This is neither: it is a control that acts on whatever is beside it.
 
 ## Examples
 

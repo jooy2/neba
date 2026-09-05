@@ -27,7 +27,7 @@ There is no `variant` and no `elevation`. The rule is drawn as a single border e
 
 ### length and thickness
 
-`length` is how far the rule runs — the width of a horizontal divider, the height of a vertical one — and `thickness` is how heavy it is. Both take a number of pixels or any CSS length. Left out, a horizontal rule fills its container and a vertical one stretches to the flex row it is in.
+`length` is how far the rule runs (the width of a horizontal divider, the height of a vertical one), and `thickness` is how heavy it is. Both take a number of pixels or any CSS length. Left out, a horizontal rule fills its container and a vertical one stretches to the flex row it is in.
 
 <Demo src="divider/size">
 
@@ -47,7 +47,7 @@ A label in `children` splits the rule around it. `center` halves the line; `star
 
 ### orientation
 
-`vertical` has no height of its own and stretches to its flex parent — the shape to use between control groups in a toolbar. A vertical label turns with the rule.
+`vertical` has no height of its own and stretches to its flex parent: the shape to use between control groups in a toolbar. A vertical label turns with the rule.
 
 <Demo src="divider/vertical">
 
@@ -68,4 +68,4 @@ A label in `children` splits the rule around it. `center` halves the line; `star
 ## Accessibility
 
 - Renders with `role="separator"`.
-- `separator` does not take its accessible name from content, so a **string** label is also passed through as `aria-label`. A node is left alone, since only the caller knows which part of it is the name — set `aria-label` yourself if you need one.
+- `separator` does not take its accessible name from content, so a **string** label is also passed through as `aria-label`. A node is left alone, since only the caller knows which part of it is the name: set `aria-label` yourself if you need one.

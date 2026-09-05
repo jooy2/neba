@@ -49,7 +49,7 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 | `density` | **Padding only.** Never the height, never the type scale |
 | `elevation` | Drop shadow depth. `0` by default, meaning no shadow at all |
 
-A handful of layout props take a per-breakpoint map on top of their own value — a `span` of `{ xs: 12, md: 6 }`. Which ones, and why the five axes above are deliberately not among them, is [breakpoints](./breakpoints).
+A handful of layout props take a per-breakpoint map on top of their own value: a `span` of `{ xs: 12, md: 6 }`. Which ones, and why the five axes above are deliberately not among them, is [breakpoints](./breakpoints).
 
 ## Motion
 
@@ -70,15 +70,15 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 It is offered on no component that is pressed. A control that moves under the pointer aiming at it is the one thing the [design language](./design-language) rules out, and a `transition` on a Button would be exactly that.
 
-[HowToSteps](../components/surfaces/how-to-steps) is the one component that takes the same prop and runs it on something other than a mount — a step arriving is what it animates — and it stays inside the rule for the same reason: the effect is on the panel, and the buttons and rows that changed it hold still. It is also the only one with a `'none'` in the union, because it is the only one whose default is an effect rather than nothing.
+[HowToSteps](../components/surfaces/how-to-steps) is the one component that takes the same prop and runs it on something other than a mount (a step arriving is what it animates), and it stays inside the rule for the same reason: the effect is on the panel, and the buttons and rows that changed it hold still. It is also the only one with a `'none'` in the union, because it is the only one whose default is an effect rather than nothing.
 
-Anything past a mount — a replay, a scroll trigger, a hover, your own control — is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all of them:
+Anything past a mount (a replay, a scroll trigger, a hover, your own control) is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all of them:
 
 | Prop                 | The rule                                                                 |
 | -------------------- | ------------------------------------------------------------------------ |
 | `duration` / `delay` | Milliseconds, always. Never a CSS string                                 |
 | `easing`             | A CSS easing curve. Defaults to the house one                            |
-| `repeat`             | A count, or `'infinite'` — the word CSS uses                             |
+| `repeat`             | A count, or `'infinite'`: the word CSS uses                              |
 | `alternate`          | Every other pass runs backwards, so a repeat returns instead of jumping  |
 | `mode`               | `'in'` or `'out'`. `out` is the same animation reversed, held at the end |
 | `trigger`            | `'mount'` (default), `'visible'`, `'hover'` or `'manual'`                |
@@ -86,7 +86,7 @@ Anything past a mount — a replay, a scroll trigger, a hover, your own control 
 | `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen   |
 | `paused`             | Holds the animation where it is                                          |
 
-Two more go on the nine whose motion is one `@keyframes` on the element itself — everything but AnimateAppear's own stagger, AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting, whose motion is written elsewhere:
+Two more go on the nine whose motion is one `@keyframes` on the element itself: everything but AnimateAppear's own stagger, AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting, whose motion is written elsewhere:
 
 | Prop           | The rule                                                                        |
 | -------------- | ------------------------------------------------------------------------------- |
@@ -114,7 +114,7 @@ Every effect in the library is switched off entirely by a reduced-motion prefere
 
 Three channels, and which one you want depends on what you are changing.
 
-### `className` — the root
+### `className`: the root
 
 Every component takes one, and it is **merged** with the classes the component wrote rather than replacing them. It lands on the component's **root**: for a field that is the column holding the label, the control and the two lines under it; for a Dialog, a Tour or a CommandPalette it is the sheet, which is the element a caller means by the component's name.
 
@@ -122,11 +122,11 @@ Every component takes one, and it is **merged** with the classes the component w
 <Button className="w-full" />
 ```
 
-[ToastProvider](../components/feedback/toast) is the one component that takes none, and that is the answer rather than an omission — it renders no element of its own, so there is nothing for a root class name to land on.
+[ToastProvider](../components/feedback/toast) is the one component that takes none, and that is the answer rather than an omission: it renders no element of its own, so there is nothing for a root class name to land on.
 
-### `classNames` — the parts behind it
+### `classNames`: the parts behind it
 
-A component that draws one element needs nothing else. A component that draws six — a field with a label, a shell, a control and two lines of text — has parts a caller can see, can want to change, and cannot name. `classNames` names them, one class per part.
+A component that draws one element needs nothing else. A component that draws six (a field with a label, a shell, a control and two lines of text) has parts a caller can see, can want to change, and cannot name. `classNames` names them, one class per part.
 
 ```tsx
 <TextField classNames={{ label: 'uppercase', control: 'font-mono' }} />
@@ -136,21 +136,21 @@ A component that draws one element needs nothing else. A component that draws si
 
 The slot names are shared where the parts are shared: `label`, `control`, `description` and `error` mean the same four things on a TextField, a Select, a Checkbox and a RadioGroup. What each component adds beyond them is on its own page.
 
-The slots worth knowing about are the ones with no other way in. A Select's `popup`, a Dialog's `backdrop`, a Tour's `mask` and a CommandPalette's `viewport` all render at the end of `<body>`, outside the element `className` reaches — no selector written against the root will ever find them.
+The slots worth knowing about are the ones with no other way in. A Select's `popup`, a Dialog's `backdrop`, a Tour's `mask` and a CommandPalette's `viewport` all render at the end of `<body>`, outside the element `className` reaches: no selector written against the root will ever find them.
 
 ### `style` and the `--n-*` slots
 
-Every per-colour value a component draws is read out of a custom property it sets on itself — `--n-fill`, `--n-accent`, `--n-line`, `--n-ring`, `--n-panel`, `--n-elev` and about a hundred more. The `style` you pass is merged **after** the component's own, so writing one of those is the one override in the library that cannot lose:
+Every per-colour value a component draws is read out of a custom property it sets on itself: `--n-fill`, `--n-accent`, `--n-line`, `--n-ring`, `--n-panel`, `--n-elev` and about a hundred more. The `style` you pass is merged **after** the component's own, so writing one of those is the one override in the library that cannot lose:
 
 ```tsx
 <Button style={{ '--n-fill': 'rebeccapurple' }} />
 ```
 
-An inline custom property has no cascade to compete in, which makes this steadier than a class for anything about colour or depth. One rung up, the `--neba-*` tokens on `:root` change the same things for the whole page — see [colour](./color).
+An inline custom property has no cascade to compete in, which makes this steadier than a class for anything about colour or depth. One rung up, the `--neba-*` tokens on `:root` change the same things for the whole page. See [colour](./color).
 
 ### When two utilities disagree
 
-A class you pass and a class the component wrote are both utilities of one class. Neither is more specific, so which one applies is decided by their **order in the generated stylesheet** — and that order is Tailwind's own, not the order you wrote them in.
+A class you pass and a class the component wrote are both utilities of one class. Neither is more specific, so which one applies is decided by their **order in the generated stylesheet**, and that order is Tailwind's own, not the order you wrote them in.
 
 That means the winner depends on the value rather than on who wrote it. `h-8` is generated before `h-10`, so a component's `h-10` wins. `rounded-full` is generated before `rounded-lg`, so a component's `rounded-lg` wins. `bg-red-500` comes after `bg-(--n-fill)`, so yours wins there.
 
@@ -160,11 +160,11 @@ Tailwind's important modifier is the form that wins every time, and it is what t
 <Button size="lg" className="h-8!" />
 ```
 
-It also beats an inline style, which is what the handful of components that could not rely on a utility use — [IconButton](../components/inputs/icon-button) writes its `border-radius` that way.
+It also beats an inline style, which is what the handful of components that could not rely on a utility use: [IconButton](../components/inputs/icon-button) writes its `border-radius` that way.
 
 ### The two stylesheets
 
-Overriding with a class is only meaningful on the `neba/tailwind.css` path, where your classes and the component's are generated in one Tailwind pass and can be ordered against each other at all. `neba/styles.css` is finished CSS and cannot take part in a build you run — on that path, override with your own CSS or with the `--n-*` slots above. See [getting started](../guide/getting-started).
+Overriding with a class is only meaningful on the `neba/tailwind.css` path, where your classes and the component's are generated in one Tailwind pass and can be ordered against each other at all. `neba/styles.css` is finished CSS and cannot take part in a build you run: on that path, override with your own CSS or with the `--n-*` slots above. See [getting started](../guide/getting-started).
 
 ## Naming
 
@@ -180,8 +180,8 @@ Overriding with a class is only meaningful on the `neba/tailwind.css` path, wher
 3. Re-export the barrel from `src/index.ts`
 4. Delegate behaviour and accessibility to a Base UI primitive
 5. Take the axes you need from the shared vocabulary; define only what genuinely has no name yet
-6. `test/components/{name}/{Name}.test.tsx` — **in the same commit**
-7. Write `docs/{locale}/components/{group}/{name}.md` — title, lede, preview, props, examples. One page **per locale**
+6. `test/components/{name}/{Name}.test.tsx`: **in the same commit**
+7. Write `docs/{locale}/components/{group}/{name}.md`: title, lede, preview, props, examples. One page **per locale**
 8. Add its rows to `docs/.vitepress/data/props.ts` and its demos to `docs/.vitepress/demos/{name}/`
 9. Give it a card in `demos/catalog/all.tsx` and a place on `demos/showcase/app.tsx`
 10. `npm run typecheck && npm test && npm run lint` all pass

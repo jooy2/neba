@@ -51,7 +51,7 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 ### 사이드바 두 개
 
-`sidebar`가 앞쪽 열, `endSidebar`가 뒤쪽 열입니다. 각각 자기 너비와 자기 drawer, 자기 trigger를 가진 [Sidebar](./sidebar)이며 `side`를 쓸 필요가 없습니다. 어느 자리에 넣었는지가 정해 줍니다. 둘 다에 `label`을 주세요. 그러지 않으면 스크린 리더가 “complementary”라는 영역 두 개를 내놓습니다.
+`sidebar`가 앞쪽 열, `endSidebar`가 뒤쪽 열입니다. 각각 자기 너비와 자기 drawer, 자기 trigger를 가진 [Sidebar](./sidebar)이며 `side`를 쓸 필요가 없습니다. 어느 자리에 넣었는지가 정해 줍니다. 둘 다에 `label`을 주세요. 그러지 않으면 스크린 리더가 "complementary"라는 영역 두 개를 내놓습니다.
 
 <Demo src="page-layout/two-sidebars" minHeight="320">
 
@@ -96,6 +96,6 @@ const [open, setOpen] = useState(false);
 ## 접근성
 
 - children은 `<main>`으로 감싸이고, header와 footer, 사이드바는 각각 `<header>`, `<footer>`, `<aside>`로 그려져 `banner`, `contentinfo`, `complementary` 랜드마크가 됩니다.
-- “본문으로 건너뛰기” 링크가 문서 맨 앞에 놓이며 focus를 받을 때만 그려집니다. 페이지에 이미 같은 링크가 있을 때만 `skipLink={false}`로 끄세요.
+- "본문으로 건너뛰기" 링크가 문서 맨 앞에 놓이며 focus를 받을 때만 그려집니다. 페이지에 이미 같은 링크가 있을 때만 `skipLink={false}`로 끄세요.
 - `locale`은 skip link와 레이아웃 안 모든 Sidebar·SidebarTrigger의 언어를 정합니다. 지원하지 않는 tag는 영어로 돌아가며, `skipLabel`로 문구를 직접 쓸 수도 있습니다.
 - 사이드바가 둘인 페이지는 각각에 `label`을 반드시 주어야 합니다.

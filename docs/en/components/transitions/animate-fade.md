@@ -23,7 +23,7 @@ import { AnimateFade } from 'neba';
 
 Every other `<div>` attribute passes through to the root.
 
-The settings shared by every `Animate*` — `duration`, `delay`, `easing`, `repeat`, `alternate`, `trigger`, `play`, `once`, `threshold`, `paused` — mean the same thing on all of them, and are defined in [prop conventions](../../design/prop-conventions).
+The settings shared by every `Animate*` (`duration`, `delay`, `easing`, `repeat`, `alternate`, `trigger`, `play`, `once`, `threshold`, `paused`) mean the same thing on all of them, and are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 
@@ -39,7 +39,7 @@ Both are milliseconds. A delay is what turns a set of fades into a sequence, and
 
 ### trigger
 
-`mount` is the default and needs nothing from you. `visible` waits until the element is scrolled into view — once, unless `once` is off — and `threshold` is how much of it has to be on screen. `hover` runs while the pointer is on it, restarting on each entry, and keyboard focus counts as a pointer. `manual` runs nothing until `play` says so, and every `false` → `true` starts it over.
+`mount` is the default and needs nothing from you. `visible` waits until the element is scrolled into view (once, unless `once` is off), and `threshold` is how much of it has to be on screen. `hover` runs while the pointer is on it, restarting on each entry, and keyboard focus counts as a pointer. `manual` runs nothing until `play` says so, and every `false` → `true` starts it over.
 
 <Demo src="animate-fade/triggers">
 
@@ -59,7 +59,7 @@ Both are milliseconds. A delay is what turns a set of fades into a sequence, and
 
 ### from
 
-The opacity the fade starts at, between `0` and `1`. Raise it for content that should never be completely gone — a dimming rather than a disappearance.
+The opacity the fade starts at, between `0` and `1`. Raise it for content that should never be completely gone: a dimming rather than a disappearance.
 
 ```tsx
 <AnimateFade from={0.4}>
@@ -69,9 +69,9 @@ The opacity the fade starts at, between `0` and `1`. Raise it for content that s
 
 ### stagger, durationStep and reverse
 
-`stagger` is how long after one child the next one starts, in milliseconds. At `0` — the default — the box itself is what fades, and the children are left alone. Above it the effect moves onto each child in turn and nothing is written on the box, so a list of five arrives one row at a time.
+`stagger` is how long after one child the next one starts, in milliseconds. At `0` (the default), the box itself is what fades, and the children are left alone. Above it the effect moves onto each child in turn and nothing is written on the box, so a list of five arrives one row at a time.
 
-`durationStep` adds that many milliseconds to each successive child's `duration`; a negative value speeds them up down the list, and a duration never goes below zero. `reverse` runs the children last-to-first — only the order reverses, each child still plays forwards.
+`durationStep` adds that many milliseconds to each successive child's `duration`; a negative value speeds them up down the list, and a duration never goes below zero. `reverse` runs the children last-to-first: only the order reverses, each child still plays forwards.
 
 The step is per _child_, so what you pass matters: five children are five steps, and one child holding five things is one step. Grouping is how part of a list opts out.
 

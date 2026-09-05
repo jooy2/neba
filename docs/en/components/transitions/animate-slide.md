@@ -29,7 +29,7 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 ### from
 
-Which edge it travels from — `top`, `right`, `bottom` or `left`. Physical rather than logical, as `NebaSide` is everywhere in the library: a panel sliding down from the top comes from the top in every writing direction.
+Which edge it travels from: `top`, `right`, `bottom` or `left`. Physical rather than logical, as `NebaSide` is everywhere in the library: a panel sliding down from the top comes from the top in every writing direction.
 
 Put it in a box with `overflow: hidden` and the effect is a panel appearing from behind that box's edge.
 
@@ -41,7 +41,7 @@ Put it in a box with `overflow: hidden` and the effect is a panel appearing from
 
 ### distance
 
-A CSS length or a number in pixels. `'100%'` — the default — is the element's own width or height. A short distance is a nudge rather than an entrance; for a whole list of those, one after another, use [AnimateAppear](./animate-appear).
+A CSS length or a number in pixels. `'100%'` (the default) is the element's own width or height. A short distance is a nudge rather than an entrance; for a whole list of those, one after another, use [AnimateAppear](./animate-appear).
 
 <Demo src="animate-slide/distance">
 

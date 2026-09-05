@@ -27,7 +27,7 @@ This is not [Timeline](../display/timeline). That one is a list of steps with no
 
 ## The data
 
-A row is a series and a span is a datum, but a span is not a `NebaChartPoint` — it has two positions on the axis rather than one — so it has a type of its own.
+A row is a series and a span is a datum, but a span is not a `NebaChartPoint` (it has two positions on the axis rather than one), so it has a type of its own.
 
 ```ts
 { start: new Date('2026-03-02'), end: new Date('2026-03-16'), label: 'Wireframes' }
@@ -49,7 +49,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### min · max
 
-Left alone, the axis is taken from the spans and rounded outward to a date a calendar has a name for. `min` and `max` pin it — to a quarter, to a sprint, to a working day — and a span that runs past the edge is cut there rather than dragging the whole axis out to meet it.
+Left alone, the axis is taken from the spans and rounded outward to a date a calendar has a name for. `min` and `max` pin it (to a quarter, to a sprint, to a working day), and a span that runs past the edge is cut there rather than dragging the whole axis out to meet it.
 
 The tick unit follows the range: seconds, minutes, hours, days, weeks, months, quarters or years. A day-long chart ticks on the hour.
 
@@ -61,7 +61,7 @@ The tick unit follows the range: seconds, minutes, hours, days, weeks, months, q
 
 ### barSize · rounded · density
 
-`barSize` caps how thick a bar may get; below the cap the bars fill their share of the row. `density` changes the share and nothing else. `rounded` cuts the corners off a span — both ends, unlike a [BarChart](./bar-chart), because a span grows from nothing and neither of its ends is a zero.
+`barSize` caps how thick a bar may get; below the cap the bars fill their share of the row. `density` changes the share and nothing else. `rounded` cuts the corners off a span: both ends, unlike a [BarChart](./bar-chart), because a span grows from nothing and neither of its ends is a zero.
 
 <Demo src="timeline-chart/bars">
 
@@ -81,7 +81,7 @@ The tick unit follows the range: seconds, minutes, hours, days, weeks, months, q
 
 ### Colour
 
-A row takes its palette slot from its place in the `series` array. `series.color` overrides the slot with a [colour family](../../design/color) or any CSS colour, and a span's own `color` overrides it for that one bar — which is how the one piece of work that is late gets to say so.
+A row takes its palette slot from its place in the `series` array. `series.color` overrides the slot with a [colour family](../../design/color) or any CSS colour, and a span's own `color` overrides it for that one bar: which is how the one piece of work that is late gets to say so.
 
 ## Accessibility
 

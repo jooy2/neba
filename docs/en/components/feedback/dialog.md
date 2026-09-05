@@ -28,13 +28,13 @@ import { Button, Dialog, DialogClose } from 'neba';
 
 Native `<div>` attributes pass through to the popup. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
 
-There is no `variant` and no `elevation` — a modal always carries a level-3 shadow.
+There is no `variant` and no `elevation`: a modal always carries a level-3 shadow.
 
 ## Examples
 
 ### size and width
 
-`size` sets the type scale and the padding along with the sheet's maximum width. When you need to break that pairing — small type on a wide sheet for a table or a diff — set a length in `width`.
+`size` sets the type scale and the padding along with the sheet's maximum width. When you need to break that pairing (small type on a wide sheet for a table or a diff), set a length in `width`.
 
 <Demo src="dialog/sizes">
 
@@ -54,7 +54,7 @@ With a long body, only the body scrolls; the heading and the actions stay put. `
 
 ### dismissible
 
-`dismissible={false}` blocks both Escape and the click outside. Turn it off only when `actions` holds a button that answers the dialog — otherwise there is no way out.
+`dismissible={false}` blocks both Escape and the click outside. Turn it off only when `actions` holds a button that answers the dialog: otherwise there is no way out.
 
 <Demo src="dialog/controlled">
 
@@ -77,7 +77,7 @@ actions={
 
 ### classNames
 
-`className` lands on the popup — the sheet itself, which is what a caller means by "the dialog". Everything around and inside it is reached through `classNames`.
+`className` lands on the popup: the sheet itself, which is what a caller means by "the dialog". Everything around and inside it is reached through `classNames`.
 
 ```tsx
 <Dialog

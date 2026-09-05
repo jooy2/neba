@@ -28,7 +28,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### count
 
-How many plates to draw. With a value, they fill left to right and the leading plate fills partially — all-or-nothing plates could only ever show 0, 25, 50, 75 or 100 at a count of four.
+How many plates to draw. With a value, they fill left to right and the leading plate fills partially: all-or-nothing plates could only ever show 0, 25, 50, 75 or 100 at a count of four.
 
 <Demo src="progress-box/counts">
 

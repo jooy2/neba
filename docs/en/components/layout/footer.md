@@ -5,7 +5,7 @@ order: 3
 
 # Footer
 
-<p class="neba-lede">The sheet at the end of a page. It renders a real <code>&lt;footer&gt;</code> — the contentinfo landmark — and decides the surface, the gutter and whether the bar stays in reach; everything in it is yours.</p>
+<p class="neba-lede">The sheet at the end of a page. It renders a real <code>&lt;footer&gt;</code> (the contentinfo landmark), and decides the surface, the gutter and whether the bar stays in reach; everything in it is yours.</p>
 
 <Demo src="footer/hero" minHeight="180" />
 
@@ -27,7 +27,7 @@ It has no slots, which is the difference between it and [Header](./header): a fo
 
 ### position
 
-`static` is the default and is the opposite of Header's: a footer is the thing at the end of the document, reached by scrolling to it. `sticky` holds it against the bottom of the window, and `fixed` takes it out of the flow — inside a [PageLayout](./page-layout) its height is then reserved rather than sitting on top of the last paragraph.
+`static` is the default and is the opposite of Header's: a footer is the thing at the end of the document, reached by scrolling to it. `sticky` holds it against the bottom of the window, and `fixed` takes it out of the flow: inside a [PageLayout](./page-layout) its height is then reserved rather than sitting on top of the last paragraph.
 
 ### variant
 

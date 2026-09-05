@@ -5,7 +5,7 @@ order: 29
 
 # Menubar
 
-<p class="neba-lede">The strip of words at the top of an application — File, Edit, View — each of which opens a menu. Once one is open, moving along the strip walks through the others rather than closing the one you left.</p>
+<p class="neba-lede">The strip of words at the top of an application (File, Edit, View), each of which opens a menu. Once one is open, moving along the strip walks through the others rather than closing the one you left.</p>
 
 <Demo src="menubar/hero" />
 
@@ -27,7 +27,7 @@ import { Menubar, MenubarMenu, MenuItem, MenuSeparator } from 'neba';
 
 Every native `<div>` attribute passes through, apart from `color`.
 
-It draws no surface of its own. A menu bar sits _on_ something — a [Toolbar](../surfaces/toolbar), a [WindowPane](../surfaces/window-pane)'s title bar, a [Header](../layout/header) — and a sheet under a strip that is already on a sheet is two sheets.
+It draws no surface of its own. A menu bar sits _on_ something (a [Toolbar](../surfaces/toolbar), a [WindowPane](../surfaces/window-pane)'s title bar, a [Header](../layout/header)), and a sheet under a strip that is already on a sheet is two sheets.
 
 ### MenubarMenu
 
@@ -39,7 +39,7 @@ The rows are the same `MenuItem`, `MenuSeparator`, `MenuGroup`, `MenuCheckboxIte
 
 ### Nested and checkable rows
 
-Everything a Menu can hold, a menu on the bar can hold — submenus, groups, checkboxes and radio rows.
+Everything a Menu can hold, a menu on the bar can hold: submenus, groups, checkboxes and radio rows.
 
 ### size
 

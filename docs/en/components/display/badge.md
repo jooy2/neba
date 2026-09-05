@@ -45,7 +45,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 `content` is what the marker says. A number past `max` (default `99`) renders as `99+`; a string is never truncated.
 
-A `content` of `0` draws nothing by default — turn it on with `showZero`. When there is nothing to count but something to report, use `dot`; `invisible` hides the marker while keeping the layout intact.
+A `content` of `0` draws nothing by default: turn it on with `showZero`. When there is nothing to count but something to report, use `dot`; `invisible` hides the marker while keeping the layout intact.
 
 <Demo src="badge/content">
 

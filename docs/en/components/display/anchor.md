@@ -30,7 +30,7 @@ Every native `<nav>` attribute passes through, apart from `color` and `children`
 
 <PropsTable name="AnchorItem" />
 
-The headings are given rather than scraped out of the document. Anything that produces this list — an MDX pipeline, a CMS, a route's frontmatter — already knows the ids, and a component that went looking for them would be guessing at which headings were content and which were chrome.
+The headings are given rather than scraped out of the document. Anything that produces this list (an MDX pipeline, a CMS, a route's frontmatter) already knows the ids, and a component that went looking for them would be guessing at which headings were content and which were chrome.
 
 ## Examples
 
@@ -46,7 +46,7 @@ How far below the top of the scrollport a heading counts as reached. Set it to t
 
 ### container
 
-What scrolls, when it is not the document — the element a [PageLayout](../layout/page-layout) with `scroll="content"` puts the page inside, for instance.
+What scrolls, when it is not the document: the element a [PageLayout](../layout/page-layout) with `scroll="content"` puts the page inside, for instance.
 
 ### rail
 

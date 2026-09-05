@@ -5,7 +5,7 @@ order: 20
 
 # AppLogo
 
-<p class="neba-lede">A product's mark, at a known size, that is never an empty box. It draws an image, an inline SVG, a letter on a tile, or — with nothing else to go on — the product's name set as the logotype.</p>
+<p class="neba-lede">A product's mark, at a known size, that is never an empty box. It draws an image, an inline SVG, a letter on a tile, or (with nothing else to go on) the product's name set as the logotype.</p>
 
 <Demo src="app-logo/hero" />
 
@@ -27,7 +27,7 @@ The artwork is `children` if there is any, otherwise `src`, otherwise the name. 
 
 ### src · children
 
-Where the artwork comes from. `src` links a file — a PNG, an SVG, whatever the brand ships — and `children` takes the markup instead, which is what an inline `<svg>` needs in order to inherit the colour around it. `children` wins when both are given, so one component serves a project that links a file and a project that inlines its icon. With neither, the tile falls back to the initials of `name`.
+Where the artwork comes from. `src` links a file (a PNG, an SVG, whatever the brand ships), and `children` takes the markup instead, which is what an inline `<svg>` needs in order to inherit the colour around it. `children` wins when both are given, so one component serves a project that links a file and a project that inlines its icon. With neither, the tile falls back to the initials of `name`.
 
 <Demo src="app-logo/artwork" minHeight="120">
 
@@ -37,7 +37,7 @@ Where the artwork comes from. `src` links a file — a PNG, an SVG, whatever the
 
 ### shape
 
-How the artwork is framed. `bare` — the default — draws it as it was given, at the height `size` asks for and whatever width that comes to: no plate, no crop, no padding. `app` insets it into a filled tile with the corners cut off, and `circle` is the same tile, round. `padded={false}` lets a mark reach the tile's own edges.
+How the artwork is framed. `bare` (the default) draws it as it was given, at the height `size` asks for and whatever width that comes to: no plate, no crop, no padding. `app` insets it into a filled tile with the corners cut off, and `circle` is the same tile, round. `padded={false}` lets a mark reach the tile's own edges.
 
 `bare` is the default because a logo file very often has a background, a margin or the product's name set into it, and a square crop would eat all three.
 
@@ -73,7 +73,7 @@ The weight of the tile behind the artwork, and the family it takes. Neither does
 
 ### href · height · render
 
-`href` makes the whole lockup a link, which is what a logo in a [Header](../layout/header) nearly always is. A `target` that leaves this tab gets `rel="noopener noreferrer"` merged into whatever `rel` you wrote. `height` overrides `size` with an exact number of pixels or a CSS length. `render` changes the element — `render={<h1 />}` for the one page where the product's name is the page's heading, or a router's own link component.
+`href` makes the whole lockup a link, which is what a logo in a [Header](../layout/header) nearly always is. A `target` that leaves this tab gets `rel="noopener noreferrer"` merged into whatever `rel` you wrote. `height` overrides `size` with an exact number of pixels or a CSS length. `render` changes the element: `render={<h1 />}` for the one page where the product's name is the page's heading, or a router's own link component.
 
 <Demo src="app-logo/link" minHeight="120">
 
@@ -85,4 +85,4 @@ The weight of the tile behind the artwork, and the family it takes. Neither does
 
 - The name is in the document exactly once. A drawn name is the accessible name; an image carries it as `alt`; a mark made of markup or of initials is marked decorative and the name is kept in a clipped span beside it.
 - `alt` overrides what the artwork says, for the rare logo that means something other than the product.
-- With `href`, the link's accessible name is the product's — so a logo that is the way home needs nothing else written on it.
+- With `href`, the link's accessible name is the product's, so a logo that is the way home needs nothing else written on it.

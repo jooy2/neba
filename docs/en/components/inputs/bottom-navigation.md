@@ -28,7 +28,7 @@ import { BottomNavigation, BottomNavigationItem } from 'neba';
 
 <PropsTable name="BottomNavigationItem" />
 
-Every other `<nav>` attribute passes through to the root and every other `<button>` attribute to each destination, except `onChange` — the change worth listening for is `onValueChange`.
+Every other `<nav>` attribute passes through to the root and every other `<button>` attribute to each destination, except `onChange`: the change worth listening for is `onValueChange`.
 
 The shared axes (`variant` `size` `color` `density` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -70,7 +70,7 @@ A destination with an `href` is a real `<a>`. That is what makes a long press of
 
 ### variant, divider, safeArea
 
-`variant` says what it says on every other container — the sheet is never dyed, and what carries the colour family is the one destination that is current. `divider` is the hairline along the top edge, facing the content, and it is on by default. `safeArea` adds `env(safe-area-inset-bottom)` under the row to clear a phone's home indicator, while the sheet itself still reaches the bottom of the screen.
+`variant` says what it says on every other container: the sheet is never dyed, and what carries the colour family is the one destination that is current. `divider` is the hairline along the top edge, facing the content, and it is on by default. `safeArea` adds `env(safe-area-inset-bottom)` under the row to clear a phone's home indicator, while the sheet itself still reaches the bottom of the screen.
 
 <Demo src="bottom-navigation/appearance" minHeight="360">
 

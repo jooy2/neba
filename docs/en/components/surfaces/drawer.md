@@ -5,7 +5,7 @@ order: 10
 
 # Drawer
 
-<p class="neba-lede">A panel attached to one edge of the window. It either floats over the page and is dismissed, or sits in the layout as a fixed sidebar — the same panel either way.</p>
+<p class="neba-lede">A panel attached to one edge of the window. It either floats over the page and is dismissed, or sits in the layout as a fixed sidebar: the same panel either way.</p>
 
 <Demo src="drawer/hero" align="center" />
 
@@ -23,7 +23,7 @@ import { Button, Drawer } from 'neba';
 
 Native `<div>` attributes pass through to the panel. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
 
-`DrawerClose` is Base UI's `Dialog.Close`, re-exported. Give it a `render` prop and any element dismisses the drawer it is inside: `<DrawerClose render={<Button>Cancel</Button>} />`. It belongs to an `overlay` drawer — an `inline` one is not a dialog.
+`DrawerClose` is Base UI's `Dialog.Close`, re-exported. Give it a `render` prop and any element dismisses the drawer it is inside: `<DrawerClose render={<Button>Cancel</Button>} />`. It belongs to an `overlay` drawer: an `inline` one is not a dialog.
 
 The shared axes are described in [prop conventions](../../design/prop-conventions).
 
@@ -41,7 +41,7 @@ The shared axes are described in [prop conventions](../../design/prop-convention
 
 ### mode
 
-`overlay`, the default, is the drawer you open: a scrim, a focus trap, Escape, and focus returned to the trigger. `inline` puts the same panel in the layout — no scrim, no portal, nothing to dismiss — and `open` decides whether it is in the flow at all. It defaults to open, so a fixed sidebar needs no state.
+`overlay`, the default, is the drawer you open: a scrim, a focus trap, Escape, and focus returned to the trigger. `inline` puts the same panel in the layout (no scrim, no portal, nothing to dismiss), and `open` decides whether it is in the flow at all. It defaults to open, so a fixed sidebar needs no state.
 
 Because it is one component, a sidebar that becomes a hamburger at a breakpoint is a `mode` that changes rather than two components to swap between.
 
@@ -53,7 +53,7 @@ Because it is one component, a sidebar that becomes a hamburger at a breakpoint 
 
 ### rounded
 
-`rounded` cuts the two corners on the edge facing the page — the top and bottom of a side panel, the inner pair of a top or bottom one. The corners against the window edge stay square. Turn it off for a panel that should read as an extension of the window.
+`rounded` cuts the two corners on the edge facing the page: the top and bottom of a side panel, the inner pair of a top or bottom one. The corners against the window edge stay square. Turn it off for a panel that should read as an extension of the window.
 
 <Demo src="drawer/rounded">
 

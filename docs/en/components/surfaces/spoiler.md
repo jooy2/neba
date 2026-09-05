@@ -21,7 +21,7 @@ import { Spoiler } from 'neba';
 
 <PropsTable name="Spoiler" />
 
-Every other `<div>` attribute passes through to the root, except `onChange` — the change worth listening for is `onRevealedChange`.
+Every other `<div>` attribute passes through to the root, except `onChange`: the change worth listening for is `onRevealedChange`.
 
 The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -29,7 +29,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### maxHeight
 
-Left out, the box is exactly as tall as what it holds — right for a paragraph or a picture. The cover keeps its place once the content is out, so a notice and a button taller than the line they were covering do not shrink the box on the press, and nothing on the page below moves.
+Left out, the box is exactly as tall as what it holds: right for a paragraph or a picture. The cover keeps its place once the content is out, so a notice and a button taller than the line they were covering do not shrink the box on the press, and nothing on the page below moves.
 
 `maxHeight` is the one thing that does change the height. It clamps the covered box, and revealing lets go of the clamp so the content takes whatever height it needs; a clamp that stayed on would leave the reader a scrollbar instead. It takes a CSS length or a number in pixels.
 
@@ -43,7 +43,7 @@ Left out, the box is exactly as tall as what it holds — right for a paragraph 
 
 ### locale
 
-The button and the line above it are the only words the component invents, and `locale` is which language they are in: a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English, and a regional tag resolves to its language — `ko-KR` is `ko`, `zh-TW` is Traditional.
+The button and the line above it are the only words the component invents, and `locale` is which language they are in: a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Tags with no translation fall back to English, and a regional tag resolves to its language: `ko-KR` is `ko`, `zh-TW` is Traditional.
 
 <Demo src="spoiler/locale">
 
@@ -55,7 +55,7 @@ The button and the line above it are the only words the component invents, and `
 
 `label` changes the button's words and `description` changes the line above it; `description={false}` leaves the cover with nothing written on it. `blur` decides how hard the content is blurred, in pixels.
 
-`action` replaces the button entirely — and that replacement is yours to wire up, through `revealed` and `onRevealedChange`.
+`action` replaces the button entirely, and that replacement is yours to wire up, through `revealed` and `onRevealedChange`.
 
 <Demo src="spoiler/words">
 

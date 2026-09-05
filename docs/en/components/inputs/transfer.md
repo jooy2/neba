@@ -38,7 +38,7 @@ Below about a dozen options a [Combobox](./combobox) with `multiple`, or a colum
 
 ### value and onValueChange
 
-The value is what is on the **right**, in the order `items` gives — so a row does not move when it is sent across and back. Ticking a row is not choosing it: ticks say which rows the next press moves, and the value says which side they are on.
+The value is what is on the **right**, in the order `items` gives, so a row does not move when it is sent across and back. Ticking a row is not choosing it: ticks say which rows the next press moves, and the value says which side they are on.
 
 ### searchable
 
@@ -62,10 +62,10 @@ Puts a filter above each list. It hides rows; it never moves them, and a hidden 
 
 ### locale · sourceLabel · targetLabel
 
-The headings, the buttons and the filter come from `locale`. `sourceLabel` and `targetLabel` write the two headings out instead, which is usually what you want — "Available" and "Selected" are rarely what the two lists actually are.
+The headings, the buttons and the filter come from `locale`. `sourceLabel` and `targetLabel` write the two headings out instead, which is usually what you want: "Available" and "Selected" are rarely what the two lists actually are.
 
 ## Accessibility
 
 - Every row is a real checkbox with its label wired to it, so the whole thing is reachable with Tab and Space.
 - The tick above each list is `Select all` for that list, and reports a mixed state while only some rows are ticked.
-- Both buttons are named — "Move to selected" and "Move to available" — and go unavailable while there is nothing for them to move.
+- Both buttons are named ("Move to selected" and "Move to available"), and go unavailable while there is nothing for them to move.

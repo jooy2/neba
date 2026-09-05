@@ -39,7 +39,7 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 ### arc, spread and blur
 
-`arc` is how much of the outline is lit at once, in degrees: small is a travelling spark, large is a sweep. `spread` is how far past the content the light reaches and `blur` is how soft it is — at `0` it reads as a graphic rather than as light.
+`arc` is how much of the outline is lit at once, in degrees: small is a travelling spark, large is a sweep. `spread` is how far past the content the light reaches and `blur` is how soft it is: at `0` it reads as a graphic rather than as light.
 
 <Demo src="animate-lighting/shape">
 
@@ -60,5 +60,5 @@ An infinite effect on `hover` runs while the pointer is on it and stops when it 
 ## Accessibility
 
 - Under a reduced-motion preference the arc stops travelling and becomes an even glow. The decoration survives; the motion does not.
-- Because of that, the light is never the only thing saying what is happening. Use it alongside a word — "Analysing", "Live" — rather than instead of one.
+- Because of that, the light is never the only thing saying what is happening. Use it alongside a word ("Analysing", "Live"), rather than instead of one.
 - The wrapper adds no role and no name.

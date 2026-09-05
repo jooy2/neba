@@ -22,7 +22,7 @@ import { ProgressLinear } from 'neba';
 
 Native `<div>` attributes pass through to the root. Only `color` and `children` are excluded, since the table above spells them differently.
 
-`value` defaults to `null`, the indeterminate state: a short segment travels along the groove. A `value` of `0` means something different — "nothing has progressed yet" — so keep the two apart.
+`value` defaults to `null`, the indeterminate state: a short segment travels along the groove. A `value` of `0` means something different ("nothing has progressed yet"), so keep the two apart.
 
 ## Examples
 
@@ -36,7 +36,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### min · max · format
 
-The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself — bytes, files, currency.
+The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself: bytes, files, currency.
 
 <Demo src="progress-linear/values">
 

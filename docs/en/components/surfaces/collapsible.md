@@ -21,7 +21,7 @@ import { Collapsible } from 'neba';
 
 <PropsTable name="Collapsible" />
 
-Every other `<div>` attribute passes through to the root, except `onChange` — the change worth listening for is `onOpenChange`.
+Every other `<div>` attribute passes through to the root, except `onChange`: the change worth listening for is `onOpenChange`.
 
 The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -29,7 +29,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### title, subtitle, startIcon, action
 
-`title` is the heading on the header and `subtitle` is the line under it. `startIcon` goes before the title; `action` goes at the end of the header but outside the trigger — a header that both folds and holds a switch has two things to press, and one of them cannot be nested inside the other.
+`title` is the heading on the header and `subtitle` is the line under it. `startIcon` goes before the title; `action` goes at the end of the header but outside the trigger: a header that both folds and holds a switch has two things to press, and one of them cannot be nested inside the other.
 
 `indicator={false}` drops the chevron, which leaves the header reporting its state in colour alone.
 
@@ -51,7 +51,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### variant
 
-The three weights say what they say on every other container. `text` draws no sheet at all, which is what a fold inside running prose — or inside a Card, which is already a sheet — usually wants.
+The three weights say what they say on every other container. `text` draws no sheet at all, which is what a fold inside running prose (or inside a Card, which is already a sheet) usually wants.
 
 <Demo src="collapsible/variants">
 

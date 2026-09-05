@@ -31,7 +31,7 @@ import { ScatterChart } from 'neba';
 
 ## The data
 
-The `series` shape is the one every chart shares — see [LineChart](./line-chart#the-data) for the full definition — with one requirement of its own: **every point carries an `x`**, and that `x` is a number or a `Date`. Both axes measure here, so a bare number as a datum has nothing to be placed against; a point given a string `x` is not on a number line and the chart draws its empty state rather than a row of marks at zero.
+The `series` shape is the one every chart shares (see [LineChart](./line-chart#the-data) for the full definition), with one requirement of its own: **every point carries an `x`**, and that `x` is a number or a `Date`. Both axes measure here, so a bare number as a datum has nothing to be placed against; a point given a string `x` is not on a number line and the chart draws its empty state rather than a row of marks at zero.
 
 ```ts
 { x: 22, y: 2 }              // a dot
@@ -65,7 +65,7 @@ The scale is taken across every series and does not move when the legend is filt
 
 ### shape
 
-Scatter is the form where any two marks can end up side by side, so the palette has to separate on **every** pair rather than on the pairs that touch — and run that way it separates three series. Past three, `shape="auto"` gives each series a mark of its own, in the fixed order circle, square, triangle, diamond, cross. The legend shows the same shapes.
+Scatter is the form where any two marks can end up side by side, so the palette has to separate on **every** pair rather than on the pairs that touch, and run that way it separates three series. Past three, `shape="auto"` gives each series a mark of its own, in the fixed order circle, square, triangle, diamond, cross. The legend shows the same shapes.
 
 `shape="varied"` turns that on from the first series, which is what a chart that will be printed or read in greyscale wants. Naming one of the five shapes uses it for every mark; on four or more series that is opting out of the second channel, so do it only when each series carries a `color` of its own.
 
@@ -77,7 +77,7 @@ Scatter is the form where any two marks can end up side by side, so the palette 
 
 ### xAxis · yAxis
 
-The x axis is a value axis here, not a category axis: it ticks at rounded numbers rather than at the data, and it casts a grid — reading a mark's x off the picture is half of what the chart is for. Setting `grid` to `false` on `xAxis` turns it off.
+The x axis is a value axis here, not a category axis: it ticks at rounded numbers rather than at the data, and it casts a grid. Reading a mark's x off the picture is half of what the chart is for. Setting `grid` to `false` on `xAxis` turns it off.
 
 Neither axis is forced through zero. What a position encodes is a place, so cropping a scale slides every mark by the same amount and the shape of the cloud survives; `min` and `max` pin an axis where a comparison needs a fixed frame.
 
@@ -105,4 +105,4 @@ A series takes its palette slot from its place in the `series` array, so filteri
 
 - The data is also rendered as a **visually hidden table**, captioned with `label`, with one row per point and its columns named from the axis labels.
 - The plot is focusable; `←` / `→` walk the marks in the order the data was given, `Home` / `End` jump to the ends, `Escape` clears the tooltip.
-- Past three series, identity is carried by shape as well as by colour — which is what makes the chart readable under colour vision deficiency, in greyscale and in print.
+- Past three series, identity is carried by shape as well as by colour: which is what makes the chart readable under colour vision deficiency, in greyscale and in print.

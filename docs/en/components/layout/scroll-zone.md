@@ -29,7 +29,7 @@ Every other `<div>` attribute passes through to the root. The shared axes (`vari
 
 ### orientation and lines
 
-`orientation` decides which way the strip runs and therefore which way it scrolls. `lines` is how many rows a horizontal zone fills before it starts a new column — two lines hold twice as much in the same width, and the strip is still one scroll.
+`orientation` decides which way the strip runs and therefore which way it scrolls. `lines` is how many rows a horizontal zone fills before it starts a new column: two lines hold twice as much in the same width, and the strip is still one scroll.
 
 `spacing` is the gap between children, on the same scale as [GridContainer](./grid)'s: `2` is `0.5rem`.
 
@@ -51,7 +51,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 ### buttons
 
-`auto` — the default — draws neither while everything fits. At an end it does whichever costs less: an overlaid button with nowhere to go is removed, an inline one is `disabled`, since its lane is held open either way. `always` draws both from the first paint, including while everything still fits, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to dragging, the arrow keys and whatever the pointer can already swipe with.
+`auto` (the default) draws neither while everything fits. At an end it does whichever costs less: an overlaid button with nowhere to go is removed, an inline one is `disabled`, since its lane is held open either way. `always` draws both from the first paint, including while everything still fits, which is what a strip whose content arrives later wants. `none` draws neither and leaves the strip to dragging, the arrow keys and whatever the pointer can already swipe with.
 
 `snap` brings the nearest child to the leading edge whenever the scrolling stops, however it was scrolled.
 
@@ -63,7 +63,7 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 ### buttonPlacement
 
-`inline` — the default — puts the buttons beside the strip: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on. `overlay` puts them over the ends of the strip instead, which keeps every pixel of the box for content and lets an item pass under a button.
+`inline` (the default) puts the buttons beside the strip: the scroller stops where the button starts, so an item is **cut off** at the button's edge rather than sliding beneath it, and the button is legible over the page rather than over whatever it landed on. `overlay` puts them over the ends of the strip instead, which keeps every pixel of the box for content and lets an item pass under a button.
 
 An inline button keeps its lane even while it has nowhere to go, or the strip would resize under the pointer that had just reached the end of it. That is also what `buttons="auto"` follows at an end: the lane is paid for either way, so an inline button stays there and is `disabled`, while an overlaid one is removed.
 
@@ -85,7 +85,7 @@ A vertical zone needs a height to scroll inside, and it takes it from the compon
 
 ### drag
 
-A finger already scrolls the strip, because the mechanism is an ordinary scroll container and touch scrolling is the browser's own — with momentum, rubber-banding and a scrollbar that no handler reproduces. `drag` adds the same gesture for a mouse or a pen, and the click that would otherwise follow a real drag is swallowed, so pulling the strip past a card never opens it.
+A finger already scrolls the strip, because the mechanism is an ordinary scroll container and touch scrolling is the browser's own: with momentum, rubber-banding and a scrollbar that no handler reproduces. `drag` adds the same gesture for a mouse or a pen, and the click that would otherwise follow a real drag is swallowed, so pulling the strip past a card never opens it.
 
 ```tsx
 <ScrollZone drag={false} scrollbar>
@@ -97,7 +97,7 @@ A finger already scrolls the strip, because the mechanism is an ordinary scroll 
 
 A mouse has one wheel and it points down the page, which is the one axis a horizontal strip does not run along. `wheel` turns a wheel rolled over the strip into travel along it.
 
-It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead. What it does take it gives back — at either end of the strip the wheel is the page's again, so a strip with nothing left ahead of it is scrolled past rather than caught in. A trackpad swiping sideways is left alone, since that already scrolls the strip, and a vertical zone ignores the prop.
+It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead. What it does take it gives back: at either end of the strip the wheel is the page's again, so a strip with nothing left ahead of it is scrolled past rather than caught in. A trackpad swiping sideways is left alone, since that already scrolls the strip, and a vertical zone ignores the prop.
 
 <Demo src="scroll-zone/wheel" minHeight="280">
 
@@ -107,8 +107,8 @@ It is off by default, because a wheel taken from the page is the page's: a reade
 
 ## Accessibility
 
-- The strip is focusable and scrolls with the arrow keys, which is the browser's own key handling on a scroll container — so it is already right under RTL.
+- The strip is focusable and scrolls with the arrow keys, which is the browser's own key handling on a scroll container, so it is already right under RTL.
 - `label` names the region and is what a screen reader reads before its contents. Without one the strip is focusable but unnamed.
-- The scroll buttons are real buttons with real names, and `previousLabel` / `nextLabel` — or `locale` — decide what those names are.
+- The scroll buttons are real buttons with real names, and `previousLabel` / `nextLabel` (or `locale`) decide what those names are.
 - In `hold` mode the buttons answer Enter and Space the same way they answer a press, scrolling while the key is down.
 - Nothing inside the strip is hidden when it is off screen: it is genuinely reachable by scrolling, and `aria-hidden` on it would be a lie a keyboard reader would fall into.

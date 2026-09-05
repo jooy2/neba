@@ -5,7 +5,7 @@ order: 9
 
 # AnimateFloat
 
-<p class="neba-lede">A slow drift with nowhere to get to. It says that something is not fixed to the page — an illustration, a floating card, a mark above a hero — and it runs for as long as the page is open.</p>
+<p class="neba-lede">A slow drift with nowhere to get to. It says that something is not fixed to the page (an illustration, a floating card, a mark above a hero), and it runs for as long as the page is open.</p>
 
 <Demo src="animate-float/hero" />
 
@@ -31,7 +31,7 @@ It is `translate` rather than a `transform`, so it composes with anything the el
 
 ### from and distance
 
-`from` is which way it drifts and `distance` is how far it gets — a CSS length, or a number of pixels. Short on purpose: past about a centimetre it stops reading as something resting and starts reading as something moving.
+`from` is which way it drifts and `distance` is how far it gets: a CSS length, or a number of pixels. Short on purpose: past about a centimetre it stops reading as something resting and starts reading as something moving.
 
 <Demo src="animate-float/distance" minHeight="300">
 

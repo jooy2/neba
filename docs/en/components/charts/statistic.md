@@ -27,7 +27,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 Pass `previousValue` and the change against the current value is calculated and shown. `delta` decides whether that change is written as a proportion, as the difference, or as both.
 
-`betterWhen` says which direction is good news. Revenue is better up, churn is better down — without it there is no way to colour the delta.
+`betterWhen` says which direction is good news. Revenue is better up, churn is better down: without it there is no way to colour the delta.
 
 <Demo src="statistic/comparison">
 
@@ -35,7 +35,7 @@ Pass `previousValue` and the change against the current value is calculated and 
 
 </Demo>
 
-The figure and the delta change shape as well as colour — a rising arrow, a falling one, a short dash when nothing moved. Direction is never carried by colour alone.
+The figure and the delta change shape as well as colour: a rising arrow, a falling one, a short dash when nothing moved. Direction is never carried by colour alone.
 
 ### icon · unit · caption · align
 

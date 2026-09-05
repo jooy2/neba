@@ -6,7 +6,7 @@ aside: false
 
 # All components
 
-<p class="neba-lede">Everything released so far. The preview inside each card is not a picture — it is the component, running.</p>
+<p class="neba-lede">Everything released so far. The preview inside each card is not a picture: it is the component, running.</p>
 
 <Demo src="catalog/all" plain />
 

@@ -57,7 +57,7 @@ Sets the sheet's radius and padding together with the type scale of the header a
 
 ### Holding controls
 
-Pass a real heading as `title` to put it in the document outline — `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
+Pass a real heading as `title` to put it in the document outline: `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
 
 <Demo src="card/form">
 

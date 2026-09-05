@@ -29,11 +29,11 @@ It works on its own. Inside a [PageLayout](./page-layout) it also registers itse
 
 ### brand · children · actions
 
-The three slots. `brand` is the leading one — the logo, the product's name; `children` is the middle, usually the navigation; `actions` is the trailing one, laid out end-aligned so a row of buttons needs no wrapper of its own. A slot given nothing renders nothing.
+The three slots. `brand` is the leading one: the logo, the product's name; `children` is the middle, usually the navigation; `actions` is the trailing one, laid out end-aligned so a row of buttons needs no wrapper of its own. A slot given nothing renders nothing.
 
 ### align
 
-Where the middle slot sits. `start` — the default — packs it against the brand. `center` puts it on the bar's own midline rather than in the space left over, which is why the two ends are given equal shares. `end` packs it against the actions.
+Where the middle slot sits. `start` (the default) packs it against the brand. `center` puts it on the bar's own midline rather than in the space left over, which is why the two ends are given equal shares. `end` packs it against the actions.
 
 <Demo src="header/align" minHeight="180">
 
@@ -47,7 +47,7 @@ Where the middle slot sits. `start` — the default — packs it against the bra
 
 ### variant
 
-The three weights say what they say everywhere: filled, hairline, none. The bar is never dyed by `color` — what is on it arrives with colours of its own — so the family shows up in the hairline and the focus rings.
+The three weights say what they say everywhere: filled, hairline, none. The bar is never dyed by `color` (what is on it arrives with colours of its own), so the family shows up in the hairline and the focus rings.
 
 <Demo src="header/variant" minHeight="220">
 
@@ -57,7 +57,7 @@ The three weights say what they say everywhere: filled, hairline, none. The bar 
 
 ### maxWidth
 
-Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder [Container](./container) uses — and the same lengths of your own, and the same per-breakpoint maps — so a header and the Container under it line up on the same edge at every width.
+Holds the row of slots to a measure and centres it while the sheet still spans the window. The same ladder [Container](./container) uses (and the same lengths of your own, and the same per-breakpoint maps), so a header and the Container under it line up on the same edge at every width.
 
 <Demo src="header/measure">
 
@@ -72,5 +72,5 @@ A hairline along the bottom edge, on by default. A bar pinned over a scrolling p
 ## Accessibility
 
 - It renders `<header>`, which is the `banner` landmark when it is not inside an `<article>` or a `<section>`.
-- Give it a `label` when a page has more than one `<header>` in it — an article's own and the site's — or a landmark list names neither.
+- Give it a `label` when a page has more than one `<header>` in it (an article's own and the site's), or a landmark list names neither.
 - The navigation in the middle slot should be a `<nav>` of your own, with its own accessible name when a page has more than one.

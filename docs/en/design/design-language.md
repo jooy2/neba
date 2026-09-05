@@ -33,13 +33,13 @@ Lowering the alpha does not by itself make glass. **The blur radius is what deci
 
 ### The undyed sheet (`--neba-glass-bg`) is the exception
 
-That rule is about a **dyed** fill. `--neba-glass-bg` — the base under the outline and text variants, and the default surface of Card, Box and TextField — has no colour in it, so alpha is the only axis there is. Here alpha does not decide whether the backdrop is legible; it decides **whether the sheet reads as white**.
+That rule is about a **dyed** fill. `--neba-glass-bg` (the base under the outline and text variants, and the default surface of Card, Box and TextField) has no colour in it, so alpha is the only axis there is. Here alpha does not decide whether the backdrop is legible; it decides **whether the sheet reads as white**.
 
-In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%** — the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went 5% → 7% for the same reason.
+In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%**: the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went 5% → 7% for the same reason.
 
 ### Container surfaces are never dyed
 
-Box, Card and TextField draw their surface from `--neba-panel` / `-hover` / `-press` — **three strengths of an undyed white sheet**, not from the family's own `--neba-{color}-panel`.
+Box, Card and TextField draw their surface from `--neba-panel` / `-hover` / `-press`: **three strengths of an undyed white sheet**, not from the family's own `--neba-{color}-panel`.
 
 What a container holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. Tinting the sheet underneath puts every one of them on a background they were not chosen against. So **the family stops at the hairline, the focus ring and the caret, and the sheet stays white.**
 
@@ -61,7 +61,7 @@ Translucency plus blur alone gives you polished glass. Noise is what makes it sa
 
 The plate is a 1px line, so how much of a surface it is depends on how big that surface is. On a 32px button it is light catching a cut edge. On an 18px checkbox, an 18px radio or a 20px switch track it is a bevel drawn at a fifteenth of the object, and a bevel that heavy on something that small reads as a toolbar icon from 2008.
 
-So `Checkbox`, `Radio` and `Switch` keep the acrylic — the grain, the sheen and the backdrop blur are what make the box a sheet of something — and drop `--neba-plate-glass` and `--neba-plate-solid` entirely. They are the only controls in the library that do.
+So `Checkbox`, `Radio` and `Switch` keep the acrylic (the grain, the sheen and the backdrop blur are what make the box a sheet of something), and drop `--neba-plate-glass` and `--neba-plate-solid` entirely. They are the only controls in the library that do.
 
 ### The sheen is off-vertical
 
@@ -84,7 +84,7 @@ The base colour is `#4072cd`; everything else comes off its palette.
 | `danger`    | A split-complementary vermilion        |
 | `info`      | The analogous cyan                     |
 
-Every colour is defined in `oklch()`, because its lightness axis matches perception — which is what lets all six families be pinned to the same number.
+Every colour is defined in `oklch()`, because its lightness axis matches perception: which is what lets all six families be pinned to the same number.
 
 ### Only five values are hand-picked per family
 
@@ -96,13 +96,13 @@ Every colour is defined in `oklch()`, because its lightness axis matches percept
 --neba-{color}-accent         readable on a surface (for the text/outline variants)
 ```
 
-The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color-mix()` in the derived block. **Adding a colour family is two edits** — one entry in the `NebaColor` union and five lines in `styles.css`.
+The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color-mix()` in the derived block. **Adding a colour family is two edits**: one entry in the `NebaColor` union and five lines in `styles.css`.
 
 ### Chroma goes to the gamut edge; lightness goes as far as contrast allows
 
-When a family looks muddy, the cause is usually not its lightness but its **chroma**. The `oklch()` chroma ceiling in sRGB differs per hue and per lightness, and a colour sitting well under that ceiling reads as grey at the very same brightness. Neba's chroma is held at roughly **90% of the maximum** for each family's lightness — vivid, with enough margin that the browser never has to clip.
+When a family looks muddy, the cause is usually not its lightness but its **chroma**. The `oklch()` chroma ceiling in sRGB differs per hue and per lightness, and a colour sitting well under that ceiling reads as grey at the very same brightness. Neba's chroma is held at roughly **90% of the maximum** for each family's lightness: vivid, with enough margin that the browser never has to clip.
 
-Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, holding 4.5:1 over a white page pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink** — which is exactly what `warning`, the one family that does it, is doing. Every step is checked against this, hover and active included.
+Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, holding 4.5:1 over a white page pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink**: which is exactly what `warning`, the one family that does it, is doing. Every step is checked against this, hover and active included.
 
 > **Moving the hue a few degrees is also an option.** `success` went 152 → 148 and `info` 218 → 223. Both sit where sRGB is unusually narrow at mid lightness, and a few degrees to the side buys chroma that no amount of tuning at the original hue could.
 
@@ -120,7 +120,7 @@ White on amber does not reach 4.5:1 at any lightness. `--neba-warning-on-solid` 
 
 ## 3. Size and density
 
-### `size` — height and type scale
+### `size`: height and type scale
 
 |        | xs   | sm   | md       | lg   | xl   |
 | ------ | ---- | ---- | -------- | ---- | ---- |
@@ -134,17 +134,17 @@ The uneven steps are deliberate. `md` is the desktop workhorse, `xs`/`sm` are fo
 
 ### What is drawn and what is pressed are two boxes
 
-A tick, a switch and the × on a Chip are not on the height ladder. They are sized against the text beside them, and text is smaller than a finger — a `md` tick is 18px where WCAG 2.5.8 asks for 24.
+A tick, a switch and the × on a Chip are not on the height ladder. They are sized against the text beside them, and text is smaller than a finger: a `md` tick is 18px where WCAG 2.5.8 asks for 24.
 
 So those controls carry `.neba-hit`. An empty `::before` grows the box that is pressed, and only on the axis that is short: a switch is already past 24px wide at every step, so it grows upward and downward only. **Nothing drawn moves by a pixel.**
 
-It is not applied to the controls on the height ladder. An `xs` Button is 22px and equally short, but a Button stands in a row of other Buttons and its label is the target — growing it two pixels past its own edge would take the press off whatever it was next to.
+It is not applied to the controls on the height ladder. An `xs` Button is 22px and equally short, but a Button stands in a row of other Buttons and its label is the target: growing it two pixels past its own edge would take the press off whatever it was next to.
 
 ### The radius is 45% of the height
 
 At 50% it is a pill. Stopping at 45% leaves a flat run along the top and bottom edge, and that flat run is what reads as a plate with its corners cut off.
 
-### `density` — padding, and only padding
+### `density`: padding, and only padding
 
 ```
 default   10 / 12 / 16 / 20 / 24px
@@ -179,7 +179,7 @@ Hovering adds a level and pressing removes one, so a control at elevation 0 stil
 
 This asymmetry is the house interaction signature. The same principle drives two things.
 
-**The fill** — per-property durations, with `:active` overriding all of them to 0ms.
+**The fill**: per-property durations, with `:active` overriding all of them to 0ms.
 
 ```
 transition-property: background-color, border-color, box-shadow, color;
@@ -192,7 +192,7 @@ transition-duration: var(--neba-duration-fill), var(--neba-duration), …;  /* 3
 
 The colour lands on the frame of the press and then takes 340ms to drain back out.
 
-**The afterglow layer** — the same trick applied to `opacity`. No JavaScript, no ripple element, no timers.
+**The afterglow layer**: the same trick applied to `opacity`. No JavaScript, no ripple element, no timers.
 
 ```css
 .neba-glow::after {
@@ -207,7 +207,7 @@ The colour lands on the frame of the press and then takes 340ms to drain back ou
 
 ### The indicator is the one thing inside a control that may travel
 
-The rule above is about the control — the box with the label on it. The mark _inside_ it is a different object: it carries no text, nothing about it is resampled, and it is the whole of what the state says. Those are allowed to move, and they move on a real property rather than on a `transform`.
+The rule above is about the control: the box with the label on it. The mark _inside_ it is a different object: it carries no text, nothing about it is resampled, and it is the whole of what the state says. Those are allowed to move, and they move on a real property rather than on a `transform`.
 
 There are four of them, and they are the whole list. A Switch's thumb travels on `left`. A Checkbox's tick draws itself along its own length, on `stroke-dashoffset` over a path normalised with `pathLength="1"`. A Radio's dot grows out of the centre of its ring, on `width` and `height`. A Rating's fill sweeps across the star the pointer is on, on `width`.
 
@@ -215,19 +215,19 @@ What none of them does is scale. A mark that arrived at 1.4× and settled would 
 
 ### A photograph in a frame that does not move is the one thing that may scale
 
-`Gallery`'s `hover="zoom"` is the exception, and it is opt-in rather than the default. What it moves is a photograph inside a tile whose own edges stay exactly where they were — the frame is `overflow: hidden` and never changes size, so nothing on the page shifts and nothing beside it is pushed. The objection the rule is made of does not apply either: a photograph carries no label, so there is no text to resample and none to shimmer under the cursor.
+`Gallery`'s `hover="zoom"` is the exception, and it is opt-in rather than the default. What it moves is a photograph inside a tile whose own edges stay exactly where they were: the frame is `overflow: hidden` and never changes size, so nothing on the page shifts and nothing beside it is pushed. The objection the rule is made of does not apply either: a photograph carries no label, so there is no text to resample and none to shimmer under the cursor.
 
 The default is `lift`, which is depth, and `dim`, which is colour. Those are how everything else in the library answers a pointer, and a gallery that does not ask for a zoom does not get one.
 
 ### A floating surface arrives and leaves in opacity, and nothing else
 
-Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ — a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving — so a surface that travels drags all of it across the screen for the length of the journey.
+Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ (a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving), so a surface that travels drags all of it across the screen for the length of the journey.
 
 It is one declaration and two state classes, written once in `internal/styles.ts` and read by all sixteen. A component that grows its own is a seventeenth chance for one popup to behave unlike the rest.
 
 The one thing that may travel besides opacity is the surface's own **size**, and only when the reader asked for it: a NavigationMenu's panel resizing between two menus of different heights is the panel staying still while its contents change, not the panel moving.
 
-**A Drawer is the exception, and the exception is the whole of what a drawer is.** Every other floating surface appears where it will stay, so moving it drags text the reader's eye is already on. A drawer has a _home_: `side` is a prop, the panel is pinned to that edge, and until it opens it is not on the screen at all. Sliding it moves nothing that was being read, and fading it in throws away the only thing that distinguishes it from a Dialog. So the panel comes in from its edge and the scrim behind it fades — the pairing every platform uses, and the one place in the library where the motion carries the meaning rather than decorating it.
+**A Drawer is the exception, and the exception is the whole of what a drawer is.** Every other floating surface appears where it will stay, so moving it drags text the reader's eye is already on. A drawer has a _home_: `side` is a prop, the panel is pinned to that edge, and until it opens it is not on the screen at all. Sliding it moves nothing that was being read, and fading it in throws away the only thing that distinguishes it from a Dialog. So the panel comes in from its edge and the scrim behind it fades: the pairing every platform uses, and the one place in the library where the motion carries the meaning rather than decorating it.
 
 ### The pointer spotlight
 
@@ -255,7 +255,7 @@ The three states each have to speak on their own axis, and each has to be distin
 
 Only `disabled` uses the native `disabled` attribute. `loading` and `readOnly` are marked with `aria-disabled`, keep focus, and stop activation in the handler.
 
-> **Don't express state with opacity.** `opacity: 0.5` reads as "blurry" whatever the state is. Give each state its own axis — saturation, colour family, flatness.
+> **Don't express state with opacity.** `opacity: 0.5` reads as "blurry" whatever the state is. Give each state its own axis: saturation, colour family, flatness.
 
 ---
 

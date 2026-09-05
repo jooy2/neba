@@ -5,7 +5,7 @@ order: 11
 
 # Meter
 
-<p class="neba-lede">How much of something there is, on a scale that is known in advance — disk used, seats taken, quota spent. It looks like a progress bar and is not one: the number is already known, and where it sits is what it means.</p>
+<p class="neba-lede">How much of something there is, on a scale that is known in advance: disk used, seats taken, quota spent. It looks like a progress bar and is not one: the number is already known, and where it sits is what it means.</p>
 
 <Demo src="meter/hero" />
 
@@ -21,7 +21,7 @@ import { Meter } from 'neba';
 
 Native `<div>` attributes pass through to the root. Only `color` and `children` are excluded, since the table above spells them differently.
 
-`value` is required, and that is the difference from [ProgressLinear](./progress-linear). A progress bar is about time — something is happening, it may have no value at all, and it is expected to move on its own. A meter is about quantity: it does not move unless the thing it measures does.
+`value` is required, and that is the difference from [ProgressLinear](./progress-linear). A progress bar is about time: something is happening, it may have no value at all, and it is expected to move on its own. A meter is about quantity: it does not move unless the thing it measures does.
 
 ### NebaThreshold
 
@@ -31,7 +31,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### thresholds
 
-Where the bar changes colour. Each entry is a point on the scale and the family the bar takes from there up; the last one the value has reached wins, and below all of them `color` stands. List them smallest `from` first — they are read in the order they are given.
+Where the bar changes colour. Each entry is a point on the scale and the family the bar takes from there up; the last one the value has reached wins, and below all of them `color` stands. List them smallest `from` first: they are read in the order they are given.
 
 <Demo src="meter/thresholds">
 
@@ -41,7 +41,7 @@ Where the bar changes colour. Each entry is a point on the scale and the family 
 
 ### min · max · format
 
-`showValue` prints the reading beside the label. Without a `format` it is a share of `min`…`max`; with one it is the number itself, through `Intl.NumberFormat` — which is the usual case here, because a meter normally has real units.
+`showValue` prints the reading beside the label. Without a `format` it is a share of `min`…`max`; with one it is the number itself, through `Intl.NumberFormat`: which is the usual case here, because a meter normally has real units.
 
 <Demo src="meter/values">
 

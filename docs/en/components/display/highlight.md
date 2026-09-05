@@ -21,7 +21,7 @@ import { Highlight } from 'neba';
 
 <PropsTable name="Highlight" />
 
-Pass whatever the search box holds straight into `query` — a string, an array of strings, or a regular expression. There is no need to pre-compute match offsets. The component holds no state, so the marks update when `children` or `query` changes.
+Pass whatever the search box holds straight into `query`: a string, an array of strings, or a regular expression. There is no need to pre-compute match offsets. The component holds no state, so the marks update when `children` or `query` changes.
 
 There is no `size`: a mark sits inside running text and takes the surrounding type size.
 
@@ -41,7 +41,7 @@ There is no `size`: a mark sits inside running text and takes the surrounding ty
 
 ### caseSensitive and wholeWord
 
-`caseSensitive` respects case; `wholeWord` matches only at word boundaries. A word here is a run of letters, digits and underscores, so it does very little for Korean or Japanese, where phrases are not delimited by spaces — which is why it is off by default.
+`caseSensitive` respects case; `wholeWord` matches only at word boundaries. A word here is a run of letters, digits and underscores, so it does very little for Korean or Japanese, where phrases are not delimited by spaces: which is why it is off by default.
 
 An array of strings is tried **longest first**: matching `['data', 'database']` shortest-first would mark `data` and leave `base` outside the mark.
 

@@ -34,11 +34,11 @@ It lays out its own children and nothing else. To have a page laid out _around_ 
 
 ### width · size
 
-`size` sets the column's default width — `md` is 16rem — and `width` overrides it with a number in pixels or any CSS length.
+`size` sets the column's default width (`md` is 16rem), and `width` overrides it with a number in pixels or any CSS length.
 
 ### resizable
 
-Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step and `onResizeEnd` once when the edge is let go — which is where a remembered width should be stored. The handle is a focusable `role="separator"`, so the left and right arrow keys do the same thing.
+Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step and `onResizeEnd` once when the edge is let go: which is where a remembered width should be stored. The handle is a focusable `role="separator"`, so the left and right arrow keys do the same thing.
 
 <Demo src="sidebar/resizable" minHeight="300">
 
@@ -58,7 +58,7 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 ### collapseBelow
 
-The width below which the column becomes a [Drawer](../feedback/dialog) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way. `title` is drawn only in that shape — a column has the page around it to say what it is, a panel that has covered the page does not.
+The width below which the column becomes a [Drawer](../feedback/dialog) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way. `title` is drawn only in that shape: a column has the page around it to say what it is, a panel that has covered the page does not.
 
 It defaults to the PageLayout's own value and to `none` outside one, because a sidebar that collapsed with nothing on the page able to bring it back is a sidebar the reader has lost.
 

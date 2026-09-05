@@ -52,7 +52,7 @@ interface NebaChartPoint {
 
 **`null` is a gap, not a zero.** A sensor that was offline and a month with no sales are different facts, and the chart draws them differently: the line breaks at a `null` and the point is not drawn. `connectNulls` bridges it, and should only be used when the gap is an artefact of how the data was collected.
 
-`categories` names the positions along the x axis. Points may carry their own `x` instead — whichever matches the shape the data already has.
+`categories` names the positions along the x axis. Points may carry their own `x` instead: whichever matches the shape the data already has.
 
 <Demo src="line-chart/data">
 
@@ -84,7 +84,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### curve
 
-`curve` decides how the line gets from one point to the next. `linear` is the default and claims nothing the data did not say. `smooth` is a monotone cubic — curved, but it will never dip below a value both of its neighbours are above. `step` holds each value until the next reading, which is what a rate limit or a plan tier actually did in between.
+`curve` decides how the line gets from one point to the next. `linear` is the default and claims nothing the data did not say. `smooth` is a monotone cubic: curved, but it will never dip below a value both of its neighbours are above. `step` holds each value until the next reading, which is what a rate limit or a plan tier actually did in between.
 
 <Demo src="line-chart/curve">
 
@@ -114,7 +114,7 @@ A line chart crops its value axis to the data, because a line encodes a _positio
 
 ### valueLabels · gradient · markers
 
-`valueLabels` writes numbers onto the line: `last` names where each series ended up, `extremes` marks each series' own high and low, `all` labels every point. The default is `none` — a number beside every point is the most reliable way to make a chart unreadable.
+`valueLabels` writes numbers onto the line: `last` names where each series ended up, `extremes` marks each series' own high and low, `all` labels every point. The default is `none`: a number beside every point is the most reliable way to make a chart unreadable.
 
 `markers` puts dots on the points. `auto` draws them while there are fourteen or fewer; the point under the pointer always gets one regardless.
 
@@ -138,7 +138,7 @@ The legend appears automatically from two series up and is left off below that. 
 
 ### Colour
 
-Series take palette slots in the order they are passed — eight hues, fixed, never cycled. A ninth series is not a ninth colour; fold the tail into an "Other" series or draw a second chart.
+Series take palette slots in the order they are passed: eight hues, fixed, never cycled. A ninth series is not a ninth colour; fold the tail into an "Other" series or draw a second chart.
 
 `series.color` overrides the slot with a `NebaColor` family or any CSS colour, and a point's own `color` overrides that for one mark. See [colour](../../design/color) for the ramp and what it is solved for.
 
@@ -153,7 +153,7 @@ Series take palette slots in the order they are passed — eight hues, fixed, ne
 
 ### format
 
-`format` takes `Intl.NumberFormat` options and applies everywhere a number appears — the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`).
+`format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`).
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }} … />
@@ -163,6 +163,6 @@ Series take palette slots in the order they are passed — eight hues, fixed, ne
 ## Accessibility
 
 - Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table.
-- The plot is focusable. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it — so the tooltip is reachable without a pointer.
+- The plot is focusable. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it, so the tooltip is reachable without a pointer.
 - The legend is a list of `aria-pressed` buttons, so which series are drawn is stated rather than implied by colour.
 - Identity is never carried by colour alone: the legend is always present from two series up, and the palette's adjacent pairs are verified against simulated protanopia and deuteranopia.

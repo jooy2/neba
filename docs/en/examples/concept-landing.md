@@ -6,7 +6,7 @@ aside: false
 
 # Landing page
 
-<p class="neba-lede">A marketing page for Kestrel, a product analytics tool that does not exist. It is the case a component library is least obviously for — mostly type, space and one call to action repeated — which makes it the best test of whether the parts compose.</p>
+<p class="neba-lede">A marketing page for Kestrel, a product analytics tool that does not exist. It is the case a component library is least obviously for (mostly type, space and one call to action repeated), which makes it the best test of whether the parts compose.</p>
 
 <Demo src="concepts/landing" min-height="640px" />
 

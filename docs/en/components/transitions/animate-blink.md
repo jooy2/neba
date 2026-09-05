@@ -41,7 +41,7 @@ How faint it gets at the bottom of the cycle, between `0` and `1`. At `0` the co
 
 ### repeat
 
-It repeats forever unless told otherwise, because a single blink is a flicker rather than an effect. A count is for drawing attention once — three pulses and then still.
+It repeats forever unless told otherwise, because a single blink is a flicker rather than an effect. A count is for drawing attention once: three pulses and then still.
 
 <Demo src="animate-blink/counted">
 
@@ -66,5 +66,5 @@ It repeats forever unless told otherwise, because a single blink is a flicker ra
 ## Accessibility
 
 - A reduced-motion preference switches the animation off entirely and the content sits at full opacity.
-- Because of that, the blink is never the only thing carrying the message. Say it in words too — a `Chip` that reads "Recording" says it whether or not it is pulsing.
+- Because of that, the blink is never the only thing carrying the message. Say it in words too: a `Chip` that reads "Recording" says it whether or not it is pulsing.
 - Something that never stops moving in the corner of a page being read is the one kind of motion this library otherwise refuses. Use it for a state that is genuinely live, and stop it when the state ends.

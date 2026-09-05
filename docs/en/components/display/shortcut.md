@@ -45,7 +45,7 @@ A string is split on `+`. The array form is only needed when a key is itself a p
 
 `os` defaults to `auto`, which asks the browser for the current platform. Name `mac`, `windows` or `linux` for documentation that describes a specific platform.
 
-The same strings are what the library **binds**: `shortcut` on [CommandPalette](../inputs/command-palette) and `shortcuts` on [TextField](../inputs/text-field), [NumberField](../inputs/number-field) and [Combobox](../inputs/combobox) all read this vocabulary. So do the aliases — `Cmd`, `Command`, `Meta` and `Win` are one key, and `Esc`, `Return`, `Opt` and `Up` are spellings of `Escape`, `Enter`, `Alt` and `ArrowUp`. A key cap and the key that fires it are the same string.
+The same strings are what the library **binds**: `shortcut` on [CommandPalette](../inputs/command-palette) and `shortcuts` on [TextField](../inputs/text-field), [NumberField](../inputs/number-field) and [Combobox](../inputs/combobox) all read this vocabulary. So do the aliases: `Cmd`, `Command`, `Meta` and `Win` are one key, and `Esc`, `Return`, `Opt` and `Up` are spellings of `Escape`, `Enter`, `Alt` and `ArrowUp`. A key cap and the key that fires it are the same string.
 
 <Demo src="shortcut/platforms">
 
@@ -67,7 +67,7 @@ Key caps sit one step below the control heights, like a [Chip](./chip), and are 
 
 ## Server rendering
 
-`os="auto"` depends on the browser, so under SSR the first frame renders the default and switches to the real platform's spelling after hydration — a Mac reader sees `Ctrl` briefly, then `⌘`. Name the `os` on screens where that transition matters.
+`os="auto"` depends on the browser, so under SSR the first frame renders the default and switches to the real platform's spelling after hydration: a Mac reader sees `Ctrl` briefly, then `⌘`. Name the `os` on screens where that transition matters.
 
 ## Accessibility
 

@@ -25,13 +25,13 @@ Every native `<div>` attribute passes through. The shared axes are described und
 
 The children go inside a real `<main>`, which is what `mainId` names and what the skip link jumps to.
 
-It draws no gutter and no measure — put a [Container](./container) inside, where a page can hold a wide dashboard on one route and a narrow article on the next.
+It draws no gutter and no measure: put a [Container](./container) inside, where a page can hold a wide dashboard on one route and a narrow article on the next.
 
 ## Examples
 
 ### headerSpan
 
-Which of the header and the sidebars takes the top corner. `full` — the default — spans the bar across the whole width with the sidebars beginning underneath it; `content` runs the sidebars the full height of the window and puts the bar between them. `footerSpan` answers the same question separately.
+Which of the header and the sidebars takes the top corner. `full` (the default) spans the bar across the whole width with the sidebars beginning underneath it; `content` runs the sidebars the full height of the window and puts the bar between them. `footerSpan` answers the same question separately.
 
 <Demo src="page-layout/span" minHeight="380">
 
@@ -51,7 +51,7 @@ Below this width both sidebars stop being columns and become drawers. A [Sidebar
 
 ### Two sidebars
 
-`sidebar` is the leading column and `endSidebar` the trailing one. Each is a [Sidebar](./sidebar) with its own width, its own drawer and its own trigger, and neither needs a `side` prop — the slot decides. Give both a `label`, or a screen reader offers two regions called "complementary".
+`sidebar` is the leading column and `endSidebar` the trailing one. Each is a [Sidebar](./sidebar) with its own width, its own drawer and its own trigger, and neither needs a `side` prop: the slot decides. Give both a `label`, or a screen reader offers two regions called "complementary".
 
 <Demo src="page-layout/two-sidebars" minHeight="320">
 
@@ -71,7 +71,7 @@ Below this width both sidebars stop being columns and become drawers. A [Sidebar
 
 ### height
 
-`viewport` is the window's height, so a short page still pushes its footer to the bottom of the screen. `auto` is the parent's, for a layout that is not the page — an app shell inside a [Mockup](../surfaces/mockup)'s screen, a preview. A number or a CSS length is exactly that.
+`viewport` is the window's height, so a short page still pushes its footer to the bottom of the screen. `auto` is the parent's, for a layout that is not the page: an app shell inside a [Mockup](../surfaces/mockup)'s screen, a preview. A number or a CSS length is exactly that.
 
 ```tsx
 <div className="h-96">
@@ -95,7 +95,7 @@ const [open, setOpen] = useState(false);
 
 ## Accessibility
 
-- The children are wrapped in a `<main>`, and the header, the footer and the sidebars carry `<header>`, `<footer>` and `<aside>` — the `banner`, `contentinfo` and `complementary` landmarks.
+- The children are wrapped in a `<main>`, and the header, the footer and the sidebars carry `<header>`, `<footer>` and `<aside>`: the `banner`, `contentinfo` and `complementary` landmarks.
 - A "Skip to content" link is the first thing in the document, drawn only while it holds the focus. Turn it off with `skipLink={false}` only if the page already has one.
 - `locale` sets the language of the skip link and of every Sidebar and SidebarTrigger inside the layout. Unsupported tags fall back to English; `skipLabel` writes the word out instead.
 - A page with two sidebars must give each one a `label`.

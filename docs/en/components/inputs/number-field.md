@@ -83,7 +83,7 @@ The steppers are sized in `em`, so they track the number. The field lines up wit
 
 ### shortcuts
 
-`shortcuts` maps a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it. `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly — `Enter` and `Mod+Enter` never both fire.
+`shortcuts` maps a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it. `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly: `Enter` and `Mod+Enter` never both fire.
 
 ```tsx
 <NumberField label="Quantity" shortcuts={{ Enter: commit }} />
@@ -95,7 +95,7 @@ Nothing is prevented for you. A shortcut on `ArrowUp` fires _and_ the field stil
 
 ### classNames
 
-`className` lands on the root — the column holding the label, the shell and the two lines under it — so the `<input>` is reached through `classNames.control`.
+`className` lands on the root (the column holding the label, the shell and the two lines under it), so the `<input>` is reached through `classNames.control`.
 
 ```tsx
 <NumberField label="Seats" classNames={{ control: 'text-right', stepper: 'rounded-none' }} />

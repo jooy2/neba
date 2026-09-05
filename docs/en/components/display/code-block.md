@@ -27,7 +27,7 @@ The code is a `code` prop rather than `children` because it is a string and not 
 
 ### language
 
-The name of the grammar — `ts`, `bash`, `yml`, `dockerfile`. Common spellings and file extensions are understood, so a value copied off a fenced code block works as it is: `jsx` and `mjs` mean JavaScript, `yml` means YAML, `html` and `vue` mean XML. A name nothing here knows is drawn plain rather than refused.
+The name of the grammar: `ts`, `bash`, `yml`, `dockerfile`. Common spellings and file extensions are understood, so a value copied off a fenced code block works as it is: `jsx` and `mjs` mean JavaScript, `yml` means YAML, `html` and `vue` mean XML. A name nothing here knows is drawn plain rather than refused.
 
 <Demo src="code-block/language" minHeight="320">
 
@@ -48,7 +48,7 @@ registerLanguage('elixir', elixir);
 
 Which palette the block wears, independent of the page's light and dark.
 
-Four are the library's own: `dark` is the default, `light` is its counterpart, `auto` follows the page, and `mono` drops the hues entirely and carries the structure in weight and muting. Eight more are ports kept at their published values — `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`.
+Four are the library's own: `dark` is the default, `light` is its counterpart, `auto` follows the page, and `mono` drops the hues entirely and carries the structure in weight and muting. Eight more are ports kept at their published values: `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`.
 
 <Demo src="code-block/theme" minHeight="480">
 
@@ -73,7 +73,7 @@ Eleven slots to fill. The muted text, the hairline, the hover tint and the two u
 
 ### highlightLines
 
-Marks lines with a tinted row and a rule down its leading edge. A number is one line, a string is a list of lines and ranges — `'4'`, `'4-9'`, `'1,4-9,12'` — and an array is any mix of the two. They are counted the way the gutter counts, so with `startLine={286}` the line the gutter calls 288 is `highlightLines={288}`.
+Marks lines with a tinted row and a rule down its leading edge. A number is one line, a string is a list of lines and ranges (`'4'`, `'4-9'`, `'1,4-9,12'`), and an array is any mix of the two. They are counted the way the gutter counts, so with `startLine={286}` the line the gutter calls 288 is `highlightLines={288}`.
 
 The tint is mixed from the theme's own ink rather than the page's colour family, so it stays legible on all twelve palettes.
 
@@ -105,7 +105,7 @@ Numbers down the side, starting wherever an excerpt actually starts. The gutter 
 
 ### prompt
 
-A shell symbol in front of every line that has something on it — `$`, `#`, `C:\>`, `>>>`. It is drawn but never present: the symbol is generated content, so a reader dragging across the block does not select it, find-in-page does not match it, and neither the copy button nor a manual copy puts it on the clipboard.
+A shell symbol in front of every line that has something on it: `$`, `#`, `C:\>`, `>>>`. It is drawn but never present: the symbol is generated content, so a reader dragging across the block does not select it, find-in-page does not match it, and neither the copy button nor a manual copy puts it on the clipboard.
 
 <Demo src="code-block/prompt" minHeight="360">
 
@@ -115,7 +115,7 @@ A shell symbol in front of every line that has something on it — `$`, `#`, `C:
 
 ### maxHeight · wrap
 
-`maxHeight` is how tall the block may get before the code scrolls inside it — a number is pixels. `wrap` folds long lines instead of scrolling them sideways.
+`maxHeight` is how tall the block may get before the code scrolls inside it: a number is pixels. `wrap` folds long lines instead of scrolling them sideways.
 
 <Demo src="code-block/scroll" minHeight="320">
 
@@ -141,6 +141,6 @@ A shell symbol in front of every line that has something on it — `$`, `#`, `C:
 
 - The code is a scrollable region with `tabIndex={0}` and a name, so a reader with no pointer to drag with can still scroll it. The name is the `title` when there is one, and the language otherwise.
 - Prompts and line numbers are generated content, which keeps them out of the accessibility tree as well as off the clipboard.
-- The copy button announces the result through a polite live region, because the only other signal — the button's own label changing — is not something a screen reader reading the page would hear.
+- The copy button announces the result through a polite live region, because the only other signal (the button's own label changing) is not something a screen reader reading the page would hear.
 - <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else. A reader who tabbed to a code block and pressed the shortcut every editor has meant this code, not the article around it. Prompts and line numbers are outside the selection for the same reason they are outside the clipboard.
 - `theme` is the one colour decision in the library that does not follow the page. A block set to `dark` stays dark under a light system preference, which is deliberate; `auto` is the opt-out.

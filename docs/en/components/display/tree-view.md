@@ -72,7 +72,7 @@ The disclosure arrow is a target of its own: it opens the branch without choosin
 
 ### href
 
-A row with an `href` renders as a link, which is what a navigation tree is made of. It is not a second tab stop — the tree holds one, and the arrow keys reach the rows.
+A row with an `href` renders as a link, which is what a navigation tree is made of. It is not a second tab stop: the tree holds one, and the arrow keys reach the rows.
 
 <Demo src="tree-view/navigation">
 
