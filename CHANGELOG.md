@@ -4,6 +4,8 @@
 
 ### Changed
 
+- **An `Anchor` finds its headings once instead of on every frame of a scroll.** It ran a `document.getElementById` for each row of the trail on every scroll frame, for an answer that changes only when the document does. The elements are kept and checked against `isConnected`, so a heading that arrives after the trail is still found.
+
 - **An `AnimateMarquee` measures itself when its size changes, not on every render above it.** The measurement listed `children` as a dependency, so every render of whatever held the strip tore both resize observers down, put them back, and ran a `getComputedStyle` and an `offsetWidth` — a forced layout — for a strip that had not moved. The track is observed, so a change in what is on it is already reported.
 
 - **The last two `Intl` objects a render was rebuilding are memoised.** `localeWeekStart` built an `Intl.DateTimeFormat` and an `Intl.Locale` on every render of a `Calendar`, a `DatePicker`, a `DateRangePicker` and a `DateTimePicker` — every keystroke and every hover anywhere inside one — and `graphemesOf` / `wordsOf` built an `Intl.Segmenter` on every call, for three text effects that ask on every frame they animate. Both go through a cache now, as the number and date formatters already did.

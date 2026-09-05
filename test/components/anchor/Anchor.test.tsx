@@ -130,6 +130,36 @@ describe('Anchor', () => {
       expect(onActiveChange).toHaveBeenCalledWith('#usage');
       window.scrollTo(0, 0);
     });
+
+    /*
+     * The headings are looked up once and kept, because the lookup happens on
+     * every frame of a scroll. Kept and *checked*: a section rendered after the
+     * trail — a route that swapped its content, a list that arrived late — has
+     * to be found the next time the reader scrolls rather than never.
+     */
+    it('finds a heading that arrived after it did', async () => {
+      const screen = await render(
+        <div>
+          <Anchor items={ITEMS} />
+        </div>
+      );
+
+      window.scrollTo(0, 200);
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Install' }))
+        .not.toHaveAttribute('aria-current');
+
+      await screen.rerender(<Page items={ITEMS} />);
+
+      window.scrollTo(0, 200);
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Install' }))
+        .toHaveAttribute('aria-current', 'location');
+
+      window.scrollTo(0, 0);
+    });
   });
 
   describe('appearance', () => {

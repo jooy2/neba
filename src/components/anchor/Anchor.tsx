@@ -109,6 +109,34 @@ const railClasses = [
 ].join(' ');
 
 /**
+ * The element one row points at, found once and kept.
+ *
+ * `read` runs on every frame of a scroll, and a `getElementById` for each of a
+ * page's headings on every one of those is a lookup per heading per frame for
+ * an answer that changes only when the document does. The cache is checked
+ * against `isConnected` rather than trusted, so a heading that arrives later —
+ * a section rendered after the trail, a route that swapped its content — is
+ * found the next time the reader scrolls instead of never.
+ */
+function headingFor(href: string, headings: Map<string, HTMLElement>): HTMLElement | null {
+  const found = headings.get(href);
+
+  if (found?.isConnected) {
+    return found;
+  }
+
+  const target = document.getElementById(href.replace(/^#/, ''));
+
+  if (target) {
+    headings.set(href, target);
+  } else {
+    headings.delete(href);
+  }
+
+  return target;
+}
+
+/**
  * Which heading the reader is in.
  *
  * The last one whose top has passed the line, which is the only rule that reads
@@ -120,7 +148,8 @@ const railClasses = [
 function activeAt(
   items: readonly AnchorItem[],
   offset: number,
-  container: HTMLElement | null
+  container: HTMLElement | null,
+  headings: Map<string, HTMLElement>
 ): string | null {
   const top = container ? container.getBoundingClientRect().top : 0;
   const line = top + offset + 1;
@@ -128,7 +157,7 @@ function activeAt(
   let current: string | null = null;
 
   for (const item of items) {
-    const target = document.getElementById(item.href.replace(/^#/, ''));
+    const target = headingFor(item.href, headings);
 
     if (!target) continue;
     if (target.getBoundingClientRect().top <= line) current = item.href;
@@ -196,12 +225,13 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
     if (controlled) return undefined;
 
     const scroller: HTMLElement | Window = container?.current ?? window;
+    const headings = new Map<string, HTMLElement>();
     let frame = 0;
     let last: string | null = null;
 
     const read = () => {
       frame = 0;
-      const next = activeAt(itemsRef.current, offset, container?.current ?? null);
+      const next = activeAt(itemsRef.current, offset, container?.current ?? null, headings);
 
       if (next === last) return;
       last = next;
