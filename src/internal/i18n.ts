@@ -35,6 +35,7 @@
  */
 
 import * as React from 'react';
+import { memoise } from './cache.js';
 
 /**
  * `{index}`, `{total}` and `{title}` filled into a message.
@@ -795,6 +796,11 @@ function candidates(locale: string): string[] {
  * so a table a bundler dropped does not keep a cache alive. The merge is the
  * same work for every ChatBubble in a thread, and a thread is where this gets
  * called a hundred times.
+ *
+ * The inner map is keyed by the tag, which is a `locale` prop and therefore a
+ * caller's to choose, so it goes through `memoise` and cannot grow without
+ * bound. The outer one needs nothing: there are fourteen tables and they are
+ * declared in this file.
  */
 const resolved = new WeakMap<MessageTable<object>, Map<string, object>>();
 
@@ -823,36 +829,28 @@ export function resolveMessages<T extends object>(table: MessageTable<T>, locale
     resolved.set(table as MessageTable<object>, cache);
   }
 
-  const cached = cache.get(key);
+  return memoise(cache, key, () => {
+    /*
+     * `Object.hasOwn` on both lookups rather than a plain index. The tag comes
+     * from a caller and reaches these objects as a key, so `locale="constructor"`
+     * would otherwise walk up the prototype chain and hand back `Object` — a
+     * value that is truthy, is not a message table, and would be spread over
+     * English as though it were one.
+     */
+    const match = candidates(key)
+      .map((candidate) => {
+        const alias = Object.hasOwn(aliases, candidate) ? aliases[candidate] : undefined;
 
-  if (cached) {
-    return cached as T;
-  }
+        if (Object.hasOwn(table, candidate)) {
+          return table[candidate];
+        }
 
-  /*
-   * `Object.hasOwn` on both lookups rather than a plain index. The tag comes
-   * from a caller and reaches these objects as a key, so `locale="constructor"`
-   * would otherwise walk up the prototype chain and hand back `Object` — a
-   * value that is truthy, is not a message table, and would be spread over
-   * English as though it were one.
-   */
-  const match = candidates(key)
-    .map((candidate) => {
-      const alias = Object.hasOwn(aliases, candidate) ? aliases[candidate] : undefined;
+        return alias && Object.hasOwn(table, alias) ? table[alias] : undefined;
+      })
+      .find(Boolean);
 
-      if (Object.hasOwn(table, candidate)) {
-        return table[candidate];
-      }
-
-      return alias && Object.hasOwn(table, alias) ? table[alias] : undefined;
-    })
-    .find(Boolean);
-
-  const messages: T = match ? { ...english, ...match } : english;
-
-  cache.set(key, messages);
-
-  return messages;
+    return match ? { ...english, ...match } : english;
+  }) as T;
 }
 
 /** The same, as a hook, for the components that read it during a render. */

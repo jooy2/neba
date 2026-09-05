@@ -19,6 +19,7 @@
  *   `value` handed in by a caller is never the object that comes back out.
  */
 
+import { memoise } from './cache.js';
 import { dateFormatter } from './format.js';
 import type { NebaDateGranularity, NebaWeekday } from '../types.js';
 
@@ -542,18 +543,7 @@ interface LocaleWeekInfo {
 const weekStarts = new Map<string, NebaWeekday>();
 
 export function localeWeekStart(locale: string | undefined): NebaWeekday {
-  const key = locale ?? '';
-  const cached = weekStarts.get(key);
-
-  if (cached !== undefined) {
-    return cached;
-  }
-
-  const start = readWeekStart(locale);
-
-  weekStarts.set(key, start);
-
-  return start;
+  return memoise(weekStarts, locale ?? '', () => readWeekStart(locale));
 }
 
 function readWeekStart(locale: string | undefined): NebaWeekday {

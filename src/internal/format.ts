@@ -13,16 +13,19 @@
  * one per category and one per tooltip row, and it writes all of them again on
  * every re-render — which, on a chart being hovered, is every frame.
  *
- * The cache is keyed on the locale and the options together, and it is unbounded
- * on purpose. The keys are not user data: they come from a component's own
- * option objects, of which any one page has a handful, so there is nothing here
- * that grows with the size of a table or the length of a series.
+ * The cache is keyed on the locale and the options together, and it goes
+ * through `memoise` so it cannot grow without bound. Nothing here grows with
+ * the size of a table or the length of a series — a page has a handful of
+ * option objects — but both halves of the key reach these functions from public
+ * props, so neither half is the library's to promise anything about.
  *
  * The options object is deliberately *not* part of the key by identity. A caller
  * writing `format={{ style: 'currency', currency: 'USD' }}` inline hands over a
  * new object on every render — which is the ordinary way that prop gets written
  * — and keying on identity would miss every time and cache nothing but garbage.
  */
+
+import { memoise } from './cache.js';
 
 /**
  * `undefined` locale means the runtime's own, and is a key of its own. The
@@ -40,15 +43,11 @@ export function dateFormatter(
   locale: string | undefined,
   options: Intl.DateTimeFormatOptions
 ): Intl.DateTimeFormat {
-  const key = cacheKey(locale, options);
-  let formatter = dateFormatters.get(key);
-
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat(locale, options);
-    dateFormatters.set(key, formatter);
-  }
-
-  return formatter;
+  return memoise(
+    dateFormatters,
+    cacheKey(locale, options),
+    () => new Intl.DateTimeFormat(locale, options)
+  );
 }
 
 const segmenters = new Map<string, Intl.Segmenter>();
@@ -73,15 +72,11 @@ export function segmenter(
     return null;
   }
 
-  const key = cacheKey(locale, { granularity });
-  let found = segmenters.get(key);
-
-  if (!found) {
-    found = new Intl.Segmenter(locale, { granularity });
-    segmenters.set(key, found);
-  }
-
-  return found;
+  return memoise(
+    segmenters,
+    cacheKey(locale, { granularity }),
+    () => new Intl.Segmenter(locale, { granularity })
+  );
 }
 
 const numberFormatters = new Map<string, Intl.NumberFormat>();
@@ -91,13 +86,9 @@ export function numberFormatter(
   locale: string | undefined,
   options?: Intl.NumberFormatOptions
 ): Intl.NumberFormat {
-  const key = cacheKey(locale, options);
-  let formatter = numberFormatters.get(key);
-
-  if (!formatter) {
-    formatter = new Intl.NumberFormat(locale, options);
-    numberFormatters.set(key, formatter);
-  }
-
-  return formatter;
+  return memoise(
+    numberFormatters,
+    cacheKey(locale, options),
+    () => new Intl.NumberFormat(locale, options)
+  );
 }

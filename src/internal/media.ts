@@ -13,27 +13,25 @@
  *
  * So the lists are made once and kept. A `MediaQueryList` is live — its
  * `matches` is the current answer, not the answer at construction — so one per
- * query string is all there ever needs to be, and the map is bounded by the
- * handful of queries the library actually writes.
+ * query string is all there ever needs to be.
+ *
+ * The map goes through `memoise` because the key is not the library's to
+ * promise anything about: `useMediaQuery` is a public hook and takes any string
+ * at all. Emptying it costs a caller nothing, since a subscription holds its
+ * own list in a closure and a rebuilt one answers the same question.
  */
 
 import * as React from 'react';
 import type { NebaBreakpoint } from '../types.js';
+import { memoise } from './cache.js';
 
 const lists = new Map<string, MediaQueryList | null>();
 
 /** The one `MediaQueryList` for a query, or `null` where there is no window. */
 function listFor(query: string): MediaQueryList | null {
-  if (lists.has(query)) {
-    return lists.get(query) ?? null;
-  }
-
-  const list =
-    typeof window === 'undefined' || !window.matchMedia ? null : window.matchMedia(query);
-
-  lists.set(query, list);
-
-  return list;
+  return memoise(lists, query, () =>
+    typeof window === 'undefined' || !window.matchMedia ? null : window.matchMedia(query)
+  );
 }
 
 /** Subscribes to one query. A no-op where there is no window to ask. */
