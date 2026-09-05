@@ -214,21 +214,46 @@ function Panel({
 }
 
 /**
- * One side's rows, narrowed by what was typed at that side's box.
+ * Every row's label, folded once, keyed by the row it belongs to.
  *
  * The fold is `searchText`, the same one a DataTable and a CommandPalette use,
- * so `cafe` finds `Café` on all three. A label that is a node rather than a
- * string has no text to match and stays: the alternative is a row that
- * disappears from a filter it could never satisfy.
+ * so `cafe` finds `Café` on all three. What is not the same is when it runs:
+ * `normalize` is the expensive call in there, and folding inside the filter put
+ * one on every row of both lists for every character typed. Built once per
+ * `items` instead, which is the shape `internal/search.ts` exists to make
+ * possible.
+ *
+ * A label that is a node rather than a string has no text to match and is left
+ * out of the map: a row with no entry stays, because the alternative is a row
+ * that disappears from a filter it could never satisfy.
  */
-function narrow(rows: readonly TransferItem[], query: string): readonly TransferItem[] {
+function haystacksOf(items: readonly TransferItem[]): Map<string, string> {
+  const folded = new Map<string, string>();
+
+  for (const item of items) {
+    if (typeof item.label === 'string') {
+      folded.set(item.value, searchText(item.label));
+    }
+  }
+
+  return folded;
+}
+
+/** One side's rows, narrowed by what was typed at that side's box. */
+function narrow(
+  rows: readonly TransferItem[],
+  query: string,
+  haystacks: Map<string, string>
+): readonly TransferItem[] {
   const needle = searchText(query);
 
   if (needle === '') return rows;
 
-  return rows.filter(
-    (item) => typeof item.label !== 'string' || searchText(item.label).includes(needle)
-  );
+  return rows.filter((item) => {
+    const haystack = haystacks.get(item.value);
+
+    return haystack === undefined || haystack.includes(needle);
+  });
 }
 
 /**
@@ -338,8 +363,15 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
       commit(next);
     };
 
-    const sourceRows = narrow(source, sourceSearch);
-    const targetRows = narrow(target, targetSearch);
+    const haystacks = React.useMemo(() => haystacksOf(items), [items]);
+    const sourceRows = React.useMemo(
+      () => narrow(source, sourceSearch, haystacks),
+      [source, sourceSearch, haystacks]
+    );
+    const targetRows = React.useMemo(
+      () => narrow(target, targetSearch, haystacks),
+      [target, targetSearch, haystacks]
+    );
     const canSend = sourceRows.some((item) => !item.disabled && ticked.has(item.value));
     const canReturn = targetRows.some((item) => !item.disabled && ticked.has(item.value));
     const listHeight = toLength(height);

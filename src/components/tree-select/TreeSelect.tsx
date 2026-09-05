@@ -93,11 +93,33 @@ function flatten(items: TreeSelectItem[], into: Map<TreeViewValue, TreeSelectIte
   return into;
 }
 
-/** What a node is matched against, folded once. */
-function haystackOf(item: TreeSelectItem): string {
-  return searchHaystack([
-    item.searchLabel ?? (typeof item.label === 'string' ? item.label : String(item.value))
-  ]);
+/**
+ * What every node is matched against, folded once for the whole tree.
+ *
+ * Once per `items` rather than once per keystroke: `normalize` is the expensive
+ * call inside `searchHaystack`, and folding it inside the filter put one on
+ * every node of the tree for every character typed. This is the arrangement
+ * `internal/search.ts` exists to make possible, and the one a DataTable and a
+ * CommandPalette already use.
+ */
+function haystacksOf(
+  items: TreeSelectItem[],
+  into: Map<TreeSelectItem, string> = new Map()
+): Map<TreeSelectItem, string> {
+  for (const item of items) {
+    into.set(
+      item,
+      searchHaystack([
+        item.searchLabel ?? (typeof item.label === 'string' ? item.label : String(item.value))
+      ])
+    );
+
+    if (item.children) {
+      haystacksOf(item.children, into);
+    }
+  }
+
+  return into;
 }
 
 /**
@@ -107,7 +129,11 @@ function haystackOf(item: TreeSelectItem): string {
  * list of leaves is exactly what a tree was chosen over — "Seoul" with nothing
  * above it does not say which Seoul, or which taxonomy it came from.
  */
-function filterTree(items: TreeSelectItem[], needle: string): TreeSelectItem[] {
+function filterTree(
+  items: TreeSelectItem[],
+  needle: string,
+  haystacks: Map<TreeSelectItem, string>
+): TreeSelectItem[] {
   if (needle === '') {
     return items;
   }
@@ -115,8 +141,8 @@ function filterTree(items: TreeSelectItem[], needle: string): TreeSelectItem[] {
   const kept: TreeSelectItem[] = [];
 
   for (const item of items) {
-    const children = item.children ? filterTree(item.children, needle) : undefined;
-    const hit = haystackOf(item).includes(needle);
+    const children = item.children ? filterTree(item.children, needle, haystacks) : undefined;
+    const hit = (haystacks.get(item) ?? '').includes(needle);
 
     if (hit || (children && children.length > 0)) {
       kept.push({ ...item, children: hit ? item.children : children });
@@ -199,8 +225,12 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
     const [query, setQuery] = React.useState('');
 
     const byValue = React.useMemo(() => flatten(items), [items]);
+    const haystacks = React.useMemo(() => haystacksOf(items), [items]);
     const needle = searchText(query);
-    const shown = React.useMemo(() => filterTree(items, needle), [items, needle]);
+    const shown = React.useMemo(
+      () => filterTree(items, needle, haystacks),
+      [items, needle, haystacks]
+    );
 
     // A search opens every branch it kept: a match folded inside a closed
     // parent is a match the reader was not shown.

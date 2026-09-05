@@ -4,6 +4,8 @@
 
 ### Changed
 
+- **A `Transfer` and a `TreeSelect` fold their labels once instead of once per keystroke.** Both folded every row inside the filter, which put a `String.prototype.normalize` on every item for every character typed — a `Transfer` did it on every render, search or no search. The haystacks are built once per `items` now, which is the arrangement a `DataTable` and a `CommandPalette` already used. Nothing about what matches has changed.
+
 - **A chart's data table is memoised, and reads the chart's own formatter.** The visually hidden table is built in the same render the crosshair's state lives in, so every cell of it was reconciled again for each pixel the pointer travelled across the picture — a row per point on a `ScatterChart`. It is `React.memo` now, and the frame's `format` is keyed on what the options say rather than on the identity of the object they arrived in, so a `format` written inline in the JSX no longer defeats it.
 
   One number moves with it: a `ScatterChart` with no `format` writes its table values the way its axis and its tooltip already write them, so `24000` reads as `24K` rather than `24,000`. It was the only chart whose table disagreed with its own picture.

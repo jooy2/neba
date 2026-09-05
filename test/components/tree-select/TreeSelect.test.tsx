@@ -153,6 +153,32 @@ describe('TreeSelect', () => {
       await expect.element(screen.getByText('Korea')).toBeInTheDocument();
     });
 
+    // The fold is built once for the whole tree rather than once per keystroke,
+    // and a nested node has to be in it: a leaf whose haystack went missing
+    // would silently stop matching anything at all.
+    it('ignores case and accents at every depth', async () => {
+      const screen = await render(
+        <TreeSelect
+          label="Region"
+          searchable
+          items={[
+            {
+              value: 'europe',
+              label: 'Europe',
+              children: [{ value: 'fr', label: 'Île-de-France' }]
+            },
+            { value: 'asia', label: 'Asia', children: [{ value: 'kr', label: 'Korea' }] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Region' }).click();
+      await screen.getByRole('textbox').fill('ILE-DE');
+
+      await expect.element(screen.getByText('Île-de-France')).toBeInTheDocument();
+      expect(screen.getByText('Asia').query()).toBeNull();
+    });
+
     it('says so when nothing matched', async () => {
       const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
 
