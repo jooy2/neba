@@ -13,25 +13,25 @@
       "id": "chip",
       "label": "Chip",
       "imports": ["Chip"],
-      "budget": 3.3
+      "budget": 3.4
     },
     {
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 11.6
+      "budget": 11.7
     },
     {
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 5
+      "budget": 5.1
     },
     {
       "id": "image",
       "label": "Image",
       "imports": ["Image"],
-      "budget": 6.5
+      "budget": 7
     },
     {
       "id": "gallery",
@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 70.5
+      "budget": 70.4
     },
     {
       "id": "app-25",
@@ -88,13 +88,13 @@
         "Chip",
         "Typography"
       ],
-      "budget": 115.7
+      "budget": 115.6
     },
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 29
+      "budget": 29.1
     },
     {
       "id": "app-12-ko",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 72.9
+      "budget": 72.8
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 263.9
+      "budget": 264.1
     }
   ]
 }

@@ -2,6 +2,26 @@
 
 ## vNext
 
+### Where the bytes went
+
+| What you import               | 1.12.0   | vNext    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.1 kB   | 5.1 kB   |
+| `Chip`                        | 3.3 kB   | 3.4 kB   |
+| `LineChart`                   | 11.6 kB  | 11.7 kB  |
+| `CodeBlock`                   | 5.0 kB   | 5.1 kB   |
+| `Image`                       | 6.5 kB   | 7.0 kB   |
+| `Gallery`                     | 10.2 kB  | 10.2 kB  |
+| a whole page shell            | 29.0 kB  | 29.1 kB  |
+| 12 components — a typical app | 70.5 kB  | 70.4 kB  |
+| 12 components, with Korean    | 72.9 kB  | 72.8 kB  |
+| 25 components — a large one   | 115.7 kB | 115.6 kB |
+| all exports                   | 263.9 kB | 264.1 kB |
+
+`Image` is the row that moved, and it is the whole of what translating one string costs on the smallest component that needed it. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts` — 0.5 kB of resolution machinery that every other translated component was already carrying. Which is why the twelve-component row went _down_: on any page that already draws one of them the marginal cost is nothing, and the two shared helpers that shrank are what is left.
+
+The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups.
+
 ### Added
 
 - **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
