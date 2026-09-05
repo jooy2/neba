@@ -13590,8 +13590,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '포인터가 올라가 있는 동안 멈춥니다. 지나가는 내용은 클릭할 수 없기 때문입니다',
-        en: 'Stops while the pointer is on it, because content moving past a pointer cannot be clicked'
+        ko: '포인터가 올라가 있거나 안쪽에 focus가 있는 동안 멈춥니다. 지나가는 내용은 클릭할 수 없기 때문입니다',
+        en: 'Stops while the pointer is on it or the focus is inside it, because content moving past a pointer cannot be clicked'
       }
     },
     ...animateProps({ duration: '—', repeat: "'infinite'", mode: false }),

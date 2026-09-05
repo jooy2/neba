@@ -2304,7 +2304,12 @@
   animation-name: neba-anim-marquee-y;
 }
 
-.neba-marquee[data-pause-on-hover]:hover .neba-marquee-track {
+/* `:focus-within` beside `:hover` for the same reason the prop exists at all. A
+   pointer stops the strip so a link on it can be aimed at; a keyboard reaches
+   that link by tabbing to it, and a strip that kept moving would be carrying the
+   focused element off the screen. */
+.neba-marquee[data-pause-on-hover]:hover .neba-marquee-track,
+.neba-marquee[data-pause-on-hover]:focus-within .neba-marquee-track {
   animation-play-state: paused;
 }
 

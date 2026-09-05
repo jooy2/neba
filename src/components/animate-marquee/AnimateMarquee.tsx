@@ -39,8 +39,8 @@ export interface AnimateMarqueeProps
    */
   copies?: number;
   /**
-   * Stops while the pointer is on it, so something scrolling past can actually
-   * be read or clicked.
+   * Stops while the pointer is on it, or while the focus is inside it, so
+   * something scrolling past can actually be read, clicked or tabbed to.
    * @default true
    */
   pauseOnHover?: boolean;
@@ -64,7 +64,9 @@ export interface AnimateMarqueeProps
  *
  * `pauseOnHover` is on by default and is not decoration: content moving past a
  * pointer cannot be clicked reliably, and a link inside a marquee that never
- * stops is a link nobody can follow.
+ * stops is a link nobody can follow. It answers the focus as well as the
+ * pointer, or the same link would be unreachable to whoever tabs to it — the
+ * strip would be carrying it off the screen while it was being read.
  *
  * Only the first copy is read out. The rest carry `aria-hidden`, or a screen
  * reader would announce everything on the strip as many times as it was laid

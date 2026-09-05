@@ -49,7 +49,7 @@ Pixels per second, measured against the strip's own width — so four logos and 
 
 ### pauseOnHover
 
-On by default, and not decoration: content moving past a pointer cannot be clicked reliably, and a link inside a strip that never stops is a link nobody can follow.
+On by default, and not decoration: content moving past a pointer cannot be clicked reliably, and a link inside a strip that never stops is a link nobody can follow. The strip answers the focus as well as the pointer, so a link reached by tabbing to it stops travelling too.
 
 <Demo src="animate-marquee/pause">
 
@@ -71,4 +71,4 @@ On by default, and not decoration: content moving past a pointer cannot be click
 
 - Only the first copy is read out; the rest carry `aria-hidden`, or a screen reader would announce the whole strip as many times as it was laid down.
 - A reduced-motion preference stops the strip and leaves the content in place.
-- `pauseOnHover` is what makes anything interactive inside it usable. Do not turn it off for a strip with links or buttons in it.
+- `pauseOnHover` is what makes anything interactive inside it usable, and it covers both a pointer resting on the strip and the focus landing inside it. Do not turn it off for a strip with links or buttons in it.

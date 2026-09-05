@@ -1,5 +1,11 @@
 # Changelog
 
+## vNext
+
+### Fixed
+
+- **An `AnimateMarquee` stops for the focus as well as for the pointer.** `pauseOnHover` was `:hover` alone, so a link on a moving strip could be aimed at with a mouse and not reached with a keyboard — tabbing to it left it travelling off the screen while it was being read.
+
 ## 1.12.0 (2026-09-05)
 
 The release about the things that were already there and were not quite saying it.
