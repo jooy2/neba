@@ -46,8 +46,8 @@ export interface CarouselProps
    * on focus anywhere inside it, while the tab is in the background, and it does
    * not start at all for a reader who has asked for reduced motion.
    *
-   * Turning it on draws a button that stops it, first in the frame and first in
-   * the tab order. There is no prop to take that button away: hover and focus
+   * Turning it on draws a button that stops it, in the row under the frame
+   * beside the dots. There is no prop to take that button away: hover and focus
    * are not a mechanism for a reader holding a phone or a magnifier, and a
    * caller who wants a control of their own can drive `value` and leave this
    * off.
@@ -109,17 +109,13 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   text: 'text-(--neba-fg) bg-transparent'
 };
 
-/**
- * How far the overlaid controls sit in from the frame's edges — the arrows down
- * both sides, the rotation control in the top corner. One table rather than
- * two, so the two cannot drift into different margins at the same size.
- */
-const insetClasses: Record<NebaSize, { arrows: string; rotation: string }> = {
-  xs: { arrows: 'start-1 end-1', rotation: 'top-1 start-1' },
-  sm: { arrows: 'start-1.5 end-1.5', rotation: 'top-1.5 start-1.5' },
-  md: { arrows: 'start-2 end-2', rotation: 'top-2 start-2' },
-  lg: { arrows: 'start-3 end-3', rotation: 'top-3 start-3' },
-  xl: { arrows: 'start-4 end-4', rotation: 'top-4 start-4' }
+/** How far the arrows sit in from the frame's edge. */
+const arrowInsetClasses: Record<NebaSize, string> = {
+  xs: 'start-1 end-1',
+  sm: 'start-1.5 end-1.5',
+  md: 'start-2 end-2',
+  lg: 'start-3 end-3',
+  xl: 'start-4 end-4'
 };
 
 /**
@@ -317,6 +313,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
      * stop it would be a control with nothing behind it.
      */
     const rotates = autoPlay && !reduced && count > 1;
+    const showDots = indicators && count > 1;
 
     return (
       <div
@@ -342,35 +339,6 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
             transitionClasses
           ].join(' ')}
         >
-          {rotates ? (
-            /*
-             * Drawn before the strip, and therefore reached before it: a reader
-             * on a keyboard meets the way to stop the slides before they meet
-             * the slides. Hover and focus already pause it for them, which is
-             * exactly what they do not do for a reader holding a phone or
-             * running a magnifier — this is the mechanism those two have.
-             *
-             * Positioned by a wrapper rather than by a class on the button, for
-             * the reason the arrows are: every Button root carries `relative`,
-             * Tailwind emits `.relative` after `.absolute`, and two utilities of
-             * equal specificity are decided by the stylesheet and not by the
-             * class attribute. An `absolute` written on the button loses — and
-             * loses silently, leaving it in the flow above the strip.
-             */
-            <span className={`absolute z-10 flex ${insetClasses[size].rotation}`}>
-              <IconButton
-                variant="solid"
-                size={size}
-                color={color}
-                density={density}
-                elevation={1}
-                label={stopped ? (playLabel ?? messages.play) : (pauseLabel ?? messages.pause)}
-                icon={stopped ? <PlayIcon /> : <PauseIcon />}
-                onClick={() => setStopped((was) => !was)}
-              />
-            </span>
-          ) : null}
-
           <div
             ref={trackRef}
             // Focusable, so the strip can be scrolled with the arrow keys by
@@ -415,7 +383,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
           {arrows && count > 1 ? (
             <div
-              className={`pointer-events-none absolute inset-y-0 flex items-center ${insetClasses[size].arrows}`}
+              className={`pointer-events-none absolute inset-y-0 flex items-center ${arrowInsetClasses[size]}`}
             >
               <IconButton
                 variant="solid"
@@ -457,29 +425,67 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           ) : null}
         </div>
 
-        {indicators && count > 1 ? (
-          <div className={`flex shrink-0 items-center justify-center pt-2 ${dotClasses[size].gap}`}>
-            {slides.map((_, dotIndex) => (
-              <button
-                key={dotIndex}
-                type="button"
-                aria-label={nameSlide(dotIndex + 1, count)}
-                aria-current={dotIndex === index ? 'true' : undefined}
-                className={[
-                  'cursor-pointer rounded-full',
-                  // Width and colour, never a transform: the current dot grows
-                  // along the row instead of scaling, so nothing beside it moves.
-                  '[transition-property:width,background-color]',
-                  '[transition-duration:var(--neba-duration)]',
-                  '[transition-timing-function:var(--neba-ease)]',
-                  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-                  dotIndex === index
-                    ? `${dotClasses[size].current} bg-(--n-accent)`
-                    : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`
-                ].join(' ')}
-                onClick={() => go(dotIndex)}
-              />
-            ))}
+        {rotates || showDots ? (
+          /*
+           * Three columns rather than a centred row, so the dots stay in the
+           * middle of the carousel whether or not there is a control beside
+           * them. A `justify-center` row would centre the pair, which moves
+           * every dot the moment `autoPlay` is turned on.
+           */
+          <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center pt-2">
+            <span className="flex justify-start">
+              {rotates ? (
+                /*
+                 * Quiet rather than solid: out here it is among the dots rather
+                 * than over a photograph, and a third filled circle in a row of
+                 * indicators would read as the loudest thing under the frame.
+                 *
+                 * It sits after the strip in the tab order, which is a cost and
+                 * a small one — focus anywhere inside a carousel already stops
+                 * it, so a reader on a keyboard never watches it move on the way
+                 * here. What it buys is the two readers who have no other way to
+                 * stop it: neither a phone nor a magnifier can hover, and both
+                 * can see a button that is never over the picture.
+                 */
+                <IconButton
+                  variant="text"
+                  size={size}
+                  color={color}
+                  density={density}
+                  label={stopped ? (playLabel ?? messages.play) : (pauseLabel ?? messages.pause)}
+                  icon={stopped ? <PlayIcon /> : <PauseIcon />}
+                  onClick={() => setStopped((was) => !was)}
+                />
+              ) : null}
+            </span>
+
+            <span className={`flex items-center ${dotClasses[size].gap}`}>
+              {showDots
+                ? slides.map((_, dotIndex) => (
+                    <button
+                      key={dotIndex}
+                      type="button"
+                      aria-label={nameSlide(dotIndex + 1, count)}
+                      aria-current={dotIndex === index ? 'true' : undefined}
+                      className={[
+                        'cursor-pointer rounded-full',
+                        // Width and colour, never a transform: the current dot grows
+                        // along the row instead of scaling, so nothing beside it moves.
+                        '[transition-property:width,background-color]',
+                        '[transition-duration:var(--neba-duration)]',
+                        '[transition-timing-function:var(--neba-ease)]',
+                        'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
+                        dotIndex === index
+                          ? `${dotClasses[size].current} bg-(--n-accent)`
+                          : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`
+                      ].join(' ')}
+                      onClick={() => go(dotIndex)}
+                    />
+                  ))
+                : null}
+            </span>
+
+            <span />
           </div>
         ) : null}
 

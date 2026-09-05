@@ -227,18 +227,35 @@ describe('Carousel', () => {
     });
 
     /*
-     * First in the frame and therefore first in the tab order, so a reader on a
-     * keyboard meets the way to stop the slides before they meet the slides.
-     * Read off DOM order rather than by tabbing, since the strip's own arrows
-     * sit between the two.
+     * Under the frame and beside the dots, never over a slide — which is what
+     * makes it legible on a photograph without a plate of its own, and what
+     * keeps it clear of the arrows on a carousel too short to hold both.
+     *
+     * The cost is that it comes after the strip in the tab order. It is a small
+     * one: focus anywhere inside a carousel already stops it, so a reader on a
+     * keyboard never watches it move on the way here.
      */
-    it('puts the control before the strip', async () => {
+    it('draws the control under the frame rather than over a slide', async () => {
       const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
 
       const control = screen.getByRole('button', { name: 'Pause slide show' }).element();
       const strip = screen.getByRole('group', { name: 'Carousel' }).element();
+      const frame = strip.parentElement;
 
-      expect(control.compareDocumentPosition(strip)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(frame?.contains(control)).toBe(false);
+      expect(strip.compareDocumentPosition(control)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    // The dots are the carousel's own centre line, so turning `autoPlay` on
+    // must not move them. They are a column of their own between two equal
+    // ones rather than half of a centred pair.
+    it('keeps the control and the dots in one row', async () => {
+      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
+
+      const control = screen.getByRole('button', { name: 'Pause slide show' }).element();
+      const dot = screen.getByRole('button', { name: 'Slide 1 of 3' }).element();
+
+      expect(control.parentElement?.parentElement).toBe(dot.parentElement?.parentElement);
     });
 
     /*
@@ -248,23 +265,6 @@ describe('Carousel', () => {
      * somewhere to park them; without it this passes whether or not the control
      * does anything, because a carousel under the pointer was never advancing.
      */
-    /*
-     * The control is positioned by a wrapper, and it has to be. Every Button
-     * root carries `relative`, Tailwind emits `.relative` after `.absolute`,
-     * and two utilities of equal specificity are decided by the stylesheet
-     * rather than by the class attribute — so an `absolute` written on the
-     * button itself loses, and loses silently: the control stays in the flow
-     * and pushes the whole strip down by its own height.
-     */
-    it('positions the control from a wrapper and not from the button', async () => {
-      const screen = await render(<Carousel autoPlay>{slides}</Carousel>);
-
-      const control = screen.getByRole('button', { name: 'Pause slide show' }).element();
-
-      expect(control.className).not.toContain('absolute');
-      expect(control.parentElement?.className).toContain('absolute');
-    });
-
     it('advances on its own, and stops for good when it is told to', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

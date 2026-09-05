@@ -66,14 +66,14 @@ Controlled, the strip can be driven by something else on the page. `onValueChang
 
 `autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, and in a background tab, and it does not start at all under `prefers-reduced-motion`. The live region announcing the current slide stays silent while it runs, and starts again once the slides are stopped.
 
-Turning it on also draws a button that stops the rotation, in the frame's top corner and first in the tab order. It has no prop to remove it: hover and focus are not a mechanism for a reader on a phone or a magnifier. `pauseLabel` and `playLabel` name it.
+Turning it on also draws a button that stops the rotation, in the row under the frame beside the dots. It has no prop to remove it: hover and focus are not a mechanism for a reader on a phone or a magnifier. `pauseLabel` and `playLabel` name it.
 
 If every slide has to be read, consider [Tabs](./tabs) or a plain vertical stack instead.
 
 ## Accessibility
 
 - `label` becomes the carousel's accessible name. `previousLabel` · `nextLabel` · `pauseLabel` · `playLabel` · `slideLabel` name the controls.
-- `autoPlay` draws its own stop button, first in the frame, so the rotation can be stopped by a reader who neither hovers nor tabs.
+- `autoPlay` draws its own stop button under the frame, so the rotation can be stopped by a reader who neither hovers nor tabs.
 - Each slide carries `role="group"` and `aria-roledescription="slide"`.
 
 ## What is not offered
