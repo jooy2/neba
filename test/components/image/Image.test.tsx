@@ -127,6 +127,71 @@ describe('Image', () => {
     expect(framed).not.toBeNull();
   });
 
+  /*
+   * `width` and `height` are the platform's own answer to layout shift, and
+   * they were omitted from the props — so the one component that exists to hold
+   * a picture's space had no way to be told what that space was except by
+   * working the ratio out by hand.
+   */
+  describe('width and height', () => {
+    /*
+     * Read as a number rather than as the string that was written. A browser
+     * normalises `aspect-ratio: 1.5` into a `<ratio>` of its own choosing —
+     * `1.5 / 1` in Chromium — and the three engines the suite runs on do not
+     * have to agree on how they spell it.
+     */
+    const ratioOf = (element: HTMLElement | null | undefined) => {
+      const [left, right = '1'] = (element?.style.aspectRatio ?? '').split('/');
+
+      return Number(left) / Number(right);
+    };
+
+    it('puts them on the img', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" width={1200} height={800} />);
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).toHaveAttribute('width', '1200');
+      expect(picture).toHaveAttribute('height', '800');
+    });
+
+    it('reserves the box they describe', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" width={1200} height={800} />);
+      const framed = screen.container.querySelector<HTMLElement>('[style*="aspect-ratio"]');
+
+      expect(ratioOf(framed)).toBeCloseTo(1.5);
+    });
+
+    // The attribute takes a string, so a numeric one counts. A percentage is a
+    // length and says nothing about the shape.
+    it('reads a numeric string and refuses a length', async () => {
+      const numeric = await render(<Image src={OK} alt="A ridge" width="1200" height="800" />);
+      expect(
+        ratioOf(numeric.container.querySelector<HTMLElement>('[style*="aspect-ratio"]'))
+      ).toBeCloseTo(1.5);
+
+      const length = await render(<Image src={OK} alt="A ridge" width="50%" height="20rem" />);
+      expect(length.container.querySelector('[style*="aspect-ratio"]')).toBeNull();
+    });
+
+    // A proportion needs two numbers.
+    it('reserves nothing for one on its own', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" width={1200} />);
+
+      expect(screen.container.querySelector('[style*="aspect-ratio"]')).toBeNull();
+    });
+
+    // `ratio` is the layout's shape and these two are the picture's, so an
+    // explicit one wins.
+    it('gives way to a ratio it was given', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" width={1200} height={800} ratio="16 / 9" />
+      );
+      const framed = screen.container.querySelector<HTMLElement>('[style*="aspect-ratio"]');
+
+      expect(ratioOf(framed)).toBeCloseTo(16 / 9);
+    });
+  });
+
   it('becomes a button when it can be previewed', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" preview />);
 

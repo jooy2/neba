@@ -19,7 +19,7 @@ import { Image } from 'neba';
 
 <PropsTable name="Image" />
 
-Native `<img>` attributes pass through to the picture itself — `loading`, `decoding`, `srcSet`, `sizes`, `referrerPolicy`. Only `width` and `height` are excluded; use `ratio` and let the box do the reserving.
+Native `<img>` attributes pass through to the picture itself — `loading`, `decoding`, `srcSet`, `sizes`, `referrerPolicy`, and `width` and `height` among them.
 
 ### `alt` is required
 
@@ -38,7 +38,17 @@ The proportion to hold while the file is still arriving, and the main reason to 
 <Image src={src} alt="…" ratio={1} />
 ```
 
-`'auto'` is the default and opts out — right only where the space around the picture can absorb the jump.
+`'auto'` is the default and lets the file decide, which reserves nothing on its own.
+
+### width and height
+
+The file's own pixel dimensions, as an `<img>` takes them. They reach the picture either way, and giving both turns an `'auto'` ratio into their proportion — so the box is reserved without anybody working out that 1200 by 800 is 3/2.
+
+```tsx
+<Image src={src} alt="…" width={1200} height={800} />
+```
+
+`ratio` is the layout's shape and these two are the picture's, so an explicit `ratio` outranks them. One on its own reserves nothing, since a proportion needs two numbers.
 
 ### fit and rounded
 

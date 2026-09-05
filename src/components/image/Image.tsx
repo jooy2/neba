@@ -163,10 +163,7 @@ const PreviewDialog = React.lazy(() =>
   import('../dialog/Dialog.js').then((module) => ({ default: module.Dialog }))
 );
 
-export interface ImageProps extends Omit<
-  React.ComponentPropsWithoutRef<'img'>,
-  'width' | 'height' | 'children'
-> {
+export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 'children'> {
   /** Required, and required to be right. See the note on the component. */
   alt: string;
   /**
@@ -174,12 +171,27 @@ export interface ImageProps extends Omit<
    *
    * This is the whole reason to use this over an `<img>`: a picture with no
    * reserved box is a picture that pushes the page down when it lands, which is
-   * the single largest source of layout shift on most sites. `'auto'` opts out
-   * and lets the file decide, which is right only when the space around it can
-   * absorb the jump.
+   * the single largest source of layout shift on most sites. `'auto'` lets the
+   * file decide — and `width` and `height` are how you tell it what the file
+   * will say, so the box is right before anything has arrived.
    * @default 'auto'
    */
   ratio?: number | string | 'auto';
+  /**
+   * The file's own pixel dimensions, as an `<img>` takes them.
+   *
+   * They are the platform's own answer to layout shift, and they are what to
+   * reach for when the proportion is the picture's rather than the layout's:
+   * `ratio` says "hold this shape whatever arrives", these two say "this is
+   * what will arrive". Give both and an `'auto'` ratio becomes their
+   * proportion, so the box is reserved without anybody working out that 1200 by
+   * 800 is 3/2.
+   *
+   * They reach the `<img>` either way. One on its own reserves nothing, since
+   * a proportion needs two numbers.
+   */
+  width?: number | string;
+  height?: number | string;
   /** How the picture fills that box. @default 'cover' */
   fit?: NebaAspectFit;
   /** Rounds the corners at this step of the radius ladder. `false` for square. */
@@ -278,6 +290,20 @@ function cornerLength(corner: NebaSize | number | string): string {
   }
 
   return toLength(corner as number | string) ?? '0px';
+}
+
+/**
+ * The proportion two `<img>` dimensions describe, or `null` where they do not.
+ *
+ * They arrive as `number | string` because that is what the attribute takes, so
+ * `'1200'` counts and `'50%'` does not — a percentage is a length and says
+ * nothing about the shape. One without the other says nothing either.
+ */
+function pixelRatio(width?: number | string, height?: number | string): number | null {
+  const w = typeof width === 'number' ? width : Number(width);
+  const h = typeof height === 'number' ? height : Number(height);
+
+  return Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0 ? w / h : null;
 }
 
 /**
@@ -384,7 +410,9 @@ function markTile(text: string, color: string): { uri: string; width: number; he
 export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(rawProps, ref) {
   const {
     alt,
-    ratio = 'auto',
+    ratio: ratioProp = 'auto',
+    width,
+    height,
     fit = 'cover',
     rounded = false,
     placeholder,
@@ -502,6 +530,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       ref={attach}
       src={src}
       alt={alt}
+      width={width}
+      height={height}
       className={cx(
         'block size-full',
         objectFitClasses[fit],
@@ -568,6 +598,17 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       {mark}
     </span>
   );
+
+  /*
+   * `width` and `height` are what the file will be, so together they are a
+   * proportion — and a proportion known before the file arrives is a box that
+   * does not move when it does. `'auto'` means "the picture's own shape", and
+   * these two are the picture's own shape stated in advance rather than
+   * discovered on load; an explicit `ratio` is the layout's shape and outranks
+   * them.
+   */
+  const declared = ratioProp === 'auto' ? pixelRatio(width, height) : null;
+  const ratio = declared ?? ratioProp;
 
   const shape = frame === undefined ? null : resolveFrame(frame, rounded);
   const corner = shape === null ? '0px' : cornerLength(shape.corner ?? 'md');

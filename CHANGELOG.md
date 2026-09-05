@@ -32,6 +32,8 @@ The Korean row is the other one worth a sentence. Registering a language ships t
 
 - **The four date and time pickers say their twenty non-date strings in the reader's language.** "Previous month", "Choose a year", "Today", "Now", "Hour", "AM/PM" and fourteen more were hardcoded English, over dates `Intl` had already translated — so a Korean product's only way out was to write out all twenty through `labels`. There is a `picker` message namespace now, in all nineteen languages. `labels` still wins where it is given, which is what it is for: `locale` answers the language and `labels` answers the wording.
 
+- **An `Image` takes `width` and `height`, and reserves the box they describe.** They were omitted from the props, so the one component in the library whose reason to exist is holding a picture's space could only be told what that space was as a `ratio` worked out by hand — and a default `Image` reserved nothing at all, which is the largest source of layout shift on most sites. They reach the `<img>` as the attributes they are, and giving both turns an `'auto'` ratio into their proportion. An explicit `ratio` still outranks them: that one is the layout's shape and these two are the picture's.
+
 ### Changed
 
 - **An `Anchor` finds its headings once instead of on every frame of a scroll.** It ran a `document.getElementById` for each row of the trail on every scroll frame, for an answer that changes only when the document does. The elements are kept and checked against `isConnected`, so a heading that arrives after the trail is still found.

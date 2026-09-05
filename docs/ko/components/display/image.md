@@ -19,7 +19,7 @@ import { Image } from 'neba';
 
 <PropsTable name="Image" />
 
-`<img>`의 native 속성은 그림 자체로 전달됩니다 — `loading` · `decoding` · `srcSet` · `sizes` · `referrerPolicy`. `width`와 `height`만 제외되며, 자리를 잡는 일은 `ratio`와 상자에 맡깁니다.
+`<img>`의 native 속성은 그림 자체로 전달됩니다 — `loading` · `decoding` · `srcSet` · `sizes` · `referrerPolicy`, 그리고 `width`와 `height`도 함께.
 
 ### `alt`은 필수입니다
 
@@ -38,7 +38,17 @@ import { Image } from 'neba';
 <Image src={src} alt="…" ratio={1} />
 ```
 
-기본값 `'auto'`는 이것을 포기합니다. 주변 공간이 그 튐을 흡수할 수 있을 때만 맞습니다.
+기본값 `'auto'`는 파일이 정하게 두며, 그것만으로는 자리를 잡지 않습니다.
+
+### width와 height
+
+파일 자체의 픽셀 크기이고, `<img>`가 받는 그대로입니다. 어느 쪽이든 그림에 전달되며, 둘 다 주면 `'auto'` 비율이 그 둘의 비율이 됩니다. 1200×800이 3/2라는 걸 직접 계산하지 않아도 상자가 잡힙니다.
+
+```tsx
+<Image src={src} alt="…" width={1200} height={800} />
+```
+
+`ratio`는 레이아웃의 비율이고 이 둘은 그림의 비율이라, `ratio`를 직접 주면 그쪽이 이깁니다. 하나만 주면 아무것도 잡지 않습니다. 비율에는 숫자 둘이 필요하기 때문입니다.
 
 ### fit과 rounded
 
