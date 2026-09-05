@@ -418,6 +418,21 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
       [selectedValues]
     );
 
+    /*
+     * One context carrying everything, including the three facts that change on
+     * every interaction — and therefore a value whose identity changes with
+     * them, which re-renders every row.
+     *
+     * `React.memo` on `TreeItem` cannot help with that: a context change is not
+     * something memo can skip. Making it help would mean taking the volatile
+     * three out of the context and having each row subscribe to its own answer
+     * through `useSyncExternalStore`, which is a rewrite of a component holding
+     * intricate open-and-shut transition state. It was measured before being
+     * considered: walking a tree with the arrow keys costs 16ms per keystroke
+     * at fifty rows and 18ms at eight hundred, nearly all of it the round trip
+     * rather than the render. Sixteen times the rows for two milliseconds is
+     * not what that rewrite would be buying.
+     */
     const context = React.useMemo<TreeViewContextValue>(
       () => ({
         size,
