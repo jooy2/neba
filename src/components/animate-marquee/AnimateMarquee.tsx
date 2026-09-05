@@ -144,7 +144,14 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
         stopTrack();
         stopBox();
       };
-    }, [vertical, children]);
+      // `children` is deliberately not a dependency. It is a new value on every
+      // render that JSX produces it, so listing it tore both observers down and
+      // put them back — and ran a `getComputedStyle` and an `offsetWidth`, which
+      // is a forced layout — for every render of whatever is above this. The
+      // track is *observed*, so content that changes size is already reported;
+      // `gap` is here because it is the one input to the measurement that the
+      // observers cannot see.
+    }, [vertical, gap]);
 
     // An explicit duration wins; otherwise the measurement decides, and until
     // the first measurement lands there is a sane number rather than `0ms`,
@@ -162,18 +169,27 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
       </div>
     );
 
+    // Held rather than written inline: an inline callback is a new function on
+    // every render, which React answers by calling the old one with `null` and
+    // the new one with the node — every render, for a ref that has not moved.
+    const runRef = run.ref;
+    const attach = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        boxRef.current = node;
+        runRef(node);
+
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+      },
+      [ref, runRef]
+    );
+
     return (
       <div
-        ref={(node) => {
-          boxRef.current = node;
-          run.ref(node);
-
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          }
-        }}
+        ref={attach}
         className={cx('neba-marquee', vertical && 'neba-marquee-vertical', className)}
         style={
           {
