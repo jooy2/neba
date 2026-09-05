@@ -99,6 +99,12 @@ type VisibilityCallback = (visible: boolean) => void;
  * `IntersectionObserver` cannot vary per target. In practice that is one
  * observer for the whole page: `threshold` defaults to the same number on every
  * `Animate*`, and a page that mixes two of them gets two.
+ *
+ * A group lives exactly as long as something is watching through it. That is
+ * not tidiness: `threshold` is a public prop on all seventeen `Animate*`
+ * components, so a caller is free to compute one — and a group that outlived
+ * its last watcher would mean a live `IntersectionObserver` per value ever
+ * passed, each one a registration the browser still walks.
  */
 interface VisibilityGroup {
   observer: IntersectionObserver;
@@ -186,6 +192,14 @@ export function observeVisibility(
     if (set.size === 0) {
       group.watchers.delete(element);
       group.observer.unobserve(element);
+
+      // And the group goes with the last element, since only that can empty it.
+      // A teardown belonging to a group already dropped this way finds nothing
+      // under its element and has returned above.
+      if (group.watchers.size === 0) {
+        group.observer.disconnect();
+        visibilityGroups.delete(threshold);
+      }
     }
   };
 }

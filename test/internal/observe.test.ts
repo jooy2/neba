@@ -206,4 +206,58 @@ describe('observeVisibility', () => {
 
     expect(() => stopLoose?.()).not.toThrow();
   });
+
+  /*
+   * A group lives exactly as long as something is watching through it.
+   * `threshold` is a public prop on every `Animate*`, so a caller is free to
+   * compute one — and a group that outlived its last watcher would leave a live
+   * observer behind for every value ever passed.
+   */
+  it('lets the observer go when its last watcher does', async () => {
+    const element = host(100);
+    const onVisible = vi.fn();
+    const disconnect = vi.spyOn(IntersectionObserver.prototype, 'disconnect');
+
+    const stop = observeVisibility(element, 0.37, onVisible);
+
+    await vi.waitFor(() => expect(onVisible).toHaveBeenCalled());
+    stop?.();
+
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    disconnect.mockRestore();
+  });
+
+  it('keeps it while another element is still being watched', async () => {
+    const leaving = host(100);
+    const staying = host(100);
+    const onStaying = vi.fn();
+    const disconnect = vi.spyOn(IntersectionObserver.prototype, 'disconnect');
+
+    const stopLeaving = observeVisibility(leaving, 0.39, vi.fn());
+    const stopStaying = observeVisibility(staying, 0.39, onStaying);
+
+    await vi.waitFor(() => expect(onStaying).toHaveBeenCalled());
+    stopLeaving?.();
+
+    expect(disconnect).not.toHaveBeenCalled();
+
+    stopStaying?.();
+    disconnect.mockRestore();
+  });
+
+  // Dropped and built again is the ordinary case on a page that mounts and
+  // unmounts the same wrapper, so the second watcher has to be told as much as
+  // the first was.
+  it('watches again at a threshold everyone had left', async () => {
+    const element = host(100);
+
+    observeVisibility(element, 0.41, vi.fn())?.();
+
+    const onVisible = vi.fn();
+    const stop = observeVisibility(element, 0.41, onVisible);
+
+    await vi.waitFor(() => expect(onVisible).toHaveBeenCalledWith(true));
+
+    stop?.();
+  });
 });

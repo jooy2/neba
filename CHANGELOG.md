@@ -58,6 +58,8 @@ The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same ma
 
 - **`colorSchemeScript` escapes `<` in the values it writes.** The string is inlined inside a `<script>` element, and a browser stops parsing that element at the first `</script` in it however the JavaScript around it is quoted — so a `storageKey` holding one would have ended the tag and handed the rest to the HTML parser as markup. `Breadcrumb` already wrote its structured data out this way.
 
+- **A shared `IntersectionObserver` is let go once nothing is watching through it.** One is kept per `threshold`, and `threshold` is a public prop on all seventeen `Animate*` components — so a caller computing one left a live observer behind for every value it had ever held, each of them a registration the browser still walks on every scroll. A group now lives exactly as long as its last watcher.
+
 - **An `AnimateMarquee` stops for the focus as well as for the pointer.** `pauseOnHover` was `:hover` alone, so a link on a moving strip could be aimed at with a mouse and not reached with a keyboard — tabbing to it left it travelling off the screen while it was being read.
 
 ## 1.12.0 (2026-09-05)
