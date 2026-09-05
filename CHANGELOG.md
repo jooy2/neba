@@ -22,6 +22,8 @@
 
 ### Fixed
 
+- **An `Anchor`, an `Image` and a `Panes` write their refs in an effect rather than during a render.** A ref written while rendering is a ref that lies when React throws that render away, which is a live hazard under concurrent rendering and is the rule `useShortcut` had already written down. None of the three reads the value during a render, so nothing about their behaviour changes.
+
 - **An `Image` says its own absence in the reader's language.** A picture that failed with an empty `alt` printed a hardcoded `Image unavailable`, which was the one string the library invented and could not translate. There is an `image` message namespace now, in all eighteen languages, and `Image` takes a `locale` and an `unavailableLabel` like every other component that has to invent a word.
 
 - **A message lookup reads a table's own keys and not its prototype's.** A `locale` a caller took from a URL, or a `{placeholder}` a translation happened to name after a member of `Object`, resolved up the prototype chain — so `locale="constructor"` was spread over English as though it were a table of messages, and `{constructor}` in a translation wrote `function Object() { [native code] }` into the middle of a sentence.

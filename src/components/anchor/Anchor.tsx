@@ -210,15 +210,26 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
   const controlled = activeHref !== undefined;
   const active = controlled ? activeHref : tracked;
 
+  /*
+   * `items` is almost always an array literal, so it is a new value on every
+   * render and depending on it directly would tear the listeners down and put
+   * them back sixty times a second. What the effect actually reads is the list
+   * of ids, which is a string.
+   *
+   * Both are written in an effect and not during the render, which is the rule
+   * `useShortcut` states: a ref written while rendering is a ref that lies if
+   * React throws that render away. The effect is declared above the one that
+   * reads them, so on any given commit the newest values are in place before
+   * anything asks. Neither is read during a render, only from a scroll frame.
+   */
   const onActiveChangeRef = React.useRef(onActiveChange);
-  onActiveChangeRef.current = onActiveChange;
-
-  // `items` is almost always an array literal, so it is a new value on every
-  // render and depending on it directly would tear the listeners down and put
-  // them back sixty times a second. What the effect actually reads is the list
-  // of ids, which is a string.
   const itemsRef = React.useRef(items);
-  itemsRef.current = items;
+
+  React.useEffect(() => {
+    onActiveChangeRef.current = onActiveChange;
+    itemsRef.current = items;
+  });
+
   const keys = items.map((item) => item.href).join('\u0000');
 
   React.useEffect(() => {

@@ -409,9 +409,21 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const [open, setOpen] = React.useState(false);
 
   const pictureRef = React.useRef<HTMLImageElement | null>(null);
+  /*
+   * The newest handler, kept for the effect below rather than closed over —
+   * that effect runs when `src` changes and nothing else, and a handler listed
+   * beside it would restart the picture every time a caller wrote one inline.
+   *
+   * Written in an effect and not during the render, which is the rule
+   * `useShortcut` states: a ref written while rendering is a ref that lies if
+   * React throws that render away. Declared above the effect that reads it, so
+   * the newest value is in place before it runs.
+   */
   const reportRef = React.useRef(onLoadingStatusChange);
 
-  reportRef.current = onLoadingStatusChange;
+  React.useEffect(() => {
+    reportRef.current = onLoadingStatusChange;
+  });
 
   const attach = React.useCallback(
     (node: HTMLImageElement | null) => {

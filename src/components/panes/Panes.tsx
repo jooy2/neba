@@ -192,8 +192,16 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
   // share off the end of the list. Until the two agree, nobody has a size and
   // every pane falls back to an even share.
   const fractions = stored && stored.length === count ? stored : null;
+  /*
+   * Read when a drag starts, which is a pointer event and never a render.
+   * Written in an effect for the reason `useShortcut` states: a ref written
+   * while rendering is a ref that lies if React throws that render away.
+   */
   const fractionsRef = React.useRef<number[] | null>(null);
-  fractionsRef.current = fractions;
+
+  React.useEffect(() => {
+    fractionsRef.current = fractions;
+  });
 
   const horizontal = orientation === 'horizontal';
   const gutter = handleTrackValues[size] * Math.max(0, count - 1);
