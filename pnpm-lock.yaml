@@ -22,16 +22,16 @@ importers:
         specifier: ^4.3.3
         version: 4.3.3
       '@types/node':
-        specifier: ^26.4.0
+        specifier: ^26.4.1
         version: 26.4.1
       '@types/react':
         specifier: ^19.2.18
         version: 19.2.18
       '@types/react-dom':
-        specifier: ^19.2.5
+        specifier: ^19.2.7
         version: 19.2.7(@types/react@19.2.18)
       '@typescript-eslint/parser':
-        specifier: ^8.68.0
+        specifier: ^8.69.0
         version: 8.69.0(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3)
       '@vitejs/plugin-react':
         specifier: ^6.1.1
@@ -55,16 +55,16 @@ importers:
         specifier: ^7.1.1
         version: 7.1.1(eslint@9.39.5(jiti@2.7.0))
       globals:
-        specifier: ^17.11.0
+        specifier: ^17.12.0
         version: 17.12.0
       jiti:
         specifier: ^2.7.0
         version: 2.7.0
       playwright:
-        specifier: ^1.62.1
+        specifier: ^1.63.0
         version: 1.63.0
       postcss:
-        specifier: ^8.5.26
+        specifier: ^8.5.28
         version: 8.5.28
       prettier:
         specifier: ^3.9.6
@@ -91,7 +91,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       typescript-eslint:
-        specifier: ^8.68.0
+        specifier: ^8.69.0
         version: 8.69.0(eslint@9.39.5(jiti@2.7.0))(typescript@6.0.3)
       vite:
         specifier: ^8.2.2

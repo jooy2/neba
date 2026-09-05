@@ -1,6 +1,6 @@
 # Changelog
 
-## vNext (2026--)
+## 1.12.0 (2026-09-05)
 
 The release about the things that were already there and were not quite saying it.
 
