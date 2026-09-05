@@ -306,11 +306,18 @@ async function writeToClipboard(text: string): Promise<boolean> {
     // the fallback below is subject to neither.
   }
 
+  // Whatever had the focus is put back on it afterwards. `select()` takes the
+  // focus to reach `execCommand`, and removing the carrier leaves it on
+  // `<body>` — so a reader who pressed the copy button with a keyboard would
+  // lose their place in the page as the reward for copying.
+  const focused = document.activeElement;
+
   try {
     const carrier = document.createElement('textarea');
 
     carrier.value = text;
     carrier.setAttribute('readonly', '');
+    carrier.setAttribute('aria-hidden', 'true');
     carrier.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
     document.body.append(carrier);
     carrier.select();
@@ -321,6 +328,10 @@ async function writeToClipboard(text: string): Promise<boolean> {
     return copied;
   } catch {
     return false;
+  } finally {
+    if (focused instanceof HTMLElement && focused.isConnected) {
+      focused.focus();
+    }
   }
 }
 

@@ -237,6 +237,28 @@ describe('CodeBlock', () => {
       expect(onCopy).not.toHaveBeenCalled();
     });
 
+    /*
+     * The fallback is the old `execCommand` dance against an off-screen
+     * textarea, and `select()` on that textarea takes the focus to reach it.
+     * Removing the carrier afterwards leaves the focus on `<body>` — so a reader
+     * who pressed the button with a keyboard would lose their place in the page
+     * as the reward for copying.
+     */
+    it('gives the focus back after the fallback has run', async () => {
+      stubClipboard(() => Promise.reject(new Error('denied')));
+      vi.spyOn(document, 'execCommand').mockReturnValue(true);
+
+      const screen = await render(<CodeBlock code={SOURCE} />);
+      // Held before the press: the button renames itself to `Copied`, so the
+      // locator would no longer find the element it is being compared against.
+      const button = screen.getByRole('button', { name: 'Copy' }).element();
+
+      await screen.getByRole('button', { name: 'Copy' }).click();
+
+      await expect.element(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument();
+      expect(document.activeElement).toBe(button);
+    });
+
     it('leaves the button out when copyable is off', async () => {
       const screen = await render(<CodeBlock code={SOURCE} copyable={false} language="ts" />);
 

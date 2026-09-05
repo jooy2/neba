@@ -22,6 +22,8 @@
 
 ### Fixed
 
+- **A `CodeBlock`'s copy button keeps the focus when the clipboard falls back.** On a page without a secure context the copy goes through `execCommand` against an off-screen textarea, and selecting that textarea took the focus — so a reader who pressed the button with a keyboard was left on `<body>`, having lost their place in the page as the reward for copying.
+
 - **An `Anchor`, an `Image` and a `Panes` write their refs in an effect rather than during a render.** A ref written while rendering is a ref that lies when React throws that render away, which is a live hazard under concurrent rendering and is the rule `useShortcut` had already written down. None of the three reads the value during a render, so nothing about their behaviour changes.
 
 - **An `Image` says its own absence in the reader's language.** A picture that failed with an empty `alt` printed a hardcoded `Image unavailable`, which was the one string the library invented and could not translate. There is an `image` message namespace now, in all eighteen languages, and `Image` takes a `locale` and an `unavailableLabel` like every other component that has to invent a word.
