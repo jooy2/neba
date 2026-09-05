@@ -19,16 +19,18 @@ The last group is the same complaint one level up. The library had a breakpoint 
 | `LineChart`                   | 11.4 kB  | 11.6 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB   |
 | `Image`                       | 23.4 kB  | 6.5 kB   |
-| `Gallery`                     | —        | 10.1 kB  |
-| a whole page shell            | 28.5 kB  | 28.7 kB  |
-| 12 components — a typical app | 68.2 kB  | 69.1 kB  |
-| 12 components, with Korean    | 70.7 kB  | 71.4 kB  |
-| 25 components — a large one   | 112.6 kB | 113.5 kB |
-| all exports                   | 248.1 kB | 261.4 kB |
+| `Gallery`                     | —        | 10.2 kB  |
+| a whole page shell            | 28.5 kB  | 29.0 kB  |
+| 12 components — a typical app | 68.2 kB  | 70.5 kB  |
+| 12 components, with Korean    | 70.7 kB  | 72.9 kB  |
+| 25 components — a large one   | 112.6 kB | 115.7 kB |
+| all exports                   | 248.1 kB | 263.9 kB |
 
 `Image` is the row that moved on purpose, and it is a new row because nothing had ever measured it: a `Dialog` nobody had opened was 20 kB of it. `Chip` is the one worth explaining, because it is the only one that moved for a reason other than "there is more library now" — `transition` gained a seventh effect, and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays 0.1 kB for the row whether or not it names it. `AnimateFloat` and `AnimateShake` bring their own keyframe class instead of a row in that table, which is why it is only 0.1 kB.
 
 `all exports` went up rather than down because `npm run size` learned to count honestly while this was being measured. It called every chunk but the entry deferred, which stopped being true the moment a module was imported both statically and dynamically. It walks the static import graph now, so a number in the table is what a page needs before it draws.
+
+The rest of the movement is one dependency. `@base-ui/react` is on 1.8.0, and pinning it back to 1.7.0 returns every row to the figure this table carried before it — so the 1.4 kB on a twelve-component app and the 2.5 kB on `all exports` are its rather than ours. Nothing that draws a single component moved by more than 0.1 kB.
 
 ### Breaking changes
 
@@ -121,6 +123,8 @@ The last group is the same complaint one level up. The library had a breakpoint 
 - **`npm run build` empties `dist/` first.** It never did, and `tsc` only ever writes, so a component deleted from `src/` stayed in `dist/` and shipped. Removing `AvatarGroup` is what surfaced it.
 
 - **`ScrollZone`'s `buttons="auto"` disables an inline button that has nowhere to go** rather than hiding it. The lane is held open either way, so an emptied one was not a lighter row — it was the same row reading as stray padding at the leading edge, which is the state every reader meets first.
+
+- **`@base-ui/react` is on 1.8.0**, which is the floor `dependencies` declares. It is the only runtime dependency that moved, and the multi-component rows of the table above are where it shows.
 
 ### Fixed
 

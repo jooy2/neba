@@ -216,11 +216,11 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `LineChart`                   | 11.6 kB  | 10.0 kB                     |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB                      |
 | `Image`                       | 6.5 kB   | 4.9 kB                      |
-| `Gallery`                     | 10.1 kB  | 8.6 kB                      |
-| 12 components — a typical app | 69.1 kB  | 11.8 kB                     |
-| 25 components — a large one   | 113.5 kB | 17.9 kB                     |
-| a whole page shell            | 28.7 kB  | 9.1 kB                      |
-| all 175 exports               | 261.4 kB | 135.7 kB                    |
+| `Gallery`                     | 10.2 kB  | 8.6 kB                      |
+| 12 components — a typical app | 70.5 kB  | 11.8 kB                     |
+| 25 components — a large one   | 115.7 kB | 17.9 kB                     |
+| a whole page shell            | 29.0 kB  | 9.1 kB                      |
+| all 175 exports               | 263.9 kB | 135.7 kB                    |
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
@@ -228,7 +228,7 @@ The Image and Gallery rows are the same arrangement one step smaller. `Image` us
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 5.0 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 5.0 kB becomes 68.5.
 
-Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 21.9 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 22.4 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 CodeBlock's eight ported themes are the one deliberate exception to that marginal cost: they are 0.8 kB gzipped of the sheet, which everybody carries and only a CodeBlock user sees. The alternative was measured too — ship them as JS token objects and tree-shake per theme — and rejected, because it costs the two things that make the CSS form worth having: `theme` stays a string, and a consumer's own `[data-code-theme='ours']` block is a theme with nothing to import and nothing to register. The derived slots are what keep the number to 0.8: `dim`, `rule`, `hover` and the two a marked line uses are mixed from each theme's own `bg` and `fg`, so a theme is fourteen declarations rather than nineteen.
 
@@ -398,6 +398,7 @@ Conventions, following [test/components/button/Button.test.tsx](test/components/
 - Import the component from `'neba'`. That alias points at `src/index.ts` ([vitest.config.ts](vitest.config.ts)), so tests exercise the same public entry point consumers use.
 - Query by role/accessible name. Use `await expect.element(locator)` for assertions that need to retry, and `locator.query()` when asserting absence.
 - `locator.query()` is for something that was never there. **An element that is leaving needs the retrying form** — Base UI keeps a node mounted while an exit transition might still run, so a Tab panel is still in the document, `inert` and marked `data-ending-style`, at the moment the panel replacing it is up.
+- **A locator matches its `name` exactly, and so does `toHaveTextContent`.** Both were substring matches before Vitest 5. Where a substring is what you mean — a step button whose accessible name carries a mark and a visually hidden sentence past its title, a code block whose text starts with the copy button's label — say so: `exact: false` on the locator, `toMatchTextContent` on the assertion. Neither is a workaround; a query that would also match a longer name is the thing the exact default exists to catch.
 - **Before pressing a key, wait for the thing being typed at to hold the focus**, not for its markup. A popup takes focus in an effect after it mounts, and a key pressed in between lands wherever the focus still was. `menuHasFocus` in [Menu.test.tsx](test/components/menu/Menu.test.tsx) is the pattern.
 
 ### One file at a time
@@ -431,7 +432,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 
 ## Toolchain notes
 
-- Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 4 need Node 20.19+/22.12+, so the declared floor is stale.
+- Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 5 need Node 20.19+/22.12+, so the declared floor is stale.
 - Both `package-lock.json` and `pnpm-lock.yaml` are checked in; `pnpm-workspace.yaml` exists for pnpm users. Match whichever lockfile the working tree already reflects rather than switching package managers.
 - `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
 - `terser.config.json` sets `compress.directives: false`, and it exists for `'use client'`. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, so it strips it from all a hundred and thirty files without a word. The published package then says nothing at all to Next.js, and nothing in this repository would notice. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser would otherwise eat on the way out.
