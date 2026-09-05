@@ -404,7 +404,16 @@ interface TableProps {
  * be inventing a relationship. Each span gets a line of its own, under the name
  * of the row it belongs to.
  */
-function TimelineTable({ id, names, series, spans, unit, label, corner, locale }: TableProps) {
+const TimelineTable = React.memo(function TimelineTable({
+  id,
+  names,
+  series,
+  spans,
+  unit,
+  label,
+  corner,
+  locale
+}: TableProps) {
   const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
 
   return (
@@ -432,4 +441,4 @@ function TimelineTable({ id, names, series, spans, unit, label, corner, locale }
       </tbody>
     </table>
   );
-}
+});

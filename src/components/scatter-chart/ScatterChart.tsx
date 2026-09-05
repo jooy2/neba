@@ -206,7 +206,7 @@ export function ScatterChart(rawProps: ScatterChartProps) {
           <path d={markPath(shapeOf(index), 5, 5, 4)} fill={color} />
         </svg>
       )}
-      table={(id) => (
+      table={(id, format) => (
         <ScatterTable
           id={id}
           series={series}
@@ -215,7 +215,7 @@ export function ScatterChart(rawProps: ScatterChartProps) {
           xLabel={xAxis?.label}
           yLabel={props.yAxis?.label}
           locale={props.locale}
-          format={props.format}
+          format={format}
         />
       )}
     >
@@ -287,7 +287,8 @@ interface TableProps {
   xLabel?: React.ReactNode;
   yLabel?: React.ReactNode;
   locale?: string;
-  format?: Intl.NumberFormatOptions;
+  /** The frame's own formatter, already stable across a render. */
+  format: (value: number) => string;
 }
 
 /**
@@ -302,7 +303,7 @@ interface TableProps {
  * and `z` when there are not — the names the data model itself uses, which is
  * the honest fallback for a heading nobody supplied.
  */
-function ScatterTable({
+const ScatterTable = React.memo(function ScatterTable({
   id,
   series,
   categories,
@@ -312,11 +313,6 @@ function ScatterTable({
   locale,
   format
 }: TableProps) {
-  const numbers = React.useMemo(
-    () => new Intl.NumberFormat(locale, format ?? { maximumFractionDigits: 2 }),
-    [locale, format]
-  );
-
   const sized = series.some((one) =>
     one.data.some((datum) => typeof datum === 'object' && datum !== null && datum.z !== undefined)
   );
@@ -347,8 +343,8 @@ function ScatterTable({
                     does on every other chart's table. A zero written here would
                     be the one place the library reported missing data as a
                     number. */}
-                <td>{y === null || !Number.isFinite(y) ? '' : numbers.format(y)}</td>
-                {sized ? <td>{point?.z === undefined ? '' : numbers.format(point.z)}</td> : null}
+                <td>{y === null || !Number.isFinite(y) ? '' : format(y)}</td>
+                {sized ? <td>{point?.z === undefined ? '' : format(point.z)}</td> : null}
               </tr>
             );
           })
@@ -356,4 +352,4 @@ function ScatterTable({
       </tbody>
     </table>
   );
-}
+});

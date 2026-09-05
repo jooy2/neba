@@ -618,8 +618,15 @@ interface DataTableProps {
  * It is clipped rather than `display: none`, for the reason `srOnlyClasses`
  * gives: the second one takes it off the accessibility tree along with the
  * screen, which would leave the chart exactly as mute as before.
+ *
+ * Memoised, and it is the one component in this file that has to be. It is a
+ * row per category and a cell per series, and it is built in the same render
+ * body that holds the crosshair's state — so without this every cell of it is
+ * reconciled again for each pixel the pointer travels across the picture, on a
+ * table nobody is looking at. Every prop it takes is either a primitive or
+ * something already memoised above.
  */
-function ChartDataTable({
+const ChartDataTable = React.memo(function ChartDataTable({
   id,
   caption,
   corner,
@@ -667,7 +674,7 @@ function ChartDataTable({
       </tbody>
     </table>
   );
-}
+});
 
 /* ---------------------------------------------------------------------------
  * The surface every chart sits on
@@ -806,8 +813,14 @@ interface CartesianProps extends CartesianChartProps {
    * @default 24
    */
   markRadius?: number;
-  /** The table under the chart, for a chart whose data is not a grid. */
-  table?: (id: string) => React.ReactNode;
+  /**
+   * The table under the chart, for a chart whose data is not a grid.
+   *
+   * It is handed the frame's own `format`, already stable across a render, so a
+   * table of its own is memoised on the same terms `ChartDataTable` is rather
+   * than building a formatter that a pointer moving over the picture rebuilds.
+   */
+  table?: (id: string, format: (value: number) => string) => React.ReactNode;
   /** The legend's swatch, for a chart whose marks are not all the same shape. */
   swatch?: (index: number, color: string) => React.ReactNode;
   /**
@@ -915,15 +928,21 @@ export function CartesianChart({
   /** Where the pointer is along the value axis. `null` when it arrived by key. */
   const [pointer, setPointer] = React.useState<number | null>(null);
 
-  /* No `useMemo` around the formatter: `format` is an options object, and the
-     ordinary way that prop gets written is a literal in the JSX — a fresh
-     object on every render, which a memo keyed on its identity would miss every
-     single time. The cache in `internal/format.ts` is keyed on what the options
-     say instead, so it hits. */
+  /* Keyed on what the options *say* rather than on their identity, for the
+     reason `internal/format.ts` is: `format` is an options object and the
+     ordinary way that prop gets written is a literal in the JSX, so a fresh one
+     arrives on every render. Keyed on identity this function would be a new
+     function every render too, and every memo below it — the data table above
+     all — would miss on a chart the pointer is merely moving across. The stale
+     `format` the closure then holds is content-identical to the current one, and
+     `numberFormatter` is keyed on the content, so the same formatter comes
+     back. */
+  const formatKey = format ? JSON.stringify(format) : '';
   const formatValue = React.useCallback(
     (value: number) =>
       format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
-    [format, locale]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [formatKey, locale]
   );
 
   const values = React.useMemo(() => toValues(series), [series]);
@@ -1428,7 +1447,7 @@ export function CartesianChart({
       table={
         nothing
           ? null
-          : (table?.(tableId) ?? (
+          : (table?.(tableId, formatValue) ?? (
               <ChartDataTable
                 id={tableId}
                 caption={label}

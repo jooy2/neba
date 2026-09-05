@@ -2,6 +2,12 @@
 
 ## vNext
 
+### Changed
+
+- **A chart's data table is memoised, and reads the chart's own formatter.** The visually hidden table is built in the same render the crosshair's state lives in, so every cell of it was reconciled again for each pixel the pointer travelled across the picture — a row per point on a `ScatterChart`. It is `React.memo` now, and the frame's `format` is keyed on what the options say rather than on the identity of the object they arrived in, so a `format` written inline in the JSX no longer defeats it.
+
+  One number moves with it: a `ScatterChart` with no `format` writes its table values the way its axis and its tooltip already write them, so `24000` reads as `24K` rather than `24,000`. It was the only chart whose table disagreed with its own picture.
+
 ### Fixed
 
 - **An `AnimateMarquee` stops for the focus as well as for the pointer.** `pauseOnHover` was `:hover` alone, so a link on a moving strip could be aimed at with a mouse and not reached with a keyboard — tabbing to it left it travelling off the screen while it was being read.

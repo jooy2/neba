@@ -582,6 +582,18 @@ describe('ScatterChart', () => {
 
       await expect.element(screen.getByRole('cell', { name: '$1,200' })).toBeInTheDocument();
     });
+
+    // The table reads the frame's own formatter rather than building a second
+    // one, so a number in it is written the way the axis and the tooltip write
+    // it. A scatter with no `format` used to be the one chart whose table
+    // disagreed with its own picture.
+    it('writes a value the way the rest of the chart writes it', async () => {
+      const screen = await render(
+        <ScatterChart label="Spend" series={[{ name: 'Q1', data: [{ x: 1, y: 24000 }] }]} />
+      );
+
+      await expect.element(screen.getByRole('cell', { name: '24K' })).toBeInTheDocument();
+    });
   });
 
   describe('tooltip', () => {
