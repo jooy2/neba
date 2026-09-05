@@ -596,11 +596,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       </AspectRatio>
     );
 
-  /*
-   * The mount, when there is one: the line, the space inside it, and the
-   * shadow. Only drawn for a caller who asked for a frame — an Image without
-   * one is exactly the two elements it has always been.
-   */
   const line = shape === null ? undefined : mountLine(shape);
   const outerCorner = mat === undefined ? corner : `calc(${corner} + ${mat})`;
 
