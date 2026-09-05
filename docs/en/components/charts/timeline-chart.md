@@ -5,7 +5,7 @@ order: 7
 
 # TimelineChart
 
-<p class="neba-lede">Work against time — a row per thing and a bar per stretch of it. A Gantt chart: what is happening, on which track, and for how long.</p>
+<p class="neba-lede">Plots work against time, with a row per thing and a bar per stretch of it. It is a Gantt chart: what is happening, on which track, and for how long.</p>
 
 <Demo src="timeline-chart/hero" />
 

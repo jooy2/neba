@@ -5,7 +5,7 @@ order: 24
 
 # Gallery
 
-<p class="neba-lede">A set of pictures, arranged. Four layouts — a contact sheet, a masonry, a justified library and a quilt — over one list of images and the metadata that came with them, with a viewer a click away.</p>
+<p class="neba-lede">Arranges a set of pictures. Four layouts (a contact sheet, a masonry, a justified library and a quilt) work over one list of images and the metadata that came with them, with a viewer a click away.</p>
 
 <Demo src="gallery/hero" />
 

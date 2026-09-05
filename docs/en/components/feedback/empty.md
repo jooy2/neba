@@ -5,7 +5,7 @@ order: 10
 
 # Empty
 
-<p class="neba-lede">What stands where content would have been: a glyph, a headline, a sentence and a way out. It is for the list that came back with nothing, the inbox nobody has written to, and the folder before its first file.</p>
+<p class="neba-lede">It fills the place content would have taken, with a glyph, a headline, a sentence and a way out. It is for the list that came back with nothing, the inbox nobody has written to, and the folder before its first file.</p>
 
 <Demo src="empty/hero" align="center" minHeight="260" />
 

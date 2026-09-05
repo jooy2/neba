@@ -5,7 +5,7 @@ order: 23
 
 # Image
 
-<p class="neba-lede">A picture that holds its space while it loads, says when it is loading, and says something useful when it fails. The three things a bare <code>&lt;img&gt;</code> leaves to whoever wrote it.</p>
+<p class="neba-lede">A picture that holds its space while it loads, shows that it is loading, and shows something useful when it fails. A bare <code>&lt;img&gt;</code> leaves all three to the caller.</p>
 
 <Demo src="image/hero" />
 

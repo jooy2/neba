@@ -5,7 +5,7 @@ order: 16
 
 # TextLink
 
-<p class="neba-lede">A link, in a sentence or on its own. It has no surface and no height of its own — what it has is the line under it, and a mark for the links that take over the window.</p>
+<p class="neba-lede">A link, in a sentence or on its own. It has no surface and no height of its own: what it has is the line under it, and a mark for the links that open in a new tab.</p>
 
 <Demo src="text-link/hero" />
 

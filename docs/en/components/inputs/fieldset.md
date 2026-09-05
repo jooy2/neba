@@ -5,7 +5,7 @@ order: 28
 
 # Fieldset
 
-<p class="neba-lede">A group of controls that answer one question together, with a name on it. It draws no surface — the group is a grouping, not a sheet.</p>
+<p class="neba-lede">A group of controls that answer one question together, with a name on it. It groups the controls without drawing a surface of its own.</p>
 
 <Demo src="fieldset/hero" />
 

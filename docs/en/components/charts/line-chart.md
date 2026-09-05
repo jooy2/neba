@@ -5,7 +5,7 @@ order: 2
 
 # LineChart
 
-<p class="neba-lede">Plots one or more series against an ordered category axis. Reach for it when the space between two points is a journey — a value over time, a curve over a range — rather than two separate facts.</p>
+<p class="neba-lede">Plots one or more series against an ordered category axis. Reach for it when two neighbouring points are part of one continuous change, such as a value over time or a curve over a range, rather than two separate facts.</p>
 
 <Demo src="line-chart/hero" />
 

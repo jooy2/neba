@@ -5,7 +5,7 @@ order: 7
 
 # TimelineChart
 
-<p class="neba-lede">시간 위에 일을 놓는 차트입니다. 한 행에 하나씩, 그 위의 막대 하나가 하나의 기간입니다. 무엇이 어느 갈래에서 얼마나 오래 일어나는지를 보여 주는 Gantt 차트입니다.</p>
+<p class="neba-lede">일을 시간 축 위에 그립니다. 한 행이 하나를 나타내고, 그 위의 막대 하나가 하나의 기간입니다. 무엇이 어느 갈래에서 얼마나 오래 일어나는지를 보여 주는 Gantt 차트입니다.</p>
 
 <Demo src="timeline-chart/hero" />
 

@@ -5,7 +5,7 @@ order: 2
 
 # LineChart
 
-<p class="neba-lede">순서가 있는 category 축 위에 하나 이상의 series를 그립니다. 두 점 사이가 서로 무관한 두 값이 아니라 하나의 흐름일 때 — 시간에 따른 값, 구간에 따른 곡선 — 쓰는 차트입니다.</p>
+<p class="neba-lede">순서가 있는 category 축 위에 하나 이상의 series를 그립니다. 이웃한 두 점이 서로 무관한 값이 아니라 하나의 연속된 변화일 때 씁니다. 시간에 따른 값이나 구간에 따른 곡선이 그런 경우입니다.</p>
 
 <Demo src="line-chart/hero" />
 
