@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **A message lookup reads a table's own keys and not its prototype's.** A `locale` a caller took from a URL, or a `{placeholder}` a translation happened to name after a member of `Object`, resolved up the prototype chain — so `locale="constructor"` was spread over English as though it were a table of messages, and `{constructor}` in a translation wrote `function Object() { [native code] }` into the middle of a sentence.
+
 - **An `AppLogo` and a `BottomNavigationItem` merge `noopener noreferrer` into a link that leaves this tab.** `safeRel` reached four of the six components that let a `target` through to an `<a>`; these two handed the page they opened a `window.opener` pointing back at the one that opened it, and a `Referer` header naming it. A `rel` written by hand — `nofollow`, `sponsored` — is merged rather than replaced, as everywhere else.
 
 - **`colorSchemeScript` escapes `<` in the values it writes.** The string is inlined inside a `<script>` element, and a browser stops parsing that element at the first `</script` in it however the JavaScript around it is quoted — so a `storageKey` holding one would have ended the tag and handed the rest to the HTML parser as markup. `Breadcrumb` already wrote its structured data out this way.

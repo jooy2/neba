@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Chip, Empty, Spoiler } from 'neba';
+import { Chip, Empty, Rating, Spoiler } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
 describe('neba/locales', () => {
@@ -19,6 +19,18 @@ describe('neba/locales', () => {
       // `qps` is a reserved tag no locale module claims, so this stays true
       // however many languages the folder grows.
       const screen = await render(<Empty locale="qps" />);
+
+      await expect.element(screen.getByText('Nothing here')).toBeInTheDocument();
+    });
+
+    /*
+     * The tag reaches the message tables as a key, so a name off `Object`'s
+     * prototype used to come back truthy and be spread over English as though it
+     * were a table of messages. A caller can hand a `locale` straight out of a
+     * URL, and the answer for a tag nobody registered is English either way.
+     */
+    it('answers a tag named after a prototype member in English', async () => {
+      const screen = await render(<Empty locale="constructor" />);
 
       await expect.element(screen.getByText('Nothing here')).toBeInTheDocument();
     });
@@ -77,6 +89,24 @@ describe('neba/locales', () => {
       );
 
       await expect.element(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
+    });
+  });
+
+  describe('a placeholder', () => {
+    /*
+     * The names come out of the template, and a template is a *translation* —
+     * so a name that happens to match a member of `Object`'s prototype must not
+     * resolve to one. Left alone, `{constructor}` wrote
+     * `function Object() { [native code] }` into the middle of the sentence.
+     */
+    it('is left as itself when the values do not carry it', async () => {
+      registerMessages('qpsFill', { rating: { value: '{constructor} of {max}' } });
+
+      const screen = await render(<Rating locale="qpsFill" value={3} readOnly />);
+
+      await expect
+        .element(screen.getByRole('img', { name: '{constructor} of 5' }))
+        .toBeInTheDocument();
     });
   });
 

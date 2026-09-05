@@ -817,11 +817,22 @@ export function resolveMessages<T extends object>(table: MessageTable<T>, locale
     return cached as T;
   }
 
+  /*
+   * `Object.hasOwn` on both lookups rather than a plain index. The tag comes
+   * from a caller and reaches these objects as a key, so `locale="constructor"`
+   * would otherwise walk up the prototype chain and hand back `Object` — a
+   * value that is truthy, is not a message table, and would be spread over
+   * English as though it were one.
+   */
   const match = candidates(key)
     .map((candidate) => {
-      const alias = aliases[candidate];
+      const alias = Object.hasOwn(aliases, candidate) ? aliases[candidate] : undefined;
 
-      return table[candidate] ?? (alias ? table[alias] : undefined);
+      if (Object.hasOwn(table, candidate)) {
+        return table[candidate];
+      }
+
+      return alias && Object.hasOwn(table, alias) ? table[alias] : undefined;
     })
     .find(Boolean);
 
@@ -848,7 +859,13 @@ export function useMessages<T extends object>(table: MessageTable<T>, locale?: s
  * hole in the middle of a sentence.
  */
 export function fillMessage(template: string, values: Record<string, string>): string {
-  return template.replace(/\{(\w+)\}/g, (whole, name: string) => values[name] ?? whole);
+  // `Object.hasOwn` and not a plain index: the names come out of the template,
+  // which is a *translation* — so `{constructor}` in one would otherwise reach
+  // up the prototype chain and write `function Object() { [native code] }` into
+  // the middle of a sentence.
+  return template.replace(/\{(\w+)\}/g, (whole, name: string) =>
+    Object.hasOwn(values, name) ? values[name] : whole
+  );
 }
 
 /**
