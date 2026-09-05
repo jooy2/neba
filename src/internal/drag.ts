@@ -98,8 +98,15 @@ export function beginPointerDrag({
     target.dataset.dragging = 'true';
   }
 
-  if (target.setPointerCapture) {
-    target.setPointerCapture(pointerId);
+  // Capture is an optimisation and not a requirement — the three listeners are
+  // on the target either way — so a failure to take it must not stop the drag.
+  // `setPointerCapture` throws `NotFoundError` for a pointer that is no longer
+  // active, which is a pointer lifted between the `pointerdown` and this call,
+  // and an exception escaping a React event handler takes the page down.
+  try {
+    target.setPointerCapture?.(pointerId);
+  } catch {
+    // Nothing to do. The gesture works without it, over a smaller area.
   }
 
   let running = true;
