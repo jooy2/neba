@@ -3,9 +3,13 @@
 import * as React from 'react';
 import { TreeItem, TreeView, type TreeViewValue } from '../tree-view/TreeView.js';
 import { PickerShell, type PickerShellProps } from '../../internal/picker.js';
-import { defaultPickerLabels } from '../../internal/calendar.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
-import { commandMessages, comboboxMessages, useMessages } from '../../internal/i18n.js';
+import {
+  actionMessages,
+  commandMessages,
+  comboboxMessages,
+  useMessages
+} from '../../internal/i18n.js';
 import type { NebaSlots } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -62,6 +66,8 @@ export interface TreeSelectProps extends PickerShellProps {
   placeholder?: React.ReactNode;
   /** Offers the × that empties the control. @default false */
   clearable?: boolean;
+  /** Accessible name of the clear button. Defaults to the `locale`'s word. */
+  clearLabel?: string;
   /** Closes the popup as soon as a node is chosen. @default !multiple */
   closeOnSelect?: boolean;
   /**
@@ -193,6 +199,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
       onOpenChange,
       placeholder,
       clearable = false,
+      clearLabel,
       closeOnSelect,
       searchable = false,
       searchPlaceholder,
@@ -212,6 +219,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
     // once, for CommandPalette. One more spelling of "Search" is one more thing
     // to translate and one more chance for the two to disagree.
     const searchMessages = useMessages(commandMessages, locale);
+    const actions = useMessages(actionMessages, locale);
 
     const asArray = (next: TreeViewValue | TreeViewValue[] | null | undefined): TreeViewValue[] =>
       next === null || next === undefined ? [] : Array.isArray(next) ? next : [next];
@@ -327,7 +335,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
         onClear={() => commit([])}
         open={open}
         onOpenChange={setOpen}
-        labels={defaultPickerLabels}
+        clearLabel={clearLabel ?? actions.clear}
         popupClassName={classNames?.popup}
         hiddenValues={name ? held.map((entry) => ({ name, value: String(entry) })) : undefined}
       >

@@ -87,6 +87,28 @@ export const zhHant: NebaLocale = {
     pause: '暫停投影片播放',
     play: '播放投影片'
   },
+  picker: {
+    previousMonth: '上個月',
+    nextMonth: '下個月',
+    previousYear: '上一年',
+    nextYear: '下一年',
+    previousYears: '上一組年份',
+    nextYears: '下一組年份',
+    chooseMonth: '選擇月份',
+    chooseYear: '選擇年份',
+    today: '今天',
+    thisMonth: '本月',
+    thisYear: '今年',
+    now: '現在',
+    clear: '清除',
+    done: '完成',
+    hour: '時',
+    minute: '分',
+    second: '秒',
+    meridiem: '上午/下午',
+    start: '開始',
+    end: '結束'
+  },
   gallery: {
     label: '圖庫',
     item: '第 {index} 張，共 {total} 張',

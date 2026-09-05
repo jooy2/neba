@@ -136,7 +136,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       ...shell
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
-    const labels = usePickerLabels(labelOverrides);
+    const labels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<DateRange>(
@@ -314,7 +314,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         onClear={() => commit(EMPTY)}
         open={open}
         onOpenChange={setOpen}
-        labels={labels}
+        clearLabel={labels.clear}
         hiddenValues={
           name
             ? [

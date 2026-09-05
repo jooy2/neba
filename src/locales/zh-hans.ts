@@ -87,6 +87,28 @@ export const zhHans: NebaLocale = {
     pause: '暂停幻灯片播放',
     play: '播放幻灯片'
   },
+  picker: {
+    previousMonth: '上个月',
+    nextMonth: '下个月',
+    previousYear: '上一年',
+    nextYear: '下一年',
+    previousYears: '上一组年份',
+    nextYears: '下一组年份',
+    chooseMonth: '选择月份',
+    chooseYear: '选择年份',
+    today: '今天',
+    thisMonth: '本月',
+    thisYear: '今年',
+    now: '现在',
+    clear: '清除',
+    done: '完成',
+    hour: '时',
+    minute: '分',
+    second: '秒',
+    meridiem: '上午/下午',
+    start: '开始',
+    end: '结束'
+  },
   gallery: {
     label: '图库',
     item: '第 {index} 张，共 {total} 张',

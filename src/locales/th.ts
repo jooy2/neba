@@ -84,6 +84,28 @@ export const th: NebaLocale = {
     pause: 'หยุดสไลด์โชว์ชั่วคราว',
     play: 'เล่นสไลด์โชว์'
   },
+  picker: {
+    previousMonth: 'เดือนก่อนหน้า',
+    nextMonth: 'เดือนถัดไป',
+    previousYear: 'ปีก่อนหน้า',
+    nextYear: 'ปีถัดไป',
+    previousYears: 'ช่วงปีก่อนหน้า',
+    nextYears: 'ช่วงปีถัดไป',
+    chooseMonth: 'เลือกเดือน',
+    chooseYear: 'เลือกปี',
+    today: 'วันนี้',
+    thisMonth: 'เดือนนี้',
+    thisYear: 'ปีนี้',
+    now: 'ตอนนี้',
+    clear: 'ล้าง',
+    done: 'เสร็จสิ้น',
+    hour: 'ชั่วโมง',
+    minute: 'นาที',
+    second: 'วินาที',
+    meridiem: 'AM/PM',
+    start: 'เริ่ม',
+    end: 'สิ้นสุด'
+  },
   gallery: {
     label: 'แกลเลอรี',
     item: 'รูปที่ {index} จาก {total}',

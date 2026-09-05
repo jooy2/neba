@@ -84,6 +84,28 @@ export const id: NebaLocale = {
     pause: 'Jeda tayangan slide',
     play: 'Putar tayangan slide'
   },
+  picker: {
+    previousMonth: 'Bulan sebelumnya',
+    nextMonth: 'Bulan berikutnya',
+    previousYear: 'Tahun sebelumnya',
+    nextYear: 'Tahun berikutnya',
+    previousYears: 'Tahun-tahun sebelumnya',
+    nextYears: 'Tahun-tahun berikutnya',
+    chooseMonth: 'Pilih bulan',
+    chooseYear: 'Pilih tahun',
+    today: 'Hari ini',
+    thisMonth: 'Bulan ini',
+    thisYear: 'Tahun ini',
+    now: 'Sekarang',
+    clear: 'Hapus',
+    done: 'Selesai',
+    hour: 'Jam',
+    minute: 'Menit',
+    second: 'Detik',
+    meridiem: 'AM/PM',
+    start: 'Mulai',
+    end: 'Selesai'
+  },
   gallery: {
     label: 'Galeri',
     item: 'Gambar {index} dari {total}',

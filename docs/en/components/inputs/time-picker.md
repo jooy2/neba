@@ -55,7 +55,7 @@ Native `<div>` attributes pass through to the root. Only `color`, `defaultValue`
 
 ## Accessibility
 
-- Each column is a `role="listbox"` of `role="option"` rows. The column names come from `labels` and have English defaults.
+- Each column is a `role="listbox"` of `role="option"` rows. The column names come from the `locale`, and `labels` writes them out instead.
 - The chosen row carries `aria-selected`; a blocked one carries `aria-disabled` rather than the `disabled` attribute, so it stays reachable and announces why it cannot be taken.
 - The chosen row in each column is scrolled into view when the popup opens.
 - A live region beside the columns reads out the whole time whenever it changes.

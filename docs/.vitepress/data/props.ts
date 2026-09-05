@@ -419,8 +419,8 @@ function pickerProps(options: PickerOptions): PropRow[] {
       name: 'labels',
       type: 'Partial<PickerLabels>',
       description: {
-        ko: '스크린 리더가 듣는 문자열들. 스무 개가 한 벌이라 프롭 하나로 받습니다 — 날짜 이름은 여기 없고 Intl이 만듭니다',
-        en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set — the date names are not among them, those come from Intl'
+        ko: '스크린 리더가 듣는 문자열들. 스무 개가 한 벌이라 프롭 하나로 받습니다 — 기본값은 locale의 표현이고, 날짜 이름은 여기 없이 Intl이 만듭니다',
+        en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set — they default to the locale’s wording, and the date names are not among them, those come from Intl'
       }
     },
     {
@@ -4853,6 +4853,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'clearLabel',
+      type: 'string',
+      description: {
+        ko: '지우기 버튼의 accessible name. 기본값은 locale의 표현',
+        en: "The clear button's accessible name. Defaults to the locale's wording"
+      }
+    },
+    {
       name: 'searchPlaceholder',
       type: 'string',
       description: { ko: '그 필드의 placeholder', en: "The search field's placeholder" }
@@ -5064,8 +5072,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'labels',
       type: 'Partial<PickerLabels>',
       description: {
-        ko: '스크린 리더가 듣는 문자열들. 모두 영어 기본값이 있습니다',
-        en: 'The strings a screen reader hears. Every one has an English default'
+        ko: '스크린 리더가 듣는 문자열들. 기본값은 locale의 표현입니다',
+        en: 'The strings a screen reader hears. Every one defaults to the locale’s wording'
       }
     }
   ],

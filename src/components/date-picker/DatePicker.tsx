@@ -183,7 +183,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       ...shell
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
-    const labels = usePickerLabels(labelOverrides);
+    const labels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
     const displayFormat = format ?? defaultFormats[granularity];
 
@@ -288,7 +288,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
         onClear={() => commit(null)}
         open={open}
         onOpenChange={setOpen}
-        labels={labels}
+        clearLabel={labels.clear}
         hiddenValues={
           name
             ? [{ name, value: isValidDate(value) ? isoWriters[granularity](value) : '' }]

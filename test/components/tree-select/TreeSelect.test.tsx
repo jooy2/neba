@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { TreeSelect, type TreeSelectItem } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 const REGIONS: TreeSelectItem[] = [
   {
@@ -204,6 +207,34 @@ describe('TreeSelect', () => {
     await screen.getByRole('button', { name: 'Clear' }).click();
 
     expect(onValueChange).toHaveBeenCalledWith([]);
+  });
+
+  /*
+   * The clear button used to be named out of the pickers' English defaults, so
+   * it said "Clear" in every language — it is the same × a Combobox draws, and
+   * reads the same word from the same place.
+   */
+  it('names the clear button in the language it was given', async () => {
+    const screen = await render(
+      <TreeSelect locale="ko" label="Region" items={REGIONS} defaultValue="kr" clearable />
+    );
+
+    await expect.element(screen.getByRole('button', { name: '지우기' })).toBeInTheDocument();
+  });
+
+  it('takes a clear label of its own', async () => {
+    const screen = await render(
+      <TreeSelect
+        locale="ko"
+        label="Region"
+        items={REGIONS}
+        defaultValue="kr"
+        clearable
+        clearLabel="Empty"
+      />
+    );
+
+    await expect.element(screen.getByRole('button', { name: 'Empty' })).toBeInTheDocument();
   });
 
   it('submits one hidden input per value', async () => {

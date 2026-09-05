@@ -11,22 +11,26 @@
 | `LineChart`                   | 11.6 kB  | 11.7 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.1 kB   |
 | `Image`                       | 6.5 kB   | 7.0 kB   |
-| `Gallery`                     | 10.2 kB  | 10.2 kB  |
-| a whole page shell            | 29.0 kB  | 29.1 kB  |
+| `Gallery`                     | 10.2 kB  | 10.3 kB  |
+| a whole page shell            | 29.0 kB  | 29.2 kB  |
 | 12 components — a typical app | 70.5 kB  | 70.4 kB  |
-| 12 components, with Korean    | 72.9 kB  | 72.8 kB  |
-| 25 components — a large one   | 115.7 kB | 115.6 kB |
-| all exports                   | 263.9 kB | 264.1 kB |
+| 12 components, with Korean    | 72.9 kB  | 73.2 kB  |
+| 25 components — a large one   | 115.7 kB | 115.7 kB |
+| all exports                   | 263.9 kB | 264.6 kB |
 
 `Image` is the row that moved, and it is the whole of what translating one string costs on the smallest component that needed it. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts` — 0.5 kB of resolution machinery that every other translated component was already carrying. Which is why the twelve-component row went _down_: on any page that already draws one of them the marginal cost is nothing, and the two shared helpers that shrank are what is left.
 
-The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups.
+The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups, and a shared bound under the memos in `internal/`.
+
+The Korean row is the other one worth a sentence. Registering a language ships that language's whole module, so the twenty picker strings and the two a Carousel's stop button needs land in it whether or not the page draws either — 2.8 kB now against 2.4 kB before. It is the price of the thing being fixed: those twenty were hardcoded English, and a Korean product had no way to reach them but to write all twenty out.
 
 ### Added
 
 - **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
 
 - **A `Carousel` with `autoPlay` draws the button that stops it.** It paused on hover, on focus and in a background tab, and it never started for a reader who had asked for less motion — but a reader holding a phone hovers nothing, and one running a magnifier may never put a pointer over the strip at all. WCAG 2.2.2 asks for a mechanism, and those were not one. The control sits in the frame's top corner and first in the tab order, so a keyboard reader meets the way to stop the slides before they meet the slides; `pauseLabel` and `playLabel` name it, and it is translated in all nineteen languages. There is no prop to take it away — a caller who wants a control of their own can drive `value` and leave `autoPlay` off.
+
+- **The four date and time pickers say their twenty non-date strings in the reader's language.** "Previous month", "Choose a year", "Today", "Now", "Hour", "AM/PM" and fourteen more were hardcoded English, over dates `Intl` had already translated — so a Korean product's only way out was to write out all twenty through `labels`. There is a `picker` message namespace now, in all nineteen languages. `labels` still wins where it is given, which is what it is for: `locale` answers the language and `labels` answers the wording.
 
 ### Changed
 
@@ -43,6 +47,8 @@ The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same ma
   One number moves with it: a `ScatterChart` with no `format` writes its table values the way its axis and its tooltip already write them, so `24000` reads as `24K` rather than `24,000`. It was the only chart whose table disagreed with its own picture.
 
 ### Fixed
+
+- **A `TreeSelect`'s clear button says "Clear" in every language no longer.** It was named out of the pickers' English defaults — a set it has nothing else to do with — rather than out of the same `action` messages the identical × on a `Combobox` reads. It takes a `clearLabel` like `Combobox` does, too.
 
 - **A pointer drag starts even when the pointer cannot be captured.** `setPointerCapture` throws for a pointer that is no longer active — one lifted between the `pointerdown` and the handler — and the exception escaped into React's event handler, which takes the page down. Capture is an optimisation and the three listeners work without it, so it is taken where it can be and skipped where it cannot.
 

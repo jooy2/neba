@@ -39,6 +39,7 @@ import {
   type TimeUnit
 } from './date.js';
 import { dateFormatter } from './format.js';
+import { pickerMessages, useMessages, type PickerMessages } from './i18n.js';
 import type {
   NebaColor,
   NebaDateGranularity,
@@ -71,75 +72,30 @@ import type {
 /**
  * Every string a picker says that is not a date.
  *
- * One object rather than twenty props. These are a set: a caller who has to
- * translate "Previous month" has to translate "Next month" in the same breath,
- * and a component with twenty `*Label` props is a component whose signature is
- * mostly apology. The dates themselves are never in here — those come from
- * `Intl`, which already knows what July is called in more languages than this
- * file ever will.
+ * The set itself lives in `internal/i18n.ts`, with the other nineteen
+ * namespaces and the eighteen translations of each — the name stays here
+ * because it is what the `labels` prop is typed against.
  */
-export interface PickerLabels {
-  /** The calendar's steppers, in day view. */
-  previousMonth: string;
-  nextMonth: string;
-  /** The same steppers in month view, where they move by a year. */
-  previousYear: string;
-  nextYear: string;
-  /** And in year view, where they move by a page of twelve. */
-  previousYears: string;
-  nextYears: string;
-  /** The two header buttons that open the month grid and the year grid. */
-  chooseMonth: string;
-  chooseYear: string;
-  /**
-   * The footer's actions. Three shortcuts rather than one because the button
-   * jumps to the current *unit*, and a month picker whose footer says "Today"
-   * is offering a day it has no way to accept.
-   */
-  today: string;
-  thisMonth: string;
-  thisYear: string;
-  now: string;
-  clear: string;
-  done: string;
-  /** The clock's columns. */
-  hour: string;
-  minute: string;
-  second: string;
-  meridiem: string;
-  /** Which end of a range the calendar is currently asking for. */
-  start: string;
-  end: string;
-}
+export type PickerLabels = PickerMessages;
 
-export const defaultPickerLabels: PickerLabels = {
-  previousMonth: 'Previous month',
-  nextMonth: 'Next month',
-  previousYear: 'Previous year',
-  nextYear: 'Next year',
-  previousYears: 'Previous years',
-  nextYears: 'Next years',
-  chooseMonth: 'Choose a month',
-  chooseYear: 'Choose a year',
-  today: 'Today',
-  thisMonth: 'This month',
-  thisYear: 'This year',
-  now: 'Now',
-  clear: 'Clear',
-  done: 'Done',
-  hour: 'Hour',
-  minute: 'Minute',
-  second: 'Second',
-  meridiem: 'AM/PM',
-  start: 'Start',
-  end: 'End'
-};
+/**
+ * The twenty strings for a locale, with a caller's own wording over the top.
+ *
+ * `locale` answers the language and `overrides` answers the wording, which is
+ * why both are taken: a product in Korean should not have to write out twenty
+ * labels to stop a calendar saying "Previous month", and a product that wants
+ * "Back" instead of "Previous month" should not have to register a language to
+ * say so.
+ */
+export function usePickerLabels(
+  overrides: Partial<PickerLabels> | undefined,
+  locale: string | undefined
+): PickerLabels {
+  const messages = useMessages(pickerMessages, locale);
 
-/** Merges a caller's overrides over the defaults, once per render. */
-export function usePickerLabels(overrides?: Partial<PickerLabels>): PickerLabels {
   return React.useMemo(
-    () => (overrides ? { ...defaultPickerLabels, ...overrides } : defaultPickerLabels),
-    [overrides]
+    () => (overrides ? { ...messages, ...overrides } : messages),
+    [messages, overrides]
   );
 }
 

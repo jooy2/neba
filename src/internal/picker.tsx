@@ -23,7 +23,6 @@ import {
   surfaceSlots,
   transitionClasses
 } from './styles.js';
-import type { PickerLabels } from './calendar.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
 
 /**
@@ -150,7 +149,13 @@ interface InternalShellProps extends PickerShellProps {
   onClear: () => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  labels: PickerLabels;
+  /**
+   * The × that empties the control, named. One string rather than the whole
+   * `labels` set, which is all the shell ever drew of it — asking for
+   * twenty to render one is what had a ColorPicker spreading the picker
+   * defaults it does not use over a label it does.
+   */
+  clearLabel: string;
   /** `<input type="hidden">` rows, so the control submits with a form. */
   hiddenValues?: Array<{ name: string; value: string }>;
   /** How far off the trigger the popup sits. */
@@ -198,7 +203,7 @@ export function PickerShell({
   onClear,
   open,
   onOpenChange,
-  labels,
+  clearLabel,
   hiddenValues,
   sideOffset = 6,
   popupClassName,
@@ -302,7 +307,7 @@ export function PickerShell({
           {clearable && !empty && !inert ? (
             <button
               type="button"
-              aria-label={labels.clear}
+              aria-label={clearLabel}
               className={cx(chipRemoveClasses, 'text-(--neba-muted-fg)')}
               onClick={(event) => {
                 event.stopPropagation();

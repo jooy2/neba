@@ -84,6 +84,28 @@ export const vi: NebaLocale = {
     pause: 'Tạm dừng trình chiếu',
     play: 'Phát trình chiếu'
   },
+  picker: {
+    previousMonth: 'Tháng trước',
+    nextMonth: 'Tháng sau',
+    previousYear: 'Năm trước',
+    nextYear: 'Năm sau',
+    previousYears: 'Các năm trước',
+    nextYears: 'Các năm sau',
+    chooseMonth: 'Chọn tháng',
+    chooseYear: 'Chọn năm',
+    today: 'Hôm nay',
+    thisMonth: 'Tháng này',
+    thisYear: 'Năm nay',
+    now: 'Bây giờ',
+    clear: 'Xóa',
+    done: 'Xong',
+    hour: 'Giờ',
+    minute: 'Phút',
+    second: 'Giây',
+    meridiem: 'SA/CH',
+    start: 'Bắt đầu',
+    end: 'Kết thúc'
+  },
   gallery: {
     label: 'Thư viện ảnh',
     item: 'Ảnh {index} trên {total}',

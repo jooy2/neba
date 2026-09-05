@@ -84,6 +84,28 @@ export const pl: NebaLocale = {
     pause: 'Wstrzymaj pokaz slajdów',
     play: 'Odtwórz pokaz slajdów'
   },
+  picker: {
+    previousMonth: 'Poprzedni miesiąc',
+    nextMonth: 'Następny miesiąc',
+    previousYear: 'Poprzedni rok',
+    nextYear: 'Następny rok',
+    previousYears: 'Poprzednie lata',
+    nextYears: 'Następne lata',
+    chooseMonth: 'Wybierz miesiąc',
+    chooseYear: 'Wybierz rok',
+    today: 'Dzisiaj',
+    thisMonth: 'Ten miesiąc',
+    thisYear: 'Ten rok',
+    now: 'Teraz',
+    clear: 'Wyczyść',
+    done: 'Gotowe',
+    hour: 'Godzina',
+    minute: 'Minuta',
+    second: 'Sekunda',
+    meridiem: 'AM/PM',
+    start: 'Początek',
+    end: 'Koniec'
+  },
   gallery: {
     label: 'Galeria',
     item: 'Obraz {index} z {total}',

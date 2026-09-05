@@ -84,6 +84,28 @@ export const hi: NebaLocale = {
     pause: 'स्लाइड शो रोकें',
     play: 'स्लाइड शो चलाएँ'
   },
+  picker: {
+    previousMonth: 'पिछला महीना',
+    nextMonth: 'अगला महीना',
+    previousYear: 'पिछला वर्ष',
+    nextYear: 'अगला वर्ष',
+    previousYears: 'पिछले वर्ष',
+    nextYears: 'अगले वर्ष',
+    chooseMonth: 'महीना चुनें',
+    chooseYear: 'वर्ष चुनें',
+    today: 'आज',
+    thisMonth: 'यह महीना',
+    thisYear: 'यह वर्ष',
+    now: 'अभी',
+    clear: 'साफ़ करें',
+    done: 'हो गया',
+    hour: 'घंटा',
+    minute: 'मिनट',
+    second: 'सेकंड',
+    meridiem: 'AM/PM',
+    start: 'प्रारंभ',
+    end: 'समाप्ति'
+  },
   gallery: {
     label: 'गैलरी',
     item: '{total} में से छवि {index}',

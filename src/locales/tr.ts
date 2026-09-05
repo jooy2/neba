@@ -84,6 +84,28 @@ export const tr: NebaLocale = {
     pause: 'Slayt gösterisini duraklat',
     play: 'Slayt gösterisini oynat'
   },
+  picker: {
+    previousMonth: 'Önceki ay',
+    nextMonth: 'Sonraki ay',
+    previousYear: 'Önceki yıl',
+    nextYear: 'Sonraki yıl',
+    previousYears: 'Önceki yıllar',
+    nextYears: 'Sonraki yıllar',
+    chooseMonth: 'Bir ay seçin',
+    chooseYear: 'Bir yıl seçin',
+    today: 'Bugün',
+    thisMonth: 'Bu ay',
+    thisYear: 'Bu yıl',
+    now: 'Şimdi',
+    clear: 'Temizle',
+    done: 'Bitti',
+    hour: 'Saat',
+    minute: 'Dakika',
+    second: 'Saniye',
+    meridiem: 'ÖÖ/ÖS',
+    start: 'Başlangıç',
+    end: 'Bitiş'
+  },
   gallery: {
     label: 'Galeri',
     item: '{total} görselden {index}. görsel',

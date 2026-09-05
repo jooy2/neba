@@ -84,6 +84,28 @@ export const ja: NebaLocale = {
     pause: 'スライドショーを一時停止',
     play: 'スライドショーを再生'
   },
+  picker: {
+    previousMonth: '前の月',
+    nextMonth: '次の月',
+    previousYear: '前の年',
+    nextYear: '次の年',
+    previousYears: '前の年範囲',
+    nextYears: '次の年範囲',
+    chooseMonth: '月を選択',
+    chooseYear: '年を選択',
+    today: '今日',
+    thisMonth: '今月',
+    thisYear: '今年',
+    now: '現在',
+    clear: 'クリア',
+    done: '完了',
+    hour: '時',
+    minute: '分',
+    second: '秒',
+    meridiem: '午前/午後',
+    start: '開始',
+    end: '終了'
+  },
   gallery: {
     label: 'ギャラリー',
     item: '{total} 枚中 {index} 枚目',

@@ -84,6 +84,28 @@ export const pt: NebaLocale = {
     pause: 'Pausar a apresentação',
     play: 'Reproduzir a apresentação'
   },
+  picker: {
+    previousMonth: 'Mês anterior',
+    nextMonth: 'Mês seguinte',
+    previousYear: 'Ano anterior',
+    nextYear: 'Ano seguinte',
+    previousYears: 'Anos anteriores',
+    nextYears: 'Anos seguintes',
+    chooseMonth: 'Escolher um mês',
+    chooseYear: 'Escolher um ano',
+    today: 'Hoje',
+    thisMonth: 'Este mês',
+    thisYear: 'Este ano',
+    now: 'Agora',
+    clear: 'Limpar',
+    done: 'Concluído',
+    hour: 'Hora',
+    minute: 'Minuto',
+    second: 'Segundo',
+    meridiem: 'AM/PM',
+    start: 'Início',
+    end: 'Fim'
+  },
   gallery: {
     label: 'Galeria',
     item: 'Imagem {index} de {total}',

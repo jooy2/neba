@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { defaultPickerLabels } from '../../internal/calendar.js';
 import { PickerShell } from '../../internal/picker.js';
 import { CheckIcon } from '../../internal/icons.js';
 import { colorMessages, useMessages } from '../../internal/i18n.js';
@@ -793,7 +792,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
 
             onOpenChange?.(next);
           }}
-          labels={{ ...defaultPickerLabels, clear: labels.clear }}
+          clearLabel={labels.clear}
           hiddenValues={name ? [{ name, value: empty ? '' : written }] : undefined}
         >
           <div className={controlTextClasses[size]}>{panel}</div>

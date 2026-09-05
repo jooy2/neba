@@ -84,6 +84,28 @@ export const ko: NebaLocale = {
     pause: '슬라이드 쇼 일시정지',
     play: '슬라이드 쇼 재생'
   },
+  picker: {
+    previousMonth: '이전 달',
+    nextMonth: '다음 달',
+    previousYear: '이전 해',
+    nextYear: '다음 해',
+    previousYears: '이전 연도 묶음',
+    nextYears: '다음 연도 묶음',
+    chooseMonth: '월 선택',
+    chooseYear: '연도 선택',
+    today: '오늘',
+    thisMonth: '이번 달',
+    thisYear: '올해',
+    now: '지금',
+    clear: '지우기',
+    done: '완료',
+    hour: '시',
+    minute: '분',
+    second: '초',
+    meridiem: '오전/오후',
+    start: '시작',
+    end: '종료'
+  },
   gallery: {
     label: '갤러리',
     item: '전체 {total}장 중 {index}장',

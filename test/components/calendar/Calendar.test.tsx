@@ -5,6 +5,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Calendar } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+/* The library ships English; a `locale` prop answers for a language the project
+   has registered. These assertions are about the prop, so the language they
+   name is registered here the way a consumer would. */
+registerMessages('ko', ko);
 
 const LOCALE = 'en-US';
 const JULY = new Date(2026, 6, 1);
@@ -200,6 +206,32 @@ describe('Calendar', () => {
     await expect
       .element(screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }))
       .toHaveAttribute('aria-selected', 'true');
+  });
+
+  /*
+   * The twenty strings a picker says that are not dates. They used to be
+   * hardcoded English with a `labels` prop as the only way out, which made a
+   * Korean product write out all twenty to stop a calendar saying "Previous
+   * month" over dates `Intl` had already translated.
+   */
+  describe('locale', () => {
+    it('names its steppers and its footer in the language it was given', async () => {
+      const screen = await render(<Calendar locale="ko" defaultMonth={JULY} />);
+
+      await expect.element(screen.getByRole('button', { name: '이전 달' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '다음 달' })).toBeInTheDocument();
+    });
+
+    // `locale` answers the language and `labels` answers the wording, so a
+    // caller writing one string keeps the other nineteen translated.
+    it('takes a label of its own over the locale, and keeps the rest', async () => {
+      const screen = await render(
+        <Calendar locale="ko" defaultMonth={JULY} labels={{ previousMonth: 'Back' }} />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '다음 달' })).toBeInTheDocument();
+    });
   });
 
   it('keeps the class name it was handed and passes an unknown prop through', async () => {

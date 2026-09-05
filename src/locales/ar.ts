@@ -84,6 +84,28 @@ export const ar: NebaLocale = {
     pause: 'إيقاف عرض الشرائح مؤقتًا',
     play: 'تشغيل عرض الشرائح'
   },
+  picker: {
+    previousMonth: 'الشهر السابق',
+    nextMonth: 'الشهر التالي',
+    previousYear: 'السنة السابقة',
+    nextYear: 'السنة التالية',
+    previousYears: 'السنوات السابقة',
+    nextYears: 'السنوات التالية',
+    chooseMonth: 'اختر شهرًا',
+    chooseYear: 'اختر سنة',
+    today: 'اليوم',
+    thisMonth: 'هذا الشهر',
+    thisYear: 'هذه السنة',
+    now: 'الآن',
+    clear: 'مسح',
+    done: 'تم',
+    hour: 'الساعة',
+    minute: 'الدقيقة',
+    second: 'الثانية',
+    meridiem: 'ص/م',
+    start: 'البداية',
+    end: 'النهاية'
+  },
   gallery: {
     label: 'معرض صور',
     item: 'الصورة {index} من {total}',

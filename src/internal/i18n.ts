@@ -416,6 +416,80 @@ export const carouselMessages: MessageTable<CarouselMessages> = {
 };
 
 /**
+ * Every string a picker says that is not a date.
+ *
+ * One object rather than twenty props. These are a set: a caller who has to
+ * translate "Previous month" has to translate "Next month" in the same breath,
+ * and a component with twenty `*Label` props is a component whose signature is
+ * mostly apology. The same argument is why they are in here rather than
+ * defaulted in the pickers: a product in Korean should get all twenty from its
+ * `locale`, and the `labels` prop is then for the wording rather than for the
+ * language.
+ *
+ * The dates themselves are never in here — those come from `Intl`, which
+ * already knows what July is called in more languages than this file ever will.
+ */
+export interface PickerMessages {
+  /** The calendar's steppers, in day view. */
+  previousMonth: string;
+  nextMonth: string;
+  /** The same steppers in month view, where they move by a year. */
+  previousYear: string;
+  nextYear: string;
+  /** And in year view, where they move by a page of twelve. */
+  previousYears: string;
+  nextYears: string;
+  /** The two header buttons that open the month grid and the year grid. */
+  chooseMonth: string;
+  chooseYear: string;
+  /**
+   * The footer's actions. Three shortcuts rather than one because the button
+   * jumps to the current *unit*, and a month picker whose footer says "Today"
+   * is offering a day it has no way to accept.
+   */
+  today: string;
+  thisMonth: string;
+  thisYear: string;
+  now: string;
+  clear: string;
+  done: string;
+  /** The clock's columns. */
+  hour: string;
+  minute: string;
+  second: string;
+  meridiem: string;
+  /** Which end of a range the calendar is currently asking for. */
+  start: string;
+  end: string;
+}
+
+/** The `picker` namespace, as the four date and time pickers read it. */
+export const pickerMessages: MessageTable<PickerMessages> = {
+  '': {
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    previousYear: 'Previous year',
+    nextYear: 'Next year',
+    previousYears: 'Previous years',
+    nextYears: 'Next years',
+    chooseMonth: 'Choose a month',
+    chooseYear: 'Choose a year',
+    today: 'Today',
+    thisMonth: 'This month',
+    thisYear: 'This year',
+    now: 'Now',
+    clear: 'Clear',
+    done: 'Done',
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    meridiem: 'AM/PM',
+    start: 'Start',
+    end: 'End'
+  }
+};
+
+/**
  * The gallery, and the viewer a tile opens into.
  *
  * A Carousel's words are next to these and are deliberately not reused: a
@@ -922,6 +996,8 @@ export interface NebaLocale {
   pagination?: Partial<PaginationMessages>;
   /** Carousel. */
   carousel?: Partial<CarouselMessages>;
+  /** Picker. */
+  picker?: Partial<PickerMessages>;
   /** Gallery. */
   gallery?: Partial<GalleryMessages>;
   /** Image. */
@@ -968,6 +1044,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   number: numberMessages as MessageTable<never>,
   pagination: paginationMessages as MessageTable<never>,
   carousel: carouselMessages as MessageTable<never>,
+  picker: pickerMessages as MessageTable<never>,
   gallery: galleryMessages as MessageTable<never>,
   image: imageMessages as MessageTable<never>,
   chart: chartMessages as MessageTable<never>,

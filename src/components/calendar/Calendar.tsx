@@ -149,7 +149,7 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
-    const pickerLabels = usePickerLabels(labelOverrides);
+    const pickerLabels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState(

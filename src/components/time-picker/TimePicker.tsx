@@ -133,7 +133,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
       ...shell
     } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-    const labels = usePickerLabels(labelOverrides);
+    const labels = usePickerLabels(labelOverrides, locale);
     const hour12 = hour12Prop ?? isHour12(locale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
@@ -226,7 +226,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
         onClear={() => commit(null)}
         open={open}
         onOpenChange={setOpen}
-        labels={labels}
+        clearLabel={labels.clear}
         hiddenValues={
           name
             ? [{ name, value: isValidDate(value) ? toISOTime(value, showSeconds) : '' }]

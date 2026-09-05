@@ -37,7 +37,7 @@
       "id": "gallery",
       "label": "Gallery",
       "imports": ["Gallery"],
-      "budget": 10.2
+      "budget": 10.3
     },
     {
       "id": "app-12",
@@ -88,13 +88,13 @@
         "Chip",
         "Typography"
       ],
-      "budget": 115.6
+      "budget": 115.7
     },
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 29.1
+      "budget": 29.2
     },
     {
       "id": "app-12-ko",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 72.8
+      "budget": 73.2
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 264.1
+      "budget": 264.6
     }
   ]
 }

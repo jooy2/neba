@@ -131,7 +131,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       ...shell
     } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
-    const labels = usePickerLabels(labelOverrides);
+    const labels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
     const hour12 = hour12Prop ?? isHour12(locale);
 
@@ -238,7 +238,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
         onClear={() => commit(null)}
         open={open}
         onOpenChange={setOpen}
-        labels={labels}
+        clearLabel={labels.clear}
         hiddenValues={
           name
             ? [{ name, value: isValidDate(value) ? toISODateTime(value, showSeconds) : '' }]

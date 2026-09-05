@@ -84,6 +84,28 @@ export const nl: NebaLocale = {
     pause: 'Diavoorstelling pauzeren',
     play: 'Diavoorstelling afspelen'
   },
+  picker: {
+    previousMonth: 'Vorige maand',
+    nextMonth: 'Volgende maand',
+    previousYear: 'Vorig jaar',
+    nextYear: 'Volgend jaar',
+    previousYears: 'Vorige jaren',
+    nextYears: 'Volgende jaren',
+    chooseMonth: 'Kies een maand',
+    chooseYear: 'Kies een jaar',
+    today: 'Vandaag',
+    thisMonth: 'Deze maand',
+    thisYear: 'Dit jaar',
+    now: 'Nu',
+    clear: 'Wissen',
+    done: 'Klaar',
+    hour: 'Uur',
+    minute: 'Minuut',
+    second: 'Seconde',
+    meridiem: 'AM/PM',
+    start: 'Begin',
+    end: 'Einde'
+  },
   gallery: {
     label: 'Galerij',
     item: 'Afbeelding {index} van {total}',

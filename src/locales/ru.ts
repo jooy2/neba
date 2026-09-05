@@ -84,6 +84,28 @@ export const ru: NebaLocale = {
     pause: 'Приостановить слайд-шоу',
     play: 'Запустить слайд-шоу'
   },
+  picker: {
+    previousMonth: 'Предыдущий месяц',
+    nextMonth: 'Следующий месяц',
+    previousYear: 'Предыдущий год',
+    nextYear: 'Следующий год',
+    previousYears: 'Предыдущие годы',
+    nextYears: 'Следующие годы',
+    chooseMonth: 'Выбрать месяц',
+    chooseYear: 'Выбрать год',
+    today: 'Сегодня',
+    thisMonth: 'Этот месяц',
+    thisYear: 'Этот год',
+    now: 'Сейчас',
+    clear: 'Очистить',
+    done: 'Готово',
+    hour: 'Часы',
+    minute: 'Минуты',
+    second: 'Секунды',
+    meridiem: 'AM/PM',
+    start: 'Начало',
+    end: 'Конец'
+  },
   gallery: {
     label: 'Галерея',
     item: 'Изображение {index} из {total}',
