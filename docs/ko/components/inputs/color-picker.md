@@ -97,7 +97,7 @@ const [color, setColor] = useState('#1a58d1');
 <ColorPicker value={color} onValueChange={setColor} />;
 ```
 
-### 어떤 색 문자열을 읽는가
+### 읽고 쓰는 색 표기
 
 네 가지 길이의 hex(`#abc`, `#abcd`, `#aabbcc`, `#aabbccdd`), 그리고 `rgb()`/`rgba()`와 `hsl()`/`hsla()`를 쉼표 문법과 공백 문법 모두로 읽습니다. 이름 있는 색과 `color()`는 읽지 않습니다. picker는 읽을 수 있는 값을 모두 되돌려 쓸 수 있어야 하는데, 패널 위에 `rebeccapurple`을 뜻하는 지점은 없기 때문입니다. 읽지 못한 문자열은 패널을 그대로 둡니다.
 

@@ -23,7 +23,7 @@ import { Portal } from 'neba';
 
 `<div>`의 native 속성은 wrapper로 전달됩니다.
 
-### `createPortal`을 직접 쓰지 않는 이유
+### `createPortal`과의 차이
 
 두 가지를 더합니다. 첫 번째가 이 컴포넌트를 쓰는 이유입니다.
 

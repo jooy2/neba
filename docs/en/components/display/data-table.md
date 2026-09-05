@@ -141,7 +141,7 @@ Give a pinned column a `width`. The offsets the sticky cells sit at are the sum 
 
 `columnOrder` is a list of keys. **A key it does not mention keeps its place**, so an order that names two columns moves those two and leaves the rest alone — and a column added to `headers` later appears without the stored order having to be migrated.
 
-`reorderable` lets a header be dragged along the row. It is off by default: a header is a control, and a table whose columns move when a reader meant to sort is worse than one whose columns do not move at all. The drag arms at a threshold rather than at the press for the same reason. Pinned headers are not draggable, since where they sit is what pinning decided.
+`reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable, since where they sit is what pinning decided.
 
 ### Editing a cell
 

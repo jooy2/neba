@@ -5,7 +5,7 @@ order: 9
 
 # GaugeChart
 
-<p class="neba-lede">One number on a scale that is known in advance, drawn as a dial. For a dashboard tile, where a dial reads at a glance from across a room and a four-pixel bar does not.</p>
+<p class="neba-lede">One number on a scale that is known in advance, drawn as a dial. It reads from further away than a bar of the same value, which is what suits it to a dashboard tile.</p>
 
 <Demo src="gauge-chart/hero" />
 
@@ -29,7 +29,7 @@ It is not a [PieChart](./pie-chart) with `shape="semi"`. A pie is parts of a who
 
 ### value · min · max
 
-`value` of `null` draws the dial with nothing on it and a dash in the middle, which is the honest picture of an instrument that has not been told anything.
+`value` of `null` draws the dial with nothing on it and a dash in the middle.
 
 ### thresholds
 

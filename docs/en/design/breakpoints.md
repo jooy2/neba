@@ -37,7 +37,7 @@ Full width until 48rem, half from there on — including at `lg` and `xl`, which
 
 The other half of the rule is that a map **narrows** a prop rather than replacing it. A `spacing` of `{ md: 4 }` keeps the documented default of `2` below 48rem rather than falling through to nothing; naming one breakpoint never silently takes the value away everywhere else. The same holds when two props overlap: `columnSpacing` is laid over `spacing`, and wins from wherever it first speaks.
 
-## Which props are responsive, and why the rest are not
+## Which props are responsive
 
 > A prop is responsive when its value fits in an inline custom property. It is not when its value is a class name.
 

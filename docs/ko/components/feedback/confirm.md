@@ -34,7 +34,7 @@ if (await confirm({ title: '프로젝트를 삭제할까요?', color: 'danger' }
 
 `confirm('프로젝트를 삭제할까요?')`는 `confirm({ title: '프로젝트를 삭제할까요?' })`의 축약형입니다.
 
-## 왜 promise인가
+## 반환되는 promise
 
 "정말 하시겠습니까?"는 가장 흔한 dialog이고, 손으로 쓰면 질문마다 state 하나, dialog가 열릴 때 무엇을 지우려던 것이었는지 담을 `useState` 하나, 그리고 그것을 옮겨 주는 콜백 하나가 필요합니다. `onConfirm`은 하나의 결정을 두 함수로 쪼갭니다. `await`는 결정을 내린 자리에 그대로 둡니다.
 

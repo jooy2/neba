@@ -23,7 +23,7 @@ import { Portal } from 'neba';
 
 Native `<div>` attributes pass through to the wrapper.
 
-### Why not `createPortal`
+### Differences from `createPortal`
 
 Two things this adds, and the first is the reason to reach for it.
 

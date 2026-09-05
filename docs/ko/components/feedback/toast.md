@@ -86,7 +86,7 @@ ToastProvider는 자기 요소를 그리지 않습니다. app을 감싸고 porta
 
 slot은 `viewport`, `toast`, `title`, `description`, `action`, `close`입니다. `viewport`는 toast가 쌓이는 띠이고 `toast`는 그중 하나로, 스택의 모든 toast에 적용됩니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
-## Toast인가 Alert인가
+## Toast와 Alert 중 무엇을 쓸지
 
 [Alert](./alert)는 해당 페이지에 속하며 그 자리에 남습니다. Toast는 방금 일어난 일을 알리고 사라집니다. 1분 뒤에도 여전히 유효한 메시지라면 Alert를 쓰세요.
 

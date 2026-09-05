@@ -29,7 +29,7 @@ Four axes: `size`, `density`, `variant` and `locale`. Writing `size="sm"` at fou
 
 A call site still wins. The order is **the caller, then the provider, then the component's own default** — so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched.
 
-### Why only four
+### The four axes
 
 |  |  |
 | --- | --- |

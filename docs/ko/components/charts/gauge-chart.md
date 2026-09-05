@@ -5,7 +5,7 @@ order: 9
 
 # GaugeChart
 
-<p class="neba-lede">미리 정해진 범위 위의 값 하나를 계기판으로 그립니다. 대시보드 타일을 위한 것으로, 방 건너편에서도 한눈에 읽히는 계기판과 4픽셀짜리 막대는 다릅니다.</p>
+<p class="neba-lede">미리 정해진 범위 위의 값 하나를 계기판으로 그립니다. 같은 값을 그린 막대보다 멀리서도 읽히므로 대시보드 타일에 적합합니다.</p>
 
 <Demo src="gauge-chart/hero" />
 
@@ -29,7 +29,7 @@ import { GaugeChart } from 'neba';
 
 ### value · min · max
 
-`value`가 `null`이면 아무것도 얹히지 않은 계기판과 가운데의 대시를 그립니다. 아무 말도 듣지 못한 계기의 정직한 모습입니다.
+`value`가 `null`이면 아무것도 얹히지 않은 계기판과 가운데의 대시를 그립니다.
 
 ### thresholds
 

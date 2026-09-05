@@ -97,7 +97,7 @@ const [color, setColor] = useState('#1a58d1');
 <ColorPicker value={color} onValueChange={setColor} />;
 ```
 
-### Which colour strings are understood
+### The colour strings it reads
 
 Hex in all four lengths (`#abc`, `#abcd`, `#aabbcc`, `#aabbccdd`), `rgb()`/`rgba()` and `hsl()`/`hsla()`, in both the comma and the space syntax. Named colours and `color()` are not: a picker has to be able to write back every value it can read, and there is no point on the panel that means `rebeccapurple`. A string it cannot read leaves the panel where it was.
 

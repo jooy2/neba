@@ -29,7 +29,7 @@ import { NebaProvider } from 'neba';
 
 호출 지점이 여전히 이깁니다. 순서는 **호출자 → provider → 컴포넌트 자신의 기본값**이므로, `size="xs"` provider 안의 `<Button size="xl">`은 `xl`이고, `size` prop이 없는 컴포넌트는 손대지 않습니다.
 
-### 왜 네 개뿐인가
+### defaults가 받는 네 축
 
 |  |  |
 | --- | --- |

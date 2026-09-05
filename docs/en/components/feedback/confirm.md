@@ -34,7 +34,7 @@ if (await confirm({ title: 'Delete the project?', color: 'danger' })) {
 
 `confirm('Delete the project?')` is shorthand for `confirm({ title: 'Delete the project?' })`.
 
-## Why a promise
+## The promise it returns
 
 "Are you sure?" is the most common dialog there is, and writing it by hand means a piece of state per question, a `useState` for what was being deleted when the dialog opened, and a callback that has to carry it. `onConfirm` splits one decision across two functions; awaiting it keeps the decision where it was made.
 
