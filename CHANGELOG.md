@@ -4,13 +4,11 @@
 
 The release about the things that were already there and were not quite saying it.
 
-Six of the items below started as somebody looking at a screen and being unable to tell what it meant: a toggle whose on and off were the same colour, a scrolling tab bar with no sign that it scrolled, a spoiler that moved the page when it opened. None of them was a missing feature. Each was a component that had made a decision and then not carried it through.
+Most of it came out of asking one question of every component in turn: when a state turns over, does anything _happen_, or is the second state simply drawn? Twenty-odd answers were "simply drawn" — a toggle whose on and off were the same colour, a checkbox whose tick was there on one frame and gone on the next, a gauge that jumped to each new reading, a spoiler that moved the page when it opened. Three were fades that had been written down and never ran.
 
-Fifteen more came out of asking the same question of every component in turn — when a state turns over, does anything _happen_, or is the second state simply drawn? Fifteen answers were "simply drawn". Three of those were fades that had been written down and never ran, and one was a rule the code had stopped describing.
+Four components are new. `Stack` is a pile of things laid over each other and replaces `AvatarGroup`; `Gallery` is a set of pictures in one of four arrangements; `Show` and `Flex` are the two answers a breakpoint gives directly. There are seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
 
-Three are new components: a `Stack`, seventeen `Animate*` where there were eleven, and a `stagger` that turns any of the nine keyframe effects into a set of them.
-
-And the last group is the same complaint one level up. The library had a breakpoint system — five widths, a per-breakpoint map, a cascade that resolves it without React hearing about it — and it reached exactly two props on two components. There was no way to draw something at one width and not another, no way to say "a row here, a column there", no way to move the widths, and no page that wrote any of it down.
+The last group is the same complaint one level up. The library had a breakpoint system — five widths, a per-breakpoint map, a cascade that resolves it without React hearing about it — and it reached exactly two props on two components. There was no way to draw something at one width and not another, no way to say "a row here, a column there", no way to move the widths, and no page that wrote any of it down.
 
 ### Where the bytes went
 
@@ -28,295 +26,135 @@ And the last group is the same complaint one level up. The library had a breakpo
 | 25 components — a large one   | 112.6 kB | 113.5 kB |
 | all exports                   | 248.1 kB | 261.4 kB |
 
-`Image` is the row that moved on purpose, and it is a new row because nothing had ever measured it: a `Dialog` nobody had opened was 20 kB of it. `Chip` is the one worth explaining, because it is the only one that moved for a reason other than "there is more library now". `transition` gained a seventh effect — `reveal` — and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays for the row whether or not it names it. It is 0.1 kB, and it is on nine components.
+`Image` is the row that moved on purpose, and it is a new row because nothing had ever measured it: a `Dialog` nobody had opened was 20 kB of it. `Chip` is the one worth explaining, because it is the only one that moved for a reason other than "there is more library now" — `transition` gained a seventh effect, and the entrance vocabulary is two `Record`s that an object literal cannot tree-shake per key, so every component offering a `transition` pays 0.1 kB for the row whether or not it names it. `AnimateFloat` and `AnimateShake` bring their own keyframe class instead of a row in that table, which is why it is only 0.1 kB.
 
-The two effects that did **not** go in are the reason it is only 0.1 kB. `AnimateFloat` and `AnimateShake` bring their own keyframe class instead of a row in the shared table: neither is an entrance, and a drift with no arrival in it should not be paid for by every Chip on every page that draws one.
+`all exports` went up rather than down because `npm run size` learned to count honestly while this was being measured. It called every chunk but the entry deferred, which stopped being true the moment a module was imported both statically and dynamically. It walks the static import graph now, so a number in the table is what a page needs before it draws.
 
----
+### Breaking changes
 
-### A toggle that is on now looks like it
+- **`AvatarGroup` is removed.** `Stack` does everything it did and is not about avatars. What is lost is its context — `size`, `shape`, `variant`, `color` and `elevation` set once for the group. Set them on the avatars, or on a `NebaProvider` for the two it covers.
 
-`Toggle` and `ToggleGroup` had off at `accent 8%` and on at `accent 10%` — two names for one colour. The only thing carrying the state was the ink.
+### Added
 
-Off leaves the colour family entirely now: the neutral `--neba-panel` ladder, a neutral hairline, muted ink. On takes the dyed `--n-panel-press` that draws a `SegmentedButton`'s chosen segment, plus the accent hairline and the accent label. A control with one state may spend the family on its surface; a control with two cannot spend it on the state that is false.
+- **`Stack`** — a pile of things laid over each other. `direction` runs it along the inline axis, down the page, or diagonally as a fanned deck; `overlap` and `drop` say how far each item sits under the last; `max`, `total` and `overflow` turn the ones that did not fit into one more item at the back; `scaleStep` and `opacityStep` make the pile recede; `ring` draws the hairline that stops two overlapping shapes of similar tone reading as one smeared one.
 
-The `text` variant had a real bug underneath the same problem: its off-hover and its on were both `--n-soft`, so hovering a toggle that was off drew it exactly as one that was on.
+  The overlap is a **margin** rather than a `translate`, so the box is exactly as big as what is in it and the content after a Stack is laid out against the right width. Each item is drawn into a wrapper of its own rather than cloned onto, because a Tooltip around an avatar is under no obligation to accept a `className`.
 
-### Home, End, PageUp and PageDown scroll a DataTable and nothing else
+  ```tsx
+  <Stack ring max={3} total={12} overflow={(hidden) => <Avatar initials={`+${hidden}`} />}>
+    {team.map((name) => (
+      <Avatar key={name} name={name} />
+    ))}
+  </Stack>
+  ```
 
-They used to move the selection with them, which meant that ticking a row and then looking at the bottom of a thousand of them threw the tick away on the journey. They are about the scrollbar; the arrows are about the choice, and they still move and choose. A table with no `height` or `maxHeight` scrolls with the page, so the four are left to the browser rather than taken and turned into nothing.
+- **`Gallery`** — a set of pictures, and the arrangement is a prop rather than four components. `grid` is a contact sheet; `masonry` keeps each picture's own proportion and stacks the columns; `justified` keeps the proportions **and** fills every row to the edge, which is the only arrangement where nothing is cropped and nothing is left over; `quilted` is a grid whose tiles may take more than one cell.
 
-### A Spoiler is the same height covered and uncovered
+  **None of them measures anything.** A tile's shape is the item's own `ratio`, so the wall is right in the first frame the browser paints and does not move again as the files land, and `justified` is a wrapping flex row the browser does the arithmetic for. `masonry` is the one layout that needs a number in JavaScript, and it deals each item into the _shortest_ column rather than filling the first one top to bottom.
 
-`reversible` grew the box by a whole button row at the moment of the press — forty-eight pixels, twice for anyone who covered it again. The row is drawn from the start and only kept out of sight.
+  `columns` takes a breakpoint map and `gap` a step, a number or a length. `caption` puts an item's title and description below the picture, across the foot of it, or under the pointer; `hover` answers with depth, colour or the one scale the design language allows; `preview` opens the picture full size with the rest of the set on the arrow keys, in a chunk that is not fetched at all unless the prop is on. `filter`, `frame`, `watermark` and `protect` pass straight through to every tile's `Image`, and the last two follow the picture into the viewer. The `gallery` message namespace is new, in all eighteen languages.
 
-The cover moved with it. It was an `absolute inset-0` layer, which contributes no height, so a cover taller than what it covered — a one-line spoiler under a two-line notice — lost its own reveal button off the bottom edge. It is a grid item spanning every row now, and the box grows to hold it.
+- **`Show`** — its children at some widths and not at others. `above` is an inclusive floor and `below` an exclusive ceiling, so the same breakpoint in both covers every width exactly once, and the two together bound a range.
 
-Which left the same jump one step further along, because that grid item still _left_ on the press. A cover is a notice over a button, and it is routinely taller than the line it is covering — the docs' own one-sentence example was 92px covered and 73px uncovered — so the box shrank under the press that revealed it and every word on the page below moved. The cover keeps its row now and gives up only the paint and the tab stop, the same answer the way-back lane one row down was already giving.
+  ```tsx
+  <Show above="md">
+    <Sidebar />
+  </Show>
+  <Show below="md">
+    <SidebarTrigger />
+  </Show>
+  ```
 
-`maxHeight` is the deliberate exception and stays one: the clamp is there so a long passage is not a page of blur, and releasing it on the reveal is the whole point. A box that kept the clamp would be a box with a scrollbar in it, which is answering a different question.
+  The children are **always rendered** and what changes is `display`, which is what makes the answer right in the first frame, the same on a server, and free on a resize. What it deliberately cannot do is stop something running; `useBreakpoint` already could. The wrapper is `display: contents`, so a `Show` between a `GridContainer` and a `Grid` leaves the cell a cell.
 
-### A tab bar says when it has more bar
+- **`Flex`** — a row that becomes a column. "Side by side on a desktop, stacked on a phone" is half of what a responsive layout is, and the only way to say it was a `GridContainer` with a `Grid` around each child. `direction` takes `horizontal`/`vertical` rather than CSS's four values, so a Flex and a Stack say the same thing the same way, and it takes a breakpoint map — `direction={{ xs: 'vertical', md: 'horizontal' }}`. `spacing`, `rowSpacing` and `columnSpacing` are a `GridContainer`'s props on its scale, so a gutter is one number across the two. It draws nothing at all, and `wrap` is **off** by default.
 
-It already scrolled. What it had no way of saying was that it had: the scrollbar is an overlay on macOS and furniture on Windows, so it is hidden on both and the ends fade instead — through the same two masks `ScrollArea` already uses, which is why there is no new CSS.
+- **Six more `Animate*`** — `AnimateReveal`, an edge travelling across content that is already in place, as a `clip-path`, so nothing reflows and it is also a `transition` value; `AnimateFloat`, a slow drift with nowhere to get to; `AnimateShake`, the one effect that says _no_, which defaults to `trigger="manual"` and is the single documented exception to the rule that a control is never transformed; `AnimateSplit`, a line arriving a word or a letter at a time; `AnimateCounter`, a number counted up to its value and formatted with `Intl.NumberFormat` options on every frame; `AnimateScramble`, text resolving out of noise in a box that is the finished length from the first frame.
 
-`overflow="wrap"` is the other answer, for a bar whose tabs all have to be visible at once, and the rule under the chosen tab moves onto the line that tab is on rather than staying at the bottom of the list. `lines` caps a wrapping bar at that many tab-rows.
+  The three that animate text put the whole string in the document once for a screen reader and hide the performance from it, which is `AnimateTyping`'s arrangement, and all four now take their grapheme boundaries from `internal/text.ts`.
 
-### Stack, and the end of AvatarGroup
+- **`stagger`, `durationStep` and `reverse`** on the nine `Animate*` whose motion is one `@keyframes` on the element itself. At `0` — the default — the box animates and the children are left alone, which is what they always did. Above it the effect moves onto each child in turn and nothing is written on the box, because a box fading in over eight children fading in is the same content faded twice. `AnimateAppear` runs on the same helper now, which is what stops the library having two staggers.
 
-**Breaking: `AvatarGroup` is removed.** `Stack` does what it did and is not about avatars: `direction` runs a pile along the inline axis, down the page, or diagonally as a fanned deck; `overlap` and `drop` say how far each item sits under the last; `max`, `total` and `overflow` turn the ones that did not fit into one more item at the back; `scaleStep` and `opacityStep` make the pile recede; `ring` draws the hairline that stops two overlapping shapes of similar tone reading as one smeared one.
+- **`timeline="view"`** — any of the nine keyframe effects driven by how far the element has travelled through the viewport instead of by the clock. It is two declarations behind an `@supports`. It costs `duration`, `delay`, `repeat` and every `trigger`, and falls back to running once on mount where the browser has no `animation-timeline`.
 
-Two things about it are load-bearing. The overlap is a **margin** rather than a `translate`, so the box is exactly as big as what is in it and the content after a Stack is laid out against the right width. And each item is drawn into a wrapper of its own rather than cloned onto — cloning would need every child to accept a `className` and a `style`, which a Tooltip around an avatar is under no obligation to do.
+- **`useBreakpointValue` and `useCurrentBreakpoint`** — a breakpoint map read in JavaScript exactly as the cascade reads it, for a caller working out a number for themselves. `undefined` is a real answer: a map that has said nothing yet at this width is an opinion declined, which is what the CSS fallback says there too.
 
-What is lost with `AvatarGroup` is its context: `size`, `shape`, `variant`, `color` and `elevation` set once for the group. Set them on the avatars, or on a `NebaProvider` for the two it covers.
+- **Four things an `Image` could not do**, none of which costs anything until it is asked for. `filter` colours the picture — `grayscale`, `sepia`, `invert`, `saturate`, `mute`, `contrast`, or a CSS chain of your own — and rides the same transition as the picture's own fade. `frame` is how the picture is mounted, a silhouette on its own or the whole arrangement of `corner`, `border`, `mat`, `background`, `elevation` and `feather`; the line is an inset shadow on a layer over the picture rather than a `border`, which is what lets it follow a chamfered corner and keeps it out of the layout. `watermark` draws a mark in a corner or tiled across the whole picture, as one SVG background rather than a wall of elements. `protect` turns off the right-click menu, the drag, the iOS long press and the selection — a deterrent and not a lock, and the docs say so where the prop is described.
 
-```tsx
-<Stack ring max={3} total={12} overflow={(hidden) => <Avatar initials={`+${hidden}`} />}>
-  {team.map((name) => (
-    <Avatar key={name} name={name} />
-  ))}
-</Stack>
-```
+- **`overflow` and `lines` on `Tabs`** — `overflow="wrap"` is for a bar whose tabs all have to be visible at once, and the rule under the chosen tab moves onto the line that tab is on rather than staying at the bottom of the list. `lines` caps a wrapping bar at that many tab-rows.
 
-### One effect, spread across the children
+- **`maxWidth` takes a length and a breakpoint map** on `Container`, `Header` and `Footer`, which had a copy each of the measure ladder and could only ever be one of its five values at one width. Anything that is not a step of the ladder goes straight to `max-width`, so `'60ch'` and `'min(90vw, 72rem)'` need no escape hatch and a number is pixels. The ladder is named `NebaMeasure` rather than left as `NebaSize`, because it shares five names with `NebaBreakpoint` and only four of its five values.
 
-`stagger`, `durationStep` and `reverse` go on the nine `Animate*` whose motion is one `@keyframes` on the element itself. At `0` — the default — the box animates and the children are left alone, which is what they always did. Above it the effect moves onto each child in turn and nothing is written on the box, because a box fading in over eight children fading in is the same content faded twice.
+- **`Statistic`'s `value` takes a node**, which is where an `AnimateCounter` belongs.
 
-`AnimateAppear` was already doing this and now runs on the same helper, which is what stops the library having two staggers.
+### Changed
 
-### Six more Animate\*, and a timeline
+- **The library's media queries are `theme(--breakpoint-*)`**, so a Tailwind project moves Neba's widths by moving its own. `@media` cannot read a custom property, so a breakpoint stays a build-time decision and no provider prop could ever move one — but it can be a decision you take part in.
 
-- **`AnimateReveal`** — an edge travelling across content that is already in place at full size. A `clip-path`, so there is no wrapper and nothing reflows. Also a `transition` value.
-- **`AnimateFloat`** — a slow drift with nowhere to get to, for something that is not fixed to the page.
-- **`AnimateShake`** — the one effect that says _no_. It defaults to `trigger="manual"`, and it is the single documented exception to the rule that a control is never transformed: a shake is not a resting state, it is a reply.
-- **`AnimateSplit`** — a line arriving a word, or a letter, at a time. `AnimateAppear` walks down a list; this walks along a sentence.
-- **`AnimateCounter`** — a number counted up to its value, formatted with `Intl.NumberFormat` options on every frame. `Statistic`'s `value` takes a node now, which is where it belongs.
-- **`AnimateScramble`** — text resolving out of noise, in a box that is the finished length from the first frame. Whitespace is never scrambled.
+  ```css
+  @import 'tailwindcss';
+  @import 'neba/tailwind.css';
 
-The three that animate text put the whole string in the document once for a screen reader and hide the performance from it, which is `AnimateTyping`'s arrangement — and `internal/text.ts` is now where all four get their grapheme boundaries, because three segmenters is three chances to disagree about where a character ends.
+  @theme {
+    --breakpoint-md: 50rem;
+  }
+  ```
 
-`timeline="view"` is the cheapest thing here and reaches furthest: two declarations behind an `@supports`, and every one of the nine keyframe effects can be driven by how far the element has travelled through the viewport instead of by the clock. It costs `duration`, `delay`, `repeat` and every `trigger`, and falls back to running once on mount where the browser has no `animation-timeline`.
+  That moves the library's own rules, the `md:` variants its components spell out, and its JavaScript, which reads the resolved widths back off the document rather than holding a second copy. Before this, redeclaring `--breakpoint-md` moved your utilities and left Neba at 48rem in both places. A project on `neba/styles.css` gets the widths baked in, since that sheet is compiled here.
 
-### Show, and the width something is drawn at
+- **A `Toggle` that is on now looks like it.** Off was `accent 8%` and on was `accent 10%` — two names for one colour, with the ink carrying the whole state. Off leaves the colour family entirely now for the neutral `--neba-panel` ladder, and on takes the dyed `--n-panel-press` that draws a `SegmentedButton`'s chosen segment. A control with two states cannot spend the family on the one that is false.
 
-```tsx
-<Show above="md">
-  <Sidebar />
-</Show>
-<Show below="md">
-  <SidebarTrigger />
-</Show>
-```
+- **`Home`, `End`, `PageUp` and `PageDown` scroll a `DataTable` and nothing else.** They used to move the selection with them, so ticking a row and then looking at the bottom of a thousand threw the tick away on the journey. The arrows still move and choose. A table with no `height` or `maxHeight` leaves all four to the browser rather than taking them and turning them into nothing.
 
-`above` is an inclusive floor and `below` an exclusive ceiling, so the same breakpoint in both covers every width exactly once — no gap, no overlap, which is the shape the common case actually has. Given together they bound a range: `above="sm" below="lg"` is drawn from 40rem up to but not including 64rem.
+- **A `Spoiler` is the same height covered and uncovered.** `reversible` grew the box by a whole button row at the moment of the press, and the cover — an `absolute inset-0` layer contributing no height — lost its own reveal button off the bottom edge whenever it was taller than what it covered. The row is drawn from the start and kept out of sight, and the cover is a grid item spanning every row that keeps its row on the press, giving up only the paint and the tab stop. `maxHeight` stays the deliberate exception, since releasing the clamp is the whole point of it.
 
-The children are **always rendered**, and what changes is `display`. That is what makes the answer right in the first frame the browser paints, the same answer on a server, and free on a resize — a repaint rather than a React render. What it deliberately cannot do is stop something running, and `useBreakpoint` already could:
+- **A tab bar says when it has more bar.** It already scrolled; the scrollbar is an overlay on macOS and furniture on Windows, so it is hidden on both and the ends fade instead, through the same two masks `ScrollArea` already uses.
 
-```tsx
-{
-  useBreakpoint('md') ? <Map /> : <StaticImage />;
-}
-```
+- **A drawer comes in from its edge.** It faded, which moves nothing and throws away the only thing that distinguishes it from a `Dialog` — and a `Sidebar` below its breakpoint _is_ a drawer, so the same thing happened to every collapsed page shell. The panel travels on `translate` now and the scrim behind it still fades. It runs on `--neba-duration` rather than the window ladder's 240ms, because `--neba-duration-window` is not zeroed under `prefers-reduced-motion` and a drawer sliding across the screen is exactly what that setting is asking not to see.
 
-The wrapper is `display: contents`, so a `Show` between a `GridContainer` and a `Grid` leaves the cell a cell. Nothing given to it to style has anywhere to land; `render` names the element where a `<div>` is not allowed.
+- **A `GaugeChart` sweeps to its reading.** It drew the reading as a wedge, and a wedge is a closed shape, so moving the value rewrote its `d` — not a property CSS can travel along. It is a stroke along the middle of the groove now, whose drawn length is `stroke-dashoffset` with `pathLength="1"`. The shape on screen is identical; only `fill` moved to `stroke`.
 
-### Flex, a row that becomes a column
+- **An `Image` weighs 6.5 kB instead of 23.4.** A `Dialog` was most of what it cost, and `preview`, the only thing that opens one, is off by default. It is fetched on demand now, the way `CodeBlock` fetches a grammar.
 
-```tsx
-<Flex direction={{ xs: 'vertical', md: 'horizontal' }} spacing={3}>
-  <Card />
-  <Card />
-</Flex>
-```
+- **`npm test` runs the suite in sessions of at most fifty files**, each its own browser, through `scripts/run-tests.mjs` — `ceil(files / 50)`, so adding tests does not need the number touched. Nothing is skipped and nothing is retried: a failing test still fails its shard and still fails the run.
 
-The commonest responsive decision there is had no home. "Side by side on a desktop, stacked on a phone" is half of what a responsive layout is, and the only way to say it was a `GridContainer` with a `Grid` around each child — two components and a column count to describe a row of two things. `Stack` is not that component either: this library's Stack is a pile of things laid _over_ each other.
+- **`npm run build` empties `dist/` first.** It never did, and `tsc` only ever writes, so a component deleted from `src/` stayed in `dist/` and shipped. Removing `AvatarGroup` is what surfaced it.
 
-`direction` is `horizontal`/`vertical` rather than CSS's four values, so a Flex and a Stack say the same thing the same way, and `reverse` turns whichever axis was chosen around. `spacing`, `rowSpacing` and `columnSpacing` are a `GridContainer`'s props on its scale through its slot, so a gutter is one number across the two.
+- **`ScrollZone`'s `buttons="auto"` disables an inline button that has nowhere to go** rather than hiding it. The lane is held open either way, so an emptied one was not a lighter row — it was the same row reading as stray padding at the leading edge, which is the state every reader meets first.
 
-It draws nothing at all, not even a gutter unless asked, and `wrap` is **off** by default — the opposite of a grid on both counts. A grid is a page's own arrangement; a Flex goes inside everything, and a wrapper that changed how its children looked would make `direction` a visual decision.
+### Fixed
 
-### maxWidth takes a length, and changes at a breakpoint
+- **A `Select`'s and a `Combobox`'s popup arrived in one frame** while the calendar hanging off the `DatePicker` beside them took 160ms. The fade was fourteen identical copies of one declaration; it is `popupFadeClasses` in `internal/styles.ts` now, read by sixteen surfaces, and the two that were missing it got it by being written the same way as the rest. `NavigationMenu` keeps its own `transition`, because its panel also changes size and a second shorthand beside its own would win or lose by stylesheet order.
 
-```tsx
-<Container maxWidth={{ xs: 'none', md: 'md', lg: 'lg' }} />
-<Container maxWidth="60ch" />
-<Container maxWidth={640} />
-```
+- **Three fades were written down and never ran.** `transitionClasses` lists the four properties a control answers a pointer with, and `opacity` is not one of them. An `Image` carried a comment saying the picture is faded in over a transition that could not fade it; a chart's legend dimming switched rather than faded; and a chart's other series dropped to 0.28 the frame the pointer crossed a legend row. `LineChart`, `AreaChart`, `BarChart` and `ScatterChart` now read the same `seriesDimClasses` that only `PieChart` had.
 
-`Container`, `Header` and `Footer` had a copy each of the measure ladder and could only ever be one of its five values at one width. All three now read one table, take a per-breakpoint map, and pass anything that is not a step of the ladder straight to `max-width` — so `'60ch'` and `'min(90vw, 72rem)'` need no escape hatch, and a number is pixels.
+- **A `Checkbox`'s tick and a `Radio`'s dot appear over time.** The tick draws itself along its own length on `stroke-dashoffset`, over a path normalised with `pathLength="1"` so one number covers both the tick and the indeterminate dash; the dot grows out of the centre of its ring on `width` and `height`. Neither scales, and the [design language](https://neba.cdget.com/design/design-language) now names the four things allowed to travel inside a control — a Switch's thumb, a Checkbox's tick, a Radio's dot, a Rating's fill — and says the list is closed.
 
-The ladder is named `NebaMeasure` rather than left as `NebaSize`, because it shares five names with `NebaBreakpoint` and only four of its five values: `maxWidth="md"` holds content to the width at which a `md:` variant starts, and `xs` is the step that is not a breakpoint floor, since a measure of zero is not a thing.
+- **A chart's marks answer the pointer on one `transition` shorthand.** A whole series at 0.28 and a single datum at 0.92 are the same sentence at two scales, and the datum half snapped everywhere the series half now fades; the mark under the crosshair also grows by a pixel, which a `<circle>` reaches through `r` and a scatter's arbitrary `<path>` reaches through `scale`. The scatter mark grows about the point it is pinned to rather than the middle of its bounding box. All three ride `markTransitionClasses`, because two shorthands on one element are decided by stylesheet order rather than by intent.
 
-### The widths follow your own theme
+- **Four more places where something changed and nothing moved.** A `Rating`'s fill travels on `width` — the same width on the same element, so no glyph is scaled. A `Tab` panel's arriving content fades up, and only the arriving one, since fading a leaving panel would put both in the layout and make the sheet twice as tall on the way past. An `Avatar`'s picture fades up on its own clock instead of swapping in on one frame, which on a list of forty was forty separate flickers. A `FloatingActionButton`'s dial no longer arrives in a single frame.
 
-`@media` cannot read a custom property, so a breakpoint is a build-time decision and no provider prop could ever move one — it would move the JavaScript and leave the CSS where it was. What it can be is a decision you take part in.
+- **A `TreeView` branch opens at a height.** It was there on one frame and gone on the next, while `Accordion` and `Collapsible`, which do the same thing, both travel. It is a grid row going from `0fr` to `1fr`, so nothing is measured and a nested branch is carried by the same track. A branch on its way shut stays in the document but is marked `data-closing`, which keeps its rows out of the order the arrow keys walk and deregisters them on the same render that shut the branch.
 
-```css
-@import 'tailwindcss';
-@import 'neba/tailwind.css';
+- **`Transfer` says where the rows went.** A press on the arrow took three rows off one list and put them in the other in a single frame, so the only way to find them was to read the whole panel again. The rows that landed fade up — keyed on the press and not on the list changing, because `rows` also changes on every keystroke in the search box and a filter that animates is a filter that feels slow.
 
-@theme {
-  --breakpoint-md: 50rem;
-}
-```
+- **A `GaugeChart`'s reading and range labels stay inside the dial.** The reading was twice the tick type whatever it said, so `10,000%` was written straight across the band and out of the card; it is solved against a chord of the inner circle now and gives way to once the tick type before it is left to run. The two range labels were written from the arc's mid radius and lay over the band on a thick dial; they are set from the outer edge, in the arrangement the end calls for, and a dial closed past 330° writes none. The dial is also centred in the box rather than pinned under its top margin.
 
-The library's media queries are `theme(--breakpoint-*)` now, which resolves in whichever Tailwind build compiles the stylesheet. That moves the library's own rules, the `md:` variants its components spell out, and its JavaScript — which reads the resolved widths back off the document rather than holding a second copy. Before this, redeclaring `--breakpoint-md` moved your utilities and left Neba at 48rem in both places.
+- **A picture that had already decoded stayed invisible.** An `<img>` fires `load` at whoever is listening at the time, and a data URI decodes inside the same task the element was inserted in — so the event went out before React had attached anything to catch it and the picture sat at `opacity: 0` behind its own placeholder for good. It is asked after the fact now: `complete` says whether it finished and `naturalWidth` says which way.
 
-A project on `neba/styles.css` gets the widths baked in, since that sheet is compiled here. That is the one thing the Tailwind path buys that the standalone path does not.
+- **A `Drawer` in `inline` mode and a collapsed `Sidebar` dropped the props they were handed.** Only the `overlay` shape spread them, so an `id`, a `data-*` or an `aria-*` reached the panel in one mode and not the other — and on a `Sidebar` the mode is the window's choice rather than the caller's, so an attribute was there on the screen you developed against and gone on the screen you did not. A structural rule for this was tried and rejected: `resolution.test.ts` can ask whether one element both spreads and writes an attribute of its own, but "every tree this component can return forwards what it was handed" is a question about branches, and every regex shape of it produced false positives. It is three ordinary tests instead.
 
-### useBreakpointValue
+- **`GridContainer`'s axis gutters took their prop whole.** `spacing={2} columnSpacing={{ md: 6 }}` left the row with no column gutter at all below 48rem, because the map says nothing there and the baseline it fell back to was the prop's own default rather than the `spacing` beside it. The two are walked together now, and `Flex` uses the same fold.
 
-```tsx
-const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;
-```
+- **The suite finishes.** `run-test` had been red on `main` for weeks, always the same way: the chromium jobs failed on every runner while firefox and webkit passed on all three. It is not a test — every test that starts passes, and chromium loses the browser somewhere past the hundredth file of a hundred and forty-six, so the _file_ count comes up short beside a full _test_ count. Twelve full runs, none finished; the only lever that separated a run which finished from one which did not was how many files a single browser session was asked to hold. See the sharding above; eighteen sharded runs since, all green.
 
-`span` and `spacing` take that map and resolve it in the cascade; a caller working out a number for themselves had no way to say the same thing, and hand-rolling it from `useBreakpoint` gets the floor rule subtly wrong. It reads a map exactly as the cascade does, `useCurrentBreakpoint` names the step the window is in, and `undefined` is a real answer — a map that has said nothing yet at this width is an opinion declined, which is what the CSS fallback says there too.
+- **`npm run docs:build` needed more heap than Node gives by default.** A hundred and thirty-nine pages with two hundred React demos behind them is past 4.3 GB, and it failed as a V8 `Abort trap: 6` inside Rollup that named no page at all.
 
-There is now a [breakpoints](https://neba.cdget.com/design/breakpoints) page, which is where the rule that every entry is a floor, the table of which props are responsive, and the reason `size` and `variant` are not among them all live.
+### Documentation
 
-### A tick that is drawn, and a dot that grows
+- A new [breakpoints](https://neba.cdget.com/design/breakpoints) page, which is where the rule that every entry is a floor, the table of which props are responsive, and the reason `size` and `variant` are not among them all live.
 
-A Checkbox answered a click in colour over 340ms and the mark inside it did not answer at all — it was there on one frame and gone on the next, at exactly the moment a checkbox has to be legible. The tick draws itself along its own length now, on `stroke-dashoffset` over a path normalised with `pathLength="1"` so one number covers both the tick and the indeterminate dash. A Radio's dot grows out of the centre of its ring on `width` and `height`.
-
-Neither of them scales, and that is the point rather than an implementation note. The house rule against transforming a control is about a label being resampled under the cursor; the mark _inside_ a control carries no text, and it is the whole of what the state says. The [design language](https://neba.cdget.com/design/design-language) now names the four things allowed to travel — a Switch's thumb, a Checkbox's tick, a Radio's dot, a Rating's fill — and says that the list is closed.
-
-### The two popups nobody had given a fade
-
-A Select's list of options and a Combobox's arrived in one frame while the calendar hanging off the DatePicker beside them took 160ms. Menu's own source called its popup "the Select popup to the pixel", which was true of everything except this.
-
-The fade was fourteen identical copies of one declaration and two state classes. It is `popupFadeClasses` in `internal/styles.ts` now, and the two that were missing it got it by being written the same way as the rest — which is the whole argument for a shared table, stated by the bug it would have prevented. Sixteen surfaces read it: every popup, panel, sheet, backdrop and toast. NavigationMenu is the one exception and keeps its own `transition`, because its panel also changes size between two menus and a second shorthand beside its own would win or lose by stylesheet order.
-
-### Three fades that were written down and never ran
-
-`transitionClasses` is the house transition, and its property list is the four a control answers a pointer with: `background-color`, `border-color`, `box-shadow`, `color`. `opacity` is not one of them. Three places toggled an opacity next to it and expected a fade:
-
-**`Image`** carried a comment saying the picture is "faded in rather than swapped in" over a transition that could not fade it. It has its own now — and only its own, since an `<img>` has no background, border or shadow to transition either.
-
-**A chart's legend** dims every entry but the one being pointed at. That dimming switched.
-
-**A chart's other series** dropped to 0.28 the frame the pointer crossed a legend row, which reads as a redraw rather than as a highlight. Only `PieChart` had ever faded; `LineChart`, `AreaChart`, `BarChart` and `ScatterChart` now read the same `seriesDimClasses`.
-
-### A gauge sweeps to its reading
-
-`GaugeChart` drew its reading as a wedge filling part of the groove — and a wedge is a closed shape, so moving the value rewrites its `d`, which is not a property CSS can travel along. The dial jumped to each new number while the `Meter` it is a bent copy of swept to it, and so did all three progress indicators.
-
-It is a _stroke_ along the middle of the groove now, whose drawn length is `stroke-dashoffset` — the same technique `ProgressCircular` already used, bent to an arbitrary span. `pathLength="1"` makes the offset the fraction itself. The shape on screen is identical; only `fill` moved to `stroke`.
-
-### Gallery
-
-A set of pictures, arranged, and the arrangement is a prop rather than four components.
-
-`grid` is a contact sheet: every tile the same shape, whatever shape the files are. `masonry` keeps each picture's own proportion and stacks the columns. `justified` keeps the proportions **and** fills every row to the edge, scaling each row to a common height — the arrangement a photograph library uses, and the only one where nothing is cropped and nothing is left over. `quilted` is a grid whose tiles may take more than one cell.
-
-**None of them measures anything**, which is the part worth stating. A tile's shape is the item's own `ratio`, so the whole wall is right in the first frame the browser paints and does not move again as the files land — the bargain `Image`'s `ratio` already makes, one level up, and the reason a gallery of forty photographs does not reflow forty times. `justified` is a wrapping flex row where each tile grows in proportion to its own aspect ratio, so the browser does the row arithmetic and a resize re-runs it with React uninvolved; the last row is held to the height of the ones above it by a generated box with an absurd `flex-grow`, rather than being blown up to fill a width it has too few pictures for. `masonry` is the one layout that needs a number in JavaScript, and it deals each item into the _shortest_ column rather than filling the first one top to bottom — so the first row a reader meets is the first three pictures they were given, not the first three of column one.
-
-`columns` takes a breakpoint map and reads the same `--n-cols` cascade a `GridContainer` does, which is four media blocks the stylesheet already had. `gap` is a step, a number or a length. `caption` puts an item's `title` and `description` below the picture, across the foot of it, or under the pointer. `hover` answers with depth, colour or the one scale the design language allows.
-
-`preview` opens the picture full size with the rest of the set on the arrow keys, and the viewer is a chunk that is not fetched at all unless the prop is on. `filter`, `frame`, `watermark` and `protect` pass straight through to every tile's `Image`; the last two follow the picture into the viewer, because a mark that came off the moment somebody enlarged the picture would not be a mark.
-
-The `gallery` message namespace is new, in all eighteen languages.
-
-### An Image weighs 6.5 kB instead of 23.4
-
-A `Dialog` was most of what an `Image` cost — 20 kB of Base UI in the bundle of every page that drew a thumbnail — and `preview`, the only thing that opens one, is off by default. It is fetched on demand now, the way `CodeBlock` fetches a grammar: the chunk arrives once, after the first paint, on the pages that asked for it, and a page that never previews anything never sees it.
-
-`npm run size` learned to tell the difference while this was being measured. It called every chunk but the entry deferred, which was true while the only splits in the library were CodeBlock's grammars — and stopped being true the moment a module was imported both statically and dynamically, because rollup then splits it out and the entry still imports it at the top of the file. It walks the static import graph now, so a number in the table is what a page needs before it draws. That is why `all exports` went up rather than down: the same bytes, counted honestly, plus the boundaries the split itself costs.
-
-### A picture that had already decoded stayed invisible
-
-An `<img>` fires `load` at whoever is listening at the time, and a data URI decodes inside the same task the element was inserted in — so the event went out before React had attached anything to catch it, the phase never left `loading`, and the picture sat at `opacity: 0` behind its own placeholder for good. Every data-URI example in these docs was doing it. It is asked after the fact now: `complete` says whether it finished and `naturalWidth` says which way, so a cached file and a data URI both settle on mount.
-
-### Four things an Image could not do
-
-None of them costs anything until it is asked for, which is the point: they are one declaration, one element, one element and four attributes respectively.
-
-**`filter`** colours the picture — `grayscale`, `sepia`, `invert`, `saturate`, `mute`, `contrast`, or a CSS `filter` chain of your own. It rides the same transition as the picture's own fade, so a thumbnail that comes back to life under the pointer travels rather than snapping.
-
-**`frame`** is how the picture is mounted: a silhouette on its own (`circle`, `cut`, `arch`, `rounded`, `rect`) or the whole arrangement — `corner`, `border`, `borderColor`, `mat`, `background`, `elevation`, `feather`. The line is drawn as an inset shadow on a layer over the picture rather than as a `border`, which is what lets it follow a chamfered corner or a circle and what keeps it out of the layout.
-
-**`watermark`** draws a mark over the picture, placed in a corner or tiled across the whole of it. The tile is one SVG background rather than a wall of elements, and the layer is turned as a whole so the tiling has no seam.
-
-**`protect`** turns off the right-click menu, the drag, the iOS long press and the selection. A deterrent and not a lock — the file is still one request away — and the docs say so where the prop is described.
-
-### A gauge's reading stays inside the dial it is drawn in
-
-Three things about a `GaugeChart` were arithmetic that did not hold once the tile got narrow or the number got long.
-
-The reading was twice the tick type whatever it said, so `10,000%` was written straight across the band and out of the card. It is solved against the hole the arc leaves now — against a chord of the inner circle rather than the tile, because the hole in a half-dial is nothing like as wide as the dial — and it gives way from twice the tick type down to once before it is left to run. The number is also what is centred in the hole, rather than the number and its caption together: a caption underneath belongs to the number, and centring the pair pushed the number up into the narrow top.
-
-The two range labels were written from the arc's _mid_ radius, so a dial thick enough had them lying over its own band — a 270° one at every size, a half-dial past about 65px of radius. They are set from the outer edge now, and in the arrangement the end calls for: centred under an end that points sideways, carried outward from one that already points down. A dial closed past 330° writes no range at all, its two ends having become one point.
-
-And the dial is centred in the box rather than pinned under its top margin. A half-dial on a tile as tall as a line chart was a third of its own card, with the other two thirds empty underneath it.
-
-A `format` that spells a number out is cut to a share of the box before the dial is sized against it, the same answer an axis gives a category name too long for its slot.
-
-### A TreeView branch opens at a height
-
-A branch was there on one frame and gone on the next, which on a tree deep enough to need one is the whole page jumping — while `Accordion` and `Collapsible`, which do the same thing, both travel. It is a grid row going from `0fr` to `1fr`, so nothing has to be measured, a branch that gains a row while it is open grows with it, and a nested branch opening inside this one is carried by the same track.
-
-The load-bearing part is what happens to a branch on its way shut. It has to stay in the document or there is nothing left to collapse, and for those 160ms its rows are visible but no longer _there_: they are marked `data-closing`, which keeps them out of the order the arrow keys walk, and they stop registering with the tree on the same render that shut the branch — so the tree's answer to "is the row holding the tab stop still on screen" turns over immediately rather than a sixth of a second later.
-
-### A drawer comes in from its edge
-
-The one surface in the library that does not simply fade, and the exception is the whole of what a drawer is. Every other floating surface appears where it will stay — a menu at its trigger, a dialog in the middle of a page somebody is already reading — so moving it drags text the reader's eye is already on. A drawer has a _home_: `side` is a prop, the panel is pinned to that edge, and until it opens it is not on the screen at all.
-
-It faded. Fading a drawer moves nothing and throws away the only thing that distinguishes it from a Dialog, and a `Sidebar` below its breakpoint _is_ a drawer, so the same thing happened to every collapsed page shell. The panel travels on `translate` now and the scrim behind it still fades, which is the pairing every platform uses.
-
-`--neba-duration` rather than the window ladder's 240ms, and that is not a rounding decision: `--neba-duration-window` is not zeroed under `prefers-reduced-motion`, and a drawer sliding across the screen is exactly what somebody turning that on is asking not to see. The [design language](https://neba.cdget.com/design/design-language) now states the exception beside the rule it breaks.
-
-### A chart's marks answer the pointer on one declaration
-
-`opacity` had two states that are the same sentence at two scales — a whole series at 0.28 when the legend is pointed at another, a single datum at 0.92 until the crosshair reaches it — and the datum half snapped everywhere the series half now fades. `r` and `scale` are the third: the mark under the crosshair is a pixel bigger than its neighbours, which a line's `<circle>` marker reaches through its radius and a scatter's arbitrary `<path>` could not reach at all, its size living inside `d`.
-
-The scatter mark grows on the independent `scale` property about _the point it is pinned to_, not the middle of its own bounding box, so a triangle grows where it stands instead of drifting as it grows. Measured: the mark's centre is identical to the pixel before and after.
-
-All three ride one `transition` shorthand — `markTransitionClasses` — and that is load-bearing rather than tidy. Two shorthands on one element are decided by their order in the generated stylesheet rather than by intent, so a mark carrying a fade _and_ a grow written separately keeps whichever Tailwind happened to emit last, which looks like the browser's fault.
-
-### Transfer says where the rows went
-
-A press on the arrow took three rows off one list and put them in the other, and both lists redrew in a single frame — so the only way to find out where they went was to read the whole panel again. The rows that landed fade up.
-
-Keyed on the press and not on the list changing, which is the load-bearing half: `rows` also changes on every keystroke in the search box, and a filter that animates is a filter that feels slow. Typing still narrows the list in one frame.
-
-### A prop that survived a wide screen and vanished on a narrow one
-
-Not motion, but found under it. A `Drawer` is two shapes of one component — `overlay` when it is opened over the page, `inline` when it is part of the layout — and only the overlay one spread the props it was handed. So an `id`, a `data-*` or an `aria-*` a caller wrote reached the panel in one mode and was dropped on the floor in the other.
-
-`Sidebar` had the same gap one level up, and there it is worse: the mode is not the caller's choice, it is the window's. A sidebar below `collapseBelow` _is_ a drawer, so every attribute a caller put on it was there on the screen they developed against and gone on the screen they did not.
-
-A structural rule for this was tried and rejected. `resolution.test.ts` can ask reliably whether _one element_ both spreads and writes an attribute of its own; "every tree this component can return forwards what it was handed" is a question about branches, and every regex shape of it produced false positives on the ten components that legitimately forward onto an inner element rather than the root. It is three ordinary tests instead — both drawer modes, and a sidebar walked across its breakpoint with an `id` on it.
-
-### The suite finishes now
-
-`run-test` had been red on `main` for weeks — two green runs in the last twenty — and always the same way: the chromium jobs failed on every runner while firefox and webkit passed on all three. Locally it took two or three attempts to get a clean run.
-
-It is not a test. Every test that starts passes; chromium loses the browser somewhere past the hundredth file of a hundred and forty-six and everything still queued behind it never runs, which is why the _file_ count comes up short beside a full _test_ count. Vitest has the report open against browser mode.
-
-What was measured: twelve full runs, none finished, dying between the 99th file and the 125th, on a dozen different files. Nine runs of a third of the suite each, all green. Not memory, not a dependency re-optimizing mid-run, and the page is still alive enough to log its own lost connection. `browser.isolate: false` hangs outright; `server.hmr: false` went one green in five, which is inside the noise.
-
-The one lever that separated a run which finished from one which did not was how many files a single browser session was asked to hold. `npm test` is `scripts/run-tests.mjs` now, and it runs the suite in sessions of at most fifty files, each its own browser — `ceil(files / 50)`, so adding tests does not need the number touched. Eighteen sharded runs since, all green.
-
-Nothing is skipped and nothing is retried. A failing test still fails its shard and still fails the run, which is the whole difference between this and the `retry` the flake keeps inviting — checked by breaking a test on purpose and watching the runner name the shard and exit 1.
-
-### And four more places where something changed and nothing moved
-
-A **`Rating`**'s fill jumped from one star to the next. It travels on `width` — the same width on the same element, so no glyph is scaled to say it.
-
-A **`Tab`** panel's content changed in a single frame under an indicator that was already travelling, which made a two-tab switch read as a page load. The arriving panel fades up, and only the arriving one: a leaving panel is still in the flow, and fading it out would put both in the layout for the length of it and make the sheet twice as tall on the way past.
-
-An **`Avatar`**'s picture mounts only once the file has decoded, so the swap from initials to a face happened in one frame — on a list of forty avatars, forty separate flickers as the network answers. It fades up, on its own clock rather than through the `--n-anim-*` slots, which belong to the entrance the caller asked for.
-
-A **`FloatingActionButton`**'s dial arrived in one frame, which on a corner of the screen reads as something having gone wrong rather than as something having opened.
-
-### And four things found on the way
-
-`npm run build` empties `dist/` first. It never did, and `tsc` only ever writes — so a component deleted from `src/` stayed in `dist/` and shipped. Removing `AvatarGroup` is what surfaced it.
-
-`ScrollZone`'s `buttons="auto"` disables an inline button that has nowhere to go rather than hiding it. The lane is held open either way, so an emptied one was not a lighter row — it was the same row reading as stray padding at the leading edge, which is the state every reader meets first.
-
-**`GridContainer`'s axis gutters took their prop whole.** `spacing={2} columnSpacing={{ md: 6 }}` left the row with no column gutter at all below 48rem: the map says nothing there, and the baseline it fell back to was the prop's own default rather than the `spacing` beside it. The two are walked together now — the override wins from wherever it first speaks and keeps winning above, being the more specific of the pair — and `Flex` uses the same fold.
-
-**`npm run docs:build` needed more heap than Node gives by default.** A hundred and thirty-nine pages with two hundred React demos behind them is past 4.3 GB, and it failed as a V8 `Abort trap: 6` inside Rollup that named no page at all.
+- The [design language](https://neba.cdget.com/design/design-language) names its two exceptions rather than leaving them to be found: the closed list of four indicators allowed to travel inside a control, and the drawer that arrives on `translate` where every other floating surface only fades.
 
 ## 1.11.0 (2026-08-31)
 
