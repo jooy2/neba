@@ -58,7 +58,7 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이기도 합니다
 
 `true`는 버튼 셋 전부, `false`는 없음이며, 배열은 그 안에 이름을 적은 것만입니다. 순서는 배열이 아니라 시스템이 정하므로 `['close', 'minimize']`라 적어도 Windows에서는 닫기가 마지막에 옵니다.
 
-셋 다 제어/비제어 짝을 가집니다. `open`, `minimized`, `maximized`에 각각 `default*`와 `on*Change`가 있습니다. 비제어 창을 닫으면 아무것도 렌더링하지 않습니다. 최소화는 제목표시줄만 남기고 말아 올립니다 — 페이지에는 창을 보낼 독이 없기 때문입니다. 최대화는 창을 담고 있는 것을 채우며, 그것은 `position="absolute"`에서는 가장 가까운 positioned 조상이고 `fixed`에서는 뷰포트입니다. 제목표시줄을 더블클릭해도 최대화됩니다.
+셋 다 제어/비제어 짝을 가집니다. `open`, `minimized`, `maximized`에 각각 `default*`와 `on*Change`가 있습니다. 비제어 창을 닫으면 아무것도 렌더링하지 않습니다. 최소화는 제목표시줄만 남기고 말아 올립니다. 웹 페이지에는 창을 내려놓을 작업 표시줄이 없기 때문입니다. 최대화는 창을 담고 있는 것을 채우며, 그것은 `position="absolute"`에서는 가장 가까운 positioned 조상이고 `fixed`에서는 뷰포트입니다. 제목표시줄을 더블클릭해도 최대화됩니다.
 
 <Demo src="window-pane/controls" minHeight="400">
 

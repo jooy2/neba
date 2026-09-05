@@ -96,9 +96,9 @@ mount 이후의 것 — 다시 재생, 스크롤 trigger, hover, 직접 제어 �
 | `timeline`     | `'time'`(기본) 또는 `'view'`. view는 시계 대신 스크롤이 재생합니다  |
 | `range`        | `'view'` 타임라인이 매핑될 `animation-range`                        |
 
-`timeline="view"`는 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`를 대가로 가져갑니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
+`timeline="view"`를 쓰면 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`가 무시됩니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
 
-라이브러리의 모든 효과는 축소된 모션 설정에서 통째로 꺼지며, 어느 것도 메시지를 혼자 지고 있지 않습니다.
+라이브러리의 모든 효과는 축소된 모션 설정에서 통째로 꺼집니다. 어느 효과도 그것만으로 정보를 전달하지 않기 때문입니다.
 
 ## 상태 prop
 

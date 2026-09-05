@@ -43,11 +43,11 @@ features:
 <div class="neba-why">
   <div class="neba-why-card">
     <h3>검증된 안정성</h3>
-    <p>모든 컴포넌트가 자기 테스트를 함께 가지고 갑니다. 실제 브라우저에서, 세 가지 OS와 세 가지 엔진 조합으로 변경마다 확인합니다.</p>
+    <p>모든 컴포넌트에 테스트가 함께 들어 있습니다. 실제 브라우저에서, 세 가지 OS와 세 가지 엔진 조합으로 변경마다 확인합니다.</p>
   </div>
   <div class="neba-why-card">
     <h3>접근성이 기본값</h3>
-    <p>role과 label, 키보드 조작, focus 관리가 컴포넌트 안에 들어 있습니다. 나중에 얹는 작업이 아닙니다.</p>
+    <p>role과 label, 키보드 조작, focus 관리가 컴포넌트 안에 들어 있습니다. 기능을 만든 뒤에 따로 덧붙일 필요가 없습니다.</p>
   </div>
   <div class="neba-why-card">
     <h3>SEO에 유리한 마크업</h3>

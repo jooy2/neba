@@ -47,7 +47,7 @@ import { NebaProvider } from 'neba';
 
 provider가 `<html>`에 `data-theme`과 `color-scheme`을 쓰고, `localStorage`에 선택을 기억하고, 상태를 `useColorScheme()`으로 넘깁니다.
 
-`color-scheme`은 속성만큼 중요합니다. 브라우저 자신의 가구 — 스크롤바, 브라우저가 아직 직접 그리는 폼 컨트롤, 오버스크롤 뒤의 캔버스 — 를 함께 넘기는 것이 이것입니다. 자기 색만 바꾸는 페이지는 어두운 화면 옆에 흰 스크롤바를 그대로 답니다.
+`color-scheme`은 속성만큼 중요합니다. 브라우저가 직접 그리는 요소, 즉 스크롤바와 아직 브라우저가 그리는 폼 컨트롤, 오버스크롤 뒤의 캔버스까지 함께 넘기는 것이 `color-scheme`입니다. 자기 색만 바꾸는 페이지는 어두운 화면 옆에 흰 스크롤바를 그대로 답니다.
 
 <Demo src="provider/color-scheme">
 

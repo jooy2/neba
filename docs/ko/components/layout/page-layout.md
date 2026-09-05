@@ -5,7 +5,7 @@ order: 1
 
 # PageLayout
 
-<p class="neba-lede">페이지를 걸어 두는 뼈대입니다. header와 footer, 사이드바 하나 또는 둘, 그리고 그 사이의 내용을 배치하며 자기 표면은 그리지 않습니다.</p>
+<p class="neba-lede">페이지의 뼈대를 잡는 컴포넌트입니다. header와 footer, 사이드바 하나 또는 둘, 그리고 그 사이의 내용을 배치하며 자기 표면은 그리지 않습니다.</p>
 
 <Demo src="page-layout/hero" minHeight="420" />
 

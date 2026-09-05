@@ -95,4 +95,4 @@ Avatar에는 상태 점이 없습니다. `overlap="circle"`을 준 [Badge](./bad
 
 - `JD`는 소리 내어 읽으면 사람이 아니라 글자 두 개입니다. `name`을 주면 이니셜은 accessibility tree에서 빠지고 그 이름이 fallback의 accessible name이 됩니다.
 - `name`도 `alt`도 없으면 `<img>`의 `alt`는 빈 문자열이 되어 파일 이름이 읽히는 대신 건너뛰어집니다. 사람 이름 옆에 놓인 아바타에는 이쪽이 맞습니다. 그림이 그 사람을 가리키는 유일한 단서일 때만 `alt`를 넘기세요.
-- `name` 없이 `children` 글리프만 있으면 아무 말도 하지 않습니다. 글리프가 혼자 뜻을 지고 있다면 `name`을 주거나 감싼 요소에 `aria-label`을 붙이세요.
+- `name` 없이 `children` 글리프만 있으면 accessible name이 생기지 않습니다. 글리프만으로 뜻이 전달되어야 한다면 `name`을 주거나 감싼 요소에 `aria-label`을 붙이세요.

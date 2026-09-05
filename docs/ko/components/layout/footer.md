@@ -5,7 +5,7 @@ order: 3
 
 # Footer
 
-<p class="neba-lede">페이지 끝의 시트입니다. 실제 <code>&lt;footer&gt;</code> — contentinfo 랜드마크 — 를 렌더링하며 표면과 거터, 그리고 바가 손에 닿아 있을지를 정합니다. 안에 들어가는 내용은 전부 직접 넣는 것입니다.</p>
+<p class="neba-lede">페이지 끝의 시트입니다. contentinfo 랜드마크인 실제 <code>&lt;footer&gt;</code>를 렌더링하며, 표면과 거터, 그리고 바를 화면 아래에 고정할지를 정합니다. 안에 들어가는 내용은 직접 넣습니다.</p>
 
 <Demo src="footer/hero" minHeight="180" />
 

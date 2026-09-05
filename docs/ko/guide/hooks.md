@@ -35,7 +35,7 @@ const desktop = useBreakpoint('lg');
 
 `useBreakpoint('lg')`는 class name의 `lg:`를 JavaScript에서 묻는 것입니다. 너비 표가 하나이므로 여기서 갈라지는 컴포넌트와 CSS에서 갈라지는 utility가 같은 픽셀에서 바뀝니다. `xs`는 `0rem`이라 항상 참입니다.
 
-query 문자열 하나당 살아 있는 `MediaQueryList`가 페이지 전체에 하나뿐입니다. 몇 개의 컴포넌트가 묻든 그렇습니다. 두 hook 모두 서버에서는 `false`를 답합니다. 창이 없으니 정직한 답이 없기 때문입니다. **깜빡이면 안 되는 레이아웃은 CSS에 적으세요.** 이 hook들은 CSS가 내릴 수 없는 결정 — 애초에 어떤 컴포넌트를 렌더할지 — 을 위한 것입니다. 같은 질문의 CSS 쪽 절반은 [Show](../components/layout/show)입니다.
+query 문자열 하나당 살아 있는 `MediaQueryList`가 페이지 전체에 하나뿐입니다. 몇 개의 컴포넌트가 묻든 그렇습니다. 두 hook 모두 서버에서는 `false`를 답합니다. 서버에는 창이 없어 답할 근거가 없기 때문입니다. **깜빡이면 안 되는 레이아웃은 CSS에 적으세요.** 이 hook들은 CSS가 내릴 수 없는 결정 — 애초에 어떤 컴포넌트를 렌더할지 — 을 위한 것입니다. 같은 질문의 CSS 쪽 절반은 [Show](../components/layout/show)입니다.
 
 ## useCurrentBreakpoint · useBreakpointValue
 
@@ -91,7 +91,7 @@ window에 거는 키 조합이고, 표기는 [Shortcut](../components/display/sh
 | `ignoreWhileTyping` | `true` | focus가 input · textarea · `contenteditable`에 있으면 건너뜀 |
 | `preventDefault`    | `true` | 일치하면 `preventDefault` 호출                               |
 
-`ignoreWhileTyping` 덕분에 맨 `/`나 `?`를 바인딩할 수 있습니다 — 검색창 안에서 발동하는 한 글자 shortcut은 누군가 쓰던 것을 먹습니다. modifier가 붙은 조합은 보통 어디서나 동작해야 하므로 이 옵션을 끄세요.
+`ignoreWhileTyping` 덕분에 맨 `/`나 `?`를 바인딩할 수 있습니다. 검색창 안에서 발동하는 한 글자 shortcut은 입력 중인 글자를 가로채기 때문입니다. modifier가 붙은 조합은 보통 어디서나 동작해야 하므로 이 옵션을 끄세요.
 
 핸들러는 ref에 담기므로 listener는 조합당 한 번만 바인딩되고, 새 state를 담은 렌더마다 다시 걸리지 않습니다. 그러면서도 항상 최신 핸들러를 봅니다.
 
