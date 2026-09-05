@@ -170,7 +170,7 @@ describe('Calendar', () => {
 
     await expect
       .element(screen.getByRole('gridcell', { name: 'Saturday, July 4, 2026' }))
-      .toHaveTextContent('●');
+      .toMatchTextContent('●');
   });
 
   it('marks days outside the bounds unavailable', async () => {

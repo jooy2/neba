@@ -20,7 +20,7 @@ describe('CodeBlock', () => {
 
       await expect
         .element(screen.getByTestId('block'))
-        .toHaveTextContent('const answer = 42;console.log(answer);');
+        .toMatchTextContent('const answer = 42;console.log(answer);');
     });
 
     it('draws one line per line of source', async () => {
@@ -97,7 +97,7 @@ describe('CodeBlock', () => {
         <CodeBlock code={SOURCE} language="ts" highlight={false} data-testid="block" />
       );
 
-      await expect.element(screen.getByTestId('block')).toHaveTextContent('const answer');
+      await expect.element(screen.getByTestId('block')).toMatchTextContent('const answer');
       expect(screen.getByTestId('block').element().querySelector('.hljs-keyword')).toBeNull();
     });
 
@@ -108,7 +108,7 @@ describe('CodeBlock', () => {
         <CodeBlock code={SOURCE} language="klingon" data-testid="block" />
       );
 
-      await expect.element(screen.getByTestId('block')).toHaveTextContent('const answer = 42;');
+      await expect.element(screen.getByTestId('block')).toMatchTextContent('const answer = 42;');
     });
 
     // A block comment, a template literal and a heredoc all cross lines, so the

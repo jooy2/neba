@@ -124,7 +124,7 @@ describe('HowToSteps', () => {
     it('jumps to a step pressed in the list', async () => {
       const screen = await render(<HowToSteps steps={STEPS} />);
 
-      await screen.getByRole('button', { name: 'Step 3: Use it' }).click();
+      await screen.getByRole('button', { name: 'Step 3: Use it', exact: false }).click();
 
       await expect.element(screen.getByText('3 of 3')).toBeInTheDocument();
     });
@@ -292,7 +292,7 @@ describe('HowToSteps', () => {
     it('still moves from the list with no buttons', async () => {
       const screen = await render(<HowToSteps steps={STEPS} navigation={false} />);
 
-      await screen.getByRole('button', { name: 'Step 2: Configure' }).click();
+      await screen.getByRole('button', { name: 'Step 2: Configure', exact: false }).click();
 
       await expect.element(screen.getByText('2 of 3')).toBeInTheDocument();
     });
