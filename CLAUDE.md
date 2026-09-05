@@ -213,12 +213,12 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `Divider`                     | 3.2 kB   | 1.5 kB                      |
 | `Button`                      | 5.1 kB   | 2.3 kB                      |
 | `Chip`                        | 3.3 kB   | 3.3 kB                      |
-| `LineChart`                   | 11.5 kB  | 10.0 kB                     |
+| `LineChart`                   | 11.6 kB  | 10.0 kB                     |
 | `CodeBlock`                   | 5.0 kB   | 5.0 kB                      |
 | `Image`                       | 6.5 kB   | 4.9 kB                      |
 | `Gallery`                     | 10.1 kB  | 8.6 kB                      |
-| 12 components — a typical app | 68.9 kB  | 11.8 kB                     |
-| 25 components — a large one   | 113.3 kB | 17.9 kB                     |
+| 12 components — a typical app | 69.1 kB  | 11.8 kB                     |
+| 25 components — a large one   | 113.5 kB | 17.9 kB                     |
 | a whole page shell            | 28.7 kB  | 9.1 kB                      |
 | all 175 exports               | 261.4 kB | 135.7 kB                    |
 
@@ -226,7 +226,7 @@ The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarT
 
 The Image and Gallery rows are the same arrangement one step smaller. `Image` used to be 23.4 kB: `preview` opens a Dialog and is off by default, so a static import put 20 kB of Base UI into the bundle of every page that drew a thumbnail. Both reach it through `React.lazy` now — Gallery through a whole viewer of its own — so the chunk is fetched after the first paint by the pages that turn the prop on. Every number in this table is what a page needs **before it draws**: the entry plus every chunk statically reachable from it, which is what `measure-bundle.mjs` walks the import graph to work out. A chunk that is both statically and dynamically imported is not free.
 
-The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 4.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 4.5 kB becomes 68.
+The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 5.0 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 5.0 kB becomes 68.5.
 
 Registering one language adds about 1.9 kB on top. Plus `neba/styles.css`, which is 21.9 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
