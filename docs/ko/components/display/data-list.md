@@ -5,7 +5,7 @@ order: 20
 
 # DataList
 
-<p class="neba-lede">어떤 것들과 그것들의 이름을 나열합니다 — 상세 패널, 레코드 요약, 제목 아래의 메타데이터. 진짜 <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> 쌍이라 각 행이 "라벨, 값"으로 읽힙니다.</p>
+<p class="neba-lede">항목과 그 항목의 이름을 나열합니다 — 상세 패널, 레코드 요약, 제목 아래의 메타데이터. 진짜 <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> 쌍이라 각 행이 "라벨, 값"으로 읽힙니다.</p>
 
 <Demo src="data-list/hero" />
 

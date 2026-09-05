@@ -35,7 +35,7 @@ A responsive prop takes a bare value or a partial map, and **each entry applies 
 
 Full width until 48rem, half from there on — including at `lg` and `xl`, which the map never mentions. There is no value that means "only at this width", which is what makes two entries enough to describe most layouts.
 
-The other half of the rule is that a map **narrows** a prop rather than replacing it. a `spacing` of `{ md: 4 }` keeps the documented default of `2` below 48rem rather than falling through to nothing; naming one breakpoint never silently takes the value away everywhere else. The same holds when two props overlap: `columnSpacing` is laid over `spacing`, and wins from wherever it first speaks.
+The other half of the rule is that a map **narrows** a prop rather than replacing it. A `spacing` of `{ md: 4 }` keeps the documented default of `2` below 48rem rather than falling through to nothing; naming one breakpoint never silently takes the value away everywhere else. The same holds when two props overlap: `columnSpacing` is laid over `spacing`, and wins from wherever it first speaks.
 
 ## Which props are responsive, and why the rest are not
 

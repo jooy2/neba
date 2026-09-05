@@ -419,7 +419,7 @@ function pickerProps(options: PickerOptions): PropRow[] {
       name: 'labels',
       type: 'Partial<PickerLabels>',
       description: {
-        ko: '스크린 리더가 듣는 문자열들. 스무 개가 한 벌이라 프롭 하나로 받습니다 — 기본값은 locale의 표현이고, 날짜 이름은 여기 없이 Intl이 만듭니다',
+        ko: '스크린 리더가 읽는 문자열. 스무 개가 한 벌이라 prop 하나로 받습니다. 기본값은 locale의 표현이고, 날짜 이름은 Intl이 만듭니다',
         en: 'The strings a screen reader hears. One object rather than twenty props, because they are a set — they default to the locale’s wording, and the date names are not among them, those come from Intl'
       }
     },
@@ -5072,7 +5072,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'labels',
       type: 'Partial<PickerLabels>',
       description: {
-        ko: '스크린 리더가 듣는 문자열들. 기본값은 locale의 표현입니다',
+        ko: '스크린 리더가 읽는 문자열. 기본값은 locale의 표현입니다',
         en: 'The strings a screen reader hears. Every one defaults to the locale’s wording'
       }
     }
@@ -10811,7 +10811,7 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '스크린 리더가 듣는 말. 비워 두면 aria-hidden입니다 — 상자 열둘이 저마다 자기를 알리는 것보다 침묵이 낫기 때문입니다. 한 영역을 대표하는 하나에만 붙이면 그것이 status가 됩니다',
+        ko: '스크린 리더가 읽는 문장. 비워 두면 aria-hidden입니다. 한 영역을 대표하는 하나에만 붙이면 그것이 status가 됩니다',
         en: 'What a screen reader is told. Unset it is aria-hidden, because a dozen boxes each announcing themselves is worse than silence. Give it to the one that stands for a whole region and it becomes a status'
       }
     },
@@ -13739,7 +13739,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'CodeBlockTheme | (string & {})',
       default: "'dark'",
       description: {
-        ko: "블록이 입는 팔레트. 집안 것 넷 — dark, light, auto, mono — 과 공개된 값을 그대로 옮겨 온 여덟 — one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. 아무 문자열이나 받으므로, [data-code-theme='ours']에 --n-code-* 를 써 두면 그것이 곧 테마입니다",
+        ko: "블록의 팔레트. 라이브러리가 직접 만든 넷(dark, light, auto, mono)과 공개된 값을 그대로 옮겨 온 여덟(one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light)입니다. auto를 뺀 나머지는 페이지의 light·dark와 무관합니다. 아무 문자열이나 받으므로, [data-code-theme='ours']에 --n-code-* 를 써 두면 그것이 곧 테마가 됩니다",
         en: "The palette it wears. Four of the library's own — dark, light, auto, mono — and eight ports kept at their published values: one-dark, dracula, monokai, nord, night-owl, gruvbox, github, solarized-light. Independent of the page's light and dark except on auto. Any string works, so writing --n-code-* under [data-code-theme='ours'] in your own CSS is a theme"
       }
     },

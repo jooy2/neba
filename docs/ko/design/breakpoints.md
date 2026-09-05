@@ -56,7 +56,7 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 
 둘 다 있고, 서로 바꿔 쓸 수 있는 것이 아닙니다.
 
-**[Show](../components/layout/show)** 는 CSS에서 정합니다. children은 언제나 렌더되고 바뀌는 것은 `display`이므로, 브라우저가 그리는 첫 프레임부터 답이 맞고, 서버에서도 같은 답이 나오며, 크기가 바뀌면 React를 다시 렌더하는 대신 다시 그리기만 합니다.
+**[Show](../components/layout/show)**는 CSS에서 정합니다. children은 언제나 렌더되고 바뀌는 것은 `display`이므로, 브라우저가 그리는 첫 프레임부터 답이 맞고, 서버에서도 같은 답이 나오며, 크기가 바뀌면 React를 다시 렌더하는 대신 다시 그리기만 합니다.
 
 ```tsx
 <Show above="md">
@@ -64,7 +64,7 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 </Show>
 ```
 
-**`useBreakpoint`와 `useBreakpointValue`** 는 JavaScript에서 정하고, CSS가 할 수 없는 한 가지를 할 수 있습니다 — 아예 렌더하지 않기. 서버에서도 클라이언트의 첫 렌더에서도 `false`와 `xs`를 답하므로, 이들이 제어하는 것은 hydration 이후에 도착합니다. 레이아웃이라면 그것은 깜빡임이고, 실행되면 안 되는 컴포넌트라면 그것이 옳습니다.
+**`useBreakpoint`와 `useBreakpointValue`**는 JavaScript에서 정하고, CSS가 할 수 없는 한 가지를 할 수 있습니다 — 아예 렌더하지 않기. 서버에서도 클라이언트의 첫 렌더에서도 `false`와 `xs`를 답하므로, 이들이 제어하는 것은 hydration 이후에 도착합니다. 레이아웃이라면 그것은 깜빡임이고, 실행되면 안 되는 컴포넌트라면 그것이 옳습니다.
 
 ```tsx
 const columns = useBreakpointValue({ xs: 1, md: 3 }) ?? 1;

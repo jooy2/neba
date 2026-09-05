@@ -27,7 +27,7 @@ import { Button, Empty } from 'neba';
 
 ### title
 
-제목은 `locale`이 "여기에는 아무것도 없다"를 말하는 방식으로 기본값이 정해지므로, prop을 하나도 주지 않은 Empty도 무언가는 말합니다. 무엇이 없는지를 짚어 주는 쪽 — 거의 언제나 그렇게 할 만합니다 — 은 `title`이고, `title={false}`는 제목 없이 글리프와 문장만 남깁니다.
+제목의 기본값은 `locale`이 "여기에는 아무것도 없다"를 표현하는 문장입니다. 그래서 prop을 하나도 주지 않은 Empty도 문장 하나는 보여 줍니다. 무엇이 없는지 짚어 주는 쪽은 `title`이고, 대개 그렇게 쓰는 편이 좋습니다. `title={false}`는 제목 없이 글리프와 문장만 남깁니다.
 
 <Demo src="empty/title" minHeight="200">
 
