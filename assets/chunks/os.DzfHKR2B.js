@@ -1,0 +1,1 @@
+import{a as s,m as o,l as i}from"./shared.BwuzQDa5.js";const t=/^i(os$|p)/.test(s)||s==="macintel"&&o>1,a="android",c=s===a||i.includes(a),n=!t&&s.startsWith("mac");s.startsWith("win");const e=n||t;export{c as a,e as b,t as i,n as m};

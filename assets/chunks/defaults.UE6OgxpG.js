@@ -1,0 +1,1 @@
+import{r as u}from"./index.CAJ_Adw3.js";const f=u.createContext(null);function c(n,r){const s=u.useContext(f);if(!s)return n;const e=n;let t=null;for(const o of r){const l=s[o];l!==void 0&&e[o]===void 0&&(t=t??{...e},t[o]=l)}return t??e}export{f as D,c as u};

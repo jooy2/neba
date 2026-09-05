@@ -1,0 +1,1 @@
+import{y as h}from"./composite.Bc5b-0Nj.js";import{e as r,i as c}from"./floating-ui.utils.dom.Dp_DHu81.js";function g(t){const i=r(t);let s=parseFloat(i.width)||0,o=parseFloat(i.height)||0;const e=c(t),f=e?t.offsetWidth:s,a=e?t.offsetHeight:o;return(h(s)!==f||h(o)!==a)&&(s=f,o=a),{width:s,height:o}}export{g};
