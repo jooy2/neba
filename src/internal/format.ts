@@ -1,8 +1,8 @@
 /**
- * The `Intl` formatters, memoised.
+ * The `Intl` objects, memoised.
  *
- * Here for the reason everything else in this folder is: three unrelated parts
- * of the library construct them, and constructing one is the expensive half of
+ * Here for the reason everything else in this folder is: unrelated parts of the
+ * library construct them, and constructing one is the expensive half of
  * using one. Measured on V8, `new Intl.NumberFormat(...).format(n)` costs about
  * 16µs and `format(n)` on a formatter that already exists costs about 0.3µs —
  * fifty-five times the work to produce the same string.
@@ -49,6 +49,39 @@ export function dateFormatter(
   }
 
   return formatter;
+}
+
+const segmenters = new Map<string, Intl.Segmenter>();
+
+/**
+ * A memoised `Intl.Segmenter`, or `null` on a runtime that has none.
+ *
+ * The same rule as the two above, and the one constructor that was still being
+ * built per call. `AnimateTyping` asks for a string's graphemes, `AnimateSplit`
+ * for its words and `AnimateScramble` for its graphemes again — three effects
+ * that a page may well hold several of, each rebuilding a segmenter for a
+ * string that has not changed.
+ *
+ * `null` rather than a throw where `Intl.Segmenter` is missing: a caller can
+ * fall back to a spread, and a text effect is not worth taking a page down for.
+ */
+export function segmenter(
+  locale: string | undefined,
+  granularity: Intl.SegmenterOptions['granularity']
+): Intl.Segmenter | null {
+  if (typeof Intl === 'undefined' || !('Segmenter' in Intl)) {
+    return null;
+  }
+
+  const key = cacheKey(locale, { granularity });
+  let found = segmenters.get(key);
+
+  if (!found) {
+    found = new Intl.Segmenter(locale, { granularity });
+    segmenters.set(key, found);
+  }
+
+  return found;
 }
 
 const numberFormatters = new Map<string, Intl.NumberFormat>();

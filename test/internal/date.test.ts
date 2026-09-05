@@ -27,6 +27,7 @@ import {
   isSameMonth,
   isUnitOutside,
   isValidDate,
+  localeWeekStart,
   makeDate,
   minutesOfDay,
   startOfDay,
@@ -284,5 +285,27 @@ describe('minutesOfDay and yearPageStart', () => {
 
     expect(yearPageStart(here - 1)).toBe(here - size);
     expect(yearPageStart(here + size)).toBe(here + size);
+  });
+});
+
+/**
+ * The answer is a property of the tag and is memoised on it, so the second call
+ * has to agree with the first — and an unparseable tag has to come back as
+ * Sunday rather than throw, because a calendar that renders on the wrong day is
+ * a small annoyance and one that renders nothing is not.
+ */
+describe('localeWeekStart', () => {
+  it('reads the first day out of the tag', () => {
+    expect(localeWeekStart('en-US')).toBe(0);
+    expect(localeWeekStart('de-DE')).toBe(1);
+  });
+
+  it('gives the same answer the second time', () => {
+    expect(localeWeekStart('fr-FR')).toBe(localeWeekStart('fr-FR'));
+    expect(localeWeekStart(undefined)).toBe(localeWeekStart(undefined));
+  });
+
+  it('falls back to Sunday on a tag it cannot parse', () => {
+    expect(localeWeekStart('not a locale')).toBe(0);
   });
 });

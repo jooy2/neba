@@ -7,7 +7,12 @@
  * own animation. Three copies of a grapheme segmenter is three chances to
  * disagree about where a character ends, which on `👩‍👩‍👧` is the difference
  * between one piece and seven.
+ *
+ * The segmenter itself comes from `internal/format.ts`, memoised there with the
+ * two `Intl` formatters: building one is the expensive half of using one, and
+ * three effects on a page were building one each per call.
  */
+import { segmenter } from './format.js';
 
 /**
  * The text inside a node, and nothing about its markup.
@@ -39,10 +44,10 @@ export function textOf(node: unknown): string {
  * not have it.
  */
 export function graphemesOf(text: string, locale?: string): string[] {
-  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
-    const segmenter = new Intl.Segmenter(locale, { granularity: 'grapheme' });
+  const cut = segmenter(locale, 'grapheme');
 
-    return [...segmenter.segment(text)].map((segment) => segment.segment);
+  if (cut) {
+    return [...cut.segment(text)].map((segment) => segment.segment);
   }
 
   return [...text];
@@ -61,11 +66,12 @@ export function graphemesOf(text: string, locale?: string): string[] {
  * piece holding the whole sentence.
  */
 export function wordsOf(text: string, locale?: string): string[] {
-  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
-    const segmenter = new Intl.Segmenter(locale, { granularity: 'word' });
+  const cut = segmenter(locale, 'word');
+
+  if (cut) {
     const pieces: string[] = [];
 
-    for (const { segment, isWordLike } of segmenter.segment(text)) {
+    for (const { segment, isWordLike } of cut.segment(text)) {
       if (isWordLike || pieces.length === 0) {
         pieces.push(segment);
       } else {

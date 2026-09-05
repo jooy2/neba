@@ -531,7 +531,32 @@ interface LocaleWeekInfo {
   getWeekInfo?: () => WeekInfo;
 }
 
+/**
+ * Memoised for `internal/format.ts`'s reason, and it is the same two
+ * constructors that file measured at about 16µs each: with no `locale` this
+ * builds an `Intl.DateTimeFormat` only to ask it what the runtime's own tag is,
+ * and then an `Intl.Locale` on top of that. Every one of the four pickers calls
+ * this in its render body, so unmemoised it is that cost on every keystroke and
+ * every hover anywhere inside a calendar. The answer cannot change for a tag.
+ */
+const weekStarts = new Map<string, NebaWeekday>();
+
 export function localeWeekStart(locale: string | undefined): NebaWeekday {
+  const key = locale ?? '';
+  const cached = weekStarts.get(key);
+
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const start = readWeekStart(locale);
+
+  weekStarts.set(key, start);
+
+  return start;
+}
+
+function readWeekStart(locale: string | undefined): NebaWeekday {
   try {
     const resolved = locale ?? new Intl.DateTimeFormat().resolvedOptions().locale;
     const info = new Intl.Locale(resolved) as LocaleWeekInfo;
