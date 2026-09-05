@@ -33,9 +33,9 @@ There is no `mode`. It starts and ends where the element sits, so a run that is 
 
 How far it travels at the widest point — a CSS length, or a number of pixels. `6` by default: this is a head shaken, not a thing thrown.
 
-### Why this one is allowed to move
+### Why this one is an exception
 
-The house rule is that a control is never transformed. That rule is about a control's resting states — hover, press, on, off — where the movement would be a side effect of saying something colour says better. A shake is not a state: it is a one-off reply to something the reader just did, it is over in four hundred milliseconds, and there is no colour that says "that did not work" as unmistakably.
+The house rule is that a control is never transformed. It applies to a control's resting states — hover, press, on, off — which colour expresses more clearly than movement does. A shake is not a state: it is a one-off reply to something the reader just did, it is over in four hundred milliseconds, and no colour reports a failure as unmistakably.
 
 ## Accessibility
 
