@@ -26,6 +26,27 @@ describe('HowToSteps', () => {
       expect(rows(screen.getByTestId('guide').element())).toHaveLength(3);
     });
 
+    // The sentence naming a step is the button's `aria-label`, not a hidden
+    // line beside the title — which is what made the row announce itself as
+    // "Use it Step 3: Use it".
+    it('names a step row once', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} />);
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Step 3: Use it' }))
+        .toBeInTheDocument();
+    });
+
+    // A title that is a node leaves no string to build that sentence out of,
+    // so the row is read as its contents rather than as "Step 1:" and nothing.
+    it('leaves a row with a node title to its contents', async () => {
+      const screen = await render(
+        <HowToSteps steps={[{ title: <em>Install</em>, content: 'One package.' }]} />
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Install' })).toBeInTheDocument();
+    });
+
     it('draws the guide its own heading', async () => {
       const screen = await render(<HowToSteps steps={STEPS} title="Getting started" />);
 
@@ -124,7 +145,7 @@ describe('HowToSteps', () => {
     it('jumps to a step pressed in the list', async () => {
       const screen = await render(<HowToSteps steps={STEPS} />);
 
-      await screen.getByRole('button', { name: 'Step 3: Use it', exact: false }).click();
+      await screen.getByRole('button', { name: 'Step 3: Use it' }).click();
 
       await expect.element(screen.getByText('3 of 3')).toBeInTheDocument();
     });
@@ -292,7 +313,7 @@ describe('HowToSteps', () => {
     it('still moves from the list with no buttons', async () => {
       const screen = await render(<HowToSteps steps={STEPS} navigation={false} />);
 
-      await screen.getByRole('button', { name: 'Step 2: Configure', exact: false }).click();
+      await screen.getByRole('button', { name: 'Step 2: Configure' }).click();
 
       await expect.element(screen.getByText('2 of 3')).toBeInTheDocument();
     });

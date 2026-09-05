@@ -124,6 +124,6 @@ import { HowToSteps } from 'neba';
 ## Accessibility
 
 - 목록은 tablist가 아니라 버튼의 목록입니다. 현재 행은 `aria-current="step"`을 지니며, 이것이 각 패널에 순서가 있고 독자가 그 순서대로 도달할 것을 전제한다고 말합니다.
-- 각 행은 "Step 3: Use it"처럼 읽힙니다. 원은 장식이고, 제목 옆에 그려진 숫자는 screen reader가 읽어 주는 숫자가 아닙니다.
+- 각 행은 "Step 3: Use it"처럼 읽힙니다. 원은 장식이고, 제목 옆에 그려진 숫자는 screen reader가 읽어 주는 숫자가 아닙니다. `title`이 노드이면 그 문장을 만들 문자열이 없으므로 행은 자기 내용 그대로 읽힙니다.
 - 보이지 않는 단계들은 본문 높이를 유지하기 위해 문서에 남아 있으며 `inert`입니다 — tab 순서에서 빠지고, accessibility tree에서 빠지고, 페이지 내 찾기에서도 빠집니다.
 - 한 페이지에 안내서가 둘 이상이면 `title`을 주십시오.

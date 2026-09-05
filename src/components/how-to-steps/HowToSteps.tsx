@@ -15,7 +15,6 @@ import {
   sheetBodyClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
-  srOnlyClasses,
   surfaceClasses,
   surfaceSlots,
   toLength,
@@ -433,6 +432,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
         {steps.map((item, index) => {
           const done = completed || index < active;
           const current = !completed && index === active;
+          const label = plainTitle(item.title);
 
           return (
             <li
@@ -475,6 +475,18 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                 type="button"
                 onClick={() => go(index)}
                 aria-current={current ? 'step' : undefined}
+                /* The row draws a disc and a title, and the disc is decoration,
+                  so the button is named rather than left to be read as its own
+                  contents: a screen reader hears "Step 3: Use it" in place of
+                  "Use it" on its own. A title that is a node has no sentence to
+                  put here — "Step 3:" with nothing after it names nothing — and
+                  that row keeps the name its contents give it. It loses no
+                  position by it, the rail being an `ol`. */
+                aria-label={
+                  label
+                    ? fill(messages.step, { index: String(index + 1), title: label })
+                    : undefined
+                }
                 className={cx(
                   'flex w-full cursor-pointer items-center p-1 text-start',
                   vertical ? 'gap-3' : 'flex-col gap-1.5 text-center',
@@ -494,15 +506,6 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   )}
                 >
                   {item.title}
-                </span>
-                {/* The row draws a disc and a title, and the disc is decoration.
-                  This is what a screen reader hears in place of "Install the
-                  CLI" on its own. */}
-                <span className={srOnlyClasses}>
-                  {fill(messages.step, {
-                    index: String(index + 1),
-                    title: plainTitle(item.title)
-                  })}
                 </span>
               </button>
             </li>
