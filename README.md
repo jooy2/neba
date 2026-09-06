@@ -253,7 +253,9 @@ Tests ship with the component they cover, in the same commit. Add a test at the 
 
 ## Contributing
 
-Anyone can contribute to the project by reporting new issues or submitting a pull request. For more information, please see [CONTRIBUTING.md](CONTRIBUTING.md).
+Anyone can contribute to the project by reporting new issues or submitting a pull request. For more information, please see [CONTRIBUTING.md](CONTRIBUTING.md). Participation is subject to the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+To report a security issue, please follow the process described in [SECURITY.md](SECURITY.md).
 
 ## License
 

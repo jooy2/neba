@@ -2,13 +2,13 @@
 
 Thank you for contributing to the project. Your contributions help make it better.
 
-This project adheres to the Contributor Covenant code of conduct. Your contribution implies that you have read and agree to this policy. Any behavior that undermines the quality of the project community, including this policy, will be warned or restricted by the maintainers.
+This project adheres to the [Contributor Covenant](CODE_OF_CONDUCT.md) code of conduct, version 2.1. Your contribution implies that you have read and agree to this policy. Any behavior that undermines the quality of the project community, including this policy, will be warned or restricted by the maintainers.
 
 ## Issues
 
 Issues can be created on the following page: https://github.com/jooy2/neba/issues
 
-Alternatively, you can email the package maintainer. However, we prefer to track progress via GitHub Issues.
+Alternatively, you can reach the maintainers at https://cdget.com/contact. However, we prefer to track progress via GitHub Issues.
 
 When creating an issue, keep the following in mind:
 
