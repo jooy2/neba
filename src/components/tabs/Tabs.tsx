@@ -17,6 +17,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import { observeResize } from '../../internal/observe.js';
+import { bindAxisWheel } from '../../internal/wheel.js';
 import type {
   NebaDensity,
   NebaOrientation,
@@ -123,6 +124,24 @@ export interface TabsProps
    * definition. Left out, a wrapping bar takes every line it needs.
    */
   lines?: number;
+  /**
+   * Turns a wheel rolled over the bar into travel along it, and holds it there
+   * while the pointer is over a bar that has somewhere to go.
+   *
+   * On by default, which is the opposite of the same prop on `ScrollZone`, and
+   * for the one reason that separates them: a ScrollZone draws a pair of
+   * buttons and a tab bar draws none. Its scrollbar is hidden too, so a wheel
+   * the page answers instead leaves the tabs past the edge reachable only by
+   * keyboard.
+   *
+   * A bar that fits takes nothing, so this costs a page with three tabs on it
+   * nothing at all. What it does take it keeps at the ends as well, rather than
+   * letting a flick that runs out of bar become a jump down the article; moving
+   * the pointer off the bar is what gives the page its wheel back. A trackpad
+   * swiping sideways is left to the browser, which scrolls it better.
+   * @default true
+   */
+  wheel?: boolean;
   /** The tabs share the bar's full width, each taking an equal share of it. */
   fullWidth?: boolean;
   children?: React.ReactNode;
@@ -367,6 +386,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
     loopFocus = true,
     overflow = 'scroll',
     lines,
+    wheel = true,
     fullWidth = false,
     className,
     style,
@@ -449,6 +469,22 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
     // anything the observer is watching.
   }, [horizontal, count]);
 
+  /*
+   * And the wheel, on the axis a mouse has not got. `internal/wheel.ts` is the
+   * handler, shared with ScrollZone; it takes nothing on a bar that fits, so it
+   * is bound whatever shape the bar is in rather than only where a scroll is
+   * expected — a wrapping bar capped by `lines` scrolls the way the wheel
+   * already points, and the handler leaves that to the browser.
+   */
+  React.useEffect(() => {
+    const node = listRef.current;
+    if (!node || !wheel) {
+      return;
+    }
+
+    return bindAxisWheel(node);
+  }, [wheel]);
+
   return (
     <TabsContext.Provider value={context}>
       <BaseUITabs.Root
@@ -494,6 +530,10 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
                 : 'overflow-x-auto'
               : '',
             !wraps && horizontal ? 'overflow-y-hidden' : '',
+            // The gestures the browser scrolls itself — a finger, a sideways
+            // trackpad swipe, and the wheel over a bar capped by `lines` — stop
+            // at the ends of the bar rather than carrying on into the page.
+            'overscroll-contain',
             '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
             // The mask is a mask rather than a gradient painted on top, for the
             // reason `styles.css` gives: over a translucent sheet there is no

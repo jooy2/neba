@@ -8,6 +8,7 @@ import { ChevronIcon } from '../../internal/icons.js';
 import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
+import { bindAxisWheel } from '../../internal/wheel.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -115,14 +116,15 @@ export interface ScrollZoneProps
    * Turns a wheel rolled over the strip into travel along it — the one axis a
    * mouse has, on a strip that does not run along it. Off by default, because a
    * wheel taken from the page is the page's: a reader who meant to scroll past
-   * the shelf is held by it instead.
+   * the shelf is held by it instead, and this strip has buttons for the pointer
+   * that has no other way along.
    *
-   * What it does take it gives back at the ends, so a strip with nothing left
-   * ahead of it is something to scroll past rather than something to be caught
-   * in. A trackpad swiping sideways is left alone — that already scrolls the
-   * strip, and answering it here would move twice as far as it was asked to —
-   * and a vertical zone ignores the prop, the wheel already pointing the way it
-   * runs.
+   * What it takes it keeps, at the ends as well, so a flick that runs out of
+   * strip does not become a jump down the article. The pointer leaving the
+   * strip is what gives the page its wheel back. A trackpad swiping sideways is
+   * left alone — that already scrolls the strip, and answering it here would
+   * move twice as far as it was asked to — and a vertical zone ignores the prop,
+   * the wheel already pointing the way it runs.
    * @default false
    */
   wheel?: boolean;
@@ -171,15 +173,6 @@ const DRAG_THRESHOLD = 4;
 
 /** Under this, a press in `hold` mode was a tap and moves one item instead. */
 const TAP_MS = 140;
-
-/**
- * What a wheel notch is worth when it is counted in lines rather than pixels.
- *
- * Firefox reports a mouse wheel that way — three lines a notch — and a line is
- * whatever the reader's text is; sixteen pixels is the browser's own default
- * and near enough for a gesture that is repeated until it looks right.
- */
-const WHEEL_LINE = 16;
 
 /** A reader who has asked for less motion gets the cut rather than the travel. */
 function scrollBehavior(): ScrollBehavior {
@@ -506,44 +499,16 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     }
 
     /*
-     * The wheel, on the axis it is not pointing along. Registered here rather
-     * than as `onWheel`, because React attaches its wheel listener passively and
-     * a passive listener cannot `preventDefault` — which is the whole gesture:
-     * taking the wheel is only right if the page does not answer it as well.
+     * The wheel, on the axis the strip is not pointing along. `internal/wheel.ts`
+     * is the handler, shared with the Tabs bar, which has the same problem and
+     * fewer ways out of it.
      */
     React.useEffect(() => {
       const el = scrollerRef.current;
       if (!el || !wheel || !horizontal) return;
 
-      const onWheel = (event: WheelEvent) => {
-        // A wheel held with Ctrl is a zoom, and a trackpad swiping sideways is
-        // already travel along the strip — the browser scrolls it itself, and
-        // answering it here would move twice as far as it was asked to.
-        if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-
-        const unit =
-          event.deltaMode === 1 ? WHEEL_LINE : event.deltaMode === 2 ? el.clientWidth : 1;
-        const distance = event.deltaY * unit;
-        if (!distance) return;
-
-        // Only while there is somewhere to go, and measured now rather than read
-        // off the last render. At either end the wheel is the page's again, so a
-        // shelf in the middle of an article is something to scroll past rather
-        // than something to be caught in.
-        const along = Math.abs(el.scrollLeft);
-        const room = distance > 0 ? el.scrollWidth - el.clientWidth - along > 1 : along > 1;
-        if (!room) return;
-
-        event.preventDefault();
-        // Instantly: a wheel is already a stream of small movements, and smoothing
-        // each one would leave the strip still arriving after the hand stopped.
-        scrollByPixels(distance * forwardSign(), false);
-      };
-
-      el.addEventListener('wheel', onWheel, { passive: false });
-
-      return () => el.removeEventListener('wheel', onWheel);
-    }, [forwardSign, horizontal, scrollByPixels, wheel]);
+      return bindAxisWheel(el);
+    }, [horizontal, wheel]);
 
     function pressHandlers(forward: boolean) {
       if (mode !== 'hold') {
@@ -663,6 +628,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
             // and a horizontal strip would come out flat.
             'min-h-0 min-w-0 grow',
             horizontal ? 'overflow-x-auto overflow-y-hidden' : 'overflow-y-auto overflow-x-hidden',
+            // The other half of the same rule, for the gestures the browser
+            // scrolls itself: a finger, a sideways trackpad swipe, and the wheel
+            // over a vertical zone all stop at the ends rather than carrying on
+            // into the page behind.
+            'overscroll-contain',
             snap ? (horizontal ? 'snap-x snap-mandatory' : 'snap-y snap-mandatory') : '',
             scrollbar ? '' : '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
             drag && (reach.back || reach.forward)

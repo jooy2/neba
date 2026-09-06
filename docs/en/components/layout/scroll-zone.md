@@ -97,7 +97,9 @@ A finger already scrolls the strip, because the mechanism is an ordinary scroll 
 
 A mouse has one wheel and it points down the page, which is the one axis a horizontal strip does not run along. `wheel` turns a wheel rolled over the strip into travel along it.
 
-It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead. What it does take it gives back: at either end of the strip the wheel is the page's again, so a strip with nothing left ahead of it is scrolled past rather than caught in. A trackpad swiping sideways is left alone, since that already scrolls the strip, and a vertical zone ignores the prop.
+It is off by default, because a wheel taken from the page is the page's: a reader who meant to scroll past the shelf would be held by it instead, and this strip already has buttons for the pointer that has no other way along.
+
+What it takes it keeps, at the ends as well, so a flick that runs out of strip does not turn into a jump down the article. Moving the pointer off the strip is what gives the page its wheel back. A trackpad swiping sideways is left alone, since that already scrolls the strip, and a vertical zone ignores the prop.
 
 <Demo src="scroll-zone/wheel" minHeight="280">
 

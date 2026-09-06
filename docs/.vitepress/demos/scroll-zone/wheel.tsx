@@ -28,7 +28,7 @@ export default function ScrollZoneWheel() {
 
       <div>
         <Typography level="caption" color="secondary">
-          wheel — roll over the strip, and keep rolling at the end
+          wheel — roll over the strip; the page waits until the pointer leaves
         </Typography>
         <ScrollZone label="With the wheel" wheel>
           <Strip />

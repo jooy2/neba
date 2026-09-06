@@ -13,20 +13,24 @@
 | `Image`                       | 6.5 kB   | 7.1 kB   |
 | `Gallery`                     | 10.2 kB  | 10.3 kB  |
 | a whole page shell            | 29.0 kB  | 29.2 kB  |
-| 12 components — a typical app | 70.5 kB  | 70.4 kB  |
-| 12 components, with Korean    | 72.9 kB  | 73.2 kB  |
-| 25 components — a large one   | 115.7 kB | 115.7 kB |
+| 12 components — a typical app | 70.5 kB  | 70.6 kB  |
+| 12 components, with Korean    | 72.9 kB  | 73.4 kB  |
+| 25 components — a large one   | 115.7 kB | 115.8 kB |
 | all exports                   | 263.9 kB | 264.7 kB |
 
-`Image` is the row that moved. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts`, which costs it 0.5 kB. The twelve-component row went _down_ because those helpers are shared and they shrank. The last 0.1 kB is `width` and `height`, which `Gallery` also carries because it draws an `Image`.
+`Image` is the row that moved. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts`, which costs it 0.5 kB. The last 0.1 kB is `width` and `height`, which `Gallery` also carries because it draws an `Image`.
 
 The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups, and a shared bound under the memos in `internal/`.
+
+The twelve- and twenty-five-component rows carry `internal/wheel.ts` on top of that, which is what a `Tabs` bar now takes the wheel with.
 
 Registering a language ships that language's whole module, so the twenty picker strings and the two a Carousel's stop button needs land in it whether or not the page draws either: 2.8 kB now against 2.4 kB before. Those twenty used to be hardcoded English, which a Korean product could not reach at all.
 
 ### Added
 
 - **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
+
+- **A `Tabs` bar takes the wheel.** A bar with more tabs than room scrolls, but a mouse has one wheel and it points down the page — and the bar draws no scroll buttons and hides its scrollbar, so the tabs past the edge were reachable only by keyboard. A wheel rolled over the bar now travels along it. It is on by default, which is what separates the prop from `ScrollZone`'s `wheel`: that strip has a pair of buttons and this one has nothing. A bar that fits takes nothing at all, so a page with three tabs on it is unaffected, and `wheel={false}` turns it off.
 
 - **A `Carousel` with `autoPlay` draws the button that stops it.** It paused on hover, on focus and in a background tab, and it never started for a reader who had asked for less motion — but a reader holding a phone hovers nothing, and one running a magnifier may never put a pointer over the strip at all. WCAG 2.2.2 asks for a mechanism, and those were not one. The control sits in the row under the frame, beside the dots and never over a slide; `pauseLabel` and `playLabel` name it, and it is translated in all nineteen languages. There is no prop to take it away — a caller who wants a control of their own can drive `value` and leave `autoPlay` off.
 
@@ -35,6 +39,10 @@ Registering a language ships that language's whole module, so the twenty picker 
 - **An `Image` takes `width` and `height`, and reserves the box they describe.** They were omitted from the props, so the one component in the library whose reason to exist is holding a picture's space could only be told what that space was as a `ratio` worked out by hand — and a default `Image` reserved nothing at all, which is the largest source of layout shift on most sites. They reach the `<img>` as the attributes they are, and giving both turns an `'auto'` ratio into their proportion. An explicit `ratio` still outranks them: that one is the layout's shape and these two are the picture's.
 
 ### Changed
+
+- **A `ScrollZone` and a `Tabs` bar hold the wheel at their ends rather than handing it back.** Taking the wheel and then giving it up the moment the strip runs out is what makes the page lurch mid-flick: the reader is still pushing the strip and what answers is the article behind it. Both hold it now, and the pointer leaving the strip is what gives the page its wheel back. `overscroll-behavior: contain` does the same for the gestures the browser scrolls itself — a finger, a sideways trackpad swipe, and the wheel over a vertical zone — which used to carry on into the page at either end.
+
+  This changes what `ScrollZone`'s `wheel` promises. The old wording said a strip with nothing left ahead of it was something to scroll past rather than something to be caught in; a caller who wanted that behaviour wants `wheel` off.
 
 - **An `Anchor` finds its headings once instead of on every frame of a scroll.** It ran a `document.getElementById` for each row of the trail on every scroll frame, for an answer that changes only when the document does. The elements are kept and checked against `isConnected`, so a heading that arrives after the trail is still found.
 

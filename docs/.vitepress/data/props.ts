@@ -7759,6 +7759,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'wheel',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '바 위에서 굴린 휠을 바를 따라가는 이동으로 바꾸고, 양 끝에서도 놓지 않습니다. 자리가 남는 바는 휠을 가져가지 않으며, 포인터가 바 밖으로 나가야 페이지가 휠을 되찾습니다',
+        en: 'Turns a wheel rolled over the bar into travel along it, and holds it at the ends too. A bar that fits takes nothing; the pointer leaving the bar is what gives the page its wheel back'
+      }
+    },
+    {
       name: 'fullWidth',
       type: 'boolean',
       default: 'false',
@@ -9918,8 +9927,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '스트립 위에서 굴린 휠을 스트립을 따라가는 이동으로 바꿉니다. 갈 곳이 없어지는 양 끝에서는 휠을 다시 페이지에 돌려주고, 옆으로 미는 트랙패드와 세로 zone은 건드리지 않습니다',
-        en: 'Turns a wheel rolled over the strip into travel along it. At either end the wheel is the page’s again; a sideways trackpad swipe and a vertical zone are left alone'
+        ko: '스트립 위에서 굴린 휠을 스트립을 따라가는 이동으로 바꾸고, 양 끝에서도 놓지 않습니다. 포인터가 스트립 밖으로 나가야 페이지가 휠을 되찾습니다. 옆으로 미는 트랙패드와 세로 zone은 건드리지 않습니다',
+        en: 'Turns a wheel rolled over the strip into travel along it, and holds it at the ends too: the pointer leaving the strip is what gives the page its wheel back. A sideways trackpad swipe and a vertical zone are left alone'
       }
     },
     {

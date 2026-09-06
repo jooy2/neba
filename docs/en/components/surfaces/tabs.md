@@ -75,6 +75,20 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 </Demo>
 
+### wheel
+
+A mouse has one wheel and it points down the page, which is the one axis a scrolling tab bar does not run along. `wheel` turns a wheel rolled over the bar into travel along it. It is on by default: the bar has no scroll buttons and its scrollbar is hidden, so a wheel the page answers instead leaves the tabs past the edge reachable only by keyboard.
+
+What it takes it keeps, at the ends as well, so a flick that runs out of bar does not turn into a jump down the article. Moving the pointer off the bar is what gives the page its wheel back. A bar that fits takes nothing, so a page with three tabs on it is unaffected. A trackpad swiping sideways is left to the browser, which scrolls it better.
+
+Pass `wheel={false}` to turn it off.
+
+<Demo src="tabs/wheel" minHeight="320">
+
+<<< @/.vitepress/demos/tabs/wheel.tsx
+
+</Demo>
+
 ### startIcon and endIcon
 
 Put an icon or a count before or after the label.

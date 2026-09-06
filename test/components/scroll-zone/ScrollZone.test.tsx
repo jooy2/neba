@@ -380,9 +380,38 @@ describe('ScrollZone', () => {
       expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 48 }));
     });
 
-    // The strip is at its start, so there is nothing behind it and the page
-    // should have the wheel that asked to go there.
-    it('gives the wheel back at the end of the strip', async () => {
+    // The strip is at its start, so there is nothing behind it — and the page
+    // still does not get the wheel, because the pointer is inside the strip.
+    it('holds the wheel at the end of the strip', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+
+      expect(roll(box, { deltaY: -120 }).defaultPrevented).toBe(true);
+    });
+
+    // Which is what makes the hold safe: a strip with room to spare is not a
+    // scroll container as far as the reader is concerned, and holding the page
+    // there would be holding it for nothing.
+    it('holds nothing on a strip that fits', async () => {
+      const screen = await render(
+        <ScrollZone wheel data-testid="zone">
+          <div style={{ width: 20 }}>One</div>
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      const scrollBy = vi.spyOn(box, 'scrollBy');
+
+      expect(roll(box, { deltaY: 120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    // A strip inside a strip, or a NumberField being scrubbed on one. The event
+    // bubbles out to the outer handler either way.
+    it('leaves a notch something nearer the pointer has already answered', async () => {
       const screen = await render(
         <ScrollZone wheel data-testid="zone">
           {cards}
@@ -390,8 +419,11 @@ describe('ScrollZone', () => {
       );
       const box = scroller(screen);
       const scrollBy = vi.spyOn(box, 'scrollBy');
+      const event = new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: 120 });
 
-      expect(roll(box, { deltaY: -120 }).defaultPrevented).toBe(false);
+      event.preventDefault();
+      box.dispatchEvent(event);
+
       expect(scrollBy).not.toHaveBeenCalled();
     });
 

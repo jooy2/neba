@@ -340,4 +340,93 @@ describe('Tabs', () => {
       expect(screen.getByRole('tablist').element().outerHTML).not.toContain('translate');
     });
   });
+
+  /*
+   * A wheel is dispatched rather than rolled, for the reason ScrollZone's own
+   * tests give: `page.mouse.wheel` scrolls the frame, and what is asserted here
+   * is what the bar did with the event.
+   */
+  describe('the wheel', () => {
+    function Crowded(props: React.ComponentProps<typeof Tabs>) {
+      return (
+        <Tabs defaultValue="t0" {...props}>
+          {Array.from({ length: 12 }, (_, index) => (
+            <Tab key={index} value={`t${index}`}>{`Section ${index}`}</Tab>
+          ))}
+          <TabPanel value="t0">The first one.</TabPanel>
+        </Tabs>
+      );
+    }
+
+    /*
+     * The bar's overflow is made here rather than left to the component,
+     * because no component test loads CSS: `overflow-x-auto` and the flex row
+     * are class names that resolve to nothing, so twelve tabs wrap onto twelve
+     * lines and the bar is exactly as wide as its box. What the handler reads
+     * is the geometry, so the geometry is what the test has to supply.
+     */
+    function crowd(screen: Awaited<ReturnType<typeof render>>) {
+      const list = screen.getByRole('tablist').element() as HTMLElement;
+
+      list.style.width = '120px';
+      list.style.overflowX = 'auto';
+      list.style.whiteSpace = 'nowrap';
+
+      return list;
+    }
+
+    function roll(box: HTMLElement, init: WheelEventInit) {
+      const event = new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init });
+      box.dispatchEvent(event);
+
+      return event;
+    }
+
+    it('turns a wheel rolled down the page into travel along the bar', async () => {
+      const screen = await render(<Crowded />);
+      const list = crowd(screen);
+      const scrollBy = vi.spyOn(list, 'scrollBy');
+
+      expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(true);
+      expect(scrollBy).toHaveBeenCalledWith(expect.objectContaining({ left: 120 }));
+    });
+
+    // The bar is at its start, so there is nothing behind it — and the page
+    // still does not get the wheel, because the pointer is over the bar.
+    it('holds the wheel at the end of the bar', async () => {
+      const screen = await render(<Crowded />);
+      const list = crowd(screen);
+
+      expect(roll(list, { deltaY: -120 }).defaultPrevented).toBe(true);
+    });
+
+    // Which is what makes it safe to leave on: three tabs in a row are not a
+    // scroll container as far as the reader is concerned.
+    it('holds nothing on a bar that fits', async () => {
+      const screen = await render(<Basic defaultValue="overview" />);
+      const list = screen.getByRole('tablist').element() as HTMLElement;
+      const scrollBy = vi.spyOn(list, 'scrollBy');
+
+      expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    it('leaves a sideways wheel to the browser, which already scrolls the bar', async () => {
+      const screen = await render(<Crowded />);
+      const list = crowd(screen);
+      const scrollBy = vi.spyOn(list, 'scrollBy');
+
+      expect(roll(list, { deltaX: 120, deltaY: 4 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+
+    it('leaves the wheel alone when it is turned off', async () => {
+      const screen = await render(<Crowded wheel={false} />);
+      const list = crowd(screen);
+      const scrollBy = vi.spyOn(list, 'scrollBy');
+
+      expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(false);
+      expect(scrollBy).not.toHaveBeenCalled();
+    });
+  });
 });
