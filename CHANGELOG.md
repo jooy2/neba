@@ -1,10 +1,12 @@
 # Changelog
 
-## vNext
+## vNext (2026--)
+
+## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
 
-| What you import               | 1.12.0   | vNext    |
+| What you import               | 1.12.0   | 1.13.0   |
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.1 kB   | 5.2 kB   |
 | `Chip`                        | 3.3 kB   | 3.4 kB   |
