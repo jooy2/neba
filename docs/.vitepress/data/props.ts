@@ -7615,6 +7615,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'headingLevel',
+      type: '1 | 2 | 3 | 4 | 5 | 6',
+      default: '3',
+      description: {
+        ko: '각 섹션 헤더가 문서 개요에서 갖는 제목 단계. h2 아래라면 3, h3 아래라면 4입니다',
+        en: "Which heading every section's header is in the page outline. 3 under an h2, 4 under an h3"
+      }
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       default: 'false',
@@ -7678,6 +7687,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '헤더 끝에 고정되는 컨트롤. 접는 버튼 바깥에 놓입니다. 버튼 안의 버튼은 브라우저가 고쳐 씁니다',
         en: 'A control pinned to the end of the header, outside the folding button: a button inside a button is markup the browser rewrites'
+      }
+    },
+    {
+      name: 'lines',
+      type: 'number',
+      description: {
+        ko: '제목과 부제목을 이 줄 수에서 자릅니다. 지정하지 않으면 줄바꿈해서 다 보여 줍니다',
+        en: 'Cuts the title and the subtitle off after this many lines. Unset, both wrap'
       }
     },
     {

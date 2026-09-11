@@ -459,6 +459,31 @@ export const focusRingClasses =
 export const focusWithinRingClasses =
   'has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[:focus-visible]:outline-offset-2';
 
+/**
+ * Cutting text off after a given number of lines.
+ *
+ * Two different mechanisms wearing one name: a single line is
+ * `text-overflow: ellipsis`, which keeps the text on its own baseline, and more
+ * than one needs the line-clamp box, which only ellipsises because WebKit says
+ * so. Six is as far as the utilities go, so a larger number clamps there.
+ *
+ * Written out per line count because Tailwind only ever sees class names that
+ * appear literally in the source. It is shared because `lines` has to mean the
+ * same thing on a Typography and on the title of an accordion section.
+ */
+const clampLineClasses: Record<number, string> = {
+  1: 'truncate',
+  2: 'line-clamp-2',
+  3: 'line-clamp-3',
+  4: 'line-clamp-4',
+  5: 'line-clamp-5',
+  6: 'line-clamp-6'
+};
+
+export function clampClasses(lines: number): string {
+  return clampLineClasses[lines] ?? 'line-clamp-6';
+}
+
 /** Icons track their label rather than carrying a size of their own. */
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 

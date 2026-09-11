@@ -66,6 +66,22 @@ The sheet is never filled with colour. Use `text` inside a [Card](./card): the c
 
 </Demo>
 
+### headingLevel · lines
+
+Every section's header is a real heading, so it belongs in the page outline at the right depth: `headingLevel` sets it for the whole stack — `3` under an `<h2>`, `4` under an `<h3>`. It lives on `Accordion` rather than on a section because the sections are siblings, and a run of headings at different levels is an outline that lies.
+
+Pass plain text as `title`. A heading element passed in would land inside the one the header already is.
+
+`lines` on a section cuts the title and the subtitle off after that many lines. Unset, both wrap: an FAQ's title is a sentence, and an ellipsis there loses the question.
+
+```tsx
+<Accordion headingLevel={2}>
+  <AccordionItem lines={2} title="What happens to my data when I close my account?">
+    …
+  </AccordionItem>
+</Accordion>
+```
+
 ### hiddenUntilFound and keepMounted
 
 `hiddenUntilFound` keeps closed panels in the DOM so the browser's find-on-page can locate and open them: worth turning on for an FAQ. `keepMounted` keeps a closed panel's React tree alive.
@@ -73,5 +89,5 @@ The sheet is never filled with colour. Use `text` inside a [Card](./card): the c
 ## Accessibility
 
 - The header button and its panel are wired together with `aria-controls` and `aria-expanded`.
-- Pass a real heading as `title` to put the section in the document outline: `title={<h3>Billing</h3>}`. It inherits the Accordion's type scale.
+- Each header is a real heading element, at `headingLevel` (`3` by default), so the sections are in the document outline. Pass plain text as `title`: a heading passed in would be nested inside that one.
 - The panel opens by animating its `height`; the content does not shift inside the panel.

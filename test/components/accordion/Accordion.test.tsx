@@ -261,6 +261,54 @@ describe('Accordion', () => {
     });
   });
 
+  describe('the heading', () => {
+    it('puts each header at the level the accordion was given', async () => {
+      const screen = await render(
+        <Accordion headingLevel={2}>
+          <AccordionItem title="Billing" />
+        </Accordion>
+      );
+
+      await expect
+        .element(screen.getByRole('heading', { level: 2, name: 'Billing' }))
+        .toBeInTheDocument();
+    });
+
+    it('is a level-three heading when nobody said otherwise', async () => {
+      const screen = await render(
+        <Accordion>
+          <AccordionItem title="Billing" />
+        </Accordion>
+      );
+
+      await expect
+        .element(screen.getByRole('heading', { level: 3, name: 'Billing' }))
+        .toBeInTheDocument();
+    });
+
+    it('lets a title wrap until it is told how many lines to keep', async () => {
+      // An FAQ's title is a sentence, and cutting it off loses the question.
+      const screen = await render(
+        <Accordion>
+          <AccordionItem title="What happens to my data when I close my account?" />
+        </Accordion>
+      );
+      const title = screen.getByText('What happens to my data when I close my account?').element();
+
+      expect(title).not.toHaveClass('truncate');
+
+      await screen.rerender(
+        <Accordion>
+          <AccordionItem lines={2} title="What happens to my data when I close my account?" />
+        </Accordion>
+      );
+
+      expect(
+        screen.getByText('What happens to my data when I close my account?').element()
+      ).toHaveClass('line-clamp-2');
+    });
+  });
+
   describe('style props', () => {
     it('keeps the sheet undyed while colouring the edge', async () => {
       const screen = await render(

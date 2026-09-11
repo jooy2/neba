@@ -5,6 +5,7 @@ import { Accordion as BaseUIAccordion } from '@base-ui/react/accordion';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
+  clampClasses,
   cx,
   focusRingClasses,
   gapClasses,
@@ -34,12 +35,14 @@ interface AccordionContextValue {
   size: NebaSize;
   density: NebaDensity;
   dividers: boolean;
+  headingLevel: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 const AccordionContext = React.createContext<AccordionContextValue>({
   size: 'md',
   density: 'default',
-  dividers: true
+  dividers: true,
+  headingLevel: 3
 });
 
 export interface AccordionProps
@@ -76,6 +79,18 @@ export interface AccordionProps
   dividers?: boolean;
   /** Unavailable. Every section stops answering. */
   disabled?: boolean;
+  /**
+   * Which heading every section's header is, in the page's own outline. An
+   * accordion under an `<h2>` wants `3`; one under an `<h3>` wants `4`.
+   *
+   * It belongs to the stack rather than to a fold in it — the sections are
+   * siblings, and a run of headings at different levels is an outline that
+   * lies. A `title` that is itself a styled heading nests one heading inside
+   * another, which this prop is the way out of: set the level here and pass
+   * plain text.
+   * @default 3
+   */
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   /**
    * Keeps closed panels in the DOM so the browser's own page search can find and
    * open them. Overrides `keepMounted`.
@@ -114,6 +129,12 @@ export interface AccordionItemProps extends Omit<
    * other. The same shape ListItem uses.
    */
   action?: React.ReactNode;
+  /**
+   * Cuts the title and the subtitle off after this many lines, with an
+   * ellipsis. Unset, both wrap — an FAQ's title is a sentence rather than a
+   * label, and ending it in an ellipsis loses the question.
+   */
+  lines?: number;
   /** Unavailable. This section stops folding; the rest keep working. */
   disabled?: boolean;
   /** The body. */
@@ -188,6 +209,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       defaultValue,
       onValueChange,
       dividers = true,
+      headingLevel = 3,
       disabled = false,
       hiddenUntilFound = false,
       keepMounted = false,
@@ -197,7 +219,10 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-    const context = React.useMemo(() => ({ size, density, dividers }), [size, density, dividers]);
+    const context = React.useMemo(
+      () => ({ size, density, dividers, headingLevel }),
+      [size, density, dividers, headingLevel]
+    );
 
     const classNames = cx(
       'flex flex-col',
@@ -244,10 +269,22 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
  */
 export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
   function AccordionItem(
-    { value, title, subtitle, startIcon, action, disabled = false, className, children, ...props },
+    {
+      value,
+      title,
+      subtitle,
+      startIcon,
+      action,
+      lines,
+      disabled = false,
+      className,
+      children,
+      ...props
+    },
     ref
   ) {
-    const { size, density, dividers } = React.useContext(AccordionContext);
+    const { size, density, dividers, headingLevel } = React.useContext(AccordionContext);
+    const clamp = lines ? clampClasses(lines) : '';
 
     const padX = boxPaddingXClasses[density][size];
     const padY = boxPaddingYClasses[density][size];
@@ -260,7 +297,10 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         className={cx('flex flex-col', className ?? '')}
         {...props}
       >
-        <BaseUIAccordion.Header className="m-0 flex w-full items-center [font:inherit]">
+        <BaseUIAccordion.Header
+          className="m-0 flex w-full items-center [font:inherit]"
+          render={React.createElement(`h${headingLevel}`)}
+        >
           <BaseUIAccordion.Trigger
             className={cx(
               'flex min-w-0 flex-1 cursor-pointer items-center text-start',
@@ -284,10 +324,10 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
 
             <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
               {hasContent(title) ? (
-                <span className={`truncate font-semibold ${sheetTitleClasses[size]}`}>{title}</span>
+                <span className={cx('font-semibold', sheetTitleClasses[size], clamp)}>{title}</span>
               ) : null}
               {hasContent(subtitle) ? (
-                <span className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+                <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size], clamp)}>
                   {subtitle}
                 </span>
               ) : null}

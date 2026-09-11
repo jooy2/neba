@@ -66,6 +66,22 @@ sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때�
 
 </Demo>
 
+### headingLevel · lines
+
+각 섹션의 헤더는 실제 heading이므로 문서 개요에서 제 깊이에 놓여야 합니다. `headingLevel`이 스택 전체의 단계를 정합니다. `<h2>` 아래라면 `3`, `<h3>` 아래라면 `4`입니다. 섹션이 아니라 Accordion의 prop인 이유는 섹션들이 서로 형제여서입니다. 단계가 제각각인 heading이 이어지면 개요가 거짓말을 합니다.
+
+`title`에는 일반 텍스트를 넘기세요. heading 요소를 넘기면 헤더가 이미 만든 heading 안에 heading이 또 들어갑니다.
+
+섹션의 `lines`는 제목과 부제목을 그 줄 수에서 자릅니다. 지정하지 않으면 줄바꿈해서 다 보여 줍니다. FAQ의 제목은 문장이고, 거기서 말줄임표를 만나면 질문이 사라집니다.
+
+```tsx
+<Accordion headingLevel={2}>
+  <AccordionItem lines={2} title="계정을 지우면 데이터는 어떻게 되나요?">
+    …
+  </AccordionItem>
+</Accordion>
+```
+
 ### hiddenUntilFound과 keepMounted
 
 `hiddenUntilFound`는 닫힌 패널을 DOM에 남겨 브라우저의 find-on-page가 찾아 펼칠 수 있게 합니다. FAQ 페이지에 적합합니다. `keepMounted`는 닫힌 패널의 React 트리를 유지합니다.
@@ -73,5 +89,5 @@ sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때�
 ## 접근성
 
 - 헤더 버튼과 패널이 `aria-controls` · `aria-expanded`로 연결됩니다.
-- `title`에 `title={<h3>결제</h3>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 Accordion의 타입 스케일을 물려받습니다.
+- 각 헤더가 `headingLevel`(기본값 `3`) 단계의 실제 heading 요소라서 섹션이 문서 개요에 들어갑니다. `title`에는 일반 텍스트를 넘기세요. heading을 넘기면 그 안에 또 들어갑니다.
 - 패널은 `height`를 애니메이션하며 열립니다. 내용이 패널 안에서 이동하지는 않습니다.

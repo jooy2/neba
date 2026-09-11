@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
-import { cx } from '../../internal/styles.js';
+import { clampClasses, cx } from '../../internal/styles.js';
 import type { NebaColor, NebaTransition } from '../../types.js';
 
 /**
@@ -166,20 +166,6 @@ const alignClasses: Record<TypographyAlign, string> = {
 };
 
 /**
- * Clamping is two different mechanisms. One line is `text-overflow: ellipsis`,
- * which keeps the text on its own baseline; more than one needs the line-clamp
- * box, which only ellipsises because WebKit says so.
- */
-const clampClasses: Record<number, string> = {
-  1: 'truncate',
-  2: 'line-clamp-2',
-  3: 'line-clamp-3',
-  4: 'line-clamp-4',
-  5: 'line-clamp-5',
-  6: 'line-clamp-6'
-};
-
-/**
  * Text at one of the library's sizes.
  *
  * The type scale is the one thing in a design system that everything else is
@@ -218,7 +204,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
     align ? alignClasses[align] : '',
-    lines ? (clampClasses[lines] ?? 'line-clamp-6') : '',
+    lines ? clampClasses(lines) : '',
     gutter ? gutterClasses[level] : '',
     color
       ? 'text-(--n-accent)'
