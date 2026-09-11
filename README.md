@@ -4,11 +4,9 @@
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jooy2/neba/blob/main/LICENSE) ![Programming Language Usage](https://img.shields.io/github/languages/top/jooy2/neba) ![Commit Count](https://img.shields.io/github/commit-activity/y/jooy2/neba) [![npm downloads](https://img.shields.io/npm/dm/neba.svg)](https://www.npmjs.com/package/neba) [![npm latest package](https://img.shields.io/npm/v/neba/latest.svg)](https://www.npmjs.com/package/neba) ![npm bundle size](https://img.shields.io/bundlephobia/min/neba) [![Followers](https://img.shields.io/github/followers/jooy2?style=social)](https://github.com/jooy2) ![Stars](https://img.shields.io/github/stars/jooy2/neba?style=social)
 
-### 📘 [**neba.cdget.com**](https://neba.cdget.com)
-
-[![Components](https://img.shields.io/badge/All_components-live_previews-444?style=for-the-badge)](https://neba.cdget.com/examples/overview)
-
 Live previews and full props for every component. This README is just the quick start.
+
+![Neba UI components arranged around the Neba mark: a search field, a settings card, radio buttons and checkboxes, buttons and chips, a segmented button and pagination, a success alert, a slider, a progress bar and a meter, an avatar stack, a badge and a rating](.github/showcase.png)
 
 ---
 
@@ -23,8 +21,6 @@ You install one package, add one line to your CSS, and import components. There 
 - **A design language, not a theme file**: a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
 - **ESM only**, TypeScript declarations included, and genuinely tree-shakeable: every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3 kB, and a twelve-component app is ~70 kB; the whole library, all one hundred and seventy-five exports at once, is ~265 kB.
 - **Two runtime dependencies**: Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later.
-
-![Neba UI components arranged around the Neba mark: a search field, a settings card, radio buttons and checkboxes, buttons and chips, a segmented button and pagination, a success alert, a slider, a progress bar and a meter, an avatar stack, a badge and a rating](.github/showcase.png)
 
 ## Documentation
 
