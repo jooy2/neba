@@ -128,7 +128,7 @@ The last group is the same complaint one level up. The library had a breakpoint 
 
 ### Where the bytes went
 
-| What you import               | 1.11.0   | vNext    |
+| What you import               | 1.11.0   | 1.12.0   |
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.1 kB   | 5.1 kB   |
 | `Chip`                        | 3.2 kB   | 3.3 kB   |
