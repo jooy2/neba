@@ -39,6 +39,20 @@ Pass an array of numbers as the `value` and you get that many thumbs: a range sl
 
 `step` is the interval the thumb settles on. `showValue` prints the current value beside the label.
 
+### marks
+
+`marks` names points along the track: `1 / 100 / 250 / 500` under a count, or the two ends of a style axis. Pass an array of `{ value, label? }`, and a mark with no label is a tick on its own.
+
+`marks` without a value is a tick at every `step`, which is worth pairing with a step you chose — the default `step={1}` over the default range would be a hundred of them, so that case draws none at all.
+
+The row is hidden from screen readers: the thumb already announces the value and the range.
+
+<Demo src="slider/marks">
+
+<<< @/.vitepress/demos/slider/marks.tsx
+
+</Demo>
+
 ### size
 
 The thumb is drawn larger than the track: it is the part you actually hit, so it needs a real touch target.
@@ -58,6 +72,16 @@ A `vertical` slider has no length of its own; give it a height.
 <<< @/.vitepress/demos/slider/vertical.tsx
 
 </Demo>
+
+### classNames
+
+`className` lands on the root — the column holding the label, the strip and the line under it — and the parts inside are reached through `classNames`.
+
+```tsx
+<Slider label="Volume" classNames={{ track: 'h-1', thumb: 'rounded-sm', mark: 'font-mono' }} />
+```
+
+The slots are `label`, `control`, `track`, `indicator`, `thumb`, `description` and `mark`. `control` is the whole strip a press lands on, which is taller than the `track` drawn inside it.
 
 ## Accessibility
 

@@ -39,6 +39,20 @@ import { Slider } from 'neba';
 
 `step`은 thumb이 멈추는 간격입니다. `showValue`는 현재 값을 라벨 옆에 표시합니다.
 
+### marks
+
+`marks`는 트랙 위의 지점에 이름을 답니다. 개수 축의 `1 / 100 / 250 / 500`, 스타일 축의 양 끝 같은 것들입니다. `{ value, label? }` 배열을 넘기고, label이 없는 mark는 눈금만 그려집니다.
+
+값 없이 `marks`만 주면 `step`마다 눈금이 하나씩 생깁니다. step을 직접 정한 슬라이더에 어울리는 형태입니다. 기본값인 `step={1}`을 기본 범위에 쓰면 눈금이 백 개가 되므로, 그 경우에는 아무것도 그리지 않습니다.
+
+이 줄은 스크린 리더에서 숨겨집니다. 값과 범위는 thumb이 이미 읽어 줍니다.
+
+<Demo src="slider/marks">
+
+<<< @/.vitepress/demos/slider/marks.tsx
+
+</Demo>
+
 ### size
 
 thumb은 트랙보다 크게 그려집니다. 실제로 손이 닿는 부분이므로 터치 대상 크기를 확보하기 위한 것입니다.
@@ -58,6 +72,16 @@ thumb은 트랙보다 크게 그려집니다. 실제로 손이 닿는 부분이�
 <<< @/.vitepress/demos/slider/vertical.tsx
 
 </Demo>
+
+### classNames
+
+`className`은 루트(라벨과 스트립, 그 아래 한 줄을 담은 열)에 붙고, 그 안의 파트는 `classNames`로 잡습니다.
+
+```tsx
+<Slider label="Volume" classNames={{ track: 'h-1', thumb: 'rounded-sm', mark: 'font-mono' }} />
+```
+
+슬롯은 `label`, `control`, `track`, `indicator`, `thumb`, `description`, `mark`입니다. `control`은 press가 닿는 스트립 전체로, 그 안에 그려지는 `track`보다 두껍습니다.
 
 ## 접근성
 

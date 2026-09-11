@@ -5480,11 +5480,21 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'marks',
+      type: 'boolean | readonly SliderMark[]',
+      default: 'false',
+      description: {
+        ko: '트랙에 표시하는 지점. { value, label? } 배열이며, true면 step마다 눈금 하나입니다',
+        en: 'Points named along the track, as an array of { value, label? }. true is a tick at every step'
+      }
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       default: 'false',
       description: { ko: '사용 불가', en: 'Unavailable' }
-    }
+    },
+    slotsProp('label', 'control', 'track', 'indicator', 'thumb', 'description', 'mark')
   ],
 
   Divider: [

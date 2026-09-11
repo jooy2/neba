@@ -119,6 +119,96 @@ describe('Slider', () => {
     });
   });
 
+  describe('marks', () => {
+    const LEVELS = [
+      { value: 1, label: 'One' },
+      { value: 250, label: 'Some' },
+      { value: 500, label: 'Every' }
+    ];
+
+    it('draws none unless asked', async () => {
+      const screen = await render(
+        <Slider aria-label="Count" min={1} max={500} data-testid="slider" />
+      );
+
+      expect(screen.container.querySelector('[aria-hidden="true"]')).toBeNull();
+    });
+
+    it('writes each mark at its share of the range', async () => {
+      const screen = await render(
+        <Slider
+          aria-label="Count"
+          min={1}
+          max={500}
+          marks={LEVELS}
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+      const marks = [...screen.container.querySelectorAll<HTMLElement>('.a-mark')];
+
+      expect(marks).toHaveLength(3);
+      expect(marks[0].style.insetInlineStart).toBe('0%');
+      expect(marks[2].style.insetInlineStart).toBe('100%');
+      await expect.element(screen.getByText('Some')).toBeInTheDocument();
+    });
+
+    it('measures a vertical slider from the bottom', async () => {
+      const screen = await render(
+        <Slider
+          aria-label="Count"
+          orientation="vertical"
+          marks={LEVELS}
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+      const mark = screen.container.querySelector<HTMLElement>('.a-mark');
+
+      expect(mark?.style.insetBlockEnd).toBe('1%');
+      expect(mark?.style.insetInlineStart).toBe('');
+    });
+
+    it('takes a tick at every step when told to', async () => {
+      const screen = await render(
+        <Slider
+          aria-label="Volume"
+          min={0}
+          max={100}
+          step={25}
+          marks
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+
+      expect(screen.container.querySelectorAll('.a-mark')).toHaveLength(5);
+    });
+
+    it('draws none at all rather than a thousand of them', async () => {
+      // A step nobody chose over a range nobody bounded is the one case where
+      // "a tick at every step" is not what the caller meant.
+      const screen = await render(
+        <Slider
+          aria-label="Ratio"
+          min={0}
+          max={100}
+          step={0.01}
+          marks
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+
+      expect(screen.container.querySelectorAll('.a-mark')).toHaveLength(0);
+    });
+
+    it('keeps the marks out of the accessibility tree', async () => {
+      // The thumb announces the value and the range; the same numbers read
+      // again as loose text ahead of it are noise.
+      const screen = await render(<Slider aria-label="Count" min={1} max={500} marks={LEVELS} />);
+      const row = screen.getByText('Some').element().closest('[aria-hidden="true"]');
+
+      expect(row).not.toBeNull();
+    });
+  });
+
   describe('style props', () => {
     it('maps colour onto the token slots', async () => {
       const screen = await render(
