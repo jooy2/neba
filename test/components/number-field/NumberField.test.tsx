@@ -206,18 +206,18 @@ describe('NumberField', () => {
       const screen = await render(<NumberField label="Seats" />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
 
-      expect(shell).toHaveClass('h-8');
+      expect(shell).toHaveClass('min-h-8');
       expect(shell).toHaveClass('border');
     });
 
     it('changes height with size but not with density', async () => {
       const screen = await render(<NumberField label="Seats" size="lg" />);
 
-      expect(screen.getByRole('textbox').element().parentElement).toHaveClass('h-10');
+      expect(screen.getByRole('textbox').element().parentElement).toHaveClass('min-h-10');
 
       await screen.rerender(<NumberField label="Seats" size="lg" density="compact" />);
 
-      expect(screen.getByRole('textbox').element().parentElement).toHaveClass('h-10');
+      expect(screen.getByRole('textbox').element().parentElement).toHaveClass('min-h-10');
     });
 
     it('keeps the sheet undyed while colouring the edge', async () => {

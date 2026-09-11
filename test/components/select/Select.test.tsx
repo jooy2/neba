@@ -185,7 +185,7 @@ describe('Select', () => {
       const screen = await render(<Select items={PLANS} label="Plan" />);
       const trigger = screen.getByRole('combobox').element();
 
-      expect(trigger).toHaveClass('h-8');
+      expect(trigger).toHaveClass('min-h-8');
       expect(trigger).toHaveClass('px-4');
       expect(trigger).toHaveClass('border');
     });
@@ -193,12 +193,12 @@ describe('Select', () => {
     it('changes height with size but not with density', async () => {
       const screen = await render(<Select items={PLANS} label="Plan" size="lg" />);
 
-      expect(screen.getByRole('combobox').element()).toHaveClass('h-10');
+      expect(screen.getByRole('combobox').element()).toHaveClass('min-h-10');
 
       await screen.rerender(<Select items={PLANS} label="Plan" size="lg" density="compact" />);
       const trigger = screen.getByRole('combobox').element();
 
-      expect(trigger).toHaveClass('h-10');
+      expect(trigger).toHaveClass('min-h-10');
       expect(trigger).toHaveClass('px-3');
     });
 

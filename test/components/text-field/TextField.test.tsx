@@ -121,16 +121,22 @@ describe('TextField', () => {
       expect(element).not.toHaveClass('resize-y');
     });
 
-    it('trades the fixed height for a minimum so rows decide the height', async () => {
+    it('centres one line and pads many, over the same floor', async () => {
+      // The ladder is a minimum on a field's shell either way — what changes
+      // is how the text sits in it: a single line is centred in the row, and
+      // `rows` is paid for with the padding that makes one row exactly as tall
+      // as the single-line field of the same size.
       const screen = await render(<TextField size="md" />);
       const shell = screen.getByRole('textbox').element().parentElement;
 
-      expect(shell).toHaveClass('h-8');
+      expect(shell).toHaveClass('min-h-8');
+      expect(shell).toHaveClass('items-center');
 
       await screen.rerender(<TextField size="md" multiline />);
 
       expect(shell).toHaveClass('min-h-8');
-      expect(shell).not.toHaveClass('h-8');
+      expect(shell).toHaveClass('items-start');
+      expect(shell).not.toHaveClass('items-center');
     });
 
     // The parity itself is arithmetic in the stylesheet — the multiline padding
@@ -199,11 +205,11 @@ describe('TextField', () => {
       const screen = await render(<TextField size="lg" />);
       const shell = screen.getByRole('textbox').element().parentElement;
 
-      expect(shell).toHaveClass('h-10');
+      expect(shell).toHaveClass('min-h-10');
 
       await screen.rerender(<TextField size="lg" density="compact" />);
 
-      expect(shell).toHaveClass('h-10');
+      expect(shell).toHaveClass('min-h-10');
     });
 
     it('changes horizontal padding with density', async () => {

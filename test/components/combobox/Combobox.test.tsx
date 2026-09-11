@@ -304,27 +304,30 @@ describe('Combobox', () => {
       const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" />);
       const shell = screen.getByRole('combobox').element().parentElement as HTMLElement;
 
-      expect(shell).toHaveClass('h-8');
+      expect(shell).toHaveClass('min-h-8');
       expect(shell).toHaveClass('border');
     });
 
-    it('grows instead of fixing a height when multiple', async () => {
+    it('pads the shell for the chips when multiple', async () => {
+      // Both shapes take the ladder as a floor; what a row of chips adds is
+      // the vertical padding that keeps them off the hairline as they wrap.
       const screen = await render(<Combobox multiple items={FRAMEWORKS} label="Framework" />);
       const shell = screen.getByRole('combobox').element().closest('.min-h-8');
 
       expect(shell).not.toBeNull();
+      expect(shell).toHaveClass('py-[3px]');
     });
 
     it('changes height with size but not with density', async () => {
       const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" size="lg" />);
 
-      expect(screen.getByRole('combobox').element().parentElement).toHaveClass('h-10');
+      expect(screen.getByRole('combobox').element().parentElement).toHaveClass('min-h-10');
 
       await screen.rerender(
         <Combobox items={FRAMEWORKS} label="Framework" size="lg" density="compact" />
       );
 
-      expect(screen.getByRole('combobox').element().parentElement).toHaveClass('h-10');
+      expect(screen.getByRole('combobox').element().parentElement).toHaveClass('min-h-10');
     });
 
     /** The same portal problem Select has, and the same fix. */

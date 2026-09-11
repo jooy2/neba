@@ -5,7 +5,7 @@ import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { SpinnerIcon } from '../../internal/icons.js';
 import {
-  controlHeightClasses,
+  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
@@ -244,7 +244,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       sizeClasses[size],
       multiline
         ? `${multilineClasses[size]} items-start`
-        : `${controlHeightClasses[size]} items-center`,
+        : `${fieldHeightClasses[size]} items-center`,
       paddingXClasses[density][size],
       // An if/else rather than stacked `data-*` variants: two Tailwind variants
       // of equal specificity resolve by their order in the generated stylesheet.

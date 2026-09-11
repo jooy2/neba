@@ -5,7 +5,7 @@ import { CloseIcon } from './icons.js';
 import { WidthSizer } from './sizer.js';
 import {
   chipRemoveClasses,
-  controlHeightClasses,
+  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
@@ -256,7 +256,7 @@ export function PickerShell({
         <span
           className={cx(
             triggerShellClasses,
-            controlHeightClasses[size],
+            fieldHeightClasses[size],
             controlTextLeadingClasses[size],
             radiusClasses[size],
             gapClasses[size],

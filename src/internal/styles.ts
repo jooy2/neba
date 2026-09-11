@@ -55,6 +55,29 @@ export const controlHeightClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * The same ladder as a **floor**, which is what a field's shell takes.
+ *
+ * A control the library draws the contents of is exactly as tall as the ladder
+ * says. A field holds a caller's own text, and the size of that text is the
+ * first thing a caller changes — a cron expression set at `2.4rem`, which is
+ * the whole point of the tool it belongs to, had its glyphs cut off by a 48px
+ * row. A fixed height made that unfixable without an `!important`, which is
+ * the signal that the height was the wrong shape rather than the wrong number.
+ *
+ * Nothing moves at the library's own sizes: a field whose text fits is the
+ * height it always was. It is a floor only on the field shells, never on a
+ * Button or a Chip — those are flex children of a row a caller arranges, and a
+ * minimum height there is a control that stretches to whatever is beside it.
+ */
+export const fieldHeightClasses: Record<NebaSize, string> = {
+  xs: 'min-h-5.5',
+  sm: 'min-h-6.5',
+  md: 'min-h-8',
+  lg: 'min-h-10',
+  xl: 'min-h-12'
+};
+
+/**
  * The same ladder as raw lengths, for the arithmetic a class cannot do.
  *
  * `paddingXValues` is here for the same reason one level down: Tailwind only

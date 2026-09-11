@@ -7,7 +7,7 @@ import { numberMessages, useMessages } from '../../internal/i18n.js';
 import { MinusIcon, PlusIcon } from '../../internal/icons.js';
 import { keyHandler } from '../../internal/keys.js';
 import {
-  controlHeightClasses,
+  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
@@ -344,7 +344,7 @@ export function NumberField(rawProps: NumberFieldProps) {
         <BaseUINumberField.Group
           className={cx(
             shellBaseClasses,
-            controlHeightClasses[size],
+            fieldHeightClasses[size],
             controlTextLeadingClasses[size],
             radiusClasses[size],
             gapClasses[size],

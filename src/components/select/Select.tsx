@@ -6,7 +6,7 @@ import { Field } from '@base-ui/react/field';
 import { CheckIcon, ChevronIcon } from '../../internal/icons.js';
 import { WidthSizer } from '../../internal/sizer.js';
 import {
-  controlHeightClasses,
+  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
@@ -311,7 +311,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             ref={ref}
             className={cx(
               triggerBaseClasses,
-              controlHeightClasses[size],
+              fieldHeightClasses[size],
               controlTextLeadingClasses[size],
               radiusClasses[size],
               gapClasses[size],

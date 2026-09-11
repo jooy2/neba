@@ -35,7 +35,7 @@ None of the three weights flood the sheet with colour. What a field holds is tex
 
 ### size
 
-The same heights as [Button](./button), so a field and a button in one row share a baseline.
+The same heights as [Button](./button), so a field and a button in one row share a baseline. On a field the height is a **floor** rather than a fixed row: text set larger than the step — a cron expression, a code, a figure — grows the shell instead of being clipped by it.
 
 <Demo src="text-field/sizes">
 

@@ -9,7 +9,7 @@ import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icon
 import { keyHandler } from '../../internal/keys.js';
 import {
   chipRemoveClasses,
-  controlHeightClasses,
+  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
@@ -445,7 +445,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     controlTextLeadingClasses[size],
     radiusClasses[size],
     gapClasses[size],
-    isMultiple ? chipsInsetClasses[size] : controlHeightClasses[size],
+    isMultiple ? chipsInsetClasses[size] : fieldHeightClasses[size],
     // The chevron brings its own hit area; stacking the field's padding on top
     // of it would leave the glyph floating in the middle of a gap.
     `${padX} pe-1.5`,
@@ -637,7 +637,10 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         <BaseUICombobox.Portal>
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
               subtree its host may have scoped a CSS reset to. */}
-          <BaseUICombobox.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]" sideOffset={6}>
+          <BaseUICombobox.Positioner
+            className="neba-portal z-(--neba-z-portal) [outline:none]"
+            sideOffset={6}
+          >
             <BaseUICombobox.Popup
               className={cx(
                 popupClasses,
