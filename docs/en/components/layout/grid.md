@@ -50,7 +50,11 @@ The width is `(100% + gutter) × span / columns − gutter`, so twelve `span={1}
 
 Two widths are not a share of twelve. `span="auto"` is as wide as what is in the cell — an avatar, a chip, a button at the end of a row — and `span="grow"` is that plus everything the row has left over, which is how a title sits between the two.
 
-Both mix with numbers in one responsive map: `span={{ xs: 'auto', md: 4 }}` is the contents' width on a phone and a third of the row from 48rem up.
+Both mix with numbers in one responsive map — the contents' width on a phone, a third of the row from 48rem up:
+
+```tsx
+<Grid span={{ xs: 'auto', md: 4 }}>Reference</Grid>
+```
 
 <Demo src="grid/auto-grow">
 
