@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { CodeBlock } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -253,7 +254,13 @@ describe('CodeBlock', () => {
       // locator would no longer find the element it is being compared against.
       const button = screen.getByRole('button', { name: 'Copy' }).element();
 
-      await screen.getByRole('button', { name: 'Copy' }).click();
+      // Pressed from the keyboard, which is the reader this is for. A click is
+      // not the same press everywhere: WebKit outside Linux does not focus a
+      // button that is clicked, so the focus was on `<body>` before the press and
+      // handing it back there is correct.
+      (button as HTMLElement).focus();
+      await expect.poll(() => document.activeElement).toBe(button);
+      await userEvent.keyboard('{Enter}');
 
       await expect.element(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument();
       expect(document.activeElement).toBe(button);
