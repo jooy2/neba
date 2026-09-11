@@ -311,6 +311,12 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
   ) {
     const context = React.useMemo(() => ({ size, density }), [size, density]);
 
+    // Both ends of the component take them. The panel is portalled to the end
+    // of the document, so it is not a descendant of the Root and inherits
+    // nothing declared there — every slot it paints with would resolve to
+    // nothing, and it would open as a sheet of clear glass over the page.
+    const slots = surfaceSlots(color, 3);
+
     return (
       <NavigationMenuContext.Provider value={context}>
         <BaseUINavigationMenu.Root
@@ -322,13 +328,7 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
           delay={delay}
           closeDelay={closeDelay}
           className={className}
-          style={
-            {
-              ...surfaceSlots(color, 3),
-              '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
-              ...style
-            } as React.CSSProperties
-          }
+          style={{ ...slots, ...style } as React.CSSProperties}
           {...props}
         >
           <BaseUINavigationMenu.List
@@ -349,7 +349,10 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
               sideOffset={sideOffset}
               collisionPadding={12}
             >
-              <BaseUINavigationMenu.Popup className={`${popupClasses} ${radiusClasses[size]}`}>
+              <BaseUINavigationMenu.Popup
+                className={`${popupClasses} ${radiusClasses[size]}`}
+                style={slots}
+              >
                 <BaseUINavigationMenu.Viewport />
               </BaseUINavigationMenu.Popup>
             </BaseUINavigationMenu.Positioner>

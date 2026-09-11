@@ -121,6 +121,24 @@ describe('NavigationMenu', () => {
       expect(element.style.getPropertyValue('--n-line')).toBe('var(--neba-success-line)');
     });
 
+    // The panel is portalled to the end of the document, so a slot declared
+    // only on the Root reaches nothing: `bg-(--n-panel-press)` paints nothing
+    // and the sheet opens clear, with the page readable straight through it.
+    it('maps color onto the portalled panel too', async () => {
+      const screen = await render(<Nav color="success" />);
+
+      await screen.getByRole('button', { name: /Product/ }).click();
+
+      const link = screen.getByRole('link', { name: /Analytics/ });
+
+      await expect.element(link).toBeInTheDocument();
+
+      const panel = link.element().closest('.neba-portal')?.firstElementChild as HTMLElement;
+
+      expect(panel.style.getPropertyValue('--n-panel-press')).toBe('var(--neba-panel-press)');
+      expect(panel.style.getPropertyValue('--n-line')).toBe('var(--neba-success-line)');
+    });
+
     it('turns the row on its side when vertical', async () => {
       const screen = await render(<Nav orientation="vertical" />);
       const list = screen.getByRole('button', { name: /Product/ }).element().parentElement
