@@ -251,6 +251,14 @@ The one thing that may travel besides opacity is the surface's own **size**, and
 
 Both layers respect `@media (hover: hover)` and `prefers-reduced-motion`.
 
+### The focus ring arrives, and on a field it is flush
+
+The ring is declared at rest with **no width** rather than not declared at all, and what the focus changes is that width. `outline-style` is a discrete property, so a ring that exists only in the focused state has nothing to travel from; a width has. It moves at the house duration, beside the hairline under it — the two are one edge, and an edge half of which is instant reads as two things happening.
+
+On a **field's shell** the ring is flush with that edge rather than held two pixels off it. A field's hairline turns the ring's own colour the moment the focus lands, so an offset ring draws a second line with a stripe of page between the two — the shape that reads as a control wearing a halo instead of an edge that has thickened.
+
+Everywhere else it keeps the offset, and the reason is contrast rather than taste: a ring flush against a **filled** control sits on a fill of its own family, and `--n-ring` over `--n-fill` is not something to rely on. A field's sheet is the undyed panel, which is what makes it the exception.
+
 ### A ceiling on the flourish
 
 The light effects are **the highlight riding on top of the press, not the press itself**. The press is the fill going dark. That is why `--neba-flash-on-fill` is only a shade brighter than the spotlight it replaces.
@@ -306,5 +314,9 @@ This is the only kind of reason to step outside Tailwind: **step outside only wh
 Tailwind v4's `outline-*` utilities route the style through `--tw-outline-style`. An `outline-none` anywhere on the element sets that variable to `none` and **the focus ring disappears entirely.** Use the shorthand.
 
 ```
-focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2
+[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]
 ```
+
+The resting declaration is what the focused one travels from, and the focused one carries the whole shorthand rather than the width alone — a host stylesheet's `:focus-visible { outline: auto }`, which normalize and several site themes ship, is one selector, and a class alone would be decided against it by generation order.
+
+An `[outline:none]` beside that is the same mistake in the other spelling: two `outline` declarations of equal specificity. The ring is already declared at no width, which is what takes the browser's own outline off.

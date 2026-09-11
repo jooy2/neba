@@ -133,7 +133,10 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
           // `overflow: scroll` beside it, also inline.
           style={{ height: '100%', width: '100%' }}
           className={cx(
-            'overscroll-contain [outline:none]',
+            'overscroll-contain',
+            // The ring is declared at zero width, so it is also what takes the
+            // UA's own outline off. A `[outline:none]` beside it would be a
+            // second `outline` shorthand of equal specificity.
             focusRingClasses,
             // The fade is a mask rather than a gradient painted over the content:
             // a gradient would have to fade *to* a colour, and over a translucent

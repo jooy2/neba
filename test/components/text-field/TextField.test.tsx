@@ -169,6 +169,36 @@ describe('TextField', () => {
     });
   });
 
+  describe('the focus ring', () => {
+    it('sits flush with the edge it thickens', async () => {
+      // The hairline turns the ring's own colour when the focus lands, so a
+      // ring held off the edge draws a second line with a stripe of page
+      // between the two.
+      const screen = await render(<TextField label="Email" />);
+      const shell = screen.getByRole('textbox').element().parentElement;
+
+      expect(shell).toHaveClass('outline-offset-0');
+      expect(shell).toHaveClass('has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]');
+    });
+
+    it('is declared at no width rather than not declared', async () => {
+      // `outline-style` is discrete: a ring that exists only in the focused
+      // state has nothing to travel from, and appears rather than arrives.
+      const screen = await render(<TextField label="Email" />);
+      const shell = screen.getByRole('textbox').element().parentElement;
+
+      expect(shell).toHaveClass('[outline:0_solid_var(--n-ring)]');
+      expect(shell?.className).toContain('outline-width');
+    });
+
+    it('gives the focus a duration of its own rather than none', async () => {
+      const screen = await render(<TextField label="Email" />);
+      const shell = screen.getByRole('textbox').element().parentElement;
+
+      expect(shell).toHaveClass('focus-within:[transition-duration:var(--neba-duration)]');
+    });
+  });
+
   describe('style props', () => {
     it('maps color onto the token slots the styles read from', async () => {
       const screen = await render(<TextField color="success" />);

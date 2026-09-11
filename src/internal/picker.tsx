@@ -5,13 +5,14 @@ import { CloseIcon } from './icons.js';
 import { WidthSizer } from './sizer.js';
 import {
   chipRemoveClasses,
-  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
+  fieldFocusTransitionClasses,
+  fieldHeightClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
-  focusWithinRingClasses,
+  fieldRingClasses,
   gapClasses,
   iconClasses,
   metaTextClasses,
@@ -80,8 +81,8 @@ const triggerShellClasses = [
   'group relative flex w-full items-center select-none',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
-  'focus-within:[transition-duration:0ms]',
-  focusWithinRingClasses,
+  fieldFocusTransitionClasses,
+  fieldRingClasses,
   iconClasses
 ].join(' ');
 

@@ -33,6 +33,7 @@ import {
   ListItem,
   Overlay,
   Switch,
+  TextField,
   Typography
 } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
@@ -190,6 +191,19 @@ describe('neba/styles.css', () => {
 
       expect(parseFloat(styles.fontSize)).toBeCloseTo(44, 1);
       expect(parseFloat(styles.lineHeight)).toBeGreaterThan(parseFloat(styles.fontSize));
+    });
+
+    it('leave a focus ring with a width to travel from', async () => {
+      // The mechanism behind a ring that arrives rather than appears:
+      // `outline-style` is a discrete property, so the ring is declared at
+      // rest with no width, and the width is what the transition moves.
+      const screen = await render(<TextField label="Email" />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+      const styles = getComputedStyle(shell);
+
+      expect(styles.outlineStyle).toBe('solid');
+      expect(styles.outlineWidth).toBe('0px');
+      expect(styles.transitionProperty).toContain('outline-width');
     });
 
     it('outrank the reset where the two meet', async () => {

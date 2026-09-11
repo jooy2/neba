@@ -5,13 +5,14 @@ import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { SpinnerIcon } from '../../internal/icons.js';
 import {
-  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
+  fieldFocusTransitionClasses,
+  fieldHeightClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
-  focusWithinRingClasses,
+  fieldRingClasses,
   gapClasses,
   iconClasses,
   metaTextClasses,
@@ -169,15 +170,15 @@ const shellBaseClasses = [
   // because the whole shell behaves as the field, padding included.
   'group relative flex w-full cursor-text',
   '[-webkit-tap-highlight-color:transparent]',
-  // Same property list and durations as Button. There is no `:active` override
-  // because a field is not pressed — but the asymmetry still applies: focus
-  // lands on the frame of the click and drains back out over 340ms once the
-  // variant stops matching.
+  // Same property list and durations as Button, with no `:active` override
+  // because a field is not pressed. What focus does have is a duration of its
+  // own: the sheet, the hairline and the ring all travel at 160ms, rather than
+  // the sheet taking the fill's 340ms to catch up with the other two.
   transitionClasses,
-  'focus-within:[transition-duration:0ms]',
+  fieldFocusTransitionClasses,
   // The ring belongs to the shell, not to the control inside it, so it traces
   // the acrylic edge rather than a rectangle floating inside it.
-  focusWithinRingClasses,
+  fieldRingClasses,
   iconClasses
 ].join(' ');
 

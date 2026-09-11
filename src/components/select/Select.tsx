@@ -6,13 +6,14 @@ import { Field } from '@base-ui/react/field';
 import { CheckIcon, ChevronIcon } from '../../internal/icons.js';
 import { WidthSizer } from '../../internal/sizer.js';
 import {
-  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
+  fieldFocusTransitionClasses,
+  fieldHeightClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
-  focusWithinRingClasses,
+  fieldRingClasses,
   gapClasses,
   hasContent,
   iconClasses,
@@ -153,8 +154,8 @@ const triggerBaseClasses = [
   'group relative flex w-full cursor-pointer items-center select-none',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
-  'focus-within:[transition-duration:0ms]',
-  focusWithinRingClasses,
+  fieldFocusTransitionClasses,
+  fieldRingClasses,
   iconClasses
 ].join(' ');
 

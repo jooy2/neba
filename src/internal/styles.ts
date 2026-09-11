@@ -396,13 +396,19 @@ export const surfaceClasses =
  * declares them: the fill drains back slowly while edges and shadows keep up
  * with the pointer.
  *
+ * `outline-width` is in the list so the focus ring *arrives* rather than
+ * appears, at the same 160ms the hairline under it turns — the two are one
+ * edge, and an edge half of which is instant reads as two things happening.
+ * It costs nothing where there is no ring: an outline nobody declared has no
+ * width to travel.
+ *
  * No `transform` is in the list, and none should ever be added — scaling a
  * control resamples its label, and a label that shimmers under the cursor is
  * what reads as cheap.
  */
 export const transitionClasses = [
-  '[transition-property:background-color,border-color,box-shadow,color]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
+  '[transition-property:background-color,border-color,box-shadow,color,outline-width]',
+  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
   '[transition-timing-function:var(--neba-ease)]'
 ].join(' ');
 
@@ -451,13 +457,64 @@ export const popupFadeClasses = [
  * `outline-2` + colour pair: the utilities route the style through
  * `--tw-outline-style`, which any `outline-none` on the element (ours or a
  * consumer's) would zero out.
+ *
+ * Declared at **zero width** in the resting state as well, which is the whole
+ * of what lets it arrive rather than appear. `outline-style` is a discrete
+ * property, so a ring that exists only in the focused state has nothing to
+ * travel from; a width has. Whatever draws the house transition gets that for
+ * nothing, and a reader who has asked for less motion gets it instantly,
+ * because every duration in this library is one token.
+ *
+ * The focused state still carries the **whole shorthand** rather than the
+ * width alone, and that is not a duplicate: the resting declaration is one
+ * class, and a host stylesheet's `:focus-visible { outline: auto }` — which
+ * normalize and several site themes ship — is also one selector, so the two
+ * would be decided by whichever was generated last. Written as a class plus a
+ * pseudo-class it outranks them and the ring cannot be taken away by a
+ * stylesheet that has never heard of this library.
  */
 export const focusRingClasses =
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
+  '[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]';
 
 /** The same ring, drawn by whichever descendant actually takes focus. */
 export const focusWithinRingClasses =
-  'has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[:focus-visible]:outline-offset-2';
+  '[outline:0_solid_var(--n-ring)] outline-offset-2 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]';
+
+/**
+ * The ring a **field's shell** takes, and the one place in the library it is
+ * flush with the edge instead of standing off it.
+ *
+ * A field's hairline turns the ring's own colour the moment the focus lands,
+ * so a ring held two pixels out draws a second line with a stripe of page
+ * between the two. That is the shape that reads as a control wearing a halo
+ * rather than as an edge that has thickened, and it is the one thing about a
+ * focused field people describe as looking dated. Flush, the border and the
+ * ring are one edge — which is what they are.
+ *
+ * It is the field shells and nothing else, for a reason worth writing down: a
+ * ring flush against a *filled* control would sit on a fill of its own family,
+ * and `--n-ring` over `--n-fill` is not a contrast anybody can rely on. What
+ * makes a field the exception is that its sheet is the undyed panel, so the
+ * ring has the page to be seen against however the control is variant-ed.
+ */
+export const fieldRingClasses =
+  '[outline:0_solid_var(--n-ring)] outline-offset-0 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]';
+
+/**
+ * How long a field takes to answer the focus.
+ *
+ * The six field shells held every duration at 0ms while the focus was inside,
+ * which is the house rule about a press applied one step too far: clicking
+ * into a field is a press, but what that made instant is the focus *ring*, and
+ * a ring is not the answer to a press. It is the answer to the caret being
+ * somewhere, and it arrives from a Tab as often as from a click.
+ *
+ * So the edge, the sheet and the ring travel together, at the house duration
+ * rather than the fill's longer one — a field that took 340ms to light up
+ * would be answering after the reader had started typing.
+ */
+export const fieldFocusTransitionClasses =
+  'focus-within:[transition-duration:var(--neba-duration)]';
 
 /**
  * Cutting text off after a given number of lines.
@@ -619,14 +676,20 @@ export const fieldRestClasses: Record<NebaVariant, string> = {
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
     'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
-    'focus-within:bg-(--n-panel-hover) focus-within:[border-color:var(--n-ring)]'
+    'focus-within:bg-(--n-panel-hover) focus-within:[border-color:var(--n-ring)]',
+    // Both at once, spelled out: `hover:` and `focus-within:` are one class
+    // each, so which of them a pointer resting on a focused field gets is
+    // decided by the order Tailwind generated them in. The hairline was
+    // coming out a shade under the ring it is flush against.
+    'focus-within:hover:[border-color:var(--n-ring)]'
   ].join(' '),
   // No surface until it is wanted — the field in a table cell that only looks
   // like a field once you go near it.
   text: [
     'text-(--neba-fg) bg-transparent',
     'hover:bg-(--n-soft)',
-    'focus-within:bg-(--n-soft-hover)'
+    'focus-within:bg-(--n-soft-hover)',
+    'focus-within:hover:bg-(--n-soft-hover)'
   ].join(' ')
 };
 

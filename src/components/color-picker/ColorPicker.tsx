@@ -503,7 +503,6 @@ function ColorPanel({
                   '[border-color:color-mix(in_oklab,var(--neba-fg)_18%,transparent)]',
                   '[transition:box-shadow_var(--neba-duration)_var(--neba-ease)]',
                   focusRingClasses,
-                  '[outline:none]',
                   inert
                     ? 'cursor-default'
                     : 'cursor-pointer hover:[box-shadow:var(--neba-shadow-1)]',

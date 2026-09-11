@@ -107,13 +107,14 @@ The governing idea: **a Neba surface is a sheet of cut acrylic, not a moulded pl
 - **No dark bottom bevel** (`inset 0 -1px 0 black`). Top light edge plus a full white hairline only — and no plate at all on a Checkbox, a Radio or a Switch, where a 1px line is a fifteenth of the object rather than light on an edge.
 - **Translucency is tuned with the blur radius, not just the alpha.** Too much blur smears the backdrop into flat colour and the surface reads opaque again.
 - **`density` changes padding only** — never height, never type scale.
+- **A field's height is a floor** (`fieldHeightClasses`, `min-h-*`) and everything else's is exact (`controlHeightClasses`, `h-*`). A field holds a caller's own text, which may be set larger than the step; a Button is a flex child of a row a caller arranges, where a minimum height is a control that stretches to its neighbour.
 - **Don't express state with `opacity`.** Each state gets its own axis (saturation, colour family, flatness).
 
 Implementation rules that are easy to get wrong:
 
 - **Branch state in JS, not in stacked Tailwind variants.** Two variants of equal specificity resolve by their order in the generated stylesheet. Use `disabled ? … : readOnly ? … : …`.
 - **Per-colour values go in inline `--n-*` slots, not in generated class names.** Tailwind only sees literal class names, so `[--n-fill:var(--neba-primary-fill)]` per family does not scale. `styleSlots()` in `Button.tsx` is the pattern.
-- **Never `outline-none`.** Tailwind v4 routes outline style through `--tw-outline-style`, which `outline-none` zeroes — killing the focus ring. Use the shorthand: `focus-visible:[outline:2px_solid_var(--n-ring)]`.
+- **Never `outline-none`.** Tailwind v4 routes outline style through `--tw-outline-style`, which `outline-none` zeroes — killing the focus ring. Use the shorthand, and declare the ring at rest with no width so the focus has something to move: `[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]` — the focused half keeps the whole shorthand, since a host's `:focus-visible { outline: auto }` is one selector and a class alone would be decided against it by generation order. An `[outline:none]` beside it is the same mistake in the other spelling — two `outline` declarations of equal specificity, decided by generation order. **On a field's shell the ring is flush** (`fieldRingClasses`, offset 0) because the hairline under it is already the ring's colour; everywhere else it keeps the offset, because a flush ring on a filled control sits on a fill of its own family.
 - **Derived tokens are repeated per theme root.** A custom property resolves its `var()`s on the element that declares it, so a derived token declared only on `:root` freezes to light-theme values inside a `.dark` subtree.
 - **Adding a colour family = two edits.** One entry in `NebaColor` and five tokens in `src/styles.css`. Everything else is derived with `color-mix()`.
 

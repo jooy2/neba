@@ -9,13 +9,14 @@ import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icon
 import { keyHandler } from '../../internal/keys.js';
 import {
   chipRemoveClasses,
-  fieldHeightClasses,
   controlTextLeadingClasses,
   cx,
   disabledClasses,
+  fieldFocusTransitionClasses,
+  fieldHeightClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
-  focusWithinRingClasses,
+  fieldRingClasses,
   gapClasses,
   hasContent,
   iconClasses,
@@ -232,8 +233,8 @@ const shellBaseClasses = [
   'group relative flex w-full cursor-text items-center',
   '[-webkit-tap-highlight-color:transparent]',
   transitionClasses,
-  'focus-within:[transition-duration:0ms]',
-  focusWithinRingClasses,
+  fieldFocusTransitionClasses,
+  fieldRingClasses,
   iconClasses
 ].join(' ');
 
