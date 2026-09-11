@@ -193,6 +193,23 @@ describe('neba/styles.css', () => {
       expect(parseFloat(styles.lineHeight)).toBeGreaterThan(parseFloat(styles.fontSize));
     });
 
+    it('leave a truncated label room for its descenders', async () => {
+      // A chip sets its row at `leading-none` and its label at `truncate`, which
+      // is `overflow: hidden`. A one-em line box is shorter than the glyphs in
+      // it, so the clip took the tail off every g, j, p, q and y. What is
+      // measured is the text's own content area against the box that clips it.
+      const screen = await render(<Chip>Typography</Chip>);
+      const label = screen.getByText('Typography').element() as HTMLElement;
+      const glyphs = document.createRange();
+
+      glyphs.selectNodeContents(label);
+
+      expect(getComputedStyle(label).overflow).toBe('hidden');
+      expect(label.clientHeight).toBeGreaterThanOrEqual(
+        Math.floor(glyphs.getBoundingClientRect().height)
+      );
+    });
+
     it('leave a focus ring with a width to travel from', async () => {
       // The mechanism behind a ring that arrives rather than appears:
       // `outline-style` is a discrete property, so the ring is declared at

@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A `Chip` keeps the tails of its letters.** The label is truncated, and truncation clips at the line box, which the chip's one-em leading made shorter than the glyphs inside it — so every g, j, p, q and y lost its descender, at every size. The label's line box is now the font's own height. The chip is the same height and the words sit where they did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
