@@ -102,6 +102,32 @@ describe('Combobox', () => {
       expect(screen.getByRole('option', { name: 'Svelte' }).query()).toBeNull();
     });
 
+    it('keeps every row when the filter is off', async () => {
+      // What a list narrowed by a server needs: the rows came back matching a
+      // keyword the label does not contain, and filtering them again here
+      // would drop exactly the results the search was for.
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" filter={false} />);
+
+      await screen.getByRole('combobox').fill('vu');
+
+      await expect.element(screen.getByRole('option', { name: 'Svelte' })).toBeInTheDocument();
+    });
+
+    it('takes a filter of its own', async () => {
+      const screen = await render(
+        <Combobox
+          items={FRAMEWORKS}
+          label="Framework"
+          filter={(option, query) => String(option.value).startsWith(query)}
+        />
+      );
+
+      await screen.getByRole('combobox').fill('re');
+
+      await expect.element(screen.getByRole('option', { name: 'React' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Vue' }).query()).toBeNull();
+    });
+
     it('honours a controlled value', async () => {
       const screen = await render(
         <Combobox items={FRAMEWORKS} label="Framework" value="react" onValueChange={() => {}} />

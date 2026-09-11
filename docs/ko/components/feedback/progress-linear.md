@@ -34,6 +34,14 @@ import { ProgressLinear } from 'neba';
 
 </Demo>
 
+### thickness
+
+`size`는 라이브러리의 사다리 위 한 단계이고, `thickness`는 픽셀 값입니다. 페이지가 그 숫자 하나를 위해 존재할 때 쓰는 prop입니다. 바뀌는 것은 홈의 두께뿐이고, 옆에 붙는 라벨의 타입 스케일은 `size`가 계속 맡습니다.
+
+```tsx
+<ProgressLinear value={62} thickness={12} />
+```
+
 ### min · max · format
 
 표시되는 백분율은 100이 아니라 `min`…`max` 구간에 대한 비율입니다. `showValue`로 값을 옆에 띄우고, `format`에 `Intl.NumberFormat` 옵션을 주면 바이트나 파일 수, 금액처럼 숫자 자체를 보여 줄 수 있습니다.

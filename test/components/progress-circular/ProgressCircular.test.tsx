@@ -80,6 +80,25 @@ describe('ProgressCircular', () => {
     });
   });
 
+  describe('thickness', () => {
+    it('takes a stroke of its own over the step it would have had', async () => {
+      const screen = await render(<ProgressCircular value={40} size="xl" thickness={6} />);
+      const ring = screen.getByRole('progressbar').element().querySelector('circle');
+
+      expect(ring).toHaveAttribute('stroke-width', '6');
+    });
+
+    it('holds the stroke inside the ring it describes', async () => {
+      // Past half the radius there is no hole left in the middle of it, and
+      // past the diameter the radius the arc is drawn on goes negative.
+      const screen = await render(<ProgressCircular value={40} size="md" thickness={400} />);
+      const ring = screen.getByRole('progressbar').element().querySelector('circle');
+
+      expect(Number(ring?.getAttribute('stroke-width'))).toBeLessThanOrEqual(10);
+      expect(Number(ring?.getAttribute('r'))).toBeGreaterThan(0);
+    });
+  });
+
   describe('indeterminate', () => {
     it('is indeterminate by default', async () => {
       const screen = await render(<ProgressCircular />);

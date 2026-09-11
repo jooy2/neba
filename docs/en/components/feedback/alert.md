@@ -60,6 +60,8 @@ An alert is the thing being coloured, so unlike a [Box](../surfaces/box) its she
 
 Pass a node to replace the default glyph, or `icon={false}` to draw none.
 
+An `<svg>` anywhere in an alert is sized to `1.2em` of the text around it, so an icon from any set arrives at the right size without being told one. Anything that is not an `<svg>` — an `<img>`, a sprite, a glyph in a font — carries its own size.
+
 ### action and onClose
 
 `action` is a slot outside `children`, so it stays on the first line while the message wraps beside it. Passing `onClose` is what makes the × appear.

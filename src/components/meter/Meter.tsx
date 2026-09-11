@@ -6,7 +6,8 @@ import {
   barThicknessClasses,
   progressFraction,
   progressSlots,
-  thresholdColor
+  thresholdColor,
+  type ProgressThickness
 } from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
@@ -47,6 +48,12 @@ export interface MeterProps extends Omit<
   thresholds?: readonly NebaThreshold[];
   /** Thickness of the groove. Nothing else on a bar has a size. @default 'md' */
   size?: NebaSize;
+  /**
+   * The groove's thickness in pixels, when the step's own is not the one you
+   * want. The same prop a [ProgressLinear](./progress-linear) takes, because
+   * the two draw the same groove.
+   */
+  thickness?: ProgressThickness;
   /** The family the bar carries before any threshold is reached. @default 'primary' */
   color?: NebaColor;
 }
@@ -77,6 +84,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     showValue = false,
     format,
     thresholds,
+    thickness,
     size = 'md',
     color = 'primary',
     className,
@@ -123,7 +131,10 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
         </div>
       ) : null}
 
-      <BaseUIMeter.Track className={`${trackClasses} ${barThicknessClasses[size]}`}>
+      <BaseUIMeter.Track
+        className={`${trackClasses} ${barThicknessClasses[size]}`}
+        style={thickness === undefined ? undefined : { height: `${thickness}px` }}
+      >
         <BaseUIMeter.Indicator
           // An inline width, never a transform — and a transition on it so a
           // reading that changes travels there rather than jumping.

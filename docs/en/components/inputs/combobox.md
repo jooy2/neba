@@ -98,6 +98,23 @@ A single-select Combobox is exactly as tall as a [TextField](./text-field) of th
 
 `clearable` adds a button that empties the value. `limit` caps how many items the popup shows at once.
 
+### filter
+
+By default the typed text narrows the list here, accent- and case-insensitively, against each option's label.
+
+**A list the server has already narrowed needs `filter={false}`.** A search that matched on a keyword, a description or a synonym sends back rows whose visible label does not contain the query at all, and filtering them a second time drops exactly the results the search was for. Fetch on `onInputValueChange`, hand the answer to `items`, and let it through:
+
+```tsx
+<Combobox
+  items={results}
+  filter={false}
+  onInputValueChange={(query) => search(query)}
+  label="Customer"
+/>
+```
+
+A function decides per option instead — matching the `value` as well as the label, or matching from the start of a word rather than anywhere in it. The row that offers to add what was typed is never filtered out.
+
 ## The popup
 
 Identical to [Select](./select)'s: portalled to the end of `<body>`, with `neba-portal` on the positioner.

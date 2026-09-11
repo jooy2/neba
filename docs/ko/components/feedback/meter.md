@@ -59,6 +59,10 @@ import { Meter } from 'neba';
 
 </Demo>
 
+### thickness
+
+[ProgressLinear](./progress-linear)이 받는 것과 같은 prop이고, 이유도 같습니다. `size`는 사다리 위 한 단계, `thickness`는 픽셀 값입니다.
+
 ## 접근성
 
 - 값과 범위 속성을 가진 `role="meter"`로 렌더링됩니다.

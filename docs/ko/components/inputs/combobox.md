@@ -98,6 +98,23 @@ interface ComboboxOption {
 
 `clearable`은 값을 비우는 버튼을 붙입니다. `limit`은 팝업에 한 번에 표시할 항목 수를 제한합니다.
 
+### filter
+
+기본값은 입력한 글자로 목록을 좁히는 것입니다. 각 옵션의 label에 대해 대소문자와 악센트를 무시하고 비교합니다.
+
+**서버가 이미 좁혀 준 목록에는 `filter={false}`가 필요합니다.** 키워드나 설명, 동의어로 검색한 결과에는 눈에 보이는 label에 질의가 들어 있지 않은 행이 섞여 있고, 여기서 한 번 더 거르면 검색이 찾아 준 결과가 바로 그 행들과 함께 사라집니다. `onInputValueChange`에서 요청하고, 받은 결과를 `items`에 넘기고, 거르지 않으면 됩니다.
+
+```tsx
+<Combobox
+  items={results}
+  filter={false}
+  onInputValueChange={(query) => search(query)}
+  label="Customer"
+/>
+```
+
+함수를 넘기면 옵션마다 직접 판단합니다. label뿐 아니라 `value`까지 보거나, 단어 중간이 아니라 앞부터 맞는 것만 남기는 식입니다. 입력한 값을 추가하겠다고 제안하는 행은 어떤 경우에도 걸러지지 않습니다.
+
 ## 팝업
 
 [Select](./select)의 팝업과 동일합니다. `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.

@@ -99,6 +99,24 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
   /** The initially chosen value, for an uncontrolled combobox. */
   defaultValue?: Selection<Multiple> | null;
   onValueChange?: (value: Selection<Multiple>) => void;
+  /**
+   * How the typed text narrows the list, when the default is not what should
+   * happen.
+   *
+   * `false` turns the filter off, which is what a list that is **already**
+   * narrowed needs: a server that matched on a keyword, a description or a
+   * synonym sends back rows whose visible label does not contain the query at
+   * all, and filtering them a second time here drops exactly the results the
+   * search was for. Fetch on `onInputValueChange`, hand the answer to `items`,
+   * and let it through.
+   *
+   * A function decides per option — matching a `value` as well as a label, or
+   * matching from the start of a word rather than anywhere in it. The row that
+   * offers to add what was typed is never filtered out: it *is* the query.
+   *
+   * @default the accent- and case-insensitive match Base UI does
+   */
+  filter?: false | ((option: ComboboxOption, query: string) => boolean);
   /** Called as the text in the input changes — the filter query, not the value. */
   onInputValueChange?: (inputValue: string) => void;
   /**
@@ -318,6 +336,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     value,
     defaultValue,
     onValueChange,
+    filter,
     onInputValueChange,
     allowCustom = true,
     customLabel,
@@ -555,6 +574,15 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         itemToStringValue={(entry) => String(entry.value)}
         isItemEqualToValue={(a, b) => a.value === b.value}
         limit={limit}
+        // `null` is Base UI's "keep everything", and the custom row is exempt
+        // from a caller's own answer because it is the query written out.
+        filter={
+          filter === false
+            ? null
+            : filter
+              ? (entry: Entry, query: string) => entry.custom === true || filter(entry, query)
+              : undefined
+        }
         disabled={disabled}
         readOnly={readOnly}
         required={required}

@@ -34,6 +34,14 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 </Demo>
 
+### thickness
+
+`size` is the ring's diameter; `thickness` is its stroke in pixels, for a dial a screen is actually about. The stroke is held inside the ring — past half the radius there would be no hole left in the middle of it.
+
+```tsx
+<ProgressCircular value={62} size="xl" thickness={6} />
+```
+
 ### Inside a control
 
 The ring sits one step under the control height at every size (an `md` ring is 20px inside a 32px control), so dropping one into a button, a field or a table row never makes the row taller.

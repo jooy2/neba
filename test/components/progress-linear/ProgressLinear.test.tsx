@@ -75,6 +75,22 @@ describe('ProgressLinear', () => {
     });
   });
 
+  describe('thickness', () => {
+    it('takes a groove height of its own over the step it would have had', async () => {
+      const screen = await render(<ProgressLinear value={40} thickness={12} />);
+      const track = screen.getByRole('progressbar').element().querySelector('div') as HTMLElement;
+
+      expect(track.style.height).toBe('12px');
+    });
+
+    it('leaves the ladder to decide when it is not given', async () => {
+      const screen = await render(<ProgressLinear value={40} />);
+      const track = screen.getByRole('progressbar').element().querySelector('div') as HTMLElement;
+
+      expect(track.style.height).toBe('');
+    });
+  });
+
   describe('indeterminate', () => {
     it('is indeterminate by default', async () => {
       const screen = await render(<ProgressLinear />);

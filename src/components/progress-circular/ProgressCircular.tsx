@@ -9,7 +9,8 @@ import {
   progressText,
   ringDiameters,
   ringStrokes,
-  type ProgressSharedProps
+  type ProgressSharedProps,
+  type ProgressThickness
 } from '../../internal/progress.js';
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
@@ -20,6 +21,15 @@ export interface ProgressCircularProps extends ProgressSharedProps {
   size?: NebaSize;
   /** @default 'primary' */
   color?: NebaColor;
+  /**
+   * The ring's stroke in pixels, when the step's own is not the one you want —
+   * a heavier dial for a reading a screen is actually about. `size` still sets
+   * the diameter, so this is how thick the ring is and not how big.
+   *
+   * Held to less than half the radius: a stroke past that closes the hole and
+   * the ring stops being one.
+   */
+  thickness?: ProgressThickness;
 }
 
 /**
@@ -42,6 +52,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       label,
       showValue = false,
       format,
+      thickness,
       className,
       style,
       ...props
@@ -52,8 +63,11 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
     const hasFormat = format !== undefined;
 
     const diameter = ringDiameters[size];
-    const stroke = ringStrokes[size];
     const centre = diameter / 2;
+    // A stroke thicker than the radius has no hole left in the middle of it,
+    // and one past the diameter inverts the arithmetic below into a negative
+    // radius — so the caller's number is held inside the ring it describes.
+    const stroke = Math.min(Math.max(thickness ?? ringStrokes[size], 0.5), centre);
     // The stroke straddles the path, so the radius has to come in by half of it
     // or the ring is clipped by its own viewBox.
     const radius = centre - stroke / 2;

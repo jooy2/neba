@@ -59,6 +59,10 @@ Where the bar changes colour. Each entry is a point on the scale and the family 
 
 </Demo>
 
+### thickness
+
+The same prop a [ProgressLinear](./progress-linear) takes, and for the same reason: `size` is a step on the ladder, `thickness` is a number of pixels.
+
 ## Accessibility
 
 - Carries `role="meter"` with the value and range attributes.

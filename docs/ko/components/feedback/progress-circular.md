@@ -34,6 +34,14 @@ import { ProgressCircular } from 'neba';
 
 </Demo>
 
+### thickness
+
+`size`는 고리의 지름이고, `thickness`는 고리 선의 두께를 픽셀로 정합니다. 화면이 그 수치 하나를 위해 존재할 때 쓰는 prop입니다. 두께는 고리 안쪽으로 잡히며, 반지름의 절반을 넘으면 가운데 구멍이 사라지므로 거기서 멈춥니다.
+
+```tsx
+<ProgressCircular value={62} size="xl" thickness={6} />
+```
+
 ### 컨트롤 안에 넣기
 
 고리는 각 단계에서 컨트롤 높이보다 한 단계 작습니다. `md` 고리는 32px 컨트롤 안의 20px입니다. 버튼이나 필드, 표의 행에 넣어도 행 높이가 늘어나지 않습니다.

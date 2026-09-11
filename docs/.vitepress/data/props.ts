@@ -2944,6 +2944,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'thickness',
+      type: 'number',
+      description: {
+        ko: '홈의 두께를 픽셀로 직접 정합니다. ProgressLinear이 받는 것과 같은 prop입니다',
+        en: "The groove's thickness in pixels. The same prop a ProgressLinear takes"
+      }
+    },
+    {
       name: 'color',
       type: COLOR,
       default: "'primary'",
@@ -6871,15 +6879,35 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
-  ProgressLinear: progressProps({
-    ko: '홈의 두께. 막대에서 크기를 가지는 것은 이것뿐입니다',
-    en: 'Thickness of the groove. Nothing else on a bar has a size'
-  }),
+  ProgressLinear: [
+    ...progressProps({
+      ko: '홈의 두께. 막대에서 크기를 가지는 것은 이것뿐입니다',
+      en: 'Thickness of the groove. Nothing else on a bar has a size'
+    }),
+    {
+      name: 'thickness',
+      type: 'number',
+      description: {
+        ko: '홈의 두께를 픽셀로 직접 정합니다. size는 옆에 붙는 글자 크기를 계속 맡습니다',
+        en: "The groove's thickness in pixels, when the step's own is not the one you want. size still sets the type scale beside it"
+      }
+    }
+  ],
 
-  ProgressCircular: progressProps({
-    ko: '고리의 지름. 매 단계에서 컨트롤 사다리 바로 아래에 놓이므로, 버튼이나 필드 안에 넣어도 행이 높아지지 않습니다',
-    en: 'Diameter of the ring. It lands just under the control ladder at every step, so dropping one into a button or a field never makes the row taller'
-  }),
+  ProgressCircular: [
+    ...progressProps({
+      ko: '고리의 지름. 매 단계에서 컨트롤 사다리 바로 아래에 놓이므로, 버튼이나 필드 안에 넣어도 행이 높아지지 않습니다',
+      en: 'Diameter of the ring. It lands just under the control ladder at every step, so dropping one into a button or a field never makes the row taller'
+    }),
+    {
+      name: 'thickness',
+      type: 'number',
+      description: {
+        ko: '고리 선의 두께를 픽셀로 직접 정합니다. size는 지름을 계속 맡습니다. 반지름의 절반을 넘지 않게 잡힙니다',
+        en: "The ring's stroke in pixels, when the step's own is not the one you want. size still sets the diameter, and the stroke is held inside the ring"
+      }
+    }
+  ],
 
   ProgressBox: [
     ...progressProps({
@@ -8222,6 +8250,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '입력란의 글자가 바뀔 때. 값이 아니라 필터 질의입니다',
         en: 'Called as the text in the input changes: the filter query, not the value'
+      }
+    },
+    {
+      name: 'filter',
+      type: 'false | ((option: ComboboxOption, query: string) => boolean)',
+      description: {
+        ko: '타이핑이 목록을 좁히는 방식. false면 거르지 않습니다. 서버가 이미 좁혀 준 목록에 씁니다',
+        en: 'How the typed text narrows the list. false filters nothing, which is what a list a server has already narrowed needs'
       }
     },
     {

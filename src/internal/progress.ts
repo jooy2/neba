@@ -125,6 +125,17 @@ export const barThicknessClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * How thick the line is, when a caller says so rather than the ladder.
+ *
+ * In pixels, because that is what the ring's arithmetic already works in and a
+ * bar and a ring should not take the number two different ways. `size` still
+ * decides everything else — the type scale beside the shape, the ring's
+ * diameter — so this is the one measurement pulled out of the step rather than
+ * a second size ladder.
+ */
+export type ProgressThickness = number;
+
+/**
  * The diameter of the ring, in pixels.
  *
  * Numbers rather than classes because the same value has to reach the SVG's

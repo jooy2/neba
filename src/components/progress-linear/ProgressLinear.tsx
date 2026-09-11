@@ -8,7 +8,8 @@ import {
   progressFraction,
   progressSlots,
   progressText,
-  type ProgressSharedProps
+  type ProgressSharedProps,
+  type ProgressThickness
 } from '../../internal/progress.js';
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
@@ -19,6 +20,12 @@ export interface ProgressLinearProps extends ProgressSharedProps {
   size?: NebaSize;
   /** @default 'primary' */
   color?: NebaColor;
+  /**
+   * The groove's thickness in pixels, when the step's own is not the one you
+   * want — a heavier bar for a page that is about the one number. `size` still
+   * sets the type scale beside it.
+   */
+  thickness?: ProgressThickness;
 }
 
 /**
@@ -50,6 +57,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       label,
       showValue = false,
       format,
+      thickness,
       className,
       style,
       ...props
@@ -90,7 +98,10 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
           </div>
         ) : null}
 
-        <Progress.Track className={`${trackClasses} ${barThicknessClasses[size]}`}>
+        <Progress.Track
+          className={`${trackClasses} ${barThicknessClasses[size]}`}
+          style={thickness === undefined ? undefined : { height: `${thickness}px` }}
+        >
           <Progress.Indicator
             className={[
               'absolute rounded-full bg-(--n-fill)',

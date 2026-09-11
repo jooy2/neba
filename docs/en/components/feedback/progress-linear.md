@@ -34,6 +34,14 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 </Demo>
 
+### thickness
+
+`size` is a step on the library's ladder; `thickness` is a number of pixels, for the bar a page is actually about. It changes the groove alone — `size` still sets the type scale of the label beside it.
+
+```tsx
+<ProgressLinear value={62} thickness={12} />
+```
+
 ### min · max · format
 
 The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself: bytes, files, currency.
