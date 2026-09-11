@@ -176,23 +176,7 @@ Placement props are logical, not physical (`start`/`end` rather than `left`/`rig
 
 ### Components
 
-**Inputs**: Button, IconButton, ButtonGroup, SegmentedButton, Toggle, ToggleGroup, Form, Fieldset, FloatingActionButton (with FloatingAction), TextField, NumberField, OtpField, Select, Combobox, TreeSelect, Checkbox, RadioGroup, Switch, Slider, Rating, Menu (with submenus, checkbox and radio items), ContextMenu, Menubar, NavigationMenu, CommandPalette, FilePicker, Transfer, Pagination, BottomNavigation, FloatingBottomNavigation, ColorPicker, Calendar, DatePicker, TimePicker, DateTimePicker, DateRangePicker
-
-**Surfaces**: Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, HowToSteps, ChatBubble, Drawer, Popover, Mockup, WindowPane, HoverCard
-
-**Display**: Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Image, Gallery, Shortcut, List, DataList, Table, DataTable, CodeBlock, Timeline, Breadcrumb, Anchor, TreeView, VisuallyHidden
-
-**Charts**: Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart, ScatterChart, TimelineChart, HeatmapChart, GaugeChart
-
-**Feedback**: Alert, Dialog, Confirm, Popconfirm, Toast, Tooltip, Overlay, Skeleton, Empty, ProgressLinear, ProgressCircular, ProgressBox, Meter, Tour
-
-**Layout**: PageLayout (with Header, Footer and Sidebar), Container, Grid (with GridContainer), Flex, Panes, Stack, Show, AspectRatio, Portal, ScrollZone, ScrollArea
-
-**Transitions**: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit, AnimateTyping, AnimateScramble, AnimateCounter, AnimateLighting, AnimateMarquee, AnimateHeadline
-
-**Added in the last two releases**: Gallery, Flex, Show, Stack and the six new `Animate*` (Reveal, Float, Shake, Split, Counter, Scramble) in 1.12.0; Calendar, TreeSelect, Image, Confirm, Popconfirm and VisuallyHidden in 1.11.0. The [changelog](https://neba.cdget.com/changelog) has the rest.
-
-Each one has its own page (live previews, every prop, and the variations worth seeing) under [**All components**](https://neba.cdget.com/components/).
+The components come in seven groups: inputs, surfaces, display, charts, feedback, layout and transitions. Each one has its own page (live previews, every prop, and the variations worth seeing) under [**All components**](https://neba.cdget.com/components/).
 
 ### Theming and dark mode
 
