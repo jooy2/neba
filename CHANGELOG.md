@@ -58,6 +58,8 @@ Registering a language ships that language's whole module, so the twenty picker 
 
 ### Fixed
 
+- **A responsive slot no longer inherits into a nested component.** Every value that changes at a breakpoint resolves through a custom property, one per breakpoint, and only the breakpoints a caller names are written — so a slot an element did not write was whatever the nearest ancestor had written. A `GridContainer` inside a `Grid` read the _item's_ `--n-span-md` and came out a fraction of the width it had asked for, and the same shape covered every gutter, column count, flex direction and content measure in the library. The element that reads a slot now clears it, which an inline style still outranks.
+
 - **Dragging a run of rows in a `DataTable` no longer selects the text it crosses.** It was the last drag in the library written by hand, and it had the hole the column resize used to have: no text-selection suppression, over every cell the pointer passed rather than the two beside a boundary. It goes through `beginPointerDrag` now — captured to the table rather than to the row that was pressed, since a virtual body unmounts a row the moment it scrolls away. The auto-scroll at the edge stays where it is.
 
 - **A `TreeSelect`'s clear button says "Clear" in every language no longer.** It was named out of the pickers' English defaults — a set it has nothing else to do with — rather than out of the same `action` messages the identical × on a `Combobox` reads. It takes a `clearLabel` like `Combobox` does, too.

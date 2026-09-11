@@ -1463,6 +1463,72 @@
  * change at the same moment — including when a consumer has moved them.
  * ------------------------------------------------------------------------- */
 
+/* Every breakpoint slot is cleared on the element that reads it, and that is
+   what keeps a nested component from reading its ancestor's layout.
+
+   A custom property inherits, and a slot the element did not write is
+   therefore whatever the nearest ancestor wrote — so a grid inside a grid item
+   resolved the *item's* `--n-span-md` and came out a third of the width it had
+   asked for. Only the breakpoints a caller names are emitted, which is what
+   keeps the inline style to one property, so there is nothing on the element
+   to overwrite the inherited value with.
+
+   An inline style wins over this rule, so a component that really did name a
+   breakpoint is untouched. What is deliberately *not* cleared is the resolved
+   slot beside each of these: `--n-cols` and `--n-gap-x` are read by a grid's
+   items rather than by the grid, and inheriting is how they get there. */
+.neba-grid,
+.neba-flex {
+  --n-gap-x-xs: initial;
+  --n-gap-x-sm: initial;
+  --n-gap-x-md: initial;
+  --n-gap-x-lg: initial;
+  --n-gap-x-xl: initial;
+  --n-gap-y-xs: initial;
+  --n-gap-y-sm: initial;
+  --n-gap-y-md: initial;
+  --n-gap-y-lg: initial;
+  --n-gap-y-xl: initial;
+}
+
+.neba-grid,
+.neba-gallery {
+  --n-cols-xs: initial;
+  --n-cols-sm: initial;
+  --n-cols-md: initial;
+  --n-cols-lg: initial;
+  --n-cols-xl: initial;
+}
+
+.neba-flex {
+  --n-flex-dir-xs: initial;
+  --n-flex-dir-sm: initial;
+  --n-flex-dir-md: initial;
+  --n-flex-dir-lg: initial;
+  --n-flex-dir-xl: initial;
+}
+
+.neba-measure {
+  --n-max-w-xs: initial;
+  --n-max-w-sm: initial;
+  --n-max-w-md: initial;
+  --n-max-w-lg: initial;
+  --n-max-w-xl: initial;
+}
+
+.neba-grid-item {
+  --n-span-xs: initial;
+  --n-span-sm: initial;
+  --n-span-md: initial;
+  --n-span-lg: initial;
+  --n-span-xl: initial;
+  --n-offset-xs: initial;
+  --n-offset-sm: initial;
+  --n-offset-md: initial;
+  --n-offset-lg: initial;
+  --n-offset-xl: initial;
+}
+
 /* The two gutters, shared: a GridContainer and a Flex ask the same question
    and `spacing` has to mean the same number on both.
 

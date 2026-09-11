@@ -21,7 +21,19 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, Checkbox, Chip, Container, Flex, List, ListItem, Switch, Typography } from 'neba';
+import {
+  Button,
+  Checkbox,
+  Chip,
+  Container,
+  Flex,
+  Grid,
+  GridContainer,
+  List,
+  ListItem,
+  Switch,
+  Typography
+} from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 import pkg from '../../package.json';
 
@@ -272,6 +284,28 @@ describe('neba/styles.css', () => {
       const screen = await render(<Flex>Row</Flex>);
 
       expect(getComputedStyle(screen.getByText('Row').element()).flexDirection).toBe('row');
+    });
+
+    it('keeps a breakpoint slot from inheriting into a nested component', async () => {
+      // A custom property inherits, and the slots are emitted only for the
+      // breakpoints a caller named — so an inner grid item that says nothing
+      // at a width used to resolve whatever the *outer* item had written
+      // there, and came out a fraction of the width it had asked for. The
+      // element that reads a slot clears it, which an inline style still wins
+      // over.
+      const screen = await render(
+        <GridContainer padded={false} spacing={0}>
+          <Grid span={4}>
+            <GridContainer padded={false} spacing={0}>
+              <Grid>Full row</Grid>
+            </GridContainer>
+          </Grid>
+        </GridContainer>
+      );
+      const inner = screen.getByText('Full row').element();
+      const row = inner.parentElement as HTMLElement;
+
+      expect(inner.getBoundingClientRect().width).toBeCloseTo(row.getBoundingClientRect().width, 1);
     });
 
     it('leaves no theme() call for a consumer build to resolve', () => {
