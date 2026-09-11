@@ -378,7 +378,7 @@ function ToastViewport(
           // Full width and `pointer-events-none`, so the strip across the top or
           // the bottom of the page is not a wall the rest of the app is behind.
           // The toasts themselves take their events back.
-          'neba-portal pointer-events-none fixed inset-x-0 z-50 flex flex-col gap-2 p-4',
+          'neba-portal pointer-events-none fixed inset-x-0 z-(--neba-z-portal) flex flex-col gap-2 p-4',
           viewportClasses[position],
           classNames?.viewport
         )}

@@ -172,6 +172,13 @@
      as a move. Nothing else may use it. */
   --neba-duration-window: 240ms;
 
+  /* How high every portalled surface sits: a menu, a dialog, a drawer, a
+     tooltip, a toast. One number, because they are all the same kind of thing
+     — something drawn over the page the reader was looking at — and because
+     the value a host needs is its own. A site whose fixed header is at 1200
+     sets this once rather than beating fourteen `z-50`s with a selector. */
+  --neba-z-portal: 50;
+
   /* Color families -------------------------------------------------------
      Chroma sits just under the sRGB gamut boundary for each family's lightness
      — around 90% of the maximum, close enough to be vivid and far enough that

@@ -31,6 +31,7 @@ import {
   GridContainer,
   List,
   ListItem,
+  Overlay,
   Switch,
   Typography
 } from 'neba';
@@ -326,6 +327,27 @@ describe('neba/styles.css', () => {
 
       expect(background).not.toBe('transparent');
       expect(background).not.toBe('rgba(0, 0, 0, 0)');
+    });
+
+    it('put every portalled surface on one z-index a host can move', async () => {
+      // A site with a fixed header of its own decides what a popup has to
+      // clear, and the library cannot know the number. One token is what makes
+      // that one declaration rather than a selector per surface.
+      const screen = await render(<Overlay open>Uploading</Overlay>);
+
+      await expect.element(screen.getByText('Uploading')).toBeInTheDocument();
+
+      const surface = document.querySelector('.neba-portal') as HTMLElement;
+
+      expect(getComputedStyle(surface).zIndex).toBe('50');
+
+      document.documentElement.style.setProperty('--neba-z-portal', '1400');
+
+      try {
+        expect(getComputedStyle(surface).zIndex).toBe('1400');
+      } finally {
+        document.documentElement.style.removeProperty('--neba-z-portal');
+      }
     });
 
     it('answer to a forced theme without any further setup', async () => {

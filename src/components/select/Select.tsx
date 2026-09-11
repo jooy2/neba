@@ -323,7 +323,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               subtree its host may have scoped a CSS reset to, and this is what
               such a host can hang the same reset off. */}
             <BaseUISelect.Positioner
-              className="neba-portal z-50 [outline:none]"
+              className="neba-portal z-(--neba-z-portal) [outline:none]"
               sideOffset={6}
               alignItemWithTrigger={false}
             >

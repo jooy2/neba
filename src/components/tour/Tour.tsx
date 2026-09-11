@@ -360,7 +360,7 @@ export function Tour(rawProps: TourProps) {
 
       <BaseUIPopover.Portal>
         <BaseUIPopover.Positioner
-          className="neba-portal z-50 [outline:none]"
+          className="neba-portal z-(--neba-z-portal) [outline:none]"
           side={current?.side ?? 'bottom'}
           align={current?.align ?? 'center'}
           sideOffset={10}

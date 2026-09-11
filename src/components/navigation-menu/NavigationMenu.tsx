@@ -345,7 +345,7 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
             {/* `neba-portal` is a hook, not a style: a portalled popup leaves
                 the subtree a host may have scoped its CSS reset to. */}
             <BaseUINavigationMenu.Positioner
-              className="neba-portal z-50 [outline:none]"
+              className="neba-portal z-(--neba-z-portal) [outline:none]"
               sideOffset={sideOffset}
               collisionPadding={12}
             >

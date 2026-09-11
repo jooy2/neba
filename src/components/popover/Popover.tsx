@@ -239,7 +239,7 @@ export function Popover(rawProps: PopoverProps) {
         {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
             subtree a host may have scoped its CSS reset to. */}
         <BaseUIPopover.Positioner
-          className="neba-portal z-50 [outline:none]"
+          className="neba-portal z-(--neba-z-portal) [outline:none]"
           side={side}
           align={align}
           sideOffset={sideOffset}

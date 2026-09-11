@@ -167,6 +167,20 @@ Hovering adds a level and pressing removes one, so a control at elevation 0 stil
 
 **Never tint a shadow with the control's own colour.** A coloured glow is the loudest thing a small control can do. Every `--neba-shadow-*` is neutral.
 
+### Everything portalled sits on one z-index
+
+A menu, a dialog, a drawer, a tooltip and a toast are drawn at the end of the document rather than where they were written, and all of them read `--neba-z-portal`, which is `50`.
+
+That number is the library's guess, and it is the host's decision. A site whose own fixed header sits at 1200 raises it once:
+
+```css
+:root {
+  --neba-z-portal: 1400;
+}
+```
+
+Nothing in the library layers a popup against another popup, so one value covers all of them. Inside a surface — a sticky table header, a chart's tooltip — the small `z-index`es are local to that component and never leave it.
+
 ---
 
 ## 5. Motion

@@ -173,7 +173,7 @@ const popupClasses = [
 ].join(' ');
 
 const backdropClasses = [
-  'fixed inset-0 z-50 bg-(--neba-scrim)',
+  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim)',
   '[backdrop-filter:blur(2px)]',
   popupFadeClasses
 ].join(' ');
@@ -272,7 +272,7 @@ export function Dialog(rawProps: DialogProps) {
 
         <BaseUIDialog.Viewport
           className={cx(
-            'neba-portal fixed inset-0 z-50 flex justify-center',
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center',
             // `items-center` alone would clip the top of a dialog taller than
             // the viewport, because a centred flex item cannot scroll past its
             // own container's start edge. The popup caps its height instead and

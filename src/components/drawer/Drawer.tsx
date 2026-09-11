@@ -272,7 +272,7 @@ const overlayShadowClasses = '[box-shadow:var(--neba-shadow-3),var(--neba-plate-
 const inlineShadowClasses = '[box-shadow:var(--neba-plate-glass)]';
 
 const backdropClasses = [
-  'fixed inset-0 z-50 bg-(--neba-scrim)',
+  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim)',
   '[backdrop-filter:blur(2px)]',
   popupFadeClasses
 ].join(' ');
@@ -509,7 +509,7 @@ export function Drawer(rawProps: DrawerProps) {
         <BaseUIDialog.Backdrop className={`neba-portal ${backdropClasses}`} />
 
         <BaseUIDialog.Viewport
-          className={`neba-portal fixed inset-0 z-50 flex ${viewportClasses[side]}`}
+          className={`neba-portal fixed inset-0 z-(--neba-z-portal) flex ${viewportClasses[side]}`}
         >
           <BaseUIDialog.Popup
             className={panel}

@@ -637,7 +637,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         <BaseUICombobox.Portal>
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
               subtree its host may have scoped a CSS reset to. */}
-          <BaseUICombobox.Positioner className="neba-portal z-50 [outline:none]" sideOffset={6}>
+          <BaseUICombobox.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]" sideOffset={6}>
             <BaseUICombobox.Popup
               className={cx(
                 popupClasses,

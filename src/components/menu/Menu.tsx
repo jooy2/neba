@@ -626,7 +626,7 @@ export function MenuSubmenu({
 
       <BaseUIMenu.Portal>
         <BaseUIMenu.Positioner
-          className="neba-portal z-50 [outline:none]"
+          className="neba-portal z-(--neba-z-portal) [outline:none]"
           side={side}
           sideOffset={sideOffset}
           align="start"
@@ -704,7 +704,7 @@ export function Menu({
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
               subtree a host may have scoped its CSS reset to. */}
           <BaseUIMenu.Positioner
-            className="neba-portal z-50 [outline:none]"
+            className="neba-portal z-(--neba-z-portal) [outline:none]"
             side={side}
             align={align}
             sideOffset={sideOffset}
@@ -764,7 +764,7 @@ export function ContextMenu({
         <BaseUIContextMenu.Trigger>{children}</BaseUIContextMenu.Trigger>
 
         <BaseUIContextMenu.Portal>
-          <BaseUIContextMenu.Positioner className="neba-portal z-50 [outline:none]">
+          <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">
             <BaseUIContextMenu.Popup
               className={cx(
                 popupClasses,

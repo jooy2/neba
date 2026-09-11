@@ -113,7 +113,7 @@ export interface CommandPaletteProps extends Pick<NebaStyleProps, 'size' | 'colo
 }
 
 const backdropClasses = [
-  'fixed inset-0 z-50 bg-(--neba-scrim)',
+  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim)',
   '[backdrop-filter:blur(2px)]',
   popupFadeClasses
 ].join(' ');
@@ -290,7 +290,7 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
 
         <BaseUIDialog.Viewport
           className={cx(
-            'neba-portal fixed inset-0 z-50 flex justify-center p-4 pt-[12vh]',
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center p-4 pt-[12vh]',
             classNames?.viewport
           )}
         >

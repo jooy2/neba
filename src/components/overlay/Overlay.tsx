@@ -169,7 +169,7 @@ export function Overlay(rawProps: OverlayProps) {
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
         <BaseUIDialog.Backdrop
-          className={`neba-portal fixed inset-0 z-50 ${popupFadeClasses} ${toneClasses[tone]}`}
+          className={`neba-portal fixed inset-0 z-(--neba-z-portal) ${popupFadeClasses} ${toneClasses[tone]}`}
         />
 
         {/* The viewport is what the content is centred in, and it is also what
@@ -178,7 +178,7 @@ export function Overlay(rawProps: OverlayProps) {
             the overlay itself. */}
         <BaseUIDialog.Viewport
           className={[
-            'neba-portal fixed inset-0 z-50 flex justify-center',
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center',
             alignClasses[align],
             insetClasses[size]
           ].join(' ')}

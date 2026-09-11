@@ -28,6 +28,8 @@ Registering a language ships that language's whole module, so the twenty picker 
 
 ### Added
 
+- **Every portalled surface reads one z-index, `--neba-z-portal`.** Fourteen of them carried a hardcoded `z-50`, which is a guess about a page the library cannot see — a site whose own fixed header sits above that had its menus and dialogs opening underneath its chrome, and the way out was a selector per surface. The token defaults to 50, and a host that needs another number sets it once on `:root`.
+
 - **A `BottomNavigationItem` declares the `target` and `rel` its link already rendered.** The props were typed against a `<button>` and cast to an `<a>`, so a destination that opened in a new tab could only be written by handing the component something TypeScript said was impossible.
 
 - **A `Tabs` bar takes the wheel.** A bar with more tabs than room scrolls, but a mouse has one wheel and it points down the page — and the bar draws no scroll buttons and hides its scrollbar, so the tabs past the edge were reachable only by keyboard. A wheel rolled over the bar now travels along it. It is on by default, which is what separates the prop from `ScrollZone`'s `wheel`: that strip has a pair of buttons and this one has nothing. A bar that fits takes nothing at all, so a page with three tabs on it is unaffected, and `wheel={false}` turns it off.
