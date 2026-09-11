@@ -176,6 +176,22 @@ describe('neba/styles.css', () => {
       expect(parseFloat(styles.height)).toBeGreaterThan(0);
     });
 
+    it('leave a size the caller overrode with a line box in proportion', async () => {
+      // Every level pairs its size with a leading *ratio* rather than the
+      // length it works out to. A length is a line box built for a size, and
+      // the size is the first thing a caller overrides: a 44px figure in a
+      // 22px row has its glyphs clipped by the line above it.
+      const screen = await render(
+        <Typography level="h2" style={{ fontSize: '2.75rem' }}>
+          42
+        </Typography>
+      );
+      const styles = getComputedStyle(screen.getByText('42').element());
+
+      expect(parseFloat(styles.fontSize)).toBeCloseTo(44, 1);
+      expect(parseFloat(styles.lineHeight)).toBeGreaterThan(parseFloat(styles.fontSize));
+    });
+
     it('outrank the reset where the two meet', async () => {
       // `reset.css` zeroes the padding of every `<ul>`; a List without dividers
       // then pads its own, so a hovered row does not run into the sheet's edge.

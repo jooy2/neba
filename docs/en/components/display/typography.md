@@ -22,6 +22,8 @@ import { Typography } from 'neba';
 
 Two props differ from the rest of the library. The type scale is chosen with `level` rather than `variant`, since `variant` means the weight of a surface everywhere else. And `color` has no default: leave it unset and the text inherits the surrounding colour.
 
+The root carries the class `neba-typography`. It is the hook a stylesheet uses to reach the text from outside React — `.neba-typography { text-wrap: balance }` — since the utilities a level resolves to are not a contract.
+
 ## Examples
 
 ### level
@@ -65,3 +67,15 @@ Use `render` when the element `level` implies is not the element you need: a sub
 ### gutter
 
 `gutter` is off by default, so there are no vertical margins. Turn it on for a run of prose; leave it off inside a flex container that already owns its spacing.
+
+### Overriding the size
+
+Each level's leading is a **ratio**, not a length, so a size set through `className` keeps a line box in proportion to it:
+
+```tsx
+<Typography level="h2" className="text-[2.75rem]!">
+  42
+</Typography>
+```
+
+The `!` is there because a size the component wrote and a size you wrote are both one class, and which of them wins is Tailwind's ordering rather than yours — see [prop conventions](../../design/prop-conventions). Add a `leading-*` beside it when the proportion is what you want to change.

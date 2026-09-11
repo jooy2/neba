@@ -4,6 +4,13 @@ import { Typography } from 'neba';
 
 describe('Typography', () => {
   describe('levels', () => {
+    it('carries the class a host stylesheet reaches it by', async () => {
+      // The utilities a level resolves to are not a contract; this is.
+      const screen = await render(<Typography>Body copy</Typography>);
+
+      expect(screen.getByText('Body copy').element()).toHaveClass('neba-typography');
+    });
+
     it('renders a paragraph by default', async () => {
       const screen = await render(<Typography>Body copy</Typography>);
       const element = screen.getByText('Body copy').element();
@@ -29,11 +36,11 @@ describe('Typography', () => {
       const screen = await render(<Typography level="h1">Title</Typography>);
       const element = screen.getByText('Title').element();
 
-      expect(element).toHaveClass('text-[1.875rem]/[2.25rem]');
+      expect(element).toHaveClass('text-[1.875rem]/[1.2]');
 
       await screen.rerender(<Typography level="h3">Title</Typography>);
 
-      expect(screen.getByText('Title').element()).toHaveClass('text-[1.25rem]/[1.625rem]');
+      expect(screen.getByText('Title').element()).toHaveClass('text-[1.25rem]/[1.3]');
     });
 
     it('changes the element as well as the scale on re-render', async () => {
@@ -57,7 +64,7 @@ describe('Typography', () => {
       const element = screen.getByText('Looks like a heading').element();
 
       expect(element.tagName).toBe('P');
-      expect(element).toHaveClass('text-[1.25rem]/[1.625rem]');
+      expect(element).toHaveClass('text-[1.25rem]/[1.3]');
     });
   });
 

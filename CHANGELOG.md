@@ -42,6 +42,8 @@ Registering a language ships that language's whole module, so the twenty picker 
 
 ### Changed
 
+- **A `Typography` level's leading is a ratio rather than a length, and the root carries `neba-typography`.** The two halves of one problem: the scale paired each size with the line height it worked out to, and the component emitted nothing but utilities. So a caller who set a size of their own — which is what a figure, a display number or a hero line is — got a line box built for a size nobody asked for, with no selector to repair it from a stylesheet either, since a utility string is not a contract. Every level keeps exactly the ratio it was drawn at, so nothing moves at the scale's own sizes and an overridden one gets a line box in proportion. The class is a hook and carries no styling of its own, the way `neba-link` and `neba-portal` do.
+
 - **A `ScrollZone` and a `Tabs` bar hold the wheel at their ends rather than handing it back.** Taking the wheel and then giving it up the moment the strip runs out is what makes the page lurch mid-flick: the reader is still pushing the strip and what answers is the article behind it. Both hold it now, and the pointer leaving the strip is what gives the page its wheel back. `overscroll-behavior: contain` does the same for the gestures the browser scrolls itself — a finger, a sideways trackpad swipe, and the wheel over a vertical zone — which used to carry on into the page at either end.
 
   This changes what `ScrollZone`'s `wheel` promises. The old wording said a strip with nothing left ahead of it was something to scroll past rather than something to be caught in; a caller who wanted that behaviour wants `wheel` off.

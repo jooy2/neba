@@ -73,18 +73,27 @@ export interface TypographyProps extends Omit<
  * card and a standalone one are the same text. The headings step up from there
  * by roughly a major third, and the leading tightens as they grow — a 30px line
  * does not want the same 1.7 ratio a 13px one does.
+ *
+ * The leading is that **ratio** rather than the length it works out to, which
+ * is the one thing here that is not a straight reading of the design. A length
+ * is a line box built for a size, and the size is the first thing a caller
+ * overrides — `className="text-[2.2rem]"` on a figure left a 22px row around
+ * 35px glyphs, and the only way out was a `leading-*` beside every override.
+ * Each level keeps exactly the ratio it was drawn at, so nothing moves at the
+ * scale's own sizes and an overridden one gets a line box in proportion. It is
+ * also how Tailwind's own text scale is written.
  */
 const levelClasses: Record<TypographyLevel, string> = {
-  h1: 'text-[1.875rem]/[2.25rem] tracking-[-0.02em]',
-  h2: 'text-[1.5rem]/[1.875rem] tracking-[-0.015em]',
-  h3: 'text-[1.25rem]/[1.625rem] tracking-[-0.01em]',
-  h4: 'text-[1.0625rem]/[1.5rem]',
-  h5: 'text-[0.9375rem]/[1.375rem]',
-  h6: 'text-[0.8125rem]/[1.25rem]',
-  lead: 'text-[1.0625rem]/[1.75rem]',
-  body: 'text-[0.8125rem]/[1.375rem]',
-  caption: 'text-[0.75rem]/[1.125rem]',
-  overline: 'text-[0.6875rem]/[1rem] tracking-[0.08em] uppercase'
+  h1: 'text-[1.875rem]/[1.2] tracking-[-0.02em]',
+  h2: 'text-[1.5rem]/[1.25] tracking-[-0.015em]',
+  h3: 'text-[1.25rem]/[1.3] tracking-[-0.01em]',
+  h4: 'text-[1.0625rem]/[1.41176]',
+  h5: 'text-[0.9375rem]/[1.46667]',
+  h6: 'text-[0.8125rem]/[1.53846]',
+  lead: 'text-[1.0625rem]/[1.64706]',
+  body: 'text-[0.8125rem]/[1.69231]',
+  caption: 'text-[0.75rem]/[1.5]',
+  overline: 'text-[0.6875rem]/[1.45455] tracking-[0.08em] uppercase'
 };
 
 /**
@@ -202,6 +211,10 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
   const animation = transitionProps(transition);
 
   const classNames = cx(
+    // A hook, not a style: the one component in the library whose whole output
+    // is text is also the one a host stylesheet most wants to reach, and a
+    // utility string is not a contract. Same arrangement as `neba-link`.
+    'neba-typography',
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
     align ? alignClasses[align] : '',
