@@ -7,7 +7,7 @@
       "id": "button",
       "label": "Button",
       "imports": ["Button"],
-      "budget": 5.1
+      "budget": 5.2
     },
     {
       "id": "chip",
@@ -19,7 +19,7 @@
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 11.7
+      "budget": 11.8
     },
     {
       "id": "code-block",
@@ -37,7 +37,7 @@
       "id": "gallery",
       "label": "Gallery",
       "imports": ["Gallery"],
-      "budget": 10.3
+      "budget": 10.4
     },
     {
       "id": "app-12",
@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 70.6
+      "budget": 71
     },
     {
       "id": "app-25",
@@ -88,7 +88,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 115.8
+      "budget": 116.9
     },
     {
       "id": "page-shell",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 73.4
+      "budget": 73.8
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 264.7
+      "budget": 265.8
     }
   ]
 }

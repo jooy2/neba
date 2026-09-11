@@ -6,23 +6,25 @@
 
 | What you import               | 1.12.0   | vNext    |
 | ----------------------------- | -------- | -------- |
-| `Button`                      | 5.1 kB   | 5.1 kB   |
+| `Button`                      | 5.1 kB   | 5.2 kB   |
 | `Chip`                        | 3.3 kB   | 3.4 kB   |
-| `LineChart`                   | 11.6 kB  | 11.7 kB  |
+| `LineChart`                   | 11.6 kB  | 11.8 kB  |
 | `CodeBlock`                   | 5.0 kB   | 5.1 kB   |
 | `Image`                       | 6.5 kB   | 7.1 kB   |
-| `Gallery`                     | 10.2 kB  | 10.3 kB  |
+| `Gallery`                     | 10.2 kB  | 10.4 kB  |
 | a whole page shell            | 29.0 kB  | 29.2 kB  |
-| 12 components — a typical app | 70.5 kB  | 70.6 kB  |
-| 12 components, with Korean    | 72.9 kB  | 73.4 kB  |
-| 25 components — a large one   | 115.7 kB | 115.8 kB |
-| all exports                   | 263.9 kB | 264.7 kB |
+| 12 components — a typical app | 70.5 kB  | 71.0 kB  |
+| 12 components, with Korean    | 72.9 kB  | 73.8 kB  |
+| 25 components — a large one   | 115.7 kB | 116.9 kB |
+| all exports                   | 263.9 kB | 265.8 kB |
 
 `Image` is the row that moved. A picture that failed with an empty `alt` printed a hardcoded English sentence, so `Image` now reaches `internal/i18n.ts` and `internal/defaults.ts`, which costs it 0.5 kB. The last 0.1 kB is `width` and `height`, which `Gallery` also carries because it draws an `Image`.
 
 The 0.1 kB on `Chip`, `CodeBlock`, `LineChart` and the page shell is the same machinery gaining an `Object.hasOwn` on each of its two lookups, and a shared bound under the memos in `internal/`.
 
 The twelve- and twenty-five-component rows carry `internal/wheel.ts` on top of that, which is what a `Tabs` bar now takes the wheel with.
+
+The last 0.1 kB on nearly every row is the focus ring: the resting declaration and the transition it travels on are two more entries in the class string every control carries. `neba/styles.css` moved 22.4 kB → 22.5 kB for the same reason, plus the breakpoint slots each responsive element now clears — which is the cost of a fix that could not be made anywhere else, since only the element that reads a slot can say it does not inherit one.
 
 Registering a language ships that language's whole module, so the twenty picker strings and the two a Carousel's stop button needs land in it whether or not the page draws either: 2.8 kB now against 2.4 kB before. Those twenty used to be hardcoded English, which a Korean product could not reach at all.
 
