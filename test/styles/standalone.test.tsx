@@ -309,6 +309,29 @@ describe('neba/styles.css', () => {
       expect(inner.getBoundingClientRect().width).toBeCloseTo(row.getBoundingClientRect().width, 1);
     });
 
+    it('sizes a span keyword against the contents rather than the columns', async () => {
+      // The two widths the column arithmetic cannot reach. `auto` is what is
+      // in the cell; `grow` is that plus everything the row has left, so the
+      // two together fill it exactly.
+      const screen = await render(
+        <GridContainer padded={false} spacing={0} wrap={false}>
+          <Grid span="auto">
+            <div style={{ width: '40px' }}>Icon</div>
+          </Grid>
+          <Grid span="grow">Title</Grid>
+        </GridContainer>
+      );
+      const icon = screen.getByText('Icon').element().parentElement as HTMLElement;
+      const title = screen.getByText('Title').element();
+      const row = icon.parentElement as HTMLElement;
+
+      expect(icon.getBoundingClientRect().width).toBeCloseTo(40, 1);
+      expect(icon.getBoundingClientRect().width + title.getBoundingClientRect().width).toBeCloseTo(
+        row.getBoundingClientRect().width,
+        1
+      );
+    });
+
     it('leaves no theme() call for a consumer build to resolve', () => {
       // Same failure mode as the `@source` check above: a browser ignores an
       // unresolved `theme()`, so the grid would simply stop being responsive.

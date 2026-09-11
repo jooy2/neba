@@ -2,10 +2,54 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { alignSelfClasses, offsetValue, spanValue } from '../../internal/grid.js';
-import { responsiveSlots } from '../../internal/responsive.js';
+import {
+  alignSelfClasses,
+  offsetValue,
+  spanGrow,
+  spanValue,
+  spanWidth
+} from '../../internal/grid.js';
+import { breakpointMap, responsiveSlots } from '../../internal/responsive.js';
 import { cx } from '../../internal/styles.js';
-import type { NebaAlignSelf, NebaResponsive } from '../../types.js';
+import type { NebaAlignSelf, NebaBreakpoint, NebaResponsive } from '../../types.js';
+
+/**
+ * How wide a cell is: a share of the container's columns, the width of what is
+ * in it, or the space the row has left.
+ */
+export type GridSpan = number | 'auto' | 'grow';
+
+/**
+ * The slots one `span` resolves into.
+ *
+ * A number is a share of the row and is arithmetic, which is what the
+ * `--n-span` cascade carries. `auto` and `grow` are the contents' own width,
+ * which arithmetic cannot reach — so they travel in two cascades of their own,
+ * and those are emitted only for a map that actually names one. A grid of
+ * numbered spans, which is nearly every grid, writes exactly the one property
+ * it always wrote.
+ */
+function spanSlots(span: NebaResponsive<GridSpan> | undefined): React.CSSProperties {
+  const map = breakpointMap(span);
+  const entries = Object.entries(map) as Array<[NebaBreakpoint, GridSpan]>;
+  const shares: Partial<Record<NebaBreakpoint, number>> = {};
+  let keyworded = false;
+
+  for (const [breakpoint, value] of entries) {
+    if (typeof value === 'number') shares[breakpoint] = value;
+    else keyworded = true;
+  }
+
+  const columns = responsiveSlots('span', shares, spanValue);
+
+  if (!keyworded) return columns;
+
+  return {
+    ...columns,
+    ...responsiveSlots('span-w', map, spanWidth),
+    ...responsiveSlots('grow', map, spanGrow)
+  };
+}
 
 export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
@@ -18,9 +62,14 @@ export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
    * breakpoint up, so two of them usually describe a whole layout.
    *
    * A span wider than the row is clamped to the row rather than overflowing.
+   *
+   * Two widths are not a share of twelve, and both are keywords: `'auto'` is
+   * as wide as the item's own contents — an icon, a chip, a button at the end
+   * of a row — and `'grow'` is that plus whatever the row has left over, which
+   * is how a title sits between the two. They mix with numbers in one map.
    * @default the container's full width
    */
-  span?: NebaResponsive<number>;
+  span?: NebaResponsive<GridSpan>;
   /**
    * Columns left empty *before* the item — space pushed in ahead of it, not an
    * absolute position in the row. First in a twelve-column row, `offset={4}`
@@ -70,7 +119,7 @@ export const Grid = React.forwardRef<HTMLDivElement, GridProps>(function Grid(
     props: {
       className: classNames,
       style: {
-        ...responsiveSlots('span', span, spanValue),
+        ...spanSlots(span),
         ...responsiveSlots('offset', offset, offsetValue),
         ...style
       },

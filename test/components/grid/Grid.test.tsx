@@ -90,6 +90,40 @@ describe('Grid', () => {
       expect(element.style.getPropertyValue('--n-span-md')).toBe('');
     });
 
+    it('writes the width slots for a span that is not a share of the row', async () => {
+      const screen = await render(<Grid span="auto">content</Grid>);
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-span-w-xs')).toBe('auto');
+      expect(element.style.getPropertyValue('--n-grow-xs')).toBe('0');
+      expect(element.style.getPropertyValue('--n-span-xs')).toBe('');
+
+      await screen.rerender(<Grid span="grow">content</Grid>);
+
+      expect(element.style.getPropertyValue('--n-grow-xs')).toBe('1');
+    });
+
+    it('takes a keyword and a number in the same map', async () => {
+      // The pair of keyword cascades has to say something at *every* named
+      // breakpoint, or `md` would keep the `auto` that `xs` asked for.
+      const screen = await render(<Grid span={{ xs: 'auto', md: 6 }}>content</Grid>);
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-span-w-xs')).toBe('auto');
+      expect(element.style.getPropertyValue('--n-span-w-md')).toBe('var(--n-col-width)');
+      expect(element.style.getPropertyValue('--n-span-md')).toBe('6');
+    });
+
+    it('writes nothing extra for a grid of numbered spans', async () => {
+      // Which is nearly every grid: the keyword slots are the cost of naming
+      // one, and a caller who names none pays none of it.
+      const screen = await render(<Grid span={{ xs: 12, md: 6 }}>content</Grid>);
+      const element = screen.getByText('content').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-span-w-xs')).toBe('');
+      expect(element.style.getPropertyValue('--n-grow-xs')).toBe('');
+    });
+
     it('rounds a span and never lets it reach zero', async () => {
       const screen = await render(<Grid span={0}>content</Grid>);
       const element = screen.getByText('content').element() as HTMLElement;

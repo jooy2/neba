@@ -57,6 +57,28 @@ export const spanValue = (value: number) => columnUnits(value, 1);
 export const offsetValue = (value: number) => columnUnits(value, 0);
 
 /**
+ * A width a column count cannot reach.
+ *
+ * `auto` is the contents' own width — an icon, a chip, a button at the end of
+ * a row — and `grow` is that plus whatever is left over in the row, which is
+ * how a title sits between an icon and an action. Neither is a share of
+ * twelve, so neither can come out of the arithmetic above.
+ *
+ * A number points back at `--n-col-width`, the arithmetic named in
+ * `styles.css`, rather than restating it: that is what lets one map mix the
+ * two — `span={{ xs: 'grow', md: 4 }}` — without the keyword at a narrow
+ * width leaking into a wider one.
+ */
+export function spanWidth(value: number | 'auto' | 'grow'): string {
+  return typeof value === 'number' ? 'var(--n-col-width)' : 'auto';
+}
+
+/** Which of the two keywords takes the space the row has left. */
+export function spanGrow(value: number | 'auto' | 'grow'): string {
+  return value === 'grow' ? '1' : '0';
+}
+
+/**
  * A gutter, as a length.
  *
  * Fractions are the point — `spacing={1.5}` is `0.375rem`, the same step

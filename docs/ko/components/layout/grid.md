@@ -46,6 +46,18 @@ import { Grid, GridContainer } from 'neba';
 
 </Demo>
 
+### auto · grow
+
+12칸으로 나눌 수 없는 너비가 둘 있습니다. `span="auto"`는 칸에 든 내용만큼의 너비이고(줄 끝의 아바타, chip, 버튼), `span="grow"`는 거기에 줄에 남은 공간을 더한 너비입니다. 아이콘과 액션 사이에 놓이는 제목이 후자입니다.
+
+둘 다 반응형 map 안에서 숫자와 섞입니다. `span={{ xs: 'auto', md: 4 }}`는 좁은 폭에서는 내용 너비, 48rem부터는 줄의 3분의 1입니다.
+
+<Demo src="grid/auto-grow">
+
+<<< @/.vitepress/demos/grid/auto-grow.tsx
+
+</Demo>
+
 ### breakpoint
 
 `span`에 객체를 주면 폭마다 다른 값을 적용합니다. 각 항목은 **그 breakpoint 이상**에 적용되는 하한이므로 두 개만 적어도 레이아웃 하나가 정의됩니다.

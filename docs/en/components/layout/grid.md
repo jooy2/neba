@@ -46,6 +46,18 @@ The width is `(100% + gutter) × span / columns − gutter`, so twelve `span={1}
 
 </Demo>
 
+### auto · grow
+
+Two widths are not a share of twelve. `span="auto"` is as wide as what is in the cell — an avatar, a chip, a button at the end of a row — and `span="grow"` is that plus everything the row has left over, which is how a title sits between the two.
+
+Both mix with numbers in one responsive map: `span={{ xs: 'auto', md: 4 }}` is the contents' width on a phone and a third of the row from 48rem up.
+
+<Demo src="grid/auto-grow">
+
+<<< @/.vitepress/demos/grid/auto-grow.tsx
+
+</Demo>
+
 ### breakpoints
 
 Give `span` an object and it uses a different value per width. Every entry applies **from its own breakpoint up** (it is a floor, not a band), which is what makes two of them enough to describe a whole layout.

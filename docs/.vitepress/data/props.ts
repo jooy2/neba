@@ -37,6 +37,7 @@ const SIDE = "'top' | 'right' | 'bottom' | 'left'";
 const POSITION = "'static' | 'sticky' | 'fixed'";
 const BREAKPOINT = "'xs' | 'sm' | 'md' | 'lg' | 'xl'";
 const RESPONSIVE = 'number | Partial<Record<NebaBreakpoint, number>>';
+const RESPONSIVE_SPAN = 'GridSpan | Partial<Record<NebaBreakpoint, GridSpan>>';
 const RESPONSIVE_MEASURE = 'NebaMeasure | Partial<Record<NebaBreakpoint, NebaMeasure>>';
 const JUSTIFY_CONTENT =
   "'start' | 'center' | 'end' | 'space-between' | 'space-around' | 'space-evenly' | 'stretch'";
@@ -2526,11 +2527,11 @@ export const propTables: Record<string, PropRow[]> = {
   Grid: [
     {
       name: 'span',
-      type: RESPONSIVE,
+      type: RESPONSIVE_SPAN,
       default: 'a full row',
       description: {
-        ko: '컨테이너의 칸을 몇 개 차지할지. 브레이크포인트마다 다르게 줄 수 있습니다. { xs: 12, md: 6 }. 줄보다 넓은 span은 넘치지 않고 줄에 맞춰 잘립니다',
-        en: "How many of the container's columns the item takes. Per-breakpoint as { xs: 12, md: 6 }. A span wider than the row is clamped to the row rather than overflowing"
+        ko: "컨테이너의 칸을 몇 개 차지할지. 브레이크포인트마다 다르게 줄 수 있습니다. { xs: 12, md: 6 }. 줄보다 넓은 span은 넘치지 않고 줄에 맞춰 잘립니다. 'auto'는 내용만큼, 'grow'는 줄에 남은 공간까지",
+        en: "How many of the container's columns the item takes. Per-breakpoint as { xs: 12, md: 6 }. A span wider than the row is clamped to the row rather than overflowing. 'auto' is as wide as the contents and 'grow' takes the space the row has left"
       }
     },
     {
