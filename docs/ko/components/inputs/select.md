@@ -39,6 +39,7 @@ interface SelectOption {
   value: string | number;
   label?: React.ReactNode; // 생략하면 value 자체
   disabled?: boolean;
+  group?: string;
 }
 ```
 
@@ -61,6 +62,18 @@ interface SelectOption {
 <Demo src="select/sizes">
 
 <<< @/.vitepress/demos/select/sizes.tsx
+
+</Demo>
+
+### group
+
+`group`은 같은 이름을 가진 이웃한 옵션들 위에 제목을 답니다. 지역별 시간대, 계열별 글꼴처럼 묶이는 목록에 씁니다. 제목은 하이라이트되지도, 선택되지도, typeahead로 닿지도 않습니다.
+
+group은 **이웃한 옵션들의 묶음**이라 배열 순서가 곧 목록 순서입니다. 라이브러리가 항목을 옮기는 일은 없습니다. 같은 이름이 떨어져서 두 번 나오면 제목도 두 번 붙습니다. `group`이 없는 옵션은 배열에 있는 자리에 그대로 놓입니다.
+
+<Demo src="select/groups">
+
+<<< @/.vitepress/demos/select/groups.tsx
 
 </Demo>
 

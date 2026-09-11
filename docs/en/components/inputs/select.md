@@ -39,6 +39,7 @@ interface SelectOption {
   value: string | number;
   label?: React.ReactNode; // defaults to the value
   disabled?: boolean;
+  group?: string;
 }
 ```
 
@@ -61,6 +62,18 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell,
 <Demo src="select/sizes">
 
 <<< @/.vitepress/demos/select/sizes.tsx
+
+</Demo>
+
+### group
+
+`group` puts a heading over an option and the ones next to it that name the same group: time zones under their region, fonts under their family. The heading cannot be highlighted, chosen or reached by typeahead.
+
+A group is a **run of adjacent options**, so the array's order is the list's order and nothing is moved out from under you. Two separate runs naming the same group draw two headings. Options with no `group` render on their own, wherever the array puts them.
+
+<Demo src="select/groups">
+
+<<< @/.vitepress/demos/select/groups.tsx
 
 </Demo>
 

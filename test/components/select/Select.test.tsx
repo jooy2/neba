@@ -110,6 +110,56 @@ describe('Select', () => {
     });
   });
 
+  describe('groups', () => {
+    const ZONES = [
+      { value: 'seoul', label: 'Seoul', group: 'Asia' },
+      { value: 'tokyo', label: 'Tokyo', group: 'Asia' },
+      { value: 'paris', label: 'Paris', group: 'Europe' }
+    ];
+
+    it('puts a heading over each run of options', async () => {
+      const screen = await render(<Select items={ZONES} label="Time zone" />);
+
+      await screen.getByRole('combobox').click();
+
+      await expect.element(screen.getByRole('group', { name: 'Asia' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('group', { name: 'Europe' })).toBeInTheDocument();
+    });
+
+    it('leaves the heading unpickable', async () => {
+      const screen = await render(<Select items={ZONES} label="Time zone" />);
+
+      await screen.getByRole('combobox').click();
+
+      await expect.element(screen.getByRole('option', { name: 'Seoul' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Asia' }).query()).toBeNull();
+    });
+
+    it('leaves an ungrouped run outside any group', async () => {
+      // The two shapes in one list: a group is a run of adjacent options, so
+      // the ones with no `group` stay where the array put them.
+      const screen = await render(
+        <Select items={[{ value: 'any', label: 'Anywhere' }, ...ZONES]} label="Time zone" />
+      );
+
+      await screen.getByRole('combobox').click();
+
+      const anywhere = screen.getByRole('option', { name: 'Anywhere' });
+
+      await expect.element(anywhere).toBeInTheDocument();
+      expect(anywhere.element().closest('[role="group"]')).toBeNull();
+      expect(
+        screen.getByRole('option', { name: 'Seoul' }).element().closest('[role="group"]')
+      ).not.toBeNull();
+    });
+
+    it('still shows a grouped option in the trigger by its label', async () => {
+      const screen = await render(<Select items={ZONES} label="Time zone" defaultValue="paris" />);
+
+      await expect.element(screen.getByRole('combobox')).toHaveTextContent('Paris');
+    });
+  });
+
   describe('validation', () => {
     it('renders the error message', async () => {
       const screen = await render(<Select items={PLANS} label="Plan" error="Choose a plan." />);

@@ -4748,8 +4748,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'readonly SelectOption[]',
       required: true,
       description: {
-        ko: '옵션 목록. { value, label?, disabled? } 배열입니다',
-        en: 'The options, as an array of { value, label?, disabled? }'
+        ko: '옵션 목록. { value, label?, disabled?, group? } 배열입니다. group이 같은 연속된 옵션 위에 제목이 붙습니다',
+        en: 'The options, as an array of { value, label?, disabled?, group? }. Adjacent options naming the same group get a heading over them'
       }
     },
     {

@@ -52,6 +52,38 @@ export interface SelectOption {
   label?: React.ReactNode;
   /** Unavailable, but still listed — the option exists, it just cannot be picked. */
   disabled?: boolean;
+  /**
+   * A heading over this option and the ones next to it that name the same
+   * group: time zones under their region, fonts under their family.
+   *
+   * A group is a **run of adjacent options**, so the array's order is the
+   * list's order and nothing is ever moved out from under a caller. Two runs
+   * naming the same group draw two headings, which is the array saying the
+   * options are not together.
+   *
+   * The heading is a heading and not a row: it cannot be highlighted, chosen
+   * or reached by typeahead.
+   */
+  group?: string;
+}
+
+/** The options in the order they were given, cut into runs by their `group`. */
+interface SelectGroup {
+  label: string | undefined;
+  items: SelectOption[];
+}
+
+function groupOptions(items: readonly SelectOption[]): SelectGroup[] {
+  const groups: SelectGroup[] = [];
+
+  for (const item of items) {
+    const current = groups.at(-1);
+
+    if (current && current.label === item.group) current.items.push(item);
+    else groups.push({ label: item.group, items: [item] });
+  }
+
+  return groups;
 }
 
 /**
@@ -149,6 +181,15 @@ const popupClasses = [
   popupFadeClasses
 ].join(' ');
 
+/**
+ * A group's heading. The same treatment a MenuGroup's label has, indented to
+ * the row text rather than to the sheet, so the heading and the options under
+ * it share a left edge and the tick gutter stays empty.
+ */
+const groupLabelClasses = [
+  'py-1.5 pe-2 ps-7 font-semibold tracking-wide text-(--neba-muted-fg) uppercase'
+].join(' ');
+
 const itemClasses = [
   'relative flex cursor-pointer items-center gap-2 select-none',
   'rounded-(--neba-radius-xs) py-1.5 pe-2 ps-7',
@@ -215,6 +256,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       () => items.map((item) => ({ label: item.label ?? String(item.value), value: item.value })),
       [items]
     );
+
+    const groups = React.useMemo(() => groupOptions(items), [items]);
 
     // Holds the trigger open at the width of the longest thing it could say, so
     // choosing a shorter option does not shrink the field out from under the
@@ -336,21 +379,36 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
                 )}
                 style={surfaceSlots(family, 3)}
               >
-                {items.map((item) => (
-                  <BaseUISelect.Item
-                    key={String(item.value)}
-                    value={item.value}
-                    disabled={item.disabled}
-                    className={cx(itemClasses, classNames?.item)}
-                  >
-                    <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
-                      <CheckIcon />
-                    </BaseUISelect.ItemIndicator>
-                    <BaseUISelect.ItemText className="truncate">
-                      {item.label ?? String(item.value)}
-                    </BaseUISelect.ItemText>
-                  </BaseUISelect.Item>
-                ))}
+                {groups.map((group, index) => {
+                  const options = group.items.map((item) => (
+                    <BaseUISelect.Item
+                      key={String(item.value)}
+                      value={item.value}
+                      disabled={item.disabled}
+                      className={cx(itemClasses, classNames?.item)}
+                    >
+                      <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
+                        <CheckIcon />
+                      </BaseUISelect.ItemIndicator>
+                      <BaseUISelect.ItemText className="truncate">
+                        {item.label ?? String(item.value)}
+                      </BaseUISelect.ItemText>
+                    </BaseUISelect.Item>
+                  ));
+
+                  if (group.label === undefined) return options;
+
+                  return (
+                    <BaseUISelect.Group key={`${group.label}-${index}`}>
+                      <BaseUISelect.GroupLabel
+                        className={`${groupLabelClasses} ${metaTextClasses[size]}`}
+                      >
+                        {group.label}
+                      </BaseUISelect.GroupLabel>
+                      {options}
+                    </BaseUISelect.Group>
+                  );
+                })}
               </BaseUISelect.Popup>
             </BaseUISelect.Positioner>
           </BaseUISelect.Portal>
