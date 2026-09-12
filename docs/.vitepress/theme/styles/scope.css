@@ -102,7 +102,30 @@
  * can hold a link. None of them should pick up article typography.
  * ------------------------------------------------------------------------- */
 
-.vp-doc .neba-scope :is(p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, figure, dl, dd) {
+/*
+ * Typography and any heading a component owns are exempt, the way `.neba-link`
+ * and `[role="list"]` are.
+ *
+ * `inherit` at two classes is not a way of *removing* `.vp-doc p`'s line height
+ * — it is a different value that beats it, and it beats a component's own
+ * one-class `/[1.25]` with it. That is harmless for a Base UI description or a
+ * card's footer, which have no leading of their own to lose, and wrong for the
+ * one component whose whole job is the type scale: every level of it was being
+ * flattened to the article's 24px row here, and the `margin: 0` was taking
+ * `gutter` with it.
+ *
+ * Typography states its scale and its vertical margin through
+ * `[&.neba-typography]`, and an Accordion header, an inline Drawer's title and a
+ * HowToSteps step do the same through `[&.neba-heading]`. Both are two classes
+ * and clear `.vp-doc h2` on their own. This rule only has to get out of their
+ * way.
+ */
+.vp-doc
+  .neba-scope
+  :is(p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, figure, dl, dd):not(
+    .neba-typography,
+    .neba-heading
+  ) {
   margin: 0;
   line-height: inherit;
   letter-spacing: inherit;
@@ -135,6 +158,23 @@
 
 .vp-doc .neba-scope :is(ul, ol) {
   list-style: none;
+}
+
+/*
+ * `.vp-doc h2` draws the rule that separates two sections of an article, and
+ * pads the heading off it. Inside a preview there is no article — a Typography
+ * `h2`, a Dialog's title and a HowToSteps step heading are all real heading
+ * tags — so every one of them came with a stray line above it and 24px of space
+ * nobody asked for.
+ *
+ * Only `border-top` and `padding-top` are taken, and only on the headings:
+ * `border: 0 solid` would wipe a border a component draws on its own heading,
+ * and `padding: 0` on the tag list above is the mistake this file already
+ * documents. Nothing in the library pads a heading, so this one is safe.
+ */
+.vp-doc .neba-scope :is(h1, h2, h3, h4, h5, h6) {
+  border-top-width: 0;
+  padding-top: 0;
 }
 
 /*

@@ -30,6 +30,7 @@ import { describe, expect, it } from 'vitest';
 import pkg from '../../package.json';
 import terser from '../../terser.config.json';
 import * as i18n from '../../src/internal/i18n.js';
+import { headingTitleClasses, sheetTitleClasses } from '../../src/internal/styles.js';
 
 /** Every module under `src/`, as text. Vite inlines these at build time. */
 const sources = import.meta.glob('../../src/**/*.{ts,tsx}', {
@@ -466,6 +467,26 @@ describe('the published package', () => {
       }
 
       expect(unread).toEqual([]);
+    });
+
+    /* `headingTitleClasses` is `sheetTitleClasses` written so it survives a
+       host stylesheet, and a second spelling of one ladder is normally the thing
+       to avoid. It is kept honest here rather than by hand: the two tables are
+       the same values, and only the prefix differs. */
+    it('keeps the two title ladders in step', () => {
+      const prefix = '[&.neba-heading]:';
+      const sizes = Object.keys(sheetTitleClasses) as (keyof typeof sheetTitleClasses)[];
+
+      expect(Object.keys(headingTitleClasses)).toEqual(sizes);
+
+      for (const size of sizes) {
+        const doubled = headingTitleClasses[size].split(' ');
+
+        expect(doubled.every((name) => name.startsWith(prefix))).toBe(true);
+        expect(doubled.map((name) => name.slice(prefix.length)).join(' ')).toBe(
+          sheetTitleClasses[size]
+        );
+      }
     });
   });
 });

@@ -8,12 +8,12 @@ import { CloseIcon } from '../../internal/icons.js';
 import {
   cx,
   hasContent,
+  headingTitleClasses,
   metaTextClasses,
   popupFadeClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
-  sheetTitleClasses,
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
@@ -393,7 +393,18 @@ export function Drawer(rawProps: DrawerProps) {
         <div className={`flex shrink-0 items-start gap-3 ${sectionClasses}`}>
           <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
             {hasContent(title) ? (
-              <TitleTag className={`m-0 font-semibold ${sheetTitleClasses[size]}`}>
+              <TitleTag
+                className={cx(
+                  // An inline Drawer's title is an `<h2>` sitting in the page,
+                  // so it is written at two-class strength — see
+                  // `headingTitleClasses`. The overlay one is portalled and out
+                  // of a host's reach either way; one code path is worth more
+                  // than the handful of characters.
+                  'neba-heading',
+                  '[&.neba-heading]:m-0 [&.neba-heading]:font-semibold [&.neba-heading]:text-inherit',
+                  headingTitleClasses[size]
+                )}
+              >
                 {title}
               </TitleTag>
             ) : null}

@@ -78,4 +78,6 @@ import { Typography } from 'neba';
 </Typography>
 ```
 
-`!`를 붙인 이유는 컴포넌트가 쓴 크기와 직접 쓴 크기가 둘 다 class 하나여서, 어느 쪽이 이기는지는 작성 순서가 아니라 Tailwind가 정하는 생성 순서에 달려 있기 때문입니다. [prop 규칙](../../design/prop-conventions)에 자세히 있습니다. 비율 자체를 바꾸고 싶다면 옆에 `leading-*`을 붙이세요.
+`!`는 필수이고, weight와 글자색, gutter를 덮어쓸 때도 마찬가지입니다. 이 scale은 host 스타일시트를 이기려고 class 두 겹으로 씁니다. `.prose h2`와 VitePress의 `.vp-doc h2`가 태그 이름으로 `font-size`, `line-height`, `letter-spacing`, `font-weight`를 지정하는데 class 하나로는 그 특정도에 닿지 않고, 그대로 두면 Markdown 본문 안의 Neba heading이 자기 scale 대신 본문 typography를 뒤집어씁니다. 그 규칙보다 위이면서 맨 utility보다 아래인 특정도는 존재하지 않으므로 `!`가 들어갈 자리입니다. 비율 자체를 바꾸고 싶다면 옆에 `leading-*`을 붙이세요.
+
+`align`과 `lines`는 일부러 맨 utility로 두었습니다. `text-align`이나 line clamp를 태그 이름으로 지정하는 host는 없어서 `className`이 `!` 없이 닿습니다.

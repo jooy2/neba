@@ -82,18 +82,43 @@ export interface TypographyProps extends Omit<
  * Each level keeps exactly the ratio it was drawn at, so nothing moves at the
  * scale's own sizes and an overridden one gets a line box in proportion. It is
  * also how Tailwind's own text scale is written.
+ *
+ * The levels below `h3` say `tracking-normal` rather than leaving the tracking
+ * out. Below that size the scale wants the font's own spacing, and *not saying
+ * so* is what let `.vp-doc h4`'s `-0.01em` through — a scale is what the
+ * component states, not what is left over.
+ *
+ * Every one of them is written through `[&.neba-typography]`, which compiles to
+ * two classes, and that is not decoration. `h1`–`h6` and `p` are the tags a host
+ * stylesheet is most certain to have styled by name: `.vp-doc h2` and `.prose
+ * h2` both set `font-size`, `line-height`, `letter-spacing` and `font-weight`,
+ * all at one class plus one tag, which a single utility cannot outrank. Measured
+ * inside VitePress's own article, every level of this scale was losing its
+ * leading, `h1` and `h4` their size, the headings their tracking, and `weight`
+ * was ignored outright — a `weight="regular"` heading rendered at 600.
+ *
+ * The cost is the one `neba-link` pays, and it lands on the caller: a plain
+ * `className="text-[2.2rem]"` is one class and no longer wins. The override to
+ * reach for is Tailwind's `!` — `className="!text-[2.2rem]"`. Repeating the
+ * doubling (`[&.neba-typography]:text-[2.2rem]`) is *not* the answer: it ties on
+ * specificity with the level's own, and a tie is decided by the order Tailwind
+ * generated the two arbitrary values in, which is not something a caller can
+ * see. There is no specificity that sits above a host's `h2` rule and below a
+ * caller's plain utility, so the choice is only which of the two wins, and a
+ * component that renders wrong inside `.prose` is the worse answer.
  */
 const levelClasses: Record<TypographyLevel, string> = {
-  h1: 'text-[1.875rem]/[1.2] tracking-[-0.02em]',
-  h2: 'text-[1.5rem]/[1.25] tracking-[-0.015em]',
-  h3: 'text-[1.25rem]/[1.3] tracking-[-0.01em]',
-  h4: 'text-[1.0625rem]/[1.41176]',
-  h5: 'text-[0.9375rem]/[1.46667]',
-  h6: 'text-[0.8125rem]/[1.53846]',
-  lead: 'text-[1.0625rem]/[1.64706]',
-  body: 'text-[0.8125rem]/[1.69231]',
-  caption: 'text-[0.75rem]/[1.5]',
-  overline: 'text-[0.6875rem]/[1.45455] tracking-[0.08em] uppercase'
+  h1: '[&.neba-typography]:text-[1.875rem]/[1.2] [&.neba-typography]:tracking-[-0.02em]',
+  h2: '[&.neba-typography]:text-[1.5rem]/[1.25] [&.neba-typography]:tracking-[-0.015em]',
+  h3: '[&.neba-typography]:text-[1.25rem]/[1.3] [&.neba-typography]:tracking-[-0.01em]',
+  h4: '[&.neba-typography]:text-[1.0625rem]/[1.41176] [&.neba-typography]:tracking-normal',
+  h5: '[&.neba-typography]:text-[0.9375rem]/[1.46667] [&.neba-typography]:tracking-normal',
+  h6: '[&.neba-typography]:text-[0.8125rem]/[1.53846] [&.neba-typography]:tracking-normal',
+  lead: '[&.neba-typography]:text-[1.0625rem]/[1.64706] [&.neba-typography]:tracking-normal',
+  body: '[&.neba-typography]:text-[0.8125rem]/[1.69231] [&.neba-typography]:tracking-normal',
+  caption: '[&.neba-typography]:text-[0.75rem]/[1.5] [&.neba-typography]:tracking-normal',
+  overline:
+    '[&.neba-typography]:text-[0.6875rem]/[1.45455] [&.neba-typography]:tracking-[0.08em] uppercase'
 };
 
 /**
@@ -137,25 +162,33 @@ const levelElements: Record<TypographyLevel, React.ElementType> = {
  */
 const mutedLevels = new Set<TypographyLevel>(['caption', 'overline']);
 
-/** How much room a level leaves under itself when `gutter` is on. */
+/**
+ * How much room a level leaves under itself when `gutter` is on.
+ *
+ * Doubled like the scale, because `.vp-doc h2` and `.prose p` both write a
+ * margin — and paired with a `my-0` for the other branch, because "off by
+ * default" has to mean *no* vertical margin and not "whatever the article gives
+ * a paragraph". Only the vertical axis is stated: `mx-auto` is how a caller
+ * centres a measure, and that is one class they should keep.
+ */
 const gutterClasses: Record<TypographyLevel, string> = {
-  h1: 'mb-4',
-  h2: 'mb-3.5',
-  h3: 'mb-3',
-  h4: 'mb-2.5',
-  h5: 'mb-2',
-  h6: 'mb-2',
-  lead: 'mb-4',
-  body: 'mb-3',
-  caption: 'mb-2',
-  overline: 'mb-2'
+  h1: '[&.neba-typography]:mb-4',
+  h2: '[&.neba-typography]:mb-3.5',
+  h3: '[&.neba-typography]:mb-3',
+  h4: '[&.neba-typography]:mb-2.5',
+  h5: '[&.neba-typography]:mb-2',
+  h6: '[&.neba-typography]:mb-2',
+  lead: '[&.neba-typography]:mb-4',
+  body: '[&.neba-typography]:mb-3',
+  caption: '[&.neba-typography]:mb-2',
+  overline: '[&.neba-typography]:mb-2'
 };
 
 const weightClasses: Record<TypographyWeight, string> = {
-  regular: 'font-normal',
-  medium: 'font-medium',
-  semibold: 'font-semibold',
-  bold: 'font-bold'
+  regular: '[&.neba-typography]:font-normal',
+  medium: '[&.neba-typography]:font-medium',
+  semibold: '[&.neba-typography]:font-semibold',
+  bold: '[&.neba-typography]:font-bold'
 };
 
 const alignClasses: Record<TypographyAlign, string> = {
@@ -197,20 +230,25 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
   const animation = transitionProps(transition);
 
   const classNames = cx(
-    // A hook, not a style: the one component in the library whose whole output
-    // is text is also the one a host stylesheet most wants to reach, and a
-    // utility string is not a contract. Same arrangement as `neba-link`.
+    // A hook *and* the second half of every selector below: the one component in
+    // the library whose whole output is text is also the one a host stylesheet
+    // most wants to reach, and a utility string is not a contract. Same
+    // arrangement as `neba-link`, and the class has to stay first — every
+    // `[&.neba-typography]:` utility on the element is matching it.
     'neba-typography',
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
     align ? alignClasses[align] : '',
     lines ? clampClasses(lines) : '',
-    gutter ? gutterClasses[level] : '',
+    gutter ? gutterClasses[level] : '[&.neba-typography]:my-0',
+    // Doubled for `.prose h1`–`h4`, which write `color` on a heading. The rest of
+    // the scale is doubled anyway, and an ink that followed the host while the
+    // size did not would be the worst of both.
     color
-      ? 'text-(--n-accent)'
+      ? '[&.neba-typography]:text-(--n-accent)'
       : mutedLevels.has(level)
-        ? 'text-(--neba-muted-fg)'
-        : 'text-(--neba-fg)',
+        ? '[&.neba-typography]:text-(--neba-muted-fg)'
+        : '[&.neba-typography]:text-(--neba-fg)',
     animation.className,
     className ?? ''
   );

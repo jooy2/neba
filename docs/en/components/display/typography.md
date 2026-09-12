@@ -78,4 +78,6 @@ Each level's leading is a **ratio**, not a length, so a size set through `classN
 </Typography>
 ```
 
-The `!` is there because a size the component wrote and a size you wrote are both one class, and which of them wins is Tailwind's ordering rather than yours — see [prop conventions](../../design/prop-conventions). Add a `leading-*` beside it when the proportion is what you want to change.
+The `!` is required, and it is the way to override the weight, the ink and the gutter too. The scale is written at two-class strength so that it clears a host stylesheet — `.prose h2` and VitePress's `.vp-doc h2` both set `font-size`, `line-height`, `letter-spacing` and `font-weight` on the tag, at a specificity a single utility cannot reach, and without this a Neba heading inside rendered Markdown took the article's type instead of its own. There is no specificity above that rule and below a plain utility, so `!` is the way in. Add a `leading-*` beside it when the proportion is what you want to change.
+
+`align` and `lines` are deliberately left as plain utilities: nothing styles `text-align` or a line clamp by tag name, so `className` reaches them without `!`.

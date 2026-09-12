@@ -350,6 +350,37 @@ export const sheetTitleClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * The same ladder, for a title that is a real heading element.
+ *
+ * Most titles in the library are a `<div>` or a `<span>`, which nothing styles
+ * by tag name. Three are not: an Accordion's header, an inline Drawer's title
+ * and a HowToSteps step all have to be `h1`–`h6` to belong in the document
+ * outline, and those are the tags a host stylesheet is most certain to have
+ * reached already. `.prose h2` and VitePress's `.vp-doc h2` set `font-size`,
+ * `line-height` and `font-weight` on them at one class plus one tag, which a
+ * utility of one class cannot outrank — measured, an Accordion header inside a
+ * rendered-Markdown article came out at 20px where the sheet asked for 15px,
+ * and a HowToSteps step at 18px and one weight heavier.
+ *
+ * So those three write their type through `[&.neba-heading]`, which compiles to
+ * two classes, and carry `neba-heading` to close the selector. It is the same
+ * arrangement `neba-link` and `neba-typography` make, and the same trade: an
+ * override through `className` needs Tailwind's `!`.
+ *
+ * This is a second spelling of one ladder, which is normally the thing to avoid.
+ * It is checked rather than trusted — `test/package/resolution.test.ts` asserts
+ * that this table is exactly the one above with the prefix on each token, so the
+ * two cannot drift.
+ */
+export const headingTitleClasses: Record<NebaSize, string> = {
+  xs: '[&.neba-heading]:text-[0.75rem]/[1rem]',
+  sm: '[&.neba-heading]:text-[0.8125rem]/[1.125rem]',
+  md: '[&.neba-heading]:text-[0.9375rem]/[1.25rem]',
+  lg: '[&.neba-heading]:text-[1.0625rem]/[1.5rem]',
+  xl: '[&.neba-heading]:text-[1.25rem]/[1.75rem]'
+};
+
+/**
  * Body copy: the control type scale with the leading opened up, because a
  * label is one line and a body is a paragraph.
  */

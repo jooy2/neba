@@ -357,4 +357,23 @@ describe('Accordion', () => {
       expect(screen.container.innerHTML).not.toContain('translate');
     });
   });
+
+  /* A real `h1`-`h6` is a tag a host stylesheet has already styled, and one
+     class cannot outrank `.vp-doc h3` — the header was taking the article's
+     type, and every `em`-sized glyph in the trigger with it. */
+  describe('host specificity', () => {
+    it('holds its header to the sheet type at two-class strength', async () => {
+      const screen = await render(
+        <Accordion>
+          <AccordionItem value="a" title="Billing">
+            Body
+          </AccordionItem>
+        </Accordion>
+      );
+      const header = screen.getByRole('heading', { level: 3 }).element();
+
+      expect(header).toHaveClass('neba-heading');
+      expect(header).toHaveClass('[&.neba-heading]:[font:inherit]');
+    });
+  });
 });

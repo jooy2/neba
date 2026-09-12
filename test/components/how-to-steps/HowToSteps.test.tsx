@@ -475,4 +475,20 @@ describe('HowToSteps', () => {
       await expect.element(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
     });
   });
+
+  /* Every heading here is a real `h1`-`h6`, which is what puts it in the
+     document outline and also what a host stylesheet has already styled. */
+  describe('host specificity', () => {
+    it('holds both headings to the sheet type at two-class strength', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} title="Set up" />);
+      const headings = [...screen.container.querySelectorAll('h3, h4')];
+
+      expect(headings.length).toBeGreaterThan(1);
+
+      for (const heading of headings) {
+        expect(heading).toHaveClass('neba-heading');
+        expect(heading).toHaveClass('[&.neba-heading]:text-[0.9375rem]/[1.25rem]');
+      }
+    });
+  });
 });

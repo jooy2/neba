@@ -877,9 +877,16 @@
  * This is in CSS rather than in Tailwind because the selector is the point:
  * `[&_:where(h1,h2,h3,h4,h5,h6)]:[font:inherit]` is expressible and nobody
  * would want to read it twice.
+ *
+ * The class is written twice for `neba-link`'s reason. One class plus a
+ * `:where()` is one class, and `.prose h2` and `.vp-doc h2` are one class plus a
+ * tag — so the browser's own bold was being replaced by the *article's*, and a
+ * `<Card title={<h2>…</h2>}>` inside rendered Markdown came out at 24px where
+ * the card asked for 15px. Two classes clears both and still loses to anything
+ * a caller writes with two of their own.
  * ------------------------------------------------------------------------- */
 
-.neba-title :where(h1, h2, h3, h4, h5, h6) {
+.neba-title.neba-title :where(h1, h2, h3, h4, h5, h6) {
   font: inherit;
   margin: 0;
 }

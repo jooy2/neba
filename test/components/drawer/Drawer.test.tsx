@@ -384,4 +384,21 @@ describe('Drawer', () => {
       expect(panel?.getAttribute('aria-describedby')).toBe('hint');
     });
   });
+
+  /* An inline Drawer's title is an `<h2>` sitting in the page, and `.prose h2`
+     outranks a one-class utility. The overlay one is portalled out of a host's
+     reach, and takes the same classes so there is one code path. */
+  describe('host specificity', () => {
+    it('holds its title to the sheet type at two-class strength', async () => {
+      const screen = await render(
+        <Drawer mode="inline" title="Filters">
+          Body
+        </Drawer>
+      );
+      const heading = screen.getByRole('heading', { level: 2, name: 'Filters' }).element();
+
+      expect(heading).toHaveClass('neba-heading');
+      expect(heading).toHaveClass('[&.neba-heading]:text-[0.9375rem]/[1.25rem]');
+    });
+  });
 });

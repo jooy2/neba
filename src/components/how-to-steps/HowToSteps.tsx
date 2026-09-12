@@ -9,6 +9,7 @@ import { transitionProps } from '../../internal/animate.js';
 import {
   cx,
   hasContent,
+  headingTitleClasses,
   iconClasses,
   metaTextClasses,
   radiusClasses,
@@ -555,7 +556,11 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                 ) : null}
                 <StepHeading
                   level={headingLevel + 1}
-                  className={cx('m-0 min-w-0 flex-1 font-medium', sheetTitleClasses[size])}
+                  className={cx(
+                    'neba-heading min-w-0 flex-1',
+                    '[&.neba-heading]:m-0 [&.neba-heading]:font-medium [&.neba-heading]:text-inherit',
+                    headingTitleClasses[size]
+                  )}
                 >
                   {item.title}
                 </StepHeading>
@@ -644,7 +649,11 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
           <StepHeading
             level={headingLevel}
             id={headingId}
-            className={cx('m-0 shrink-0 font-medium', sheetTitleClasses[size])}
+            className={cx(
+              'neba-heading shrink-0',
+              '[&.neba-heading]:m-0 [&.neba-heading]:font-medium [&.neba-heading]:text-inherit',
+              headingTitleClasses[size]
+            )}
           >
             {title}
           </StepHeading>

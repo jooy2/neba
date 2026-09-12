@@ -297,8 +297,13 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         className={cx('flex flex-col', className ?? '')}
         {...props}
       >
+        {/* `neba-heading` and the doubled `[font:inherit]`: this is a real
+            `h1`–`h6`, and a host's rule for that tag outranks a one-class
+            utility — the header was taking the article's 20px, and every
+            `em`-sized glyph in the trigger with it. See
+            `headingTitleClasses`. */}
         <BaseUIAccordion.Header
-          className="m-0 flex w-full items-center [font:inherit]"
+          className="neba-heading flex w-full items-center [&.neba-heading]:m-0 [&.neba-heading]:[font:inherit]"
           render={React.createElement(`h${headingLevel}`)}
         >
           <BaseUIAccordion.Trigger
