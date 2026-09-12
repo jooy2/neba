@@ -246,11 +246,17 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
           className={[
             'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full px-1.5 py-px',
             'text-[0.85em] leading-none font-semibold tabular-nums',
-            // On a filled chip the plate is a hole punched in the fill; on a
-            // tinted or bare one it is the accent showing through.
+            // On a filled chip the plate is a hole punched in the fill. On a
+            // tinted or bare one it is a fill of its own, and that is a fix
+            // rather than a preference: the plate used to be `--n-soft-press`,
+            // which is a wash on top of whatever wash the chip is already
+            // painted with, and `--n-on-tint` is solved for *one* of those. A
+            // count on a `text` chip read 4.2:1, and on a selected one 3.5:1.
+            // A fill carries its own bed at 88% opacity, so the number reads the
+            // same 4.6:1 or better wherever the chip happens to be sitting.
             variant === 'solid'
               ? 'bg-(--neba-glow-on-fill) text-(--n-on-solid)'
-              : 'bg-(--n-soft-press) text-(--n-on-tint)'
+              : 'bg-(--n-fill) text-(--n-on-solid)'
           ].join(' ')}
         >
           {count}

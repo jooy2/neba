@@ -283,4 +283,30 @@ describe('Chip', () => {
       await expect.element(screen.getByRole('button', { name: 'Remove tag' })).toBeInTheDocument();
     });
   });
+
+  /* The count plate carries its own bed rather than another wash on top of the
+     chip's: `--n-on-tint` is solved for one wash, and a count on a selected chip
+     was reading 3.5:1. */
+  describe('the count plate', () => {
+    it('is a fill of its own on a chip that is not filled', async () => {
+      const screen = await render(
+        <Chip variant="text" count={12}>
+          Errors
+        </Chip>
+      );
+
+      expect(screen.getByText('12').element()).toHaveClass('bg-(--n-fill)');
+      expect(screen.getByText('12').element()).toHaveClass('text-(--n-on-solid)');
+    });
+
+    it('is a hole punched in the fill on one that is', async () => {
+      const screen = await render(
+        <Chip variant="solid" count={12}>
+          Errors
+        </Chip>
+      );
+
+      expect(screen.getByText('12').element()).toHaveClass('bg-(--neba-glow-on-fill)');
+    });
+  });
 });

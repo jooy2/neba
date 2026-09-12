@@ -188,7 +188,13 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'text-(--n-on-tint) bg-(--n-soft-press)'
+  // `--n-soft-hover` rather than `--n-soft-press`, and the same in Avatar and
+  // AppLogo: a badge is a small thing a caller drops *inside* other things, and
+  // the strongest wash stacked on a row that is already washed takes
+  // `--n-on-tint` under 4.5:1 — 4.2:1 on a hovered row, measured. One step down
+  // leaves the headroom for that, and on a bare sheet the plate is still plainly
+  // a plate.
+  text: 'text-(--n-on-tint) bg-(--n-soft-hover)'
 };
 
 /** `99+`, but only for a value a `+` means anything on. */
