@@ -12,6 +12,7 @@ import {
   hasContent,
   srOnlyClasses,
   surfaceClasses,
+  tintPlateClasses,
   transitionClasses
 } from '../../internal/styles.js';
 import type {
@@ -169,9 +170,9 @@ const variantClasses: Record<NebaVariant, string> = {
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev)]'
   ].join(' '),
-  // One wash short of the top, so it survives being dropped on a tinted row —
-  // see the note in `Badge`.
-  text: 'text-(--n-on-tint) bg-(--n-soft-hover) [box-shadow:var(--n-elev)]'
+  // The plate carries its own bed, so it reads the same wherever it is dropped —
+  // see `tintPlateClasses`.
+  text: `text-(--n-on-tint) ${tintPlateClasses} [box-shadow:var(--n-elev)]`
 };
 
 /**

@@ -866,6 +866,33 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * The `text` plate
+ *
+ * `--n-soft*` is a wash — an alpha of the family's accent — so what it comes out
+ * as depends on whatever is painted behind it, and `--n-on-tint` is solved for
+ * *one* wash over the page. A Badge, an Avatar and an AppLogo are marks a caller
+ * puts **inside** other things, and the moment one lands on something that is
+ * itself painted the sum is a bed nobody solved an ink for. Measured, a `text`
+ * Badge read 3.9:1 on a selected row and 1.45:1 on a filled surface — which is
+ * not faint, it is gone.
+ *
+ * So the wash is laid on the page's own surface rather than on the caller's: an
+ * opaque colour with the wash as a one-stop gradient over it, which is the
+ * arrangement Table uses for a row. The plate then reads what it always read on
+ * the page, and reads it on every bed, because there is no longer a bed to
+ * depend on.
+ *
+ * It is here rather than in Tailwind for `styles.css`'s usual reason: the
+ * arbitrary-property form of a gradient whose two stops are the same `var()` is
+ * expressible and nobody would want to read it.
+ * ------------------------------------------------------------------------- */
+
+.neba-tint-plate {
+  background-color: var(--neba-surface);
+  background-image: linear-gradient(var(--n-soft-hover), var(--n-soft-hover));
+}
+
+/* ---------------------------------------------------------------------------
  * Sheet titles
  *
  * A `title` is styled by the element the component renders around it — Card,

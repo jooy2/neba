@@ -22,6 +22,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import {
+  Badge,
   Button,
   Checkbox,
   Chip,
@@ -418,6 +419,21 @@ describe('neba/styles.css', () => {
       } finally {
         document.documentElement.style.removeProperty('--neba-z-portal');
       }
+    });
+
+    /* A `text` plate is opaque on purpose: `--n-soft*` is a wash, and a mark a
+       caller drops inside a painted thing cannot let that thing through and
+       still be read — a `text` Badge on a filled surface measured 1.45:1. The
+       rule lives in `styles.css`, so nothing in a component test would notice it
+       failing to arrive. */
+    it("give a `text` plate a bed of its own rather than the caller's", async () => {
+      const screen = await render(<Badge variant="text">7</Badge>);
+      const element = screen.container.querySelector('.neba-tint-plate') as HTMLElement;
+      const style = getComputedStyle(element);
+
+      expect(element).not.toBeNull();
+      expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+      expect(style.backgroundImage).toContain('gradient');
     });
 
     it('answer to a forced theme without any further setup', async () => {

@@ -669,6 +669,34 @@ export function surfaceSlots(color: NebaColor, elevation: NebaElevation): React.
  * ------------------------------------------------------------------------- */
 
 /**
+ * A `text` plate that carries its own bed.
+ *
+ * `--n-soft*` is a wash — an alpha of the family's accent — so what it actually
+ * comes out as depends on whatever is painted behind it, and `--n-on-tint` is
+ * solved for *one* wash over the page. A Badge, an Avatar and an AppLogo are
+ * marks a caller puts **inside** other things, and the moment one lands on
+ * something that is itself painted the sum is a bed nobody solved an ink for.
+ * Measured, a `text` Badge read 3.9:1 on a selected row and **1.45:1** on a
+ * filled surface — a Chip, a Button, a Card — which is not faint, it is gone.
+ *
+ * So the wash is laid on the page's own surface rather than on the caller's:
+ * an opaque `background-color` with the wash as a one-stop gradient over it,
+ * which is the arrangement Table uses for a row. The plate then reads exactly
+ * what it always read on the page — 5.5:1 in light and 7.6:1 in dark — and
+ * reads it on every bed, because there is no longer a bed to depend on.
+ *
+ * Nothing changes where these already worked: on the page the opaque colour
+ * *is* what the wash resolved to. It is `--neba-surface` and not the parent's
+ * sheet because an element cannot know what it was dropped into; the page is
+ * the one answer that is always available and never wrong by much.
+ *
+ * The two declarations are in `styles.css`, under the same name. A gradient
+ * whose two stops are one `var()` is the kind of thing the arbitrary-property
+ * form can say and nobody can read.
+ */
+export const tintPlateClasses = 'neba-tint-plate';
+
+/**
  * Disabled drops the colour family entirely. Fading the coloured surface would
  * still read as "this is the primary action", only blurrier.
  */

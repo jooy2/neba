@@ -244,4 +244,16 @@ describe('AppLogo', () => {
       expect(mark.style.width).toBe('3rem');
     });
   });
+
+  /* `--n-soft*` is a wash, and this is a mark a caller drops *inside* other
+     things: on a filled surface the wash let the fill through and the label read
+     1.45:1. The `text` plate carries its own bed instead — see
+     `tintPlateClasses`. */
+  describe('the `text` plate', () => {
+    it('carries its own bed rather than the surface it was dropped on', async () => {
+      const screen = await render(<AppLogo variant="text" shape="app" name="Neba" />);
+
+      expect(screen.container.querySelector('.neba-tint-plate')).not.toBeNull();
+    });
+  });
 });
