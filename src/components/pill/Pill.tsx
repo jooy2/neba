@@ -183,15 +183,22 @@ const mediaClasses =
   'flex shrink-0 items-center justify-center overflow-hidden rounded-full [&_img]:size-full [&_img]:object-cover';
 
 /**
- * The description under the title.
+ * The description under the title is the *same* ink as the title, one step
+ * smaller and one weight lighter. It is not dimmed, and that is the point.
  *
- * Mixed toward transparent rather than pointed at `--neba-muted-fg`: the middle
- * of a pill sits on the colour family's own fill as often as on a bare surface,
- * and a fixed grey that reads as secondary on white reads as dirt on `primary`.
- * Taking the ink that is already there and letting some of the surface through
- * is the one form of "one step quieter" that holds on all three variants.
+ * It used to be `currentColor` at 72%, on the reasoning that the middle of a
+ * pill sits on the family's own fill as often as on a bare surface and a fixed
+ * grey that reads as secondary on white reads as dirt on `primary`. The
+ * reasoning holds; the number could not. `--n-on-solid` on `--n-fill` is
+ * 4.6-4.8:1 at full strength — the fill's lightness was pinned so that white
+ * text *just* clears 4.5:1 — so on a `solid` pill there is no room to take
+ * anything away at all, and 72% read at 3.2:1. On `outline` and `text` there is
+ * room for about 12% and no more.
+ *
+ * Where the ink on a bed was solved to the minimum, "quieter" cannot be a
+ * fainter copy of it. Size and weight carry the step instead, which they do on
+ * every variant and need no number.
  */
-const descriptionClasses = '[color:color-mix(in_oklab,currentColor_72%,transparent)]';
 
 /** Where a pinned pill hangs, and how far in from the edge. */
 const positionClasses: Record<NebaPosition, Record<'top' | 'bottom', string>> = {
@@ -281,9 +288,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
         >
           {hasContent(title) ? <span className="max-w-full truncate">{title}</span> : null}
           {hasContent(description) ? (
-            <span
-              className={`max-w-full truncate font-normal ${metaTextClasses[size]} ${descriptionClasses}`}
-            >
+            <span className={`max-w-full truncate font-normal ${metaTextClasses[size]}`}>
               {description}
             </span>
           ) : null}

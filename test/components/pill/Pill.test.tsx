@@ -232,4 +232,17 @@ describe('Pill', () => {
       expect(media).toHaveClass('size-5');
     });
   });
+
+  /* `--n-on-solid` on `--n-fill` is 4.6:1 at full strength, so a dimmed copy of
+     it cannot clear 4.5:1 on a `solid` pill at any percentage worth having. The
+     step down is size and weight, and the ink is left alone. */
+  describe('the description ink', () => {
+    it('is not dimmed out of the title ink', async () => {
+      const screen = await render(<Pill title="Recording" description="02:14 elapsed" />);
+      const element = screen.getByText('02:14 elapsed').element();
+
+      expect(element.className).not.toContain('color-mix');
+      expect(element).toHaveClass('font-normal');
+    });
+  });
 });

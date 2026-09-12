@@ -283,4 +283,32 @@ describe('List', () => {
       expect(screen.getByRole('list').element().outerHTML).not.toContain('translate');
     });
   });
+
+  /* A selected row is painted with the family's wash and its ink is already at
+     the minimum for that bed, so a neutral grey under it reads 3.1:1. */
+  describe('a selected row\u2019s description', () => {
+    it('takes the row ink rather than the neutral grey', async () => {
+      const screen = await render(
+        <List>
+          <ListItem description="Two minutes ago" selected>
+            Production
+          </ListItem>
+        </List>
+      );
+
+      expect(screen.getByText('Two minutes ago').element()).not.toHaveClass(
+        'text-(--neba-muted-fg)'
+      );
+    });
+
+    it('keeps the neutral grey on a row that is not selected', async () => {
+      const screen = await render(
+        <List>
+          <ListItem description="Two minutes ago">Production</ListItem>
+        </List>
+      );
+
+      expect(screen.getByText('Two minutes ago').element()).toHaveClass('text-(--neba-muted-fg)');
+    });
+  });
 });

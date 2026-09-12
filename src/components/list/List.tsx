@@ -286,7 +286,18 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
       <span className="flex min-w-0 flex-1 flex-col">
         {hasContent(children) ? <span className="truncate">{children}</span> : null}
         {hasContent(description) ? (
-          <span className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+          // `--neba-muted-fg` is a neutral grey, which is right on the sheet and
+          // wrong on a selected row: it is the wrong family *and* too quiet,
+          // reading 3.1:1 on the wash the row is painted with. A selected row's
+          // ink is already at the minimum for that bed, so the description takes
+          // it whole and steps down in size alone.
+          <span
+            className={cx(
+              'truncate',
+              metaTextClasses[size],
+              selected ? '' : 'text-(--neba-muted-fg)'
+            )}
+          >
             {description}
           </span>
         ) : null}
