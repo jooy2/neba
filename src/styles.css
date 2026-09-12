@@ -343,18 +343,61 @@
  *
  * Fills stay mid-tone rather than pale, so a filled button on a dark surface
  * does not glare; the readable-on-surface `accent` is what lightens.
+ *
+ * Ink and hairlines are picked against the *raised* sheet, not against the bare
+ * one, and that is the one rule this theme does not share with the light block.
+ *
+ * The panel ladder is opacity: `--neba-panel` and its two steps lay white over
+ * whatever is behind them. On a white page that changes nothing — white over
+ * white is white — so a light-theme value measured on `--neba-surface` still
+ * reads the same inside a Card, inside a popup, under a table header. On a
+ * near-black page every step multiplies the bed's luminance instead, and the
+ * steps compound: a Card is 2.1x the page, and a header band inside that Card
+ * is 4.9x. Ink tuned against the bare sheet loses most of its contrast the
+ * moment it sits on a raised one, which is exactly where secondary text,
+ * disabled text and structural rules live.
+ *
+ * Which is also why the dark ladder is 5/7/9% rather than the 7/10/13% it was.
+ * Those three were picked for how a sheet reads against the page, and at the
+ * time the page was all they were checked against; compounded they put a table
+ * header at 7.5x the sheet and squeezed the whole ink hierarchy into the top of
+ * the range. Lowering them costs less than it looks: the light theme's own
+ * ladder moves a sheet's lightness by *nothing at all* — it is the hairline and
+ * the plate edge that say where a Card begins there — and the dark sheet still
+ * lifts by 0.05 in `oklch` L on top of both.
+ *
+ * The four values below are then solved against a table header inside a Card,
+ * the deepest bed the library composes for itself, and checked back down the
+ * ladder:
+ *
+ * - `--neba-muted-fg` reads 5.05:1 there and 4.34:1 with a page shell around it
+ *   as well — the light theme reads 4.33-4.64:1 everywhere, so this is parity at
+ *   every depth. At the old 66% on the old ladder the same header came out at
+ *   3.3:1, and a segmented button's unchosen label and a field's placeholder
+ *   were not far above it.
+ * - `--neba-disabled-fg` lands inside the 2.0-2.4:1 the light theme reads at.
+ *   Disabled text is exempt from 4.5:1 and is meant to be quiet, but at the old
+ *   48% it fell to 1.8:1 on a panel — a disabled menu row or segment was not
+ *   quiet, it was gone.
+ * - `--neba-border` sits *above* the ladder. The light hairline is 0.09 below
+ *   every bed it is drawn on; the old dark one was 0.11 above the bare sheet
+ *   but 0.02 to 0.05 *below* a raised one, so a tree's rails and a chart's grid
+ *   on a Card came out darker than the sheet under them — a black scratch where
+ *   the design language asks for an edge catching the light. It is more present
+ *   on the bare page than the light hairline is, and that is the trade: one
+ *   value cannot be a whisper across a ladder that moves.
  * ------------------------------------------------------------------------- */
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not([data-theme='light']) {
     --neba-surface: oklch(19% 0.012 262);
     --neba-fg: oklch(95% 0.008 262);
-    --neba-muted-fg: oklch(66% 0.014 262);
-    --neba-border: oklch(30% 0.012 262);
+    --neba-muted-fg: oklch(72% 0.014 262);
+    --neba-border: oklch(38% 0.012 262);
 
     --neba-disabled-bg: oklch(27% 0.012 262);
-    --neba-disabled-fg: oklch(48% 0.012 262);
-    --neba-disabled-border: oklch(32% 0.012 262);
+    --neba-disabled-fg: oklch(52% 0.012 262);
+    --neba-disabled-border: oklch(40% 0.012 262);
 
     --neba-fill-alpha: 87%;
     --neba-blur: blur(9px) saturate(1.3);
@@ -363,11 +406,11 @@
     --neba-plate-top: rgb(255 255 255 / 0.16);
     --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
 
-    --neba-glass-bg: rgb(255 255 255 / 0.07);
+    --neba-glass-bg: rgb(255 255 255 / 0.05);
 
-    --neba-panel: rgb(255 255 255 / 0.07);
-    --neba-panel-hover: rgb(255 255 255 / 0.1);
-    --neba-panel-press: rgb(255 255 255 / 0.13);
+    --neba-panel: rgb(255 255 255 / 0.05);
+    --neba-panel-hover: rgb(255 255 255 / 0.07);
+    --neba-panel-press: rgb(255 255 255 / 0.09);
 
     --neba-glow-on-fill: rgb(255 255 255 / 0.13);
     --neba-flash-on-fill: rgb(255 255 255 / 0.18);
@@ -462,12 +505,12 @@
 [data-theme='dark'] {
   --neba-surface: oklch(19% 0.012 262);
   --neba-fg: oklch(95% 0.008 262);
-  --neba-muted-fg: oklch(66% 0.014 262);
-  --neba-border: oklch(30% 0.012 262);
+  --neba-muted-fg: oklch(72% 0.014 262);
+  --neba-border: oklch(38% 0.012 262);
 
   --neba-disabled-bg: oklch(27% 0.012 262);
-  --neba-disabled-fg: oklch(48% 0.012 262);
-  --neba-disabled-border: oklch(32% 0.012 262);
+  --neba-disabled-fg: oklch(52% 0.012 262);
+  --neba-disabled-border: oklch(40% 0.012 262);
 
   --neba-fill-alpha: 87%;
   --neba-blur: blur(9px) saturate(1.3);
@@ -476,11 +519,11 @@
   --neba-plate-top: rgb(255 255 255 / 0.16);
   --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
 
-  --neba-glass-bg: rgb(255 255 255 / 0.07);
+  --neba-glass-bg: rgb(255 255 255 / 0.05);
 
-  --neba-panel: rgb(255 255 255 / 0.07);
-  --neba-panel-hover: rgb(255 255 255 / 0.1);
-  --neba-panel-press: rgb(255 255 255 / 0.13);
+  --neba-panel: rgb(255 255 255 / 0.05);
+  --neba-panel-hover: rgb(255 255 255 / 0.07);
+  --neba-panel-press: rgb(255 255 255 / 0.09);
 
   --neba-glow-on-fill: rgb(255 255 255 / 0.13);
   --neba-flash-on-fill: rgb(255 255 255 / 0.18);

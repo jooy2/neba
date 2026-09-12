@@ -59,9 +59,9 @@ A family is a set of `--neba-{family}-{role}` tokens.
 Only **controls** let a family flood their surface. Box, Card and TextField read a neutral, undyed set of three steps rather than the family's own `--neba-{color}-panel`.
 
 ```css
---neba-panel        /* white 66% (dark 7%) */
---neba-panel-hover  /* white 82% (dark 10%) */
---neba-panel-press  /* white 92% (dark 13%) */
+--neba-panel        /* white 66% (dark 5%) */
+--neba-panel-hover  /* white 82% (dark 7%) */
+--neba-panel-press  /* white 92% (dark 9%) */
 ```
 
 What a container holds is other people's content, and it arrives with its own colours: body text, links, buttons, fields. Tinting the sheet underneath puts every one of them on a background they were not chosen against. So **the family stops at the hairline, the focus ring and the caret, and the sheet stays white.** A Button is the opposite case (its surface _is_ the thing being coloured), so it keeps the family fill.
@@ -83,6 +83,7 @@ Every colour is defined in `oklch()`, because its lightness axis matches percept
 - **Text on a fill holds 4.5:1.** All three steps (`solid`, `hover`, `active`) checked against the 88%-opaque fill over a white page.
 - **`accent` clears 5:1 on white**, with the margin sized so it still clears 4.5:1 on the faintly tinted `panel`.
 - **Chroma sits near 90% of the sRGB gamut ceiling.** Well under it and the colour reads grey at the very same brightness; over it and the browser clips.
+- **In dark mode ink is measured on a raised sheet, not the bare one.** The panel ladder is opacity, so it costs nothing on a white page and a great deal on a near-black one. [Design language](./design-language) has the reasoning.
 
 Lightness is not as free as it looks. With a white `on-solid` and a fill at 88%, holding 4.5:1 pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink**, and `warning` is the one family that does exactly that.
 

@@ -112,6 +112,16 @@ Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, hold
 
 Pastel fills with dark text on them are a common dark-theme approach, but on a dark screen the fill itself becomes the light source and it hurts to look at. Neba keeps fills mid-tone in dark mode and keeps the text white. The only thing that lightens is `accent`, the colour that has to read on a surface.
 
+### In dark mode, ink is measured on the raised sheet
+
+The panel ladder is opacity: `--neba-panel` and its two steps lay white over whatever is behind them. On a white page that changes nothing, so a light-theme value measured on `--neba-surface` still reads the same inside a Card, inside a popup, under a table header. On a near-black page every step multiplies the bed's luminance instead, and the steps compound: a Card is 2.1x the page, and a header band inside that Card is 4.9x. Ink picked against the bare sheet loses most of its contrast the moment it sits on a raised one.
+
+`--neba-muted-fg`, `--neba-disabled-fg` and `--neba-border` are therefore solved against a table header inside a Card — the deepest bed the library composes for itself — and checked back down the ladder from there. Muted ink reads 5.05:1 there and 4.34:1 with a page shell around it as well, against the 4.33-4.64:1 the light theme reads everywhere.
+
+> **The dark ladder is 5/7/9%, and it used to be 7/10/13%.** Those were picked for how a sheet reads against the page, and the page was all they were checked against; compounded they put a table header at 7.5x the sheet and squeezed the whole ink hierarchy into the top of its range. Lowering them costs less than it looks — the light ladder moves a sheet's lightness by nothing at all, and it is the hairline and the plate edge that say where a Card begins there.
+
+> **The hairline inverts rather than merely weakening.** In light the border sits just below every bed it is drawn on. A dark value picked on the bare sheet ends up _darker_ than a raised one, so the edge that is supposed to catch the light reads as a black scratch — which is what a TreeView's rails and a chart's grid on a Card were doing. The dark hairline sits above the whole ladder instead, and is more present on a plain page than its light counterpart. One value cannot be a whisper across a ladder that moves.
+
 ### `warning` has dark text
 
 White on amber does not reach 4.5:1 at any lightness. `--neba-warning-on-solid` is the one dark brown in the set. Changing the text colour is the right answer; distorting the family to preserve contrast is not.

@@ -4,6 +4,14 @@
 
 ### Fixed
 
+- **Dark mode's panel ladder is 5/7/9%, down from 7/10/13%.** The ladder is opacity, which is why it is free on a white page — white over white is white — and expensive on a near-black one, where every step multiplies the bed's luminance and nested sheets compound. At the old numbers a Card was 2.6x the page and a table header inside that Card was 7.5x, which squeezed the whole ink hierarchy into the top of its range: `--neba-fg` itself fell from 16:1 to 9:1 just by being inside two sheets. The light theme's own ladder moves a sheet's lightness by nothing at all, and it is the hairline and the plate edge that say where a Card begins there, so the dark sheet keeps more separation than its light counterpart even after the change.
+
+- **Dark mode's secondary ink, disabled ink and hairline are measured on that raised sheet, not the bare one.** All three were picked against `--neba-surface`, which is the one bed almost nothing is drawn on. So a DataTable's column names came out at 3.3:1, a SegmentedButton's unchosen labels at 3.9:1, a Combobox's placeholder at 4.5:1, and a disabled Select option or segment at 1.8:1 — a fifth of what its own label reads at.
+
+  `--neba-muted-fg` now reads 5.05:1 on a table header inside a Card and 4.34:1 with a page shell around that, against the 4.33-4.64:1 the light theme reads everywhere — parity at every depth the library composes. `--neba-disabled-fg` lands inside the 2.0-2.4:1 light reads at, still clearly unavailable and no longer gone. Nothing in the light theme moved.
+
+- **A hairline in dark mode is lighter than the sheet it is drawn on.** `--neba-border` was 0.11 above the bare surface in perceptual lightness but 0.02 to 0.05 _below_ a raised one, so on anything that is not the bare page the edge that is supposed to catch the light was a black scratch. A TreeView's rails and elbows were the clearest case, at 1.03:1 against the sheet behind them; a chart's grid and axis, a Panes divider, a Slider's ticks, an Anchor's rail, a Timeline's connectors and a DataList's rules are derived from the same token and were all doing it. The dark value now sits above the whole panel ladder. It is more present on a plain page than the light hairline is, which is the trade — one value cannot be a whisper across a ladder that moves.
+
 - **A `Chip` keeps the tails of its letters.** The label is truncated, and truncation clips at the line box, which the chip's one-em leading made shorter than the glyphs inside it — so every g, j, p, q and y lost its descender, at every size. The label's line box is now the font's own height. The chip is the same height and the words sit where they did.
 
 ## 1.13.0 (2026-09-11)
