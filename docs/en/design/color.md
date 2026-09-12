@@ -35,6 +35,8 @@ A family is a set of `--neba-{family}-{role}` tokens.
 
 `solid` and `accent` are not two shades of one idea. `solid` is **a background to put text on**; `accent` is **text to put on a background**. That is why `accent` is the lighter and more saturated of the two: it is the one that has to hold contrast against a white page.
 
+`on-tint` is the third of that pair, derived rather than picked. `panel` and `soft` are both washes of `accent`, so an accent label on one of them is a colour on a pale copy of itself — the ink and the bed move together and the gap cannot be opened by changing either. Pulling the ink 28% toward `--neba-fg` breaks the coupling, and it flips with the theme on its own.
+
 ### The rest, derived
 
 ```css
@@ -47,6 +49,7 @@ A family is a set of `--neba-{family}-{role}` tokens.
 --neba-{color}-soft           /* accent 10% — the text variant's hover wash */
 --neba-{color}-soft-hover     /* accent 17% */
 --neba-{color}-soft-press     /* accent 25% */
+--neba-{color}-on-tint        /* accent 72% + --neba-fg — text on panel or soft */
 --neba-{color}-line           /* accent 22% — the hairline */
 --neba-{color}-line-hover     /* accent 40% */
 --neba-{color}-ring           /* accent 55% — the focus ring */
@@ -81,7 +84,7 @@ It is also why the three steps rise in **opacity** rather than lightness: an eng
 Every colour is defined in `oklch()`, because its lightness axis matches perception: which is what lets all six families be pinned to the same number.
 
 - **Text on a fill holds 4.5:1.** All three steps (`solid`, `hover`, `active`) checked against the 88%-opaque fill over a white page.
-- **`accent` clears 5:1 on white**, with the margin sized so it still clears 4.5:1 on the faintly tinted `panel`.
+- **`accent` clears 5:1 on white**, which is the surface it is for. On a bed made of its own colour the ink is `on-tint`, which clears 4.5:1 on every step of both the `panel` and the `soft` ladder, in both themes.
 - **Chroma sits near 90% of the sRGB gamut ceiling.** Well under it and the colour reads grey at the very same brightness; over it and the browser clips.
 - **In dark mode ink is measured on a raised sheet, not the bare one.** The panel ladder is opacity, so it costs nothing on a white page and a great deal on a near-black one. [Design language](./design-language) has the reasoning.
 

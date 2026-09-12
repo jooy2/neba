@@ -281,8 +281,8 @@ const itemClasses = [
   transitionClasses,
   // `data-highlighted` rather than `:hover`: it is also what the arrow keys
   // move, so the mouse and the keyboard light the same row.
-  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-accent)',
-  'data-[selected]:text-(--n-accent) data-[selected]:font-medium',
+  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-on-tint)',
+  'data-[selected]:text-(--n-on-tint) data-[selected]:font-medium',
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
   '[outline:none]'
 ].join(' ');

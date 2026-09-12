@@ -226,11 +226,11 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'text-(--n-accent) bg-(--n-soft)'
+  text: 'text-(--n-on-tint) bg-(--n-soft)'
 };
 
 /** The width a single-letter cap is held to, so `⌘` and `K` are the same square. */

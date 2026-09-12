@@ -107,11 +107,11 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'text-(--n-accent) bg-(--n-soft)'
+  text: 'text-(--n-on-tint) bg-(--n-soft)'
 };
 
 /**
@@ -250,7 +250,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
             // tinted or bare one it is the accent showing through.
             variant === 'solid'
               ? 'bg-(--neba-glow-on-fill) text-(--n-on-solid)'
-              : 'bg-(--n-soft-press) text-(--n-accent)'
+              : 'bg-(--n-soft-press) text-(--n-on-tint)'
           ].join(' ')}
         >
           {count}

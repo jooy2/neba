@@ -80,7 +80,7 @@ const triggerClasses = [
   // A menu bar is the one place where "this one is open" has to be legible from
   // across the bar, and it is still colour and nothing else: the word does not
   // move and the strip does not change height.
-  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-accent)',
+  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint)',
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
   'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg) disabled:hover:bg-transparent'
 ].join(' ');
@@ -181,6 +181,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
               '--n-soft': `var(--neba-${color}-soft)`,
               '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
               '--n-accent': `var(--neba-${color}-accent)`,
+              '--n-on-tint': `var(--neba-${color}-on-tint)`,
               '--n-ring': `var(--neba-${color}-ring)`,
               ...style
             } as React.CSSProperties

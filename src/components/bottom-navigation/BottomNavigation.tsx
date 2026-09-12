@@ -325,8 +325,8 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
             // under this item; painting a second one here would be two fills
             // travelling at different speeds.
             bar.floating
-            ? 'cursor-pointer font-medium text-(--n-accent)'
-            : 'cursor-pointer font-medium text-(--n-accent) bg-(--n-soft) hover:bg-(--n-soft-hover)'
+            ? 'cursor-pointer font-medium text-(--n-on-tint)'
+            : 'cursor-pointer font-medium text-(--n-on-tint) bg-(--n-soft) hover:bg-(--n-soft-hover)'
           : 'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg) hover:bg-(--n-panel-hover)',
       className
     );

@@ -312,7 +312,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
               focusRingClasses,
               dividers ? '' : itemRadiusClasses[size],
               'hover:bg-(--n-soft)',
-              'data-[panel-open]:text-(--n-accent)',
+              'data-[panel-open]:text-(--n-on-tint)',
               'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
             )}
           >

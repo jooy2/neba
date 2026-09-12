@@ -166,7 +166,7 @@ const rowClasses = [
   // The highlight is Base UI's, and it is one thing rather than two: the pointer
   // and the arrow keys move the same mark, so a reader never has to work out
   // which of two highlighted rows Enter would run.
-  'data-[highlighted]:bg-(--n-soft) data-[highlighted]:text-(--n-accent)',
+  'data-[highlighted]:bg-(--n-soft) data-[highlighted]:text-(--n-on-tint)',
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)'
 ].join(' ');
 

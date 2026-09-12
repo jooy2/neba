@@ -191,7 +191,7 @@ const stepperClasses = [
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
   'active:[transition-duration:0ms]',
-  'hover:bg-(--n-soft) hover:text-(--n-accent)',
+  'hover:bg-(--n-soft) hover:text-(--n-on-tint)',
   'active:bg-(--n-soft-press)',
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
   'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'

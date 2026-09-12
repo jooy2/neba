@@ -769,7 +769,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     disabled
       ? 'cursor-not-allowed text-(--neba-disabled-fg)'
       : isSelected
-        ? 'bg-(--n-soft-press) font-medium text-(--n-accent) hover:bg-(--n-soft-press)'
+        ? 'bg-(--n-soft-press) font-medium text-(--n-on-tint) hover:bg-(--n-soft-press)'
         : 'hover:bg-(--n-soft)'
   );
 

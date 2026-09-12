@@ -75,11 +75,11 @@ export interface HighlightProps extends Omit<React.ComponentPropsWithoutRef<'spa
  */
 const variantClasses: Record<NebaVariant, string> = {
   solid: 'bg-(--n-fill) text-(--n-on-solid)',
-  outline: 'border bg-(--n-panel) text-(--n-accent) [border-color:var(--n-line)]',
+  outline: 'border bg-(--n-panel) text-(--n-on-tint) [border-color:var(--n-line)]',
   // Both properties are still set. A `<mark>` arrives from the browser's own
   // stylesheet with a yellow background and black ink, and "no surface" has to
   // be said out loud or it turns into the UA's surface.
-  text: 'bg-transparent text-(--n-accent)'
+  text: 'bg-transparent text-(--n-on-tint)'
 };
 
 const weightClasses: Record<TypographyWeight, string> = {
@@ -310,6 +310,7 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
             '--n-fill': `var(--neba-${color}-fill)`,
             '--n-on-solid': `var(--neba-${color}-on-solid)`,
             '--n-accent': `var(--neba-${color}-accent)`,
+            '--n-on-tint': `var(--neba-${color}-on-tint)`,
             '--n-panel': `var(--neba-${color}-panel)`,
             '--n-line': `var(--neba-${color}-line)`,
             ...style

@@ -266,7 +266,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
     disabled
       ? 'cursor-not-allowed text-(--neba-disabled-fg)'
       : selected
-        ? 'bg-(--n-soft-press) font-medium text-(--n-accent)'
+        ? 'bg-(--n-soft-press) font-medium text-(--n-on-tint)'
         : '',
     interactive ? `cursor-pointer ${focusRingClasses}` : '',
     // Hover deepens the same tint `selected` already uses, one step down, so a

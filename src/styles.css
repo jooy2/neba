@@ -612,6 +612,22 @@
  * is repeated for every theme root because a custom property resolves its
  * `var()`s on the element that declares it — declaring these only on `:root`
  * would freeze them to the light values inside a `.dark` subtree.
+ *
+ * `on-tint` is the one that is not a strength of the base colour, and it is
+ * here for the same reason `on-solid` exists. A `soft` surface is a wash of the
+ * family's own `accent`, so writing the label in that accent puts a colour on a
+ * pale copy of itself: the ink and the bed move together and the gap between
+ * them cannot be opened by changing either one. It tops out at 4.5:1 the moment
+ * the wash passes about 9%, and `soft-press` is 25%. Measured, an `on` Toggle,
+ * a `text` Chip and a highlighted menu row all sat between 3.4:1 and 4.5:1, in
+ * *both* themes — this is not a dark-mode failure.
+ *
+ * Pulling the ink 28% toward `--neba-fg` breaks the coupling, and it flips with
+ * the theme on its own: toward near-black on a white page, toward near-white on
+ * a dark one. The family's hue survives — a primary on-tint is still plainly
+ * blue — and the worst family on the strongest wash clears 4.5:1 in both.
+ * `accent` itself is untouched, so what a TextLink or a Statistic's delta is
+ * written in on the bare sheet does not change.
  * ------------------------------------------------------------------------- */
 
 :root,
@@ -653,6 +669,7 @@
   --neba-primary-soft: color-mix(in srgb, var(--neba-primary-accent) 10%, transparent);
   --neba-primary-soft-hover: color-mix(in srgb, var(--neba-primary-accent) 17%, transparent);
   --neba-primary-soft-press: color-mix(in srgb, var(--neba-primary-accent) 25%, transparent);
+  --neba-primary-on-tint: color-mix(in oklab, var(--neba-primary-accent) 72%, var(--neba-fg));
   --neba-primary-panel: color-mix(in srgb, var(--neba-primary-accent) 8%, var(--neba-glass-bg));
   --neba-primary-panel-hover: color-mix(
     in srgb,
@@ -686,6 +703,7 @@
   --neba-secondary-soft: color-mix(in srgb, var(--neba-secondary-accent) 10%, transparent);
   --neba-secondary-soft-hover: color-mix(in srgb, var(--neba-secondary-accent) 17%, transparent);
   --neba-secondary-soft-press: color-mix(in srgb, var(--neba-secondary-accent) 25%, transparent);
+  --neba-secondary-on-tint: color-mix(in oklab, var(--neba-secondary-accent) 72%, var(--neba-fg));
   --neba-secondary-panel: color-mix(in srgb, var(--neba-secondary-accent) 8%, var(--neba-glass-bg));
   --neba-secondary-panel-hover: color-mix(
     in srgb,
@@ -719,6 +737,7 @@
   --neba-success-soft: color-mix(in srgb, var(--neba-success-accent) 10%, transparent);
   --neba-success-soft-hover: color-mix(in srgb, var(--neba-success-accent) 17%, transparent);
   --neba-success-soft-press: color-mix(in srgb, var(--neba-success-accent) 25%, transparent);
+  --neba-success-on-tint: color-mix(in oklab, var(--neba-success-accent) 72%, var(--neba-fg));
   --neba-success-panel: color-mix(in srgb, var(--neba-success-accent) 8%, var(--neba-glass-bg));
   --neba-success-panel-hover: color-mix(
     in srgb,
@@ -752,6 +771,7 @@
   --neba-warning-soft: color-mix(in srgb, var(--neba-warning-accent) 12%, transparent);
   --neba-warning-soft-hover: color-mix(in srgb, var(--neba-warning-accent) 20%, transparent);
   --neba-warning-soft-press: color-mix(in srgb, var(--neba-warning-accent) 28%, transparent);
+  --neba-warning-on-tint: color-mix(in oklab, var(--neba-warning-accent) 72%, var(--neba-fg));
   --neba-warning-panel: color-mix(in srgb, var(--neba-warning-accent) 8%, var(--neba-glass-bg));
   --neba-warning-panel-hover: color-mix(
     in srgb,
@@ -785,6 +805,7 @@
   --neba-danger-soft: color-mix(in srgb, var(--neba-danger-accent) 10%, transparent);
   --neba-danger-soft-hover: color-mix(in srgb, var(--neba-danger-accent) 17%, transparent);
   --neba-danger-soft-press: color-mix(in srgb, var(--neba-danger-accent) 25%, transparent);
+  --neba-danger-on-tint: color-mix(in oklab, var(--neba-danger-accent) 72%, var(--neba-fg));
   --neba-danger-panel: color-mix(in srgb, var(--neba-danger-accent) 8%, var(--neba-glass-bg));
   --neba-danger-panel-hover: color-mix(
     in srgb,
@@ -814,6 +835,7 @@
   --neba-info-soft: color-mix(in srgb, var(--neba-info-accent) 10%, transparent);
   --neba-info-soft-hover: color-mix(in srgb, var(--neba-info-accent) 17%, transparent);
   --neba-info-soft-press: color-mix(in srgb, var(--neba-info-accent) 25%, transparent);
+  --neba-info-on-tint: color-mix(in oklab, var(--neba-info-accent) 72%, var(--neba-fg));
   --neba-info-panel: color-mix(in srgb, var(--neba-info-accent) 8%, var(--neba-glass-bg));
   --neba-info-panel-hover: color-mix(in srgb, var(--neba-info-accent) 16%, var(--neba-glass-bg));
   --neba-info-panel-press: color-mix(in srgb, var(--neba-info-accent) 24%, var(--neba-glass-bg));

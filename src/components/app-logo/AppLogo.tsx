@@ -212,11 +212,11 @@ const variantClasses: Record<NebaVariant, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'text-(--n-accent) bg-(--n-soft-press) [box-shadow:var(--n-elev)]'
+  text: 'text-(--n-on-tint) bg-(--n-soft-press) [box-shadow:var(--n-elev)]'
 };
 
 /**

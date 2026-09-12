@@ -287,7 +287,7 @@ describe('FloatingBottomNavigation', () => {
         'bg-(--n-soft)'
       );
       expect(screen.getByRole('button', { name: 'Home' }).element()).toHaveClass(
-        'text-(--n-accent)'
+        'text-(--n-on-tint)'
       );
     });
   });

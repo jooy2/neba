@@ -184,11 +184,11 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: 'text-(--n-accent) bg-(--n-soft-press)'
+  text: 'text-(--n-on-tint) bg-(--n-soft-press)'
 };
 
 /** `99+`, but only for a value a `+` means anything on. */

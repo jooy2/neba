@@ -240,7 +240,7 @@ function Cell({
       : inRange
         ? 'cursor-pointer bg-(--n-soft) text-(--neba-fg) hover:bg-(--n-soft-hover) active:bg-(--n-soft-press)'
         : current
-          ? 'cursor-pointer font-semibold text-(--n-accent) hover:bg-(--n-soft) active:bg-(--n-soft-press)'
+          ? 'cursor-pointer font-semibold text-(--n-on-tint) hover:bg-(--n-soft) active:bg-(--n-soft-press)'
           : muted
             ? 'cursor-pointer text-(--neba-muted-fg) hover:bg-(--n-soft) active:bg-(--n-soft-press)'
             : 'cursor-pointer text-(--neba-fg) hover:bg-(--n-soft) active:bg-(--n-soft-press)';

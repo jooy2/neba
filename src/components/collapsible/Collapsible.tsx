@@ -207,7 +207,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
                 // shaved off on three sides.
                 'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
                 'hover:bg-(--n-soft)',
-                'data-[panel-open]:text-(--n-accent)',
+                'data-[panel-open]:text-(--n-on-tint)',
                 'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
               ].join(' ')}
             >

@@ -107,12 +107,12 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   // catching light, with just enough accent in it to name the color.
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
   // Nothing to catch the light on, and nothing to cast a shadow.
-  text: 'text-(--n-accent) bg-transparent'
+  text: 'text-(--n-on-tint) bg-transparent'
 };
 
 /**
@@ -150,10 +150,10 @@ const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = 
   outline: [
     surfaceClasses,
     readOnlyFilterClasses,
-    'cursor-default border text-(--n-accent) bg-(--n-panel)',
+    'cursor-default border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)]'
   ].join(' '),
-  text: `${readOnlyFilterClasses} cursor-default text-(--n-accent) bg-transparent`
+  text: `${readOnlyFilterClasses} cursor-default text-(--n-on-tint) bg-transparent`
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

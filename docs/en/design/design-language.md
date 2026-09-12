@@ -122,6 +122,12 @@ The panel ladder is opacity: `--neba-panel` and its two steps lay white over wha
 
 > **The hairline inverts rather than merely weakening.** In light the border sits just below every bed it is drawn on. A dark value picked on the bare sheet ends up _darker_ than a raised one, so the edge that is supposed to catch the light reads as a black scratch — which is what a TreeView's rails and a chart's grid on a Card were doing. The dark hairline sits above the whole ladder instead, and is more present on a plain page than its light counterpart. One value cannot be a whisper across a ladder that moves.
 
+### Text on a tinted bed is `on-tint`, not `accent`
+
+`panel` and `soft` are both washes of the family's own `accent`, so writing the label in that accent puts a colour on a pale copy of itself. The ink and the bed move together, and no change to either one opens the gap: past a wash of about 9% the pair cannot reach 4.5:1, and `soft-press` is 25%. An `on` Toggle, a `text` Chip, a highlighted menu row and an `outline` Button under the pointer all sat between 3.4:1 and 4.5:1 — in **both** themes.
+
+`--neba-{color}-on-tint` is the ink for those beds, the way `on-solid` is the ink for a fill. It is `accent` pulled 28% toward `--neba-fg`, so it flips with the theme on its own: toward near-black on a white page, toward near-white on a dark one. The family's hue survives, and every family clears 4.5:1 on every step of both ladders. `accent` itself is unchanged, so a TextLink, a Statistic's delta and an Alert's title on the bare sheet look exactly as they did.
+
 ### `warning` has dark text
 
 White on amber does not reach 4.5:1 at any lightness. `--neba-warning-on-solid` is the one dark brown in the set. Changing the text colour is the right answer; distorting the family to preserve contrast is not.

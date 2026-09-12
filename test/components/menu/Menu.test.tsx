@@ -225,10 +225,12 @@ describe('Menu', () => {
       const accented = screen.getByRole('menuitem', { name: 'Delete' }).element();
       const plain = screen.getByRole('menuitem', { name: 'Rename' }).element();
 
-      expect(accented).toHaveClass('text-(--n-accent)');
+      // `on-tint` and not `accent`: a highlighted row's bed is the family's own
+      // wash, and an accent on a pale copy of itself does not clear 4.5:1.
+      expect(accented).toHaveClass('text-(--n-on-tint)');
       expect(accented).not.toHaveClass('text-(--neba-fg)');
       expect(plain).toHaveClass('text-(--neba-fg)');
-      expect(plain).not.toHaveClass('text-(--n-accent)');
+      expect(plain).not.toHaveClass('text-(--n-on-tint)');
     });
 
     it('renders a group with its heading and a separator', async () => {

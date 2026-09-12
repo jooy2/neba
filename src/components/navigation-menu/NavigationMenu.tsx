@@ -121,7 +121,7 @@ const triggerClasses = [
   transitionClasses,
   iconClasses,
   'hover:bg-(--n-soft)',
-  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-accent)',
+  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint)',
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
   'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
   'data-[disabled]:hover:bg-transparent'

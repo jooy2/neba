@@ -158,7 +158,7 @@ const onClasses: Record<NebaVariant, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel-press)',
+    'border text-(--n-on-tint) bg-(--n-panel-press)',
     '[border-color:var(--n-line-hover)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
     'hover:bg-(--n-soft-hover)',
@@ -168,7 +168,7 @@ const onClasses: Record<NebaVariant, string> = {
   // *off* `text` toggle does on hover — the two were the same value, so hovering
   // one that was off drew it exactly as one that was on.
   text: [
-    'text-(--n-accent) bg-(--n-soft-hover)',
+    'text-(--n-on-tint) bg-(--n-soft-hover)',
     'hover:bg-(--n-soft-press)',
     'active:bg-(--n-soft-press)'
   ].join(' ')

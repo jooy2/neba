@@ -286,7 +286,7 @@ function rowClasses(
 ): string {
   return cx(
     'relative flex w-full cursor-pointer items-center select-none',
-    accented ? 'text-(--n-accent)' : 'text-(--neba-fg)',
+    accented ? 'text-(--n-on-tint)' : 'text-(--neba-fg)',
     rowPaddingClasses[density][size],
     rowRadiusClasses[size],
     gapClasses[size],

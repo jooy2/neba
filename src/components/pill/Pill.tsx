@@ -109,11 +109,11 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   ].join(' '),
   outline: [
     surfaceClasses,
-    'border text-(--n-accent) bg-(--n-panel)',
+    'border text-(--n-on-tint) bg-(--n-panel)',
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: `${surfaceClasses} text-(--n-accent) bg-(--n-soft)`
+  text: `${surfaceClasses} text-(--n-on-tint) bg-(--n-soft)`
 };
 
 const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {

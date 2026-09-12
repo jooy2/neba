@@ -173,8 +173,8 @@ const rootClasses: Record<NebaVariant, string> = {
 
 const accentClasses: Record<NebaVariant, string> = {
   solid: '',
-  outline: 'text-(--n-accent)',
-  text: 'text-(--n-accent)'
+  outline: 'text-(--n-on-tint)',
+  text: 'text-(--n-on-tint)'
 };
 
 /**

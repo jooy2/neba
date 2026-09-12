@@ -127,8 +127,8 @@ const tileClasses: Record<NebaVariant, string> = {
 /** What the chosen label is written in, which is the other half of the tile. */
 const checkedTextClasses: Record<NebaVariant, string> = {
   solid: 'data-[checked]:text-(--n-on-solid)',
-  outline: 'data-[checked]:text-(--n-accent)',
-  text: 'data-[checked]:text-(--n-accent)'
+  outline: 'data-[checked]:text-(--n-on-tint)',
+  text: 'data-[checked]:text-(--n-on-tint)'
 };
 
 /**

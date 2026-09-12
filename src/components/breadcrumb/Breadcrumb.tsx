@@ -346,7 +346,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
       iconClasses,
       expandable
         ? cx(
-            'cursor-pointer hover:bg-(--n-soft) hover:text-(--n-accent)',
+            'cursor-pointer hover:bg-(--n-soft) hover:text-(--n-on-tint)',
             'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
           )
         : ''
@@ -360,6 +360,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
         style={
           {
             '--n-accent': `var(--neba-${color}-accent)`,
+            '--n-on-tint': `var(--neba-${color}-on-tint)`,
             '--n-soft': `var(--neba-${color}-soft)`,
             '--n-ring': `var(--neba-${color}-ring)`,
             ...style
@@ -462,7 +463,7 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
           : interactive
             ? cx(
                 'cursor-pointer text-(--neba-muted-fg)',
-                'hover:bg-(--n-soft) hover:text-(--n-accent)',
+                'hover:bg-(--n-soft) hover:text-(--n-on-tint)',
                 'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
               )
             : 'text-(--neba-muted-fg)'
