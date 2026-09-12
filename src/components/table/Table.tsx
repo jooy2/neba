@@ -138,6 +138,15 @@ const cellPaddingYValues: Record<NebaDensity, Record<NebaSize, string>> = {
  * outrank. Padding, alignment, backgrounds and the rules between rows all
  * silently lost to the host before this was inline.
  *
+ * The ink is in that list, and was the last thing left out of it. `.vp-doc th`
+ * sets three declarations and `color` is one of them, so a header written as
+ * `text-(--neba-muted-fg)` came out in VitePress's secondary grey — near enough
+ * to Neba's own to go unnoticed here, and not near enough anywhere else: under
+ * `.prose` a header takes the *heading* colour, which is the one ink on the page
+ * chosen to stand out. So the cells read `--n-cell-ink` inline, defaulting to
+ * what the part is meant to be. A caller who wants another colour sets that slot
+ * through `classNames`, which works where a `text-*` utility never could.
+ *
  * What is *not* inline is the row's own background, because it has a hover
  * state and inline styles have no `:hover`. It reads a `--n-row` slot instead,
  * which classes then set — a custom property is invisible to a host stylesheet,
@@ -216,7 +225,8 @@ export function Table<Row>(rawProps: TableProps<Row>) {
     // The header sits one step up the sheet's opacity ladder rather than taking
     // a tint: it is still the container, and a coloured band behind a row of
     // column names is the fastest way to make data look like chrome.
-    backgroundColor: 'var(--n-panel-press)'
+    backgroundColor: 'var(--n-panel-press)',
+    color: 'var(--n-cell-ink, var(--neba-muted-fg))'
   };
 
   return (
@@ -268,7 +278,7 @@ export function Table<Row>(rawProps: TableProps<Row>) {
                 key={column.key}
                 scope="col"
                 className={cx(
-                  'font-semibold whitespace-nowrap text-(--neba-muted-fg)',
+                  'font-semibold whitespace-nowrap',
                   stickyHeader ? 'sticky top-0 z-10 [backdrop-filter:var(--neba-blur)]' : '',
                   classNames?.headCell
                 )}
@@ -285,8 +295,12 @@ export function Table<Row>(rawProps: TableProps<Row>) {
             <tr className={cx(rowClasses, classNames?.row)} style={rowRuleStyle}>
               <td
                 colSpan={headers.length}
-                className={cx('text-(--neba-muted-fg)', classNames?.empty)}
-                style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
+                className={classNames?.empty}
+                style={{
+                  padding: `2rem ${padX}`,
+                  textAlign: 'center',
+                  color: 'var(--n-cell-ink, var(--neba-muted-fg))'
+                }}
               >
                 {empty ?? messages.empty}
               </td>

@@ -370,4 +370,25 @@ describe('Table', () => {
       expect(table.closest('.root-class')).not.toBeNull();
     });
   });
+
+  /* A host stylesheet that styles `th` and `td` by tag name outranks a one-class
+     utility, and `color` is one of the three declarations `.vp-doc th` writes.
+     A header left on a `text-*` class comes out in the host's ink, which is the
+     bug these two guard: the ink has to be inline, and it has to read a slot so
+     a caller still has a way to change it. */
+  describe('cell ink', () => {
+    it('writes the header ink inline rather than as a class', async () => {
+      const screen = await render(<Table headers={HEADERS} items={ITEMS} />);
+      const head = screen.getByRole('table').element().querySelector('th');
+
+      expect(head?.style.color).toBe('var(--n-cell-ink, var(--neba-muted-fg))');
+    });
+
+    it('writes the empty row ink inline too', async () => {
+      const screen = await render(<Table headers={HEADERS} items={[]} />);
+      const cell = screen.getByRole('table').element().querySelector('tbody td');
+
+      expect(cell?.getAttribute('style')).toContain('--n-cell-ink');
+    });
+  });
 });

@@ -1794,7 +1794,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const headCellStyle: React.CSSProperties = {
     ...cellStyle,
     height: `${headerHeight}px`,
-    backgroundColor: 'var(--n-panel-press)'
+    backgroundColor: 'var(--n-panel-press)',
+    // Inline for the reason the padding and the background are — see the note on
+    // Table's `cellStyle`. `.vp-doc th` and `.prose th` both write `color`, and
+    // both outrank a one-class utility, so a header styled with `text-*` comes
+    // out in the host's ink rather than the library's. `--n-cell-ink` is the way
+    // back in for a caller, since a custom property is invisible to a host
+    // stylesheet.
+    color: 'var(--n-cell-ink, var(--neba-muted-fg))'
   };
 
   const stripeIndex = striped === 'odd' ? 0 : 1;
@@ -1936,7 +1943,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         data-dragging={movingKey === column.key || undefined}
         className={cx(
           'relative font-semibold select-none',
-          entry ? 'text-(--n-accent)' : 'text-(--neba-muted-fg)',
           stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : '',
           canMove ? 'cursor-grab' : '',
           movingKey === column.key ? 'opacity-60' : '',
@@ -1946,7 +1952,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           ...headCellStyle,
           ...pinStyle(column, true),
           top: stickyHeader ? (rowSpan === 2 || !hasGroups ? 0 : headerHeight) : undefined,
-          textAlign: align
+          textAlign: align,
+          // A sorted column is written in the accent, and through the same inline
+          // slot rather than a class beside it. A `text-*` here would lose to the
+          // host's `th` rule, and a sorted column that looks exactly like an
+          // unsorted one is the mark of the sort gone.
+          color: entry ? 'var(--n-cell-ink, var(--n-accent))' : headCellStyle.color
         }}
         onPointerDown={canMove ? (event) => startReorder(column.key, event) : undefined}
       >
@@ -2391,7 +2402,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                       scope="colgroup"
                       colSpan={run.span}
                       className={cx(
-                        'font-semibold text-(--neba-muted-fg) select-none',
+                        'font-semibold select-none',
                         stickyHeader ? 'sticky top-0 z-20 [backdrop-filter:var(--neba-blur)]' : ''
                       )}
                       style={{ ...headCellStyle, textAlign: 'center' }}
@@ -2431,8 +2442,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               <tr>
                 <td
                   colSpan={columnCount}
-                  className="text-(--neba-muted-fg)"
-                  style={{ padding: `2rem ${padX}`, textAlign: 'center' }}
+                  style={{
+                    padding: `2rem ${padX}`,
+                    textAlign: 'center',
+                    color: 'var(--n-cell-ink, var(--neba-muted-fg))'
+                  }}
                 >
                   {empty ?? emptyText.title}
                 </td>

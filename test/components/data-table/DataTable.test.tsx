@@ -1251,3 +1251,35 @@ describe('export', () => {
     expect(csv).not.toContain('Seoul');
   });
 });
+
+/* A host stylesheet that styles `th` by tag name outranks a one-class utility,
+   and `color` is one of the declarations `.vp-doc th` and `.prose th` write. A
+   header left on a `text-*` class comes out in the host's ink — see the note on
+   Table's `cellStyle`. */
+describe('cell ink', () => {
+  it('writes the header ink inline rather than as a class', async () => {
+    const screen = await render(<DataTable headers={HEADERS} items={ITEMS} getRowKey={key} />);
+    const head = screen.getByRole('columnheader', { name: 'City' }).element() as HTMLElement;
+
+    expect(head.style.color).toBe('var(--n-cell-ink, var(--neba-muted-fg))');
+  });
+
+  it('writes the sorted column in the accent, inline as well', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} sortable />
+    );
+
+    await screen.getByRole('button', { name: 'City' }).click();
+
+    const head = screen.getByRole('columnheader', { name: 'City' }).element() as HTMLElement;
+
+    expect(head.style.color).toBe('var(--n-cell-ink, var(--n-accent))');
+  });
+
+  it('writes the empty row ink inline too', async () => {
+    const screen = await render(<DataTable headers={HEADERS} items={[]} getRowKey={key} />);
+    const cell = screen.container.querySelector('tbody td');
+
+    expect(cell?.getAttribute('style')).toContain('--n-cell-ink');
+  });
+});
