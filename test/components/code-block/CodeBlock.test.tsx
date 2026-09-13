@@ -441,8 +441,10 @@ describe('CodeBlock', () => {
       has meant *this* code, not the article around it — so the block answers
       the key itself and stops the browser selecting the page.
     */
+    // Held to a height it overflows, since only a block that scrolls is a tab
+    // stop to press the shortcut in.
     it('selects the code and nothing else on Ctrl+A', async () => {
-      const screen = await render(<CodeBlock code={'const a = 1;\nconst b = 2;'} />);
+      const screen = await render(<CodeBlock code={'const a = 1;\nconst b = 2;'} maxHeight={8} />);
       const region = screen.getByRole('region', { name: 'Code' }).element() as HTMLElement;
 
       region.focus();
@@ -465,7 +467,7 @@ describe('CodeBlock', () => {
     });
 
     it('leaves a plain A alone', async () => {
-      const screen = await render(<CodeBlock code="const a = 1;" />);
+      const screen = await render(<CodeBlock code="const a = 1;" maxHeight={8} />);
       const region = screen.getByRole('region', { name: 'Code' }).element() as HTMLElement;
 
       region.focus();
@@ -530,9 +532,9 @@ describe('CodeBlock', () => {
 
     it('bounds its height when it is told to', async () => {
       const screen = await render(<CodeBlock code={SOURCE} maxHeight={120} data-testid="block" />);
-      const region = screen.getByTestId('block').element().querySelector('[role="region"]');
+      const box = screen.getByTestId('block').element().querySelector('pre')?.parentElement;
 
-      expect((region as HTMLElement).style.maxHeight).toBe('120px');
+      expect((box as HTMLElement).style.maxHeight).toBe('120px');
     });
   });
 
@@ -540,20 +542,37 @@ describe('CodeBlock', () => {
     // A region that scrolls has to be reachable by a keyboard with no pointer to
     // drag with, and a focusable region has to have a name.
     it('names the scrollable region after the title', async () => {
-      const screen = await render(<CodeBlock code={SOURCE} title="answer.ts" />);
+      const screen = await render(<CodeBlock code={SOURCE} title="answer.ts" maxHeight={8} />);
       const region = screen.getByRole('region', { name: 'answer.ts' });
 
       await expect.element(region).toHaveAttribute('tabindex', '0');
     });
 
     it('falls back to the language, and then to the word for code', async () => {
-      const screen = await render(<CodeBlock code={SOURCE} language="ts" />);
+      const screen = await render(<CodeBlock code={SOURCE} language="ts" maxHeight={8} />);
 
       await expect.element(screen.getByRole('region', { name: 'typescript' })).toBeInTheDocument();
 
-      await screen.rerender(<CodeBlock code={SOURCE} />);
+      await screen.rerender(<CodeBlock code={SOURCE} maxHeight={8} />);
 
       await expect.element(screen.getByRole('region', { name: 'Code' })).toBeInTheDocument();
+    });
+
+    // Thirty short snippets on a page were thirty landmarks and thirty tab stops
+    // with nothing in any of them to scroll.
+    it('is neither a region nor a tab stop while nothing in it scrolls', async () => {
+      const screen = await render(<CodeBlock code="const a = 1;" data-testid="block" />);
+      const box = screen.getByTestId('block').element().querySelector('pre')?.parentElement;
+
+      await expect.element(screen.getByText('const a = 1;')).toBeInTheDocument();
+      expect(box).not.toHaveAttribute('role');
+      expect(box).not.toHaveAttribute('tabindex');
+
+      await screen.rerender(<CodeBlock code="const a = 1;" maxHeight={8} data-testid="block" />);
+
+      await expect
+        .element(screen.getByRole('region', { name: 'Code' }))
+        .toHaveAttribute('tabindex', '0');
     });
 
     it('says the raw toggle is pressed while it is', async () => {

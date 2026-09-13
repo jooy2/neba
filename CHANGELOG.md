@@ -42,6 +42,8 @@
 
 - **A confirm is an alert dialog that opens a destructive question on Cancel.** `useConfirm` rendered a plain `role="dialog"` and put the focus on the confirming button whatever was asked, so for `color: 'danger'` the Enter that raised the question was one more Enter from the loss. The sheet is `role="alertdialog"` now, a `danger` question opens on the cancelling button, and the focus goes back to what asked once the last queued question is answered; it could be lost there before, because the confirming button took the focus as the sheet mounted. A test that found the sheet by the `dialog` role finds it by `alertdialog`.
 
+- **A `CodeBlock` scrolls as a region only when there is something to scroll.** Every block was a named `role="region"` and a tab stop, so a page of thirty short snippets had thirty landmarks and thirty stops on the way through it. The box is measured now, and only code wider or taller than it is a focusable, named region. A test that found a short block by the `region` role finds it by its text or its toolbar.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

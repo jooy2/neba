@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { CheckIcon, CodeIcon, CopyIcon } from '../../internal/icons.js';
 import { codeMessages, useMessages } from '../../internal/i18n.js';
+import { observeResize } from '../../internal/observe.js';
 import {
   canonicalLanguage,
   highlight as highlightCode,
@@ -489,6 +490,39 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
      * nothing there to select.
      */
     const codeRef = React.useRef<HTMLPreElement | null>(null);
+    const scrollRef = React.useRef<HTMLDivElement | null>(null);
+
+    /*
+     * Whether the code is wider or taller than the box that shows it.
+     *
+     * Only a block that scrolls has to be reachable by a keyboard, and only a
+     * focusable box has to be a named region. A page of thirty short snippets
+     * was thirty landmarks and thirty tab stops, none of which had anything to
+     * scroll. Measured after the first paint, so a server render has neither.
+     */
+    const [overflows, setOverflows] = React.useState(false);
+
+    React.useEffect(() => {
+      const box = scrollRef.current;
+      const code = codeRef.current;
+      if (!box || !code) {
+        return;
+      }
+
+      const measure = () =>
+        setOverflows(
+          box.scrollWidth > box.clientWidth + 1 || box.scrollHeight > box.clientHeight + 1
+        );
+
+      measure();
+      const stopBox = observeResize(box, measure);
+      const stopCode = observeResize(code, measure);
+
+      return () => {
+        stopBox();
+        stopCode();
+      };
+    }, []);
 
     const selectEverything = (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.key !== 'a' && event.key !== 'A') return;
@@ -535,11 +569,13 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
 
     const body = (
       <div
+        ref={scrollRef}
         // A scrollable region has to be reachable by a keyboard that has no
-        // pointer to drag with, and a focusable region has to have a name.
-        role="region"
-        aria-label={typeof title === 'string' ? title : label}
-        tabIndex={0}
+        // pointer to drag with, and a focusable region has to have a name. One
+        // that does not scroll is neither.
+        role={overflows ? 'region' : undefined}
+        aria-label={overflows ? (typeof title === 'string' ? title : label) : undefined}
+        tabIndex={overflows ? 0 : undefined}
         onKeyDown={selectEverything}
         className={cx(
           'min-h-0 overflow-auto',
