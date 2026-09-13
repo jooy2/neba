@@ -74,7 +74,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
 - **D13 (103)** CSV formula injection: (a) prefix `'` by default, with an option to turn it off; (b) an option only, off by default.
 - **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
-- **D15 (111)** `date.ts`: (a) delete `isDayInRange`, `minutesOfDay` and their tests, and keep `clampDate` for 158; (b) keep all three.
 - **D16 (118)** Provider defaults: (a) make the listed components read the defaults and fill the missing keys, except TextLink's `size` and Icon; (b) change the guide to match the current behaviour.
 - **D17 (119)** Non-modal Dialog, Overlay and Drawer: (a) `pointer-events-none` on the Viewport and the Backdrop when `modal !== true`; (b) fix the docs only.
 - **D18 (120, Fieldset)** (a) read Base UI's Fieldset context so inner fields show the disabled state; (b) leave it.
@@ -275,7 +274,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **108** i18n had two placeholder fillers; the old `fill` is gone.
 - [ ] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`
 - [x] **110** responsive.ts `lengthOf` duplicated `toLength`.
-- [ ] **111** **date.ts**: `clampDate`, `isDayInRange` and `minutesOfDay` are unused in `src/` and imported only by tests. `clampDate` can serve the fix for 158; the other two need a decision to delete. `src/internal/date.ts:175, 183, 237`. See D15.
+- [x] **111** **date.ts**: `clampDate`, `isDayInRange` and `minutesOfDay` are unused in `src/` and imported only by tests. `clampDate` can serve the fix for 158; the other two need a decision to delete. `src/internal/date.ts:175, 183, 237`. Decided: (a) `isDayInRange`, `minutesOfDay` and their tests are deleted; `clampDate` stays for 158.
 - [x] **112** mockup.tsx `MockupChrome.size` was never read.
 - [x] **113** AnimateCounter ignored `paused` and built a formatter per instance. `paused` removed (breaking).
 - [x] **114** Props with no effect on AnimateScramble, AnimateTyping, AnimateHeadline and AnimateLighting. AnimateLighting `easing` removed (breaking).

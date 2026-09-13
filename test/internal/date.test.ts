@@ -22,7 +22,6 @@ import {
   compareDay,
   daysInMonth,
   displaySamples,
-  isDayInRange,
   isDayOutside,
   isSameDay,
   isSameMonth,
@@ -30,7 +29,6 @@ import {
   isValidDate,
   localeWeekStart,
   makeDate,
-  minutesOfDay,
   startOfDay,
   startOfMonth,
   startOfUnit,
@@ -161,18 +159,6 @@ describe('bounds', () => {
     expect(isDayOutside(makeDate(2026, 5, 21), min, max)).toBe(true);
     expect(isDayOutside(makeDate(2026, 5, 9), min, max)).toBe(true);
   });
-
-  it('holds nothing inside a range that has only one end', () => {
-    // A range half-chosen is not a range, and shading everything after the
-    // first click is the thing that reads as broken.
-    expect(isDayInRange(makeDate(2026, 5, 15), min, null)).toBe(false);
-    expect(isDayInRange(makeDate(2026, 5, 15), null, max)).toBe(false);
-  });
-
-  it('leaves the two ends outside the run between them', () => {
-    expect(isDayInRange(makeDate(2026, 5, 10), min, max)).toBe(false);
-    expect(isDayInRange(makeDate(2026, 5, 15), min, max)).toBe(true);
-  });
 });
 
 /**
@@ -295,12 +281,7 @@ describe('calendarWeeks', () => {
   });
 });
 
-describe('minutesOfDay and yearPageStart', () => {
-  it('counts minutes from local midnight', () => {
-    expect(minutesOfDay(new Date(2026, 0, 1, 9, 30))).toBe(570);
-    expect(minutesOfDay(new Date(2026, 0, 1, 0, 0))).toBe(0);
-  });
-
+describe('yearPageStart', () => {
   it('puts a year on a page that always starts in the same place', () => {
     // A page of years is a grid, and a grid whose first cell moved with
     // whichever year you arrived from would shuffle under every step. So the

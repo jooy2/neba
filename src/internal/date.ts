@@ -171,14 +171,6 @@ export function isSameMonth(a: Date | null | undefined, b: Date | null | undefin
   );
 }
 
-/** Strictly between the two ends, both of which are optional. */
-export function isDayInRange(date: Date, start: Date | null, end: Date | null): boolean {
-  if (!isValidDate(start) || !isValidDate(end)) {
-    return false;
-  }
-  return compareDay(date, start) > 0 && compareDay(date, end) < 0;
-}
-
 /** Holds a date inside `[min, max]`, at whatever precision the bounds carry. */
 export function clampDate(date: Date, min?: Date | null, max?: Date | null): Date {
   if (isValidDate(min) && date.getTime() < min.getTime()) {
@@ -232,11 +224,6 @@ export function isUnitOutside(
 /* ---------------------------------------------------------------------------
  * Time of day
  * ------------------------------------------------------------------------- */
-
-/** Minutes since local midnight — what `minTime`/`maxTime` are compared on. */
-export function minutesOfDay(date: Date): number {
-  return date.getHours() * 60 + date.getMinutes();
-}
 
 /** Seconds since local midnight, for the pickers that show a seconds column. */
 export function secondsOfDay(date: Date): number {
