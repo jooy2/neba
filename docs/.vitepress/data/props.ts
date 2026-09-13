@@ -6612,6 +6612,22 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'initialFocus',
+      type: 'boolean | RefObject<HTMLElement> | ((openType) => boolean | HTMLElement | void)',
+      description: {
+        ko: '열릴 때 focus를 받을 요소. 기본값은 안에서 처음 focus 받을 수 있는 요소입니다',
+        en: 'What takes the focus when it opens. By default the first thing inside that can be focused'
+      }
+    },
+    {
+      name: 'finalFocus',
+      type: 'boolean | RefObject<HTMLElement> | ((closeType) => boolean | HTMLElement | void)',
+      description: {
+        ko: '닫힐 때 focus가 돌아갈 곳. 기본값은 열리기 전에 focus를 쥐고 있던 요소입니다',
+        en: 'Where the focus goes when it closes. By default the element that held it before it opened'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

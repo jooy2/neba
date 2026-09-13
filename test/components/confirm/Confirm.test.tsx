@@ -55,10 +55,10 @@ function press(button: HTMLElement) {
 }
 
 describe('ConfirmProvider', () => {
-  it('asks the question it was given', async () => {
+  it('asks the question it was given, as an alert dialog', async () => {
     const screen = await ask(() => {});
 
-    await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+    await expect.element(screen.getByRole('alertdialog')).toBeInTheDocument();
     await expect.element(screen.getByText('Delete the project?')).toBeInTheDocument();
   });
 
@@ -89,6 +89,30 @@ describe('ConfirmProvider', () => {
     await userEvent.keyboard('{Escape}');
 
     await vi.waitFor(() => expect(onAnswer).toHaveBeenCalledWith(false));
+  });
+
+  it('opens on the confirming button', async () => {
+    const screen = await ask(() => {});
+
+    await expect.element(screen.getByRole('button', { name: 'Confirm' })).toHaveFocus();
+  });
+
+  // Enter asked the question; a second Enter on the confirming button would
+  // be the loss, with no moment in between to read what was asked.
+  it('opens a destructive question on the button that destroys nothing', async () => {
+    const screen = await ask(() => {}, { title: 'Delete the project?', color: 'danger' });
+
+    await expect.element(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+  });
+
+  it('gives the focus back to what asked once the question is answered', async () => {
+    const onAnswer = vi.fn();
+    const screen = await ask(onAnswer);
+
+    press(screen.getByRole('button', { name: 'Confirm' }).element() as HTMLElement);
+
+    await vi.waitFor(() => expect(onAnswer).toHaveBeenCalledWith(true));
+    await expect.element(screen.getByRole('button', { name: 'Delete' })).toHaveFocus();
   });
 
   it('takes a bare string as the question', async () => {

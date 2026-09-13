@@ -123,6 +123,18 @@ export interface DialogProps
    */
   dismissible?: boolean;
   /**
+   * What takes the focus when the dialog opens: a ref to an element, `false` to
+   * leave it where it is, or a function of how the dialog was opened. Base UI's
+   * own option, passed to the popup. By default the first thing that can be
+   * focused inside takes it.
+   */
+  initialFocus?: React.ComponentPropsWithoutRef<typeof BaseUIDialog.Popup>['initialFocus'];
+  /**
+   * Where the focus goes when the dialog closes, in the same shapes. By default
+   * it returns to the element that held it before the dialog opened.
+   */
+  finalFocus?: React.ComponentPropsWithoutRef<typeof BaseUIDialog.Popup>['finalFocus'];
+  /**
    * Class names for the parts around the popup. `className` is the popup — the
    * sheet — so the scrim behind it is `classNames.backdrop`.
    */

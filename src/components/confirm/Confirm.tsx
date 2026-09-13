@@ -79,6 +79,14 @@ interface Pending {
  */
 export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   const [queue, setQueue] = React.useState<Pending[]>([]);
+  // What held the focus when the first of a run of questions was asked, and so
+  // where it goes back to once the last is answered. A confirm has no trigger of
+  // its own to return to, and what Base UI remembers is whatever held the focus
+  // when the sheet opened — which, with a button inside it taking the focus as
+  // it mounts, could be that button.
+  const opener = React.useRef<HTMLElement | null>(null);
+  const cancelRef = React.useRef<HTMLButtonElement | null>(null);
+  const confirmRef = React.useRef<HTMLButtonElement | null>(null);
   // The question on the sheet, which is *not* the same as the head of the
   // queue: Base UI keeps a dialog mounted while its exit transition runs, and
   // reading the queue directly would empty the heading and the description out
@@ -98,6 +106,11 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   const confirm = React.useCallback<ConfirmFunction>(
     (options) =>
       new Promise<boolean>((resolve) => {
+        if (!opener.current) {
+          opener.current =
+            document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        }
+
         setQueue((waiting) => [
           ...waiting,
           {
@@ -119,6 +132,9 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
 
   const merged: ConfirmOptions = { ...defaults, ...shown };
   const messages = useMessages(confirmMessages, merged.locale);
+  // A destructive question opens on the answer that destroys nothing, so a
+  // reader who pressed Enter once to ask is not one more Enter from the loss.
+  const cautious = merged.color === 'danger' && !merged.alert;
 
   return (
     <ConfirmContext.Provider value={confirm}>
@@ -140,18 +156,33 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
         description={merged.description}
         dismissible={merged.dismissible ?? true}
         showClose={false}
+        // A question the reader has to answer before anything else happens,
+        // which is what an alert dialog is — and what a screen reader announces
+        // with more urgency than a dialog.
+        role="alertdialog"
+        initialFocus={cautious ? cancelRef : confirmRef}
+        finalFocus={() => {
+          const target = opener.current;
+          opener.current = null;
+          return target?.isConnected ? target : true;
+        }}
         actions={
           <>
             {merged.alert ? null : (
-              <Button variant="text" color="secondary" onClick={() => answer(false)}>
+              <Button
+                ref={cancelRef}
+                variant="text"
+                color="secondary"
+                onClick={() => answer(false)}
+              >
                 {merged.cancelLabel ?? messages.cancel}
               </Button>
             )}
             <Button
+              ref={confirmRef}
               variant="solid"
               color={merged.color ?? 'primary'}
               onClick={() => answer(true)}
-              autoFocus
             >
               {merged.confirmLabel ?? messages.confirm}
             </Button>

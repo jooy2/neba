@@ -86,5 +86,7 @@ That matters more than it looks. Resolving the older one `false` to make room wo
 ## Accessibility
 
 - It renders a [Dialog](./dialog), so everything that has is here: the focus trap, the scroll lock, the inert page behind, and focus returning to whatever raised the question.
-- The confirming button takes the focus when the sheet opens, so `Enter` answers yes and `Escape` answers no.
+- The sheet is a `role="alertdialog"`: a question that has to be answered before anything else happens.
+- The confirming button takes the focus when the sheet opens, so `Enter` answers yes and `Escape` answers no. A `danger` question opens on the cancelling button instead, so the `Enter` that asked is not followed by one that destroys.
+- Once the last queued question is answered, the focus goes back to the element that held it when the first was asked.
 - `title` becomes the dialog's accessible name and `description` its `aria-describedby`. A question with neither is a dialog a screen reader announces as nothing: always pass at least a `title`.

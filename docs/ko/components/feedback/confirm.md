@@ -86,5 +86,7 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 ## 접근성
 
 - [Dialog](./dialog)를 그리므로 Dialog의 기능이 전부 여기에도 있습니다. focus trap과 스크롤 잠금, 뒤쪽 페이지의 inert 처리, 그리고 질문을 띄운 곳으로 돌아가는 focus입니다.
-- 시트가 열리면 확인 버튼이 focus를 받으므로 `Enter`가 예, `Escape`가 아니오입니다.
+- 시트는 `role="alertdialog"`입니다. 다른 일을 하기 전에 답해야 하는 질문이기 때문입니다.
+- 시트가 열리면 확인 버튼이 focus를 받으므로 `Enter`가 예, `Escape`가 아니오입니다. `danger` 질문은 취소 버튼에서 열리므로, 질문을 띄운 `Enter` 다음의 `Enter`가 삭제로 이어지지 않습니다.
+- 대기열의 마지막 질문에 답하면 focus는 첫 질문을 띄울 때 focus를 쥐고 있던 요소로 돌아갑니다.
 - `title`이 dialog의 accessible name이 되고 `description`이 `aria-describedby`가 됩니다. 둘 다 없는 질문은 스크린 리더가 아무것도 읽어 주지 않는 dialog입니다. 최소한 `title`은 항상 넘기세요.

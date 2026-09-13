@@ -40,6 +40,8 @@
 
 - **`HowToSteps`' Previous and Next keep the focus at the ends.** Pressing Previous onto the first step, or Next onto the last with `completion={false}`, made the button `disabled` and dropped the focus onto the document. Both stay in place with `aria-disabled`; a test that asserted `toBeDisabled()` on them should assert `aria-disabled="true"`.
 
+- **A confirm is an alert dialog that opens a destructive question on Cancel.** `useConfirm` rendered a plain `role="dialog"` and put the focus on the confirming button whatever was asked, so for `color: 'danger'` the Enter that raised the question was one more Enter from the loss. The sheet is `role="alertdialog"` now, a `danger` question opens on the cancelling button, and the focus goes back to what asked once the last queued question is answered; it could be lost there before, because the confirming button took the focus as the sheet mounted. A test that found the sheet by the `dialog` role finds it by `alertdialog`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
@@ -67,6 +69,8 @@
 - **`Button` and `IconButton` take `focusableWhenDisabled`.** A disabled button stays in the tab order, marked `aria-disabled` rather than with the `disabled` attribute, and still cannot be pressed. It is for a button that is disabled by its own press, which would otherwise hand the focus to the document.
 
 - **`Slider` takes `getAriaLabel` and `getAriaValueText`.** The first names each thumb by its index, so a range slider's two thumbs are no longer both read by the label; the second words a thumb's value, for a unit or in place of the English Base UI reads for a range.
+
+- **`Dialog` takes `initialFocus` and `finalFocus`.** Base UI's own options, passed to the popup: what takes the focus when the dialog opens, and where it goes when it closes.
 
 ### Changed
 
