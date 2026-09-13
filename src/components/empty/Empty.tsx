@@ -209,7 +209,20 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
   const animation = transitionProps(transition);
   const titled = hasContent(heading);
 
-  const classNames = cx(
+  /*
+   * A table cell stays a cell. The state is drawn inside it rather than on it:
+   * `display: flex` takes a `<td>` out of the table's layout, so its `colSpan`
+   * spans nothing, and `role="status"` replaces the cell role a screen reader
+   * navigates the table by. So the column and the live region go on a box of
+   * their own, and the cell keeps what the caller gave it.
+   */
+  const cell = React.isValidElement(render) && (render.type === 'td' || render.type === 'th');
+  // `role={undefined}` is how a caller turns the live region off, so the key
+  // being there at all is what counts, not what it holds.
+  const { role: roleProp, ...rest } = props;
+  const liveRole = 'role' in props ? roleProp : 'status';
+
+  const ownClassNames = cx(
     'flex w-full flex-col items-center justify-center text-center',
     boxPaddingXClasses[density][size],
     emptyPaddingYClasses[density][size],
@@ -217,63 +230,71 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
     sheetSectionGapClasses[size],
     transitionClasses,
     variantClasses[variant],
-    animation.className,
-    className ?? ''
+    animation.className
+  );
+
+  const ownStyle = { ...surfaceSlots(color, elevation), ...animation.style };
+
+  const content = (
+    <>
+      {hasContent(glyph) ? (
+        <span
+          className={`flex items-center text-(--neba-muted-fg) ${glyphScaleClasses[size]} ${iconClasses}`}
+        >
+          {glyph}
+        </span>
+      ) : null}
+
+      {titled || hasContent(children) ? (
+        // `max-w-prose` and nothing narrower: an empty state is centred, and
+        // a centred sentence running the full width of a page is a sentence
+        // whose second line starts somewhere the eye has to hunt for.
+        <div className={`flex max-w-prose flex-col items-center ${sheetHeaderGapClasses[size]}`}>
+          {titled ? (
+            <div className={`neba-title font-semibold ${sheetTitleClasses[size]}`}>{heading}</div>
+          ) : null}
+          {hasContent(children) ? (
+            // The detail is supporting text under a headline, so it takes
+            // the muted ink — the same step a field's description takes.
+            // Without a headline it *is* the state, and stays reading text.
+            <div className={`${sheetBodyClasses[size]} ${titled ? 'text-(--neba-muted-fg)' : ''}`}>
+              {children}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {hasContent(action) ? (
+        <div className="flex flex-wrap items-center justify-center gap-2">{action}</div>
+      ) : null}
+    </>
   );
 
   return useRender({
     render,
     ref,
-    props: {
-      // A list that empties under the reader has to say so, and it has no other
-      // way to: nothing was removed from the page, something was added to it.
-      // Announced rather than interrupting, because "no results" is the answer
-      // to a question that was just asked. `role={undefined}` turns it off for
-      // a state that is simply part of the page on arrival.
-      role: 'status',
-      className: classNames,
-      style: { ...surfaceSlots(color, elevation), ...animation.style, ...style },
-      children: (
-        <>
-          {hasContent(glyph) ? (
-            <span
-              className={`flex items-center text-(--neba-muted-fg) ${glyphScaleClasses[size]} ${iconClasses}`}
-            >
-              {glyph}
-            </span>
-          ) : null}
-
-          {titled || hasContent(children) ? (
-            // `max-w-prose` and nothing narrower: an empty state is centred, and
-            // a centred sentence running the full width of a page is a sentence
-            // whose second line starts somewhere the eye has to hunt for.
-            <div
-              className={`flex max-w-prose flex-col items-center ${sheetHeaderGapClasses[size]}`}
-            >
-              {titled ? (
-                <div className={`neba-title font-semibold ${sheetTitleClasses[size]}`}>
-                  {heading}
-                </div>
-              ) : null}
-              {hasContent(children) ? (
-                // The detail is supporting text under a headline, so it takes
-                // the muted ink — the same step a field's description takes.
-                // Without a headline it *is* the state, and stays reading text.
-                <div
-                  className={`${sheetBodyClasses[size]} ${titled ? 'text-(--neba-muted-fg)' : ''}`}
-                >
-                  {children}
-                </div>
-              ) : null}
+    props: cell
+      ? {
+          className,
+          style,
+          children: (
+            <div role={liveRole} className={ownClassNames} style={ownStyle}>
+              {content}
             </div>
-          ) : null}
-
-          {hasContent(action) ? (
-            <div className="flex flex-wrap items-center justify-center gap-2">{action}</div>
-          ) : null}
-        </>
-      ),
-      ...props
-    }
+          ),
+          ...rest
+        }
+      : {
+          // A list that empties under the reader has to say so, and it has no
+          // other way to: nothing was removed from the page, something was added
+          // to it. Announced rather than interrupting, because "no results" is
+          // the answer to a question that was just asked. `role={undefined}`
+          // turns it off for a state that is simply part of the page on arrival.
+          role: liveRole,
+          className: cx(ownClassNames, className ?? ''),
+          style: { ...ownStyle, ...style },
+          children: content,
+          ...rest
+        }
   });
 });

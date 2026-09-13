@@ -268,6 +268,8 @@
 
 - **A `static` `BottomNavigation` no longer leaves room for a home indicator.** `safeArea` added the bottom inset whatever the position, so a bar sitting in the flow inside a card had 34px of empty sheet under it on an iPhone. It applies only to a `fixed` or `sticky` bar now.
 
+- **An `Empty` rendered as a table cell stays a cell.** The props table suggests `render={<td colSpan={5} />}`, which put `role="status"` and `display: flex` on the `<td>` itself: the cell lost its role, and a flex `<td>` is no longer laid out as a cell, so its `colSpan` spanned nothing. Given a `<td>` or a `<th>`, the state is now drawn inside it, and the cell keeps its role, its span and the class names it was given.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

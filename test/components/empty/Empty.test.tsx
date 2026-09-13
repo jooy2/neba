@@ -41,6 +41,28 @@ describe('Empty', () => {
       expect(screen.getByRole('status').element().tagName).toBe('SECTION');
     });
 
+    // `display: flex` takes a cell out of the table and `role="status"` takes
+    // its role, so a state rendered as a cell is drawn inside it instead.
+    it('stays a table cell when it is rendered as one', async () => {
+      const screen = await render(
+        <table>
+          <tbody>
+            <tr>
+              <Empty render={<td colSpan={3} />} className="my-cell" />
+            </tr>
+          </tbody>
+        </table>
+      );
+      const cell = screen.container.querySelector('td') as HTMLTableCellElement;
+
+      expect(cell).not.toHaveAttribute('role');
+      expect(cell.colSpan).toBe(3);
+      expect(cell).toHaveClass('my-cell');
+      expect(cell).not.toHaveClass('flex');
+      await expect.element(screen.getByRole('status')).toHaveTextContent('Nothing here');
+      expect(cell.contains(screen.getByRole('status').element())).toBe(true);
+    });
+
     it('keeps caller-supplied class names alongside its own', async () => {
       const screen = await render(<Empty className="my-own-class" />);
 
