@@ -38,6 +38,25 @@ describe('Fieldset', () => {
       await expect.element(screen.getByText('Where the card statement goes.')).toBeInTheDocument();
     });
 
+    it('describes the group by the description and leaves it out of the name', async () => {
+      const screen = await render(
+        <Fieldset
+          legend="Billing address"
+          description="Where the card statement goes."
+          aria-describedby="note"
+        >
+          <TextField label="Street" />
+          <p id="note">Required.</p>
+        </Fieldset>
+      );
+      const group = screen.getByRole('group', { name: 'Billing address' });
+
+      await expect.element(group).toBeInTheDocument();
+      await expect
+        .element(group)
+        .toHaveAccessibleDescription('Required. Where the card statement goes.');
+    });
+
     it('draws no legend when there is nothing to put in one', async () => {
       const screen = await render(
         <Fieldset>

@@ -22,6 +22,8 @@
 
 - **A `FilePicker`'s button is named by its `label`.** The label was drawn above the box and tied to nothing, so a form asking for a résumé and a cover letter had two buttons both called "Drop files here, or click to browse". The button is now named by the label followed by what the box says. A test that finds the box by its title alone needs the label added, or `exact: false`.
 
+- **A `Fieldset`'s `description` describes the group instead of joining its name.** It was drawn inside the legend, so the group was named "Billing address Where the card statement goes." and that sentence was read before every control in it. The legend alone names the group now, and the description is tied to it with `aria-describedby`, merged with any the caller passes. A test that found the group by the whole sentence finds it by the legend.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

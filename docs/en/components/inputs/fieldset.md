@@ -52,5 +52,5 @@ The one thing only a real `<fieldset>` can do: it reaches every control inside, 
 
 ## Accessibility
 
-- Renders a real `<fieldset>` with `role="group"`, named by the legend through `aria-labelledby`.
+- Renders a real `<fieldset>` with `role="group"`, named by the legend through `aria-labelledby` and described by `description` through `aria-describedby`.
 - A screen reader reads the legend before each control inside, which is why the legend is written as a phrase rather than a question.

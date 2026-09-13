@@ -44,10 +44,21 @@ export interface FieldsetProps extends Omit<React.ComponentPropsWithoutRef<'fiel
  * box by every browser, so a `gap` would put no space under it at all.
  */
 export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset(
-  { legend, description, disabled = false, size = 'md', className, children, ...props },
+  {
+    legend,
+    description,
+    disabled = false,
+    size = 'md',
+    className,
+    children,
+    'aria-describedby': describedBy,
+    ...props
+  },
   ref
 ) {
-  const hasLegend = hasContent(legend) || hasContent(description);
+  const descriptionId = React.useId();
+  const hasLegend = hasContent(legend);
+  const hasDescription = hasContent(description);
 
   return (
     <BaseUIFieldset.Root
@@ -62,19 +73,28 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(fun
         sheetSectionGapClasses[size],
         className ?? ''
       )}
+      // The description is the group's description and not part of its name.
+      // Inside the legend it was both, so every control in the group was
+      // introduced by a whole sentence.
+      aria-describedby={
+        [describedBy, hasDescription ? descriptionId : undefined].filter(Boolean).join(' ') ||
+        undefined
+      }
       {...props}
     >
-      {hasLegend ? (
-        <BaseUIFieldset.Legend
-          className={`flex min-w-0 flex-col p-0 ${sheetHeaderGapClasses[size]}`}
-        >
-          {hasContent(legend) ? (
-            <span className={`font-semibold ${sheetTitleClasses[size]}`}>{legend}</span>
+      {hasLegend || hasDescription ? (
+        <div className={`flex min-w-0 flex-col ${sheetHeaderGapClasses[size]}`}>
+          {hasLegend ? (
+            <BaseUIFieldset.Legend className={`p-0 font-semibold ${sheetTitleClasses[size]}`}>
+              {legend}
+            </BaseUIFieldset.Legend>
           ) : null}
-          {hasContent(description) ? (
-            <span className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{description}</span>
+          {hasDescription ? (
+            <span id={descriptionId} className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+              {description}
+            </span>
           ) : null}
-        </BaseUIFieldset.Legend>
+        </div>
       ) : null}
 
       {children}

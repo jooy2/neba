@@ -52,5 +52,5 @@ legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다
 
 ## 접근성
 
-- `role="group"`을 가진 진짜 `<fieldset>`으로 렌더링되고, `aria-labelledby`로 legend와 연결됩니다.
+- `role="group"`을 가진 진짜 `<fieldset>`으로 렌더링되고, `aria-labelledby`로 legend와, `aria-describedby`로 `description`과 연결됩니다.
 - 스크린 리더는 안의 컨트롤마다 legend를 먼저 읽습니다. legend를 질문이 아니라 구절로 쓰는 이유입니다.
