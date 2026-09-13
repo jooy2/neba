@@ -348,6 +348,8 @@
 
 - **A shortcut does not fire in the middle of a word typed through an input method.** Korean, Japanese and Chinese build a character over several keydowns, and every one of them reached the page, so a `Mod+Enter` bound on a field, or bound with `useShortcut` and `ignoreWhileTyping: false`, could fire while a syllable was still being composed and send it half written. A keystroke an input method is holding, marked by `isComposing` or a `keyCode` of 229, matches no shortcut now. This covers `useShortcut`, a `CommandPalette`'s opener and a field's `shortcuts`.
 
+- **`lines` on a `Typography` or an `AccordionItem` clamps to any count.** Each count from two to six had a class of its own, and anything larger fell back to the class for six, so `lines={8}` cut the text off at six lines without a word. The count is written into an `--n-lines` slot that one clamp class reads, the way the library passes every other number to its styles.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

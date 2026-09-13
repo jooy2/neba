@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
-import { clampClasses, cx } from '../../internal/styles.js';
+import { clampClasses, clampSlot, cx } from '../../internal/styles.js';
 import type { NebaColor, NebaTransition } from '../../types.js';
 
 /**
@@ -259,8 +259,13 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     props: {
       className: classNames,
       style: (color
-        ? { '--n-accent': `var(--neba-${color}-accent)`, ...animation.style, ...style }
-        : { ...animation.style, ...style }) as React.CSSProperties,
+        ? {
+            '--n-accent': `var(--neba-${color}-accent)`,
+            ...clampSlot(lines),
+            ...animation.style,
+            ...style
+          }
+        : { ...clampSlot(lines), ...animation.style, ...style }) as React.CSSProperties,
       children,
       ...props
     }

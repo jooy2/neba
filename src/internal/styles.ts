@@ -553,23 +553,22 @@ export const fieldFocusTransitionClasses =
  * Two different mechanisms wearing one name: a single line is
  * `text-overflow: ellipsis`, which keeps the text on its own baseline, and more
  * than one needs the line-clamp box, which only ellipsises because WebKit says
- * so. Six is as far as the utilities go, so a larger number clamps there.
+ * so. It is shared because `lines` has to mean the same thing on a Typography
+ * and on the title of an accordion section.
  *
- * Written out per line count because Tailwind only ever sees class names that
- * appear literally in the source. It is shared because `lines` has to mean the
- * same thing on a Typography and on the title of an accordion section.
+ * The count reaches the box through an `--n-lines` slot that `clampSlot`
+ * writes, rather than through a class per count. The classes stopped at six,
+ * so `lines={8}` clamped at six without a word.
  */
-const clampLineClasses: Record<number, string> = {
-  1: 'truncate',
-  2: 'line-clamp-2',
-  3: 'line-clamp-3',
-  4: 'line-clamp-4',
-  5: 'line-clamp-5',
-  6: 'line-clamp-6'
-};
-
 export function clampClasses(lines: number): string {
-  return clampLineClasses[lines] ?? 'line-clamp-6';
+  return lines > 1 ? 'line-clamp-(--n-lines)' : 'truncate';
+}
+
+/** The count `clampClasses` reads, for the element that carries its class. */
+export function clampSlot(lines: number | undefined): React.CSSProperties | undefined {
+  return lines !== undefined && lines > 1
+    ? ({ '--n-lines': Math.floor(lines) } as React.CSSProperties)
+    : undefined;
 }
 
 /** Icons track their label rather than carrying a size of their own. */

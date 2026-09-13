@@ -6,6 +6,7 @@ import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   clampClasses,
+  clampSlot,
   cx,
   focusRingClasses,
   gapClasses,
@@ -293,6 +294,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
   ) {
     const { size, density, dividers, headingLevel } = React.useContext(AccordionContext);
     const clamp = lines ? clampClasses(lines) : '';
+    const clampStyle = clampSlot(lines);
 
     const padX = boxPaddingXClasses[density][size];
     const padY = boxPaddingYClasses[density][size];
@@ -344,12 +346,18 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
 
               <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
                 {hasContent(title) ? (
-                  <span className={cx('font-semibold', sheetTitleClasses[size], clamp)}>
+                  <span
+                    className={cx('font-semibold', sheetTitleClasses[size], clamp)}
+                    style={clampStyle}
+                  >
                     {title}
                   </span>
                 ) : null}
                 {hasContent(subtitle) ? (
-                  <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size], clamp)}>
+                  <span
+                    className={cx('text-(--neba-muted-fg)', metaTextClasses[size], clamp)}
+                    style={clampStyle}
+                  >
                     {subtitle}
                   </span>
                 ) : null}

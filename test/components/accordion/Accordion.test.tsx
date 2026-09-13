@@ -357,9 +357,12 @@ describe('Accordion', () => {
         </Accordion>
       );
 
-      expect(
-        screen.getByText('What happens to my data when I close my account?').element()
-      ).toHaveClass('line-clamp-2');
+      const clamped = screen
+        .getByText('What happens to my data when I close my account?')
+        .element() as HTMLElement;
+
+      expect(clamped).toHaveClass('line-clamp-(--n-lines)');
+      expect(clamped.style.getPropertyValue('--n-lines')).toBe('2');
     });
   });
 

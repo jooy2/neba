@@ -132,7 +132,25 @@ describe('Typography', () => {
         </Typography>
       );
 
-      expect(screen.getByTestId('text').element()).toHaveClass('line-clamp-3');
+      const element = screen.getByTestId('text').element() as HTMLElement;
+
+      expect(element).toHaveClass('line-clamp-(--n-lines)');
+      expect(element).not.toHaveClass('truncate');
+      expect(element.style.getPropertyValue('--n-lines')).toBe('3');
+    });
+
+    // The classes went up to six, so a larger count clamped at six silently.
+    it('clamps to a count past six', async () => {
+      const screen = await render(
+        <Typography lines={8} data-testid="text" style={{ color: 'red' }}>
+          Long
+        </Typography>
+      );
+
+      const element = screen.getByTestId('text').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-lines')).toBe('8');
+      expect(element.style.color).toBe('red');
     });
 
     it('adds no margin unless asked', async () => {
@@ -198,7 +216,7 @@ describe('Typography', () => {
       const classes = [...screen.getByText('Heading').element().classList];
 
       expect(classes).toContain('text-center');
-      expect(classes).toContain('line-clamp-2');
+      expect(classes).toContain('line-clamp-(--n-lines)');
     });
   });
 
