@@ -166,9 +166,11 @@ const resizeClasses: Record<TextFieldResize, string> = {
 };
 
 const shellBaseClasses = [
-  // `group` so the adornments can answer the control's focus; `cursor-text`
-  // because the whole shell behaves as the field, padding included.
-  'group relative flex w-full cursor-text',
+  // `group` so the adornments can answer the control's focus. The I-beam over
+  // the whole shell, padding included, is decided with the state below: beside
+  // the `cursor-not-allowed` a disabled shell takes, two cursor utilities would
+  // be settled by the order Tailwind happened to emit them in.
+  'group relative flex w-full',
   '[-webkit-tap-highlight-color:transparent]',
   // Same property list and durations as Button, with no `:active` override
   // because a field is not pressed. What focus does have is a duration of its
@@ -254,6 +256,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         : readOnly
           ? readOnlyClasses[variant]
           : restClasses[variant],
+      disabled ? '' : 'cursor-text',
       classNames?.shell
     );
 

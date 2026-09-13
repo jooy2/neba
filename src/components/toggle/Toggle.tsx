@@ -80,7 +80,9 @@ const iconOnlyClasses: Record<NebaSize, string> = {
 };
 
 const baseClasses = [
-  'relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center',
+  // No cursor here: a disabled toggle takes `cursor-not-allowed`, and beside a
+  // `cursor-pointer` the two would be decided by stylesheet order.
+  'relative inline-flex shrink-0 select-none items-center justify-center',
   'whitespace-nowrap align-middle font-medium leading-none',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
@@ -242,7 +244,7 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
               : state.pressed
                 ? onClasses[variant]
                 : offClasses[variant],
-            disabled ? '' : 'neba-glow',
+            disabled ? '' : 'neba-glow cursor-pointer',
             fullWidth ? 'w-full' : '',
             className ?? ''
           )

@@ -168,7 +168,8 @@ export interface NumberFieldProps
 
 /** The shell is a TextField's, to the pixel — see `fieldRestClasses`. */
 const shellBaseClasses = [
-  'group relative flex w-full cursor-text items-center',
+  // No cursor here: it is decided with the state, as on TextField.
+  'group relative flex w-full items-center',
   '[-webkit-tap-highlight-color:transparent]',
   transitionClasses,
   fieldFocusTransitionClasses,
@@ -363,6 +364,7 @@ export function NumberField(rawProps: NumberFieldProps) {
               : readOnly
                 ? fieldReadOnlyClasses[variant]
                 : fieldRestClasses[variant],
+            disabled ? '' : 'cursor-text',
             classNames?.shell
           )}
         >

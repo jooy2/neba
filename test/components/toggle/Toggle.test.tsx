@@ -82,6 +82,23 @@ describe('Toggle', () => {
       await expect.element(toggle).toHaveAttribute('aria-pressed', 'false');
     });
 
+    // Two cursor utilities on one element are decided by stylesheet order.
+    it('carries one cursor for its state, never two', async () => {
+      const screen = await render(<Toggle data-testid="t">Bold</Toggle>);
+      const element = screen.getByTestId('t').element();
+
+      expect(element).toHaveClass('cursor-pointer');
+
+      await screen.rerender(
+        <Toggle disabled data-testid="t">
+          Bold
+        </Toggle>
+      );
+
+      expect(element).toHaveClass('cursor-not-allowed');
+      expect(element).not.toHaveClass('cursor-pointer');
+    });
+
     it('does not fire while disabled', async () => {
       const onPressedChange = vi.fn();
       const screen = await render(

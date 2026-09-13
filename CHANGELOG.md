@@ -288,6 +288,8 @@
 
 - **A translation's placeholders are filled the same way everywhere.** `Tour`, `HowToSteps` and `Gallery` filled theirs with an older helper that looked a `{name}` up with a plain index, so a registered translation containing `{constructor}` printed `function Object() { [native code] }` into the counter. They use the one helper the rest of the library does, which leaves a placeholder it has no value for as it was written.
 
+- **A disabled `TextField`, `NumberField` or `Toggle` shows the not-allowed cursor.** Each carried its ordinary cursor on every render and `cursor-not-allowed` beside it when disabled, and two cursor utilities on one element are decided by the order Tailwind emits them in: a disabled field showed an I-beam and a disabled toggle a pointer. The cursor is chosen with the state now, so each element carries one.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

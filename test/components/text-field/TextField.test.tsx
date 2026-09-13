@@ -28,6 +28,18 @@ describe('TextField', () => {
       expect(screen.getByRole('textbox', { name: 'Email' }).element()).toHaveClass('neba-input');
     });
 
+    // Two cursor utilities on one element are decided by stylesheet order, and
+    // a disabled field showed an I-beam.
+    it('gives a disabled shell the not-allowed cursor alone', async () => {
+      const screen = await render(
+        <TextField label="Email" disabled classNames={{ shell: 'the-shell' }} />
+      );
+      const shell = screen.container.querySelector('.the-shell') as HTMLElement;
+
+      expect(shell).toHaveClass('cursor-not-allowed');
+      expect(shell).not.toHaveClass('cursor-text');
+    });
+
     it('associates the label with the control', async () => {
       const screen = await render(<TextField label="Email" />);
       const input = screen.getByRole('textbox', { name: 'Email' }).element();
