@@ -262,6 +262,8 @@
 
 - **Controls and indicators stay visible in a forced-colour theme.** Windows' contrast themes draw no `box-shadow` and replace background colours, and the stylesheet had nothing for them: a filled `Button`, `Toggle`, `Chip` or `Pill` lost the plate that was its edge, and a `Switch`, a `ProgressLinear` and a `Slider` lost the fill and the thumb that say their value. Under `forced-colors: active` those controls now carry a system-coloured outline, and the indicators are drawn in the system's own `Highlight` and `ButtonText`. Nothing changes in any other mode.
 
+- **Small controls are pressed at the size of a finger.** An `Alert` or `Toast` ×, a `NumberField` stepper at `xs` and `sm`, a `Carousel` dot, a `Panes` or `Sidebar` resize handle, a `WindowPane`'s resize corner and its macOS traffic lights were all drawn, and pressed, well under the 24px WCAG 2.5.8 asks for. Each now carries an invisible target of at least 24px on the short axis; a control in a tight row grows along the row only into the gaps beside it, so it never takes a neighbour's press. Nothing drawn moves, and the `xs` step of the control height ladder is left as it was.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

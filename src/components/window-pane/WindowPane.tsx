@@ -859,6 +859,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
                       className={cx(
                         'absolute z-10 touch-none',
                         handle.className,
+                        // The corner is the handle a keyboard and a finger reach
+                        // for, and it is 12px square.
+                        corner ? 'neba-hit' : '',
                         corner
                           ? 'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
                           : ''

@@ -185,7 +185,11 @@ const shellBaseClasses = [
  * the library does.
  */
 const stepperClasses = [
-  'inline-flex size-[1.7em] shrink-0 cursor-pointer items-center justify-center',
+  'relative inline-flex size-[1.7em] shrink-0 cursor-pointer items-center justify-center',
+  // Pressed at the height of a finger, and along the row only into the gap:
+  // at `xs` and `sm` the pair is under 24px, and grown that way too each would
+  // lie over the other.
+  'neba-hit-row',
   'rounded-(--neba-radius-xs) text-(--neba-muted-fg) select-none',
   '[&_svg]:size-[0.9em] [&_svg]:shrink-0',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
@@ -402,7 +406,10 @@ export function NumberField(rawProps: NumberFieldProps) {
           ) : null}
 
           {showSteppers && steppers === 'end' ? (
-            <span className="flex shrink-0 items-center gap-0.5">
+            <span
+              className="flex shrink-0 items-center gap-0.5"
+              style={{ '--n-hit-gap': '0.125rem' } as React.CSSProperties}
+            >
               {decrement}
               {increment}
             </span>

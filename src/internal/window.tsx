@@ -830,7 +830,7 @@ export function WindowControls({
         // in the middle of the bar. Everything else is centred in it.
         aero ? 'self-start' : 'self-stretch'
       )}
-      style={{ gap: metrics.gap }}
+      style={{ gap: metrics.gap, '--n-hit-gap': `${metrics.gap}px` } as React.CSSProperties}
       // The bar under it drags the window; the buttons on it do not.
       onPointerDown={(event) => event.stopPropagation()}
       onDoubleClick={(event) => event.stopPropagation()}
@@ -851,6 +851,8 @@ export function WindowControls({
               '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease),filter_var(--neba-duration)_var(--neba-ease)]',
               'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
               dots || circles ? 'rounded-full' : '',
+              // Twelve pixels across, and three in a row.
+              dots ? 'neba-hit-row' : '',
               circles ? 'bg-(--n-window-hover)' : '',
               face ? 'bg-(--n-window-face)' : '',
               // An if/else rather than two hover classes of equal specificity:

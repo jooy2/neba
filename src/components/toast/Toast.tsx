@@ -10,6 +10,7 @@ import {
   cx,
   focusRingClasses,
   hasContent,
+  hitAreaClasses,
   iconClasses,
   metaTextClasses,
   popupFadeClasses,
@@ -364,7 +365,8 @@ function ToastItem({
         <BaseUIToast.Close
           aria-label={closeLabel}
           className={cx(
-            'inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
+            'relative inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
+            hitAreaClasses,
             'opacity-70 [transition:opacity_var(--neba-duration)_var(--neba-ease)]',
             'hover:opacity-100 focus-visible:opacity-100',
             'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',

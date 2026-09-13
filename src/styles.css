@@ -2087,6 +2087,22 @@
   border-radius: inherit;
 }
 
+/*
+ * The same target for a control in a tight row — a Carousel's dots, a
+ * NumberField's two steppers, a window's traffic lights. Grown to the full
+ * height, and along the row only into half the gap on each side: grown to 24px
+ * that way too, each one would lie over its neighbour, and a press on the right
+ * half of a dot would land on the next one. `--n-hit-gap` is the gap the row
+ * is laid out with.
+ */
+.neba-hit-row::before {
+  content: '';
+  position: absolute;
+  inset-block: min(0px, calc((var(--n-hit, 1.5rem) - 100%) / -2));
+  inset-inline: calc(var(--n-hit-gap, 0px) / -2);
+  border-radius: inherit;
+}
+
 /* ---------------------------------------------------------------------------
  * Interaction light
  *

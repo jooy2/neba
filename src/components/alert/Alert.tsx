@@ -9,6 +9,7 @@ import {
   controlSlots,
   cx,
   hasContent,
+  hitAreaClasses,
   iconClasses,
   radiusClasses,
   sheetBodyClasses,
@@ -225,7 +226,10 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
             aria-label={closeLabel ?? messages.dismiss}
             onClick={onClose}
             className={[
-              'inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
+              'relative inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
+              // Drawn at the size of the text beside it, pressed at the size of
+              // a finger.
+              hitAreaClasses,
               'opacity-70 [transition:opacity_var(--neba-duration)_var(--neba-ease)]',
               'hover:opacity-100 focus-visible:opacity-100',
               'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'

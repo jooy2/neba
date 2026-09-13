@@ -344,6 +344,8 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     resizable
       ? cx(
           horizontal ? 'cursor-col-resize' : 'cursor-row-resize',
+          // Grabbed across 24px however thin the track is drawn.
+          'neba-hit',
           // Or a finger moving across the handle starts a scroll, and the
           // browser cancels the pointer a few pixels into the drag.
           'touch-none',

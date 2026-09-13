@@ -131,6 +131,15 @@ const dotClasses: Record<NebaSize, { rest: string; current: string; gap: string 
   xl: { rest: 'h-2 w-2', current: 'h-2 w-6', gap: 'gap-2' }
 };
 
+/** The same gaps as lengths, for the target each dot is pressed by. */
+const dotGapValues: Record<NebaSize, string> = {
+  xs: '0.25rem',
+  sm: '0.25rem',
+  md: '0.375rem',
+  lg: '0.5rem',
+  xl: '0.5rem'
+};
+
 /**
  * A strip of slides, one of which is in view.
  *
@@ -496,7 +505,10 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
               ) : null}
             </span>
 
-            <span className={`flex items-center ${dotClasses[size].gap}`}>
+            <span
+              className={`flex items-center ${dotClasses[size].gap}`}
+              style={{ '--n-hit-gap': dotGapValues[size] } as React.CSSProperties}
+            >
               {showDots
                 ? slides.map((_, dotIndex) => (
                     <button
@@ -505,7 +517,9 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
                       aria-label={nameSlide(dotIndex + 1, count)}
                       aria-current={dotIndex === index ? 'true' : undefined}
                       className={[
-                        'cursor-pointer rounded-full',
+                        // A dot is 6px and a finger is not: it is pressed at 24px
+                        // high and across the gaps either side of it.
+                        'neba-hit-row relative cursor-pointer rounded-full',
                         // Width and colour, never a transform: the current dot grows
                         // along the row instead of scaling, so nothing beside it moves.
                         '[transition-property:width,background-color]',
