@@ -47,6 +47,9 @@ const HEADERS: DataTableColumn<Package>[] = [
   }
 ];
 
+const rowKey = (row: Package) => row.name;
+const outdatedOnly = (row: Package) => row.outdated;
+
 export default function DataTableSearch() {
   const [onlyOutdated, setOnlyOutdated] = useState(false);
 
@@ -54,11 +57,11 @@ export default function DataTableSearch() {
     <DataTable
       headers={HEADERS}
       items={ITEMS}
-      getRowKey={(row) => row.name}
+      getRowKey={rowKey}
       sortable
       searchable
       searchPlaceholder="Filter packages"
-      filter={onlyOutdated ? (row) => row.outdated : undefined}
+      filter={onlyOutdated ? outdatedOnly : undefined}
       toolbar={
         <Button
           size="sm"

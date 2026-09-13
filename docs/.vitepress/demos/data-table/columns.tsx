@@ -37,6 +37,8 @@ const ITEMS: Region[] = [
   { code: 'gru1', city: 'São Paulo', latency: 112, uptime: 99.81, nodes: 12 }
 ];
 
+const rowKey = (row: Region) => row.code;
+
 export default function DataTableColumns() {
-  return <DataTable headers={HEADERS} items={ITEMS} getRowKey={(row) => row.code} resizable />;
+  return <DataTable headers={HEADERS} items={ITEMS} getRowKey={rowKey} resizable />;
 }

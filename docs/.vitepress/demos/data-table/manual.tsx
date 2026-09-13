@@ -41,6 +41,8 @@ const HEADERS: DataTableColumn<Event>[] = [
   { key: 'at', label: 'Date', width: 130, sortable: false }
 ];
 
+const rowKey = (row: Event) => row.id;
+
 export default function DataTableManual() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -63,7 +65,7 @@ export default function DataTableManual() {
     <DataTable
       headers={HEADERS}
       items={rows}
-      getRowKey={(row) => row.id}
+      getRowKey={rowKey}
       manual
       rowCount={TOTAL}
       paging="pages"

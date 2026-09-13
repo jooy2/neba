@@ -17,11 +17,12 @@ const headers: DataTableColumn<Build>[] = [
   { key: 'branch', label: 'Branch', width: 180 },
   { key: 'duration', label: 'Duration', align: 'end', render: (row) => `${row.duration}s` }
 ];
+const rowKey = (row: Build) => row.id;
 
 <DataTable
   headers={headers}
   items={builds}
-  getRowKey={(row) => row.id}
+  getRowKey={rowKey}
   height={280}
   selectionMode="multiple"
   sortable
@@ -34,7 +35,7 @@ const headers: DataTableColumn<Build>[] = [
 
 The outer sheet is a [Box](../surfaces/box): `variant` · `size` · `color` · `density` · `elevation` all pass straight through. Everything else a `<div>` takes (`id`, `data-*`, `onContextMenu`) lands on it too.
 
-Define `headers` outside the component, or memoise it. The search and the sort are keyed on that array's identity, and an inline literal is a new array on every render.
+Define `headers`, `getRowKey`, `filter` and `manual` outside the component, or memoise them. The row keys, the search and the sort are keyed on their identity, and an inline literal or arrow is a new one on every render, so every row is keyed, searched and sorted again each time the component around the table renders, which a selection or a drag does on every change.
 
 ### DataTableColumn
 

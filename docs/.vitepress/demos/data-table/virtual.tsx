@@ -22,6 +22,8 @@ const HEADERS: DataTableColumn<Reading>[] = [
   { key: 'taken', label: 'Taken', width: 140 }
 ];
 
+const rowKey = (row: Reading) => row.id;
+
 export default function DataTableVirtual() {
   const [virtual, setVirtual] = useState(true);
 
@@ -39,7 +41,7 @@ export default function DataTableVirtual() {
       <DataTable
         headers={HEADERS}
         items={virtual ? ITEMS : ITEMS.slice(0, 2000)}
-        getRowKey={(row) => row.id}
+        getRowKey={rowKey}
         height={260}
         virtual={virtual}
         striped

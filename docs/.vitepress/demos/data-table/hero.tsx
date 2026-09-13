@@ -47,6 +47,8 @@ const HEADERS: DataTableColumn<Build>[] = [
   { key: 'queued', label: 'Queued', width: 100, align: 'end' }
 ];
 
+const rowKey = (row: Build) => row.id;
+
 export default function DataTableHero() {
   const [selected, setSelected] = useState<React.Key[]>([]);
 
@@ -55,7 +57,7 @@ export default function DataTableHero() {
       <DataTable
         headers={HEADERS}
         items={ITEMS}
-        getRowKey={(row) => row.id}
+        getRowKey={rowKey}
         height={280}
         selectionMode="multiple"
         selected={selected}

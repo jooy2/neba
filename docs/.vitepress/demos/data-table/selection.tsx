@@ -27,6 +27,8 @@ const HEADERS: DataTableColumn<Asset>[] = [
   }
 ];
 
+const rowKey = (row: Asset) => row.path;
+
 export default function DataTableSelection() {
   const [selected, setSelected] = useState<React.Key[]>([]);
   const [opened, setOpened] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export default function DataTableSelection() {
       <DataTable
         headers={HEADERS}
         items={ITEMS}
-        getRowKey={(row) => row.path}
+        getRowKey={rowKey}
         height={240}
         selectionMode="multiple"
         checkboxes

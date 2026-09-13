@@ -24,6 +24,8 @@ const HEADERS: DataTableColumn<Job>[] = [
   { key: 'state', label: 'State' }
 ];
 
+const rowKey = (row: Job) => row.id;
+
 export default function DataTableDensity() {
   const [size, setSize] = useState<NebaSize>('sm');
   const [compact, setCompact] = useState(true);
@@ -55,7 +57,7 @@ export default function DataTableDensity() {
       <DataTable
         headers={HEADERS}
         items={ITEMS}
-        getRowKey={(row) => row.id}
+        getRowKey={rowKey}
         size={size}
         density={compact ? 'compact' : 'default'}
         striped

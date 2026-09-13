@@ -34,12 +34,14 @@ const HEADERS: DataTableColumn<Entry>[] = [
   }
 ];
 
+const rowKey = (row: Entry) => row.id;
+
 export default function DataTablePages() {
   return (
     <DataTable
       headers={HEADERS}
       items={ITEMS}
-      getRowKey={(row) => row.id}
+      getRowKey={rowKey}
       paging="pages"
       defaultPageSize={10}
       pageSizeOptions={[10, 25, 50]}

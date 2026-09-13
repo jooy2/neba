@@ -17,11 +17,12 @@ const headers: DataTableColumn<Build>[] = [
   { key: 'branch', label: 'Branch', width: 180 },
   { key: 'duration', label: 'Duration', align: 'end', render: (row) => `${row.duration}s` }
 ];
+const rowKey = (row: Build) => row.id;
 
 <DataTable
   headers={headers}
   items={builds}
-  getRowKey={(row) => row.id}
+  getRowKey={rowKey}
   height={280}
   selectionMode="multiple"
   sortable
@@ -34,7 +35,7 @@ const headers: DataTableColumn<Build>[] = [
 
 바깥 시트는 [Box](../surfaces/box)입니다. `variant` · `size` · `color` · `density` · `elevation`이 그대로 전달됩니다. `id`, `data-*`, `onContextMenu`처럼 `<div>`가 받는 나머지도 여기에 얹힙니다.
 
-`headers`는 컴포넌트 밖에 정의하거나 memoize하세요. 검색과 정렬은 그 배열의 identity를 기준으로 캐시되고, inline literal은 매 render마다 새 배열입니다.
+`headers`, `getRowKey`, `filter`, `manual`은 컴포넌트 밖에 정의하거나 memoize하세요. 행 key와 검색, 정렬은 이 값들의 identity를 기준으로 캐시되고, inline literal이나 화살표 함수는 매 render마다 새로 만들어집니다. 그러면 표를 감싼 컴포넌트가 render될 때마다 모든 행의 key를 다시 구하고 다시 검색하고 정렬합니다. 선택이나 드래그는 바뀔 때마다 그 render를 일으킵니다.
 
 ### DataTableColumn
 

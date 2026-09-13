@@ -32,6 +32,8 @@ const HEADERS: DataTableColumn<Ticket>[] = [
   { key: 'points', label: 'Points', width: 100, align: 'end' }
 ];
 
+const rowKey = (row: Ticket) => row.id;
+
 export default function DataTableSorting() {
   const [sort, setSort] = useState<DataTableSort[]>([{ key: 'priority', direction: 'desc' }]);
 
@@ -40,7 +42,7 @@ export default function DataTableSorting() {
       <DataTable
         headers={HEADERS}
         items={ITEMS}
-        getRowKey={(row) => row.id}
+        getRowKey={rowKey}
         sortable
         sortMode="multiple"
         sort={sort}
