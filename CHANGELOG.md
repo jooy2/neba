@@ -276,6 +276,8 @@
 
 - **`AnimateScramble` and `AnimateCounter` show the answer to a reader who asked for less motion, triggered or not.** Under a reduced-motion preference both skipped the animation once it started, but until then a Scramble showed its noise and a Counter its `from` value, and with `trigger="hover"` or `"manual"` that could be all the reader ever saw. Both show the final text or number from the first frame now.
 
+- **A `Sidebar`'s resize handle says how wide the sidebar is.** It is a focusable `separator`, which has to carry a value and its range, and it carried neither, so a screen reader announced a separator and nothing about where it was or how far it could go. It now carries `aria-valuenow`, `aria-valuemin` and `aria-valuemax` in pixels, kept up to date as the width is dragged or stepped.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

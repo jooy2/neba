@@ -131,6 +131,24 @@ describe('Sidebar', () => {
       expect(onResizeEnd).toHaveBeenCalledWith(236);
     });
 
+    // A focusable separator has to say where it is and how far it can go.
+    it('says its width and its bounds, and keeps saying it as it moves', async () => {
+      const screen = await render(
+        <Sidebar resizable width={220} minWidth={180} maxWidth={400} style={{ width: 220 }} />
+      );
+      const handle = screen.getByRole('separator');
+
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '220');
+      expect(handle.element()).toHaveAttribute('aria-valuemin', '180');
+      expect(handle.element()).toHaveAttribute('aria-valuemax', '400');
+
+      handle
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '236');
+    });
+
     it('refuses to be dragged past its bounds', async () => {
       const screen = await render(
         <Sidebar resizable width={170} minWidth={168} style={{ width: 170 }} />

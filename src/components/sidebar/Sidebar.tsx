@@ -281,34 +281,60 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
   const teardownRef = React.useRef<(() => void) | null>(null);
   React.useEffect(() => () => teardownRef.current?.(), []);
 
+  const handleRef = React.useRef<HTMLDivElement | null>(null);
+
+  /**
+   * One of the two bounds, in pixels. A bare number is already pixels here — a
+   * sidebar's width is an absolute thing, unlike a pane's share of a split. A
+   * percentage is a percentage of the window, which is what the sidebar is
+   * ultimately competing with the page for.
+   */
+  const bound = (node: HTMLElement, value: number | string | undefined, fallback: number) => {
+    if (value === undefined || value === null) return fallback;
+    if (typeof value === 'number') return value;
+
+    return (
+      toPixels(value, {
+        percentOf: typeof window === 'undefined' ? 0 : window.innerWidth,
+        relativeTo: node
+      }) ?? fallback
+    );
+  };
+
+  /**
+   * What the handle says about the width, which a focusable separator has to:
+   * where it is and how far it can go. Written onto the element for the reason
+   * the width is — nothing else in the tree reads the number.
+   */
+  const describeWidth = (node: HTMLElement, pixels: number) => {
+    const handle = handleRef.current;
+    if (!handle) return;
+
+    handle.setAttribute('aria-valuenow', String(Math.round(pixels)));
+    handle.setAttribute('aria-valuemin', String(Math.round(bound(node, minWidth, 160))));
+    handle.setAttribute('aria-valuemax', String(Math.round(bound(node, maxWidth, 480))));
+  };
+
+  React.useEffect(() => {
+    const node = rootRef.current;
+    if (!resizable || !node) return;
+
+    describeWidth(node, node.getBoundingClientRect().width);
+    // The bounds and the width as given; a drag describes itself as it goes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resizable, minWidth, maxWidth, width]);
+
   const applyWidth = (pixels: number) => {
     const node = rootRef.current;
     if (!node) return pixels;
 
-    /**
-     * One of the two bounds, in pixels. A bare number is already pixels here —
-     * a sidebar's width is an absolute thing, unlike a pane's share of a split.
-     * A percentage is a percentage of the window, which is what the sidebar is
-     * ultimately competing with the page for.
-     */
-    const bound = (value: number | string | undefined, fallback: number) => {
-      if (value === undefined || value === null) return fallback;
-      if (typeof value === 'number') return value;
-
-      return (
-        toPixels(value, {
-          percentOf: typeof window === 'undefined' ? 0 : window.innerWidth,
-          relativeTo: node
-        }) ?? fallback
-      );
-    };
-
     const sized = Math.min(
-      bound(maxWidth, 480),
-      Math.max(bound(minWidth, 160), Math.round(pixels))
+      bound(node, maxWidth, 480),
+      Math.max(bound(node, minWidth, 160), Math.round(pixels))
     );
 
     node.style.setProperty('--n-sidebar-w', `${sized}px`);
+    describeWidth(node, sized);
 
     return sized;
   };
@@ -436,6 +462,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
       {resizable ? (
         <div
+          ref={handleRef}
           role="separator"
           aria-orientation="vertical"
           aria-label={messages.resizeSidebar}
