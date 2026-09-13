@@ -275,6 +275,27 @@ export function timeUnitSpan(unit: TimeUnit, at: Date): [number, number] {
   return [start, start + 12 * 3600 - 1];
 }
 
+/**
+ * The same span as `timeUnitSpan`, as the two instants on `at`'s day.
+ *
+ * A picker comparing a row with a bound that carries a date has to leave seconds
+ * of the day behind, and the step that looks equivalent — midnight plus that
+ * many seconds — is an hour out on a day the clocks change, because that day is
+ * 23 or 25 hours long. Setting the clock fields lands on the wall-clock time the
+ * row is labelled with.
+ */
+export function timeUnitRange(unit: TimeUnit, at: Date): [Date, Date] {
+  const [from, to] = timeUnitSpan(unit, at);
+  const instant = (seconds: number) =>
+    withTime(at, {
+      hours: Math.floor(seconds / 3600),
+      minutes: Math.floor((seconds % 3600) / 60),
+      seconds: seconds % 60
+    });
+
+  return [instant(from), instant(to)];
+}
+
 /** The same instant with one or more clock fields replaced. */
 export function withTime(
   date: Date,

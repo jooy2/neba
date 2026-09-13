@@ -318,6 +318,8 @@
 
 - **`marks` on a `Slider` stepped in fractions keeps its last mark.** The marks for `marks={true}` were counted by flooring the range over the step, and `0.6 / 0.1` is `5.999999999999999`, so a slider from 0 to 0.6 in tenths drew no mark at 0.6. The count now allows for the rounding.
 
+- **A `DateTimePicker` blocks the right hours on a day the clocks change.** A row was compared with `minDate` and `maxDate` as midnight plus a fixed number of hours, and a day the clocks go back is 25 hours long, so in New York on 1 November 2026 a minimum of 09:30 blocked the whole of hour 9 and 09:30 to 09:59 could not be chosen. A spring-forward day was an hour out the other way. Each row's first and last instant is now set on the day's wall clock.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

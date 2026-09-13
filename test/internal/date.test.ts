@@ -34,6 +34,7 @@ import {
   startOfMonth,
   startOfUnit,
   endOfUnit,
+  timeUnitRange,
   toISODate,
   toISOMonth,
   toISOYear,
@@ -235,6 +236,39 @@ describe('units', () => {
     expect(toISOMonth(date)).toBe('2026-07');
     expect(toISOYear(date)).toBe('2026');
     expect(toISOMonth(makeDate(2026, 0, 5))).toBe('2026-01');
+  });
+});
+
+describe('timeUnitRange', () => {
+  const clock = (date: Date) => [date.getHours(), date.getMinutes(), date.getSeconds()];
+
+  // 1 November 2026 is 25 hours long in New York, where midnight plus a fixed
+  // number of hours lands an hour early. The clock fields hold in every zone.
+  const at = new Date(2026, 10, 1, 9, 42, 17);
+
+  it('runs a row from its first second to its last on the wall clock', () => {
+    expect(timeUnitRange('hour', at).map(clock)).toEqual([
+      [9, 0, 0],
+      [9, 59, 59]
+    ]);
+    expect(timeUnitRange('minute', at).map(clock)).toEqual([
+      [9, 42, 0],
+      [9, 42, 59]
+    ]);
+    expect(timeUnitRange('second', at).map(clock)).toEqual([
+      [9, 42, 17],
+      [9, 42, 17]
+    ]);
+    expect(timeUnitRange('meridiem', at).map(clock)).toEqual([
+      [0, 0, 0],
+      [11, 59, 59]
+    ]);
+  });
+
+  it('stays on the day it was given', () => {
+    for (const end of timeUnitRange('meridiem', new Date(2026, 10, 1, 18, 0))) {
+      expect(isSameDay(end, at)).toBe(true);
+    }
   });
 });
 

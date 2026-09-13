@@ -20,7 +20,7 @@ import {
   mergeDateAndTime,
   startOfDay,
   startOfMonth,
-  timeUnitSpan,
+  timeUnitRange,
   toISODateTime,
   today,
   withPlaceholder,
@@ -180,13 +180,12 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
      */
     const isTimeBlocked = React.useCallback(
       (candidate: Date, unit: TimeUnit) => {
-        const [from, to] = timeUnitSpan(unit, candidate);
-        const midnight = startOfDay(candidate).getTime();
+        const [from, to] = timeUnitRange(unit, candidate);
 
-        if (isValidDate(minDate) && midnight + to * 1000 < minDate.getTime()) {
+        if (isValidDate(minDate) && to.getTime() < minDate.getTime()) {
           return true;
         }
-        if (isValidDate(maxDate) && midnight + from * 1000 > maxDate.getTime()) {
+        if (isValidDate(maxDate) && from.getTime() > maxDate.getTime()) {
           return true;
         }
         return shouldDisableTime?.(candidate, unit) ?? false;

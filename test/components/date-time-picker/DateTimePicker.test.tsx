@@ -130,6 +130,33 @@ describe('DateTimePicker', () => {
         .element(hours.getByRole('option', { name: '09' }))
         .not.toHaveAttribute('aria-disabled');
     });
+
+    // On 1 November 2026 the clocks in New York go back an hour, so 09:30 is ten
+    // and a half hours after midnight rather than nine and a half. Measuring a
+    // row from midnight in fixed hours blocked 09 there. The rows are compared
+    // on the wall clock, which gives the same answer in every time zone; run
+    // with `TZ=America/New_York` to reach the day that told them apart.
+    it('reads minDate on the wall clock on a day the clocks change', async () => {
+      const screen = await render(
+        <DateTimePicker
+          locale={LOCALE}
+          label="Runs at"
+          defaultValue={new Date(2026, 10, 1, 12, 0)}
+          minDate={new Date(2026, 10, 1, 9, 30)}
+          hour12={false}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
+
+      const hours = screen.getByRole('listbox', { name: 'Hour' });
+      await expect
+        .element(hours.getByRole('option', { name: '08' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(hours.getByRole('option', { name: '09' }))
+        .not.toHaveAttribute('aria-disabled');
+    });
   });
 
   describe('states', () => {
