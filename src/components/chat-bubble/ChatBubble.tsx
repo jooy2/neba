@@ -220,12 +220,44 @@ function DoubleCheckIcon() {
   );
 }
 
-/** One glyph per step. `read` shares the mark with `delivered` and takes the colour. */
+/**
+ * The double tick again, cut out of a filled disc.
+ *
+ * `read` used to be `delivered` in the accent colour and nothing else, so the
+ * one thing a sender looks at the mark to learn was said only to readers who can
+ * tell the two colours apart. A disc is a shape change a glance catches at 12px.
+ * The ticks are a mask rather than ink of their own, so they show whatever is
+ * behind the mark instead of guessing at a colour for it.
+ */
+function ReadIcon() {
+  const mask = React.useId();
+
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <mask id={mask}>
+        <rect width="16" height="16" fill="white" />
+        <g
+          transform="translate(2.375 1.25) scale(0.75)"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m1.5 8.5 2.75 2.75L9.5 6" />
+          <path d="M7 10.75 8.25 12l5.25-5.25" />
+        </g>
+      </mask>
+      <circle cx="8" cy="8" r="7.25" fill="currentColor" mask={`url(#${mask})`} />
+    </svg>
+  );
+}
+
+/** One glyph per step. `read` is its own shape as well as the colour. */
 const statusIcons: Record<ChatBubbleStatus, React.ReactNode> = {
   sending: <ClockIcon />,
   sent: <CheckIcon />,
   delivered: <DoubleCheckIcon />,
-  read: <DoubleCheckIcon />,
+  read: <ReadIcon />,
   failed: <DangerIcon />
 };
 

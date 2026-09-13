@@ -246,6 +246,8 @@
 
 - **A `Timeline` step says in words whether it is done.** Only the current step was read, through `aria-current`; a finished and a waiting step differed only in the shape of their bullets. Each now carries visually hidden text, "Completed" or "Upcoming", in the words of the new `locale` prop or of `labels`, and every registered language has the new `timeline` namespace.
 
+- **A read `ChatBubble` is told from a delivered one by shape.** `read` was the `delivered` double tick in the accent colour, so whether a message had been read was said only to readers who can tell the two colours apart. It is now the double tick cut out of a filled disc.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

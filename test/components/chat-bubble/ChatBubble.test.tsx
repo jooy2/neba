@@ -107,6 +107,22 @@ describe('ChatBubble', () => {
       await expect.element(screen.getByText('Read')).toBeInTheDocument();
     });
 
+    // Delivered and read were one mark in two colours, which says nothing to a
+    // reader who cannot tell the colours apart.
+    it('draws read as a different shape from delivered', async () => {
+      const screen = await render(<ChatBubble status="delivered">Hi</ChatBubble>);
+      const mark = () => screen.getByText('Delivered').element().parentElement!.innerHTML;
+      const delivered = mark();
+
+      await screen.rerender(<ChatBubble status="read">Hi</ChatBubble>);
+
+      await expect.element(screen.getByText('Read')).toBeInTheDocument();
+      const read = screen.getByText('Read').element().parentElement!.innerHTML;
+
+      expect(read.replace(/Read/, '')).not.toBe(delivered.replace(/Delivered/, ''));
+      expect(read).toContain('<circle');
+    });
+
     it('names it in the language it was given', async () => {
       const screen = await render(
         <ChatBubble status="read" locale="ko">

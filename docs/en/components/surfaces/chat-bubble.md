@@ -55,7 +55,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### status
 
-Five steps: `sending`, `sent`, `delivered`, `read` and `failed`. Only the last two carry a colour: a thread where every message is marked in colour is a thread where the colour has stopped meaning anything.
+Five steps: `sending`, `sent`, `delivered`, `read` and `failed`. Only the last two carry a colour: a thread where every message is marked in colour is a thread where the colour has stopped meaning anything. Each step is also its own shape, `read` being the double tick in a filled disc, so the mark says which step it is without the colour; a visually hidden word says it to a screen reader.
 
 The mark is the whole of what is drawn. The word behind it is read out but never shown; `statusLabel` replaces it.
 
