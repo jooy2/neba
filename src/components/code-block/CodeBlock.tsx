@@ -257,7 +257,11 @@ const COPIED_FOR = 2000;
  * dropped rather than thrown: a marked line is an annotation, and a typo in one
  * should cost the annotation, not the code.
  */
-function markedLines(spec: number | string | Array<number | string> | undefined): Set<number> {
+function markedLines(
+  spec: number | string | Array<number | string> | undefined,
+  first: number,
+  last: number
+): Set<number> {
   const marked = new Set<number>();
 
   if (spec === undefined) return marked;
@@ -276,8 +280,13 @@ function markedLines(spec: number | string | Array<number | string> | undefined)
       const to = range[2] === undefined ? from : Number(range[2]);
 
       // Written the wrong way round is still a range, and the reader who typed
-      // `9-4` meant the same four lines.
-      for (let line = Math.min(from, to); line <= Math.max(from, to); line += 1) {
+      // `9-4` meant the same four lines. Held to the lines the block has: a range
+      // written as `10-100000000` walked a hundred million numbers into a Set
+      // until the page ran out of memory, to mark lines that do not exist.
+      const low = Math.max(Math.min(from, to), first);
+      const high = Math.min(Math.max(from, to), last);
+
+      for (let line = low; line <= high; line += 1) {
         marked.add(line);
       }
     }
@@ -474,7 +483,11 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
       if (done) onCopy?.(source);
     };
 
-    const marked = React.useMemo(() => markedLines(highlightLines), [highlightLines]);
+    const lastLine = startLine + Math.max(lines.length - 1, 0);
+    const marked = React.useMemo(
+      () => markedLines(highlightLines, startLine, lastLine),
+      [highlightLines, startLine, lastLine]
+    );
 
     /**
      * Select-all inside the block, rather than select-all of the page.

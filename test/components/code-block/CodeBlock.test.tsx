@@ -397,6 +397,18 @@ describe('CodeBlock', () => {
       expect(marks(screen.getByTestId('block').element())).toEqual([false, true, true]);
     });
 
+    // `10-100000000` used to count a hundred million lines into a Set before it
+    // could draw three.
+    it('marks only the lines a far-reaching range lands on, and at once', async () => {
+      const started = performance.now();
+      const screen = await render(
+        <CodeBlock code={'a\nb\nc'} highlightLines="2-100000000" data-testid="block" />
+      );
+
+      expect(marks(screen.getByTestId('block').element())).toEqual([false, true, true]);
+      expect(performance.now() - started).toBeLessThan(1000);
+    });
+
     // A marked line is an annotation, and a typo in one should cost the
     // annotation rather than the code.
     it('drops what it cannot read rather than throwing', async () => {

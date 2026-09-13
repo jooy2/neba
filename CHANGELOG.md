@@ -278,6 +278,8 @@
 
 - **A `Sidebar`'s resize handle says how wide the sidebar is.** It is a focusable `separator`, which has to carry a value and its range, and it carried neither, so a screen reader announced a separator and nothing about where it was or how far it could go. It now carries `aria-valuenow`, `aria-valuemin` and `aria-valuemax` in pixels, kept up to date as the width is dragged or stepped.
 
+- **A `CodeBlock` range that runs past the code no longer freezes the page.** `highlightLines="10-100000000"` counted every number in the range into a set before drawing anything, which held the page for seconds and then threw a `RangeError` that took the render down. A range is held to the lines the block has.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
