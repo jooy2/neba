@@ -67,6 +67,13 @@ export interface CommandItem {
   onSelect?: () => void;
 }
 
+/** A run of rows that share a group, in the order they were given. */
+interface CommandGroup {
+  key: string;
+  value: string | undefined;
+  items: CommandItem[];
+}
+
 export interface CommandPaletteProps extends Pick<NebaStyleProps, 'size' | 'color' | 'density'> {
   /** Everything the palette can do. */
   items: readonly CommandItem[];
@@ -262,6 +269,32 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
     return needle === '' ? items : items.filter((_, index) => haystacks[index].includes(needle));
   }, [items, haystacks, query]);
 
+  /*
+   * The rows as runs of one group each, which is the shape Base UI's own groups
+   * take. A heading drawn between rows was a `presentation` div inside the
+   * listbox, tied to nothing, so moving into a group never said which group it
+   * was; a `Group` names its options by its label. A run with no group is still
+   * a run, drawn without a label. `order` is each row's place in the whole
+   * list, which is what the highlight moves through.
+   */
+  const { groups, order } = React.useMemo(() => {
+    const runs: CommandGroup[] = [];
+    const places = new Map<CommandItem, number>();
+
+    filtered.forEach((item, index) => {
+      places.set(item, index);
+      const last = runs[runs.length - 1];
+
+      if (last && last.value === item.group) {
+        last.items.push(item);
+      } else {
+        runs.push({ key: `${runs.length}:${item.group ?? ''}`, value: item.group, items: [item] });
+      }
+    });
+
+    return { groups: runs, order: places };
+  }, [filtered]);
+
   const run = (item: CommandItem) => {
     if (item.disabled) return;
 
@@ -312,9 +345,9 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
             <Autocomplete.Root
               open
               mode="list"
-              // Already filtered here, so that a group heading can be drawn from
-              // the same array the rows come out of.
-              items={filtered}
+              // Already filtered here, so that the groups can be built from the
+              // same array the rows come out of.
+              items={groups}
               filter={null}
               value={query}
               onValueChange={(next) => setQuery(next)}
@@ -342,11 +375,10 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
                 )}
                 style={{ maxHeight: listHeight }}
               >
-                {(item: CommandItem, index: number) => (
-                  <React.Fragment key={item.value}>
-                    {item.group && item.group !== filtered[index - 1]?.group ? (
-                      <div
-                        role="presentation"
+                {(group: CommandGroup) => (
+                  <Autocomplete.Group key={group.key} items={group.items}>
+                    {group.value ? (
+                      <Autocomplete.GroupLabel
                         className={cx(
                           insetX[size],
                           'pt-2 pb-1 font-medium text-(--neba-muted-fg)',
@@ -354,45 +386,50 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
                           classNames?.group
                         )}
                       >
-                        {item.group}
-                      </div>
+                        {group.value}
+                      </Autocomplete.GroupLabel>
                     ) : null}
 
-                    <Autocomplete.Item
-                      index={index}
-                      value={item}
-                      disabled={item.disabled}
-                      onClick={() => run(item)}
-                      className={cx(
-                        rowClasses,
-                        radiusClasses[size],
-                        insetX[size],
-                        rowPadY[density === 'compact' ? 'xs' : size],
-                        classNames?.item
-                      )}
-                    >
-                      {hasContent(item.icon) ? (
-                        <span className="flex h-[1lh] shrink-0 items-center [&_svg]:size-[1.15em]">
-                          {item.icon}
-                        </span>
-                      ) : null}
+                    <Autocomplete.Collection>
+                      {(item: CommandItem) => (
+                        <Autocomplete.Item
+                          key={item.value}
+                          index={order.get(item)}
+                          value={item}
+                          disabled={item.disabled}
+                          onClick={() => run(item)}
+                          className={cx(
+                            rowClasses,
+                            radiusClasses[size],
+                            insetX[size],
+                            rowPadY[density === 'compact' ? 'xs' : size],
+                            classNames?.item
+                          )}
+                        >
+                          {hasContent(item.icon) ? (
+                            <span className="flex h-[1lh] shrink-0 items-center [&_svg]:size-[1.15em]">
+                              {item.icon}
+                            </span>
+                          ) : null}
 
-                      <span className="flex min-w-0 flex-1 flex-col">
-                        <span className="truncate">{item.label}</span>
-                        {hasContent(item.description) ? (
-                          <span
-                            className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}
-                          >
-                            {item.description}
+                          <span className="flex min-w-0 flex-1 flex-col">
+                            <span className="truncate">{item.label}</span>
+                            {hasContent(item.description) ? (
+                              <span
+                                className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+                              >
+                                {item.description}
+                              </span>
+                            ) : null}
                           </span>
-                        ) : null}
-                      </span>
 
-                      {item.shortcut ? (
-                        <Shortcut size="xs" keys={item.shortcut} className="shrink-0" />
-                      ) : null}
-                    </Autocomplete.Item>
-                  </React.Fragment>
+                          {item.shortcut ? (
+                            <Shortcut size="xs" keys={item.shortcut} className="shrink-0" />
+                          ) : null}
+                        </Autocomplete.Item>
+                      )}
+                    </Autocomplete.Collection>
+                  </Autocomplete.Group>
                 )}
               </Autocomplete.List>
 

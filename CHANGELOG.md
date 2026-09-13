@@ -248,6 +248,8 @@
 
 - **A read `ChatBubble` is told from a delivered one by shape.** `read` was the `delivered` double tick in the accent colour, so whether a message had been read was said only to readers who can tell the two colours apart. It is now the double tick cut out of a filled disc.
 
+- **A `CommandPalette` group names the rows in it.** A group heading was a `presentation` element between rows of the listbox, tied to none of them, so arrowing from "Navigate" into "Actions" never said the group had changed. Each run of rows that share a `group` is now a `role="group"` named by its heading.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

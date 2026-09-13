@@ -82,5 +82,6 @@ The slots are `backdrop`, `viewport`, `input`, `list`, `group`, `item` and `empt
 
 - The sheet is a modal dialog named by `label`, which has no visible title of its own. Focus moves into the field as it opens and back to wherever the reader was as it closes.
 - The field is a `combobox` over a `listbox`, with the highlighted row reported through `aria-activedescendant`; the pointer and the arrow keys move the same highlight, so Enter never runs a row other than the marked one.
+- Each run of rows that share a `group` is a `role="group"` named by its heading, so moving into it says which group it is.
 - Escape closes it.
 - A palette is never the only way to a command. Everything in it has to be reachable some other way: a reader who does not know it exists gets no other showing.

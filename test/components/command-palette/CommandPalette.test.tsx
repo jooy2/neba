@@ -42,6 +42,21 @@ describe('CommandPalette', () => {
       await expect.element(screen.getByText('Actions')).toBeInTheDocument();
     });
 
+    // A heading drawn between rows named nothing, so arrowing into a group
+    // never said which group it was.
+    it('puts each group of rows in a group named by its heading', async () => {
+      const screen = await render(<CommandPalette items={ITEMS} shortcut={false} defaultOpen />);
+      const navigate = screen.getByRole('group', { name: 'Navigate' });
+
+      await expect.element(navigate).toBeInTheDocument();
+      expect(
+        navigate
+          .element()
+          .contains(screen.getByRole('option', { name: /Go to deployments/ }).element())
+      ).toBe(true);
+      await expect.element(screen.getByRole('group', { name: 'Actions' })).toBeInTheDocument();
+    });
+
     it('draws the keystroke a command already has', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut={false} defaultOpen />);
 
@@ -135,6 +150,17 @@ describe('CommandPalette', () => {
       // The retrying form: the sheet is leaving rather than gone, and Base UI
       // keeps it mounted for as long as an exit transition might still run.
       await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('walks the highlight from one group into the next', async () => {
+      const onSelect = vi.fn();
+      await render(
+        <CommandPalette items={ITEMS} shortcut={false} defaultOpen onSelect={onSelect} />
+      );
+
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{Enter}');
+
+      expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ value: 'deploy' }));
     });
 
     it('never runs a disabled one', async () => {
