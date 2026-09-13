@@ -2304,7 +2304,9 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       setEditing(null);
       const next = column.editType === 'number' ? Number(raw) : raw;
 
-      if (column.editType === 'number' && Number.isNaN(next as number)) {
+      // An emptied number field holds no number, the way a `NaN` does — and
+      // `Number('')` is `0`, which would write a zero nobody typed.
+      if (column.editType === 'number' && (raw.trim() === '' || Number.isNaN(next as number))) {
         return;
       }
       if (String(next) !== String(initial ?? '')) {

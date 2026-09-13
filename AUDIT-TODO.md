@@ -319,7 +319,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`
 - [x] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (confirmed with a real mouse in Chromium, Firefox and WebKit). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
 - [ ] **168** **DataTable**, small defects:
-  - [ ] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
+  - [x] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
   - [ ] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`).
   - [ ] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
   - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).

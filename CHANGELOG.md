@@ -330,6 +330,8 @@
 
 - **A mouse click reaches the rows of a `DataTable` that selects many, and the sort buttons of one whose columns can be dragged.** Pressing a row with `selectionMode="multiple"` captured the pointer to the table in case the press became a drag, and a captured pointer's `click` and `dblclick` go to the capturing element, so `onRowClick`, `onRowActivate` on a double click and a cell's editor never ran for a mouse in Chromium, Firefox or WebKit. A header with `reorderable` did the same to its own sort button. Both drags now follow the pointer from the document instead, and still carry on past the edge of the table.
 
+- **An emptied number cell in a `DataTable` writes no zero.** `Number('')` is `0`, so clearing a cell with `editType: 'number'` called `onCellEdit` with `0`, and so did opening an empty number cell and leaving it. An empty number field is treated like one holding no number, and the edit is dropped.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -1413,6 +1413,23 @@ describe('editing', () => {
 
     expect(onCellEdit.mock.calls[0][2]).toBe(45);
   });
+
+  it('writes no zero for a number cell that was emptied', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'name', label: 'Name' },
+      { key: 'score', label: 'Score', editable: true, editType: 'number' }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+
+    await screen.getByText('30').dblClick();
+    await screen.getByRole('spinbutton', { name: 'Score' }).fill('');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCellEdit).not.toHaveBeenCalled();
+  });
 });
 
 describe('grouping', () => {
