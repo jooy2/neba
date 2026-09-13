@@ -2491,6 +2491,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                       const all = groups.byLabel.get(label) ?? [];
                       const onPage = all.filter((entry) => pageIndex.has(entry.key));
 
+                      // An open group whose rows are all on other pages has
+                      // nothing to head here. A folded one has no rows on any
+                      // page, so it stays on every page — or it could not be
+                      // opened again.
+                      if (onPage.length === 0 && !collapsedGroups.has(label)) {
+                        return null;
+                      }
+
                       return (
                         <React.Fragment key={label || '\u0000'}>
                           {groupHeading(label, all)}

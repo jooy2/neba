@@ -1196,6 +1196,34 @@ describe('grouping', () => {
     await expect.element(screen.getByRole('button', { name: /Oslo\s*1/ })).toBeInTheDocument();
   });
 
+  it('heads a page only with the groups that have rows on it, and keeps a folded one', async () => {
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={CITIES}
+        getRowKey={key}
+        groupBy={(row) => row.city}
+        paging="pages"
+        pageSize={2}
+        pageSizeOptions={[]}
+      />
+    );
+    const headings = () =>
+      [...screen.container.querySelectorAll('tr[data-neba-group]')].map((row) =>
+        row.getAttribute('data-neba-group')
+      );
+
+    // Seoul's two rows fill the first page, so Oslo has nothing to head there.
+    await expect.poll(headings).toEqual(['Seoul']);
+
+    await screen.getByRole('button', { name: 'Page 2' }).click();
+    await expect.poll(headings).toEqual(['Oslo']);
+
+    // Folded, a group has no rows on any page, so it stays where it can be opened.
+    await screen.getByRole('button', { name: /Oslo/ }).click();
+    await expect.poll(headings).toEqual(['Seoul', 'Oslo']);
+  });
+
   it('stripes grouped rows by where they sit on the page, across the headings', async () => {
     const screen = await render(
       <DataTable

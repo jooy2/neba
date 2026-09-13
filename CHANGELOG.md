@@ -118,6 +118,8 @@
 
 - **`useToast`'s methods keep one identity.** `add`, `close`, `update` and `promise` were rebuilt every time the list of toasts changed, so an effect that raised a toast and listed `add` among its dependencies raised one, received a new `add`, and ran again without end. The object the hook returns still changes with `toasts`; list the method you call, not the object.
 
+- **A grouped `DataTable` in pages heads each page with the groups that are on it.** Every group's heading was drawn on every page, so the second page of a long table opened with a column of headings for groups whose rows were all somewhere else. An open group is headed only on the pages that hold its rows; a folded one has no rows anywhere and stays on every page, so it can be opened again.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
