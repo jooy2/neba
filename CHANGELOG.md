@@ -128,6 +128,8 @@
 
 - **A `Spoiler` keeps the keyboard focus when it is revealed or covered again.** The pressed button went inert with the half it was in, which drops the focus to the page. Revealing now hands the focus to the content, and covering again hands it to the cover's button.
 
+- **Unfolding a `Breadcrumb` keeps the keyboard focus in the trail.** The `…` button left the trail as soon as it was pressed, which dropped the focus to the page. It now moves to the first step the fold was hiding.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

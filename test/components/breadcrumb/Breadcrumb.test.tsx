@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Breadcrumb, BreadcrumbItem } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
@@ -223,6 +224,22 @@ describe('Breadcrumb', () => {
 
       await expect.element(screen.getByText('Projects')).toBeInTheDocument();
       await expect.element(screen.getByText('Neba')).toBeInTheDocument();
+    });
+
+    it('hands the focus to the first step the fold was hiding', async () => {
+      const screen = await render(
+        <Breadcrumb maxItems={3}>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
+          <BreadcrumbItem href="/b">Neba</BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      screen.getByRole('button', { name: 'Show hidden steps' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('link', { name: 'Projects' })).toHaveFocus();
     });
 
     it('keeps the ends the caller asked for', async () => {

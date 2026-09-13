@@ -306,6 +306,27 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
 
     const messages = useMessages(breadcrumbMessages, locale);
     const [unfolded, setUnfolded] = React.useState(false);
+    const listRef = React.useRef<HTMLOListElement | null>(null);
+    /*
+     * Set when the `…` is pressed while it holds the focus. The button leaves
+     * the trail the moment it is pressed, which drops the focus to the page, so
+     * it is handed to the first step the fold was hiding.
+     */
+    const refocus = React.useRef(false);
+
+    React.useLayoutEffect(() => {
+      if (!unfolded || !refocus.current) {
+        return;
+      }
+
+      refocus.current = false;
+
+      const step = listRef.current?.querySelectorAll(':scope > li:not([aria-hidden])')[
+        Math.max(0, itemsBeforeCollapse)
+      ];
+
+      step?.querySelector<HTMLElement>('a, button')?.focus();
+    }, [unfolded, itemsBeforeCollapse]);
 
     const steps = React.Children.toArray(children).filter(
       React.isValidElement
@@ -380,6 +401,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
         ) : null}
 
         <ol
+          ref={listRef}
           // `role="list"` for the reason List says it out loud: Tailwind's reset
           // takes the bullets off every `<ol>`, and Safari takes the list
           // semantics off with them.
@@ -413,7 +435,10 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
                       type="button"
                       className={foldClassNames}
                       aria-label={expandLabel ?? messages.expand}
-                      onClick={() => setUnfolded(true)}
+                      onClick={(event) => {
+                        refocus.current = event.currentTarget === document.activeElement;
+                        setUnfolded(true);
+                      }}
                     >
                       <EllipsisIcon />
                     </button>
