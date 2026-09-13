@@ -308,6 +308,13 @@ describe('colorSchemeScript', () => {
     expect(script).toContain('prefers-color-scheme: dark');
   });
 
+  it('turns the browser\u2019s own furniture over with the scheme, as the provider does', () => {
+    new Function(colorSchemeScript({ defaultColorScheme: 'dark', storageKey: 'my-key' }))();
+
+    expect(root()).toHaveAttribute('data-theme', 'dark');
+    expect(root().style.colorScheme).toBe('dark');
+  });
+
   it('runs without throwing where storage is denied', () => {
     // It is inlined above everything, so anything it throws is the page.
     expect(() => new Function(colorSchemeScript())()).not.toThrow();

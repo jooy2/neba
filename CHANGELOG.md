@@ -146,6 +146,8 @@
 
 - **The words `Combobox`, `ToastProvider`, `ScatterChart` and `TimelineChart` said in English now follow `locale`.** The row that adds what was typed, the name of a combobox's chevron, the name of the toast region, and the column headings of the scatter and timeline data tables were written in English whatever language the product spoke. All eighteen languages under `neba/locales` translate them, and a test now fails when a language is missing a word English has. The hidden tables' English headings change as well: a scatter's size column is `Size` rather than `z`, and a timeline's columns are `Label`, `Start` and `End`.
 
+- **`colorSchemeScript()` sets `color-scheme` as well as `data-theme`.** A remembered dark page kept light scrollbars and native controls until the app hydrated, because only the provider wrote `color-scheme`. The pre-paint script writes both now, as the provider does.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

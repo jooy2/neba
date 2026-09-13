@@ -87,9 +87,9 @@ function readStored(key: string | false): NebaColorScheme | null {
  * <script dangerouslySetInnerHTML={{ __html: colorSchemeScript() }} />
  * ```
  *
- * It reads the same key and writes the same attribute the provider does, so the
- * two cannot disagree — which is the reason it is here rather than in a
- * documentation snippet somebody copies once and never updates.
+ * It reads the same key and writes the same attribute and `color-scheme` the
+ * provider does, so the two cannot disagree — which is the reason it is here
+ * rather than in a documentation snippet somebody copies once and never updates.
  */
 export function colorSchemeScript(
   options: { storageKey?: string; defaultColorScheme?: NebaColorScheme } = {}
@@ -100,7 +100,9 @@ export function colorSchemeScript(
   return (
     `(function(){try{var s=localStorage.getItem(${embed(key)})||${embed(fallback)};` +
     `if(s==='system'){s=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}` +
-    `document.documentElement.setAttribute('data-theme',s)}catch(e){}})()`
+    // `color-scheme` beside the attribute, as the provider writes it: without it
+    // the scrollbars and native controls stay light until the app hydrates.
+    `var d=document.documentElement;d.setAttribute('data-theme',s);d.style.colorScheme=s}catch(e){}})()`
   );
 }
 
