@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateTyping } from 'neba';
 
@@ -65,13 +65,36 @@ describe('AnimateTyping', () => {
     });
   });
 
+  /*
+   * On the fake clock, one step at a time. The typing is a chain of timeouts,
+   * and on a real clock every assertion here was a race against it: seven
+   * characters at five milliseconds each should be over in a few dozen
+   * milliseconds, and a slow CI runner once held a single timeout for longer
+   * than the poll waits in total, so the text stopped at two characters and the
+   * test failed with nothing wrong in the component. Stepping the clock also
+   * lets a test look at every frame rather than only at the last one.
+   *
+   * The clock is faked before `render`, so the first timeout the effect sets is
+   * already on it. React commits on a message-channel task, not a timeout, so
+   * the DOM still has to be waited for after each step.
+   */
   describe('typing', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('gets to the end of the text', async () => {
       const screen = await render(
         <AnimateTyping speed={200} caret={false} data-testid="typing">
           Hello
         </AnimateTyping>
       );
+
+      await vi.runAllTimersAsync();
 
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello');
     });
@@ -83,6 +106,7 @@ describe('AnimateTyping', () => {
         </AnimateTyping>
       );
 
+      await vi.runAllTimersAsync();
       expect(typed(screen.getByTestId('typing').element())).toBe('');
 
       await screen.rerender(
@@ -90,21 +114,38 @@ describe('AnimateTyping', () => {
           Hello
         </AnimateTyping>
       );
+      await vi.runAllTimersAsync();
 
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello');
     });
 
-    // A code point is not a character: a family emoji is seven of them, and a
-    // typewriter that advanced by code points would spend four frames drawing
-    // fragments that mean nothing on their own.
+    /*
+     * A code point is not a character: a family emoji is five of them, and a
+     * typewriter that advanced by code points would spend four frames drawing
+     * fragments that mean nothing on their own. So every frame is asserted, not
+     * just the finished line — the finished line is the same either way.
+     *
+     * A minute a character, through `duration`, because `expect.poll` moves a
+     * fake clock on by its own interval each time it retries. With a step that
+     * long, no amount of retrying reaches the next character, and the only thing
+     * that does is the step the test takes.
+     */
     it('advances by graphemes rather than by code points', async () => {
+      const line = '한글 👩‍👩‍👧 ok';
+      const frames = ['한', '한글', '한글 ', '한글 👩‍👩‍👧', '한글 👩‍👩‍👧 ', '한글 👩‍👩‍👧 o', line];
+      const step = 60_000;
       const screen = await render(
-        <AnimateTyping speed={200} caret={false} data-testid="typing">
-          한글 👩‍👩‍👧 ok
+        <AnimateTyping duration={step * frames.length} caret={false} data-testid="typing">
+          {line}
         </AnimateTyping>
       );
+      const root = screen.getByTestId('typing').element();
 
-      await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('한글 👩‍👩‍👧 ok');
+      for (const [index, frame] of frames.entries()) {
+        // The first character is typed once the delay, which is zero, has run.
+        await vi.advanceTimersByTimeAsync(index === 0 ? 0 : step);
+        await expect.poll(() => typed(root)).toBe(frame);
+      }
     });
 
     it('takes only the text out of an element among the children', async () => {
@@ -113,6 +154,8 @@ describe('AnimateTyping', () => {
           {['Half ', 'and half']}
         </AnimateTyping>
       );
+
+      await vi.runAllTimersAsync();
 
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Half and half');
     });
