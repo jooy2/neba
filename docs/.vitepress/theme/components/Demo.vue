@@ -18,19 +18,6 @@ function reactRuntime() {
   return runtime;
 }
 
-/*
- * Started here rather than in a preview's `onMounted`, which is what it used to
- * be. Together the two are the largest thing the page downloads, nothing can
- * render until they arrive, and a dynamic import inside a lifecycle hook only
- * begins once hydration is done — so the browser sat idle through hydration and
- * then went to the network. Evaluating this module is the earliest moment the
- * fetch can start, and it costs nothing on a page that turns out to have no
- * previews, since the same promise is what every preview then awaits.
- */
-if (!import.meta.env.SSR) {
-  reactRuntime();
-}
-
 /**
  * How far outside the viewport a preview counts as worth mounting, in px.
  * Wide enough that scrolling reaches a mounted preview rather than an empty box.
@@ -83,6 +70,19 @@ const host = ref(null);
 const open = ref(false);
 let root = null;
 let observer = null;
+
+/*
+ * Started as a preview is set up rather than in its `onMounted`. Together the
+ * two are the largest thing the page downloads, nothing can render until they
+ * arrive, and a dynamic import inside a lifecycle hook only begins once
+ * hydration is done — so the browser sat idle through hydration and then went
+ * to the network. Setup runs during hydration, which is early enough. It is not
+ * started when this module is evaluated, because the theme imports this file on
+ * every page, and a page with no previews has no use for React.
+ */
+if (!import.meta.env.SSR) {
+  reactRuntime();
+}
 
 /*
  * Which theme this one preview is in, and it is a *deviation* rather than a
