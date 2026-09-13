@@ -292,6 +292,28 @@ describe('useShortcut', () => {
     expect((screen.getByRole('textbox').element() as HTMLInputElement).value).toBe('/');
   });
 
+  it('does not run for a keystroke an input method is composing', async () => {
+    const run = vi.fn();
+
+    function Bound() {
+      useShortcut('Alt+Enter', run, { ignoreWhileTyping: false });
+      return <p>bound</p>;
+    }
+
+    await render(<Bound />);
+
+    const send = (isComposing: boolean) =>
+      window.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', altKey: true, isComposing })
+      );
+
+    send(true);
+    expect(run).not.toHaveBeenCalled();
+
+    send(false);
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
   it('can be turned off without unmounting', async () => {
     const run = vi.fn();
 

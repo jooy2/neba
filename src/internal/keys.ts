@@ -160,6 +160,28 @@ export interface KeyPress {
   metaKey: boolean;
   altKey: boolean;
   shiftKey: boolean;
+  /** On a DOM event. React's synthetic one carries it on `nativeEvent`. */
+  isComposing?: boolean;
+  nativeEvent?: { isComposing?: boolean };
+  /** `229` for a key an input method took. */
+  keyCode?: number;
+}
+
+/**
+ * Whether the keystroke belongs to an input method rather than to the page.
+ *
+ * Korean, Japanese and Chinese are typed through one: a syllable is built over
+ * several keys and committed by the next, and every one of those keydowns
+ * reaches the page. A `Mod+Enter` bound on a field fired in the middle of a
+ * word and sent it half written. `isComposing` is the standard flag. Safari
+ * delivers the keydown that commits a composition after the composition has
+ * ended, with the flag already off, and a `keyCode` of 229 is the mark left on
+ * it.
+ */
+function isComposing(event: KeyPress): boolean {
+  return (
+    event.isComposing === true || event.nativeEvent?.isComposing === true || event.keyCode === 229
+  );
 }
 
 /**
@@ -172,7 +194,7 @@ export interface KeyPress {
  */
 export function matchesShortcut(event: KeyPress, shortcut: string): boolean {
   const tokens = tokenize(shortcut).map(canonicalKey);
-  if (tokens.length === 0) {
+  if (tokens.length === 0 || isComposing(event)) {
     return false;
   }
 

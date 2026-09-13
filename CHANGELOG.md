@@ -346,6 +346,8 @@
 
 - **A shortcut on a letter no longer fires for the letter in the same place on another layout.** When the key typed was not the one named, a shortcut fell back to the physical key, even when the layout had typed a different Latin letter there. On AZERTY the Z sits where QWERTY has W, so Ctrl+Z fired both `Ctrl+Z` and `Ctrl+W` in `useShortcut`, a `CommandPalette` and a field's `shortcuts`. The fallback is kept for a key that types something other than a Latin letter or a digit, such as `Alt+K` on a Mac or a Cyrillic layout.
 
+- **A shortcut does not fire in the middle of a word typed through an input method.** Korean, Japanese and Chinese build a character over several keydowns, and every one of them reached the page, so a `Mod+Enter` bound on a field, or bound with `useShortcut` and `ignoreWhileTyping: false`, could fire while a syllable was still being composed and send it half written. A keystroke an input method is holding, marked by `isComposing` or a `keyCode` of 229, matches no shortcut now. This covers `useShortcut`, a `CommandPalette`'s opener and a field's `shortcuts`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -177,6 +177,19 @@ describe('matchesShortcut', () => {
     expect(matchesShortcut({ ...press('с'), code: 'KeyC', ctrlKey: true }, 'Ctrl+C')).toBe(true);
   });
 
+  // A syllable typed through an input method is built over several keydowns,
+  // and every one reaches the page; a bound Mod+Enter fired mid-word.
+  it('never matches a keystroke an input method is holding', () => {
+    const enter = { ...press('Enter'), ...mod };
+
+    expect(matchesShortcut(enter, 'Mod+Enter')).toBe(true);
+    expect(matchesShortcut({ ...enter, isComposing: true }, 'Mod+Enter')).toBe(false);
+    expect(matchesShortcut({ ...enter, nativeEvent: { isComposing: true } }, 'Mod+Enter')).toBe(
+      false
+    );
+    expect(matchesShortcut({ ...enter, keyCode: 229 }, 'Mod+Enter')).toBe(false);
+  });
+
   it('never matches a combination it cannot read', () => {
     expect(matchesShortcut(press('k', mod), 'Hyper+K')).toBe(false);
     expect(matchesShortcut(press('k'), '')).toBe(false);
