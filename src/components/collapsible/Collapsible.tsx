@@ -198,7 +198,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
           <div className="flex w-full items-center">
             <BaseUICollapsible.Trigger
               className={[
-                'flex min-w-0 flex-1 cursor-pointer items-center text-start',
+                'flex min-w-0 flex-1 items-center text-start',
                 padX,
                 padY,
                 gapClasses[size],
@@ -210,9 +210,12 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
                 // ring on a trigger that fills the top of the sheet would be
                 // shaved off on three sides.
                 'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-                'hover:bg-(--n-soft)',
-                'data-[panel-open]:text-(--n-on-tint)',
-                'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
+                // Decided here: Base UI's trigger stays focusable while disabled,
+                // so it never carries the `disabled` attribute a `disabled:`
+                // variant would need.
+                disabled
+                  ? 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg)'
+                  : 'cursor-pointer hover:bg-(--n-soft) data-[panel-open]:text-(--n-on-tint)'
               ].join(' ')}
             >
               {hasContent(startIcon) ? (

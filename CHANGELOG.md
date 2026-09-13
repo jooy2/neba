@@ -366,6 +366,8 @@
 
 - **A `TextLink` takes no `size` from a `NebaProvider`.** A link in a sentence is the size of the sentence, and a provider with `size: 'lg'` turned every link in running text into 15px type. A link given `size` itself still takes it.
 
+- **A disabled `Accordion` section or `Collapsible` looks disabled.** Base UI keeps a disabled trigger focusable, so it never carries the `disabled` attribute, and the `disabled:` classes that grey it out never matched: a disabled section kept its ink, its hover wash and its pointer. The state is decided in the component now, for a section, for a whole disabled Accordion and for a Collapsible.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

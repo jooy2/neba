@@ -37,13 +37,15 @@ interface AccordionContextValue {
   density: NebaDensity;
   dividers: boolean;
   headingLevel: 1 | 2 | 3 | 4 | 5 | 6;
+  disabled: boolean;
 }
 
 const AccordionContext = React.createContext<AccordionContextValue>({
   size: 'md',
   density: 'default',
   dividers: true,
-  headingLevel: 3
+  headingLevel: 3,
+  disabled: false
 });
 
 export interface AccordionProps
@@ -229,8 +231,8 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
     const context = React.useMemo(
-      () => ({ size, density, dividers, headingLevel }),
-      [size, density, dividers, headingLevel]
+      () => ({ size, density, dividers, headingLevel, disabled }),
+      [size, density, dividers, headingLevel, disabled]
     );
 
     const classNames = cx(
@@ -292,7 +294,12 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
     },
     ref
   ) {
-    const { size, density, dividers, headingLevel } = React.useContext(AccordionContext);
+    const group = React.useContext(AccordionContext);
+    const { size, density, dividers, headingLevel } = group;
+    // The whole accordion or this one section. Base UI's trigger stays
+    // focusable while disabled, so it never carries the `disabled` attribute and
+    // a `disabled:` variant could not match it; the state is decided here.
+    const off = disabled || group.disabled;
     const clamp = lines ? clampClasses(lines) : '';
     const clampStyle = clampSlot(lines);
 
@@ -322,7 +329,8 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
           >
             <BaseUIAccordion.Trigger
               className={cx(
-                'flex min-w-0 flex-1 cursor-pointer items-center text-start',
+                'flex min-w-0 flex-1 items-center text-start',
+                off ? '' : 'cursor-pointer',
                 padX,
                 padY,
                 gapClasses[size],
@@ -333,9 +341,9 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
                 // was cut off on both sides and, for a lone section, everywhere.
                 dividers ? insetRingClasses : focusRingClasses,
                 dividers ? '' : itemRadiusClasses[size],
-                'hover:bg-(--n-soft)',
-                'data-[panel-open]:text-(--n-on-tint)',
-                'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
+                off
+                  ? 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg)'
+                  : 'hover:bg-(--n-soft) data-[panel-open]:text-(--n-on-tint)'
               )}
             >
               {hasContent(startIcon) ? (

@@ -146,6 +146,13 @@ describe('Collapsible', () => {
       );
 
       await expect.element(screen.getByRole('button', { name: 'Advanced' })).toBeDisabled();
+      // And looks it: the trigger stays focusable, so no `disabled:` class matched.
+      expect(screen.getByRole('button', { name: 'Advanced' }).element()).toHaveClass(
+        'text-(--neba-disabled-fg)'
+      );
+      expect(screen.getByRole('button', { name: 'Advanced' }).element()).not.toHaveClass(
+        'hover:bg-(--n-soft)'
+      );
     });
 
     it('keeps a closed panel in the document when it is asked to', async () => {

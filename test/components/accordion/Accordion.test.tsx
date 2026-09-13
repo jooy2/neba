@@ -216,6 +216,35 @@ describe('Accordion', () => {
         .element(screen.getByRole('button', { name: 'Billing' }))
         .toHaveAttribute('aria-expanded', 'false');
     });
+
+    // Base UI's trigger stays focusable while disabled, so it carries no
+    // `disabled` attribute and the `disabled:` classes never applied.
+    it('looks disabled, whether the section or the accordion is', async () => {
+      const screen = await render(
+        <>
+          <Accordion>
+            <AccordionItem value="one" title="Section" disabled />
+          </Accordion>
+          <Accordion disabled>
+            <AccordionItem value="two" title="Whole" />
+          </Accordion>
+          <Accordion>
+            <AccordionItem value="three" title="Open" />
+          </Accordion>
+        </>
+      );
+
+      for (const name of ['Section', 'Whole']) {
+        const header = screen.getByRole('button', { name }).element();
+
+        expect(header, name).toHaveClass('text-(--neba-disabled-fg)', 'cursor-not-allowed');
+        expect(header, name).not.toHaveClass('hover:bg-(--n-soft)');
+      }
+
+      expect(screen.getByRole('button', { name: 'Open' }).element()).not.toHaveClass(
+        'text-(--neba-disabled-fg)'
+      );
+    });
   });
 
   describe('the action beside the header', () => {
