@@ -104,6 +104,26 @@ describe('Checkbox', () => {
       expect(onCheckedChange).not.toHaveBeenCalled();
     });
 
+    // A read-only tick is the same tick, desaturated. It filled for checked
+    // and not for mixed, so a read-only "some of these" drew a white dash on
+    // an empty box.
+    it('fills a read-only mixed state the way it fills an editable one', async () => {
+      const screen = await render(
+        <>
+          <Checkbox label="Editable" indeterminate />
+          <Checkbox label="Read-only" indeterminate readOnly />
+        </>
+      );
+
+      const fills = (name: string) =>
+        [...screen.getByRole('checkbox', { name }).element().classList].filter(
+          (one) => one.startsWith('data-[indeterminate]:') && !one.includes('hover:')
+        );
+
+      expect(fills('Editable').length).toBeGreaterThan(0);
+      expect(fills('Read-only')).toEqual(fills('Editable'));
+    });
+
     it('reports a mixed state', async () => {
       const screen = await render(<Checkbox label="All" indeterminate />);
 

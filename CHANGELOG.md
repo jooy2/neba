@@ -312,6 +312,8 @@
 
 - **A `FloatingBottomNavigation` highlight lands on the whole destination when two names are the same width.** Under `labels="selected"` the tile was measured as the pressed destination's name set off, before it had any width, and only a change in the bar's own width sent it on from there. Two names of the same width leave the bar as wide as it was, so the tile stopped short and narrow beside the destination. It is measured again when the names finish their transition.
 
+- **A read-only `Checkbox` in the mixed state is filled.** The read-only tick filled for `checked` and not for `indeterminate`, so `readOnly` with `indeterminate` drew a light dash on an empty box, which did not read as mixed. It is filled the way an editable mixed tick is, and desaturated like the rest of the read-only state.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -113,7 +113,9 @@ const readOnlyClasses = [
   'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
   '[filter:saturate(0.55)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
-  'data-[checked]:[border-color:transparent]'
+  'data-[checked]:[border-color:transparent]',
+  'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid)',
+  'data-[indeterminate]:[border-color:transparent]'
 ].join(' ');
 
 /** Disabled drops the colour family entirely, exactly as on Button. */
