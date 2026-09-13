@@ -192,6 +192,8 @@
 
 - **The tick on a chosen `ColorPicker` swatch is the ink that reads.** It turned black only past a luminance of 0.42, so a white tick was drawn on a mid grey, an orange or a green at 2.3:1 to 2.8:1, where black reads 7:1 or better. The tick now takes whichever of the two contrasts more, so a few light swatches that had a white tick have a black one.
 
+- **A `HowToSteps` with a `title` is a named group.** Its root pointed `aria-labelledby` at the title, but a `<div>` with no role cannot carry a name, so the reference was ignored and the guide had no name at all. With a `title` the root is `role="group"` named by it.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

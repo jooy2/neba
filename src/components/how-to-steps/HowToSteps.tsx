@@ -646,6 +646,9 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
     return (
       <div
         ref={ref}
+        // A generic `<div>` cannot be named, so without a role the heading it
+        // points at was ignored. A group is what a set of steps is.
+        role={hasContent(title) ? 'group' : undefined}
         aria-labelledby={hasContent(title) ? headingId : undefined}
         className={cx(
           'flex min-w-0 flex-col',

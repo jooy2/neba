@@ -468,6 +468,14 @@ describe('HowToSteps', () => {
         .toBe('step');
     });
 
+    it('is a group named by its title', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} title="Getting started" />);
+
+      await expect
+        .element(screen.getByRole('group', { name: 'Getting started' }))
+        .toBeInTheDocument();
+    });
+
     it('names the list', async () => {
       const screen = await render(<HowToSteps steps={STEPS} />);
 
