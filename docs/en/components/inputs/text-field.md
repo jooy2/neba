@@ -131,3 +131,4 @@ The slots are `label`, `shell`, `control`, `description` and `error`. `shell` is
 - There is no floating-label variant.
 - The focus ring belongs to the shell rather than the `<input>` inside it, so it traces the border.
 - Clicking the shell's own padding puts the caret in the field.
+- On iOS and iPadOS the text is at least 16px, since Safari there zooms the page in on a smaller field when it is tapped. Every other browser draws the size the field's `size` sets. `NumberField`, `Combobox`, `OtpField`, `CommandPalette` and the other text inputs in the library do the same.

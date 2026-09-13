@@ -258,6 +258,8 @@
 
 - **A macOS `WindowPane` shows its traffic-light glyphs to the keyboard and to touch, and its resize corner says how it works.** The glyph inside each dot appeared only under a hovering pointer, so a keyboard or a touch reader told close, minimise and maximise apart by colour alone; it now also shows while one of the three has the focus, and always where there is no hover. The keyboard-reachable corner, a button that does nothing when pressed, is described as resizing with the arrow keys, in a new `window` message every registered language has.
 
+- **Tapping a field on an iPhone no longer zooms the page.** Safari on iOS and iPadOS zooms in on any field under 16px when it takes the focus, and the default `md` field is 13px, so the ordinary field on the ordinary phone moved the whole page and left it zoomed. On those systems alone, the text of `TextField`, `NumberField`, `Combobox`, `CommandPalette`, `TreeSelect`'s search, `ColorPicker`'s value, a `DataTable` cell editor and an `xs` or `sm` `OtpField` is now at least 16px; every other browser keeps the size `size` sets.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -258,7 +258,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
     );
 
     const controlClasses = cx(
-      'min-w-0 flex-1 bg-transparent [font:inherit] text-inherit',
+      'neba-input min-w-0 flex-1 bg-transparent [font:inherit] text-inherit',
       // Not `outline-none`: that utility zeroes `--tw-outline-style`, and the
       // shell's focus ring is drawn with the same variable family. The shorthand
       // takes the outline off this element and leaves the ring alone.

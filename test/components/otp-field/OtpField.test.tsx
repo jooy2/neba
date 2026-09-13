@@ -71,6 +71,19 @@ describe('OtpField', () => {
       await expect.element(slots(screen)[1]).toHaveAccessibleName('Digit 2');
     });
 
+    // iOS zooms the page in on a field under 16px; only the two steps set
+    // below that carry the hook the stylesheet raises them through.
+    it('marks the slots set under 16px for the iOS size floor', async () => {
+      const screen = await render(<OtpField size="sm" length={4} />);
+
+      await expect.poll(() => slots(screen)).toHaveLength(4);
+      expect(slots(screen)[0]).toHaveClass('neba-input');
+
+      await screen.rerender(<OtpField size="lg" length={4} />);
+
+      expect(slots(screen)[0]).not.toHaveClass('neba-input');
+    });
+
     it('shows the description and the error under the row', async () => {
       const screen = await render(
         <OtpField description="Sent to your phone" error="That code has expired" />

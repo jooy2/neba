@@ -360,7 +360,7 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
                   autoFocus
                   placeholder={placeholder ?? messages.search}
                   className={cx(
-                    'min-w-0 flex-1 bg-transparent [font:inherit] text-inherit [outline:none]',
+                    'neba-input min-w-0 flex-1 bg-transparent [font:inherit] text-inherit [outline:none]',
                     'placeholder:text-(--neba-muted-fg) caret-(--n-accent)',
                     inputHeights[size],
                     classNames?.input

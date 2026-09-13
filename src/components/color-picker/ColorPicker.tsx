@@ -465,7 +465,7 @@ function ColorPanel({
             aria-label={labels.value}
             onChange={(event) => onTextChange(event.target.value)}
             className={cx(
-              'min-w-0 flex-1 border bg-transparent px-1.5 py-1 font-mono lowercase',
+              'neba-input min-w-0 flex-1 border bg-transparent px-1.5 py-1 font-mono lowercase',
               '[border-color:var(--neba-border)]',
               radiusClasses.xs,
               metaTextClasses[size],

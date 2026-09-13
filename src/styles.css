@@ -1053,6 +1053,27 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Text a finger types into, on iOS
+ *
+ * Safari on iOS zooms the page in whenever a field under 16px takes the focus,
+ * and leaves it zoomed after the keyboard goes. The library's `md` field is
+ * 13px, so tapping into the ordinary field on the ordinary phone moved the whole
+ * page. The only fix that holds is the size: `maximum-scale` in a viewport tag
+ * also takes pinch-zoom away from everybody who needs it.
+ *
+ * `-webkit-touch-callout` is the property only WebKit on iOS and iPadOS has,
+ * which keeps every other browser, and desktop Safari, at the size the design
+ * set. `1em` is the size the field inherits from its shell, so a field already
+ * over 16px keeps its own; the doubled class is `.neba-link`'s reason.
+ * ------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .neba-input.neba-input {
+    font-size: max(1em, 16px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Code blocks
  *
  * A CodeBlock is the one surface in the library that does **not** take the

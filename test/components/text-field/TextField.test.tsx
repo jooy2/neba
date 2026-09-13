@@ -16,6 +16,18 @@ describe('TextField', () => {
       expect(element).toBeEnabled();
     });
 
+    // The hook the stylesheet raises a field to 16px through on iOS, where a
+    // smaller one zooms the page in when it is tapped.
+    it('marks the control for the iOS size floor, as an input and as a textarea', async () => {
+      const screen = await render(<TextField label="Email" />);
+
+      expect(screen.getByRole('textbox', { name: 'Email' }).element()).toHaveClass('neba-input');
+
+      await screen.rerender(<TextField label="Email" multiline />);
+
+      expect(screen.getByRole('textbox', { name: 'Email' }).element()).toHaveClass('neba-input');
+    });
+
     it('associates the label with the control', async () => {
       const screen = await render(<TextField label="Email" />);
       const input = screen.getByRole('textbox', { name: 'Email' }).element();

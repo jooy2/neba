@@ -2257,7 +2257,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         type={column.editType === 'number' ? 'number' : 'text'}
         defaultValue={initial === null || initial === undefined ? '' : String(initial)}
         aria-label={typeof column.label === 'string' ? column.label : column.key}
-        className="w-full bg-transparent [font:inherit] text-inherit [outline:none]"
+        className="neba-input w-full bg-transparent [font:inherit] text-inherit [outline:none]"
         style={{ textAlign: column.align ?? 'start' }}
         onPointerDown={(event) => event.stopPropagation()}
         onBlur={(event) => {

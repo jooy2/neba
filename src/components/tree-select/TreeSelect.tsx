@@ -348,7 +348,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
               placeholder={searchPlaceholder ?? searchMessages.search}
               aria-label={searchPlaceholder ?? searchMessages.search}
               onChange={(event) => setQuery(event.currentTarget.value)}
-              className="w-full shrink-0 bg-transparent px-1 py-1 [font:inherit] text-(--neba-fg) [outline:none] placeholder:text-(--neba-muted-fg)"
+              className="neba-input w-full shrink-0 bg-transparent px-1 py-1 [font:inherit] text-(--neba-fg) [outline:none] placeholder:text-(--neba-muted-fg)"
             />
           ) : null}
 

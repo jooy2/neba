@@ -131,3 +131,4 @@ slot은 `label`, `shell`, `control`, `description`, `error`입니다. `shell`은
 - floating label은 제공하지 않습니다.
 - focus ring은 `<input>`이 아니라 감싸는 shell에 그려지므로 테두리를 그대로 따라갑니다.
 - shell의 여백을 클릭해도 caret이 들어갑니다.
+- iOS와 iPadOS에서는 글자가 최소 16px입니다. 그곳의 Safari는 더 작은 필드를 누르면 페이지를 확대하기 때문입니다. 다른 브라우저는 `size`가 정한 크기로 그립니다. `NumberField`, `Combobox`, `OtpField`, `CommandPalette` 등 라이브러리의 다른 텍스트 입력도 같습니다.

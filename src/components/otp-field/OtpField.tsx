@@ -243,6 +243,9 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
       // shorthand would take the inherited font *size* with it and undo the ladder
       // set on the next line.
       'text-center font-medium [font-family:inherit]',
+      // The two steps set under 16px, which is where iOS zooms the page in on a
+      // tap. See `.neba-input` in `styles.css`.
+      size === 'xs' || size === 'sm' ? 'neba-input' : '',
       slotSizeClasses[size],
       slotTextClasses[size],
       slotRadiusClasses[size],

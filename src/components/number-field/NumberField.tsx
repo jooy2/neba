@@ -378,7 +378,7 @@ export function NumberField(rawProps: NumberFieldProps) {
             onKeyDown={keyHandler(shortcuts)}
             placeholder={placeholder}
             className={[
-              'min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
+              'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
               // Not `outline-none`: that utility zeroes `--tw-outline-style`,
               // and the shell's focus ring is drawn from the same family.
               '[outline:none]',

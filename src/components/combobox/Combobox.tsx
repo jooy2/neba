@@ -495,7 +495,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     // it sits on — the field in single mode, the chip line in multiple — is what
     // puts the placeholder on the same baseline as the chips beside it. A fixed
     // `1lh` here left it sitting a pixel or two high.
-    'min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
+    'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
     // Not `outline-none`: that utility zeroes `--tw-outline-style`, and the
     // shell's focus ring is drawn from the same variable family.
     '[outline:none]',
