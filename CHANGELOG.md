@@ -40,6 +40,8 @@
 
 - **`ScatterChart` and `TimelineChart` stop re-rendering for every pixel the pointer moves.** Both stored the pointer's offset on each move for a tooltip mode that only a chart of columns reads, so hovering over one mark laid the whole chart out again for every pixel of travel. They re-render when the mark under the pointer changes.
 
+- **A chart formats, cuts and measures its category labels once rather than on every hover.** Moving the pointer across a `LineChart`, `AreaChart` or `BarChart` re-renders it for each column crossed, and every one of those re-renders ran every label through `tickFormat`, the truncation and the width estimate again, which was most of the time spent on a plot of ten thousand dates. The widest label is also found without spreading the list into `Math.max`, which threw a `RangeError` past about a hundred thousand of them.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

@@ -1014,17 +1014,27 @@ export function CartesianChart({
      belongs to the value axis and is not borrowed for these — a currency
      applied to an axis of years prints `$2,019` — so the fallback is the plain
      compaction and `xAxis.tickFormat` is how a caller says more. */
-  const rawCategoryTexts = categoryScale
-    ? categoryScale.ticks.map((tick, index) =>
-        categoryAxis?.tickFormat
-          ? String(categoryAxis.tickFormat(tick, index))
-          : compactNumber(tick, locale)
-      )
-    : labels.map((category, index) =>
-        categoryAxis?.tickFormat
-          ? String(categoryAxis.tickFormat(category, index))
-          : formatCategory(category, locale)
-      );
+  const categoryTickFormat = categoryAxis?.tickFormat;
+  const rawCategoryTexts = React.useMemo(
+    () =>
+      categoryScale
+        ? categoryScale.ticks.map((tick, index) =>
+            categoryTickFormat
+              ? String(categoryTickFormat(tick, index))
+              : compactNumber(tick, locale)
+          )
+        : labels.map((category, index) =>
+            categoryTickFormat
+              ? String(categoryTickFormat(category, index))
+              : formatCategory(category, locale)
+          ),
+    // A value scale's ticks are a handful of numbers rebuilt with the scale, so
+    // only the labels are worth keeping — and the labels are the part that grows
+    // with the data: a pointer crossing a plot of ten thousand dates re-renders
+    // for every column, and formatting all of them each time was most of it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [categoryScale ? categoryScale.ticks.join(' ') : labels, categoryTickFormat, locale]
+  );
 
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
   const axisLabelBand = fontSize + 6;
@@ -1044,15 +1054,22 @@ export function CartesianChart({
      `ChartAxes` takes over instead. A tick is a number that was already rounded
      to be short, so it is never cut: half of `12.4K` is not a smaller number,
      it is a wrong one. */
-  const categoryTexts = categoryScale
-    ? rawCategoryTexts
-    : horizontal || slot - 6 >= fontSize * 2.4
-      ? rawCategoryTexts.map((text) => truncate(text, horizontal ? 150 : slot - 6, fontSize))
-      : rawCategoryTexts;
+  const cutsLabels = !categoryScale && (horizontal || slot - 6 >= fontSize * 2.4);
+  const cutTo = horizontal ? 150 : slot - 6;
+  const categoryTexts = React.useMemo(
+    () =>
+      cutsLabels
+        ? rawCategoryTexts.map((text) => truncate(text, cutTo, fontSize))
+        : rawCategoryTexts,
+    [rawCategoryTexts, cutsLabels, cutTo, fontSize]
+  );
 
-  const widestCategory = categoryTexts.reduce(
-    (most, text) => Math.max(most, textWidth(text, fontSize)),
-    0
+  // A reduce rather than `Math.max(...widths)`: spreading an array passes every
+  // element as an argument, and past about a hundred thousand of them that is a
+  // RangeError rather than a number.
+  const widestCategory = React.useMemo(
+    () => categoryTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0),
+    [categoryTexts, fontSize]
   );
 
   /* The two bands the axes take out of the box. `hidden` gives the room back to
@@ -1539,7 +1556,9 @@ export function CartesianChart({
               categoryPx={categoryPx}
               valuePx={valuePx}
               tickTexts={tickTexts}
+              widestTick={widestTick}
               categoryTexts={categoryTexts}
+              widestCategory={widestCategory}
               categoryScale={categoryScale}
               categoryValuePx={categoryValuePx}
               valueAxis={valueAxis}
@@ -1647,8 +1666,12 @@ interface AxesProps {
   categoryPx: (index: number) => number;
   valuePx: (value: number) => number;
   tickTexts: readonly string[];
+  /** How wide the widest of `tickTexts` renders, measured once by the chart. */
+  widestTick: number;
   /** Either the category labels or, with `categoryScale`, that scale's ticks. */
   categoryTexts: readonly string[];
+  /** How wide the widest of `categoryTexts` renders. */
+  widestCategory: number;
   categoryScale: ValueScale | null;
   categoryValuePx: (value: number) => number;
   valueAxis?: NebaChartAxis;
@@ -1672,7 +1695,9 @@ function ChartAxes({
   categoryPx,
   valuePx,
   tickTexts,
+  widestTick,
   categoryTexts,
+  widestCategory,
   categoryScale,
   categoryValuePx,
   valueAxis,
@@ -1702,9 +1727,7 @@ function ChartAxes({
   const stride = tickStride(
     categoryTexts.length,
     horizontal ? plot.height : plot.width,
-    horizontal
-      ? fontSize * 1.8
-      : Math.max(...categoryTexts.map((t) => textWidth(t, fontSize)), 1) + 12
+    horizontal ? fontSize * 1.8 : Math.max(widestCategory, 1) + 12
   );
 
   /* The value axis needs a stride of its own once it is the *horizontal* one:
@@ -1714,7 +1737,7 @@ function ChartAxes({
   const valueStride = tickStride(
     scale.ticks.length,
     horizontal ? plot.width : plot.height,
-    horizontal ? Math.max(...tickTexts.map((t) => textWidth(t, fontSize)), 1) + 16 : fontSize * 2
+    horizontal ? Math.max(widestTick, 1) + 16 : fontSize * 2
   );
 
   /* Whether the end of each axis still has room to be written down. Measured

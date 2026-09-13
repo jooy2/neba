@@ -322,6 +322,33 @@ describe('LineChart', () => {
       expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
     });
 
+    it('does not format the category labels again when the pointer moves', async () => {
+      const tickFormat = vi.fn((category: string | number | Date) => String(category));
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          height={200}
+          xAxis={{ tickFormat }}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const before = tickFormat.mock.calls.length;
+      const width = plot.element().getBoundingClientRect().width;
+
+      await plot.hover({ position: { x: width * 0.2, y: 60 } });
+      await expect.element(screen.getByRole('status')).toBeInTheDocument();
+      await plot.hover({ position: { x: width * 0.8, y: 60 } });
+
+      expect(tickFormat.mock.calls.length).toBe(before);
+    });
+
     it('shows the whole column with mode="index"', async () => {
       const screen = await render(
         <LineChart
