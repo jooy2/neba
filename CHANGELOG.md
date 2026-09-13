@@ -292,6 +292,8 @@
 
 - **A `fullWidth` `ButtonGroup`, `ToggleGroup` or `SegmentedButton` is a block.** Each kept `inline-flex` in its base classes and added `flex` for `fullWidth`, and two display utilities on one element are decided by stylesheet order, so the group stayed `inline-flex w-full` and sat on the text baseline like a word. The display is chosen with `fullWidth` now.
 
+- **A child put in front of the others no longer remounts the ones after it in `Stack`, `Timeline` and `Carousel`.** Each drew a wrapper around every child and keyed it by position, which threw the caller's own keys away: a new first avatar, step or slide handed every later wrapper a different child, so React mounted all of them again, reloading their images, dropping their state and replaying a `Stack`'s entrance. The wrappers take the child's key now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

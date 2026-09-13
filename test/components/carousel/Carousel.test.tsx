@@ -448,4 +448,15 @@ describe('Carousel', () => {
       await expect.element(screen.getByRole('group', { name: 'Photo 1' })).toBeInTheDocument();
     });
   });
+
+  describe('identity', () => {
+    it('keeps a slide mounted when another is put in front of it', async () => {
+      const screen = await render(<Carousel>{slides}</Carousel>);
+      const alpha = screen.getByText('Alpha').element();
+
+      await screen.rerender(<Carousel>{[<p key="z">Zulu</p>, ...slides]}</Carousel>);
+
+      expect(screen.getByText('Alpha').element()).toBe(alpha);
+    });
+  });
 });

@@ -223,4 +223,22 @@ describe('Stack', () => {
       expect(items(screen.container)[0].className).toBe('');
     });
   });
+
+  describe('identity', () => {
+    it('keeps a child mounted when another is put in front of it', async () => {
+      const Letters = ({ names }: { names: string[] }) => (
+        <Stack>
+          {names.map((name) => (
+            <span key={name}>{name}</span>
+          ))}
+        </Stack>
+      );
+      const screen = await render(<Letters names={['Ada', 'Bo']} />);
+      const ada = screen.getByText('Ada').element();
+
+      await screen.rerender(<Letters names={['Cai', 'Ada', 'Bo']} />);
+
+      expect(screen.getByText('Ada').element()).toBe(ada);
+    });
+  });
 });

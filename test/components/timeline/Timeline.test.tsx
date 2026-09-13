@@ -297,4 +297,22 @@ describe('Timeline', () => {
       expect(screen.container.querySelector('li')).toHaveClass('flex-col');
     });
   });
+
+  describe('identity', () => {
+    it('keeps an item mounted when another is put in front of it', async () => {
+      const Steps = ({ titles }: { titles: string[] }) => (
+        <Timeline>
+          {titles.map((title) => (
+            <TimelineItem key={title} title={title} />
+          ))}
+        </Timeline>
+      );
+      const screen = await render(<Steps titles={['Packed', 'Delivered']} />);
+      const packed = screen.getByText('Packed').element();
+
+      await screen.rerender(<Steps titles={['Ordered', 'Packed', 'Delivered']} />);
+
+      expect(screen.getByText('Packed').element()).toBe(packed);
+    });
+  });
 });

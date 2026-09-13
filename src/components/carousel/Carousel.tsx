@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
+import { childKey } from '../../internal/children.js';
 import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon, PauseIcon, PlayIcon } from '../../internal/icons.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
@@ -406,7 +407,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           >
             {slides.map((slide, slideIndex) => (
               <div
-                key={slideIndex}
+                key={childKey(slide, slideIndex)}
                 role="group"
                 aria-roledescription="slide"
                 aria-label={nameSlide(slideIndex + 1, count)}

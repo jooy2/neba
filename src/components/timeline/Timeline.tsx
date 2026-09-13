@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { childKey } from '../../internal/children.js';
 import { timelineMessages, useMessages, type TimelineMessages } from '../../internal/i18n.js';
 import {
   cx,
@@ -431,7 +432,10 @@ export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
         className: cx('flex', orientation === 'horizontal' ? 'flex-row' : 'flex-col', className),
         style: { ...surfaceSlots(color, 0), ...style },
         children: items.map((item, index) => (
-          <TimelineItemContext.Provider key={index} value={{ index, last: index === count - 1 }}>
+          <TimelineItemContext.Provider
+            key={childKey(item, index)}
+            value={{ index, last: index === count - 1 }}
+          >
             {item}
           </TimelineItemContext.Provider>
         )),

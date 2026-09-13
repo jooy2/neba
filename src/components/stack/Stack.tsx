@@ -8,6 +8,7 @@ import {
   transitionParts
 } from '../../internal/animate.js';
 import { cx, toLength } from '../../internal/styles.js';
+import { childKey } from '../../internal/children.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import type { NebaSize, NebaStaggerProps, NebaTransition } from '../../types.js';
 
@@ -222,7 +223,9 @@ export const Stack = React.forwardRef<HTMLDivElement, StackProps>(function Stack
 
         return (
           <span
-            key={index}
+            // The overflow marker is always last and was never a child, so it
+            // takes a key no `Children.toArray` key can be.
+            key={index === shown.length ? 'overflow' : childKey(child, index)}
             data-neba-stack-item=""
             className={effectClass || undefined}
             style={{
