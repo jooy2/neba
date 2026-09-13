@@ -337,6 +337,12 @@ export function transitionProps(transition: NebaTransition | undefined): {
   };
 }
 
+/** An effect, and the slots it reads. */
+export interface TransitionParts {
+  effect: NebaAnimation;
+  slots: AnimationSlotOptions;
+}
+
 /**
  * The same reading, one step before it becomes a class and a style object.
  *
@@ -345,10 +351,14 @@ export function transitionProps(transition: NebaTransition | undefined): {
  * add to the delay before the slots are filled. Splitting it here is what keeps
  * one table: `transition="fade"` on a Card and on a Stack item are the same
  * fade, read by the same code.
+ *
+ * Given an effect it always has an answer, and the overload says so: AnimateSplit
+ * names one every time, and a `null` it could never receive was two branches of
+ * code that never ran.
  */
-export function transitionParts(
-  transition: NebaTransition | undefined
-): { effect: NebaAnimation; slots: AnimationSlotOptions } | null {
+export function transitionParts(transition: NebaTransition): TransitionParts;
+export function transitionParts(transition: NebaTransition | undefined): TransitionParts | null;
+export function transitionParts(transition: NebaTransition | undefined): TransitionParts | null {
   if (!transition) {
     return null;
   }

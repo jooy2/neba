@@ -153,17 +153,15 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
     });
 
     const animated = staggerChildren(
-      parts
-        ? pieces.map((piece, index) => (
-            // `pre` rather than `pre-wrap`: the piece is one box, so there is
-            // nothing inside it to wrap, and the trailing space has to survive.
-            <span key={index} className="inline-block whitespace-pre">
-              {piece}
-            </span>
-          ))
-        : null,
+      pieces.map((piece, index) => (
+        // `pre` rather than `pre-wrap`: the piece is one box, so there is
+        // nothing inside it to wrap, and the trailing space has to survive.
+        <span key={index} className="inline-block whitespace-pre">
+          {piece}
+        </span>
+      )),
       `${animBaseClass} ${animationClasses[effect]}`,
-      parts?.slots ?? { duration, delay, repeat },
+      parts.slots,
       { stagger, durationStep, reverse }
     );
 
