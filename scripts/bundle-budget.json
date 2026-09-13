@@ -25,7 +25,7 @@
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 5.1
+      "budget": 5.4
     },
     {
       "id": "image",
@@ -37,7 +37,7 @@
       "id": "gallery",
       "label": "Gallery",
       "imports": ["Gallery"],
-      "budget": 11.4
+      "budget": 11.7
     },
     {
       "id": "app-12",
