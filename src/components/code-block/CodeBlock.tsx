@@ -405,8 +405,13 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
      * on `\n`, so each line keeps a carriage return the reader cannot see, the
      * highlighter treats as part of the last token, and the clipboard hands
      * straight to a shell.
+     *
+     * `trimEnd` rather than `/\s+$/`, which removes the same characters. The
+     * pattern retries its run of whitespace from every position the run starts
+     * at, so forty thousand spaces in the middle of a pasted file took seconds
+     * to find they were not at the end.
      */
-    const source = React.useMemo(() => code.replace(/\r\n?/g, '\n').replace(/\s+$/, ''), [code]);
+    const source = React.useMemo(() => code.replace(/\r\n?/g, '\n').trimEnd(), [code]);
 
     const name = canonicalLanguage(language);
 

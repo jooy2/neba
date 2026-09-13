@@ -44,6 +44,8 @@
 
 - **`BarChart` finds a series' high and low once for `valueLabels="extremes"`.** It walked the whole series again for every bar, so a five-hundred-bar series did a quarter of a million comparisons on each render, and a hovered chart renders on every column the pointer crosses. It now asks the same question the line charts already asked once.
 
+- **`CodeBlock` trims the end of its code in linear time.** The trailing whitespace was found with a pattern that retried every run of spaces from each position in it, so a pasted file with a long run of spaces in the middle held the page for seconds — forty thousand of them took 2.6 seconds — every time `code` changed.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
