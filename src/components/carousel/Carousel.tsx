@@ -179,6 +179,10 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       className,
       style,
       children,
+      onPointerEnter,
+      onPointerLeave,
+      onFocus,
+      onBlur,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
@@ -206,10 +210,14 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     // scroll events thrown on the way from slide 0 to slide 2 would each be read
     // as the reader landing on slide 1.
     const settling = React.useRef(false);
-    const [paused, setPaused] = React.useState(false);
-    // Two ways of not advancing, and they have to stay apart. `paused` is the
-    // pointer or the focus and lasts as long as they do; `stopped` is the reader
-    // pressing the button and lasts until they press it again.
+    // Three ways of not advancing, and they have to stay apart. The pointer and
+    // the focus each hold the strip for as long as they are inside it, and one
+    // leaving must not let it go while the other is still there — a mouse brushing
+    // past must not restart a strip a keyboard reader is reading. `stopped` is the
+    // reader pressing the button and lasts until they press it again.
+    const [hovered, setHovered] = React.useState(false);
+    const [focused, setFocused] = React.useState(false);
+    const paused = hovered || focused;
     const [stopped, setStopped] = React.useState(false);
 
     const go = React.useCallback(
@@ -335,11 +343,28 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         className={cx('flex flex-col', className ?? '')}
         style={{ ...surfaceSlots(color, elevation), ...style }}
         // Hover and focus both stop the timer. The second one is the important
-        // one: a keyboard reader who has tabbed into a slide is reading it.
-        onPointerEnter={() => setPaused(true)}
-        onPointerLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
+        // one: a keyboard reader who has tabbed into a slide is reading it. A
+        // caller's own handlers run beside these rather than replacing them.
+        onPointerEnter={(event) => {
+          setHovered(true);
+          onPointerEnter?.(event);
+        }}
+        onPointerLeave={(event) => {
+          setHovered(false);
+          onPointerLeave?.(event);
+        }}
+        onFocus={(event) => {
+          setFocused(true);
+          onFocus?.(event);
+        }}
+        onBlur={(event) => {
+          // Moving between two controls inside the strip is not leaving it.
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            setFocused(false);
+          }
+
+          onBlur?.(event);
+        }}
         {...props}
       >
         <div
@@ -503,7 +528,14 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           reader unusable on a page that has one. Stopping it is what turns the
           announcements back on, since from then on the only thing that moves
           the strip is the reader. */}
-        <span className={srOnlyClasses} aria-live={rotates && !stopped ? 'off' : 'polite'}>
+        {/* Quiet only while the strip is actually turning on its own, which is
+            when an announcement per slide would talk over the reader. Held by
+            the focus, a slide changes because the reader pressed an arrow, and
+            that is the one change they need to hear. */}
+        <span
+          className={srOnlyClasses}
+          aria-live={rotates && !stopped && !paused ? 'off' : 'polite'}
+        >
           {count > 0 ? nameSlide(index + 1, count) : ''}
         </span>
       </div>

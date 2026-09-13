@@ -164,6 +164,8 @@
 
 - **A selected `ListItem` that is not pressable is announced as the current one.** Only a row that was a button or a link said so, through `aria-current`; a plain row showed it with its tint alone. It carries `aria-current` as well now.
 
+- **An autoplaying `Carousel` stays held while the keyboard focus is inside it.** The pointer and the focus shared one pause, so a mouse passing over and out of the strip started it again under a reader who had tabbed into a slide, and the slide changes made there by the arrows were not announced because the live region stayed silent. The two pauses are kept apart, the live region speaks whenever the strip is held, and a caller's `onFocus`, `onBlur`, `onPointerEnter` and `onPointerLeave` run beside the carousel's own instead of switching the pause off.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

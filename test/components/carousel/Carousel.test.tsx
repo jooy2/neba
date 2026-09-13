@@ -323,6 +323,51 @@ describe('Carousel', () => {
       expect(onValueChange).not.toHaveBeenCalled();
     });
 
+    // A keyboard reader inside the strip is reading it, and a mouse passing over
+    // the page on its way somewhere else is not a reason to start it again.
+    it('stays held by the focus when the pointer passes over and leaves', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <Carousel autoPlay interval={60} onValueChange={onValueChange}>
+          {slides}
+        </Carousel>
+      );
+      const region = screen.getByRole('region').element();
+
+      screen.getByRole('button', { name: 'Next slide' }).element().focus();
+      region.dispatchEvent(new PointerEvent('pointerover', { bubbles: true }));
+      region.dispatchEvent(new PointerEvent('pointerout', { bubbles: true }));
+      onValueChange.mockClear();
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      // Held by the focus, an arrow press is the one change the reader needs to hear.
+      expect(region.querySelector('[aria-live]')?.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('runs a caller\u2019s focus handler beside its own', async () => {
+      const onFocus = vi.fn();
+      const screen = await render(
+        <Carousel autoPlay onFocus={onFocus}>
+          {slides}
+        </Carousel>
+      );
+
+      screen.getByRole('button', { name: 'Next slide' }).element().focus();
+
+      expect(onFocus).toHaveBeenCalled();
+      await expect
+        .poll(() =>
+          screen
+            .getByRole('region')
+            .element()
+            .querySelector('[aria-live]')
+            ?.getAttribute('aria-live')
+        )
+        .toBe('polite');
+    });
+
     // The live region is silent while the slides move on their own, because one
     // that names a slide every five seconds is what makes a page unusable with a
     // screen reader. Stopping them is what turns it back on.
