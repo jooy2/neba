@@ -4,8 +4,9 @@ The working list for the audit of every public component, started on 2026-09-12.
 
 ## State
 
-- Four batches are done, and the last push was `fdbd5603` on 2026-09-13.
-- Decisions C1–C5, D1–D19, E1–E7 and F1–F35 were asked on 2026-09-13 and have no answer yet. They are listed under [Pending decisions](#pending-decisions).
+- Four batches are done, and the last push was `f443d40e` on 2026-09-13.
+- On 2026-09-13 the maintainer answered every question C1–F35 with "모두 권장대로". Ten are implemented (C1, C4, C5, D1, D2, D9, D15, D16, D17, D18). The 56 still listed under [Pending decisions](#pending-decisions) are decided as recommended and wait only to be implemented; the maintainer stopped the session there.
+- The next session implements those 56 first, one commit per unit, ticking each item with its `Decided:` line and removing it from the list, and pushes before starting a batch. It asks nothing about them again.
 - The next batch starts after item 190. The first open item without a tag is 191.
 - Item 109 waits for 129 and is done together with it.
 - The next batch labels its questions G (approvals) and H (choices), so an answer like "H3 (b)" names exactly one question.
@@ -50,12 +51,14 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ## Pending decisions
 
-### C. Approvals (recommended: approve all)
+Every entry below was answered on 2026-09-13 as recommended: each approval is approved and each choice is (a). They are listed here only because they are not implemented yet.
+
+### C. Approvals (approved)
 
 - **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
 - **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
 
-### D. Choices (recommended: (a) for all)
+### D. Choices (decided: (a))
 
 - **D3 (83)** `GaugeChart`: (a) `role="meter"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and an `aria-valuetext` that carries the caption; (b) fix the `aria-label` wording only.
 - **D4 (84)** `PieChart`: (a) pick the higher-contrast ink per slice and implement `Escape`, `Home` and `End`; (b) fix the ink only and remove the keys from the docs.
@@ -70,7 +73,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
 - **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
 
-### E. Approvals (recommended: approve all)
+### E. Approvals (approved)
 
 - **E1 (132)** Chart `tickFormat`: narrow the return type to `string | number`, which is what the axis can write. A callback returning JSX becomes a type error instead of `[object Object]`.
 - **E2 (140)** `Menubar` and `NavigationMenu` with `orientation="vertical"`: popups open beside the bar, toward the inline end, instead of downward over the next item.
@@ -80,7 +83,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **E6 (173)** `Anchor` `rail`: nested rows are indented with `padding-inline-start`, so their highlight stays on the rail.
 - **E7 (168, new)** `DataTable` that has a tab stop but no selection (`onRowActivate` or an editable column): ring the sheet while the table has the focus, as a selecting table does. Today it shows no focus indicator until an arrow key makes a row active.
 
-### F. Choices (recommended: (a) for all)
+### F. Choices (decided: (a))
 
 - **F1 (125)** Hydration errors inside `<p>`: (a) the wrappers in Image, Stack, AnimateTyping, AnimateHeadline and AnimateMarquee become `<span>` elements with a block display, and the three Animate components take `render`; (b) document that they cannot sit inside a paragraph.
 - **F2 (126)** Server and client renders disagree: (a) Calendar marks today and NebaProvider reads the stored scheme after hydration, and the chart docs tell server-rendered pages to pass `locale`; (b) document all three.
