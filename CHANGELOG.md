@@ -352,6 +352,8 @@
 
 - **An `Image` preview opens the picture from the same sources.** The enlarged picture in the preview took only `src`, so an `Image` given a `srcSet` and no `src` opened an empty dialog, and a picture served behind a CORS or referrer rule was requested again without its `crossOrigin` and `referrerPolicy`. The preview takes all three now. It does not take `sizes`, which describes the thumbnail, so the browser picks a candidate for the size of the dialog.
 
+- **A `Gallery` tile zooms on a transition under `hover="zoom"`.** The Gallery wrote a `transition` of its own onto each picture beside the one `Image` already carries, and two shorthands on one element are decided by stylesheet order: the Image's won, it did not name `transform`, and the zoom jumped to full size. The picture's own transition names `transform` now, and the Gallery no longer writes a second one.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -972,8 +972,11 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         //
         // `filter` rides along, so a treatment a caller changes on hover — the
         // grey thumbnail that comes back to life under the pointer — travels
-        // rather than snapping.
-        '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease)]',
+        // rather than snapping, and `transform` for a Gallery's `zoom`. Named
+        // here and nowhere else: a Gallery that wrote a second `transition` on
+        // this element lost it to this one by stylesheet order, and its zoom
+        // jumped.
+        '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease),transform_var(--neba-duration-fill)_var(--neba-ease)]',
         // A `priority` picture is never hidden, not even for the moment before
         // hydration: that is the moment it is being measured in.
         priority || phase === 'loaded' ? 'opacity-100' : 'opacity-0',

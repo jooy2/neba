@@ -447,10 +447,11 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
           className={cx('size-full', classNames?.image)}
           classNames={{
             image: cx(
-              // The house fill clock, and the same one the picture's own fade
-              // already runs on, so a treatment and an arrival never disagree
-              // about how long a picture takes to settle.
-              '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease),transform_var(--neba-duration-fill)_var(--neba-ease)]',
+              // The picture's own transition already names `filter` and
+              // `transform` on the fill clock its fade runs on, so a treatment
+              // and an arrival never disagree about how long a picture takes to
+              // settle. A second shorthand here would be decided against it by
+              // stylesheet order, which is how the zoom came to jump.
               'motion-reduce:[transition-duration:0ms]',
               pictureHoverClasses[hover]
             )

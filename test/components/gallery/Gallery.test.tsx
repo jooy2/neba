@@ -323,6 +323,17 @@ describe('Gallery', () => {
       expect(picture.className).not.toContain('group-focus-visible/tile');
     });
 
+    // The Gallery wrote a `transition` of its own on the picture beside the
+    // Image's, and the Image's won by stylesheet order, so the zoom jumped.
+    it('travels on the one transition the picture carries', async () => {
+      const screen = await render(<Gallery items={items} hover="zoom" />);
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+      const shorthands = [...picture.classList].filter((name) => name.startsWith('[transition:'));
+
+      expect(shorthands).toHaveLength(1);
+      expect(shorthands[0]).toContain('transform_');
+    });
+
     it('scales nothing when it is told to do nothing', async () => {
       const screen = await render(<Gallery items={items} hover="none" />);
       const picture = screen.container.querySelector('img') as HTMLImageElement;
