@@ -94,7 +94,11 @@ export interface AccordionProps
   /**
    * Keeps closed panels in the DOM so the browser's own page search can find and
    * open them. Overrides `keepMounted`.
-   * @default false
+   *
+   * On by default, because a closed answer that is not in the markup is not in
+   * a server render either, and a crawler reads the server render. Turn it off
+   * for panels that are expensive to build and only need to exist when open.
+   * @default true
    */
   hiddenUntilFound?: boolean;
   /**
@@ -215,7 +219,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       dividers = true,
       headingLevel = 3,
       disabled = false,
-      hiddenUntilFound = false,
+      hiddenUntilFound = true,
       keepMounted = false,
       className,
       style,

@@ -61,7 +61,7 @@ The three weights say what they say on every other container. `text` draws no sh
 
 ### keepMounted, hiddenUntilFound
 
-A closed panel leaves the DOM by default. `keepMounted` keeps it there, so content that is expensive to build or that holds form state survives being folded away. `hiddenUntilFound` keeps it there as `hidden="until-found"`, which lets the browser's own page search find and open it, and overrides `keepMounted`.
+A closed panel stays in the DOM by default, as `hidden="until-found"`: it is in a server render, and the browser's own page search can find it and open the panel. `hiddenUntilFound={false}` takes a closed panel out of the DOM. `keepMounted` keeps it there without being found, so content that is expensive to build or that holds form state survives being folded away; `hiddenUntilFound` overrides it.
 
 <Demo src="collapsible/mounting">
 
@@ -85,5 +85,5 @@ const [open, setOpen] = useState(false);
 
 - The trigger is a real `<button>`, carrying `aria-expanded` and an `aria-controls` pointing at the panel it opens.
 - `action` sits outside the trigger, so it is reachable and pressable on its own from a keyboard.
-- A closed panel leaves the DOM, so it is in neither the tab order nor the accessibility tree. `keepMounted` does not change that.
-- With `hiddenUntilFound`, the browser's own page search can find closed content and open the panel around it.
+- A closed panel is in neither the tab order nor the accessibility tree, whether it is hidden until found, kept mounted or out of the DOM.
+- Unless `hiddenUntilFound` is off, the browser's own page search can find closed content and open the panel around it.

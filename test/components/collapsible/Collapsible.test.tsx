@@ -22,6 +22,28 @@ describe('Collapsible', () => {
       await expect
         .element(screen.getByRole('button', { name: 'Advanced' }))
         .toHaveAttribute('aria-expanded', 'false');
+      await expect.element(screen.getByText('Everything else.')).not.toBeVisible();
+    });
+
+    // In the markup, and so in a server render and a crawler's index, but
+    // hidden until the browser's page search finds something in it.
+    it('keeps a closed panel in the document, hidden until it is found', async () => {
+      const screen = await render(<Collapsible title="Advanced">Everything else.</Collapsible>);
+      const body = screen.getByText('Everything else.').element();
+
+      expect(body.closest('[hidden]')).toHaveAttribute('hidden', 'until-found');
+    });
+
+    it('leaves a closed panel out of the document when it is not to be found', async () => {
+      const screen = await render(
+        <Collapsible title="Advanced" hiddenUntilFound={false}>
+          Everything else.
+        </Collapsible>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Advanced' }))
+        .toHaveAttribute('aria-expanded', 'false');
       expect(screen.getByText('Everything else.').query()).toBeNull();
     });
 
@@ -128,7 +150,7 @@ describe('Collapsible', () => {
 
     it('keeps a closed panel in the document when it is asked to', async () => {
       const screen = await render(
-        <Collapsible title="Advanced" keepMounted>
+        <Collapsible title="Advanced" hiddenUntilFound={false} keepMounted>
           Everything else.
         </Collapsible>
       );

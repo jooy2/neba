@@ -109,7 +109,7 @@ import { Tab, TabPanel, Tabs } from 'neba';
 
 ### keepMounted
 
-`TabPanel`에 지정하면 선택되지 않은 패널의 React 트리를 유지합니다.
+`TabPanel`에 지정하면 선택되지 않은 패널의 React 트리를 유지합니다. 그렇지 않으면 선택되지 않은 패널은 DOM에 없으므로 서버 렌더와 크롤러 색인에도 없습니다. 검색에 걸려야 하는 내용이 든 패널에는 `keepMounted`를 주세요.
 
 ## 접근성
 

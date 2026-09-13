@@ -28,6 +28,8 @@
 
 - **An `AccordionItem`'s `action` sits beside its heading instead of inside it.** The action was rendered in the `<h3>`, so a section with a Switch in its header was a heading named "Billing Enable", and every heading list read the control's label as part of the title. The heading holds only the trigger now, and the action is its sibling in the same row. Nothing moves on screen; a test that found the heading by title and action together finds it by the title.
 
+- **A closed `Accordion` or `Collapsible` panel stays in the document.** `hiddenUntilFound` is on by default. A closed panel used to leave the DOM, so an FAQ's answers were missing from a server render and from a crawler's index, and the browser's find-on-page could not reach them. A closed panel is now `hidden="until-found"`: out of sight, the tab order and the accessibility tree as before, and opened when a page search lands in it. A test that asserted a closed panel's text is absent should assert it is not visible, and a panel too expensive to build while closed can pass `hiddenUntilFound={false}`. `Tabs` keeps its default; its docs now say to set `keepMounted` on a panel whose content should be indexed.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

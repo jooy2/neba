@@ -7681,10 +7681,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'hiddenUntilFound',
       type: 'boolean',
-      default: 'false',
+      default: 'true',
       description: {
-        ko: '닫힌 패널을 DOM에 남겨 브라우저의 페이지 검색이 찾아 펼칠 수 있게 합니다. keepMounted보다 우선합니다',
-        en: "Keeps closed panels in the DOM so the browser's own page search can find and open them. Overrides keepMounted"
+        ko: '닫힌 패널을 DOM에 남겨 서버 렌더와 크롤러에 포함되고 브라우저의 페이지 검색이 찾아 펼칠 수 있게 합니다. keepMounted보다 우선합니다',
+        en: "Keeps closed panels in the DOM, so they are in a server render and the browser's own page search can find and open them. Overrides keepMounted"
       }
     },
     {
@@ -7692,8 +7692,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '닫힌 패널을 DOM에 남깁니다. 만들기 비싼 내용이나 접혀도 살아 있어야 하는 폼 상태',
-        en: 'Keeps closed panels in the DOM. For content that is expensive to build, or form state that should survive being folded away'
+        ko: 'hiddenUntilFound를 끈 뒤 닫힌 패널을 DOM에 남깁니다. 만들기 비싼 내용이나 접혀도 살아 있어야 하는 폼 상태',
+        en: 'With hiddenUntilFound off, keeps closed panels in the DOM. For content that is expensive to build, or form state that should survive being folded away'
       }
     },
     {
@@ -7908,8 +7908,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '숨겨진 동안에도 DOM에 남깁니다. 만들기 비싼 내용이나 살아 있어야 하는 폼 상태',
-        en: 'Keeps the panel in the DOM while hidden. For content that is expensive to build, or form state that should survive'
+        ko: '숨겨진 동안에도 DOM에 남깁니다. 만들기 비싼 내용, 살아 있어야 하는 폼 상태, 서버 렌더와 크롤러에 포함되어야 하는 내용',
+        en: 'Keeps the panel in the DOM while hidden. For content that is expensive to build, form state that should survive, or content a server render and a crawler should include'
       }
     },
     {
@@ -12732,10 +12732,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'hiddenUntilFound',
       type: 'boolean',
-      default: 'false',
+      default: 'true',
       description: {
-        ko: '닫힌 패널을 DOM에 남겨 브라우저의 페이지 내 찾기가 찾아 열 수 있게 합니다. keepMounted보다 우선합니다',
-        en: 'Keeps a closed panel in the DOM so the browser’s own page search can find and open it. Overrides keepMounted'
+        ko: '닫힌 패널을 DOM에 남겨 서버 렌더와 크롤러에 포함되고 브라우저의 페이지 내 찾기가 찾아 열 수 있게 합니다. keepMounted보다 우선합니다',
+        en: 'Keeps a closed panel in the DOM, so it is in a server render and the browser’s own page search can find and open it. Overrides keepMounted'
       }
     },
     {
@@ -12743,8 +12743,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '닫힌 패널을 DOM에 남깁니다. 만드는 비용이 크거나 폼 상태를 쥐고 있는 내용에',
-        en: 'Keeps a closed panel in the DOM. For content that is expensive to build, or that holds form state'
+        ko: 'hiddenUntilFound를 끈 뒤 닫힌 패널을 DOM에 남깁니다. 만드는 비용이 크거나 폼 상태를 쥐고 있는 내용에',
+        en: 'With hiddenUntilFound off, keeps a closed panel in the DOM. For content that is expensive to build, or that holds form state'
       }
     },
     {

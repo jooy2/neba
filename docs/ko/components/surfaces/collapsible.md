@@ -61,7 +61,7 @@ import { Collapsible } from 'neba';
 
 ### keepMounted, hiddenUntilFound
 
-기본적으로 닫힌 패널은 DOM에서 빠집니다. `keepMounted`는 그것을 남겨 두므로, 만드는 비용이 크거나 폼 상태를 쥐고 있는 내용이 접혔다 펴져도 그대로입니다. `hiddenUntilFound`는 `hidden="until-found"`로 남겨 브라우저의 페이지 내 찾기가 찾아 열 수 있게 하며, `keepMounted`보다 우선합니다.
+기본적으로 닫힌 패널은 `hidden="until-found"`로 DOM에 남습니다. 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 찾아 패널을 열 수 있습니다. `hiddenUntilFound={false}`를 주면 닫힌 패널이 DOM에서 빠집니다. `keepMounted`는 찾기에 걸리지 않게 남겨 두므로, 만드는 비용이 크거나 폼 상태를 쥐고 있는 내용이 접혔다 펴져도 그대로입니다. `hiddenUntilFound`가 `keepMounted`보다 우선합니다.
 
 <Demo src="collapsible/mounting">
 
@@ -85,5 +85,5 @@ const [open, setOpen] = useState(false);
 
 - trigger는 실제 `<button>`이고, 자신이 여는 패널을 가리키는 `aria-expanded`와 `aria-controls`를 갖습니다.
 - `action`은 trigger 바깥에 있으므로 키보드로 따로 접근하고 누를 수 있습니다.
-- 닫힌 패널은 DOM에서 빠지므로 tab 순서에도 접근성 트리에도 없습니다. `keepMounted`로 남겨 두어도 마찬가지입니다.
-- `hiddenUntilFound`를 켜면 브라우저의 페이지 내 찾기가 닫힌 내용을 찾아 패널을 열 수 있습니다.
+- 닫힌 패널은 찾기 전까지 숨겨져 있든, `keepMounted`로 남아 있든, DOM에서 빠져 있든 tab 순서에도 접근성 트리에도 없습니다.
+- `hiddenUntilFound`를 끄지 않는 한 브라우저의 페이지 내 찾기가 닫힌 내용을 찾아 패널을 열 수 있습니다.

@@ -91,6 +91,32 @@ describe('Accordion', () => {
       await expect.element(header).toHaveAttribute('aria-expanded', 'true');
     });
 
+    // In the markup, and so in a server render and a crawler's index, but
+    // hidden until the browser's page search finds something in it.
+    it('keeps a closed answer in the document, hidden until it is found', async () => {
+      const screen = await render(
+        <Accordion>
+          <AccordionItem value="billing" title="Billing">
+            How we charge.
+          </AccordionItem>
+        </Accordion>
+      );
+      const body = screen.getByText('How we charge.');
+
+      await expect.element(body).not.toBeVisible();
+      expect(body.element().closest('[hidden]')).toHaveAttribute('hidden', 'until-found');
+
+      await screen.rerender(
+        <Accordion hiddenUntilFound={false}>
+          <AccordionItem value="billing" title="Billing">
+            How we charge.
+          </AccordionItem>
+        </Accordion>
+      );
+
+      await expect.element(screen.getByText('How we charge.')).not.toBeInTheDocument();
+    });
+
     it('reports which sections are open', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

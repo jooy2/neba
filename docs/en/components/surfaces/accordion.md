@@ -84,7 +84,7 @@ Pass plain text as `title`. A heading element passed in would land inside the on
 
 ### hiddenUntilFound and keepMounted
 
-`hiddenUntilFound` keeps closed panels in the DOM so the browser's find-on-page can locate and open them: worth turning on for an FAQ. `keepMounted` keeps a closed panel's React tree alive.
+`hiddenUntilFound` is on by default. A closed panel stays in the DOM as `hidden="until-found"`, so its answer is in a server render and a crawler's index, and the browser's find-on-page can locate it and open the section. Turn it off for panels that are expensive to build and only need to exist while open; `keepMounted` then keeps a closed panel's React tree alive without it being found.
 
 ## Accessibility
 

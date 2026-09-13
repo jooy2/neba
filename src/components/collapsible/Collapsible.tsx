@@ -83,7 +83,11 @@ export interface CollapsibleProps
   /**
    * Keeps a closed panel in the DOM so the browser's own page search can find
    * and open it. Overrides `keepMounted`.
-   * @default false
+   *
+   * On by default, because a closed panel that is not in the markup is not in a
+   * server render either, and a crawler reads the server render. Turn it off
+   * for a panel that is expensive to build and only needs to exist when open.
+   * @default true
    */
   hiddenUntilFound?: boolean;
   /**
@@ -156,7 +160,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
       indicator = true,
       disabled = false,
       padded = true,
-      hiddenUntilFound = false,
+      hiddenUntilFound = true,
       keepMounted = false,
       className,
       style,

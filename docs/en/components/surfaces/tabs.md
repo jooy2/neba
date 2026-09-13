@@ -109,7 +109,7 @@ Off by default: walking the arrow keys along the bar does not change the panel, 
 
 ### keepMounted
 
-Set on a `TabPanel`, it keeps an unselected panel's React tree alive.
+Set on a `TabPanel`, it keeps an unselected panel's React tree alive. An unselected panel is otherwise not in the DOM, so it is not in a server render or a crawler's index either: set `keepMounted` on panels whose content should be found by search.
 
 ## Accessibility
 

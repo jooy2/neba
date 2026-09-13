@@ -84,7 +84,7 @@ sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때�
 
 ### hiddenUntilFound과 keepMounted
 
-`hiddenUntilFound`는 닫힌 패널을 DOM에 남겨 브라우저의 find-on-page가 찾아 펼칠 수 있게 합니다. FAQ 페이지에 적합합니다. `keepMounted`는 닫힌 패널의 React 트리를 유지합니다.
+`hiddenUntilFound`는 기본으로 켜져 있습니다. 닫힌 패널이 `hidden="until-found"`로 DOM에 남으므로 답변이 서버 렌더와 크롤러 색인에 들어가고, 브라우저의 find-on-page가 찾아 섹션을 펼칠 수 있습니다. 만드는 비용이 크고 열려 있을 때만 있으면 되는 패널이면 끄세요. 그때 `keepMounted`를 주면 찾기에는 걸리지 않으면서 닫힌 패널의 React 트리를 유지합니다.
 
 ## 접근성
 
