@@ -116,6 +116,14 @@ describe('Tour', () => {
       expect(commits).toBe(before);
     });
 
+    it('draws a step whose selector cannot be parsed rather than throwing', async () => {
+      const screen = await render(
+        <Page steps={[{ target: '#1-intro', title: 'Intro', content: 'Welcome.' }]} defaultOpen />
+      );
+
+      await expect.element(screen.getByText('Welcome.')).toBeInTheDocument();
+    });
+
     it('offers no Previous on the first step', async () => {
       const screen = await render(<Page steps={STEPS} defaultOpen />);
 

@@ -142,6 +142,22 @@ interface Spot {
 }
 
 /**
+ * The element a step points at, or `null` when there is none.
+ *
+ * `querySelector` throws on a selector it cannot parse — an id that starts with
+ * a digit, or one React 18's `useId` made — and it would throw inside an effect,
+ * where nothing catches it and the whole tree unmounts. A step whose target
+ * cannot be found is already a step the tour knows how to draw.
+ */
+function findTarget(selector: string): Element | null {
+  try {
+    return document.querySelector(selector);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * The dimming, with a hole in it.
  *
  * One element the size of the target carrying a shadow far larger than any
@@ -277,7 +293,7 @@ export function Tour(rawProps: TourProps) {
     // The page is the external system: the target is read out of a document
     // React does not own, once per step rather than on every render.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setAnchor(running && selector ? document.querySelector(selector) : null);
+    setAnchor(running && selector ? findTarget(selector) : null);
   }, [running, current?.target]);
 
   /**
@@ -293,7 +309,7 @@ export function Tour(rawProps: TourProps) {
 
     if (!running || !selector) return undefined;
 
-    const target = document.querySelector(selector);
+    const target = findTarget(selector);
 
     if (!(target instanceof HTMLElement)) return undefined;
 

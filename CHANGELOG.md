@@ -98,6 +98,8 @@
 
 - **`neba/hooks` has types under `moduleResolution: node10`.** `typesVersions`, which that resolver reads instead of `exports`, had no entry for it, so its wildcard sent the import to a component folder that does not exist and TypeScript reported the module as missing.
 
+- **A `Tour` step with a selector the browser cannot parse no longer takes the app down.** `querySelector` throws on a `target` such as `#1-intro` or an id made by React 18's `useId`, and it threw inside an effect, where it unmounted the whole tree. Such a step is drawn as a step with no target.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
