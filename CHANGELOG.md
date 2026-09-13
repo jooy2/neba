@@ -184,6 +184,8 @@
 
 - **A calendar says which month it moved to.** Stepping a month, or arrowing off the edge of one, changed every cell at once and a screen reader heard only the newly focused day. The grid is named by the month on screen, in a polite live region that says it again when it changes. A month cell is named the way the locale writes a month of a year ("2026년 11월", not "11월 2026"), and a `multiple` or `range` calendar marks its grid `aria-multiselectable`.
 
+- **The tick on a chosen `ColorPicker` swatch is the ink that reads.** It turned black only past a luminance of 0.42, so a white tick was drawn on a mid grey, an orange or a green at 2.3:1 to 2.8:1, where black reads 7:1 or better. The tick now takes whichever of the two contrasts more, so a few light swatches that had a white tick have a black one.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

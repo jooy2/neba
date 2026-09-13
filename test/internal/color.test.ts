@@ -175,6 +175,16 @@ describe('readableInk', () => {
     expect([onYellow, onNavy].sort()).toEqual([onNavy, onYellow].sort());
   });
 
+  // Halfway is the wrong place for the crossover: a mid grey, an orange and a
+  // green all read under 3:1 in white and far better in black.
+  it('chooses whichever ink contrasts more on a mid-tone swatch', () => {
+    for (const hex of ['#9ca3af', '#f97316', '#22c55e']) {
+      expect(readableInk(parseColor(hex)!.hsv), hex).toBe('#000000');
+    }
+
+    expect(readableInk(parseColor('#2563eb')!.hsv)).toBe('#ffffff');
+  });
+
   it('reads on white and on black', () => {
     expect(readableInk({ h: 0, s: 0, v: 100 })).not.toBe(readableInk({ h: 0, s: 0, v: 0 }));
   });

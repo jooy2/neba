@@ -316,6 +316,10 @@ export function cssColor(hsv: Hsv, alpha = 1): string {
  * is relative luminance rather than plain lightness, because the eye weighs
  * green about six times as heavily as blue and a colour model that pretends
  * otherwise puts the tick the wrong way round on both.
+ *
+ * Whichever ink contrasts more wins, which puts the crossover at a luminance of
+ * about 0.18 rather than halfway: a mid grey, an orange or a green reads 4:1 or
+ * better in black and under 3:1 in white.
  */
 export function readableInk(hsv: Hsv): string {
   const { r, g, b } = hsvToRgb(hsv);
@@ -327,7 +331,10 @@ export function readableInk(hsv: Hsv): string {
 
   const luminance = 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 
-  return luminance > 0.42 ? '#000000' : '#ffffff';
+  const onWhite = 1.05 / (luminance + 0.05);
+  const onBlack = (luminance + 0.05) / 0.05;
+
+  return onBlack > onWhite ? '#000000' : '#ffffff';
 }
 
 /**
