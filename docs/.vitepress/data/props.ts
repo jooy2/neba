@@ -11573,6 +11573,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'letterbox',
+      type: "'none' | 'blur' | string",
+      default: "'none'",
+      description: {
+        ko: 'contain · none · scale-down이 남긴 빈 영역을 채우는 것. blur는 같은 그림을 흐리게 깔고, 그 밖의 문자열은 CSS background입니다',
+        en: 'What fills the space contain, none or scale-down leave empty. blur lays the same picture behind it, blurred; any other string is a CSS background'
+      }
+    },
+    {
       name: 'rounded',
       type: 'NebaSize | boolean',
       default: 'false',

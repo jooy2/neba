@@ -79,6 +79,18 @@ It is read on the picture as it is shown, so it holds through `rotate` and `flip
 
 </Demo>
 
+### letterbox
+
+What fills the part of the box a picture leaves empty under `contain`, `none` or `scale-down`. `blur` draws the same picture behind it, covering the box and blurred, the way a video player fills the sides of a portrait clip. Any other string is a CSS `background`: a colour, a token or a gradient. `none`, the default, leaves the box transparent.
+
+The blurred copy is the same file, so it is not a second download. It follows `position`, `rotate`, `flip` and `filter`, and it is only drawn under a `fit` that can leave space.
+
+<Demo src="image/letterbox">
+
+<<< @/.vitepress/demos/image/letterbox.tsx
+
+</Demo>
+
 ### rotate and flip
 
 `rotate` turns the picture clockwise by `0`, `90`, `180` or `270` degrees. `flip` mirrors it: `horizontal`, `vertical`, `both`, or `none`, the default. The mirror runs along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture has been turned.

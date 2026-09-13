@@ -79,6 +79,18 @@ import { Image } from 'neba';
 
 </Demo>
 
+### letterbox
+
+`contain`, `none`, `scale-down`에서 그림이 채우지 못한 상자 영역을 무엇으로 채울지 정합니다. `blur`는 같은 그림을 상자에 꽉 차게 흐리게 깔아, 동영상 플레이어가 세로 영상의 양옆을 채우는 방식과 같게 만듭니다. 그 밖의 문자열은 색, 토큰, 그러데이션 같은 CSS `background`입니다. 기본값 `none`은 상자를 투명하게 둡니다.
+
+흐린 사본은 같은 파일이라 다시 내려받지 않습니다. `position`, `rotate`, `flip`, `filter`를 그대로 따르며, 빈 영역이 생길 수 있는 `fit`에서만 그립니다.
+
+<Demo src="image/letterbox">
+
+<<< @/.vitepress/demos/image/letterbox.tsx
+
+</Demo>
+
 ### rotate와 flip
 
 `rotate`는 그림을 시계 방향으로 `0`, `90`, `180`, `270`도 돌립니다. `flip`은 그림을 뒤집으며 `horizontal`, `vertical`, `both`, 그리고 기본값 `none`을 받습니다. 뒤집는 축은 화면에 보이는 그림을 기준으로 하므로, 돌렸든 아니든 `flip="horizontal"`은 좌우를 바꿉니다.

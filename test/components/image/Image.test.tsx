@@ -388,6 +388,88 @@ describe('Image', () => {
     });
   });
 
+  describe('letterbox', () => {
+    const picturesIn = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+
+    it('draws nothing by default', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" fit="contain" />);
+      const [picture] = picturesIn(screen.container);
+
+      expect(picturesIn(screen.container)).toHaveLength(1);
+      expect(picture.parentElement?.style.background).toBe('');
+    });
+
+    it('paints a CSS background behind the picture', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" fit="contain" letterbox="rgb(10, 20, 30)" />
+      );
+      const [picture] = picturesIn(screen.container);
+
+      expect(picturesIn(screen.container)).toHaveLength(1);
+      expect(picture.parentElement?.style.background).toContain('rgb(10, 20, 30)');
+    });
+
+    /*
+     * The copy is decoration and nothing else: out of the accessibility tree,
+     * out of the pointer's way, and drawn from exactly what the picture is drawn
+     * from so it is the same request.
+     */
+    it('draws the picture blurred behind itself', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          srcSet={`${OK} 1x`}
+          alt="A ridge"
+          fit="contain"
+          letterbox="blur"
+          loading="lazy"
+        />
+      );
+      const [copy, picture] = picturesIn(screen.container);
+
+      expect(picturesIn(screen.container)).toHaveLength(2);
+      await expect.element(screen.getByRole('img', { name: 'A ridge' })).toBeInTheDocument();
+      expect(copy).toHaveAttribute('aria-hidden', 'true');
+      expect(copy).toHaveAttribute('alt', '');
+      expect(copy).toHaveAttribute('srcset', `${OK} 1x`);
+      expect(copy).toHaveAttribute('loading', 'lazy');
+      expect(copy).toHaveClass('pointer-events-none', 'object-cover');
+      expect(copy.style.filter).toContain('blur(');
+      // Positioned, so the picture paints over the copy rather than under it.
+      expect(picture).toHaveClass('relative');
+    });
+
+    it('draws no copy where the fit leaves no space for one', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" letterbox="blur" />);
+
+      expect(picturesIn(screen.container)).toHaveLength(1);
+    });
+
+    it('turns, mirrors and tints the copy with the picture', async () => {
+      const screen = await render(
+        <Image
+          src={OK}
+          alt="A ridge"
+          ratio={1}
+          fit="contain"
+          letterbox="blur"
+          filter="grayscale"
+          rotate={90}
+          flip="vertical"
+        />
+      );
+      const [copy, picture] = picturesIn(screen.container);
+
+      expect(copy.style.rotate).toBe(picture.style.rotate);
+      expect(copy.style.scale).toBe(picture.style.scale);
+      expect(copy.style.filter).toContain('grayscale(1)');
+      // Grown past the box, so the blur's transparent fringe is clipped away.
+      expect(copy.style.width).toContain('100cqh');
+      expect(copy.style.width).toContain('+');
+    });
+  });
+
   describe('rotate and flip', () => {
     /** A file twice as wide as it is tall, so a turn has a shape to change. */
     const WIDE =

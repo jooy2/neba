@@ -14,6 +14,8 @@
 
 - **`Image` takes `position`.** It is `object-position`: which part of the picture a `cover` crop keeps, and where `contain`, `none` and `scale-down` leave their empty space. It takes a side, a corner, `center` or two percentages, and is read on the picture as it is shown, so `position="top"` keeps the top the reader sees through `rotate` and `flip`.
 
+- **`Image` takes `letterbox`.** It fills the part of the box `contain`, `none` or `scale-down` leave empty: `blur` lays the same picture behind it, covering the box and blurred, and any other string is a CSS `background`. The blurred copy is the same file rather than a second download, follows `position`, `rotate`, `flip` and `filter`, and is only drawn under a `fit` that can leave space.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

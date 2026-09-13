@@ -57,6 +57,15 @@ export type NebaImagePosition =
   | 'bottom right'
   | `${number}% ${number}%`;
 
+/**
+ * What fills the part of the box a picture leaves empty.
+ *
+ * `blur` is the picture itself, covering the box and blurred behind it — what a
+ * video player does with a portrait clip in a landscape frame, and the one fill
+ * that never reads as a gap. Any other string is a CSS `background`.
+ */
+export type NebaImageLetterbox = 'none' | 'blur';
+
 /** The silhouette a frame cuts the picture to. */
 export type NebaImageFrameShape = 'rect' | 'rounded' | 'circle' | 'cut' | 'arch';
 
@@ -246,6 +255,17 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * @default 'center'
    */
   position?: NebaImagePosition;
+  /**
+   * What fills the box where `contain`, `none` or `scale-down` leave it empty:
+   * `blur` for the picture itself, blurred and covering the box behind it, or a
+   * CSS `background` — a colour, a token, a gradient.
+   *
+   * The blurred copy is the same file, so it is not a second download, and it
+   * is only drawn under a `fit` that can leave space; under `cover` and `fill`
+   * there is nothing for it to show through.
+   * @default 'none'
+   */
+  letterbox?: NebaImageLetterbox | (string & {});
   /** Rounds the corners at this step of the radius ladder. `false` for square. */
   rounded?: NebaSize | boolean;
   /**
@@ -504,6 +524,40 @@ function objectPosition(position: string, quarters: 0 | 1 | 2 | 3, flip: NebaIma
 }
 
 /**
+ * How far the blurred letterbox is blurred, and how far past the box it is
+ * drawn. A blur fades to transparent over about two radii at the element's
+ * edge, so the copy is grown by that much on every side and the box clips the
+ * fringe off rather than showing the page through it.
+ */
+const LETTERBOX_BLUR = 24;
+
+/**
+ * The geometry of a copy of the picture drawn under it: the same turn, the same
+ * mirror, and the same box grown by `bleed` on every side.
+ */
+function layerStyle(
+  pose: React.CSSProperties,
+  sideways: boolean,
+  bleed: number
+): React.CSSProperties {
+  const grown = (length: string) => (bleed === 0 ? length : `calc(${length} + ${bleed * 2}px)`);
+
+  if (sideways) {
+    return { ...pose, width: grown('100cqh'), height: grown('100cqw') };
+  }
+
+  return {
+    ...pose,
+    position: 'absolute',
+    top: `${-bleed}px`,
+    left: `${-bleed}px`,
+    width: grown('100%'),
+    height: grown('100%'),
+    maxWidth: 'none'
+  };
+}
+
+/**
  * The turn and the mirror, as the declarations that draw them.
  *
  * The individual `rotate` and `scale` properties rather than `transform`, which
@@ -654,6 +708,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     height,
     fit = 'cover',
     position,
+    letterbox = 'none',
     rounded = false,
     placeholder,
     fallback,
@@ -769,6 +824,15 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const sideways = quarters % 2 === 1;
   const pose = poseStyle(quarters, flip);
   const placed = position === undefined ? undefined : objectPosition(position, quarters, flip);
+  /*
+   * The blurred letterbox, drawn only where it can show: `cover` and `fill`
+   * leave no space around the picture. What it is drawn from has to be exactly
+   * what the picture is drawn from — the same candidate out of a `srcSet`, the
+   * same CORS mode — or it would be a second request for a file already on its
+   * way.
+   */
+  const blurred = letterbox === 'blur' && fit !== 'cover' && fit !== 'fill';
+  const painted = letterbox !== 'none' && letterbox !== 'blur' ? letterbox : undefined;
 
   /*
    * The deterrents, as the attributes that carry them.
@@ -814,6 +878,9 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // rather than snapping.
         '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease)]',
         phase === 'loaded' ? 'opacity-100' : 'opacity-0',
+        // Positioned, so it paints over the absolutely positioned copy under it
+        // rather than beneath it.
+        blurred ? 'relative' : '',
         guarded?.className,
         classNames?.image
       )}
@@ -831,6 +898,31 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       {...props}
     />
   );
+
+  const backdrop = blurred ? (
+    <img
+      src={src}
+      srcSet={props.srcSet}
+      sizes={props.sizes}
+      loading={props.loading}
+      decoding={props.decoding}
+      crossOrigin={props.crossOrigin}
+      referrerPolicy={props.referrerPolicy}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      className={cx(
+        'pointer-events-none block object-cover select-none',
+        '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]',
+        phase === 'loaded' ? 'opacity-100' : 'opacity-0'
+      )}
+      style={{
+        ...layerStyle(pose, sideways, LETTERBOX_BLUR * 2),
+        objectPosition: placed,
+        filter: `${tint === 'none' ? '' : `${tint} `}blur(${LETTERBOX_BLUR}px)`
+      }}
+    />
+  ) : null;
 
   const cover =
     phase === 'failed' ? (
@@ -861,11 +953,16 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const stack = (
     <span
       className="relative block size-full"
-      // What the turned picture's container units read. Only on its side:
-      // size containment is a change to how the stack is measured, and nothing
-      // else needs it.
-      style={sideways ? { containerType: 'size' } : undefined}
+      // What the turned picture's container units read, and the letterbox's
+      // paint. Containment only on its side: it is a change to how the stack is
+      // measured, and nothing else needs it.
+      style={
+        sideways || painted !== undefined
+          ? { containerType: sideways ? 'size' : undefined, background: painted }
+          : undefined
+      }
     >
+      {backdrop}
       {picture}
       {cover}
       {mark}
