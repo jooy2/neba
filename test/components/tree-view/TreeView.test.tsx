@@ -158,6 +158,20 @@ describe('TreeView', () => {
       expect(group).toHaveClass('min-h-0');
     });
 
+    // The handlers are read when a row is pressed rather than captured when the
+    // tree last rebuilt its context, so the one reported to is the latest.
+    it('reports to the handler it was most recently given', async () => {
+      const first = vi.fn();
+      const second = vi.fn();
+      const screen = await render(<Sample onExpandedChange={first} onSelectedChange={first} />);
+
+      await screen.rerender(<Sample onExpandedChange={second} onSelectedChange={second} />);
+      await screen.getByText('src').click();
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledWith(['src']);
+    });
+
     it('stays shut when the caller controls it and does not answer', async () => {
       const screen = await render(<Sample expanded={[]} />);
 

@@ -36,6 +36,8 @@
 
 - **A grouped `DataTable` finds each row's place on the page in constant time.** Every render searched the page once per row of every group, which in a five-thousand-row grouped table without virtualisation made a single selection tens of millions of comparisons.
 
+- **A controlled `TreeView` re-renders its rows only when something in the tree changed.** Its toggle and select handlers were rebuilt whenever the `expanded` or `selected` array or an inline callback was, which is every render in the usual way of writing a controlled tree, and each rebuild re-rendered every row.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

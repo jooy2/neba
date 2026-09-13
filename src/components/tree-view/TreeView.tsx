@@ -351,39 +351,68 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
       [ref]
     );
 
-    const toggle = React.useCallback(
-      (value: TreeViewValue) => {
-        const key = keyOf(value);
-        const current = expanded ?? uncontrolledExpanded;
-        const next = current.some((entry) => keyOf(entry) === key)
+    /*
+     * What `toggle` and `select` read, so the two can keep one identity for the
+     * life of the tree. Both go into the context, and rebuilt whenever a list or
+     * a caller's inline handler did, they rebuilt the context with them — which
+     * re-rendered every row and undid the keyed memo below.
+     */
+    const latest = React.useRef({
+      expandedValues,
+      selectedValues,
+      controlledExpanded: expanded !== undefined,
+      controlledSelected: selected !== undefined,
+      multiple,
+      onExpandedChange,
+      onSelectedChange
+    });
+    // Read by the two handlers when a row is pressed, never during a render.
+    latest.current = {
+      expandedValues,
+      selectedValues,
+      controlledExpanded: expanded !== undefined,
+      controlledSelected: selected !== undefined,
+      multiple,
+      onExpandedChange,
+      onSelectedChange
+    };
+
+    const toggle = React.useCallback((value: TreeViewValue) => {
+      const {
+        expandedValues: current,
+        controlledExpanded,
+        onExpandedChange: report
+      } = latest.current;
+      const key = keyOf(value);
+      const next = current.some((entry) => keyOf(entry) === key)
+        ? current.filter((entry) => keyOf(entry) !== key)
+        : [...current, value];
+
+      if (!controlledExpanded) setUncontrolledExpanded(next);
+      report?.(next);
+    }, []);
+
+    const select = React.useCallback((value: TreeViewValue) => {
+      const {
+        selectedValues: current,
+        controlledSelected,
+        multiple: many,
+        onSelectedChange: report
+      } = latest.current;
+      const key = keyOf(value);
+      const isSelected = current.some((entry) => keyOf(entry) === key);
+      // Single select never empties: pressing the chosen row again keeps it,
+      // because "nothing chosen" is a state a caller cannot get back to by
+      // pointing at a row. Multi-select does toggle — that is what it is for.
+      const next = many
+        ? isSelected
           ? current.filter((entry) => keyOf(entry) !== key)
-          : [...current, value];
+          : [...current, value]
+        : [value];
 
-        if (expanded === undefined) setUncontrolledExpanded(next);
-        onExpandedChange?.(next);
-      },
-      [expanded, uncontrolledExpanded, onExpandedChange]
-    );
-
-    const select = React.useCallback(
-      (value: TreeViewValue) => {
-        const key = keyOf(value);
-        const current = selected ?? uncontrolledSelected;
-        const isSelected = current.some((entry) => keyOf(entry) === key);
-        // Single select never empties: pressing the chosen row again keeps it,
-        // because "nothing chosen" is a state a caller cannot get back to by
-        // pointing at a row. Multi-select does toggle — that is what it is for.
-        const next = multiple
-          ? isSelected
-            ? current.filter((entry) => keyOf(entry) !== key)
-            : [...current, value]
-          : [value];
-
-        if (selected === undefined) setUncontrolledSelected(next);
-        onSelectedChange?.(next);
-      },
-      [multiple, selected, uncontrolledSelected, onSelectedChange]
-    );
+      if (!controlledSelected) setUncontrolledSelected(next);
+      report?.(next);
+    }, []);
 
     const apisRef = React.useRef(new Map<string, TreeItemApi>());
     const register = React.useCallback((key: string, api: TreeItemApi) => {
