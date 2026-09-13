@@ -19,7 +19,9 @@ describe('DatePicker', () => {
     it('renders a button named by its label', async () => {
       const screen = await render(<DatePicker locale={LOCALE} label="Ships on" />);
 
-      await expect.element(screen.getByRole('button', { name: 'Ships on' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Ships on', exact: false }))
+        .toBeInTheDocument();
     });
 
     it('shows the placeholder while nothing is chosen', async () => {
@@ -89,7 +91,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       await expect
         .element(screen.getByRole('button', { name: 'Choose a month' }))
@@ -110,7 +112,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       expect(onValueChange).toHaveBeenCalledTimes(1);
@@ -124,7 +126,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} closeOnSelect={false} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       await expect.element(screen.getByRole('grid')).toBeInTheDocument();
@@ -141,7 +143,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2026, 6, 15, 14, 30));
@@ -159,7 +161,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       expect(onValueChange).toHaveBeenCalled();
@@ -173,7 +175,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('button', { name: 'Next month' }).click();
 
       await expect
@@ -186,7 +188,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('button', { name: 'Choose a month' }).click();
       await screen.getByRole('gridcell', { name: 'November 2026' }).click();
 
@@ -204,7 +206,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
       await screen.getByRole('button', { name: 'Choose a year' }).click();
 
       await expect.element(screen.getByRole('gridcell', { name: '2020' })).toBeInTheDocument();
@@ -242,7 +244,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
 
       // No day view to be seen: the months are what is on screen.
       await expect
@@ -269,7 +271,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Vintage' }).click();
+      await screen.getByRole('button', { name: 'Vintage', exact: false }).click();
       await screen.getByRole('gridcell', { name: '2020' }).click();
 
       expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2020, 0, 1));
@@ -287,7 +289,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
       await screen.getByRole('button', { name: 'Choose a year' }).click();
       await screen.getByRole('gridcell', { name: '2020' }).click();
 
@@ -335,7 +337,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships in" granularity="month" />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
 
       await expect.element(screen.getByRole('button', { name: 'This month' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Today' }).query()).toBeNull();
@@ -353,7 +355,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
       await screen.getByRole('button', { name: 'This month' }).click();
 
       const now = new Date();
@@ -401,7 +403,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
 
       // July has days left after the 20th, so July is still an answer.
       await expect
@@ -427,7 +429,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships in' }).click();
+      await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'November 2026' }))
@@ -450,7 +452,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }))
@@ -470,7 +472,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }))
@@ -493,7 +495,7 @@ describe('DatePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       const cell = screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' });
       await expect.element(cell).toHaveAttribute('aria-disabled', 'true');
@@ -526,7 +528,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} readOnly />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       expect(screen.getByRole('grid').query()).toBeNull();
     });
@@ -536,7 +538,9 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={JULY_27} disabled />
       );
 
-      await expect.element(screen.getByRole('button', { name: 'Ships on' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Ships on', exact: false }))
+        .toBeDisabled();
       expect(screen.getByRole('grid').query()).toBeNull();
     });
 
@@ -547,7 +551,7 @@ describe('DatePicker', () => {
 
       await expect.element(screen.getByText('Pick a weekday.')).toBeInTheDocument();
       await expect
-        .element(screen.getByRole('button', { name: 'Ships on' }))
+        .element(screen.getByRole('button', { name: 'Ships on', exact: false }))
         .toHaveAttribute('aria-invalid', 'true');
     });
 
@@ -567,7 +571,7 @@ describe('DatePicker', () => {
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={new Date(2026, 6, 30)} />
       );
 
-      await screen.getByRole('button', { name: 'Ships on' }).click();
+      await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       // The calendar takes the focus itself, on the chosen day. Waiting for the
       // focus rather than for the markup: a key pressed before it lands goes
@@ -606,7 +610,7 @@ describe('DatePicker', () => {
     it('reserves room for every month name and a two-digit day', async () => {
       const screen = await render(<DatePicker locale={LOCALE} label="Ships on" />);
       const samples = samplesOf(
-        screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement
+        screen.getByRole('button', { name: 'Ships on', exact: false }).element() as HTMLElement
       );
 
       for (const month of ['Jan', 'Feb', 'Sep', 'Nov', 'Dec']) {
@@ -621,7 +625,9 @@ describe('DatePicker', () => {
       );
 
       expect(
-        samplesOf(screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement)
+        samplesOf(
+          screen.getByRole('button', { name: 'Ships on', exact: false }).element() as HTMLElement
+        )
       ).toContain('Pick a departure date');
     });
 
@@ -635,20 +641,26 @@ describe('DatePicker', () => {
       const screen = await render(
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={new Date(2026, 6, 30)} />
       );
-      const trigger = screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement;
+      const trigger = screen
+        .getByRole('button', { name: 'Ships on', exact: false })
+        .element() as HTMLElement;
 
       expect(trigger.textContent).toBe('Jul 30, 2026');
       expect([...sizerOf(trigger).children].every((child) => child.textContent === '')).toBe(true);
     });
 
-    it('keeps the sizer out of the accessible name', async () => {
+    it('names the trigger by its label and the date it holds, and not by the sizer', async () => {
       const screen = await render(
         <DatePicker locale={LOCALE} label="Ships on" defaultValue={new Date(2026, 6, 30)} />
       );
 
-      await expect.element(screen.getByRole('button', { name: 'Ships on' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Ships on Jul 30, 2026' }))
+        .toBeInTheDocument();
       expect(
-        sizerOf(screen.getByRole('button', { name: 'Ships on' }).element() as HTMLElement)
+        sizerOf(
+          screen.getByRole('button', { name: 'Ships on', exact: false }).element() as HTMLElement
+        )
       ).toHaveAttribute('aria-hidden', 'true');
     });
   });

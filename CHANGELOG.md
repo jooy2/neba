@@ -16,6 +16,8 @@
 
 - **A `TextLink` with a `target` of its own is announced as opening elsewhere.** The spoken "(opens in a new tab)" came only with `newTab`, so `target="_blank"` written by hand opened a new tab without a word to a screen reader. The sentence now follows any target that leaves this tab, which changes the link's accessible name: a test that finds it by name needs the sentence added. The glyph still comes only with `newTab` or `icon`.
 
+- **A picker's trigger is named by its label and what it shows.** `DatePicker`, `DateRangePicker`, `TimePicker`, `DateTimePicker`, `TreeSelect` and `ColorPicker` named the trigger by `label` alone, which covered the date, the time or the choice written on it, so a screen reader said "Ships on, button" whatever had been picked. The name is now the label followed by the trigger's own text — "Ships on Jul 30, 2026". A test that finds the trigger by its exact label needs the value added, or `exact: false`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

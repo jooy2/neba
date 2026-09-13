@@ -112,5 +112,5 @@ The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two
 
 - The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
 - The chosen cell carries `aria-selected`; the current day, month or year carries `aria-current="date"` and a dot under the number.
-- `label` becomes the trigger's accessible name, and `description` and `error` are wired to it with `aria-describedby`.
+- The trigger's accessible name is `label` followed by what the trigger shows, so a reader hears the date that is chosen and not only what the field is for. `description` and `error` are wired to it with `aria-describedby`.
 - The popup is portalled to the end of `<body>`, with `neba-portal` on the positioner.

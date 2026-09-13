@@ -11,7 +11,9 @@ describe('DateTimePicker', () => {
     it('renders a button named by its label', async () => {
       const screen = await render(<DateTimePicker locale={LOCALE} label="Runs at" />);
 
-      await expect.element(screen.getByRole('button', { name: 'Runs at' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Runs at', exact: false }))
+        .toBeInTheDocument();
     });
 
     it('writes the day and the time in one string', async () => {
@@ -33,7 +35,7 @@ describe('DateTimePicker', () => {
         <DateTimePicker locale={LOCALE} label="Runs at" defaultValue={JULY_27_1430} />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
 
       await expect.element(screen.getByRole('grid')).toBeInTheDocument();
       await expect.element(screen.getByRole('listbox', { name: 'Hour' })).toBeInTheDocument();
@@ -52,7 +54,7 @@ describe('DateTimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2026, 6, 15, 14, 30));
@@ -69,7 +71,7 @@ describe('DateTimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
       await screen
         .getByRole('listbox', { name: 'Minute' })
         .getByRole('option', { name: '45' })
@@ -83,7 +85,7 @@ describe('DateTimePicker', () => {
         <DateTimePicker locale={LOCALE} label="Runs at" defaultValue={JULY_27_1430} />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' }).click();
 
       // A moment is a day *and* a time. Closing on the first of the two would
@@ -111,7 +113,7 @@ describe('DateTimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }))
@@ -170,7 +172,7 @@ describe('DateTimePicker', () => {
         <DateTimePicker locale={LOCALE} label="Runs at" defaultValue={JULY_27_1430} readOnly />
       );
 
-      await screen.getByRole('button', { name: 'Runs at' }).click();
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
 
       expect(screen.getByRole('grid').query()).toBeNull();
     });

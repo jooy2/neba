@@ -112,5 +112,5 @@ trigger는 텍스트 입력이 아니라 버튼입니다. 날짜는 달력에서
 
 - 그리드는 `role="grid"`, 각 칸은 `role="gridcell"` 버튼입니다. 칸의 이름은 숫자가 아니라 완전한 날짜입니다.
 - 선택된 칸은 `aria-selected`, 지금에 해당하는 날·달·해는 `aria-current="date"`와 숫자 아래의 점으로 표시됩니다.
-- `label`이 trigger의 accessible name이 되고, `description`과 `error`는 `aria-describedby`로 연결됩니다.
+- trigger의 accessible name은 `label` 뒤에 trigger에 보이는 내용을 이은 것이라, 무엇을 고르는 필드인지와 함께 고른 날짜가 읽힙니다. `description`과 `error`는 `aria-describedby`로 연결됩니다.
 - 팝업은 `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.

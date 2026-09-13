@@ -12,7 +12,9 @@ describe('TimePicker', () => {
     it('renders a button named by its label', async () => {
       const screen = await render(<TimePicker locale={LOCALE} label="Starts at" />);
 
-      await expect.element(screen.getByRole('button', { name: 'Starts at' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Starts at', exact: false }))
+        .toBeInTheDocument();
     });
 
     it('shows the placeholder while nothing is chosen', async () => {
@@ -51,7 +53,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       await expect.element(screen.getByRole('listbox', { name: 'Hour' })).toBeInTheDocument();
       await expect.element(screen.getByRole('listbox', { name: 'Minute' })).toBeInTheDocument();
@@ -68,7 +70,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} hour12={false} />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       expect(screen.getByRole('listbox', { name: 'AM/PM' }).query()).toBeNull();
       expect(
@@ -81,7 +83,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} minuteStep={15} />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       expect(
         screen.getByRole('listbox', { name: 'Minute' }).getByRole('option').elements()
@@ -93,7 +95,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       await expect
         .element(
@@ -118,7 +120,7 @@ describe('TimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
       await screen
         .getByRole('listbox', { name: 'Hour' })
         .getByRole('option', { name: '5' })
@@ -139,7 +141,7 @@ describe('TimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
       await screen
         .getByRole('listbox', { name: 'AM/PM' })
         .getByRole('option', { name: 'AM' })
@@ -153,7 +155,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
       await screen
         .getByRole('listbox', { name: 'Hour' })
         .getByRole('option', { name: '5' })
@@ -177,7 +179,7 @@ describe('TimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
       await screen
         .getByRole('listbox', { name: 'Minute' })
         .getByRole('option', { name: '45' })
@@ -206,7 +208,7 @@ describe('TimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       const hours = screen.getByRole('listbox', { name: 'Hour' });
       await expect
@@ -236,7 +238,7 @@ describe('TimePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       await expect
         .element(screen.getByRole('listbox', { name: 'Hour' }).getByRole('option', { name: '13' }))
@@ -269,7 +271,7 @@ describe('TimePicker', () => {
         <TimePicker locale={LOCALE} label="Starts at" defaultValue={HALF_TWO} readOnly />
       );
 
-      await screen.getByRole('button', { name: 'Starts at' }).click();
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
 
       expect(screen.getByRole('listbox', { name: 'Hour' }).query()).toBeNull();
     });

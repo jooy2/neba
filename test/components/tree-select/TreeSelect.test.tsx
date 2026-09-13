@@ -35,7 +35,9 @@ describe('TreeSelect', () => {
   it('renders a trigger named by its label, with nothing open', async () => {
     const screen = await render(<TreeSelect label="Region" items={REGIONS} />);
 
-    await expect.element(screen.getByRole('button', { name: 'Region' })).toBeInTheDocument();
+    await expect
+      .element(screen.getByRole('button', { name: 'Region', exact: false }))
+      .toBeInTheDocument();
     expect(screen.getByRole('tree').query()).toBeNull();
   });
 
@@ -50,7 +52,7 @@ describe('TreeSelect', () => {
       />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Korea').click();
 
     expect(onValueChange).toHaveBeenCalledWith(['kr']);
@@ -68,7 +70,7 @@ describe('TreeSelect', () => {
       <TreeSelect label="Region" items={REGIONS} onValueChange={onValueChange} />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Asia').click();
 
     expect(onValueChange).not.toHaveBeenCalled();
@@ -80,7 +82,7 @@ describe('TreeSelect', () => {
       <TreeSelect label="Region" items={REGIONS} onValueChange={onValueChange} />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Asia').click();
 
     await expect.element(screen.getByText('Korea')).toBeInTheDocument();
@@ -97,7 +99,7 @@ describe('TreeSelect', () => {
       <TreeSelect label="Region" items={REGIONS} selectableBranches onValueChange={onValueChange} />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Asia').click();
 
     expect(onValueChange).toHaveBeenCalledWith(['asia']);
@@ -115,7 +117,7 @@ describe('TreeSelect', () => {
       />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Korea').click();
     await screen.getByText('France').click();
 
@@ -127,7 +129,7 @@ describe('TreeSelect', () => {
       <TreeSelect label="Region" items={REGIONS} defaultExpanded={['asia']} />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Korea').click();
 
     await expect.poll(() => screen.getByRole('tree').query()).toBeNull();
@@ -144,7 +146,7 @@ describe('TreeSelect', () => {
       />
     );
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
     await screen.getByText('Germany').click();
 
     expect(onValueChange).not.toHaveBeenCalled();
@@ -156,7 +158,7 @@ describe('TreeSelect', () => {
       // and "France" under nothing at all does not say which taxonomy it is in.
       const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
 
-      await screen.getByRole('button', { name: 'Region' }).click();
+      await screen.getByRole('button', { name: 'Region', exact: false }).click();
       await screen.getByRole('textbox').fill('fran');
 
       await expect.element(screen.getByText('Europe')).toBeInTheDocument();
@@ -167,7 +169,7 @@ describe('TreeSelect', () => {
     it('opens what it kept, so a match is not folded away', async () => {
       const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
 
-      await screen.getByRole('button', { name: 'Region' }).click();
+      await screen.getByRole('button', { name: 'Region', exact: false }).click();
       await screen.getByRole('textbox').fill('korea');
 
       await expect.element(screen.getByText('Korea')).toBeInTheDocument();
@@ -192,7 +194,7 @@ describe('TreeSelect', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Region' }).click();
+      await screen.getByRole('button', { name: 'Region', exact: false }).click();
       await screen.getByRole('textbox').fill('ILE-DE');
 
       await expect.element(screen.getByText('Île-de-France')).toBeInTheDocument();
@@ -202,7 +204,7 @@ describe('TreeSelect', () => {
     it('says so when nothing matched', async () => {
       const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
 
-      await screen.getByRole('button', { name: 'Region' }).click();
+      await screen.getByRole('button', { name: 'Region', exact: false }).click();
       await screen.getByRole('textbox').fill('atlantis');
 
       await expect.element(screen.getByText('No matches')).toBeInTheDocument();
@@ -286,7 +288,7 @@ describe('TreeSelect', () => {
   it('does not open when read-only', async () => {
     const screen = await render(<TreeSelect label="Region" items={REGIONS} readOnly />);
 
-    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByRole('button', { name: 'Region', exact: false }).click();
 
     expect(screen.getByRole('tree').query()).toBeNull();
   });

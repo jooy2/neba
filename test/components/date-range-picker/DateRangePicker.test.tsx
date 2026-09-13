@@ -11,7 +11,9 @@ describe('DateRangePicker', () => {
     it('renders a button named by its label', async () => {
       const screen = await render(<DateRangePicker locale={LOCALE} label="Stay" />);
 
-      await expect.element(screen.getByRole('button', { name: 'Stay' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Stay', exact: false }))
+        .toBeInTheDocument();
     });
 
     it('shows a placeholder for each end while it is unchosen', async () => {
@@ -46,7 +48,7 @@ describe('DateRangePicker', () => {
         <DateRangePicker locale={LOCALE} label="Stay" defaultMonth={JULY} />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       expect(screen.getByRole('grid').elements()).toHaveLength(2);
       await expect
@@ -59,7 +61,7 @@ describe('DateRangePicker', () => {
         <DateRangePicker locale={LOCALE} label="Stay" defaultMonth={JULY} monthCount={1} />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       expect(screen.getByRole('grid').elements()).toHaveLength(1);
     });
@@ -77,7 +79,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }).click();
 
       // Half a range: the first end is reported, the second is still open.
@@ -104,7 +106,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Thursday, July 9, 2026' }).click();
       await screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }).click();
 
@@ -127,7 +129,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }).click();
       await screen.getByRole('gridcell', { name: 'Monday, August 3, 2026' }).click();
 
@@ -147,7 +149,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }))
@@ -173,7 +175,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Monday, July 20, 2026' }).click();
 
       expect(onValueChange.mock.calls[0][0]).toEqual({ start: new Date(2026, 6, 20), end: null });
@@ -198,7 +200,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('button', { name: 'First week' }).click();
 
       expect(onValueChange).toHaveBeenCalledWith({
@@ -220,7 +222,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       expect(build).not.toHaveBeenCalled();
 
@@ -243,7 +245,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       await expect
         .element(screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }))
@@ -302,7 +304,7 @@ describe('DateRangePicker', () => {
         />
       );
 
-      await screen.getByRole('button', { name: 'Stay' }).click();
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
 
       expect(screen.getByRole('grid').query()).toBeNull();
     });

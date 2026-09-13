@@ -275,7 +275,7 @@ export function PickerShell({
             id={triggerId}
             ref={triggerRef}
             disabled={disabled}
-            aria-labelledby={label ? labelId : undefined}
+            aria-labelledby={label ? `${labelId} ${triggerId}` : undefined}
             aria-describedby={describedBy}
             aria-required={required || undefined}
             aria-invalid={isInvalid || undefined}
