@@ -1,3 +1,4 @@
+import { Profiler } from 'react';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { ScatterChart } from 'neba';
@@ -630,6 +631,51 @@ describe('ScatterChart', () => {
       await expect.element(status).toBeInTheDocument();
       expect(status.element().textContent).toContain('High');
       expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
+    });
+
+    it('does not re-render for every pixel the pointer moves over one mark', async () => {
+      let commits = 0;
+      const screen = await render(
+        <Profiler id="chart" onRender={() => (commits += 1)}>
+          <ScatterChart
+            label="Spend"
+            height={200}
+            xAxis={{ hidden: true }}
+            yAxis={{ hidden: true }}
+            series={[{ name: 'Q1', data: [{ x: 50, y: 50 }] }]}
+          />
+        </Profiler>
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const host = plot.element();
+      const rect = host.getBoundingClientRect();
+      const [mark] = markCentres(host);
+      // Down the value axis, which is the offset `item` mode over a column reads.
+      const move = (dy: number) =>
+        host.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles: true,
+            clientX: rect.left + mark.x,
+            clientY: rect.top + mark.y + dy
+          })
+        );
+
+      move(0);
+      await expect.element(screen.getByRole('status')).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const before = commits;
+
+      for (let dy = 1; dy <= 8; dy += 1) {
+        move(dy);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+      }
+
+      expect(commits).toBe(before);
     });
 
     it('says nothing when the pointer is nowhere near a mark', async () => {

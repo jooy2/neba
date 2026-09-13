@@ -1491,12 +1491,13 @@ export function CartesianChart({
             setColumnIndex(indexAt(event.clientX, event.clientY));
           }
 
-          // Only `item` mode reads this, and only it may pay for it. The index
-          // above settles to the same value everywhere inside one column, so
-          // React bails out of the re-render — but a pointer offset is a fresh
-          // pixel on every event, and storing one the tooltip never consults
-          // would re-lay the whole chart out for each pixel the pointer moves.
-          if (tooltipMode === 'item') {
+          // Only `item` mode over a column reads this, and only it may pay for
+          // it. The index above settles to the same value everywhere inside one
+          // column, so React bails out of the re-render — but a pointer offset
+          // is a fresh pixel on every event, and storing one the tooltip never
+          // consults would re-lay the whole chart out for each pixel the pointer
+          // moves. A chart of marks never consults it: its item is the mark.
+          if (tooltipMode === 'item' && !marks) {
             setPointer(valueAt(event.clientX, event.clientY));
           }
         }}
