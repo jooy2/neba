@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Mockup } from 'neba';
 
@@ -24,6 +25,25 @@ describe('Mockup', () => {
       expect(root.tagName).toBe('DIV');
       await expect.element(screen.getByText('App')).toBeInTheDocument();
       expect(parts(root).screen.contains(screen.getByText('App').element())).toBe(true);
+    });
+
+    // A server render has no box to measure, so the device used to arrive
+    // hidden and stay that way until hydration.
+    it('draws the device in a server render when its width is given in pixels', () => {
+      const html = renderToString(
+        <Mockup device="mobile" width={195}>
+          <span>App</span>
+        </Mockup>
+      );
+
+      expect(html).toContain('scale(0.');
+      expect(html).not.toContain('visibility:hidden');
+    });
+
+    it('holds the device inside its own box, whatever size it is still drawn at', async () => {
+      const screen = await render(<Mockup data-testid="mockup" device="desktop" />);
+
+      expect(screen.getByTestId('mockup').element()).toHaveClass('overflow-hidden');
     });
 
     it('renders something else through render', async () => {

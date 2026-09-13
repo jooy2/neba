@@ -231,6 +231,24 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
   const [scale, setScale] = React.useState<number | null>(null);
 
   /*
+   * The scale a size given in pixels already implies, worked out while
+   * rendering. It is the same division the measurement makes, and having it
+   * before the first paint means a server-rendered mockup with a numeric
+   * `width` or `height` is drawn in the HTML rather than hidden until
+   * hydration measures it — a device and everything on its screen that a
+   * reader, a crawler and Largest Contentful Paint all waited for.
+   */
+  const implied =
+    typeof width === 'number'
+      ? typeof height === 'number'
+        ? Math.min(width / frame.width, height / frame.height)
+        : width / frame.width
+      : typeof height === 'number' && width === undefined
+        ? height / frame.height
+        : null;
+  const shownScale = scale ?? implied;
+
+  /*
    * One measurement, and the reason the device cannot simply be sized in CSS:
    * the scale is a ratio between a length the stylesheet knows and a length only
    * this file knows, and there is no CSS operator that divides one by the other.
@@ -308,7 +326,14 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
   // `neba-mockup` and `neba-mockup-screen` are hooks rather than styles, the way
   // `neba-link` and `neba-portal` are: the device draws itself, and these are
   // there so a caller can reach the glass without counting elements.
-  const classNames = cx('neba-mockup relative block', animation.className, className ?? '');
+  // `overflow-hidden`, because until it is measured the device is drawn at its
+  // own resolution and a 1440-pixel desktop hidden with `visibility` still
+  // takes up 1440 pixels of a narrow page's scroll width.
+  const classNames = cx(
+    'neba-mockup relative block overflow-hidden',
+    animation.className,
+    className ?? ''
+  );
 
   return useRender({
     render,
@@ -334,10 +359,11 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
           style={{
             width: frame.width,
             height: frame.height,
-            transform: `translate(-50%, -50%) scale(${scale ?? 1})`,
+            transform: `translate(-50%, -50%) scale(${shownScale ?? 1})`,
             // Until the box has been measured there is no honest size to draw
-            // at. One frame, and only ever on the very first paint.
-            visibility: scale === null ? 'hidden' : undefined
+            // at, unless a size in pixels already said what it would be. One
+            // frame on a client, and until hydration on a server render.
+            visibility: shownScale === null ? 'hidden' : undefined
           }}
         >
           <div

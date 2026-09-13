@@ -236,6 +236,8 @@
 
 - **A modal `Popover` always has a way out.** With `modal` on and `showClose` left off, the popup trapped the focus with no close button in it, so on iOS VoiceOver, which has no Escape key, a reader could not leave; Base UI requires a close for a modal popover. One is now added last in the popup, visually hidden until it takes the keyboard focus, when it shows as the × in the corner.
 
+- **A `Mockup` with a width in pixels is drawn in a server render, and never widens the page.** The device stayed `visibility: hidden` until its box was measured, so on a server-rendered page the device and everything on its screen were invisible until hydration, and meanwhile a desktop drawn at 1440 pixels could give a phone-width page a horizontal scrollbar. A numeric `width` or `height` now works out the scale while rendering, and the root clips what it holds; a mockup sized in a CSS length is still measured first.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
