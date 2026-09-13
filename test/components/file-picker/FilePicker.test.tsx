@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { FilePicker } from 'neba';
 
 function file(name: string, type = 'text/plain', size = 10) {
@@ -112,6 +113,25 @@ describe('FilePicker', () => {
 
       expect(onFilesChange).toHaveBeenCalledWith([]);
       expect(screen.getByText('notes.txt').query()).toBeNull();
+    });
+
+    it('keeps the keyboard focus in the list as files are removed', async () => {
+      const screen = await render(
+        <FilePicker multiple defaultValue={[file('a.txt'), file('b.txt'), file('c.txt')]} />
+      );
+
+      screen.getByRole('button', { name: 'Remove b.txt' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+      // The next file moved into the place of the one removed.
+      await expect.element(screen.getByRole('button', { name: 'Remove c.txt' })).toHaveFocus();
+
+      await userEvent.keyboard('{Enter}');
+      // The last one gone, the one before it.
+      await expect.element(screen.getByRole('button', { name: 'Remove a.txt' })).toHaveFocus();
+
+      await userEvent.keyboard('{Enter}');
+      // Nothing left, the zone that adds files.
+      await expect.element(screen.getByRole('button', { name: /Drop files here/ })).toHaveFocus();
     });
 
     it('follows a controlled value', async () => {

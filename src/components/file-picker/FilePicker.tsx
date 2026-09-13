@@ -408,6 +408,32 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       [accepting, commit, files, multiple, onReject]
     );
 
+    const zoneRef = React.useRef<HTMLButtonElement | null>(null);
+    const listRef = React.useRef<HTMLUListElement | null>(null);
+    /*
+     * The row a removal took the focus out of. Its remove button leaves the
+     * document with the row, which drops the focus to the page, so once the list
+     * has been redrawn the focus goes to the remove button now in that place —
+     * the next file, or the one before it when the last was removed — and to
+     * the drop zone once there is nothing left.
+     */
+    const refocusAt = React.useRef<number | null>(null);
+
+    React.useLayoutEffect(() => {
+      const at = refocusAt.current;
+
+      if (at === null) {
+        return;
+      }
+
+      refocusAt.current = null;
+
+      const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>('li button') ?? [];
+      const next = buttons[Math.min(at, buttons.length - 1)] ?? zoneRef.current;
+
+      next?.focus();
+    }, [files]);
+
     const browse = () => {
       if (inert) {
         return;
@@ -506,6 +532,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
           }}
         >
           <button
+            ref={zoneRef}
             type="button"
             id={id}
             disabled={disabled}
@@ -556,6 +583,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
 
         {showList && files.length > 0 ? (
           <ul
+            ref={listRef}
             role="list"
             className={`flex w-full flex-col ${stackGapClasses[size]} m-0 list-none p-0`}
           >
@@ -587,7 +615,11 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
                       'hover:text-(--neba-fg) hover:opacity-100 focus-visible:opacity-100',
                       'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
                     ].join(' ')}
-                    onClick={() => commit(files.filter((_, at) => at !== index))}
+                    onClick={(event) => {
+                      refocusAt.current =
+                        event.currentTarget === document.activeElement ? index : null;
+                      commit(files.filter((_, at) => at !== index));
+                    }}
                   >
                     <CloseIcon />
                   </button>

@@ -130,6 +130,8 @@
 
 - **Unfolding a `Breadcrumb` keeps the keyboard focus in the trail.** The `…` button left the trail as soon as it was pressed, which dropped the focus to the page. It now moves to the first step the fold was hiding.
 
+- **Removing a file from a `FilePicker` keeps the keyboard focus in the list.** The remove button left with its row and the focus fell to the page. It now moves to the remove button that takes that place, the one before it when the last file went, and the drop zone when the list is empty.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
