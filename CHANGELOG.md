@@ -14,6 +14,8 @@
 
 - **A `DataTable` sorted descending puts rows with no value last.** A blank, `null`, `undefined` or `NaN` cell went last in an ascending sort and was reversed to the top of a descending one, so the first screen of a column sorted high-to-low could be all blanks. Blanks now go last in both directions, which was always the stated intent. A column with its own `compare` orders its blanks itself, as before.
 
+- **A `TextLink` with a `target` of its own is announced as opening elsewhere.** The spoken "(opens in a new tab)" came only with `newTab`, so `target="_blank"` written by hand opened a new tab without a word to a screen reader. The sentence now follows any target that leaves this tab, which changes the link's accessible name: a test that finds it by name needs the sentence added. The glyph still comes only with `newTab` or `icon`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

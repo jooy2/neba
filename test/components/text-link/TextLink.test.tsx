@@ -139,6 +139,29 @@ describe('TextLink', () => {
       await expect.element(screen.getByText('(opens in a new tab)')).toBeInTheDocument();
     });
 
+    it('says so for a target written by hand, without drawing the glyph', async () => {
+      const screen = await render(
+        <TextLink href="https://example.com" target="_blank">
+          Example
+        </TextLink>
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Example (opens in a new tab)' }))
+        .toBeInTheDocument();
+      expect(screen.getByRole('link').element().querySelector('svg')).toBeNull();
+    });
+
+    it('says nothing for a target that stays in the tab', async () => {
+      const screen = await render(
+        <TextLink href="/docs" target="_self">
+          Docs
+        </TextLink>
+      );
+
+      await expect.element(screen.getByRole('link', { name: 'Docs' })).toBeInTheDocument();
+    });
+
     it('says so in the language it was given', async () => {
       const screen = await render(
         <TextLink href="https://example.com" newTab locale="ko">

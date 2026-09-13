@@ -137,6 +137,9 @@ const baseClasses = [
   'focus-visible:rounded-[0.25rem]'
 ].join(' ');
 
+/** The targets that stay in this browsing context, which `safeRel` leaves alone too. */
+const SAME_CONTEXT_TARGETS = new Set(['_self', '_parent', '_top']);
+
 /**
  * A link, in a sentence or on its own.
  *
@@ -211,6 +214,10 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
     // it goes through the same merge rather than around it.
     const target = newTab ? '_blank' : targetProp;
     const rel = safeRel(target, askedFor);
+    // And it is announced the same way. The arrow stays with `newTab`, because
+    // a glyph that appeared on links already written would change how they
+    // look; the sentence changes only what is heard.
+    const leaves = target !== undefined && !SAME_CONTEXT_TARGETS.has(target);
 
     return useRender({
       render: render ?? <a />,
@@ -228,7 +235,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
               only to a reader who can see it. The space is a real text node, so
               the accessible name comes out as two words rather than as the
               label with a bracket stuck to the end of it. */}
-            {newTab ? (
+            {leaves ? (
               <>
                 {' '}
                 <span className={srOnlyClasses}>{messages.newTab}</span>

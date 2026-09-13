@@ -65,7 +65,7 @@ Also unset by default: a link in a sentence is the size of the sentence. Set `si
 
 `newTab` sets `target="_blank"` and the `rel` that stops the new page reaching back through `window.opener`. It also turns `icon` on, because a window changing under the reader is the one thing about a link that cannot be seen until it has happened.
 
-A `rel` of your own is merged with that rather than replacing it. `rel="nofollow"` is an SEO decision and not a security one, so writing it never costs the link its `noopener`: `newTab rel="nofollow"` comes out as `nofollow noopener noreferrer`. On a link that stays in the tab, your `rel` is left exactly as written.
+A `rel` of your own is merged with that rather than replacing it. `rel="nofollow"` is an SEO decision and not a security one, so writing it never costs the link its `noopener`: `newTab rel="nofollow"` comes out as `nofollow noopener noreferrer`. On a link that stays in the tab, your `rel` is left exactly as written. A `target` you write yourself gets the same `rel` and the same spoken sentence as `newTab`, but not the glyph: pass `icon` to draw it.
 
 `icon` overrides that either way: `false` for a new-tab link with no mark, `true` for a same-tab link that wants one, or a node of your own to replace the glyph.
 
