@@ -93,6 +93,21 @@ describe('RadioGroup', () => {
       await expect.element(screen.getByRole('radio', { name: 'Enterprise' })).toBeChecked();
     });
 
+    // The group's `disabled` stopped the radios answering and left them looking
+    // available, because a Radio read only its own prop.
+    it('draws every radio disabled when the group is', async () => {
+      const screen = await render(
+        <RadioGroup label="Plan" disabled>
+          <Radio value="free" label="Free" />
+        </RadioGroup>
+      );
+
+      await expect.element(screen.getByText('Free')).toHaveClass('text-(--neba-disabled-fg)');
+      expect(screen.getByRole('radio', { name: 'Free' }).element()).toHaveClass(
+        'cursor-not-allowed'
+      );
+    });
+
     it('leaves a disabled option out of reach', async () => {
       const screen = await render(<Plans label="Plan" />);
 

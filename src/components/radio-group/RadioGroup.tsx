@@ -30,18 +30,22 @@ import { useStyleDefaults } from '../../internal/defaults.js';
  * A radio button is meaningless alone — it only says anything relative to its
  * siblings — so `size`, `color` and the read-only state belong to the set, not
  * to the member. Passing them on every `<Radio>` would be four chances to get
- * one of them wrong.
+ * one of them wrong. `disabled` too: Base UI already stops a radio in a
+ * disabled group from answering, but a Radio that only read its own prop went on
+ * looking available.
  */
 interface RadioGroupContextValue {
   size: NebaSize;
   color: NebaColor;
   readOnly: boolean;
+  disabled: boolean;
 }
 
 const RadioGroupContext = React.createContext<RadioGroupContextValue>({
   size: 'md',
   color: 'primary',
-  readOnly: false
+  readOnly: false,
+  disabled: false
 });
 
 /**
@@ -179,11 +183,12 @@ const indicatorClasses = [
  * option in the set.
  */
 export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
-  { label, description, disabled = false, className, classNames, style, ...props },
+  { label, description, disabled: disabledProp, className, classNames, style, ...props },
   ref
 ) {
   const group = React.useContext(RadioGroupContext);
   const readOnly = props.readOnly ?? group.readOnly;
+  const disabled = disabledProp ?? group.disabled;
 
   return (
     <Field.Root disabled={disabled} className={cx('flex flex-col', className ?? '')} style={style}>
@@ -284,8 +289,8 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
     } as React.CSSProperties;
 
     const context = React.useMemo(
-      () => ({ size, color: family, readOnly }),
-      [size, family, readOnly]
+      () => ({ size, color: family, readOnly, disabled }),
+      [size, family, readOnly, disabled]
     );
 
     return (

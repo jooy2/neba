@@ -368,6 +368,8 @@
 
 - **A disabled `Accordion` section or `Collapsible` looks disabled.** Base UI keeps a disabled trigger focusable, so it never carries the `disabled` attribute, and the `disabled:` classes that grey it out never matched: a disabled section kept its ink, its hover wash and its pointer. The state is decided in the component now, for a section, for a whole disabled Accordion and for a Collapsible.
 
+- **The radios of a disabled `RadioGroup` look disabled.** The group's `disabled` reached Base UI, which stopped the radios answering, and never reached the `Radio`s' own drawing, which read only their own prop, so a disabled group looked available. A Radio takes the group's `disabled` when it has none of its own.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
