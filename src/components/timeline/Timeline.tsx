@@ -226,7 +226,18 @@ const titleStatusClasses: Record<TimelineStatus, string> = {
  */
 export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
   function TimelineItem(
-    { title, meta, bullet, status, color, connector = 'solid', className, children, ...props },
+    {
+      title,
+      meta,
+      bullet,
+      status,
+      color,
+      connector = 'solid',
+      className,
+      style,
+      children,
+      ...props
+    },
     ref
   ) {
     const timeline = React.useContext(TimelineContext);
@@ -352,7 +363,8 @@ export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
             // for the sheet a bullet sits on — but a bullet *is* the thing being
             // coloured, so the two fills it needs are put back.
             '--n-fill': `var(--neba-${family}-fill)`,
-            '--n-on-solid': `var(--neba-${family}-on-solid)`
+            '--n-on-solid': `var(--neba-${family}-on-solid)`,
+            ...style
           } as React.CSSProperties
         }
         {...props}

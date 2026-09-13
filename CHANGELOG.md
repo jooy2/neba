@@ -298,6 +298,8 @@
 
 - **A `Tooltip` given an `id` still describes its trigger.** The `id` replaced the generated one on the popup while the trigger's `aria-describedby` kept the generated one, so a screen reader was pointed at an element that did not exist and read nothing. The popup takes the caller's `id` and the trigger points at it.
 
+- **A `style` on a `TimelineItem` is merged with the item's own slots.** It went through the props spread and replaced the whole inline style, so any `style` at all took away the bullet size and the colour slots and drew the step with a bullet of no size. The caller's declarations are laid over the slots now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

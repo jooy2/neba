@@ -298,6 +298,20 @@ describe('Timeline', () => {
     });
   });
 
+  describe('style', () => {
+    it('keeps its own slots under a style the caller gives an item', async () => {
+      const screen = await render(
+        <Timeline>
+          <TimelineItem title="Ordered" style={{ marginInline: '4px' }} />
+        </Timeline>
+      );
+      const item = screen.container.querySelector('li') as HTMLElement;
+
+      expect(item.style.marginInline).toBe('4px');
+      expect(item.style.getPropertyValue('--n-bullet')).not.toBe('');
+    });
+  });
+
   describe('identity', () => {
     it('keeps an item mounted when another is put in front of it', async () => {
       const Steps = ({ titles }: { titles: string[] }) => (
