@@ -139,8 +139,8 @@ A shell symbol in front of every line that has something on it: `$`, `#`, `C:\>`
 
 ## Accessibility
 
-- The code is a scrollable region with `tabIndex={0}` and a name, so a reader with no pointer to drag with can still scroll it. The name is the `title` when there is one, and the language otherwise.
-- Prompts and line numbers are generated content, which keeps them out of the accessibility tree as well as off the clipboard.
+- Code that is wider or taller than its box is a scrollable region with `tabIndex={0}` and a name, so a reader with no pointer to drag with can still scroll it. The name is the `title` when there is one, and the language otherwise. A block with nothing to scroll is neither, so a page of short snippets is not a page of landmarks and tab stops.
+- Prompts and line numbers are generated content with empty alternative text, which keeps them from being read out as well as off the clipboard. A browser without the alternative-text syntax (Firefox before 128, Safari before 17.4) still reads them.
 - The copy button announces the result through a polite live region, because the only other signal (the button's own label changing) is not something a screen reader reading the page would hear.
 - <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else. A reader who tabbed to a code block and pressed the shortcut every editor has meant this code, not the article around it. Prompts and line numbers are outside the selection for the same reason they are outside the clipboard.
 - `theme` is the one colour decision in the library that does not follow the page. A block set to `dark` stays dark under a light system preference, which is deliberate; `auto` is the opt-out.

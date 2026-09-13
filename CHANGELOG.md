@@ -232,6 +232,8 @@
 
 - **A `priority` `Image` is visible before hydration.** Every picture started at `opacity: 0` under a Skeleton and faded in once React had seen it load, so on a server-rendered page the picture Largest Contentful Paint measures stayed hidden until hydration, however early its file arrived. A `priority` picture is now drawn from the first paint, with no fade and no Skeleton over it; a `placeholder` picture still stands beneath it.
 
+- **A `CodeBlock`'s line numbers and prompts are not read out.** They are generated content, which a screen reader reads with the code, so a block was heard as "1 const a equals 1, 2 const b…" although the docs said otherwise. Both now carry empty alternative text; a browser without that syntax, Firefox before 128 and Safari before 17.4, keeps reading them as before.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

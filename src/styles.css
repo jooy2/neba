@@ -1397,8 +1397,16 @@
   border-inline-start-color: var(--n-code-mark-edge);
 }
 
+/*
+ * The numbers and the prompts are drawn, not read. Generated content is in the
+ * accessibility tree, so a screen reader went down a block saying "1 const a
+ * equals 1, 2 const b…". The `/ ''` is the alternative text a browser speaks
+ * instead, which is nothing; a browser that does not know the syntax drops the
+ * second declaration and keeps the first, and reads the number as before.
+ */
 .neba-code-line[data-line]::before {
   content: attr(data-line);
+  content: attr(data-line) / '';
   order: 0;
   flex: none;
   width: var(--n-code-gutter, 2ch);
@@ -1411,6 +1419,7 @@
 
 .neba-code-line[data-prompt]::after {
   content: attr(data-prompt);
+  content: attr(data-prompt) / '';
   order: 1;
   flex: none;
   margin-inline-end: 0.75em;
