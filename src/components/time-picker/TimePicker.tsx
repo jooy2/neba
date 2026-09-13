@@ -131,7 +131,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
       disabled = false,
       startIcon,
       ...shell
-    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
     const labels = usePickerLabels(labelOverrides, locale);
     const hour12 = hour12Prop ?? isHour12(locale);

@@ -408,7 +408,7 @@ export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
       style,
       children,
       ...props
-    } = useStyleDefaults(rawProps, ['locale']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
     const messages = useMessages(timelineMessages, locale);
     const labels = React.useMemo(
       () => ({ ...messages, ...labelOverrides }),

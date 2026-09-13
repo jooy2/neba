@@ -1,5 +1,6 @@
 'use client';
 
+import { DefaultsContext } from '../../internal/defaults.js';
 import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { Dialog } from '../dialog/Dialog.js';
@@ -131,7 +132,10 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   };
 
   const merged: ConfirmOptions = { ...defaults, ...shown };
-  const messages = useMessages(confirmMessages, merged.locale);
+  // The provider's locale under the confirm's own, so a Korean product asks in
+  // Korean without every call to `confirm` saying so.
+  const provided = React.useContext(DefaultsContext);
+  const messages = useMessages(confirmMessages, merged.locale ?? provided?.locale);
   // A destructive question opens on the answer that destroys nothing, so a
   // reader who pressed Enter once to ask is not one more Enter from the loss.
   const cautious = merged.color === 'danger' && !merged.alert;

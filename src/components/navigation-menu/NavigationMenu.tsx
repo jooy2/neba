@@ -21,6 +21,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What every part of a navigation menu inherits from the root.
@@ -313,8 +314,8 @@ export function NavigationMenuItem({
  * read as one surface rather than three.
  */
 export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>(
-  function NavigationMenu(
-    {
+  function NavigationMenu(rawProps, ref) {
+    const {
       size = 'md',
       color = 'primary',
       density = 'default',
@@ -329,9 +330,7 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density']);
     const context = React.useMemo(() => ({ size, density }), [size, density]);
 
     // Both ends of the component take them. The panel is portalled to the end

@@ -432,6 +432,52 @@ describe('the published package', () => {
     });
   });
 
+  /**
+   * The guide says a provider fills in every axis a component takes. That held
+   * for some of them: a SegmentedButton, a Tabs, a Menu and a LineChart never
+   * asked, and a DatePicker asked for its size and not its variant. Crude on
+   * purpose, like the scans below: an axis a component destructures from its
+   * props is one the provider has to be able to fill.
+   */
+  describe('takes what a provider sets', () => {
+    // Not left out by accident. A TextLink is the size of the sentence it is in,
+    // so an application's `size` would enlarge every link in running text;
+    // Image's `size` is its watermark's, a Confirm's the one its options carry,
+    // and the Gallery viewer is handed its locale by the Gallery.
+    const exceptions = new Set([
+      'text-link/TextLink.tsx:size',
+      'image/Image.tsx:size',
+      'confirm/Confirm.tsx:size',
+      'gallery/GalleryViewer.tsx:locale'
+    ]);
+
+    it('fills every provider axis a component destructures', () => {
+      const missing: string[] = [];
+
+      for (const [path, source] of Object.entries(sources)) {
+        const file = /src\/(?:components|internal)\/(.+\/[A-Z]\w*\.tsx)$/.exec(path)?.[1];
+
+        if (!file) continue;
+
+        const filled = new Set(
+          [...source.matchAll(/useStyleDefaults\([^,]+,\s*\[([^\]]*)\]/g)].flatMap((call) =>
+            [...call[1].matchAll(/'(\w+)'/g)].map((key) => key[1])
+          )
+        );
+
+        for (const axis of ['size', 'density', 'variant', 'locale']) {
+          const declared = new RegExp(`^\\s+${axis}(\\s*=\\s*[^,]+)?,\\s*$`, 'm').test(source);
+
+          if (declared && !filled.has(axis) && !exceptions.has(`${file}:${axis}`)) {
+            missing.push(`${file}:${axis}`);
+          }
+        }
+      }
+
+      expect(missing).toEqual([]);
+    });
+  });
+
   describe('keeps its fixed costs divisible', () => {
     it('holds one message table per namespace, never one table of all of them', () => {
       // A bundler drops an unused `export const` and cannot drop a key out of

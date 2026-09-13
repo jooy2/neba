@@ -23,6 +23,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** A segment's value. The same restraint Tabs and Select put on theirs. */
 export type SegmentValue = string | number;
@@ -214,8 +215,8 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
  * measurement with a logical property is what would break the direction.
  */
 export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonProps>(
-  function SegmentedButton(
-    {
+  function SegmentedButton(rawProps, ref) {
+    const {
       variant = 'outline',
       size = 'md',
       color = 'primary',
@@ -232,9 +233,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
     const [uncontrolled, setUncontrolled] = React.useState<SegmentValue | null>(defaultValue);
     const controlled = valueProp !== undefined;
     const value = controlled ? valueProp : uncontrolled;

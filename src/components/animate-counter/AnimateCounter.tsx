@@ -6,6 +6,7 @@ import { useAnimationRun, usePrefersReducedMotion } from '../../internal/animate
 import { numberFormatter } from '../../internal/format.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AnimateCounterProps
   // `paused` is out with the three a count has no use for: a count is a
@@ -68,8 +69,8 @@ function easeOut(t: number): number {
  * answer too.
  */
 export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterProps>(
-  function AnimateCounter(
-    {
+  function AnimateCounter(rawProps, ref) {
+    const {
       value,
       from = 0,
       duration = 1200,
@@ -84,9 +85,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       className,
       style,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['locale']);
     const run = useAnimationRun({
       caller: props,
       trigger,

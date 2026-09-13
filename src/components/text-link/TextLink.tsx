@@ -167,7 +167,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
       style,
       children,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'locale']);
+    } = useStyleDefaults(rawProps, ['locale']);
 
     const messages = useMessages(linkMessages, locale);
 

@@ -11,6 +11,7 @@ import {
   ButtonGroup,
   Chip,
   colorSchemeScript,
+  LineChart,
   NebaProvider,
   TextField,
   Toggle,
@@ -111,6 +112,27 @@ describe('defaults', () => {
 
     expect(heightOf(screen.getByRole('button', { name: 'Grouped' }).element())).toBe(bare);
     expect(heightOf(screen.getByRole('button', { name: 'Pinned' }).element())).toBe(bare);
+  });
+
+  // A chart asked nothing of the provider: its size came from its own default.
+  it('reaches a chart', async () => {
+    const chart = (
+      <LineChart label="Visits" categories={['a', 'b']} series={[{ name: 'x', data: [1, 2] }]} />
+    );
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ size: 'xl' }}>
+          <div data-testid="provided">{chart}</div>
+        </NebaProvider>
+        <div data-testid="bare">{chart}</div>
+      </>
+    );
+    const heightIn = (id: string) =>
+      screen.getByTestId(id).element().querySelector('svg')?.getAttribute('height');
+
+    await expect.poll(() => heightIn('bare')).toBeTruthy();
+    await expect.poll(() => heightIn('provided')).toBeTruthy();
+    expect(heightIn('provided')).not.toBe(heightIn('bare'));
   });
 
   it('reaches a component that takes the axis and skips one that does not', async () => {

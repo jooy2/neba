@@ -19,6 +19,7 @@ import type {
   NebaStaggerProps,
   NebaTimelineProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** What a piece is. */
 export type NebaSplitBy = 'word' | 'character';
@@ -85,8 +86,8 @@ export interface AnimateSplitProps
  * a line still breaks between words and never inside the gap.
  */
 export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
-  function AnimateSplit(
-    {
+  function AnimateSplit(rawProps, ref) {
+    const {
       text,
       by = 'word',
       effect = 'slide',
@@ -116,9 +117,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['locale']);
     const run = useAnimationRun({
       caller: props,
       trigger,

@@ -95,7 +95,7 @@ export function ScatterChart(rawProps: ScatterChartProps) {
     size = 'md',
     xAxis,
     ...props
-  } = useStyleDefaults(rawProps, ['size']);
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
 
   const dot = pointRadius ?? markerRadii[size];
 

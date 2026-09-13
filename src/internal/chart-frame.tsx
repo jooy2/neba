@@ -18,6 +18,7 @@
  * element is, and nothing in here does arithmetic that is not layout.
  */
 
+import { useStyleDefaults } from './defaults.js';
 import * as React from 'react';
 import { Box, type BoxProps } from '../components/box/Box.js';
 import {
@@ -882,39 +883,40 @@ interface CartesianProps extends CartesianChartProps {
  * function's business, and they are handed pixels rather than values so a
  * component never has to know which way round the axes are.
  */
-export function CartesianChart({
-  series,
-  categories,
-  xAxis,
-  yAxis,
-  horizontal = false,
-  stacked = false,
-  includeZero = true,
-  bandRatio = 1,
-  inset = false,
-  headroom = 0,
-  markInset = 0,
-  xScale = 'band',
-  marks,
-  markRadius = 24,
-  table,
-  swatch,
-  scale: givenScale,
-  markTooltip,
-  height,
-  format,
-  locale,
-  label,
-  legend,
-  tooltip,
-  empty,
-  size = 'md',
-  variant = 'text',
-  padded = false,
-  className,
-  children,
-  ...box
-}: CartesianProps) {
+export function CartesianChart(rawProps: CartesianProps) {
+  const {
+    series,
+    categories,
+    xAxis,
+    yAxis,
+    horizontal = false,
+    stacked = false,
+    includeZero = true,
+    bandRatio = 1,
+    inset = false,
+    headroom = 0,
+    markInset = 0,
+    xScale = 'band',
+    marks,
+    markRadius = 24,
+    table,
+    swatch,
+    scale: givenScale,
+    markTooltip,
+    height,
+    format,
+    locale,
+    label,
+    legend,
+    tooltip,
+    empty,
+    size = 'md',
+    variant = 'text',
+    padded = false,
+    className,
+    children,
+    ...box
+  } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);

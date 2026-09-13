@@ -22,6 +22,7 @@ import type {
   NebaSize,
   NebaSlots
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a Radio inherits from the group around it.
@@ -248,105 +249,111 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
  * whole reason a radio group is a component at all rather than a `<div>` full of
  * inputs: the set takes one tab stop, and the arrows move within it.
  */
-export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(function RadioGroup(
-  {
-    size = 'md',
-    color = 'primary',
-    orientation = 'vertical',
-    label,
-    description,
-    error,
-    invalid,
-    disabled = false,
-    readOnly = false,
-    className,
-    classNames,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  const hasError = error !== undefined && error !== null && error !== false && error !== '';
-  const isInvalid = invalid ?? hasError;
-  const family: NebaColor = isInvalid ? 'danger' : color;
+export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
+  function RadioGroup(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      orientation = 'vertical',
+      label,
+      description,
+      error,
+      invalid,
+      disabled = false,
+      readOnly = false,
+      className,
+      classNames,
+      style,
+      children,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
+    const hasError = error !== undefined && error !== null && error !== false && error !== '';
+    const isInvalid = invalid ?? hasError;
+    const family: NebaColor = isInvalid ? 'danger' : color;
 
-  const slots = {
-    '--n-fill': `var(--neba-${family}-fill)`,
-    '--n-fill-hover': `var(--neba-${family}-fill-hover)`,
-    '--n-on-solid': `var(--neba-${family}-on-solid)`,
-    '--n-accent': `var(--neba-${family}-accent)`,
-    '--n-panel': 'var(--neba-panel)',
-    '--n-panel-hover': 'var(--neba-panel-hover)',
-    '--n-line': `var(--neba-${family}-line)`,
-    '--n-line-hover': `var(--neba-${family}-line-hover)`,
-    '--n-ring': `var(--neba-${family}-ring)`
-  } as React.CSSProperties;
+    const slots = {
+      '--n-fill': `var(--neba-${family}-fill)`,
+      '--n-fill-hover': `var(--neba-${family}-fill-hover)`,
+      '--n-on-solid': `var(--neba-${family}-on-solid)`,
+      '--n-accent': `var(--neba-${family}-accent)`,
+      '--n-panel': 'var(--neba-panel)',
+      '--n-panel-hover': 'var(--neba-panel-hover)',
+      '--n-line': `var(--neba-${family}-line)`,
+      '--n-line-hover': `var(--neba-${family}-line-hover)`,
+      '--n-ring': `var(--neba-${family}-ring)`
+    } as React.CSSProperties;
 
-  const context = React.useMemo(
-    () => ({ size, color: family, readOnly }),
-    [size, family, readOnly]
-  );
+    const context = React.useMemo(
+      () => ({ size, color: family, readOnly }),
+      [size, family, readOnly]
+    );
 
-  return (
-    <RadioGroupContext.Provider value={context}>
-      <Field.Root
-        disabled={disabled}
-        invalid={isInvalid}
-        className={cx('flex flex-col gap-1.5', className ?? '')}
-        style={{ ...slots, ...style }}
-      >
-        {label ? (
-          <Field.Label
-            className={cx(
-              metaTextClasses[size],
-              'font-medium',
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
-              classNames?.label
-            )}
-          >
-            {label}
-          </Field.Label>
-        ) : null}
-
-        {description ? (
-          <Field.Description
-            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
-          >
-            {description}
-          </Field.Description>
-        ) : null}
-
-        <BaseUIRadioGroup
-          ref={ref}
+    return (
+      <RadioGroupContext.Provider value={context}>
+        <Field.Root
           disabled={disabled}
-          readOnly={readOnly}
-          className={cx(
-            'flex',
-            orientation === 'horizontal' ? 'flex-row flex-wrap gap-x-5 gap-y-2' : 'flex-col gap-2',
-            classNames?.control
-          )}
-          {...props}
+          invalid={isInvalid}
+          className={cx('flex flex-col gap-1.5', className ?? '')}
+          style={{ ...slots, ...style }}
         >
-          {children}
-        </BaseUIRadioGroup>
+          {label ? (
+            <Field.Label
+              className={cx(
+                metaTextClasses[size],
+                'font-medium',
+                disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+                classNames?.label
+              )}
+            >
+              {label}
+            </Field.Label>
+          ) : null}
 
-        {hasError ? (
-          <Field.Error
-            match
-            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          {description ? (
+            <Field.Description
+              className={cx(
+                metaTextClasses[size],
+                'text-(--neba-muted-fg)',
+                classNames?.description
+              )}
+            >
+              {description}
+            </Field.Description>
+          ) : null}
+
+          <BaseUIRadioGroup
+            ref={ref}
+            disabled={disabled}
+            readOnly={readOnly}
+            className={cx(
+              'flex',
+              orientation === 'horizontal'
+                ? 'flex-row flex-wrap gap-x-5 gap-y-2'
+                : 'flex-col gap-2',
+              classNames?.control
+            )}
+            {...props}
           >
-            {error}
-          </Field.Error>
-        ) : (
-          // No message of our own, so whatever the validity has: the browser's
-          // own text for a failed constraint, or the entry a Form's `errors`
-          // put here. Renders nothing at all while the field is valid.
-          <Field.Error
-            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
-          />
-        )}
-      </Field.Root>
-    </RadioGroupContext.Provider>
-  );
-});
+            {children}
+          </BaseUIRadioGroup>
+
+          {hasError ? (
+            <Field.Error
+              match
+              className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+            >
+              {error}
+            </Field.Error>
+          ) : (
+            // No message of our own, so whatever the validity has: the browser's
+            // own text for a failed constraint, or the entry a Form's `errors`
+            // put here. Renders nothing at all while the field is valid.
+            <Field.Error
+              className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+            />
+          )}
+        </Field.Root>
+      </RadioGroupContext.Provider>
+    );
+  }
+);

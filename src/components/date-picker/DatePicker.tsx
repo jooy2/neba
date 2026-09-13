@@ -181,7 +181,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       disabled = false,
       startIcon,
       ...shell
-    } = useStyleDefaults(rawProps, ['size', 'locale']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
     const labels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Form as BaseUIForm } from '@base-ui/react/form';
 import { cx, sheetSectionGapClasses } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * When a field decides whether it is valid.
@@ -64,10 +65,16 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
  * array here — a project that wants those keeps them and hands the result to
  * `errors`, which is the seam this is built around.
  */
-export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
-  { validationMode = 'onSubmit', errors, onSubmit, size = 'md', className, children, ...props },
-  ref
-) {
+export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(rawProps, ref) {
+  const {
+    validationMode = 'onSubmit',
+    errors,
+    onSubmit,
+    size = 'md',
+    className,
+    children,
+    ...props
+  } = useStyleDefaults(rawProps, ['size']);
   return (
     <BaseUIForm
       ref={ref}

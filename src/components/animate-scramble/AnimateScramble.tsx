@@ -6,6 +6,7 @@ import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../inte
 import { graphemesOf, textOf } from '../../internal/text.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AnimateScrambleProps
   extends
@@ -84,8 +85,8 @@ function glyphAt(tick: number, index: number, size: number): number {
  * reader who has asked for less motion is shown the text.
  */
 export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleProps>(
-  function AnimateScramble(
-    {
+  function AnimateScramble(rawProps, ref) {
+    const {
       text,
       speed = 18,
       tick = 45,
@@ -104,9 +105,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
       style,
       children,
       ...props
-    },
-    ref
-  ) {
+    } = useStyleDefaults(rawProps, ['locale']);
     const run = useAnimationRun({
       caller: props,
       trigger,

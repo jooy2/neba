@@ -362,6 +362,10 @@
 
 - **A `ButtonGroup` or `ToggleGroup` beats a `NebaProvider` for the buttons inside it.** The provider's defaults were filled in before a `Button` or a `Toggle` read its group, so a group's `size`, `density` or `variant` lost to the provider's: `<ButtonGroup size="lg">` under `defaults={{ size: 'sm' }}` drew small buttons. The order is the button's own prop, then its group, then the provider, then the default.
 
+- **A `NebaProvider`'s defaults reach every component that takes the axis.** Some components never asked for them and others asked for part: `SegmentedButton`, `RadioGroup`, `Tabs`, `Timeline`, `Form`, `Fieldset`, `Menu`, `ContextMenu`, `NavigationMenu`, `LineChart`, `AreaChart` and `useConfirm`'s sheet ignored the provider, the date pickers took their `size` and not their `density` or `variant`, the Cartesian charts took no `variant` or `locale`, and `AnimateCounter`, `AnimateScramble` and `AnimateSplit` took no `locale`. Each fills in every axis it declares now.
+
+- **A `TextLink` takes no `size` from a `NebaProvider`.** A link in a sentence is the size of the sentence, and a provider with `size: 'lg'` turned every link in running text into 15px type. A link given `size` itself still takes it.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -25,6 +25,7 @@ import type {
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * What a Tab inherits from the Tabs around it.
@@ -372,8 +373,8 @@ export const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function
  * Select — because a panel is a subtree, and there is no useful shape for
  * "an array of arbitrary React trees" that is not just children.
  */
-export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
-  {
+export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(rawProps, ref) {
+  const {
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -392,9 +393,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
     style,
     children,
     ...props
-  },
-  ref
-) {
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
   const horizontal = orientation === 'horizontal';
   const wraps = overflow === 'wrap';
   const rootRef = React.useRef<HTMLDivElement | null>(null);

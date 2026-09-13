@@ -37,7 +37,7 @@ A call site still wins. The order is **the caller, then the provider, then the c
 | `color` | **Not defaultable.** A component's colour default is often semantic: an [Alert](../components/feedback/alert) is `info`, a [Popconfirm](../components/feedback/popconfirm) is `danger`, severity carries meaning: and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 
-Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node, and `size` on an `<input>` is a real attribute that would quietly resize the field.
+Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node, and `size` on an `<input>` is a real attribute that would quietly resize the field. One axis a component declares is left out on purpose: a [TextLink](../components/display/text-link) takes no `size` from the provider, because a link in a sentence is the size of the sentence.
 
 ## Colour scheme
 

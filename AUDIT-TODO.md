@@ -69,7 +69,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
 - **D13 (103)** CSV formula injection: (a) prefix `'` by default, with an option to turn it off; (b) an option only, off by default.
 - **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
-- **D16 (118)** Provider defaults: (a) make the listed components read the defaults and fill the missing keys, except TextLink's `size` and Icon; (b) change the guide to match the current behaviour.
 - **D17 (119)** Non-modal Dialog, Overlay and Drawer: (a) `pointer-events-none` on the Viewport and the Backdrop when `modal !== true`; (b) fix the docs only.
 - **D18 (120, Fieldset)** (a) read Base UI's Fieldset context so inner fields show the disabled state; (b) leave it.
 - **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
@@ -281,7 +280,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 ### Common
 
 - [x] **117** [major] **Button, Toggle**: provider `defaults` are applied before the group's values, so a button inside `<NebaProvider defaults={{ size: 'sm' }}><ButtonGroup size="lg">` is `sm`. The order should be caller, group, provider, default. `Button.tsx:180-191`, `Toggle.tsx:210-220`. Decided: approved; the order is caller, group, provider, default.
-- [ ] **118** [major][decision] **Provider defaults are applied unevenly.** The guide says a component fills every axis it declares. See D16.
+- [x] **118** [major][decision] **Provider defaults are applied unevenly.** The guide says a component fills every axis it declares. Decided: (a) every listed component fills the axes it declares, TextLink takes no `size` from the provider and Icon is left as it is; AnimateCounter, AnimateScramble and AnimateSplit had the same gap for `locale` and were included. `test/package/resolution.test.ts` holds it.
   - Not calling `useStyleDefaults` at all: SegmentedButton, RadioGroup, Tabs, Timeline, Form, Fieldset, Menu, NavigationMenu, LineChart, AreaChart, Confirm (`locale`), Icon (possibly on purpose, since it has an icon ladder).
   - Only some keys: DatePicker and DateRangePicker (`density`, `variant` missing), TimePicker and DateTimePicker (`variant` missing), BarChart (`size`, `density`), ScatterChart (`size`).
   - The opposite: TextLink takes `size`, so under a `size="lg"` provider every link inside running text becomes 15px.

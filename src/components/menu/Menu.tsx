@@ -27,6 +27,7 @@ import type {
   NebaSize,
   NebaStyleProps
 } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * A menu takes `size`, `color` and `density` and stops there.
@@ -668,25 +669,26 @@ export function MenuSubmenu({
  * shape a row can take, which is a component tree spelled as a discriminated
  * union.
  */
-export function Menu({
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  trigger,
-  open,
-  defaultOpen,
-  onOpenChange,
-  side = 'bottom',
-  align = 'start',
-  sideOffset = 6,
-  modal,
-  openOnHover = false,
-  loopFocus = true,
-  disabled = false,
-  className,
-  style,
-  children
-}: MenuProps) {
+export function Menu(rawProps: MenuProps) {
+  const {
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    trigger,
+    open,
+    defaultOpen,
+    onOpenChange,
+    side = 'bottom',
+    align = 'start',
+    sideOffset = 6,
+    modal,
+    openOnHover = false,
+    loopFocus = true,
+    disabled = false,
+    className,
+    style,
+    children
+  } = useStyleDefaults(rawProps, ['size', 'density']);
   const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
 
   return (
@@ -739,20 +741,21 @@ export function Menu({
  * wrapped. Base UI positions the popup at the pointer rather than against an
  * anchor, and the long press is what makes it reachable on a touch screen at all.
  */
-export function ContextMenu({
-  size = 'md',
-  color = 'primary',
-  density = 'default',
-  content,
-  children,
-  open,
-  defaultOpen,
-  onOpenChange,
-  loopFocus = true,
-  disabled = false,
-  className,
-  style
-}: ContextMenuProps) {
+export function ContextMenu(rawProps: ContextMenuProps) {
+  const {
+    size = 'md',
+    color = 'primary',
+    density = 'default',
+    content,
+    children,
+    open,
+    defaultOpen,
+    onOpenChange,
+    loopFocus = true,
+    disabled = false,
+    className,
+    style
+  } = useStyleDefaults(rawProps, ['size', 'density']);
   const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
 
   return (

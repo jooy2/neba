@@ -53,7 +53,7 @@ With no `color` the link takes whatever colour the text around it has. Passing o
 
 ### size
 
-Also unset by default: a link in a sentence is the size of the sentence. Set `size` for one standing on its own, and it takes the library's type scale with the leading a wrapping line needs.
+Also unset by default, and not filled in by a `NebaProvider`: a link in a sentence is the size of the sentence. Set `size` for one standing on its own, and it takes the library's type scale with the leading a wrapping line needs.
 
 <Demo src="text-link/sizes">
 

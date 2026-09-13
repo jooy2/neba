@@ -11,6 +11,7 @@ import {
   sheetTitleClasses
 } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface FieldsetProps extends Omit<React.ComponentPropsWithoutRef<'fieldset'>, 'color'> {
   /**
@@ -43,61 +44,64 @@ export interface FieldsetProps extends Omit<React.ComponentPropsWithoutRef<'fiel
  * flex container: a real rendered legend is lifted out of its fieldset's content
  * box by every browser, so a `gap` would put no space under it at all.
  */
-export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(function Fieldset(
-  {
-    legend,
-    description,
-    disabled = false,
-    size = 'md',
-    className,
-    children,
-    'aria-describedby': describedBy,
-    ...props
-  },
-  ref
-) {
-  const descriptionId = React.useId();
-  const hasLegend = hasContent(legend);
-  const hasDescription = hasContent(description);
+export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
+  function Fieldset(rawProps, ref) {
+    const {
+      legend,
+      description,
+      disabled = false,
+      size = 'md',
+      className,
+      children,
+      'aria-describedby': describedBy,
+      ...props
+    } = useStyleDefaults(rawProps, ['size']);
+    const descriptionId = React.useId();
+    const hasLegend = hasContent(legend);
+    const hasDescription = hasContent(description);
 
-  return (
-    <BaseUIFieldset.Root
-      ref={ref}
-      disabled={disabled}
-      className={cx(
-        // A `<fieldset>` arrives with the browser's own border, padding and
-        // margin, and none of the three is the library's. `min-w-0` is the other
-        // half: a fieldset is `min-width: min-content` by default, which is what
-        // makes one holding a wide table refuse to shrink.
-        'm-0 flex min-w-0 flex-col border-0 p-0',
-        sheetSectionGapClasses[size],
-        className ?? ''
-      )}
-      // The description is the group's description and not part of its name.
-      // Inside the legend it was both, so every control in the group was
-      // introduced by a whole sentence.
-      aria-describedby={
-        [describedBy, hasDescription ? descriptionId : undefined].filter(Boolean).join(' ') ||
-        undefined
-      }
-      {...props}
-    >
-      {hasLegend || hasDescription ? (
-        <div className={`flex min-w-0 flex-col ${sheetHeaderGapClasses[size]}`}>
-          {hasLegend ? (
-            <BaseUIFieldset.Legend className={`p-0 font-semibold ${sheetTitleClasses[size]}`}>
-              {legend}
-            </BaseUIFieldset.Legend>
-          ) : null}
-          {hasDescription ? (
-            <span id={descriptionId} className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
-              {description}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
+    return (
+      <BaseUIFieldset.Root
+        ref={ref}
+        disabled={disabled}
+        className={cx(
+          // A `<fieldset>` arrives with the browser's own border, padding and
+          // margin, and none of the three is the library's. `min-w-0` is the other
+          // half: a fieldset is `min-width: min-content` by default, which is what
+          // makes one holding a wide table refuse to shrink.
+          'm-0 flex min-w-0 flex-col border-0 p-0',
+          sheetSectionGapClasses[size],
+          className ?? ''
+        )}
+        // The description is the group's description and not part of its name.
+        // Inside the legend it was both, so every control in the group was
+        // introduced by a whole sentence.
+        aria-describedby={
+          [describedBy, hasDescription ? descriptionId : undefined].filter(Boolean).join(' ') ||
+          undefined
+        }
+        {...props}
+      >
+        {hasLegend || hasDescription ? (
+          <div className={`flex min-w-0 flex-col ${sheetHeaderGapClasses[size]}`}>
+            {hasLegend ? (
+              <BaseUIFieldset.Legend className={`p-0 font-semibold ${sheetTitleClasses[size]}`}>
+                {legend}
+              </BaseUIFieldset.Legend>
+            ) : null}
+            {hasDescription ? (
+              <span
+                id={descriptionId}
+                className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+              >
+                {description}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
 
-      {children}
-    </BaseUIFieldset.Root>
-  );
-});
+        {children}
+      </BaseUIFieldset.Root>
+    );
+  }
+);

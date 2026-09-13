@@ -129,7 +129,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       disabled = false,
       startIcon,
       ...shell
-    } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
     const labels = usePickerLabels(labelOverrides, locale);
     const firstDay = weekStartsOn ?? localeWeekStart(locale);
