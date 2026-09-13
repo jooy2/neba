@@ -329,6 +329,12 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * passes straight through: `loading="lazy"` for one below the fold,
    * `decoding`, `fetchPriority`. An attribute written out wins over what this
    * implies.
+   *
+   * It also draws the picture from the first paint: no fade, and no Skeleton
+   * over it. A server-rendered page shows the `<img>` as soon as the browser
+   * has the file, rather than waiting for hydration to lift a cover and start a
+   * fade, which is exactly what Largest Contentful Paint would otherwise wait
+   * on. A `placeholder` picture still stands beneath it while it arrives.
    * @default false
    */
   priority?: boolean;
@@ -968,7 +974,9 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // grey thumbnail that comes back to life under the pointer — travels
         // rather than snapping.
         '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease)]',
-        phase === 'loaded' ? 'opacity-100' : 'opacity-0',
+        // A `priority` picture is never hidden, not even for the moment before
+        // hydration: that is the moment it is being measured in.
+        priority || phase === 'loaded' ? 'opacity-100' : 'opacity-0',
         // Positioned, so it paints over the absolutely positioned copy under it
         // rather than beneath it.
         blurred || stand !== null ? 'relative' : '',
@@ -1093,7 +1101,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           </span>
         )}
       </span>
-    ) : phase === 'loading' && placeholder !== false && stand === null ? (
+    ) : phase === 'loading' && placeholder !== false && stand === null && !priority ? (
       <span className={cx('absolute inset-0', classNames?.placeholder)}>
         {(placeholder as React.ReactNode) ?? (
           <Skeleton shape="rect" className={cx('size-full', radius)} />

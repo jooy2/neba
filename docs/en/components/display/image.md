@@ -123,7 +123,7 @@ Changing `src` starts both over. Without that, a second file would inherit the f
 
 When a picture loads belongs to the `<img>`, and its attributes pass straight through. `loading="lazy"` waits until the reader scrolls near a picture below the fold, `decoding="async"` keeps the decode off the main thread, and `fetchPriority` moves the request up or down the network queue.
 
-`priority` is for the picture a page is judged by, usually the largest one above the fold, which is what Largest Contentful Paint measures. It sets `loading="eager"` and a high fetch priority together, and an attribute written out still wins over it. A lazy picture needs its box as much as any other, so keep `ratio`, or `width` and `height`, on it.
+`priority` is for the picture a page is judged by, usually the largest one above the fold, which is what Largest Contentful Paint measures. It sets `loading="eager"` and a high fetch priority together, and an attribute written out still wins over it. It also draws the picture from the first paint, with no fade and no Skeleton over it, so a server-rendered page does not wait for hydration to show it; a `placeholder` picture still stands beneath it. A lazy picture needs its box as much as any other, so keep `ratio`, or `width` and `height`, on it.
 
 ```tsx
 <Image src={hero} alt="…" ratio="16 / 9" priority />

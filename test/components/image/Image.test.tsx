@@ -252,6 +252,17 @@ describe('Image', () => {
     expect(picture.className).not.toContain('transition-property:background-color');
   });
 
+  // Held in the loading phase, which is what a server render arrives in: a
+  // priority picture is drawn then, with nothing over it.
+  it('draws a priority picture from the first paint, with no fade and no cover', async () => {
+    const screen = await render(<Image alt="A ridge" priority />);
+    const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+    expect(picture).toHaveClass('opacity-100');
+    expect(picture).not.toHaveClass('opacity-0');
+    expect(screen.container.querySelectorAll('[class*="animate"]').length).toBe(0);
+  });
+
   it('reserves a box for a ratio it was given', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" ratio="16 / 9" />);
     const framed = screen.container.querySelector('[style*="aspect-ratio"]');

@@ -228,6 +228,8 @@
 
 - **A `Pill` that opens its `details` says so.** The button a pill with `onClick` draws had no `aria-expanded` and no way to be given one, since attributes passed to the pill land on its root, so a screen reader was never told that pressing it revealed anything. With `details` it now carries `aria-expanded` from `expanded` and `aria-controls` pointing at the details.
 
+- **A `priority` `Image` is visible before hydration.** Every picture started at `opacity: 0` under a Skeleton and faded in once React had seen it load, so on a server-rendered page the picture Largest Contentful Paint measures stayed hidden until hydration, however early its file arrived. A `priority` picture is now drawn from the first paint, with no fade and no Skeleton over it; a `placeholder` picture still stands beneath it.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

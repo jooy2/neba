@@ -11816,8 +11816,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '페이지의 평가 기준이 되는 그림(보통 LCP 그림)을 일찍, lazy 없이 불러옵니다. loading="eager"와 높은 fetchPriority이며, 직접 쓴 속성이 이깁니다',
-        en: 'Fetches the picture a page is judged by, usually its LCP image, early and never lazily: loading="eager" and a high fetchPriority. An attribute written out wins'
+        ko: '페이지의 평가 기준이 되는 그림(보통 LCP 그림)을 일찍, lazy 없이 불러오고 페이드나 Skeleton 없이 첫 페인트부터 그립니다. loading="eager"와 높은 fetchPriority이며, 직접 쓴 속성이 이깁니다',
+        en: 'Fetches the picture a page is judged by, usually its LCP image, early and never lazily, and draws it from the first paint with no fade or Skeleton: loading="eager" and a high fetchPriority. An attribute written out wins'
       }
     },
     {

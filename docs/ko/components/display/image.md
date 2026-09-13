@@ -123,7 +123,7 @@ import { Image } from 'neba';
 
 그림을 언제 불러올지는 `<img>`의 속성이 정하고, 그 속성은 그대로 전달됩니다. `loading="lazy"`는 화면 아래쪽 그림을 독자가 가까이 스크롤할 때까지 미루고, `decoding="async"`는 디코딩을 메인 스레드 밖으로 빼며, `fetchPriority`는 네트워크 대기열에서 요청의 순서를 올리거나 내립니다.
 
-`priority`는 페이지의 평가 기준이 되는 그림, 보통 첫 화면에서 가장 큰 그림에 씁니다. Largest Contentful Paint가 재는 것이 바로 그 그림입니다. `loading="eager"`와 높은 fetch priority를 함께 설정하며, 속성을 직접 쓰면 그쪽이 이깁니다. lazy로 불러오는 그림도 자리를 잡아야 하므로 `ratio`나 `width`와 `height`를 함께 주세요.
+`priority`는 페이지의 평가 기준이 되는 그림, 보통 첫 화면에서 가장 큰 그림에 씁니다. Largest Contentful Paint가 재는 것이 바로 그 그림입니다. `loading="eager"`와 높은 fetch priority를 함께 설정하며, 속성을 직접 쓰면 그쪽이 이깁니다. 그림도 첫 페인트부터 페이드나 Skeleton 없이 그리므로, 서버에서 렌더한 페이지가 hydration을 기다리지 않고 그림을 보여 줍니다. `placeholder` 그림은 여전히 그 아래에 깔립니다. lazy로 불러오는 그림도 자리를 잡아야 하므로 `ratio`나 `width`와 `height`를 함께 주세요.
 
 ```tsx
 <Image src={hero} alt="…" ratio="16 / 9" priority />
