@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import * as React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Highlight } from 'neba';
 
@@ -195,6 +196,55 @@ describe('Highlight', () => {
       );
 
       expect(screen.container.querySelector('em mark')?.textContent).toBe('fox');
+    });
+
+    it('keeps a list mounted when a query arrives and leaves', async () => {
+      let mounts = 0;
+
+      function Row({ children }: { children: React.ReactNode }) {
+        React.useEffect(() => {
+          mounts += 1;
+        }, []);
+
+        return <li>{children}</li>;
+      }
+
+      const list = (query: string) => (
+        <Highlight query={query}>
+          <ul>
+            {['alpha', 'beta', 'gamma'].map((word) => (
+              <Row key={word}>{word}</Row>
+            ))}
+          </ul>
+        </Highlight>
+      );
+      const screen = await render(list(''));
+
+      expect(mounts).toBe(3);
+
+      await screen.rerender(list('a'));
+      expect(marks(screen.container)).toEqual(['a', 'a', 'a', 'a', 'a']);
+
+      await screen.rerender(list(''));
+      expect(mounts).toBe(3);
+    });
+
+    it('asks for no keys the children did not already owe', async () => {
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await render(
+        <Highlight query="o">
+          one <b>two</b> <i>three</i>
+          <p>
+            four <b>five</b>
+          </p>
+        </Highlight>
+      );
+
+      const logged = error.mock.calls.flat().join(' ');
+
+      error.mockRestore();
+      expect(logged).not.toContain('key');
     });
 
     it('leaves an element with no children alone', async () => {

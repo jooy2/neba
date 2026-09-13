@@ -66,6 +66,8 @@
 
 - **A `Tour`'s card follows the step to its target.** The card was anchored to the first step's target for as long as the tour stayed open, so from the second step on the cut-out moved and the card did not. It is anchored again on every step.
 
+- **`Highlight` no longer remounts its children when a query arrives or clears.** Marking re-keyed every child in a list, so typing the first character of a search, or deleting the last one, threw away the state inside every row it wrapped: what had been typed into a field, what was open and which pictures had loaded. Keys are left as they were, and a part of the tree with no match in it is not rebuilt at all.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

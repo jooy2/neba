@@ -206,6 +206,12 @@ function markString(
  * element is cloned with its children marked, which keeps its type, its props
  * and its key; anything that is not a string, a number, an array or an element
  * with children is returned untouched.
+ *
+ * Nothing is rebuilt that has no match in it, and an array is mapped in place
+ * rather than through `React.Children.map`. That one re-keys every child, so a
+ * list went from `key="a"` to `.$a` the moment a query arrived and React
+ * remounted all of it — the text a reader had typed into a row, a row's open
+ * state and its pictures went with the first character of the search.
  */
 function markNode(
   node: React.ReactNode,
@@ -222,7 +228,9 @@ function markNode(
   }
 
   if (Array.isArray(node)) {
-    return React.Children.map(node, (child) => markNode(child, pattern, wholeWord, mark));
+    const marked = node.map((child: React.ReactNode) => markNode(child, pattern, wholeWord, mark));
+
+    return marked.every((child, index) => child === node[index]) ? node : marked;
   }
 
   if (React.isValidElement(node)) {
@@ -233,10 +241,26 @@ function markNode(
     if (children === undefined || typeof children === 'function') {
       return node;
     }
-    return React.cloneElement(node, undefined, markNode(children, pattern, wholeWord, mark));
+
+    const marked = markNode(children, pattern, wholeWord, mark);
+
+    if (marked === children) {
+      return node;
+    }
+
+    return React.cloneElement(node, undefined, ...asChildArguments(marked));
   }
 
   return node;
+}
+
+/**
+ * Children as the separate arguments `createElement` takes, which is how React
+ * knows they are the static children JSX writes rather than a list that owes it
+ * a `key` on every element. A cloned element in a plain array would warn.
+ */
+function asChildArguments(children: React.ReactNode): React.ReactNode[] {
+  return Array.isArray(children) ? children : [children];
 }
 
 /**
@@ -301,25 +325,23 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
         ))
       : children;
 
-    return (
-      <span
-        ref={ref}
-        className={className}
-        style={
-          {
-            '--n-fill': `var(--neba-${color}-fill)`,
-            '--n-on-solid': `var(--neba-${color}-on-solid)`,
-            '--n-accent': `var(--neba-${color}-accent)`,
-            '--n-on-tint': `var(--neba-${color}-on-tint)`,
-            '--n-panel': `var(--neba-${color}-panel)`,
-            '--n-line': `var(--neba-${color}-line)`,
-            ...style
-          } as React.CSSProperties
-        }
-        {...props}
-      >
-        {marked}
-      </span>
+    return React.createElement(
+      'span',
+      {
+        ref,
+        className,
+        style: {
+          '--n-fill': `var(--neba-${color}-fill)`,
+          '--n-on-solid': `var(--neba-${color}-on-solid)`,
+          '--n-accent': `var(--neba-${color}-accent)`,
+          '--n-on-tint': `var(--neba-${color}-on-tint)`,
+          '--n-panel': `var(--neba-${color}-panel)`,
+          '--n-line': `var(--neba-${color}-line)`,
+          ...style
+        } as React.CSSProperties,
+        ...props
+      },
+      ...asChildArguments(marked)
     );
   }
 );
