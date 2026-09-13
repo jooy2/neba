@@ -33,9 +33,18 @@ import 'neba/styles.css';
 
 ### About the reset
 
-`neba/styles.css` includes the global reset the components are written against: Tailwind's Preflight cut down to what they actually need: `box-sizing`, font inheritance on form controls, list markers off. It does not touch the typography of your paragraphs, headings or links.
+`neba/styles.css` includes the global reset the components are written against: Tailwind's Preflight cut down to what they actually need. It does not change the font size of your paragraphs or the look of your links.
 
 Every rule in it is wrapped in `:where()`, so it has **specificity 0**. A single type selector of your own (`p { margin: 1rem }`) beats it, whatever the import order. The reset is a floor under the components, not a claim on your page.
+
+It is global, though, so on a page that already has markup of its own, anything that relied on the browser's defaults for these changes when the stylesheet is added:
+
+- Every element is `border-box`.
+- Headings, paragraphs, `blockquote`, `figure`, `pre` and `hr` have no margin, and headings take the size and weight of the text around them.
+- `ul`, `ol` and `menu` have no markers and no indent. Safari's VoiceOver does not announce a list whose markers were removed in CSS, so give a list in your own prose `role="list"` if it should still be read as one.
+- A `<button>`, `<input>`, `<select>` or `<textarea>` of your own has no border, no background and square corners.
+
+Style those in your own CSS where you want them back. A project that already runs Tailwind should take the path below, which carries no reset at all.
 
 ### If you already use Tailwind
 
