@@ -302,6 +302,8 @@
 
 - **A `className` in the `imageProps` of an `Avatar` or an `AppLogo` is added to the picture's own classes.** It went through the spread and replaced them, so `imageProps={{ className: 'grayscale' }}` took away `size-full object-cover` on an Avatar and `object-contain` with its bounds on an AppLogo, and the picture spilled out of its circle or tile.
 
+- **A chart whose values all lie past a pinned axis end still draws its axis.** A `LineChart` or `ScatterChart` given `yAxis={{ min: 0 }}` over values that are all below zero, or any chart with a `max` below all of its values, worked out a value range that ran backwards, so the step and the top of the scale were `NaN`, no tick was written and the marks were drawn far outside the plot. The pinned end now stays where it was put and the scale opens past it. A flat series under one pinned end keeps that end too, where it used to be moved to open the band.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

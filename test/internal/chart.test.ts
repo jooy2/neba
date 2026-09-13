@@ -94,6 +94,38 @@ describe('valueScale', () => {
     expect(scale.min).toBeLessThanOrEqual(-900);
     expect(scale.max).toBe(0);
   });
+
+  it('keeps a pinned end when every value lies past it', () => {
+    // A LineChart told `min: 0` over a series that is all below zero. The data
+    // gives a top of -10 under a bottom of 0, and a negative range had no step.
+    const below = valueScale({ min: -50, max: -10 }, { min: 0, includeZero: false });
+
+    expect(below.min).toBe(0);
+    expect(below.max).toBeGreaterThan(0);
+    expect(below.ticks.length).toBeGreaterThan(1);
+    expect(below.ticks.every(Number.isFinite)).toBe(true);
+
+    const above = valueScale({ min: 10, max: 50 }, { max: 0, includeZero: false });
+
+    expect(above.max).toBe(0);
+    expect(above.min).toBeLessThan(0);
+    expect(above.ticks.length).toBeGreaterThan(1);
+
+    // A bar chart keeps zero in range, and a pinned `min` above the data still
+    // inverts it.
+    const bars = valueScale({ min: 2, max: 5 }, { min: 10 });
+
+    expect(bars.min).toBe(10);
+    expect(bars.max).toBeGreaterThan(10);
+    expect(Number.isFinite(bars.fraction(5))).toBe(true);
+  });
+
+  it('keeps a pinned end under a flat series', () => {
+    const scale = valueScale({ min: 40, max: 40 }, { min: 40, includeZero: false });
+
+    expect(scale.min).toBe(40);
+    expect(scale.max).toBeGreaterThan(40);
+  });
 });
 
 describe('extentOf', () => {

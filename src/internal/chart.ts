@@ -541,7 +541,23 @@ export function valueScale(
 
   // A flat series — every value the same — has no extent to divide by. Open a
   // band around it rather than dividing by zero and drawing a line off the top.
-  if (high === low) {
+  // With one end pinned the band opens past it instead, and the same branch takes
+  // a series that lies wholly on the far side of that end — `min: 0` over values
+  // that are all below zero — which would otherwise be a negative range with no
+  // step, and a scale of `NaN`.
+  const minPinned = options.min !== undefined && options.max === undefined;
+  const maxPinned = options.max !== undefined && options.min === undefined;
+
+  if (high <= low && (minPinned || maxPinned)) {
+    const anchor = minPinned ? low : high;
+    const band = Math.abs(anchor) > 0 ? Math.abs(anchor) : 2;
+
+    if (minPinned) {
+      high = low + band;
+    } else {
+      low = high - band;
+    }
+  } else if (high === low) {
     const pad = Math.abs(high) > 0 ? Math.abs(high) * 0.5 : 1;
 
     low -= pad;

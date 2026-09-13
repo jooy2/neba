@@ -276,7 +276,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [ ] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`
 - [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`
 - [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`
-- [ ] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`
+- [x] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`
 - [ ] **136** **Axis title placement**: on a horizontal chart `xAxis.label` reserves space and is never drawn. On a vertical chart `yAxis.label` is drawn at `plot.top - 8`, which can fall outside the top of the SVG, while its space is added to the left band. `chart-frame.tsx:1038, 1064, 1901, 1910`
 
 ### Inputs
