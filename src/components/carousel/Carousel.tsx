@@ -197,7 +197,6 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     const index = Math.min(Math.max(value ?? uncontrolled, 0), Math.max(count - 1, 0));
 
     const trackRef = React.useRef<HTMLDivElement>(null);
-    const slideRefs = React.useRef<(HTMLDivElement | null)[]>([]);
     // Set while the index is catching up with a scroll the reader performed. The
     // effect below skips those, or every drag would be answered by a scroll back
     // to where the browser had already put us.
@@ -248,7 +247,19 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         return;
       }
 
-      slideRefs.current[index]?.scrollIntoView({ block: 'nearest', inline: 'start' });
+      // The strip is scrolled rather than the slide scrolled into view, because
+      // `scrollIntoView` moves every scroll container above the slide as well —
+      // the page included, so a reader who had scrolled past an autoplaying
+      // strip was pulled back up to it on every turn. Every slide is exactly the
+      // width of the frame, which is what makes the offset a multiple of it; RTL
+      // counts backwards from zero.
+      const track = trackRef.current;
+
+      if (track) {
+        const sign = getComputedStyle(track).direction === 'rtl' ? -1 : 1;
+
+        track.scrollTo({ left: sign * index * track.clientWidth });
+      }
 
       settling.current = true;
       const timer = window.setTimeout(() => {
@@ -362,9 +373,6 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
             {slides.map((slide, slideIndex) => (
               <div
                 key={slideIndex}
-                ref={(element) => {
-                  slideRefs.current[slideIndex] = element;
-                }}
                 role="group"
                 aria-roledescription="slide"
                 aria-label={nameSlide(slideIndex + 1, count)}

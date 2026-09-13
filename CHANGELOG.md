@@ -68,6 +68,8 @@
 
 - **`Highlight` no longer remounts its children when a query arrives or clears.** Marking re-keyed every child in a list, so typing the first character of a search, or deleting the last one, threw away the state inside every row it wrapped: what had been typed into a field, what was open and which pictures had loaded. Keys are left as they were, and a part of the tree with no match in it is not rebuilt at all.
 
+- **Turning a `Carousel` slide scrolls the strip and nothing else.** The slide was scrolled into view, which moves every scroll container above it as well, so a reader who had scrolled past an autoplaying carousel was pulled back up to it on every turn, and a `value` changed from outside did the same. Only the carousel's own track moves now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

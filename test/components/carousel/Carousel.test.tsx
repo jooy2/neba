@@ -157,6 +157,39 @@ describe('Carousel', () => {
         .toHaveAttribute('aria-current', 'true');
     });
 
+    it('scrolls the strip and leaves the page where the reader put it', async () => {
+      // Nothing loads Tailwind into the test run, so the few rules that make the
+      // track a horizontal scroller are written out here.
+      const sheet = document.createElement('style');
+
+      sheet.textContent =
+        '.flex{display:flex}.overflow-x-auto{overflow-x:auto}.shrink-0{flex-shrink:0}.basis-full{flex-basis:100%}';
+      document.head.append(sheet);
+
+      const strip = (value: number) => (
+        <div>
+          <div style={{ width: 300 }}>
+            <Carousel value={value}>{slides}</Carousel>
+          </div>
+          <div style={{ height: 3000 }} />
+        </div>
+      );
+      try {
+        const screen = await render(strip(0));
+
+        window.scrollTo(0, 1500);
+        await screen.rerender(strip(1));
+
+        const track = screen.getByRole('group', { name: 'Carousel' }).element() as HTMLElement;
+
+        await expect.poll(() => track.scrollLeft).toBeGreaterThan(0);
+        expect(window.scrollY).toBe(1500);
+      } finally {
+        sheet.remove();
+        window.scrollTo(0, 0);
+      }
+    });
+
     it('starts on defaultValue', async () => {
       const screen = await render(<Carousel defaultValue={2}>{slides}</Carousel>);
 
