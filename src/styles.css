@@ -2605,7 +2605,12 @@
 /* Respect a reduced-motion preference. Both layers track the pointer, so they
    are motion in the sense that matters here — drop them entirely. */
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  /* Every root the durations are declared on, and not only `:root`: a nested
+     `.light` box declares them again, and on `:root` alone the preference was
+     undone for everything inside one. */
+  :root,
+  .light,
+  [data-theme='light'] {
     --neba-duration: 0ms;
     --neba-duration-fill: 0ms;
   }

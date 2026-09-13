@@ -148,6 +148,8 @@
 
 - **`colorSchemeScript()` sets `color-scheme` as well as `data-theme`.** A remembered dark page kept light scrollbars and native controls until the app hydrated, because only the provider wrote `color-scheme`. The pre-paint script writes both now, as the provider does.
 
+- **Reduced motion holds inside a forced-light box.** An element with `.light` or `data-theme="light"` declares the motion durations again, so a reader who asked for less motion got the hover transitions and popup fades back everywhere inside one. The override now names those roots too.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
