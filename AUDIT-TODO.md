@@ -313,7 +313,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 ### Display
 
 - [x] **162** DataTable row checkboxes pressed with a mouse did not add to the selection.
-- [ ] **163** **DataTable**: after scrolling to the bottom of 5,000 rows, a search that leaves 10 rows shows an empty body, because `virtualWindow` does not clamp `first` to the row count. `src/internal/data-table.ts:281-290`, `DataTable.tsx:1090-1099`
+- [x] **163** **DataTable**: after scrolling to the bottom of 5,000 rows, a search that leaves 10 rows shows an empty body, because `virtualWindow` does not clamp `first` to the row count. `src/internal/data-table.ts:281-290`, `DataTable.tsx:1090-1099`
 - [x] **164** [major] DataTable put empty values first in descending order. Decided: always last (breaking).
 - [ ] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`
 - [ ] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`

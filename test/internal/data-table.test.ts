@@ -208,6 +208,22 @@ describe('virtualWindow', () => {
     expect(virtualWindow(99999, 300, 30, 40, 5).after).toBeGreaterThanOrEqual(0);
   });
 
+  // Scrolled to the bottom of five thousand rows, then searched down to ten:
+  // the offset is still the old one, and a window that starts past the end
+  // draws an empty body over a spacer that keeps the scroll where it was.
+  it('draws the last rows for an offset past the end rather than none', () => {
+    const rowHeight = 32;
+    const window_ = virtualWindow(4990 * rowHeight, 320, rowHeight, 10, 5);
+
+    expect(window_).toEqual({ start: 0, end: 10, before: 0, after: 0 });
+
+    const long = virtualWindow(99999 * rowHeight, 320, rowHeight, 100, 5);
+
+    expect(long.end).toBe(100);
+    expect(long.end - long.start).toBeGreaterThanOrEqual(10);
+    expect(long.before + (long.end - long.start) * rowHeight + long.after).toBe(100 * rowHeight);
+  });
+
   it('renders something before the viewport has been measured', () => {
     // The first frame: the observer has not answered yet, and a window of zero
     // rows is a table that draws nothing and never asks again.

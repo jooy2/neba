@@ -322,6 +322,8 @@
 
 - **A date picker whose format writes a weekday is sized to its widest date.** A trigger is held at the width of the longest string its format can produce, measured over twenty-four sample dates, and those dates fell on no Friday and paired each month with only two weekdays. A `dateStyle: 'full'` picker in Greek was sized for 27 characters of a real 29, so choosing a Friday in February widened the field. A format with a weekday is measured over every month against every weekday now, and the samples are worked out once per locale and format rather than on every render.
 
+- **A virtual `DataTable` scrolled far down still draws rows after a search narrows it.** Scrolled to the bottom of five thousand rows and then searched down to ten, the table kept its old scroll offset, started its window of rendered rows past the last one and drew nothing, while the spacer standing in for the rows above held the scroll where it was, so the body stayed empty. An offset past the end now draws the last screen of rows, and the table shrinks back to the rows it has.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

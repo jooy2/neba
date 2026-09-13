@@ -324,7 +324,14 @@ export function virtualWindow(
   overscan: number
 ): VirtualWindow {
   const visible = viewport > 0 ? Math.ceil(viewport / rowHeight) : overscan * 3;
-  const first = Math.max(0, Math.floor(scrollTop / rowHeight) - overscan);
+  // An offset past the rows there are is a scroll position the rows just left
+  // behind: scrolled to the bottom of five thousand, then searched down to ten.
+  // Read as it stands it starts the window beyond the end, draws nothing, and
+  // keeps the spacer that holds the scroll where it was, so the body stays
+  // empty. It is held to the last screen of rows instead, which lets the
+  // container shrink and the browser pull the scroll back.
+  const top = Math.min(Math.floor(scrollTop / rowHeight), Math.max(0, count - visible));
+  const first = Math.max(0, top - overscan);
   const last = Math.min(count, first + visible + overscan * 2);
 
   return {
