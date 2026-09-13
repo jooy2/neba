@@ -453,6 +453,62 @@ describe('LineChart', () => {
       expect(texts).not.toContain('Jan');
     });
 
+    it('writes the value axis name above the plot, inside the box, without widening the ticks', async () => {
+      const chart = (name?: string) => (
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          yAxis={{ label: name }}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+      const screen = await render(chart());
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+      const gridLeft = () => Number(plot.element().querySelector('line')?.getAttribute('x1'));
+
+      await expect.poll(() => plot.element().querySelector('line')).not.toBeNull();
+
+      const before = gridLeft();
+
+      await screen.rerender(chart('Visits'));
+
+      const texts = () => [...plot.element().querySelectorAll('text')];
+
+      await expect.poll(() => texts().some((text) => text.textContent === 'Visits')).toBe(true);
+
+      const svg = plot.element().querySelector('svg')!.getBoundingClientRect();
+      const name = texts()
+        .find((text) => text.textContent === 'Visits')!
+        .getBoundingClientRect();
+      const ticks = texts()
+        .filter((text) => /^\d+$/.test(text.textContent ?? ''))
+        .map((text) => text.getBoundingClientRect());
+
+      expect(gridLeft()).toBe(before);
+      expect(name.top).toBeGreaterThanOrEqual(svg.top);
+      expect(ticks.length).toBeGreaterThan(1);
+      expect(Math.min(...ticks.map((tick) => tick.top))).toBeGreaterThanOrEqual(name.bottom);
+    });
+
+    it('draws no axis name for a hidden axis', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          yAxis={{ label: 'Visits', hidden: true }}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.poll(() => plot.element().querySelector('path')).not.toBeNull();
+
+      const texts = [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+
+      expect(texts).not.toContain('Visits');
+    });
+
     it('drops the gridlines when the value axis says so', async () => {
       const screen = await render(
         <LineChart

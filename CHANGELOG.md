@@ -304,6 +304,8 @@
 
 - **A chart whose values all lie past a pinned axis end still draws its axis.** A `LineChart` or `ScatterChart` given `yAxis={{ min: 0 }}` over values that are all below zero, or any chart with a `max` below all of its values, worked out a value range that ran backwards, so the step and the top of the scale were `NaN`, no tick was written and the marks were drawn far outside the plot. The pinned end now stays where it was put and the scale opens past it. A flat series under one pinned end keeps that end too, where it used to be moved to open the band.
 
+- **A chart writes the name of its left axis above the plot, and on a horizontal chart writes it at all.** A vertical chart's `yAxis.label` was drawn eight pixels above the plot, which on most charts is above the top of the box, while the room for it was taken out of the band beside the ticks, where nothing was drawn. A horizontal chart's `xAxis.label` took that band too and was never drawn. The name of the axis along the left edge now takes a band along the top of the box and is drawn in it, so the plot is a little shorter and a little wider than before. A `hidden` axis draws no name, as its props say.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

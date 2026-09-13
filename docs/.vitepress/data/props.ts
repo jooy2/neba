@@ -897,8 +897,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'thickness',
       type: 'number',
       description: {
-        ko: '축이 눈금과 이름을 위해 잡아 두는 폭(px). 기본값은 눈금 글자에서 측정합니다. 대시보드에서 두 차트의 plot을 맞출 때 쓰세요',
-        en: 'How much room the axis keeps for its ticks and label, in pixels. Measured from the ticks otherwise; set it to line two charts up on a dashboard'
+        ko: '축이 눈금을 위해 잡아 두는 폭(px). 아래쪽 축은 이름의 자리도 여기에 들어가고, 왼쪽 축의 이름은 plot 위에 따로 자리를 잡습니다. 기본값은 눈금 글자에서 측정합니다. 대시보드에서 두 차트의 plot을 맞출 때 쓰세요',
+        en: "How much room the axis keeps for its ticks, in pixels. The bottom axis' label is inside it; the left axis' label takes a band above the plot instead. Measured from the ticks otherwise; set it to line two charts up on a dashboard"
       }
     }
   ],

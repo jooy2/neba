@@ -1039,13 +1039,19 @@ export function CartesianChart({
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
   const axisLabelBand = fontSize + 6;
 
+  /* An axis name is written where its axis is: the one along the bottom under
+     its ticks, and the one along the left above the plot, since a name turned on
+     its side is unreadable at a glance. Each takes its band on that edge — the
+     left axis' name used to take a band beside the ticks it was never drawn in,
+     and on a horizontal chart it was not drawn at all. */
+  const leftAxis = horizontal ? categoryAxis : valueAxis;
+  const namesLeftAxis = Boolean(leftAxis?.label) && !leftAxis?.hidden;
+
   /* How much room one category label has, before anything is laid out.
      A horizontal chart gives each label a row of its own on the left, so the
      limit is a column width; a vertical one gives it a slot along the bottom,
      so the limit is the slot. */
-  const valueBand = valueAxis?.hidden
-    ? 0
-    : widestTick + 10 + (valueAxis?.label ? axisLabelBand : 0);
+  const valueBand = valueAxis?.hidden ? 0 : widestTick + 10;
   const slot = (width - (horizontal ? 0 : valueBand) - 16) / Math.max(1, count);
 
   /* Cut a long name to its slot rather than dropping labels until the rest fit —
@@ -1075,11 +1081,7 @@ export function CartesianChart({
   /* The two bands the axes take out of the box. `hidden` gives the room back to
      the plot, which is the whole reason a sparkline-shaped chart is the same
      component with both axes off rather than a different one. */
-  const leftBand = horizontal
-    ? categoryAxis?.hidden
-      ? 0
-      : widestCategory + 10 + (categoryAxis?.label ? axisLabelBand : 0)
-    : valueBand;
+  const leftBand = horizontal ? (categoryAxis?.hidden ? 0 : widestCategory + 10) : valueBand;
 
   const bottomBand = horizontal
     ? valueAxis?.hidden
@@ -1106,7 +1108,7 @@ export function CartesianChart({
   // A mark is drawn from its centre, so half of the widest one hangs over the
   // top of the plot. On a scatter that half is a whole bubble, which is what
   // `markInset` is reserving on the other three sides.
-  const topPad = markerRadii[size] + 4 + headroom + markInset;
+  const topPad = markerRadii[size] + 4 + headroom + markInset + (namesLeftAxis ? axisLabelBand : 0);
 
   const boxHeight = plotHeight ?? 0;
   const plot: PlotBox = {
@@ -1706,6 +1708,8 @@ function ChartAxes({
   zeroPx
 }: AxesProps) {
   const grid = valueAxis?.grid !== false && !valueAxis?.hidden;
+  const leftAxis = horizontal ? categoryAxis : valueAxis;
+  const bottomAxis = horizontal ? valueAxis : categoryAxis;
   /* A grid in both directions is graph paper, and on a chart of columns the
      vertical rules do the job the crosshair is already doing under the pointer.
      A plot with two value axes is the exception that makes the rule: there is
@@ -1916,22 +1920,23 @@ function ChartAxes({
         </>
       )}
 
-      {/* The axis names. The value axis' name is set above its ticks rather than
-          turned on its side — a rotated label is unreadable at a glance and it
-          takes a band of the plot to be unreadable in. */}
-      {valueAxis?.label ? (
+      {/* The axis names, in the bands the frame reserved for them: the left
+          axis' along the top of the box, starting where the plot does, and the
+          bottom axis' under its ticks at the far end. A hidden axis has neither
+          a band nor a name. */}
+      {leftAxis?.label && !leftAxis.hidden ? (
         <text
-          x={horizontal ? plot.left + plot.width : plot.left}
-          y={horizontal ? plot.top + plot.height + fontSize * 2 + 12 : plot.top - 8}
-          textAnchor={horizontal ? 'end' : 'start'}
+          x={plot.left}
+          y={fontSize}
+          textAnchor="start"
           fontSize={fontSize}
           fill="var(--neba-muted-fg)"
           fontWeight={500}
         >
-          {valueAxis.label}
+          {leftAxis.label}
         </text>
       ) : null}
-      {categoryAxis?.label && !horizontal ? (
+      {bottomAxis?.label && !bottomAxis.hidden ? (
         <text
           x={plot.left + plot.width}
           y={plot.top + plot.height + fontSize * 2 + 12}
@@ -1940,7 +1945,7 @@ function ChartAxes({
           fill="var(--neba-muted-fg)"
           fontWeight={500}
         >
-          {categoryAxis.label}
+          {bottomAxis.label}
         </text>
       ) : null}
     </g>

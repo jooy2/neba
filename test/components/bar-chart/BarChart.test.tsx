@@ -78,6 +78,37 @@ describe('BarChart', () => {
     });
   });
 
+  describe('axes', () => {
+    it("writes a horizontal chart's category axis name above the plot", async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          orientation="horizontal"
+          xAxis={{ label: 'Team' }}
+          categories={TEAMS}
+          series={[{ name: 'Deploys', data: [1, 2, 3] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+      const texts = () => [...plot.element().querySelectorAll('text')];
+
+      await expect.poll(() => texts().some((text) => text.textContent === 'Team')).toBe(true);
+
+      const svg = plot.element().querySelector('svg')!.getBoundingClientRect();
+      const name = texts()
+        .find((text) => text.textContent === 'Team')!
+        .getBoundingClientRect();
+      const rows = texts()
+        .filter((text) => TEAMS.includes(text.textContent ?? ''))
+        .map((text) => text.getBoundingClientRect());
+
+      expect(name.top).toBeGreaterThanOrEqual(svg.top);
+      expect(rows).toHaveLength(3);
+      expect(Math.min(...rows.map((row) => row.top))).toBeGreaterThanOrEqual(name.bottom);
+    });
+  });
+
   describe('valueLabels', () => {
     it('writes nothing on the bars by default', async () => {
       const screen = await render(
