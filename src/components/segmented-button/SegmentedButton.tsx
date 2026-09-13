@@ -262,8 +262,13 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
         return;
       }
 
+      // A `value` no segment carries takes nothing, and a tile left where the
+      // last choice was would say that choice is still made. It goes away, and
+      // like a first choice it appears in place when a segment matches again.
       const active = root.querySelector<HTMLElement>('[data-segment][data-checked]');
+      tile.hidden = !active;
       if (!active) {
+        tile.removeAttribute('data-ready');
         return;
       }
 

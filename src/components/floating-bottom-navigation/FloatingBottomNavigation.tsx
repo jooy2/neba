@@ -282,8 +282,12 @@ export const FloatingBottomNavigation = React.forwardRef<
     // Found by what it *is* rather than by a ref per item: the items are the
     // caller's children, composed however they liked, and `aria-current` is the
     // one mark that is on the current one wherever it ended up.
+    // A `value` no destination carries takes nothing, and a tile left where the
+    // last one was would say it is still current.
     const current = root.querySelector<HTMLElement>('[data-nav-item][aria-current]');
+    tile.hidden = !current;
     if (!current) {
+      tile.removeAttribute('data-ready');
       return;
     }
 
@@ -320,7 +324,25 @@ export const FloatingBottomNavigation = React.forwardRef<
       return;
     }
 
-    return observeResize(root, () => measure(false));
+    // Under `labels="selected"` a press starts two names travelling, and the
+    // measurement above is taken as they set off — before the new name has any
+    // width. When the bar changes width on the way the resize catches the rest,
+    // but two names of the same width leave the bar as wide as it was, and the
+    // tile stayed at the narrow box it was first sent to. The end of the names'
+    // own transition sends it to where the destination finished.
+    const settle = (event: TransitionEvent) => {
+      if (event.propertyName === 'grid-template-columns') {
+        measure(true);
+      }
+    };
+
+    const stop = observeResize(root, () => measure(false));
+    root.addEventListener('transitionend', settle);
+
+    return () => {
+      stop();
+      root.removeEventListener('transitionend', settle);
+    };
   }, [measure]);
 
   const gap = typeof offset === 'number' ? `${offset}px` : offset;

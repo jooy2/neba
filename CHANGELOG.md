@@ -308,6 +308,10 @@
 
 - **A `CommandPalette` opens with an empty search after a command closed it.** The query was cleared only when Escape or the scrim closed the sheet, so running a command, or turning a controlled `open` off, left the last search in the field and the next open showed a filtered list. It is cleared whenever the palette closes, however that happens.
 
+- **The highlight of a `SegmentedButton` or a `FloatingBottomNavigation` goes away when nothing matches `value`.** A `value` no segment or destination carried left the tile where the last choice had been, which drew a choice that was no longer made. The tile is hidden until something matches again, and then appears in place.
+
+- **A `FloatingBottomNavigation` highlight lands on the whole destination when two names are the same width.** Under `labels="selected"` the tile was measured as the pressed destination's name set off, before it had any width, and only a change in the bar's own width sent it on from there. Two names of the same width leave the bar as wide as it was, so the tile stopped short and narrow beside the destination. It is measured again when the names finish their transition.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

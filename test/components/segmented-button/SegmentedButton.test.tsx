@@ -212,6 +212,23 @@ describe('SegmentedButton', () => {
       expect(box.style.getPropertyValue('--n-seg-x')).not.toBe(before);
     });
 
+    it('goes away for a value no segment carries, and comes back in place', async () => {
+      const screen = await render(<Basic value="day" />);
+      const box = tile(screen.getByRole('radiogroup').element()) as HTMLElement;
+
+      expect(box.hidden).toBe(false);
+
+      await screen.rerender(<Basic value="year" />);
+
+      expect(box.hidden).toBe(true);
+
+      await screen.rerender(<Basic value="month" />);
+
+      const month = screen.getByRole('radio', { name: 'Month' }).element() as HTMLElement;
+      expect(box.hidden).toBe(false);
+      expect(box.style.getPropertyValue('--n-seg-x')).toBe(`${month.offsetLeft}px`);
+    });
+
     // The whole point of the component moves, and it moves without a transform:
     // the tile is an empty box, so no label is ever resampled.
     it('never applies a transform', async () => {

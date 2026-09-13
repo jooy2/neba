@@ -265,6 +265,50 @@ describe('FloatingBottomNavigation', () => {
         .toBe(`${next.offsetLeft}px`);
     });
 
+    it('goes away for a value no destination carries', async () => {
+      const bar = (value: string) => (
+        <FloatingBottomNavigation value={value} data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+      const screen = await render(bar('home'));
+
+      await expect.poll(() => tile(screen)?.hidden).toBe(false);
+
+      await screen.rerender(bar('settings'));
+
+      expect(tile(screen)?.hidden).toBe(true);
+    });
+
+    // Two names of the same width travel without changing the bar's width, so
+    // no resize follows them; the end of their transition is what re-measures.
+    it('lands where the destination finished when its name has arrived', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation defaultValue="home" data-testid="bar" style={{ width: 400 }}>
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+
+      const home = screen.getByRole('button', { name: 'Home' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => tile(screen)?.style.getPropertyValue('--n-nav-w'))
+        .toBe(`${home.offsetWidth}px`);
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      home.style.paddingInline = '40px';
+      home.dispatchEvent(
+        new TransitionEvent('transitionend', {
+          propertyName: 'grid-template-columns',
+          bubbles: true
+        })
+      );
+
+      expect(tile(screen)?.style.getPropertyValue('--n-nav-w')).toBe(`${home.offsetWidth}px`);
+    });
+
     it('is not drawn at all until a destination is current', async () => {
       const screen = await render(
         <FloatingBottomNavigation data-testid="bar">
