@@ -79,5 +79,6 @@ slot은 `mask`, `title`, `description`, `close`, `footer`입니다. 넘긴 class
 ## 접근성
 
 - 카드는 제목이 이름이 되고 본문이 설명이 되는 dialog이며, 각 단계가 열릴 때 focus가 그 안으로 옮겨갑니다.
+- Next와 Previous는 카드를 제자리에서 바꾸므로, 새 단계를 polite live region이 "Step 2: Deploy"처럼 읽어 줍니다.
 - `dismissible`을 끄지 않는 한 Escape로 tour가 끝납니다. 바깥을 누르는 것으로는 끝나지 않습니다. 페이지를 쓰는 것이 tour의 목적이기 때문입니다.
 - tour가 어떤 것에 이르는 유일한 통로가 되어서는 안 됩니다. tour가 가리키는 것은 tour 없이도 찾을 수 있어야 합니다. 이미 닫아버린 독자나 애초에 보지 못한 독자에게 두 번째 기회는 없습니다.

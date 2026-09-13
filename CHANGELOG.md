@@ -224,6 +224,8 @@
 
 - **`HowToSteps` says which step it moved to.** Next, Previous and a row in the list changed the panel in place and left the focus on the button pressed, so a screen reader heard nothing change. A polite live region now reads the new step, as "Step 2: Configure", or its position when the title is not a string.
 
+- **A `Tour` says which step it moved to.** Next rewrote the title, the words and the counter in place while the focus stayed on Next, so a screen reader heard nothing change. A polite live region in the card now reads the new step, as "Step 2: Deploy", or its position when the title is not a string.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

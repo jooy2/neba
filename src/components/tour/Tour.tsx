@@ -4,7 +4,13 @@ import * as React from 'react';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { Button } from '../button/Button.js';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import { actionMessages, fill, stepsMessages, useMessages } from '../../internal/i18n.js';
+import {
+  actionMessages,
+  fill,
+  fillMessage,
+  stepsMessages,
+  useMessages
+} from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { observeResize } from '../../internal/observe.js';
 import {
@@ -17,6 +23,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  srOnlyClasses,
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
@@ -428,6 +435,19 @@ export function Tour(rawProps: TourProps) {
             )}
             style={surfaceSlots(color, 3)}
           >
+            {/* Next rewrites the title, the words and the counter in place, and
+                the focus stays on Next — so a screen reader was told nothing
+                had changed. The first sentence is here as the popup mounts and
+                is not announced; the next one is. */}
+            <span className={srOnlyClasses} aria-live="polite">
+              {typeof current?.title === 'string'
+                ? fillMessage(messages.step, { index: String(index + 1), title: current.title })
+                : fillMessage(messages.position, {
+                    index: String(index + 1),
+                    total: String(steps.length)
+                  })}
+            </span>
+
             {hasHeader ? (
               <div className="flex items-start gap-3">
                 <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>

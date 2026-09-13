@@ -62,6 +62,20 @@ describe('Tour', () => {
       await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
     });
 
+    // The card is rewritten in place and the focus stays on Next.
+    it('says which step it moved to', async () => {
+      const screen = await render(<Page steps={STEPS} defaultOpen />);
+      const live = () =>
+        screen.getByRole('dialog').element().querySelector('[aria-live="polite"]') as HTMLElement;
+
+      await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(live()).toHaveTextContent('Step 1: Save');
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+
+      await expect.poll(() => live().textContent).toBe('Step 2: Deploy');
+    });
+
     it('moves the card to the target of each step', async () => {
       const screen = await render(
         <div>
