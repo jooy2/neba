@@ -4,13 +4,7 @@ import * as React from 'react';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { Button } from '../button/Button.js';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import {
-  actionMessages,
-  fill,
-  fillMessage,
-  stepsMessages,
-  useMessages
-} from '../../internal/i18n.js';
+import { actionMessages, fillMessage, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { observeResize } from '../../internal/observe.js';
 import {
@@ -496,7 +490,7 @@ export function Tour(rawProps: TourProps) {
               <span
                 className={`shrink-0 tabular-nums text-(--neba-muted-fg) ${metaTextClasses[size]}`}
               >
-                {fill(messages.position, {
+                {fillMessage(messages.position, {
                   index: String(index + 1),
                   total: String(steps.length)
                 })}

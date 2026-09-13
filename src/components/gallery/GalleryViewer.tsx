@@ -5,7 +5,7 @@ import { Dialog } from '../dialog/Dialog.js';
 import { IconButton } from '../icon-button/IconButton.js';
 import { Image } from '../image/Image.js';
 import { ChevronIcon } from '../../internal/icons.js';
-import { fill } from '../../internal/i18n.js';
+import { fillMessage } from '../../internal/i18n.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
 import { isSideways, shownRatioOf } from './Gallery.js';
 import type { GalleryMessages } from '../../internal/i18n.js';
@@ -172,7 +172,7 @@ export function GalleryViewer({
             // to a reader who cannot see the picture it landed on.
             aria-live="polite"
           >
-            {fill(messages.item, {
+            {fillMessage(messages.item, {
               index: String((index ?? 0) + 1),
               total: String(items.length)
             })}

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Image } from '../image/Image.js';
 import { responsiveSlots, withBaseline } from '../../internal/responsive.js';
 import { useBreakpointValue } from '../../hooks/useMediaQuery.js';
-import { fill, galleryMessages, useMessages } from '../../internal/i18n.js';
+import { fillMessage, galleryMessages, useMessages } from '../../internal/i18n.js';
 import {
   cx,
   hasContent,
@@ -408,7 +408,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       const titleId = `${idBase}-${index}-title`;
       const descriptionId = `${idBase}-${index}-description`;
       const positionId = `${idBase}-${index}-position`;
-      const position = fill(messages.item, {
+      const position = fillMessage(messages.item, {
         index: String(index + 1),
         total: String(items.length)
       });

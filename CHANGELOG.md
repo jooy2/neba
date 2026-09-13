@@ -282,6 +282,8 @@
 
 - **A `threshold` outside 0–1 no longer takes the page down.** Every `Animate*` component and `useOnScreen` hand `threshold` to an `IntersectionObserver`, which throws a `RangeError` for `1.2` or `-0.1`, from an effect, so nothing caught it. A threshold is held to the range now, and a `NaN` is treated as `0`.
 
+- **A translation's placeholders are filled the same way everywhere.** `Tour`, `HowToSteps` and `Gallery` filled theirs with an older helper that looked a `{name}` up with a plain index, so a registered translation containing `{constructor}` printed `function Object() { [native code] }` into the counter. They use the one helper the rest of the library does, which leaves a placeholder it has no value for as it was written.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -517,6 +517,16 @@ describe('HowToSteps', () => {
       await expect.element(screen.getByRole('button', { name: '다음' })).toBeInTheDocument();
     });
 
+    // A placeholder is looked up among the values the component has, and never
+    // up the prototype chain: `{constructor}` in a translation used to print
+    // `function Object() { [native code] }` into the counter.
+    it('leaves a placeholder it has no value for as it was written', async () => {
+      registerMessages('eo', { steps: { position: '{index} {constructor}' } });
+      const screen = await render(<HowToSteps steps={STEPS} locale="eo" />);
+
+      await expect.element(screen.getByText('1 {constructor}')).toBeInTheDocument();
+    });
+
     it('takes labels written out over the locale', async () => {
       const screen = await render(
         <HowToSteps steps={STEPS} nextLabel="Onward" previousLabel="Back" />

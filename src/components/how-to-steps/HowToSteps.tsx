@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { CheckIcon, ChevronIcon, RestartIcon, SuccessIcon } from '../../internal/icons.js';
-import { fill, fillMessage, stepsMessages, useMessages } from '../../internal/i18n.js';
+import { fillMessage, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   cx,
@@ -514,7 +514,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   position by it, the rail being an `ol`. */
                 aria-label={
                   label
-                    ? fill(messages.step, { index: String(index + 1), title: label })
+                    ? fillMessage(messages.step, { index: String(index + 1), title: label })
                     : undefined
                 }
                 className={cx(
@@ -599,7 +599,10 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                     metaTextClasses[size]
                   )}
                 >
-                  {fill(messages.position, { index: String(index + 1), total: String(total) })}
+                  {fillMessage(messages.position, {
+                    index: String(index + 1),
+                    total: String(total)
+                  })}
                 </span>
               </div>
 
