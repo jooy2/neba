@@ -174,6 +174,19 @@ describe('FloatingActionButton', () => {
       expect(screen.getByRole('button', { name: 'Copy link' }).query()).toBeNull();
     });
 
+    it('puts the focus back on the button when an action closes the dial', async () => {
+      const screen = await render(
+        <FloatingActionButton label="Share" openOnHover={false} defaultOpen>
+          <FloatingAction label="Copy link" />
+        </FloatingActionButton>
+      );
+
+      screen.getByRole('button', { name: 'Copy link' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('button', { name: 'Share' })).toHaveFocus();
+    });
+
     it('keeps the dial up when it was told to', async () => {
       const screen = await render(
         <FloatingActionButton label="Share" openOnHover={false} closeOnAction={false} defaultOpen>

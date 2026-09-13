@@ -53,6 +53,10 @@ interface FloatingActionContextValue {
   showLabels: boolean;
   reversed: boolean;
   close: () => void;
+  /** Whether pressing an action closes the dial, and so takes the action away. */
+  closesOnAction: boolean;
+  /** Puts the focus back on the button the dial came out of. */
+  focusTrigger: () => void;
 }
 
 const FloatingActionContext = React.createContext<FloatingActionContextValue>({
@@ -63,7 +67,9 @@ const FloatingActionContext = React.createContext<FloatingActionContextValue>({
   elevation: 1,
   showLabels: true,
   reversed: true,
-  close: () => {}
+  close: () => {},
+  closesOnAction: false,
+  focusTrigger: () => {}
 });
 
 export interface FloatingActionButtonProps
@@ -332,7 +338,9 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
         elevation,
         showLabels,
         reversed,
-        close: closeOnAction ? close : () => {}
+        close: closeOnAction ? close : () => {},
+        closesOnAction: closeOnAction,
+        focusTrigger: () => triggerRef.current?.focus()
       }),
       [variant, size, color, density, elevation, showLabels, reversed, closeOnAction, close]
     );
@@ -489,8 +497,17 @@ export const FloatingAction = React.forwardRef<HTMLButtonElement, FloatingAction
           startIcon={icon}
           style={{ borderRadius: '9999px' }}
           onClick={(event) => {
+            // Read before anything closes: the dial and this button leave the
+            // document together, and a focus that goes with them lands on the
+            // page — the same place Escape already refuses to leave it.
+            const hadFocus = event.currentTarget === document.activeElement;
+
             onClick?.(event);
             dial.close();
+
+            if (hadFocus && dial.closesOnAction) {
+              dial.focusTrigger();
+            }
           }}
           {...props}
         />

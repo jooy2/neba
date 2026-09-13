@@ -132,6 +132,8 @@
 
 - **Removing a file from a `FilePicker` keeps the keyboard focus in the list.** The remove button left with its row and the focus fell to the page. It now moves to the remove button that takes that place, the one before it when the last file went, and the drop zone when the list is empty.
 
+- **Pressing a `FloatingAction` puts the keyboard focus back on the button it came out of.** The dial closed with the pressed action inside it, so the focus fell to the page, where Escape already refused to leave it. A dial kept open with `closeOnAction={false}` leaves the focus on the action.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
