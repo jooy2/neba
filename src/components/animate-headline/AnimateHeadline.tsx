@@ -179,17 +179,27 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
       return () => clearTimeout(timer);
     }, [index, count, run.state, interval, delay, advance, loop, active]);
 
+    // Held rather than written inline: an inline callback is a new function on
+    // every render, which React answers by calling the old one with `null` and
+    // the new one with the node — every render, and this one renders for every
+    // line it turns.
+    const runRef = run.ref;
+    const attach = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        runRef(node);
+
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+      },
+      [ref, runRef]
+    );
+
     return (
       <div
-        ref={(node) => {
-          run.ref(node);
-
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          }
-        }}
+        ref={attach}
         className={cx('neba-headline', className)}
         style={
           {

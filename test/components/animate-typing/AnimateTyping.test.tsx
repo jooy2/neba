@@ -148,6 +148,22 @@ describe('AnimateTyping', () => {
       }
     });
 
+    // Typing renders once per character, and a callback ref written inline is
+    // detached and attached again on every one of those renders.
+    it('attaches a callback ref once rather than on every character', async () => {
+      const ref = vi.fn();
+      const screen = await render(
+        <AnimateTyping ref={ref} speed={200} caret={false} data-testid="typing">
+          Hello
+        </AnimateTyping>
+      );
+
+      await vi.runAllTimersAsync();
+      await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello');
+
+      expect(ref.mock.calls.filter(([node]) => node === null)).toHaveLength(0);
+    });
+
     it('takes only the text out of an element among the children', async () => {
       const screen = await render(
         <AnimateTyping speed={200} caret={false} data-testid="typing">

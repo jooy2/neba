@@ -230,17 +230,27 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
       };
     }, [run.started, paused, reduced, total, typeDelay, deleteDelay, delay, hold, erase, repeat]);
 
+    // Held rather than written inline: an inline callback is a new function on
+    // every render, which React answers by calling the old one with `null` and
+    // the new one with the node — every render, and this one renders for every
+    // character it types.
+    const runRef = run.ref;
+    const attach = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        runRef(node);
+
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+      },
+      [ref, runRef]
+    );
+
     return (
       <div
-        ref={(node) => {
-          run.ref(node);
-
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          }
-        }}
+        ref={attach}
         className={className}
         style={style}
         data-neba-animation="typing"
