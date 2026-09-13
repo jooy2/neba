@@ -32,6 +32,8 @@ import { Gallery } from 'neba';
 
 `ratio`는 없어도 될 것 같아 보여도 적어 두는 편이 좋습니다. `masonry`와 `justified`는 이 값으로 배치를 계산하고, 그 계산은 파일이 한 장도 도착하기 전에 끝납니다. 브라우저가 처음 그리는 프레임부터 배치가 맞고, 사진 마흔 장이 도착하면서 마흔 번 다시 흐르는 일이 없는 이유입니다. 측정하는 것은 아무것도 없습니다.
 
+항목에는 `rotate`, `flip`, `position`, `placeholder`도 줄 수 있고, [Image](./image)에서와 똑같이 그 사진에 전달됩니다. `rotate`와 `flip`은 크게 보기 화면까지 따라갑니다. `ratio`는 저장된 파일의 비율 그대로 두면 되고, 옆으로 돌린 항목은 누운 모양으로 배치됩니다.
+
 ## 예시
 
 ### layout
@@ -53,6 +55,16 @@ import { Gallery } from 'neba';
 <Demo src="gallery/columns">
 
 <<< @/.vitepress/demos/gallery/columns.tsx
+
+</Demo>
+
+### fit, letterbox, loading
+
+`fit`은 Image에서처럼 각 사진이 타일을 채우는 방식입니다. 기본값 `cover`는 타일에 맞춰 잘라내고, `contain`과 `scale-down`은 사진 전체를 남깁니다. `letterbox`는 그때 생기는 빈 영역을 CSS background로 채우거나, `blur`면 같은 사진을 흐리게 깔아 채웁니다. `loading="lazy"`는 타일이 화면 가까이 올 때까지 파일 요청을 미루므로, 첫 줄이 페이지에서 가장 큰 그림이 아닌 긴 갤러리에 알맞습니다.
+
+<Demo src="gallery/fit">
+
+<<< @/.vitepress/demos/gallery/fit.tsx
 
 </Demo>
 

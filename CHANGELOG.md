@@ -20,6 +20,8 @@
 
 - **`Image` takes `priority`.** It is for the picture a page is judged by, usually its Largest Contentful Paint: `loading="eager"` and a high fetch priority together, with an attribute written out still winning. `fetchpriority` is spelled the way the installed React accepts it, so neither React 18 nor React 19 warns.
 
+- **`Gallery` passes the new `Image` props on.** An item takes `rotate`, `flip`, `position` and a `placeholder`, and the Gallery takes `fit`, `letterbox` and `loading` for every tile. An item's `ratio` stays the file's own: a turned item is laid out on its side by `masonry` and `justified`, and opens turned in the viewer.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

@@ -32,6 +32,8 @@ Every other `<ul>` attribute passes through to the list. The shared axes are def
 
 `ratio` is the one worth writing down even when it feels optional. `masonry` and `justified` are laid out from it, and they are laid out before a single file has arrived: which is what makes the arrangement right in the first frame and stops a wall of forty photographs reflowing forty times as they land. Nothing is ever measured.
 
+An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which reach its picture as they do on an [Image](./image), and `rotate` and `flip` follow it into the viewer. `ratio` stays the proportion of the file as stored, so an item turned onto its side is laid out on its side.
+
 ## Examples
 
 ### layout
@@ -53,6 +55,16 @@ Every other `<ul>` attribute passes through to the list. The shared axes are def
 <Demo src="gallery/columns">
 
 <<< @/.vitepress/demos/gallery/columns.tsx
+
+</Demo>
+
+### fit, letterbox and loading
+
+`fit` is how each picture fills its tile, as on an Image. `cover`, the default, crops to the tile, and `contain` or `scale-down` keep the whole picture. `letterbox` fills the space those leave, with a CSS background or, for `blur`, with the picture itself. `loading="lazy"` waits to fetch a tile's file until the tile is near the screen, which suits a long wall whose first row is not the largest picture on the page.
+
+<Demo src="gallery/fit">
+
+<<< @/.vitepress/demos/gallery/fit.tsx
 
 </Demo>
 

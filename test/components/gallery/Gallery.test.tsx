@@ -141,6 +141,86 @@ describe('Gallery', () => {
     });
   });
 
+  /*
+   * An item's `ratio` is the file's, so one turned onto its side has to be laid
+   * out on its side by the arithmetic that runs before anything loads — or a
+   * masonry would reserve a landscape slot for a portrait and crop it.
+   */
+  describe('a turned item', () => {
+    const turned: NebaGalleryItem[] = [{ ...items[0], rotate: 90 }, ...items.slice(1)];
+
+    it('masonry reserves it on its side', async () => {
+      const screen = await render(<Gallery items={turned} layout="masonry" columns={2} />);
+      const box = tiles(screen.container)[0].querySelector<HTMLElement>('[style*="aspect-ratio"]');
+      const [width, height = '1'] = (box?.style.aspectRatio ?? '').split('/');
+
+      expect(Number(width) / Number(height)).toBeCloseTo(2 / 3);
+    });
+
+    it('justified grows it in proportion to its turned width', async () => {
+      const screen = await render(<Gallery items={turned} layout="justified" rowHeight={200} />);
+
+      expect(Number(tiles(screen.container)[0].style.flexGrow)).toBeCloseTo(2 / 3);
+    });
+
+    it('grid keeps the layout shape and turns the picture inside it', async () => {
+      const screen = await render(<Gallery items={turned} ratio={1} />);
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element() as HTMLImageElement;
+
+      expect(picture.style.rotate).toBe('90deg');
+      expect(picture.closest<HTMLElement>('[style*="aspect-ratio"]')?.style.aspectRatio).toMatch(
+        /^1( \/ 1)?$/
+      );
+    });
+  });
+
+  describe('what reaches each picture', () => {
+    it('hands an item its own turn, mirror, position and stand-in', async () => {
+      const screen = await render(
+        <Gallery
+          items={[
+            {
+              ...items[0],
+              rotate: 180,
+              flip: 'horizontal',
+              position: 'top',
+              placeholder: { src: OK }
+            }
+          ]}
+        />
+      );
+      const tile = tiles(screen.container)[0];
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element() as HTMLImageElement;
+
+      expect(picture.style.rotate).toBe('180deg');
+      expect(picture.style.scale).toBe('-1 1');
+      // Read on the picture as it is shown, so through the half turn and the
+      // mirror the top of what the reader sees is the bottom of the file.
+      expect(picture.style.objectPosition).toBe('50% 100%');
+      expect(tile.querySelector('img[aria-hidden="true"]')).toHaveAttribute('src', OK);
+    });
+
+    it('hands every picture the fit, the letterbox and the loading', async () => {
+      const screen = await render(
+        <Gallery items={items} fit="contain" letterbox="blur" loading="lazy" />
+      );
+      const tile = tiles(screen.container)[0];
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).toHaveClass('object-contain');
+      expect(picture).toHaveAttribute('loading', 'lazy');
+      expect(tile.querySelectorAll('img')).toHaveLength(2);
+    });
+
+    it('covers each tile by default', async () => {
+      const screen = await render(<Gallery items={items} />);
+
+      await expect
+        .element(screen.getByRole('img', { name: 'A ridge' }))
+        .toHaveClass('object-cover');
+    });
+  });
+
   describe('columns and gap', () => {
     // The column count travels as the `--n-cols` slots the stylesheet cascade
     // reads, which is what lets a breakpoint change it without React hearing.
@@ -281,6 +361,33 @@ describe('Gallery', () => {
 
       await expect.element(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled();
       await expect.element(screen.getByRole('button', { name: 'Next image' })).toBeEnabled();
+    });
+
+    /*
+     * Turned, a picture is out of the flow and cannot size the viewer by its
+     * own content, so the viewer gives it the turned shape from the item's
+     * ratio and a width to hold it.
+     */
+    it('opens a turned picture turned, in a box of its turned shape', async () => {
+      const screen = await render(
+        <Gallery items={[{ ...items[0], rotate: 90, flip: 'vertical' }]} preview />
+      );
+
+      await screen.getByRole('button', { name: /A ridge/ }).click();
+
+      const dialog = screen.getByRole('dialog').element();
+
+      await vi.waitFor(() => expect(dialog.querySelector('img')).not.toBeNull());
+
+      const picture = dialog.querySelector('img') as HTMLImageElement;
+      const box = picture.closest<HTMLElement>('[style*="aspect-ratio"]');
+      const [width, height = '1'] = (box?.style.aspectRatio ?? '').split('/');
+
+      expect(picture.style.rotate).toBe('90deg');
+      expect(Number(width) / Number(height)).toBeCloseTo(2 / 3);
+      // Capped at the height the unturned picture may take, which the browser
+      // folds into a single `vh` length.
+      expect(box?.style.width).toMatch(/^min\(100%, .*vh\)$/);
     });
 
     it('opens the larger file when the item has one', async () => {

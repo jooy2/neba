@@ -7,6 +7,7 @@ import { Image } from '../image/Image.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { fill } from '../../internal/i18n.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
+import { isSideways, shownRatioOf } from './Gallery.js';
 import type { GalleryMessages } from '../../internal/i18n.js';
 import type { NebaImageProtection, NebaImageWatermark } from '../image/Image.js';
 import type { NebaGalleryItem } from './Gallery.js';
@@ -51,6 +52,15 @@ export function GalleryViewer({
   const atStart = index === null || index <= 0;
   const atEnd = index === null || index >= items.length - 1;
 
+  /*
+   * A picture on its side cannot size the viewer by its own content: turned,
+   * it is out of the flow. With a ratio the box is the turned shape, as wide as
+   * the dialog allows and no taller than the unturned picture may be; without
+   * one it spans the dialog and `contain` keeps the whole picture inside.
+   */
+  const sideways = current !== undefined && isSideways(current);
+  const turnedRatio = sideways && current.ratio !== undefined ? shownRatioOf(current, 1) : null;
+
   const go = (to: number) => {
     if (to >= 0 && to < items.length) onIndexChange(to);
   };
@@ -94,13 +104,29 @@ export function GalleryViewer({
               key={current.id ?? current.src}
               src={current.full ?? current.src}
               alt={current.alt}
-              ratio="auto"
+              ratio={turnedRatio ?? 'auto'}
               fit="contain"
               rounded="md"
+              rotate={current.rotate}
+              flip={current.flip}
               watermark={watermark}
               protect={protect}
-              className="max-h-[70vh] w-auto"
-              classNames={{ image: 'max-h-[70vh] w-auto object-contain' }}
+              className={
+                sideways
+                  ? turnedRatio === null
+                    ? 'max-h-[70vh]'
+                    : undefined
+                  : 'max-h-[70vh] w-auto'
+              }
+              classNames={sideways ? undefined : { image: 'max-h-[70vh] w-auto object-contain' }}
+              style={
+                sideways
+                  ? {
+                      width:
+                        turnedRatio === null ? '100%' : `min(100%, calc(70vh * ${turnedRatio}))`
+                    }
+                  : undefined
+              }
             />
           ) : null}
 

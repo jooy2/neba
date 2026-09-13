@@ -11396,6 +11396,31 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '타일의 모서리를 둥글게', en: 'Rounds the tiles' }
     },
     {
+      name: 'fit',
+      type: "'cover' | 'contain' | 'fill' | 'none' | 'scale-down'",
+      default: "'cover'",
+      description: {
+        ko: '각 사진이 타일을 채우는 방식. contain과 scale-down은 사진 전체를 남깁니다',
+        en: 'How each picture fills its tile. contain and scale-down keep the whole picture'
+      }
+    },
+    {
+      name: 'letterbox',
+      type: "'none' | 'blur' | string",
+      description: {
+        ko: '각 타일의 Image로 전달됩니다. fit이 남긴 빈 영역을 채우는 것',
+        en: "Passed to every tile's Image: what fills the space fit leaves"
+      }
+    },
+    {
+      name: 'loading',
+      type: "'lazy' | 'eager'",
+      description: {
+        ko: '타일의 파일을 언제 불러올지. lazy는 타일이 화면 가까이 올 때까지 기다립니다',
+        en: "When the tiles' files load. lazy waits until a tile is near the screen"
+      }
+    },
+    {
       name: 'caption',
       type: "'none' | 'below' | 'overlay' | 'hover'",
       default: "'none'",
@@ -11487,6 +11512,30 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '사진 자체의 비율. masonry와 justified가 이 값으로 배치를 계산하며, 그 계산은 파일이 도착하기 전에 끝납니다',
         en: "The picture's own proportion. masonry and justified are laid out from it, before a single file has arrived"
+      }
+    },
+    {
+      name: 'rotate · flip',
+      type: "0 | 90 | 180 | 270 · 'none' | 'horizontal' | 'vertical' | 'both'",
+      description: {
+        ko: '사진을 돌리고 뒤집습니다. ratio는 파일의 비율 그대로 두면 옆으로 돌린 항목이 누운 모양으로 배치되고, 크게 보기 화면까지 따라갑니다',
+        en: "Turns and mirrors the picture. ratio stays the file's own, and a turned item is laid out on its side and opens turned in the viewer"
+      }
+    },
+    {
+      name: 'position',
+      type: 'NebaImagePosition',
+      description: {
+        ko: '타일이 사진을 자를 때 남길 부분, 또는 빈 영역이 생길 자리',
+        en: 'Which part a tile keeps when it crops, or where the space goes when it does not'
+      }
+    },
+    {
+      name: 'placeholder',
+      type: '{ src: string | Blob; blur?: boolean | number }',
+      description: {
+        ko: '타일의 파일이 도착하는 동안 Skeleton 대신 자리를 지킬 작은 사본',
+        en: "A small copy to stand in while the tile's file arrives, instead of a Skeleton"
       }
     },
     {

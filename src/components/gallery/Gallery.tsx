@@ -13,10 +13,16 @@ import {
   sheetTitleClasses,
   toLength
 } from '../../internal/styles.js';
+import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
 import type {
   NebaImageFilter,
+  NebaImageFlip,
   NebaImageFrame,
+  NebaImageLetterbox,
+  NebaImagePlaceholderOptions,
+  NebaImagePosition,
   NebaImageProtection,
+  NebaImageRotation,
   NebaImageWatermark
 } from '../image/Image.js';
 import type { NebaResponsive, NebaSize, NebaSlots } from '../../types.js';
@@ -71,8 +77,31 @@ export interface NebaGalleryItem {
    * *before* anything has loaded — which is the whole reason it is data rather
    * than a measurement. A set without it falls back to the Gallery's own
    * `ratio`, and comes out as a grid of squares in a masonry's clothing.
+   *
+   * It is the file's proportion as stored: an item turned onto its side with
+   * `rotate` is laid out on its side without anybody working the ratio out
+   * again.
    */
   ratio?: number | string;
+  /**
+   * Turns the picture clockwise, a quarter at a time — for the photograph that
+   * was shot sideways. Follows the picture into the viewer.
+   * @default 0
+   */
+  rotate?: NebaImageRotation;
+  /** Mirrors the picture. Follows it into the viewer. @default 'none' */
+  flip?: NebaImageFlip;
+  /**
+   * Which part of the picture a tile keeps when it crops, or where the space
+   * goes when it does not.
+   * @default 'center'
+   */
+  position?: NebaImagePosition;
+  /**
+   * A small copy of the picture — a URL, a data URI or a `Blob` — to stand in
+   * while the tile's file arrives, instead of a Skeleton.
+   */
+  placeholder?: NebaImagePlaceholderOptions;
   /** How many columns the tile takes in `quilted`. @default 1 */
   cols?: number;
   /** How many rows the tile takes in `quilted`. @default 1 */
@@ -114,6 +143,21 @@ export interface GalleryProps extends Omit<
   rowHeight?: number;
   /** Rounds the tiles. @default 'md' */
   rounded?: NebaSize | boolean;
+  /**
+   * How a picture fills its tile. `cover` crops it to the tile; `contain` and
+   * `scale-down` keep all of it, which is what a set of product shots on a
+   * contact sheet wants, and leave space that `letterbox` fills.
+   * @default 'cover'
+   */
+  fit?: NebaAspectFit;
+  /** Passed to every tile's picture: what fills the space `fit` leaves. */
+  letterbox?: NebaImageLetterbox | (string & {});
+  /**
+   * When the tiles' files load. `lazy` waits until a tile is near the screen,
+   * which is right for a long wall whose first row is not the page's largest
+   * picture.
+   */
+  loading?: 'lazy' | 'eager';
   /**
    * Where a tile's `title` and `description` go. `below` puts them under the
    * picture, `overlay` writes them across the foot of it, and `hover` is
@@ -210,6 +254,25 @@ function ratioOf(value: number | string | undefined, fallback: number): number {
 }
 
 /**
+ * Whether an item is turned onto its side, whatever number its turn was written
+ * as. Exported for the viewer, and deliberately left out of the barrel.
+ */
+export function isSideways(item: NebaGalleryItem): boolean {
+  return Math.abs(Math.round((item.rotate ?? 0) / 90)) % 2 === 1;
+}
+
+/**
+ * The shape an item is drawn in: its own ratio, on its side when it is turned.
+ * An item with no ratio takes the Gallery's, which is the layout's shape and has
+ * nothing to turn.
+ */
+export function shownRatioOf(item: NebaGalleryItem, fallback: number): number {
+  const own = ratioOf(item.ratio, fallback);
+
+  return item.ratio !== undefined && isSideways(item) ? 1 / own : own;
+}
+
+/**
  * The items dealt into columns, shortest column first.
  *
  * Not CSS `columns`, which fills the first column top to bottom before it
@@ -288,6 +351,9 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       ratio = 1,
       rowHeight = 220,
       rounded = 'md',
+      fit = 'cover',
+      letterbox,
+      loading,
       caption = 'none',
       hover = 'lift',
       preview = false,
@@ -342,8 +408,22 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
            * whole difference between it and a masonry. `quilted` takes neither,
            * because the cell it spans has already decided.
            */
-          ratio={layout === 'grid' ? ratio : layout === 'quilted' ? 'auto' : (item.ratio ?? ratio)}
-          fit="cover"
+          ratio={
+            layout === 'grid'
+              ? ratio
+              : layout === 'quilted'
+                ? 'auto'
+                : item.ratio === undefined || !isSideways(item)
+                  ? (item.ratio ?? ratio)
+                  : shownRatioOf(item, fallbackRatio)
+          }
+          fit={fit}
+          position={item.position}
+          letterbox={letterbox}
+          rotate={item.rotate}
+          flip={item.flip}
+          placeholder={item.placeholder}
+          loading={loading}
           rounded={false}
           filter={filter}
           frame={frame}
@@ -488,7 +568,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     let children: React.ReactNode;
 
     if (layout === 'masonry') {
-      const ratios = items.map((item) => ratioOf(item.ratio, fallbackRatio));
+      const ratios = items.map((item) => shownRatioOf(item, fallbackRatio));
 
       children = deal(ratios, laneCount).map((lane, index) => (
         <li
@@ -506,7 +586,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       ));
     } else if (layout === 'justified') {
       children = items.map((item, index) => {
-        const each = ratioOf(item.ratio, fallbackRatio);
+        const each = shownRatioOf(item, fallbackRatio);
 
         return tile(item, index, {
           // Grown in proportion to the picture's own width, from a basis in the
