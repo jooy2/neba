@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateCounter } from 'neba';
 
@@ -12,21 +12,46 @@ function announced(root: Element): string {
   return root.children[0]?.textContent ?? '';
 }
 
+/*
+ * On the fake clock, which fakes `requestAnimationFrame` along with the
+ * timeouts. The count is a chain of animation frames, and on a real clock the
+ * short runs were a race against a one-second poll and the long ones a race
+ * the other way — a slow runner could reach the end of a count the test meant
+ * to catch in the middle. React still commits on a task of its own, so the DOM
+ * is waited for after the clock moves.
+ */
 describe('AnimateCounter', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('lands on its value', async () => {
     const screen = await render(<AnimateCounter value={42} duration={60} data-testid="c" />);
+
+    await vi.runAllTimersAsync();
 
     await expect.poll(() => shown(screen.getByTestId('c').element())).toBe('42');
   });
 
-  it('starts from where it was told', async () => {
+  it('starts from where it was told, and counts from there', async () => {
     const screen = await render(
       <AnimateCounter value={100} from={90} duration={4000} data-testid="c" />
     );
-    const seen = Number(shown(screen.getByTestId('c').element()));
+    const root = screen.getByTestId('c').element();
 
-    expect(seen).toBeGreaterThanOrEqual(90);
-    expect(seen).toBeLessThan(100);
+    expect(shown(root)).toBe('90');
+
+    await vi.advanceTimersByTimeAsync(2000);
+    await expect.poll(() => shown(root)).not.toBe('90');
+
+    const midway = Number(shown(root));
+
+    expect(midway).toBeGreaterThan(90);
+    expect(midway).toBeLessThan(100);
   });
 
   /*
@@ -55,6 +80,8 @@ describe('AnimateCounter', () => {
       />
     );
 
+    await vi.runAllTimersAsync();
+
     await expect.poll(() => shown(screen.getByTestId('c').element())).toBe('$1,234.50');
   });
 
@@ -68,6 +95,9 @@ describe('AnimateCounter', () => {
     const screen = await render(
       <AnimateCounter value={50} from={0} trigger="manual" duration={4000} data-testid="c" />
     );
+
+    // Longer than the whole count, so a count that had started would be over.
+    await vi.advanceTimersByTimeAsync(5000);
 
     expect(shown(screen.getByTestId('c').element())).toBe('0');
   });

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateScramble } from 'neba';
 
@@ -6,11 +6,54 @@ function shown(root: Element): string {
   return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
 }
 
+/*
+ * On the fake clock. The letters settle on a chain of timeouts while an
+ * interval redraws the noise, and on a real clock both kinds of test raced it:
+ * a short run against a one-second poll, and a long one the other way — a
+ * reading of the first frame that a slow runner had already moved past, so a
+ * letter had settled and `####` read `A###`. React still commits on a task of
+ * its own, so the DOM is waited for after the clock moves.
+ */
 describe('AnimateScramble', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('settles on the text it was given', async () => {
     const screen = await render(<AnimateScramble text="NEBA" duration={80} data-testid="s" />);
 
+    await vi.runAllTimersAsync();
+
     await expect.poll(() => shown(screen.getByTestId('s').element())).toBe('NEBA');
+  });
+
+  /*
+   * A minute a letter, and noise that never redraws, because `expect.poll`
+   * moves a fake clock on by its own interval each time it retries: with a step
+   * that long no retry reaches the next letter, and with the pool a single
+   * character what has not settled can only read `#`.
+   */
+  it('settles one letter at a time from the left', async () => {
+    const step = 60_000;
+    const screen = await render(
+      <AnimateScramble
+        text="ABCD"
+        characters="#"
+        duration={step * 4}
+        tick={step * 100}
+        data-testid="s"
+      />
+    );
+    const root = screen.getByTestId('s').element();
+
+    for (const frame of ['A###', 'AB##', 'ABC#', 'ABCD']) {
+      await vi.advanceTimersByTimeAsync(step);
+      await expect.poll(() => shown(root)).toBe(frame);
+    }
   });
 
   // The box never changes size, which is the whole reason to reach for this
@@ -73,6 +116,8 @@ describe('AnimateScramble', () => {
         Hello
       </AnimateScramble>
     );
+
+    await vi.runAllTimersAsync();
 
     await expect.poll(() => shown(screen.getByTestId('s').element())).toBe('Hello');
   });
