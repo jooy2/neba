@@ -197,7 +197,7 @@ Called with `'loading'`, `'loaded'` or `'failed'`. Useful for swapping to a `src
 ## Accessibility
 
 - `alt` is the picture's accessible name. Write what the picture _says_, not what it is a picture of, and use `alt=""` when it says nothing the surrounding text does not.
-- With `preview`, the button takes its name from `alt` and nothing else. Two names for one thing is a screen reader reading the same sentence twice.
+- With `preview`, the button takes its name from `alt` and nothing else, since two names for one thing is a screen reader reading the same sentence twice. A picture with `alt=""` has no name to lend, so its button and its preview are named "Enlarge image" in the `locale`'s language.
 - The placeholder and the fallback are not announced separately; the picture keeps its own name throughout.
 - A failed picture with an empty `alt` has no name to fall back on, so the box says so in the page's own language. Set `locale`, or write the sentence out with `unavailableLabel`.
 - A watermark is `aria-hidden` and takes no pointer events. What it says belongs in the text around the picture, or in the `alt`, where a reader who cannot see the mark still meets it.

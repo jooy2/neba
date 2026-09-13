@@ -112,7 +112,7 @@ export const ja: NebaLocale = {
     previous: '前の画像',
     next: '次の画像'
   },
-  image: { unavailable: '画像を表示できません' },
+  image: { unavailable: '画像を表示できません', preview: '画像を拡大' },
   chart: {
     label: 'グラフ',
     size: 'サイズ',

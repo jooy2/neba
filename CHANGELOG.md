@@ -166,6 +166,8 @@
 
 - **An autoplaying `Carousel` stays held while the keyboard focus is inside it.** The pointer and the focus shared one pause, so a mouse passing over and out of the strip started it again under a reader who had tabbed into a slide, and the slide changes made there by the arrows were not announced because the live region stayed silent. The two pauses are kept apart, the live region speaks whenever the strip is held, and a caller's `onFocus`, `onBlur`, `onPointerEnter` and `onPointerLeave` run beside the carousel's own instead of switching the pause off.
 
+- **A failed `Image` is named once, and a previewable one with `alt=""` has a name.** When the file did not arrive, the `<img>` kept its `alt` in the accessibility tree and the fallback wrote the same words over it, so a screen reader read the name twice; the drawn words are hidden from it now. With `preview` and an empty `alt`, the button and the preview had no name at all, and both are called "Enlarge image", translated in every language under `neba/locales`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

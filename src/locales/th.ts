@@ -112,7 +112,7 @@ export const th: NebaLocale = {
     previous: 'รูปก่อนหน้า',
     next: 'รูปถัดไป'
   },
-  image: { unavailable: 'ไม่พบรูปภาพ' },
+  image: { unavailable: 'ไม่พบรูปภาพ', preview: 'ขยายภาพ' },
   chart: {
     label: 'แผนภูมิ',
     size: 'ขนาด',

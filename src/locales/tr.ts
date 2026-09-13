@@ -112,7 +112,7 @@ export const tr: NebaLocale = {
     previous: 'Önceki görsel',
     next: 'Sonraki görsel'
   },
-  image: { unavailable: 'Görsel kullanılamıyor' },
+  image: { unavailable: 'Görsel kullanılamıyor', preview: 'Görseli büyüt' },
   chart: {
     label: 'Grafik',
     size: 'Boyut',

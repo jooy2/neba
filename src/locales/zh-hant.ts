@@ -115,7 +115,7 @@ export const zhHant: NebaLocale = {
     previous: '上一張圖片',
     next: '下一張圖片'
   },
-  image: { unavailable: '圖片無法顯示' },
+  image: { unavailable: '圖片無法顯示', preview: '放大圖片' },
   chart: {
     label: '圖表',
     size: '大小',

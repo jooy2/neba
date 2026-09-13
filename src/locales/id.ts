@@ -112,7 +112,7 @@ export const id: NebaLocale = {
     previous: 'Gambar sebelumnya',
     next: 'Gambar berikutnya'
   },
-  image: { unavailable: 'Gambar tidak tersedia' },
+  image: { unavailable: 'Gambar tidak tersedia', preview: 'Perbesar gambar' },
   chart: {
     label: 'Bagan',
     size: 'Ukuran',

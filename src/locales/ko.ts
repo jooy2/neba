@@ -112,7 +112,7 @@ export const ko: NebaLocale = {
     previous: '이전 이미지',
     next: '다음 이미지'
   },
-  image: { unavailable: '이미지를 불러올 수 없습니다' },
+  image: { unavailable: '이미지를 불러올 수 없습니다', preview: '이미지 확대' },
   chart: {
     label: '차트',
     size: '크기',

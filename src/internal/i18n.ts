@@ -522,10 +522,15 @@ export interface ImageMessages {
    * caller gave no `alt` to say what it was.
    */
   unavailable: string;
+  /**
+   * Names the button that opens a preview, and titles the preview, when the
+   * picture has an empty `alt` to take a name from.
+   */
+  preview: string;
 }
 
 export const imageMessages: MessageTable<ImageMessages> = {
-  '': { unavailable: 'Image unavailable' }
+  '': { unavailable: 'Image unavailable', preview: 'Enlarge image' }
 };
 
 /**

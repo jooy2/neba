@@ -112,7 +112,7 @@ export const nl: NebaLocale = {
     previous: 'Vorige afbeelding',
     next: 'Volgende afbeelding'
   },
-  image: { unavailable: 'Afbeelding niet beschikbaar' },
+  image: { unavailable: 'Afbeelding niet beschikbaar', preview: 'Afbeelding vergroten' },
   chart: {
     label: 'Grafiek',
     size: 'Grootte',

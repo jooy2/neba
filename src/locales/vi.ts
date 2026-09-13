@@ -112,7 +112,7 @@ export const vi: NebaLocale = {
     previous: 'Ảnh trước',
     next: 'Ảnh tiếp theo'
   },
-  image: { unavailable: 'Không tải được hình ảnh' },
+  image: { unavailable: 'Không tải được hình ảnh', preview: 'Phóng to hình ảnh' },
   chart: {
     label: 'Biểu đồ',
     size: 'Kích thước',

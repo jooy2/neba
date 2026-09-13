@@ -1085,7 +1085,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         )}
       >
         {fallback ?? (
-          <span className="px-2 text-center text-sm">
+          // Hidden from assistive technology when there is an `alt`: the
+          // `<img>` is still in the accessibility tree carrying it, and the same
+          // words drawn over it would be read a second time.
+          <span className="px-2 text-center text-sm" aria-hidden={alt ? true : undefined}>
             {alt || unavailableLabel || messages.unavailable}
           </span>
         )}
@@ -1253,8 +1256,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       <button
         type="button"
         // The accessible name is the picture's own: two names for one thing is
-        // a screen reader reading the same sentence twice.
-        aria-label={alt}
+        // a screen reader reading the same sentence twice. A picture with an
+        // empty `alt` has none to lend, and a button with no name is announced
+        // as nothing at all, so it says what it does instead.
+        aria-label={alt || messages.preview}
         className={cx(
           'block cursor-zoom-in [outline:none]',
           narrowed ? 'w-fit max-w-full' : 'w-full',
@@ -1269,7 +1274,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       </button>
 
       <React.Suspense fallback={null}>
-        <PreviewDialog open={open} onOpenChange={setOpen} size="xl" title={alt}>
+        <PreviewDialog open={open} onOpenChange={setOpen} size="xl" title={alt || messages.preview}>
           <span
             className={cx('relative mx-auto block', sideways ? '' : 'w-fit')}
             style={sideways ? turnedPreviewStyle(natural ?? file) : undefined}

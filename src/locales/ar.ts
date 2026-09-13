@@ -112,7 +112,7 @@ export const ar: NebaLocale = {
     previous: 'الصورة السابقة',
     next: 'الصورة التالية'
   },
-  image: { unavailable: 'الصورة غير متاحة' },
+  image: { unavailable: 'الصورة غير متاحة', preview: 'تكبير الصورة' },
   chart: {
     label: 'رسم بياني',
     size: 'الحجم',

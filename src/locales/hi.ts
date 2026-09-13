@@ -112,7 +112,7 @@ export const hi: NebaLocale = {
     previous: 'पिछली छवि',
     next: 'अगली छवि'
   },
-  image: { unavailable: 'छवि उपलब्ध नहीं है' },
+  image: { unavailable: 'छवि उपलब्ध नहीं है', preview: 'छवि बड़ी करें' },
   chart: {
     label: 'चार्ट',
     size: 'आकार',

@@ -50,6 +50,23 @@ describe('Image', () => {
     await expect.element(screen.getByText('A ridge')).toBeInTheDocument();
   });
 
+  it('names a failed picture once, through its img', async () => {
+    const screen = await render(<Image src={BROKEN} alt="A ridge" />);
+
+    await expect.element(screen.getByText('A ridge')).toBeInTheDocument();
+    // The words over the box are for sight; the img still carries the name.
+    expect(screen.getByText('A ridge').element()).toHaveAttribute('aria-hidden', 'true');
+    await expect.element(screen.getByRole('img', { name: 'A ridge' })).toBeInTheDocument();
+  });
+
+  it('names the preview of a picture with an empty alt by what it does', async () => {
+    const screen = await render(<Image src={OK} alt="" preview />);
+
+    await screen.getByRole('button', { name: 'Enlarge image' }).click();
+
+    await expect.element(screen.getByRole('dialog', { name: 'Enlarge image' })).toBeInTheDocument();
+  });
+
   it('still shows the picture when a caller listens for the load', async () => {
     // A file served over the network rather than a data URI: a data URI has
     // already decoded by the time the component looks, and that path never

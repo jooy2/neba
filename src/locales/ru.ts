@@ -112,7 +112,7 @@ export const ru: NebaLocale = {
     previous: 'Предыдущее изображение',
     next: 'Следующее изображение'
   },
-  image: { unavailable: 'Изображение недоступно' },
+  image: { unavailable: 'Изображение недоступно', preview: 'Увеличить изображение' },
   chart: {
     label: 'Диаграмма',
     size: 'Размер',
