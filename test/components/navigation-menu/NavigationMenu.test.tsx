@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from 'neba';
 
@@ -97,7 +98,38 @@ describe('NavigationMenu', () => {
     it('opens no panel until an item is asked', async () => {
       const screen = await render(<Nav />);
 
+      await expect.element(screen.getByRole('button', { name: /Product/ })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /Analytics/ }).query()).toBeNull();
+    });
+
+    // A link that exists only once a pointer rests on the row is not in a server
+    // render, and a crawler never follows it.
+    it('writes the panel links into a server render, hidden', async () => {
+      const html = renderToString(<Nav />);
+
+      expect(html).toContain('href="/analytics"');
+      expect(html).toContain('href="/pipelines"');
+    });
+
+    it('keeps the panel links in the document before the panel opens', async () => {
+      const screen = await render(<Nav />);
+      const link = screen.container.querySelector('a[href="/analytics"]');
+
+      expect(link).not.toBeNull();
+      expect(link).not.toBeVisible();
+    });
+
+    it('creates the panel only on opening when it is not kept mounted', async () => {
+      const screen = await render(
+        <NavigationMenu aria-label="Main">
+          <NavigationMenuItem label="Product" value="product" keepMounted={false}>
+            <NavigationMenuLink href="/analytics" title="Analytics" />
+          </NavigationMenuItem>
+        </NavigationMenu>
+      );
+
+      await expect.element(screen.getByRole('button', { name: /Product/ })).toBeInTheDocument();
+      expect(screen.container.querySelector('a[href="/analytics"]')).toBeNull();
     });
 
     it('keeps caller-supplied class names alongside its own', async () => {

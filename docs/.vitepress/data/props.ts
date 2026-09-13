@@ -3539,6 +3539,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '패널을 열기 전에도 링크를 숨긴 채 렌더해 서버 렌더와 크롤러에 포함합니다. 만드는 비용이 큰 패널이면 끄세요',
+        en: 'Renders the panel links, hidden, before the panel is opened, so they are in a server render and a crawler follows them. Turn it off for a panel that is expensive to build'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

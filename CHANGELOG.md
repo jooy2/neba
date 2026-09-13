@@ -30,6 +30,8 @@
 
 - **A closed `Accordion` or `Collapsible` panel stays in the document.** `hiddenUntilFound` is on by default. A closed panel used to leave the DOM, so an FAQ's answers were missing from a server render and from a crawler's index, and the browser's find-on-page could not reach them. A closed panel is now `hidden="until-found"`: out of sight, the tab order and the accessibility tree as before, and opened when a page search lands in it. A test that asserted a closed panel's text is absent should assert it is not visible, and a panel too expensive to build while closed can pass `hiddenUntilFound={false}`. `Tabs` keeps its default; its docs now say to set `keepMounted` on a panel whose content should be indexed.
 
+- **A `NavigationMenu` panel's links are in the page before it opens.** A panel was created only when a pointer or a key first opened it, so its links were missing from a server render and a crawler never followed them, although the component is the one meant to put a site's destinations in a crawler's index. Each `NavigationMenuItem` now renders its panel hidden from the start, and `keepMounted={false}` restores the old behaviour for a panel that is expensive to build. A test that asserted a panel link is absent before opening should assert it is not visible.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

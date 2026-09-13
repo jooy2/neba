@@ -94,6 +94,15 @@ export interface NavigationMenuItemProps {
   disabled?: boolean;
   /** How many columns the panel lays its links out in. @default 1 */
   columns?: number;
+  /**
+   * Renders the panel's links, hidden, before the panel is ever opened.
+   *
+   * On by default, because a link that is only created when a pointer rests on
+   * the row is a link a server render does not contain and a crawler never
+   * follows. Turn it off for a panel whose contents are expensive to build.
+   * @default true
+   */
+  keepMounted?: boolean;
   /** The panel's contents — usually `NavigationMenuLink`s. */
   children?: React.ReactNode;
 }
@@ -221,6 +230,7 @@ export function NavigationMenuItem({
   value,
   disabled = false,
   columns = 1,
+  keepMounted = true,
   children
 }: NavigationMenuItemProps) {
   const { size, density } = React.useContext(NavigationMenuContext);
@@ -269,7 +279,10 @@ export function NavigationMenuItem({
           </BaseUINavigationMenu.Trigger>
 
           <BaseUINavigationMenu.Content
-            className={`grid gap-1 ${panelPaddingClasses[size]}`}
+            keepMounted={keepMounted}
+            // `hidden` is only a UA `display: none`, which the `grid` beside it
+            // outranks; a kept panel waiting in the row would be drawn in it.
+            className={`grid gap-1 [&[hidden]]:hidden ${panelPaddingClasses[size]}`}
             style={
               columns > 1
                 ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }

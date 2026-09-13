@@ -73,6 +73,6 @@ How many columns the panel lays its links out in. One is right for a short list;
 ## Accessibility
 
 - Renders a real `<nav>`; give it an `aria-label` where a page holds more than one.
-- Every destination is an `<a href>`, so it can be opened in a new tab, copied, followed by a crawler and reached from a screen reader's link list.
+- Every destination is an `<a href>`, so it can be opened in a new tab, copied, followed by a crawler and reached from a screen reader's link list. A panel's links are rendered, hidden, before the panel first opens, so they are in a server render too; `keepMounted={false}` on an item leaves them out until it opens.
 - The row is keyboard-driven: the arrow keys move between items and into an open panel, and Escape closes it.
 - A panel resizes between items rather than closing and reopening, so crossing the row reads as one surface.
