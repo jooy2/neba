@@ -668,6 +668,9 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
     };
 
     const inert = disabled || readOnly;
+    const labelId = React.useId();
+    const descriptionId = React.useId();
+    const errorId = React.useId();
 
     const panel = (
       <ColorPanel
@@ -697,16 +700,26 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
 
     if (inline) {
       const family: NebaColor = (invalid ?? Boolean(error)) ? 'danger' : color;
+      const described = [description ? descriptionId : '', error ? errorId : '']
+        .filter(Boolean)
+        .join(' ');
 
       return (
+        // A group named by the label and described by the note under it, so the
+        // square, the rails and the field inside are heard as one picker rather
+        // than as a hue slider with no context — twice, for two pickers.
         <div
           ref={ref}
+          role="group"
+          aria-labelledby={label ? labelId : undefined}
+          aria-describedby={described || undefined}
           className={cx('flex flex-col', stackGapClasses[size], className)}
           style={{ ...surfaceSlots(family, elevation), ...style }}
           {...props}
         >
           {label ? (
             <span
+              id={labelId}
               className={cx(
                 metaTextClasses[size],
                 'font-medium',
@@ -720,13 +733,18 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
           {panel}
 
           {description ? (
-            <span className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}>
+            <span
+              id={descriptionId}
+              className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)')}
+            >
               {description}
             </span>
           ) : null}
 
           {error ? (
-            <span className={cx(metaTextClasses[size], 'text-(--n-accent)')}>{error}</span>
+            <span id={errorId} className={cx(metaTextClasses[size], 'text-(--n-accent)')}>
+              {error}
+            </span>
           ) : null}
 
           {hidden}

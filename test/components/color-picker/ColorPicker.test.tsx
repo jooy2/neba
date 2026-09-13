@@ -22,6 +22,21 @@ describe('ColorPicker', () => {
       await expect.element(screen.getByRole('button', { name: '#ff0000' })).toBeInTheDocument();
     });
 
+    it('names and describes an inline picker as one group', async () => {
+      const screen = await render(
+        <ColorPicker
+          inline
+          label="Accent"
+          description="Used for links and buttons."
+          defaultValue="#ff0000"
+        />
+      );
+      const group = screen.getByRole('group', { name: 'Accent' });
+
+      await expect.element(group).toBeInTheDocument();
+      await expect.element(group).toHaveAccessibleDescription('Used for links and buttons.');
+    });
+
     it('renders the panel in the page when inline', async () => {
       const screen = await render(<ColorPicker inline defaultValue="#ff0000" />);
 

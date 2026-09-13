@@ -154,6 +154,8 @@
 
 - **A `Transfer`'s two lists are named groups.** Each list has its own "Select all" box and search field, identical to the other list's, and nothing tied them to a heading, so a screen reader could not tell which list a control belonged to. Each list is now a group named by its heading.
 
+- **An inline `ColorPicker` is a group named by its `label` and described by its `description` and `error`.** The three were drawn beside the panel and connected to nothing, so the square, the rails and the field were heard without any of them, and two inline pickers on a page could not be told apart.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
