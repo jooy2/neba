@@ -34,6 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * What a Select's value may be.
@@ -233,7 +234,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       invalid,
       startIcon,
       fullWidth = false,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       required = false,
       name,
@@ -245,6 +246,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       'aria-labelledby': ariaLabelledBy,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    const disabled = useFieldsetDisabled(disabledProp);
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;

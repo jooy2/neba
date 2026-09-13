@@ -374,6 +374,8 @@
 
 - **A disabled `Slider` is drawn in the disabled colours rather than faded.** It was the whole slider desaturated and at 70% opacity, which took its label down with the control and put the state on the one axis no other state in the library uses. The rail, the fill and the thumb take the disabled ground, ink and hairline a Button uses, and the label keeps the disabled ink it already had.
 
+- **A field inside a disabled `Fieldset` looks disabled.** Base UI's Fieldset stopped every field inside it answering, but each Neba field draws itself from its own `disabled` prop and cannot read Base UI's fieldset state, so a disabled group of fields looked available. `TextField`, `NumberField`, `OtpField`, `Select`, `Combobox`, `Checkbox`, `RadioGroup`, `Switch` and the date and time pickers now take the Fieldset's `disabled` as well as their own.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

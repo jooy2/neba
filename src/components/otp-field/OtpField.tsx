@@ -22,6 +22,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * What may be typed into a slot.
@@ -214,7 +215,7 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
       invalid,
       name,
       required = false,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       autoFocus = false,
       locale,
@@ -223,6 +224,7 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+    const disabled = useFieldsetDisabled(disabledProp);
 
     const messages = useMessages(otpMessages, locale);
     const nameSlot =

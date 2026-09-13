@@ -34,6 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * Where the two steppers sit.
@@ -246,7 +247,7 @@ export function NumberField(rawProps: NumberFieldProps) {
     startIcon,
     endIcon,
     fullWidth = false,
-    disabled = false,
+    disabled: disabledProp,
     readOnly = false,
     required = false,
     name,
@@ -260,6 +261,7 @@ export function NumberField(rawProps: NumberFieldProps) {
     'aria-labelledby': ariaLabelledBy,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+  const disabled = useFieldsetDisabled(disabledProp);
 
   // `Intl` takes more shapes than a message tag does; only a plain string names
   // anything here, and anything else falls back to English.

@@ -16,6 +16,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * Base UI's own props, minus the ones this component owns: `className` and
@@ -203,13 +204,14 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
       description,
       error,
       invalid,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       className,
       classNames,
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size']);
+    const disabled = useFieldsetDisabled(disabledProp);
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;

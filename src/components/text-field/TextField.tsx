@@ -33,6 +33,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** How the multiline control may be resized by the user. Ignored when single line. */
 export type TextFieldResize = 'none' | 'vertical' | 'horizontal' | 'both';
@@ -215,12 +216,13 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       shortcuts,
       onKeyDown,
       readOnly = false,
-      disabled = false,
+      disabled: disabledProp,
       type = 'text',
       className,
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    const disabled = useFieldsetDisabled(disabledProp);
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;

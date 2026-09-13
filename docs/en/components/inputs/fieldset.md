@@ -32,7 +32,7 @@ The legend becomes the accessible name of every control inside, so it has to be 
 
 ### disabled
 
-The one thing only a real `<fieldset>` can do: it reaches every control inside, including ones a component three levels down rendered and never heard of it.
+The one thing only a real `<fieldset>` can do: it reaches every control inside, including ones a component three levels down rendered and never heard of it. The field components — TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch and the date and time pickers — also draw themselves disabled inside it.
 
 <Demo src="fieldset/disabled">
 

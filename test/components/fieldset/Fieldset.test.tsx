@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Fieldset, TextField } from 'neba';
+import { Checkbox, Fieldset, Select, Switch, TextField } from 'neba';
 
 describe('Fieldset', () => {
   describe('rendering', () => {
@@ -97,6 +97,25 @@ describe('Fieldset', () => {
 
       await expect.element(screen.getByLabelText('Street')).toBeDisabled();
       await expect.element(screen.getByLabelText('City')).toBeDisabled();
+    });
+
+    // Base UI stopped them answering, and each drew itself from its own
+    // `disabled` prop, so a disabled group of fields looked available.
+    it('draws every field inside it disabled', async () => {
+      const screen = await render(
+        <Fieldset legend="Address" disabled>
+          <TextField label="Street" />
+          <Checkbox label="Save it" />
+          <Switch label="Default" />
+          <Select label="Country" items={[{ value: 'kr', label: 'Korea' }]} />
+        </Fieldset>
+      );
+
+      for (const text of ['Street', 'Save it', 'Default', 'Country']) {
+        await expect
+          .element(screen.getByText(text, { exact: true }).first())
+          .toHaveClass('text-(--neba-disabled-fg)');
+      }
     });
 
     it('leaves them alone when it is not', async () => {

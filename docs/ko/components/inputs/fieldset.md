@@ -32,7 +32,7 @@ legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다
 
 ### disabled
 
-진짜 `<fieldset>`만 할 수 있는 일입니다. 안의 모든 컨트롤에 닿습니다. 세 단계 아래의 컴포넌트가 렌더링해 이 fieldset의 존재조차 모르는 컨트롤까지 포함해서입니다.
+진짜 `<fieldset>`만 할 수 있는 일입니다. 안의 모든 컨트롤에 닿습니다. 세 단계 아래의 컴포넌트가 렌더링해 이 fieldset의 존재조차 모르는 컨트롤까지 포함해서입니다. 필드 컴포넌트인 TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch와 날짜·시간 picker는 그 안에서 모양도 비활성으로 그립니다.
 
 <Demo src="fieldset/disabled">
 

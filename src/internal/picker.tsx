@@ -25,6 +25,7 @@ import {
   transitionClasses
 } from './styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
+import { useFieldsetDisabled } from './fieldset.js';
 
 /**
  * The shell all four pickers wear: a field-shaped trigger with a popup hanging
@@ -191,7 +192,7 @@ export function PickerShell({
   invalid,
   startIcon,
   fullWidth = false,
-  disabled = false,
+  disabled: disabledProp,
   readOnly = false,
   required = false,
   id,
@@ -212,6 +213,7 @@ export function PickerShell({
   triggerRef,
   ...props
 }: InternalShellProps) {
+  const disabled = useFieldsetDisabled(disabledProp);
   const generatedId = React.useId();
   const triggerId = id ?? `${generatedId}-trigger`;
   const labelId = `${generatedId}-label`;

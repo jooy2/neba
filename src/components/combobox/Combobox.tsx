@@ -39,6 +39,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * What a Combobox's value may be — the same two types a [Select](../select)
@@ -357,7 +358,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     invalid,
     startIcon,
     fullWidth = false,
-    disabled = false,
+    disabled: disabledProp,
     readOnly = false,
     required = false,
     name,
@@ -377,6 +378,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     'aria-labelledby': ariaLabelledBy,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+  const disabled = useFieldsetDisabled(disabledProp);
 
   const messages = useMessages(comboboxMessages, locale);
   const actions = useMessages(actionMessages, locale);

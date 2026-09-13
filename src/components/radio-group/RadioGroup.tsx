@@ -23,6 +23,7 @@ import type {
   NebaSlots
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
  * What a Radio inherits from the group around it.
@@ -264,7 +265,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
       description,
       error,
       invalid,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       className,
       classNames,
@@ -272,6 +273,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
       children,
       ...props
     } = useStyleDefaults(rawProps, ['size']);
+    const disabled = useFieldsetDisabled(disabledProp);
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;
     const family: NebaColor = isInvalid ? 'danger' : color;

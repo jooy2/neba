@@ -13,6 +13,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** Which side of the track the label sits on. */
 export type SwitchLabelPlacement = 'start' | 'end';
@@ -162,13 +163,14 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     error,
     invalid,
     labelPlacement = 'end',
-    disabled = false,
+    disabled: disabledProp,
     readOnly = false,
     className,
     classNames,
     style,
     ...props
   } = useStyleDefaults(rawProps, ['size']);
+  const disabled = useFieldsetDisabled(disabledProp);
 
   const hasError = error !== undefined && error !== null && error !== false && error !== '';
   const isInvalid = invalid ?? hasError;
