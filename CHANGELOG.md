@@ -76,6 +76,8 @@
 
 - **A `NavigationMenuLink` that opens elsewhere carries `noopener noreferrer`.** A link inside a panel passed `target` straight through, unlike a `NavigationMenuItem` link beside it, so `target="_blank"` in a panel left the new page a `window.opener` and a `Referer`. A `rel` of the caller's own is kept and merged.
 
+- **`neba/hooks` has types under `moduleResolution: node10`.** `typesVersions`, which that resolver reads instead of `exports`, had no entry for it, so its wildcard sent the import to a component folder that does not exist and TypeScript reported the module as missing.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

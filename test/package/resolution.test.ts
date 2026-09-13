@@ -291,6 +291,29 @@ describe('the published package', () => {
       expect(keys.indexOf('./hooks')).toBeLessThan(keys.indexOf('./*'));
     });
 
+    // `typesVersions` is what a consumer on `moduleResolution: node10` reads
+    // instead of `exports`, and its `*` sends everything it does not name to the
+    // component folders — so a subpath left out of it is a subpath whose types
+    // resolve to `dist/components/<name>/index.d.ts`, which does not exist.
+    it('maps every typed subpath in exports for a resolver that ignores exports', () => {
+      const versions = pkg.typesVersions['*'] as Record<string, string[]>;
+      const order = Object.keys(versions);
+
+      for (const [subpath, target] of Object.entries(pkg.exports)) {
+        if (subpath === '.' || typeof target !== 'object' || !('types' in target)) {
+          continue;
+        }
+
+        const name = subpath.slice(2);
+
+        expect(versions[name], subpath).toEqual([(target as { types: string }).types.slice(2)]);
+
+        if (name !== '*') {
+          expect(order.indexOf(name), subpath).toBeLessThan(order.indexOf('*'));
+        }
+      }
+    });
+
     it('re-exports every hook module from the hooks barrel', () => {
       const barrel = sources['../../src/hooks/index.ts'];
       const missing = hookFiles.filter((name) => !barrel.includes(`from './${name}.js'`));

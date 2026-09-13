@@ -89,6 +89,9 @@
       "locales/*": [
         "dist/locales/*.d.ts"
       ],
+      "hooks": [
+        "dist/hooks/index.d.ts"
+      ],
       "*": [
         "dist/components/*/index.d.ts"
       ]
