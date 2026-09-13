@@ -13,6 +13,7 @@ import {
   dataRowHeights,
   dataTickWidths,
   defaultColumnWidth,
+  isEmptyValue,
   keysBetween,
   minColumnWidth,
   nextSort,
@@ -838,7 +839,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         ? column.value
         : (row: Row) => (row as Record<string, unknown>)[column.key];
 
-      return (a, b) => compareValues(read(a.row), read(b.row), collator);
+      return {
+        compare: (a, b) => compareValues(read(a.row), read(b.row), collator),
+        isEmpty: (entry) => isEmptyValue(read(entry.row))
+      };
     });
   }, [filtered, sort, columns, collator, stages]);
 

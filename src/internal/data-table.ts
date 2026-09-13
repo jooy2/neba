@@ -96,21 +96,14 @@ export interface SortEntry {
  * comes before `item10` rather than after it.
  */
 export function compareValues(a: unknown, b: unknown, collator: Intl.Collator): number {
-  const aEmpty = a === null || a === undefined || a === '';
-  const bEmpty = b === null || b === undefined || b === '';
+  const aEmpty = isEmptyValue(a);
+  const bEmpty = isEmptyValue(b);
 
   if (aEmpty || bEmpty) {
     return aEmpty && bEmpty ? 0 : aEmpty ? 1 : -1;
   }
 
   if (typeof a === 'number' && typeof b === 'number') {
-    // `NaN` is empty by another name: it compares false against everything, so
-    // left to the subtraction below it would make the sort order depend on
-    // which rows happened to be next to each other.
-    if (Number.isNaN(a) || Number.isNaN(b)) {
-      return Number.isNaN(a) && Number.isNaN(b) ? 0 : Number.isNaN(a) ? 1 : -1;
-    }
-
     return a - b;
   }
 
@@ -124,6 +117,30 @@ export function compareValues(a: unknown, b: unknown, collator: Intl.Collator): 
 
   return collator.compare(String(a), String(b));
 }
+
+/**
+ * Whether a cell holds nothing to sort by.
+ *
+ * `NaN` is empty by another name: it compares false against everything, so left
+ * to a subtraction it would make the sort order depend on which rows happened to
+ * be next to each other.
+ */
+export function isEmptyValue(value: unknown): boolean {
+  return (
+    value === null ||
+    value === undefined ||
+    value === '' ||
+    (typeof value === 'number' && Number.isNaN(value))
+  );
+}
+
+/**
+ * How one key orders two rows: a comparison written ascending, and optionally
+ * which rows hold nothing for it. Rows that hold nothing go last whichever way
+ * the key runs, so they are kept out of the reversal a descending key applies.
+ */
+export type RowComparator<T> =
+  ((a: T, b: T) => number) | { compare: (a: T, b: T) => number; isEmpty: (row: T) => boolean };
 
 /**
  * Sorts by every key at once, first key outermost.
@@ -140,19 +157,33 @@ export function compareValues(a: unknown, b: unknown, collator: Intl.Collator): 
 export function sortRows<T>(
   rows: readonly T[],
   sort: readonly SortEntry[],
-  comparatorFor: (key: string) => ((a: T, b: T) => number) | null
+  comparatorFor: (key: string) => RowComparator<T> | null
 ): T[] {
   if (sort.length === 0) {
     return rows as T[];
   }
 
-  const steps = sort
-    .map((entry) => {
-      const compare = comparatorFor(entry.key);
+  interface Step {
+    compare: (a: T, b: T) => number;
+    isEmpty: ((row: T) => boolean) | null;
+    sign: number;
+  }
 
-      return compare ? { compare, sign: entry.direction === 'desc' ? -1 : 1 } : null;
+  const steps = sort
+    .map((entry): Step | null => {
+      const comparator = comparatorFor(entry.key);
+
+      if (!comparator) {
+        return null;
+      }
+
+      const sign = entry.direction === 'desc' ? -1 : 1;
+
+      return typeof comparator === 'function'
+        ? { compare: comparator, isEmpty: null, sign }
+        : { compare: comparator.compare, isEmpty: comparator.isEmpty, sign };
     })
-    .filter((step): step is { compare: (a: T, b: T) => number; sign: number } => step !== null);
+    .filter((step): step is Step => step !== null);
 
   if (steps.length === 0) {
     return rows as T[];
@@ -160,6 +191,19 @@ export function sortRows<T>(
 
   return [...rows].sort((a, b) => {
     for (const step of steps) {
+      if (step.isEmpty) {
+        const aEmpty = step.isEmpty(a);
+        const bEmpty = step.isEmpty(b);
+
+        if (aEmpty !== bEmpty) {
+          return aEmpty ? 1 : -1;
+        }
+
+        if (aEmpty) {
+          continue;
+        }
+      }
+
       const result = step.compare(a, b);
 
       if (result !== 0) {

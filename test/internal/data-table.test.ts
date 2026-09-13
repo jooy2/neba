@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   compareValues,
+  isEmptyValue,
   keysBetween,
   nextSort,
   pageBounds,
@@ -97,6 +98,24 @@ describe('sortRows', () => {
 
     // `Bo` and `Cy` share a team and were already in that order.
     expect(sorted.map((row) => row.name)).toEqual(['Bo', 'Cy', 'Ana']);
+  });
+
+  it('keeps empty values last when a key runs descending', () => {
+    const scores = [3, null, 1, '', 2, Number.NaN].map((score, index) => ({ index, score }));
+    const byScore = () => ({
+      compare: (a: (typeof scores)[number], b: (typeof scores)[number]) =>
+        compare(a.score, b.score),
+      isEmpty: (row: (typeof scores)[number]) => isEmptyValue(row.score)
+    });
+
+    const down = sortRows(scores, [{ key: 'score', direction: 'desc' }], byScore);
+    const up = sortRows(scores, [{ key: 'score', direction: 'asc' }], byScore);
+
+    expect(down.map((row) => row.score).slice(0, 3)).toEqual([3, 2, 1]);
+    expect(up.map((row) => row.score).slice(0, 3)).toEqual([1, 2, 3]);
+    // The three empty rows keep the order they came in, at the end both ways.
+    expect(down.slice(3).map((row) => row.index)).toEqual([1, 3, 5]);
+    expect(up.slice(3).map((row) => row.index)).toEqual([1, 3, 5]);
   });
 
   it('skips a key no column claims rather than throwing', () => {

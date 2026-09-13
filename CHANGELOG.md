@@ -12,6 +12,8 @@
 
 - **A disabled `MenuItem` or `NavigationMenuItem` with an `href` is no longer a link.** Both ignored `disabled` once they had an `href`, so the row was drawn as available and pressing it navigated. While disabled it renders as a disabled row, with no `<a>` and no `href`; a test that found it by the `link` role finds a `menuitem`, or plain text in a navigation menu.
 
+- **A `DataTable` sorted descending puts rows with no value last.** A blank, `null`, `undefined` or `NaN` cell went last in an ascending sort and was reversed to the top of a descending one, so the first screen of a column sorted high-to-low could be all blanks. Blanks now go last in both directions, which was always the stated intent. A column with its own `compare` orders its blanks itself, as before.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

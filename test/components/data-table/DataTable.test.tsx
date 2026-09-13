@@ -190,6 +190,20 @@ describe('DataTable', () => {
       expect(cellText(screen.container, 1)).toEqual(['Seoul', 'Lisbon', 'Oslo']);
     });
 
+    it('puts a row with no value last in both directions', async () => {
+      const items = [...ITEMS, { id: 'd', name: 'Di', city: '', score: 5 }];
+      const screen = await render(
+        <DataTable headers={HEADERS} items={items} getRowKey={key} sortable />
+      );
+      const heading = screen.getByRole('button', { name: 'City' });
+
+      await heading.click();
+      expect(cellText(screen.container, 1)).toEqual(['Lisbon', 'Oslo', 'Seoul', '']);
+
+      await heading.click();
+      expect(cellText(screen.container, 1)).toEqual(['Seoul', 'Oslo', 'Lisbon', '']);
+    });
+
     it('marks the sorted column with aria-sort', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} sortable />
