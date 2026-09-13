@@ -46,6 +46,8 @@
 
 - **A captioned `Gallery` tile is named by its caption, and a hover caption shows on a touch screen.** A tile's button was named "alt — Image 1 of 12" whatever was written on it, so a voice-control user saying the caption they could see pressed nothing, and `caption="hover"` never appeared on a device that cannot hover. A tile with a caption drawn is now named by its title and its place in the set, described by its description, and a hover caption is always up where there is no hover. A tile with no caption keeps the `alt`; a test that found a captioned tile by its `alt` finds it by its title.
 
+- **A `DataTable` without a selection can be worked from the keyboard.** With `selectionMode="none"` the table took no focus, so `onRowActivate` answered only a double-click and an editable cell opened only on one. A table whose rows open something or whose cells edit is now a `grid` with a tab stop: the arrows move an active row without choosing it, Enter calls `onRowActivate`, and F2 edits the first editable cell of the row, in every selection mode. Enter and Escape in an editor hand the focus back to the table. A test that found such a table by the `table` role finds it by `grid`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

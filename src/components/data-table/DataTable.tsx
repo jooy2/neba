@@ -738,6 +738,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const selects = selectionMode !== 'none';
   const multiple = selectionMode === 'multiple';
   const showTicks = selects && checkboxes;
+  /*
+   * A table a keyboard has something to do in: one that chooses rows, one whose
+   * rows open something, or one with a cell that edits. Without a selection the
+   * last two had no keyboard path at all — `onRowActivate` answered only a
+   * double-click and an editor opened only on one — so it is a grid with a tab
+   * stop and an active row in all three, and only the first chooses as it goes.
+   */
+  const editsCells =
+    onCellEdit !== undefined && columns.some((column) => column.editable !== undefined);
+  const navigable = selects || onRowActivate !== undefined || editsCells;
 
   /* -- The rows, and the three stages ------------------------------------- */
 
@@ -1337,6 +1347,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     setActiveKey(entry.key);
     revealRow(target);
 
+    if (!selects) {
+      return;
+    }
+
     if (event.shiftKey && latest.current.multiple) {
       selectRange(entry.key, false);
     } else if (!event.ctrlKey && !event.metaKey) {
@@ -1377,7 +1391,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     // Only when the *table* has the focus. A sortable heading is a real button
     // inside this element, and its Enter and its Space belong to it — a table
     // that answered them here would sort a column and open a row at once.
-    if (!selects || event.target !== event.currentTarget) {
+    if (!navigable || event.target !== event.currentTarget) {
       return;
     }
 
@@ -1415,7 +1429,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       case ' ':
         // Space is the one key that chooses without moving, and the reason the
         // arrows can be told to move without choosing.
-        if (index !== -1) {
+        if (selects && index !== -1) {
           event.preventDefault();
 
           if ((event.ctrlKey || event.metaKey) && multiple) {
@@ -1427,14 +1441,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         break;
       case 'a':
       case 'A':
-        if ((event.ctrlKey || event.metaKey) && multiple) {
+        if (selects && (event.ctrlKey || event.metaKey) && multiple) {
           event.preventDefault();
           commitSelection(latest.current.pagedKeys);
         }
         break;
       case 'Escape':
-        event.preventDefault();
-        commitSelection([]);
+        if (selects) {
+          event.preventDefault();
+          commitSelection([]);
+        }
         break;
       case 'Enter':
         if (index !== -1 && onRowActivate) {
@@ -1442,6 +1458,19 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           onRowActivate(rows[index].row, displayOffset + index);
         }
         break;
+      // The spreadsheet's key for "edit this", and the one way into an editor
+      // that does not need a pointer: the first cell of the active row that
+      // edits.
+      case 'F2': {
+        const entry = rows[index];
+        const column = entry ? columns.find((each) => canEdit(each, entry.row)) : undefined;
+
+        if (entry && column) {
+          event.preventDefault();
+          openEditor(entry.key, column.key);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -1634,6 +1663,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     event: React.PointerEvent<HTMLTableRowElement>
   ) {
     if (!selects) {
+      // A pointer press still says where the arrows go on from, in a table the
+      // keyboard can act on, and it chooses nothing.
+      if (navigable && !(event.target as HTMLElement).closest(PRESSABLE_IN_CELL)) {
+        setActiveKey(entry.key);
+      }
       return;
     }
 
@@ -1910,7 +1944,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               ? '[--n-row:var(--n-stripe)]'
               : '',
           !isSelected && hoverable ? 'hover:[--n-row:var(--n-soft)]' : '',
-          isActive && selects ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
+          isActive && navigable ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
           selects || onRowClick ? 'cursor-default' : ''
         )}
         style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
@@ -1935,7 +1969,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           return (
             <td
               key={column.key}
-              role={selects ? 'gridcell' : undefined}
+              role={navigable ? 'gridcell' : undefined}
               style={{
                 ...cellStyle,
                 ...pinStyle(column, false),
@@ -1949,7 +1983,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                       // the double-click; `onRowActivate` must not
                       // also fire and take the reader elsewhere.
                       event.stopPropagation();
-                      setEditing({ key: entry.key, column: column.key });
+                      openEditor(entry.key, column.key);
                     }
                   : undefined
               }
@@ -2171,6 +2205,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /* -- Editing ------------------------------------------------------------- */
 
   const [editing, setEditing] = React.useState<{ key: string; column: string } | null>(null);
+  /**
+   * Whether the open editor has already been answered by a key. Enter and Escape
+   * hand the focus back to the table, and the blur that causes must not commit
+   * a second time — or at all, after an Escape.
+   */
+  const editorSettled = React.useRef(false);
+
+  function openEditor(rowKey: string, columnKey: string) {
+    editorSettled.current = false;
+    setEditing({ key: rowKey, column: columnKey });
+  }
 
   const canEdit = (column: DataTableColumn<Row>, row: Row) =>
     onCellEdit !== undefined &&
@@ -2215,17 +2260,29 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         className="w-full bg-transparent [font:inherit] text-inherit [outline:none]"
         style={{ textAlign: column.align ?? 'start' }}
         onPointerDown={(event) => event.stopPropagation()}
-        onBlur={(event) => commit(event.currentTarget.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            event.stopPropagation();
+        onBlur={(event) => {
+          if (!editorSettled.current) {
             commit(event.currentTarget.value);
           }
-          if (event.key === 'Escape') {
-            event.stopPropagation();
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== 'Enter' && event.key !== 'Escape') {
+            return;
+          }
+
+          event.stopPropagation();
+          editorSettled.current = true;
+
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            commit(event.currentTarget.value);
+          } else {
             setEditing(null);
           }
+
+          // The editor held the focus and is about to go; the table takes it
+          // back, so the arrows carry on from the row that was edited.
+          tableRef.current?.focus({ preventScroll: true });
         }}
       />
     );
@@ -2376,7 +2433,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       >
         <table
           ref={tableRef}
-          role={selects ? 'grid' : undefined}
+          role={navigable ? 'grid' : undefined}
           aria-label={label}
           aria-multiselectable={multiple || undefined}
           aria-rowcount={virtualized ? paged.length + headRows : undefined}
@@ -2385,7 +2442,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           // attribute at an id that is no longer in the document is worse than
           // pointing it nowhere.
           aria-activedescendant={activeRendered ? `${reactId}-${activeKey}` : undefined}
-          tabIndex={selects ? 0 : undefined}
+          tabIndex={navigable ? 0 : undefined}
           className={cx(
             'w-full text-start [outline:none]',
             controlTextLeadingClasses[size],

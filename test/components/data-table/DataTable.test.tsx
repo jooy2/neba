@@ -833,6 +833,29 @@ describe('DataTable', () => {
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(0);
     });
 
+    // `onRowActivate` answered only a double-click when nothing was chosen.
+    it('opens a row from the keyboard without choosing anything when there is no selection', async () => {
+      const onRowActivate = vi.fn();
+      const screen = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} onRowActivate={onRowActivate} />
+      );
+      const grid = screen.getByRole('grid');
+
+      await expect.element(grid).toHaveAttribute('tabindex', '0');
+      (grid.element() as HTMLElement).focus();
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+
+      expect(onRowActivate).toHaveBeenLastCalledWith(ITEMS[1], 1);
+      expect(screen.container.querySelector('tr[aria-selected]')).toBeNull();
+    });
+
+    it('stays a plain table with nothing a keyboard could do in it', async () => {
+      const screen = await render(<DataTable headers={HEADERS} items={ITEMS} getRowKey={key} />);
+
+      await expect.element(screen.getByRole('table')).toBeInTheDocument();
+      expect(screen.getByRole('table').element()).not.toHaveAttribute('tabindex');
+    });
+
     it('opens a row on Enter and on a double click', async () => {
       const onRowActivate = vi.fn();
       const screen = await render(
@@ -1202,6 +1225,44 @@ describe('editing', () => {
 
     await screen.getByText('Bo').dblClick();
     await expect.element(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+  });
+
+  // An editor that opened only on a double-click was out of a keyboard's reach.
+  it("opens the active row's editor on F2 and gives the focus back to the table", async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [
+      { key: 'city', label: 'City' },
+      { key: 'name', label: 'Name', editable: true }
+    ];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+    const grid = screen.getByRole('grid');
+
+    (grid.element() as HTMLElement).focus();
+    await userEvent.keyboard('{ArrowDown}{F2}');
+    await screen.getByRole('textbox', { name: 'Name' }).fill('Adele');
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCellEdit).toHaveBeenCalledTimes(1);
+    expect(onCellEdit.mock.calls[0][2]).toBe('Adele');
+    await expect.element(grid).toHaveFocus();
+  });
+
+  it('throws an edit away on Escape even as the focus leaves it', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable headers={columns} items={ITEMS} getRowKey={key} onCellEdit={onCellEdit} />
+    );
+
+    (screen.getByRole('grid').element() as HTMLElement).focus();
+    await userEvent.keyboard('{ArrowDown}{F2}');
+    await screen.getByRole('textbox', { name: 'Name' }).fill('Adele');
+    await userEvent.keyboard('{Escape}');
+
+    expect(onCellEdit).not.toHaveBeenCalled();
+    await expect.element(screen.getByRole('grid')).toHaveFocus();
   });
 
   it('hands back a number for a number column', async () => {

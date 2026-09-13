@@ -76,6 +76,7 @@ const rowKey = (row: Build) => row.id;
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> | 표시된 모든 행 |
 | <kbd>Esc</kbd> | 전부 놓습니다 |
 | <kbd>Enter</kbd>, 더블클릭 | `onRowActivate` |
+| <kbd>F2</kbd> | 활성 행에서 편집할 수 있는 첫 셀을 편집합니다 |
 
 `checkboxes`는 체크박스 열과, 표시된 모든 행을 한 번에 고르는 머리행 체크박스를 답니다. `onSelectedChange`는 key와 그 뒤의 행을 함께 넘기며, 지금 화면에 없는 페이지의 행도 포함합니다.
 
@@ -161,7 +162,7 @@ const rowKey = (row: Build) => row.id;
 
 `editable`은 함수일 수 있습니다. 잠긴 레코드나 계산된 필드를 위해서입니다. `editType: 'number'`는 휴대폰에서 숫자 키패드를 유지하고 문자열이 아니라 숫자를 돌려줍니다.
 
-더블 클릭이 에디터를 열고, blur와 `Enter`가 확정하고 `Escape`가 취소합니다. 에디터를 연 셀에서는 `onRowActivate`가 **함께 발동하지 않습니다**. 그 더블 클릭에는 셀이 이미 답했기 때문입니다.
+더블 클릭이나 활성 행에서 <kbd>F2</kbd>를 누르면 에디터가 열리고, blur와 `Enter`가 확정하고 `Escape`가 취소합니다. 두 키 모두 focus를 표로 돌려줍니다. 에디터를 연 셀에서는 `onRowActivate`가 **함께 발동하지 않습니다**. 그 더블 클릭에는 셀이 이미 답했기 때문입니다.
 
 ### 그룹과 집계
 
@@ -219,7 +220,7 @@ const rowKey = (row: Build) => row.id;
 ## Accessibility
 
 - `selectionMode`가 있으면 표는 tab stop이 하나인 `grid`가 되고 `aria-activedescendant`로 현재 행을 가리킵니다. virtual한 행은 focus를 들고 있을 수 없기 때문입니다. 스크롤되어 나가는 순간 그 행은 unmount됩니다. 각 행은 `aria-selected`를 답니다.
-- `selectionMode`가 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
+- `selectionMode`가 없어도 행이 무언가를 열거나(`onRowActivate`) 편집할 셀이 있으면 tab 정지점을 가진 `grid`입니다. 방향키로 활성 행을 옮기고 <kbd>Enter</kbd>로 열고 <kbd>F2</kbd>로 편집하며, 아무것도 고르지 않습니다. 그 어느 것도 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
 - 정렬 가능한 머리글은 진짜 `<button>`이고, 그것을 감싼 `<th>`가 `aria-sort`를 답니다.
 - 표에 `caption`이나 `label`을 주세요. 둘 다 없으면 screen reader는 이름 없는 grid라고 읽습니다.
 - 크기 조정 핸들은 포인터 전용이며 보조 기술에서는 숨겨집니다. 열 너비는 정보가 아니라 취향이고, 그것 없이 닿지 못하는 내용은 표 안에 없습니다.

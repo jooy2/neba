@@ -76,6 +76,7 @@ Every row is `rowHeight` tall and cells truncate rather than wrap, which is what
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> | every displayed row |
 | <kbd>Esc</kbd> | drops every row |
 | <kbd>Enter</kbd>, double-click | `onRowActivate` |
+| <kbd>F2</kbd> | edits the first editable cell of the active row |
 
 `checkboxes` adds a tick column and a header tick that chooses every displayed row at once. `onSelectedChange` reports the keys and the rows behind them, including rows on pages that are not on screen.
 
@@ -161,7 +162,7 @@ Neither works alone. A column with no handler above it is not editable however `
 
 `editable` may be a function, for a locked record or a computed field. `editType: 'number'` keeps the keypad on a phone and hands back a number rather than a string.
 
-A double-click opens the editor; blur and `Enter` commit, `Escape` cancels. `onRowActivate` does **not** also fire for a cell that opened an editor: the cell answered the double-click.
+A double-click opens the editor, and so does <kbd>F2</kbd> on the active row; blur and `Enter` commit, `Escape` cancels, and either key hands the focus back to the table. `onRowActivate` does **not** also fire for a cell that opened an editor: the cell answered the double-click.
 
 ### Grouping and aggregates
 
@@ -219,7 +220,7 @@ The file leads with a byte-order mark, and that is not decoration: Excel reads a
 ## Accessibility
 
 - With a `selectionMode` the table is a `grid` with one tab stop and `aria-activedescendant`, because a virtual row cannot hold the focus: the row that had it is unmounted the moment it scrolls away. Rows carry `aria-selected`.
-- Without one it is a plain `table`, and nothing in it takes focus except the sortable headings.
+- Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
 - The resize handles are pointer-only and hidden from assistive technology. Column widths are a preference, not information: nothing in the table is unreachable without them.
