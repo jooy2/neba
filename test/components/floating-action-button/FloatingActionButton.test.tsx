@@ -56,6 +56,21 @@ describe('FloatingActionButton', () => {
         '24px'
       );
     });
+
+    // A button pinned to the bottom of a phone sits over the home indicator
+    // unless the inset is added to its offset.
+    it('adds the screen inset to the offset when pinned to the window, and only then', async () => {
+      const screen = await render(<FloatingActionButton label="Compose" data-testid="fab" />);
+      const root = screen.getByTestId('fab').element();
+
+      expect(root.className).toContain('env(safe-area-inset-bottom)');
+
+      await screen.rerender(
+        <FloatingActionButton label="Compose" position="absolute" data-testid="fab" />
+      );
+
+      expect(root.className).not.toContain('safe-area-inset');
+    });
   });
 
   describe('on its own', () => {

@@ -138,6 +138,13 @@ export interface DrawerProps
    * @default true
    */
   dismissible?: boolean;
+  /**
+   * Keeps the panel's contents clear of a phone's home indicator and notch, on
+   * a page laid out under them with `viewport-fit=cover`. The sheet still runs
+   * to the edge of the screen; what moves is what is on it. `overlay` only.
+   * @default true
+   */
+  safeArea?: boolean;
   /** The body. */
   children?: React.ReactNode;
 }
@@ -277,6 +284,29 @@ const backdropClasses = [
   popupFadeClasses
 ].join(' ');
 
+/**
+ * The screen's insets, as transparent borders on the edges a panel runs to.
+ *
+ * Borders rather than padding, because the panel's padding is already a class
+ * from the size ladder, and an inset added to it would need the ladder written
+ * out again as lengths. A sheet's background is painted under its borders, so
+ * the acrylic still reaches the edge of the screen and only the contents move.
+ * The edge a panel faces the page with keeps its hairline: it is never one of
+ * these.
+ */
+const safeAreaEdges: Record<NebaSide, React.CSSProperties> = {
+  top: { borderTop: 'env(safe-area-inset-top) solid transparent' },
+  bottom: { borderBottom: 'env(safe-area-inset-bottom) solid transparent' },
+  left: {
+    borderTop: 'env(safe-area-inset-top) solid transparent',
+    borderBottom: 'env(safe-area-inset-bottom) solid transparent'
+  },
+  right: {
+    borderTop: 'env(safe-area-inset-top) solid transparent',
+    borderBottom: 'env(safe-area-inset-bottom) solid transparent'
+  }
+};
+
 /** The internal hairline: the same `--n-line` as the sheet's own edge. */
 const dividerClasses = 'border-t [border-color:var(--n-line)]';
 
@@ -342,6 +372,7 @@ export function Drawer(rawProps: DrawerProps) {
     rounded = true,
     modal = true,
     dismissible = true,
+    safeArea = true,
     className,
     style,
     children,
@@ -524,7 +555,12 @@ export function Drawer(rawProps: DrawerProps) {
         >
           <BaseUIDialog.Popup
             className={panel}
-            style={{ ...surfaceSlots(color, 3), ...sizeStyle, ...style }}
+            style={{
+              ...surfaceSlots(color, 3),
+              ...sizeStyle,
+              ...(safeArea ? safeAreaEdges[side] : null),
+              ...style
+            }}
             {...props}
           >
             {contents}

@@ -80,6 +80,8 @@
 
 - **`FilePicker` takes `locale`.** The sentence inside the box and the name of each remove button were English whatever the page spoke, with only a prop per string as the way out. Both come from the new `file` namespace now, which every registered language has; `title` and `removeLabel` still override them.
 
+- **`Toolbar`, `Pill`, `Footer`, `FloatingActionButton` and `Drawer` take `safeArea`.** On a page laid out under a phone's notch and home indicator with `viewport-fit=cover`, a bar or button pinned to the edge of the screen sat underneath them. With `safeArea` on, the default, a `fixed` or `sticky` one adds the screen's `env(safe-area-inset-*)` on the edge it is held against, and an overlay `Drawer` keeps its contents inside the insets on the edges it runs to; the sheets still reach the edge of the screen. A `static` one is left alone.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
@@ -263,6 +265,8 @@
 - **Controls and indicators stay visible in a forced-colour theme.** Windows' contrast themes draw no `box-shadow` and replace background colours, and the stylesheet had nothing for them: a filled `Button`, `Toggle`, `Chip` or `Pill` lost the plate that was its edge, and a `Switch`, a `ProgressLinear` and a `Slider` lost the fill and the thumb that say their value. Under `forced-colors: active` those controls now carry a system-coloured outline, and the indicators are drawn in the system's own `Highlight` and `ButtonText`. Nothing changes in any other mode.
 
 - **Small controls are pressed at the size of a finger.** An `Alert` or `Toast` ×, a `NumberField` stepper at `xs` and `sm`, a `Carousel` dot, a `Panes` or `Sidebar` resize handle, a `WindowPane`'s resize corner and its macOS traffic lights were all drawn, and pressed, well under the 24px WCAG 2.5.8 asks for. Each now carries an invisible target of at least 24px on the short axis; a control in a tight row grows along the row only into the gaps beside it, so it never takes a neighbour's press. Nothing drawn moves, and the `xs` step of the control height ladder is left as it was.
+
+- **A `static` `BottomNavigation` no longer leaves room for a home indicator.** `safeArea` added the bottom inset whatever the position, so a bar sitting in the flow inside a card had 34px of empty sheet under it on an iPhone. It applies only to a `fixed` or `sticky` bar now.
 
 ## 1.13.0 (2026-09-11)
 

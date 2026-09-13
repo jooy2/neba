@@ -87,6 +87,14 @@ export interface PillProps
   position?: NebaPosition;
   /** Which edge it is held against when `position` is not `static`. @default 'top' */
   side?: 'top' | 'bottom';
+  /**
+   * Keeps it clear of a phone's home indicator and notch, on a page laid out
+   * under them with `viewport-fit=cover`, by adding the screen's
+   * `env(safe-area-inset-*)` on the edge it is held against. Only a `fixed` or
+   * `sticky` one is ever against that edge, so a `static` one is left alone.
+   * @default true
+   */
+  safeArea?: boolean;
   /** Passing it makes the row a real button. */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   /**
@@ -215,6 +223,20 @@ const positionClasses: Record<NebaPosition, Record<'top' | 'bottom', string>> = 
   }
 };
 
+/** The same, with the screen's inset added to the distance from the edge. */
+const safePositionClasses: Record<NebaPosition, Record<'top' | 'bottom', string>> = {
+  static: { top: '', bottom: '' },
+  sticky: {
+    top: 'sticky top-[calc(0.75rem_+_env(safe-area-inset-top))] z-20',
+    bottom: 'sticky bottom-[calc(0.75rem_+_env(safe-area-inset-bottom))] z-20'
+  },
+  fixed: {
+    top: 'fixed inset-x-0 top-[calc(0.75rem_+_env(safe-area-inset-top))] z-30 mx-auto w-fit',
+    bottom:
+      'fixed inset-x-0 bottom-[calc(0.75rem_+_env(safe-area-inset-bottom))] z-30 mx-auto w-fit'
+  }
+};
+
 /**
  * A floating lozenge holding a small amount of live information.
  *
@@ -247,6 +269,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
     expanded = false,
     position = 'static',
     side = 'top',
+    safeArea = true,
     className,
     style,
     children,
@@ -318,7 +341,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
         pressTransitionClasses,
         iconClasses,
         interactive ? `neba-glow ${hoverClasses[variant]}` : '',
-        positionClasses[position][side],
+        (safeArea ? safePositionClasses : positionClasses)[position][side],
         className ?? ''
       )}
       style={{ ...controlSlots(color, elevation, variant), ...style }}

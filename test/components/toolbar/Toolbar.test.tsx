@@ -104,6 +104,22 @@ describe('Toolbar', () => {
       expect(element).toHaveClass('bottom-0');
     });
 
+    // Its padding and the phone's home indicator, on the edge it is held to.
+    it('holds what is on a pinned bar clear of the screen inset', async () => {
+      const screen = await render(
+        <Toolbar position="fixed" side="bottom" data-testid="bar">
+          Title
+        </Toolbar>
+      );
+      const element = screen.getByTestId('bar').element() as HTMLElement;
+
+      expect(element.getAttribute('style')).toContain('env(safe-area-inset-bottom)');
+
+      await screen.rerender(<Toolbar data-testid="bar">Title</Toolbar>);
+
+      expect(element.getAttribute('style') ?? '').not.toContain('safe-area-inset');
+    });
+
     it('turns its rule to face the content', async () => {
       const screen = await render(
         <Toolbar divider data-testid="bar">

@@ -128,6 +128,19 @@ describe('BottomNavigation', () => {
         'pb-[env(safe-area-inset-bottom)]'
       );
     });
+
+    // A bar in the flow, inside a card, is nowhere near the home indicator.
+    it('leaves a static bar alone', async () => {
+      const screen = await render(
+        <BottomNavigation position="static" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+        </BottomNavigation>
+      );
+
+      expect(screen.getByTestId('bar').element()).not.toHaveClass(
+        'pb-[env(safe-area-inset-bottom)]'
+      );
+    });
   });
 
   describe('choosing a destination', () => {

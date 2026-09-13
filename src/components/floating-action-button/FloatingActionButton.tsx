@@ -120,6 +120,13 @@ export interface FloatingActionButtonProps
    */
   offset?: number | string;
   /**
+   * Adds the screen's `env(safe-area-inset-*)` to `offset` on the edge the
+   * corner is against, so a button pinned to the bottom of a phone clears its
+   * home indicator. Only a `fixed` or `sticky` button is ever against that edge.
+   * @default true
+   */
+  safeArea?: boolean;
+  /**
    * Which way the actions fan out. Taken from `corner` when it is left out — up
    * from the bottom of the screen, down from the top — which is right often
    * enough that it is rarely written down.
@@ -211,6 +218,16 @@ const cornerClasses: Record<NebaCorner, string> = {
   'bottom-end': 'bottom-(--n-fab-offset) end-(--n-fab-offset)'
 };
 
+/** The same corners, with the screen's inset added on the edge each is against. */
+const safeCornerClasses: Record<NebaCorner, string> = {
+  'top-start': 'top-[calc(var(--n-fab-offset)_+_env(safe-area-inset-top))] start-(--n-fab-offset)',
+  'top-end': 'top-[calc(var(--n-fab-offset)_+_env(safe-area-inset-top))] end-(--n-fab-offset)',
+  'bottom-start':
+    'bottom-[calc(var(--n-fab-offset)_+_env(safe-area-inset-bottom))] start-(--n-fab-offset)',
+  'bottom-end':
+    'bottom-[calc(var(--n-fab-offset)_+_env(safe-area-inset-bottom))] end-(--n-fab-offset)'
+};
+
 /**
  * The lozenge an action's name is written on.
  *
@@ -263,6 +280,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
       position = 'fixed',
       corner = 'bottom-end',
       offset = 16,
+      safeArea = true,
       direction,
       open: openProp,
       defaultOpen = false,
@@ -366,7 +384,11 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
           reversed ? 'items-end' : 'items-start',
           size === 'xs' || size === 'sm' ? 'gap-1.5' : 'gap-2',
           positionClasses[position],
-          position === 'static' ? '' : cornerClasses[corner],
+          position === 'static'
+            ? ''
+            : safeArea && (position === 'fixed' || position === 'sticky')
+              ? safeCornerClasses[corner]
+              : cornerClasses[corner],
           className
         )}
         style={

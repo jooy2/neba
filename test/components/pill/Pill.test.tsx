@@ -66,10 +66,19 @@ describe('Pill', () => {
       const element = screen.getByTestId('pill').element();
 
       expect(element).toHaveClass('fixed');
-      expect(element).toHaveClass('bottom-3');
+      // Its distance from the edge, plus the phone's home indicator.
+      expect(element).toHaveClass('bottom-[calc(0.75rem_+_env(safe-area-inset-bottom))]');
       // Centred with auto margins, never with a transform.
       expect(element).toHaveClass('mx-auto');
       expect(element.className).not.toContain('translate');
+
+      await screen.rerender(
+        <Pill position="fixed" side="bottom" safeArea={false} data-testid="pill">
+          Recording
+        </Pill>
+      );
+
+      expect(element).toHaveClass('bottom-3');
     });
 
     it('sits in the flow by default', async () => {

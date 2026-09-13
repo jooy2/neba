@@ -84,6 +84,15 @@ export const boxPaddingYClasses: Record<NebaDensity, Record<NebaSize, string>> =
   compact: { xs: 'py-1.5', sm: 'py-2', md: 'py-2.5', lg: 'py-3', xl: 'py-4' }
 };
 
+/**
+ * The same ladder as lengths, for the one thing a class cannot do with it: add
+ * a screen inset to it. Keep the two in step.
+ */
+export const boxPaddingYValues: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: { xs: '0.5rem', sm: '0.75rem', md: '1rem', lg: '1.25rem', xl: '1.5rem' },
+  compact: { xs: '0.375rem', sm: '0.5rem', md: '0.625rem', lg: '0.75rem', xl: '1rem' }
+};
+
 const baseClasses = [
   'block',
   // The same property list and durations as the controls, so a box whose color

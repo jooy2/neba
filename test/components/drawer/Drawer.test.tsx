@@ -22,6 +22,16 @@ describe('Drawer', () => {
       await expect.element(screen.getByRole('dialog', { name: 'Navigation' })).toBeInTheDocument();
     });
 
+    // The sheet runs to the edge of the screen and what is on it clears the
+    // phone's home indicator.
+    it('holds a bottom sheet clear of the screen inset', async () => {
+      const screen = await render(<Drawer defaultOpen side="bottom" title="Filters" />);
+      const sheet = screen.getByRole('dialog', { name: 'Filters' });
+
+      await expect.element(sheet).toBeInTheDocument();
+      expect(sheet.element().getAttribute('style')).toContain('env(safe-area-inset-bottom)');
+    });
+
     it('renders the title as a real heading', async () => {
       const screen = await render(<Drawer defaultOpen title="Navigation" />);
 

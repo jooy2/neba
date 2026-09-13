@@ -66,7 +66,8 @@ export interface BottomNavigationProps
   /**
    * Keeps the bar clear of the home indicator on a phone, by adding
    * `env(safe-area-inset-bottom)` under it. The sheet still reaches the bottom
-   * of the screen; only the items move up.
+   * of the screen; only the items move up. A `static` bar is not at the bottom
+   * of the screen, so it is left alone.
    * @default true
    */
   safeArea?: boolean;
@@ -234,7 +235,7 @@ export const BottomNavigation = React.forwardRef<HTMLElement, BottomNavigationPr
       // The sheet keeps reaching the bottom of the screen; what the inset moves
       // is the row inside it. A bar that stopped above the home indicator would
       // leave a stripe of page showing under the acrylic.
-      safeArea ? 'pb-[env(safe-area-inset-bottom)]' : '',
+      safeArea && position !== 'static' ? 'pb-[env(safe-area-inset-bottom)]' : '',
       transitionClasses,
       className
     );

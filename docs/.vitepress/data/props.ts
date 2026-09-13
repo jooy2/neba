@@ -2043,6 +2043,15 @@ export const propTables: Record<string, PropRow[]> = {
         en: "The opposite default from Header's: a footer is the thing at the end of the document, reached by scrolling to it. sticky and fixed are for the bar that has to stay in reach"
       }
     },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'fixed나 sticky일 때 아래에 화면의 safe-area inset을 더해 홈 인디케이터를 피합니다',
+        en: 'On a fixed or sticky footer, adds the screen safe-area inset under it, clearing a phone home indicator'
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -9190,6 +9199,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'fixed나 sticky일 때 가장자리까지의 거리에 화면의 safe-area inset을 더합니다',
+        en: 'On a fixed or sticky pill, adds the screen safe-area inset to its distance from the edge'
+      }
+    },
+    {
       name: 'side',
       type: "'top' | 'bottom'",
       default: "'top'",
@@ -9246,6 +9264,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '페이지 스크롤 안에서 어떻게 앉는지. sticky는 자기 자리를 차지한 채 가장자리에서 멈추므로 아래 내용에 여백을 줄 필요가 없고, fixed는 흐름에서 완전히 빠지므로 페이지가 스스로 여백을 마련해야 합니다',
         en: 'How the bar sits in the page’s scroll. `sticky` takes up its own space and stops at the edge, so nothing underneath has to be padded around it; `fixed` leaves the flow entirely, so the page needs padding of its own'
+      }
+    },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'fixed나 sticky일 때 붙은 쪽 가장자리에 화면의 safe-area inset을 더해 휴대폰의 홈 인디케이터와 노치를 피합니다',
+        en: 'On a fixed or sticky bar, adds the screen safe-area inset on the edge it is held against, clearing a phone home indicator and notch'
       }
     },
     {
@@ -10925,6 +10952,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: 'Escape나 스크림 클릭으로 닫히는지. overlay 전용',
         en: 'Whether Escape or a click on the scrim closes it. overlay only'
+      }
+    },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '패널이 닿는 화면 가장자리의 safe-area inset만큼 내용을 안쪽으로 둡니다. overlay 전용',
+        en: 'Keeps the panel contents inside the screen safe-area insets on the edges it runs to. overlay only'
       }
     },
     {
@@ -13059,8 +13095,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: 'env(safe-area-inset-bottom)만큼 아래를 띄워 홈 인디케이터를 피합니다. 시트는 화면 아래 끝까지 그대로 닿습니다',
-        en: 'Keeps the bar clear of the home indicator by adding env(safe-area-inset-bottom) under it. The sheet still reaches the bottom of the screen'
+        ko: 'env(safe-area-inset-bottom)만큼 아래를 띄워 홈 인디케이터를 피합니다. 시트는 화면 아래 끝까지 그대로 닿습니다. static인 바에는 적용하지 않습니다',
+        en: 'Keeps the bar clear of the home indicator by adding env(safe-area-inset-bottom) under it. The sheet still reaches the bottom of the screen. A static bar is left alone'
       }
     },
     {
@@ -13330,6 +13366,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '양쪽 가장자리에서 얼마나 안쪽인지. CSS 길이 또는 픽셀 수',
         en: 'How far in from both edges, as a CSS length or a number of pixels'
+      }
+    },
+    {
+      name: 'safeArea',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'fixed나 sticky일 때 모서리 쪽 offset에 화면의 safe-area inset을 더합니다',
+        en: 'On a fixed or sticky button, adds the screen safe-area inset to the offset on the edge its corner is against'
       }
     },
     {

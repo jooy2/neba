@@ -38,6 +38,14 @@ export interface FooterProps extends Omit<
    */
   position?: NebaPosition;
   /**
+   * Keeps it clear of a phone's home indicator and notch, on a page laid out
+   * under them with `viewport-fit=cover`, by adding the screen's
+   * `env(safe-area-inset-*)` on the edge it is held against. Only a `fixed` or
+   * `sticky` one is ever against that edge, so a `static` one is left alone.
+   * @default true
+   */
+  safeArea?: boolean;
+  /**
    * Weight of the sheet, said the way a *container* says it: the bar is never
    * dyed, because what is on it arrives with colours of its own.
    * @default 'outline'
@@ -134,6 +142,7 @@ const positionClasses: Record<NebaPosition, string> = {
 export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer(rawProps, ref) {
   const {
     position = 'static',
+    safeArea = true,
     variant = 'outline',
     size = 'md',
     color = 'primary',
@@ -168,6 +177,9 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
     variantClasses[variant],
     divider ? 'border-t [border-color:var(--n-line)]' : '',
     positionClasses[position],
+    // The sheet still reaches the bottom of the screen; what the inset moves is
+    // what is on it.
+    safeArea && position !== 'static' ? 'pb-[env(safe-area-inset-bottom)]' : '',
     transitionClasses,
     className
   );

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
+import { boxPaddingXClasses, boxPaddingYClasses, boxPaddingYValues } from '../box/Box.js';
 import {
   cx,
   hasContent,
@@ -39,6 +39,14 @@ export interface ToolbarProps
   position?: NebaPosition;
   /** Which edge it is held against when `position` is not `static`. @default 'top' */
   side?: 'top' | 'bottom';
+  /**
+   * Keeps what is on the bar clear of a phone's home indicator and notch, on a
+   * page laid out under them with `viewport-fit=cover`, by adding the screen's
+   * `env(safe-area-inset-*)` on the edge it is held against. Only a `fixed` or
+   * `sticky` bar is ever against that edge, so a `static` one is left alone.
+   * @default true
+   */
+  safeArea?: boolean;
   /**
    * Draws a hairline along the edge that faces the content — under a `top` bar,
    * over a `bottom` one.
@@ -122,6 +130,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
       elevation = 0,
       position = 'static',
       side = 'top',
+      safeArea = true,
       divider = false,
       start,
       end,
@@ -153,7 +162,18 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
       ref,
       props: {
         className: classNames,
-        style: { ...surfaceSlots(color, elevation), ...style },
+        style: {
+          ...surfaceSlots(color, elevation),
+          // The padding the bar already has, plus the inset on its edge. Inline,
+          // because it is one length added to another and no class states that.
+          ...(safeArea && position !== 'static'
+            ? {
+                [side === 'bottom' ? 'paddingBottom' : 'paddingTop']:
+                  `calc(${boxPaddingYValues[density][size]} + env(safe-area-inset-${side}))`
+              }
+            : null),
+          ...style
+        },
         children: (
           <>
             {hasContent(start) ? (

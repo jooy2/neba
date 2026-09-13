@@ -62,6 +62,17 @@ describe('Footer', () => {
 
       expect(screen.getByRole('contentinfo').element()).toHaveClass('fixed', 'bottom-0');
     });
+
+    it('keeps a pinned footer clear of the home indicator, and a static one as it is', async () => {
+      const screen = await render(<Footer position="sticky" />);
+      const footer = screen.getByRole('contentinfo').element();
+
+      expect(footer).toHaveClass('pb-[env(safe-area-inset-bottom)]');
+
+      await screen.rerender(<Footer />);
+
+      expect(footer).not.toHaveClass('pb-[env(safe-area-inset-bottom)]');
+    });
   });
 
   describe('appearance', () => {
