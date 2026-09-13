@@ -107,6 +107,6 @@ import { Button, Empty } from 'neba';
 
 ## 접근성
 
-- root는 `role="status"` live region입니다. 읽는 사람 눈앞에서 목록이 비면 조용히 백지가 되는 대신 그 사실을 알립니다. 처음부터 페이지의 일부로 놓이는 상태라면 `role={undefined}`을 넘기세요.
+- root는 `role="status"` live region입니다. screen reader는 live region 안의 내용이 바뀔 때 그것을 읽는데, 목록 자리에 나타나는 Empty는 처음부터 문구를 담은 채 들어오므로 모든 screen reader가 읽어 주지는 않습니다. 읽는 사람 눈앞에서 목록이 빈 사실을 반드시 들려줘야 한다면, 처음부터 페이지에 `role="status"` 요소 하나를 두고 거기에 문구를 쓰세요. 처음부터 페이지의 일부로 놓이는 상태라면 `role={undefined}`을 넘기세요.
 - 기본 글리프는 `aria-hidden`입니다. 제목이 이미 말한 것 외에 무엇도 새로 말하지 않기 때문입니다.
 - 내용이 아직 오는 중이라면 [Skeleton](./skeleton)을, 올 것이 없다는 사실이 확인된 뒤에야 Empty를 쓰세요. 둘 다 보여 주지 않으면 답이 있어야 할 자리에 빈 사각형이 남습니다.

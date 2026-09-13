@@ -75,6 +75,7 @@ Alert 안의 `<svg>`는 주변 글자의 `1.2em`으로 그려집니다. 어떤 �
 ## 접근성
 
 - 심각도가 live region을 정합니다. `warning`과 `danger`는 screen reader가 읽던 내용을 끊는 `role="alert"`, 나머지는 끊기지 않고 기다리는 `role="status"`입니다.
+- screen reader는 live region 안의 내용이 바뀔 때 그것을 읽습니다. 문구를 담은 채 마운트되는 Alert는 모든 screen reader가 읽어 주지는 않습니다. 반드시 들려줘야 하는 문구라면 Alert를 마운트해 둔 채 내용만 바꾸거나, 이미 페이지에 있는 live region에 문구를 쓰세요.
 - `role`을 직접 넘기면 기본값을 덮어씁니다.
 - 여러 Alert가 있는 화면에서는 `closeLabel`로 무엇을 닫는지 밝혀 주세요.
 - 닫기 버튼의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

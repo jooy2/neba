@@ -68,5 +68,5 @@ This is not the accessibility switch: a reduced-motion preference already replac
 ## Accessibility
 
 - A skeleton is `aria-hidden` by default. A dozen placeholders each announcing themselves is worse than silence.
-- Give `label` to the **one** skeleton that stands for a whole region and it becomes a `status` holding the label as visually hidden text. Do not label every bar in a stack.
+- Give `label` to the **one** skeleton that stands for a whole region and it becomes a `status` holding the label as visually hidden text. It mounts with that text in it, so it is read when a reader reaches it and is not announced by every screen reader on arrival. Do not label every bar in a stack.
 - Prefer a skeleton over a spinner where the layout is known. It is the only loading indicator that keeps the page from reflowing when the content arrives.

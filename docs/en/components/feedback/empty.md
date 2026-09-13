@@ -107,6 +107,6 @@ The sheet is never dyed: `color` reaches the hairline and the focus ring and sto
 
 ## Accessibility
 
-- The root is a `role="status"` live region, so a list that empties under the reader announces itself rather than going silently blank. Pass `role={undefined}` for a state that is simply part of the page when it arrives.
+- The root is a `role="status"` live region. A screen reader announces a live region when what is inside it changes, and an Empty that appears in place of a list arrives already holding its message, which not every screen reader announces. When a list emptying under the reader has to be heard, keep one `role="status"` element on the page from the start and write the message into it. Pass `role={undefined}` for a state that is simply part of the page when it arrives.
 - The default glyph is `aria-hidden`. It names nothing the headline does not already say.
 - Reach for [Skeleton](./skeleton) while content is still on its way and Empty only once it is known that none is coming. Showing neither leaves a blank rectangle where the answer should be.

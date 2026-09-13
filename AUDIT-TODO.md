@@ -60,7 +60,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 ### D. Choices (recommended: (a) for all)
 
 - **D1 (78)** `Overlay` default name: (a) "Loading", with all 18 locales updated; (b) require `label` (breaking); (c) leave it.
-- **D2 (81)** A `role="status"` mounted with its content: (a) correct the "announces itself" wording in the docs to what is guaranteed and point to an always-mounted live region; (b) fill the content a tick after mount so the announcement is guaranteed; (c) leave it.
 - **D3 (83)** `GaugeChart`: (a) `role="meter"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and an `aria-valuetext` that carries the caption; (b) fix the `aria-label` wording only.
 - **D4 (84)** `PieChart`: (a) pick the higher-contrast ink per slice and implement `Escape`, `Home` and `End`; (b) fix the ink only and remove the keys from the docs.
 - **D5 (86)** `HeatmapChart` keyboard: (a) in a grid, up and down move along the column, and the treemap keeps size order, documented; (b) both move by on-screen position.
@@ -221,7 +220,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [ ] **78** [major][decision] **Overlay**: the default name is "Overlay", so the common use with only a spinner reads "Overlay, dialog". Consider a default like "Loading" or making `label` required. `src/internal/i18n.ts:686`. See D1.
 - [x] **79** [major] **Skeleton**: with `label`, one element gets `role="status"`, `aria-busy="true"` and `aria-label`. `aria-busy` holds announcements back, which contradicts a live region, and a live region does not read `aria-label`. `Skeleton.tsx:199-201`. Decided: approved; the label is visually hidden text inside the status, with no `aria-busy` or `aria-label`.
 - [x] **80** Empty rendered as a table cell lost the cell role.
-- [ ] **81** [decision] **Alert, Empty, Skeleton**: a `role="status"` mounted together with its content is not announced in some browser and screen reader combinations (unverified). The Empty docs' "announces itself" is not guaranteed. See D2.
+- [x] **81** [decision] **Alert, Empty, Skeleton**: a `role="status"` mounted together with its content is not announced in some browser and screen reader combinations (unverified). The Empty docs' "announces itself" is not guaranteed. Decided: (a) the Alert, Empty and Skeleton docs say what is guaranteed and point to an always-mounted live region.
 
 ### Charts
 
