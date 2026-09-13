@@ -7,8 +7,7 @@ import {
   animationSlots,
   transitionParts
 } from '../../internal/animate.js';
-import { lengthOf } from '../../internal/responsive.js';
-import { cx } from '../../internal/styles.js';
+import { cx, toLength } from '../../internal/styles.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import type { NebaSize, NebaStaggerProps, NebaTransition } from '../../types.js';
 
@@ -181,8 +180,8 @@ export const Stack = React.forwardRef<HTMLDivElement, StackProps>(function Stack
   const extra = hidden > 0 ? overflow?.(hidden) : null;
   const drawn = extra === null || extra === undefined ? shown : [...shown, extra];
 
-  const step = lengthOf(overlap ?? overlapSizes[size]);
-  const fall = lengthOf(drop ?? overlap ?? overlapSizes[size]);
+  const step = toLength(overlap ?? overlapSizes[size]);
+  const fall = toLength(drop ?? overlap ?? overlapSizes[size]);
   // `diagonal` runs along the inline axis like `horizontal` does and drops each
   // item as it goes. The drop is a per-item margin rather than the flow's,
   // because a flow only overlaps on the axis it runs along.

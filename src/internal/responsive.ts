@@ -159,17 +159,6 @@ export function overlayResponsive<T>(
   return merged;
 }
 
-/**
- * A number is pixels; a string is already a CSS length.
- *
- * Every length a caller can hand this library goes through here — a Stack's
- * overlap, a Container's measure — so that `640` and `'640px'` mean the same
- * thing everywhere rather than in the components that happened to think of it.
- */
-export function lengthOf(value: number | string): string {
-  return typeof value === 'number' ? `${value}px` : value;
-}
-
 /* ---------------------------------------------------------------------------
  * Being drawn at all
  *

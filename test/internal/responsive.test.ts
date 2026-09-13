@@ -10,7 +10,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   breakpointMap,
-  lengthOf,
   overlayResponsive,
   responsiveSlots,
   valueAt,
@@ -112,12 +111,5 @@ describe('valueAt', () => {
     // number a caller worked out for themselves describe different layouts.
     expect(valueAt(withBaseline({ md: 4 }, 2), 'sm')).toBe(2);
     expect(valueAt(withBaseline({ md: 4 }, 2), 'md')).toBe(4);
-  });
-});
-
-describe('lengthOf', () => {
-  it('reads a number as pixels and a string as itself', () => {
-    expect(lengthOf(640)).toBe('640px');
-    expect(lengthOf('60ch')).toBe('60ch');
   });
 });
