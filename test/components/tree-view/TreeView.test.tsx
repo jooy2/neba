@@ -280,6 +280,18 @@ describe('TreeView', () => {
         .toBe(true);
     }
 
+    it('starts the tab stop on the chosen row when one is showing', async () => {
+      const screen = await render(<Sample defaultSelected={['readme']} />);
+
+      await expect
+        .poll(() =>
+          screen.container
+            .querySelector('[role="treeitem"][tabindex="0"]')
+            ?.getAttribute('data-neba-value')
+        )
+        .toBe('readme');
+    });
+
     it('holds exactly one tab stop however many rows there are', async () => {
       const screen = await render(<Sample defaultExpanded={['src']} />);
 
@@ -419,20 +431,84 @@ describe('TreeView', () => {
     });
   });
 
+  describe('a tree that chooses several', () => {
+    it('says which rows are not chosen as well as which are', async () => {
+      const screen = await render(<Sample multiple defaultSelected={['readme']} />);
+
+      await expect
+        .element(screen.getByRole('treeitem', { name: /README/ }))
+        .toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('treeitem', { name: /src/ }).element()).toHaveAttribute(
+        'aria-selected',
+        'false'
+      );
+    });
+  });
+
   describe('the row', () => {
     it('puts an action outside the pressable area', async () => {
       const onSelectedChange = vi.fn();
       const onAction = vi.fn();
       const screen = await render(
         <TreeView onSelectedChange={onSelectedChange}>
-          <TreeItem value="a" label="Report" action={<Button size="xs">Share</Button>} />
+          <TreeItem
+            value="a"
+            label="Report"
+            action={
+              <Button size="xs" onClick={onAction}>
+                Share
+              </Button>
+            }
+          />
         </TreeView>
       );
 
       await screen.getByRole('button', { name: 'Share' }).click();
 
-      expect(onAction).not.toHaveBeenCalled();
+      expect(onAction).toHaveBeenCalledTimes(1);
       expect(onSelectedChange).not.toHaveBeenCalled();
+    });
+
+    // The row holds the focus while the tree is walked, so a key pressed on a
+    // button inside it is that button's, and the tree must not take it.
+    it('leaves Enter on an action to the action', async () => {
+      const onSelectedChange = vi.fn();
+      const onAction = vi.fn();
+      const screen = await render(
+        <TreeView onSelectedChange={onSelectedChange}>
+          <TreeItem
+            value="a"
+            label="Report"
+            action={
+              <Button size="xs" onClick={onAction}>
+                Share
+              </Button>
+            }
+          />
+        </TreeView>
+      );
+
+      screen.getByRole('button', { name: 'Share' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      expect(onAction).toHaveBeenCalledTimes(1);
+      expect(onSelectedChange).not.toHaveBeenCalled();
+    });
+
+    it('follows a row that is a link when Enter is pressed on it', async () => {
+      const followed = vi.fn((event: MouseEvent) => event.preventDefault());
+      const screen = await render(
+        <TreeView label="Docs">
+          <TreeItem value="guide" label="Guide" href="#guide" />
+        </TreeView>
+      );
+      const row = screen.getByRole('treeitem', { name: /Guide/ }).element() as HTMLElement;
+
+      row.querySelector('a')!.addEventListener('click', followed);
+      row.focus();
+      await userEvent.keyboard('{Enter}');
+
+      expect(followed).toHaveBeenCalledTimes(1);
     });
 
     it('fires the row handler before it opens', async () => {

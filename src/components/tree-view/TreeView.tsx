@@ -46,6 +46,8 @@ interface TreeViewContextValue {
   size: NebaSize;
   density: NebaDensity;
   disabled: boolean;
+  /** Whether more than one row may be chosen, which decides how a row says it is not. */
+  multiple: boolean;
   expandedKeys: ReadonlySet<string>;
   selectedKeys: ReadonlySet<string>;
   activeKey: string | null;
@@ -73,6 +75,7 @@ const TreeViewContext = React.createContext<TreeViewContextValue>({
   size: 'md',
   density: 'default',
   disabled: false,
+  multiple: false,
   expandedKeys: new Set(),
   selectedKeys: new Set(),
   activeKey: null,
@@ -473,6 +476,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
         size,
         density,
         disabled,
+        multiple,
         expandedKeys: new Set(expandedValues.map(keyOf)),
         selectedKeys: new Set(selectedValues.map(keyOf)),
         activeKey,
@@ -484,7 +488,18 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
       // The two lists are read inside and are deliberately not listed here: the
       // keys above change exactly when their contents do, which is the question.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [size, density, disabled, expandedKey, selectedKey, activeKey, toggle, select, register]
+      [
+        size,
+        density,
+        disabled,
+        multiple,
+        expandedKey,
+        selectedKey,
+        activeKey,
+        toggle,
+        select,
+        register
+      ]
     );
 
     /*
@@ -516,7 +531,11 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
       const rows = treeRows(root);
       if (rows.length === 0) return;
 
-      setActiveKey(rows[0].dataset.nebaValue ?? null);
+      // The chosen row when one is showing, which is where a reader tabbing in
+      // expects to land; the first row otherwise.
+      const start = rows.find((row) => row.getAttribute('aria-selected') === 'true') ?? rows[0];
+
+      setActiveKey(start.dataset.nebaValue ?? null);
     });
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLUListElement>) {
@@ -528,6 +547,11 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
         '[role="treeitem"]'
       ) as HTMLElement | null;
       if (!root || !target || !root.contains(target)) return;
+      // A key pressed inside a row's `action` belongs to that control. The row
+      // itself holds the focus while the tree is walked, so anything else being
+      // the target means the reader has tabbed into a button or a field there,
+      // and Enter on it is that control's press, not the row's.
+      if (event.target !== target) return;
 
       const rows = treeRows(root);
       const index = rows.indexOf(target);
@@ -589,10 +613,19 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
         // Enter is the one key that *presses* the row — it chooses it, and opens
         // it on the way, which is what pressing it with a pointer does.
         case 'Enter':
-        case ' ':
+        case ' ': {
           event.preventDefault();
-          target.click();
+          // Enter on a row that is a link follows it, which a click on the row
+          // around the link does not; the link's own click still reaches the
+          // row on its way up, so it is chosen and opened as well.
+          const link =
+            event.key === 'Enter'
+              ? target.querySelector<HTMLAnchorElement>(':scope > div > a[href]')
+              : null;
+
+          (link ?? target).click();
           break;
+        }
         default:
           break;
       }
@@ -670,7 +703,8 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     toggle,
     select,
     activate,
-    register
+    register,
+    multiple
   } = React.useContext(TreeViewContext);
 
   const generatedId = React.useId();
@@ -858,7 +892,9 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
       ref={setItemRef}
       role="treeitem"
       aria-expanded={isParent ? isExpanded : undefined}
-      aria-selected={isSelected ? true : undefined}
+      // In a tree that chooses several, every row that can be chosen says
+      // whether it is, so "not selected" is announced rather than left out.
+      aria-selected={isSelected ? true : multiple && selectable ? false : undefined}
       aria-disabled={disabled || undefined}
       data-neba-value={key}
       tabIndex={activeKey === key ? 0 : -1}

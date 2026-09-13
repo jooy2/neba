@@ -160,6 +160,8 @@
 
 - **A virtualised `DataTable` with column groups counts its rows correctly.** The row numbers a screen reader reads out assumed a head of one row, so under a two-row head every body row was numbered one too low and the total one too few. Both head rows are numbered now and the body starts after them.
 
+- **`TreeView`'s keyboard follows the tree pattern more closely.** Enter or Space on a button in a row's `action` chose the row instead of pressing the button; the tree now leaves keys pressed inside a row's controls alone. Enter on a row with an `href` follows the link, where it only chose the row before. In a `multiple` tree every row that can be chosen says whether it is, and a reader tabbing into a tree lands on the chosen row rather than the first.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
