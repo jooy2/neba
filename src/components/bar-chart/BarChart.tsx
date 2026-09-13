@@ -13,6 +13,7 @@ import {
   barPath,
   barRadius,
   chartFontSizes,
+  labelledPoints,
   markGap,
   toValues,
   type ChartValue
@@ -226,6 +227,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
       {drawn.map(({ one, index }, lane) => {
         const color = colors[index];
         const dimmed = hovered !== null && hovered !== index;
+        const extreme = valueLabels === 'extremes' ? labelledPoints(one, 'extremes') : null;
 
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
@@ -297,8 +299,8 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                   />
 
                   {valueLabels === 'none' ||
-                  (valueLabels === 'extremes' && !isExtreme(one, category)) ? null : valueLabels ===
-                      'last' && category !== one.length - 1 ? null : (
+                  (extreme && !extreme(category)) ? null : valueLabels === 'last' &&
+                    category !== one.length - 1 ? null : (
                     // Always just past the data end, on the outside — which for
                     // a bar that grows downward means *below* it. Kept at the
                     // end rather than inside the fill so it never has to be
@@ -355,27 +357,4 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
       )}
     </g>
   );
-}
-
-/** Whether this is the series' own high or low — the two bars worth naming. */
-function isExtreme(one: readonly ChartValue[], index: number): boolean {
-  const value = one[index].value;
-
-  if (value === null) {
-    return false;
-  }
-
-  let min = Infinity;
-  let max = -Infinity;
-
-  for (const entry of one) {
-    if (entry.value === null) {
-      continue;
-    }
-
-    min = Math.min(min, entry.value);
-    max = Math.max(max, entry.value);
-  }
-
-  return value === min || value === max;
 }

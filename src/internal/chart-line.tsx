@@ -14,7 +14,15 @@
  */
 
 import * as React from 'react';
-import { areaPath, chartFontSizes, linePath, lineWidths, markerRadii, markGap } from './chart.js';
+import {
+  areaPath,
+  chartFontSizes,
+  labelledPoints,
+  linePath,
+  lineWidths,
+  markerRadii,
+  markGap
+} from './chart.js';
 import { markTransitionClasses } from './chart-frame.js';
 import type { CartesianContext } from './chart-frame.js';
 import type { NebaChartCurve, NebaChartValueLabels } from '../types.js';
@@ -288,55 +296,4 @@ export function LineSeries({
       })}
     </g>
   );
-}
-
-/**
- * Which points of a series get a label, decided once for the whole series.
- *
- * Once and not per point, which is the only thing worth saying about it: asking
- * "is this the series' high" inside the loop over the points means walking the
- * series again for each of them, and a five-hundred-point line then does a
- * quarter of a million comparisons to place two labels — on every render, which
- * on a chart being hovered is every frame.
- */
-function labelledPoints(
-  one: readonly { value: number | null }[],
-  valueLabels: NebaChartValueLabels
-): (index: number) => boolean {
-  if (valueLabels === 'all') {
-    return () => true;
-  }
-
-  if (valueLabels === 'last') {
-    let last = -1;
-
-    for (let index = one.length - 1; index >= 0; index--) {
-      if (one[index].value !== null) {
-        last = index;
-        break;
-      }
-    }
-
-    return (index) => index === last;
-  }
-
-  // `extremes`. A series that is entirely `null` has no high and no low, and
-  // the comparison below is false for every point of it either way.
-  let min = Infinity;
-  let max = -Infinity;
-
-  for (const entry of one) {
-    if (entry.value === null) {
-      continue;
-    }
-
-    min = Math.min(min, entry.value);
-    max = Math.max(max, entry.value);
-  }
-
-  return (index) => {
-    const value = one[index].value;
-
-    return value !== null && (value === min || value === max);
-  };
 }

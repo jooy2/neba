@@ -21,6 +21,7 @@ import {
   categoryCount,
   chartPalette,
   extentOf,
+  labelledPoints,
   linePath,
   ringPath,
   seriesColor,
@@ -343,5 +344,33 @@ describe('ringPath', () => {
   it('starts at twelve o\u2019clock, not at three', () => {
     // A zero-degree point sits directly above the centre.
     expect(ringPath(50, 50, 30, 0, 90).startsWith('M50 20')).toBe(true);
+  });
+});
+
+describe('labelledPoints', () => {
+  const series = (...values: (number | null)[]) => values.map((value) => ({ value }));
+  const chosen = (test: (index: number) => boolean, length: number) =>
+    Array.from({ length }, (_, index) => index).filter(test);
+
+  it('names the high and the low, every time either value appears', () => {
+    const one = series(3, 9, 1, 9, null, 1);
+
+    expect(chosen(labelledPoints(one, 'extremes'), one.length)).toEqual([1, 2, 3, 5]);
+  });
+
+  it('names nothing in a series that is all gaps', () => {
+    const one = series(null, null);
+
+    expect(chosen(labelledPoints(one, 'extremes'), one.length)).toEqual([]);
+  });
+
+  it('takes the last value that exists rather than the last slot', () => {
+    const one = series(4, 7, null);
+
+    expect(chosen(labelledPoints(one, 'last'), one.length)).toEqual([1]);
+  });
+
+  it('names every point with all', () => {
+    expect(chosen(labelledPoints(series(1, null, 3), 'all'), 3)).toEqual([0, 1, 2]);
   });
 });
