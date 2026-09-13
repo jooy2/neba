@@ -351,6 +351,13 @@ const vitePressConfig: UserConfig = {
   cleanUrls: true,
   metaChunk: true,
   /**
+   * `public/` is copied to the site as it is, and it is not a folder of pages.
+   * The note under `public/samples` that records where each picture came from
+   * is Markdown, so without this it was built into a page of its own and listed
+   * in the sitemap at `/public/samples/README`.
+   */
+  srcExclude: ['public/**'],
+  /**
    * The default locale is served from `/`, not from `/{lang}/`.
    *
    * This has to agree with two other things or every sidebar link 404s:
