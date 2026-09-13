@@ -8,10 +8,12 @@ import { render } from 'vitest-browser-react';
 import {
   Alert,
   Button,
+  ButtonGroup,
   Chip,
   colorSchemeScript,
   NebaProvider,
   TextField,
+  Toggle,
   useColorScheme
 } from 'neba';
 
@@ -90,6 +92,25 @@ describe('defaults', () => {
     expect(heightOf(screen.getByRole('button', { name: 'Provided' }).element())).toBe(
       heightOf(screen.getByRole('button', { name: 'Bare' }).element())
     );
+  });
+
+  // The provider was filled in before the group was read, so it beat the group.
+  it('loses to a group around the call site', async () => {
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ size: 'xs', variant: 'text' }}>
+          <ButtonGroup size="xl" variant="solid" aria-label="Provided">
+            <Button>Grouped</Button>
+            <Toggle>Pinned</Toggle>
+          </ButtonGroup>
+        </NebaProvider>
+        <Button size="xl">Bare</Button>
+      </>
+    );
+    const bare = heightOf(screen.getByRole('button', { name: 'Bare' }).element());
+
+    expect(heightOf(screen.getByRole('button', { name: 'Grouped' }).element())).toBe(bare);
+    expect(heightOf(screen.getByRole('button', { name: 'Pinned' }).element())).toBe(bare);
   });
 
   it('reaches a component that takes the axis and skips one that does not', async () => {

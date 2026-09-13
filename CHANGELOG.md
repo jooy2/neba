@@ -360,6 +360,8 @@
 
 - **A `CodeBlock` shows new `code` as soon as it is given.** The colouring is worked out after the code changes, and until it arrived the block went on drawing the colouring of the previous code, while the copy button already copied the new one; with a language whose grammar still had to load, the old code stayed on screen for the length of the download. A colouring is kept with the code and the language it was made from, and new code is drawn plain until its own arrives.
 
+- **A `ButtonGroup` or `ToggleGroup` beats a `NebaProvider` for the buttons inside it.** The provider's defaults were filled in before a `Button` or a `Toggle` read its group, so a group's `size`, `density` or `variant` lost to the provider's: `<ButtonGroup size="lg">` under `defaults={{ size: 'sm' }}` drew small buttons. The order is the button's own prop, then its group, then the provider, then the default.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

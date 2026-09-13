@@ -54,7 +54,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 - **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
 - **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
-- **C4 (117)** `Button`, `Toggle`: the order becomes caller, then group, then provider, then default.
 - **C5 (120)** Disabled appearance: Accordion and Collapsible use `data-[disabled]:`, RadioGroup passes the group's `disabled` through context, SegmentedButton gets a disabled branch, and Slider shows the state in colour instead of `opacity-70`.
 
 ### D. Choices (recommended: (a) for all)
@@ -281,7 +280,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ### Common
 
-- [ ] **117** [major] **Button, Toggle**: provider `defaults` are applied before the group's values, so a button inside `<NebaProvider defaults={{ size: 'sm' }}><ButtonGroup size="lg">` is `sm`. The order should be caller, group, provider, default. `Button.tsx:180-191`, `Toggle.tsx:210-220`. See C4.
+- [x] **117** [major] **Button, Toggle**: provider `defaults` are applied before the group's values, so a button inside `<NebaProvider defaults={{ size: 'sm' }}><ButtonGroup size="lg">` is `sm`. The order should be caller, group, provider, default. `Button.tsx:180-191`, `Toggle.tsx:210-220`. Decided: approved; the order is caller, group, provider, default.
 - [ ] **118** [major][decision] **Provider defaults are applied unevenly.** The guide says a component fills every axis it declares. See D16.
   - Not calling `useStyleDefaults` at all: SegmentedButton, RadioGroup, Tabs, Timeline, Form, Fieldset, Menu, NavigationMenu, LineChart, AreaChart, Confirm (`locale`), Icon (possibly on purpose, since it has an icon ladder).
   - Only some keys: DatePicker and DateRangePicker (`density`, `variant` missing), TimePicker and DateTimePicker (`variant` missing), BarChart (`size`, `density`), ScatterChart (`size`).

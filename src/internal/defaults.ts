@@ -43,13 +43,22 @@ export const DefaultsContext = React.createContext<NebaDefaults | null>(null);
  * the one a reader expects: the call site, then the provider, then the
  * component's own literal default.
  *
+ * `nearer` is a layer between the call site and the provider — a ButtonGroup
+ * around a Button — and a key it sets is left for the component to read from
+ * it. Filled first, the provider's `size` beat the group's, so a Button in a
+ * `size="lg"` group under a `size: 'sm'` provider came out small.
+ *
  * The keys are passed in rather than worked out, and that is load-bearing. A
  * key a component does not destructure stays in the props it spreads onto its
  * root, so filling `density` into a component that has none would put
  * `density="compact"` on a `<div>` — and `size` on an `<input>` is a real
  * attribute that would quietly resize the field.
  */
-export function useStyleDefaults<P extends object>(props: P, keys: DefaultableKey[]): P {
+export function useStyleDefaults<P extends object>(
+  props: P,
+  keys: DefaultableKey[],
+  nearer?: NebaDefaults | null
+): P {
   const defaults = React.useContext(DefaultsContext);
 
   if (!defaults) {
@@ -62,7 +71,7 @@ export function useStyleDefaults<P extends object>(props: P, keys: DefaultableKe
   for (const key of keys) {
     const value = defaults[key];
 
-    if (value !== undefined && given[key] === undefined) {
+    if (value !== undefined && given[key] === undefined && nearer?.[key] === undefined) {
       filled = filled ?? { ...given };
       filled[key] = value;
     }

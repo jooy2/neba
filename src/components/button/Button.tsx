@@ -169,6 +169,7 @@ const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = 
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(rawProps, ref) {
+    const group = React.useContext(ButtonGroupContext);
     const {
       variant: variantProp,
       size: sizeProp,
@@ -189,12 +190,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       onPointerMove,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant'], group);
 
     // A ButtonGroup sets these once for the whole set. The button's own prop still
     // wins — a group of secondary actions with one danger button in it is a real
-    // thing — and with no group around it the defaults are what they always were.
-    const group = React.useContext(ButtonGroupContext);
+    // thing — then the group, then the provider, and with neither around it the
+    // defaults are what they always were.
     const variant = variantProp ?? group?.variant ?? 'solid';
     const size = sizeProp ?? group?.size ?? 'md';
     const color = colorProp ?? group?.color ?? 'primary';

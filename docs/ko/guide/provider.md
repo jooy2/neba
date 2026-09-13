@@ -27,7 +27,7 @@ import { NebaProvider } from 'neba';
 
 </Demo>
 
-호출 지점이 여전히 이깁니다. 순서는 **호출자 → provider → 컴포넌트 자신의 기본값**이므로, `size="xs"` provider 안의 `<Button size="xl">`은 `xl`이고, `size` prop이 없는 컴포넌트는 손대지 않습니다.
+호출 지점이 여전히 이깁니다. 순서는 **호출자 → provider → 컴포넌트 자신의 기본값**이므로, `size="xs"` provider 안의 `<Button size="xl">`은 `xl`이고, `size` prop이 없는 컴포넌트는 손대지 않습니다. `ButtonGroup`과 `ToggleGroup`은 호출자와 provider 사이에 옵니다. `size: 'sm'` provider 아래 `size="lg"` group 안의 Button은 `lg`입니다.
 
 ### defaults가 받는 네 축
 

@@ -190,6 +190,7 @@ const onClasses: Record<NebaVariant, string> = {
  */
 export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
   function Toggle(rawProps, ref) {
+    const group = React.useContext(ButtonGroupContext);
     const {
       variant: variantProp,
       size: sizeProp,
@@ -209,11 +210,11 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       children,
       onPointerMove,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant'], group);
 
     // A ToggleGroup and a ButtonGroup provide the same context, so a Toggle picks
-    // up the set it is in either way. Its own prop still wins.
-    const group = React.useContext(ButtonGroupContext);
+    // up the set it is in either way. Its own prop still wins, then the group,
+    // then the provider.
     const variant = variantProp ?? group?.variant ?? 'outline';
     const size = sizeProp ?? group?.size ?? 'md';
     const color = colorProp ?? group?.color ?? 'primary';

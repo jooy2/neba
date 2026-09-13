@@ -27,7 +27,7 @@ Four axes: `size`, `density`, `variant` and `locale`. Writing `size="sm"` at fou
 
 </Demo>
 
-A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched.
+A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched. A `ButtonGroup` or `ToggleGroup` sits between the caller and the provider: a Button in a `size="lg"` group under a `size: 'sm'` provider is `lg`.
 
 ### The four axes
 
