@@ -134,6 +134,8 @@
 
 - **Pressing a `FloatingAction` puts the keyboard focus back on the button it came out of.** The dial closed with the pressed action inside it, so the focus fell to the page, where Escape already refused to leave it. A dial kept open with `closeOnAction={false}` leaves the focus on the action.
 
+- **Picking a month from a calendar's month grid keeps the focus in the calendar.** The day grid drew its first frame with the tab stop still in the previous month, found no day to focus and dropped the focus to the page; this happened in `Calendar` and in every date picker. The first day of the picked month takes the focus.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

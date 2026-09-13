@@ -708,6 +708,11 @@ export function Calendar({
               if (granularity === 'month') {
                 onSelect(picked);
               } else {
+                // The tab stop moves with the pick, in the same render as the
+                // view. Left to the effect that follows the month, the day grid
+                // would draw its first frame with the stop still in the old
+                // month, find nothing to focus, and drop the focus to the page.
+                setFocusedDate((current) => (isSameMonth(current, picked) ? current : picked));
                 changeView('day');
               }
             }}

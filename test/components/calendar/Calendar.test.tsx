@@ -25,6 +25,17 @@ describe('Calendar', () => {
       .toBeInTheDocument();
   });
 
+  it('keeps the focus in the calendar after a month is picked from the month grid', async () => {
+    const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
+
+    await screen.getByRole('button', { name: 'Choose a month' }).click();
+    await screen.getByRole('gridcell', { name: 'November 2026' }).click();
+
+    await expect
+      .element(screen.getByRole('gridcell', { name: 'Sunday, November 1, 2026' }))
+      .toHaveFocus();
+  });
+
   describe('single', () => {
     it('reports the day that was clicked', async () => {
       const onValueChange = vi.fn();
