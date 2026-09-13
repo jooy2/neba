@@ -70,6 +70,8 @@
 
 - **Turning a `Carousel` slide scrolls the strip and nothing else.** The slide was scrolled into view, which moves every scroll container above it as well, so a reader who had scrolled past an autoplaying carousel was pulled back up to it on every turn, and a `value` changed from outside did the same. Only the carousel's own track moves now.
 
+- **`registerMessages` cannot be used to write onto `Object.prototype`.** A locale parsed from JSON can carry an own `__proto__` key, and registering one put the tag on every object in the page. Namespaces are now matched only against the ones the library has, and a tag of `__proto__` is ignored.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

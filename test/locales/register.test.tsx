@@ -36,6 +36,16 @@ describe('neba/locales', () => {
     });
   });
 
+  describe('a locale that did not come from this package', () => {
+    // A translation fetched from a CMS or a URL reaches `registerMessages` out of
+    // `JSON.parse`, which is the one way an object gets an own `__proto__` key.
+    it('writes nothing onto the prototype of every object', () => {
+      registerMessages('qps-polluted', JSON.parse('{"__proto__": {"title": "owned"}}'));
+
+      expect(Object.hasOwn(Object.prototype, 'qps-polluted')).toBe(false);
+    });
+  });
+
   describe('once it is', () => {
     it('translates the strings the component invents', async () => {
       registerMessages('ko', ko);

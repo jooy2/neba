@@ -1091,8 +1091,20 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
 export function registerMessages(tag: string, locale: NebaLocale): void {
   const key = tag.trim().toLowerCase();
 
+  // Assigning to `__proto__` replaces an object's prototype instead of adding a
+  // key, and there is no language by that name to lose.
+  if (key === '__proto__') {
+    return;
+  }
+
   for (const [namespace, messages] of Object.entries(locale)) {
-    const table = byNamespace[namespace as keyof NebaLocale];
+    // `Object.hasOwn` rather than a plain index, the reason `resolveMessages`
+    // gives. A locale parsed out of JSON can carry an own `__proto__` key, which
+    // indexed here is `Object.prototype` — and writing a table into that puts
+    // the tag on every object in the page.
+    const table = Object.hasOwn(byNamespace, namespace)
+      ? byNamespace[namespace as keyof NebaLocale]
+      : undefined;
 
     if (!table || !messages) {
       continue;
