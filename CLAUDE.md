@@ -220,13 +220,13 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | What a consumer imports       | Bundle   | Of which is Neba's own code |
 | ----------------------------- | -------- | --------------------------- |
 | `Divider`                     | 3.1 kB   | 1.4 kB                      |
-| `Button`                      | 5.1 kB   | 2.4 kB                      |
+| `Button`                      | 5.2 kB   | 2.4 kB                      |
 | `Chip`                        | 3.4 kB   | 3.4 kB                      |
-| `LineChart`                   | 11.7 kB  | 10.2 kB                     |
-| `CodeBlock`                   | 5.1 kB   | 4.8 kB                      |
+| `LineChart`                   | 11.8 kB  | 10.2 kB                     |
+| `CodeBlock`                   | 5.1 kB   | 4.9 kB                      |
 | `Image`                       | 8.6 kB   | 6.9 kB                      |
 | `Gallery`                     | 11.4 kB  | 9.7 kB                      |
-| 12 components — a typical app | 70.6 kB  | 12.7 kB                     |
+| 12 components — a typical app | 71.0 kB  | 13.0 kB                     |
 | 25 components — a large one   | 117.1 kB | 19.8 kB                     |
 | a whole page shell            | 29.3 kB  | 9.4 kB                      |
 | all 175 exports               | 267.8 kB | 136.1 kB                    |
