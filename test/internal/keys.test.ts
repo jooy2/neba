@@ -164,6 +164,19 @@ describe('matchesShortcut', () => {
     expect(matchesShortcut({ ...press('˚'), code: 'KeyJ', altKey: true }, 'Alt+K')).toBe(false);
   });
 
+  // On AZERTY the Z is where QWERTY has W. The layout said the key was `z`,
+  // and the fallback to the physical position made Ctrl+Z match `Ctrl+W` too.
+  it('does not fall back to the physical key when the layout typed another letter', () => {
+    const azertyZ = { ...press('z'), code: 'KeyW', ctrlKey: true };
+
+    expect(matchesShortcut(azertyZ, 'Ctrl+Z')).toBe(true);
+    expect(matchesShortcut(azertyZ, 'Ctrl+W')).toBe(false);
+    expect(matchesShortcut({ ...press('1'), code: 'Digit2' }, '2')).toBe(false);
+
+    // A layout that types no Latin letter on the key still reaches it.
+    expect(matchesShortcut({ ...press('с'), code: 'KeyC', ctrlKey: true }, 'Ctrl+C')).toBe(true);
+  });
+
   it('never matches a combination it cannot read', () => {
     expect(matchesShortcut(press('k', mod), 'Hyper+K')).toBe(false);
     expect(matchesShortcut(press('k'), '')).toBe(false);

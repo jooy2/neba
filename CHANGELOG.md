@@ -344,6 +344,8 @@
 
 - **An `outline` `Highlight` no longer moves the text after it.** Each mark takes a hair of padding and gives it back as a negative margin, but the outline's 1px border was not given back, so every mark was two pixels wider than its word and the rest of the line shifted each time a search found one more. The margin now takes the border back too.
 
+- **A shortcut on a letter no longer fires for the letter in the same place on another layout.** When the key typed was not the one named, a shortcut fell back to the physical key, even when the layout had typed a different Latin letter there. On AZERTY the Z sits where QWERTY has W, so Ctrl+Z fired both `Ctrl+Z` and `Ctrl+W` in `useShortcut`, a `CommandPalette` and a field's `shortcuts`. The fallback is kept for a key that types something other than a Latin letter or a digit, such as `Alt+K` on a Mac or a Cyrillic layout.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

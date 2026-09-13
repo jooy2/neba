@@ -207,15 +207,22 @@ export function matchesShortcut(event: KeyPress, shortcut: string): boolean {
  *
  * `event.code` is the fallback, and only for a single character, because
  * holding a modifier can change what gets typed: `Alt+K` on a Mac reports a
- * `key` of `˚`, and on a Dvorak layout `Mod+C` is not on the C key at all. A
- * combination that would otherwise silently stop working on half the keyboards
- * in the world is worth four lines.
+ * `key` of `˚`, and a Cyrillic layout types `с` on the C key. A combination that
+ * would otherwise silently stop working on half the keyboards in the world is
+ * worth four lines.
+ *
+ * But only when `event.key` is not itself a Latin letter or a digit. When it is,
+ * the reader's layout has already said which key this is, and the physical
+ * position is a different key: on AZERTY the Z is where QWERTY has W, and
+ * falling back there made Ctrl+Z fire `Ctrl+W` as well.
  */
 function sameKey(event: KeyPress, key: string): boolean {
-  if (canonicalKey(event.key) === key) {
+  const typed = canonicalKey(event.key);
+
+  if (typed === key) {
     return true;
   }
-  if (key.length === 1) {
+  if (key.length === 1 && !/^[a-z0-9]$/.test(typed)) {
     if (key >= 'a' && key <= 'z') {
       return event.code === `Key${key.toUpperCase()}`;
     }
