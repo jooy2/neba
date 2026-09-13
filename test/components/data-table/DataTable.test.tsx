@@ -786,6 +786,38 @@ describe('DataTable', () => {
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(0);
     });
 
+    it('adds to the selection when a tick is pressed with a pointer', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          checkboxes
+        />
+      );
+
+      // The press reaches the row a moment before the tick's own click does,
+      // which is the order that used to replace the selection with the row.
+      const pointerTick = async (element: Element) => {
+        element.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 1 })
+        );
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        element.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+        (element as HTMLElement).click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      };
+      const ticks = screen.getByRole('checkbox', { name: 'Select row' });
+
+      await pointerTick(ticks.nth(0).element());
+      await pointerTick(ticks.nth(2).element());
+
+      await expect
+        .poll(() => screen.container.querySelectorAll('tr[aria-selected="true"]').length)
+        .toBe(2);
+    });
+
     it('honours a controlled selection', async () => {
       const screen = await render(
         <DataTable

@@ -534,6 +534,10 @@ const resizeHandleClasses = [
   'hover:after:[background:var(--n-accent)] data-[dragging]:after:[background:var(--n-accent)]'
 ].join(' ');
 
+/** What a press inside a cell belongs to, rather than to the row around it. */
+const PRESSABLE_IN_CELL =
+  'button, a, input, select, textarea, label, [role="button"], [role="checkbox"], [role="switch"], [role="radio"]';
+
 /** The magnifier on the search field. Local: nothing else in the library draws one. */
 function SearchIcon() {
   return (
@@ -1604,10 +1608,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     }
 
     // Anything pressable inside a cell keeps its press: a tick, a row menu, a
-    // link. The row is what is left over.
-    if (
-      (event.target as HTMLElement).closest('button, a, input, select, textarea, [role="button"]')
-    ) {
+    // link. The row is what is left over. The roles are on the list because a
+    // Base UI Checkbox, Switch or Radio is a `<span>` that only carries one, and
+    // a press on the row's own tick would otherwise replace the selection just
+    // before the tick added to it.
+    if ((event.target as HTMLElement).closest(PRESSABLE_IN_CELL)) {
       return;
     }
 

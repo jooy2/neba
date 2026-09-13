@@ -60,6 +60,8 @@
 
 - **A `Chip` keeps the tails of its letters.** The label is truncated, and truncation clips at the line box, which the chip's one-em leading made shorter than the glyphs inside it — so every g, j, p, q and y lost its descender, at every size. The label's line box is now the font's own height. The chip is the same height and the words sit where they did.
 
+- **Ticking a `DataTable` row with the pointer adds it to the selection.** In `multiple` mode with `checkboxes`, the press on a tick reached the row first and replaced the selection with that row, and the tick's own click then took it away again, so ticking a second row left at most one chosen. A press on a checkbox, switch, radio or label inside a cell now belongs to that control, as a press on a button or a link already did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
