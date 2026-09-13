@@ -339,11 +339,13 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
           className={[
             // `relative` is load-bearing twice over: it is what makes the trough
             // the segments' offsetParent, and what the tile is positioned in.
-            'relative inline-flex items-center rounded-full',
+            'relative items-center rounded-full',
             troughClasses[variant],
             transitionClasses,
             readOnly ? '[filter:saturate(0.55)]' : '',
-            fullWidth ? 'flex w-full' : '',
+            // Decided here rather than beside a base `inline-flex`, which the
+            // `flex` would have had to win by stylesheet order.
+            fullWidth ? 'flex w-full' : 'inline-flex',
             className ?? ''
           ]
             .filter(Boolean)

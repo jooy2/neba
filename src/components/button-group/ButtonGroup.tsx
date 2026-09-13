@@ -52,7 +52,9 @@ const overlapClasses: Record<NebaOrientation, string> = {
 };
 
 const baseClasses = [
-  'inline-flex align-middle',
+  // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
+  // utilities for one property, and which won was stylesheet order.
+  'align-middle',
   // Every child gets a stacking context so the hovered or focused one can come
   // forward — without it the focus ring is clipped by whichever button happens
   // to be painted after it.
@@ -111,7 +113,7 @@ export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
             // `variant` defaults to `solid` on a Button, so an unset group is a
             // solid group and must not overlap.
             (variant ?? 'solid') === 'outline' ? overlapClasses[orientation] : '',
-            fullWidth ? 'flex w-full [&>*]:flex-1' : '',
+            fullWidth ? 'flex w-full [&>*]:flex-1' : 'inline-flex',
             className ?? ''
           )}
           {...props}

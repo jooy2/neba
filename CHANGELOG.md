@@ -290,6 +290,8 @@
 
 - **A disabled `TextField`, `NumberField` or `Toggle` shows the not-allowed cursor.** Each carried its ordinary cursor on every render and `cursor-not-allowed` beside it when disabled, and two cursor utilities on one element are decided by the order Tailwind emits them in: a disabled field showed an I-beam and a disabled toggle a pointer. The cursor is chosen with the state now, so each element carries one.
 
+- **A `fullWidth` `ButtonGroup`, `ToggleGroup` or `SegmentedButton` is a block.** Each kept `inline-flex` in its base classes and added `flex` for `fullWidth`, and two display utilities on one element are decided by stylesheet order, so the group stayed `inline-flex w-full` and sat on the text baseline like a word. The display is chosen with `fullWidth` now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

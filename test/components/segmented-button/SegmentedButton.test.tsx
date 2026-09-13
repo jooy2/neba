@@ -259,7 +259,8 @@ describe('SegmentedButton', () => {
     it('stretches and divides the width when fullWidth is set', async () => {
       const screen = await render(<Basic defaultValue="day" fullWidth />);
 
-      expect(screen.getByRole('radiogroup').element()).toHaveClass('w-full');
+      expect(screen.getByRole('radiogroup').element()).toHaveClass('w-full', 'flex');
+      expect(screen.getByRole('radiogroup').element()).not.toHaveClass('inline-flex');
       expect(screen.getByRole('radio', { name: 'Day' }).element()).toHaveClass('flex-1');
     });
   });

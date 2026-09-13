@@ -79,6 +79,9 @@ describe('ButtonGroup', () => {
 
       expect(element).toHaveClass('w-full');
       expect(element).toHaveClass('[&>*]:flex-1');
+      // One display, or `inline-flex` and `flex` are decided by stylesheet order.
+      expect(element).toHaveClass('flex');
+      expect(element).not.toHaveClass('inline-flex');
     });
   });
 

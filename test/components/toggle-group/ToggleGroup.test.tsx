@@ -59,6 +59,27 @@ describe('ToggleGroup', () => {
 
       expect(screen.getByRole('group').element()).toHaveClass('flex-col');
     });
+
+    // One display, or `inline-flex` and `flex` are decided by stylesheet order.
+    it('stretches across its container as a block when full width', async () => {
+      const screen = await render(
+        <ToggleGroup fullWidth>
+          <Marks />
+        </ToggleGroup>
+      );
+      const element = screen.getByRole('group').element();
+
+      expect(element).toHaveClass('flex', 'w-full');
+      expect(element).not.toHaveClass('inline-flex');
+
+      await screen.rerender(
+        <ToggleGroup>
+          <Marks />
+        </ToggleGroup>
+      );
+
+      expect(element).toHaveClass('inline-flex');
+    });
   });
 
   describe('selection', () => {

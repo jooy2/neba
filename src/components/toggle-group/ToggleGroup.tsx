@@ -64,7 +64,9 @@ const overlapClasses: Record<NebaOrientation, string> = {
 };
 
 const baseClasses = [
-  'inline-flex align-middle',
+  // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
+  // utilities for one property, and which won was stylesheet order.
+  'align-middle',
   '[&>*]:relative [&>*:hover]:z-10 [&>*:focus-visible]:z-10',
   '[&>*]:shrink-0'
 ].join(' ');
@@ -129,7 +131,7 @@ export const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
             // A Toggle defaults to `outline`, so an unset group is a hairline
             // group and does need the overlap.
             (variant ?? 'outline') === 'outline' ? overlapClasses[orientation] : '',
-            fullWidth ? 'flex w-full [&>*]:flex-1' : '',
+            fullWidth ? 'flex w-full [&>*]:flex-1' : 'inline-flex',
             className ?? ''
           )}
           {...props}
