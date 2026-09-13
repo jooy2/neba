@@ -556,6 +556,13 @@ interface AnimateOptions {
    * their children. Left out by the ones that already read what a child *is*.
    */
   stagger?: string;
+  /**
+   * The shared rows a component does not take, or takes and does nothing with:
+   * a typewriter has no easing, a scramble nothing to alternate.
+   */
+  omit?: ReadonlyArray<'easing' | 'repeat' | 'alternate'>;
+  /** A `repeat` description of its own, where it means something narrower. */
+  repeatDescription?: { ko: string; en: string };
 }
 
 /**
@@ -566,7 +573,7 @@ interface AnimateOptions {
  * learned it everywhere. Only the durations and a couple of defaults differ.
  */
 function animateProps(options: AnimateOptions): PropRow[] {
-  return [
+  const rows: PropRow[] = [
     ...(options.stagger === undefined
       ? []
       : ([
@@ -642,7 +649,7 @@ function animateProps(options: AnimateOptions): PropRow[] {
       type: ANIMATE_REPEAT,
       default: options.repeat ?? '1',
       shared: true,
-      description: {
+      description: options.repeatDescription ?? {
         ko: "반복 횟수. 'infinite'이면 화면 밖에 있는 동안 멈췄다가 돌아오면 이어서 재생합니다",
         en: "How many times it runs. An 'infinite' one holds while it is off the screen and carries on when it is back"
       }
@@ -703,6 +710,10 @@ function animateProps(options: AnimateOptions): PropRow[] {
       description: { ko: '있는 자리에 붙들어 둡니다', en: 'Holds the animation where it is' }
     }
   ];
+
+  const omitted = new Set<string>(options.omit ?? []);
+
+  return rows.filter((row) => !omitted.has(row.name));
 }
 
 const CHART_CURVE = "'linear' | 'smooth' | 'step'";
@@ -13984,7 +13995,15 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: { ko: '글자 경계를 찾을 언어', en: 'Which language the text is in' }
     },
-    ...animateProps({ duration: '\u2014', mode: false }),
+    ...animateProps({
+      duration: '\u2014',
+      mode: false,
+      omit: ['easing', 'alternate'],
+      repeatDescription: {
+        ko: "hover로 재생할 때만 쓰입니다. 'infinite'이면 포인터가 떠날 때마다 되감아 다음 hover에 다시 흩어집니다",
+        en: 'Only read with trigger="hover": \'infinite\' rewinds it when the pointer leaves, so the next hover scrambles again'
+      }
+    }),
     renderProp('render={<h2 />}'),
     {
       name: 'children',
@@ -14046,7 +14065,7 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'|'",
       description: { ko: '커서로 그릴 것', en: 'What the caret is drawn as' }
     },
-    ...animateProps({ duration: '—', mode: false }),
+    ...animateProps({ duration: '—', mode: false, omit: ['easing', 'alternate'] }),
     {
       name: 'children',
       type: 'ReactNode',
@@ -14116,7 +14135,7 @@ export const propTables: Record<string, PropRow[]> = {
       shared: true,
       description: { ko: '빛의 색 역할', en: 'Which family the light is drawn in' }
     },
-    ...animateProps({ duration: '3000', repeat: "'infinite'", mode: false }),
+    ...animateProps({ duration: '3000', repeat: "'infinite'", mode: false, omit: ['easing'] }),
     renderProp('render={<section />}'),
     {
       name: 'children',
@@ -14233,7 +14252,16 @@ export const propTables: Record<string, PropRow[]> = {
         en: "How far a line travels as it comes up or leaves. '100%' is one line's own height"
       }
     },
-    ...animateProps({ duration: '480', repeat: "'infinite'", mode: false }),
+    ...animateProps({
+      duration: '480',
+      repeat: "'infinite'",
+      mode: false,
+      omit: ['alternate'],
+      repeatDescription: {
+        ko: "줄을 몇 번 돌리는지가 아니라(그것은 loop) 끝이 있는지입니다. 'infinite'이면 화면 밖에서 멈추고, hover로 재생하면 포인터가 떠날 때 되감습니다",
+        en: 'Not how many times the reel turns, which is loop, but whether it ends: an \'infinite\' one holds off the screen and, under trigger="hover", rewinds when the pointer leaves'
+      }
+    }),
     {
       name: 'children',
       type: 'ReactNode',

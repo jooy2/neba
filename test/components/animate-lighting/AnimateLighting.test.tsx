@@ -3,6 +3,15 @@ import { render } from 'vitest-browser-react';
 import { AnimateLighting } from 'neba';
 
 describe('AnimateLighting', () => {
+  // The arc travels at a constant rate on a pseudo-element, and `easing` reached
+  // nothing that moved.
+  it('takes no easing, which nothing it draws would follow', () => {
+    // @ts-expect-error — the arc runs linearly by design
+    const props: React.ComponentProps<typeof AnimateLighting> = { easing: 'ease-in' };
+
+    expect(props).toBeDefined();
+  });
+
   describe('rendering', () => {
     it('renders what it lights', async () => {
       const screen = await render(<AnimateLighting>Processing</AnimateLighting>);

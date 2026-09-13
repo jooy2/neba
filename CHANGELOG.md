@@ -50,6 +50,8 @@
 
 - **`AnimateCounter` no longer takes `paused`.** It came with the props every `Animate*` shares, and a count ignored it: nothing held the number, so `paused` type-checked and did nothing. It is gone from the type; hold a count with `trigger="manual"` and `play`. A counter that passed `paused` fails to compile and can drop it with no change in behaviour.
 
+- **`AnimateLighting` no longer takes `easing`.** The arc travels on a pseudo-element at a constant rate, so `easing` type-checked and changed nothing. It is gone from the type; a lighting that passed it fails to compile and can drop it with no change in behaviour. The props tables of `AnimateScramble`, `AnimateTyping` and `AnimateHeadline` also stop listing `easing` and `alternate` where their types never took them, and `repeat` on a Scramble and a Headline is described as what it actually decides.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

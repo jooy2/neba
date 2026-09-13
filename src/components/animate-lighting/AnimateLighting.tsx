@@ -8,7 +8,9 @@ import type { NebaAnimateProps, NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface AnimateLightingProps
-  extends NebaAnimateProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
+  // No `easing`: the arc travels on `::before` at a constant rate, which is what
+  // makes it read as light going round rather than something speeding up.
+  extends Omit<NebaAnimateProps, 'easing'>, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   /**
    * Which family the light is drawn in.
    * @default 'primary'
@@ -72,7 +74,6 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
     const {
       duration = 3000,
       delay = 0,
-      easing,
       repeat = 'infinite',
       alternate,
       paused,
@@ -100,7 +101,6 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
       effect: null,
       duration,
       delay,
-      easing,
       repeat,
       alternate,
       mode: reverse ? 'out' : 'in',
