@@ -280,6 +280,8 @@
 
 - **A `CodeBlock` range that runs past the code no longer freezes the page.** `highlightLines="10-100000000"` counted every number in the range into a set before drawing anything, which held the page for seconds and then threw a `RangeError` that took the render down. A range is held to the lines the block has.
 
+- **A `threshold` outside 0–1 no longer takes the page down.** Every `Animate*` component and `useOnScreen` hand `threshold` to an `IntersectionObserver`, which throws a `RangeError` for `1.2` or `-0.1`, from an effect, so nothing caught it. A threshold is held to the range now, and a `NaN` is treated as `0`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

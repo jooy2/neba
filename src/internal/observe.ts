@@ -164,7 +164,13 @@ export function observeVisibility(
   threshold: number,
   onVisible: VisibilityCallback
 ): (() => void) | null {
-  const group = visibilityShared(threshold);
+  // `threshold` is a public prop on seventeen components and `useOnScreen`, and
+  // `IntersectionObserver` throws a `RangeError` for anything outside 0–1 — from
+  // an effect, which takes the whole tree down. Held to the range instead, and a
+  // `NaN` is the default, since it is what a computed threshold that went wrong
+  // looks like.
+  const bounded = Number.isNaN(threshold) ? 0 : Math.min(1, Math.max(0, threshold));
+  const group = visibilityShared(bounded);
 
   if (!group) {
     return null;
@@ -198,7 +204,7 @@ export function observeVisibility(
       // under its element and has returned above.
       if (group.watchers.size === 0) {
         group.observer.disconnect();
-        visibilityGroups.delete(threshold);
+        visibilityGroups.delete(bounded);
       }
     }
   };

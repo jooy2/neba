@@ -207,6 +207,33 @@ describe('observeVisibility', () => {
     expect(() => stopLoose?.()).not.toThrow();
   });
 
+  // A computed threshold past either end threw from inside an effect and took
+  // the tree with it.
+  it('holds a threshold outside 0–1 to the range rather than throwing', async () => {
+    const element = host(100);
+    const over = vi.fn();
+    const under = vi.fn();
+    const broken = vi.fn();
+
+    let stops: Array<(() => void) | null> = [];
+
+    expect(() => {
+      stops = [
+        observeVisibility(element, 1.2, over),
+        observeVisibility(element, -0.1, under),
+        observeVisibility(element, Number.NaN, broken)
+      ];
+    }).not.toThrow();
+
+    await vi.waitFor(() => {
+      expect(over).toHaveBeenCalled();
+      expect(under).toHaveBeenCalled();
+      expect(broken).toHaveBeenCalled();
+    });
+
+    for (const stop of stops) stop?.();
+  });
+
   /*
    * A group lives exactly as long as something is watching through it.
    * `threshold` is a public prop on every `Animate*`, so a caller is free to
