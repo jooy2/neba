@@ -69,5 +69,6 @@ The block after the text, on by default. `caretChar` is what it is drawn as: `�
 
 - The full text is in the document from the first frame, in a clipped box, and the animated copy is `aria-hidden`. A screen reader reads the line once and is not made to sit through the performance.
 - A reduced-motion preference shows the whole string immediately, with no typing at all.
+- The caret keeps blinking after the line has been typed, for as long as it is on the page, and `paused` does not reach it. Pass `caret={false}` where the line sits beside text a reader is working through.
 - The box is not laid out from the characters that have arrived, so the text around it does not reflow on every frame.
 - Characters are counted as graphemes, not code points: `한` and `👩‍👩‍👧` each arrive in one step rather than in three or seven.

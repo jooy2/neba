@@ -539,8 +539,8 @@ function transitionProp(example: string): PropRow {
     type: 'NebaTransition',
     shared: true,
     description: {
-      ko: `mount 시 한 번 실행되는 등장 애니메이션 (${example}). 트리거나 반복이 필요하면 Animate* 컴포넌트로 감싸세요`,
-      en: `An entrance animation, run once on mount (${example}). Wrap it in an Animate* component for a trigger or a replay`
+      ko: `mount 시 한 번 실행되는 등장 애니메이션 (${example}). blink는 repeat를 주지 않으면 계속 반복합니다. 트리거나 반복이 필요하면 Animate* 컴포넌트로 감싸세요`,
+      en: `An entrance animation, run once on mount (${example}). blink repeats unless its repeat says otherwise. Wrap it in an Animate* component for a trigger or a replay`
     }
   };
 }

@@ -389,7 +389,8 @@ export interface NebaTransitionOptions {
  * A bare effect name is the whole of what most callers want —
  * `transition="fade"` — and the object form is there for the rest.
  *
- * It runs on mount and once. Anything else — replaying on scroll, on hover, or
+ * It runs on mount and once, except `blink`, which repeats until its `repeat`
+ * says otherwise: a blink that ran once would be a flicker. Anything else — replaying on scroll, on hover, or
  * under your own control — is what the `Animate*` components are, and any
  * component can be wrapped in one. This prop exists so the common case does not
  * need an extra element in the tree.

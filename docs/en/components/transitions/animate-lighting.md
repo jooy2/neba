@@ -62,3 +62,4 @@ An infinite effect on `hover` runs while the pointer is on it and stops when it 
 - Under a reduced-motion preference the arc stops travelling and becomes an even glow. The decoration survives; the motion does not.
 - Because of that, the light is never the only thing saying what is happening. Use it alongside a word ("Analysing", "Live"), rather than instead of one.
 - The wrapper adds no role and no name.
+- It keeps moving past five seconds, so the page needs a way to stop it: put a pause button beside it and bind its state to `paused`. A reduced-motion preference is not enough on its own, since most readers who are distracted by motion never set one.

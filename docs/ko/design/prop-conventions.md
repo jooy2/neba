@@ -55,7 +55,7 @@ export interface ButtonProps
 
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.
 
-`transition`은 mount 시 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
+`transition`은 mount 시 한 번 실행되는 등장 효과이며(`blink`는 한 번이면 깜빡임에 그치므로 `repeat`로 따로 정하지 않는 한 계속 반복합니다), 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
 
 ```ts
 type NebaAnimation =

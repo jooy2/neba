@@ -158,7 +158,10 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
     const turned = React.useRef(false);
 
     React.useEffect(() => {
-      if (index !== undefined || count < 2 || run.state !== 'running') {
+      // A reel that changes every few seconds is still motion to a reader who
+      // asked for less of it, even with the slide taken out, and it never ends.
+      // It stays on the line it is showing; a controlled `index` still turns it.
+      if (index !== undefined || count < 2 || run.state !== 'running' || reduced) {
         return;
       }
 
@@ -177,7 +180,7 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
       );
 
       return () => clearTimeout(timer);
-    }, [index, count, run.state, interval, delay, advance, loop, active]);
+    }, [index, count, run.state, interval, delay, advance, loop, active, reduced]);
 
     // Held rather than written inline: an inline callback is a new function on
     // every render, which React answers by calling the old one with `null` and

@@ -3,6 +3,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateHeadline } from 'neba';
 
+/*
+ * The reduced-motion answer, under the test's control. The library keeps one
+ * `MediaQueryList` per query and reads its `matches` live, so a stand-in handed
+ * out before the first render is the one every render in this file asks.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 const LINES = [
   <span key="a">Faster</span>,
   <span key="b">Simpler</span>,
@@ -179,6 +205,26 @@ describe('AnimateHeadline', () => {
         'data-state',
         'active'
       );
+    });
+
+    it('stays on its line when the reader asked for less motion', async () => {
+      reduceMotion = true;
+
+      try {
+        const onIndexChange = vi.fn();
+        const screen = await render(
+          <AnimateHeadline interval={step} onIndexChange={onIndexChange} data-testid="headline">
+            {LINES}
+          </AnimateHeadline>
+        );
+
+        await elapse(step * 3);
+
+        expect(showing(screen.getByTestId('headline').element())).toBe(0);
+        expect(onIndexChange).not.toHaveBeenCalled();
+      } finally {
+        reduceMotion = false;
+      }
     });
 
     // A controlled Headline is somebody else's timer; a second one running

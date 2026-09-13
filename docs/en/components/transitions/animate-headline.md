@@ -63,4 +63,5 @@ Pass `index` and the reel stops turning on its own: it becomes a way of moving b
 
 - Only the line that is showing is on the accessibility tree; the others are `visibility: hidden`, which keeps their space without putting them in the reading order.
 - Nothing is announced when the reel turns. This is deliberate (a live region cycling every two seconds is unusable), and it is why the component is for a set of phrases where any one of them would have done, not for content a reader has to see.
-- A reduced-motion preference drops the transition. The lines still change, they simply arrive rather than slide.
+- A reduced-motion preference stops the reel turning on its own: it stays on the line it is showing. A controlled `index` still changes the line, which then arrives rather than slides.
+- Otherwise it keeps changing past five seconds, so the page needs a way to stop it: put a pause button beside it and bind its state to `paused`.

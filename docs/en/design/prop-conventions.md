@@ -55,7 +55,7 @@ A handful of layout props take a per-breakpoint map on top of their own value: a
 
 Two vocabularies, and which one you want depends on whether the motion needs a trigger.
 
-`transition` is an entrance, run once on mount, on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography and Blockquote. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
+`transition` is an entrance, run once on mount (`blink` repeats until its `repeat` says otherwise, since a blink that ran once would be a flicker), on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography and Blockquote. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
 
 ```ts
 type NebaAnimation =

@@ -51,3 +51,4 @@ It is `translate` rather than a `transform`, so it composes with anything the el
 
 - A reduced-motion preference switches the animation off and the content sits where the layout put it.
 - Do not float a control. Something that is never quite where it was is harder to press, and this is the one effect in the set with no end.
+- It keeps moving past five seconds, so the page needs a way to stop it: put a pause button beside it and bind its state to `paused`. A reduced-motion preference is not enough on its own, since most readers who are distracted by motion never set one.
