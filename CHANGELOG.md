@@ -76,6 +76,8 @@
 
 - **`Dialog` takes `initialFocus` and `finalFocus`.** Base UI's own options, passed to the popup: what takes the focus when the dialog opens, and where it goes when it closes.
 
+- **`FilePicker` takes `locale`.** The sentence inside the box and the name of each remove button were English whatever the page spoke, with only a prop per string as the way out. Both come from the new `file` namespace now, which every registered language has; `title` and `removeLabel` still override them.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.

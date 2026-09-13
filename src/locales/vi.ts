@@ -186,5 +186,9 @@ export const vi: NebaLocale = {
   },
   otp: {
     slot: 'Ký tự {index} trên {total}'
+  },
+  file: {
+    title: 'Thả tệp vào đây hoặc nhấp để chọn tệp',
+    remove: 'Gỡ bỏ {name}'
   }
 };

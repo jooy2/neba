@@ -189,5 +189,9 @@ export const zhHans: NebaLocale = {
   },
   otp: {
     slot: '第 {index} 个字符，共 {total} 个'
+  },
+  file: {
+    title: '将文件拖放到此处，或点击浏览',
+    remove: '移除 {name}'
   }
 };

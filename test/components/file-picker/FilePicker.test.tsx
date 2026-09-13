@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { FilePicker } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 function file(name: string, type = 'text/plain', size = 10) {
   return new File(['x'.repeat(size)], name, { type });
@@ -69,6 +72,19 @@ describe('FilePicker', () => {
         .toBeInTheDocument();
       await expect
         .element(screen.getByRole('button', { name: 'Cover letter Drop a PDF' }))
+        .toBeInTheDocument();
+    });
+
+    it('says its own words in the language it was given', async () => {
+      const screen = await render(
+        <FilePicker locale="ko" defaultValue={[file('notes.txt')]} label="첨부" />
+      );
+
+      await expect
+        .element(screen.getByText('파일을 여기에 놓거나 클릭해 찾아보세요'))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'notes.txt 삭제' }))
         .toBeInTheDocument();
     });
 

@@ -8075,8 +8075,17 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'removeLabel',
       type: '(name: string) => string',
       description: {
-        ko: '파일 삭제 버튼의 접근성 이름',
-        en: "Accessible name of a file's remove button"
+        ko: '파일 삭제 버튼의 접근성 이름. locale의 문구보다 우선합니다',
+        en: "Accessible name of a file's remove button. Overrides the locale's words"
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      shared: true,
+      description: {
+        ko: '상자 안 문장과 삭제 버튼 이름의 언어',
+        en: "Which language the box's own sentence and the remove buttons are in"
       }
     },
     ...fieldProps,

@@ -186,5 +186,9 @@ export const ja: NebaLocale = {
   },
   otp: {
     slot: '{total} 文字中 {index} 文字目'
+  },
+  file: {
+    title: 'ここにファイルをドロップするか、クリックして選択',
+    remove: '{name} を削除'
   }
 };

@@ -186,5 +186,9 @@ export const nl: NebaLocale = {
   },
   otp: {
     slot: 'Teken {index} van {total}'
+  },
+  file: {
+    title: 'Sleep bestanden hierheen of klik om te bladeren',
+    remove: '{name} verwijderen'
   }
 };

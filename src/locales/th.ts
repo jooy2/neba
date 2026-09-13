@@ -186,5 +186,9 @@ export const th: NebaLocale = {
   },
   otp: {
     slot: 'อักขระที่ {index} จาก {total}'
+  },
+  file: {
+    title: 'วางไฟล์ที่นี่ หรือคลิกเพื่อเลือกไฟล์',
+    remove: 'นำ {name} ออก'
   }
 };

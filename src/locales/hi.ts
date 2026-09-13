@@ -190,5 +190,9 @@ export const hi: NebaLocale = {
   },
   otp: {
     slot: '{total} में से अक्षर {index}'
+  },
+  file: {
+    title: 'फ़ाइलें यहाँ छोड़ें, या ब्राउज़ करने के लिए क्लिक करें',
+    remove: '{name} हटाएँ'
   }
 };

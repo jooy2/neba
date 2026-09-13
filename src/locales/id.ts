@@ -190,5 +190,9 @@ export const id: NebaLocale = {
   },
   otp: {
     slot: 'Karakter {index} dari {total}'
+  },
+  file: {
+    title: 'Letakkan file di sini, atau klik untuk menelusuri',
+    remove: 'Hapus {name}'
   }
 };

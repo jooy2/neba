@@ -707,6 +707,22 @@ export const toastMessages: MessageTable<ToastMessages> = {
   '': { label: 'Notifications' }
 };
 
+/** FilePicker. */
+export interface FileMessages {
+  /** The line inside the box, when the caller wrote none. */
+  title: string;
+  /** Names the button that takes one file back out of the list. */
+  remove: string;
+}
+
+/** The `file` namespace, as FilePicker reads it. */
+export const fileMessages: MessageTable<FileMessages> = {
+  '': {
+    title: 'Drop files here, or click to browse',
+    remove: 'Remove {name}'
+  }
+};
+
 /** OtpField. */
 export interface OtpMessages {
   /**
@@ -1079,6 +1095,8 @@ export interface NebaLocale {
   confirm?: Partial<ConfirmMessages>;
   /** OtpField. */
   otp?: Partial<OtpMessages>;
+  /** FilePicker. */
+  file?: Partial<FileMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1111,7 +1129,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   layout: layoutMessages as MessageTable<never>,
   code: codeMessages as MessageTable<never>,
   steps: stepsMessages as MessageTable<never>,
-  otp: otpMessages as MessageTable<never>
+  otp: otpMessages as MessageTable<never>,
+  file: fileMessages as MessageTable<never>
 };
 
 /**

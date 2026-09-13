@@ -190,5 +190,9 @@ export const fr: NebaLocale = {
   },
   otp: {
     slot: 'Caractère {index} sur {total}'
+  },
+  file: {
+    title: 'Déposez des fichiers ici ou cliquez pour parcourir',
+    remove: 'Supprimer {name}'
   }
 };

@@ -186,5 +186,9 @@ export const pl: NebaLocale = {
   },
   otp: {
     slot: 'Znak {index} z {total}'
+  },
+  file: {
+    title: 'Upuść pliki tutaj lub kliknij, aby je wybrać',
+    remove: 'Usuń {name}'
   }
 };

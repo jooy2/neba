@@ -190,5 +190,9 @@ export const es: NebaLocale = {
   },
   otp: {
     slot: 'Carácter {index} de {total}'
+  },
+  file: {
+    title: 'Suelta los archivos aquí o haz clic para buscarlos',
+    remove: 'Quitar {name}'
   }
 };

@@ -190,5 +190,9 @@ export const ru: NebaLocale = {
   },
   otp: {
     slot: 'Символ {index} из {total}'
+  },
+  file: {
+    title: 'Перетащите файлы сюда или нажмите, чтобы выбрать',
+    remove: 'Удалить {name}'
   }
 };

@@ -186,5 +186,9 @@ export const ko: NebaLocale = {
   },
   otp: {
     slot: '{total}자리 중 {index}번째'
+  },
+  file: {
+    title: '파일을 여기에 놓거나 클릭해 찾아보세요',
+    remove: '{name} 삭제'
   }
 };

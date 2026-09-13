@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { CloseIcon } from '../../internal/icons.js';
+import { fileMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -77,7 +78,7 @@ export interface FilePickerProps
   error?: React.ReactNode;
   /** Forces the invalid state without a message. Defaults to `!!error`. */
   invalid?: boolean;
-  /** The line inside the box. Defaults to an English sentence. */
+  /** The line inside the box. Defaults to the `locale`'s sentence. */
   title?: React.ReactNode;
   /** The line under it — what is accepted, how big, how many. */
   hint?: React.ReactNode;
@@ -88,8 +89,16 @@ export interface FilePickerProps
    * @default true
    */
   showList?: boolean;
-  /** Accessible name of a file's remove button. Receives the file's name. */
+  /**
+   * Accessible name of a file's remove button. Receives the file's name, and
+   * overrides the `locale`'s words.
+   */
   removeLabel?: (name: string) => string;
+  /**
+   * Which language the box's own words are in — the line inside it and the
+   * remove buttons — as a BCP 47 tag. Unsupported tags fall back to English.
+   */
+  locale?: string;
   /** Stretches to the width of the container. @default true */
   fullWidth?: boolean;
   /** Unavailable. */
@@ -294,17 +303,22 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       hint,
       icon,
       showList = true,
-      removeLabel = (name: string) => `Remove ${name}`,
+      removeLabel: removeLabelProp,
       fullWidth = true,
       disabled = false,
       readOnly = false,
       required = false,
       name,
       id,
+      locale,
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
+    const messages = useMessages(fileMessages, locale);
+    const removeLabel =
+      removeLabelProp ?? ((fileName: string) => fillMessage(messages.remove, { name: fileName }));
 
     const inputRef = React.useRef<HTMLInputElement>(null);
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
@@ -560,7 +574,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
             ) : null}
 
             <span className={`font-medium ${sheetTitleClasses[size]}`}>
-              {title ?? 'Drop files here, or click to browse'}
+              {title ?? messages.title}
             </span>
 
             {hasContent(hint) ? (

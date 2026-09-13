@@ -186,5 +186,9 @@ export const tr: NebaLocale = {
   },
   otp: {
     slot: '{total} karakterden {index}. karakter'
+  },
+  file: {
+    title: 'Dosyaları buraya bırakın veya göz atmak için tıklayın',
+    remove: '{name} kaldır'
   }
 };
