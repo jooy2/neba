@@ -132,8 +132,25 @@ describe('Carousel', () => {
     it('goes inert at the ends when it does not loop', async () => {
       const screen = await render(<Carousel loop={false}>{slides}</Carousel>);
 
-      await expect.element(screen.getByRole('button', { name: 'Previous slide' })).toBeDisabled();
-      await expect.element(screen.getByRole('button', { name: 'Next slide' })).toBeEnabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Previous slide' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(screen.getByRole('button', { name: 'Next slide' }))
+        .not.toHaveAttribute('aria-disabled', 'true');
+    });
+
+    // A `disabled` arrow hands the focus to the document, and the blur that
+    // makes restarts the rotation the focus had paused.
+    it('keeps the focus on an arrow the press ran out', async () => {
+      const screen = await render(<Carousel loop={false}>{slides}</Carousel>);
+      const next = screen.getByRole('button', { name: 'Next slide' });
+
+      await next.click();
+      await next.click();
+
+      await expect.element(next).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(next).toHaveFocus();
     });
 
     it('honours a controlled value and does not move on its own', async () => {

@@ -426,6 +426,9 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
                 elevation={1}
                 label={previousLabel ?? messages.previous}
                 disabled={!loop && atStart}
+                // An arrow that runs out because it was pressed keeps the focus,
+                // which is also what keeps the blur from restarting the rotation.
+                focusableWhenDisabled
                 className="pointer-events-auto"
                 // Drawn pointing down and turned, which is the one allowance the
                 // no-transform rule makes — and turned the other way under RTL,
@@ -446,6 +449,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
                 elevation={1}
                 label={nextLabel ?? messages.next}
                 disabled={!loop && atEnd}
+                focusableWhenDisabled
                 className="pointer-events-auto"
                 icon={
                   <span className="flex items-center -rotate-90 rtl:rotate-90">

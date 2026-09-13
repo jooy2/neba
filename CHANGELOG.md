@@ -34,6 +34,8 @@
 
 - **A `Pagination` stepper keeps the focus when the press runs it out.** Pressing Next onto the last page made the button `disabled`, and with `getPageHref` and `onPageChange` it swapped the link for a button, so either way the focus fell to the document and a keyboard reader started again from the top. A stepper with nowhere to go, and the current page, stay where they are with `aria-disabled`; a link loses only its `href`. A test that asserted `toBeDisabled()` on such a stepper should assert `aria-disabled="true"`, and with `getPageHref` the current page and an exhausted stepper are found by the `link` role.
 
+- **A `Carousel` arrow keeps the focus when the press runs it out.** With `loop={false}`, pressing Next onto the last slide made the arrow `disabled`, which dropped the focus onto the document, and the blur that caused restarted an auto-playing carousel the focus had paused. The arrow stays in place with `aria-disabled`; a test that asserted `toBeDisabled()` on it should assert `aria-disabled="true"`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
