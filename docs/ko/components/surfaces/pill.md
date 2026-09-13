@@ -57,7 +57,7 @@ import { Pill } from 'neba';
 
 </Demo>
 
-접혀 있는 동안 상세 영역은 `inert`입니다. 높이가 0인 요소에도 focus는 들어갈 수 있으므로, `aria-hidden`만으로는 키보드 사용자가 보이지 않는 영역으로 tab해 들어가게 됩니다.
+접혀 있는 동안 상세 영역은 `inert`입니다. 높이가 0인 요소에도 focus는 들어갈 수 있으므로, `aria-hidden`만으로는 키보드 사용자가 보이지 않는 영역으로 tab해 들어가게 됩니다. `details`와 `onClick`이 함께 있으면 버튼에 `aria-expanded`와 `aria-controls`가 붙어, 누르면 상세가 열린다는 것이 읽힙니다.
 
 ### variant와 size
 

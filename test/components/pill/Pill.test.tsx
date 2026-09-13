@@ -111,6 +111,35 @@ describe('Pill', () => {
       expect(panel).not.toHaveAttribute('inert');
     });
 
+    it('tells a screen reader that pressing it reveals the details', async () => {
+      const screen = await render(
+        <Pill details={<span>02:14 elapsed</span>} onClick={() => {}}>
+          Recording
+        </Pill>
+      );
+      const button = screen.getByRole('button', { name: 'Recording' });
+
+      await expect.element(button).toHaveAttribute('aria-expanded', 'false');
+      const panel = document.getElementById(button.element().getAttribute('aria-controls')!);
+      expect(panel?.textContent).toBe('02:14 elapsed');
+
+      await screen.rerender(
+        <Pill details={<span>02:14 elapsed</span>} expanded onClick={() => {}}>
+          Recording
+        </Pill>
+      );
+
+      await expect.element(button).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('says nothing about expanding when there is nothing to expand', async () => {
+      const screen = await render(<Pill onClick={() => {}}>Recording</Pill>);
+
+      expect(screen.getByRole('button', { name: 'Recording' }).element()).not.toHaveAttribute(
+        'aria-expanded'
+      );
+    });
+
     it('follows details that grow while it is open', async () => {
       const pill = (height: number) => (
         <Pill details={<div style={{ height }}>Log</div>} expanded data-testid="pill">

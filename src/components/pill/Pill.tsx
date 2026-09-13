@@ -255,6 +255,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
   const detailsRef = React.useRef<HTMLDivElement>(null);
+  const detailsId = React.useId();
   const [detailsHeight, setDetailsHeight] = React.useState(0);
   // Keyed on whether there are details rather than on the details themselves:
   // inline JSX is a new object on every render of the parent, and each one
@@ -357,6 +358,10 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
               padX,
               focusRingClasses
             ].join(' ')}
+            // With details to reveal, pressing the pill is what reveals them — so
+            // the button says whether they are showing and which panel they are.
+            aria-expanded={hasDetails ? expanded : undefined}
+            aria-controls={hasDetails ? detailsId : undefined}
             onClick={onClick}
           >
             {row}
@@ -372,6 +377,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
 
       {hasDetails ? (
         <div
+          id={detailsId}
           className={[
             'overflow-hidden',
             '[transition:height_var(--neba-duration)_var(--neba-ease)]',

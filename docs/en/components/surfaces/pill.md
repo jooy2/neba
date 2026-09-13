@@ -57,7 +57,7 @@ The leading slot is a square box clipped to a circle, so an `<img>` fills and cr
 
 </Demo>
 
-The details area is `inert` while closed. Focus can still enter a zero-height element, so `aria-hidden` alone would leave a keyboard user tabbing into something invisible.
+The details area is `inert` while closed. Focus can still enter a zero-height element, so `aria-hidden` alone would leave a keyboard user tabbing into something invisible. A pill with both `details` and `onClick` carries `aria-expanded` and `aria-controls` on its button, so pressing it is announced as opening the details.
 
 ### variant and size
 

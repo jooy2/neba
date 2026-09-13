@@ -226,6 +226,8 @@
 
 - **A `Tour` says which step it moved to.** Next rewrote the title, the words and the counter in place while the focus stayed on Next, so a screen reader heard nothing change. A polite live region in the card now reads the new step, as "Step 2: Deploy", or its position when the title is not a string.
 
+- **A `Pill` that opens its `details` says so.** The button a pill with `onClick` draws had no `aria-expanded` and no way to be given one, since attributes passed to the pill land on its root, so a screen reader was never told that pressing it revealed anything. With `details` it now carries `aria-expanded` from `expanded` and `aria-controls` pointing at the details.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
