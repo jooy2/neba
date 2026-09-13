@@ -16,6 +16,20 @@ describe('Select', () => {
       await expect.element(screen.getByRole('combobox', { name: 'Plan' })).toBeInTheDocument();
     });
 
+    // A Select with no visible label, in a table cell, is named on the component.
+    it('names the combobox by an aria-label written on the component', async () => {
+      const screen = await render(
+        <>
+          <Select items={PLANS} aria-label="Plan" />
+          <span id="tier">Tier</span>
+          <Select items={PLANS} aria-labelledby="tier" />
+        </>
+      );
+
+      await expect.element(screen.getByRole('combobox', { name: 'Plan' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('combobox', { name: 'Tier' })).toBeInTheDocument();
+    });
+
     it('shows the placeholder while nothing is chosen', async () => {
       const screen = await render(<Select items={PLANS} label="Plan" placeholder="Pick one" />);
 

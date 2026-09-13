@@ -19,7 +19,7 @@ import { NumberField } from 'neba';
 
 <PropsTable name="NumberField" />
 
-`<div>`의 native 속성은 root로 전달됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
+`<div>`의 native 속성은 root로 전달됩니다. 다만 `aria-label`과 `aria-labelledby`는 `<input>`의 이름이 됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
 
 `value`의 타입은 `number | null`이며 `null`이 비어 있음을 뜻합니다. 파싱해야 하는 문자열이 아닙니다.
 

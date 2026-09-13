@@ -22,6 +22,19 @@ describe('Combobox', () => {
       await expect.element(screen.getByRole('combobox', { name: 'Framework' })).toBeInTheDocument();
     });
 
+    it('names the input by an aria-label written on the component', async () => {
+      const screen = await render(
+        <>
+          <Combobox items={FRAMEWORKS} aria-label="Framework" />
+          <span id="stack">Stack</span>
+          <Combobox items={FRAMEWORKS} multiple aria-labelledby="stack" />
+        </>
+      );
+
+      await expect.element(screen.getByRole('combobox', { name: 'Framework' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('combobox', { name: 'Stack' })).toBeInTheDocument();
+    });
+
     it('renders the placeholder while nothing is typed', async () => {
       const screen = await render(
         <Combobox items={FRAMEWORKS} label="Framework" placeholder="Search" />

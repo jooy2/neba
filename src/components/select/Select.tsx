@@ -241,6 +241,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       className,
       classNames,
       style,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
@@ -310,6 +312,11 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         >
           <BaseUISelect.Trigger
             ref={ref}
+            // A name written on the component is the control's name. On the root
+            // it named a `<div>` nobody reads, and a Select with no visible label
+            // — one in a table cell — had a trigger with no name at all.
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
             className={cx(
               triggerBaseClasses,
               fieldHeightClasses[size],

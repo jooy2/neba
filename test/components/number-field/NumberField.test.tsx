@@ -17,6 +17,19 @@ describe('NumberField', () => {
       await expect.element(screen.getByRole('textbox', { name: 'Seats' })).toBeInTheDocument();
     });
 
+    it('names the text box by an aria-label written on the component', async () => {
+      const screen = await render(
+        <>
+          <NumberField aria-label="Quantity" />
+          <span id="seats">Seats</span>
+          <NumberField aria-labelledby="seats" />
+        </>
+      );
+
+      await expect.element(screen.getByRole('textbox', { name: 'Quantity' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('textbox', { name: 'Seats' })).toBeInTheDocument();
+    });
+
     it('shows the initial value', async () => {
       const screen = await render(<NumberField label="Seats" defaultValue={3} />);
 

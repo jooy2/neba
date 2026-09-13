@@ -19,7 +19,7 @@ import { NumberField } from 'neba';
 
 <PropsTable name="NumberField" />
 
-Native `<div>` attributes pass through to the root. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
+Native `<div>` attributes pass through to the root, except `aria-label` and `aria-labelledby`, which name the `<input>`. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
 
 `value` is a `number | null`, where `null` means empty. It is never a string you have to parse.
 

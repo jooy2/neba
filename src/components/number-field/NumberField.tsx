@@ -251,6 +251,8 @@ export function NumberField(rawProps: NumberFieldProps) {
     classNames,
     shortcuts,
     style,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
@@ -369,6 +371,10 @@ export function NumberField(rawProps: NumberFieldProps) {
           ) : null}
 
           <BaseUINumberField.Input
+            // A name written on the component is the input's. On the root it
+            // named a `<div>`, so a quantity field in a table cell had none.
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
             onKeyDown={keyHandler(shortcuts)}
             placeholder={placeholder}
             className={[

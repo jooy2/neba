@@ -373,6 +373,8 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     className,
     classNames,
     style,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
@@ -517,6 +519,10 @@ export function Combobox<Multiple extends boolean | undefined = false>(
   const renderInput = (afterChips: boolean) => (
     <BaseUICombobox.Input
       ref={inputRef}
+      // A name written on the component is the input's. On the root it named a
+      // `<div>`, and a Combobox with no visible label had an unnamed input.
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
       onKeyDown={keyHandler(shortcuts)}
       placeholder={placeholder}
       className={
