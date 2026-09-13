@@ -152,6 +152,8 @@
 
 - **A `Gallery` tile answers the keyboard focus the way it answers the pointer.** The lift, the dim, the zoom and a `caption="hover"` were keyed to the tile being focused, and the tile is a list item that never is, so none of them appeared for a keyboard reader. They follow a focused button inside the tile now, and `focus-within` in a browser without `:has()`.
 
+- **A `Transfer`'s two lists are named groups.** Each list has its own "Select all" box and search field, identical to the other list's, and nothing tied them to a heading, so a screen reader could not tell which list a control belonged to. Each list is now a group named by its heading.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

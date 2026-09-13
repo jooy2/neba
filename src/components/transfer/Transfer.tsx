@@ -142,9 +142,15 @@ function Panel({
   const all = movable.length > 0 && tickedHere.length === movable.length;
   const some = tickedHere.length > 0 && !all;
   const insetX = paddingXClasses[density][size];
+  const titleId = React.useId();
 
   return (
+    // A group named by its title, so the two "Select all" boxes and the two
+    // search fields — which are identical controls — are heard with the list
+    // each one belongs to.
     <div
+      role="group"
+      aria-labelledby={titleId}
       className={[
         'flex min-w-0 flex-col overflow-hidden',
         fieldRestClasses[variant],
@@ -162,7 +168,10 @@ function Panel({
           aria-label={selectAllLabel}
           onCheckedChange={(next) => onTickAll(next === true)}
         />
-        <span className={`min-w-0 flex-1 truncate font-medium ${metaTextClasses[size]}`}>
+        <span
+          id={titleId}
+          className={`min-w-0 flex-1 truncate font-medium ${metaTextClasses[size]}`}
+        >
           {title}
         </span>
         <span className={`shrink-0 tabular-nums text-(--neba-muted-fg) ${metaTextClasses[size]}`}>

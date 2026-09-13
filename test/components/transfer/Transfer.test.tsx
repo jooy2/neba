@@ -28,6 +28,17 @@ describe('Transfer', () => {
         .toBeInTheDocument();
     });
 
+    // The two lists hold identical controls — a "Select all" each, and a search
+    // field each — so each list is a group named by its own heading.
+    it('names each list as a group by its heading', async () => {
+      const screen = await render(<Transfer items={ITEMS} searchable />);
+      const available = screen.getByRole('group', { name: 'Available' });
+
+      await expect.element(available).toBeInTheDocument();
+      await expect.element(screen.getByRole('group', { name: 'Selected' })).toBeInTheDocument();
+      expect(available.getByRole('checkbox', { name: 'Select all' }).elements()).toHaveLength(1);
+    });
+
     it('starts everything on the left', async () => {
       const screen = await render(<Transfer items={ITEMS} />);
 
