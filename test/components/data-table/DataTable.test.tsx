@@ -1349,6 +1349,39 @@ describe('column order', () => {
     expect(onColumnOrderChange).toHaveBeenCalledWith(['city', 'score', 'name']);
   });
 
+  it('marks the heading being carried with a wash rather than by fading it', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} reorderable />
+    );
+
+    const name = screen.getByRole('columnheader', { name: 'Name' }).element() as HTMLElement;
+    const score = screen.getByRole('columnheader', { name: 'Score' }).element() as HTMLElement;
+    const rect = score.getBoundingClientRect();
+
+    name.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        pointerId: 1,
+        button: 0,
+        clientX: name.getBoundingClientRect().left + 4
+      })
+    );
+    score.dispatchEvent(
+      new PointerEvent('pointermove', {
+        bubbles: true,
+        pointerId: 1,
+        clientX: rect.left + rect.width / 2
+      })
+    );
+
+    await expect.poll(() => name.style.backgroundImage).toContain('--n-soft');
+    expect(name.className).not.toMatch(/opacity/);
+
+    score.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+    await expect.poll(() => name.style.backgroundImage).toBe('');
+  });
+
   it('leaves a column the order does not name where it was', async () => {
     // An order that has to list everything is an order a new column vanishes
     // out of.

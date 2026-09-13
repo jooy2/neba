@@ -338,6 +338,8 @@
 
 - **A `DataTable` rings its sheet only when the table has the focus.** The ring around a selectable table answered any focus inside it, so the search field drew its own ring inside a second ring around the whole table, which said the table had the focus when it did not; the footer's page-size Select did the same. It answers the table itself and the cell editor now, which is the one control in it with no ring of its own.
 
+- **A `DataTable` heading being dragged is marked with a wash instead of being faded.** The heading carried along the row was drawn at 60% opacity, which faded the label saying which column it was, and state is not carried on opacity anywhere else in the library. It takes the soft wash a dragged `Sidebar` or `Panes` handle takes, over its own opaque ground, and the grabbing cursor while it moves.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

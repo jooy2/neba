@@ -324,7 +324,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
   - [x] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
   - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).
   - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
-  - [ ] The header being dragged shows its state with `opacity-60` (`:1948`).
+  - [x] The header being dragged shows its state with `opacity-60` (`:1948`). It takes the `--n-soft` wash the Sidebar and Panes handles take while dragged.
 - [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`
 - [ ] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`
 - [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`

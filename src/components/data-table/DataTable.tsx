@@ -2116,13 +2116,18 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         className={cx(
           'relative font-semibold select-none',
           stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : '',
-          canMove ? 'cursor-grab' : '',
-          movingKey === column.key ? 'opacity-60' : '',
+          canMove ? (movingKey === column.key ? 'cursor-grabbing' : 'cursor-grab') : '',
           dropKey === column.key ? 'shadow-[inset_2px_0_0_var(--n-accent)]' : ''
         )}
         style={{
           ...headCellStyle,
           ...pinStyle(column, true),
+          // The heading being carried takes the wash a dragged Sidebar or Panes
+          // handle takes, laid over its own opaque ground so a sticky heading
+          // stays opaque. It was `opacity`, which the design language keeps off
+          // every state because it also fades the text that says what it is.
+          backgroundImage:
+            movingKey === column.key ? 'linear-gradient(var(--n-soft), var(--n-soft))' : undefined,
           top: stickyHeader ? (rowSpan === 2 || !hasGroups ? 0 : headerHeight) : undefined,
           textAlign: align,
           // A sorted column is written in the accent, and through the same inline
