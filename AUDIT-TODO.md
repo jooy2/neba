@@ -308,7 +308,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`
 - [x] **159** **DateTimePicker**: on a daylight-saving change day, the check that disables hour rows is an hour off (with `TZ=America/New_York` on 2026-11-01, 09:30–09:59 cannot be chosen; confirmed in Node). Build the interval ends with `withTime`. `DateTimePicker.tsx:184-190`. The row's ends are `timeUnitRange` in `date.ts` now, which is the pure function 250 asks for.
 - [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`
-- [ ] **161** **date.ts**: `DISPLAY_SAMPLES` has no Friday, so a `format` with a weekday can change width (for `el` full the sample is 27 characters and the real maximum 29). `src/internal/date.ts:349-367`
+- [x] **161** **date.ts**: `DISPLAY_SAMPLES` has no Friday, so a `format` with a weekday can change width (for `el` full the sample is 27 characters and the real maximum 29). `src/internal/date.ts:349-367`
 
 ### Display
 

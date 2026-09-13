@@ -320,6 +320,8 @@
 
 - **A `DateTimePicker` blocks the right hours on a day the clocks change.** A row was compared with `minDate` and `maxDate` as midnight plus a fixed number of hours, and a day the clocks go back is 25 hours long, so in New York on 1 November 2026 a minimum of 09:30 blocked the whole of hour 9 and 09:30 to 09:59 could not be chosen. A spring-forward day was an hour out the other way. Each row's first and last instant is now set on the day's wall clock.
 
+- **A date picker whose format writes a weekday is sized to its widest date.** A trigger is held at the width of the longest string its format can produce, measured over twenty-four sample dates, and those dates fell on no Friday and paired each month with only two weekdays. A `dateStyle: 'full'` picker in Greek was sized for 27 characters of a real 29, so choosing a Friday in February widened the field. A format with a weekday is measured over every month against every weekday now, and the samples are worked out once per locale and format rather than on every render.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

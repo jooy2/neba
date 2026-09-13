@@ -369,8 +369,8 @@ export function formatDate(
 
 /**
  * Twenty-four instants that between them exercise everything a picker's display
- * can vary by: all twelve month names, all seven weekday names, a two-digit day,
- * every hour of the clock and a two-digit minute and second.
+ * can vary by: all twelve month names, a two-digit day, every hour of the clock
+ * and a two-digit minute and second.
  *
  * They exist to be measured, not read. A picker's trigger is sized by its
  * content, so `Jul 1, 2026` and `Sep 28, 2026` are different widths and the
@@ -378,9 +378,9 @@ export function formatDate(
  * beside it shuffling along. Rendering all of these invisibly pins the trigger
  * to the widest thing it could ever say.
  *
- * Both cycles are prime to twelve in the right way — `i % 12` walks the months
- * and `i % 7` walks the days 21…27 — so every name appears without the two being
- * multiplied out into eighty-four samples.
+ * `i % 12` walks the months and `i` the hours. The day moves too, through
+ * 21…27, which keeps it two digits; it does not reach every weekday, and these
+ * twenty-four land on no Friday at all, which is what the list below is for.
  */
 const DISPLAY_SAMPLES: Date[] = Array.from(
   { length: 24 },
@@ -388,15 +388,51 @@ const DISPLAY_SAMPLES: Date[] = Array.from(
 );
 
 /**
+ * Every month against every weekday, for a format that writes a weekday.
+ *
+ * A weekday and a month are both words, so the widest string is the widest of
+ * each in one date: `Παρασκευή 26 Φεβρουαρίου 2027` is two characters longer
+ * than anything the twenty-four reach in Greek. Each of the eighty-four pairs
+ * takes the day in 21…27 that falls on it. The list is kept apart because its
+ * days differ, and a format with no weekday would write eighty-four strings
+ * where twenty-four measure the same.
+ */
+const WEEKDAY_SAMPLES: Date[] = Array.from({ length: 84 }, (_, index) => {
+  const month = Math.floor(index / 7);
+  const first = new Date(2027, month, 21).getDay();
+
+  return new Date(2027, month, 21 + ((index - first + 7) % 7), index % 24, 58, 58);
+});
+
+// Keyed on the formatter, which `dateFormatter` holds one of per locale and
+// options, so an entry goes when its formatter does.
+const samplesByFormatter = new WeakMap<Intl.DateTimeFormat, string[]>();
+
+/**
  * Every distinct string those instants format to. Deduplicated, because a
- * date-only format collapses twenty-four of them into a handful.
+ * date-only format collapses the samples into a handful. Built once per
+ * formatter, since a picker asks on every render.
  */
 export function displaySamples(
   locale: string | undefined,
   options: Intl.DateTimeFormatOptions
 ): string[] {
   const formatter = dateFormatter(locale, options);
-  return [...new Set(DISPLAY_SAMPLES.map((date) => formatter.format(date)))];
+  const known = samplesByFormatter.get(formatter);
+
+  if (known) {
+    return known;
+  }
+
+  const writesWeekday = formatter
+    .formatToParts(DISPLAY_SAMPLES[0])
+    .some((part) => part.type === 'weekday');
+  const instants = writesWeekday ? WEEKDAY_SAMPLES : DISPLAY_SAMPLES;
+  const samples = [...new Set(instants.map((date) => formatter.format(date)))];
+
+  samplesByFormatter.set(formatter, samples);
+
+  return samples;
 }
 
 /**

@@ -21,6 +21,7 @@ import {
   clampDate,
   compareDay,
   daysInMonth,
+  displaySamples,
   isDayInRange,
   isDayOutside,
   isSameDay,
@@ -328,6 +329,56 @@ describe('minutesOfDay and yearPageStart', () => {
  * Sunday rather than throw, because a calendar that renders on the wrong day is
  * a small annoyance and one that renders nothing is not.
  */
+describe('displaySamples', () => {
+  const year = (() => {
+    const days: Date[] = [];
+
+    for (let date = makeDate(2027, 0, 1); date.getFullYear() === 2027; date = addDays(date, 1)) {
+      days.push(date);
+    }
+
+    return days;
+  })();
+
+  const longest = (strings: string[]) => Math.max(...strings.map((one) => one.length));
+
+  it('writes every weekday for a format that has one', () => {
+    const samples = displaySamples('en-US', { weekday: 'long' });
+
+    expect(samples).toHaveLength(7);
+    expect(samples).toContain('Friday');
+  });
+
+  // The widest date is the widest weekday in the widest month, and the pair
+  // has to be in one sample. In Greek the twenty-four reached 27 characters of
+  // a real 29.
+  it('reaches the longest date of a whole year', () => {
+    for (const [locale, options] of [
+      ['el', { dateStyle: 'full' }],
+      ['en-US', { dateStyle: 'full' }],
+      ['de', { weekday: 'long', day: 'numeric', month: 'long' }]
+    ] as const) {
+      const formatter = new Intl.DateTimeFormat(locale, options);
+
+      expect(longest(displaySamples(locale, options)), locale).toBe(
+        longest(year.map((date) => formatter.format(date)))
+      );
+    }
+  });
+
+  it('keeps the short list for a format with no weekday', () => {
+    expect(displaySamples('en-US', { month: 'short', day: 'numeric' }).length).toBeLessThanOrEqual(
+      24
+    );
+  });
+
+  it('builds the list once for the same locale and options', () => {
+    expect(displaySamples('en-US', { dateStyle: 'medium' })).toBe(
+      displaySamples('en-US', { dateStyle: 'medium' })
+    );
+  });
+});
+
 describe('localeWeekStart', () => {
   it('reads the first day out of the tag', () => {
     expect(localeWeekStart('en-US')).toBe(0);
