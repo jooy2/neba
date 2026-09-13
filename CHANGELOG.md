@@ -270,6 +270,8 @@
 
 - **An `Empty` rendered as a table cell stays a cell.** The props table suggests `render={<td colSpan={5} />}`, which put `role="status"` and `display: flex` on the `<td>` itself: the cell lost its role, and a flex `<td>` is no longer laid out as a cell, so its `colSpan` spanned nothing. Given a `<td>` or a `<th>`, the state is now drawn inside it, and the cell keeps its role, its span and the class names it was given.
 
+- **A `GaugeChart`'s reading is in a server render.** The number in the middle was drawn only once the box had been measured, and an unmeasured box counted as an empty gauge, so the HTML a server sent, and a crawler read, said "Nothing here" where the reading belonged. Until it is measured the gauge now shows its reading and caption in the middle of the box.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

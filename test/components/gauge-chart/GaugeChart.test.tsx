@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { GaugeChart } from 'neba';
 
@@ -17,6 +18,15 @@ describe('GaugeChart', () => {
       const screen = await render(<Tile value={64} label="CPU" />);
 
       await expect.element(screen.getByText('64')).toBeInTheDocument();
+    });
+
+    // A server render has no width, and it used to say "no data" instead.
+    it('writes the reading and the caption into a server render', () => {
+      const html = renderToString(<GaugeChart value={64} caption="of 100 cores" label="CPU" />);
+
+      expect(html).toContain('>64<');
+      expect(html).toContain('of 100 cores');
+      expect(html).not.toContain('Nothing here');
     });
 
     it('names itself with the reading and the top of the range', async () => {

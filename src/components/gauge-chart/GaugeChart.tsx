@@ -257,7 +257,11 @@ export function GaugeChart(rawProps: GaugeChartProps) {
   const drawn = topPad + outer * (1 + belowFactor) + bottomPad;
   const centreY = topPad + outer + Math.max(0, (plotHeight - drawn) / 2);
 
-  const nothing = outer <= 0 || range === 0;
+  // A box that has not been measured yet is not an empty gauge: a server render
+  // has no width at all, and saying "no data" there put the wrong words in the
+  // HTML a crawler reads.
+  const measured = width > 0;
+  const nothing = range === 0 || (measured && outer <= 0);
 
   /*
    * The reading sits in the middle of the hole the arc leaves, which is not the
@@ -350,7 +354,22 @@ export function GaugeChart(rawProps: GaugeChartProps) {
           >
             {empty ?? messages.title}
           </div>
-        ) : width > 0 ? (
+        ) : !measured ? (
+          // Until there is a width there is no dial to put the reading in, but
+          // the reading is still the one thing the chart is about: it is drawn
+          // in the middle of the box, so a server render carries it.
+          <div className="flex h-full flex-col items-center justify-center gap-0.5 text-center">
+            <span
+              className="font-semibold tabular-nums text-(--neba-fg)"
+              style={{ fontSize: fontSize * 2 }}
+            >
+              {reading}
+            </span>
+            {caption ? (
+              <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size])}>{caption}</span>
+            ) : null}
+          </div>
+        ) : (
           <>
             <svg
               width={width}
@@ -470,7 +489,7 @@ export function GaugeChart(rawProps: GaugeChartProps) {
               ) : null}
             </div>
           </>
-        ) : null}
+        )}
       </div>
     </ChartSurface>
   );
