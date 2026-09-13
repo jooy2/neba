@@ -206,6 +206,17 @@ describe('Box', () => {
       expect(element.style.getPropertyValue('--n-anim-delay')).toBe('50ms');
     });
 
+    it('holds a blink to three flashes a second and leaves other effects alone', async () => {
+      const screen = await render(<Box transition={{ type: 'blink', duration: 100 }}>content</Box>);
+      const element = () => screen.getByText('content').element() as HTMLElement;
+
+      expect(element().style.getPropertyValue('--n-anim-duration')).toBe('334ms');
+
+      await screen.rerender(<Box transition={{ type: 'fade', duration: 100 }}>content</Box>);
+
+      expect(element().style.getPropertyValue('--n-anim-duration')).toBe('100ms');
+    });
+
     // A blink that ran once would be a flicker, so it is the one effect whose
     // repeat defaults to endless.
     it('repeats a blink forever and everything else once', async () => {

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { isInfinite, useAnimateElement } from '../../internal/animate.js';
+import { isInfinite, MIN_BLINK_DURATION, useAnimateElement } from '../../internal/animate.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaStaggerProps, NebaTimelineProps } from '../../types.js';
 
@@ -38,6 +38,9 @@ export interface AnimateBlinkProps
  * reduced-motion preference will see none of it — so `min` is a dimming, never
  * the only thing carrying the message. If it is urgent, say so in words as
  * well.
+ *
+ * `duration` is one blink, and it is never shorter than 334ms: three blinks a
+ * second is the fastest a flash may safely go.
  */
 export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
   function AnimateBlink(
@@ -68,7 +71,7 @@ export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
   ) {
     const animate = useAnimateElement({
       effect: 'blink',
-      duration,
+      duration: Math.max(duration, MIN_BLINK_DURATION),
       delay,
       easing,
       repeat,

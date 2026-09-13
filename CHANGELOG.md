@@ -194,6 +194,8 @@
 
 - **A `HowToSteps` with a `title` is a named group.** Its root pointed `aria-labelledby` at the title, but a `<div>` with no role cannot carry a name, so the reference was ignored and the guide had no name at all. With a `title` the root is `role="group"` named by it.
 
+- **A blink never runs faster than three times a second.** `AnimateBlink`'s `duration` had no floor, so `duration={200}` flashed five times a second, past the rate at which a flash can bring on a seizure. A blink shorter than 334ms is raised to it, on `AnimateBlink`, on `transition="blink"` and on an `AnimateSplit` whose effect is `blink`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

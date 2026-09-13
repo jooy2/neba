@@ -37,6 +37,26 @@ describe('AnimateBlink', () => {
       expect(element.style.getPropertyValue('--n-anim-repeat')).toBe('3');
     });
 
+    // Three flashes a second is the most WCAG 2.3.1 allows.
+    it('never blinks faster than three times a second', async () => {
+      const screen = await render(
+        <AnimateBlink duration={200} data-testid="blink">
+          Live
+        </AnimateBlink>
+      );
+      const element = screen.getByTestId('blink').element() as HTMLElement;
+
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('334ms');
+
+      await screen.rerender(
+        <AnimateBlink duration={1200} data-testid="blink">
+          Live
+        </AnimateBlink>
+      );
+
+      expect(element.style.getPropertyValue('--n-anim-duration')).toBe('1200ms');
+    });
+
     it('dips to the floor it was given rather than to nothing', async () => {
       const screen = await render(
         <AnimateBlink min={0.45} data-testid="blink">

@@ -298,6 +298,16 @@ export function staggerChildren(
   });
 }
 
+/**
+ * The shortest a blink may run, in milliseconds.
+ *
+ * One blink is one flash, full to faint and back, and more than three flashes
+ * in a second is what WCAG 2.3.1 rules out, because that is the rate at which a
+ * flash can bring on a seizure. A shorter `duration` is raised to this rather
+ * than refused, wherever a blink is asked for.
+ */
+export const MIN_BLINK_DURATION = 334;
+
 /* ---------------------------------------------------------------------------
  * The `transition` prop
  * ------------------------------------------------------------------------- */
@@ -346,8 +356,10 @@ export function transitionParts(
   const options = typeof transition === 'string' ? { type: transition } : transition;
   const { type } = options;
 
+  const duration = options.duration ?? defaultDurations[type];
+
   const slots: AnimationSlotOptions = {
-    duration: options.duration ?? defaultDurations[type],
+    duration: type === 'blink' ? Math.max(duration, MIN_BLINK_DURATION) : duration,
     delay: options.delay ?? 0,
     easing: options.easing,
     // A blink that ran once would be a flicker, which is a rendering bug rather
