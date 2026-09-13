@@ -80,6 +80,20 @@ describe('NavigationMenu', () => {
       ]);
     });
 
+    it('stops being a link while a link item is disabled', async () => {
+      const screen = await render(
+        <NavigationMenu aria-label="Main">
+          <NavigationMenuItem label="Pricing" href="/pricing" disabled />
+        </NavigationMenu>
+      );
+
+      await expect.element(screen.getByText('Pricing')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Pricing' }).query()).toBeNull();
+      expect(
+        screen.getByText('Pricing').element().closest('[aria-disabled="true"]')
+      ).not.toBeNull();
+    });
+
     it('opens no panel until an item is asked', async () => {
       const screen = await render(<Nav />);
 

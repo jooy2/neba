@@ -3522,8 +3522,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '사용 불가. 단어는 줄에 남고 아무것도 열지 않습니다',
-        en: 'Unavailable. The word stays in the row and opens nothing'
+        ko: '사용 불가. 단어는 줄에 남고 아무것도 열지 않습니다. href가 있는 항목도 링크가 아니게 됩니다',
+        en: 'Unavailable. The word stays in the row and opens nothing, and an item with an href is not a link'
       }
     },
     {
@@ -7474,8 +7474,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '사용 불가. 목록에는 남고 타이핑 검색에도 걸립니다',
-        en: 'Unavailable. Still listed, and still found by typeahead'
+        ko: '사용 불가. 목록에는 남고 타이핑 검색에도 걸립니다. href가 있어도 비활성인 동안에는 링크가 아닙니다',
+        en: 'Unavailable. Still listed, and still found by typeahead. A row with an href is not a link while it is disabled'
       }
     },
     {

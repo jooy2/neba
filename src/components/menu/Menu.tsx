@@ -395,7 +395,10 @@ export function MenuItem({
   const slots = color ? surfaceSlots(color, 0) : undefined;
   const rowStyle = slots || style ? { ...slots, ...style } : undefined;
 
-  if (href !== undefined) {
+  // A disabled destination is drawn as a disabled row rather than a link:
+  // Base UI's link row has no `disabled`, and an `<a>` with an `href` still
+  // navigates when it is pressed however it is painted.
+  if (href !== undefined && !disabled) {
     return (
       <BaseUIMenu.LinkItem
         href={href}

@@ -112,6 +112,22 @@ describe('Menu', () => {
       expect(item).toHaveAttribute('href', '#settings');
     });
 
+    it('stops being a link while it is disabled', async () => {
+      const screen = await render(
+        <Menu defaultOpen>
+          <MenuItem href="#billing" disabled>
+            Billing
+          </MenuItem>
+        </Menu>
+      );
+
+      const item = screen.getByRole('menuitem', { name: 'Billing' }).element();
+
+      expect(item.tagName).not.toBe('A');
+      expect(item).not.toHaveAttribute('href');
+      expect(item).toHaveAttribute('aria-disabled', 'true');
+    });
+
     // The same promise TextLink makes, because a row that lets a caller choose
     // where it opens is a row that can hand the new page a `window.opener` and
     // a `Referer` naming this one.

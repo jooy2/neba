@@ -237,7 +237,15 @@ export function NavigationMenuItem({
 
   return (
     <BaseUINavigationMenu.Item value={value}>
-      {isLink ? (
+      {isLink && disabled ? (
+        // Not a link at all while it is unavailable: an `<a>` with an `href`
+        // navigates when it is pressed however it is painted, and a disabled
+        // trigger beside it is out of the tab order too.
+        <span aria-disabled="true" data-disabled="" className={chrome}>
+          {hasContent(startIcon) ? startIcon : null}
+          {label}
+        </span>
+      ) : isLink ? (
         <BaseUINavigationMenu.Link
           href={href}
           target={target}

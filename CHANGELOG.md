@@ -10,6 +10,8 @@
 
 - **A `Form` without `onSubmit` lets the submit go ahead.** It prevented the native submit whether or not anybody was given the values, and React skips a function `action` for a prevented submit, so `<Form action={formAction}>` did nothing. Validation still runs first and still stops an invalid submit. A `Form` that relied on never navigating with no `onSubmit` should pass `onSubmit` or an `action`.
 
+- **A disabled `MenuItem` or `NavigationMenuItem` with an `href` is no longer a link.** Both ignored `disabled` once they had an `href`, so the row was drawn as available and pressing it navigated. While disabled it renders as a disabled row, with no `<a>` and no `href`; a test that found it by the `link` role finds a `menuitem`, or plain text in a navigation menu.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
