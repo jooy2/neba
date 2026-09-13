@@ -315,6 +315,27 @@ describe('Highlight', () => {
       expect(screen.container.querySelector('mark')).not.toHaveClass('border');
     });
 
+    // The border is two pixels a mark added to its word's width, so the text
+    // after it moved whenever a search found one more. Measured with the
+    // stylesheet loaded it is the same width as the unmarked line; no component
+    // test loads one, so what is pinned here is that the margin gives it back.
+    it('gives the outline border back in its margin', async () => {
+      const screen = await render(
+        <Highlight query="a" variant="outline">
+          abc
+        </Highlight>
+      );
+
+      expect(screen.container.querySelector('mark')).toHaveClass(
+        'px-0.5',
+        '-mx-[calc(0.125rem+1px)]'
+      );
+
+      await screen.rerender(<Highlight query="a">abc</Highlight>);
+
+      expect(screen.container.querySelector('mark')).toHaveClass('px-0.5', '-mx-0.5');
+    });
+
     it('adds an underline and a weight only when asked', async () => {
       const screen = await render(<Highlight query="a">abc</Highlight>);
 

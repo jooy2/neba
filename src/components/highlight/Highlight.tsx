@@ -82,6 +82,18 @@ const variantClasses: Record<NebaVariant, string> = {
   text: 'bg-transparent text-(--n-on-tint)'
 };
 
+/**
+ * The hair of padding each mark takes, handed straight back as a negative margin
+ * so the marked line is the length it was. `outline` hands back its 1px border
+ * too: left out, every mark was two pixels wider than its word, and the text
+ * after it moved each time a search found one more.
+ */
+const insetClasses: Record<NebaVariant, string> = {
+  solid: 'px-0.5 -mx-0.5',
+  outline: 'px-0.5 -mx-[calc(0.125rem+1px)]',
+  text: 'px-0.5 -mx-0.5'
+};
+
 const weightClasses: Record<TypographyWeight, string> = {
   regular: 'font-normal',
   medium: 'font-medium',
@@ -304,7 +316,8 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
       // A hair of padding so the surface does not sit flush against the letters,
       // and the same hair back out as a negative margin so the marked line is the
       // same length as it was before. A mark must not move the text around it.
-      'rounded-[0.25rem] px-0.5 -mx-0.5',
+      'rounded-[0.25rem]',
+      insetClasses[variant],
       // A mark that wraps across two lines gets its corners on both fragments
       // rather than one long box with two square ends.
       'box-decoration-clone',

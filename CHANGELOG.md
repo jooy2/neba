@@ -342,6 +342,8 @@
 
 - **`wholeWord` on a `Highlight` is ignored for a RegExp `query`, as documented.** A regular expression says its own boundaries, and the props said `wholeWord` was ignored for one, but it went on dropping every match that was not a whole word. `query={/cat/} wholeWord` now marks what the expression matches.
 
+- **An `outline` `Highlight` no longer moves the text after it.** Each mark takes a hair of padding and gives it back as a negative margin, but the outline's 1px border was not given back, so every mark was two pixels wider than its word and the rest of the line shifted each time a search found one more. The margin now takes the border back too.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
