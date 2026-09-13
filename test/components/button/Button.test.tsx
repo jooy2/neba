@@ -279,6 +279,30 @@ describe('Button', () => {
       expect(screen.getByRole('button').element().textContent).toBe('Save');
     });
 
+    it('keeps a disabled button focusable when asked, and still unpressable', async () => {
+      const onClick = vi.fn();
+      const screen = await render(
+        <Button onClick={onClick} focusableWhenDisabled>
+          Next
+        </Button>
+      );
+      const button = screen.getByRole('button', { name: 'Next' });
+
+      (button.element() as HTMLElement).focus();
+      await screen.rerender(
+        <Button onClick={onClick} disabled focusableWhenDisabled>
+          Next
+        </Button>
+      );
+
+      expect(button.element().hasAttribute('disabled')).toBe(false);
+      expect(button.element()).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(button).toHaveFocus();
+
+      await button.click({ force: true });
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
     it('stays focusable but does not fire onClick while loading', async () => {
       const onClick = vi.fn();
       const screen = await render(

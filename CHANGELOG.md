@@ -32,6 +32,8 @@
 
 - **A `NavigationMenu` panel's links are in the page before it opens.** A panel was created only when a pointer or a key first opened it, so its links were missing from a server render and a crawler never followed them, although the component is the one meant to put a site's destinations in a crawler's index. Each `NavigationMenuItem` now renders its panel hidden from the start, and `keepMounted={false}` restores the old behaviour for a panel that is expensive to build. A test that asserted a panel link is absent before opening should assert it is not visible.
 
+- **A `Pagination` stepper keeps the focus when the press runs it out.** Pressing Next onto the last page made the button `disabled`, and with `getPageHref` and `onPageChange` it swapped the link for a button, so either way the focus fell to the document and a keyboard reader started again from the top. A stepper with nowhere to go, and the current page, stay where they are with `aria-disabled`; a link loses only its `href`. A test that asserted `toBeDisabled()` on such a stepper should assert `aria-disabled="true"`, and with `getPageHref` the current page and an exhausted stepper are found by the `link` role.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
@@ -55,6 +57,8 @@
 - **`TreeItem` takes `selectable`.** A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch — the folder in a tree whose answers are the files.
 
 - **`ToastProvider` takes `label`, `Tour` takes `closeLabel` and `Combobox` takes `openLabel`.** Each overrides a word the component otherwise takes from its `locale`: the name of the region the toast stack lives in, the × that ends a tour, and the chevron of a combobox with no string label.
+
+- **`Button` and `IconButton` take `focusableWhenDisabled`.** A disabled button stays in the tab order, marked `aria-disabled` rather than with the `disabled` attribute, and still cannot be pressed. It is for a button that is disabled by its own press, which would otherwise hand the focus to the document.
 
 ### Changed
 

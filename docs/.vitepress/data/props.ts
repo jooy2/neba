@@ -1541,6 +1541,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'focusableWhenDisabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '비활성인 버튼을 disabled 속성 대신 aria-disabled로 표시해 tab 순서에 남깁니다. 누른 결과로 비활성이 되는 버튼이 포커스를 잃지 않게 합니다',
+        en: 'Keeps a disabled button in the tab order, marked with aria-disabled instead of the disabled attribute, so a button disabled by its own press keeps the focus'
+      }
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       default: 'false',
@@ -8799,6 +8808,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '흐려지지 않은 채 반응만 멈춤, 액션은 존재하지만 여기서는 쓸 수 없습니다',
         en: 'Inert but not dimmed: the action exists, it just is not available here'
+      }
+    },
+    {
+      name: 'focusableWhenDisabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '비활성인 버튼을 disabled 속성 대신 aria-disabled로 표시해 tab 순서에 남깁니다. 누른 결과로 비활성이 되는 버튼이 포커스를 잃지 않게 합니다',
+        en: 'Keeps a disabled button in the tab order, marked with aria-disabled instead of the disabled attribute, so a button disabled by its own press keeps the focus'
       }
     },
     {

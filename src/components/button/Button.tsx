@@ -44,6 +44,17 @@ export interface ButtonProps
   loading?: boolean;
   /** Inert but not dimmed — the action exists, it just is not available here. */
   readOnly?: boolean;
+  /**
+   * Keeps a disabled button in the tab order, announced with `aria-disabled`
+   * rather than the `disabled` attribute, and still unable to be pressed.
+   *
+   * For a button that becomes disabled *because* it was pressed — the Next that
+   * reaches the last page — where the `disabled` attribute would drop the focus
+   * onto the page in the middle of a keyboard reader's work. Ignored when
+   * `render` draws something other than a `<button>`.
+   * @default false
+   */
+  focusableWhenDisabled?: boolean;
   /** Stretches to the width of the container. */
   fullWidth?: boolean;
   /**
@@ -170,6 +181,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       readOnly = false,
       fullWidth = false,
       disabled: disabledProp,
+      focusableWhenDisabled = false,
       render,
       className,
       style,
@@ -225,12 +237,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
      * and `disabled` is the one thing that cannot travel to an `<a>` anyway.
      */
     return useRender({
-      render: render ?? <BaseUIButton disabled={disabled} />,
+      render: render ?? (
+        <BaseUIButton disabled={disabled} focusableWhenDisabled={focusableWhenDisabled} />
+      ),
       ref,
       props: {
         className: classNames,
         style: { ...controlSlots(color, elevation, variant), ...style },
-        'aria-disabled': inert || undefined,
+        // Written only when it is true: an `aria-disabled` of `undefined` here
+        // would be merged over the one Base UI writes for a disabled button that
+        // stays focusable, and take it away.
+        ...(inert ? { 'aria-disabled': true } : null),
         'aria-busy': loading || undefined,
         'data-loading': loading || undefined,
         'data-readonly': readOnly || undefined,

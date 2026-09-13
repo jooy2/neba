@@ -73,6 +73,7 @@ The page being read and an arrow at the end of the row stay `<button>`. An `<a>`
 
 - Renders a `<nav>` around a `<ul>`, with `aria-current="page"` on the current page.
 - The ellipsis is punctuation rather than a control, so it is not rendered as a disabled button.
+- A stepper with nowhere to go stays in the tab order with `aria-disabled`. With `getPageHref` it and the current page stay links with no `href` rather than turning into buttons. Either way, pressing Next onto the last page leaves the focus where it was.
 - With `getPageHref` the numbers are links, so they appear in a screen reader's list of links and a keyboard reader can see where each one goes.
 - Every accessible name is settable: `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`. With more than one pagination on a screen, use `label` to say what each one paginates.
 - `locale` decides the nav name, the page buttons, the arrows and the sentence that reads out where you are. Each of them takes a string of its own.

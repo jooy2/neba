@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Pagination } from 'neba';
@@ -236,12 +237,30 @@ describe('Pagination', () => {
     it('turns off the stepper that has nowhere to go', async () => {
       const screen = await render(<Pagination count={5} page={1} />);
 
-      await expect.element(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
-      await expect.element(screen.getByRole('button', { name: 'Next page' })).not.toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Previous page' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(screen.getByRole('button', { name: 'Next page' }))
+        .not.toHaveAttribute('aria-disabled', 'true');
 
       await screen.rerender(<Pagination count={5} page={5} />);
 
-      await expect.element(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Next page' }))
+        .toHaveAttribute('aria-disabled', 'true');
+    });
+
+    // The stepper runs out because it was pressed, and a `disabled` button
+    // hands the focus to the document.
+    it('keeps the focus on a stepper that the press ran out', async () => {
+      const screen = await render(<Pagination count={5} defaultPage={4} />);
+      const next = screen.getByRole('button', { name: 'Next page' });
+
+      await next.click();
+
+      await expect.element(next).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(next).toHaveFocus();
     });
 
     it('leaves out the steppers when told to', async () => {
@@ -295,15 +314,15 @@ describe('Pagination', () => {
 
     // The page being read is not somewhere to go, and it is the one number in
     // the row that carries `aria-current`.
-    it('leaves the current page as a button', async () => {
+    it('gives the current page no href', async () => {
       const screen = await render(
         <Pagination count={5} page={2} getPageHref={(page) => `/posts?page=${page}`} />
       );
+      const current = screen.getByRole('link', { name: 'Page 2' });
 
-      await expect
-        .element(screen.getByRole('button', { name: 'Page 2' }))
-        .toHaveAttribute('aria-current', 'page');
-      expect(screen.getByRole('link', { name: 'Page 2' }).query()).toBeNull();
+      await expect.element(current).toHaveAttribute('aria-current', 'page');
+      await expect.element(current).toHaveAttribute('aria-disabled', 'true');
+      expect(current.element()).not.toHaveAttribute('href');
     });
 
     it('marks the two arrows with the rel a crawler reads', async () => {
@@ -319,16 +338,41 @@ describe('Pagination', () => {
         .toHaveAttribute('rel', 'next');
     });
 
-    // `disabled` is not something an `<a>` can be: a stepper left as a link at
-    // the end of the row is one a keyboard still lands on and a crawler follows.
-    it('keeps a stepper with nowhere to go as a button', async () => {
+    // A stepper at the end of the row is somewhere a crawler must not follow.
+    it('gives a stepper with nowhere to go no href', async () => {
       const screen = await render(
         <Pagination count={5} page={1} showEdges getPageHref={(page) => `/posts?page=${page}`} />
       );
 
-      await expect.element(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
-      expect(screen.getByRole('link', { name: 'Previous page' }).query()).toBeNull();
-      await expect.element(screen.getByRole('button', { name: 'First page' })).toBeDisabled();
+      for (const name of ['Previous page', 'First page']) {
+        const stepper = screen.getByRole('link', { name });
+
+        await expect.element(stepper).toHaveAttribute('aria-disabled', 'true');
+        expect(stepper.element()).not.toHaveAttribute('href');
+      }
+    });
+
+    // Swapping the `<a>` for a `<button>` replaced the node holding the focus.
+    it('keeps the focus on a link the press ran out', async () => {
+      function Routed() {
+        const [page, setPage] = React.useState(4);
+
+        return (
+          <Pagination
+            count={5}
+            page={page}
+            onPageChange={setPage}
+            getPageHref={(to) => `/posts?page=${to}`}
+          />
+        );
+      }
+      const screen = await render(<Routed />);
+      const next = screen.getByRole('link', { name: 'Next page' });
+
+      await next.click();
+
+      await expect.element(next).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(next).toHaveFocus();
     });
 
     it('cancels the navigation when a handler is there to answer it', async () => {

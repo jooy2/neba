@@ -245,13 +245,23 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
     const atEnd = current >= count;
 
     /*
-     * A link only where there is somewhere to go. The page being read and a
-     * stepper at the end of the row are both `disabled`, and `disabled` is not
-     * something an `<a>` can be — a link that only looks unavailable is one a
-     * keyboard still lands on and a crawler still follows.
+     * An `href` only where there is somewhere to go, so a crawler never follows
+     * the page being read or a stepper at the end of the row.
+     *
+     * Those two stay `<a>`s, only without the `href`. Swapping the element for a
+     * `<button>` replaces the node that holds the focus, so pressing Next onto
+     * the last page, or a number onto the page it names, dropped the focus onto
+     * the document in the middle of a keyboard reader's work.
      */
-    const linkProps = (to: number, inert: boolean, rel?: 'prev' | 'next') =>
-      getPageHref && !inert ? { render: <a href={getPageHref(to)} rel={rel} /> } : null;
+    const linkProps = (to: number, inert: boolean, rel?: 'prev' | 'next') => {
+      if (!getPageHref || disabled) {
+        return null;
+      }
+
+      return inert
+        ? { render: <a role="link" aria-disabled="true" tabIndex={0} /> }
+        : { render: <a href={getPageHref(to)} rel={rel} /> };
+    };
 
     /*
      * Who answers the press.
@@ -301,10 +311,12 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
           density={density}
           elevation={elevation}
           disabled={disabled || inert}
+          // A stepper that runs out because it was pressed keeps the focus.
+          focusableWhenDisabled={!disabled}
           aria-label={accessibleName}
           startIcon={<span className={`flex items-center ${rotation}`}>{glyph}</span>}
           onClick={(event) => press(event, to)}
-          {...linkProps(to, disabled || inert, rel)}
+          {...linkProps(to, inert, rel)}
         />
       </li>
     );
@@ -370,7 +382,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
                   // The page being read is not somewhere to go, so it keeps its
                   // `aria-current` and stops being a link — the same rule
                   // Breadcrumb applies to the step the reader is standing on.
-                  {...linkProps(slot, disabled || slot === current)}
+                  {...linkProps(slot, slot === current)}
                 >
                   {slot}
                 </Button>
