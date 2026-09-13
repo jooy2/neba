@@ -208,15 +208,28 @@ function toManagerOptions(options: ToastOptions) {
  */
 export function useToast() {
   const manager = BaseUIToast.useToastManager<ToastData>();
+  /*
+   * The four methods keep one identity for the life of the component and read
+   * the manager through this. Base UI hands back a new manager every time the
+   * list of toasts changes, and methods rebuilt with it made the natural
+   * `useEffect(() => { if (error) add(…) }, [error, add])` add a toast, get a
+   * new `add`, and run again, for ever.
+   */
+  const managerRef = React.useRef(manager);
 
-  return React.useMemo(
+  React.useLayoutEffect(() => {
+    managerRef.current = manager;
+  });
+
+  const methods = React.useMemo(
     () => ({
       /** Raises a toast and returns its id. */
-      add: (options: ToastOptions) => manager.add(toManagerOptions(options)),
+      add: (options: ToastOptions) => managerRef.current.add(toManagerOptions(options)),
       /** Closes one toast, or every toast when called with nothing. */
-      close: (id?: string) => manager.close(id),
+      close: (id?: string) => managerRef.current.close(id),
       /** Changes a toast already on screen. */
-      update: (id: string, options: ToastOptions) => manager.update(id, toManagerOptions(options)),
+      update: (id: string, options: ToastOptions) =>
+        managerRef.current.update(id, toManagerOptions(options)),
       /**
        * One toast that follows a promise: the loading message while it runs,
        * then the success or the error. `timeout: 0` is applied to the loading
@@ -230,7 +243,7 @@ export function useToast() {
           error: ToastOptions | ((error: unknown) => ToastOptions);
         }
       ) =>
-        manager.promise(promise, {
+        managerRef.current.promise(promise, {
           loading: toManagerOptions(options.loading),
           success: (value: Value) =>
             toManagerOptions(
@@ -240,11 +253,18 @@ export function useToast() {
             toManagerOptions(
               typeof options.error === 'function' ? options.error(error) : options.error
             )
-        }),
+        })
+    }),
+    []
+  );
+
+  return React.useMemo(
+    () => ({
+      ...methods,
       /** Every toast currently in the stack, newest first. */
       toasts: manager.toasts
     }),
-    [manager]
+    [methods, manager.toasts]
   );
 }
 

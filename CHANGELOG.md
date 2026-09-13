@@ -112,6 +112,8 @@
 
 - **A `TreeSelect` branch that cannot be chosen opens again.** It was drawn as a disabled row, and a disabled row answers neither a click nor its arrow, so with the default `selectableBranches={false}` no branch could be opened at all and only `defaultExpanded` or a search reached the leaves. Such a branch is now an ordinary row that opens and shuts and is never chosen; a branch marked `disabled` still looks and acts disabled.
 
+- **`useToast`'s methods keep one identity.** `add`, `close`, `update` and `promise` were rebuilt every time the list of toasts changed, so an effect that raised a toast and listed `add` among its dependencies raised one, received a new `add`, and ran again without end. The object the hook returns still changes with `toasts`; list the method you call, not the object.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

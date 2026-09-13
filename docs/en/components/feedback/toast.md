@@ -32,7 +32,7 @@ Toasts are raised from a hook rather than rendered as a component. The appearanc
 
 <PropsTable name="useToast().add" />
 
-Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })` and `toasts`.
+Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })` and `toasts`. The four methods keep the same identity for the life of the component, while the object around them changes whenever `toasts` does, so list the method rather than the object in an effect's dependencies: `[add]`, not `[toast]`.
 
 ## Examples
 

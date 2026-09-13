@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Button, ToastProvider, useToast, type ToastOptions, type ToastProviderProps } from 'neba';
@@ -65,6 +66,34 @@ describe('Toast', () => {
 
       await expect.element(screen.getByText('Saved').first()).toBeInTheDocument();
       expect(screen.getByText('Saved').elements()).toHaveLength(2);
+    });
+  });
+
+  describe('the hook', () => {
+    // The shape a caller reaches for: raise a toast when something goes wrong.
+    // With an `add` that changed whenever the list did, this raised one toast,
+    // got a new `add` and ran again, without end.
+    it('keeps add stable, so an effect that raises a toast runs once', async () => {
+      function Watcher() {
+        const { add } = useToast();
+
+        React.useEffect(() => {
+          add({ title: 'Connection lost', timeout: 0 });
+        }, [add]);
+
+        return null;
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Watcher />
+        </ToastProvider>
+      );
+
+      await expect.element(screen.getByText('Connection lost')).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(screen.getByText('Connection lost').elements()).toHaveLength(1);
     });
   });
 

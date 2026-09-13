@@ -32,7 +32,7 @@ Toast는 컴포넌트가 아니라 hook으로 띄웁니다. 겉모습은 `ToastP
 
 <PropsTable name="useToast().add" />
 
-hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })`, `toasts`를 함께 돌려줍니다.
+hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })`, `toasts`를 함께 돌려줍니다. 네 메서드는 컴포넌트가 살아 있는 동안 identity가 바뀌지 않지만, 이들을 담은 객체는 `toasts`가 바뀔 때마다 새로 만들어집니다. 그래서 effect의 deps에는 객체가 아니라 메서드를 넣습니다. `[toast]`가 아니라 `[add]`입니다.
 
 ## 예시
 
