@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Button } from '../button/Button.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { CheckIcon, ChevronIcon, RestartIcon, SuccessIcon } from '../../internal/icons.js';
-import { fill, stepsMessages, useMessages } from '../../internal/i18n.js';
+import { fill, fillMessage, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   cx,
@@ -16,6 +16,7 @@ import {
   sheetBodyClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  srOnlyClasses,
   surfaceClasses,
   surfaceSlots,
   toLength,
@@ -689,6 +690,22 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
             {title}
           </StepHeading>
         ) : null}
+
+        {/* The panel changes in place and nothing on the page moves the focus
+            to it, so this is what tells a screen reader that Next did
+            something. It holds its first sentence from the first render, which
+            is not announced; a change to it is. The finished state says nothing
+            here: the focus moves to Start over beside the words that say it. */}
+        <span className={srOnlyClasses} aria-live="polite">
+          {completed
+            ? ''
+            : typeof steps[active]?.title === 'string'
+              ? fillMessage(messages.step, {
+                  index: String(active + 1),
+                  title: steps[active].title as string
+                })
+              : fillMessage(messages.position, { index: String(active + 1), total: String(total) })}
+        </span>
 
         <div
           className={cx(

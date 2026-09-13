@@ -125,5 +125,6 @@ The three weights say what they say everywhere, and the sheet is never dyed by `
 
 - The list is a list of buttons, not a tablist. The current row carries `aria-current="step"`, which says the panels are ordered and the reader is expected to arrive at them in that order.
 - Each row is read as "Step 3: Use it". The disc is decoration, and a number drawn beside a title is not a number a screen reader announces. A `title` that is a node is read as itself instead, there being no string to build that sentence out of.
+- Moving to another step is announced through a polite live region, as "Step 2: Configure", since the panel changes in place and the focus stays on the button that was pressed.
 - The steps that are not showing stay in the document so the panel can keep its height, and are `inert`: out of the tab order, off the accessibility tree, and out of a find-in-page.
 - Give the guide a `title` when a page has more than one. With a `title` the guide is a `role="group"` named by it.

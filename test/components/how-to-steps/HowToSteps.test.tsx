@@ -482,6 +482,21 @@ describe('HowToSteps', () => {
         .toBe('step');
     });
 
+    // The panel changes in place, so a screen reader is told which step it is.
+    it('says which step it moved to', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+      const live = screen
+        .getByTestId('guide')
+        .element()
+        .querySelector('[aria-live="polite"]') as HTMLElement;
+
+      expect(live).toHaveTextContent('Step 1: Install');
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+
+      await expect.element(live).toHaveTextContent('Step 2: Configure');
+    });
+
     it('is a group named by its title', async () => {
       const screen = await render(<HowToSteps steps={STEPS} title="Getting started" />);
 
