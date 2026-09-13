@@ -72,6 +72,18 @@ describe('Highlight', () => {
       expect(marks(screen.container)).toEqual(['66', '1977']);
     });
 
+    // `wholeWord` is documented as ignored for a RegExp, which says its own
+    // boundaries; it went on filtering the expression's matches.
+    it('ignores wholeWord for a RegExp', async () => {
+      const screen = await render(
+        <Highlight query={/cat/} wholeWord>
+          concatenate cat
+        </Highlight>
+      );
+
+      expect(marks(screen.container)).toEqual(['cat', 'cat']);
+    });
+
     it('leaves a caller-supplied RegExp alone', async () => {
       // A global expression carries a `lastIndex` that matching moves. The
       // caller may be matching with this one elsewhere, so marking must not

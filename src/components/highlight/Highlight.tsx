@@ -317,8 +317,12 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
       transitionClasses
     );
 
+    // Ignored for a RegExp, as the prop says: the expression states its own
+    // boundaries, and filtering its matches again took away the ones it asked for.
+    const byWord = wholeWord && !(query instanceof RegExp);
+
     const marked = pattern
-      ? markNode(children, pattern, wholeWord, (matched, key) => (
+      ? markNode(children, pattern, byWord, (matched, key) => (
           <mark key={key} className={markClasses}>
             {matched}
           </mark>

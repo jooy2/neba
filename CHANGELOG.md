@@ -340,6 +340,8 @@
 
 - **A `DataTable` heading being dragged is marked with a wash instead of being faded.** The heading carried along the row was drawn at 60% opacity, which faded the label saying which column it was, and state is not carried on opacity anywhere else in the library. It takes the soft wash a dragged `Sidebar` or `Panes` handle takes, over its own opaque ground, and the grabbing cursor while it moves.
 
+- **`wholeWord` on a `Highlight` is ignored for a RegExp `query`, as documented.** A regular expression says its own boundaries, and the props said `wholeWord` was ignored for one, but it went on dropping every match that was not a whole word. `query={/cat/} wholeWord` now marks what the expression matches.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
