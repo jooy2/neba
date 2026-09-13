@@ -173,6 +173,12 @@ export interface TreeItemProps extends Omit<
   expandable?: boolean;
   /** Unavailable. Its branch, if it is open, keeps working. */
   disabled?: boolean;
+  /**
+   * Whether pressing the row chooses it. A row that cannot be chosen still
+   * opens and shuts — the folder in a tree whose answers are the files.
+   * @default true
+   */
+  selectable?: boolean;
   /** The rows underneath this one. */
   children?: React.ReactNode;
 }
@@ -646,6 +652,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     href,
     expandable,
     disabled: disabledProp = false,
+    selectable = true,
     className,
     children,
     onClick,
@@ -776,7 +783,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     if (event.defaultPrevented) return;
 
     if (isParent) toggle(identity);
-    select(identity);
+    if (selectable) select(identity);
   }
 
   const rowClassNames = cx(

@@ -314,7 +314,8 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
           value={item.value}
           label={item.label}
           startIcon={item.startIcon}
-          disabled={item.disabled || !isSelectable(item)}
+          disabled={item.disabled}
+          selectable={isSelectable(item)}
           className={classNames?.item}
         >
           {item.children ? renderItems(item.children) : null}

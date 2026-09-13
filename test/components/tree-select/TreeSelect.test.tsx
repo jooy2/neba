@@ -74,6 +74,23 @@ describe('TreeSelect', () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 
+  it('still opens a branch that cannot be chosen, and stays open to pick inside it', async () => {
+    const onValueChange = vi.fn();
+    const screen = await render(
+      <TreeSelect label="Region" items={REGIONS} onValueChange={onValueChange} />
+    );
+
+    await screen.getByRole('button', { name: 'Region' }).click();
+    await screen.getByText('Asia').click();
+
+    await expect.element(screen.getByText('Korea')).toBeInTheDocument();
+    expect(onValueChange).not.toHaveBeenCalled();
+
+    await screen.getByText('Korea').click();
+
+    expect(onValueChange).toHaveBeenCalledWith(['kr']);
+  });
+
   it('lets a branch be chosen when asked', async () => {
     const onValueChange = vi.fn();
     const screen = await render(

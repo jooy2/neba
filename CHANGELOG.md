@@ -30,6 +30,8 @@
 
 - **`Gallery` passes the new `Image` props on.** An item takes `rotate`, `flip`, `position` and a `placeholder`, and the Gallery takes `fit`, `letterbox` and `loading` for every tile. An item's `ratio` stays the file's own: a turned item is laid out on its side by `masonry` and `justified`, and opens turned in the viewer.
 
+- **`TreeItem` takes `selectable`.** A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch — the folder in a tree whose answers are the files.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
@@ -103,6 +105,8 @@
 - **`neba/hooks` has types under `moduleResolution: node10`.** `typesVersions`, which that resolver reads instead of `exports`, had no entry for it, so its wildcard sent the import to a component folder that does not exist and TypeScript reported the module as missing.
 
 - **A `Tour` step with a selector the browser cannot parse no longer takes the app down.** `querySelector` throws on a `target` such as `#1-intro` or an id made by React 18's `useId`, and it threw inside an effect, where it unmounted the whole tree. Such a step is drawn as a step with no target.
+
+- **A `TreeSelect` branch that cannot be chosen opens again.** It was drawn as a disabled row, and a disabled row answers neither a click nor its arrow, so with the default `selectableBranches={false}` no branch could be opened at all and only `defaultExpanded` or a search reached the leaves. Such a branch is now an ordinary row that opens and shuts and is never chosen; a branch marked `disabled` still looks and acts disabled.
 
 ## 1.13.0 (2026-09-11)
 

@@ -9764,6 +9764,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'selectable',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '행을 눌렀을 때 선택되는지. 선택되지 않는 행도 펼치고 접을 수 있습니다',
+        en: 'Whether pressing the row chooses it. A row that cannot be chosen still opens and shuts'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '이 행 아래의 TreeItem들', en: 'The TreeItems underneath this one' }

@@ -62,7 +62,7 @@ The sheet is never filled with colour. Use `text` inside a [Card](../surfaces/ca
 
 Pressing a row chooses it, and opens it if it has children. `multiple` lets more than one row be chosen at a time; without it, choosing a row replaces whatever was chosen before.
 
-The disclosure arrow is a target of its own: it opens the branch without choosing the row.
+The disclosure arrow is a target of its own: it opens the branch without choosing the row. A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch.
 
 <Demo src="tree-view/selection">
 

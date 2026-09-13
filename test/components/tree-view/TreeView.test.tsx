@@ -172,6 +172,25 @@ describe('TreeView', () => {
       expect(second).toHaveBeenCalledWith(['src']);
     });
 
+    it('opens a row that cannot be chosen without choosing it', async () => {
+      const onSelectedChange = vi.fn();
+      const screen = await render(
+        <TreeView label="Files" onSelectedChange={onSelectedChange}>
+          <TreeItem value="src" label="src" selectable={false}>
+            <TreeItem value="index" label="index.ts" />
+          </TreeItem>
+        </TreeView>
+      );
+
+      await screen.getByText('src').click();
+
+      await expect.element(screen.getByText('index.ts')).toBeInTheDocument();
+      expect(onSelectedChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('treeitem', { name: /src/ }).element()).not.toHaveAttribute(
+        'aria-selected'
+      );
+    });
+
     it('stays shut when the caller controls it and does not answer', async () => {
       const screen = await render(<Sample expanded={[]} />);
 
