@@ -61,6 +61,33 @@ describe('Tour', () => {
       await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
     });
 
+    it('moves the card to the target of each step', async () => {
+      const screen = await render(
+        <div>
+          <button id="tour-near" type="button">
+            Near
+          </button>
+          <button id="tour-far" type="button" style={{ position: 'absolute', top: 400, left: 0 }}>
+            Far
+          </button>
+          <Tour
+            defaultOpen
+            steps={[
+              { target: '#tour-near', title: 'Near', side: 'bottom' },
+              { target: '#tour-far', title: 'Far', side: 'bottom' }
+            ]}
+          />
+        </div>
+      );
+      const card = () => screen.getByRole('dialog').element().getBoundingClientRect().top;
+
+      await expect.poll(card).toBeLessThan(200);
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+
+      await expect.poll(card).toBeGreaterThan(400);
+    });
+
     it('offers no Previous on the first step', async () => {
       const screen = await render(<Page steps={STEPS} defaultOpen />);
 

@@ -64,6 +64,8 @@
 
 - **An `Image` given its own `onLoad` or `onError` still shows the picture.** The caller's handler replaced the one that marks the picture loaded, so it stayed at `opacity: 0` behind its placeholder for good, and a caller's `onContextMenu`, `onDragStart` or `draggable` switched `protect` off in the same way. Both handlers run now, the component's first.
 
+- **A `Tour`'s card follows the step to its target.** The card was anchored to the first step's target for as long as the tour stayed open, so from the second step on the cut-out moved and the card did not. It is anchored again on every step.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

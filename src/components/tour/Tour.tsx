@@ -261,6 +261,26 @@ export function Tour(rawProps: TourProps) {
   };
 
   /**
+   * The element the card is anchored to, found again whenever the step changes.
+   *
+   * An element rather than a getter: Base UI reads a getter once, when the popup
+   * mounts, and the popup stays mounted from one step to the next — so a getter
+   * left the card beside the first step's target while the hole moved on. It is
+   * found in a layout effect because a target rendered in the same commit as the
+   * tour is not in the document yet while the tour renders.
+   */
+  const [anchor, setAnchor] = React.useState<Element | null>(null);
+
+  React.useLayoutEffect(() => {
+    const selector = current?.target;
+
+    // The page is the external system: the target is read out of a document
+    // React does not own, once per step rather than on every render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAnchor(running && selector ? document.querySelector(selector) : null);
+  }, [running, current?.target]);
+
+  /**
    * Where the current target is, re-read on anything that could move it.
    *
    * A tour runs over a live page: something below can load, an image can arrive,
@@ -365,15 +385,7 @@ export function Tour(rawProps: TourProps) {
           align={current?.align ?? 'center'}
           sideOffset={10}
           collisionPadding={12}
-          // A getter rather than an element: the target is found by selector on
-          // whatever the page looks like right now, and it changes every step.
-          anchor={() => {
-            if (!current?.target) return null;
-
-            const found = document.querySelector(current.target);
-
-            return found instanceof Element ? found : null;
-          }}
+          anchor={anchor}
         >
           <BaseUIPopover.Popup
             className={cx(
