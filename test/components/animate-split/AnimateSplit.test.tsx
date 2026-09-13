@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { AnimateSplit } from 'neba';
 
@@ -45,6 +46,20 @@ describe('AnimateSplit', () => {
   });
 
   describe('the effect', () => {
+    it('runs a hover handler of the caller beside its own', async () => {
+      const onPointerEnter = vi.fn();
+      const screen = await render(
+        <AnimateSplit trigger="hover" onPointerEnter={onPointerEnter} data-testid="split">
+          One two three
+        </AnimateSplit>
+      );
+
+      await userEvent.hover(screen.getByTestId('split'));
+
+      expect(onPointerEnter).toHaveBeenCalledOnce();
+      await expect.element(screen.getByTestId('split')).toHaveAttribute('data-state', 'running');
+    });
+
     it('holds each piece back by its place in the line', async () => {
       const screen = await render(
         <AnimateSplit stagger={50} delay={10}>

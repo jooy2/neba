@@ -79,6 +79,7 @@ export const AnimateZoom = React.forwardRef<HTMLDivElement, AnimateZoomProps>(fu
   ref
 ) {
   const animate = useAnimateElement({
+    caller: props,
     effect: 'zoom',
     duration,
     delay,

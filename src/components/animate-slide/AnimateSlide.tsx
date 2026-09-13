@@ -93,6 +93,7 @@ export const AnimateSlide = React.forwardRef<HTMLDivElement, AnimateSlideProps>(
     const { x, y } = slideOffsets(from, distance);
 
     const animate = useAnimateElement({
+      caller: props,
       effect: 'slide',
       duration,
       delay,

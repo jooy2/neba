@@ -88,6 +88,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,

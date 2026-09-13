@@ -108,6 +108,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,

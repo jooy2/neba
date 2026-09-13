@@ -93,6 +93,7 @@ export const AnimateRotate = React.forwardRef<HTMLDivElement, AnimateRotateProps
     ref
   ) {
     const animate = useAnimateElement({
+      caller: props,
       effect: 'rotate',
       duration,
       delay,

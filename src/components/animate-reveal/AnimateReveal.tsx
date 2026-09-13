@@ -85,6 +85,7 @@ export const AnimateReveal = React.forwardRef<HTMLDivElement, AnimateRevealProps
     ref
   ) {
     const animate = useAnimateElement({
+      caller: props,
       effect: 'reveal',
       duration,
       delay,

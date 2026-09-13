@@ -90,6 +90,7 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,
@@ -215,8 +216,8 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
         }
         data-neba-animation="headline"
         data-state={run.state}
-        {...run.handlers}
         {...props}
+        {...run.handlers}
       >
         {items.map((child, position) => {
           const state =

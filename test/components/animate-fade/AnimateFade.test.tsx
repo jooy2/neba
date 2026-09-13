@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { AnimateFade } from 'neba';
 
@@ -246,6 +247,20 @@ describe('AnimateFade', () => {
   });
 
   describe('triggers', () => {
+    it('runs a hover handler of the caller beside its own', async () => {
+      const onPointerEnter = vi.fn();
+      const screen = await render(
+        <AnimateFade trigger="hover" onPointerEnter={onPointerEnter} data-testid="fade">
+          Arriving
+        </AnimateFade>
+      );
+
+      await userEvent.hover(screen.getByTestId('fade'));
+
+      expect(onPointerEnter).toHaveBeenCalledOnce();
+      await expect.element(screen.getByTestId('fade')).toHaveAttribute('data-state', 'running');
+    });
+
     it('runs on mount by default', async () => {
       const screen = await render(<AnimateFade data-testid="fade">Arriving</AnimateFade>);
 

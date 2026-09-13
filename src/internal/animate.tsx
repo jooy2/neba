@@ -422,7 +422,19 @@ export interface AnimationRunOptions {
   paused?: boolean;
   /** An infinite effect stops when the pointer leaves; a finite one finishes. */
   infinite: boolean;
+  /**
+   * The caller's own props, read for the four events a `hover` trigger listens
+   * to. Their handlers run beside the trigger's: spread in one order the
+   * trigger threw them away, and spread in the other they took the trigger off.
+   */
+  caller?: TriggerHandlers;
 }
+
+/** The events a `hover` trigger listens to. */
+type TriggerHandlers = Pick<
+  React.HTMLAttributes<HTMLElement>,
+  'onPointerEnter' | 'onPointerLeave' | 'onFocus' | 'onBlur'
+>;
 
 export interface AnimationRun {
   /** Goes on the animated element. */
@@ -431,8 +443,11 @@ export interface AnimationRun {
   state: 'running' | 'paused';
   /** Whether the animation has been let go at all, for `data-state`. */
   started: boolean;
-  /** Spread onto the element when `trigger` is `hover`; empty otherwise. */
-  handlers: React.HTMLAttributes<HTMLElement>;
+  /**
+   * Spread onto the element after the caller's props when `trigger` is
+   * `hover`, with the caller's handlers already inside; empty otherwise.
+   */
+  handlers: TriggerHandlers;
   /**
    * An endless effect that is off the screen, and held where it is until it
    * comes back. Already folded into `state`; a loop written in JavaScript reads
@@ -466,7 +481,8 @@ export function useAnimationRun({
   once,
   threshold,
   paused,
-  infinite
+  infinite,
+  caller
 }: AnimationRunOptions): AnimationRun {
   const node = React.useRef<HTMLElement | null>(null);
   const [started, setStarted] = React.useState(trigger === 'mount');
@@ -577,19 +593,27 @@ export function useAnimationRun({
     }
   }, [trigger, play, start]);
 
-  const handlers: React.HTMLAttributes<HTMLElement> =
+  const handlers: TriggerHandlers =
     trigger === 'hover'
       ? {
-          onPointerEnter: start,
+          onPointerEnter: (event) => {
+            caller?.onPointerEnter?.(event);
+            start();
+          },
           // Focus counts, or an effect on something keyboard-reachable would
           // never run for a reader who is not holding a mouse.
-          onFocus: start,
-          onPointerLeave: () => {
+          onFocus: (event) => {
+            caller?.onFocus?.(event);
+            start();
+          },
+          onPointerLeave: (event) => {
+            caller?.onPointerLeave?.(event);
             if (infinite) {
               setStarted(false);
             }
           },
-          onBlur: () => {
+          onBlur: (event) => {
+            caller?.onBlur?.(event);
             if (infinite) {
               setStarted(false);
             }
@@ -668,6 +692,7 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
     threshold,
     paused,
     infinite,
+    caller,
     children,
     stagger = 0,
     durationStep = 0,
@@ -677,7 +702,7 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
     ...slots
   } = params;
 
-  const run = useAnimationRun({ trigger, play, once, threshold, paused, infinite });
+  const run = useAnimationRun({ trigger, play, once, threshold, paused, infinite, caller });
   const keyframe = effect ? animationClasses[effect] : ownClass;
   const effectClass = keyframe ? `${animBaseClass} ${keyframe}` : '';
   const spread = effectClass !== '' && staggers({ stagger, durationStep, reverse });

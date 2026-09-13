@@ -294,6 +294,8 @@
 
 - **A child put in front of the others no longer remounts the ones after it in `Stack`, `Timeline` and `Carousel`.** Each drew a wrapper around every child and keyed it by position, which threw the caller's own keys away: a new first avatar, step or slide handed every later wrapper a different child, so React mounted all of them again, reloading their images, dropping their state and replaying a `Stack`'s entrance. The wrappers take the child's key now.
 
+- **An `Animate*` with `trigger="hover"` runs the caller's `onPointerEnter`, `onPointerLeave`, `onFocus` and `onBlur` beside its own.** Fourteen of them spread the trigger's handlers over the caller's and threw those away, and `AnimateTyping`, `AnimateMarquee` and `AnimateHeadline` spread them the other way round, so a caller's handler took the trigger off and the effect never started.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

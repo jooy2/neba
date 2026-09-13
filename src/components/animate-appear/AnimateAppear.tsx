@@ -95,6 +95,7 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,

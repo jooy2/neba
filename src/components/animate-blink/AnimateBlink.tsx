@@ -70,6 +70,7 @@ export const AnimateBlink = React.forwardRef<HTMLDivElement, AnimateBlinkProps>(
     ref
   ) {
     const animate = useAnimateElement({
+      caller: props,
       effect: 'blink',
       duration: Math.max(duration, MIN_BLINK_DURATION),
       delay,

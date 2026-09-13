@@ -91,6 +91,7 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,
@@ -267,8 +268,8 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
         style={style}
         data-neba-animation="typing"
         data-state={run.state}
-        {...run.handlers}
         {...props}
+        {...run.handlers}
       >
         <span className={srOnlyClasses}>{source}</span>
         <span aria-hidden="true" className="whitespace-pre-wrap">

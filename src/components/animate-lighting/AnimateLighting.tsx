@@ -96,6 +96,7 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
     } = useStyleDefaults(rawProps, ['size']);
 
     const animate = useAnimateElement({
+      caller: props,
       // The keyframe runs on a pseudo-element rather than on the root, so there
       // is no effect class to apply here — only the slots it reads.
       effect: null,

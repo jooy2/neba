@@ -120,6 +120,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,

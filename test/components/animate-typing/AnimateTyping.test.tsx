@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { AnimateTyping } from 'neba';
 
@@ -9,6 +10,20 @@ function typed(root: Element): string {
 
 describe('AnimateTyping', () => {
   describe('rendering', () => {
+    it('runs a hover handler of the caller beside its own', async () => {
+      const onPointerEnter = vi.fn();
+      const screen = await render(
+        <AnimateTyping trigger="hover" onPointerEnter={onPointerEnter} data-testid="typing">
+          Hello there
+        </AnimateTyping>
+      );
+
+      await userEvent.hover(screen.getByTestId('typing'));
+
+      expect(onPointerEnter).toHaveBeenCalledOnce();
+      await expect.element(screen.getByTestId('typing')).toHaveAttribute('data-state', 'running');
+    });
+
     it('says which effect it is running', async () => {
       const screen = await render(<AnimateTyping data-testid="typing">Hello there</AnimateTyping>);
 

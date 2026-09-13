@@ -84,6 +84,7 @@ export const AnimateGrow = React.forwardRef<HTMLDivElement, AnimateGrowProps>(fu
   ref
 ) {
   const animate = useAnimateElement({
+    caller: props,
     effect: 'grow',
     duration,
     delay,

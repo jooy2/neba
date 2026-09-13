@@ -80,6 +80,7 @@ export const AnimateFloat = React.forwardRef<HTMLDivElement, AnimateFloatProps>(
     const { x, y } = slideOffsets(from, distance);
 
     const animate = useAnimateElement({
+      caller: props,
       // Its own keyframe rather than one out of the shared table: this is not
       // an entrance, so putting it in the `transition` vocabulary would make
       // every component that offers one pay for a row it can never use.

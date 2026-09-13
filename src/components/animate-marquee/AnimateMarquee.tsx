@@ -101,6 +101,7 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
     ref
   ) {
     const run = useAnimationRun({
+      caller: props,
       trigger,
       play,
       once,
@@ -221,8 +222,8 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
         data-neba-animation="marquee"
         data-state={run.state}
         data-pause-on-hover={pauseOnHover ? '' : undefined}
-        {...run.handlers}
         {...props}
+        {...run.handlers}
       >
         {Array.from({ length: Math.max(1, copies) }, (_, index) => track(index))}
       </div>

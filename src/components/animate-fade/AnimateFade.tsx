@@ -72,6 +72,7 @@ export const AnimateFade = React.forwardRef<HTMLDivElement, AnimateFadeProps>(fu
   ref
 ) {
   const animate = useAnimateElement({
+    caller: props,
     effect: 'fade',
     duration,
     delay,
