@@ -4,11 +4,11 @@ The working list for the audit of every public component, started on 2026-09-12.
 
 ## State
 
-- Three batches are done, and the last push was `039b18c5` on 2026-09-13.
-- Decisions C1–C5 and D1–D19 were asked on 2026-09-13 and have no answer yet. They are listed under [Pending decisions](#pending-decisions).
-- The next batch starts after item 124. The first open item without a tag is 135.
+- Four batches are done, and the last push was `fdbd5603` on 2026-09-13.
+- Decisions C1–C5, D1–D19, E1–E7 and F1–F35 were asked on 2026-09-13 and have no answer yet. They are listed under [Pending decisions](#pending-decisions).
+- The next batch starts after item 190. The first open item without a tag is 191.
 - Item 109 waits for 129 and is done together with it.
-- The next batch labels its questions E (approvals) and F (choices), so an answer like "F3 (b)" names exactly one question.
+- The next batch labels its questions G (approvals) and H (choices), so an answer like "H3 (b)" names exactly one question.
 
 ## How to run a batch
 
@@ -79,6 +79,54 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **D17 (119)** Non-modal Dialog, Overlay and Drawer: (a) `pointer-events-none` on the Viewport and the Backdrop when `modal !== true`; (b) fix the docs only.
 - **D18 (120, Fieldset)** (a) read Base UI's Fieldset context so inner fields show the disabled state; (b) leave it.
 - **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
+
+### E. Approvals (recommended: approve all)
+
+- **E1 (132)** Chart `tickFormat`: narrow the return type to `string | number`, which is what the axis can write. A callback returning JSX becomes a type error instead of `[object Object]`.
+- **E2 (140)** `Menubar` and `NavigationMenu` with `orientation="vertical"`: popups open beside the bar, toward the inline end, instead of downward over the next item.
+- **E3 (157)** `TimePicker`: the default `referenceDate` becomes the start of today, so pressing an hour on an empty picker gives that hour at 00 minutes and 00 seconds.
+- **E4 (170)** `Table` `striped`: rows take the 4% mix of `--neba-fg` that DataTable uses, so the stripes show on a white page.
+- **E5 (172)** `DataList` `orientation="vertical"`: the gap inside a pair becomes smaller than the gap between pairs, and `dividers` rules between pairs rather than inside them.
+- **E6 (173)** `Anchor` `rail`: nested rows are indented with `padding-inline-start`, so their highlight stays on the rail.
+- **E7 (168, new)** `DataTable` that has a tab stop but no selection (`onRowActivate` or an editable column): ring the sheet while the table has the focus, as a selecting table does. Today it shows no focus indicator until an arrow key makes a row active.
+
+### F. Choices (recommended: (a) for all)
+
+- **F1 (125)** Hydration errors inside `<p>`: (a) the wrappers in Image, Stack, AnimateTyping, AnimateHeadline and AnimateMarquee become `<span>` elements with a block display, and the three Animate components take `render`; (b) document that they cannot sit inside a paragraph.
+- **F2 (126)** Server and client renders disagree: (a) Calendar marks today and NebaProvider reads the stored scheme after hydration, and the chart docs tell server-rendered pages to pass `locale`; (b) document all three.
+- **F3 (127)** Nested NebaProvider: (a) an inner provider merges its `defaults` over the outer ones, inherits the direction when it has none, and only the outermost provider writes the scheme to `<html>`; (b) document that providers do not nest and drop the guide's recommendation.
+- **F4 (129, with 109)** `stacked="full"`: (a) keep each original value as a number, write it with `format` and the locale, count only visible series toward 100%, and move the shared normalisation into `internal/`; (b) fix the formatting only.
+- **F5 (130)** A string chart `height`: (a) measure the height, so every chart takes any CSS length; (b) narrow `height` to `number` (breaking).
+- **F6 (131)** Stacked LineChart and AreaChart with negative values: (a) stack marks by sign, as the axis already does; (b) document that stacking takes non-negative values.
+- **F7 (133)** Legend hidden state: (a) remember hidden series by name, falling back to the index, so reordered data hides the same series; (b) reset it whenever the series change.
+- **F8 (134)** A ninth series: (a) a development warning, and the docs say the slots repeat from there; (b) fix the docs only.
+- **F9 (142)** Combobox `limit` and the "Add" row: (a) `limit` counts options only, so the add row is always drawn; (b) the add row takes the place of the last option when the list is full.
+- **F10 (143)** FilePicker in a form: (a) keep the hidden input's files in step with the list through `DataTransfer`, keep `required` while the list is empty, use `readOnly` rather than `disabled`, and fix the `maxFiles` JSDoc; (b) document that the files are read from `onValueChange`.
+- **F11 (144)** Transfer ids missing from `items`: (a) keep them in the value in both directions; (b) drop them in both directions.
+- **F12 (148)** NumberField ref: (a) `forwardRef` to the input, as TextField does; (b) `forwardRef` to the root.
+- **F13 (149)** IconButton in a ButtonGroup: (a) move the round radius into a class, so the group's joined corners apply; (b) document that an IconButton is not joined.
+- **F14 (151)** Rating without `name`: (a) write no `name`, so nothing is submitted; (b) keep the generated name and document it.
+- **F15 (152)** FloatingActionButton `openOnHover`: (a) a click just after the hover opened the dial keeps it open; (b) turn `openOnHover` off by default.
+- **F16 (153)** BottomNavigation `labels="selected"`: (a) reserve the name line on every item, so the glyphs stay put; (b) leave it.
+- **F17 (154)** Calendar `elevation` and `bordered`: (a) `elevation` draws its shadow and `bordered` draws the popup's sheet; (b) remove `elevation` (breaking).
+- **F18 (155)** Pressing a date before the start of a range: (a) Calendar and DateRangePicker both start a new range there; (b) both swap the ends.
+- **F19 (156)** DateRangePicker closed after one click: (a) drop the half range and keep the previous one, as the docs say; (b) keep the half range and fix the docs.
+- **F20 (158)** A value outside `minDate`, `maxDate` or `minTime`: (a) clamp it on commit with `clampDate`, which also settles D15; (b) commit it and mark the field `invalid`.
+- **F21 (160)** Pickers in a form: (a) submit nothing while `disabled`, and let `required` block an empty submit through the form's own validation; (b) fix `disabled` only and document `required`.
+- **F22 (165)** DataTable `manual={['pages']}` selection: (a) keep the keys chosen on other pages when a range or the header tick is used; (b) document that a manual table selects one page at a time.
+- **F23 (168)** DataTable rows with no group: (a) head them with a word from i18n, "No group", in all 18 locales; (b) show the count with no title; (c) draw no heading row for them.
+- **F24 (169)** DataTable `Date` cell without `render`: (a) write it as a date in the table's locale; (b) document that a `Date` needs `render`.
+- **F25 (171)** Table `stickyHeader` in a height-limited box: (a) a `maxHeight` prop that makes the Table's own sheet scroll; (b) change the docs to what works now.
+- **F26 (174)** Anchor `activeHref`: (a) keep tracking in controlled mode and call `onActiveChange`, and start on the first heading when nothing scrolls; (b) document that `activeHref` turns tracking off.
+- **F27 (175)** Badge without `content`: (a) draw the dot the docs describe, and rewrite the tests that pass on an invisible one; (b) document that no content draws nothing.
+- **F28 (176)** Breadcrumb: (a) reset `unfolded` when `items` change, and give BreadcrumbItem `render` and `target`; (b) add `render` and `target` only.
+- **F29 (179)** Highlight and accents: (a) fold accents as `internal/search.ts` does, with a map back to positions in the original text; (b) document the difference.
+- **F30 (180)** Shortcut modifier order on macOS: (a) sort into ⌃⌥⇧⌘; (b) keep the written order and fix the docs.
+- **F31 (181)** Shortcuts on punctuation typed with Shift: (a) skip the Shift comparison for a single key that is neither a letter nor a digit, so `'?'` fires; (b) document `Shift+?`.
+- **F32 (184)** Typography with no `color`: (a) inherit, as the docs say, with the muted levels still muted; this lets a host's `.prose` heading colour through again; (b) fix the docs.
+- **F33 (185)** Typography `caption` and `overline` with `align` or `gutter`: (a) make them `block` when either is given; (b) document that both apply to block levels only.
+- **F34 (187)** Image with `preview`: (a) put `className` and `style` on the button, so it is the size of the picture (breaking where a caller styled the inner element); (b) document where they land.
+- **F35 (188)** Image `watermark` with `repeat`: (a) draw it as an inline `<svg>` pattern, where the colour tokens resolve; (b) document that `repeat` needs a literal colour.
 
 ## 1. Performance
 
@@ -260,22 +308,22 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
   - [x] TimelineItem: `style` erased the slots and the bullet size.
   - [x] Avatar, AppLogo: `imageProps.className` replaced `size-full object-cover`.
   - [ ] [decision] FloatingActionButton: `style` replaces the round radius, and `className` lands on the outer div instead of the button (`FloatingActionButton.tsx:471-495`). See D19.
-- [ ] **125** [major][decision] **Hydration errors inside `<p>`**: the root or a child is a `<div>`. Image (the default Skeleton and `AspectRatio` are divs; it happens with an MDX `img` mapping, `Image.tsx:1070, 1167`), Stack (its JSDoc says it can sit inside a paragraph, `Stack.tsx:140`), AnimateTyping, AnimateHeadline and AnimateMarquee (no `render` prop, so the Headline demo drops the heading semantics).
-- [ ] **126** [decision] **Server and client renders disagree.**
+- [ ] **125** [major][decision] **Hydration errors inside `<p>`**: the root or a child is a `<div>`. Image (the default Skeleton and `AspectRatio` are divs; it happens with an MDX `img` mapping, `Image.tsx:1070, 1167`), Stack (its JSDoc says it can sit inside a paragraph, `Stack.tsx:140`), AnimateTyping, AnimateHeadline and AnimateMarquee (no `render` prop, so the Headline demo drops the heading semantics). See F1.
+- [ ] **126** [decision] **Server and client renders disagree.** See F2.
   - Calendar reads `today()` and the runtime locale during render. With a UTC server and a reader in KST, the "today" mark differs between 00:00 and 09:00 every day, and the shown month differs at the end of a month (`Calendar.tsx:164-166`, `src/internal/date.ts:545`).
   - Charts without `locale` format with the server's locale and time zone, so `Mar 3` on the server does not match the client's localised date (`chart-frame.tsx:655, 668`).
   - NebaProvider reads the stored scheme in the `useState` initialiser, so the server renders `light` and the client `dark` (`NebaProvider.tsx:152-155`).
-- [ ] **127** [major][decision] **Nested NebaProvider**: an inner `defaults={{ density: 'compact' }}` erases the outer `size` and `locale`. A provider with no `direction` still forces `DirectionProvider` to `'ltr'`, so it switches back to LTR inside an RTL tree. Every provider writes the scheme onto `<html>`, which fights the outer toggle. The guide recommends nesting. `NebaProvider.tsx:178-191, 212-214`
+- [ ] **127** [major][decision] **Nested NebaProvider**: an inner `defaults={{ density: 'compact' }}` erases the outer `size` and `locale`. A provider with no `direction` still forces `DirectionProvider` to `'ltr'`, so it switches back to LTR inside an RTL tree. Every provider writes the scheme onto `<html>`, which fights the outer toggle. The guide recommends nesting. `NebaProvider.tsx:178-191, 212-214`. See F3.
 - [x] **128** `typesVersions` had no `hooks` entry.
 
 ### Charts common
 
-- [ ] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`
-- [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`
-- [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`
-- [ ] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`
-- [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`
-- [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`
+- [ ] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`. See F4.
+- [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`. See F5.
+- [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`. See F6.
+- [ ] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1.
+- [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`. See F7.
+- [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`. See F8.
 - [x] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`
 - [x] **136** **Axis title placement**: on a horizontal chart `xAxis.label` reserves space and is never drawn. On a vertical chart `yAxis.label` is drawn at `plot.top - 8`, which can fall outside the top of the SVG, while its space is added to the left band. `chart-frame.tsx:1038, 1064, 1901, 1910`
 
@@ -284,30 +332,30 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **137** [major] Form without `onSubmit` blocked `action`. Decided: fixed (breaking).
 - [x] **138** [major][decision] TreeSelect branches could not be expanded. Decided: `TreeItem` `selectable`.
 - [x] **139** [major] MenuItem and NavigationMenuItem ignored `disabled` with `href`. Decided: fixed (breaking).
-- [ ] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`
+- [ ] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`. See E2.
 - [x] **141** **CommandPalette**: when a command runs and closes it, or a controlled `open` becomes `false`, the query stays, so reopening shows a filtered list. `CommandPalette.tsx:265-284`
-- [ ] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`
-- [ ] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`
-- [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`
+- [ ] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`. See F9.
+- [ ] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`. See F10.
+- [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`. See F11.
 - [x] **145** **SegmentedButton, FloatingBottomNavigation**: when no item matches `value`, the highlight tile stays at its previous place and shows a wrong selection. FloatingBottomNavigation's default `labels="selected"` measures the width when the transition starts, so the tile can stay narrow (confirmed in the docs with two names of the same width). `SegmentedButton.tsx:265-268`, `FloatingBottomNavigation.tsx:285-288, 313-324`
 - [x] **146** **Checkbox**: `readOnly` together with `indeterminate` has no fill, so it does not look indeterminate. `Checkbox.tsx:111-117`
 - [x] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
-- [ ] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`
-- [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`
+- [ ] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`. See F12.
+- [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`. See F13.
 - [x] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
-- [ ] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`
-- [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`
-- [ ] **153** [major][decision] **BottomNavigation**: with `labels="selected"` the unselected names are absolutely positioned and reserve no line, so the glyphs jump up and down whenever the selection changes. `BottomNavigation.tsx:392-403`
+- [ ] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`. See F14.
+- [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`. See F15.
+- [ ] **153** [major][decision] **BottomNavigation**: with `labels="selected"` the unselected names are absolutely positioned and reserve no line, so the glyphs jump up and down whenever the selection changes. `BottomNavigation.tsx:392-403`. See F16.
 
 ### Date and time pickers
 
-- [ ] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`
-- [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`
-- [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`
-- [ ] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`
-- [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`
+- [ ] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`. See F17.
+- [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`. See F18.
+- [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`. See F19.
+- [ ] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3.
+- [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`. See F20.
 - [x] **159** **DateTimePicker**: on a daylight-saving change day, the check that disables hour rows is an hour off (with `TZ=America/New_York` on 2026-11-01, 09:30–09:59 cannot be chosen; confirmed in Node). Build the interval ends with `withTime`. `DateTimePicker.tsx:184-190`. The row's ends are `timeUnitRange` in `date.ts` now, which is the pure function 250 asks for.
-- [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`
+- [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`. See F21.
 - [x] **161** **date.ts**: `DISPLAY_SAMPLES` has no Friday, so a `format` with a weekday can change width (for `el` full the sample is 27 characters and the real maximum 29). `src/internal/date.ts:349-367`
 
 ### Display
@@ -315,36 +363,37 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **162** DataTable row checkboxes pressed with a mouse did not add to the selection.
 - [x] **163** **DataTable**: after scrolling to the bottom of 5,000 rows, a search that leaves 10 rows shows an empty body, because `virtualWindow` does not clamp `first` to the row count. `src/internal/data-table.ts:281-290`, `DataTable.tsx:1090-1099`
 - [x] **164** [major] DataTable put empty values first in descending order. Decided: always last (breaking).
-- [ ] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`
+- [ ] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`. See F22.
 - [x] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`
 - [x] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (confirmed with a real mouse in Chromium, Firefox and WebKit). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
 - [ ] **168** **DataTable**, small defects:
   - [x] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
   - [x] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`). A pinned heading was also stacked under the sticky headings beside it, found while checking this with the stylesheet loaded, and was fixed with it.
   - [x] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
-  - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).
+  - [ ] [decision] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`). See F23.
+  - [ ] [major] A table with a tab stop and no selection draws no focus ring on its sheet, and no row is marked until an arrow key moves; found while fixing the ring above. See E7.
   - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
   - [x] The header being dragged shows its state with `opacity-60` (`:1948`). It takes the `--n-soft` wash the Sidebar and Panes handles take while dragged.
-- [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`
-- [ ] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`
-- [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`
-- [ ] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`
-- [ ] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`
-- [ ] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`
-- [ ] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`
-- [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`
+- [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`. See F24.
+- [ ] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`. See E4.
+- [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`. See F25.
+- [ ] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`. See E5.
+- [ ] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`. See E6.
+- [ ] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`. See F26.
+- [ ] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`. See F27.
+- [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28.
 - [x] **177** Highlight remounted its children when a query started or cleared.
 - [x] **178** **Highlight**: `wholeWord` applies to a RegExp query although the docs say it is ignored. The `outline` variant leaves a 2px side border on each mark, so the text shifts as the reader types. `Highlight.tsx:78, 283, 297`
-- [ ] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`
-- [ ] **180** [decision] **Shortcut** does not sort modifiers on macOS, so `Mod+Shift+P` draws `⌘⇧P`. The docs say `⇧⌘P` (Apple's order ⌃⌥⇧⌘). `Shortcut.tsx:287, 291`
-- [ ] **181** [decision] **keys.ts**: punctuation shortcuts that need Shift never fire. `?` fails the `shiftKey` match, `Shift+/` fails because `event.key` is `?`, and only `Shift+?` works. The `useShortcut` JSDoc and the hooks guide use `'?'`. One option is to skip the Shift comparison for a single non-letter key. `src/internal/keys.ts:195-200, 214-227`
+- [ ] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`. See F29.
+- [ ] **180** [decision] **Shortcut** does not sort modifiers on macOS, so `Mod+Shift+P` draws `⌘⇧P`. The docs say `⇧⌘P` (Apple's order ⌃⌥⇧⌘). `Shortcut.tsx:287, 291`. See F30.
+- [ ] **181** [decision] **keys.ts**: punctuation shortcuts that need Shift never fire. `?` fails the `shiftKey` match, `Shift+/` fails because `event.key` is `?`, and only `Shift+?` works. The `useShortcut` JSDoc and the hooks guide use `'?'`. One option is to skip the Shift comparison for a single non-letter key. `src/internal/keys.ts:195-200, 214-227`. See F31.
 - [x] **182** **keys.ts**: the `event.code` fallback applies even when `event.key` is a different letter, so on AZERTY Ctrl+Z matches both `Ctrl+Z` and `Ctrl+W`. Fall back to `code` only when `event.key` is not an ASCII letter or digit. `keys.ts:218-221`
 - [x] **183** **useShortcut** does not skip keydown during IME composition, so a `Mod+Enter` bound with `ignoreWhileTyping: false` can fire in the middle of Korean composition. Skip when `isComposing` is set or `keyCode === 229`. `useShortcut.ts:75-86`, `keys.ts:156-163`
-- [ ] **184** [major][decision] **Typography**: an empty `color` is pinned to `--neba-fg` instead of inheriting, so inside a solid Alert it draws dark text on a dark fill. The docs say it inherits. `Typography.tsx:247-251`
-- [ ] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and ~~a `lines` of 7 or more silently clamps at 6~~ (fixed: the count is an `--n-lines` slot). `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`
+- [ ] **184** [major][decision] **Typography**: an empty `color` is pinned to `--neba-fg` instead of inheriting, so inside a solid Alert it draws dark text on a dark fill. The docs say it inherits. `Typography.tsx:247-251`. See F32.
+- [ ] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and ~~a `lines` of 7 or more silently clamps at 6~~ (fixed: the count is an `--n-lines` slot). `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`. See F33.
 - [x] **186** Image stayed invisible when given `onLoad` or `onError`; `protect` could be undone.
-- [ ] **187** [major][decision] **Image**: with `preview`, `className` and `style` land on the element inside the button, so the button spans the whole line and clicking empty space beside the picture opens it. `Image.tsx:1158, 1199, 1234`
-- [ ] **188** **Image**: ~~the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request~~ (fixed: `srcSet`, `crossOrigin` and `referrerPolicy` pass; `sizes` stays with the thumbnail so the preview picks a larger candidate). `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`
+- [ ] **187** [major][decision] **Image**: with `preview`, `className` and `style` land on the element inside the button, so the button spans the whole line and clicking empty space beside the picture opens it. `Image.tsx:1158, 1199, 1234`. See F34.
+- [ ] **188** **Image**: ~~the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request~~ (fixed: `srcSet`, `crossOrigin` and `referrerPolicy` pass; `sizes` stays with the thumbnail so the preview picks a larger candidate). `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`. See F35.
 - [x] **189** **Gallery**: with `hover="zoom"` the same `<img>` carries two `transition` shorthands and Image's wins, so the zoom jumps without a transition. `Gallery.tsx:440`, `Image.tsx:965`
 - [x] **190** **CodeBlock**: when `code` or `language` changes, the old code stays on screen until the new highlighting finishes, while the copy button already copies the new code. Store which source a result belongs to. `CodeBlock.tsx:415, 450-453`
 - [ ] **191** **CodeBlock**: the Ctrl/Cmd+A handling checks only `event.key`, so on non-Latin keyboard layouts the whole page is selected. Without `language` and with `copyable={false}`, an empty toolbar is drawn. `CodeBlock.tsx:489, 613`
