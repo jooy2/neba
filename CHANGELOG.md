@@ -250,6 +250,8 @@
 
 - **A `CommandPalette` group names the rows in it.** A group heading was a `presentation` element between rows of the listbox, tied to none of them, so arrowing from "Navigate" into "Actions" never said the group had changed. Each run of rows that share a `group` is now a `role="group"` named by its heading.
 
+- **A time column is one tab stop.** Every hour, minute and second in a `TimePicker` or `DateTimePicker` was a tab stop of its own and no key moved within a column, so getting past a 24-hour clock with seconds took a hundred and forty-four presses of Tab. Each column is now one stop, on its chosen row or its first; ↑ and ↓ walk it, Home and End jump to its ends, and Enter, Space or a press still chooses.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

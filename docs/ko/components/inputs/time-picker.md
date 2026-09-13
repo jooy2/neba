@@ -56,6 +56,7 @@ import { TimePicker } from 'neba';
 ## 접근성
 
 - 각 열은 `role="listbox"`이고 행은 `role="option"`입니다. 열의 이름은 `locale`에서 오고, `labels`로 직접 쓸 수도 있습니다.
+- 열마다 tab 정지점이 하나이며, 선택된 행이나 첫 행에 있습니다. ↑와 ↓로 열 안을 오가고 Home과 End로 양 끝으로 갑니다. 행을 고르는 것은 Enter, Space, 누르기입니다.
 - 선택된 행은 `aria-selected`, 막힌 행은 `disabled` 속성 대신 `aria-disabled`로 표시됩니다. 도달할 수 있어야 왜 고를 수 없는지 전달되기 때문입니다.
 - 팝업이 열릴 때 각 열의 선택된 행이 화면 안으로 스크롤됩니다.
 - 열 옆의 live region이 값이 바뀔 때마다 전체 시각을 읽어 줍니다.

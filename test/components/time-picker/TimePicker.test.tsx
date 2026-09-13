@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { TimePicker } from 'neba';
 
 /** Pinned, so the columns are a 12-hour dial and the trigger writes `2:30 PM`. */
@@ -128,6 +129,35 @@ describe('TimePicker', () => {
 
       // 5 on a PM dial is 17:00, and the minutes are untouched.
       expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2026, 6, 27, 17, 30));
+    });
+
+    // Every row a tab stop was a hundred and forty-four presses to get past a
+    // 24-hour clock with seconds.
+    it('stops once per column and walks a column with the arrow keys', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <TimePicker
+          locale={LOCALE}
+          label="Starts at"
+          defaultValue={HALF_TWO}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
+      const hour = screen.getByRole('listbox', { name: 'Hour' }).getByRole('option', { name: '2' });
+      await expect.element(hour).toHaveFocus();
+
+      await userEvent.keyboard('{Tab}');
+      const minutes = screen.getByRole('listbox', { name: 'Minute' });
+      await expect.element(minutes.getByRole('option', { name: '30' })).toHaveFocus();
+
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(minutes.getByRole('option', { name: '31' })).toHaveFocus();
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      await userEvent.keyboard('{Enter}');
+      expect(onValueChange.mock.calls[0][0]).toEqual(new Date(2026, 6, 27, 14, 31));
     });
 
     it('moves the whole time across the meridiem', async () => {

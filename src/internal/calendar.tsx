@@ -1288,62 +1288,106 @@ export function TimeGrid({
   const pad = (raw: number) => String(raw).padStart(2, '0');
   const displayHour = hour12 ? base.getHours() % 12 || 12 : base.getHours();
 
+  /**
+   * The arrow keys within a column, and Home and End to its ends.
+   *
+   * One row per column is a tab stop — the chosen one, or the first — so Tab
+   * moves between hours, minutes and seconds rather than through every one of
+   * them: a 24-hour clock with a seconds column was a hundred and forty-four
+   * presses to get past. The focus moves; choosing is still Enter, Space or a
+   * press, so arrowing past a row does not change the time.
+   */
+  const moveInColumn = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const options = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>('[role="option"]')
+    );
+    const at = options.indexOf(event.target as HTMLElement);
+    if (at < 0) {
+      return;
+    }
+
+    const next =
+      event.key === 'ArrowDown'
+        ? at + 1
+        : event.key === 'ArrowUp'
+          ? at - 1
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? options.length - 1
+              : null;
+    if (next === null) {
+      return;
+    }
+
+    event.preventDefault();
+    const target = options[Math.min(options.length - 1, Math.max(0, next))];
+    target.focus({ preventScroll: true });
+    revealInColumn(target);
+  };
+
   const column = (
     unit: TimeUnit,
     name: string,
     rows: number[],
     isChosen: (raw: number) => boolean,
     render: (raw: number) => string
-  ) => (
-    <div
-      key={unit}
-      role="listbox"
-      aria-label={name}
-      className={cx(
-        'flex flex-col gap-0.5 overflow-y-auto overscroll-contain',
-        // The same height as the calendar beside it, so a DateTimePicker's popup
-        // is one rectangle rather than two of different heights.
-        'h-[calc(var(--n-cell)*7)] w-[calc(var(--n-cell)*2)]',
-        'scroll-py-0.5 [scrollbar-width:thin]'
-      )}
-    >
-      {rows.map((raw) => {
-        const at = candidate(unit, raw);
-        const chosen = value !== null && isChosen(raw);
-        const disabled = shouldDisableTime?.(at, unit) ?? false;
+  ) => {
+    const stop = Math.max(0, value === null ? 0 : rows.findIndex(isChosen));
 
-        return (
-          <button
-            key={raw}
-            type="button"
-            role="option"
-            aria-selected={chosen}
-            aria-disabled={disabled || undefined}
-            data-chosen={chosen ? 'true' : undefined}
-            className={cx(
-              cellBaseClasses,
-              cellRadiusClasses[size],
-              controlHeightClasses[size],
-              controlTextClasses[size],
-              'w-full shrink-0',
-              disabled
-                ? 'cursor-not-allowed text-(--neba-disabled-fg)'
-                : chosen
-                  ? 'cursor-pointer bg-(--n-fill) font-semibold text-(--n-on-solid) hover:bg-(--n-fill-hover) active:bg-(--n-fill-active)'
-                  : 'cursor-pointer text-(--neba-fg) hover:bg-(--n-soft) active:bg-(--n-soft-press)'
-            )}
-            onClick={() => {
-              if (!disabled) {
-                onChange(at);
-              }
-            }}
-          >
-            {render(raw)}
-          </button>
-        );
-      })}
-    </div>
-  );
+    return (
+      <div
+        key={unit}
+        role="listbox"
+        aria-label={name}
+        onKeyDown={moveInColumn}
+        className={cx(
+          'flex flex-col gap-0.5 overflow-y-auto overscroll-contain',
+          // The same height as the calendar beside it, so a DateTimePicker's popup
+          // is one rectangle rather than two of different heights.
+          'h-[calc(var(--n-cell)*7)] w-[calc(var(--n-cell)*2)]',
+          'scroll-py-0.5 [scrollbar-width:thin]'
+        )}
+      >
+        {rows.map((raw, index) => {
+          const at = candidate(unit, raw);
+          const chosen = value !== null && isChosen(raw);
+          const disabled = shouldDisableTime?.(at, unit) ?? false;
+
+          return (
+            <button
+              key={raw}
+              type="button"
+              role="option"
+              aria-selected={chosen}
+              aria-disabled={disabled || undefined}
+              data-chosen={chosen ? 'true' : undefined}
+              tabIndex={index === stop ? 0 : -1}
+              className={cx(
+                cellBaseClasses,
+                cellRadiusClasses[size],
+                controlHeightClasses[size],
+                controlTextClasses[size],
+                'w-full shrink-0',
+                disabled
+                  ? 'cursor-not-allowed text-(--neba-disabled-fg)'
+                  : chosen
+                    ? 'cursor-pointer bg-(--n-fill) font-semibold text-(--n-on-solid) hover:bg-(--n-fill-hover) active:bg-(--n-fill-active)'
+                    : 'cursor-pointer text-(--neba-fg) hover:bg-(--n-soft) active:bg-(--n-soft-press)'
+              )}
+              onClick={() => {
+                if (!disabled) {
+                  onChange(at);
+                }
+              }}
+            >
+              {render(raw)}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div
