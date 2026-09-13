@@ -178,7 +178,18 @@ const thumbClasses = [
   'data-[dragging]:[box-shadow:var(--neba-shadow-1),0_0_0_6px_var(--n-soft-hover)]'
 ].join(' ');
 
-const disabledSliderClasses = '[filter:saturate(0.25)] opacity-70 [&_*]:cursor-not-allowed';
+/**
+ * Disabled is the three parts in the disabled tokens a Button uses, not the
+ * slider faded: `opacity` is the one axis the design language keeps off every
+ * state, since it takes the label and the marks down with the control.
+ */
+const disabledRailClasses = 'neba-slider-rail rounded-full bg-(--neba-disabled-bg)';
+const disabledIndicatorClasses = 'neba-slider-indicator rounded-full bg-(--neba-disabled-fg)';
+const disabledThumbClasses = [
+  'neba-slider-thumb rounded-full border bg-(--neba-surface)',
+  surfaceClasses,
+  '[border-color:var(--neba-disabled-border)] shadow-none'
+].join(' ');
 
 /**
  * The marks a `marks` of `true` stands for: one at every step.
@@ -298,14 +309,19 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
     >
       <BaseUISlider.Track
         className={cx(
-          railClasses,
+          disabled ? disabledRailClasses : railClasses,
           vertical
             ? `${verticalThicknessClasses[size]} h-full`
             : `${trackThicknessClasses[size]} w-full`,
           classNames?.track
         )}
       >
-        <BaseUISlider.Indicator className={cx(indicatorClasses, classNames?.indicator)} />
+        <BaseUISlider.Indicator
+          className={cx(
+            disabled ? disabledIndicatorClasses : indicatorClasses,
+            classNames?.indicator
+          )}
+        />
         {Array.from({ length: thumbCount }, (_, index) => (
           <BaseUISlider.Thumb
             key={index}
@@ -315,7 +331,11 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
             aria-describedby={describedBy}
             getAriaLabel={getAriaLabel}
             getAriaValueText={getAriaValueText}
-            className={cx(thumbClasses, thumbSizeClasses[size], classNames?.thumb)}
+            className={cx(
+              disabled ? disabledThumbClasses : thumbClasses,
+              thumbSizeClasses[size],
+              classNames?.thumb
+            )}
           />
         ))}
       </BaseUISlider.Track>
@@ -379,7 +399,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
       className={cx(
         'flex',
         vertical ? 'w-fit flex-col items-center gap-2' : 'w-full flex-col gap-1.5',
-        disabled ? disabledSliderClasses : '',
+        disabled ? '[&_*]:cursor-not-allowed' : '',
         className ?? ''
       )}
       style={{ ...slots, ...style }}

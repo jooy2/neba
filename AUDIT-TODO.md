@@ -54,7 +54,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 - **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
 - **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
-- **C5 (120)** Disabled appearance: Accordion and Collapsible use `data-[disabled]:`, RadioGroup passes the group's `disabled` through context, SegmentedButton gets a disabled branch, and Slider shows the state in colour instead of `opacity-70`.
 
 ### D. Choices (recommended: (a) for all)
 
@@ -285,11 +284,11 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
   - Only some keys: DatePicker and DateRangePicker (`density`, `variant` missing), TimePicker and DateTimePicker (`variant` missing), BarChart (`size`, `density`), ScatterChart (`size`).
   - The opposite: TextLink takes `size`, so under a `size="lg"` provider every link inside running text becomes 15px.
 - [ ] **119** [decision] **Dialog, Overlay, Drawer**: with `modal="trap-focus"` or `modal={false}` the Backdrop and the `fixed inset-0` Viewport still take the pointer, so the page cannot be clicked and a click counts as an outside click that closes the popup. The docs say "scrollable and clickable". Give the Viewport and Backdrop `pointer-events-none` and the Popup `pointer-events-auto` when `modal !== true`. `Dialog.tsx:269-285`, `Overlay.tsx:171-185`, `Drawer.tsx:520-523`. See D17.
-- [ ] **120** [major] **Disabled appearance does not apply.** See C5.
+- [ ] **120** [major] **Disabled appearance does not apply.** C5 approved; the Fieldset part is D18.
   - [x] Accordion, Collapsible: the Base UI trigger is `focusableWhenDisabled`, so it has no `disabled` attribute and the `disabled:` variant never matches. Use `data-[disabled]:` (`Accordion.tsx:321`, `Collapsible.tsx:211`). Done as a branch in JS rather than `data-[disabled]:`, which would have been decided against `hover:` and `data-[panel-open]:` by stylesheet order; the Accordion passes its own `disabled` through context.
   - [x] RadioGroup: the group's `disabled` is not in context, so a Radio looks enabled (`RadioGroup.tsx:34-38`).
   - [x] SegmentedButton: no disabled branch, so the colour family stays and grey text sits on the solid fill (`SegmentedButton.tsx:107-125, 178`).
-  - [ ] Slider: shows the state with `opacity-70`, against the design language (`Slider.tsx:168`).
+  - [x] Slider: shows the state with `opacity-70`, against the design language (`Slider.tsx:168`).
   - [ ] [decision] Fieldset: `disabled` is not reflected on the fields inside; it needs Base UI's Fieldset context (`Fieldset.tsx:55`). See D18.
 - [x] **121** Two cursor utilities were decided by stylesheet order on disabled fields and toggles.
 - [x] **122** Full-width ButtonGroup, ToggleGroup and SegmentedButton kept `inline-flex`.

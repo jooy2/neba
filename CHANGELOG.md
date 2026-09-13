@@ -372,6 +372,8 @@
 
 - **A disabled `SegmentedButton` drops its colour family.** It had no disabled drawing of its own: the groove and the tile kept the family's colours, and the chosen segment's grey label sat on the solid fill, where the checked ink and the disabled ink were decided by stylesheet order. The groove and the tile take the disabled ground a Button does, every label takes the disabled ink, and the tile under one disabled segment in an enabled set is greyed as well.
 
+- **A disabled `Slider` is drawn in the disabled colours rather than faded.** It was the whole slider desaturated and at 70% opacity, which took its label down with the control and put the state on the one axis no other state in the library uses. The rail, the fill and the thumb take the disabled ground, ink and hairline a Button uses, and the label keeps the disabled ink it already had.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

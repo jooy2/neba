@@ -146,6 +146,25 @@ describe('Slider', () => {
 
       await expect.element(screen.getByRole('slider')).toBeDisabled();
     });
+
+    // It was the whole slider at 70% opacity, which fades the label with it and
+    // is the one axis a state is never carried on.
+    it('shows disabled in colour rather than by fading', async () => {
+      const screen = await render(
+        <Slider
+          label="Volume"
+          defaultValue={40}
+          disabled
+          data-testid="slider"
+          classNames={{ track: 'a-track', indicator: 'a-fill' }}
+        />
+      );
+      const root = screen.getByTestId('slider').element();
+
+      expect(root.className).not.toMatch(/opacity/);
+      expect(root.querySelector('.a-track')).toHaveClass('bg-(--neba-disabled-bg)');
+      expect(root.querySelector('.a-fill')).toHaveClass('bg-(--neba-disabled-fg)');
+    });
   });
 
   describe('marks', () => {
