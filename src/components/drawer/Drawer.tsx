@@ -547,13 +547,25 @@ export function Drawer(rawProps: DrawerProps) {
       <BaseUIDialog.Portal>
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
-        <BaseUIDialog.Backdrop className={`neba-portal ${backdropClasses}`} />
+        {/* Not fully modal, the page beside the drawer stays usable: the scrim
+            and the viewport let the pointer through, and the panel takes it back. */}
+        <BaseUIDialog.Backdrop
+          className={cx(
+            'neba-portal',
+            backdropClasses,
+            modal === true ? '' : 'pointer-events-none'
+          )}
+        />
 
         <BaseUIDialog.Viewport
-          className={`neba-portal fixed inset-0 z-(--neba-z-portal) flex ${viewportClasses[side]}`}
+          className={cx(
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex',
+            viewportClasses[side],
+            modal === true ? '' : 'pointer-events-none'
+          )}
         >
           <BaseUIDialog.Popup
-            className={panel}
+            className={cx(panel, modal === true ? '' : 'pointer-events-auto')}
             style={{
               ...surfaceSlots(color, 3),
               ...sizeStyle,

@@ -314,4 +314,33 @@ describe('Dialog', () => {
       expect(screen.getByRole('dialog').element()).not.toHaveClass('body-class');
     });
   });
+  // Not fully modal, the page is meant to stay usable, and the scrim and the
+  // viewport covered it: nothing behind them could be clicked.
+  describe('not fully modal', () => {
+    const covers = () => [...document.querySelectorAll<HTMLElement>('.neba-portal')];
+
+    it('lets the pointer through to the page and takes it back on the dialog', async () => {
+      const screen = await render(<Dialog defaultOpen title="Filters" modal={'trap-focus'} />);
+      const popup = screen.getByRole('dialog');
+
+      await expect.element(popup).toBeInTheDocument();
+      expect(popup.element()).toHaveClass('pointer-events-auto');
+      // The scrim and the viewport, which are outside the popup.
+      expect(covers()).toHaveLength(2);
+
+      for (const node of covers()) {
+        expect(node).toHaveClass('pointer-events-none');
+      }
+    });
+
+    it('keeps covering the page when it is modal', async () => {
+      const screen = await render(<Dialog defaultOpen title="Filters" />);
+
+      await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+
+      for (const node of covers()) {
+        expect(node).not.toHaveClass('pointer-events-none');
+      }
+    });
+  });
 });

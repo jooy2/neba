@@ -376,6 +376,8 @@
 
 - **A field inside a disabled `Fieldset` looks disabled.** Base UI's Fieldset stopped every field inside it answering, but each Neba field draws itself from its own `disabled` prop and cannot read Base UI's fieldset state, so a disabled group of fields looked available. `TextField`, `NumberField`, `OtpField`, `Select`, `Combobox`, `Checkbox`, `RadioGroup`, `Switch` and the date and time pickers now take the Fieldset's `disabled` as well as their own.
 
+- **A `Dialog`, `Overlay` or `Drawer` that is not fully modal leaves the page clickable.** With `modal={false}` or `modal="trap-focus"` the page is meant to stay usable, but the scrim and the full-screen viewport the popup is centred in both covered it, so nothing behind them could be clicked. They let the pointer through now, and the popup takes it back. A fully modal one covers the page as before.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

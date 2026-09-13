@@ -168,8 +168,15 @@ export function Overlay(rawProps: OverlayProps) {
       <BaseUIDialog.Portal>
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
+        {/* Not fully modal, the page stays usable: the scrim and the viewport
+            let the pointer through, and the content takes it back. */}
         <BaseUIDialog.Backdrop
-          className={`neba-portal fixed inset-0 z-(--neba-z-portal) ${popupFadeClasses} ${toneClasses[tone]}`}
+          className={cx(
+            'neba-portal fixed inset-0 z-(--neba-z-portal)',
+            popupFadeClasses,
+            toneClasses[tone],
+            modal === true ? '' : 'pointer-events-none'
+          )}
         />
 
         {/* The viewport is what the content is centred in, and it is also what
@@ -180,7 +187,8 @@ export function Overlay(rawProps: OverlayProps) {
           className={[
             'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center',
             alignClasses[align],
-            insetClasses[size]
+            insetClasses[size],
+            modal === true ? '' : 'pointer-events-none'
           ].join(' ')}
         >
           <BaseUIDialog.Popup
@@ -188,6 +196,7 @@ export function Overlay(rawProps: OverlayProps) {
             className={cx(
               'flex max-h-full max-w-full flex-col items-center justify-center',
               '[outline:none]',
+              modal === true ? '' : 'pointer-events-auto',
               popupFadeClasses,
               className ?? ''
             )}

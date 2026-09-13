@@ -278,8 +278,16 @@ export function Dialog(rawProps: DialogProps) {
       <BaseUIDialog.Portal>
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
+        {/* A dialog that is not fully modal leaves the page usable, but the scrim
+            and the viewport both cover it. They let the pointer through, and the
+            popup takes it back, or the page could not be clicked at all. */}
         <BaseUIDialog.Backdrop
-          className={cx('neba-portal', backdropClasses, classNames?.backdrop)}
+          className={cx(
+            'neba-portal',
+            backdropClasses,
+            modal === true ? '' : 'pointer-events-none',
+            classNames?.backdrop
+          )}
         />
 
         <BaseUIDialog.Viewport
@@ -290,12 +298,14 @@ export function Dialog(rawProps: DialogProps) {
             // own container's start edge. The popup caps its height instead and
             // scrolls its body, so the header and the actions stay put.
             fullScreen ? 'items-stretch' : 'items-center p-4',
+            modal === true ? '' : 'pointer-events-none',
             classNames?.viewport
           )}
         >
           <BaseUIDialog.Popup
             className={cx(
               popupClasses,
+              modal === true ? '' : 'pointer-events-auto',
               sheetBodyClasses[size],
               fullScreen
                 ? 'h-full max-w-none rounded-none'
