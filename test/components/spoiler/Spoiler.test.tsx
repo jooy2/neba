@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Button, Spoiler } from 'neba';
 import { ko, zhHant, registerMessages } from 'neba/locales';
 
@@ -168,6 +169,25 @@ describe('Spoiler', () => {
       await screen.getByRole('button', { name: 'Hide' }).click();
 
       expect(screen.getByTestId('spoiler').element().firstElementChild).toHaveAttribute('inert');
+    });
+
+    it('keeps the keyboard focus inside through a reveal and a cover', async () => {
+      const screen = await render(
+        <Spoiler reversible data-testid="spoiler">
+          Secret
+        </Spoiler>
+      );
+      const content = screen.getByTestId('spoiler').element().firstElementChild;
+
+      screen.getByRole('button', { name: 'Reveal' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.poll(() => document.activeElement).toBe(content);
+
+      screen.getByRole('button', { name: 'Hide' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('button', { name: 'Reveal' })).toHaveFocus();
     });
 
     /*

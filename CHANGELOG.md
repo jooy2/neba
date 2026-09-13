@@ -126,6 +126,8 @@
 
 - **`HowToSteps` keeps the keyboard focus through Done and Start over.** Both remove the button that was pressed, so the focus fell to the page and a keyboard reader started again from the top. Done hands it to Start over, and Start over hands it back to the forward button.
 
+- **A `Spoiler` keeps the keyboard focus when it is revealed or covered again.** The pressed button went inert with the half it was in, which drops the focus to the page. Revealing now hands the focus to the content, and covering again hands it to the cover's button.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -189,6 +189,37 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
 
     const notice = description === false ? null : (description ?? messages.notice);
 
+    const contentRef = React.useRef<HTMLDivElement | null>(null);
+    const coverRef = React.useRef<HTMLDivElement | null>(null);
+
+    /*
+     * The button that was pressed is inside the half that has just gone inert —
+     * the cover when revealing, the hide row when covering again — and a focused
+     * element that turns inert loses the focus to `<body>`. Before the browser
+     * gets to that, the focus is handed to the half that is now live: the
+     * content that was revealed, or the cover's own button.
+     */
+    React.useLayoutEffect(() => {
+      const root = contentRef.current?.parentElement;
+      const focused = document.activeElement;
+
+      if (!root || !(focused instanceof HTMLElement) || !root.contains(focused)) {
+        return;
+      }
+
+      if (!focused.closest('[inert]')) {
+        return;
+      }
+
+      const next = open
+        ? contentRef.current
+        : coverRef.current?.querySelector<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+
+      next?.focus({ preventScroll: true });
+    }, [open]);
+
     return (
       <div
         ref={ref}
@@ -214,9 +245,12 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
         {...props}
       >
         <div
+          ref={contentRef}
           id={contentId}
+          // Focusable by script only, so a reveal can hand it the focus.
+          tabIndex={-1}
           className={cx(
-            'min-w-0',
+            'min-w-0 [outline:none]',
             padded ? boxPaddingClasses[density][size] : '',
             '[transition:filter_var(--neba-duration-fill)_var(--neba-ease)]',
             'motion-reduce:[transition-duration:0ms]',
@@ -276,6 +310,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
           </div>
         ) : null}
         <div
+          ref={coverRef}
           className={cx(
             'z-10 flex flex-col items-center justify-center gap-2 text-center',
             boxPaddingClasses[density][size],
