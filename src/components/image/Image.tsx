@@ -810,6 +810,11 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     classNames,
     style,
     src,
+    onLoad,
+    onError,
+    onContextMenu,
+    onDragStart,
+    draggable,
     ...props
   } = useStyleDefaults(rawProps, ['locale']);
 
@@ -976,11 +981,32 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         ...pose,
         ...guarded?.style
       }}
-      onLoad={(event) => settle('loaded', event.currentTarget)}
-      onError={(event) => settle('failed', event.currentTarget)}
-      onContextMenu={guarded?.onContextMenu}
-      onDragStart={guarded?.onDragStart}
-      draggable={guarded?.draggable}
+      // A caller's own handler runs beside the component's rather than instead
+      // of it: without `settle` a picture that loaded stays at `opacity: 0`, and
+      // without `stop` a `protect` that was asked for does nothing.
+      onLoad={(event) => {
+        settle('loaded', event.currentTarget);
+        onLoad?.(event);
+      }}
+      onError={(event) => {
+        settle('failed', event.currentTarget);
+        onError?.(event);
+      }}
+      onContextMenu={(event) => {
+        if (noMenu) {
+          stop(event);
+        }
+
+        onContextMenu?.(event);
+      }}
+      onDragStart={(event) => {
+        if (noDrag) {
+          stop(event);
+        }
+
+        onDragStart?.(event);
+      }}
+      draggable={noDrag ? false : draggable}
       {...(priority
         ? ({
             loading: 'eager',

@@ -62,6 +62,8 @@
 
 - **Ticking a `DataTable` row with the pointer adds it to the selection.** In `multiple` mode with `checkboxes`, the press on a tick reached the row first and replaced the selection with that row, and the tick's own click then took it away again, so ticking a second row left at most one chosen. A press on a checkbox, switch, radio or label inside a cell now belongs to that control, as a press on a button or a link already did.
 
+- **An `Image` given its own `onLoad` or `onError` still shows the picture.** The caller's handler replaced the one that marks the picture loaded, so it stayed at `opacity: 0` behind its placeholder for good, and a caller's `onContextMenu`, `onDragStart` or `draggable` switched `protect` off in the same way. Both handlers run now, the component's first.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

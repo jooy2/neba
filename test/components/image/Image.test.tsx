@@ -50,6 +50,19 @@ describe('Image', () => {
     await expect.element(screen.getByText('A ridge')).toBeInTheDocument();
   });
 
+  it('still shows the picture when a caller listens for the load', async () => {
+    // A file served over the network rather than a data URI: a data URI has
+    // already decoded by the time the component looks, and that path never
+    // reaches the `load` listener this is about.
+    const onLoad = vi.fn();
+    const screen = await render(
+      <Image src="/docs/public/samples/photos/alpine-lake-dawn.jpg" alt="A lake" onLoad={onLoad} />
+    );
+
+    await vi.waitFor(() => expect(onLoad).toHaveBeenCalled());
+    await expect.element(screen.getByRole('img', { name: 'A lake' })).toHaveClass('opacity-100');
+  });
+
   it('draws a fallback of its own when given one', async () => {
     const screen = await render(
       <Image src={BROKEN} alt="A ridge" fallback={<span>Could not load</span>} />
@@ -885,6 +898,21 @@ describe('Image', () => {
       picture.dispatchEvent(event);
 
       expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('keeps swallowing the context menu when a caller listens for it', async () => {
+      const onContextMenu = vi.fn();
+      const screen = await render(
+        <Image src={OK} alt="A ridge" protect onContextMenu={onContextMenu} />
+      );
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+      const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+
+      picture.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+      expect(onContextMenu).toHaveBeenCalled();
+      expect(picture).toHaveAttribute('draggable', 'false');
     });
 
     it('leaves the parts it was told to leave', async () => {
