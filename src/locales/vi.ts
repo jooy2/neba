@@ -113,7 +113,13 @@ export const vi: NebaLocale = {
     next: 'Ảnh tiếp theo'
   },
   image: { unavailable: 'Không tải được hình ảnh' },
-  chart: { label: 'Biểu đồ' },
+  chart: {
+    label: 'Biểu đồ',
+    size: 'Kích thước',
+    title: 'Nhãn',
+    start: 'Bắt đầu',
+    end: 'Kết thúc'
+  },
   scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
   breadcrumb: {
     label: 'Đường dẫn',
@@ -136,7 +142,12 @@ export const vi: NebaLocale = {
   },
   combobox: {
     empty: 'Không có kết quả',
-    remove: 'Gỡ bỏ {label}'
+    remove: 'Gỡ bỏ {label}',
+    add: 'Thêm “{label}”',
+    open: 'Mở'
+  },
+  toast: {
+    label: 'Thông báo'
   },
   overlay: {
     label: 'Lớp phủ'

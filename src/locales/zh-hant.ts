@@ -116,7 +116,13 @@ export const zhHant: NebaLocale = {
     next: '下一張圖片'
   },
   image: { unavailable: '圖片無法顯示' },
-  chart: { label: '圖表' },
+  chart: {
+    label: '圖表',
+    size: '大小',
+    title: '標籤',
+    start: '開始',
+    end: '結束'
+  },
   scroll: { label: '可捲動內容', previous: '向前捲動', next: '向後捲動' },
   breadcrumb: {
     label: '麵包屑導覽',
@@ -139,7 +145,12 @@ export const zhHant: NebaLocale = {
   },
   combobox: {
     empty: '沒有相符的項目',
-    remove: '移除 {label}'
+    remove: '移除 {label}',
+    add: '新增「{label}」',
+    open: '開啟'
+  },
+  toast: {
+    label: '通知'
   },
   overlay: {
     label: '遮罩層'

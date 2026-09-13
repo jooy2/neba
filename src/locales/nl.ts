@@ -113,7 +113,13 @@ export const nl: NebaLocale = {
     next: 'Volgende afbeelding'
   },
   image: { unavailable: 'Afbeelding niet beschikbaar' },
-  chart: { label: 'Grafiek' },
+  chart: {
+    label: 'Grafiek',
+    size: 'Grootte',
+    title: 'Label',
+    start: 'Begin',
+    end: 'Einde'
+  },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {
     label: 'Kruimelpad',
@@ -136,7 +142,12 @@ export const nl: NebaLocale = {
   },
   combobox: {
     empty: 'Geen resultaten',
-    remove: '{label} verwijderen'
+    remove: '{label} verwijderen',
+    add: '‘{label}’ toevoegen',
+    open: 'Openen'
+  },
+  toast: {
+    label: 'Meldingen'
   },
   overlay: {
     label: 'Overlay'

@@ -189,6 +189,11 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
   /** Accessible name of the clear button. Defaults to the `locale`'s word. */
   clearLabel?: string;
   /**
+   * Accessible name of the chevron that opens the list, when the field has no
+   * string `label` to name it by. Defaults to the `locale`'s word.
+   */
+  openLabel?: string;
+  /**
    * Accessible name of a chip's remove button. Receives the chip's label, and
    * defaults to the `locale`'s wording.
    */
@@ -360,6 +365,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     defaultOpen,
     onOpenChange,
     clearLabel,
+    openLabel,
     removeLabel,
     inputRef,
     shortcuts,
@@ -646,7 +652,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
           ) : null}
 
           <BaseUICombobox.Trigger
-            aria-label={typeof label === 'string' ? undefined : 'Open'}
+            aria-label={typeof label === 'string' ? undefined : (openLabel ?? messages.open)}
             className={adornmentClasses}
           >
             <BaseUICombobox.Icon
@@ -697,7 +703,9 @@ export function Combobox<Multiple extends boolean | undefined = false>(
                           <PlusIcon />
                         </span>
                         <span className="truncate">
-                          {customLabel ? customLabel(entry.label) : `Add “${entry.label}”`}
+                          {customLabel
+                            ? customLabel(entry.label)
+                            : fillMessage(messages.add, { label: entry.label })}
                         </span>
                       </React.Fragment>
                     ) : (

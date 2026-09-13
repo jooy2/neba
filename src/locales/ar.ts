@@ -113,7 +113,13 @@ export const ar: NebaLocale = {
     next: 'الصورة التالية'
   },
   image: { unavailable: 'الصورة غير متاحة' },
-  chart: { label: 'رسم بياني' },
+  chart: {
+    label: 'رسم بياني',
+    size: 'الحجم',
+    title: 'التسمية',
+    start: 'البداية',
+    end: 'النهاية'
+  },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {
     label: 'مسار التنقل',
@@ -136,7 +142,12 @@ export const ar: NebaLocale = {
   },
   combobox: {
     empty: 'لا توجد نتائج مطابقة',
-    remove: 'إزالة {label}'
+    remove: 'إزالة {label}',
+    add: 'إضافة «{label}»',
+    open: 'فتح'
+  },
+  toast: {
+    label: 'الإشعارات'
   },
   overlay: {
     label: 'تراكب'

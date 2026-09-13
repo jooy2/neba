@@ -540,11 +540,19 @@ export const imageMessages: MessageTable<ImageMessages> = {
 export interface ChartMessages {
   /** Names the drawing when the caller did not. */
   label: string;
+  /** The column of a scatter's table that holds each point's size. */
+  size: string;
+  /** The column of a timeline's table that holds each span's own label. */
+  title: string;
+  /** The column of a timeline's table where each span starts. */
+  start: string;
+  /** And where it ends. */
+  end: string;
 }
 
 /** The `chart` namespace, as every chart reads it. */
 export const chartMessages: MessageTable<ChartMessages> = {
-  '': { label: 'Chart' }
+  '': { label: 'Chart', size: 'Size', title: 'Label', start: 'Start', end: 'End' }
 };
 
 /**
@@ -664,14 +672,34 @@ export interface ComboboxMessages {
   empty: string;
   /** The × on one chosen entry. `{label}` is replaced with its own label. */
   remove: string;
+  /** The row that adds what was typed. `{label}` is replaced with the text. */
+  add: string;
+  /** The chevron that opens the list, when there is no label to name it by. */
+  open: string;
 }
 
 /** The `combobox` namespace, as Combobox read it. */
 export const comboboxMessages: MessageTable<ComboboxMessages> = {
   '': {
     empty: 'No matches',
-    remove: 'Remove {label}'
+    remove: 'Remove {label}',
+    add: 'Add “{label}”',
+    open: 'Open'
   }
+};
+
+/** ToastProvider. */
+export interface ToastMessages {
+  /**
+   * Names the region the stack lives in. It is a landmark a screen reader can
+   * jump to, and F6 moves the focus into it, so it is announced on its own.
+   */
+  label: string;
+}
+
+/** The `toast` namespace, as ToastProvider reads it. */
+export const toastMessages: MessageTable<ToastMessages> = {
+  '': { label: 'Notifications' }
 };
 
 /** Overlay. */
@@ -1016,6 +1044,8 @@ export interface NebaLocale {
   command?: Partial<CommandMessages>;
   /** Combobox. */
   combobox?: Partial<ComboboxMessages>;
+  /** Toast. */
+  toast?: Partial<ToastMessages>;
   /** Overlay. */
   overlay?: Partial<OverlayMessages>;
   /** Window. */
@@ -1054,6 +1084,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   transfer: transferMessages as MessageTable<never>,
   command: commandMessages as MessageTable<never>,
   combobox: comboboxMessages as MessageTable<never>,
+  toast: toastMessages as MessageTable<never>,
   overlay: overlayMessages as MessageTable<never>,
   window: windowMessages as MessageTable<never>,
   layout: layoutMessages as MessageTable<never>,

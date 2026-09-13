@@ -38,6 +38,8 @@
 
 - **`TreeItem` takes `selectable`.** A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch — the folder in a tree whose answers are the files.
 
+- **`ToastProvider` takes `label`, `Tour` takes `closeLabel` and `Combobox` takes `openLabel`.** Each overrides a word the component otherwise takes from its `locale`: the name of the region the toast stack lives in, the × that ends a tour, and the chevron of a combobox with no string label.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
@@ -141,6 +143,8 @@
 - **The preview button of an `Image` and the tiles of a `Gallery` draw a focus ring.** Both wrote their outline through a ring colour that nothing above them declares, and a custom property with no value drops the whole declaration, so a keyboard reader saw no focus at all. They fall back to the primary ring.
 
 - **Focus rings inside a clipped sheet are drawn inside the edge.** A ruled `Accordion`, a ruled `List` and a `ScrollArea` clip their overflow, and the ring drawn outside a full-width header, row or viewport was cut off on both sides — entirely, for a lone accordion section or the viewport. Those three rings sit inside the edge now, as `Collapsible`'s already did.
+
+- **The words `Combobox`, `ToastProvider`, `ScatterChart` and `TimelineChart` said in English now follow `locale`.** The row that adds what was typed, the name of a combobox's chevron, the name of the toast region, and the column headings of the scatter and timeline data tables were written in English whatever language the product spoke. All eighteen languages under `neba/locales` translate them, and a test now fails when a language is missing a word English has. The hidden tables' English headings change as well: a scatter's size column is `Size` rather than `z`, and a timeline's columns are `Label`, `Start` and `End`.
 
 ## 1.13.0 (2026-09-11)
 

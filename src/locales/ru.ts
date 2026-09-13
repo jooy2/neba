@@ -113,7 +113,13 @@ export const ru: NebaLocale = {
     next: 'Следующее изображение'
   },
   image: { unavailable: 'Изображение недоступно' },
-  chart: { label: 'Диаграмма' },
+  chart: {
+    label: 'Диаграмма',
+    size: 'Размер',
+    title: 'Метка',
+    start: 'Начало',
+    end: 'Конец'
+  },
   scroll: {
     label: 'Прокручиваемая область',
     previous: 'Прокрутить назад',
@@ -140,7 +146,12 @@ export const ru: NebaLocale = {
   },
   combobox: {
     empty: 'Совпадений нет',
-    remove: 'Удалить {label}'
+    remove: 'Удалить {label}',
+    add: 'Добавить «{label}»',
+    open: 'Открыть'
+  },
+  toast: {
+    label: 'Уведомления'
   },
   overlay: {
     label: 'Наложение'

@@ -2,7 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Combobox } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
 import { readOS } from '../../../src/internal/keys.js';
+
+registerMessages('ko', ko);
 
 const FRAMEWORKS = [
   { value: 'react', label: 'React' },
@@ -186,6 +189,22 @@ describe('Combobox', () => {
 
       await expect.element(screen.getByRole('option', { name: 'Vue' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Add “Vue”' }).query()).toBeNull();
+    });
+
+    it('offers what was typed in the language it was given', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" locale="ko" />);
+
+      await screen.getByRole('combobox').fill('qwik');
+
+      await expect.element(screen.getByRole('option', { name: '“qwik” 추가' })).toBeInTheDocument();
+    });
+
+    it('names the chevron in the language it was given when there is no label', async () => {
+      const screen = await render(
+        <Combobox items={FRAMEWORKS} aria-label="Framework" locale="ko" />
+      );
+
+      await expect.element(screen.getByRole('button', { name: '열기' })).toBeInTheDocument();
     });
 
     it('offers nothing at all when allowCustom is off', async () => {

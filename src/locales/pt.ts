@@ -113,7 +113,13 @@ export const pt: NebaLocale = {
     next: 'Próxima imagem'
   },
   image: { unavailable: 'Imagem indisponível' },
-  chart: { label: 'Gráfico' },
+  chart: {
+    label: 'Gráfico',
+    size: 'Tamanho',
+    title: 'Rótulo',
+    start: 'Início',
+    end: 'Fim'
+  },
   scroll: { label: 'Conteúdo rolável', previous: 'Rolar para trás', next: 'Rolar para a frente' },
   breadcrumb: {
     label: 'Trilha de navegação',
@@ -136,7 +142,12 @@ export const pt: NebaLocale = {
   },
   combobox: {
     empty: 'Nenhuma correspondência',
-    remove: 'Remover {label}'
+    remove: 'Remover {label}',
+    add: 'Adicionar “{label}”',
+    open: 'Abrir'
+  },
+  toast: {
+    label: 'Notificações'
   },
   overlay: {
     label: 'Sobreposição'

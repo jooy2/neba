@@ -113,7 +113,13 @@ export const id: NebaLocale = {
     next: 'Gambar berikutnya'
   },
   image: { unavailable: 'Gambar tidak tersedia' },
-  chart: { label: 'Bagan' },
+  chart: {
+    label: 'Bagan',
+    size: 'Ukuran',
+    title: 'Label',
+    start: 'Mulai',
+    end: 'Selesai'
+  },
   scroll: {
     label: 'Konten yang dapat digulir',
     previous: 'Gulir ke belakang',
@@ -140,7 +146,12 @@ export const id: NebaLocale = {
   },
   combobox: {
     empty: 'Tidak ada yang cocok',
-    remove: 'Hapus {label}'
+    remove: 'Hapus {label}',
+    add: 'Tambahkan “{label}”',
+    open: 'Buka'
+  },
+  toast: {
+    label: 'Notifikasi'
   },
   overlay: {
     label: 'Hamparan'

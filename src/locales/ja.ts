@@ -113,7 +113,13 @@ export const ja: NebaLocale = {
     next: '次の画像'
   },
   image: { unavailable: '画像を表示できません' },
-  chart: { label: 'グラフ' },
+  chart: {
+    label: 'グラフ',
+    size: 'サイズ',
+    title: 'ラベル',
+    start: '開始',
+    end: '終了'
+  },
   scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {
     label: 'パンくずリスト',
@@ -136,7 +142,12 @@ export const ja: NebaLocale = {
   },
   combobox: {
     empty: '一致する項目がありません',
-    remove: '{label} を削除'
+    remove: '{label} を削除',
+    add: '「{label}」を追加',
+    open: '開く'
+  },
+  toast: {
+    label: '通知'
   },
   overlay: {
     label: 'オーバーレイ'

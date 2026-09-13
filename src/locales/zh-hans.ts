@@ -116,7 +116,13 @@ export const zhHans: NebaLocale = {
     next: '下一张图片'
   },
   image: { unavailable: '图片不可用' },
-  chart: { label: '图表' },
+  chart: {
+    label: '图表',
+    size: '大小',
+    title: '标签',
+    start: '开始',
+    end: '结束'
+  },
   scroll: { label: '可滚动内容', previous: '向前滚动', next: '向后滚动' },
   breadcrumb: {
     label: '面包屑导航',
@@ -139,7 +145,12 @@ export const zhHans: NebaLocale = {
   },
   combobox: {
     empty: '无匹配项',
-    remove: '移除 {label}'
+    remove: '移除 {label}',
+    add: '添加“{label}”',
+    open: '打开'
+  },
+  toast: {
+    label: '通知'
   },
   overlay: {
     label: '遮罩层'

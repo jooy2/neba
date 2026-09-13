@@ -124,6 +124,14 @@ describe('Tour', () => {
       await expect.element(screen.getByText('Welcome.')).toBeInTheDocument();
     });
 
+    it('names the close button with a word of its own', async () => {
+      const screen = await render(<Page steps={STEPS} defaultOpen closeLabel="End the tour" />);
+
+      await expect
+        .element(screen.getByRole('button', { name: 'End the tour' }))
+        .toBeInTheDocument();
+    });
+
     it('offers no Previous on the first step', async () => {
       const screen = await render(<Page steps={STEPS} defaultOpen />);
 

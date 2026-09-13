@@ -113,7 +113,13 @@ export const th: NebaLocale = {
     next: 'รูปถัดไป'
   },
   image: { unavailable: 'ไม่พบรูปภาพ' },
-  chart: { label: 'แผนภูมิ' },
+  chart: {
+    label: 'แผนภูมิ',
+    size: 'ขนาด',
+    title: 'ป้ายกำกับ',
+    start: 'เริ่มต้น',
+    end: 'สิ้นสุด'
+  },
   scroll: { label: 'เนื้อหาที่เลื่อนได้', previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
   breadcrumb: {
     label: 'เส้นทางนำทาง',
@@ -136,7 +142,12 @@ export const th: NebaLocale = {
   },
   combobox: {
     empty: 'ไม่พบรายการที่ตรงกัน',
-    remove: 'นำ {label} ออก'
+    remove: 'นำ {label} ออก',
+    add: 'เพิ่ม “{label}”',
+    open: 'เปิด'
+  },
+  toast: {
+    label: 'การแจ้งเตือน'
   },
   overlay: {
     label: 'เลเยอร์ซ้อน'

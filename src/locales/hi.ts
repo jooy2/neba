@@ -113,7 +113,13 @@ export const hi: NebaLocale = {
     next: 'अगली छवि'
   },
   image: { unavailable: 'छवि उपलब्ध नहीं है' },
-  chart: { label: 'चार्ट' },
+  chart: {
+    label: 'चार्ट',
+    size: 'आकार',
+    title: 'लेबल',
+    start: 'शुरुआत',
+    end: 'अंत'
+  },
   scroll: {
     label: 'स्क्रॉल करने योग्य सामग्री',
     previous: 'पीछे स्क्रॉल करें',
@@ -140,7 +146,12 @@ export const hi: NebaLocale = {
   },
   combobox: {
     empty: 'कोई मिलान नहीं',
-    remove: '{label} हटाएँ'
+    remove: '{label} हटाएँ',
+    add: '“{label}” जोड़ें',
+    open: 'खोलें'
+  },
+  toast: {
+    label: 'सूचनाएँ'
   },
   overlay: {
     label: 'ओवरले'

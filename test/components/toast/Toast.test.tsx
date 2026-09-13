@@ -265,6 +265,26 @@ describe('Toast', () => {
       await expect.element(screen.getByRole('button', { name: '닫기' })).toBeInTheDocument();
     });
 
+    it('names the region the stack lives in, in the language it was given', async () => {
+      const screen = await render(
+        <Harness locale="ko" options={{ title: '저장됨', timeout: 0 }} />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+
+      await expect.element(screen.getByRole('region', { name: '알림' })).toBeInTheDocument();
+    });
+
+    it('takes a region name of its own over the locale', async () => {
+      const screen = await render(
+        <Harness locale="ko" label="Updates" options={{ title: '저장됨', timeout: 0 }} />
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+
+      await expect.element(screen.getByRole('region', { name: 'Updates' })).toBeInTheDocument();
+    });
+
     it('takes a word of its own over the locale', async () => {
       const screen = await render(
         <Harness locale="ko" closeLabel="Dismiss" options={{ title: '저장됨', timeout: 0 }} />

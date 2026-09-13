@@ -113,7 +113,13 @@ export const ko: NebaLocale = {
     next: '다음 이미지'
   },
   image: { unavailable: '이미지를 불러올 수 없습니다' },
-  chart: { label: '차트' },
+  chart: {
+    label: '차트',
+    size: '크기',
+    title: '레이블',
+    start: '시작',
+    end: '끝'
+  },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {
     label: '탐색 경로',
@@ -136,7 +142,12 @@ export const ko: NebaLocale = {
   },
   combobox: {
     empty: '일치하는 항목 없음',
-    remove: '{label} 삭제'
+    remove: '{label} 삭제',
+    add: '“{label}” 추가',
+    open: '열기'
+  },
+  toast: {
+    label: '알림'
   },
   overlay: {
     label: '오버레이'

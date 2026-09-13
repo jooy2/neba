@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box.js';
-import { actionMessages, useMessages } from '../../internal/i18n.js';
+import { actionMessages, toastMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon, severityIcon } from '../../internal/icons.js';
 import {
   controlSlots,
@@ -123,6 +123,11 @@ export interface ToastProviderProps extends Pick<NebaStyleProps, 'variant' | 'si
   locale?: string;
   /** Accessible name of every toast's × button. Defaults to the `locale`'s word. */
   closeLabel?: string;
+  /**
+   * Accessible name of the region the stack lives in, which a screen reader can
+   * jump to and F6 moves the focus into. Defaults to the `locale`'s word.
+   */
+  label?: string;
   /**
    * Class names for the parts of the stack. There is no `className` here — a
    * provider renders no element of its own to put one on.
@@ -379,10 +384,11 @@ function ToastViewport(
     Pick<ToastProviderProps, 'variant' | 'density' | 'classNames'> & {
       color: NebaColor;
       closeLabel: string;
+      regionLabel: string;
     }
 ) {
   const { toasts } = BaseUIToast.useToastManager<ToastData>();
-  const { position, width, classNames, ...rest } = props;
+  const { position, width, classNames, regionLabel, ...rest } = props;
 
   // One array rather than a fresh one per render. Every toast on screen is
   // handed it, and a new identity each time is a new prop each time on every
@@ -397,6 +403,7 @@ function ToastViewport(
       {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
           subtree a host may have scoped its CSS reset to. */}
       <BaseUIToast.Viewport
+        aria-label={regionLabel}
         className={cx(
           // Full width and `pointer-events-none`, so the strip across the top or
           // the bottom of the page is not a wall the rest of the app is behind.
@@ -449,11 +456,13 @@ export function ToastProvider(rawProps: ToastProviderProps) {
     width = 380,
     locale,
     closeLabel,
+    label,
     classNames,
     children
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
   const messages = useMessages(actionMessages, locale);
+  const toastWords = useMessages(toastMessages, locale);
 
   return (
     <BaseUIToast.Provider timeout={timeout} limit={limit}>
@@ -466,6 +475,7 @@ export function ToastProvider(rawProps: ToastProviderProps) {
         density={density}
         width={width}
         closeLabel={closeLabel ?? messages.close}
+        regionLabel={label ?? toastWords.label}
         classNames={classNames}
       />
     </BaseUIToast.Provider>

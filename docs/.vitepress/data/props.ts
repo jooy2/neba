@@ -4181,6 +4181,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: 'Skip 버튼의 문구', en: 'The Skip button' }
     },
     {
+      name: 'closeLabel',
+      type: 'string',
+      description: {
+        ko: '투어를 끝내는 × 버튼의 접근성 이름. 기본값은 locale의 단어입니다',
+        en: "Accessible name of the × that ends the tour. Defaults to the locale's word"
+      }
+    },
+    {
       name: 'className',
       type: 'string',
       description: { ko: '카드에 붙는 class', en: 'Class names for the card' }
@@ -6659,6 +6667,14 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string',
       description: { ko: '× 버튼의 접근성 이름', en: "Accessible name of every toast's × button" }
     },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '토스트 스택이 놓이는 영역의 접근성 이름. 스크린 리더가 이 영역으로 건너뛸 수 있고 F6이 포커스를 옮깁니다. 기본값은 locale의 단어입니다',
+        en: "Accessible name of the region the stack lives in, which a screen reader can jump to and F6 moves the focus into. Defaults to the locale's word"
+      }
+    },
     slotsProp('viewport', 'toast', 'title', 'description', 'action', 'close')
   ],
 
@@ -8337,6 +8353,14 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'clearLabel',
       type: 'string',
       description: { ko: '× 버튼의 접근성 이름', en: 'Accessible name of the clear button' }
+    },
+    {
+      name: 'openLabel',
+      type: 'string',
+      description: {
+        ko: '목록을 여는 펼침 버튼의 접근성 이름. 문자열 label이 없을 때 쓰이며, 기본값은 locale의 단어입니다',
+        en: "Accessible name of the chevron that opens the list, used when there is no string label. Defaults to the locale's word"
+      }
     },
     {
       name: 'name',

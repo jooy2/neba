@@ -113,7 +113,13 @@ export const pl: NebaLocale = {
     next: 'Następny obraz'
   },
   image: { unavailable: 'Obraz niedostępny' },
-  chart: { label: 'Wykres' },
+  chart: {
+    label: 'Wykres',
+    size: 'Rozmiar',
+    title: 'Etykieta',
+    start: 'Początek',
+    end: 'Koniec'
+  },
   scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
   breadcrumb: {
     label: 'Ścieżka nawigacji',
@@ -136,7 +142,12 @@ export const pl: NebaLocale = {
   },
   combobox: {
     empty: 'Brak wyników',
-    remove: 'Usuń {label}'
+    remove: 'Usuń {label}',
+    add: 'Dodaj „{label}”',
+    open: 'Otwórz'
+  },
+  toast: {
+    label: 'Powiadomienia'
   },
   overlay: {
     label: 'Nakładka'

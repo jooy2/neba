@@ -20,6 +20,7 @@ import {
   pointX,
   type MarkShape
 } from '../../internal/chart.js';
+import { chartMessages, useMessages } from '../../internal/i18n.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -299,9 +300,10 @@ interface TableProps {
  * both the fifth of their series have nothing whatever to do with each other,
  * and a table that filed them in one row would be inventing a relationship.
  *
- * The columns are named from the axis labels when there are any, and `x`, `y`
- * and `z` when there are not — the names the data model itself uses, which is
- * the honest fallback for a heading nobody supplied.
+ * The columns are named from the axis labels when there are any, and `x` and
+ * `y` when there are not — the names the data model itself uses, which is the
+ * honest fallback for a heading nobody supplied. The size column is a word in
+ * the `locale`'s language, since `z` is only a name inside the data model.
  */
 const ScatterTable = React.memo(function ScatterTable({
   id,
@@ -313,6 +315,7 @@ const ScatterTable = React.memo(function ScatterTable({
   locale,
   format
 }: TableProps) {
+  const words = useMessages(chartMessages, locale);
   const sized = series.some((one) =>
     one.data.some((datum) => typeof datum === 'object' && datum !== null && datum.z !== undefined)
   );
@@ -325,7 +328,7 @@ const ScatterTable = React.memo(function ScatterTable({
           <th scope="col" />
           <th scope="col">{xLabel ?? 'x'}</th>
           <th scope="col">{yLabel ?? 'y'}</th>
-          {sized ? <th scope="col">z</th> : null}
+          {sized ? <th scope="col">{words.size}</th> : null}
         </tr>
       </thead>
       <tbody>

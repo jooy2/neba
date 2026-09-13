@@ -11,7 +11,9 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Chip, Empty, Rating, Spoiler } from 'neba';
+import * as locales from 'neba/locales';
 import { ko, registerMessages } from 'neba/locales';
+import * as tables from '../../src/internal/i18n.js';
 
 describe('neba/locales', () => {
   describe('before a language is registered', () => {
@@ -33,6 +35,37 @@ describe('neba/locales', () => {
       const screen = await render(<Empty locale="constructor" />);
 
       await expect.element(screen.getByText('Nothing here')).toBeInTheDocument();
+    });
+  });
+
+  // A language is merged over English when it is read, so a missing key is not
+  // an error anywhere but here: it is an English word in the middle of a Korean
+  // page, and nothing else in the suite would notice it.
+  describe('every language that ships', () => {
+    const english = Object.fromEntries(
+      Object.entries(tables)
+        .filter(
+          ([name, table]) =>
+            name.endsWith('Messages') && typeof table === 'object' && table !== null && '' in table
+        )
+        .map(([name, table]) => [name.slice(0, -'Messages'.length), (table as never)['']])
+    ) as Record<string, Record<string, string>>;
+    const languages = Object.entries(locales).filter(
+      ([, value]) => typeof value === 'object' && value !== null
+    ) as [string, Record<string, Record<string, string>>][];
+
+    it('has every namespace and every key English has, and nothing else', () => {
+      const gaps = languages.flatMap(([tag, language]) =>
+        Object.entries(english).flatMap(([namespace, words]) => {
+          const theirs = Object.keys(language[namespace] ?? {}).sort();
+          const ours = Object.keys(words).sort();
+
+          return theirs.join() === ours.join() ? [] : [`${tag}.${namespace}`];
+        })
+      );
+
+      expect(languages.length).toBeGreaterThan(0);
+      expect(gaps).toEqual([]);
     });
   });
 

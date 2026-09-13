@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { TimelineChart } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
 import { render } from 'vitest-browser-react';
+
+registerMessages('ko', ko);
 
 const at = (iso: string) => new Date(iso);
 
@@ -309,7 +312,7 @@ describe('TimelineChart', () => {
 
       await expect.element(table).toBeInTheDocument();
       expect(table.element().querySelectorAll('tbody tr').length).toBe(3);
-      await expect.element(screen.getByRole('columnheader', { name: 'start' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('columnheader', { name: 'Start' })).toBeInTheDocument();
       await expect.element(screen.getByRole('cell', { name: 'Wireframes' })).toBeInTheDocument();
     });
 
@@ -326,8 +329,20 @@ describe('TimelineChart', () => {
         />
       );
 
-      await expect.element(screen.getByRole('columnheader', { name: 'end' })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: 'label' }).query()).toBeNull();
+      await expect.element(screen.getByRole('columnheader', { name: 'End' })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: 'Label' }).query()).toBeNull();
+    });
+  });
+
+  describe('the table, in another language', () => {
+    it('names its columns in the language it was given', async () => {
+      const screen = await render(<TimelineChart label="Plan" locale="ko" series={PLAN} />);
+
+      await expect.element(screen.getByRole('columnheader', { name: '시작' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('columnheader', { name: '끝' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('columnheader', { name: '레이블' }))
+        .toBeInTheDocument();
     });
   });
 

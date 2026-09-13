@@ -23,6 +23,7 @@ import {
   toNumber,
   type TimeScale
 } from '../../internal/chart.js';
+import { chartMessages, useMessages } from '../../internal/i18n.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -414,6 +415,7 @@ const TimelineTable = React.memo(function TimelineTable({
   corner,
   locale
 }: TableProps) {
+  const words = useMessages(chartMessages, locale);
   const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
 
   return (
@@ -422,9 +424,9 @@ const TimelineTable = React.memo(function TimelineTable({
       <thead>
         <tr>
           <th scope="col">{corner ?? ''}</th>
-          {titled ? <th scope="col">label</th> : null}
-          <th scope="col">start</th>
-          <th scope="col">end</th>
+          {titled ? <th scope="col">{words.title}</th> : null}
+          <th scope="col">{words.start}</th>
+          <th scope="col">{words.end}</th>
         </tr>
       </thead>
       <tbody>

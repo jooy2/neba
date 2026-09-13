@@ -2,6 +2,9 @@ import { Profiler } from 'react';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { ScatterChart } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 /** Four points, spread far enough apart that a hit test cannot be ambiguous. */
 const CLOUD = [
@@ -530,7 +533,7 @@ describe('ScatterChart', () => {
 
       await expect.element(screen.getByRole('columnheader', { name: 'x' })).toBeInTheDocument();
       await expect.element(screen.getByRole('columnheader', { name: 'y' })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: 'z' }).query()).toBeNull();
+      expect(screen.getByRole('columnheader', { name: 'Size' }).query()).toBeNull();
     });
 
     it('adds a z column only when a point has one', async () => {
@@ -538,8 +541,16 @@ describe('ScatterChart', () => {
         <ScatterChart label="Spend" series={[{ name: 'Q1', data: BUBBLES }]} />
       );
 
-      await expect.element(screen.getByRole('columnheader', { name: 'z' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('columnheader', { name: 'Size' })).toBeInTheDocument();
       await expect.element(screen.getByRole('cell', { name: '64' })).toBeInTheDocument();
+    });
+
+    it('names the size column in the language it was given', async () => {
+      const screen = await render(
+        <ScatterChart label="Spend" locale="ko" series={[{ name: 'Q1', data: BUBBLES }]} />
+      );
+
+      await expect.element(screen.getByRole('columnheader', { name: '크기' })).toBeInTheDocument();
     });
 
     it('leaves a gap out rather than writing it as a zero', async () => {

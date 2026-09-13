@@ -96,6 +96,8 @@ export interface TourProps extends Pick<NebaStyleProps, 'size' | 'color' | 'dens
   doneLabel?: React.ReactNode;
   /** The Skip button. */
   skipLabel?: React.ReactNode;
+  /** Accessible name of the × that ends the tour. Defaults to the `locale`'s word. */
+  closeLabel?: string;
   /** Class names for the card. */
   className?: string;
   /**
@@ -239,6 +241,7 @@ export function Tour(rawProps: TourProps) {
     nextLabel,
     doneLabel,
     skipLabel,
+    closeLabel,
     size = 'md',
     color = 'primary',
     density = 'default',
@@ -451,7 +454,7 @@ export function Tour(rawProps: TourProps) {
                 {dismissible ? (
                   <button
                     type="button"
-                    aria-label={actions.close}
+                    aria-label={closeLabel ?? actions.close}
                     onClick={() => setOpen(false)}
                     className={cx(
                       'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',

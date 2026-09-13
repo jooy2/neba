@@ -113,7 +113,13 @@ export const tr: NebaLocale = {
     next: 'Sonraki görsel'
   },
   image: { unavailable: 'Görsel kullanılamıyor' },
-  chart: { label: 'Grafik' },
+  chart: {
+    label: 'Grafik',
+    size: 'Boyut',
+    title: 'Etiket',
+    start: 'Başlangıç',
+    end: 'Bitiş'
+  },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {
     label: 'Gezinti yolu',
@@ -136,7 +142,12 @@ export const tr: NebaLocale = {
   },
   combobox: {
     empty: 'Eşleşme yok',
-    remove: '{label} kaldır'
+    remove: '{label} kaldır',
+    add: '“{label}” ekle',
+    open: 'Aç'
+  },
+  toast: {
+    label: 'Bildirimler'
   },
   overlay: {
     label: 'Kaplama'
