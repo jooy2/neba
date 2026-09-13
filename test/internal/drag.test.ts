@@ -184,6 +184,38 @@ describe('beginPointerDrag', () => {
     });
   });
 
+  describe('without capture', () => {
+    it('hears the gesture anywhere in the document and captures nothing', () => {
+      const target = host();
+      const elsewhere = host();
+      const onMove = vi.fn();
+      const onEnd = vi.fn();
+      const capture = vi.fn();
+
+      target.setPointerCapture = capture;
+      beginPointerDrag({ target, pointerId: 1, onMove, onEnd, capture: false });
+
+      send(elsewhere, 'pointermove');
+      send(elsewhere, 'pointerup');
+      send(elsewhere, 'pointermove');
+
+      expect(capture).not.toHaveBeenCalled();
+      expect(onMove).toHaveBeenCalledTimes(1);
+      expect(onEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it('takes its document listeners away on release', () => {
+      const target = host();
+      const onMove = vi.fn();
+
+      beginPointerDrag({ target, pointerId: 1, onMove, capture: false })();
+
+      send(target, 'pointermove');
+
+      expect(onMove).not.toHaveBeenCalled();
+    });
+  });
+
   /*
    * Capture is an optimisation and not a requirement — the listeners are on the
    * target either way — so a pointer that is no longer active must not take the

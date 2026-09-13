@@ -1213,9 +1213,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const startX = event.clientX;
     let armed = false;
 
+    // Not captured, for the reason the row drag gives: the press may be a sort,
+    // and a click captured to the header never reaches its button.
     reorderRef.current = beginPointerDrag({
       target: cell,
       pointerId: event.pointerId,
+      capture: false,
       onMove: (moveEvent) => {
         if (!armed) {
           if (Math.abs(moveEvent.clientX - startX) < 6) {
@@ -1686,9 +1689,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     dragRef.current = { y: clientY, speed: 0, frame: null, stop, key };
 
     /*
-     * Captured to the table rather than to the row that was pressed: a virtual
-     * body unmounts a row the moment it scrolls away, and this is the one drag
-     * whose whole point is to scroll the body past where it started.
+     * Heard on the document and not captured. Capture to the row would be lost
+     * the moment a virtual body unmounts it, and this is the one drag whose
+     * whole point is to scroll the body past where it started; capture to the
+     * table sends the `click` and `dblclick` that end a plain press to the table
+     * instead of the row, so `onRowClick`, `onRowActivate` and a cell's editor
+     * never heard a mouse in a table that selects more than one row.
      *
      * The auto-scroll frame below stays here and is deliberately not something
      * `beginPointerDrag` grew an option for. That helper has no
@@ -1702,6 +1708,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       pointerId: event.pointerId,
       onMove: move,
       onEnd: stop,
+      capture: false,
       mark: false
     });
   };

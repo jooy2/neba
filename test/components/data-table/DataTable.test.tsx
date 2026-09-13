@@ -963,6 +963,30 @@ describe('DataTable', () => {
       expect(onRowActivate).toHaveBeenLastCalledWith(ITEMS[1], 1);
     });
 
+    // A press that could start a drag of many rows captured the pointer to the
+    // table, and a captured pointer's click and double click go to the table:
+    // with a real mouse neither callback ever ran.
+    it('answers a mouse click and double click in a table that selects many rows', async () => {
+      const onRowClick = vi.fn();
+      const onRowActivate = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          onRowClick={onRowClick}
+          onRowActivate={onRowActivate}
+        />
+      );
+
+      await screen.getByText('Lisbon').click();
+      expect(onRowClick).toHaveBeenLastCalledWith(ITEMS[1], 1, expect.anything());
+
+      await screen.getByText('Oslo').dblClick();
+      expect(onRowActivate).toHaveBeenLastCalledWith(ITEMS[2], 2);
+    });
+
     // Nothing loads Tailwind into the test run, so a tick renders at zero size
     // and Playwright will not click something it cannot see. These press it
     // with the keyboard instead, which is a path a real reader takes and which
@@ -1220,6 +1244,26 @@ describe('column order', () => {
     );
 
     expect(headings.slice(0, 3)).toEqual(['Score', 'Name', 'City']);
+  });
+
+  // A header that can be dragged captured the pointer on the press, and the
+  // click that followed went to the header rather than to its sort button.
+  it('still sorts from a header that can be dragged', async () => {
+    const onSortChange = vi.fn();
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={ITEMS}
+        getRowKey={key}
+        sortable
+        reorderable
+        onSortChange={onSortChange}
+      />
+    );
+
+    await screen.getByRole('button', { name: 'City', exact: false }).click();
+
+    expect(onSortChange).toHaveBeenCalledWith([{ key: 'city', direction: 'asc' }]);
   });
 
   it('leaves a column the order does not name where it was', async () => {

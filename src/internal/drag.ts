@@ -54,6 +54,18 @@ export interface PointerDragOptions {
    * the pointer leaving the element it started on.
    */
   target: HTMLElement;
+  /**
+   * Whether the pointer is captured to `target`. Without it the listeners go on
+   * the target's document, which hears the gesture wherever the pointer goes.
+   *
+   * It is for a drag that starts on something the reader may only have meant
+   * to press. A captured pointer's `click` and `dblclick` go to the capturing
+   * element rather than to what is under the pointer, so capturing on the press
+   * takes the click away from a row's `onClick` or a sort button inside a
+   * header in every browser, whether or not the pointer moved.
+   * @default true
+   */
+  capture?: boolean;
   /** The pointer that started it. */
   pointerId: number;
   /** Every move until the gesture ends. */
@@ -91,10 +103,12 @@ export function beginPointerDrag({
   pointerId,
   onMove,
   onEnd,
+  capture = true,
   selectable = true,
   mark = true
 }: PointerDragOptions): () => void {
   const restoreSelection = selectable ? takeSelection() : null;
+  const listener: HTMLElement | Document = capture ? target : target.ownerDocument;
 
   if (mark) {
     target.dataset.dragging = 'true';
@@ -105,10 +119,12 @@ export function beginPointerDrag({
   // `setPointerCapture` throws `NotFoundError` for a pointer that is no longer
   // active, which is a pointer lifted between the `pointerdown` and this call,
   // and an exception escaping a React event handler takes the page down.
-  try {
-    target.setPointerCapture?.(pointerId);
-  } catch {
-    // Nothing to do. The gesture works without it, over a smaller area.
+  if (capture) {
+    try {
+      target.setPointerCapture?.(pointerId);
+    } catch {
+      // Nothing to do. The gesture works without it, over a smaller area.
+    }
   }
 
   let running = true;
@@ -119,9 +135,9 @@ export function beginPointerDrag({
     }
 
     running = false;
-    target.removeEventListener('pointermove', onMove);
-    target.removeEventListener('pointerup', end);
-    target.removeEventListener('pointercancel', end);
+    listener.removeEventListener('pointermove', onMove as EventListener);
+    listener.removeEventListener('pointerup', end);
+    listener.removeEventListener('pointercancel', end);
 
     if (mark) {
       delete target.dataset.dragging;
@@ -135,9 +151,9 @@ export function beginPointerDrag({
     onEnd?.();
   };
 
-  target.addEventListener('pointermove', onMove);
-  target.addEventListener('pointerup', end);
-  target.addEventListener('pointercancel', end);
+  listener.addEventListener('pointermove', onMove as EventListener);
+  listener.addEventListener('pointerup', end);
+  listener.addEventListener('pointercancel', end);
 
   return release;
 }

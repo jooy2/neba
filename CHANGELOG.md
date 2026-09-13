@@ -328,6 +328,8 @@
 
 - **Dragging a run of rows in a grouped `DataTable` takes the row under the pointer.** The drag read the body as rows of one height from its top, and each group heading is one more row than that, so a drag onto a row took the one after it, or more. The row is now found by where the rows are drawn.
 
+- **A mouse click reaches the rows of a `DataTable` that selects many, and the sort buttons of one whose columns can be dragged.** Pressing a row with `selectionMode="multiple"` captured the pointer to the table in case the press became a drag, and a captured pointer's `click` and `dblclick` go to the capturing element, so `onRowClick`, `onRowActivate` on a double click and a cell's editor never ran for a mouse in Chromium, Firefox or WebKit. A header with `reorderable` did the same to its own sort button. Both drags now follow the pointer from the document instead, and still carry on past the edge of the table.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
