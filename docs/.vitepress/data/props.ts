@@ -11607,6 +11607,24 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'rotate',
+      type: '0 | 90 | 180 | 270',
+      default: '0',
+      description: {
+        ko: '그림을 시계 방향으로 90도 단위로 돌립니다. 옆으로 누우면 상자도 누운 모양으로 잡히며, width와 height는 여전히 파일의 크기입니다',
+        en: 'Turns the picture clockwise, a quarter at a time. On its side it reserves a box on its side, with width and height still describing the file'
+      }
+    },
+    {
+      name: 'flip',
+      type: "'none' | 'horizontal' | 'vertical' | 'both'",
+      default: "'none'",
+      description: {
+        ko: '그림을 뒤집습니다. 축은 화면에 보이는 그림 기준이라 rotate와 상관없이 horizontal은 좌우를 바꿉니다',
+        en: 'Mirrors the picture along the axes it is shown on, so horizontal swaps left and right whatever rotate says'
+      }
+    },
+    {
       name: 'frame',
       type: "'rect' | 'rounded' | 'circle' | 'cut' | 'arch' | NebaImageFrameOptions",
       description: {

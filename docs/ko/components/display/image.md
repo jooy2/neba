@@ -54,6 +54,18 @@ import { Image } from 'neba';
 
 `fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none` 중 하나를 받습니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
 
+### rotate와 flip
+
+`rotate`는 그림을 시계 방향으로 `0`, `90`, `180`, `270`도 돌립니다. `flip`은 그림을 뒤집으며 `horizontal`, `vertical`, `both`, 그리고 기본값 `none`을 받습니다. 뒤집는 축은 화면에 보이는 그림을 기준으로 하므로, 돌렸든 아니든 `flip="horizontal"`은 좌우를 바꿉니다.
+
+옆으로 누운 그림은 누운 모양으로 배치됩니다. `width`와 `height`는 여전히 파일의 크기라서 `width={560} height={373} rotate={90}`은 세로로 긴 상자를 잡고, 둘 다 없으면 파일이 도착한 뒤 돌린 모양의 상자가 됩니다. `ratio`를 직접 주면 그 비율은 그대로 두고, 돌린 그림이 상자를 채우는 방식은 `fit`이 정합니다. preview도 같은 방향으로 돌리고 뒤집어서 엽니다.
+
+<Demo src="image/rotate">
+
+<<< @/.vitepress/demos/image/rotate.tsx
+
+</Demo>
+
 ### placeholder와 fallback
 
 파일이 도착하는 동안 같은 모양의 [Skeleton](../feedback/skeleton)이 자리를 지킵니다. 직접 만든 노드를 넘기거나 `false`로 끌 수 있습니다.

@@ -249,6 +249,8 @@ transition-duration: var(--neba-duration-fill), var(--neba-duration), …;  /* 3
 
 기본값은 깊이를 바꾸는 `lift`와 색을 바꾸는 `dim`입니다. 라이브러리의 나머지가 pointer에 반응하는 방식과 같으며, zoom을 지정하지 않은 갤러리는 확대하지 않습니다.
 
+`Image`의 `rotate`와 `flip`도 사진에 거는 변형이지만 움직임은 아닙니다. 호출하는 쪽이 한 번 정하고 pointer가 바꾸지 않으며, 90도 단위 회전과 뒤집기는 픽셀을 리샘플링하지 않고 다른 픽셀 자리로 옮길 뿐입니다. `transform`이 아니라 개별 `rotate`와 `scale` 속성에 쓰기 때문에, 같은 사진에 건 zoom도 그 위에 그대로 적용됩니다.
+
 ### 떠 있는 표면은 opacity로만 등장하고 사라집니다
 
 라이브러리의 모든 popup, panel, sheet, backdrop, toast는 fade합니다. 슬라이드도, 스케일도, 와이프도 없습니다. popup은 **대부분 글자**이기 때문입니다. 포인터가 향하고 있던 메뉴 행, 읽기 시작한 dialog, 손가락 아래의 달력 칸이 모두 글자이고, 표면이 이동하면 그 글자가 전부 함께 이동합니다.

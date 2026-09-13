@@ -249,6 +249,8 @@ What none of them does is scale. A mark that arrived at 1.4× and settled would 
 
 The default is `lift`, which is depth, and `dim`, which is colour. Those are how everything else in the library answers a pointer, and a gallery that does not ask for a zoom does not get one.
 
+`Image`'s `rotate` and `flip` are the other transforms a photograph takes, and they are not motion at all. The caller sets them once and nothing under the pointer changes them, and a quarter turn or a mirror moves every pixel onto another pixel rather than resampling it. They are written on the individual `rotate` and `scale` properties rather than on `transform`, so a zoom on the same photograph still applies on top.
+
 ### A floating surface arrives and leaves in opacity, and nothing else
 
 Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ (a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving), so a surface that travels drags all of it across the screen for the length of the journey.

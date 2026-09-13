@@ -23,6 +23,22 @@ export type ImageSlot = 'image' | 'placeholder' | 'fallback' | 'frame' | 'waterm
 export type NebaImageFilter =
   'none' | 'grayscale' | 'sepia' | 'invert' | 'saturate' | 'mute' | 'contrast';
 
+/**
+ * How far the picture is turned, clockwise, in degrees.
+ *
+ * Quarter turns and nothing between them. A picture turned by anything else no
+ * longer covers its own box, and filling the corners that leaves means
+ * enlarging it by an amount a caller would then want to tune — which is a photo
+ * editor, and the same line `filter` draws.
+ */
+export type NebaImageRotation = 0 | 90 | 180 | 270;
+
+/**
+ * Which way the picture is mirrored, along the axes it is shown on — so
+ * `horizontal` swaps left and right whatever `rotate` has done to it.
+ */
+export type NebaImageFlip = 'none' | 'horizontal' | 'vertical' | 'both';
+
 /** The silhouette a frame cuts the picture to. */
 export type NebaImageFrameShape = 'rect' | 'rounded' | 'circle' | 'cut' | 'arch';
 
@@ -228,6 +244,25 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    */
   filter?: NebaImageFilter | (string & {});
   /**
+   * Turns the picture clockwise, a quarter at a time.
+   *
+   * A picture on its side is laid out on its side: `width` and `height` still
+   * describe the file, so `width={1200} height={800} rotate={90}` reserves a
+   * box two wide by three tall, and a `ratio` of `'auto'` with neither takes
+   * the turned shape once the file has said what it is. An explicit `ratio` is
+   * the layout's and is kept, with `fit` deciding how the turned picture fills
+   * it.
+   * @default 0
+   */
+  rotate?: NebaImageRotation;
+  /**
+   * Mirrors the picture, along the axes it is shown on. The two props commute
+   * as a reader sees them: `flip="horizontal"` swaps left and right on the
+   * screen whether or not the picture has been turned.
+   * @default 'none'
+   */
+  flip?: NebaImageFlip;
+  /**
    * How the picture is mounted: the silhouette it is cut to, and the line, the
    * mount, the shadow and the softened edge around it.
    */
@@ -292,18 +327,83 @@ function cornerLength(corner: NebaSize | number | string): string {
   return toLength(corner as number | string) ?? '0px';
 }
 
+/** The file's own pixel dimensions, once something has said what they are. */
+interface PixelSize {
+  width: number;
+  height: number;
+}
+
 /**
- * The proportion two `<img>` dimensions describe, or `null` where they do not.
+ * The file two `<img>` dimensions describe, or `null` where they do not.
  *
  * They arrive as `number | string` because that is what the attribute takes, so
  * `'1200'` counts and `'50%'` does not — a percentage is a length and says
  * nothing about the shape. One without the other says nothing either.
  */
-function pixelRatio(width?: number | string, height?: number | string): number | null {
+function pixelSize(width?: number | string, height?: number | string): PixelSize | null {
   const w = typeof width === 'number' ? width : Number(width);
   const h = typeof height === 'number' ? height : Number(height);
 
-  return Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0 ? w / h : null;
+  return Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0
+    ? { width: w, height: h }
+    : null;
+}
+
+/**
+ * A turn as a count of quarters, whatever number arrived.
+ *
+ * The type holds a TypeScript caller to the four; this is for everyone else,
+ * so `-90` is the `270` it means and `45` is the nearest quarter rather than a
+ * picture that no longer covers its box.
+ */
+function quartersOf(rotate: number): 0 | 1 | 2 | 3 {
+  if (!Number.isFinite(rotate)) {
+    return 0;
+  }
+
+  return (((Math.round(rotate / 90) % 4) + 4) % 4) as 0 | 1 | 2 | 3;
+}
+
+/**
+ * The turn and the mirror, as the declarations that draw them.
+ *
+ * The individual `rotate` and `scale` properties rather than `transform`, which
+ * leaves `transform` to whoever else wants the picture — a Gallery's zoom is a
+ * `transform` class, and an inline `transform` here would silently beat it.
+ * They also compose in a fixed order, scale first: so on a quarter turn a
+ * mirror along the screen's axis is a mirror along the picture's other one,
+ * and the two are swapped here rather than making a caller think about it.
+ *
+ * On its side the picture is laid out at the box's height by the box's width
+ * and turned into place, which is what lets `fit` work at all — `object-fit`
+ * fits the element's own box, and a picture turned inside the box it was given
+ * would overhang it on one axis and fall short on the other. The container
+ * units read the stack the picture sits in; `maxWidth` is cleared because every
+ * reset caps an `<img>` at the width of its parent, which on a tall box is
+ * narrower than the length the turned picture needs.
+ */
+function poseStyle(quarters: 0 | 1 | 2 | 3, flip: NebaImageFlip): React.CSSProperties {
+  const sideways = quarters % 2 === 1;
+  const acrossX = flip === 'horizontal' || flip === 'both';
+  const acrossY = flip === 'vertical' || flip === 'both';
+  const mirrorX = sideways ? acrossY : acrossX;
+  const mirrorY = sideways ? acrossX : acrossY;
+
+  return {
+    scale: mirrorX || mirrorY ? `${mirrorX ? -1 : 1} ${mirrorY ? -1 : 1}` : undefined,
+    rotate: quarters === 0 ? undefined : `${quarters * 90}deg`,
+    ...(sideways
+      ? {
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '100cqh',
+          height: '100cqw',
+          maxWidth: 'none',
+          translate: '-50% -50%'
+        }
+      : null)
+  };
 }
 
 /**
@@ -420,6 +520,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     onLoadingStatusChange,
     preview = false,
     filter = 'none',
+    rotate = 0,
+    flip = 'none',
     frame,
     watermark,
     protect = false,
@@ -435,6 +537,13 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const messages = useMessages(imageMessages, locale);
   const [phase, setPhase] = React.useState<Phase>('loading');
   const [open, setOpen] = React.useState(false);
+  /*
+   * What the file turned out to be, kept for the one layout that cannot know it
+   * in advance: a picture on its side with nothing to say its shape, whose box
+   * is the file's height by its width. Set beside the phase, so a load is still
+   * one render.
+   */
+  const [natural, setNatural] = React.useState<PixelSize | null>(null);
 
   const pictureRef = React.useRef<HTMLImageElement | null>(null);
   /*
@@ -487,14 +596,22 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       src && node?.complete ? (node.naturalWidth > 0 ? 'loaded' : 'failed') : null;
 
     setPhase(settled ?? 'loading');
+    setNatural(
+      settled === 'loaded' && node ? { width: node.naturalWidth, height: node.naturalHeight } : null
+    );
 
     if (settled) {
       reportRef.current?.(settled);
     }
   }, [src]);
 
-  const settle = (next: Phase) => {
+  const settle = (next: Phase, node: HTMLImageElement) => {
     setPhase(next);
+
+    if (next === 'loaded') {
+      setNatural({ width: node.naturalWidth, height: node.naturalHeight });
+    }
+
     onLoadingStatusChange?.(next);
   };
 
@@ -507,6 +624,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const noSelect = guard !== null && guard.select !== false;
 
   const stop = (event: React.SyntheticEvent) => event.preventDefault();
+
+  const quarters = quartersOf(rotate);
+  const sideways = quarters % 2 === 1;
+  const pose = poseStyle(quarters, flip);
 
   /*
    * The deterrents, as the attributes that carry them.
@@ -555,9 +676,9 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         guarded?.className,
         classNames?.image
       )}
-      style={{ filter: tint === 'none' ? undefined : tint, ...guarded?.style }}
-      onLoad={() => settle('loaded')}
-      onError={() => settle('failed')}
+      style={{ filter: tint === 'none' ? undefined : tint, ...pose, ...guarded?.style }}
+      onLoad={(event) => settle('loaded', event.currentTarget)}
+      onError={(event) => settle('failed', event.currentTarget)}
       onContextMenu={guarded?.onContextMenu}
       onDragStart={guarded?.onDragStart}
       draggable={guarded?.draggable}
@@ -592,7 +713,13 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   // One stack — the picture with whatever is standing over it — wrapped either
   // in a box that holds a proportion or in one that does not.
   const stack = (
-    <span className="relative block size-full">
+    <span
+      className="relative block size-full"
+      // What the turned picture's container units read. Only on its side:
+      // size containment is a change to how the stack is measured, and nothing
+      // else needs it.
+      style={sideways ? { containerType: 'size' } : undefined}
+    >
       {picture}
       {cover}
       {mark}
@@ -607,8 +734,18 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
    * discovered on load; an explicit `ratio` is the layout's shape and outranks
    * them.
    */
-  const declared = ratioProp === 'auto' ? pixelRatio(width, height) : null;
-  const ratio = declared ?? ratioProp;
+  const file = pixelSize(width, height);
+  const declared = ratioProp === 'auto' && file !== null ? file.width / file.height : null;
+  const ratio = declared === null ? ratioProp : sideways ? 1 / declared : declared;
+  /*
+   * A picture on its side with nothing declared is out of the flow, so nothing
+   * holds the box open — and the box has to be the file's height by its width,
+   * which only the file knows. It is written onto the box that is already there
+   * rather than by swapping it for an AspectRatio, which would remount the
+   * picture the moment it arrived.
+   */
+  const measured =
+    ratio === 'auto' && sideways && natural !== null ? natural.height / natural.width : null;
 
   const shape = frame === undefined ? null : resolveFrame(frame, rounded);
   const corner = shape === null ? '0px' : cornerLength(shape.corner ?? 'md');
@@ -629,7 +766,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           shape === null ? radius : '',
           shape === null ? className : ''
         )}
-        style={boxStyle}
+        style={measured === null ? boxStyle : { aspectRatio: measured, ...boxStyle }}
       >
         {stack}
       </span>
@@ -711,12 +848,18 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
 
       <React.Suspense fallback={null}>
         <PreviewDialog open={open} onOpenChange={setOpen} size="xl" title={alt}>
-          <span className="relative mx-auto block w-fit">
+          <span
+            className={cx('relative mx-auto block', sideways ? '' : 'w-fit')}
+            style={sideways ? turnedPreviewStyle(natural ?? file) : undefined}
+          >
             <img
               src={src}
               alt={alt}
-              className={cx('mx-auto block max-h-[70vh] w-auto max-w-full', guarded?.className)}
-              style={{ filter: tint === 'none' ? undefined : tint, ...guarded?.style }}
+              className={cx(
+                sideways ? 'block object-contain' : 'mx-auto block max-h-[70vh] w-auto max-w-full',
+                guarded?.className
+              )}
+              style={{ filter: tint === 'none' ? undefined : tint, ...pose, ...guarded?.style }}
               onContextMenu={guarded?.onContextMenu}
               onDragStart={guarded?.onDragStart}
               draggable={guarded?.draggable}
@@ -728,6 +871,31 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     </>
   );
 });
+
+/**
+ * The preview's box for a picture on its side.
+ *
+ * An `<img>` sized by its own content cannot be turned in place: it keeps the
+ * footprint of the file, so a portrait turned onto its side would spill out of
+ * the dialog sideways and leave a hole above and below. The box is the turned
+ * shape instead, capped at the width the dialog has, at the file's own size and
+ * at the height the unturned preview is allowed — so it is never enlarged past
+ * what the file holds. A file nothing has measured yet gets a square, which
+ * `contain` fills correctly whatever arrives.
+ */
+function turnedPreviewStyle(file: PixelSize | null): React.CSSProperties {
+  if (file === null) {
+    return { aspectRatio: '1', width: 'min(100%, 70vh)', containerType: 'size' };
+  }
+
+  const across = file.height / file.width;
+
+  return {
+    aspectRatio: `${file.height} / ${file.width}`,
+    width: `min(100%, ${file.height}px, calc(70vh * ${across}))`,
+    containerType: 'size'
+  };
+}
 
 /** The frame's line, as the inset shadow that draws it — or nothing. */
 function mountLine(shape: NebaImageFrameOptions): string | undefined {

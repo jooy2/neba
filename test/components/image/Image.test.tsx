@@ -12,6 +12,18 @@ import { Image } from 'neba';
 const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 const BROKEN = 'data:image/gif;base64,not-a-picture';
 
+/*
+ * Read as a number rather than as the string that was written. A browser
+ * normalises `aspect-ratio: 1.5` into a `<ratio>` of its own choosing — `1.5 / 1`
+ * in Chromium — and the three engines the suite runs on do not have to agree on
+ * how they spell it.
+ */
+const ratioOf = (element: HTMLElement | null | undefined) => {
+  const [left, right = '1'] = (element?.style.aspectRatio ?? '').split('/');
+
+  return Number(left) / Number(right);
+};
+
 describe('Image', () => {
   it('renders an img with the alt it was given', async () => {
     const screen = await render(<Image src={OK} alt="A ridge of hills" />);
@@ -134,18 +146,6 @@ describe('Image', () => {
    * working the ratio out by hand.
    */
   describe('width and height', () => {
-    /*
-     * Read as a number rather than as the string that was written. A browser
-     * normalises `aspect-ratio: 1.5` into a `<ratio>` of its own choosing —
-     * `1.5 / 1` in Chromium — and the three engines the suite runs on do not
-     * have to agree on how they spell it.
-     */
-    const ratioOf = (element: HTMLElement | null | undefined) => {
-      const [left, right = '1'] = (element?.style.aspectRatio ?? '').split('/');
-
-      return Number(left) / Number(right);
-    };
-
     it('puts them on the img', async () => {
       const screen = await render(<Image src={OK} alt="A ridge" width={1200} height={800} />);
       const picture = screen.getByRole('img', { name: 'A ridge' }).element();
@@ -246,6 +246,151 @@ describe('Image', () => {
       const picture = screen.container.querySelector('img') as HTMLImageElement;
 
       expect(picture.style.filter).toBe('');
+    });
+  });
+
+  describe('rotate and flip', () => {
+    /** A file twice as wide as it is tall, so a turn has a shape to change. */
+    const WIDE =
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3C/svg%3E";
+
+    const pictureIn = (container: HTMLElement) =>
+      container.querySelector('img') as HTMLImageElement;
+
+    // A browser writes a uniform `scale` back as one number, so `-1 -1` reads
+    // `-1`; spelled out, both axes can be compared.
+    const scaleOf = (picture: HTMLImageElement) => {
+      const [x, y = x] = picture.style.scale.split(' ');
+
+      return `${x} ${y}`;
+    };
+
+    it('writes nothing at all when neither is asked for', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+      const picture = pictureIn(screen.container);
+
+      expect(picture.style.scale).toBe('');
+      expect(picture.style.rotate).toBe('');
+      expect(picture.parentElement?.style.containerType).toBe('');
+    });
+
+    it('mirrors along the axis it names', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" flip="horizontal" />);
+
+      expect(scaleOf(pictureIn(screen.container))).toBe('-1 1');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" flip="vertical" />);
+      expect(scaleOf(pictureIn(screen.container))).toBe('1 -1');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" flip="both" />);
+      expect(scaleOf(pictureIn(screen.container))).toBe('-1 -1');
+    });
+
+    /*
+     * The individual properties rather than `transform`, so a Gallery's zoom —
+     * which is a `transform` class on the same element — still applies on top.
+     */
+    it('turns on the rotate property and leaves transform alone', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" rotate={180} />);
+      const picture = pictureIn(screen.container);
+
+      expect(picture.style.rotate).toBe('180deg');
+      expect(picture.style.transform).toBe('');
+      // Upside down is the same footprint, so the picture stays in the flow.
+      expect(picture.style.position).toBe('');
+    });
+
+    it('reads any number as the nearest quarter turn', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" rotate={-90 as 270} />);
+
+      expect(pictureIn(screen.container).style.rotate).toBe('270deg');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" rotate={450 as 90} />);
+      expect(pictureIn(screen.container).style.rotate).toBe('90deg');
+    });
+
+    /*
+     * Scale is applied before rotate, so on its side a mirror along the
+     * picture's own horizontal axis would come out as a vertical one on the
+     * screen. What a caller wrote is what the screen does.
+     */
+    it('mirrors along the screen rather than the file once on its side', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" ratio={1} rotate={90} flip="horizontal" />
+      );
+
+      expect(scaleOf(pictureIn(screen.container))).toBe('1 -1');
+    });
+
+    /*
+     * Laid out at the box's height by its width and turned into place, which is
+     * what lets `fit` work on its side at all. No component test loads the
+     * stylesheet, so this reads the declarations rather than measuring the
+     * result.
+     */
+    it('lays a picture on its side out at the swapped size of its box', async () => {
+      const screen = await render(<Image src={WIDE} alt="A ridge" ratio="3 / 2" rotate={90} />);
+      const picture = pictureIn(screen.container);
+
+      expect(picture.parentElement?.style.containerType).toBe('size');
+      expect(picture.style.position).toBe('absolute');
+      expect(picture.style.width).toBe('100cqh');
+      expect(picture.style.height).toBe('100cqw');
+      expect(picture.style.translate).toBe('-50% -50%');
+      // Every reset caps an img at its parent's width, which on a tall box is
+      // shorter than the turned picture's length.
+      expect(picture.style.maxWidth).toBe('none');
+    });
+
+    it('reserves the turned shape of the file it was told about', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" width={1200} height={800} rotate={270} />
+      );
+      const framed = screen.container.querySelector<HTMLElement>('[style*="aspect-ratio"]');
+
+      expect(ratioOf(framed)).toBeCloseTo(800 / 1200);
+    });
+
+    it('takes the turned shape of a file nobody described, once it arrives', async () => {
+      const screen = await render(<Image src={WIDE} alt="A ridge" rotate={90} />);
+
+      await vi.waitFor(() => {
+        const framed = screen.container.querySelector<HTMLElement>('[style*="aspect-ratio"]');
+
+        expect(ratioOf(framed)).toBeCloseTo(20 / 40);
+      });
+    });
+
+    it('carries the turn and the mirror into the preview', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" preview rotate={180} flip="horizontal" />
+      );
+
+      await screen.getByRole('button', { name: 'A ridge' }).click();
+
+      const dialog = screen.getByRole('dialog', { name: 'A ridge' });
+      await expect.element(dialog).toBeInTheDocument();
+
+      const enlarged = dialog.element().querySelector('img') as HTMLImageElement;
+
+      expect(enlarged.style.rotate).toBe('180deg');
+      expect(enlarged.style.scale).toBe('-1 1');
+    });
+
+    it('gives the preview a box of the turned shape when it is on its side', async () => {
+      const screen = await render(<Image src={WIDE} alt="A ridge" preview rotate={90} />);
+      const picture = pictureIn(screen.container);
+
+      await vi.waitFor(() => expect(picture).toHaveClass('opacity-100'));
+      await screen.getByRole('button', { name: 'A ridge' }).click();
+
+      const dialog = screen.getByRole('dialog', { name: 'A ridge' });
+      await expect.element(dialog).toBeInTheDocument();
+
+      const enlarged = dialog.element().querySelector('img') as HTMLImageElement;
+
+      expect(enlarged.parentElement?.style.containerType).toBe('size');
+      expect(ratioOf(enlarged.parentElement)).toBeCloseTo(20 / 40);
     });
   });
 

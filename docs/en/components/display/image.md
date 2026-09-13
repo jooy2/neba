@@ -54,6 +54,18 @@ The file's own pixel dimensions, as an `<img>` takes them. They reach the pictur
 
 `fit` is `object-fit`: `cover` (the default), `contain`, `fill`, `none`. `rounded` takes a step of the radius ladder, or `true` for `md`.
 
+### rotate and flip
+
+`rotate` turns the picture clockwise by `0`, `90`, `180` or `270` degrees. `flip` mirrors it: `horizontal`, `vertical`, `both`, or `none`, the default. The mirror runs along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture has been turned.
+
+A picture on its side is laid out on its side. `width` and `height` still describe the file, so `width={560} height={373} rotate={90}` reserves a tall box, and with neither the box takes the turned shape once the file arrives. An explicit `ratio` stays as it is, and `fit` decides how the turned picture fills it. The preview opens turned and mirrored the same way.
+
+<Demo src="image/rotate">
+
+<<< @/.vitepress/demos/image/rotate.tsx
+
+</Demo>
+
 ### placeholder and fallback
 
 While the file is arriving, a [Skeleton](../feedback/skeleton) of the same shape stands in. Pass a node of your own, or `false` for nothing.
