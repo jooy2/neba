@@ -36,8 +36,9 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
    */
   errors?: FormErrors;
   /**
-   * Called on a valid submit, with the form's values. The native submit event is
-   * prevented, so nothing navigates.
+   * Called on a valid submit, with the form's values. When it is given, the
+   * native submit event is prevented, so nothing navigates. Without it the
+   * submit goes ahead, which is what lets an `action` run.
    */
   onSubmit?: (values: Record<string, unknown>) => void;
   /**
@@ -72,7 +73,11 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(
       ref={ref}
       validationMode={validationMode}
       errors={errors}
-      onFormSubmit={(values) => onSubmit?.(values)}
+      // Only when there is somebody to hand the values to. Base UI prevents the
+      // native submit whenever this is set, and React then skips a function
+      // `action` for a prevented submit — so passing it unconditionally made
+      // `<Form action={…}>` a form that did nothing at all.
+      onFormSubmit={onSubmit ? (values) => onSubmit(values) : undefined}
       className={cx('flex flex-col', sheetSectionGapClasses[size], className ?? '')}
       {...props}
     >

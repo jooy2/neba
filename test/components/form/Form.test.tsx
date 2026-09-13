@@ -52,6 +52,36 @@ describe('Form', () => {
       expect(onSubmit.mock.calls[0][0]).toMatchObject({ email: 'a@b.com' });
     });
 
+    it('lets an action run when there is no onSubmit', async () => {
+      const action = vi.fn();
+      const screen = await render(
+        <Form aria-label="Sign up" action={action}>
+          <TextField label="Email" name="email" defaultValue="a@b.com" />
+          <Button type="submit">Sign up</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Sign up' }).click();
+
+      await expect.poll(() => action.mock.calls.length).toBe(1);
+      expect((action.mock.calls[0][0] as FormData).get('email')).toBe('a@b.com');
+    });
+
+    it('keeps an action from running while a required field is empty', async () => {
+      const action = vi.fn();
+      const screen = await render(
+        <Form aria-label="Sign up" action={action}>
+          <TextField label="Email" name="email" required />
+          <Button type="submit">Sign up</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Sign up' }).click();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(action).not.toHaveBeenCalled();
+    });
+
     it('does not submit while a required field is empty', async () => {
       const onSubmit = vi.fn();
       const screen = await render(

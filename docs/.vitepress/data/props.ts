@@ -3193,8 +3193,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onSubmit',
       type: '(values: Record<string, unknown>) => void',
       description: {
-        ko: '모든 field가 유효할 때만, 각 field의 name을 키로 하는 값 객체와 함께 호출됩니다. 네이티브 submit 이벤트는 막히므로 페이지가 이동하지 않습니다',
-        en: "Called only when every field is valid, with the form's values keyed by each field's name. The native submit event is prevented, so nothing navigates"
+        ko: '모든 field가 유효할 때만, 각 field의 name을 키로 하는 값 객체와 함께 호출됩니다. 이 prop이 있으면 네이티브 submit 이벤트가 막혀 페이지가 이동하지 않고, 없으면 submit이 그대로 진행되어 action이 실행됩니다',
+        en: "Called only when every field is valid, with the form's values keyed by each field's name. When it is given the native submit event is prevented, so nothing navigates; without it the submit goes ahead and an action runs"
       }
     },
     {
