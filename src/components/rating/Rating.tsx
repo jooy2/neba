@@ -172,11 +172,15 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
         ? valueLabel(score, stars)
         : score <= 0
           ? messages.empty
-          : // `String` rather than `Intl.NumberFormat`: a score is a small
-            // number with at most one decimal, and a format that depends on the
-            // runtime's own locale is text that differs between the server that
-            // rendered it and the browser that hydrated it.
-            fillMessage(messages.value, { value: String(score), max: String(stars) }),
+          : // `String` rather than `Intl.NumberFormat`: a format that depends
+            // on the runtime's own locale is text that differs between the
+            // server that rendered it and the browser that hydrated it. Rounded
+            // to one decimal first, because a read-only score is often an
+            // average, and `13 / 3` read out whole is sixteen digits.
+            fillMessage(messages.value, {
+              value: String(Math.round(score * 10) / 10),
+              max: String(stars)
+            }),
     [valueLabel, stars, messages]
   );
 

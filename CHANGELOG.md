@@ -156,6 +156,8 @@
 
 - **An inline `ColorPicker` is a group named by its `label` and described by its `description` and `error`.** The three were drawn beside the panel and connected to nothing, so the square, the rails and the field were heard without any of them, and two inline pickers on a page could not be told apart.
 
+- **A read-only `Rating` reads an average out to one decimal.** The score was spoken whole, so `value={13 / 3}` was announced as "4.333333333333333 out of 5". It is rounded to one decimal before it is written into the sentence.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

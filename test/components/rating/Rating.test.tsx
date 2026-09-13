@@ -162,6 +162,12 @@ describe('Rating', () => {
       await expect.element(screen.getByRole('img', { name: 'No rating' })).toBeInTheDocument();
     });
 
+    it('reads an average out to one decimal', async () => {
+      const screen = await render(<Rating value={13 / 3} readOnly />);
+
+      await expect.element(screen.getByRole('img', { name: '4.3 out of 5' })).toBeInTheDocument();
+    });
+
     it('draws a fraction of a star for an average', async () => {
       const screen = await render(<Rating value={4.3} readOnly data-testid="rating" />);
 
