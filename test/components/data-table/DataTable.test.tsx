@@ -489,6 +489,26 @@ describe('DataTable', () => {
       expect(bodyRows(screen.container).length).toBeGreaterThan(0);
     });
 
+    // A screen reader counts rows from these, and the head is one row or two.
+    it('numbers the rows after however many rows the head takes', async () => {
+      const grouped: DataTableColumn<Person>[] = [
+        { key: 'name', label: 'Name' },
+        { key: 'city', label: 'City', group: 'Where' },
+        { key: 'score', label: 'Score', group: 'Where' }
+      ];
+      const screen = await render(
+        <DataTable headers={grouped} items={manyItems(200)} getRowKey={key} height={200} />
+      );
+      const table = screen.container.querySelector('table')!;
+
+      await expect.poll(() => bodyRows(screen.container).length).toBeGreaterThan(0);
+      expect(table).toHaveAttribute('aria-rowcount', '202');
+      expect(bodyRows(screen.container)[0]).toHaveAttribute('aria-rowindex', '3');
+      expect(
+        [...table.querySelectorAll('thead tr')].map((row) => row.getAttribute('aria-rowindex'))
+      ).toEqual(['1', '2']);
+    });
+
     it('stands the missing rows up as spacers, so the scrollbar is honest', async () => {
       const screen = await render(
         <DataTable

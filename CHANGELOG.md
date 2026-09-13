@@ -158,6 +158,8 @@
 
 - **A read-only `Rating` reads an average out to one decimal.** The score was spoken whole, so `value={13 / 3}` was announced as "4.333333333333333 out of 5". It is rounded to one decimal before it is written into the sentence.
 
+- **A virtualised `DataTable` with column groups counts its rows correctly.** The row numbers a screen reader reads out assumed a head of one row, so under a two-row head every body row was numbered one too low and the total one too few. Both head rows are numbered now and the body starts after them.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

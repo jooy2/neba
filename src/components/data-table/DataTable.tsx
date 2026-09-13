@@ -732,6 +732,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   }, [headers, columnOrder]);
 
   const hasGroups = columns.some((column) => column.group !== undefined);
+  /** How many rows the head takes, which is where the body's row numbers start. */
+  const headRows = hasGroups ? 2 : 1;
 
   const selects = selectionMode !== 'none';
   const multiple = selectionMode === 'multiple';
@@ -1884,7 +1886,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         key={entry.key}
         id={`${reactId}-${entry.key}`}
         aria-selected={selects ? isSelected : undefined}
-        aria-rowindex={virtualized ? index + 2 : undefined}
+        aria-rowindex={virtualized ? index + headRows + 1 : undefined}
         data-neba-row={entry.key}
         className={cx(
           rowClasses,
@@ -2358,7 +2360,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           role={selects ? 'grid' : undefined}
           aria-label={label}
           aria-multiselectable={multiple || undefined}
-          aria-rowcount={virtualized ? paged.length + 1 : undefined}
+          aria-rowcount={virtualized ? paged.length + headRows : undefined}
           // Only while the row it names is actually rendered. A wheel can carry
           // the active row out of the virtual window, and pointing the
           // attribute at an id that is no longer in the document is worse than
@@ -2407,7 +2409,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
           <thead>
             {hasGroups ? (
-              <tr style={{ height: `${headerHeight}px` }}>
+              <tr
+                aria-rowindex={virtualized ? 1 : undefined}
+                style={{ height: `${headerHeight}px` }}
+              >
                 {showTicks ? (
                   <th
                     scope="col"
@@ -2447,7 +2452,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               </tr>
             ) : null}
 
-            <tr style={{ height: `${headerHeight}px` }}>
+            <tr
+              aria-rowindex={virtualized ? headRows : undefined}
+              style={{ height: `${headerHeight}px` }}
+            >
               {showTicks && !hasGroups ? (
                 <th
                   scope="col"
