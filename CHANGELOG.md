@@ -48,6 +48,8 @@
 
 - **A `DataTable` without a selection can be worked from the keyboard.** With `selectionMode="none"` the table took no focus, so `onRowActivate` answered only a double-click and an editable cell opened only on one. A table whose rows open something or whose cells edit is now a `grid` with a tab stop: the arrows move an active row without choosing it, Enter calls `onRowActivate`, and F2 edits the first editable cell of the row, in every selection mode. Enter and Escape in an editor hand the focus back to the table. A test that found such a table by the `table` role finds it by `grid`.
 
+- **`AnimateCounter` no longer takes `paused`.** It came with the props every `Animate*` shares, and a count ignored it: nothing held the number, so `paused` type-checked and did nothing. It is gone from the type; hold a count with `trigger="manual"` and `play`. A counter that passed `paused` fails to compile and can drop it with no change in behaviour.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

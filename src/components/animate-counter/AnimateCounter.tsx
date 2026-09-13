@@ -3,12 +3,16 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
+import { numberFormatter } from '../../internal/format.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 
 export interface AnimateCounterProps
+  // `paused` is out with the three a count has no use for: a count is a
+  // hundred renders of one number and nothing here holds one, which is what
+  // `trigger="manual"` with `play` is for.
   extends
-    Omit<NebaAnimateProps, 'easing' | 'repeat' | 'alternate'>,
+    Omit<NebaAnimateProps, 'easing' | 'repeat' | 'alternate' | 'paused'>,
     Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
   /** Where it lands. */
   value: number;
@@ -70,7 +74,6 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       from = 0,
       duration = 1200,
       delay = 0,
-      paused,
       trigger = 'mount',
       play,
       once = true,
@@ -89,7 +92,6 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       play,
       once,
       threshold,
-      paused,
       // A count runs once and stops; there is no version of it that loops.
       infinite: false
     });
@@ -102,8 +104,10 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
     // hands us a new object every render, and building an `Intl.NumberFormat` a
     // hundred times a second is the most expensive thing on the page.
     const key = format === undefined ? '' : JSON.stringify(format);
+    // And through the library's own cache, so a row of counters in one currency
+    // shares one formatter rather than building one each.
     const formatter = React.useMemo(
-      () => new Intl.NumberFormat(locale, format),
+      () => numberFormatter(locale, format),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [locale, key]
     );
@@ -156,8 +160,6 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       frame = requestAnimationFrame(step);
 
       return () => cancelAnimationFrame(frame);
-      // `paused` is deliberately not here. A count is a hundred renders of one
-      // number, and holding it is what `trigger="manual"` with `play` is for.
     }, [run.started, reduced, value, from, duration, delay]);
 
     return useRender({

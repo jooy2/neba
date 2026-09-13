@@ -47,6 +47,14 @@ function announced(root: Element): string {
  * is waited for after the clock moves.
  */
 describe('AnimateCounter', () => {
+  // It took `paused` with the props every Animate* shares and ignored it.
+  it('takes no paused, which it had nothing to hold with', () => {
+    // @ts-expect-error — a count is held with `trigger="manual"` and `play`
+    const props: React.ComponentProps<typeof AnimateCounter> = { value: 1, paused: true };
+
+    expect(props.value).toBe(1);
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
   });
