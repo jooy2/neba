@@ -56,6 +56,22 @@ describe('FilePicker', () => {
       await expect.element(screen.getByText('Pick at least one.')).toBeInTheDocument();
     });
 
+    it('names the box by its label and what the box says', async () => {
+      const screen = await render(
+        <>
+          <FilePicker label="Resume" title="Drop a PDF" />
+          <FilePicker label="Cover letter" title="Drop a PDF" />
+        </>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Resume Drop a PDF' }))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Cover letter Drop a PDF' }))
+        .toBeInTheDocument();
+    });
+
     it('carries accept and multiple onto the real input', async () => {
       const screen = await render(<FilePicker accept="image/*" multiple />);
       const input = screen.container.querySelector('input[type="file"]') as HTMLInputElement;

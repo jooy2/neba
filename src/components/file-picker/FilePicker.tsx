@@ -352,6 +352,9 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
     const family: NebaColor = isInvalid ? 'danger' : color;
     const inert = disabled || readOnly;
     const descriptionId = React.useId();
+    const labelId = React.useId();
+    const generatedZoneId = React.useId();
+    const zoneId = id ?? generatedZoneId;
 
     const commit = React.useCallback(
       (next: File[]) => {
@@ -480,6 +483,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       >
         {hasContent(label) ? (
           <span
+            id={labelId}
             className={[
               metaTextClasses[size],
               'font-medium',
@@ -534,8 +538,12 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
           <button
             ref={zoneRef}
             type="button"
-            id={id}
+            id={zoneId}
             disabled={disabled}
+            // The label first and then what the box says, so two pickers on one
+            // form are told apart by what each is for rather than both being
+            // "Drop files here".
+            aria-labelledby={hasContent(label) ? `${labelId} ${zoneId}` : undefined}
             aria-describedby={hasContent(description) || hasError ? descriptionId : undefined}
             aria-invalid={isInvalid || undefined}
             className={zoneClassNames}

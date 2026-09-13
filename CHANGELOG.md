@@ -20,6 +20,8 @@
 
 - **A calendar's month and year buttons are named by what they show.** They were named "Choose a month" and "Choose a year" over the words "July" and "2026", so a reader using voice control could not say what they saw to press them. They are named by their text now and described by what they do, which changes their accessible names: a test that found `name: 'Choose a month'` finds the month on screen. This covers `Calendar` and every date picker.
 
+- **A `FilePicker`'s button is named by its `label`.** The label was drawn above the box and tied to nothing, so a form asking for a résumé and a cover letter had two buttons both called "Drop files here, or click to browse". The button is now named by the label followed by what the box says. A test that finds the box by its title alone needs the label added, or `exact: false`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
