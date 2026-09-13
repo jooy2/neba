@@ -159,7 +159,8 @@ export const zhHant: NebaLocale = {
     minimize: '最小化',
     maximize: '最大化',
     restore: '還原',
-    resize: '調整視窗大小'
+    resize: '調整視窗大小',
+    resizeHint: '使用方向鍵調整視窗大小'
   },
   layout: {
     skipToContent: '跳至主要內容',

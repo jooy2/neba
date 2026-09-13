@@ -156,7 +156,8 @@ export const ko: NebaLocale = {
     minimize: '최소화',
     maximize: '최대화',
     restore: '이전 크기로 복원',
-    resize: '창 크기 조절'
+    resize: '창 크기 조절',
+    resizeHint: '방향키로 창 크기를 조절합니다'
   },
   layout: {
     skipToContent: '본문으로 건너뛰기',

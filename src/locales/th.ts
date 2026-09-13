@@ -156,7 +156,8 @@ export const th: NebaLocale = {
     minimize: 'ย่อ',
     maximize: 'ขยาย',
     restore: 'คืนค่า',
-    resize: 'ปรับขนาดหน้าต่าง'
+    resize: 'ปรับขนาดหน้าต่าง',
+    resizeHint: 'ใช้ปุ่มลูกศรเพื่อปรับขนาดหน้าต่าง'
   },
   layout: {
     skipToContent: 'ข้ามไปยังเนื้อหา',

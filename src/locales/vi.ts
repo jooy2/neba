@@ -156,7 +156,8 @@ export const vi: NebaLocale = {
     minimize: 'Thu nhỏ',
     maximize: 'Phóng to',
     restore: 'Khôi phục',
-    resize: 'Thay đổi kích thước cửa sổ'
+    resize: 'Thay đổi kích thước cửa sổ',
+    resizeHint: 'Dùng các phím mũi tên để đổi kích thước cửa sổ'
   },
   layout: {
     skipToContent: 'Chuyển đến nội dung',

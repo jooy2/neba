@@ -103,6 +103,6 @@ A rolled-up window keeps its body in the tree, `inert` and clipped, which is wha
 ## Accessibility
 
 - The root is a `role="group"` labelled by its own title, so a screen reader reads the window's name before its contents.
-- The three title bar buttons are real `<button>`s with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized.
-- One resize handle (the bottom-right corner) is reachable from the keyboard and resizes with the arrow keys. The other seven are pointer affordances and are hidden from the accessibility tree; a keyboard reader has the same range through `maximize`.
+- The three title bar buttons are real `<button>`s with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized. On macOS the glyph inside each dot shows under the pointer, while one of them has the keyboard focus, and always on a screen that cannot hover, so the three are never told apart by colour alone.
+- One resize handle (the bottom-right corner) is reachable from the keyboard and resizes with the arrow keys, which its description says. The other seven are pointer affordances and are hidden from the accessibility tree; a keyboard reader has the same range through `maximize`.
 - Dragging is a pointer affordance as well. A window that must be movable without one should be given its `offset` by the caller.

@@ -256,6 +256,8 @@
 
 - **Scrolling a `DataTable` with a finger no longer changes the selection.** A row was chosen on `pointerdown`, so every touch that began a scroll replaced the selection with the row under the finger. A touch now chooses on `click`, which the browser does not send when the finger went on to scroll; a mouse and a pen still choose on the press and drag a run as before.
 
+- **A macOS `WindowPane` shows its traffic-light glyphs to the keyboard and to touch, and its resize corner says how it works.** The glyph inside each dot appeared only under a hovering pointer, so a keyboard or a touch reader told close, minimise and maximise apart by colour alone; it now also shows while one of the three has the focus, and always where there is no hover. The keyboard-reachable corner, a button that does nothing when pressed, is described as resizing with the arrow keys, in a new `window` message every registered language has.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

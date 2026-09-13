@@ -905,8 +905,11 @@ export function WindowControls({
             <span
               className={cx(
                 'flex items-center justify-center',
+                // And back the moment the focus is on one of them, and always on
+                // a screen with no hover: without the glyph the three are told
+                // apart only by colour.
                 dots
-                  ? 'opacity-0 [transition:opacity_var(--neba-duration)_var(--neba-ease)] group-hover/controls:opacity-100'
+                  ? 'opacity-0 [transition:opacity_var(--neba-duration)_var(--neba-ease)] group-hover/controls:opacity-100 group-has-[:focus-visible]/controls:opacity-100 supports-[not_selector(:has(*))]:group-focus-within/controls:opacity-100 [@media(hover:none)]:opacity-100'
                   : ''
               )}
             >

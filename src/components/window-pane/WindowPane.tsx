@@ -302,6 +302,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const messages = useMessages(windowMessages, locale);
+    const hintId = React.useId();
     const actionText = useMessages(actionMessages, locale);
     const chrome = windowChrome(os);
     const metrics = windowMetrics(os, size);
@@ -831,6 +832,12 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
               {children}
             </div>
 
+            {resizable && !maximized && !minimized ? (
+              <span id={hintId} hidden>
+                {messages.resizeHint}
+              </span>
+            ) : null}
+
             {resizable && !maximized && !minimized
               ? resizeHandles.map((handle) => {
                   const corner = handle.edge === 'se';
@@ -845,6 +852,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
                       role={corner ? 'button' : undefined}
                       tabIndex={corner ? 0 : undefined}
                       aria-label={corner ? (resizeLabel ?? messages.resize) : undefined}
+                      // A button that does nothing when pressed has to say what it
+                      // does instead, or a keyboard reader stops at it and leaves.
+                      aria-describedby={corner ? hintId : undefined}
                       aria-hidden={corner ? undefined : 'true'}
                       className={cx(
                         'absolute z-10 touch-none',

@@ -160,7 +160,8 @@ export const id: NebaLocale = {
     minimize: 'Perkecil',
     maximize: 'Perbesar',
     restore: 'Pulihkan',
-    resize: 'Ubah ukuran jendela'
+    resize: 'Ubah ukuran jendela',
+    resizeHint: 'Gunakan tombol panah untuk mengubah ukuran jendela'
   },
   layout: {
     skipToContent: 'Lompat ke konten',

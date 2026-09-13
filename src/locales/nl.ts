@@ -156,7 +156,8 @@ export const nl: NebaLocale = {
     minimize: 'Minimaliseren',
     maximize: 'Maximaliseren',
     restore: 'Vorig formaat',
-    resize: 'Venstergrootte wijzigen'
+    resize: 'Venstergrootte wijzigen',
+    resizeHint: 'Gebruik de pijltoetsen om het venster van grootte te veranderen'
   },
   layout: {
     skipToContent: 'Naar inhoud springen',

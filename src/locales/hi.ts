@@ -160,7 +160,8 @@ export const hi: NebaLocale = {
     minimize: 'छोटा करें',
     maximize: 'बड़ा करें',
     restore: 'पुनर्स्थापित करें',
-    resize: 'विंडो का आकार बदलें'
+    resize: 'विंडो का आकार बदलें',
+    resizeHint: 'विंडो का आकार बदलने के लिए तीर कुंजियों का उपयोग करें'
   },
   layout: {
     skipToContent: 'सामग्री पर जाएँ',

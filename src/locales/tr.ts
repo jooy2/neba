@@ -156,7 +156,8 @@ export const tr: NebaLocale = {
     minimize: 'Simge durumuna küçült',
     maximize: 'Ekranı kapla',
     restore: 'Geri yükle',
-    resize: 'Pencereyi yeniden boyutlandır'
+    resize: 'Pencereyi yeniden boyutlandır',
+    resizeHint: 'Pencereyi yeniden boyutlandırmak için ok tuşlarını kullanın'
   },
   layout: {
     skipToContent: 'İçeriğe geç',

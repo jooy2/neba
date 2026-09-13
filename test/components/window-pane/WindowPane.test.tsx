@@ -564,6 +564,33 @@ describe('WindowPane', () => {
       expect(screen.getByRole('button', { name: 'Resize window' }).query()).toBeNull();
     });
 
+    // Without the glyph the three dots are told apart by colour alone, so the
+    // glyph comes back for the focus and stays on a screen that cannot hover.
+    it('brings the traffic-light glyphs back for the focus and for touch', async () => {
+      const screen = await render(<WindowPane os="macosx" title="Finder" />);
+      const glyph = screen
+        .getByRole('button', { name: 'Minimize' })
+        .element()
+        .querySelector('span') as HTMLElement;
+
+      expect(glyph.className).toContain('group-hover/controls:opacity-100');
+      expect(glyph.className).toContain('group-has-[:focus-visible]/controls:opacity-100');
+      expect(glyph.className).toContain('[@media(hover:none)]:opacity-100');
+    });
+
+    // A button that does nothing when pressed has to say what it does.
+    it('tells a keyboard reader how the corner resizes', async () => {
+      const screen = await render(
+        <WindowPane title="Finder" resizable width={320} height={200}>
+          <p>Body</p>
+        </WindowPane>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Resize window' }))
+        .toHaveAccessibleDescription('Use the arrow keys to resize the window');
+    });
+
     it('leaves one corner reachable without a pointer', async () => {
       const screen = await render(
         <WindowPane title="Finder" resizable width={320} height={200} data-testid="window">

@@ -783,6 +783,8 @@ export interface WindowMessages {
   restore: string;
   /** Names the corner a pointer drags to resize. */
   resize: string;
+  /** Says how a keyboard resizes from that corner, which its name does not. */
+  resizeHint: string;
 }
 
 /** The `window` namespace, as WindowPane read it. */
@@ -791,7 +793,8 @@ export const windowMessages: MessageTable<WindowMessages> = {
     minimize: 'Minimize',
     maximize: 'Maximize',
     restore: 'Restore',
-    resize: 'Resize window'
+    resize: 'Resize window',
+    resizeHint: 'Use the arrow keys to resize the window'
   }
 };
 

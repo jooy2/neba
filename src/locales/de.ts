@@ -156,7 +156,8 @@ export const de: NebaLocale = {
     minimize: 'Minimieren',
     maximize: 'Maximieren',
     restore: 'Wiederherstellen',
-    resize: 'Fenstergröße ändern'
+    resize: 'Fenstergröße ändern',
+    resizeHint: 'Mit den Pfeiltasten die Fenstergröße ändern'
   },
   layout: {
     skipToContent: 'Zum Inhalt springen',

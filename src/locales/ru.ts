@@ -160,7 +160,8 @@ export const ru: NebaLocale = {
     minimize: 'Свернуть',
     maximize: 'Развернуть',
     restore: 'Восстановить',
-    resize: 'Изменить размер окна'
+    resize: 'Изменить размер окна',
+    resizeHint: 'Используйте клавиши со стрелками, чтобы изменить размер окна'
   },
   layout: {
     skipToContent: 'Перейти к содержимому',

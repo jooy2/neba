@@ -156,7 +156,8 @@ export const ja: NebaLocale = {
     minimize: '最小化',
     maximize: '最大化',
     restore: '元のサイズに戻す',
-    resize: 'ウィンドウのサイズを変更'
+    resize: 'ウィンドウのサイズを変更',
+    resizeHint: '矢印キーでウィンドウのサイズを変更します'
   },
   layout: {
     skipToContent: '本文へスキップ',
