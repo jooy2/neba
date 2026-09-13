@@ -7,7 +7,7 @@ import { useStyleDefaults } from '../../internal/defaults.js';
 import { imageMessages, useMessages } from '../../internal/i18n.js';
 import { cx, metaTextValues, radiusClasses, toLength } from '../../internal/styles.js';
 import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
-import type { NebaCorner, NebaElevation, NebaSize, NebaSlots } from '../../types.js';
+import type { NebaCorner, NebaElevation, NebaSide, NebaSize, NebaSlots } from '../../types.js';
 
 /** The parts an Image draws behind its root. */
 export type ImageSlot = 'image' | 'placeholder' | 'fallback' | 'frame' | 'watermark';
@@ -38,6 +38,24 @@ export type NebaImageRotation = 0 | 90 | 180 | 270;
  * `horizontal` swaps left and right whatever `rotate` has done to it.
  */
 export type NebaImageFlip = 'none' | 'horizontal' | 'vertical' | 'both';
+
+/**
+ * Where the picture sits in its box, spelled the way `object-position` spells
+ * it: a side, a corner, the centre, or two percentages across and down.
+ *
+ * Physical rather than logical, and on purpose. `NebaCorner` says `top-start`
+ * because a mark placed on a page belongs to the page's writing direction; the
+ * subject of a photograph is on the left of it in every language, so a crop
+ * that keeps it must not move to the other side on a right-to-left page.
+ */
+export type NebaImagePosition =
+  | 'center'
+  | NebaSide
+  | 'top left'
+  | 'top right'
+  | 'bottom left'
+  | 'bottom right'
+  | `${number}% ${number}%`;
 
 /** The silhouette a frame cuts the picture to. */
 export type NebaImageFrameShape = 'rect' | 'rounded' | 'circle' | 'cut' | 'arch';
@@ -218,6 +236,16 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
   height?: number | string;
   /** How the picture fills that box. @default 'cover' */
   fit?: NebaAspectFit;
+  /**
+   * Where the picture sits in that box: which part survives a `cover` crop, and
+   * where `contain`, `none` and `scale-down` leave their empty space.
+   *
+   * Read on the picture as it is shown, so it holds through `rotate` and
+   * `flip` — `position="top"` keeps the top of what the reader sees, not the
+   * top of the file.
+   * @default 'center'
+   */
+  position?: NebaImagePosition;
   /** Rounds the corners at this step of the radius ladder. `false` for square. */
   rounded?: NebaSize | boolean;
   /**
@@ -383,6 +411,98 @@ function quartersOf(rotate: number): 0 | 1 | 2 | 3 {
   return (((Math.round(rotate / 90) % 4) + 4) % 4) as 0 | 1 | 2 | 3;
 }
 
+/** One `<position>` component written as a percentage. */
+const PERCENTAGE = /^(-?\d*\.?\d+)%$/;
+
+/**
+ * A position as fractions across and down, or `null` for anything past the
+ * keywords and percentages the type offers — a length has no fraction to turn.
+ *
+ * The grammar is the part of CSS's that a caller writes: one or two words, a
+ * percentage first is across and second is down, and two keywords may come in
+ * either order.
+ */
+function positionFractions(position: string): [number, number] | null {
+  const words = position.trim().toLowerCase().split(/\s+/);
+  let across: number | undefined;
+  let down: number | undefined;
+
+  if (words.length > 2 || words[0] === '') {
+    return null;
+  }
+
+  for (const [index, word] of words.entries()) {
+    const percentage = PERCENTAGE.exec(word);
+
+    if (word === 'left' || word === 'right') {
+      if (across !== undefined) {
+        return null;
+      }
+
+      across = word === 'left' ? 0 : 1;
+    } else if (word === 'top' || word === 'bottom') {
+      if (down !== undefined) {
+        return null;
+      }
+
+      down = word === 'top' ? 0 : 1;
+    } else if (percentage !== null) {
+      const fraction = Number(percentage[1]) / 100;
+
+      if (index === 0) {
+        across = fraction;
+      } else if (down === undefined) {
+        down = fraction;
+      } else {
+        return null;
+      }
+    } else if (word !== 'center') {
+      return null;
+    }
+  }
+
+  return [across ?? 0.5, down ?? 0.5];
+}
+
+/**
+ * A position read on the picture as it is shown, as the `object-position` of
+ * the element that is actually turned and mirrored.
+ *
+ * `object-position` is laid out in the element's own frame, before its
+ * transforms, so `top` on a picture turned upside down would keep what ends up
+ * at the bottom. The mirror is undone first because it is applied on the
+ * screen's axes, after the turn; then the turn, a quarter at a time. What comes
+ * back is always percentages, which also makes it one spelling in every engine
+ * — a string nothing could parse is handed through as it was written.
+ */
+function objectPosition(position: string, quarters: 0 | 1 | 2 | 3, flip: NebaImageFlip): string {
+  const fractions = positionFractions(position);
+
+  if (fractions === null) {
+    return position;
+  }
+
+  let [across, down] = fractions;
+
+  if (flip === 'horizontal' || flip === 'both') {
+    across = 1 - across;
+  }
+
+  if (flip === 'vertical' || flip === 'both') {
+    down = 1 - down;
+  }
+
+  for (let turn = 0; turn < quarters; turn += 1) {
+    // One quarter clockwise draws the element's left edge along the top of the
+    // screen, so what is across on the screen was down the element.
+    [across, down] = [down, 1 - across];
+  }
+
+  const percent = (fraction: number) => `${Math.round(fraction * 10000) / 100}%`;
+
+  return `${percent(across)} ${percent(down)}`;
+}
+
 /**
  * The turn and the mirror, as the declarations that draw them.
  *
@@ -533,6 +653,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     width,
     height,
     fit = 'cover',
+    position,
     rounded = false,
     placeholder,
     fallback,
@@ -647,6 +768,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const quarters = quartersOf(rotate);
   const sideways = quarters % 2 === 1;
   const pose = poseStyle(quarters, flip);
+  const placed = position === undefined ? undefined : objectPosition(position, quarters, flip);
 
   /*
    * The deterrents, as the attributes that carry them.
@@ -695,7 +817,12 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         guarded?.className,
         classNames?.image
       )}
-      style={{ filter: tint === 'none' ? undefined : tint, ...pose, ...guarded?.style }}
+      style={{
+        filter: tint === 'none' ? undefined : tint,
+        objectPosition: placed,
+        ...pose,
+        ...guarded?.style
+      }}
       onLoad={(event) => settle('loaded', event.currentTarget)}
       onError={(event) => settle('failed', event.currentTarget)}
       onContextMenu={guarded?.onContextMenu}

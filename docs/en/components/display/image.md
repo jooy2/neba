@@ -67,6 +67,18 @@ One on its own is not a proportion, so it sizes the box on that axis instead. `h
 
 </Demo>
 
+### position
+
+Where the picture sits in its box, spelled the way `object-position` spells it: `center` (the default), `top`, `right`, `bottom`, `left`, a corner such as `top left`, or two percentages such as `'30% 20%'`. Under `cover` it decides which part of the picture survives the crop, and under `contain`, `none` and `scale-down` it decides where the empty space goes.
+
+It is read on the picture as it is shown, so it holds through `rotate` and `flip`: `position="top"` keeps the top of what the reader sees. It is also physical rather than logical, and does not change sides on a right-to-left page.
+
+<Demo src="image/position">
+
+<<< @/.vitepress/demos/image/position.tsx
+
+</Demo>
+
 ### rotate and flip
 
 `rotate` turns the picture clockwise by `0`, `90`, `180` or `270` degrees. `flip` mirrors it: `horizontal`, `vertical`, `both`, or `none`, the default. The mirror runs along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture has been turned.

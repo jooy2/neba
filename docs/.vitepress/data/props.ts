@@ -11564,6 +11564,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '그림이 상자를 채우는 방식', en: 'How the picture fills that box' }
     },
     {
+      name: 'position',
+      type: "'center' | 'top' | 'right' | 'bottom' | 'left' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | `${number}% ${number}%`",
+      default: "'center'",
+      description: {
+        ko: '상자 안에서 그림이 놓이는 자리(object-position). cover에서는 남는 부분을, contain에서는 빈 영역의 위치를 정합니다. 화면에 보이는 그림 기준이라 rotate와 flip을 거쳐도 유지됩니다',
+        en: 'Where the picture sits in the box (object-position): which part a cover crop keeps, and where contain leaves its empty space. Read on the picture as shown, so it holds through rotate and flip'
+      }
+    },
+    {
       name: 'rounded',
       type: 'NebaSize | boolean',
       default: 'false',

@@ -12,6 +12,8 @@
 
 - **`fit` takes `scale-down` on `AspectRatio` and `Image`.** It is `contain` that never enlarges, for a file that may be smaller than the box it is given.
 
+- **`Image` takes `position`.** It is `object-position`: which part of the picture a `cover` crop keeps, and where `contain`, `none` and `scale-down` leave their empty space. It takes a side, a corner, `center` or two percentages, and is read on the picture as it is shown, so `position="top"` keeps the top the reader sees through `rotate` and `flip`.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

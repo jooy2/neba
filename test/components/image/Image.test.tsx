@@ -274,6 +274,63 @@ describe('Image', () => {
     });
   });
 
+  describe('position', () => {
+    const placedIn = (container: HTMLElement) =>
+      (container.querySelector('img') as HTMLImageElement).style.objectPosition;
+
+    it('writes nothing when it is not asked for', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+
+      expect(placedIn(screen.container)).toBe('');
+    });
+
+    // Percentages whatever was written, so every engine spells it one way.
+    it('writes a keyword, a corner or a pair of percentages as percentages', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" position="top" />);
+      expect(placedIn(screen.container)).toBe('50% 0%');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" position="bottom right" />);
+      expect(placedIn(screen.container)).toBe('100% 100%');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" position="30% 20%" />);
+      expect(placedIn(screen.container)).toBe('30% 20%');
+    });
+
+    /*
+     * `object-position` is laid out before the element is turned or mirrored,
+     * so each of these would keep the opposite edge if it were passed through.
+     * What is asserted is the edge the reader sees kept.
+     */
+    it('keeps the side of the picture the reader sees, through a turn', async () => {
+      const upsideDown = await render(
+        <Image src={OK} alt="A ridge" ratio={1} position="top" rotate={180} />
+      );
+      expect(placedIn(upsideDown.container)).toBe('50% 100%');
+
+      // A quarter clockwise draws the element's bottom edge down the left.
+      const onItsSide = await render(
+        <Image src={OK} alt="A ridge" ratio={1} position="left" rotate={90} />
+      );
+      expect(placedIn(onItsSide.container)).toBe('50% 100%');
+    });
+
+    it('keeps the side of the picture the reader sees, through a mirror', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" position="25% 10%" flip="horizontal" />
+      );
+
+      expect(placedIn(screen.container)).toBe('75% 10%');
+    });
+
+    it('hands a value it cannot read straight through', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" position={'left 10px top 20px' as 'top'} />
+      );
+
+      expect(placedIn(screen.container)).toBe('left 10px top 20px');
+    });
+  });
+
   it('becomes a button when it can be previewed', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" preview />);
 

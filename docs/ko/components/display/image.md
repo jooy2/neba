@@ -67,6 +67,18 @@ import { Image } from 'neba';
 
 </Demo>
 
+### position
+
+상자 안에서 그림이 놓이는 자리이며, `object-position`이 쓰는 방식 그대로 받습니다. `center`(기본값), `top`, `right`, `bottom`, `left`, `top left` 같은 모서리, `'30% 20%'` 같은 퍼센트 두 개 중 하나입니다. `cover`에서는 잘라낸 뒤 그림의 어느 부분이 남을지 정하고, `contain`, `none`, `scale-down`에서는 빈 영역이 어느 쪽에 생길지 정합니다.
+
+화면에 보이는 그림을 기준으로 읽기 때문에 `rotate`와 `flip`을 거쳐도 유지됩니다. `position="top"`은 독자에게 보이는 그림의 위쪽을 남깁니다. 또한 논리 방향이 아니라 물리 방향이라, 오른쪽에서 왼쪽으로 쓰는 페이지에서도 좌우가 바뀌지 않습니다.
+
+<Demo src="image/position">
+
+<<< @/.vitepress/demos/image/position.tsx
+
+</Demo>
+
 ### rotate와 flip
 
 `rotate`는 그림을 시계 방향으로 `0`, `90`, `180`, `270`도 돌립니다. `flip`은 그림을 뒤집으며 `horizontal`, `vertical`, `both`, 그리고 기본값 `none`을 받습니다. 뒤집는 축은 화면에 보이는 그림을 기준으로 하므로, 돌렸든 아니든 `flip="horizontal"`은 좌우를 바꿉니다.

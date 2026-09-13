@@ -7,6 +7,7 @@ export type {
   NebaImageFrame,
   NebaImageFrameOptions,
   NebaImageFrameShape,
+  NebaImagePosition,
   NebaImageProtection,
   NebaImageRotation,
   NebaImageWatermark,
