@@ -74,5 +74,5 @@ Pass `open` with `onOpenChange` and the caller owns the state, so anything else 
 - The popup carries `role="dialog"`. `title` names it and `description` describes it, wired with `aria-labelledby` and `aria-describedby`; a popover with neither needs an `aria-label` of its own.
 - Focus moves into the popup when it opens and returns to the trigger when it closes.
 - Escape closes it, and so does a click outside. `dismissible={false}` cancels both: a `PopoverClose` still gets through, so it is never a trap.
-- `modal` is `false` by default, so the page behind stays scrollable and usable. Use `'trap-focus'` for a popup that must be answered before anything else is touched.
+- `modal` is `false` by default, so the page behind stays scrollable and usable. Use `'trap-focus'` for a popup that must be answered before anything else is touched. A modal popover without `showClose` still gets a close button, hidden until it takes the keyboard focus, so a reader using VoiceOver on a phone, where there is no Escape key, has a way out.
 - `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.

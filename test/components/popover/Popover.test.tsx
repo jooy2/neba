@@ -205,6 +205,18 @@ describe('Popover', () => {
       expect(screen.getByRole('button', { name: 'Close' }).query()).toBeNull();
     });
 
+    // A focus trap with no way out that a screen reader can reach is a trap.
+    it('is drawn, hidden until focused, on a modal popover that did not ask for one', async () => {
+      const screen = await render(<Popover defaultOpen modal title="Share this page" />);
+      const close = screen.getByRole('button', { name: 'Close' });
+
+      await expect.element(close).toBeInTheDocument();
+
+      await screen.rerender(<Popover defaultOpen modal={false} title="Share this page" />);
+
+      await expect.element(screen.getByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+    });
+
     it('closes the popup when it is', async () => {
       const screen = await render(<Popover defaultOpen showClose title="Share this page" />);
 

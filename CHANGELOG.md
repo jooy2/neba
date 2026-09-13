@@ -234,6 +234,8 @@
 
 - **A `CodeBlock`'s line numbers and prompts are not read out.** They are generated content, which a screen reader reads with the code, so a block was heard as "1 const a equals 1, 2 const b…" although the docs said otherwise. Both now carry empty alternative text; a browser without that syntax, Firefox before 128 and Safari before 17.4, keeps reading them as before.
 
+- **A modal `Popover` always has a way out.** With `modal` on and `showClose` left off, the popup trapped the focus with no close button in it, so on iOS VoiceOver, which has no Escape key, a reader could not leave; Base UI requires a close for a modal popover. One is now added last in the popup, visually hidden until it takes the keyboard focus, when it shows as the × in the corner.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

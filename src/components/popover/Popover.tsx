@@ -15,6 +15,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  srOnlyClasses,
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
@@ -90,7 +91,14 @@ export interface PopoverProps
    * @default true
    */
   dismissible?: boolean;
-  /** Shows the × in the corner. @default false */
+  /**
+   * Shows the × in the corner.
+   *
+   * A `modal` popover without one still gets a close button, visually hidden
+   * until it takes the keyboard focus: a focus trap needs a way out a screen
+   * reader can reach, and VoiceOver on iOS has no Escape key to press.
+   * @default false
+   */
   showClose?: boolean;
   /**
    * Which language the × is named in — a BCP 47 tag such as `ko`, `pt-BR` or
@@ -336,6 +344,25 @@ export function Popover(rawProps: PopoverProps) {
             ) : null}
 
             {hasContent(children) ? <div className="min-w-0">{children}</div> : null}
+
+            {/* The way out a modal popover has to have, for a reader who cannot
+                see the page it is hiding or press Escape to leave it. Last in
+                the popup, so it never takes the focus the popup opens with;
+                drawn in the corner while it holds the keyboard focus. */}
+            {modal !== false && !showClose ? (
+              <BaseUIPopover.Close
+                aria-label={closeLabel ?? messages.close}
+                className={cx(
+                  srOnlyClasses,
+                  'end-2 top-2 flex cursor-pointer items-center justify-center rounded-full',
+                  'bg-(--n-panel-press) text-(--neba-muted-fg) [&_svg]:size-[1.1em] [&_svg]:shrink-0',
+                  'focus-visible:size-[1.6em] focus-visible:[clip-path:none]',
+                  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
+                )}
+              >
+                <CloseIcon />
+              </BaseUIPopover.Close>
+            ) : null}
           </BaseUIPopover.Popup>
         </BaseUIPopover.Positioner>
       </BaseUIPopover.Portal>
