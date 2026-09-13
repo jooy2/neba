@@ -83,6 +83,23 @@ describe('CodeBlock', () => {
         .toBeGreaterThan(0);
     });
 
+    // The colouring of the old code stayed on screen until the new code had
+    // been coloured, while the copy button already copied the new. A language
+    // this file has not loaded keeps the new colouring from arriving at once.
+    it('draws new code straight away rather than the old colouring', async () => {
+      const screen = await render(<CodeBlock code={SOURCE} language="ts" data-testid="block" />);
+      const block = () => screen.getByTestId('block').element();
+
+      await expect.poll(() => block().querySelectorAll('.hljs-keyword').length).toBeGreaterThan(0);
+
+      await screen.rerender(
+        <CodeBlock code={'local total = 7\nprint(total)'} language="lua" data-testid="block" />
+      );
+
+      expect(block().textContent).toContain('local total = 7');
+      expect(block().textContent).not.toContain('const answer');
+    });
+
     it('understands an alias for the language', async () => {
       const screen = await render(<CodeBlock code={SOURCE} language="TSX" data-testid="block" />);
 

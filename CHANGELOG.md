@@ -354,6 +354,8 @@
 
 - **A `Gallery` tile zooms on a transition under `hover="zoom"`.** The Gallery wrote a `transition` of its own onto each picture beside the one `Image` already carries, and two shorthands on one element are decided by stylesheet order: the Image's won, it did not name `transform`, and the zoom jumped to full size. The picture's own transition names `transform` now, and the Gallery no longer writes a second one.
 
+- **A `CodeBlock` shows new `code` as soon as it is given.** The colouring is worked out after the code changes, and until it arrived the block went on drawing the colouring of the previous code, while the copy button already copied the new one; with a language whose grammar still had to load, the old code stayed on screen for the length of the download. A colouring is kept with the code and the language it was made from, and new code is drawn plain until its own arrives.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

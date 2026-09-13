@@ -427,7 +427,15 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
 
     const [raw, setRaw] = React.useState(false);
     const [copied, setCopied] = React.useState<boolean | null>(null);
-    const [coloured, setColoured] = React.useState<CodeLine[] | null>(null);
+    // Kept with the source and the language it was coloured from. A new `code`
+    // is on screen before its colouring is, and the colouring still held here
+    // belongs to the old one: drawn as it stood, the block showed the previous
+    // code while the copy button already copied the new.
+    const [coloured, setColoured] = React.useState<{
+      source: string;
+      name: string;
+      lines: CodeLine[];
+    } | null>(null);
 
     const wanted = highlight && !raw && name !== null;
 
@@ -450,7 +458,7 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
 
       highlightCode(source, name).then(
         (lines) => {
-          if (!cancelled) setColoured(lines);
+          if (!cancelled) setColoured(lines ? { source, name, lines } : null);
         },
         () => {
           if (!cancelled) setColoured(null);
@@ -463,8 +471,11 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     }, [source, name, wanted]);
 
     const lines = React.useMemo(
-      () => (wanted && coloured ? coloured : plainLines(source)),
-      [wanted, coloured, source]
+      () =>
+        wanted && coloured && coloured.source === source && coloured.name === name
+          ? coloured.lines
+          : plainLines(source),
+      [wanted, coloured, source, name]
     );
 
     /** Wide enough for the last number, so the gutter does not step as it scrolls. */
