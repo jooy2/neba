@@ -260,6 +260,8 @@
 
 - **Tapping a field on an iPhone no longer zooms the page.** Safari on iOS and iPadOS zooms in on any field under 16px when it takes the focus, and the default `md` field is 13px, so the ordinary field on the ordinary phone moved the whole page and left it zoomed. On those systems alone, the text of `TextField`, `NumberField`, `Combobox`, `CommandPalette`, `TreeSelect`'s search, `ColorPicker`'s value, a `DataTable` cell editor and an `xs` or `sm` `OtpField` is now at least 16px; every other browser keeps the size `size` sets.
 
+- **Controls and indicators stay visible in a forced-colour theme.** Windows' contrast themes draw no `box-shadow` and replace background colours, and the stylesheet had nothing for them: a filled `Button`, `Toggle`, `Chip` or `Pill` lost the plate that was its edge, and a `Switch`, a `ProgressLinear` and a `Slider` lost the fill and the thumb that say their value. Under `forced-colors: active` those controls now carry a system-coloured outline, and the indicators are drawn in the system's own `Highlight` and `ButtonText`. Nothing changes in any other mode.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

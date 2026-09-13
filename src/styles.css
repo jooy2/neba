@@ -1074,6 +1074,55 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Forced colours
+ *
+ * A forced palette — Windows' contrast themes — replaces every colour with a
+ * handful of system ones and draws no `box-shadow` and no background image at
+ * all. Three things the library draws are lost to that: the plate that is the
+ * edge of a filled control, the bar and the thumb that say a value by being a
+ * colour, and the fill of a switch that says it is on. Nothing here applies in
+ * any other mode, so the ordinary look does not change.
+ *
+ * The indicators opt out of the palette with `forced-color-adjust: none` and
+ * are drawn in the system's own `Highlight`, which is what a forced theme uses
+ * to say "chosen" and so cannot clash with it.
+ * ------------------------------------------------------------------------- */
+
+@media (forced-colors: active) {
+  /* A hairline where the plate was. The focus ring still replaces it. */
+  .neba-glow.neba-glow:not(:focus-visible),
+  .neba-switch.neba-switch:not(:focus-visible) {
+    outline: 1px solid ButtonText;
+    outline-offset: -1px;
+  }
+
+  .neba-progress-track.neba-progress-track,
+  .neba-slider-rail.neba-slider-rail {
+    forced-color-adjust: none;
+    background-color: Canvas;
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  .neba-progress-indicator.neba-progress-indicator,
+  .neba-slider-indicator.neba-slider-indicator,
+  .neba-switch.neba-switch[data-checked] {
+    forced-color-adjust: none;
+    background-color: Highlight;
+  }
+
+  .neba-switch-thumb.neba-switch-thumb,
+  .neba-slider-thumb.neba-slider-thumb {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  .neba-switch.neba-switch[data-checked] .neba-switch-thumb {
+    background-color: HighlightText;
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Code blocks
  *
  * A CodeBlock is the one surface in the library that does **not** take the

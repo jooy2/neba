@@ -34,7 +34,10 @@ export interface ProgressLinearProps extends ProgressSharedProps {
  * there is no flat run left to preserve, and a square-ended bar reads as a
  * rendering bug rather than as a cut edge.
  */
-const trackClasses = 'relative w-full overflow-hidden rounded-full bg-(--n-soft)';
+// `neba-progress-track` and `neba-progress-indicator` are hooks for the
+// forced-colours block in `styles.css`.
+const trackClasses =
+  'neba-progress-track relative w-full overflow-hidden rounded-full bg-(--n-soft)';
 
 /**
  * A bar that fills. The workhorse: it is the only one of the three that can
@@ -104,7 +107,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
         >
           <Progress.Indicator
             className={[
-              'absolute rounded-full bg-(--n-fill)',
+              'neba-progress-indicator absolute rounded-full bg-(--n-fill)',
               // `neba-sweep` supplies the position, the width and the animation;
               // when the value is known Base UI supplies the width instead and
               // this transition is what makes it move rather than jump. Both

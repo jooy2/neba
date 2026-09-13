@@ -157,8 +157,9 @@ const trackBoxWidthClasses: Record<NebaSize, string> = {
  * pills for the same reason the Switch's track is: this is a groove something
  * travels along, not a sheet.
  */
-const railClasses = 'rounded-full bg-(--n-soft)';
-const indicatorClasses = `rounded-full bg-(--n-fill) ${transitionClasses}`;
+// The `neba-slider-*` names are hooks for the forced-colours block in `styles.css`.
+const railClasses = 'neba-slider-rail rounded-full bg-(--n-soft)';
+const indicatorClasses = `neba-slider-indicator rounded-full bg-(--n-fill) ${transitionClasses}`;
 
 /**
  * The thumb is a disc of the same acrylic every other surface is made of, and it
@@ -166,7 +167,7 @@ const indicatorClasses = `rounded-full bg-(--n-fill) ${transitionClasses}`;
  * rule is not relaxed just because this particular part has no label on it.
  */
 const thumbClasses = [
-  'rounded-full border bg-(--neba-surface)',
+  'neba-slider-thumb rounded-full border bg-(--neba-surface)',
   surfaceClasses,
   '[border-color:var(--n-line-hover)]',
   '[box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]',

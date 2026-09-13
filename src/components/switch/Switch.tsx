@@ -190,6 +190,9 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
       <BaseUISwitch.Root
         ref={ref}
         className={cx(
+          // `neba-switch` and `neba-switch-thumb` are hooks for the forced-colours
+          // block in `styles.css`, which has no other way to find the two parts.
+          'neba-switch',
           trackBaseClasses,
           trackClasses[size],
           disabled ? disabledTrackClasses : readOnly ? readOnlyTrackClasses : restTrackClasses,
@@ -200,7 +203,12 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
         {...props}
       >
         <BaseUISwitch.Thumb
-          className={cx(thumbClasses, thumbTravelClasses[size], classNames?.thumb)}
+          className={cx(
+            'neba-switch-thumb',
+            thumbClasses,
+            thumbTravelClasses[size],
+            classNames?.thumb
+          )}
         />
       </BaseUISwitch.Root>
     </span>
