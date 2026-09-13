@@ -30,7 +30,9 @@ Every other `<ul>` attribute passes through to the list. The shared axes are def
 
 <PropsTable name="NebaGalleryItem" />
 
-`ratio` is the one worth writing down even when it feels optional. `masonry` and `justified` are laid out from it, and they are laid out before a single file has arrived: which is what makes the arrangement right in the first frame and stops a wall of forty photographs reflowing forty times as they land. Nothing is ever measured.
+`ratio` is the one worth writing down even when it feels optional. `masonry` and `justified` are laid out from it, and they are laid out before a single file has arrived: which is what makes the arrangement right in the first frame and stops a wall of forty photographs reflowing forty times as they land. No picture is ever measured.
+
+The one thing `masonry` reads in JavaScript is the breakpoint, to know how many columns it deals into. A page rendered on a server deals into the `xs` count and deals again once it hydrates on a wider screen, and crossing a breakpoint deals again, which mounts every tile afresh in its new column. `grid`, `quilted` and `justified` take their columns from CSS and never move a tile.
 
 An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which reach its picture as they do on an [Image](./image), and `rotate` and `flip` follow it into the viewer. `ratio` stays the proportion of the file as stored, so an item turned onto its side is laid out on its side.
 
@@ -116,5 +118,6 @@ Called with the item and its index when a tile is chosen, whether or not there i
 
 - The list is a `role="list"` named by `label`, or by the `locale`'s word for "Gallery". Name it after what the set _is_: a page with two galleries and one name on both is a page with one name.
 - A tile's button is named by the picture's `alt` and its place in the set, so a reader tabbing a wall of thumbnails is told which one of how many they are on.
+- `masonry` is read a column at a time. `Tab` and a screen reader go down the first column before the second, so with three columns the order is 1, 4, 7 and then 2, 5, 8, which is not the order the items were given in. Where the order matters, as in a sequence of steps or a ranking, use `justified`, which keeps it row by row.
 - Every hover treatment is also a focus treatment. A tile that only responds to a pointer responds to half the readers.
 - The viewer's counter is a live region, so an arrow key says where it landed to a reader who cannot see the picture it landed on.
