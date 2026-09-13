@@ -46,4 +46,4 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 ## Accessibility
 
 - The finished number is in the document from the first frame, in a clipped box for a screen reader; what counts is a visible copy that is `aria-hidden`. A reader who cannot see the count is told the answer rather than a hundred intermediate ones.
-- A reduced-motion preference shows the answer straight away.
+- A reduced-motion preference shows the answer straight away, including before a `trigger` has fired.

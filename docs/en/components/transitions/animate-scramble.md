@@ -44,5 +44,5 @@ The pool an unsettled character is drawn from. Keep the glyphs one height: a poo
 ## Accessibility
 
 - The finished string is in the document from the first frame, in a clipped box for a screen reader; the noise is a visible copy that is `aria-hidden`.
-- A reduced-motion preference shows the text straight away.
+- A reduced-motion preference shows the text straight away, including before a `trigger` has fired.
 - Do not scramble something a reader has to act on quickly. It is legible only at the end.

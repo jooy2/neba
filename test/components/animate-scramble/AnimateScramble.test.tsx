@@ -2,6 +2,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateScramble } from 'neba';
 
+/*
+ * The reduced-motion answer, under the test's control. The library keeps one
+ * `MediaQueryList` per query and reads its `matches` live, so a stand-in handed
+ * out before the first render is the one every render in this file asks.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 function shown(root: Element): string {
   return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
 }
@@ -21,6 +47,20 @@ describe('AnimateScramble', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  // `hover` and `manual` may never be triggered, and noise waiting for them is
+  // motion the reader asked not to see.
+  it('shows the text itself, untriggered, to a reader who asked for less motion', async () => {
+    reduceMotion = true;
+
+    try {
+      const screen = await render(<AnimateScramble text="NEBA" trigger="manual" data-testid="s" />);
+
+      expect(shown(screen.getByTestId('s').element())).toBe('NEBA');
+    } finally {
+      reduceMotion = false;
+    }
   });
 
   it('settles on the text it was given', async () => {

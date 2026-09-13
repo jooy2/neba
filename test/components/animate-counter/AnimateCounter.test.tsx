@@ -2,6 +2,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateCounter } from 'neba';
 
+/*
+ * The reduced-motion answer, under the test's control. The library keeps one
+ * `MediaQueryList` per query and reads its `matches` live, so a stand-in handed
+ * out before the first render is the one every render in this file asks.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 /** What a sighted reader sees. */
 function shown(root: Element): string {
   return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
@@ -27,6 +53,20 @@ describe('AnimateCounter', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('shows the number itself, untriggered, to a reader who asked for less motion', async () => {
+    reduceMotion = true;
+
+    try {
+      const screen = await render(
+        <AnimateCounter value={120} from={0} trigger="manual" data-testid="c" />
+      );
+
+      expect(shown(screen.getByTestId('c').element())).toBe('120');
+    } finally {
+      reduceMotion = false;
+    }
   });
 
   it('lands on its value', async () => {

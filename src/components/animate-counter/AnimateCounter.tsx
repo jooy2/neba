@@ -112,8 +112,10 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       // Waiting shows the first frame, which is `from`. That is the same rule
       // the CSS effects follow — an untriggered animation is paused on its own
       // opening frame rather than showing its last — and without it a counter
-      // waiting to be scrolled to would already be displaying the answer.
-      if (!run.started) {
+      // waiting to be scrolled to would already be displaying the answer. A
+      // reader who asked for less motion is the exception: there is no count to
+      // wait for, only the answer.
+      if (!run.started && !reduced) {
         setShown(from);
 
         return;
@@ -171,7 +173,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
         children: (
           <>
             <span className={srOnlyClasses}>{formatter.format(value)}</span>
-            <span aria-hidden="true">{formatter.format(shown)}</span>
+            <span aria-hidden="true">{formatter.format(reduced ? value : shown)}</span>
           </>
         )
       }

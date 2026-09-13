@@ -178,7 +178,10 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
     const pool = characters.length > 0 ? characters : DEFAULT_POOL;
     const shown = graphemes
       .map((grapheme, index) => {
-        if (index < settled || grapheme.trim() === '') {
+        // A reader who asked for less motion is shown the text, and not the
+        // noise it would have resolved out of — including while it waits for a
+        // trigger that, for `hover` or `manual`, may never come.
+        if (reduced || index < settled || grapheme.trim() === '') {
           return grapheme;
         }
 
