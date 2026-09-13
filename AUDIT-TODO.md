@@ -1,0 +1,527 @@
+# Audit TODO
+
+The working list for the audit of every public component, started on 2026-09-12. It holds 281 numbered items, the rules the fixes follow, and the decisions still waiting for the maintainer. It is temporary: when every item is ticked or dropped, delete this file and its line in `.npmignore` in one commit.
+
+## State
+
+- Three batches are done, and the last push was `039b18c5` on 2026-09-13.
+- Decisions C1–C5 and D1–D19 were asked on 2026-09-13 and have no answer yet. They are listed under [Pending decisions](#pending-decisions).
+- The next batch starts after item 124. The first open item without a tag is 135.
+- Item 109 waits for 129 and is done together with it.
+- The next batch labels its questions E (approvals) and F (choices), so an answer like "F3 (b)" names exactly one question.
+
+## How to run a batch
+
+The maintainer starts a batch with a short request such as "전수조사 항목 진행하자" or "모두 권장대로 하고 다음 20개 진행해주세요". Start working straight away and ask nothing until the batch is finished.
+
+1. Read this file, `CLAUDE.md` and `git status`. Every file that is modified or untracked before you begin is the maintainer's own work in progress: never commit it and never stage a hunk of it. Save `git status --porcelain` and `git diff` so you can compare them after the build.
+1. If the request answers the pending decisions (for example "모두 권장대로"), apply those first, one commit per unit, tick them here, and push before starting the batch. A decision the request does not answer stays pending and is asked again at the end.
+1. Take the next 20 open items without a tag, in number order. Skip items tagged [major] or [decision], and the tagged part of an item that is only partly tagged. A tag-free item that turns out to change public behaviour or to need a real choice is skipped too and becomes a question. Deleting code, files or exports that an item does not explicitly name also needs a question first.
+1. The line numbers below are from the audit and may have moved. Check each item against the current code before changing anything. An item that is already fixed gets ticked with a note.
+1. For each item:
+   - Follow `CLAUDE.md`: no `transform` on controls, `'use client'`, `.js` specifiers, state branched in JS, `--n-*` slots, tests in the same commit.
+   - Write a regression test for a bug, and confirm it fails on the old code by putting the `HEAD` version of the source back temporarily (`git show HEAD:path > path`), then restore your change.
+   - Add an entry under `## vNext (2026--)` in `CHANGELOG.md`: `### Breaking changes` for anything a consumer must act on (always first), `### Added` for new props, `### Changed` for behaviour changes, `### Fixed` for bugs. Match the existing style: a bold sentence stating the new behaviour, then what was wrong and what changed.
+   - A new i18n namespace is an `export const` in `src/internal/i18n.ts`, a field on `NebaLocale`, and an entry in all 18 locale files under `src/locales/`.
+   - A documentation change covers both `docs/en` and `docs/ko`, plus the rows in `docs/.vitepress/data/props.ts`. When the change is visible in the docs, check it in the dev server.
+   - Format, lint and type-check the touched files: `npx prettier --write <files>`, `npx eslint --max-warnings 0 <ts files>`, `npx tsc -p tsconfig.prod.json --noEmit`, `npx tsc -p test/tsconfig.json`.
+   - Commit one unit at a time, as `tag: message` in the Udacity style (`fix:`, `feat:`, `docs:`, `refactor:`, `test:`, `chore:`), with no attribution lines. Tick the item in this file in the same commit. A multi-part item can take one commit per part.
+1. When a file you have to change also carries the maintainer's work (usually `CHANGELOG.md`), stage only your own edit:
+   - Before editing, copy the working file aside as the base.
+   - After editing, run `git merge-file -p <working file> <base copy> <HEAD version>`. The result is `HEAD` plus your edit only.
+   - Write it with `git hash-object -w <result>`, stage it with `git update-index --cacheinfo <mode>,<blob>,<path>`, then copy the working file over the base again before the next edit.
+   - Never `git add` such a file.
+1. After 20 items, run the full check: `npm run lint`, `npx prettier --check .`, `npm run typecheck`, `npm test`, `npm run build`, `npm run size`, and `npm run compat` (or `node scripts/check-browsers.mjs` while that script is still uncommitted). `npm run build` runs `format:fix`, so confirm that `git status --porcelain` and `git diff` match what you saved at the start. A deliberate size change goes through `npm run size:update` and the bundle table in `CLAUDE.md`.
+1. Push with `git push origin main`, then update [State](#state) and [Pending decisions](#pending-decisions) in this file, commit and push that too.
+1. Report to the maintainer in Korean, formal and concise:
+   - the pushed commit range
+   - the items done, one line each, with partial fixes and breaking changes marked
+   - the verification results and any budget change
+   - the questions, split into approvals and choices, each with its options and a recommended option first, answerable as "모두 권장대로" or "F3 (b)"
+
+When a decision is answered, write the choice on the item (`Decided: (a) …`), implement it, tick it, and remove it from the pending list. A dropped item is ticked with `Dropped by the maintainer.`
+
+## Legend
+
+- **[major]** Fixing it changes behaviour, an API, a default, markup or appearance that a consumer relied on.
+- **[decision]** There is more than one way to fix it, or the fix has a cost, so the maintainer chooses.
+- No tag means a local fix.
+- **(unverified)** marks a claim that was not confirmed against the code or a render.
+
+## Pending decisions
+
+### C. Approvals (recommended: approve all)
+
+- **C1 (79)** `Skeleton`: when `label` is given, drop `aria-busy` and move the name into visually hidden text inside the live region.
+- **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
+- **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
+- **C4 (117)** `Button`, `Toggle`: the order becomes caller, then group, then provider, then default.
+- **C5 (120)** Disabled appearance: Accordion and Collapsible use `data-[disabled]:`, RadioGroup passes the group's `disabled` through context, SegmentedButton gets a disabled branch, and Slider shows the state in colour instead of `opacity-70`.
+
+### D. Choices (recommended: (a) for all)
+
+- **D1 (78)** `Overlay` default name: (a) "Loading", with all 18 locales updated; (b) require `label` (breaking); (c) leave it.
+- **D2 (81)** A `role="status"` mounted with its content: (a) correct the "announces itself" wording in the docs to what is guaranteed and point to an always-mounted live region; (b) fill the content a tick after mount so the announcement is guaranteed; (c) leave it.
+- **D3 (83)** `GaugeChart`: (a) `role="meter"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and an `aria-valuetext` that carries the caption; (b) fix the `aria-label` wording only.
+- **D4 (84)** `PieChart`: (a) pick the higher-contrast ink per slice and implement `Escape`, `Home` and `End`; (b) fix the ink only and remove the keys from the docs.
+- **D5 (86)** `HeatmapChart` keyboard: (a) in a grid, up and down move along the column, and the treemap keeps size order, documented; (b) both move by on-screen position.
+- **D6 (87)** Chart tooltips on touch: (a) a tap pins the nearest point's tooltip and a tap outside closes it; (b) document the limitation.
+- **D7 (88)** Chart `aria-describedby`: (a) stop pointing at the hidden table and describe the chart in one sentence with the point count and range; (b) link the table only when there are few points.
+- **D8 (90)** `AnimateMarquee` under reduced motion: (a) draw no copies and lift `overflow` so the content wraps; (b) hide the copies and keep the clipping.
+- **D9 (93)** `Tabs` `wheel` default: (a) keep it on, since `CLAUDE.md` records the default and the hold at the ends as deliberate; (b) turn it off by default.
+- **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
+- **D11 (95)** `Panes` separator: (a) a default name from i18n, a prop for the name, and `aria-controls` pointing at the adjacent panes; (b) a name prop only.
+- **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
+- **D13 (103)** CSV formula injection: (a) prefix `'` by default, with an option to turn it off; (b) an option only, off by default.
+- **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
+- **D15 (111)** `date.ts`: (a) delete `isDayInRange`, `minutesOfDay` and their tests, and keep `clampDate` for 158; (b) keep all three.
+- **D16 (118)** Provider defaults: (a) make the listed components read the defaults and fill the missing keys, except TextLink's `size` and Icon; (b) change the guide to match the current behaviour.
+- **D17 (119)** Non-modal Dialog, Overlay and Drawer: (a) `pointer-events-none` on the Viewport and the Backdrop when `modal !== true`; (b) fix the docs only.
+- **D18 (120, Fieldset)** (a) read Base UI's Fieldset context so inner fields show the disabled state; (b) leave it.
+- **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
+
+## 1. Performance
+
+- [x] **1** [major][decision] Toast: `useToast()` returned a new object on every change. Decided: stable methods, same API.
+- [x] **2** NebaProvider: an inline `defaults` re-rendered every consumer.
+- [x] **3** [decision] DataTable: inline `getRowKey`, `filter` and `manual` invalidate every memo. Decided: documented to define them outside the component.
+- [x] **4** DataTable: drag selection committed on every `pointermove`.
+- [x] **5** DataTable: quadratic group rendering, and titles of groups with no rows on the page. Decided: an expanded group shows only on pages with its rows.
+- [x] **6** TreeView: context rebuilt on every render.
+- [x] **7** ScatterChart, TimelineChart: re-rendered per pointer pixel in `item` mode. The mark list is still rebuilt when the active point changes, which was left because the cost is small.
+- [x] **8** Charts: axis labels not memoised, and `Math.max(...array)` threw on large inputs.
+- [x] **9** BarChart: quadratic `extremes`.
+- [x] **10** CodeBlock: quadratic `/\s+$/`.
+- [x] **11** Tour: re-rendered on every scroll frame.
+- [x] **12** AnimateTyping, AnimateHeadline, AnimateScramble: JS loops ran off screen. Decided: endless effects pause off screen.
+- [x] **13** AnimateLighting painted off screen. Decided with 12.
+- [x] **14** AnimateTyping, AnimateHeadline: unstable ref callbacks.
+- [x] **15** Pill: the measuring effect re-ran for inline `details`. SegmentedButton keeps `children` in its dependencies on purpose, since without it the tile does not follow a label that changes width.
+- [x] **16** [decision] Gallery masonry: column count from JS breakpoints. Decided: documented, with `justified` recommended where order matters.
+- [x] **17** highlight.ts: unknown language names were cached without a bound.
+- [x] **18** [decision] Docs: React was fetched on pages with no preview. Decided: fetched when the first preview is set up.
+
+## 2. SEO and accessibility
+
+### Common
+
+- [x] **19** [major][decision] Collapsed content was missing from the server render. Decided: `hiddenUntilFound` by default on Accordion and Collapsible; Tabs documented.
+- [x] **20** [major][decision] NavigationMenu panel links were missing from the server render. Decided: `keepMounted` on by default.
+- [x] **21** [decision] `inert` was dropped under React 18. Decided: `internal/inert.ts`.
+- [x] **22** [major][decision] Buttons that became `disabled` lost focus (Pagination, Carousel, ScrollZone, HowToSteps). Decided: `aria-disabled`.
+- [x] **23** A pressed element unmounted and lost focus (HowToSteps, Spoiler, Breadcrumb, FilePicker, FloatingActionButton, Calendar).
+- [x] **24** [major][decision] `aria-label` went to the root instead of the control (Select, Combobox, NumberField, Slider). Decided: passed to the control.
+- [x] **25** [decision] Safe-area insets. Decided: a `safeArea` prop.
+- [x] **26** [decision] Touch targets under 24px. Decided: pseudo-element hit areas, xs sizes excluded.
+- [x] **27** Drag handles had no `touch-action: none`.
+- [x] **28** [major][decision] iOS zoomed into inputs. Decided: 16px inputs on iOS only.
+- [x] **29** [major] The light theme's focus ring was under 3:1.
+- [x] **30** [decision] No forced-colours support. Decided: a forced-colours block.
+- [x] **31** Image and Gallery focus rings read an undeclared slot.
+- [x] **32** Focus rings clipped by `overflow-hidden` (Accordion, List, ScrollArea).
+- [x] **33** [major][decision] No way to stop motion longer than five seconds. Decided: documented pause buttons, and AnimateHeadline holds under reduced motion.
+- [x] **34** [decision] AnimateBlink had no `duration` floor. Decided: at most three flashes a second.
+- [x] **35** Strings that bypassed i18n (chart table headers, Combobox, Toast, Tour, FilePicker). FilePicker decided: a `locale` prop and a `file` namespace.
+- [x] **36** [major][decision] The global reset. Decided: documented.
+- [x] **37** NebaProvider `colorSchemeScript()` did not set `color-scheme`.
+- [x] **38** styles.css: a nested light root re-declared the motion tokens.
+
+### Inputs
+
+- [x] **39** [major] Picker triggers did not say the chosen value.
+- [x] **40** [major] Calendar header names, month announcement, month cell names, `aria-multiselectable`.
+- [x] **41** [major][decision] Time columns were a tab stop per option. Decided: one tab stop per column with arrow keys.
+- [x] **42** [major][decision] CommandPalette group headings were not linked to their options. Decided: Base UI `Group` and `GroupLabel`.
+- [x] **43** Gallery `group-focus-visible` sat on an element that never takes focus.
+- [x] **44** [major][decision] Gallery masonry reading order. Decided with 16.
+- [x] **45** [major][decision] Gallery tile names hid the caption, and hover captions never showed on touch. Decided: the caption names the tile; hover captions always show on touch.
+- [x] **46** [major] FilePicker `label` was not the button's name.
+- [x] **47** Transfer panels had duplicate control names.
+- [x] **48** ColorPicker inline `label`, `description` and `error`. `required` on the inline group was left, since no ARIA attribute applies to a group.
+- [x] **49** [major] ColorPicker swatch tick contrast.
+- [x] **50** [major] Fieldset `description` was inside the legend.
+- [x] **51** [decision] OtpField slots all had the same name. Decided: "n of total" in i18n.
+- [x] **52** [decision] Slider `description` and thumb names. Decided: linked, with `getAriaLabel` and `getAriaValueText`.
+- [x] **53** Rating read an unrounded average.
+- [x] **54** [decision] DataTable with `selectionMode="none"` had no keyboard path. Decided: a tab stop, Enter to activate, F2 to edit.
+- [x] **55** [decision] DataTable selected a row on touch before a scroll. Decided: touch selects on click.
+- [x] **56** DataTable `aria-rowindex` with column group headers.
+- [x] **57** TreeView keys inside actions, Enter on link rows, `aria-selected`, first tab stop.
+- [x] **58** List `aria-disabled` on a roleless element. `disabled` on a non-interactive row was left as it is, by decision.
+
+### Display and surfaces
+
+- [x] **59** [decision] Badge count was not read with its button. Decided: documented `aria-describedby`.
+- [x] **60** [major] Chip added `aria-pressed` without `selected`.
+- [x] **61** [decision] Timeline complete and upcoming states. Decided: visually hidden words from i18n.
+- [x] **62** [major] Accordion `action` was inside the heading.
+- [x] **63** Carousel hover and focus shared one pause, and the live region stayed off.
+- [x] **64** [major][decision] ChatBubble read and delivered differed only in colour. Decided: a read glyph and hidden text.
+- [x] **65** [decision] A modal Popover had no Close. Decided: a visually hidden Close.
+- [x] **66** [major] HowToSteps named a roleless root.
+- [x] **67** [decision] Pill `details` toggle had no `aria-expanded`. Decided: added automatically.
+- [x] **68** [decision] WindowPane glyphs showed on hover only; the corner handle had no keyboard hint. Decided: glyphs on focus, a description on the handle.
+- [x] **69** [decision] Mockup was hidden until measured. Decided: first scale computed in render for a numeric `width`, `overflow: hidden` on the root.
+- [x] **70** Image read its `alt` twice on failure; an empty `alt` with `preview` was unnamed.
+- [x] **71** [major][decision] Image was invisible until hydration. Decided: `priority` pictures skip the fade.
+- [x] **72** [decision] CodeBlock line numbers were read out. Decided: alternative text in `content`, with a fallback.
+- [x] **73** [major][decision] Every CodeBlock was a region and a tab stop. Decided: only when it scrolls.
+- [x] **74** Avatar with `alt` and no `name`.
+
+### Feedback
+
+- [x] **75** [major][decision] Confirm: `dialog` role, focus on confirm for danger, focus return. Decided: all three fixed.
+- [x] **76** [decision] Tour steps changed silently. Decided: a polite live region.
+- [x] **77** Popconfirm title and description were not linked.
+- [ ] **78** [major][decision] **Overlay**: the default name is "Overlay", so the common use with only a spinner reads "Overlay, dialog". Consider a default like "Loading" or making `label` required. `src/internal/i18n.ts:686`. See D1.
+- [ ] **79** [major] **Skeleton**: with `label`, one element gets `role="status"`, `aria-busy="true"` and `aria-label`. `aria-busy` holds announcements back, which contradicts a live region, and a live region does not read `aria-label`. `Skeleton.tsx:199-201`. See C1.
+- [x] **80** Empty rendered as a table cell lost the cell role.
+- [ ] **81** [decision] **Alert, Empty, Skeleton**: a `role="status"` mounted together with its content is not announced in some browser and screen reader combinations (unverified). The Empty docs' "announces itself" is not guaranteed. See D2.
+
+### Charts
+
+- [x] **82** GaugeChart reading was missing from the server render.
+- [ ] **83** [decision] **GaugeChart**: `aria-label` is `value / max`, so `min=-50, max=50, value=0` reads "0 / 50" and the `caption` is lost. Consider `role="meter"` with `aria-value*`. `GaugeChart.tsx:335-342`. See D3.
+- [ ] **84** [decision] **PieChart**: share labels are white on every slice, about 4.0:1 in the light theme. The `Escape` dismissal and `Home`/`End` the docs describe do not exist. `PieChart.tsx:287-303, 377`. See D4.
+- [ ] **85** [major] **HeatmapChart**: the treemap's hidden table takes its column headers from the first series' `x`, so tiles outside the first group are written under the wrong column and a screen reader gets wrong data. `HeatmapChart.tsx:152-155, 358-381`. See C2.
+- [ ] **86** [decision] **HeatmapChart**: the keyboard only moves row by row and `ArrowDown` equals `ArrowRight`; the treemap moves in size order. `HeatmapChart.tsx:401-418`. See D5.
+- [ ] **87** [decision] **Charts**: tooltips cannot be opened by touch. They rely on `onPointerMove` or `pointerenter`/`pointerleave`, so a tap shows nothing or flashes. See D6.
+- [ ] **88** [decision] **Charts**: `aria-describedby` points at the whole hidden table, so a 365-point chart reads hundreds of numbers on every focus. `chart-frame.tsx:1482`, `PieChart.tsx:284`, `HeatmapChart.tsx:398`. See D7.
+
+### Transitions
+
+- [x] **89** AnimateMarquee copies kept links and buttons in the tab order.
+- [ ] **90** [major][decision] **AnimateMarquee**: under reduced motion the track stops but `overflow: hidden` and the copies remain, so long content is clipped and short content shows the same items four times. `src/styles.css:2494-2498, 2666-2668`. See D8.
+- [x] **91** AnimateScramble and AnimateCounter showed noise or `from` under reduced motion before a trigger.
+
+### Other
+
+- [ ] **92** [major] **RTL**: these places do not follow the direction. See C3.
+  - [ ] The Switch thumb uses a physical `left`, so on and off do not flip (`Switch.tsx:79-85, 144`).
+  - [ ] Transfer's move arrows point the wrong way, and the comment "it is logical" is wrong (`Transfer.tsx:426-429`).
+  - [ ] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`).
+  - [ ] Panes keyboard direction (`Panes.tsx:398-404`).
+  - [ ] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
+  - [ ] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).
+- [ ] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. See D9.
+- [ ] **94** [decision] **PageLayout**: `<main>`, `id="main"` and the skip link cannot be turned off, so a PageLayout inside a Mockup inside an app's PageLayout gives two `<main>` elements and a duplicate id. `PageLayout.tsx:188, 409`. See D10.
+- [ ] **95** [decision] **Panes**: the `role="separator"` has no name and no `aria-controls`, so it reads only "separator 50". `Panes.tsx:380-388`. See D11.
+- [x] **96** Sidebar's focusable separator had no `aria-valuenow`, `aria-valuemin` or `aria-valuemax`.
+- [x] **97** Docs PropsTable marked required props only with a red asterisk and a `title`.
+- [x] **98** Docs built `docs/public/samples/README.md` as a page.
+
+## 3. Security
+
+- [x] **99** `registerMessages` could write through a `__proto__` key.
+- [x] **100** TextLink with a hand-written `target="_blank"` lost its `rel` protection. Decided: the new-tab sentence is added, the icon stays with `newTab`.
+- [x] **101** NavigationMenuLink did not go through `safeRel`.
+- [ ] **102** [decision] **ChatBubble and other `href` components**: `preview.url` goes into `href` unchecked. Previews usually come from messages other users sent, and React 18, inside the peer range, renders `javascript:` URLs as they are (19 blocks them). Decide whether `internal/link.ts` gets a scheme allow list and whether the other `href` components follow the same policy. `ChatBubble.tsx:446-449`. See D12.
+- [ ] **103** [decision] **DataTable CSV export**: strings starting with `=`, `+`, `-`, `@`, a tab or a CR are written as they are, so Excel runs formulas such as `=HYPERLINK(...)`. Options are a `'` prefix on string cells or an option. `src/internal/csv.ts:18-33`. See D13.
+- [x] **104** Tour threw on an unparsable selector and unmounted the app.
+- [x] **105** CodeBlock `highlightLines` with a huge range hung and threw.
+- [x] **106** `threshold` outside 0–1 made `IntersectionObserver` throw.
+
+## 4. Optimisation
+
+- [ ] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. See D14.
+- [x] **108** i18n had two placeholder fillers; the old `fill` is gone.
+- [ ] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`
+- [x] **110** responsive.ts `lengthOf` duplicated `toLength`.
+- [ ] **111** **date.ts**: `clampDate`, `isDayInRange` and `minutesOfDay` are unused in `src/` and imported only by tests. `clampDate` can serve the fix for 158; the other two need a decision to delete. `src/internal/date.ts:175, 183, 237`. See D15.
+- [x] **112** mockup.tsx `MockupChrome.size` was never read.
+- [x] **113** AnimateCounter ignored `paused` and built a formatter per instance. `paused` removed (breaking).
+- [x] **114** Props with no effect on AnimateScramble, AnimateTyping, AnimateHeadline and AnimateLighting. AnimateLighting `easing` removed (breaking).
+- [x] **115** AnimateSplit dead branches for `effect="blink"`.
+- [x] **116** Eleven comments that said the opposite of the code.
+
+## 5. Bugs
+
+### Common
+
+- [ ] **117** [major] **Button, Toggle**: provider `defaults` are applied before the group's values, so a button inside `<NebaProvider defaults={{ size: 'sm' }}><ButtonGroup size="lg">` is `sm`. The order should be caller, group, provider, default. `Button.tsx:180-191`, `Toggle.tsx:210-220`. See C4.
+- [ ] **118** [major][decision] **Provider defaults are applied unevenly.** The guide says a component fills every axis it declares. See D16.
+  - Not calling `useStyleDefaults` at all: SegmentedButton, RadioGroup, Tabs, Timeline, Form, Fieldset, Menu, NavigationMenu, LineChart, AreaChart, Confirm (`locale`), Icon (possibly on purpose, since it has an icon ladder).
+  - Only some keys: DatePicker and DateRangePicker (`density`, `variant` missing), TimePicker and DateTimePicker (`variant` missing), BarChart (`size`, `density`), ScatterChart (`size`).
+  - The opposite: TextLink takes `size`, so under a `size="lg"` provider every link inside running text becomes 15px.
+- [ ] **119** [decision] **Dialog, Overlay, Drawer**: with `modal="trap-focus"` or `modal={false}` the Backdrop and the `fixed inset-0` Viewport still take the pointer, so the page cannot be clicked and a click counts as an outside click that closes the popup. The docs say "scrollable and clickable". Give the Viewport and Backdrop `pointer-events-none` and the Popup `pointer-events-auto` when `modal !== true`. `Dialog.tsx:269-285`, `Overlay.tsx:171-185`, `Drawer.tsx:520-523`. See D17.
+- [ ] **120** [major] **Disabled appearance does not apply.** See C5.
+  - [ ] Accordion, Collapsible: the Base UI trigger is `focusableWhenDisabled`, so it has no `disabled` attribute and the `disabled:` variant never matches. Use `data-[disabled]:` (`Accordion.tsx:321`, `Collapsible.tsx:211`).
+  - [ ] RadioGroup: the group's `disabled` is not in context, so a Radio looks enabled (`RadioGroup.tsx:34-38`).
+  - [ ] SegmentedButton: no disabled branch, so the colour family stays and grey text sits on the solid fill (`SegmentedButton.tsx:107-125, 178`).
+  - [ ] Slider: shows the state with `opacity-70`, against the design language (`Slider.tsx:168`).
+  - [ ] [decision] Fieldset: `disabled` is not reflected on the fields inside; it needs Base UI's Fieldset context (`Fieldset.tsx:55`). See D18.
+- [x] **121** Two cursor utilities were decided by stylesheet order on disabled fields and toggles.
+- [x] **122** Full-width ButtonGroup, ToggleGroup and SegmentedButton kept `inline-flex`.
+- [x] **123** Stack, Timeline and Carousel keyed wrappers by index and remounted children.
+- [ ] **124** **Caller props overwrite internal handling, or internal handling drops caller props.**
+  - [x] Carousel: `onFocus`, `onBlur`, `onPointerEnter` and `onPointerLeave` removed the autoplay pause.
+  - [x] `Animate*` with `trigger="hover"`: fourteen dropped the caller's handlers, and Typing, Marquee and Headline let the caller's handlers remove the trigger.
+  - [x] Tooltip: an `id` broke the trigger's `aria-describedby`.
+  - [x] TimelineItem: `style` erased the slots and the bullet size.
+  - [x] Avatar, AppLogo: `imageProps.className` replaced `size-full object-cover`.
+  - [ ] [decision] FloatingActionButton: `style` replaces the round radius, and `className` lands on the outer div instead of the button (`FloatingActionButton.tsx:471-495`). See D19.
+- [ ] **125** [major][decision] **Hydration errors inside `<p>`**: the root or a child is a `<div>`. Image (the default Skeleton and `AspectRatio` are divs; it happens with an MDX `img` mapping, `Image.tsx:1070, 1167`), Stack (its JSDoc says it can sit inside a paragraph, `Stack.tsx:140`), AnimateTyping, AnimateHeadline and AnimateMarquee (no `render` prop, so the Headline demo drops the heading semantics).
+- [ ] **126** [decision] **Server and client renders disagree.**
+  - Calendar reads `today()` and the runtime locale during render. With a UTC server and a reader in KST, the "today" mark differs between 00:00 and 09:00 every day, and the shown month differs at the end of a month (`Calendar.tsx:164-166`, `src/internal/date.ts:545`).
+  - Charts without `locale` format with the server's locale and time zone, so `Mar 3` on the server does not match the client's localised date (`chart-frame.tsx:655, 668`).
+  - NebaProvider reads the stored scheme in the `useState` initialiser, so the server renders `light` and the client `dark` (`NebaProvider.tsx:152-155`).
+- [ ] **127** [major][decision] **Nested NebaProvider**: an inner `defaults={{ density: 'compact' }}` erases the outer `size` and `locale`. A provider with no `direction` still forces `DirectionProvider` to `'ltr'`, so it switches back to LTR inside an RTL tree. Every provider writes the scheme onto `<html>`, which fights the outer toggle. The guide recommends nesting. `NebaProvider.tsx:178-191, 212-214`
+- [x] **128** `typesVersions` had no `hooks` entry.
+
+### Charts common
+
+- [ ] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`
+- [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`
+- [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`
+- [ ] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`
+- [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`
+- [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`
+- [ ] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`
+- [ ] **136** **Axis title placement**: on a horizontal chart `xAxis.label` reserves space and is never drawn. On a vertical chart `yAxis.label` is drawn at `plot.top - 8`, which can fall outside the top of the SVG, while its space is added to the left band. `chart-frame.tsx:1038, 1064, 1901, 1910`
+
+### Inputs
+
+- [x] **137** [major] Form without `onSubmit` blocked `action`. Decided: fixed (breaking).
+- [x] **138** [major][decision] TreeSelect branches could not be expanded. Decided: `TreeItem` `selectable`.
+- [x] **139** [major] MenuItem and NavigationMenuItem ignored `disabled` with `href`. Decided: fixed (breaking).
+- [ ] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`
+- [ ] **141** **CommandPalette**: when a command runs and closes it, or a controlled `open` becomes `false`, the query stays, so reopening shows a filtered list. `CommandPalette.tsx:265-284`
+- [ ] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`
+- [ ] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`
+- [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`
+- [ ] **145** **SegmentedButton, FloatingBottomNavigation**: when no item matches `value`, the highlight tile stays at its previous place and shows a wrong selection. FloatingBottomNavigation's default `labels="selected"` measures the width when the transition starts, so the tile can stay narrow (unverified). `SegmentedButton.tsx:265-268`, `FloatingBottomNavigation.tsx:285-288, 313-324`
+- [ ] **146** **Checkbox**: `readOnly` together with `indeterminate` has no fill, so it does not look indeterminate. `Checkbox.tsx:111-117`
+- [ ] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
+- [ ] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`
+- [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`
+- [ ] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
+- [ ] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`
+- [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`
+- [ ] **153** [major][decision] **BottomNavigation**: with `labels="selected"` the unselected names are absolutely positioned and reserve no line, so the glyphs jump up and down whenever the selection changes. `BottomNavigation.tsx:392-403`
+
+### Date and time pickers
+
+- [ ] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`
+- [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`
+- [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`
+- [ ] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`
+- [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`
+- [ ] **159** **DateTimePicker**: on a daylight-saving change day, the check that disables hour rows is an hour off (with `TZ=America/New_York` on 2026-11-01, 09:30–09:59 cannot be chosen; confirmed in Node). Build the interval ends with `withTime`. `DateTimePicker.tsx:184-190`
+- [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`
+- [ ] **161** **date.ts**: `DISPLAY_SAMPLES` has no Friday, so a `format` with a weekday can change width (for `el` full the sample is 27 characters and the real maximum 29). `src/internal/date.ts:349-367`
+
+### Display
+
+- [x] **162** DataTable row checkboxes pressed with a mouse did not add to the selection.
+- [ ] **163** **DataTable**: after scrolling to the bottom of 5,000 rows, a search that leaves 10 rows shows an empty body, because `virtualWindow` does not clamp `first` to the row count. `src/internal/data-table.ts:281-290`, `DataTable.tsx:1090-1099`
+- [x] **164** [major] DataTable put empty values first in descending order. Decided: always last (breaking).
+- [ ] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`
+- [ ] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`
+- [ ] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (unverified beyond the related test). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
+- [ ] **168** **DataTable**, small defects:
+  - [ ] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
+  - [ ] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`).
+  - [ ] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
+  - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).
+  - [ ] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
+  - [ ] The header being dragged shows its state with `opacity-60` (`:1948`).
+- [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`
+- [ ] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`
+- [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`
+- [ ] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`
+- [ ] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`
+- [ ] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`
+- [ ] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`
+- [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`
+- [x] **177** Highlight remounted its children when a query started or cleared.
+- [ ] **178** **Highlight**: `wholeWord` applies to a RegExp query although the docs say it is ignored. The `outline` variant leaves a 2px side border on each mark, so the text shifts as the reader types. `Highlight.tsx:78, 283, 297`
+- [ ] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`
+- [ ] **180** [decision] **Shortcut** does not sort modifiers on macOS, so `Mod+Shift+P` draws `⌘⇧P`. The docs say `⇧⌘P` (Apple's order ⌃⌥⇧⌘). `Shortcut.tsx:287, 291`
+- [ ] **181** [decision] **keys.ts**: punctuation shortcuts that need Shift never fire. `?` fails the `shiftKey` match, `Shift+/` fails because `event.key` is `?`, and only `Shift+?` works. The `useShortcut` JSDoc and the hooks guide use `'?'`. One option is to skip the Shift comparison for a single non-letter key. `src/internal/keys.ts:195-200, 214-227`
+- [ ] **182** **keys.ts**: the `event.code` fallback applies even when `event.key` is a different letter, so on AZERTY Ctrl+Z matches both `Ctrl+Z` and `Ctrl+W`. Fall back to `code` only when `event.key` is not an ASCII letter or digit. `keys.ts:218-221`
+- [ ] **183** **useShortcut** does not skip keydown during IME composition, so a `Mod+Enter` bound with `ignoreWhileTyping: false` can fire in the middle of Korean composition. Skip when `isComposing` is set or `keyCode === 229`. `useShortcut.ts:75-86`, `keys.ts:156-163`
+- [ ] **184** [major][decision] **Typography**: an empty `color` is pinned to `--neba-fg` instead of inheriting, so inside a solid Alert it draws dark text on a dark fill. The docs say it inherits. `Typography.tsx:247-251`
+- [ ] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and a `lines` of 7 or more silently clamps at 6. `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`
+- [x] **186** Image stayed invisible when given `onLoad` or `onError`; `protect` could be undone.
+- [ ] **187** [major][decision] **Image**: with `preview`, `className` and `style` land on the element inside the button, so the button spans the whole line and clicking empty space beside the picture opens it. `Image.tsx:1158, 1199, 1234`
+- [ ] **188** **Image**: the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request. `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`
+- [ ] **189** **Gallery**: with `hover="zoom"` the same `<img>` carries two `transition` shorthands and Image's wins, so the zoom jumps without a transition. `Gallery.tsx:440`, `Image.tsx:965`
+- [ ] **190** **CodeBlock**: when `code` or `language` changes, the old code stays on screen until the new highlighting finishes, while the copy button already copies the new code. Store which source a result belongs to. `CodeBlock.tsx:415, 450-453`
+- [ ] **191** **CodeBlock**: the Ctrl/Cmd+A handling checks only `event.key`, so on non-Latin keyboard layouts the whole page is selected. Without `language` and with `copyable={false}`, an empty toolbar is drawn. `CodeBlock.tsx:489, 613`
+- [ ] **192** **highlight.ts**: if the core chunk fails to load once, the rejected promise stays, and every block is plain for the life of the page. A language registered under a name that is also an alias (`registerLanguage('vue', …)`) is shadowed by the alias. `src/internal/highlight.ts:181-207, 220`
+- [ ] **193** [decision] **highlight.ts** does not load subLanguage grammars, so `<script>` inside `language="html"` is coloured only when a JS block loaded first on the same page. Loading them together adds chunks. `highlight.ts:214-228`
+- [ ] **194** **initials.ts** slices by code point, so `'👩‍💻 Dev'` becomes `👩D` and `'🇰🇷 Team'` becomes `🇰T`. Use `graphemesOf`. `toLocaleUpperCase()` has no locale, so the server and the browser may disagree (unverified). `src/internal/initials.ts:32-33`
+
+### Charts
+
+- [ ] **195** **Statistic**: the percentage delta ignores `locale` (`de-DE` shows `+1.250` for the absolute delta and `+71.4%` for the percentage). Sign and colour come from the unrounded difference, which puts an up arrow next to `+0%`, and `value=NaN` shows `NaN%`. `Statistic.tsx:196-231`
+- [ ] **196** **Sparkline**: an all-negative `shape="bar"` has its baseline outside the band, so the bars cover the text above. With all values equal, the line sits on the floor and the bars are 1px, which reads as zero. `Sparkline.tsx:122, 211-213`
+- [ ] **197** **BarChart**: `valueLabels="last"` writes no label when the last value is `null`; LineChart writes it on the last non-null value. `BarChart.tsx:299-301`
+- [ ] **198** **PieChart**: with `tooltip={false}` the arrow keys still change `active` and dim the other slices, with no status to read. Negative values become positive slices through `Math.abs`, while the treemap drops negatives ([decision]). `PieChart.tsx:152-156, 210, 287, 328-330`
+- [ ] **199** **HeatmapChart**: the column label skip interval is computed per label, so "Mar 9" and "Mar 10" overlap. When all values are equal every cell takes the darkest step, so a week of zeros looks like peak activity ([decision]). `HeatmapChart.tsx:540-552`, `chart.ts:1473-1475`
+- [ ] **200** **TimelineChart** writes span dates at the axis unit's precision, so a two-week span on a one-year range reads `Mar 2025 – Mar 2025` in the tooltip and the table. Write span ends at day precision at least. `TimelineChart.tsx:210-214, 436-437`, `chart.ts:847-866`
+- [ ] **201** **TimelineChart**: a fixed `min` puts ticks off the calendar (`min=2026-01-31` skips February). Spans outside a fixed `min` or `max` stay in the mark list, so the arrow keys stop on spans that are not drawn. `chart.ts:805`, `TimelineChart.tsx:151-192`
+- [ ] **202** **ScatterChart** writes x through `String()`: the axis says `24K` while the table says `24000`, and `0.1+0.2` shows `0.30000000000000004`. `z` takes y's `format`, which puts a currency sign on a population. `chart-frame.tsx:1607`, `ScatterChart.tsx:341, 347`
+
+### Feedback
+
+- [ ] **203** **Toast**: a partial update such as `update(id, { description })` overwrites `data` and `actionProps` with `undefined` keys, which removes the colour, variant, icon and action button. `Toast.tsx:188-199, 219`
+- [ ] **204** [decision] **Toast**: toasts hidden by `limit` start their timer when they are added, so "appears when the stack clears" holds only for manual dismissal. Pause the timer while hidden or fix the docs. `Toast.tsx:108-113`
+- [ ] **205** **Confirm**: with `alert: true`, Escape or a backdrop click resolves `false`, which sends the caller down the cancel branch. Use `answer(merged.alert === true)`. `Confirm.tsx:129-135`
+- [x] **206** Tour's card stayed beside the first step's target.
+- [ ] **207** **Tour**: the Mask is `fixed z-40` outside the portal, so inside a Card with `backdrop-filter` the dim is trapped inside the card and the hole is misplaced. Move the Mask into the Portal. `Tour.tsx:169, 178, 357-359`
+- [ ] **208** [decision] **Popconfirm**: a rejected `onConfirm` has no catch and becomes "Uncaught (in promise)". `Popconfirm.tsx:118-126`
+- [ ] **209** **ProgressLinear, ProgressCircular, ProgressBox**: the screen and ARIA disagree about "indeterminate". `value={0} max={0}` is drawn indeterminate by Neba while Base UI emits `aria-valuenow=0` and `data-complete`, and ProgressLinear shows an empty track; `value={Infinity}` is the reverse. ProgressBox `count={NaN}` draws no plates and `count={Infinity}` throws a RangeError. `src/internal/progress.ts:204-218`, `ProgressBox.tsx:71`
+- [ ] **210** [decision] **ProgressCircular** cuts `thickness` out of the whole outer radius, so `thickness={10}` closes the hole. The docs say half the radius. `ProgressCircular.tsx:29-31, 70`
+- [ ] **211** [decision] **ProgressLinear, ProgressCircular, Meter**: there is no way to pass a locale to `format`, so Base UI formats with the runtime locale, which causes hydration warnings, and in `de-DE` Meter's `aria-valuetext` "50 %" differs from the visible "50%".
+
+### Surfaces
+
+- [x] **212** Carousel scrolled the whole page on every slide change.
+- [ ] **213** **Carousel**: a non-zero `defaultValue` makes the first effect skip scrolling, so the dots say slide 3 while the track shows slide 1. The test only checks `aria-current`. `Carousel.tsx:246-249`
+- [ ] **214** **Drawer**: an uncontrolled `inline` drawer with `showClose` has a close button that only calls `onOpenChange(false)` and does nothing. `Drawer.tsx:427-432, 479`
+- [ ] **215** [decision] **Tabs**: a `TabPanel` inside a Fragment or a wrapper fails the `child.type === TabPanel` check and renders inside the tablist. `overflow="wrap"` with `lines` does not count the 1px `border-b`, which adds a vertical scroll. `Tabs.tsx:194, 413-419, 549-552`
+- [ ] **216** [major][decision] **Collapsible**: `title` and `subtitle` always `truncate`, which hides the end of a question-style title on a narrow screen. Follow Accordion's `lines` rule. `Collapsible.tsx:222, 227`
+- [ ] **217** **Pill**: when it starts `expanded`, it draws with a `detailsHeight` of 0 and then animates open after mount, pushing the content below. Start from `null` or `auto` and measure in a layout effect. `Pill.tsx:257-268, 374`
+- [ ] **218** **WindowPane**: size and position math uses `getBoundingClientRect()` (which includes transforms) as local pixels, so inside a Mockup at scale 0.3 one key press shrinks the width to 180px and a drag follows only 30% of the pointer. `WindowPane.tsx:482, 513-514, 550-554`
+- [ ] **219** **WindowPane**: a double-click inside `actions` maximises the window, because `dblclick` bubbles. `defaultMinimized` skips measuring, so the title bar is clipped by the border width. Closing the front window leaves every remaining window inactive. `WindowPane.tsx:350, 409-424, 711-719, 737`
+- [ ] **220** [decision] **WindowPane**: movement is not bounded, so a `fixed` window dragged off the viewport cannot be grabbed again. After one resize, `sized` keeps overriding the `width` and `height` props. `WindowPane.tsx:327, 492-497, 733, 738`
+
+### Layout
+
+- [ ] **221** **AspectRatio**: `fit` sets `object-*` only on `img` and `video`, so the `<canvas>` the docs mention is stretched. `AspectRatio.tsx:77-84`
+- [ ] **222** [major][decision] **Show**: `contents` is added even for the `render={<td />}` and `<li />` the docs recommend, which removes the cell's padding, border and background (a missing role in Safari 16 is unverified). `Show.tsx:71`
+- [ ] **223** **ScrollArea**: with only `maxHeight`, the viewport's `height: 100%` resolves to auto, so it does not scroll and the overflow is clipped. The showcase list with `maxHeight={220}` is affected. `ScrollArea.tsx:122, 134`
+- [ ] **224** **ScrollZone**: `snap` with mouse dragging snaps every `scrollLeft` write and jumps; turn `scroll-snap-type` off during a drag. [decision] `ref` and `onScroll` go to the root rather than the scroller, so scroll restoration does not work. `ScrollZone.tsx:461-462, 587-607`
+- [ ] **225** [decision] **PageLayout, Sidebar**: on a portrait tablet, opening the drawer, rotating to landscape and rotating back reopens the modal drawer on its own and traps focus. Close it when the layout widens. `Sidebar.tsx:250, 367`
+- [ ] **226** [decision] **Header, Footer**: every Header and Footer inside a PageLayout registers as the slot, so an article header inside `<main>` overwrites `--n-layout-header` with 0 and, when it unmounts, the site header is lost. A change of `position` alone is not measured again, so switching to fixed puts the content under the header. `Header.tsx:262-270`, `Footer.tsx:156-164`, `PageLayout.tsx:262-297`
+- [ ] **227** [major][decision] **Sidebar**: on a narrow screen the caller's `ref` is `null`. Used on its own it defaults to `sticky` with a `100dvh` height, so inside a height-limited box the bottom items cannot be reached. Changing only `<Sidebar collapseBelow="lg">` hides the trigger between md and lg, leaving no way to open it. `Sidebar.tsx:367-418`, `SidebarTrigger.tsx:85`
+- [ ] **228** **responsive.ts**: `withBaseline` lets the `xs` of `{ xs: undefined, md: 4 }` overwrite the baseline, so `spacing` becomes 0 instead of the documented 2. Use `value.xs ?? baseline`. `src/internal/responsive.ts:82-83`
+- [ ] **229** **useOnScreen, useElementSize** observe only the element attached at the first commit, so when the ref attaches later (`if (!data) return <Spinner />`) the size stays `0×0` and the visibility `false`. `src/hooks/useOnScreen.ts:37-59`, `useElementSize.ts:32-54`
+- [ ] **230** [decision] **CodeBlock `theme="auto"`** does not follow the nearest theme root: with an OS dark preference and `<html class="light">` the tokens are light while the block is dark. One option is to derive it from `--neba-surface` and `--neba-fg` as `mono` does. `src/styles.css:1096-1097, 1115-1116`
+
+### Transitions
+
+- [ ] **231** **`trigger="hover"`**: React's `onFocus` and `onBlur` bubble, so moving focus inside restarts the animation; a form wrapped in `<AnimateFade trigger="hover">` flashes on every Tab. Ignore the event when `relatedTarget` is inside. `src/internal/animate.tsx:532-550` (the handlers have chained the caller's since 124)
+- [ ] **232** **Rewind scope**: `querySelectorAll('.neba-anim, .neba-marquee-track')` rewinds every descendant, so an `<Alert transition="fade">` inside `<AnimateShake play>` fades in again on every shake. Limit it to the component's own targets. `animate.tsx:463-476`
+- [ ] **233** [decision] **`--n-anim-*` inheritance**: the slots inherit and only the defined values are written, so an `<Alert transition="fade">` inside `<AnimateLighting trigger="hover">` inherits `paused` and stays hidden until hover, and a fade inside `<AnimateReveal>` loses its fade. `@property` with `inherits: false` is not supported in Firefox 113, so every slot has to be written explicitly. `animate.tsx:160-209`, `styles.css:2230-2237`
+- [ ] **234** [major][decision] **End state under reduced motion**: `animation: none` means Fade, Slide, Zoom, Reveal and Grow with `mode="out"` show content that should be gone, Rotate rests at 0 degrees instead of `to`, and a pattern that unmounts on `onAnimationEnd` never unmounts. One option is `animation-duration: 1ms`, which lands on the end frame. `src/styles.css:2308-2317, 2666-2671`
+- [ ] **235** **AnimateMarquee**: `trigger="hover"` with the default `pauseOnHover` never moves. `src/styles.css:2530-2533`
+- [ ] **236** [decision] **AnimateBlink**: pausing an endless blink with `paused` or `play={false}` freezes it at an opacity in the middle of the cycle. The docs example `paused={!recording}` leaves the Chip translucent or invisible when recording stops. `animate.tsx:527-529, 539-548`
+- [ ] **237** [major][decision] **AnimateShake**: the docs and the demo replay the shake by changing `key`, which remounts the child and drops focus to `body`. That contradicts the same page's advice to move focus to the failed control. It needs an API that accepts a number or a `replay` counter for `play`. `docs/en/components/transitions/animate-shake.md:15, 26`
+- [ ] **238** **AnimateTyping**: resuming after a pause resets `pass` and `deleting`, so `repeat={2} erase` plays three times. Switching to a string of the same length shows it at once without typing, because the dependencies use `total`. `AnimateTyping.tsx:130-132, 157-163, 231`
+- [ ] **239** **AnimateScramble**: resuming after `paused` starts over through `setSettled(0)`. `AnimateScramble.tsx:141-176`
+- [ ] **240** **AnimateCounter**: with the default `format`, decimals show while counting ("37,251.482") and the width shakes. Round to the digits of `value` and use `tabular-nums`. `AnimateCounter.tsx:106, 146, 174`
+- [ ] **241** [major][decision] **AnimateCounter**: when `value` changes it counts again from `from` (0) rather than from the value on screen, so a live dashboard going from 100 to 105 climbs from 0. `AnimateCounter.tsx:153, 159`
+- [ ] **242** [decision] **AnimateHeadline** counts `interval` from when a line starts arriving rather than when it has arrived, so with `duration >= interval` no line ever rests. The leaving line may vanish for a frame (unverified). `AnimateHeadline.tsx:112-117, 160-180, 208-214`
+- [ ] **243** [decision] **AnimateSplit, AnimateTyping**: the docs say element children contribute their text, but they are dropped, so `<AnimateTyping>Hello <b>world</b></AnimateTyping>` leaves only "Hello ". The test passes an array of strings. `src/internal/text.ts:24-34`, `AnimateSplit.tsx:64, 131`
+- [ ] **244** **AnimateSplit**: `by="character"` makes every piece `inline-block`, so lines break in the middle of a word (by the spec; not checked in a render). `effect="blink"` passes the default `repeat` of 1, so it blinks once and stops. `AnimateSplit.tsx:96, 139-166`
+- [ ] **245** **AnimateAppear, AnimateSplit** do not ignore `trigger` under `timeline="view"`, so with `trigger="visible"` they stay paused until visible. `AnimateAppear.tsx:126-129`, `AnimateSplit.tsx:178-181`
+
+## 6. Tests
+
+These are defects in existing tests and missing areas. Regression tests for the bugs above ship with their fixes and are not listed.
+
+- [ ] **246** **Tests that always pass**
+  - [ ] `TreeView.test.tsx:390-403`: `onAction` is not wired to the Button, so the assertion always passes.
+  - [ ] `Badge.test.tsx:82-92, 189-194`: passes on an invisible dot, and passes children instead of `content`.
+  - [ ] `Gallery.test.tsx:298`: checks focus styling only as a class string (43 is fixed; check whether the test changed with it).
+  - [ ] Fieldset: queries the name with the regex `/Billing address/`, which hid 50 (50 is fixed; check whether the test changed with it).
+  - [ ] `Carousel.test.tsx:160`: checks `defaultValue` only through `aria-current`, so it misses 213.
+  - [ ] `LineChart.test.tsx:352`: the name "is not focusable when turned off" says the opposite of the behaviour.
+  - [ ] `AnimateTyping.test.tsx:151-155`: claims to cover element children but passes only strings.
+- [ ] **247** [decision] **No React 18 test path**: the suite runs on React 19 only, so problems that exist only on 18, such as 21 (`inert`) and 102 (`javascript:` URLs), are not caught. The peer range promises 18; decide whether CI gets a React 18 job.
+- [ ] **248** **resolution.test.ts**: `spreadCollisions` skips a whole file when any component in it destructures `style,`, which is how it missed the TimelineItem bug in 124. Check per component. Also add structural checks for components that read `var(--n-ring)` without declaring it (31) and for `typesVersions.hooks` (128). `test/package/resolution.test.ts:155-158`
+- [ ] **249** **The 17 `Animate*` test files** do not cover `trigger="hover"`, `trigger="visible"` or the reduced-motion branches. At minimum: no restart when focus moves inside, nested `transition` children are not rewound, Typing, Scramble and Counter show the final value under a faked `matchMedia`, and Marquee copies take no focus. Partly covered since 89 (Marquee copies), 91 (Scramble and Counter under reduced motion) and 124 (hover handlers on Fade, Split and Typing).
+- [ ] **250** **Internal pure functions**: `test/internal/chart.test.ts` has no cases for `timeScale` (fixed `min`, month end, DST), `formatTimeValue`, `rampStep` (all-equal values), `squarify` or `markPath`. Pulling DateTimePicker's hour-row interval math into a pure function would let DST be tested in `test/internal/`.
+- [ ] **251** **Toast**: untested are `promise` going from loading to success or error, `close()` with no argument, exceeding `limit`, `add` again with the same `id`, and the identity stability of `useToast()` (check whether the fix for 1 added it).
+- [ ] **252** **NebaProvider, hooks, locales**: missing are nested provider defaults, direction and scheme; `useShortcut('?')` and `isComposing`; a ref that attaches late and `once: false`; reduced-motion tokens under a nested light root (CSSOM; 38 is fixed, so check what its test covers). `registerMessages` with `__proto__` is covered since 99.
+- [ ] **253** **Picker and form combinations**: missing are hover then click with the default `openOnHover` (FloatingActionButton), a group `size` inside a provider (Button, Toggle), a `value` not in the list (SegmentedButton, FloatingBottomNavigation), a group `disabled` (RadioGroup), `limit` with the add row (Combobox), and a vertical `side` (Menubar, NavigationMenu). `action` without `onSubmit` (Form) is covered since 137, and `href` with `disabled` (Menu) since 139.
+- [ ] **254** **Layout and surface combinations**: missing are Anchor's `container`, controlled mode and `rail` with `depth`; ScrollArea `maxHeight`; Panes RTL keyboard; a Header inside an article; WindowPane under a scaled ancestor, with `defaultMinimized`, and with a double-click in `actions`. Stack keeping DOM nodes after reordering is covered since 123, and Sidebar `aria-value*` since 96.
+- [ ] **255** **Chart combinations**: missing are a string `height`, provider defaults, negative stacking, `stacked="full"` with `format` and hidden series, a multi-group treemap table, short TimelineChart spans in the table, Sparkline with negative and equal values, and the Statistic percentage locale.
+
+## 7. Documentation
+
+### Repository documents
+
+The line numbers in this section are from the audit. `CLAUDE.md` has changed since, so search for the quoted phrase.
+
+- [ ] **256** **`CLAUDE.md` counts and lists disagree with the code.**
+  - [ ] The docs edits needed for a new component are "five places" in one paragraph and "six edits" in another.
+  - [ ] "The nine" client-marked internal modules lists eight (`internal/defaults.ts` is missing). The `'use client'` file count is 123 in one place and 130 in another; it was 147 at the audit.
+  - [ ] The docs group lists miss 23 components: BottomNavigation, Calendar, FloatingActionButton, FloatingBottomNavigation, Rating, TreeSelect, DataTable, VisuallyHidden, HeatmapChart, ScatterChart, TimelineChart, Confirm, Empty, Popconfirm, Skeleton, Collapsible, Drawer, Mockup, Popover, WindowPane, AspectRatio, Portal, ScrollZone.
+  - [ ] The docs tree calls getting-started the only page in Guide and leaves out hooks, provider, breakpoints, `demos/showcase/` and `theme/index.js`.
+  - [ ] The list of responsive axes wrongly includes `gap` and misses `offset`, `rowSpacing` and `columnSpacing`. "Five more files" is followed by "the eleventh reason".
+  - [ ] Stale numbers: "ninety-odd components" (131), "two hundred modules" (327), "up to nineteen" (inputs has 35; also in `docs/.vitepress/config.ts`), "139 pages, 200 demos" (144 pages, 579 demos), "146" test files (153).
+- [ ] **257** **`CLAUDE.md` contradicts itself.** The locale routing paragraph says `rewrites` move `docs/ko/**` to `/` and calls `en/:rest*` a past bug, while the config and the toolchain notes say the opposite. `neba/styles.css` is "~16 kB" in one place and "23.0 kB" in another (measured 23.0). Registering a language costs "1.9 kB" in one place and "2.8 kB" in another. `color.ts` is called "a hundred lines" (373) and the reason the package has "one runtime dependency" (it has two).
+- [ ] **258** [decision] **`CLAUDE.md` internal modules section** runs to nearly 50 long paragraphs, so a module's note is hard to find. Proposal: a one-line table per module, keeping only the load-bearing rules as prose.
+- [ ] **259** [decision] **`CLAUDE.md` rule against DataTable**: "`density` changes padding only", but DataTable changes the row height with `density`. Write the exception into the rule or change the behaviour.
+- [ ] **260** **README.md**: the theming example (`:183-187`) overrides the derived token `--neba-primary-fill`, which the colour docs forbid. The root provider list (`:93`) lacks `ConfirmProvider`, and `useConfirm()` throws without one. "Placement props are logical" (`:168`) is wrong, since `side` on Drawer, Tooltip, Popover, Menu and others is physical. The docs table (`:29-37`) lacks Hooks, NebaProvider, Breakpoints and Browser support.
+- [ ] **261** **CONTRIBUTING.md, the PR template, SECURITY.md**: CONTRIBUTING is a generic template that conflicts with the repository's rules ("you may write in your own language" at `:32`, tests "as needed" at `:33`, no commit message rules at `:37`) and does not mention `npx playwright install chromium` or `npm test`. `.github/pull_request_template.md:12-13` has the same problems. SECURITY says "create an issue" at `:5` and then not to file an issue at `:7`.
+
+### Docs site: guide and design
+
+- [ ] **262** **"A new colour family is two edits" is wrong.** It takes about 20 lines of derived tokens per family, five tokens in each of three theme blocks, and the `Record<NebaColor, …>` in `Alert.tsx:126`. `docs/en/design/color.md:135`, `design-language.md:99`, `README.md:191`, and the "Adding a colour family" bullet in `CLAUDE.md`.
+- [ ] **263** **color.md**: the dark colour override example declares its values only under `.dark`, so it does not apply to the system dark mode (`@media … :root:not(.light)`) or to NebaProvider's `data-theme="dark"`. `docs/en/design/color.md:95`
+- [ ] **264** **prop-conventions.md**: `'float' | 'shake'` are listed although `NebaAnimation` does not have them (`:61-62`). "Two more go on the nine" (`:89`) refers to five props and 11 components. "Only `ToastProvider` has no `className`" (`:125`) is wrong, since NebaProvider, ConfirmProvider and TooltipProvider have none either. The list of components that take `transition` (`:58`) misses Empty, Mockup and Stack, and the new-component checklist (`:176-187`) lacks `'use client'` and `llms.txt`.
+- [ ] **265** **design-language.md, breakpoints.md**: "The dark theme went 5% → 7%" (`design-language.md:38`) is the reverse of the current 5%. The responsive table (`breakpoints.md:49`) lists `columns` for Flex, which Flex does not take, and misses Gallery's `columns`.
+- [ ] **266** **getting-started.md**: says the reset does not touch the typography of paragraphs, headings and links (`:36`), but it changes `h1`–`h6` sizes and `p` margins. The Browser support section sits after the "Next" list, and the ko heading differs from the title of the page it links to. This file has maintainer work in progress at the time of writing.
+- [ ] **267** **Three Drawer links go elsewhere**: `guide/hooks.md:18` and `components/layout/portal.md:55` link to `surfaces/card`, and `components/layout/sidebar.md:61` to `feedback/dialog`, in both en and ko. No link on the site goes to `surfaces/drawer`.
+- [ ] **268** **Sentences**: some sentences chained with colons do not read (`getting-started.md:42`, `design-language.md:87, 105`, `color.md:84`, `provider.md:37, 96`, and `examples/concept-signup.md:9`, which is also a meta description). The Korean imperative ending on the new pages (`ko/browser-support.md:24, 39`, `ko/guide/getting-started.md:105`) differs from the one used everywhere else. Three Korean sentences read awkwardly: `ko/guide/provider.md:36`, the heading at `ko/design/design-language.md:272`, and a sentence with no predicate at `ko/design/color.md:135`.
+- [ ] **269** **llms.txt**: "The six named effects" (`:169`) are seven, and the list misses Empty, Mockup and Stack. Mismatched parentheses break the meaning at `:5`, `:80`, `:119` and `:162`. ScrollZone "handing it back to the page at either end" (`:141`) is the opposite of the real hold at the ends. "A Pane can opt out of being resizable" (`:139`) is wrong, since `resizable` is a Panes prop. WindowPane "four" (`:162`) should be the eight `os` values. This file has maintainer work in progress at the time of writing.
+- [ ] **270** **Examples, catalog**: the Overview lede (`examples/overview.md:9`) says "Every component", but the showcase lacks LineChart, Portal, AnimateBlink, AnimateFade, AnimateGrow, AnimateRotate, AnimateSlide and AnimateZoom. The Overview table (`:15-25`) explains 9 of 25 blocks. The Confirm and Portal cards in the catalog are pictures, which contradicts "the component itself, running" (`components/index.md:9`).
+
+### Props data (`docs/.vitepress/data/props.ts`)
+
+- [ ] **271** **Korean defaults on English pages**: `default` is not split by locale, so rows whose default is written only in Korean (`:1095`, `:2269`, `:2337`, `:6295`, `:12391`) and rows with both languages in one string (`:846`, `:1165`, `:1441`) show on English pages. Type `default` as `Text` too.
+- [ ] **272** **Missing rows**: IconButton `render`; Table `classNames`; Menu's `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem`, `MenuGroup` and `MenuSeparator` (no tables at all, and `MenuGroup` is not mentioned on the page); GaugeChart `size`, `variant`, `locale` and `padded`; `startIcon` and `required` on the four pickers; all the shared rows of AnimateSplit (`duration`, `stagger`, `trigger`, `play`, `paused`); `timeline` and `range` on all 11 components that take them; HoverCard's `delay` and `closeDelay` defaults (600 and 300).
+- [ ] **273** **Wrong or extra rows**
+  - [ ] HeatmapChart `legend` appears twice with different defaults (`:768`, `:1242`), which is a duplicate Vue key.
+  - [ ] An AppLogo `density` row that does not exist (`:2358`), and a TimelineChart `legend` row for a prop that is omitted.
+  - [ ] TextField `onChange` recommends a nonexistent `onValueChange` (`:1695-1697`).
+  - [ ] Popconfirm `side` is typed `'start' | 'end'` (it is `NebaSide`, `:11188`), and `locale` "Defaults to the browser's" (it is the provider's, then English, `:11225`).
+  - [ ] AnimateMarquee `easing` default "house curve" (it is `linear`), and Float and Shake `ease-in-out` (`:633`).
+  - [ ] Statistic `*value*` (`:8785`, `:8850`) and the chart `label` `*of*` (`:748`) show literally.
+  - [ ] Chart `tooltip.mode` default `'index'` (Scatter and Timeline use `'item'`, `:929-931`).
+  - [ ] DataTable `onRowClick` "before the selection changes" (the selection changes first, on `pointerdown`, `:6064`).
+  - [ ] ScatterChart `maxRadius` "1/12 of the plot's short side" (it is 1/12 of the chart height).
+  - [ ] Image `onLoadingStatusChange` is said to report `'loading'` (`:11730`).
+  - [ ] ProgressCircular `thickness` "half the radius" (`:6906`), fixed together with 210.
+
+### Component pages
+
+- [ ] **274** [decision] **Pages that break the page skeleton** with design rationale, internals or sections outside the skeleton. Decide whether to clean them up in one pass or whenever a component is touched.
+  - inputs: select (`## The popup`), combobox (where `### shortcuts` sits), file-picker (the drag counter in Accessibility), segmented-button (implementation notes in Accessibility, "When to use something else"), rating, calendar ("What it is not", `## Keyboard`), date-picker (`### Three views` under Props, `## Keyboard`), floating-bottom-navigation (`### The highlight`)
+  - display: anchor (`:33, 53`), text-link (`:42, 66`), breadcrumb (`:82, 86`), visually-hidden ("Why not display: none"), shortcut ("Server rendering"), timeline ("When to use something else", the paragraph before Props), data-list (`:27`), data-table (`:136, 158, 179-193, 223`), gallery (hover, preview), app-logo, code-block (the Props section)
+  - charts: pie-chart ("When not to use it"), heatmap-chart (the squarify explanation)
+  - feedback: confirm ("The promise it returns", "Two at once"), tour (`:33`), popconfirm (`:27, 48, 52, 58`)
+  - surfaces: accordion (`:71, 93`), carousel (`:29`, "What is not offered"), chat-bubble (`:72`), hover-card (`:24, 26`), how-to-steps (`:34, 40, 78`), spoiler (Accessibility), tabs (`:119`), window-pane (`:71`, Motion)
+  - layout: header and footer (`divider`), scroll-zone (`buttonPlacement`, `wheel`), sidebar (`side`, `collapseBelow`), flex (the bundle note under `justifyContent`), stack (margin and translate), aspect-ratio (`rounded`), show (the sentence heading `### It adds no box`)
+  - transitions: animate-shake (`### Why this one is an exception`)
+  - ko pages whose `## Examples` and `## Accessibility` headings are still English: how-to-steps (`:36, 124`), code-block (`:26, 140`)
+- [ ] **275** **Factual errors on inputs pages**: Slider says there are no marks at the default `step={1}` but draws 101, and its example heading "An array value makes it a range" is a sentence. OtpField's "`color`, `size`, `onChange` are excluded" differs from the real Omit (`color`, `defaultValue`, `onChange`, `children`). ColorPicker's claim that both `disabled` and `readOnly` leave the tab order is wrong, since a `readOnly` input stays in it. DateTimePicker's description of the trigger name was wrong before 39; check it against the current name. TimePicker "`00` through `25` dim" is `00` through `29` at a one-minute step.
+- [ ] **276** **Factual errors on display pages**
+  - [ ] Blockquote: said to be a single `<blockquote>` without an attribution, but it is wrapped in a `<div>`; the comma in the HTML example is not in the output.
+  - [ ] Breadcrumb: "one `BreadcrumbList` per page" differs from Google's documentation (unverified).
+  - [ ] Highlight: the usage example `query={/\d+/} caseSensitive` is a combination with no effect.
+  - [ ] Shortcut: "the key cap and the string you press are the same" is wrong for Shift punctuation.
+  - [ ] TextLink: the `render` example writes `href` twice while the text says once is enough.
+  - [ ] VisuallyHidden: the skip-link demo uses `focus:` classes instead of `visible`, which contradicts the text, and the table's `visibility: hidden` row is wrong.
+  - [ ] Image: says `frame.border` follows `cut` corners, but the diagonal has no line.
+  - [ ] Gallery: "every hover treatment is also a focus treatment" (43) and "Nothing is ever measured" (16); both items are fixed or documented now, so check the wording.
+  - [ ] CodeBlock: the custom theme example `[data-code-theme='ours']` has the same specificity as `.neba-code` and loses by load order; the slot count is "Eleven" in the docs and "Sixteen" in the JSDoc, while it is 14 plus 5.
+  - [ ] Badge, Tooltip: the icon-only buttons in the usage example and the hero have no name.
+  - [ ] DataTable: "`md` row 32px against a Button's 32px plus its own margin" is wrong (`:199`).
+- [ ] **277** **Factual errors on chart pages**: Statistic says both the value and the delta change shape (only the delta does). LineChart says slots are "never cycled" (see 134), `NebaChartPoint` lacks `z`, and `connectNulls` is not explained. BarChart says the axis starts at 0 and cannot be changed (`yAxis.min` changes it). PieChart says colours hold when data is filtered or sorted (they follow the index). TimelineChart says arrows ←/→ move (it is ↑/↓). HeatmapChart speaks of treemap groups (tiles are placed regardless of group).
+- [ ] **278** **Factual errors on feedback pages**: Toast says `update` restarts the timer (only `add` with the same `id` does). Alert says "Three drawings cover the six families" (four; the source comment was fixed in 116). Tour says focus moves in as each step opens (76 chose an announcement instead). Popover's `'trap-focus'` description is the behaviour of `modal={true}`. Overlay recommends `trap-focus` with the `clear` tone, which does not work because of 119.
+- [ ] **279** **Factual errors on surfaces pages**
+  - [ ] ChatBubble: "`end` is the other party" is reversed (`:36`).
+  - [ ] Collapsible: "`keepMounted` does not change that" misleads (`:88`); 19 changed the default, so check the wording.
+  - [ ] Card: the `### Holding controls` heading does not match its text, and the hero's "Popular" is a Button that does nothing.
+  - [ ] card.md (`:13`, Button), drawer.md (`:16`, List), popover.md (`:16`, TextField): the first usage example uses a component it does not import, so it does not compile as written.
+  - [ ] Toolbar: "`color` reaches the rule and the focus ring" (it does not reach the ring, `:61`).
+  - [ ] WindowPane: the lede, the text and the source comments say "four" systems (there are eight), and "Both need `absolute` or `fixed`" contradicts the prop docs, which say `static` moves too.
+  - [ ] Spoiler: `reversible` is explained under `### maxHeight`, and `blur` under `### label, description and action`.
+  - [ ] Carousel: recommends Grid with `overflow-x-auto` instead of ScrollZone for several slides in view.
+- [ ] **280** **Factual errors on layout pages**: Header's Accessibility section leaves out headers inside `<main>`, `<aside>` and `<nav>`, recommends `label` on an article header whose role is generic, and mentions a `title` prop that does not exist. Portal's Accessibility sentence "A portal moves the DOM, not the reading order … which is the DOM." contradicts itself. Panes "a upright" should be "an upright". ScrollZone "focusable but unnamed without a label" ignores the `messages.label` fallback. [decision] Flex `rowSpacing` and `columnSpacing` are explained only for a row and read backwards for a column; say they are physical, or make them follow the direction.
+- [ ] **281** **Factual errors on transitions pages**: [decision] AnimateTyping's "arriving characters do not size the box, so nothing reflows" is wrong across several lines, and AnimateScramble's "the box never changes size" holds only for monospace fonts; either lay the final string underneath and draw over it, or fix the sentences. AnimateRotate's reduced-motion text is fixed together with 234.
