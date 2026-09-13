@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
@@ -1309,6 +1310,43 @@ describe('column order', () => {
     await screen.getByRole('button', { name: 'City', exact: false }).click();
 
     expect(onSortChange).toHaveBeenCalledWith([{ key: 'city', direction: 'asc' }]);
+  });
+
+  // The new order was worked out inside a state updater, which StrictMode runs
+  // twice, so every drag reported it twice.
+  it('reports a dragged column once under StrictMode', async () => {
+    const onColumnOrderChange = vi.fn();
+    const screen = await render(
+      <React.StrictMode>
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          reorderable
+          onColumnOrderChange={onColumnOrderChange}
+        />
+      </React.StrictMode>
+    );
+
+    const name = screen.getByRole('columnheader', { name: 'Name' }).element() as HTMLElement;
+    const score = screen.getByRole('columnheader', { name: 'Score' }).element() as HTMLElement;
+    const centreOf = (cell: HTMLElement) => {
+      const rect = cell.getBoundingClientRect();
+
+      return { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 };
+    };
+
+    name.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, button: 0, ...centreOf(name) })
+    );
+    score.dispatchEvent(
+      new PointerEvent('pointermove', { bubbles: true, pointerId: 1, ...centreOf(score) })
+    );
+    score.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+    await expect.poll(() => onColumnOrderChange.mock.calls.length).toBeGreaterThan(0);
+    expect(onColumnOrderChange).toHaveBeenCalledTimes(1);
+    expect(onColumnOrderChange).toHaveBeenCalledWith(['city', 'score', 'name']);
   });
 
   it('leaves a column the order does not name where it was', async () => {

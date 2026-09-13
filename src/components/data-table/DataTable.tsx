@@ -1172,6 +1172,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const reorderRef = React.useRef<ReturnType<typeof beginPointerDrag> | null>(null);
   const [movingKey, setMovingKey] = React.useState<string | null>(null);
   const [dropKey, setDropKey] = React.useState<string | null>(null);
+  // The same two, for the end of the drag to read. The commit used to be worked
+  // out inside the state updaters, and an updater has to be pure: StrictMode
+  // calls each one twice, which reported the new order twice.
+  const movingRef = React.useRef<string | null>(null);
+  const dropRef = React.useRef<string | null>(null);
 
   React.useEffect(
     () => () => {
@@ -1225,6 +1230,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             return;
           }
           armed = true;
+          movingRef.current = key;
           setMovingKey(key);
         }
 
@@ -1241,24 +1247,27 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           return moveEvent.clientX >= box.left && moveEvent.clientX <= box.right;
         });
 
-        setDropKey(over && over.key !== key ? over.key : null);
+        dropRef.current = over && over.key !== key ? over.key : null;
+        setDropKey(dropRef.current);
       },
       onEnd: () => {
-        reorderRef.current = null;
-        setMovingKey((moving) => {
-          setDropKey((target) => {
-            if (moving && target && moving !== target) {
-              const keys = columns.map((column) => column.key);
-              const from = keys.indexOf(moving);
-              const to = keys.indexOf(target);
+        const moving = movingRef.current;
+        const target = dropRef.current;
 
-              keys.splice(to, 0, ...keys.splice(from, 1));
-              setColumnOrder(keys);
-            }
-            return null;
-          });
-          return null;
-        });
+        reorderRef.current = null;
+        movingRef.current = null;
+        dropRef.current = null;
+        setMovingKey(null);
+        setDropKey(null);
+
+        if (moving && target && moving !== target) {
+          const keys = columns.map((column) => column.key);
+          const from = keys.indexOf(moving);
+          const to = keys.indexOf(target);
+
+          keys.splice(to, 0, ...keys.splice(from, 1));
+          setColumnOrder(keys);
+        }
       }
     });
   };

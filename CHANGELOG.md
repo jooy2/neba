@@ -334,6 +334,8 @@
 
 - **A `DataTable` with ticks and a column pinned to the start keeps both in place as it scrolls sideways.** The pinned columns were offset by the width of the tick column, but the tick column itself scrolled away, which left a gap that width in front of them with the scrolling cells showing through. The tick column is frozen with them now. A pinned heading was also stacked under the sticky headings beside it, so under `stickyHeader` the headings scrolling past were drawn over the frozen one; it is stacked above them.
 
+- **Dragging a `DataTable` column reports the new order once.** The order was worked out and committed inside two nested state updaters, and React's StrictMode runs every updater twice, so `onColumnOrderChange` was called twice for one drag in development. The drag reads what it needs when it ends and commits outside them.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
