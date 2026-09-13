@@ -487,50 +487,32 @@ const PERCENTAGE = /^(-?\d*\.?\d+)%$/;
  * A position as fractions across and down, or `null` for anything past the
  * keywords and percentages the type offers — a length has no fraction to turn.
  *
- * The grammar is the part of CSS's that a caller writes: one or two words, a
- * percentage first is across and second is down, and two keywords may come in
- * either order.
+ * The part of CSS's grammar a caller writes: a keyword says its own axis, and a
+ * percentage is across when it comes first and down when it comes second.
  */
 function positionFractions(position: string): [number, number] | null {
-  const words = position.trim().toLowerCase().split(/\s+/);
-  let across: number | undefined;
-  let down: number | undefined;
+  let across = 0.5;
+  let down = 0.5;
 
-  if (words.length > 2 || words[0] === '') {
-    return null;
-  }
-
-  for (const [index, word] of words.entries()) {
+  for (const [index, word] of position.trim().toLowerCase().split(/\s+/).entries()) {
     const percentage = PERCENTAGE.exec(word);
 
     if (word === 'left' || word === 'right') {
-      if (across !== undefined) {
-        return null;
-      }
-
       across = word === 'left' ? 0 : 1;
     } else if (word === 'top' || word === 'bottom') {
-      if (down !== undefined) {
-        return null;
-      }
-
       down = word === 'top' ? 0 : 1;
     } else if (percentage !== null) {
-      const fraction = Number(percentage[1]) / 100;
-
       if (index === 0) {
-        across = fraction;
-      } else if (down === undefined) {
-        down = fraction;
+        across = Number(percentage[1]) / 100;
       } else {
-        return null;
+        down = Number(percentage[1]) / 100;
       }
     } else if (word !== 'center') {
       return null;
     }
   }
 
-  return [across ?? 0.5, down ?? 0.5];
+  return [across, down];
 }
 
 /**
