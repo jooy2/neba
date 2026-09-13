@@ -33,6 +33,17 @@ describe('ScrollArea', () => {
       expect(screen.getByTestId('area').element()).toHaveClass('my-own-class');
     });
 
+    it('draws the viewport focus ring inside the edge the root clips', async () => {
+      const screen = await render(
+        <ScrollArea height={80} data-testid="area">
+          <Tall />
+        </ScrollArea>
+      );
+      const viewport = screen.getByTestId('area').element().firstElementChild;
+
+      expect(viewport).toHaveClass('outline-offset-[-2px]');
+    });
+
     it('takes a height and a ceiling as inline lengths', async () => {
       const screen = await render(
         <ScrollArea height={80} maxHeight="12rem" data-testid="area">

@@ -140,6 +140,8 @@
 
 - **The preview button of an `Image` and the tiles of a `Gallery` draw a focus ring.** Both wrote their outline through a ring colour that nothing above them declares, and a custom property with no value drops the whole declaration, so a keyboard reader saw no focus at all. They fall back to the primary ring.
 
+- **Focus rings inside a clipped sheet are drawn inside the edge.** A ruled `Accordion`, a ruled `List` and a `ScrollArea` clip their overflow, and the ring drawn outside a full-width header, row or viewport was cut off on both sides — entirely, for a lone accordion section or the viewport. Those three rings sit inside the edge now, as `Collapsible`'s already did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

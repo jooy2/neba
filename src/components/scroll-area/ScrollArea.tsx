@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { ScrollArea as BaseUIScrollArea } from '@base-ui/react/scroll-area';
-import { cx, focusRingClasses, toLength } from '../../internal/styles.js';
+import { cx, toLength } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -136,8 +136,10 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
             'overscroll-contain',
             // The ring is declared at zero width, so it is also what takes the
             // UA's own outline off. A `[outline:none]` beside it would be a
-            // second `outline` shorthand of equal specificity.
-            focusRingClasses,
+            // second `outline` shorthand of equal specificity. It is drawn inside
+            // the edge because the viewport fills a root that clips its overflow,
+            // and a ring outside it was cut off entirely.
+            '[outline:0_solid_var(--n-ring)] outline-offset-[-2px] focus-visible:[outline:2px_solid_var(--n-ring)]',
             // The fade is a mask rather than a gradient painted over the content:
             // a gradient would have to fade *to* a colour, and over a translucent
             // acrylic sheet there is no such colour. `styles.css` has the rest.

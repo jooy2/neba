@@ -271,6 +271,18 @@ describe('List', () => {
       expect(screen.getByRole('list').element()).toHaveClass('border');
     });
 
+    it('draws a pressable row\u2019s focus ring inside the edge when the list is ruled', async () => {
+      const screen = await render(
+        <List dividers>
+          <ListItem onClick={() => {}}>Production</ListItem>
+        </List>
+      );
+
+      expect(screen.getByRole('button', { name: 'Production' }).element()).toHaveClass(
+        'outline-offset-[-2px]'
+      );
+    });
+
     it('never applies a transform', async () => {
       const screen = await render(
         <List dividers>

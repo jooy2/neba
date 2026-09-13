@@ -182,6 +182,10 @@ const itemRadiusClasses: Record<NebaSize, string> = {
   xl: radiusClasses.md
 };
 
+/** The focus ring drawn inside the edge, for a header the sheet clips. */
+const insetRingClasses =
+  '[outline:0_solid_var(--n-ring)] outline-offset-[-2px] focus-visible:[outline:2px_solid_var(--n-ring)]';
+
 /**
  * A stack of sections, one of which is open.
  *
@@ -314,7 +318,10 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
               gapClasses[size],
               transitionClasses,
               iconClasses,
-              focusRingClasses,
+              // Inside the edge when the sections are ruled: the sheet clips its
+              // overflow then, and a ring outside a header that spans the sheet
+              // was cut off on both sides and, for a lone section, everywhere.
+              dividers ? insetRingClasses : focusRingClasses,
               dividers ? '' : itemRadiusClasses[size],
               'hover:bg-(--n-soft)',
               'data-[panel-open]:text-(--n-on-tint)',

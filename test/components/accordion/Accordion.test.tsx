@@ -259,6 +259,20 @@ describe('Accordion', () => {
         'rounded'
       );
     });
+
+    // A ruled accordion clips its overflow, and a ring outside a full-width
+    // header is cut off with it.
+    it('draws the focus ring inside the edge when the accordion is ruled', async () => {
+      const screen = await render(
+        <Accordion dividers>
+          <AccordionItem title="Billing" />
+        </Accordion>
+      );
+
+      expect(screen.getByRole('button', { name: 'Billing' }).element()).toHaveClass(
+        'outline-offset-[-2px]'
+      );
+    });
   });
 
   describe('the heading', () => {

@@ -158,6 +158,10 @@ const rowRadiusClasses: Record<NebaSize, string> = {
  */
 const dividerClasses = '[&>li+li]:border-t [&>li+li]:[border-color:var(--n-line)]';
 
+/** The focus ring drawn inside the edge, for a row the sheet clips. */
+const insetRingClasses =
+  '[outline:0_solid_var(--n-ring)] outline-offset-[-2px] focus-visible:[outline:2px_solid_var(--n-ring)]';
+
 /**
  * A stack of rows.
  *
@@ -268,7 +272,9 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
       : selected
         ? 'bg-(--n-soft-press) font-medium text-(--n-on-tint)'
         : '',
-    interactive ? `cursor-pointer ${focusRingClasses}` : '',
+    // Inside the edge when the rows are ruled, for Accordion's reason: the sheet
+    // clips its overflow then, and a ring outside a full-width row is cut off.
+    interactive ? `cursor-pointer ${dividers ? insetRingClasses : focusRingClasses}` : '',
     // Hover deepens the same tint `selected` already uses, one step down, so a
     // hovered row and the chosen row are the same idea at two strengths.
     interactive && !selected ? 'hover:bg-(--n-soft)' : '',
