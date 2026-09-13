@@ -72,7 +72,7 @@ An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which r
 
 ### caption
 
-`below` puts an item's `title` and `description` under the picture, `overlay` writes them across the foot of it on a gradient, and `hover` is `overlay` that arrives with the pointer. `none`, the default, draws neither: the words are still in the picture's `alt` and in the viewer.
+`below` puts an item's `title` and `description` under the picture, `overlay` writes them across the foot of it on a gradient, and `hover` is `overlay` that arrives with the pointer, or with the focus; on a screen that cannot hover it is always there. `none`, the default, draws neither: the words are still in the picture's `alt` and in the viewer.
 
 Reach for `overlay` or `hover` in `justified`: a caption below the picture makes a tile taller than the row it was measured into, and rows stop lining up.
 
@@ -117,7 +117,7 @@ Called with the item and its index when a tile is chosen, whether or not there i
 ## Accessibility
 
 - The list is a `role="list"` named by `label`, or by the `locale`'s word for "Gallery". Name it after what the set _is_: a page with two galleries and one name on both is a page with one name.
-- A tile's button is named by the picture's `alt` and its place in the set, so a reader tabbing a wall of thumbnails is told which one of how many they are on.
+- A tile's button is named by its caption and its place in the set, so a reader tabbing a wall of thumbnails is told which one of how many they are on, and a voice-control user can say the words on the tile to press it. A tile with no caption drawn is named by the picture's `alt` instead.
 - `masonry` is read a column at a time. `Tab` and a screen reader go down the first column before the second, so with three columns the order is 1, 4, 7 and then 2, 5, 8, which is not the order the items were given in. Where the order matters, as in a sequence of steps or a ranking, use `justified`, which keeps it row by row.
 - Every hover treatment is also a focus treatment. A tile that only responds to a pointer responds to half the readers.
 - The viewer's counter is a live region, so an arrow key says where it landed to a reader who cannot see the picture it landed on.

@@ -379,6 +379,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     } = useStyleDefaults(rawProps, ['locale']);
 
     const messages = useMessages(galleryMessages, locale);
+    const idBase = React.useId();
     const [openAt, setOpenAt] = React.useState<number | null>(null);
 
     const lanes = withBaseline(columns ?? defaultColumns, 2);
@@ -404,6 +405,13 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       const words = hasContent(item.title) || hasContent(item.description);
       const shown = caption !== 'none' && words;
       const over = caption === 'overlay' || caption === 'hover';
+      const titleId = `${idBase}-${index}-title`;
+      const descriptionId = `${idBase}-${index}-description`;
+      const positionId = `${idBase}-${index}-position`;
+      const position = fill(messages.item, {
+        index: String(index + 1),
+        total: String(items.length)
+      });
 
       const picture = (
         <Image
@@ -458,8 +466,10 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
               ? cx(
                   'pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-2.5 text-white',
                   captionScrimClasses,
+                  // A screen that cannot hover never brings a hover caption up,
+                  // so there it is simply an overlay.
                   caption === 'hover'
-                    ? 'opacity-0 group-hover/tile:opacity-100 group-has-[:focus-visible]/tile:opacity-100 supports-[not_selector(:has(*))]:group-focus-within/tile:opacity-100 [transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]'
+                    ? 'opacity-0 group-hover/tile:opacity-100 group-has-[:focus-visible]/tile:opacity-100 supports-[not_selector(:has(*))]:group-focus-within/tile:opacity-100 [@media(hover:none)]:opacity-100 [transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]'
                     : ''
                 )
               : 'flex flex-col gap-0.5 pt-1.5',
@@ -468,6 +478,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
         >
           {hasContent(item.title) ? (
             <span
+              id={titleId}
               className={cx(
                 'truncate font-medium',
                 sheetTitleClasses.sm,
@@ -480,6 +491,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
           ) : null}
           {hasContent(item.description) ? (
             <span
+              id={descriptionId}
               className={cx(
                 'truncate',
                 metaTextClasses.md,
@@ -533,9 +545,22 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
           {preview || onItemSelect ? (
             <button
               type="button"
-              // The picture's own words, plus where it sits: a reader tabbing a
-              // wall of thumbnails is told which one of how many they are on.
-              aria-label={`${item.alt} — ${fill(messages.item, { index: String(index + 1), total: String(items.length) })}`}
+              // Where it sits, always: a reader tabbing a wall of thumbnails is
+              // told which one of how many they are on. What comes before it is
+              // the caption when one is drawn, since a name that hides the words
+              // on the tile leaves a voice-control user nothing to say to press
+              // it, and the picture's own `alt` when there is none.
+              aria-label={shown ? undefined : `${item.alt} — ${position}`}
+              aria-labelledby={
+                shown
+                  ? `${hasContent(item.title) ? titleId : descriptionId} ${positionId}`
+                  : undefined
+              }
+              aria-describedby={
+                shown && hasContent(item.title) && hasContent(item.description)
+                  ? descriptionId
+                  : undefined
+              }
               className={cx(
                 'block w-full text-start [outline:none]',
                 preview ? 'cursor-zoom-in' : 'cursor-pointer',
@@ -548,6 +573,11 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
               onClick={() => open(index)}
             >
               {body}
+              {shown ? (
+                <span id={positionId} hidden>
+                  {position}
+                </span>
+              ) : null}
             </button>
           ) : (
             body

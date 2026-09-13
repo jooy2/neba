@@ -289,6 +289,21 @@ describe('Gallery', () => {
 
       expect(legend).toHaveClass('opacity-0');
       expect(legend.className).toContain('group-hover/tile:opacity-100');
+      // A touch screen never hovers, so there the caption is always up.
+      expect(legend.className).toContain('[@media(hover:none)]:opacity-100');
+    });
+
+    // The words on the tile are what a voice-control user says to press it.
+    it('names a tile by the caption drawn on it, and its place in the set', async () => {
+      const screen = await render(<Gallery items={items} caption="below" preview />);
+      const ridge = screen.getByRole('button', { name: 'Ridge Image 1 of 4' });
+
+      await expect.element(ridge).toBeInTheDocument();
+      await expect.element(ridge).toHaveAccessibleDescription('Dawn');
+      // A tile with no words to draw keeps the picture's own.
+      await expect
+        .element(screen.getByRole('button', { name: 'A field — Image 4 of 4' }))
+        .toBeInTheDocument();
     });
   });
 
