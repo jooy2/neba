@@ -74,7 +74,7 @@ Every row is `rowHeight` tall and cells truncate rather than wrap, which is what
 | <kbd>Shift</kbd> + arrows | extend the run |
 | <kbd>Space</kbd> | choose the row the focus is on; with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>, toggle it |
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> | every displayed row |
-| <kbd>Esc</kbd> | nothing |
+| <kbd>Esc</kbd> | drops every row |
 | <kbd>Enter</kbd>, double-click | `onRowActivate` |
 
 `checkboxes` adds a tick column and a header tick that chooses every displayed row at once. `onSelectedChange` reports the keys and the rows behind them, including rows on pages that are not on screen.
