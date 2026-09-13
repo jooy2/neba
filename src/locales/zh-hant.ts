@@ -186,5 +186,8 @@ export const zhHant: NebaLocale = {
     steps: '步驟',
     position: '第 {index} 步，共 {total} 步',
     step: '第 {index} 步：{title}'
+  },
+  otp: {
+    slot: '第 {index} 個字元，共 {total} 個'
   }
 };

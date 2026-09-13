@@ -183,5 +183,8 @@ export const th: NebaLocale = {
     steps: 'ขั้นตอน',
     position: '{index} จาก {total}',
     step: 'ขั้นตอนที่ {index}: {title}'
+  },
+  otp: {
+    slot: 'อักขระที่ {index} จาก {total}'
   }
 };

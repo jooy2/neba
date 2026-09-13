@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { OtpField } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 /**
  * The slot inputs, in the order they are typed into.
@@ -40,6 +43,32 @@ describe('OtpField', () => {
       const screen = await render(<OtpField label="Verification code" />);
 
       await expect.element(screen.getByText('Verification code')).toBeInTheDocument();
+    });
+
+    // Six boxes all called "Verification code" say nothing about which one the
+    // caret is in.
+    it('names every slot after the first by its place in the code', async () => {
+      const screen = await render(<OtpField label="Verification code" length={4} />);
+
+      await expect.poll(() => slots(screen)).toHaveLength(4);
+      const [first, second, , last] = slots(screen);
+
+      await expect.element(first).toHaveAccessibleName('Verification code');
+      await expect.element(second).toHaveAccessibleName('Character 2 of 4');
+      await expect.element(last).toHaveAccessibleName('Character 4 of 4');
+    });
+
+    it('names the slots in the language it was given, or in words of its own', async () => {
+      const screen = await render(<OtpField label="코드" length={4} locale="ko" />);
+
+      await expect.poll(() => slots(screen)).toHaveLength(4);
+      await expect.element(slots(screen)[1]).toHaveAccessibleName('4자리 중 2번째');
+
+      await screen.rerender(
+        <OtpField label="코드" length={4} locale="ko" slotLabel={(index) => `Digit ${index}`} />
+      );
+
+      await expect.element(slots(screen)[1]).toHaveAccessibleName('Digit 2');
     });
 
     it('shows the description and the error under the row', async () => {

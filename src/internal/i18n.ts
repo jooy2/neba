@@ -707,6 +707,20 @@ export const toastMessages: MessageTable<ToastMessages> = {
   '': { label: 'Notifications' }
 };
 
+/** OtpField. */
+export interface OtpMessages {
+  /**
+   * Names every slot after the first, which takes the field's label. Six boxes
+   * all called "Verification code" say nothing about which one has the caret.
+   */
+  slot: string;
+}
+
+/** The `otp` namespace, as OtpField reads it. */
+export const otpMessages: MessageTable<OtpMessages> = {
+  '': { slot: 'Character {index} of {total}' }
+};
+
 /** Overlay. */
 export interface OverlayMessages {
   /** Names the sheet that covers whatever it was wrapped around. */
@@ -1063,6 +1077,8 @@ export interface NebaLocale {
   steps?: Partial<StepsMessages>;
   /** Confirm. */
   confirm?: Partial<ConfirmMessages>;
+  /** OtpField. */
+  otp?: Partial<OtpMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1094,7 +1110,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   window: windowMessages as MessageTable<never>,
   layout: layoutMessages as MessageTable<never>,
   code: codeMessages as MessageTable<never>,
-  steps: stepsMessages as MessageTable<never>
+  steps: stepsMessages as MessageTable<never>,
+  otp: otpMessages as MessageTable<never>
 };
 
 /**

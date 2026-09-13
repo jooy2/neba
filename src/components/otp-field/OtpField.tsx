@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { OTPField } from '@base-ui/react/otp-field';
+import { fillMessage, otpMessages, useMessages } from '../../internal/i18n.js';
 import {
   cx,
   disabledClasses,
@@ -100,6 +101,13 @@ export interface OtpFieldProps
   readOnly?: boolean;
   /** Puts the caret in the first slot on mount. @default false */
   autoFocus?: boolean;
+  /**
+   * Which language the slots are named in — a BCP 47 tag. The first slot takes
+   * `label`; every other is "Character 2 of 6" in the `locale`'s words.
+   */
+  locale?: string;
+  /** Names a slot after the first, by its position. Overrides the `locale`'s words. */
+  slotLabel?: (index: number, total: number) => string;
 }
 
 /**
@@ -209,10 +217,18 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
       disabled = false,
       readOnly = false,
       autoFocus = false,
+      locale,
+      slotLabel,
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+
+    const messages = useMessages(otpMessages, locale);
+    const nameSlot =
+      slotLabel ??
+      ((index: number, total: number) =>
+        fillMessage(messages.slot, { index: String(index), total: String(total) }));
 
     const slots = Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, Math.round(length)));
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
@@ -305,7 +321,13 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
                   {separator}
                 </span>
               ) : null}
-              <OTPField.Input className={slotClassNames} autoFocus={autoFocus && index === 0} />
+              <OTPField.Input
+                className={slotClassNames}
+                autoFocus={autoFocus && index === 0}
+                // The first slot is named by the field's label, which Base UI
+                // wires up; the rest say where they are in the code.
+                aria-label={index === 0 ? undefined : nameSlot(index + 1, slots)}
+              />
             </React.Fragment>
           ))}
         </OTPField.Root>

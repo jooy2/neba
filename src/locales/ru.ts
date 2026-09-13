@@ -187,5 +187,8 @@ export const ru: NebaLocale = {
     steps: 'Шаги',
     position: '{index} из {total}',
     step: 'Шаг {index}: {title}'
+  },
+  otp: {
+    slot: 'Символ {index} из {total}'
   }
 };

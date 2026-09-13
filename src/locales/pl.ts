@@ -183,5 +183,8 @@ export const pl: NebaLocale = {
     steps: 'Kroki',
     position: '{index} z {total}',
     step: 'Krok {index}: {title}'
+  },
+  otp: {
+    slot: 'Znak {index} z {total}'
   }
 };

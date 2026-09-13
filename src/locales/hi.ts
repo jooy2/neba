@@ -187,5 +187,8 @@ export const hi: NebaLocale = {
     steps: 'चरण',
     position: '{total} में से {index}',
     step: 'चरण {index}: {title}'
+  },
+  otp: {
+    slot: '{total} में से अक्षर {index}'
   }
 };

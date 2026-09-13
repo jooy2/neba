@@ -183,5 +183,8 @@ export const vi: NebaLocale = {
     steps: 'Các bước',
     position: '{index} trên {total}',
     step: 'Bước {index}: {title}'
+  },
+  otp: {
+    slot: 'Ký tự {index} trên {total}'
   }
 };

@@ -183,5 +183,8 @@ export const ko: NebaLocale = {
     steps: '단계',
     position: '{total}단계 중 {index}단계',
     step: '{index}단계: {title}'
+  },
+  otp: {
+    slot: '{total}자리 중 {index}번째'
   }
 };

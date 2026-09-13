@@ -183,5 +183,8 @@ export const nl: NebaLocale = {
     steps: 'Stappen',
     position: '{index} van {total}',
     step: 'Stap {index}: {title}'
+  },
+  otp: {
+    slot: 'Teken {index} van {total}'
   }
 };

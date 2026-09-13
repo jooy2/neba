@@ -187,5 +187,8 @@ export const id: NebaLocale = {
     steps: 'Langkah',
     position: '{index} dari {total}',
     step: 'Langkah {index}: {title}'
+  },
+  otp: {
+    slot: 'Karakter {index} dari {total}'
   }
 };

@@ -78,3 +78,4 @@ import { OtpField } from 'neba';
 - 클릭은 포인터 밑의 칸이 아니라 첫 빈 칸에 떨어지므로, 쓰다 만 코드를 중간부터 고쳐 넣을 일이 없습니다.
 - 값 전체를 담은 클리핑된 input이 폼 제출과 휴대폰 autofill을 맡습니다. `autocomplete="one-time-code"`는 이미 붙어 있습니다.
 - `label`·`description`·`error`가 칸들과 연결되어 있어 셋 다 필드와 함께 읽힙니다.
+- 첫 칸은 `label`로, 나머지 칸은 코드 안의 위치로 이름이 붙습니다. `locale`의 문구로 "6자리 중 2번째"처럼 읽히며, `slotLabel`로 직접 정할 수 있습니다.

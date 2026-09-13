@@ -183,5 +183,8 @@ export const ar: NebaLocale = {
     steps: 'الخطوات',
     position: '{index} من {total}',
     step: 'الخطوة {index}: {title}'
+  },
+  otp: {
+    slot: 'الحرف {index} من {total}'
   }
 };

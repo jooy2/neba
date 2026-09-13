@@ -183,5 +183,8 @@ export const ja: NebaLocale = {
     steps: '手順',
     position: '{total} 件中 {index} 件目',
     step: '手順 {index}: {title}'
+  },
+  otp: {
+    slot: '{total} 文字中 {index} 文字目'
   }
 };

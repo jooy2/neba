@@ -78,3 +78,4 @@ Every other `<div>` attribute passes through to the row of slots. `color`, `size
 - Clicking lands on the first empty slot rather than on the one under the pointer, so a half-typed code cannot be edited into a gap.
 - A clipped input carries the whole value for the form and for a phone's autofill; `autocomplete="one-time-code"` is on it already.
 - `label`, `description` and `error` are wired to the slots, so all three are announced with the field.
+- The first slot is named by `label`, and every other by its place in the code, as "Character 2 of 6" in the `locale`'s words or through `slotLabel`.

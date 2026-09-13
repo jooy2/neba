@@ -9985,6 +9985,23 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '마운트되면 첫 칸에 커서를 둡니다',
         en: 'Puts the caret in the first slot on mount'
       }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      shared: true,
+      description: {
+        ko: '둘째 칸부터 붙는 "6자리 중 2번째" 같은 이름의 언어',
+        en: 'Which language the slots after the first are named in, as "Character 2 of 6"'
+      }
+    },
+    {
+      name: 'slotLabel',
+      type: '(index: number, total: number) => string',
+      description: {
+        ko: '둘째 칸부터의 이름을 위치로 직접 정합니다. locale의 문구보다 우선합니다',
+        en: 'Names a slot after the first by its position. Overrides the locale words'
+      }
     }
   ],
 

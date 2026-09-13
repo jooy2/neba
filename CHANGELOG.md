@@ -240,6 +240,8 @@
 
 - **A `Mockup` with a width in pixels is drawn in a server render, and never widens the page.** The device stayed `visibility: hidden` until its box was measured, so on a server-rendered page the device and everything on its screen were invisible until hydration, and meanwhile a desktop drawn at 1440 pixels could give a phone-width page a horizontal scrollbar. A numeric `width` or `height` now works out the scale while rendering, and the root clips what it holds; a mockup sized in a CSS length is still measured first.
 
+- **`OtpField` names each slot by its place, and takes `locale` and `slotLabel`.** Every slot was named by the field's label, so a six-digit code was "Verification code" six times with no word about which box held the caret. The first slot keeps the label and every other is "Character 2 of 6", in the `locale`'s words or through `slotLabel`. Every registered language has the new `otp` namespace.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
