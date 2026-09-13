@@ -21,6 +21,25 @@ describe('Popconfirm', () => {
     await expect.element(screen.getByText('Delete this row?')).toBeInTheDocument();
   });
 
+  it('names and describes the bubble by its title and description', async () => {
+    const screen = await render(
+      <Popconfirm
+        trigger={trigger}
+        title="Delete this row?"
+        description="It cannot be undone."
+        onConfirm={() => {}}
+      />
+    );
+
+    await screen.getByRole('button', { name: 'Delete' }).click();
+
+    const bubble = screen.getByRole('dialog', { name: 'Delete this row?' });
+
+    await expect.element(bubble).toBeInTheDocument();
+    await expect.element(bubble).toHaveAccessibleDescription('It cannot be undone.');
+    expect(screen.getByText('Delete this row?').element().tagName).toBe('P');
+  });
+
   it('calls onConfirm and closes', async () => {
     const onConfirm = vi.fn();
     const screen = await render(

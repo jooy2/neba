@@ -170,6 +170,8 @@
 
 - **An `Avatar` says its `alt` whatever stands in for the picture, and says nothing when `alt` is empty.** A silhouette given an `alt` and no `name` had nothing to read while its picture loaded or after it failed, and `alt=""` beside a `name` still read the initials out as two letters. The name is spoken from the label alone now, and an empty `alt` hides the stand-in as it hides the picture.
 
+- **A `Popconfirm` bubble is named by its title and described by its description.** Both were plain paragraphs connected to nothing, so the focus moved into a bubble announced only as "dialog". They are the popover's own title and description now, drawn as the same paragraphs.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

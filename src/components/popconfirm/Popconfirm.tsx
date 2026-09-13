@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { Button } from '../button/Button.js';
 import { Popover, PopoverClose } from '../popover/Popover.js';
 import { severityIcon } from '../../internal/icons.js';
@@ -151,12 +152,25 @@ export function Popconfirm(rawProps: PopconfirmProps) {
         ) : null}
 
         <div className={cx('flex min-w-0 flex-1 flex-col', gapClasses[size])}>
+          {/* Base UI's own title and description, drawn as the paragraphs they
+              were, so the bubble is named and described by them. Plain `<p>`s
+              beside the icon left it announced as an unnamed dialog. */}
           {title ? (
-            <p className={cx('font-medium text-(--neba-fg)', classNames?.title)}>{title}</p>
+            <BaseUIPopover.Title
+              render={<p />}
+              className={cx('font-medium text-(--neba-fg)', classNames?.title)}
+            >
+              {title}
+            </BaseUIPopover.Title>
           ) : null}
 
           {description ? (
-            <p className={cx('text-(--neba-muted-fg)', classNames?.description)}>{description}</p>
+            <BaseUIPopover.Description
+              render={<p />}
+              className={cx('text-(--neba-muted-fg)', classNames?.description)}
+            >
+              {description}
+            </BaseUIPopover.Description>
           ) : null}
 
           <div className={cx('flex justify-end gap-1.5 pt-0.5', classNames?.actions)}>
