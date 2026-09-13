@@ -11,7 +11,6 @@ export default function GalleryFit() {
       ratio={1}
       fit="contain"
       letterbox="blur"
-      loading="lazy"
       className="w-full max-w-2xl"
     />
   );

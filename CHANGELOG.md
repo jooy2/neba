@@ -6,6 +6,8 @@
 
 - **A lone `width` or `height` on an `Image` sizes its box.** One dimension is not a proportion, so it used to reach the `<img>` and change nothing on the page. `height={200}` is now a box 200 pixels tall across the width it is given, and `width={320}` one 320 wide, capped at the container, with `fit` deciding what the picture does inside. A number is pixels and a string a CSS length, and beside a `ratio` a lone `height` takes its width from the ratio. An `Image` given only one of the two as a hint about the file draws at that size now: pass both, or remove the one. Both together still reserve their proportion, as before.
 
+- **A `Gallery` loads its tiles lazily.** Every tile's picture is `loading="lazy"` unless the Gallery says otherwise, so a wall of forty photographs asks for the few a reader can see rather than all forty at once. A Gallery that is the largest thing above the fold should pass `loading="eager"`, or its first row arrives later than it did.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

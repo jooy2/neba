@@ -60,7 +60,7 @@ import { Gallery } from 'neba';
 
 ### fit, letterbox, loading
 
-`fit`은 Image에서처럼 각 사진이 타일을 채우는 방식입니다. 기본값 `cover`는 타일에 맞춰 잘라내고, `contain`과 `scale-down`은 사진 전체를 남깁니다. `letterbox`는 그때 생기는 빈 영역을 CSS background로 채우거나, `blur`면 같은 사진을 흐리게 깔아 채웁니다. `loading="lazy"`는 타일이 화면 가까이 올 때까지 파일 요청을 미루므로, 첫 줄이 페이지에서 가장 큰 그림이 아닌 긴 갤러리에 알맞습니다.
+`fit`은 Image에서처럼 각 사진이 타일을 채우는 방식입니다. 기본값 `cover`는 타일에 맞춰 잘라내고, `contain`과 `scale-down`은 사진 전체를 남깁니다. `letterbox`는 그때 생기는 빈 영역을 CSS background로 채우거나, `blur`면 같은 사진을 흐리게 깔아 채웁니다. `loading`의 기본값은 `lazy`라서 타일이 화면 가까이 올 때까지 파일 요청을 미룹니다. 갤러리가 첫 화면에서 가장 큰 요소라면 lazy로 불러온 첫 줄이 늦게 나타나므로 `loading="eager"`를 주세요.
 
 <Demo src="gallery/fit">
 

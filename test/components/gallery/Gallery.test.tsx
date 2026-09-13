@@ -202,14 +202,23 @@ describe('Gallery', () => {
 
     it('hands every picture the fit, the letterbox and the loading', async () => {
       const screen = await render(
-        <Gallery items={items} fit="contain" letterbox="blur" loading="lazy" />
+        <Gallery items={items} fit="contain" letterbox="blur" loading="eager" />
       );
       const tile = tiles(screen.container)[0];
       const picture = screen.getByRole('img', { name: 'A ridge' }).element();
 
       expect(picture).toHaveClass('object-contain');
-      expect(picture).toHaveAttribute('loading', 'lazy');
+      expect(picture).toHaveAttribute('loading', 'eager');
       expect(tile.querySelectorAll('img')).toHaveLength(2);
+    });
+
+    // A wall of photographs asks for the few a reader can see, not all of them.
+    it('loads every tile lazily by default', async () => {
+      const screen = await render(<Gallery items={items} fit="contain" letterbox="blur" />);
+
+      for (const picture of screen.container.querySelectorAll('img')) {
+        expect(picture).toHaveAttribute('loading', 'lazy');
+      }
     });
 
     it('covers each tile by default', async () => {

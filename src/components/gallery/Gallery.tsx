@@ -154,8 +154,10 @@ export interface GalleryProps extends Omit<
   letterbox?: NebaImageLetterbox | (string & {});
   /**
    * When the tiles' files load. `lazy` waits until a tile is near the screen,
-   * which is right for a long wall whose first row is not the page's largest
-   * picture.
+   * so a wall of forty photographs asks for the few a reader can see rather
+   * than all forty at once. Set `eager` when the gallery is the largest thing
+   * above the fold, where a lazy first row arrives later than it should.
+   * @default 'lazy'
    */
   loading?: 'lazy' | 'eager';
   /**
@@ -353,7 +355,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       rounded = 'md',
       fit = 'cover',
       letterbox,
-      loading,
+      loading = 'lazy',
       caption = 'none',
       hover = 'lift',
       preview = false,

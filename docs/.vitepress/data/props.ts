@@ -11415,9 +11415,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'loading',
       type: "'lazy' | 'eager'",
+      default: "'lazy'",
       description: {
-        ko: '타일의 파일을 언제 불러올지. lazy는 타일이 화면 가까이 올 때까지 기다립니다',
-        en: "When the tiles' files load. lazy waits until a tile is near the screen"
+        ko: '타일의 파일을 언제 불러올지. lazy는 타일이 화면 가까이 올 때까지 기다립니다. 갤러리가 첫 화면에서 가장 큰 요소라면 eager',
+        en: "When the tiles' files load. lazy waits until a tile is near the screen; use eager when the gallery is the largest thing above the fold"
       }
     },
     {

@@ -60,7 +60,7 @@ An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which r
 
 ### fit, letterbox and loading
 
-`fit` is how each picture fills its tile, as on an Image. `cover`, the default, crops to the tile, and `contain` or `scale-down` keep the whole picture. `letterbox` fills the space those leave, with a CSS background or, for `blur`, with the picture itself. `loading="lazy"` waits to fetch a tile's file until the tile is near the screen, which suits a long wall whose first row is not the largest picture on the page.
+`fit` is how each picture fills its tile, as on an Image. `cover`, the default, crops to the tile, and `contain` or `scale-down` keep the whole picture. `letterbox` fills the space those leave, with a CSS background or, for `blur`, with the picture itself. `loading` is `lazy` by default, which waits to fetch a tile's file until the tile is near the screen. Set `loading="eager"` when the gallery is the largest thing above the fold, where a lazy first row arrives later than it should.
 
 <Demo src="gallery/fit">
 
