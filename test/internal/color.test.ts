@@ -93,6 +93,17 @@ describe('parseColor', () => {
     expect(parseColor('hsl(120, 100%, 50%)')?.hsv.h).toBeCloseTo(120, 5);
   });
 
+  it('reads an rgb channel written as a percentage as a share of 255', () => {
+    const red = parseColor('rgb(100% 0% 0%)');
+
+    expect(red && formatColor(red.hsv, red.alpha, 'hex')).toBe('#ff0000');
+
+    const mixed = parseColor('rgba(50%, 128, 0%, 50%)');
+
+    expect(mixed && formatColor(mixed.hsv, 1, 'hex')).toBe('#808000');
+    expect(mixed?.alpha).toBeCloseTo(0.5, 5);
+  });
+
   it('does not care about case or surrounding space', () => {
     expect(parseColor('  #FF0000  ')?.hsv.h).toBeCloseTo(0, 5);
     expect(parseColor('RGB(255, 0, 0)')?.hsv.h).toBeCloseTo(0, 5);

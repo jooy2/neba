@@ -197,15 +197,18 @@ function numbersIn(source: string): number[] {
   return (source.match(/-?[\d.]+%?/g) ?? []).map((token) => parseFloat(token));
 }
 
+/** Whether the number at `index` was written as a percentage. */
+function isPercent(source: string, index: number): boolean {
+  return (source.match(/-?[\d.]+%?/g) ?? [])[index]?.endsWith('%') === true;
+}
+
 /** Whether the fourth number was written as a percentage rather than a fraction. */
 function alphaOf(source: string, numbers: number[], index: number): number {
   if (numbers.length <= index) {
     return 1;
   }
 
-  const tokens = source.match(/-?[\d.]+%?/g) ?? [];
-
-  return clamp(tokens[index]?.endsWith('%') ? numbers[index] / 100 : numbers[index], 0, 1);
+  return clamp(isPercent(source, index) ? numbers[index] / 100 : numbers[index], 0, 1);
 }
 
 /**
@@ -243,8 +246,13 @@ export function parseColor(input: string): ColorValue | null {
   const alpha = alphaOf(body, numbers, 3);
 
   if (name.startsWith('rgb')) {
+    // A channel may be written as a share of 255 — `rgb(100% 0% 0%)` is red —
+    // and read as a number it would be a dark red at 100 of 255.
+    const channel = (index: number) =>
+      isPercent(body, index) ? numbers[index] * 2.55 : numbers[index];
+
     return {
-      hsv: rgbToHsv({ r: numbers[0], g: numbers[1], b: numbers[2] }),
+      hsv: rgbToHsv({ r: channel(0), g: channel(1), b: channel(2) }),
       alpha
     };
   }

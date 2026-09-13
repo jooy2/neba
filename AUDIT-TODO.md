@@ -291,7 +291,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`
 - [x] **145** **SegmentedButton, FloatingBottomNavigation**: when no item matches `value`, the highlight tile stays at its previous place and shows a wrong selection. FloatingBottomNavigation's default `labels="selected"` measures the width when the transition starts, so the tile can stay narrow (confirmed in the docs with two names of the same width). `SegmentedButton.tsx:265-268`, `FloatingBottomNavigation.tsx:285-288, 313-324`
 - [x] **146** **Checkbox**: `readOnly` together with `indeterminate` has no fill, so it does not look indeterminate. `Checkbox.tsx:111-117`
-- [ ] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
+- [x] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
 - [ ] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`
 - [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`
 - [ ] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`

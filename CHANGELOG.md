@@ -314,6 +314,8 @@
 
 - **A read-only `Checkbox` in the mixed state is filled.** The read-only tick filled for `checked` and not for `indeterminate`, so `readOnly` with `indeterminate` drew a light dash on an empty box, which did not read as mixed. It is filled the way an editable mixed tick is, and desaturated like the rest of the read-only state.
 
+- **A `ColorPicker` reads an `rgb()` channel written as a percentage.** `rgb(100% 0% 0%)` was read as a red channel of 100 out of 255 and became `#640000`, a dark red. A percentage channel is a share of 255 now, so it is `#ff0000`; a percentage alpha was already read correctly.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
