@@ -26,6 +26,8 @@
 
 - **A pressable `Chip` is a toggle only when it says whether it is on.** `selected` defaulted to `false`, so every chip with an `onClick` carried `aria-pressed="false"` and was announced as a toggle that was off, including a chip that only opened something. It is a plain button now unless `selected` is passed, and `selected={false}` still makes it a toggle. A test that expected `aria-pressed="false"` on a chip with no `selected` needs the prop.
 
+- **An `AccordionItem`'s `action` sits beside its heading instead of inside it.** The action was rendered in the `<h3>`, so a section with a Switch in its header was a heading named "Billing Enable", and every heading list read the control's label as part of the title. The heading holds only the trigger now, and the action is its sibling in the same row. Nothing moves on screen; a test that found the heading by title and action together finds it by the title.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

@@ -214,6 +214,20 @@ describe('Accordion', () => {
         .element(screen.getByRole('button', { name: 'Billing' }))
         .toHaveAttribute('aria-expanded', 'false');
     });
+
+    it('leaves the action out of the heading and its name', async () => {
+      const screen = await render(
+        <Accordion>
+          <AccordionItem value="billing" title="Billing" action={<Button>Manage</Button>} />
+        </Accordion>
+      );
+      const heading = screen.getByRole('heading', { name: 'Billing' });
+
+      await expect.element(heading).toBeInTheDocument();
+      expect(
+        heading.element().contains(screen.getByRole('button', { name: 'Manage' }).element())
+      ).toBe(false);
+    });
   });
 
   describe('what the section inherits', () => {

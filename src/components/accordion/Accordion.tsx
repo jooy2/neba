@@ -301,69 +301,76 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         className={cx('flex flex-col', className ?? '')}
         {...props}
       >
-        {/* `neba-heading` and the doubled `[font:inherit]`: this is a real
+        {/* The action sits beside the heading rather than inside it: in the
+            heading it became part of the heading's name, so a section with a
+            Switch in its header was read as "Billing Enable". */}
+        <div className="flex w-full items-center">
+          {/* `neba-heading` and the doubled `[font:inherit]`: this is a real
             `h1`–`h6`, and a host's rule for that tag outranks a one-class
             utility — the header was taking the article's 20px, and every
             `em`-sized glyph in the trigger with it. See
             `headingTitleClasses`. */}
-        <BaseUIAccordion.Header
-          className="neba-heading flex w-full items-center [&.neba-heading]:m-0 [&.neba-heading]:[font:inherit]"
-          render={React.createElement(`h${headingLevel}`)}
-        >
-          <BaseUIAccordion.Trigger
-            className={cx(
-              'flex min-w-0 flex-1 cursor-pointer items-center text-start',
-              padX,
-              padY,
-              gapClasses[size],
-              transitionClasses,
-              iconClasses,
-              // Inside the edge when the sections are ruled: the sheet clips its
-              // overflow then, and a ring outside a header that spans the sheet
-              // was cut off on both sides and, for a lone section, everywhere.
-              dividers ? insetRingClasses : focusRingClasses,
-              dividers ? '' : itemRadiusClasses[size],
-              'hover:bg-(--n-soft)',
-              'data-[panel-open]:text-(--n-on-tint)',
-              'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
-            )}
+          <BaseUIAccordion.Header
+            className="neba-heading flex min-w-0 flex-1 items-center [&.neba-heading]:m-0 [&.neba-heading]:[font:inherit]"
+            render={React.createElement(`h${headingLevel}`)}
           >
-            {hasContent(startIcon) ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-                {startIcon}
-              </span>
-            ) : null}
-
-            <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
-              {hasContent(title) ? (
-                <span className={cx('font-semibold', sheetTitleClasses[size], clamp)}>{title}</span>
-              ) : null}
-              {hasContent(subtitle) ? (
-                <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size], clamp)}>
-                  {subtitle}
+            <BaseUIAccordion.Trigger
+              className={cx(
+                'flex min-w-0 flex-1 cursor-pointer items-center text-start',
+                padX,
+                padY,
+                gapClasses[size],
+                transitionClasses,
+                iconClasses,
+                // Inside the edge when the sections are ruled: the sheet clips its
+                // overflow then, and a ring outside a header that spans the sheet
+                // was cut off on both sides and, for a lone section, everywhere.
+                dividers ? insetRingClasses : focusRingClasses,
+                dividers ? '' : itemRadiusClasses[size],
+                'hover:bg-(--n-soft)',
+                'data-[panel-open]:text-(--n-on-tint)',
+                'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
+              )}
+            >
+              {hasContent(startIcon) ? (
+                <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+                  {startIcon}
                 </span>
               ) : null}
-            </span>
 
-            {/* Turned, not moved: the chevron is a glyph, so rotating it is the
+              <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
+                {hasContent(title) ? (
+                  <span className={cx('font-semibold', sheetTitleClasses[size], clamp)}>
+                    {title}
+                  </span>
+                ) : null}
+                {hasContent(subtitle) ? (
+                  <span className={cx('text-(--neba-muted-fg)', metaTextClasses[size], clamp)}>
+                    {subtitle}
+                  </span>
+                ) : null}
+              </span>
+
+              {/* Turned, not moved: the chevron is a glyph, so rotating it is the
                 one allowance the no-transform rule makes. It is also the only
                 thing on the header that reports the open state by moving, which
                 is why the header itself only changes colour. */}
-            <span
-              className={[
-                'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-                '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                'data-[panel-open]:rotate-180'
-              ].join(' ')}
-            >
-              <ChevronIcon />
-            </span>
-          </BaseUIAccordion.Trigger>
+              <span
+                className={[
+                  'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
+                  '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+                  'data-[panel-open]:rotate-180'
+                ].join(' ')}
+              >
+                <ChevronIcon />
+              </span>
+            </BaseUIAccordion.Trigger>
+          </BaseUIAccordion.Header>
 
           {hasContent(action) ? (
             <span className={`flex shrink-0 items-center ${padX}`}>{action}</span>
           ) : null}
-        </BaseUIAccordion.Header>
+        </div>
 
         {/*
           `height` from Base UI's measured `--accordion-panel-height` down to 0,
