@@ -14,6 +14,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
+import { inertValue } from '../../internal/inert.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface SpoilerProps extends Omit<
@@ -269,7 +270,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
           // accessibility tree and out of the selection in one attribute, and
           // `aria-hidden` alone would leave a keyboard reader tabbing into a link
           // their screen reader has been told is not there.
-          inert={!open}
+          inert={inertValue(!open)}
         >
           {children}
         </div>
@@ -294,7 +295,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
               'pt-0'
             ].join(' ')}
             style={{ gridArea: '2 / 1' }}
-            inert={!open}
+            inert={inertValue(!open)}
           >
             <Button
               variant="text"
@@ -327,7 +328,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
           // moving every word on the page below. `visibility: hidden` holds the
           // space and gives up the paint; `inert` gives up the rest.
           style={{ gridRow: '1 / -1', gridColumn: '1' }}
-          inert={open}
+          inert={inertValue(open)}
         >
           {hasContent(notice) ? (
             <p className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{notice}</p>

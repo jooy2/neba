@@ -30,6 +30,7 @@ import type {
   NebaTransition,
   NebaVariant
 } from '../../types.js';
+import { inertValue } from '../../internal/inert.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One step of the guide. */
@@ -557,7 +558,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
             <div
               key={index}
               aria-hidden={hidden}
-              inert={hidden || undefined}
+              inert={inertValue(hidden)}
               className={cx(
                 'col-start-1 row-start-1 min-w-0',
                 bounded ? 'overflow-y-auto overscroll-contain' : '',
@@ -625,7 +626,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
         {completion ? (
           <div
             aria-hidden={!completed}
-            inert={!completed || undefined}
+            inert={inertValue(!completed)}
             className={cx(
               'col-start-1 row-start-1 flex min-w-0 flex-col items-center justify-center gap-2 py-4 text-center',
               completed ? (motion?.className ?? '') : 'invisible'

@@ -196,6 +196,8 @@
 
 - **A blink never runs faster than three times a second.** `AnimateBlink`'s `duration` had no floor, so `duration={200}` flashed five times a second, past the rate at which a flash can bring on a seizure. A blink shorter than 334ms is raised to it, on `AnimateBlink`, on `transition="blink"` and on an `AnimateSplit` whose effect is `blink`.
 
+- **Hidden panels are out of reach under React 18 too.** `Spoiler`, `Pill`, `WindowPane` and `HowToSteps` take what they hide out of the tab order and the accessibility tree with `inert`, written as a boolean. React 18 does not know the attribute and drops a boolean on it, so under 18 a covered spoiler was read aloud, a collapsed pill's details and a minimised window took the focus, and a guide's other steps could be tabbed into. The attribute is now spelled for the React that is running.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

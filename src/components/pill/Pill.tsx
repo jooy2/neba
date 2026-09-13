@@ -25,6 +25,7 @@ import type {
   NebaSize,
   NebaStyleProps
 } from '../../types.js';
+import { inertValue } from '../../internal/inert.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface PillProps
@@ -381,7 +382,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
           // box that its content is still perfectly focusable inside, and
           // `aria-hidden` alone would leave a keyboard reader tabbing into
           // something their screen reader has been told does not exist.
-          inert={!expanded}
+          inert={inertValue(!expanded)}
         >
           <div
             ref={detailsRef}

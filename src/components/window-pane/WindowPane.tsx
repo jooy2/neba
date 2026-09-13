@@ -14,6 +14,7 @@ import {
 } from '../../internal/window.js';
 import type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window.js';
 import type { NebaColor, NebaElevation, NebaSize } from '../../types.js';
+import { inertValue } from '../../internal/inert.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export type { NebaWindowControl, NebaWindowOffset, NebaWindowOs } from '../../internal/window.js';
@@ -774,7 +775,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
         'data-gesture': gesturing ? '' : undefined,
         // Nothing in a window on its way out can be pressed or reached, and the
         // page underneath it is available again from the frame the close lands on.
-        inert: !open || undefined,
+        inert: inertValue(!open),
         style: {
           opacity: open ? undefined : 0,
           ...windowSlots({ os, color, accent, transparency, active, elevation }),
@@ -825,7 +826,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
                 // the frame run into each other.
                 boxShadow: metrics.band.side > 0 ? 'inset 0 0 0 1px rgb(0 0 0 / 0.12)' : undefined
               }}
-              inert={minimized}
+              inert={inertValue(minimized)}
             >
               {children}
             </div>

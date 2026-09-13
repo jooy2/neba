@@ -410,6 +410,28 @@ describe('the published package', () => {
     });
   });
 
+  describe('works on every React in its peer range', () => {
+    it('writes `inert` through the helper that spells it for the running React', () => {
+      // React 18 drops a boolean on an attribute it does not know, and `inert`
+      // is one; React 19 warns about the string that 18 needs. A bare
+      // `inert={!open}` is a panel that is out of reach under 19 and reachable
+      // under 18, and nothing in this repository runs 18.
+      const offenders = Object.entries(sources)
+        .filter(([path]) => /src\/components\/.+\.tsx$/.test(path))
+        .flatMap(([path, source]) => [
+          ...openingTags(source)
+            .filter((tag) => /^<[a-z]/.test(tag) && /\sinert=/.test(tag))
+            .filter((tag) => !/\sinert=\{inertValue\(/.test(tag))
+            .map((tag) => `${path.replace('../../', '')}: ${tag.slice(0, 40)}`),
+          ...renderPropsObjects(source)
+            .filter((object) => /\binert:/.test(object) && !/\binert: inertValue\(/.test(object))
+            .map(() => `${path.replace('../../', '')}: props.inert`)
+        ]);
+
+      expect(offenders).toEqual([]);
+    });
+  });
+
   describe('keeps its fixed costs divisible', () => {
     it('holds one message table per namespace, never one table of all of them', () => {
       // A bundler drops an unused `export const` and cannot drop a key out of
