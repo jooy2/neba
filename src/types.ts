@@ -33,7 +33,7 @@ export type NebaOrientation = 'horizontal' | 'vertical';
  * Which edge of an anchor something is placed against. Tooltip reads this, and
  * so does anything else that hangs a popup off an element.
  *
- * Logical rather than physical — `start`/`end` would be wrong here, because a
+ * Physical rather than logical — `start`/`end` would be wrong here, because a
  * tooltip above a button is above it in every writing direction.
  */
 export type NebaSide = 'top' | 'right' | 'bottom' | 'left';

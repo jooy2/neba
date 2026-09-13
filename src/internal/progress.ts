@@ -220,11 +220,11 @@ export function progressFraction(
 /**
  * What the value reads as, both on screen and to a screen reader.
  *
- * Base UI's own default is `${value}%`, which is right only when the range
- * happens to be 0–100 — "3%" for step 3 of 4 is worse than saying nothing. So
- * the percentage is computed from the fraction, and a caller who passed
- * `format` gets Base UI's formatted string instead, because at that point they
- * have said what the number means.
+ * Without `format` it is the share of the range as a whole percent, computed
+ * from the fraction — so step 3 of 4 reads "75%" — and written the same way in
+ * every language. (Base UI's own default is that share too, in the locale's
+ * percent style.) A caller who passed `format` gets Base UI's formatted string
+ * instead, because at that point they have said what the number means.
  */
 export function progressText(
   fraction: number | null,

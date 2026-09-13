@@ -3,10 +3,11 @@
  *
  * Here rather than in the component for the reason `progress.ts` and `color.ts`
  * are here: none of it is layout and none of it is a class name. Sorting rows,
- * matching a query against them, cutting a page out of the result and working
- * out which twenty of forty thousand rows are actually on screen are four
- * questions with numeric answers, and a component file that also has to draw a
- * resize handle is not where they can be read.
+ * cutting a page out of the result and working out which twenty of forty
+ * thousand rows are actually on screen are three questions with numeric
+ * answers, and a component file that also has to draw a resize handle is not
+ * where they can be read. Matching a query against the rows is `search.ts`,
+ * which three other components share.
  *
  * `color.ts` is the precedent for a single-consumer file: the test is whether
  * the thing is separable, not whether two components happen to want it. Every
@@ -28,11 +29,11 @@ import type { NebaDensity, NebaSize } from '../types.js';
  * offset lands, how tall the spacer above the first rendered row is, how many
  * rows fit in the viewport for PageDown. A Tailwind class cannot be added up.
  *
- * The ladder is deliberately below `controlHeightClasses` at every step — 28px
- * at `md` against a Button's 32 — because a DataTable is a hundred rows on one
- * screen and a Table is eight. A row here is the height of the text plus enough
- * air to click, and nothing more; `density` is what takes the last of the air
- * out. A caller who puts a Chip or an Avatar in a cell raises `rowHeight`.
+ * The ladder stays at or below `controlHeightClasses` — a `md` row is a
+ * Button's 32px, and `compact` takes it to 28 — because a DataTable is a hundred
+ * rows on one screen and a Table is eight. A row here is the height of the text
+ * plus enough air to click, and nothing more; `density` is what takes the last
+ * of the air out. A caller who puts a Chip or an Avatar in a cell raises `rowHeight`.
  */
 export const dataRowHeights: Record<NebaDensity, Record<NebaSize, number>> = {
   default: { xs: 24, sm: 28, md: 32, lg: 38, xl: 44 },

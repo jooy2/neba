@@ -52,7 +52,7 @@ jobs:
   bundle:
     runs-on: ubuntu-latest
     name: Bundle size
-    # The build is about half of this and the seven scenarios the rest. A cap
+    # The build is about half of this and the eleven scenarios the rest. A cap
     # well above that, because a job that hangs here holds a runner for nothing.
     timeout-minutes: 10
 

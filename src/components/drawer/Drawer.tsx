@@ -261,11 +261,10 @@ const viewportClasses: Record<NebaSide, string> = {
 /**
  * The sheet.
  *
- * Opacity only, exactly as on Dialog. A drawer that slid in would be dragging
- * its own text across the screen for the length of the transition, and a panel
- * is nothing but text and controls — this is the case the no-transform rule was
- * written for, not the exception to it. What says the panel came from an edge is
- * that it is *attached* to one: square against the window, cut on the free side.
+ * Square against the window and cut on the free side, which is what says it is
+ * attached to an edge. How an overlay one arrives is `slideClasses`, above: it
+ * travels in from that edge rather than fading, and an inline one does not move
+ * at all.
  */
 const panelClasses = [
   surfaceClasses,

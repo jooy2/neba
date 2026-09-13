@@ -509,8 +509,9 @@ export function DangerIcon() {
  * One drawing per colour family.
  *
  * `primary` and `secondary` have no severity to draw, so they take the note the
- * informational one uses — three shapes for six families, because the three
- * that mean something are the three worth telling apart.
+ * informational one uses — four shapes for six families, because the three
+ * that mean something are the three worth telling apart, and everything else
+ * shares the note.
  *
  * A function rather than a `Record` of elements, for the reason the tables in
  * `i18n.ts` are one per namespace: a bundler drops an unused function and it

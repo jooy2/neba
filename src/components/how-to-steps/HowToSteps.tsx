@@ -236,6 +236,22 @@ function plainTitle(title: React.ReactNode): string {
 }
 
 /**
+ * A heading at the level the page says, rather than at the level the component
+ * happens to prefer.
+ *
+ * `createElement` with a computed tag rather than a lookup table: the six of
+ * them differ in nothing but their name, and a table would be six entries
+ * saying so. Clamped, because `headingLevel + 1` on the deepest step would
+ * otherwise ask for an `<h7>`.
+ */
+function StepHeading({
+  level,
+  ...props
+}: React.ComponentPropsWithoutRef<'h3'> & { level: number }) {
+  return React.createElement(`h${Math.min(6, Math.max(1, level))}`, props);
+}
+
+/**
  * A guide the reader walks through: numbered steps down one side, one step's
  * instructions at a time beside them, and a way forward under those.
  *
@@ -260,22 +276,6 @@ function plainTitle(title: React.ReactNode): string {
  * so. A tablist's roving focus would tell a screen reader that these are
  * interchangeable views of one thing.
  */
-/**
- * A heading at the level the page says, rather than at the level the component
- * happens to prefer.
- *
- * `createElement` with a computed tag rather than a lookup table: the six of
- * them differ in nothing but their name, and a table would be six entries
- * saying so. Clamped, because `headingLevel + 1` on the deepest step would
- * otherwise ask for an `<h7>`.
- */
-function StepHeading({
-  level,
-  ...props
-}: React.ComponentPropsWithoutRef<'h3'> & { level: number }) {
-  return React.createElement(`h${Math.min(6, Math.max(1, level))}`, props);
-}
-
 export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
   function HowToSteps(rawProps, ref) {
     const {
@@ -611,9 +611,11 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   src={item.image}
                   alt={item.imageAlt ?? plainTitle(item.title)}
                   // Every step's picture is in the document at once so the panel
-                  // can keep the height of the tallest — but only one of them is
-                  // on screen, and the rest have no business being fetched before
-                  // the reader reaches them.
+                  // can keep the height of the tallest, and they share one grid
+                  // cell — so to the browser a hidden step's picture is exactly
+                  // as near the viewport as the one showing, and `lazy` fetches
+                  // them together. What it still does is hold all of them back
+                  // until the guide itself is scrolled to.
                   loading="lazy"
                   decoding="async"
                   className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}

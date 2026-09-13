@@ -118,14 +118,7 @@ export const PageLayoutContext = React.createContext<PageLayoutContextValue>({
 export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
 
 /**
- * The media query each breakpoint's floor makes, written the way `styles.css`
- * writes the grid's.
- *
- * `xs` has no query because its floor is zero: there is no width below it, so
- * a sidebar that collapses there never collapses.
- */
-/**
- * The same five widths as Tailwind variants, for the parts of this that are
+ * The five widths as Tailwind variants, for the parts of this that are
  * decided in CSS rather than in JavaScript.
  *
  * The tables themselves are `internal/responsive.ts`', because `Show` asks the

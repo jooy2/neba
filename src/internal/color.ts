@@ -192,9 +192,9 @@ function hexToRgba(hex: string): ColorValue | null {
 
 /** `rgb(12 34 56 / 50%)` and `rgba(12, 34, 56, .5)` are one shape once split. */
 function numbersIn(source: string): number[] {
-  return (source.match(/-?[\d.]+%?/g) ?? []).map((token) =>
-    token.endsWith('%') ? parseFloat(token) : parseFloat(token)
-  );
+  // Only the number: `parseFloat` stops before a `%`, and `alphaOf` reads the
+  // `%` off the source for itself.
+  return (source.match(/-?[\d.]+%?/g) ?? []).map((token) => parseFloat(token));
 }
 
 /** Whether the fourth number was written as a percentage rather than a fraction. */

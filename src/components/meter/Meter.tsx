@@ -122,9 +122,9 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
           ) : null}
           {showValue ? (
             <BaseUIMeter.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">
-              {/* Base UI's own default is the raw number, which is only right
-                  once somebody has said what the units are. Without `format`
-                  the honest reading is a share of the range. */}
+              {/* Without `format` the reading is the share of the range as a
+                  whole percent, the way the progress indicators write it; with
+                  one, it is the number in the units the caller gave. */}
               {(formatted) => (hasFormat ? formatted : `${Math.round((fraction ?? 0) * 100)}%`)}
             </BaseUIMeter.Value>
           ) : null}

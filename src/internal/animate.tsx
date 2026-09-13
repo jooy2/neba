@@ -5,7 +5,7 @@
  * with it.
  *
  * It lives in `internal/` for the reason `button-group.ts` and `menu.ts` do:
- * eleven components need it and none of them should have to import another. The
+ * seventeen components need it and none of them should have to import another. The
  * `transition` prop needs the same table from the other side — a Card and an
  * `AnimateFade` must produce the same fade, or the library has two fades.
  *
@@ -20,7 +20,7 @@
  *
  * Because the from-state is the *keyframe* rather than a second class, running
  * an effect backwards is `animation-direction: reverse` and nothing else. That
- * is what makes `mode="out"` free on all six.
+ * is what makes `mode="out"` free on every one of them.
  *
  * ## What is deliberately not here
  *
@@ -407,10 +407,10 @@ export function transitionParts(transition: NebaTransition | undefined): Transit
  * ------------------------------------------------------------------------- */
 
 /**
- * Whether the reader has asked for less motion — the hook the three effects
+ * Whether the reader has asked for less motion — the hook the four effects
  * with motion written in JavaScript read. It lives in `media.ts` beside the
  * query it asks, so a Carousel and a ScrollZone can ask the same question
- * without pulling the eleven effects below in with the answer.
+ * without pulling the table of effects below in with the answer.
  */
 export { usePrefersReducedMotion } from './media.js';
 
@@ -494,9 +494,9 @@ export function useAnimationRun({
       return;
     }
 
-    // The element itself for the six effects, and its descendants for the four
-    // that animate their children rather than themselves — a staggered Appear
-    // has nothing to rewind on its own root.
+    // The element itself for an effect on its own root, and its descendants for
+    // the ones that animate their children rather than themselves — a staggered
+    // Appear has nothing to rewind on its own root.
     const targets: HTMLElement[] = [
       element,
       ...element.querySelectorAll<HTMLElement>('.neba-anim, .neba-marquee-track')
@@ -647,11 +647,13 @@ export interface AnimateElement {
 /**
  * Everything an `Animate*` root needs, in one call.
  *
- * The six effect components differ only in their defaults and in which slots
+ * The ten effect components differ only in their defaults and in which slots
  * they fill, so this is where the identical two-thirds of each of them lives.
- * The four that have to understand their children — Typing, Marquee, Headline,
- * Appear — call `useAnimationRun` directly and put the classes where their own
- * structure needs them, which is why `effect` is allowed to be `null`.
+ * The seven that have to understand their children or their text — Typing,
+ * Marquee, Headline, Appear, Split, Scramble and Counter — call
+ * `useAnimationRun` directly and put the classes where their own structure
+ * needs them. `effect` may be `null` for the one effect component, Lighting,
+ * whose keyframe runs on a pseudo-element rather than on its root.
  *
  * `data-neba-animation` and `data-state` are here rather than in each component
  * because they are the same two facts every time, and because a test that has
