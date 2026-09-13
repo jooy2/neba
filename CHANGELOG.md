@@ -300,6 +300,8 @@
 
 - **A `style` on a `TimelineItem` is merged with the item's own slots.** It went through the props spread and replaced the whole inline style, so any `style` at all took away the bullet size and the colour slots and drew the step with a bullet of no size. The caller's declarations are laid over the slots now.
 
+- **A `className` in the `imageProps` of an `Avatar` or an `AppLogo` is added to the picture's own classes.** It went through the spread and replaced them, so `imageProps={{ className: 'grayscale' }}` took away `size-full object-cover` on an Avatar and `object-contain` with its bounds on an AppLogo, and the picture spilled out of its circle or tile.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

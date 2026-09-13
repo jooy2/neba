@@ -191,6 +191,21 @@ describe('Avatar', () => {
       );
     });
 
+    it('keeps its own picture classes beside the ones given in imageProps', async () => {
+      const screen = await render(
+        <Avatar
+          src={PIXEL}
+          name="Jane Doe"
+          imageProps={{ className: 'grayscale' }}
+          data-testid="avatar"
+        />
+      );
+      const image = screen.getByTestId('avatar').element().querySelector('img');
+
+      expect(image).toHaveClass('grayscale');
+      expect(image).toHaveClass('size-full', 'object-cover');
+    });
+
     it('falls back to the initials when the picture fails', async () => {
       const screen = await render(<Avatar src="/does-not-exist.png" name="Jane Doe" />);
 

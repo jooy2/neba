@@ -26,6 +26,16 @@ describe('AppLogo', () => {
       await expect.element(screen.getByRole('img', { name: 'Neba' })).toBeInTheDocument();
     });
 
+    it('keeps its own image classes beside the ones given in imageProps', async () => {
+      const screen = await render(
+        <AppLogo src="/logo.svg" name="Neba" imageProps={{ className: 'grayscale' }} />
+      );
+      const image = screen.getByRole('img', { name: 'Neba' });
+
+      await expect.element(image).toHaveClass('grayscale');
+      await expect.element(image).toHaveClass('object-contain');
+    });
+
     it('prefers markup to a file, so a project can inline its own mark', async () => {
       const screen = await render(
         <AppLogo src="/logo.svg" name="Neba" data-testid="logo">

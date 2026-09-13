@@ -308,6 +308,12 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
             // decoration, and `alt` left off is what makes a screen reader read
             // the file name out instead.
             alt={label ?? ''}
+            // Before the spread, so a caller can still say otherwise. Decoding an
+            // image on the main thread is what makes a list of forty avatars
+            // arrive as forty small pauses; off it, they arrive.
+            decoding="async"
+            onLoadingStatusChange={onLoadingStatusChange}
+            {...imageProps}
             // Faded up over whatever stood in for it. Base UI mounts this only
             // once the file has decoded, so the swap from initials to a face
             // happened in a single frame — on a list of forty avatars that is
@@ -319,13 +325,13 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
             // caller asked for would set the picture's timing too — a `delay` on
             // the Avatar would hold the face back long after the circle arrived.
             // `both` keeps it on the first frame until it starts.
-            className="size-full object-cover [animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]"
-            // Before the spread, so a caller can still say otherwise. Decoding an
-            // image on the main thread is what makes a list of forty avatars
-            // arrive as forty small pauses; off it, they arrive.
-            decoding="async"
-            onLoadingStatusChange={onLoadingStatusChange}
-            {...imageProps}
+            //
+            // After the spread and merged with the caller's, which replaced it
+            // and let the picture spill out of the circle.
+            className={cx(
+              'size-full object-cover [animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]',
+              imageProps?.className
+            )}
           />
         ) : null}
 
