@@ -242,6 +242,22 @@
   color: var(--vp-c-danger-1, #e5484d);
 }
 
+/* The word behind the star, for a screen reader. */
+.neba-props-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.vp-doc .neba-props .neba-props-legend {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+}
+
 /* Unions wrap at the pipes because those are spaces. No `word-break` — it would
    split `'outline'` down the middle, which is worse than a taller row. */
 .vp-doc .neba-props .neba-props-type {

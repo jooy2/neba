@@ -16,6 +16,7 @@ const props = defineProps({
 const { lang } = useData();
 const locale = computed(() => localeOf(lang.value));
 const rows = computed(() => propTables[props.name] ?? []);
+const hasRequired = computed(() => rows.value.some((row) => row.required));
 </script>
 
 <template>
@@ -33,9 +34,13 @@ const rows = computed(() => propTables[props.name] ?? []);
         <tr v-for="row in rows" :key="row.name">
           <td>
             <span class="neba-props-name">{{ row.name }}</span>
-            <span v-if="row.required" class="neba-props-required" :title="t(locale, 'required')">
-              *
-            </span>
+            <!-- The star is for the eye, and a `title` reaches neither a screen
+                 reader nor a finger: the word is said to one, and the legend
+                 under the table says it to the other. -->
+            <template v-if="row.required">
+              <span class="neba-props-required" aria-hidden="true">*</span>
+              <span class="neba-props-hidden">{{ t(locale, 'required') }}</span>
+            </template>
             <span v-if="row.shared" class="neba-props-shared" :title="t(locale, 'sharedTitle')">
               {{ t(locale, 'sharedTag') }}
             </span>
@@ -46,5 +51,8 @@ const rows = computed(() => propTables[props.name] ?? []);
         </tr>
       </tbody>
     </table>
+    <p v-if="hasRequired" class="neba-props-legend" aria-hidden="true">
+      <span class="neba-props-required">*</span> {{ t(locale, 'required') }}
+    </p>
   </div>
 </template>
