@@ -86,6 +86,7 @@ thumb은 트랙보다 크게 그려집니다. 실제로 손이 닿는 부분이�
 ## 접근성
 
 - 각 thumb이 실제 `<input type="range">`이므로 방향키, Home/End, PageUp/PageDown이 그대로 동작합니다.
-- `label`이 accessible name이 됩니다. 없으면 `aria-label`을 주세요.
+- `label`이 각 thumb의 accessible name이 되고 `description`이 설명으로 붙습니다. label이 없으면 `aria-label`을 주세요. 이것도 thumb에 붙습니다.
+- 범위 slider의 두 thumb은 label을 함께 씁니다. `getAriaLabel`로 이름을 나누고, `getAriaValueText`로 값을 읽는 문장을 정하세요.
 - `showValue`는 `<output>`으로 렌더링되어 값이 바뀔 때 읽힙니다.
 - hover와 drag에서 thumb 크기는 변하지 않고 둘레에 ring이 그려집니다.

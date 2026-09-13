@@ -77,6 +77,18 @@ export interface SliderProps extends BaseSliderProps {
    * @default false
    */
   marks?: boolean | readonly SliderMark[];
+  /**
+   * Names each thumb, by its index. A range slider's two thumbs are otherwise
+   * both named by `label`, which leaves a screen reader two controls called the
+   * same thing: `(index) => (index === 0 ? 'Minimum price' : 'Maximum price')`.
+   */
+  getAriaLabel?: (index: number) => string;
+  /**
+   * What a thumb's value is read out as. Handed the value as the slider shows
+   * it, the number itself and the thumb's index — the way to say "20 dollars"
+   * rather than "20", or to replace the English Base UI reads for a range.
+   */
+  getAriaValueText?: (formattedValue: string, value: number, index: number) => string;
   /** Class names for the root: the column holding the label, the strip and the
    * line under it. The parts behind it are `classNames`. */
   className?: string;
@@ -233,12 +245,24 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
     min = 0,
     max = 100,
     step = 1,
+    getAriaLabel,
+    getAriaValueText,
     className,
     style,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
     ...props
   } = useStyleDefaults(rawProps, ['size']);
 
   const vertical = orientation === 'vertical';
+  const descriptionId = React.useId();
+  // What names and describes the slider is on the thumbs, which are the
+  // controls. On the root it named a `<div>`.
+  const describedBy =
+    [ariaDescribedBy, hasContent(description) ? descriptionId : undefined]
+      .filter(Boolean)
+      .join(' ') || undefined;
 
   const markList = React.useMemo(
     () => (marks === true ? stepMarks(min, max, step) : marks === false ? [] : [...marks]),
@@ -283,6 +307,11 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
           <BaseUISlider.Thumb
             key={index}
             index={index}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-describedby={describedBy}
+            getAriaLabel={getAriaLabel}
+            getAriaValueText={getAriaValueText}
             className={cx(thumbClasses, thumbSizeClasses[size], classNames?.thumb)}
           />
         ))}
@@ -389,6 +418,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
 
       {description ? (
         <div
+          id={descriptionId}
           className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
         >
           {description}

@@ -5526,6 +5526,22 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'getAriaLabel',
+      type: '(index: number) => string',
+      description: {
+        ko: 'thumb마다 index로 이름을 붙입니다. 범위 slider의 두 thumb이 같은 이름으로 읽히지 않게 할 때',
+        en: 'Names each thumb by its index, so the two thumbs of a range slider are not read with the same name'
+      }
+    },
+    {
+      name: 'getAriaValueText',
+      type: '(formattedValue: string, value: number, index: number) => string',
+      description: {
+        ko: 'thumb의 값을 읽는 문장. "20달러"처럼 단위를 붙이거나 범위 slider의 영어 문구를 바꿀 때',
+        en: 'What a thumb value is read out as: a unit such as "20 dollars", or words in place of the English a range slider reads'
+      }
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       default: 'false',

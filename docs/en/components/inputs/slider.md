@@ -86,6 +86,7 @@ The slots are `label`, `control`, `track`, `indicator`, `thumb`, `description` a
 ## Accessibility
 
 - Each thumb is a real `<input type="range">`, so the arrow keys, Home/End and Page Up/Down all work as they should.
-- `label` becomes the accessible name. Without one, give the slider an `aria-label`.
+- `label` becomes each thumb's accessible name, and `description` describes it. Without a label, give the slider an `aria-label`, which also lands on the thumbs.
+- A range slider's thumbs share the label. Name them apart with `getAriaLabel`, and word their values with `getAriaValueText`.
 - `showValue` renders an `<output>`, which is announced as the value changes.
 - Hovering and dragging draw a ring around the thumb rather than changing its size.

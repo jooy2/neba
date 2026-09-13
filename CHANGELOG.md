@@ -66,6 +66,8 @@
 
 - **`Button` and `IconButton` take `focusableWhenDisabled`.** A disabled button stays in the tab order, marked `aria-disabled` rather than with the `disabled` attribute, and still cannot be pressed. It is for a button that is disabled by its own press, which would otherwise hand the focus to the document.
 
+- **`Slider` takes `getAriaLabel` and `getAriaValueText`.** The first names each thumb by its index, so a range slider's two thumbs are no longer both read by the label; the second words a thumb's value, for a unit or in place of the English Base UI reads for a range.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
@@ -213,6 +215,8 @@
 - **Hidden panels are out of reach under React 18 too.** `Spoiler`, `Pill`, `WindowPane` and `HowToSteps` take what they hide out of the tab order and the accessibility tree with `inert`, written as a boolean. React 18 does not know the attribute and drops a boolean on it, so under 18 a covered spoiler was read aloud, a collapsed pill's details and a minimised window took the focus, and a guide's other steps could be tabbed into. The attribute is now spelled for the React that is running.
 
 - **An `aria-label` on a `Select`, `Combobox` or `NumberField` names the control.** `aria-label` and `aria-labelledby` went to the root `<div>` with every other attribute, so a field with no visible label, the usual case in a table cell or a toolbar, had a trigger or an input with no name at all. Both now go to the control itself, as they already did on `TextField`.
+
+- **A `Slider` is named and described on its thumbs.** `aria-label` and `aria-labelledby` went to the root, so a slider with no visible label had thumbs with no name, and `description` was tied to nothing. Both names, and `aria-describedby` merged with the description, now go to every thumb.
 
 ## 1.13.0 (2026-09-11)
 

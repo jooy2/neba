@@ -17,10 +17,39 @@ describe('Slider', () => {
       await expect.element(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument();
     });
 
-    it('renders the description', async () => {
+    it('renders the description and describes the thumb with it', async () => {
       const screen = await render(<Slider label="Volume" description="Applies to alerts too." />);
 
       await expect.element(screen.getByText('Applies to alerts too.')).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('slider', { name: 'Volume' }))
+        .toHaveAccessibleDescription('Applies to alerts too.');
+    });
+
+    // With no visible label the name is written on the component, and the
+    // component is not the control.
+    it('names the thumb by an aria-label written on the component', async () => {
+      const screen = await render(<Slider aria-label="Volume" defaultValue={40} />);
+
+      await expect.element(screen.getByRole('slider', { name: 'Volume' })).toBeInTheDocument();
+    });
+
+    it('names each thumb and reads each value the way it is told to', async () => {
+      const screen = await render(
+        <Slider
+          label="Price"
+          defaultValue={[20, 80]}
+          getAriaLabel={(index) => (index === 0 ? 'Minimum price' : 'Maximum price')}
+          getAriaValueText={(formatted) => `${formatted} dollars`}
+        />
+      );
+
+      await expect
+        .element(screen.getByRole('slider', { name: 'Minimum price' }))
+        .toHaveAttribute('aria-valuetext', '20 dollars');
+      await expect
+        .element(screen.getByRole('slider', { name: 'Maximum price' }))
+        .toHaveAttribute('aria-valuetext', '80 dollars');
     });
 
     it('shows the value only when asked', async () => {
