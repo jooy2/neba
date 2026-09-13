@@ -52,7 +52,7 @@ import { Image } from 'neba';
 
 ### fit과 rounded
 
-`fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none` 중 하나를 받습니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
+`fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none`, `scale-down` 중 하나를 받습니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
 
 ### rotate와 flip
 

@@ -91,6 +91,13 @@ describe('AspectRatio', () => {
       expect(screen.getByTestId('box').element()).not.toHaveClass('[&>img]:object-cover');
     });
 
+    // `contain` that never enlarges: a small file stays the size it is.
+    it('takes scale-down', async () => {
+      const screen = await render(<AspectRatio data-testid="box" fit="scale-down" />);
+
+      expect(screen.getByTestId('box').element()).toHaveClass('[&>img]:object-scale-down');
+    });
+
     // Whatever the fit, the media has to fill the box first — `object-fit` has
     // nothing to act on until the element is the size of the proportion.
     it('stretches the media to the box whatever the fit', async () => {

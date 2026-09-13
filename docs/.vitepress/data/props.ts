@@ -11559,7 +11559,7 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'fit',
-      type: "'cover' | 'contain' | 'fill' | 'none'",
+      type: "'cover' | 'contain' | 'fill' | 'none' | 'scale-down'",
       default: "'cover'",
       description: { ko: '그림이 상자를 채우는 방식', en: 'How the picture fills that box' }
     },
@@ -11867,7 +11867,7 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'fit',
-      type: "'cover' | 'contain' | 'fill' | 'none'",
+      type: "'cover' | 'contain' | 'fill' | 'none' | 'scale-down'",
       default: "'cover'",
       description: {
         ko: '안의 미디어를 상자에 맞추는 방식. 직계 자식인 img, video, canvas, svg, iframe에 적용되며 그 밖의 것은 평소대로 배치됩니다',

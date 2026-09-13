@@ -13,7 +13,7 @@ import { useStyleDefaults } from '../../internal/defaults.js';
  * same reason `NebaPosition` keeps `static`/`sticky`/`fixed`: inventing
  * `fill-the-box` would only make a reader look up which CSS it maps to.
  */
-export type NebaAspectFit = 'cover' | 'contain' | 'fill' | 'none';
+export type NebaAspectFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 
 export interface AspectRatioProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
@@ -78,7 +78,9 @@ const fitClasses: Record<NebaAspectFit, string> = {
   cover: '[&>img]:object-cover [&>video]:object-cover [&>picture>img]:object-cover',
   contain: '[&>img]:object-contain [&>video]:object-contain [&>picture>img]:object-contain',
   fill: '[&>img]:object-fill [&>video]:object-fill [&>picture>img]:object-fill',
-  none: '[&>img]:object-none [&>video]:object-none [&>picture>img]:object-none'
+  none: '[&>img]:object-none [&>video]:object-none [&>picture>img]:object-none',
+  'scale-down':
+    '[&>img]:object-scale-down [&>video]:object-scale-down [&>picture>img]:object-scale-down'
 };
 
 /**

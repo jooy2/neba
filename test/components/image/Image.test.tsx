@@ -192,6 +192,25 @@ describe('Image', () => {
     });
   });
 
+  describe('fit', () => {
+    it('covers by default', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+
+      await expect
+        .element(screen.getByRole('img', { name: 'A ridge' }))
+        .toHaveClass('object-cover');
+    });
+
+    // `contain` that never enlarges, for a file that may be smaller than its box.
+    it('takes scale-down', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" fit="scale-down" />);
+
+      await expect
+        .element(screen.getByRole('img', { name: 'A ridge' }))
+        .toHaveClass('object-scale-down');
+    });
+  });
+
   it('becomes a button when it can be previewed', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" preview />);
 

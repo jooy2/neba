@@ -37,7 +37,7 @@ import { AspectRatio } from 'neba';
 
 ### fit
 
-`fit`은 직계 자식인 미디어 하나(`img`, `video`, `canvas`, `svg`, `iframe`)에 적용되는 `object-fit`입니다. 미디어는 먼저 상자에 맞게 늘어나는데, 이 컴포넌트를 쓸 때마다 반드시 먼저 쓰게 되는 선언 두 줄이 바로 그것입니다. `cover`는 잘라내고, `contain`은 여백을 남기며, `fill`은 찌그러뜨립니다.
+`fit`은 직계 자식인 미디어 하나(`img`, `video`, `canvas`, `svg`, `iframe`)에 적용되는 `object-fit`입니다. 미디어는 먼저 상자에 맞게 늘어나는데, 이 컴포넌트를 쓸 때마다 반드시 먼저 쓰게 되는 선언 두 줄이 바로 그것입니다. `cover`는 잘라내고, `contain`은 여백을 남기며, `fill`은 찌그러뜨립니다. `none`은 파일 원래 크기를 유지하고, `scale-down`은 `none`과 `contain` 중 더 작게 그려지는 쪽이라 작은 파일을 키우지 않습니다.
 
 <Demo src="aspect-ratio/fit">
 

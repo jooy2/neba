@@ -122,7 +122,7 @@ export interface NebaImageProtection {
 }
 
 /**
- * The four fits, written out.
+ * The five fits, written out.
  *
  * Not `object-${fit}`: Tailwind only ever sees class names that are written
  * literally, so a template literal generates nothing and the picture falls back
@@ -133,7 +133,8 @@ const objectFitClasses: Record<NebaAspectFit, string> = {
   cover: 'object-cover',
   contain: 'object-contain',
   fill: 'object-fill',
-  none: 'object-none'
+  none: 'object-none',
+  'scale-down': 'object-scale-down'
 };
 
 /**

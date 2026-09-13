@@ -52,7 +52,7 @@ The file's own pixel dimensions, as an `<img>` takes them. They reach the pictur
 
 ### fit and rounded
 
-`fit` is `object-fit`: `cover` (the default), `contain`, `fill`, `none`. `rounded` takes a step of the radius ladder, or `true` for `md`.
+`fit` is `object-fit`: `cover` (the default), `contain`, `fill`, `none`, `scale-down`. `rounded` takes a step of the radius ladder, or `true` for `md`.
 
 ### rotate and flip
 

@@ -6,6 +6,8 @@
 
 - **`Image` turns and mirrors a picture with `rotate` and `flip`.** `rotate` takes quarter turns, clockwise, and `flip` mirrors along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture was turned. A picture on its side reserves a box on its side: `width` and `height` still describe the file, and with neither the box takes the turned shape once the file arrives. The preview opens turned and mirrored the same way.
 
+- **`fit` takes `scale-down` on `AspectRatio` and `Image`.** It is `contain` that never enlarges, for a file that may be smaller than the box it is given.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
