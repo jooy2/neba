@@ -340,7 +340,14 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
           {body}
         </button>
       ) : (
-        <div className={bodyClassNames} aria-disabled={disabled || undefined}>
+        // `aria-current` is global, so a chosen row that is not pressable still
+        // says it is the chosen one, the way the button above does; the tint
+        // alone told only the readers who could see it.
+        <div
+          className={bodyClassNames}
+          aria-disabled={disabled || undefined}
+          aria-current={selected ? true : undefined}
+        >
           {body}
         </div>
       )}

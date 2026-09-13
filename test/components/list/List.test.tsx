@@ -283,6 +283,19 @@ describe('List', () => {
       );
     });
 
+    it('says a chosen row that is not pressable is the current one', async () => {
+      const screen = await render(
+        <List>
+          <ListItem selected>Production</ListItem>
+        </List>
+      );
+
+      expect(screen.getByText('Production').element().closest('[aria-current]')).toHaveAttribute(
+        'aria-current',
+        'true'
+      );
+    });
+
     it('never applies a transform', async () => {
       const screen = await render(
         <List dividers>

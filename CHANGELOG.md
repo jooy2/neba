@@ -162,6 +162,8 @@
 
 - **`TreeView`'s keyboard follows the tree pattern more closely.** Enter or Space on a button in a row's `action` chose the row instead of pressing the button; the tree now leaves keys pressed inside a row's controls alone. Enter on a row with an `href` follows the link, where it only chose the row before. In a `multiple` tree every row that can be chosen says whether it is, and a reader tabbing into a tree lands on the chosen row rather than the first.
 
+- **A selected `ListItem` that is not pressable is announced as the current one.** Only a row that was a button or a link said so, through `aria-current`; a plain row showed it with its tint alone. It carries `aria-current` as well now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
