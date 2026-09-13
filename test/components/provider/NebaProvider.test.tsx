@@ -2,7 +2,7 @@
  * The three jobs, tested one at a time: the prop values a product sets once,
  * the colour scheme a reader chooses, and the direction the document runs in.
  */
-import { Component, type ReactNode } from 'react';
+import { Component, memo, Profiler, type ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import {
@@ -50,6 +50,31 @@ describe('defaults', () => {
 
     expect(provided).not.toBe('');
     expect(provided).not.toBe(bare);
+  });
+
+  it('does not re-render its readers when the page above it re-renders', async () => {
+    let commits = 0;
+    // Memoised, so the only thing that can reach the Button inside is the
+    // context it reads — and the Profiler counts every commit that does.
+    const Reader = memo(function Reader() {
+      return (
+        <Profiler id="reader" onRender={() => (commits += 1)}>
+          <Button>Save</Button>
+        </Profiler>
+      );
+    });
+    const Page = ({ tick }: { tick: number }) => (
+      <NebaProvider defaults={{ size: 'sm' }} storageKey={false}>
+        <span>{tick}</span>
+        <Reader />
+      </NebaProvider>
+    );
+    const screen = await render(<Page tick={0} />);
+    const before = commits;
+
+    await screen.rerender(<Page tick={1} />);
+
+    expect(commits).toBe(before);
   });
 
   it('loses to the call site', async () => {

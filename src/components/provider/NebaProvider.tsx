@@ -208,8 +208,21 @@ export function NebaProvider({
     [colorScheme, resolved, setColorScheme]
   );
 
+  /*
+   * Kept by value rather than by the object that was passed. The natural way to
+   * write the prop is inline — `defaults={{ size: 'sm' }}` — which is a new
+   * object on every render of whatever renders the provider, and a context value
+   * that changes identity re-renders every component under it that reads one.
+   */
+  const given = defaults !== undefined && defaults !== null;
+  const { size, density, variant, locale } = defaults ?? {};
+  const defaultsValue = React.useMemo<NebaDefaults | null>(
+    () => (given ? { size, density, variant, locale } : null),
+    [given, size, density, variant, locale]
+  );
+
   return (
-    <DefaultsContext.Provider value={defaults ?? null}>
+    <DefaultsContext.Provider value={defaultsValue}>
       <ColorSchemeContext.Provider value={scheme}>
         <DirectionProvider direction={direction ?? 'ltr'}>{children}</DirectionProvider>
       </ColorSchemeContext.Provider>
