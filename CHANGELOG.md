@@ -62,6 +62,8 @@
 
 - **An endless animation holds while it is off the screen.** An `Animate*` component with `repeat="infinite"` — `AnimateLighting`, `AnimateMarquee`, `AnimateFloat`, `AnimateBlink` and the rest, and a `transition="blink"` — kept its animation, timer or paint running for as long as it was mounted, however far below the fold it sat. It now pauses when it leaves the viewport and carries on from where it was when it comes back, through one shared observer. A finite animation is untouched and still finishes on schedule.
 
+- **A `Pill` with `details` no longer forces a layout on every render of its parent.** The details were written inline in the usual case, a new object each time, and each one re-subscribed the height observer and read the panel's height again; the observer already follows the details as they change.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

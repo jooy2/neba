@@ -255,6 +255,11 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
 
   const detailsRef = React.useRef<HTMLDivElement>(null);
   const [detailsHeight, setDetailsHeight] = React.useState(0);
+  // Keyed on whether there are details rather than on the details themselves:
+  // inline JSX is a new object on every render of the parent, and each one
+  // re-subscribed and forced a layout to read a height the observer below
+  // already follows.
+  const hasDetails = hasContent(details);
 
   React.useEffect(() => {
     const element = detailsRef.current;
@@ -265,7 +270,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
     setDetailsHeight(element.scrollHeight);
 
     return observeResize(element, () => setDetailsHeight(element.scrollHeight));
-  }, [details]);
+  }, [hasDetails]);
 
   const interactive = Boolean(onClick);
   const padX = paddingXClasses[density][size];
@@ -364,7 +369,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
         ) : null}
       </div>
 
-      {hasContent(details) ? (
+      {hasDetails ? (
         <div
           className={[
             'overflow-hidden',

@@ -110,6 +110,22 @@ describe('Pill', () => {
       expect(panel.style.height).not.toBe('0px');
       expect(panel).not.toHaveAttribute('inert');
     });
+
+    it('follows details that grow while it is open', async () => {
+      const pill = (height: number) => (
+        <Pill details={<div style={{ height }}>Log</div>} expanded data-testid="pill">
+          Recording
+        </Pill>
+      );
+      const screen = await render(pill(40));
+      const panel = screen.getByText('Log').element().parentElement!.parentElement as HTMLElement;
+
+      await expect.poll(() => parseFloat(panel.style.height)).toBeGreaterThanOrEqual(40);
+
+      await screen.rerender(pill(160));
+
+      await expect.poll(() => parseFloat(panel.style.height)).toBeGreaterThanOrEqual(160);
+    });
   });
 
   describe('interaction', () => {
