@@ -195,7 +195,9 @@ function stepMarks(min: number, max: number, step: number): SliderMark[] {
 
   if (!(step > 0) || !(span > 0) || span / step > MAX_STEP_MARKS) return [];
 
-  const count = Math.floor(span / step);
+  // The epsilon is a floating-point guard: 0.6 / 0.1 is 5.999999999999999,
+  // which floored drops the mark at the top of the range.
+  const count = Math.floor(span / step + 1e-9);
 
   // `min + index * step` rather than an accumulator: adding 0.1 to itself ten
   // times does not reach 1, and a mark that misses its own value by a

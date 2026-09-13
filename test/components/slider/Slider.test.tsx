@@ -211,6 +211,24 @@ describe('Slider', () => {
       expect(screen.container.querySelectorAll('.a-mark')).toHaveLength(5);
     });
 
+    it('keeps the mark at the top of a range stepped in tenths', async () => {
+      const screen = await render(
+        <Slider
+          aria-label="Opacity"
+          min={0}
+          max={0.6}
+          step={0.1}
+          marks
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+
+      const marks = [...screen.container.querySelectorAll<HTMLElement>('.a-mark')];
+
+      expect(marks).toHaveLength(7);
+      expect(parseFloat(marks[6].style.insetInlineStart)).toBeCloseTo(100, 5);
+    });
+
     it('draws none at all rather than a thousand of them', async () => {
       // A step nobody chose over a range nobody bounded is the one case where
       // "a tick at every step" is not what the caller meant.

@@ -294,7 +294,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
 - [ ] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`
 - [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`
-- [ ] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
+- [x] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
 - [ ] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`
 - [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`
 - [ ] **153** [major][decision] **BottomNavigation**: with `labels="selected"` the unselected names are absolutely positioned and reserve no line, so the glyphs jump up and down whenever the selection changes. `BottomNavigation.tsx:392-403`

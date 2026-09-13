@@ -316,6 +316,8 @@
 
 - **A `ColorPicker` reads an `rgb()` channel written as a percentage.** `rgb(100% 0% 0%)` was read as a red channel of 100 out of 255 and became `#640000`, a dark red. A percentage channel is a share of 255 now, so it is `#ff0000`; a percentage alpha was already read correctly.
 
+- **`marks` on a `Slider` stepped in fractions keeps its last mark.** The marks for `marks={true}` were counted by flooring the range over the step, and `0.6 / 0.1` is `5.999999999999999`, so a slider from 0 to 0.6 in tenths drew no mark at 0.6. The count now allows for the rounding.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
