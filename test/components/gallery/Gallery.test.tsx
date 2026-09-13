@@ -300,7 +300,12 @@ describe('Gallery', () => {
       const picture = screen.container.querySelector('img') as HTMLImageElement;
 
       expect(picture.className).toContain('group-hover/tile:[transform:scale(1.06)]');
-      expect(picture.className).toContain('group-focus-visible/tile:[transform:scale(1.06)]');
+      // Asked of the tile as `has a focused button`: the tile itself, an `<li>`,
+      // never holds the focus, so a plain focus variant on it never applied.
+      expect(picture.className).toContain(
+        'group-has-[:focus-visible]/tile:[transform:scale(1.06)]'
+      );
+      expect(picture.className).not.toContain('group-focus-visible/tile');
     });
 
     it('scales nothing when it is told to do nothing', async () => {

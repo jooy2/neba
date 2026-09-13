@@ -150,6 +150,8 @@
 
 - **Reduced motion holds inside a forced-light box.** An element with `.light` or `data-theme="light"` declares the motion durations again, so a reader who asked for less motion got the hover transitions and popup fades back everywhere inside one. The override now names those roots too.
 
+- **A `Gallery` tile answers the keyboard focus the way it answers the pointer.** The lift, the dim, the zoom and a `caption="hover"` were keyed to the tile being focused, and the tile is a list item that never is, so none of them appeared for a keyboard reader. They follow a focused button inside the tile now, and `focus-within` in a browser without `:has()`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

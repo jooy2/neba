@@ -310,10 +310,15 @@ function deal(ratios: readonly number[], columns: number): number[][] {
  *
  * `zoom` is on the picture and the other two are on the tile, which is why this
  * is two tables rather than one.
+ *
+ * The focus half asks whether the tile *has* a focused button inside it rather
+ * than whether the tile is focused: the tile is an `<li>`, which never takes the
+ * focus, so `group-focus-visible` could never apply. A browser without `:has()`
+ * falls back to `focus-within`, which also answers a click.
  */
 const tileHoverClasses: Record<NebaGalleryHover, string> = {
   none: '',
-  lift: 'group-hover/tile:[box-shadow:var(--neba-shadow-2)] group-focus-visible/tile:[box-shadow:var(--neba-shadow-2)]',
+  lift: 'group-hover/tile:[box-shadow:var(--neba-shadow-2)] group-has-[:focus-visible]/tile:[box-shadow:var(--neba-shadow-2)] supports-[not_selector(:has(*))]:group-focus-within/tile:[box-shadow:var(--neba-shadow-2)]',
   dim: '',
   zoom: ''
 };
@@ -321,8 +326,8 @@ const tileHoverClasses: Record<NebaGalleryHover, string> = {
 const pictureHoverClasses: Record<NebaGalleryHover, string> = {
   none: '',
   lift: '',
-  dim: 'group-hover/tile:[filter:brightness(0.82)] group-focus-visible/tile:[filter:brightness(0.82)]',
-  zoom: 'group-hover/tile:[transform:scale(1.06)] group-focus-visible/tile:[transform:scale(1.06)]'
+  dim: 'group-hover/tile:[filter:brightness(0.82)] group-has-[:focus-visible]/tile:[filter:brightness(0.82)] supports-[not_selector(:has(*))]:group-focus-within/tile:[filter:brightness(0.82)]',
+  zoom: 'group-hover/tile:[transform:scale(1.06)] group-has-[:focus-visible]/tile:[transform:scale(1.06)] supports-[not_selector(:has(*))]:group-focus-within/tile:[transform:scale(1.06)]'
 };
 
 /** The wash a caption is written on, so the words survive a pale photograph. */
@@ -454,7 +459,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
                   'pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-2.5 text-white',
                   captionScrimClasses,
                   caption === 'hover'
-                    ? 'opacity-0 group-hover/tile:opacity-100 group-focus-visible/tile:opacity-100 [transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]'
+                    ? 'opacity-0 group-hover/tile:opacity-100 group-has-[:focus-visible]/tile:opacity-100 supports-[not_selector(:has(*))]:group-focus-within/tile:opacity-100 [transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]'
                     : ''
                 )
               : 'flex flex-col gap-0.5 pt-1.5',
