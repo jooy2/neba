@@ -275,7 +275,11 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
     // three has nothing to say, which is what decides whether the fallback needs
     // the name spelled out beside it.
     const stand = hasContent(children) ? children : (initials ?? derived) || <PersonIcon />;
-    const speaks = hasContent(children) || Boolean(initials ?? derived);
+    // A name to say, or an empty `alt` asking for silence. The two are read off
+    // the label alone: whether the stand-in is initials or the silhouette changes
+    // what is drawn, not what a screen reader should hear.
+    const named = Boolean(label);
+    const decorative = label === '';
 
     const classNames = cx(
       baseClasses,
@@ -331,9 +335,11 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
         >
           {/* `JD` read out loud is two letters, not a person. When there is a name
             it becomes the fallback's accessible name and the initials are left
-            as the picture they are standing in for. */}
-          {label && speaks ? <span className={srOnlyClasses}>{label}</span> : null}
-          <span aria-hidden={label && speaks ? true : undefined} className="contents">
+            as the picture they are standing in for — and a silhouette with an
+            `alt` says the `alt` too, or a picture that failed says nothing. An
+            empty `alt` hides the stand-in as it hides the picture. */}
+          {named ? <span className={srOnlyClasses}>{label}</span> : null}
+          <span aria-hidden={named || decorative ? true : undefined} className="contents">
             {stand}
           </span>
         </BaseAvatar.Fallback>

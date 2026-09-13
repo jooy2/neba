@@ -39,6 +39,24 @@ describe('Avatar', () => {
     });
   });
 
+  describe('what a screen reader hears', () => {
+    it('says the alt of a silhouette that has no name to make initials from', async () => {
+      const screen = await render(<Avatar alt="Jane Doe" data-testid="avatar" />);
+      const avatar = screen.getByTestId('avatar').element();
+
+      expect(avatar.textContent).toBe('Jane Doe');
+      expect(avatar.querySelector('svg')?.closest('[aria-hidden="true"]')).not.toBeNull();
+    });
+
+    it('hides the initials when an empty alt asks for silence', async () => {
+      const screen = await render(<Avatar name="Jane Doe" alt="" />);
+
+      await expect.element(screen.getByText('JD')).toBeInTheDocument();
+      expect(screen.getByText('JD').element().closest('[aria-hidden="true"]')).not.toBeNull();
+      expect(screen.getByText('Jane Doe').query()).toBeNull();
+    });
+  });
+
   describe('initials', () => {
     it('takes the first letter of the first and last word', async () => {
       const screen = await render(<Avatar name="Jane Doe" />);

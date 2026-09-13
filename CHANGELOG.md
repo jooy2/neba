@@ -168,6 +168,8 @@
 
 - **A failed `Image` is named once, and a previewable one with `alt=""` has a name.** When the file did not arrive, the `<img>` kept its `alt` in the accessibility tree and the fallback wrote the same words over it, so a screen reader read the name twice; the drawn words are hidden from it now. With `preview` and an empty `alt`, the button and the preview had no name at all, and both are called "Enlarge image", translated in every language under `neba/locales`.
 
+- **An `Avatar` says its `alt` whatever stands in for the picture, and says nothing when `alt` is empty.** A silhouette given an `alt` and no `name` had nothing to read while its picture loaded or after it failed, and `alt=""` beside a `name` still read the initials out as two letters. The name is spoken from the label alone now, and an empty `alt` hides the stand-in as it hides the picture.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
