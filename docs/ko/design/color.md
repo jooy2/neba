@@ -52,7 +52,7 @@ Neba는 임의의 색상값을 받지 않습니다. `color`는 `#4072cd`가 아�
 --neba-{color}-on-tint        /* accent 72% + --neba-fg — panel/soft 위 글자색 */
 --neba-{color}-line           /* accent 22% — 하이라인 */
 --neba-{color}-line-hover     /* accent 40% */
---neba-{color}-ring           /* accent 55% — 포커스 링 */
+--neba-{color}-ring           /* accent 라이트 80%, 다크 55% — 포커스 링 */
 ```
 
 > **파생 블록은 테마 루트마다 반복됩니다.** 커스텀 프로퍼티는 선언된 요소에서 `var()`를 해석하므로, 파생 토큰을 `:root`에만 두면 `.dark` 하위 트리에서도 라이트 값으로 굳습니다. 자세한 이유는 [디자인 언어](./design-language)에 있습니다.

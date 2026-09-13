@@ -52,7 +52,7 @@ A family is a set of `--neba-{family}-{role}` tokens.
 --neba-{color}-on-tint        /* accent 72% + --neba-fg — text on panel or soft */
 --neba-{color}-line           /* accent 22% — the hairline */
 --neba-{color}-line-hover     /* accent 40% */
---neba-{color}-ring           /* accent 55% — the focus ring */
+--neba-{color}-ring           /* accent 80% light, 55% dark — the focus ring */
 ```
 
 > **The derived block is repeated per theme root.** A custom property resolves its `var()`s on the element that declares it, so derived tokens declared only on `:root` would freeze to their light values inside a `.dark` subtree. [Design language](./design-language) has the full reasoning.

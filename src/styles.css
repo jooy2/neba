@@ -83,6 +83,13 @@
   --neba-fill-alpha: 88%;
   --neba-blur: blur(9px) saturate(1.5);
 
+  /* How much of the family's accent a focus ring is. The ring sits 2px off the
+     control, so what it is read against is the page, and on a white sheet 55%
+     of any accent is 2.2 to 2.6:1 — under the 3:1 a focus indicator needs, on
+     the controls where the ring is all the focus there is. 80% clears 3.4:1 for
+     every family. The dark sheet keeps 55%, which already clears 3.2:1. */
+  --neba-ring-alpha: 80%;
+
   /* Frosted, not polished. A single tile of greyscale fractal noise laid over
      the fill in `overlay` is what separates sandblasted acrylic from a pane of
      glass — and it is the one thing a flat fill can never fake. Kept at 12% in
@@ -401,6 +408,7 @@
 
     --neba-fill-alpha: 87%;
     --neba-blur: blur(9px) saturate(1.3);
+    --neba-ring-alpha: 55%;
 
     --neba-plate-edge: rgb(255 255 255 / 0.12);
     --neba-plate-top: rgb(255 255 255 / 0.16);
@@ -514,6 +522,7 @@
 
   --neba-fill-alpha: 87%;
   --neba-blur: blur(9px) saturate(1.3);
+  --neba-ring-alpha: 55%;
 
   --neba-plate-edge: rgb(255 255 255 / 0.12);
   --neba-plate-top: rgb(255 255 255 / 0.16);
@@ -683,7 +692,11 @@
   );
   --neba-primary-line: color-mix(in srgb, var(--neba-primary-accent) 22%, transparent);
   --neba-primary-line-hover: color-mix(in srgb, var(--neba-primary-accent) 40%, transparent);
-  --neba-primary-ring: color-mix(in srgb, var(--neba-primary-accent) 55%, transparent);
+  --neba-primary-ring: color-mix(
+    in srgb,
+    var(--neba-primary-accent) var(--neba-ring-alpha),
+    transparent
+  );
 
   --neba-secondary-fill: color-mix(
     in srgb,
@@ -717,7 +730,11 @@
   );
   --neba-secondary-line: color-mix(in srgb, var(--neba-secondary-accent) 22%, transparent);
   --neba-secondary-line-hover: color-mix(in srgb, var(--neba-secondary-accent) 40%, transparent);
-  --neba-secondary-ring: color-mix(in srgb, var(--neba-secondary-accent) 55%, transparent);
+  --neba-secondary-ring: color-mix(
+    in srgb,
+    var(--neba-secondary-accent) var(--neba-ring-alpha),
+    transparent
+  );
 
   --neba-success-fill: color-mix(
     in srgb,
@@ -751,7 +768,11 @@
   );
   --neba-success-line: color-mix(in srgb, var(--neba-success-accent) 22%, transparent);
   --neba-success-line-hover: color-mix(in srgb, var(--neba-success-accent) 40%, transparent);
-  --neba-success-ring: color-mix(in srgb, var(--neba-success-accent) 55%, transparent);
+  --neba-success-ring: color-mix(
+    in srgb,
+    var(--neba-success-accent) var(--neba-ring-alpha),
+    transparent
+  );
 
   --neba-warning-fill: color-mix(
     in srgb,
@@ -785,7 +806,11 @@
   );
   --neba-warning-line: color-mix(in srgb, var(--neba-warning-accent) 26%, transparent);
   --neba-warning-line-hover: color-mix(in srgb, var(--neba-warning-accent) 44%, transparent);
-  --neba-warning-ring: color-mix(in srgb, var(--neba-warning-accent) 55%, transparent);
+  --neba-warning-ring: color-mix(
+    in srgb,
+    var(--neba-warning-accent) var(--neba-ring-alpha),
+    transparent
+  );
 
   --neba-danger-fill: color-mix(
     in srgb,
@@ -819,7 +844,11 @@
   );
   --neba-danger-line: color-mix(in srgb, var(--neba-danger-accent) 22%, transparent);
   --neba-danger-line-hover: color-mix(in srgb, var(--neba-danger-accent) 40%, transparent);
-  --neba-danger-ring: color-mix(in srgb, var(--neba-danger-accent) 55%, transparent);
+  --neba-danger-ring: color-mix(
+    in srgb,
+    var(--neba-danger-accent) var(--neba-ring-alpha),
+    transparent
+  );
 
   --neba-info-fill: color-mix(in srgb, var(--neba-info-solid) var(--neba-fill-alpha), transparent);
   --neba-info-fill-hover: color-mix(
@@ -841,7 +870,7 @@
   --neba-info-panel-press: color-mix(in srgb, var(--neba-info-accent) 24%, var(--neba-glass-bg));
   --neba-info-line: color-mix(in srgb, var(--neba-info-accent) 22%, transparent);
   --neba-info-line-hover: color-mix(in srgb, var(--neba-info-accent) 40%, transparent);
-  --neba-info-ring: color-mix(in srgb, var(--neba-info-accent) 55%, transparent);
+  --neba-info-ring: color-mix(in srgb, var(--neba-info-accent) var(--neba-ring-alpha), transparent);
 
   /* A chart's chrome: the grid, the axis rules, the baseline.
 

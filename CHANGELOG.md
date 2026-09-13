@@ -172,6 +172,8 @@
 
 - **A `Popconfirm` bubble is named by its title and described by its description.** Both were plain paragraphs connected to nothing, so the focus moved into a bubble announced only as "dialog". They are the popover's own title and description now, drawn as the same paragraphs.
 
+- **A focus ring on the light sheet clears 3:1.** A ring is drawn 2px off its control, so it is read against the page, and on white 55% of a family's accent was 2.2:1 to 2.6:1 — under what a focus indicator needs, on a Button or a Chip's × where the ring is the only sign of focus. The light theme draws the ring at 80% now, 3.4:1 or better for every family; the dark theme keeps 55%, which already cleared 3.2:1. `--neba-ring-alpha` holds the number for each theme.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
