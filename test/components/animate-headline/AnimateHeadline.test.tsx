@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { act } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateHeadline } from 'neba';
 
@@ -58,7 +59,50 @@ describe('AnimateHeadline', () => {
     });
   });
 
+  /*
+   * On the fake clock. The reel turns on a timeout that is set again after every
+   * commit, and on a real clock these tests raced it: a line that is showing for
+   * forty milliseconds can fall between two reads of a poll that looks every
+   * fifty, so "comes back to the first line" could miss the third line on any
+   * run. With one step at a time there is exactly one line to find after each.
+   *
+   * That next timeout is set by an effect once the turn has committed, so moving
+   * the clock the moment the new line is on screen can move it before the
+   * timeout exists: WebKit showed the line and ran the effect far enough apart
+   * that the reel stopped on the third line. So the clock moves inside `act`,
+   * which finishes the render and its effects before it returns, and each turn
+   * is read straight off the DOM afterwards.
+   */
   describe('turning', () => {
+    const step = 60_000;
+
+    /** Moves the fake clock and lets React finish everything that moved it. */
+    const elapse = async (ms: number) => {
+      // What tells React this is a test that drives `act` itself. The render
+      // helper sets it only around its own calls and clears it after them.
+      const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
+
+      scope.IS_REACT_ACT_ENVIRONMENT = true;
+
+      try {
+        await act(() => vi.advanceTimersByTimeAsync(ms));
+      } finally {
+        scope.IS_REACT_ACT_ENVIRONMENT = false;
+      }
+    };
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    /** Which line is showing, by position. */
+    const showing = (root: Element) =>
+      [...root.children].findIndex((line) => line.getAttribute('data-state') === 'active');
+
     it('starts on the line it was given', async () => {
       const screen = await render(
         <AnimateHeadline defaultIndex={1} data-testid="headline">
@@ -70,11 +114,11 @@ describe('AnimateHeadline', () => {
       expect(root.children[1]).toHaveAttribute('data-state', 'active');
     });
 
-    it('moves on after the interval', async () => {
+    it('moves on after the interval, and not before', async () => {
       const onIndexChange = vi.fn();
       const screen = await render(
         <AnimateHeadline
-          interval={60}
+          interval={step}
           duration={20}
           onIndexChange={onIndexChange}
           data-testid="headline"
@@ -82,43 +126,44 @@ describe('AnimateHeadline', () => {
           {LINES}
         </AnimateHeadline>
       );
+      const root = screen.getByTestId('headline').element();
 
-      await expect
-        .poll(() => screen.getByTestId('headline').element().children[1].getAttribute('data-state'))
-        .toBe('active');
+      await elapse(step - 1);
+      expect(showing(root)).toBe(0);
+      expect(onIndexChange).not.toHaveBeenCalled();
+
+      await elapse(1);
+      expect(showing(root)).toBe(1);
 
       expect(onIndexChange).toHaveBeenCalledWith(1);
     });
 
     it('comes back to the first line', async () => {
       const screen = await render(
-        <AnimateHeadline interval={40} duration={10} data-testid="headline">
+        <AnimateHeadline interval={step} duration={10} data-testid="headline">
           {LINES}
         </AnimateHeadline>
       );
+      const root = screen.getByTestId('headline').element();
 
-      await expect
-        .poll(
-          () => screen.getByTestId('headline').element().children[2].getAttribute('data-state'),
-          { timeout: 3000 }
-        )
-        .toBe('active');
-
-      await expect
-        .poll(
-          () => screen.getByTestId('headline').element().children[0].getAttribute('data-state'),
-          { timeout: 3000 }
-        )
-        .toBe('active');
+      for (const line of [1, 2, 0]) {
+        await elapse(step);
+        expect(showing(root)).toBe(line);
+      }
     });
 
+    /*
+     * One call covering several intervals is enough for the two tests below. A
+     * turn that should not happen would be the first timeout to fire, and that
+     * one is already set when the clock moves.
+     */
     it('stops on the last line when loop is off', async () => {
       const onIndexChange = vi.fn();
       const screen = await render(
         <AnimateHeadline
           loop={false}
           defaultIndex={2}
-          interval={30}
+          interval={step}
           duration={10}
           onIndexChange={onIndexChange}
           data-testid="headline"
@@ -127,7 +172,7 @@ describe('AnimateHeadline', () => {
         </AnimateHeadline>
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await elapse(step * 3);
 
       expect(onIndexChange).not.toHaveBeenCalled();
       expect(screen.getByTestId('headline').element().children[2]).toHaveAttribute(
@@ -143,7 +188,7 @@ describe('AnimateHeadline', () => {
       const screen = await render(
         <AnimateHeadline
           index={0}
-          interval={30}
+          interval={step}
           onIndexChange={onIndexChange}
           data-testid="headline"
         >
@@ -151,14 +196,14 @@ describe('AnimateHeadline', () => {
         </AnimateHeadline>
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await elapse(step * 3);
 
       expect(onIndexChange).not.toHaveBeenCalled();
 
       await screen.rerender(
         <AnimateHeadline
           index={2}
-          interval={30}
+          interval={step}
           onIndexChange={onIndexChange}
           data-testid="headline"
         >
