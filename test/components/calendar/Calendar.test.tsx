@@ -28,12 +28,60 @@ describe('Calendar', () => {
   it('keeps the focus in the calendar after a month is picked from the month grid', async () => {
     const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
 
-    await screen.getByRole('button', { name: 'Choose a month' }).click();
+    await screen.getByRole('button', { name: 'July' }).click();
     await screen.getByRole('gridcell', { name: 'November 2026' }).click();
 
     await expect
       .element(screen.getByRole('gridcell', { name: 'Sunday, November 1, 2026' }))
       .toHaveFocus();
+  });
+
+  describe('header', () => {
+    it('names the month and year buttons by what they show', async () => {
+      const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
+
+      await expect
+        .element(screen.getByRole('button', { name: 'July' }))
+        .toHaveAccessibleDescription('Choose a month');
+      await expect
+        .element(screen.getByRole('button', { name: '2026' }))
+        .toHaveAccessibleDescription('Choose a year');
+    });
+
+    it('names the grid by the month on screen, and says so again when it changes', async () => {
+      const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
+
+      await expect.element(screen.getByRole('grid', { name: 'July 2026' })).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Next month' }).click();
+
+      const grid = screen.getByRole('grid', { name: 'August 2026' });
+      await expect.element(grid).toBeInTheDocument();
+      const caption = document.getElementById(grid.element().getAttribute('aria-labelledby')!);
+      expect(caption).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('names a month cell the way the locale writes a month of a year', async () => {
+      const screen = await render(<Calendar locale="ko" defaultMonth={JULY} />);
+
+      await screen.getByRole('button', { name: '7월' }).click();
+
+      await expect
+        .element(screen.getByRole('gridcell', { name: '2026년 11월' }))
+        .toBeInTheDocument();
+    });
+
+    it('says the grid takes more than one pick only where it does', async () => {
+      const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
+
+      expect(screen.getByRole('grid').element()).not.toHaveAttribute('aria-multiselectable');
+
+      await screen.rerender(<Calendar mode="multiple" locale={LOCALE} defaultMonth={JULY} />);
+      expect(screen.getByRole('grid').element()).toHaveAttribute('aria-multiselectable', 'true');
+
+      await screen.rerender(<Calendar mode="range" locale={LOCALE} defaultMonth={JULY} />);
+      expect(screen.getByRole('grid').element()).toHaveAttribute('aria-multiselectable', 'true');
+    });
   });
 
   describe('single', () => {
@@ -62,8 +110,8 @@ describe('Calendar', () => {
       const screen = await render(<Calendar locale={LOCALE} defaultValue={new Date(2019, 2, 4)} />);
 
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a month' }))
-        .toHaveTextContent('March');
+        .element(screen.getByRole('button', { name: 'March' }))
+        .toHaveAccessibleDescription('Choose a month');
     });
   });
 

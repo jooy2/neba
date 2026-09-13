@@ -94,8 +94,8 @@ describe('DatePicker', () => {
       await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
 
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a month' }))
-        .toHaveTextContent('July');
+        .element(screen.getByRole('button', { name: 'July' }))
+        .toHaveAccessibleDescription('Choose a month');
       await expect
         .element(screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }))
         .toHaveAttribute('aria-selected', 'true');
@@ -179,8 +179,8 @@ describe('DatePicker', () => {
       await screen.getByRole('button', { name: 'Next month' }).click();
 
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a month' }))
-        .toHaveTextContent('August');
+        .element(screen.getByRole('button', { name: 'August' }))
+        .toHaveAccessibleDescription('Choose a month');
     });
 
     it('opens the month grid and picks a month', async () => {
@@ -189,12 +189,12 @@ describe('DatePicker', () => {
       );
 
       await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
-      await screen.getByRole('button', { name: 'Choose a month' }).click();
+      await screen.getByRole('button', { name: 'July' }).click();
       await screen.getByRole('gridcell', { name: 'November 2026' }).click();
 
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a month' }))
-        .toHaveTextContent('November');
+        .element(screen.getByRole('button', { name: 'November' }))
+        .toHaveAccessibleDescription('Choose a month');
       // Back in day view, so the days of November are on screen.
       await expect
         .element(screen.getByRole('gridcell', { name: 'Sunday, November 1, 2026' }))
@@ -207,7 +207,7 @@ describe('DatePicker', () => {
       );
 
       await screen.getByRole('button', { name: 'Ships on', exact: false }).click();
-      await screen.getByRole('button', { name: 'Choose a year' }).click();
+      await screen.getByRole('button', { name: '2026' }).click();
 
       await expect.element(screen.getByRole('gridcell', { name: '2020' })).toBeInTheDocument();
 
@@ -216,8 +216,8 @@ describe('DatePicker', () => {
       // Year view hands over to month view rather than all the way back to days:
       // having just said which year, the next question is which month.
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a year' }))
-        .toHaveTextContent('2020');
+        .element(screen.getByRole('button', { name: '2020' }))
+        .toHaveAccessibleDescription('Choose a year');
       await expect
         .element(screen.getByRole('gridcell', { name: 'March 2020' }))
         .toBeInTheDocument();
@@ -290,7 +290,7 @@ describe('DatePicker', () => {
       );
 
       await screen.getByRole('button', { name: 'Ships in', exact: false }).click();
-      await screen.getByRole('button', { name: 'Choose a year' }).click();
+      await screen.getByRole('button', { name: '2026' }).click();
       await screen.getByRole('gridcell', { name: '2020' }).click();
 
       // A year is one half of the answer, so it hands back to the month grid.
@@ -586,8 +586,8 @@ describe('DatePicker', () => {
         .poll(() => document.activeElement?.getAttribute('aria-label'))
         .toBe('Thursday, August 6, 2026');
       await expect
-        .element(screen.getByRole('button', { name: 'Choose a month' }))
-        .toHaveTextContent('August');
+        .element(screen.getByRole('button', { name: 'August' }))
+        .toHaveAccessibleDescription('Choose a month');
     });
   });
 

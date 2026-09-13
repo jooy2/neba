@@ -246,6 +246,7 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
           shouldDisableDate={shouldDisableDate}
           showOutsideDays={showOutsideDays}
           renderDay={renderDay}
+          multiselectable={mode !== 'single'}
           labels={pickerLabels}
         />
       </div>

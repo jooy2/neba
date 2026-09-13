@@ -86,5 +86,6 @@ The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two
 ## Accessibility
 
 - The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
-- A held day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number.
+- A held day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number. In `multiple` and `range` mode the grid carries `aria-multiselectable`.
+- The grid is named by the month on screen, in a polite live region that says the new month again when a stepper or an arrow key changes it. The month and year buttons are named by the month and year they show and described by what pressing them does.
 - Anything `renderDay` draws is inside the cell's accessible name unless you mark it `aria-hidden`. A dot that repeats what a label already says should be hidden; a count that adds something should not.

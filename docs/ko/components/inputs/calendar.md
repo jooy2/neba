@@ -86,5 +86,6 @@ import { Calendar } from 'neba';
 ## 접근성
 
 - 그리드는 `role="grid"`, 각 칸은 `role="gridcell"` 버튼입니다. 칸의 이름은 숫자가 아니라 완전한 날짜입니다.
-- 담긴 날은 `aria-selected`, 오늘은 `aria-current="date"`와 숫자 아래의 점으로 표시됩니다.
+- 담긴 날은 `aria-selected`, 오늘은 `aria-current="date"`와 숫자 아래의 점으로 표시됩니다. `multiple`과 `range` 모드에서는 그리드에 `aria-multiselectable`이 붙습니다.
+- 그리드의 이름은 화면에 있는 달이며, 이 이름은 polite live region에 있어 stepper나 방향키로 달이 바뀌면 새 달을 다시 알립니다. 월·연도 버튼의 이름은 버튼에 보이는 달과 해이고, 누르면 무엇을 하는지는 설명으로 붙습니다.
 - `renderDay`가 그리는 것은 `aria-hidden`을 붙이지 않는 한 칸의 accessible name에 포함됩니다. 라벨이 이미 말한 것을 되풀이하는 점은 숨기고, 무언가를 더하는 개수는 숨기지 마세요.

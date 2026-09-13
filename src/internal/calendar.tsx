@@ -305,6 +305,8 @@ interface HeaderProps {
   labels: PickerLabels;
   showPreviousButton: boolean;
   showNextButton: boolean;
+  /** The id of the caption the grid below is named by. */
+  captionId: string;
   onStep: (direction: -1 | 1) => void;
   onViewChange: (view: CalendarView) => void;
 }
@@ -331,12 +333,15 @@ function Header({
   labels,
   showPreviousButton,
   showNextButton,
+  captionId,
   onStep,
   onViewChange
 }: HeaderProps) {
   const monthName = monthLabels(locale, 'long')[month.getMonth()];
   const yearName = String(month.getFullYear());
   const monthFirst = isMonthBeforeYear(locale);
+  const pageStart = yearPageStart(month.getFullYear());
+  const pageName = `${pageStart}–${pageStart + YEAR_PAGE_SIZE - 1}`;
 
   const stepLabels =
     view === 'day'
@@ -390,7 +395,9 @@ function Header({
       size={size}
       color={color}
       density="compact"
-      aria-label={labels.chooseMonth}
+      // Named by the month it shows, which is what a reader who can see it will
+      // call it, and described by what pressing it does.
+      aria-describedby={`${captionId}-month`}
       aria-expanded={view === 'month'}
       onClick={() => onViewChange(view === 'month' ? 'day' : 'month')}
       endIcon={disclosure(view === 'month')}
@@ -407,7 +414,7 @@ function Header({
       color={color}
       density="compact"
       className="tabular-nums"
-      aria-label={labels.chooseYear}
+      aria-describedby={`${captionId}-year`}
       aria-expanded={view === 'year'}
       onClick={() => onViewChange(view === 'year' ? 'day' : 'year')}
       endIcon={disclosure(view === 'year')}
@@ -416,10 +423,26 @@ function Header({
     </Button>
   );
 
-  const pageStart = yearPageStart(month.getFullYear());
-
   return (
     <div className="flex items-center justify-between gap-1">
+      {/* What the grid below is showing, said again whenever it changes: a
+          stepper press or an arrow key off the edge of the month moves every
+          cell at once, and the focused cell's own name does not say that the
+          month it is in has changed. It also names the grid. */}
+      <span id={captionId} className={srOnlyClasses} aria-live="polite">
+        {view === 'day'
+          ? dateFormatter(locale, { year: 'numeric', month: 'long' }).format(month)
+          : view === 'month'
+            ? yearName
+            : pageName}
+      </span>
+      <span id={`${captionId}-month`} hidden>
+        {labels.chooseMonth}
+      </span>
+      <span id={`${captionId}-year`} hidden>
+        {labels.chooseYear}
+      </span>
+
       {stepper(-1, showPreviousButton)}
 
       <div className={cx('flex min-w-0 flex-1 items-center justify-center', gapClasses[size])}>
@@ -433,7 +456,7 @@ function Header({
               controlTextClasses[size]
             )}
           >
-            {`${pageStart}–${pageStart + YEAR_PAGE_SIZE - 1}`}
+            {pageName}
           </span>
         ) : view === 'month' ? (
           yearButton
@@ -513,6 +536,11 @@ export interface CalendarProps {
   renderDay?: (date: Date) => React.ReactNode;
   /** Takes the focus on mount — the popup has just opened. */
   autoFocus?: boolean;
+  /**
+   * More than one cell can be selected at once — a `multiple` calendar or a
+   * range — which a screen reader is told on the grid a pick is made in.
+   */
+  multiselectable?: boolean;
   showPreviousButton?: boolean;
   showNextButton?: boolean;
   labels: PickerLabels;
@@ -559,11 +587,13 @@ export function Calendar({
   shouldDisableDate,
   showOutsideDays = true,
   autoFocus = false,
+  multiselectable = false,
   showPreviousButton = true,
   showNextButton = true,
   labels,
   className
 }: CalendarProps) {
+  const captionId = React.useId();
   const [requestedView, setView] = React.useState<CalendarView>(granularity);
   // Clamped rather than kept in step by an effect: a view finer than the
   // granularity is not a view this calendar has, so a `granularity` that
@@ -664,6 +694,7 @@ export function Calendar({
         labels={labels}
         showPreviousButton={showPreviousButton}
         showNextButton={showNextButton}
+        captionId={captionId}
         onStep={step}
         onViewChange={changeView}
       />
@@ -672,6 +703,8 @@ export function Calendar({
       <div className="h-[calc(var(--n-cell)*7)] w-[calc(var(--n-cell)*7)]">
         {view === 'day' ? (
           <DayGrid
+            labelledBy={captionId}
+            multiselectable={multiselectable && granularity === 'day'}
             size={size}
             locale={locale}
             weekStartsOn={weekStartsOn}
@@ -692,6 +725,8 @@ export function Calendar({
           />
         ) : view === 'month' ? (
           <MonthGrid
+            labelledBy={captionId}
+            multiselectable={multiselectable && granularity === 'month'}
             size={size}
             locale={locale}
             month={month}
@@ -719,6 +754,8 @@ export function Calendar({
           />
         ) : (
           <YearGrid
+            labelledBy={captionId}
+            multiselectable={multiselectable && granularity === 'year'}
             size={size}
             month={month}
             chosen={chosen}
@@ -756,6 +793,10 @@ function orderedRange(a: Date | null, b: Date | null): [Date, Date] | null {
 }
 
 interface DayGridProps {
+  /** The caption the header keeps up to date. */
+  labelledBy: string;
+  /** Set only on the grid a pick is made in. */
+  multiselectable: boolean;
   size: NebaSize;
   locale: string | undefined;
   weekStartsOn: NebaWeekday;
@@ -773,6 +814,8 @@ interface DayGridProps {
 }
 
 function DayGrid({
+  labelledBy,
+  multiselectable,
   size,
   locale,
   weekStartsOn,
@@ -818,7 +861,12 @@ function DayGrid({
   };
 
   return (
-    <div role="grid" className="flex h-full flex-col">
+    <div
+      role="grid"
+      aria-labelledby={labelledBy}
+      aria-multiselectable={multiselectable || undefined}
+      className="flex h-full flex-col"
+    >
       <div role="row" className="grid grid-cols-7">
         {short.map((label, index) => (
           <span
@@ -898,6 +946,10 @@ function DayGrid({
 }
 
 interface MonthGridProps {
+  /** The caption the header keeps up to date. */
+  labelledBy: string;
+  /** Set only on the grid a pick is made in. */
+  multiselectable: boolean;
   size: NebaSize;
   locale: string | undefined;
   month: Date;
@@ -922,6 +974,8 @@ interface MonthGridProps {
  * button follows, which is one fewer thing for the reader to keep track of.
  */
 function MonthGrid({
+  labelledBy,
+  multiselectable,
   size,
   locale,
   month,
@@ -933,7 +987,9 @@ function MonthGrid({
   onPick
 }: MonthGridProps) {
   const short = monthLabels(locale, 'short');
-  const long = monthLabels(locale, 'long');
+  // A month's name is written the way the locale writes a month of a year —
+  // `July 2026`, `2026년 7월` — and not a month name with the year stuck on.
+  const monthOfYear = dateFormatter(locale, { year: 'numeric', month: 'long' });
   const year = month.getFullYear();
   const now = new Date();
 
@@ -958,7 +1014,12 @@ function MonthGrid({
     // The rows are spread over the height the day view occupies rather than
     // stretched to fill it: the popup keeps its size across a view change, and a
     // month cell stays a cell rather than becoming a panel.
-    <div role="grid" className="flex h-full flex-col justify-evenly">
+    <div
+      role="grid"
+      aria-labelledby={labelledBy}
+      aria-multiselectable={multiselectable || undefined}
+      className="flex h-full flex-col justify-evenly"
+    >
       {[0, 1, 2, 3].map((row) => (
         <div role="row" key={row} className="grid grid-cols-3 gap-1">
           {[0, 1, 2].map((column) => {
@@ -971,7 +1032,7 @@ function MonthGrid({
               <Cell
                 key={index}
                 size={size}
-                label={`${long[index]} ${year}`}
+                label={monthOfYear.format(first)}
                 selected={chosen.some(
                   (entry) => entry.getFullYear() === year && entry.getMonth() === index
                 )}
@@ -996,6 +1057,10 @@ function MonthGrid({
 }
 
 interface YearGridProps {
+  /** The caption the header keeps up to date. */
+  labelledBy: string;
+  /** Set only on the grid a pick is made in. */
+  multiselectable: boolean;
   size: NebaSize;
   month: Date;
   chosen: Date[];
@@ -1009,6 +1074,8 @@ interface YearGridProps {
 
 /** Twelve years, four across, and the same trick with the cursor. */
 function YearGrid({
+  labelledBy,
+  multiselectable,
   size,
   month,
   chosen,
@@ -1039,7 +1106,12 @@ function YearGrid({
   };
 
   return (
-    <div role="grid" className="flex h-full flex-col justify-evenly">
+    <div
+      role="grid"
+      aria-labelledby={labelledBy}
+      aria-multiselectable={multiselectable || undefined}
+      className="flex h-full flex-col justify-evenly"
+    >
       {[0, 1, 2].map((row) => (
         <div role="row" key={row} className="grid grid-cols-4 gap-1">
           {[0, 1, 2, 3].map((column) => {

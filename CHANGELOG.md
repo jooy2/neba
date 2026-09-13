@@ -18,6 +18,8 @@
 
 - **A picker's trigger is named by its label and what it shows.** `DatePicker`, `DateRangePicker`, `TimePicker`, `DateTimePicker`, `TreeSelect` and `ColorPicker` named the trigger by `label` alone, which covered the date, the time or the choice written on it, so a screen reader said "Ships on, button" whatever had been picked. The name is now the label followed by the trigger's own text — "Ships on Jul 30, 2026". A test that finds the trigger by its exact label needs the value added, or `exact: false`.
 
+- **A calendar's month and year buttons are named by what they show.** They were named "Choose a month" and "Choose a year" over the words "July" and "2026", so a reader using voice control could not say what they saw to press them. They are named by their text now and described by what they do, which changes their accessible names: a test that found `name: 'Choose a month'` finds the month on screen. This covers `Calendar` and every date picker.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
@@ -177,6 +179,8 @@
 - **A `Popconfirm` bubble is named by its title and described by its description.** Both were plain paragraphs connected to nothing, so the focus moved into a bubble announced only as "dialog". They are the popover's own title and description now, drawn as the same paragraphs.
 
 - **A focus ring on the light sheet clears 3:1.** A ring is drawn 2px off its control, so it is read against the page, and on white 55% of a family's accent was 2.2:1 to 2.6:1 — under what a focus indicator needs, on a Button or a Chip's × where the ring is the only sign of focus. The light theme draws the ring at 80% now, 3.4:1 or better for every family; the dark theme keeps 55%, which already cleared 3.2:1. `--neba-ring-alpha` holds the number for each theme.
+
+- **A calendar says which month it moved to.** Stepping a month, or arrowing off the edge of one, changed every cell at once and a screen reader heard only the newly focused day. The grid is named by the month on screen, in a polite live region that says it again when it changes. A month cell is named the way the locale writes a month of a year ("2026년 11월", not "11월 2026"), and a `multiple` or `range` calendar marks its grid `aria-multiselectable`.
 
 ## 1.13.0 (2026-09-11)
 

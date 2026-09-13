@@ -270,6 +270,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       // Two cells with the same name in one popup is ambiguous to a pointer and
       // outright broken to a screen reader.
       showOutsideDays: false,
+      multiselectable: true,
       labels
     };
 
