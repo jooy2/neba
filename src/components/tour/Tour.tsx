@@ -307,16 +307,25 @@ export function Tour(rawProps: TourProps) {
     const read = () => {
       frame = 0;
       const rect = target.getBoundingClientRect();
+      const spot = {
+        top: rect.top - pad,
+        left: rect.left - pad,
+        width: rect.width + pad * 2,
+        height: rect.height + pad * 2
+      };
 
-      setMeasured({
-        selector,
-        spot: {
-          top: rect.top - pad,
-          left: rect.left - pad,
-          width: rect.width + pad * 2,
-          height: rect.height + pad * 2
-        }
-      });
+      // The scroll listener is on the whole page, so most frames it answers are
+      // a scroll somewhere that did not move the target. Handing React the same
+      // numbers in a new object would re-render the tour for each of them.
+      setMeasured((previous) =>
+        previous?.selector === selector &&
+        previous.spot.top === spot.top &&
+        previous.spot.left === spot.left &&
+        previous.spot.width === spot.width &&
+        previous.spot.height === spot.height
+          ? previous
+          : { selector, spot }
+      );
     };
 
     const schedule = () => {

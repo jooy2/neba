@@ -1,3 +1,4 @@
+import { Profiler } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Tour } from 'neba';
@@ -86,6 +87,33 @@ describe('Tour', () => {
       await screen.getByRole('button', { name: 'Next' }).click();
 
       await expect.poll(card).toBeGreaterThan(400);
+    });
+
+    it('does not re-render for a scroll that leaves its target where it was', async () => {
+      let commits = 0;
+      const screen = await render(
+        <div>
+          <div data-testid="pane" style={{ height: 60, overflow: 'auto' }}>
+            <div style={{ height: 600 }} />
+          </div>
+          <Profiler id="tour" onRender={() => (commits += 1)}>
+            <Page steps={STEPS} defaultOpen />
+          </Profiler>
+        </div>
+      );
+
+      await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const before = commits;
+      const pane = screen.getByTestId('pane').element();
+
+      for (let top = 10; top <= 50; top += 10) {
+        pane.scrollTop = top;
+        await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+      }
+
+      expect(commits).toBe(before);
     });
 
     it('offers no Previous on the first step', async () => {
