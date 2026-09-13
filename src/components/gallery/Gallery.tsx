@@ -534,7 +534,9 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
               className={cx(
                 'block w-full text-start [outline:none]',
                 preview ? 'cursor-zoom-in' : 'cursor-pointer',
-                'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:2px]',
+                // A fallback to the primary ring: the picture declares no colour family of
+                // its own, and a `var()` with nothing behind it drops the whole outline.
+                'focus-visible:[outline:2px_solid_var(--n-ring,var(--neba-primary-ring))] focus-visible:[outline-offset:2px]',
                 radius,
                 layout === 'justified' ? 'flex-1' : ''
               )}

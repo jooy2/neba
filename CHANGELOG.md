@@ -138,6 +138,8 @@
 
 - **`Panes`, `Sidebar` and a draggable `WindowPane` can be dragged with a finger.** Their handles and the window's title bar let the browser treat a moving finger as a scroll, so it cancelled the pointer a few pixels into every drag. They take `touch-action: none` now, as the window's resize handles already did.
 
+- **The preview button of an `Image` and the tiles of a `Gallery` draw a focus ring.** Both wrote their outline through a ring colour that nothing above them declares, and a custom property with no value drops the whole declaration, so a keyboard reader saw no focus at all. They fall back to the primary ring.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -479,6 +479,11 @@ describe('Image', () => {
     // Reachable by keyboard: a picture that only a pointer can enlarge is one
     // half the readers cannot enlarge.
     await expect.element(screen.getByRole('button', { name: 'A ridge' })).toBeInTheDocument();
+    // And visibly focused when it is reached. Nothing above an Image declares a
+    // ring colour, so the outline carries its own fallback or is dropped whole.
+    expect(screen.getByRole('button', { name: 'A ridge' }).element().className).toContain(
+      'var(--n-ring,var(--neba-primary-ring))'
+    );
   });
 
   it('opens the full picture when previewed', async () => {

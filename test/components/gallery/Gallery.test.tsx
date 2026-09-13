@@ -325,6 +325,10 @@ describe('Gallery', () => {
       await expect
         .element(screen.getByRole('button', { name: 'A cliff — Image 2 of 4' }))
         .toBeInTheDocument();
+      // A ring colour with a fallback, since nothing above a Gallery declares one.
+      expect(
+        screen.getByRole('button', { name: 'A cliff — Image 2 of 4' }).element().className
+      ).toContain('var(--n-ring,var(--neba-primary-ring))');
     });
 
     it('reports the item and its index', async () => {
