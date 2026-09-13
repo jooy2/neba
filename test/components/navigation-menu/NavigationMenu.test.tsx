@@ -54,6 +54,32 @@ describe('NavigationMenu', () => {
       ]);
     });
 
+    it('closes window.opener on a panel link that opens elsewhere', async () => {
+      const screen = await render(
+        <NavigationMenu>
+          <NavigationMenuItem label="Product" value="product">
+            <NavigationMenuLink
+              href="https://example.com"
+              title="Status"
+              target="_blank"
+              rel="nofollow"
+            />
+          </NavigationMenuItem>
+        </NavigationMenu>
+      );
+
+      await screen.getByRole('button', { name: /Product/ }).click();
+
+      const link = screen.getByRole('link', { name: /Status/ });
+
+      await expect.element(link).toBeInTheDocument();
+      expect(link.element().getAttribute('rel')?.split(' ').sort()).toEqual([
+        'nofollow',
+        'noopener',
+        'noreferrer'
+      ]);
+    });
+
     it('opens no panel until an item is asked', async () => {
       const screen = await render(<Nav />);
 

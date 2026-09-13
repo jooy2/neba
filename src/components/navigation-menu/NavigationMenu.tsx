@@ -169,7 +169,7 @@ const panelPaddingClasses: Record<NebaSize, string> = {
  */
 export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, NavigationMenuLinkProps>(
   function NavigationMenuLink(
-    { href, title, description, startIcon, className, children, ...props },
+    { href, title, description, startIcon, target, rel, className, children, ...props },
     ref
   ) {
     const { size, density } = React.useContext(NavigationMenuContext);
@@ -178,6 +178,8 @@ export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, Navigation
       <BaseUINavigationMenu.Link
         ref={ref}
         href={href}
+        target={target}
+        rel={safeRel(target, rel)}
         className={cx(
           linkClasses,
           radiusClasses[size],

@@ -74,6 +74,8 @@
 
 - **A `TextLink` given `target` directly gets the same `rel` protection as `newTab`.** Only the target `newTab` implies went through the merge, so `<TextLink target="_blank">` left out `noopener noreferrer` and the new page kept a `window.opener` and a `Referer` pointing back.
 
+- **A `NavigationMenuLink` that opens elsewhere carries `noopener noreferrer`.** A link inside a panel passed `target` straight through, unlike a `NavigationMenuItem` link beside it, so `target="_blank"` in a panel left the new page a `window.opener` and a `Referer`. A `rel` of the caller's own is kept and merged.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
