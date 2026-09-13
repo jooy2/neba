@@ -206,8 +206,10 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
      * NavigationMenu link let a caller choose where they open too, and the three
      * of them have to make the same promise.
      */
-    const target = newTab ? '_blank' : undefined;
-    const { rel: askedFor, ...rest } = props;
+    const { rel: askedFor, target: targetProp, ...rest } = props;
+    // A `target` written by hand opens somewhere else just as `newTab` does, so
+    // it goes through the same merge rather than around it.
+    const target = newTab ? '_blank' : targetProp;
     const rel = safeRel(target, askedFor);
 
     return useRender({

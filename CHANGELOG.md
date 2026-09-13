@@ -72,6 +72,8 @@
 
 - **`registerMessages` cannot be used to write onto `Object.prototype`.** A locale parsed from JSON can carry an own `__proto__` key, and registering one put the tag on every object in the page. Namespaces are now matched only against the ones the library has, and a tag of `__proto__` is ignored.
 
+- **A `TextLink` given `target` directly gets the same `rel` protection as `newTab`.** Only the target `newTab` implies went through the merge, so `<TextLink target="_blank">` left out `noopener noreferrer` and the new page kept a `window.opener` and a `Referer` pointing back.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -98,6 +98,19 @@ describe('TextLink', () => {
       expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer', 'sponsored']);
     });
 
+    it('protects a target written by hand as it does newTab', async () => {
+      const screen = await render(
+        <TextLink href="https://example.com" target="_blank" rel="nofollow">
+          Example
+        </TextLink>
+      );
+      const element = screen.getByRole('link').element();
+      const rel = element.getAttribute('rel') ?? '';
+
+      expect(element).toHaveAttribute('target', '_blank');
+      expect(rel.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
+    });
+
     it('leaves a rel alone on a link that stays in the tab', async () => {
       const screen = await render(
         <TextLink href="/docs" rel="nofollow">
