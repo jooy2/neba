@@ -296,6 +296,8 @@
 
 - **An `Animate*` with `trigger="hover"` runs the caller's `onPointerEnter`, `onPointerLeave`, `onFocus` and `onBlur` beside its own.** Fourteen of them spread the trigger's handlers over the caller's and threw those away, and `AnimateTyping`, `AnimateMarquee` and `AnimateHeadline` spread them the other way round, so a caller's handler took the trigger off and the effect never started.
 
+- **A `Tooltip` given an `id` still describes its trigger.** The `id` replaced the generated one on the popup while the trigger's `aria-describedby` kept the generated one, so a screen reader was pointed at an element that did not exist and read nothing. The popup takes the caller's `id` and the trigger points at it.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

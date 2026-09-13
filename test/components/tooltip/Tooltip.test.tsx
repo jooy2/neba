@@ -181,6 +181,19 @@ describe('Tooltip', () => {
   });
 
   describe('forwarded props', () => {
+    it('describes the trigger by a popup given an id of its own', async () => {
+      const screen = await render(
+        <Tooltip defaultOpen id="copy-tip" content="Copy to clipboard">
+          <Button>Copy</Button>
+        </Tooltip>
+      );
+
+      await expect.element(screen.getByRole('tooltip')).toHaveAttribute('id', 'copy-tip');
+      await expect
+        .element(screen.getByRole('button', { name: 'Copy' }))
+        .toHaveAccessibleDescription('Copy to clipboard');
+    });
+
     it('passes an unknown prop to the popup', async () => {
       const screen = await render(
         <Tooltip content="Copied" defaultOpen data-analytics="copy-hint">

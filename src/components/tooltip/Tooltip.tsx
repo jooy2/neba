@@ -158,11 +158,16 @@ export function Tooltip(rawProps: TooltipProps) {
     disabled = false,
     className,
     style,
+    id,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density']);
 
   const arrowSize = arrowSizes[size];
-  const popupId = React.useId();
+  // The caller's own `id` when there is one. Left in the spread, it replaced
+  // this one on the popup and left the trigger described by an element that
+  // did not exist.
+  const generatedId = React.useId();
+  const popupId = id ?? generatedId;
 
   // Mirrored rather than owned: `open` still drives a controlled tooltip and
   // Base UI still drives an uncontrolled one. This copy exists only so the
