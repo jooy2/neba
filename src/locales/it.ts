@@ -190,5 +190,9 @@ export const it: NebaLocale = {
   file: {
     title: 'Trascina qui i file o fai clic per sfogliare',
     remove: 'Rimuovi {name}'
+  },
+  timeline: {
+    complete: 'Completato',
+    upcoming: 'In arrivo'
   }
 };

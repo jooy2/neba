@@ -244,6 +244,8 @@
 
 - **`OtpField` names each slot by its place, and takes `locale` and `slotLabel`.** Every slot was named by the field's label, so a six-digit code was "Verification code" six times with no word about which box held the caret. The first slot keeps the label and every other is "Character 2 of 6", in the `locale`'s words or through `slotLabel`. Every registered language has the new `otp` namespace.
 
+- **A `Timeline` step says in words whether it is done.** Only the current step was read, through `aria-current`; a finished and a waiting step differed only in the shape of their bullets. Each now carries visually hidden text, "Completed" or "Upcoming", in the words of the new `locale` prop or of `labels`, and every registered language has the new `timeline` namespace.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

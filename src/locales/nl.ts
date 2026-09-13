@@ -190,5 +190,9 @@ export const nl: NebaLocale = {
   file: {
     title: 'Sleep bestanden hierheen of klik om te bladeren',
     remove: '{name} verwijderen'
+  },
+  timeline: {
+    complete: 'Voltooid',
+    upcoming: 'Gepland'
   }
 };

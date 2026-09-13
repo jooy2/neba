@@ -194,5 +194,9 @@ export const hi: NebaLocale = {
   file: {
     title: 'फ़ाइलें यहाँ छोड़ें, या ब्राउज़ करने के लिए क्लिक करें',
     remove: '{name} हटाएँ'
+  },
+  timeline: {
+    complete: 'पूरा हुआ',
+    upcoming: 'आगामी'
   }
 };

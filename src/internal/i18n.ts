@@ -707,6 +707,24 @@ export const toastMessages: MessageTable<ToastMessages> = {
   '': { label: 'Notifications' }
 };
 
+/** Timeline. */
+export interface TimelineMessages {
+  /**
+   * What a step's bullet says by its shape alone, said in words to a reader who
+   * cannot see it. The current step needs none: `aria-current` says it.
+   */
+  complete: string;
+  upcoming: string;
+}
+
+/** The `timeline` namespace, as Timeline reads it. */
+export const timelineMessages: MessageTable<TimelineMessages> = {
+  '': {
+    complete: 'Completed',
+    upcoming: 'Upcoming'
+  }
+};
+
 /** FilePicker. */
 export interface FileMessages {
   /** The line inside the box, when the caller wrote none. */
@@ -1097,6 +1115,8 @@ export interface NebaLocale {
   otp?: Partial<OtpMessages>;
   /** FilePicker. */
   file?: Partial<FileMessages>;
+  /** Timeline. */
+  timeline?: Partial<TimelineMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1130,7 +1150,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   code: codeMessages as MessageTable<never>,
   steps: stepsMessages as MessageTable<never>,
   otp: otpMessages as MessageTable<never>,
-  file: fileMessages as MessageTable<never>
+  file: fileMessages as MessageTable<never>,
+  timeline: timelineMessages as MessageTable<never>
 };
 
 /**

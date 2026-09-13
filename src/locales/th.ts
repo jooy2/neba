@@ -190,5 +190,9 @@ export const th: NebaLocale = {
   file: {
     title: 'วางไฟล์ที่นี่ หรือคลิกเพื่อเลือกไฟล์',
     remove: 'นำ {name} ออก'
+  },
+  timeline: {
+    complete: 'เสร็จแล้ว',
+    upcoming: 'ยังไม่ถึง'
   }
 };

@@ -190,5 +190,9 @@ export const ko: NebaLocale = {
   file: {
     title: '파일을 여기에 놓거나 클릭해 찾아보세요',
     remove: '{name} 삭제'
+  },
+  timeline: {
+    complete: '완료',
+    upcoming: '예정'
   }
 };

@@ -75,6 +75,7 @@ The three states each use a different shape (a filled disc (`complete`), a fille
 
 - Renders an `<ol>`, so it is announced as an ordered list.
 - The `current` item carries `aria-current="step"`.
+- A `complete` or `upcoming` item says so in visually hidden text, since its bullet says it only by shape. The words come from `locale`, or from `labels`.
 
 ## When to use something else
 

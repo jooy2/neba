@@ -194,5 +194,9 @@ export const ru: NebaLocale = {
   file: {
     title: 'Перетащите файлы сюда или нажмите, чтобы выбрать',
     remove: 'Удалить {name}'
+  },
+  timeline: {
+    complete: 'Завершено',
+    upcoming: 'Предстоит'
   }
 };

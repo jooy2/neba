@@ -190,5 +190,9 @@ export const ja: NebaLocale = {
   file: {
     title: 'ここにファイルをドロップするか、クリックして選択',
     remove: '{name} を削除'
+  },
+  timeline: {
+    complete: '完了',
+    upcoming: '未着手'
   }
 };

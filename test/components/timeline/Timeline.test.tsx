@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Timeline, TimelineItem } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 function Basic(props: React.ComponentProps<typeof Timeline>) {
   return (
@@ -110,6 +113,29 @@ describe('Timeline', () => {
       const screen = await render(<Basic active={3} />);
 
       expect(statuses(screen.container)).toEqual(['complete', 'complete', 'complete']);
+    });
+
+    // The bullet's shape is the only other place a step says it is done, and a
+    // shape is not read aloud.
+    it('says a finished and a waiting step in words, and leaves the current one to aria-current', async () => {
+      const screen = await render(<Basic active={1} />);
+      const [ordered, packed, delivered] = Array.from(screen.container.querySelectorAll('li'));
+
+      expect(ordered.textContent).toContain('Completed');
+      expect(packed.textContent).not.toContain('Completed');
+      expect(packed.textContent).not.toContain('Upcoming');
+      expect(delivered.textContent).toContain('Upcoming');
+    });
+
+    it('says the status in the language it was given, or in words of its own', async () => {
+      const screen = await render(<Basic active={1} locale="ko" />);
+      const first = () => screen.container.querySelector('li') as HTMLElement;
+
+      expect(first().textContent).toContain('완료');
+
+      await screen.rerender(<Basic active={1} locale="ko" labels={{ complete: 'Done' }} />);
+
+      expect(first().textContent).toContain('Done');
     });
 
     it('moves the current step when active changes', async () => {

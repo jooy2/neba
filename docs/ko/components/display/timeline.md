@@ -75,6 +75,7 @@ import { Timeline, TimelineItem } from 'neba';
 
 - `<ol>`로 렌더링되므로 순서가 있는 목록으로 읽힙니다.
 - `current` 상태의 항목에는 `aria-current="step"`이 붙습니다.
+- `complete`와 `upcoming` 항목은 화면에 보이지 않는 글로 상태를 말합니다. 불릿은 모양으로만 말하기 때문입니다. 낱말은 `locale`이나 `labels`에서 옵니다.
 
 ## 이럴 때는 다른 컴포넌트를
 

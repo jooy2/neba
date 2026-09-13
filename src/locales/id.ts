@@ -194,5 +194,9 @@ export const id: NebaLocale = {
   file: {
     title: 'Letakkan file di sini, atau klik untuk menelusuri',
     remove: 'Hapus {name}'
+  },
+  timeline: {
+    complete: 'Selesai',
+    upcoming: 'Mendatang'
   }
 };

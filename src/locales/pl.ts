@@ -190,5 +190,9 @@ export const pl: NebaLocale = {
   file: {
     title: 'Upuść pliki tutaj lub kliknij, aby je wybrać',
     remove: 'Usuń {name}'
+  },
+  timeline: {
+    complete: 'Ukończono',
+    upcoming: 'Zaplanowano'
   }
 };

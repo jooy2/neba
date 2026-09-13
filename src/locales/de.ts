@@ -190,5 +190,9 @@ export const de: NebaLocale = {
   file: {
     title: 'Dateien hier ablegen oder zum Durchsuchen klicken',
     remove: '{name} entfernen'
+  },
+  timeline: {
+    complete: 'Abgeschlossen',
+    upcoming: 'Ausstehend'
   }
 };

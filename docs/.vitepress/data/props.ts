@@ -9626,6 +9626,23 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Which way the sequence runs. `vertical` is the default and takes any number of steps with anything to say about each; `horizontal` is the stepper across the top of a checkout, and is only honest while every label is short'
       }
     },
+    {
+      name: 'locale',
+      type: 'string',
+      shared: true,
+      description: {
+        ko: '완료·예정 상태를 스크린 리더에 말하는 언어',
+        en: 'Which language a step status is said in to a screen reader'
+      }
+    },
+    {
+      name: 'labels',
+      type: '{ complete?: string; upcoming?: string }',
+      description: {
+        ko: '완료·예정 상태를 말하는 두 낱말. locale의 문구보다 우선합니다',
+        en: 'The two words for a finished and a waiting step. Override the locale words'
+      }
+    },
     renderProp('render={<ul />}'),
     {
       name: 'children',

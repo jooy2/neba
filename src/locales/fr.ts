@@ -194,5 +194,9 @@ export const fr: NebaLocale = {
   file: {
     title: 'Déposez des fichiers ici ou cliquez pour parcourir',
     remove: 'Supprimer {name}'
+  },
+  timeline: {
+    complete: 'Terminé',
+    upcoming: 'À venir'
   }
 };

@@ -190,5 +190,9 @@ export const ar: NebaLocale = {
   file: {
     title: 'أفلت الملفات هنا أو انقر للاستعراض',
     remove: 'إزالة {name}'
+  },
+  timeline: {
+    complete: 'مكتمل',
+    upcoming: 'قادم'
   }
 };

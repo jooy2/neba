@@ -193,5 +193,9 @@ export const zhHant: NebaLocale = {
   file: {
     title: '將檔案拖放到這裡，或點擊瀏覽',
     remove: '移除 {name}'
+  },
+  timeline: {
+    complete: '已完成',
+    upcoming: '未開始'
   }
 };

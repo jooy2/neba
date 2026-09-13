@@ -190,5 +190,9 @@ export const tr: NebaLocale = {
   file: {
     title: 'Dosyaları buraya bırakın veya göz atmak için tıklayın',
     remove: '{name} kaldır'
+  },
+  timeline: {
+    complete: 'Tamamlandı',
+    upcoming: 'Sırada'
   }
 };

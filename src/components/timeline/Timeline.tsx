@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { timelineMessages, useMessages, type TimelineMessages } from '../../internal/i18n.js';
 import {
   cx,
   hasContent,
@@ -9,11 +10,13 @@ import {
   metaTextClasses,
   sheetBodyClasses,
   sheetTitleClasses,
+  srOnlyClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaOrientation, NebaSize } from '../../types.js';
+import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
  * How far along one item is.
@@ -34,6 +37,7 @@ interface TimelineContextValue {
   orientation: NebaOrientation;
   color: NebaColor;
   active: number | null;
+  labels: TimelineMessages;
 }
 
 interface TimelineItemContextValue {
@@ -72,6 +76,13 @@ export interface TimelineProps extends Omit<React.ComponentPropsWithoutRef<'ol'>
    * @default 'vertical'
    */
   orientation?: NebaOrientation;
+  /**
+   * Which language a step's status is said in to a screen reader — "Completed"
+   * or "Upcoming", which the bullet otherwise says only by its shape.
+   */
+  locale?: string;
+  /** Those two words, written out. Overrides the `locale`'s. */
+  labels?: Partial<TimelineMessages>;
   /** Renders something other than an `<ol>` — Base UI's own escape hatch. */
   render?: useRender.RenderProp;
   children?: React.ReactNode;
@@ -227,6 +238,8 @@ export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
     const orientation = timeline?.orientation ?? 'vertical';
     const family = color ?? timeline?.color ?? 'primary';
     const active = timeline?.active ?? null;
+    const fallbackLabels = useMessages(timelineMessages);
+    const labels = timeline?.labels ?? fallbackLabels;
 
     const resolved: TimelineStatus =
       status ??
@@ -289,6 +302,9 @@ export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 
     const body = (
       <div className={cx('flex min-w-0 flex-col gap-0.5', horizontal ? 'mt-2' : '')}>
+        {/* The bullet's shape is the only other place this is said, and a
+            shape is not read. The current step is `aria-current` instead. */}
+        {resolved === 'current' ? null : <span className={srOnlyClasses}>{labels[resolved]}</span>}
         {hasContent(title) || hasContent(meta) ? (
           <div className="flex flex-wrap items-baseline gap-x-2">
             {hasContent(title) ? (
@@ -364,55 +380,65 @@ export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
  * has something to count against and inserting a step in the middle does not
  * mean renumbering the ones after it.
  */
-export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(function Timeline(
-  {
-    active,
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    orientation = 'vertical',
-    render,
-    className,
-    style,
-    children,
-    ...props
-  },
-  ref
-) {
-  // `toArray` is what drops the `null`s and `false`s a conditional step leaves
-  // behind, so `active={2}` counts the steps that are actually on the page.
-  const items = React.Children.toArray(children);
-  const count = items.length;
-
-  const context = React.useMemo<TimelineContextValue>(
-    () => ({
-      size,
-      density,
-      orientation,
-      color,
-      active: active ?? null
-    }),
-    [size, density, orientation, color, active]
-  );
-
-  const element = useRender({
-    render: render ?? <ol />,
-    ref,
-    props: {
-      // Tailwind's reset takes the markers off every `<ol>`, and Safari takes the
-      // list semantics off with them. Saying `role="list"` out loud is the
-      // one-line fix, and it costs nothing when the reset is not there.
-      role: 'list',
-      className: cx('flex', orientation === 'horizontal' ? 'flex-row' : 'flex-col', className),
-      style: { ...surfaceSlots(color, 0), ...style },
-      children: items.map((item, index) => (
-        <TimelineItemContext.Provider key={index} value={{ index, last: index === count - 1 }}>
-          {item}
-        </TimelineItemContext.Provider>
-      )),
+export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(
+  function Timeline(rawProps, ref) {
+    const {
+      active,
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      orientation = 'vertical',
+      locale,
+      labels: labelOverrides,
+      render,
+      className,
+      style,
+      children,
       ...props
-    }
-  });
+    } = useStyleDefaults(rawProps, ['locale']);
+    const messages = useMessages(timelineMessages, locale);
+    const labels = React.useMemo(
+      () => ({ ...messages, ...labelOverrides }),
+      // The two words, rather than the object a caller wrote inline.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [messages, labelOverrides?.complete, labelOverrides?.upcoming]
+    );
+    // `toArray` is what drops the `null`s and `false`s a conditional step leaves
+    // behind, so `active={2}` counts the steps that are actually on the page.
+    const items = React.Children.toArray(children);
+    const count = items.length;
 
-  return <TimelineContext.Provider value={context}>{element}</TimelineContext.Provider>;
-});
+    const context = React.useMemo<TimelineContextValue>(
+      () => ({
+        size,
+        density,
+        orientation,
+        color,
+        active: active ?? null,
+        labels
+      }),
+      [size, density, orientation, color, active, labels]
+    );
+
+    const element = useRender({
+      render: render ?? <ol />,
+      ref,
+      props: {
+        // Tailwind's reset takes the markers off every `<ol>`, and Safari takes the
+        // list semantics off with them. Saying `role="list"` out loud is the
+        // one-line fix, and it costs nothing when the reset is not there.
+        role: 'list',
+        className: cx('flex', orientation === 'horizontal' ? 'flex-row' : 'flex-col', className),
+        style: { ...surfaceSlots(color, 0), ...style },
+        children: items.map((item, index) => (
+          <TimelineItemContext.Provider key={index} value={{ index, last: index === count - 1 }}>
+            {item}
+          </TimelineItemContext.Provider>
+        )),
+        ...props
+      }
+    });
+
+    return <TimelineContext.Provider value={context}>{element}</TimelineContext.Provider>;
+  }
+);

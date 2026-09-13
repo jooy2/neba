@@ -190,5 +190,9 @@ export const vi: NebaLocale = {
   file: {
     title: 'Thả tệp vào đây hoặc nhấp để chọn tệp',
     remove: 'Gỡ bỏ {name}'
+  },
+  timeline: {
+    complete: 'Đã hoàn thành',
+    upcoming: 'Sắp tới'
   }
 };
