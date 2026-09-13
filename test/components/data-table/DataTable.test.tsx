@@ -1197,6 +1197,51 @@ describe('pinned columns', () => {
     expect(head.style.insetInlineStart).toBe('0px');
   });
 
+  // The pinned columns were offset by the tick column's width while the tick
+  // column itself scrolled away, which left a gap of that width in front of them.
+  it('freezes the tick column with the columns pinned to the start', async () => {
+    const screen = await render(
+      <DataTable
+        headers={pinned}
+        items={ITEMS}
+        getRowKey={key}
+        selectionMode="multiple"
+        checkboxes
+      />
+    );
+    const ticks = [...screen.container.querySelectorAll<HTMLElement>('tr > :first-child')];
+
+    expect(ticks.length).toBe(4);
+
+    for (const cell of ticks) {
+      expect(cell.style.position).toBe('sticky');
+      expect(cell.style.insetInlineStart).toBe('0px');
+    }
+
+    await screen.rerender(
+      <DataTable
+        headers={HEADERS}
+        items={ITEMS}
+        getRowKey={key}
+        selectionMode="multiple"
+        checkboxes
+      />
+    );
+
+    expect(screen.container.querySelector<HTMLElement>('tbody td')!.style.position).toBe('');
+  });
+
+  // A sticky header's cells are `z-20`, and a frozen header under that number
+  // had the headings scrolling past painted over it.
+  it('stacks a pinned header above the sticky headings that scroll past it', async () => {
+    const screen = await render(<DataTable headers={pinned} items={ITEMS} getRowKey={key} />);
+    const head = screen.getByRole('columnheader', { name: 'Name' }).element() as HTMLElement;
+    const other = screen.getByRole('columnheader', { name: 'City' }).element() as HTMLElement;
+
+    expect(other).toHaveClass('z-20');
+    expect(Number(head.style.zIndex)).toBeGreaterThan(20);
+  });
+
   it('offsets each pinned column by the widths before it', async () => {
     const two: DataTableColumn<Person>[] = [
       { key: 'name', label: 'Name', width: 160, pinned: 'start' },

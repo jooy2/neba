@@ -320,7 +320,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (confirmed with a real mouse in Chromium, Firefox and WebKit). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
 - [ ] **168** **DataTable**, small defects:
   - [x] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
-  - [ ] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`).
+  - [x] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`). A pinned heading was also stacked under the sticky headings beside it, found while checking this with the stylesheet loaded, and was fixed with it.
   - [ ] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
   - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).
   - [ ] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).

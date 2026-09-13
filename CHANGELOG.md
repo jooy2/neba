@@ -332,6 +332,8 @@
 
 - **An emptied number cell in a `DataTable` writes no zero.** `Number('')` is `0`, so clearing a cell with `editType: 'number'` called `onCellEdit` with `0`, and so did opening an empty number cell and leaving it. An empty number field is treated like one holding no number, and the edit is dropped.
 
+- **A `DataTable` with ticks and a column pinned to the start keeps both in place as it scrolls sideways.** The pinned columns were offset by the width of the tick column, but the tick column itself scrolled away, which left a gap that width in front of them with the scrolling cells showing through. The tick column is frozen with them now. A pinned heading was also stacked under the sticky headings beside it, so under `stickyHeader` the headings scrolling past were drawn over the frozen one; it is stacked above them.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

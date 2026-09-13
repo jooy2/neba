@@ -1900,6 +1900,22 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * is the one form that keeps stripes, hover and selection while staying
    * opaque.
    */
+  const pinnedStyle = (
+    edge: 'start' | 'end',
+    offset: number,
+    header: boolean
+  ): React.CSSProperties => ({
+    position: 'sticky',
+    insetInlineStart: edge === 'start' ? `${offset}px` : undefined,
+    insetInlineEnd: edge === 'end' ? `${offset}px` : undefined,
+    // A body cell above the scrolling cells and under a sticky header. A header
+    // cell above the sticky headings beside it too, which are `z-20`: at a lower
+    // number the headings scrolling past slid over the frozen one.
+    zIndex: header ? 21 : 1,
+    backgroundColor: 'var(--n-panel-press)',
+    backgroundImage: header ? undefined : 'linear-gradient(var(--n-row), var(--n-row))'
+  });
+
   const pinStyle = (column: DataTableColumn<Row>, header: boolean): React.CSSProperties => {
     if (!column.pinned) {
       return {};
@@ -1908,17 +1924,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const offset =
       column.pinned === 'start' ? pinOffsets.start.get(column.key) : pinOffsets.end.get(column.key);
 
-    return {
-      position: 'sticky',
-      insetInlineStart: column.pinned === 'start' ? `${offset ?? 0}px` : undefined,
-      insetInlineEnd: column.pinned === 'end' ? `${offset ?? 0}px` : undefined,
-      // Above the scrolling cells, and under a sticky header, which carries its
-      // own higher one.
-      zIndex: header ? 3 : 1,
-      backgroundColor: header ? 'var(--n-panel-press)' : 'var(--n-panel-press)',
-      backgroundImage: header ? undefined : 'linear-gradient(var(--n-row), var(--n-row))'
-    };
+    return pinnedStyle(column.pinned, offset ?? 0, header);
   };
+
+  /**
+   * The tick column is frozen with the columns pinned to the start. They are
+   * offset by its width already, so a tick column left to scroll away opened a
+   * gap of that width in front of them for the content to show through.
+   */
+  const pinsStart = columns.some((column) => column.pinned === 'start');
+  const tickPinStyle = (header: boolean): React.CSSProperties =>
+    pinsStart ? pinnedStyle('start', 0, header) : {};
 
   /* -- Styles -------------------------------------------------------------- */
 
@@ -2227,7 +2243,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         data-neba-group={label}
         style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-soft)' }}
       >
-        {showTicks ? <td style={{ ...cellStyle, padding: 0 }} /> : null}
+        {showTicks ? <td style={{ ...cellStyle, padding: 0, ...tickPinStyle(false) }} /> : null}
 
         {columns.map((column, index) => (
           <td
@@ -2364,7 +2380,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const tickCell = (entry: RowEntry<Row>) => (
     <td
       role={selects ? 'gridcell' : undefined}
-      style={{ ...cellStyle, padding: 0, overflow: 'visible' }}
+      style={{ ...cellStyle, padding: 0, overflow: 'visible', ...tickPinStyle(false) }}
     >
       {tickBox(
         <Checkbox
@@ -2559,7 +2575,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                     className={cx(
                       stickyHeader ? 'sticky top-0 z-20 [backdrop-filter:var(--neba-blur)]' : ''
                     )}
-                    style={{ ...headCellStyle, padding: 0, overflow: 'visible' }}
+                    style={{
+                      ...headCellStyle,
+                      padding: 0,
+                      overflow: 'visible',
+                      ...tickPinStyle(true)
+                    }}
                   >
                     {selectAllTick}
                   </th>
@@ -2601,7 +2622,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                   className={cx(
                     stickyHeader ? 'sticky top-0 z-20 [backdrop-filter:var(--neba-blur)]' : ''
                   )}
-                  style={{ ...headCellStyle, padding: 0, overflow: 'visible' }}
+                  style={{
+                    ...headCellStyle,
+                    padding: 0,
+                    overflow: 'visible',
+                    ...tickPinStyle(true)
+                  }}
                 >
                   {selectAllTick}
                 </th>
