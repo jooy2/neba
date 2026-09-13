@@ -411,6 +411,12 @@ export interface AnimationRun {
   started: boolean;
   /** Spread onto the element when `trigger` is `hover`; empty otherwise. */
   handlers: React.HTMLAttributes<HTMLElement>;
+  /**
+   * An endless effect that is off the screen, and held where it is until it
+   * comes back. Already folded into `state`; a loop written in JavaScript reads
+   * it beside `paused`.
+   */
+  offscreen: boolean;
 }
 
 /**
@@ -443,6 +449,15 @@ export function useAnimationRun({
   const node = React.useRef<HTMLElement | null>(null);
   const [started, setStarted] = React.useState(trigger === 'mount');
   const [run, setRun] = React.useState(0);
+  /*
+   * Only for an effect with no end. A finite one finishes on its own, and one
+   * held while it was scrolled past would still be running when the reader came
+   * back to what should long since have been done. An endless one has no such
+   * moment to protect, and left running it keeps a timer or a paint going for a
+   * page nobody is looking at — a pricing grid of lit cards, a marquee far below
+   * the fold.
+   */
+  const [offscreen, setOffscreen] = React.useState(false);
 
   const start = React.useCallback(() => {
     setStarted(true);
@@ -515,6 +530,17 @@ export function useAnimationRun({
   }, [trigger, once, threshold, start]);
 
   React.useEffect(() => {
+    const element = node.current;
+
+    if (!infinite || !element) {
+      return;
+    }
+
+    // `null` when there is no observer to ask, which leaves it running.
+    return observeVisibility(element, 0, (visible) => setOffscreen(!visible)) ?? undefined;
+  }, [infinite]);
+
+  React.useEffect(() => {
     if (trigger !== 'manual') {
       return;
     }
@@ -553,9 +579,10 @@ export function useAnimationRun({
     ref: React.useCallback((element: HTMLElement | null) => {
       node.current = element;
     }, []),
-    state: started && !paused ? 'running' : 'paused',
+    state: started && !paused && !(infinite && offscreen) ? 'running' : 'paused',
     started,
-    handlers
+    handlers,
+    offscreen: infinite && offscreen
   };
 }
 

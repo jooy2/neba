@@ -150,7 +150,7 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
         return;
       }
 
-      if (paused) {
+      if (paused || run.offscreen) {
         return;
       }
 
@@ -228,7 +228,19 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
         cancelled = true;
         clearTimeout(timer);
       };
-    }, [run.started, paused, reduced, total, typeDelay, deleteDelay, delay, hold, erase, repeat]);
+    }, [
+      run.started,
+      run.offscreen,
+      paused,
+      reduced,
+      total,
+      typeDelay,
+      deleteDelay,
+      delay,
+      hold,
+      erase,
+      repeat
+    ]);
 
     // Held rather than written inline: an inline callback is a new function on
     // every render, which React answers by calling the old one with `null` and

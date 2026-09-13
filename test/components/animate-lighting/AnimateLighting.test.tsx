@@ -96,4 +96,23 @@ describe('AnimateLighting', () => {
       expect(element.style.getPropertyValue('--n-anim-direction')).toBe('reverse');
     });
   });
+
+  describe('off the screen', () => {
+    it('holds the light while it is scrolled out of view and runs it again once back', async () => {
+      const screen = await render(
+        <div>
+          <div style={{ height: 4000 }} />
+          <AnimateLighting data-testid="lighting">Processing</AnimateLighting>
+        </div>
+      );
+      const lighting = screen.getByTestId('lighting');
+
+      await expect.element(lighting).toHaveAttribute('data-state', 'paused');
+
+      lighting.element().scrollIntoView();
+
+      await expect.element(lighting).toHaveAttribute('data-state', 'running');
+      window.scrollTo(0, 0);
+    });
+  });
 });

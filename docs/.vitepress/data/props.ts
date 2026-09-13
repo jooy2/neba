@@ -642,7 +642,10 @@ function animateProps(options: AnimateOptions): PropRow[] {
       type: ANIMATE_REPEAT,
       default: options.repeat ?? '1',
       shared: true,
-      description: { ko: '반복 횟수', en: 'How many times it runs' }
+      description: {
+        ko: "반복 횟수. 'infinite'이면 화면 밖에 있는 동안 멈췄다가 돌아오면 이어서 재생합니다",
+        en: "How many times it runs. An 'infinite' one holds while it is off the screen and carries on when it is back"
+      }
     },
     {
       name: 'alternate',

@@ -58,6 +58,8 @@
 
 - **`AnimateTyping` and `AnimateHeadline` attach a callback `ref` once.** Both wrote their ref inline, so a caller's callback ref was called with `null` and then with the node again on every render — once per character typed, and once per line turned. `AnimateMarquee` already held its ref, and the other two do the same now.
 
+- **An endless animation holds while it is off the screen.** An `Animate*` component with `repeat="infinite"` — `AnimateLighting`, `AnimateMarquee`, `AnimateFloat`, `AnimateBlink` and the rest, and a `transition="blink"` — kept its animation, timer or paint running for as long as it was mounted, however far below the fold it sat. It now pauses when it leaves the viewport and carries on from where it was when it comes back, through one shared observer. A finite animation is untouched and still finishes on schedule.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
