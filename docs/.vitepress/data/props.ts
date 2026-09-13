@@ -11214,8 +11214,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '스크린 리더가 읽는 문장. 비워 두면 aria-hidden입니다. 한 영역을 대표하는 하나에만 붙이면 그것이 status가 됩니다',
-        en: 'What a screen reader is told. Unset it is aria-hidden, because a dozen boxes each announcing themselves is worse than silence. Give it to the one that stands for a whole region and it becomes a status'
+        ko: '스크린 리더가 읽는 문장. 비워 두면 aria-hidden입니다. 한 영역을 대표하는 하나에만 붙이면 이 문장을 보이지 않는 글자로 담은 status가 됩니다',
+        en: 'What a screen reader is told. Unset it is aria-hidden, because a dozen boxes each announcing themselves is worse than silence. Give it to the one that stands for a whole region and it becomes a status holding the sentence as visually hidden text'
       }
     },
     renderProp('render={<span />}')

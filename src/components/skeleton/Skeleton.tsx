@@ -6,6 +6,7 @@ import {
   controlHeightClasses,
   controlSquareClasses,
   cx,
+  srOnlyClasses,
   surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
@@ -63,7 +64,7 @@ export interface SkeletonProps extends Omit<React.ComponentPropsWithoutRef<'div'
    * Unset — the default — the placeholder is `aria-hidden`, because a dozen
    * boxes each announcing themselves is worse than silence. Give the *one*
    * skeleton that stands for the whole region a label and it becomes a live
-   * `status` instead.
+   * `status` holding the label as visually hidden text.
    */
   label?: string;
   /**
@@ -195,10 +196,13 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
           : `w-full ${barRadiusClasses[size]} ${lineHeightClasses[size]}`;
 
     // Unlabelled it is scenery and says nothing; labelled it is the one element
-    // that reports the wait for the region around it.
-    const announce = label
-      ? ({ role: 'status', 'aria-busy': true, 'aria-label': label } as const)
-      : ({ 'aria-hidden': true } as const);
+    // that reports the wait for the region around it. The label is text inside
+    // the region rather than an `aria-label` on it, because a live region is
+    // announced by what it holds and a name on it is not read out. And no
+    // `aria-busy`, which tells a screen reader to hold the region's changes
+    // back until it clears: on the element whose whole job is to be heard.
+    const announce = label ? ({ role: 'status' } as const) : ({ 'aria-hidden': true } as const);
+    const spoken = label ? <span className={srOnlyClasses}>{label}</span> : null;
 
     // A run of lines is a stack of bars rather than one box, so the gaps between
     // them are real gaps: text has leading, and a striped gradient would not
@@ -225,21 +229,24 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
         ...announce,
         ...(stacked
           ? {
-              children: Array.from({ length: lines }, (_, index) => (
-                <div
-                  key={index}
-                  className={cx(
-                    fillClasses,
-                    sweep,
-                    barRadiusClasses[size],
-                    lineHeightClasses[size],
-                    // The last line of a paragraph does not reach the margin.
-                    index === lines - 1 ? 'w-3/5' : 'w-full'
-                  )}
-                />
-              ))
+              children: [
+                spoken,
+                ...Array.from({ length: lines }, (_, index) => (
+                  <div
+                    key={index}
+                    className={cx(
+                      fillClasses,
+                      sweep,
+                      barRadiusClasses[size],
+                      lineHeightClasses[size],
+                      // The last line of a paragraph does not reach the margin.
+                      index === lines - 1 ? 'w-3/5' : 'w-full'
+                    )}
+                  />
+                ))
+              ]
             }
-          : null),
+          : { children: spoken }),
         ...props
       }
     });

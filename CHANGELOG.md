@@ -52,6 +52,8 @@
 
 - **`AnimateLighting` no longer takes `easing`.** The arc travels on a pseudo-element at a constant rate, so `easing` type-checked and changed nothing. It is gone from the type; a lighting that passed it fails to compile and can drop it with no change in behaviour. The props tables of `AnimateScramble`, `AnimateTyping` and `AnimateHeadline` also stop listing `easing` and `alternate` where their types never took them, and `repeat` on a Scramble and a Headline is described as what it actually decides.
 
+- **A `Skeleton` given a `label` says it.** A labelled skeleton was a `role="status"` with `aria-busy="true"` and the label as its `aria-label`. `aria-busy` tells a screen reader to hold a region's changes back until it clears, and a live region is announced by what it holds rather than by its name, so neither half reached the reader. The status now holds the label as visually hidden text and carries no `aria-busy`. A test that found it with `getByRole('status', { name })` should look for the text inside it.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

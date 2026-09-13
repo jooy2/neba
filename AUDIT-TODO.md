@@ -52,7 +52,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ### C. Approvals (recommended: approve all)
 
-- **C1 (79)** `Skeleton`: when `label` is given, drop `aria-busy` and move the name into visually hidden text inside the live region.
 - **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
 - **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
 - **C4 (117)** `Button`, `Toggle`: the order becomes caller, then group, then provider, then default.
@@ -68,7 +67,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - **D6 (87)** Chart tooltips on touch: (a) a tap pins the nearest point's tooltip and a tap outside closes it; (b) document the limitation.
 - **D7 (88)** Chart `aria-describedby`: (a) stop pointing at the hidden table and describe the chart in one sentence with the point count and range; (b) link the table only when there are few points.
 - **D8 (90)** `AnimateMarquee` under reduced motion: (a) draw no copies and lift `overflow` so the content wraps; (b) hide the copies and keep the clipping.
-- **D9 (93)** `Tabs` `wheel` default: (a) keep it on, since `CLAUDE.md` records the default and the hold at the ends as deliberate; (b) turn it off by default.
 - **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
 - **D11 (95)** `Panes` separator: (a) a default name from i18n, a prop for the name, and `aria-controls` pointing at the adjacent panes; (b) a name prop only.
 - **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
@@ -221,7 +219,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [x] **76** [decision] Tour steps changed silently. Decided: a polite live region.
 - [x] **77** Popconfirm title and description were not linked.
 - [ ] **78** [major][decision] **Overlay**: the default name is "Overlay", so the common use with only a spinner reads "Overlay, dialog". Consider a default like "Loading" or making `label` required. `src/internal/i18n.ts:686`. See D1.
-- [ ] **79** [major] **Skeleton**: with `label`, one element gets `role="status"`, `aria-busy="true"` and `aria-label`. `aria-busy` holds announcements back, which contradicts a live region, and a live region does not read `aria-label`. `Skeleton.tsx:199-201`. See C1.
+- [x] **79** [major] **Skeleton**: with `label`, one element gets `role="status"`, `aria-busy="true"` and `aria-label`. `aria-busy` holds announcements back, which contradicts a live region, and a live region does not read `aria-label`. `Skeleton.tsx:199-201`. Decided: approved; the label is visually hidden text inside the status, with no `aria-busy` or `aria-label`.
 - [x] **80** Empty rendered as a table cell lost the cell role.
 - [ ] **81** [decision] **Alert, Empty, Skeleton**: a `role="status"` mounted together with its content is not announced in some browser and screen reader combinations (unverified). The Empty docs' "announces itself" is not guaranteed. See D2.
 
@@ -250,7 +248,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
   - [ ] Panes keyboard direction (`Panes.tsx:398-404`).
   - [ ] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
   - [ ] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).
-- [ ] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. See D9.
+- [x] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. Decided: (a) the default stays on, as `CLAUDE.md` records; no change.
 - [ ] **94** [decision] **PageLayout**: `<main>`, `id="main"` and the skip link cannot be turned off, so a PageLayout inside a Mockup inside an app's PageLayout gives two `<main>` elements and a duplicate id. `PageLayout.tsx:188, 409`. See D10.
 - [ ] **95** [decision] **Panes**: the `role="separator"` has no name and no `aria-controls`, so it reads only "separator 50". `Panes.tsx:380-388`. See D11.
 - [x] **96** Sidebar's focusable separator had no `aria-valuenow`, `aria-valuemin` or `aria-valuemax`.

@@ -13,13 +13,24 @@ describe('Skeleton', () => {
       expect(screen.getByRole('status').query()).toBeNull();
     });
 
-    it('becomes a named status when it is given a label', async () => {
+    // A live region is announced by what it holds, so the label is text inside
+    // it rather than an `aria-label`, and `aria-busy` — which holds a region's
+    // announcements back — is not on the one element meant to be heard.
+    it('becomes a status that holds its label when it is given one', async () => {
       const screen = await render(<Skeleton label="Loading the report" />);
+      const status = screen.getByRole('status');
 
-      await expect
-        .element(screen.getByRole('status', { name: 'Loading the report' }))
-        .toBeInTheDocument();
-      expect(screen.getByRole('status').element()).toHaveAttribute('aria-busy', 'true');
+      await expect.element(status).toHaveTextContent('Loading the report');
+      expect(status.element()).not.toHaveAttribute('aria-busy');
+      expect(status.element()).not.toHaveAttribute('aria-label');
+    });
+
+    it('holds its label beside the bars of a stack', async () => {
+      const screen = await render(<Skeleton label="Loading the report" lines={3} />);
+      const status = screen.getByRole('status').element();
+
+      expect(status.textContent).toBe('Loading the report');
+      expect(status.children).toHaveLength(4);
     });
 
     it('renders something else through render', async () => {
