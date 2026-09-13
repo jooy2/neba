@@ -1470,6 +1470,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     speed: number;
     frame: number | null;
     stop: () => void;
+    /** The row the run last reached, so a pointer moving inside it commits nothing. */
+    key: string;
   } | null>(null);
 
   /** Takes the run from the anchor to whichever row the pointer is over. */
@@ -1477,11 +1479,21 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     (clientY: number) => {
       const index = rowIndexAt(clientY);
       const entry = index === null ? undefined : latest.current.paged[index];
+      const drag = dragRef.current;
 
-      if (entry) {
-        setActiveKey(entry.key);
-        selectRange(entry.key, false);
+      // A `pointermove` arrives every frame the pointer moves, and most of them
+      // are still inside the row the last one reached. Committing those would
+      // report the same selection to `onSelectedChange` dozens of times a second.
+      if (!entry || (drag && drag.key === entry.key)) {
+        return;
       }
+
+      if (drag) {
+        drag.key = entry.key;
+      }
+
+      setActiveKey(entry.key);
+      selectRange(entry.key, false);
     },
     [rowIndexAt, selectRange]
   );
@@ -1503,7 +1515,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * want is longer than the viewport. The speed is how far past the edge the
    * pointer is, capped, so easing off slows the scroll instead of stopping it.
    */
-  const startDrag = (event: React.PointerEvent<HTMLTableRowElement>) => {
+  const startDrag = (event: React.PointerEvent<HTMLTableRowElement>, key: string) => {
     const table = tableRef.current;
 
     if (dragRef.current || !table) {
@@ -1570,7 +1582,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       release();
     };
 
-    dragRef.current = { y: clientY, speed: 0, frame: null, stop };
+    dragRef.current = { y: clientY, speed: 0, frame: null, stop, key };
 
     /*
      * Captured to the table rather than to the row that was pressed: a virtual
@@ -1653,7 +1665,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     selectOnly(entry.key);
 
     if (multiple) {
-      startDrag(event);
+      startDrag(event, entry.key);
     }
   }
 

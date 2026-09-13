@@ -32,6 +32,8 @@
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
 
+- **Dragging a run of `DataTable` rows reports the selection once per row it reaches.** Every `pointermove` committed the run again, so a drag held still inside one row called `onSelectedChange` and re-rendered the table on every frame the pointer shook.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

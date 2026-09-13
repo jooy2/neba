@@ -638,6 +638,53 @@ describe('DataTable', () => {
       expect(held()).toBe('');
     });
 
+    it('reports a dragged run once per row it reaches, not once per move', async () => {
+      const onSelectedChange = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          onSelectedChange={onSelectedChange}
+        />
+      );
+
+      const table = screen.container.querySelector<HTMLTableElement>('table')!;
+      const first = screen.container.querySelector<HTMLElement>('tr[data-neba-row="a"]')!;
+      const last = screen.container.querySelector<HTMLElement>('tr[data-neba-row="c"]')!;
+      const middleOf = (row: HTMLElement) => {
+        const rect = row.getBoundingClientRect();
+
+        return rect.top + rect.height / 2;
+      };
+      const move = (clientY: number) =>
+        table.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientY }));
+
+      table.setPointerCapture = () => {};
+      first.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          clientY: middleOf(first),
+          pointerId: 1,
+          button: 0
+        })
+      );
+      await expect.poll(() => onSelectedChange.mock.calls.length).toBe(1);
+
+      // Ten moves inside the pressed row, then ten inside the last one.
+      for (let step = 0; step < 10; step += 1) {
+        move(middleOf(first) + (step % 3) - 1);
+      }
+      for (let step = 0; step < 10; step += 1) {
+        move(middleOf(last) + (step % 3) - 1);
+      }
+      table.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+      await expect.poll(() => onSelectedChange.mock.calls.length).toBe(2);
+      expect(onSelectedChange).toHaveBeenLastCalledWith(['a', 'b', 'c'], ITEMS);
+    });
+
     it('walks the rows with the arrow keys, choosing as it goes', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />
