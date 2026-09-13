@@ -222,16 +222,16 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | What a consumer imports       | Bundle   | Of which is Neba's own code |
 | ----------------------------- | -------- | --------------------------- |
 | `Divider`                     | 3.1 kB   | 1.4 kB                      |
-| `Button`                      | 5.2 kB   | 2.4 kB                      |
+| `Button`                      | 5.2 kB   | 2.5 kB                      |
 | `Chip`                        | 3.4 kB   | 3.4 kB                      |
-| `LineChart`                   | 11.8 kB  | 10.2 kB                     |
-| `CodeBlock`                   | 5.4 kB   | 5.2 kB                      |
-| `Image`                       | 8.6 kB   | 6.9 kB                      |
+| `LineChart`                   | 11.9 kB  | 10.4 kB                     |
+| `CodeBlock`                   | 5.5 kB   | 5.2 kB                      |
+| `Image`                       | 8.7 kB   | 7.0 kB                      |
 | `Gallery`                     | 11.7 kB  | 10.0 kB                     |
-| 12 components — a typical app | 71.0 kB  | 13.0 kB                     |
-| 25 components — a large one   | 117.1 kB | 19.8 kB                     |
-| a whole page shell            | 29.3 kB  | 9.4 kB                      |
-| all 175 exports               | 267.8 kB | 136.1 kB                    |
+| 12 components — a typical app | 71.2 kB  | 13.2 kB                     |
+| 25 components — a large one   | 117.5 kB | 20.2 kB                     |
+| a whole page shell            | 29.5 kB  | 9.7 kB                      |
+| all 175 exports               | 273.5 kB | 141.8 kB                    |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is.
 
@@ -239,9 +239,9 @@ The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarT
 
 The Image and Gallery rows are the same arrangement one step smaller. `Image` used to be 23.4 kB: `preview` opens a Dialog and is off by default, so a static import put 20 kB of Base UI into the bundle of every page that drew a thumbnail. Both reach it through `React.lazy` now — Gallery through a whole viewer of its own — so the chunk is fetched after the first paint by the pages that turn the prop on. Every number in this table is what a page needs **before it draws**: the entry plus every chunk statically reachable from it, which is what `measure-bundle.mjs` walks the import graph to work out. A chunk that is both statically and dynamically imported is not free.
 
-The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 5.4 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 5.4 kB becomes 68.9.
+The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 5.5 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 5.5 kB becomes 69.0.
 
-Registering one language adds about 2.8 kB on top — the whole of that language's module, since `registerMessages` is handed every namespace at once. That is the `app-12-ko` scenario minus `app-12`, so `npm run size` keeps the number honest. Plus `neba/styles.css`, which is 23.0 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 3.3 kB on top — the whole of that language's module, since `registerMessages` is handed every namespace at once. That is the `app-12-ko` scenario minus `app-12`, so `npm run size` keeps the number honest. Plus `neba/styles.css`, which is 23.0 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 CodeBlock's eight ported themes are the one deliberate exception to that marginal cost: they are 0.8 kB gzipped of the sheet, which everybody carries and only a CodeBlock user sees. The alternative was measured too — ship them as JS token objects and tree-shake per theme — and rejected, because it costs the two things that make the CSS form worth having: `theme` stays a string, and a consumer's own `[data-code-theme='ours']` block is a theme with nothing to import and nothing to register. The derived slots are what keep the number to 0.8: `dim`, `rule`, `hover` and the two a marked line uses are mixed from each theme's own `bg` and `fg`, so a theme is fourteen declarations rather than nineteen.
 
