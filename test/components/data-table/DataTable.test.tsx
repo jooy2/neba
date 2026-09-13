@@ -582,6 +582,29 @@ describe('DataTable', () => {
       await expect.element(screen.getByRole('row', { selected: true })).toBeInTheDocument();
     });
 
+    // A finger on a row is as often the start of a scroll as a choice.
+    it('chooses a row a finger pressed only when the press becomes a click', async () => {
+      const onSelectedChange = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="single"
+          onSelectedChange={onSelectedChange}
+        />
+      );
+      const row = screen.getByText('Lisbon').element().closest('tr') as HTMLElement;
+
+      row.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'touch' })
+      );
+      expect(onSelectedChange).not.toHaveBeenCalled();
+
+      row.click();
+      await vi.waitFor(() => expect(onSelectedChange).toHaveBeenCalledWith(['b'], [ITEMS[1]]));
+    });
+
     it('drops the previous row on a plain click', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />

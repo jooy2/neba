@@ -252,6 +252,8 @@
 
 - **A time column is one tab stop.** Every hour, minute and second in a `TimePicker` or `DateTimePicker` was a tab stop of its own and no key moved within a column, so getting past a 24-hour clock with seconds took a hundred and forty-four presses of Tab. Each column is now one stop, on its chosen row or its first; ↑ and ↓ walk it, Home and End jump to its ends, and Enter, Space or a press still chooses.
 
+- **Scrolling a `DataTable` with a finger no longer changes the selection.** A row was chosen on `pointerdown`, so every touch that began a scroll replaced the selection with the row under the finger. A touch now chooses on `click`, which the browser does not send when the finger went on to scroll; a mouse and a pen still choose on the press and drag a run as before.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

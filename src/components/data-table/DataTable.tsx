@@ -1072,6 +1072,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const viewportRef = React.useRef<HTMLDivElement | null>(null);
   const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
   const tableRef = React.useRef<HTMLTableElement | null>(null);
+  /** The row a finger went down on, which its `click` chooses. */
+  const touchedKey = React.useRef<string | null>(null);
 
   const [viewportHeight, setViewportHeight] = React.useState(0);
   const [scrollTop, setScrollTop] = React.useState(0);
@@ -1644,6 +1646,15 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       return;
     }
 
+    // A finger that lands on a row is as often the start of a scroll as a
+    // choice, and choosing on the way down replaced the selection every time
+    // someone scrolled the table. So a touch chooses on `click`, which the
+    // browser does not send when the finger went on to scroll.
+    if (event.pointerType === 'touch') {
+      touchedKey.current = entry.key;
+      return;
+    }
+
     // The table is the tab stop, not the row — a virtual body cannot hold one,
     // because the row that had it is unmounted the moment it scrolls away.
     tableRef.current?.focus({ preventScroll: true });
@@ -1904,7 +1915,15 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         )}
         style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
         onPointerDown={(event) => handleRowPointerDown(entry, event)}
-        onClick={(event) => onRowClick?.(entry.row, displayOffset + index, event)}
+        onClick={(event) => {
+          if (touchedKey.current === entry.key) {
+            touchedKey.current = null;
+            tableRef.current?.focus({ preventScroll: true });
+            setActiveKey(entry.key);
+            selectOnly(entry.key);
+          }
+          onRowClick?.(entry.row, displayOffset + index, event);
+        }}
         onDoubleClick={() => onRowActivate?.(entry.row, displayOffset + index)}
       >
         {showTicks ? tickCell(entry) : null}

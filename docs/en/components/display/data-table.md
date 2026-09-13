@@ -67,6 +67,7 @@ Every row is `rowHeight` tall and cells truncate rather than wrap, which is what
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + click | adds or removes one |
 | <kbd>Shift</kbd> + click | takes the run from the last row chosen |
 | Click and drag | takes the run under the pointer, scrolling at the edges |
+| Tap | chooses that row once the finger lifts, so a finger that scrolls the table chooses nothing |
 | <kbd>↑</kbd> <kbd>↓</kbd> | move and choose |
 | <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | scroll only: what is chosen stays chosen |
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + arrows | move without choosing |
