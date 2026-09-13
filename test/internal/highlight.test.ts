@@ -8,7 +8,12 @@
  * a rendered CodeBlock.
  */
 import { describe, expect, it } from 'vitest';
-import { canonicalLanguage, plainLines, tokenize } from '../../src/internal/highlight.js';
+import {
+  canonicalLanguage,
+  highlight,
+  plainLines,
+  tokenize
+} from '../../src/internal/highlight.js';
 
 /** Every line as its plain text, which is what the clipboard and a select get. */
 const text = (lines: ReturnType<typeof tokenize>) =>
@@ -111,5 +116,16 @@ describe('canonicalLanguage', () => {
     expect(canonicalLanguage(undefined)).toBeNull();
     expect(canonicalLanguage('')).toBeNull();
     expect(canonicalLanguage('   ')).toBeNull();
+  });
+});
+
+describe('highlight', () => {
+  it('answers null for a language nothing can load, without fetching anything', async () => {
+    await expect(highlight('let x = 1', 'no-such-language')).resolves.toBeNull();
+  });
+
+  it('does not take a name off the prototype of the loader table for a grammar', async () => {
+    await expect(highlight('let x = 1', 'constructor')).resolves.toBeNull();
+    await expect(highlight('let x = 1', 'hasOwnProperty')).resolves.toBeNull();
   });
 });

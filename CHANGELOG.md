@@ -122,6 +122,8 @@
 
 - **A grouped `DataTable` in pages heads each page with the groups that are on it.** Every group's heading was drawn on every page, so the second page of a long table opened with a column of headings for groups whose rows were all somewhere else. An open group is headed only on the pages that hold its rows; a folded one has no rows anywhere and stays on every page, so it can be opened again.
 
+- **`CodeBlock` keeps nothing for a `language` it cannot load.** Every unknown name a page passed was remembered for the page's lifetime, so a block whose language came from a reader's choice grew the cache without bound; such a name is now answered as plain text on the spot. A `language` named after a member of `Object`'s prototype, such as `constructor`, is plain text too rather than a failed attempt to call `Object` as a grammar.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

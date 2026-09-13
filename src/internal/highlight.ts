@@ -213,7 +213,9 @@ export function canonicalLanguage(language: string | undefined): string | null {
  */
 async function prepare(name: string): Promise<string | null> {
   const registered = extra.get(name);
-  const load = registered ? undefined : loaders[name];
+  // `Object.hasOwn`, or a `language` of `constructor` finds `Object` on the
+  // table's prototype and is called as a grammar loader.
+  const load = registered || !Object.hasOwn(loaders, name) ? undefined : loaders[name];
 
   if (!registered && !load) return null;
 
@@ -237,6 +239,13 @@ async function prepare(name: string): Promise<string | null> {
  * code.
  */
 export async function highlight(code: string, language: string): Promise<CodeLine[] | null> {
+  // A name nothing here can load is answered without being remembered. It comes
+  // straight from a caller's `language` prop, and a page that let readers pick
+  // one would otherwise keep a settled promise for every word ever typed.
+  if (!extra.has(language) && !Object.hasOwn(loaders, language)) {
+    return null;
+  }
+
   let pending = resolved.get(language);
 
   if (!pending) {
