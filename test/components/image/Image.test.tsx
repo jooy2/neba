@@ -421,6 +421,45 @@ describe('Image', () => {
     });
   });
 
+  describe('priority and loading', () => {
+    it('leaves when to load to the browser by default', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" />);
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).not.toHaveAttribute('loading');
+      expect(picture.getAttribute('fetchpriority')).toBeNull();
+    });
+
+    it('fetches the picture a page is judged by early and eagerly', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" priority />);
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).toHaveAttribute('loading', 'eager');
+      // An HTML attribute name is case-insensitive, so this reads it whichever
+      // spelling the installed React wrote.
+      expect(picture.getAttribute('fetchpriority')).toBe('high');
+    });
+
+    it('lets an attribute written out win over what priority implies', async () => {
+      const screen = await render(<Image src={OK} alt="A ridge" priority loading="lazy" />);
+
+      await expect
+        .element(screen.getByRole('img', { name: 'A ridge' }))
+        .toHaveAttribute('loading', 'lazy');
+    });
+
+    it('passes the native loading attributes through', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" loading="lazy" decoding="async" fetchPriority="low" />
+      );
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).toHaveAttribute('loading', 'lazy');
+      expect(picture).toHaveAttribute('decoding', 'async');
+      expect(picture.getAttribute('fetchpriority')).toBe('low');
+    });
+  });
+
   it('becomes a button when it can be previewed', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" preview />);
 

@@ -11668,6 +11668,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'priority',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '페이지의 평가 기준이 되는 그림(보통 LCP 그림)을 일찍, lazy 없이 불러옵니다. loading="eager"와 높은 fetchPriority이며, 직접 쓴 속성이 이깁니다',
+        en: 'Fetches the picture a page is judged by, usually its LCP image, early and never lazily: loading="eager" and a high fetchPriority. An attribute written out wins'
+      }
+    },
+    {
       name: 'onLoadingStatusChange',
       type: "(status: 'loading' | 'loaded' | 'failed') => void",
       description: {

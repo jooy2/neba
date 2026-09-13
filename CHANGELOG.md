@@ -18,6 +18,8 @@
 
 - **An `Image`'s `placeholder` can be a picture.** `placeholder={{ src }}` stands a URL, a data URI or a `Blob` in for the file while it arrives, drawn with the same `fit`, `position`, `rotate` and `flip`, and `blur` softens a copy stretched up from a few pixels. A Blob is shown through an object URL that is released when the stand-in goes. The picture fades in over the stand-in, which is taken away once that fade has run.
 
+- **`Image` takes `priority`.** It is for the picture a page is judged by, usually its Largest Contentful Paint: `loading="eager"` and a high fetch priority together, with an attribute written out still winning. `fetchpriority` is spelled the way the installed React accepts it, so neither React 18 nor React 19 warns.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

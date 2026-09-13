@@ -225,6 +225,16 @@ type Phase = 'loading' | 'loaded' | 'failed';
  * fetched once, after the first paint, by the pages that asked for it. What a
  * thumbnail costs is 6.5 kB now, and the other 19.8 waits to be wanted.
  */
+/**
+ * The spelling React accepts for the `fetchpriority` attribute.
+ *
+ * React 19 knows it as `fetchPriority` and warns about the lower-case form;
+ * React 18 does not know it at all, and warns about the camel-case one while
+ * writing it anyway. The attribute is the same either way, so this only decides
+ * which of the two supported versions stays quiet.
+ */
+const FETCH_PRIORITY = Number.parseInt(React.version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority';
+
 const PreviewDialog = React.lazy(() =>
   import('../dialog/Dialog.js').then((module) => ({ default: module.Dialog }))
 );
@@ -309,6 +319,19 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
   fallback?: React.ReactNode;
   /** Called when the file fails. Useful for swapping a `src` you control. */
   onLoadingStatusChange?: (status: Phase) => void;
+  /**
+   * Marks the picture a page is judged by — usually the largest thing above
+   * the fold, which is what Largest Contentful Paint measures — so it is
+   * fetched early and never lazily: `loading="eager"` and a high fetch
+   * priority.
+   *
+   * Everything else about when a picture loads belongs to the `<img>` and
+   * passes straight through: `loading="lazy"` for one below the fold,
+   * `decoding`, `fetchPriority`. An attribute written out wins over what this
+   * implies.
+   * @default false
+   */
+  priority?: boolean;
   /**
    * Opens the full picture in a Dialog when it is clicked.
    *
@@ -792,6 +815,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     fallback,
     onLoadingStatusChange,
     preview = false,
+    priority = false,
     filter = 'none',
     rotate = 0,
     flip = 'none',
@@ -975,6 +999,12 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       onContextMenu={guarded?.onContextMenu}
       onDragStart={guarded?.onDragStart}
       draggable={guarded?.draggable}
+      {...(priority
+        ? ({
+            loading: 'eager',
+            [FETCH_PRIORITY]: 'high'
+          } as React.ImgHTMLAttributes<HTMLImageElement>)
+        : null)}
       {...props}
     />
   );
