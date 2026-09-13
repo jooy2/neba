@@ -5652,10 +5652,9 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'selected',
       type: 'boolean',
-      default: 'false',
       description: {
-        ko: '선택됨. 색 계열을 바꾸는 대신 표면을 한 단계 깊게 만듭니다',
-        en: 'Chosen. Deepens the surface a step rather than changing the colour family'
+        ko: '선택됨. 색 계열을 바꾸는 대신 표면을 한 단계 깊게 만듭니다. false를 포함해 값을 주면 누를 수 있는 Chip이 aria-pressed를 가진 토글이 됩니다',
+        en: 'Chosen. Deepens the surface a step rather than changing the colour family. Passing it, false included, makes a pressable chip a toggle with aria-pressed'
       }
     },
     {

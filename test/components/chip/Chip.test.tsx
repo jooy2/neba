@@ -131,6 +131,25 @@ describe('Chip', () => {
       );
     });
 
+    it('is a plain button when it is pressable and says nothing about being on', async () => {
+      const screen = await render(<Chip onClick={() => {}}>Draft</Chip>);
+
+      expect(screen.getByRole('button', { name: 'Draft' }).element()).not.toHaveAttribute(
+        'aria-pressed'
+      );
+
+      await screen.rerender(
+        <Chip selected={false} onClick={() => {}}>
+          Draft
+        </Chip>
+      );
+
+      expect(screen.getByRole('button', { name: 'Draft' }).element()).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      );
+    });
+
     it('deepens the surface when selected without changing the colour family', async () => {
       const screen = await render(
         <Chip data-testid="chip" color="success">

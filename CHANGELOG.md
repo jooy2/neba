@@ -24,6 +24,8 @@
 
 - **A `Fieldset`'s `description` describes the group instead of joining its name.** It was drawn inside the legend, so the group was named "Billing address Where the card statement goes." and that sentence was read before every control in it. The legend alone names the group now, and the description is tied to it with `aria-describedby`, merged with any the caller passes. A test that found the group by the whole sentence finds it by the legend.
 
+- **A pressable `Chip` is a toggle only when it says whether it is on.** `selected` defaulted to `false`, so every chip with an `onClick` carried `aria-pressed="false"` and was announced as a toggle that was off, including a chip that only opened something. It is a plain button now unless `selected` is passed, and `selected={false}` still makes it a toggle. A test that expected `aria-pressed="false"` on a chip with no `selected` needs the prop.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

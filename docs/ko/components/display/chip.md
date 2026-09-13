@@ -45,7 +45,7 @@ Chip의 `size`는 컨트롤 높이보다 한 단계 아래입니다. `md` Chip�
 
 ### onClick · onDelete · selected
 
-`onClick`을 주면 Chip 전체가 누를 수 있는 컨트롤이 됩니다. `onDelete`는 라벨 뒤에 삭제 버튼을 붙입니다. `selected`는 색 계열을 바꾸지 않고 표면을 한 단계 깊게 만들어 선택 상태를 표시합니다.
+`onClick`을 주면 Chip 전체가 누를 수 있는 컨트롤이 됩니다. `onDelete`는 라벨 뒤에 삭제 버튼을 붙입니다. `selected`는 색 계열을 바꾸지 않고 표면을 한 단계 깊게 만들어 선택 상태를 표시합니다. 누를 수 있는 Chip은 `false`를 포함해 `selected`를 줄 때만 토글로 읽히고, `onClick`만 있으면 일반 버튼입니다.
 
 <Demo src="chip/interactive">
 

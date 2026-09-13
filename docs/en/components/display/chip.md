@@ -45,7 +45,7 @@ Chip's `size` sits one step below the control heights: an `md` Chip is 26px, the
 
 ### onClick · onDelete · selected
 
-`onClick` makes the whole chip a pressable control. `onDelete` adds a delete button after the label. `selected` marks the chip as on by deepening the surface one step rather than changing the colour family.
+`onClick` makes the whole chip a pressable control. `onDelete` adds a delete button after the label. `selected` marks the chip as on by deepening the surface one step rather than changing the colour family. A pressable chip is announced as a toggle only when `selected` is passed, `false` included; with `onClick` alone it is a plain button.
 
 <Demo src="chip/interactive">
 

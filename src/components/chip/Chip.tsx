@@ -64,7 +64,9 @@ export interface ChipProps
    * Marks the chip as chosen — a filter that is on. `selected` deepens the
    * surface a step rather than changing the colour family, so a row of chips
    * stays one row of chips.
-   * @default false
+   *
+   * Passing it, `false` included, is what makes a pressable chip a toggle to a
+   * screen reader. A chip with `onClick` and no `selected` is a plain button.
    */
   selected?: boolean;
   /** Unavailable. Drops the colour family for neutral grey, as everywhere else. */
@@ -191,7 +193,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
     locale,
     deleteLabel,
     transition,
-    selected = false,
+    selected,
     disabled = false,
     className,
     style,
@@ -276,6 +278,9 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
       {interactive ? (
         <button
           type="button"
+          // Only a chip that says whether it is on is a toggle. One that merely
+          // does something when pressed is a button, and `aria-pressed="false"`
+          // would announce it as a switch that is off.
           aria-pressed={selected}
           className={`${labelButtonClasses} ${gapClasses[step]} ${padX}`}
           onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
