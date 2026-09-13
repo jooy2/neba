@@ -1096,29 +1096,34 @@
     outline-offset: -1px;
   }
 
-  .neba-progress-track.neba-progress-track,
-  .neba-slider-rail.neba-slider-rail {
-    forced-color-adjust: none;
-    background-color: Canvas;
-    outline: 1px solid CanvasText;
-    outline-offset: -1px;
-  }
+  /* Behind `@supports` as well, which every browser that can be in a forced
+     palette passes: a colour that cannot opt out of the palette would be
+     replaced by it, and a fill the same colour as its track says nothing. */
+  @supports (forced-color-adjust: none) {
+    .neba-progress-track.neba-progress-track,
+    .neba-slider-rail.neba-slider-rail {
+      forced-color-adjust: none;
+      background-color: Canvas;
+      outline: 1px solid CanvasText;
+      outline-offset: -1px;
+    }
 
-  .neba-progress-indicator.neba-progress-indicator,
-  .neba-slider-indicator.neba-slider-indicator,
-  .neba-switch.neba-switch[data-checked] {
-    forced-color-adjust: none;
-    background-color: Highlight;
-  }
+    .neba-progress-indicator.neba-progress-indicator,
+    .neba-slider-indicator.neba-slider-indicator,
+    .neba-switch.neba-switch[data-checked] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+    }
 
-  .neba-switch-thumb.neba-switch-thumb,
-  .neba-slider-thumb.neba-slider-thumb {
-    forced-color-adjust: none;
-    background-color: ButtonText;
-  }
+    .neba-switch-thumb.neba-switch-thumb,
+    .neba-slider-thumb.neba-slider-thumb {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
 
-  .neba-switch.neba-switch[data-checked] .neba-switch-thumb {
-    background-color: HighlightText;
+    .neba-switch.neba-switch[data-checked] .neba-switch-thumb {
+      background-color: HighlightText;
+    }
   }
 }
 

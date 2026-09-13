@@ -23,14 +23,24 @@ afterAll(() => {
   sheet.remove();
 });
 
+/** Every style rule under a grouping rule, however deeply it is nested. */
+function styleRulesIn(rules: CSSRuleList): CSSStyleRule[] {
+  return [...rules].flatMap((rule) =>
+    rule instanceof CSSStyleRule
+      ? [rule]
+      : rule instanceof CSSGroupingRule
+        ? styleRulesIn(rule.cssRules)
+        : []
+  );
+}
+
 function forcedRules(): CSSStyleRule[] {
   return [...(sheet.sheet?.cssRules ?? [])]
     .filter(
       (rule): rule is CSSMediaRule =>
         rule instanceof CSSMediaRule && rule.conditionText.includes('forced-colors')
     )
-    .flatMap((media) => [...media.cssRules])
-    .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule);
+    .flatMap((media) => styleRulesIn(media.cssRules));
 }
 
 describe('forced colours', () => {
