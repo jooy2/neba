@@ -540,6 +540,17 @@ const PRESSABLE_IN_CELL =
   'button, a, input, select, textarea, label, [role="button"], [role="checkbox"], [role="switch"], [role="radio"]';
 
 /** The magnifier on the search field. Local: nothing else in the library draws one. */
+/** The `<tr>` drawn for a key, or `null` when the window has not drawn it. */
+function rowElement(body: HTMLTableSectionElement, key: string): HTMLTableRowElement | null {
+  for (let index = 0; index < body.rows.length; index += 1) {
+    if (body.rows[index].dataset.nebaRow === key) {
+      return body.rows[index];
+    }
+  }
+
+  return null;
+}
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -1089,6 +1100,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   const [scrollTop, setScrollTop] = React.useState(0);
 
   const bounded = height !== undefined || maxHeight !== undefined;
+  const grouped = groupBy !== undefined;
   // Never while grouping: the window arithmetic counts every child of `<tbody>`
   // as one row of `rowHeight`, and a heading row is one more than that. A
   // grouped table renders all of its rows, which is the honest trade — the two
@@ -1307,31 +1319,48 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /* -- Moving about -------------------------------------------------------- */
 
   /**
-   * Puts a row on screen by arithmetic rather than by `scrollIntoView`.
+   * Puts a row on screen inside a bounded table by measuring rather than by
+   * `scrollIntoView`.
    *
    * The row may not be in the DOM at all — that is the whole point of the
    * virtual mode — and even when it is, `scrollIntoView` would slide it under
    * the sticky header, which is not "in view".
    */
   const revealRow = React.useCallback(
-    (index: number) => {
+    (key: string, index: number) => {
       const node = viewportRef.current;
+      const body = bodyRef.current;
 
-      if (!node || !bounded) {
+      if (!node || !body) {
         return;
       }
 
-      const headerTotal = stickyHeader ? headerHeight * (hasGroups ? 2 : 1) : 0;
-      const top = index * rowHeight;
-      const above = node.scrollTop + headerTotal;
+      const row = rowElement(body, key);
 
-      if (top < above) {
-        node.scrollTop = Math.max(0, top - headerTotal);
-      } else if (top + rowHeight > node.scrollTop + node.clientHeight) {
-        node.scrollTop = top + rowHeight - node.clientHeight;
+      // The page is what scrolls, and nothing is virtual without a bound, so the
+      // row is drawn and the browser knows how far every ancestor has to move.
+      if (!bounded) {
+        row?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        return;
+      }
+
+      // Measured from the top of what scrolls rather than counted from zero: the
+      // caption and the head sit above the first row, and a grouped table has a
+      // heading above each group. A row the window has not drawn is still a
+      // whole number of rows below the top of the body, spacer included.
+      const origin = node.getBoundingClientRect().top + node.clientTop - node.scrollTop;
+      const top =
+        (row ?? body).getBoundingClientRect().top - origin + (row ? 0 : index * rowHeight);
+      const bottom = top + (row ? row.offsetHeight : rowHeight);
+      const covered = stickyHeader ? (tableRef.current?.tHead?.offsetHeight ?? 0) : 0;
+
+      if (top < node.scrollTop + covered) {
+        node.scrollTop = Math.max(0, top - covered);
+      } else if (bottom > node.scrollTop + node.clientHeight) {
+        node.scrollTop = bottom - node.clientHeight;
       }
     },
-    [bounded, stickyHeader, headerHeight, hasGroups, rowHeight]
+    [bounded, stickyHeader, rowHeight]
   );
 
   const moveActive = (index: number, event: React.KeyboardEvent) => {
@@ -1345,7 +1374,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
     event.preventDefault();
     setActiveKey(entry.key);
-    revealRow(target);
+    revealRow(entry.key, target);
 
     if (!selects) {
       return;
@@ -1496,12 +1525,37 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         return null;
       }
 
+      // A grouped table has a heading above each group, so the body stops being
+      // a linear map — but it is never virtual either, so every row is drawn and
+      // the row under the pointer can be found by where it is. The last row that
+      // starts above the pointer, so a heading counts as the end of the group
+      // over it.
+      if (grouped) {
+        const drawn = body.querySelectorAll<HTMLElement>('tr[data-neba-row]');
+        let low = 0;
+        let high = drawn.length - 1;
+        let found = 0;
+
+        while (low <= high) {
+          const middle = (low + high) >> 1;
+
+          if (drawn[middle].getBoundingClientRect().top <= clientY) {
+            found = middle;
+            low = middle + 1;
+          } else {
+            high = middle - 1;
+          }
+        }
+
+        return Math.min(found, rows.length - 1);
+      }
+
       const top = body.getBoundingClientRect().top;
       const index = Math.floor((clientY - top) / rowHeight);
 
       return Math.min(Math.max(index, 0), rows.length - 1);
     },
-    [rowHeight]
+    [rowHeight, grouped]
   );
 
   /**

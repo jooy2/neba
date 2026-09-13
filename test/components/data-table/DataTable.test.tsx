@@ -818,6 +818,94 @@ describe('DataTable', () => {
         .toHaveAttribute('data-neba-row', '3');
     });
 
+    describe('keeping the active row on screen', () => {
+      /** The box a row has to stay inside, with the scroll a stylesheet would give it. */
+      const scroller = (container: HTMLElement) => {
+        const node = container.querySelector('table')!.parentElement!;
+
+        // A component test loads no CSS, so the viewport's `overflow-auto` is
+        // written here; its `height` is already inline.
+        node.style.overflow = 'auto';
+
+        return node;
+      };
+
+      const inside = (row: Element, box: { top: number; bottom: number }) => {
+        const rect = row.getBoundingClientRect();
+
+        return rect.top >= box.top - 0.5 && rect.bottom <= box.bottom + 0.5;
+      };
+
+      // The arrows counted the row's place from the top of the scroller, and
+      // the caption and the head sit above the first row.
+      it('scrolls a bounded table past its caption and its head', async () => {
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(40)}
+            getRowKey={key}
+            selectionMode="single"
+            caption="People"
+            height={160}
+            rowHeight={32}
+          />
+        );
+        const node = scroller(screen.container);
+
+        await screen.getByText('Person 0', { exact: true }).click();
+        await userEvent.keyboard('{ArrowDown>8/}');
+
+        const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="8"]')!;
+
+        await expect.element(row).toHaveAttribute('aria-selected', 'true');
+        expect(inside(row, node.getBoundingClientRect())).toBe(true);
+      });
+
+      it('counts the group headings above a row', async () => {
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(40)}
+            getRowKey={key}
+            selectionMode="single"
+            groupBy={(row) => `Group ${Math.floor(row.score / 4)}`}
+            height={200}
+            rowHeight={32}
+          />
+        );
+        const node = scroller(screen.container);
+
+        await screen.getByText('Person 0', { exact: true }).click();
+        await userEvent.keyboard('{ArrowDown>10/}');
+
+        const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="10"]')!;
+
+        await expect.element(row).toHaveAttribute('aria-selected', 'true');
+        expect(inside(row, node.getBoundingClientRect())).toBe(true);
+      });
+
+      // Without a height it is the page that scrolls, and nothing moved it.
+      it('scrolls the page for a table with no height', async () => {
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(80)}
+            getRowKey={key}
+            selectionMode="single"
+            rowHeight={32}
+          />
+        );
+
+        await screen.getByText('Person 0', { exact: true }).click();
+        await userEvent.keyboard('{ArrowDown>60/}');
+
+        const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="60"]')!;
+
+        await expect.element(row).toHaveAttribute('aria-selected', 'true');
+        expect(inside(row, { top: 0, bottom: window.innerHeight })).toBe(true);
+      });
+    });
+
     it('takes everything with Ctrl+A and lets go with Escape', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} selectionMode="multiple" />
@@ -1289,6 +1377,50 @@ describe('grouping', () => {
     { id: 'b', name: 'Bo', city: 'Seoul', score: 10 },
     { id: 'c', name: 'Cy', city: 'Oslo', score: 20 }
   ];
+
+  // The body was read as rows of one height from its top, and a heading above
+  // each group is one more row than that: a drag onto Bo reached Cy.
+  it('drags a run to the row under the pointer, past a group heading', async () => {
+    const onSelectedChange = vi.fn();
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={CITIES}
+        getRowKey={key}
+        groupBy={(row) => row.city}
+        selectionMode="multiple"
+        onSelectedChange={onSelectedChange}
+      />
+    );
+
+    const table = screen.container.querySelector<HTMLTableElement>('table')!;
+    const first = screen.container.querySelector<HTMLElement>('tr[data-neba-row="a"]')!;
+    const second = screen.container.querySelector<HTMLElement>('tr[data-neba-row="b"]')!;
+    const middleOf = (row: HTMLElement) => {
+      const rect = row.getBoundingClientRect();
+
+      return rect.top + rect.height / 2;
+    };
+
+    table.setPointerCapture = () => {};
+    first.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        clientY: middleOf(first),
+        pointerId: 1,
+        button: 0
+      })
+    );
+    await expect.poll(() => onSelectedChange.mock.calls.length).toBe(1);
+
+    table.dispatchEvent(
+      new PointerEvent('pointermove', { bubbles: true, clientY: middleOf(second) })
+    );
+    table.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+    await expect.poll(() => onSelectedChange.mock.calls.length).toBe(2);
+    expect(onSelectedChange).toHaveBeenLastCalledWith(['a', 'b'], [CITIES[0], CITIES[1]]);
+  });
 
   it('draws a heading over each group, with its count', async () => {
     const screen = await render(

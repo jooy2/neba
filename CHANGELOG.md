@@ -324,6 +324,10 @@
 
 - **A virtual `DataTable` scrolled far down still draws rows after a search narrows it.** Scrolled to the bottom of five thousand rows and then searched down to ten, the table kept its old scroll offset, started its window of rendered rows past the last one and drew nothing, while the spacer standing in for the rows above held the scroll where it was, so the body stayed empty. An offset past the end now draws the last screen of rows, and the table shrinks back to the rows it has.
 
+- **The arrow keys keep a `DataTable`'s active row on screen.** A row's place was counted from the top of the scrolling box, so a table with a caption, a head or group headings scrolled too little and left the row the arrows had reached below the edge — by the height of the head and caption, and by one more heading for every group above it. A table with no `height` did not scroll at all, so arrowing past the bottom of the window lost the row. The row is measured where it is now, and a table without a height scrolls the page.
+
+- **Dragging a run of rows in a grouped `DataTable` takes the row under the pointer.** The drag read the body as rows of one height from its top, and each group heading is one more row than that, so a drag onto a row took the one after it, or more. The row is now found by where the rows are drawn.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
