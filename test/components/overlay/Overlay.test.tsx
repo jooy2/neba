@@ -48,7 +48,7 @@ describe('Overlay', () => {
     it('names itself even with nothing readable inside', async () => {
       const screen = await render(<Overlay open />);
 
-      await expect.element(screen.getByRole('dialog', { name: 'Overlay' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('dialog', { name: 'Loading' })).toBeInTheDocument();
     });
 
     it('opens from defaultOpen', async () => {
@@ -162,21 +162,21 @@ describe('Overlay', () => {
     it('names the sheet in the language it was given', async () => {
       const screen = await render(
         <Overlay open locale="ko">
-          불러오는 중
+          <span aria-hidden="true">…</span>
         </Overlay>
       );
 
-      await expect.element(screen.getByRole('dialog', { name: '오버레이' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('dialog', { name: '불러오는 중' })).toBeInTheDocument();
     });
 
     it('takes a name of its own over the locale', async () => {
       const screen = await render(
-        <Overlay open locale="ko" label="Loading">
+        <Overlay open locale="ko" label="Publishing">
           불러오는 중
         </Overlay>
       );
 
-      await expect.element(screen.getByRole('dialog', { name: 'Loading' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('dialog', { name: 'Publishing' })).toBeInTheDocument();
     });
   });
 

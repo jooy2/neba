@@ -150,7 +150,7 @@ export const vi: NebaLocale = {
     label: 'Thông báo'
   },
   overlay: {
-    label: 'Lớp phủ'
+    label: 'Đang tải'
   },
   window: {
     minimize: 'Thu nhỏ',

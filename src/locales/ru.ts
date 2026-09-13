@@ -154,7 +154,7 @@ export const ru: NebaLocale = {
     label: 'Уведомления'
   },
   overlay: {
-    label: 'Наложение'
+    label: 'Загрузка'
   },
   window: {
     minimize: 'Свернуть',

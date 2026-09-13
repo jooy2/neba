@@ -153,7 +153,7 @@ export const zhHant: NebaLocale = {
     label: '通知'
   },
   overlay: {
-    label: '遮罩層'
+    label: '載入中'
   },
   window: {
     minimize: '最小化',

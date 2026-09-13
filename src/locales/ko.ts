@@ -150,7 +150,7 @@ export const ko: NebaLocale = {
     label: '알림'
   },
   overlay: {
-    label: '오버레이'
+    label: '불러오는 중'
   },
   window: {
     minimize: '최소화',

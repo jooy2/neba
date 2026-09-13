@@ -150,7 +150,7 @@ export const tr: NebaLocale = {
     label: 'Bildirimler'
   },
   overlay: {
-    label: 'Kaplama'
+    label: 'Yükleniyor'
   },
   window: {
     minimize: 'Simge durumuna küçült',

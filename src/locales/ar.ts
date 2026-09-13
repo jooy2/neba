@@ -150,7 +150,7 @@ export const ar: NebaLocale = {
     label: 'الإشعارات'
   },
   overlay: {
-    label: 'تراكب'
+    label: 'جارٍ التحميل'
   },
   window: {
     minimize: 'تصغير',

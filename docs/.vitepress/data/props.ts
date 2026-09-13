@@ -8767,8 +8767,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '오버레이의 접근성 이름. 읽을 것이 없는 오버레이도 자기가 무엇인지는 말해야 하므로 선택이 아니라 기본값입니다',
-        en: 'The accessible name. It has a default rather than being optional: an overlay that holds nothing readable still has to say what it is'
+        ko: '오버레이의 접근성 이름. 읽을 것이 없는 오버레이도 자기가 무엇인지는 말해야 하므로 locale의 "불러오는 중"이 기본값입니다',
+        en: 'The accessible name. It defaults to the locale\'s word for "Loading": an overlay that holds nothing readable still has to say what it is'
       }
     },
     {

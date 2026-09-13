@@ -744,14 +744,19 @@ export const otpMessages: MessageTable<OtpMessages> = {
 
 /** Overlay. */
 export interface OverlayMessages {
-  /** Names the sheet that covers whatever it was wrapped around. */
+  /**
+   * Names the sheet that covers whatever it was wrapped around. It says what
+   * the common case is doing rather than what the component is called: an
+   * overlay holding only a spinner was announced as "Overlay, dialog", which
+   * tells a reader nothing about why the page went out of reach.
+   */
   label: string;
 }
 
 /** The `overlay` namespace, as Overlay read it. */
 export const overlayMessages: MessageTable<OverlayMessages> = {
   '': {
-    label: 'Overlay'
+    label: 'Loading'
   }
 };
 

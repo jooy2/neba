@@ -150,7 +150,7 @@ export const nl: NebaLocale = {
     label: 'Meldingen'
   },
   overlay: {
-    label: 'Overlay'
+    label: 'Bezig met laden'
   },
   window: {
     minimize: 'Minimaliseren',

@@ -150,7 +150,7 @@ export const ja: NebaLocale = {
     label: '通知'
   },
   overlay: {
-    label: 'オーバーレイ'
+    label: '読み込み中'
   },
   window: {
     minimize: '最小化',

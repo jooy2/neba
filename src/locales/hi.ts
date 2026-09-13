@@ -154,7 +154,7 @@ export const hi: NebaLocale = {
     label: 'सूचनाएँ'
   },
   overlay: {
-    label: 'ओवरले'
+    label: 'लोड हो रहा है'
   },
   window: {
     minimize: 'छोटा करें',

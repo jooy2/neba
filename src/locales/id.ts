@@ -154,7 +154,7 @@ export const id: NebaLocale = {
     label: 'Notifikasi'
   },
   overlay: {
-    label: 'Hamparan'
+    label: 'Memuat'
   },
   window: {
     minimize: 'Perkecil',

@@ -79,7 +79,7 @@ export interface OverlayProps extends Omit<
   /**
    * The accessible name of the overlay. An overlay that holds nothing readable
    * — a bare spinner, a `clear` sheet — still has to say what it is, so this
-   * falls back to the `locale`'s word for it rather than to nothing.
+   * falls back to the `locale`'s word for "Loading" rather than to nothing.
    */
   label?: string;
   /** What sits on top of the scrim — a spinner, a line of text, a small card. */

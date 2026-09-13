@@ -54,6 +54,8 @@
 
 - **A `Skeleton` given a `label` says it.** A labelled skeleton was a `role="status"` with `aria-busy="true"` and the label as its `aria-label`. `aria-busy` tells a screen reader to hold a region's changes back until it clears, and a live region is announced by what it holds rather than by its name, so neither half reached the reader. The status now holds the label as visually hidden text and carries no `aria-busy`. A test that found it with `getByRole('status', { name })` should look for the text inside it.
 
+- **An `Overlay` with no `label` is named "Loading".** The default name was the word "Overlay", so the common case — a sheet holding only a spinner — was announced as "Overlay, dialog", which says nothing about why the page went out of reach. The default is the locale's word for "Loading" now, in all eighteen registered languages. A test that found an unlabelled overlay by the name "Overlay" should use "Loading", and an overlay that means something else should pass `label`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

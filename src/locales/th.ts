@@ -150,7 +150,7 @@ export const th: NebaLocale = {
     label: 'การแจ้งเตือน'
   },
   overlay: {
-    label: 'เลเยอร์ซ้อน'
+    label: 'กำลังโหลด'
   },
   window: {
     minimize: 'ย่อ',

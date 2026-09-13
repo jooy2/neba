@@ -154,7 +154,7 @@ export const es: NebaLocale = {
     label: 'Notificaciones'
   },
   overlay: {
-    label: 'Superposición'
+    label: 'Cargando'
   },
   window: {
     minimize: 'Minimizar',
