@@ -272,6 +272,8 @@
 
 - **A `GaugeChart`'s reading is in a server render.** The number in the middle was drawn only once the box had been measured, and an unmeasured box counted as an empty gauge, so the HTML a server sent, and a crawler read, said "Nothing here" where the reading belonged. Until it is measured the gauge now shows its reading and caption in the middle of the box.
 
+- **An `AnimateMarquee`'s copies are out of the tab order.** The strip is laid down more than once so it can loop, and the copies were only `aria-hidden`, so every link or button in it was a tab stop once per copy, each landing somewhere a screen reader had been told was not there. The copies are `inert` now.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

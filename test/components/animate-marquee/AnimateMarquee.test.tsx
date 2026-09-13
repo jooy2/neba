@@ -64,6 +64,20 @@ describe('AnimateMarquee', () => {
       expect(tracks[1]).toHaveAttribute('aria-hidden', 'true');
     });
 
+    // A link in every copy was a tab stop in every copy.
+    it('keeps the copies out of the tab order', async () => {
+      const screen = await render(
+        <AnimateMarquee copies={3} data-testid="marquee">
+          <a href="#one">One</a>
+        </AnimateMarquee>
+      );
+      const links = Array.from(screen.getByTestId('marquee').element().querySelectorAll('a'));
+      const reachable = links.filter((link) => !link.closest('[inert]'));
+
+      expect(links).toHaveLength(3);
+      expect(reachable).toHaveLength(1);
+    });
+
     it('keeps caller-supplied class names alongside its own', async () => {
       const screen = await render(
         <AnimateMarquee className="my-own-class" data-testid="marquee">

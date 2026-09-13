@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
+import { inertValue } from '../../internal/inert.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaOrientation } from '../../types.js';
@@ -68,9 +69,10 @@ export interface AnimateMarqueeProps
  * pointer, or the same link would be unreachable to whoever tabs to it — the
  * strip would be carrying it off the screen while it was being read.
  *
- * Only the first copy is read out. The rest carry `aria-hidden`, or a screen
- * reader would announce everything on the strip as many times as it was laid
- * down.
+ * Only the first copy is read out and reached. The rest carry `aria-hidden`
+ * and `inert`, or a screen reader would announce everything on the strip as
+ * many times as it was laid down, and a keyboard would stop at every link in
+ * it as many times too.
  */
 export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueeProps>(
   function AnimateMarquee(
@@ -164,6 +166,10 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
         ref={index === 0 ? trackRef : undefined}
         className="neba-marquee-track"
         aria-hidden={index === 0 ? undefined : 'true'}
+        // And out of the tab order: a link in a copy is a second stop for the
+        // same link, landing somewhere `aria-hidden` has told a screen reader
+        // is not there.
+        inert={inertValue(index !== 0)}
       >
         {children}
       </div>
