@@ -38,6 +38,8 @@
 
 - **A `ScrollZone` button keeps the focus when the press reaches the end.** The button with nowhere to go became `disabled`, or under `buttons="auto"` with overlaid buttons was removed outright, and either way the focus fell to the document. It is now `aria-disabled`, and an overlaid one stays until the focus leaves it. A test that asserted `toBeDisabled()` on it should assert `aria-disabled="true"`.
 
+- **`HowToSteps`' Previous and Next keep the focus at the ends.** Pressing Previous onto the first step, or Next onto the last with `completion={false}`, made the button `disabled` and dropped the focus onto the document. Both stay in place with `aria-disabled`; a test that asserted `toBeDisabled()` on them should assert `aria-disabled="true"`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

@@ -163,7 +163,19 @@ describe('HowToSteps', () => {
     it('has nowhere to go back to on the first step', async () => {
       const screen = await render(<HowToSteps steps={STEPS} />);
 
-      await expect.element(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Previous' }))
+        .toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('keeps the focus on Previous when it reaches the first step', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} defaultStep={1} />);
+      const previous = screen.getByRole('button', { name: 'Previous' });
+
+      await previous.click();
+
+      await expect.element(previous).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(previous).toHaveFocus();
     });
 
     it('takes the step it is given and changes nothing on its own', async () => {
@@ -259,7 +271,9 @@ describe('HowToSteps', () => {
       const screen = await render(<HowToSteps steps={STEPS} defaultStep={2} completion={false} />);
 
       expect(screen.getByRole('button', { name: 'Done' }).query()).toBeNull();
-      await expect.element(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Next' }))
+        .toHaveAttribute('aria-disabled', 'true');
     });
   });
 

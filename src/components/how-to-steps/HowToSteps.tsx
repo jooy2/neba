@@ -756,6 +756,9 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                       variant="outline"
                       color={color}
                       disabled={first}
+                      // Pressing Previous onto the first step is what disables
+                      // it, and a `disabled` button hands the focus to the page.
+                      focusableWhenDisabled
                       startIcon={
                         <span className="rotate-90 rtl:-rotate-90">
                           <ChevronIcon />
@@ -787,6 +790,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                         variant="solid"
                         color={color}
                         disabled={last}
+                        focusableWhenDisabled
                         endIcon={
                           <span className="-rotate-90 rtl:rotate-90">
                             <ChevronIcon />
