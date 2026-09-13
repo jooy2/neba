@@ -107,6 +107,14 @@ import { Image } from 'neba';
 
 파일이 도착하는 동안 같은 모양의 [Skeleton](../feedback/skeleton)이 자리를 지킵니다. 직접 만든 노드를 넘기거나 `false`로 끌 수 있습니다.
 
+`{ src }`를 넘기면 대신 그림이 자리를 지킵니다. URL, data URI, `Blob`을 받으며, Blob은 object URL로 보여 주고 필요 없어지면 해제합니다. 최종 그림과 같은 `fit`, `position`, `rotate`, `flip`으로 그리므로 같은 파일의 작은 사본을 넣는 용도입니다. 몇 픽셀짜리를 늘린 사본은 `blur`로 부드럽게 만들 수 있고, `true`면 20픽셀, 숫자를 주면 그만큼 흐립니다. 그림은 이 사본 위로 서서히 나타나고, 사본은 그 전환이 끝난 뒤 사라집니다. Skeleton처럼 상자를 채우므로 `ratio`나 `width`와 `height`가 있어야 보입니다.
+
+<Demo src="image/placeholder">
+
+<<< @/.vitepress/demos/image/placeholder.tsx
+
+</Demo>
+
 도착하지 못하면 `fallback`이 대신 그려지고, 기본값은 `alt` 텍스트를 담은 상자입니다. 아무것도 없는 것보다 나은 이유는, 브라우저 자신의 찢어진 종이 글리프가 독자에게 파일 하나가 없다는 게 아니라 **사이트가** 고장 났다고 말하기 때문입니다.
 
 `src`가 바뀌면 둘 다 처음부터 다시 시작합니다. 그러지 않으면 두 번째 파일이 첫 번째의 성공을 물려받아 placeholder를 아예 보여 주지 않고, 실패한 두 번째 파일도 마찬가지로 성공을 물려받습니다.

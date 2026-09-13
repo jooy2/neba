@@ -18,6 +18,8 @@ The files under this folder are what the documentation's previews draw on: a pho
 | `people/` | Head-and-shoulders portraits, 192px square, framed for an avatar              |
 | `logos/`  | Product marks, 128px square, transparent                                      |
 
+A photograph whose name ends in `-tiny` is a 24-pixel copy of the photograph of the same name, kept for the previews that show a small stand-in while the full file arrives.
+
 The people are fictional. Each was generated without a reference photograph, and the name on a file labels the file rather than standing for anyone.
 
 Nothing here ships in the npm package: `docs/` is not published.

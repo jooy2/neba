@@ -8,6 +8,7 @@ export type {
   NebaImageFrameOptions,
   NebaImageFrameShape,
   NebaImageLetterbox,
+  NebaImagePlaceholderOptions,
   NebaImagePosition,
   NebaImageProtection,
   NebaImageRotation,

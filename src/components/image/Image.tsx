@@ -69,6 +69,28 @@ export type NebaImageLetterbox = 'none' | 'blur';
 /** The silhouette a frame cuts the picture to. */
 export type NebaImageFrameShape = 'rect' | 'rounded' | 'circle' | 'cut' | 'arch';
 
+/**
+ * A picture to stand in while the file arrives, rather than a Skeleton.
+ *
+ * Drawn the way the picture will be — the same `fit`, `position`, `rotate`
+ * and `flip` — which is what it is for: a small copy of the same file, a few
+ * hundred bytes inlined as a data URI or already in memory as a `Blob`, so the
+ * reader sees the picture's colours and shape before its detail.
+ */
+export interface NebaImagePlaceholderOptions {
+  /**
+   * The stand-in: a URL, a data URI, or a `Blob`. A Blob is turned into an
+   * object URL for as long as it is shown and released when it is not.
+   */
+  src: string | Blob;
+  /**
+   * Blurs the stand-in, by this many pixels or by 20 for `true` — a copy
+   * stretched up from a few pixels is blocky without it.
+   * @default false
+   */
+  blur?: boolean | number;
+}
+
 export interface NebaImageFrameOptions {
   /** @default 'rounded' */
   shape?: NebaImageFrameShape;
@@ -270,9 +292,13 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
   rounded?: NebaSize | boolean;
   /**
    * What stands in while the file is arriving. A Skeleton of the right shape by
-   * default, `false` for nothing at all.
+   * default, a node of your own, `{ src }` for a picture — a small copy of the
+   * same file, as a URL or a `Blob` — or `false` for nothing at all.
+   *
+   * Like the Skeleton, a stand-in fills the box, so it needs one to fill: a
+   * `ratio`, or `width` and `height`.
    */
-  placeholder?: React.ReactNode | false;
+  placeholder?: React.ReactNode | false | NebaImagePlaceholderOptions;
   /**
    * What is drawn instead when the file does not arrive.
    *
@@ -531,6 +557,58 @@ function objectPosition(position: string, quarters: 0 | 1 | 2 | 3, flip: NebaIma
  */
 const LETTERBOX_BLUR = 24;
 
+/** How far a stand-in with `blur: true` is blurred. */
+const PLACEHOLDER_BLUR = 20;
+
+/** Whether a placeholder is a picture to draw rather than a node to render. */
+function isPlaceholderPicture(
+  placeholder: React.ReactNode | NebaImagePlaceholderOptions
+): placeholder is NebaImagePlaceholderOptions {
+  return (
+    typeof placeholder === 'object' &&
+    placeholder !== null &&
+    !React.isValidElement(placeholder) &&
+    'src' in placeholder
+  );
+}
+
+/**
+ * A URL for a stand-in, whichever of the two it was given as.
+ *
+ * A Blob becomes an object URL in an effect rather than during the render: an
+ * object URL is an allocation the document holds until it is revoked, and a
+ * render React throws away would leave one behind that nothing could release.
+ * The cost is a stand-in that appears a frame after the box, which is sooner
+ * than any file it stands in for.
+ */
+function useObjectUrl(source: string | Blob | undefined): string | undefined {
+  // Kept with the Blob it was made from, so a URL for the last Blob is never
+  // handed out for the next one in the render before the effect has caught up.
+  const [made, setMade] = React.useState<{ blob: Blob; url: string } | null>(null);
+
+  React.useEffect(() => {
+    if (typeof Blob === 'undefined' || !(source instanceof Blob)) {
+      return undefined;
+    }
+
+    const url = URL.createObjectURL(source);
+
+    // The object URL is the external system here: it is allocated in the one
+    // place that can release it, and the state only carries it to the render.
+    // It runs once per Blob rather than cascading.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMade({ blob: source, url });
+
+    return () => URL.revokeObjectURL(url);
+  }, [source]);
+
+  if (typeof source === 'string') {
+    return source;
+  }
+
+  return made !== null && made.blob === source ? made.url : undefined;
+}
+
 /**
  * The geometry of a copy of the picture drawn under it: the same turn, the same
  * mirror, and the same box grown by `bleed` on every side.
@@ -730,6 +808,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   } = useStyleDefaults(rawProps, ['locale']);
 
   const messages = useMessages(imageMessages, locale);
+  const stand = placeholder !== false && isPlaceholderPicture(placeholder) ? placeholder : null;
+  const standSrc = useObjectUrl(stand?.src);
   const [phase, setPhase] = React.useState<Phase>('loading');
   const [open, setOpen] = React.useState(false);
   /*
@@ -880,7 +960,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         phase === 'loaded' ? 'opacity-100' : 'opacity-0',
         // Positioned, so it paints over the absolutely positioned copy under it
         // rather than beneath it.
-        blurred ? 'relative' : '',
+        blurred || stand !== null ? 'relative' : '',
         guarded?.className,
         classNames?.image
       )}
@@ -924,6 +1004,38 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     />
   ) : null;
 
+  const standBlur =
+    stand === null || !stand.blur ? 0 : stand.blur === true ? PLACEHOLDER_BLUR : stand.blur;
+
+  /*
+   * The picture stand-in, under the picture rather than over it: the picture
+   * fades in on top of it, and it is taken away only once that fade has run, so
+   * the two are never both half there with the page showing through. Gone
+   * entirely when the file fails, since the fallback says that instead.
+   */
+  const standIn =
+    stand === null || phase === 'failed' || standSrc === undefined ? null : (
+      <img
+        src={standSrc}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className={cx(
+          'pointer-events-none block select-none',
+          objectFitClasses[fit],
+          phase === 'loaded'
+            ? 'opacity-0 [transition:opacity_0ms_linear_var(--neba-duration-fill)]'
+            : 'opacity-100',
+          classNames?.placeholder
+        )}
+        style={{
+          ...layerStyle(pose, sideways, standBlur * 2),
+          objectPosition: placed,
+          filter: standBlur === 0 ? undefined : `blur(${standBlur}px)`
+        }}
+      />
+    );
+
   const cover =
     phase === 'failed' ? (
       <span
@@ -940,9 +1052,11 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           </span>
         )}
       </span>
-    ) : phase === 'loading' && placeholder !== false ? (
+    ) : phase === 'loading' && placeholder !== false && stand === null ? (
       <span className={cx('absolute inset-0', classNames?.placeholder)}>
-        {placeholder ?? <Skeleton shape="rect" className={cx('size-full', radius)} />}
+        {(placeholder as React.ReactNode) ?? (
+          <Skeleton shape="rect" className={cx('size-full', radius)} />
+        )}
       </span>
     ) : null;
 
@@ -963,6 +1077,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       }
     >
       {backdrop}
+      {standIn}
       {picture}
       {cover}
       {mark}

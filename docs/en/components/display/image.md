@@ -107,6 +107,14 @@ A picture on its side is laid out on its side. `width` and `height` still descri
 
 While the file is arriving, a [Skeleton](../feedback/skeleton) of the same shape stands in. Pass a node of your own, or `false` for nothing.
 
+Pass `{ src }` to stand a picture in instead: a URL, a data URI or a `Blob`, which is shown through an object URL and released when it is no longer needed. It is drawn the way the picture will be, with the same `fit`, `position`, `rotate` and `flip`, so it is meant for a small copy of the same file. `blur` softens a copy stretched up from a few pixels, by 20 pixels for `true` or by a number you give. The picture fades in over it, and it goes once that fade has run. Like the Skeleton, it fills the box, so it needs a `ratio`, or `width` and `height`.
+
+<Demo src="image/placeholder">
+
+<<< @/.vitepress/demos/image/placeholder.tsx
+
+</Demo>
+
 When it does not arrive, `fallback` is drawn instead: by default a box carrying the `alt` text. Something rather than nothing, because the browser's own torn-page glyph tells a reader the _site_ is broken rather than that one file is missing.
 
 Changing `src` starts both over. Without that, a second file would inherit the first one's success and never show a placeholder, and a second file that failed would inherit it too.

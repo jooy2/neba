@@ -117,6 +117,96 @@ describe('Image', () => {
     expect(screen.container.querySelectorAll('[class*="animate"]').length).toBe(0);
   });
 
+  describe('a picture as the placeholder', () => {
+    const standInOf = (container: HTMLElement) =>
+      container.querySelector<HTMLImageElement>('img[aria-hidden="true"]');
+
+    // Held in the loading phase with no `src`, for the reason given above.
+    it('draws the picture it was given instead of a Skeleton', async () => {
+      const screen = await render(<Image alt="A ridge" ratio={1} placeholder={{ src: OK }} />);
+      const standIn = standInOf(screen.container);
+
+      expect(standIn).toHaveAttribute('src', OK);
+      expect(standIn).toHaveAttribute('alt', '');
+      expect(standIn).toHaveClass('opacity-100', 'object-cover');
+      expect(screen.container.querySelectorAll('[class*="animate"]').length).toBe(0);
+      // Positioned, so the picture paints over it when it arrives.
+      await expect.element(screen.getByRole('img', { name: 'A ridge' })).toHaveClass('relative');
+    });
+
+    it('blurs it, and grows it past the box so the blur has no edge', async () => {
+      const screen = await render(
+        <Image alt="A ridge" ratio={1} placeholder={{ src: OK, blur: true }} />
+      );
+      const standIn = standInOf(screen.container) as HTMLImageElement;
+
+      expect(standIn.style.filter).toBe('blur(20px)');
+      expect(standIn.style.width).toBe('calc(100% + 80px)');
+
+      await screen.rerender(<Image alt="A ridge" ratio={1} placeholder={{ src: OK, blur: 6 }} />);
+      expect((standInOf(screen.container) as HTMLImageElement).style.filter).toBe('blur(6px)');
+    });
+
+    it('turns and places it the way the picture will be', async () => {
+      const screen = await render(
+        <Image
+          alt="A ridge"
+          ratio={1}
+          fit="contain"
+          position="top"
+          rotate={180}
+          placeholder={{ src: OK }}
+        />
+      );
+      const standIn = standInOf(screen.container) as HTMLImageElement;
+
+      expect(standIn).toHaveClass('object-contain');
+      expect(standIn.style.rotate).toBe('180deg');
+      expect(standIn.style.objectPosition).toBe('50% 100%');
+    });
+
+    it('draws a Blob through an object URL and releases it when it is gone', async () => {
+      const revoke = vi.spyOn(URL, 'revokeObjectURL');
+      const blob = await (await fetch(OK)).blob();
+      const screen = await render(<Image alt="A ridge" ratio={1} placeholder={{ src: blob }} />);
+
+      await vi.waitFor(() =>
+        expect(standInOf(screen.container)?.getAttribute('src')).toMatch(/^blob:/)
+      );
+
+      const url = standInOf(screen.container)?.getAttribute('src');
+
+      await screen.unmount();
+
+      expect(revoke).toHaveBeenCalledWith(url);
+      revoke.mockRestore();
+    });
+
+    /*
+     * Taken away only once the picture has faded in over it: gone at once, the
+     * two would be half there together and the page would show through.
+     */
+    it('waits for the picture to finish arriving before it goes', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" ratio={1} placeholder={{ src: OK }} />
+      );
+
+      await vi.waitFor(() => expect(standInOf(screen.container)).toHaveClass('opacity-0'));
+      expect(standInOf(screen.container)?.className).toContain(
+        'transition:opacity_0ms_linear_var(--neba-duration-fill)'
+      );
+    });
+
+    it('is taken away when the file fails', async () => {
+      const screen = await render(
+        <Image src={BROKEN} alt="A ridge" ratio={1} placeholder={{ src: OK }} />
+      );
+
+      await expect.element(screen.getByText('A ridge')).toBeInTheDocument();
+      expect(standInOf(screen.container)).toBeNull();
+    });
+  });
+
   /*
    * The fade was written down and never ran: the picture carried the house
    * transition, whose property list is the four a control answers a pointer
