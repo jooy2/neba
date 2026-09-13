@@ -365,6 +365,29 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
       }
     }, [active, vertical]);
 
+    /*
+     * Done and Start over each remove the button that was pressed — the row of
+     * buttons is a different row once the guide is finished — and a focused
+     * element that leaves the document drops the focus to `<body>`, so a
+     * keyboard reader starts again from the top of the page. The press says
+     * where the focus should go, and it goes there once the row has been drawn:
+     * to Start over after Done, and back to the forward button after Start over.
+     * Keyed on the state it was waiting for, so a controlled guide whose parent
+     * did not follow the press is not surprised by a focus move later.
+     */
+    const restartRef = React.useRef<HTMLButtonElement | null>(null);
+    const forwardRef = React.useRef<HTMLButtonElement | null>(null);
+    const handOff = React.useRef<boolean | null>(null);
+
+    React.useEffect(() => {
+      if (handOff.current === null || handOff.current !== completed) {
+        return;
+      }
+
+      handOff.current = null;
+      (completed ? restartRef : forwardRef).current?.focus();
+    }, [completed]);
+
     if (total === 0) {
       return null;
     }
@@ -381,6 +404,10 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
 
     const first = active === 0;
     const last = active === total - 1;
+
+    const pressed = (event: React.MouseEvent<HTMLButtonElement>, completing: boolean) => {
+      handOff.current = event.currentTarget === document.activeElement ? completing : null;
+    };
 
     /**
      * The entrance, and how it is re-run without remounting anything.
@@ -706,11 +733,15 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
               <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                 {completed ? (
                   <Button
+                    ref={restartRef}
                     size={size}
                     variant="outline"
                     color={color}
                     startIcon={<RestartIcon />}
-                    onClick={() => go(0)}
+                    onClick={(event) => {
+                      pressed(event, false);
+                      go(0);
+                    }}
                   >
                     {restartLabel ?? messages.restart}
                   </Button>
@@ -733,16 +764,21 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
 
                     {last && completion ? (
                       <Button
+                        ref={forwardRef}
                         size={size}
                         variant="solid"
                         color={color}
                         startIcon={<CheckIcon />}
-                        onClick={() => go(active, true)}
+                        onClick={(event) => {
+                          pressed(event, true);
+                          go(active, true);
+                        }}
                       >
                         {doneLabel ?? messages.done}
                       </Button>
                     ) : (
                       <Button
+                        ref={forwardRef}
                         size={size}
                         variant="solid"
                         color={color}

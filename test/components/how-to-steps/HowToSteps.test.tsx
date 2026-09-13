@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { HowToSteps } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 import type { HowToStep } from 'neba';
@@ -210,6 +211,19 @@ describe('HowToSteps', () => {
       await screen.getByRole('button', { name: 'Start over' }).click();
 
       await expect.element(screen.getByText('1 of 3')).toBeInTheDocument();
+    });
+
+    it('keeps the focus in the row of buttons through Done and Start over', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} defaultStep={2} />);
+
+      screen.getByRole('button', { name: 'Done' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('button', { name: 'Start over' })).toHaveFocus();
+
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('button', { name: 'Next' })).toHaveFocus();
     });
 
     it('reports finishing and starting again', async () => {

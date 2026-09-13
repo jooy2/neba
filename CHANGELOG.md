@@ -124,6 +124,8 @@
 
 - **`CodeBlock` keeps nothing for a `language` it cannot load.** Every unknown name a page passed was remembered for the page's lifetime, so a block whose language came from a reader's choice grew the cache without bound; such a name is now answered as plain text on the spot. A `language` named after a member of `Object`'s prototype, such as `constructor`, is plain text too rather than a failed attempt to call `Object` as a grammar.
 
+- **`HowToSteps` keeps the keyboard focus through Done and Start over.** Both remove the button that was pressed, so the focus fell to the page and a keyboard reader started again from the top. Done hands it to Start over, and Start over hands it back to the forward button.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
