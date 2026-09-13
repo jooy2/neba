@@ -522,6 +522,34 @@ describe('Image', () => {
     await expect.element(screen.getByRole('dialog', { name: 'A ridge' })).toBeInTheDocument();
   });
 
+  // The preview took only `src`, so a picture given a `srcSet` alone opened an
+  // empty dialog, and one behind a CORS rule was fetched again without it.
+  it('opens the preview from the same sources and request settings', async () => {
+    const screen = await render(
+      <Image
+        srcSet={`${OK} 1x`}
+        sizes="120px"
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
+        alt="A ridge"
+        preview
+      />
+    );
+
+    await screen.getByRole('button', { name: 'A ridge' }).click();
+
+    const dialog = screen.getByRole('dialog', { name: 'A ridge' });
+    await expect.element(dialog).toBeInTheDocument();
+
+    const enlarged = dialog.element().querySelector('img') as HTMLImageElement;
+
+    expect(enlarged.getAttribute('srcset')).toBe(`${OK} 1x`);
+    expect(enlarged.getAttribute('crossorigin')).toBe('anonymous');
+    expect(enlarged.getAttribute('referrerpolicy')).toBe('no-referrer');
+    // The thumbnail's `sizes` would choose the thumbnail's candidate.
+    expect(enlarged.hasAttribute('sizes')).toBe(false);
+  });
+
   it('is not a button without preview', async () => {
     const screen = await render(<Image src={OK} alt="A ridge" />);
 

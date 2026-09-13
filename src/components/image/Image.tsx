@@ -1287,8 +1287,16 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
             className={cx('relative mx-auto block', sideways ? '' : 'w-fit')}
             style={sideways ? turnedPreviewStyle(natural ?? file) : undefined}
           >
+            {/* The same file, reached the same way: a picture given only a
+                `srcSet` had an empty preview, and one behind a CORS or referrer
+                rule was asked for without it. `sizes` stays behind on purpose.
+                It describes the thumbnail, and a preview exists to be bigger,
+                so the browser chooses a candidate for the dialog instead. */}
             <img
               src={src}
+              srcSet={props.srcSet}
+              crossOrigin={props.crossOrigin}
+              referrerPolicy={props.referrerPolicy}
               alt={alt}
               className={cx(
                 sideways ? 'block object-contain' : 'mx-auto block max-h-[70vh] w-auto max-w-full',
