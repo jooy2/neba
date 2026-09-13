@@ -113,4 +113,5 @@ What it takes it keeps, at the ends as well, so a flick that runs out of strip d
 - `label` names the region and is what a screen reader reads before its contents. Without one the strip is focusable but unnamed.
 - The scroll buttons are real buttons with real names, and `previousLabel` / `nextLabel` (or `locale`) decide what those names are.
 - In `hold` mode the buttons answer Enter and Space the same way they answer a press, scrolling while the key is down.
+- A button with nowhere to go is marked `aria-disabled` rather than `disabled`, so the press that reaches the end leaves the focus on it. An overlaid one that `auto` would remove stays until the focus moves on.
 - Nothing inside the strip is hidden when it is off screen: it is genuinely reachable by scrolling, and `aria-hidden` on it would be a lie a keyboard reader would fall into.

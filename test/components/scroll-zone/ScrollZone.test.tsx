@@ -160,8 +160,39 @@ describe('ScrollZone', () => {
         </ScrollZone>
       );
 
-      await expect.element(screen.getByRole('button', { name: 'Scroll back' })).toBeDisabled();
-      await expect.element(screen.getByRole('button', { name: 'Scroll forward' })).toBeEnabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll back' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .not.toHaveAttribute('aria-disabled', 'true');
+    });
+
+    // Pressing it is what runs it out, and a button that is taken away or made
+    // `disabled` under the focus drops the focus onto the document.
+    it('keeps the focus on an overlaid button that runs out, until the focus leaves', async () => {
+      const screen = await render(
+        <ScrollZone buttonPlacement="overlay" data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const forward = screen.getByRole('button', { name: 'Scroll forward' });
+
+      (forward.element() as HTMLElement).focus();
+      // The one place a scroll is needed: without a stylesheet the strip does not
+      // clip, so it is given the overflow its class would have given it.
+      const strip = scroller(screen);
+      strip.style.overflowX = 'auto';
+      strip.scrollLeft = strip.scrollWidth;
+
+      await expect.element(forward).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(forward).toHaveFocus();
+
+      strip.focus();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .not.toBeInTheDocument();
     });
 
     it('draws none at all when it is told to', async () => {
@@ -257,8 +288,12 @@ describe('ScrollZone', () => {
       const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
       const root = screen.getByTestId('zone').element();
 
-      await expect.element(screen.getByRole('button', { name: 'Scroll back' })).toBeDisabled();
-      await expect.element(screen.getByRole('button', { name: 'Scroll forward' })).toBeEnabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll back' }))
+        .toHaveAttribute('aria-disabled', 'true');
+      await expect
+        .element(screen.getByRole('button', { name: 'Scroll forward' }))
+        .not.toHaveAttribute('aria-disabled', 'true');
       // A lane either side, and nothing invisible or `inert` in either of them.
       expect(root.children).toHaveLength(3);
       expect(root.children[0]).not.toHaveClass('invisible');

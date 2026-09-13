@@ -239,6 +239,9 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     /** Whether there is anything left in each direction, as one object so a
      *  measurement that changed nothing costs no render. */
     const [reach, setReach] = React.useState({ back: false, forward: false });
+    // The button holding the focus, which an overlaid `auto` button that runs
+    // out is kept for: taking it away would take the focus with it.
+    const [held, setHeld] = React.useState<'back' | 'forward' | null>(null);
 
     const measure = React.useCallback(() => {
       const el = scrollerRef.current;
@@ -545,7 +548,12 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       // the same row reading as stray padding at the edge every reader meets
       // first. So it stays and is `disabled`, in the width it was occupying
       // anyway, which is what `always` was already doing there.
-      if (buttons === 'auto' && !available && !inline) return <span />;
+      //
+      // Either way it is disabled rather than gone while it holds the focus —
+      // pressing it is what ran it out — and an overlaid one goes once the
+      // focus has left it.
+      const side = forward ? 'forward' : 'back';
+      if (buttons === 'auto' && !available && !inline && held !== side) return <span />;
 
       const turn = horizontal
         ? forward
@@ -564,6 +572,9 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
           elevation={1}
           label={forward ? (nextLabel ?? messages.next) : (previousLabel ?? messages.previous)}
           disabled={!available}
+          focusableWhenDisabled
+          onFocus={() => setHeld(side)}
+          onBlur={() => setHeld((current) => (current === side ? null : current))}
           className="pointer-events-auto"
           // Drawn pointing down and turned, which is the one allowance the
           // no-transform rule makes.
