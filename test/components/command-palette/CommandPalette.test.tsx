@@ -115,6 +115,36 @@ describe('CommandPalette', () => {
       expect(screen.getByText('Deploy production').query()).toBeNull();
     });
 
+    it('starts empty again after a command ran and closed it', async () => {
+      const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+P" defaultOpen />);
+
+      await screen.getByRole('combobox').fill('overview');
+      await expect
+        .element(screen.getByRole('option', { name: /Go to overview/ }))
+        .toBeInTheDocument();
+      await userEvent.keyboard('{ArrowDown}{Enter}');
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+
+      await userEvent.keyboard('{Alt>}p{/Alt}');
+
+      await expect.element(screen.getByRole('combobox')).toHaveValue('');
+      await expect.element(screen.getByText('Deploy production')).toBeInTheDocument();
+    });
+
+    it('starts empty again after a controlled open was turned off', async () => {
+      const screen = await render(<CommandPalette items={ITEMS} shortcut={false} open />);
+
+      await screen.getByRole('combobox').fill('overview');
+      await expect.element(screen.getByText('Deploy production')).not.toBeInTheDocument();
+
+      await screen.rerender(<CommandPalette items={ITEMS} shortcut={false} open={false} />);
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+      await screen.rerender(<CommandPalette items={ITEMS} shortcut={false} open />);
+
+      await expect.element(screen.getByRole('combobox')).toHaveValue('');
+      await expect.element(screen.getByText('Deploy production')).toBeInTheDocument();
+    });
+
     it('says so when nothing matched', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut={false} defaultOpen />);
 

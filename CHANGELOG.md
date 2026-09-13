@@ -306,6 +306,8 @@
 
 - **A chart writes the name of its left axis above the plot, and on a horizontal chart writes it at all.** A vertical chart's `yAxis.label` was drawn eight pixels above the plot, which on most charts is above the top of the box, while the room for it was taken out of the band beside the ticks, where nothing was drawn. A horizontal chart's `xAxis.label` took that band too and was never drawn. The name of the axis along the left edge now takes a band along the top of the box and is drawn in it, so the plot is a little shorter and a little wider than before. A `hidden` axis draws no name, as its props say.
 
+- **A `CommandPalette` opens with an empty search after a command closed it.** The query was cleared only when Escape or the scrim closed the sheet, so running a command, or turning a controlled `open` off, left the last search in the field and the next open showed a filtered list. It is cleared whenever the palette closes, however that happens.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

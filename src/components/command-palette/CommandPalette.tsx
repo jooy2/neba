@@ -231,6 +231,18 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
 
   const showing = open ?? uncontrolled;
 
+  // The query is dropped on the way out rather than on the way in, so the sheet
+  // never flashes the last search as it opens. It is read off `showing` during
+  // render rather than off one close path, because there are three — Escape or
+  // the scrim, a command that runs and closes it, and a controlled `open` the
+  // caller turns off — and missing one opens the next search already filtered.
+  const [wasShowing, setWasShowing] = React.useState(showing);
+
+  if (showing !== wasShowing) {
+    setWasShowing(showing);
+    if (!showing) setQuery('');
+  }
+
   const setOpen = React.useCallback(
     (next: boolean) => {
       if (open === undefined) setUncontrolled(next);
@@ -307,15 +319,7 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
   const listHeight = toLength(maxHeight);
 
   return (
-    <BaseUIDialog.Root
-      open={showing}
-      onOpenChange={(next) => {
-        // The query is dropped on the way out rather than on the way in, so the
-        // sheet never flashes the last search as it fades.
-        if (!next) setQuery('');
-        setOpen(next);
-      }}
-    >
+    <BaseUIDialog.Root open={showing} onOpenChange={setOpen}>
       <BaseUIDialog.Portal>
         <BaseUIDialog.Backdrop
           className={cx('neba-portal', backdropClasses, classNames?.backdrop)}
