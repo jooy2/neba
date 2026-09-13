@@ -288,7 +288,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 - [ ] **120** [major] **Disabled appearance does not apply.** See C5.
   - [x] Accordion, Collapsible: the Base UI trigger is `focusableWhenDisabled`, so it has no `disabled` attribute and the `disabled:` variant never matches. Use `data-[disabled]:` (`Accordion.tsx:321`, `Collapsible.tsx:211`). Done as a branch in JS rather than `data-[disabled]:`, which would have been decided against `hover:` and `data-[panel-open]:` by stylesheet order; the Accordion passes its own `disabled` through context.
   - [x] RadioGroup: the group's `disabled` is not in context, so a Radio looks enabled (`RadioGroup.tsx:34-38`).
-  - [ ] SegmentedButton: no disabled branch, so the colour family stays and grey text sits on the solid fill (`SegmentedButton.tsx:107-125, 178`).
+  - [x] SegmentedButton: no disabled branch, so the colour family stays and grey text sits on the solid fill (`SegmentedButton.tsx:107-125, 178`).
   - [ ] Slider: shows the state with `opacity-70`, against the design language (`Slider.tsx:168`).
   - [ ] [decision] Fieldset: `disabled` is not reflected on the fields inside; it needs Base UI's Fieldset context (`Fieldset.tsx:55`). See D18.
 - [x] **121** Two cursor utilities were decided by stylesheet order on disabled fields and toggles.

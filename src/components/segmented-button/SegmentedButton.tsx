@@ -40,13 +40,15 @@ interface SegmentedButtonContextValue {
   size: NebaSize;
   density: NebaDensity;
   fullWidth: boolean;
+  disabled: boolean;
 }
 
 const SegmentedButtonContext = React.createContext<SegmentedButtonContextValue>({
   variant: 'outline',
   size: 'md',
   density: 'default',
-  fullWidth: false
+  fullWidth: false,
+  disabled: false
 });
 
 export interface SegmentedButtonProps
@@ -112,6 +114,16 @@ const troughClasses: Record<NebaVariant, string> = {
 };
 
 /**
+ * A disabled set drops the colour family, as a disabled Button does. The groove
+ * keeps its padding and its hairline's width, so nothing moves.
+ */
+const disabledTroughClasses: Record<NebaVariant, string> = {
+  solid: 'bg-transparent p-1',
+  outline: 'border bg-transparent p-1 [border-color:var(--neba-disabled-border)]',
+  text: ''
+};
+
+/**
  * The tile that slides.
  *
  * `solid` fills it with the colour family and puts the on-fill ink on the label;
@@ -124,6 +136,14 @@ const tileClasses: Record<NebaVariant, string> = {
   outline: `${surfaceClasses} bg-(--n-panel-press) [box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]`,
   text: `${surfaceClasses} bg-(--n-panel-press) [box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]`
 };
+
+/**
+ * The tile under a disabled segment, whether the set is disabled or only that
+ * segment is. It is marked `data-off` when it is measured, which is where the
+ * component learns which segment it sits under; the grey label on it would
+ * otherwise sit on the family's fill.
+ */
+const offTileClasses = 'data-[off]:bg-(--neba-disabled-bg) data-[off]:[box-shadow:none]';
 
 /** What the chosen label is written in, which is the other half of the tile. */
 const checkedTextClasses: Record<NebaVariant, string> = {
@@ -143,7 +163,9 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
   { value, startIcon, endIcon, disabled = false, className, children, ...props },
   ref
 ) {
-  const { variant, size, density, fullWidth } = React.useContext(SegmentedButtonContext);
+  const set = React.useContext(SegmentedButtonContext);
+  const { variant, size, density, fullWidth } = set;
+  const off = disabled || set.disabled;
 
   return (
     <BaseUIRadio.Root
@@ -158,7 +180,7 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
       className={cx(
         // `z-10` and a stacking context of its own: the tile is painted behind
         // the segments, and without this it would cover the label it is under.
-        'relative z-10 inline-flex shrink-0 cursor-pointer items-center justify-center select-none',
+        'relative z-10 inline-flex shrink-0 items-center justify-center select-none',
         'whitespace-nowrap font-medium',
         '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
         controlHeightClasses[size],
@@ -171,12 +193,18 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
         'rounded-full',
         transitionClasses,
         iconClasses,
-        'text-(--neba-muted-fg) hover:text-(--neba-fg)',
-        checkedTextClasses[variant],
+        // An if/else rather than `data-[disabled]:` beside `data-[checked]:`: two
+        // variants of equal specificity are decided by stylesheet order, and
+        // the checked ink won over the disabled one.
+        off
+          ? 'cursor-not-allowed text-(--neba-disabled-fg)'
+          : cx(
+              'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg)',
+              checkedTextClasses[variant]
+            ),
         // Inset rather than offset — an offset ring on a segment inside a trough
         // is drawn on top of its neighbours.
         'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-        'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
         'data-[readonly]:cursor-default',
         fullWidth ? 'flex-1' : '',
         className ?? ''
@@ -271,6 +299,8 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
         return;
       }
 
+      tile.toggleAttribute('data-off', active.hasAttribute('data-disabled'));
+
       // A tile that has only just mounted has nowhere to travel *from*, so its
       // first placement is instant however it was asked for — that is what makes
       // the first choice of an empty set appear under the segment rather than
@@ -302,7 +332,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     // Before the browser paints, or the tile is visibly at nothing for a frame.
     React.useLayoutEffect(() => {
       measure(true);
-    }, [measure, value, variant, size, density, fullWidth, children]);
+    }, [measure, value, variant, size, density, fullWidth, disabled, children]);
 
     React.useEffect(() => {
       const root = rootRef.current;
@@ -314,8 +344,8 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     }, [measure]);
 
     const context = React.useMemo(
-      () => ({ variant, size, density, fullWidth }),
-      [variant, size, density, fullWidth]
+      () => ({ variant, size, density, fullWidth, disabled }),
+      [variant, size, density, fullWidth, disabled]
     );
 
     return (
@@ -344,7 +374,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
             // `relative` is load-bearing twice over: it is what makes the trough
             // the segments' offsetParent, and what the tile is positioned in.
             'relative items-center rounded-full',
-            troughClasses[variant],
+            disabled ? disabledTroughClasses[variant] : troughClasses[variant],
             transitionClasses,
             readOnly ? '[filter:saturate(0.55)]' : '',
             // Decided here rather than beside a base `inline-flex`, which the
@@ -368,6 +398,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
                 'pointer-events-none absolute rounded-full',
                 'left-(--n-seg-x) top-(--n-seg-y) h-(--n-seg-h) w-(--n-seg-w)',
                 tileClasses[variant],
+                offTileClasses,
                 '[transition-property:left,top,width,height]',
                 '[transition-timing-function:var(--neba-ease)]',
                 // Nothing until the first measurement has landed; the house

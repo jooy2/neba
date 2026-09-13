@@ -370,6 +370,8 @@
 
 - **The radios of a disabled `RadioGroup` look disabled.** The group's `disabled` reached Base UI, which stopped the radios answering, and never reached the `Radio`s' own drawing, which read only their own prop, so a disabled group looked available. A Radio takes the group's `disabled` when it has none of its own.
 
+- **A disabled `SegmentedButton` drops its colour family.** It had no disabled drawing of its own: the groove and the tile kept the family's colours, and the chosen segment's grey label sat on the solid fill, where the checked ink and the disabled ink were decided by stylesheet order. The groove and the tile take the disabled ground a Button does, every label takes the disabled ink, and the tile under one disabled segment in an enabled set is greyed as well.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

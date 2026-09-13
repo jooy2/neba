@@ -176,6 +176,44 @@ describe('SegmentedButton', () => {
     });
   });
 
+  describe('disabled', () => {
+    // A disabled set kept its colour family, and the grey label of the chosen
+    // segment sat on the solid fill.
+    it('drops the colour family from the groove, the tile and the labels', async () => {
+      const screen = await render(<Basic value="week" variant="solid" disabled />);
+      const group = screen.getByRole('radiogroup').element();
+
+      expect(group).not.toHaveClass('bg-(--n-panel)');
+      expect(tile(group)).toHaveAttribute('data-off');
+
+      for (const name of ['Day', 'Week']) {
+        const segment = screen.getByRole('radio', { name }).element();
+
+        expect(segment, name).toHaveClass('text-(--neba-disabled-fg)');
+        expect(segment.className, name).not.toContain('data-[checked]:text-(--n-on-solid)');
+      }
+    });
+
+    it('greys the tile under one disabled segment and not under the others', async () => {
+      const set = (value: string) => (
+        <SegmentedButton value={value} aria-label="Set" variant="solid">
+          <Segment value="day">Day</Segment>
+          <Segment value="week" disabled>
+            Week
+          </Segment>
+        </SegmentedButton>
+      );
+      const screen = await render(set('week'));
+      const group = screen.getByRole('radiogroup').element();
+
+      expect(tile(group)).toHaveAttribute('data-off');
+
+      await screen.rerender(set('day'));
+
+      expect(tile(group)).not.toHaveAttribute('data-off');
+    });
+  });
+
   describe('the tile', () => {
     it('is not drawn until something is chosen', async () => {
       const screen = await render(<Basic />);
