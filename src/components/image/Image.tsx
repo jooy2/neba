@@ -195,17 +195,24 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    */
   ratio?: number | string | 'auto';
   /**
-   * The file's own pixel dimensions, as an `<img>` takes them.
+   * The file's own pixel dimensions, as an `<img>` takes them — or, given one
+   * at a time, the size of the box.
    *
-   * They are the platform's own answer to layout shift, and they are what to
-   * reach for when the proportion is the picture's rather than the layout's:
-   * `ratio` says "hold this shape whatever arrives", these two say "this is
-   * what will arrive". Give both and an `'auto'` ratio becomes their
+   * Together they are the platform's own answer to layout shift, and they are
+   * what to reach for when the proportion is the picture's rather than the
+   * layout's: `ratio` says "hold this shape whatever arrives", these two say
+   * "this is what will arrive". Give both and an `'auto'` ratio becomes their
    * proportion, so the box is reserved without anybody working out that 1200 by
    * 800 is 3/2.
    *
-   * They reach the `<img>` either way. One on its own reserves nothing, since
-   * a proportion needs two numbers.
+   * One on its own is not a proportion, so it is read as the length it looks
+   * like. `height={200}` is a box 200 pixels tall across whatever width it is
+   * given, and `width={320}` is one 320 wide — never wider than its container —
+   * and as tall as the picture makes it. A number is pixels and a string is a
+   * CSS length, and `fit` decides what the picture does inside. With a `ratio`
+   * as well, a lone `height` takes its width from the ratio.
+   *
+   * They reach the `<img>` either way.
    */
   width?: number | string;
   height?: number | string;
@@ -348,6 +355,17 @@ function pixelSize(width?: number | string, height?: number | string): PixelSize
   return Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0
     ? { width: w, height: h }
     : null;
+}
+
+/**
+ * A lone `width` or `height` as the length it sizes the box to: a number, or a
+ * string of digits the way the attribute is written, is pixels, and anything
+ * else is already a CSS length.
+ */
+function boxLength(value: number | string): string {
+  const pixels = typeof value === 'number' ? value : value.trim() === '' ? NaN : Number(value);
+
+  return Number.isFinite(pixels) ? `${pixels}px` : String(value);
 }
 
 /**
@@ -745,8 +763,28 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
    * rather than by swapping it for an AspectRatio, which would remount the
    * picture the moment it arrived.
    */
+  /*
+   * One dimension on its own is not a proportion, so it sizes the box on its
+   * axis instead, and `fit` decides what the picture does inside. A lone height
+   * leaves the width to the container, unless a `ratio` can say what it is; a
+   * lone width is capped at the container's, the way a reset caps an `<img>`.
+   */
+  const loneWidth = height === undefined && width !== undefined ? boxLength(width) : undefined;
+  const loneHeight = width === undefined && height !== undefined ? boxLength(height) : undefined;
+  const sized: React.CSSProperties | null =
+    loneWidth !== undefined
+      ? { width: loneWidth, maxWidth: '100%' }
+      : loneHeight !== undefined
+        ? { height: loneHeight, ...(ratio === 'auto' ? null : { width: 'auto', maxWidth: '100%' }) }
+        : null;
+  // Whether the box is narrower than the container, which a frame and a
+  // preview button around it then have to shrink to rather than stretch past.
+  const narrowed = loneWidth !== undefined || (loneHeight !== undefined && ratio !== 'auto');
+
   const measured =
-    ratio === 'auto' && sideways && natural !== null ? natural.height / natural.width : null;
+    ratio === 'auto' && sideways && natural !== null && loneHeight === undefined
+      ? natural.height / natural.width
+      : null;
 
   const shape = frame === undefined ? null : resolveFrame(frame, rounded);
   const corner = shape === null ? '0px' : cornerLength(shape.corner ?? 'md');
@@ -754,6 +792,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const feather = shape === null ? undefined : toLength(shape.feather);
 
   const boxStyle: React.CSSProperties = {
+    ...sized,
     ...(shape === null ? null : shapeStyle(shape.shape, corner)),
     ...(feather === undefined ? null : featherStyle(feather)),
     ...(shape === null ? style : null)
@@ -812,6 +851,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           padding: mat,
           background: shape.background ?? (mat === undefined ? undefined : 'var(--neba-surface)'),
           boxShadow: shape.elevation ? `var(--neba-shadow-${shape.elevation})` : undefined,
+          width: narrowed ? 'fit-content' : undefined,
+          maxWidth: narrowed ? '100%' : undefined,
           ...style
         }}
       >
@@ -838,7 +879,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // a screen reader reading the same sentence twice.
         aria-label={alt}
         className={cx(
-          'block w-full cursor-zoom-in [outline:none]',
+          'block cursor-zoom-in [outline:none]',
+          narrowed ? 'w-fit max-w-full' : 'w-full',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:2px]',
           radius
         )}

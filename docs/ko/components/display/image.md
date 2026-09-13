@@ -48,11 +48,24 @@ import { Image } from 'neba';
 <Image src={src} alt="…" width={1200} height={800} />
 ```
 
-`ratio`는 레이아웃의 비율이고 이 둘은 그림의 비율이라, `ratio`를 직접 주면 그쪽이 이깁니다. 하나만 주면 아무것도 잡지 않습니다. 비율에는 숫자 둘이 필요하기 때문입니다.
+`ratio`는 레이아웃의 비율이고 이 둘은 그림의 비율이라, `ratio`를 직접 주면 그쪽이 이깁니다.
+
+하나만 주면 비율이 되지 않으므로 그 축의 상자 크기가 됩니다. `height={200}`은 주어진 너비만큼 퍼지는 높이 200픽셀 상자이고, `width={320}`은 컨테이너보다 넓어지지 않는 너비 320픽셀 상자이며 높이는 그림을 따릅니다. 숫자는 픽셀이고 문자열은 CSS 길이입니다. `ratio`를 함께 주면 `height` 하나만 준 상자는 너비를 비율에서 가져옵니다.
+
+```tsx
+<Image src={src} alt="…" height={200} fit="contain" />
+<Image src={src} alt="…" width={320} />
+```
 
 ### fit과 rounded
 
-`fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none`, `scale-down` 중 하나를 받습니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
+`fit`은 `object-fit`이며 `cover`(기본값), `contain`, `fill`, `none`, `scale-down` 중 하나를 받습니다. `ratio`든 `width`나 `height` 하나든 `className`이든, 그림과 모양이 다른 상자 안에서 그림을 어떻게 둘지 정합니다. `rounded`는 radius 사다리의 한 단계를 받고, `true`면 `md`입니다.
+
+<Demo src="image/fit">
+
+<<< @/.vitepress/demos/image/fit.tsx
+
+</Demo>
 
 ### rotate와 flip
 

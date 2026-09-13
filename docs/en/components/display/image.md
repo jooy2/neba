@@ -48,11 +48,24 @@ The file's own pixel dimensions, as an `<img>` takes them. They reach the pictur
 <Image src={src} alt="…" width={1200} height={800} />
 ```
 
-`ratio` is the layout's shape and these two are the picture's, so an explicit `ratio` outranks them. One on its own reserves nothing, since a proportion needs two numbers.
+`ratio` is the layout's shape and these two are the picture's, so an explicit `ratio` outranks them.
+
+One on its own is not a proportion, so it sizes the box on that axis instead. `height={200}` is a box 200 pixels tall across the width it is given, and `width={320}` is one 320 pixels wide, never wider than its container, and as tall as the picture. A number is pixels and a string is a CSS length. With a `ratio` as well, a lone `height` takes its width from the ratio.
+
+```tsx
+<Image src={src} alt="…" height={200} fit="contain" />
+<Image src={src} alt="…" width={320} />
+```
 
 ### fit and rounded
 
-`fit` is `object-fit`: `cover` (the default), `contain`, `fill`, `none`, `scale-down`. `rounded` takes a step of the radius ladder, or `true` for `md`.
+`fit` is `object-fit`: `cover` (the default), `contain`, `fill`, `none`, `scale-down`. It decides what the picture does inside a box that is not its own shape, whether `ratio`, a lone `width` or `height`, or a `className` set that box. `rounded` takes a step of the radius ladder, or `true` for `md`.
+
+<Demo src="image/fit">
+
+<<< @/.vitepress/demos/image/fit.tsx
+
+</Demo>
 
 ### rotate and flip
 

@@ -173,11 +173,74 @@ describe('Image', () => {
       expect(length.container.querySelector('[style*="aspect-ratio"]')).toBeNull();
     });
 
-    // A proportion needs two numbers.
-    it('reserves nothing for one on its own', async () => {
-      const screen = await render(<Image src={OK} alt="A ridge" width={1200} />);
+    /*
+     * A proportion needs two numbers, so one on its own is read as the length it
+     * looks like: the size of the box on that axis, with `fit` deciding what the
+     * picture does inside.
+     */
+    describe('one on its own', () => {
+      const boxIn = (container: HTMLElement) => container.firstElementChild as HTMLElement;
 
-      expect(screen.container.querySelector('[style*="aspect-ratio"]')).toBeNull();
+      it('sizes the box to a lone height and reserves no proportion', async () => {
+        const screen = await render(<Image src={OK} alt="A ridge" height={200} />);
+        const box = boxIn(screen.container);
+
+        expect(box.style.height).toBe('200px');
+        expect(box.style.width).toBe('');
+        expect(screen.container.querySelector('[style*="aspect-ratio"]')).toBeNull();
+        await expect
+          .element(screen.getByRole('img', { name: 'A ridge' }))
+          .toHaveAttribute('height', '200');
+      });
+
+      it('sizes the box to a lone width, capped at its container', async () => {
+        const screen = await render(<Image src={OK} alt="A ridge" width={320} />);
+        const box = boxIn(screen.container);
+
+        expect(box.style.width).toBe('320px');
+        expect(box.style.maxWidth).toBe('100%');
+        expect(box.style.height).toBe('');
+      });
+
+      // The attribute is written as digits, and a CSS length is a CSS length.
+      it('reads digits as pixels and passes a length through', async () => {
+        const digits = await render(<Image src={OK} alt="A ridge" height="180" />);
+        expect(boxIn(digits.container).style.height).toBe('180px');
+
+        const length = await render(<Image src={OK} alt="A ridge" width="20rem" />);
+        expect(boxIn(length.container).style.width).toBe('20rem');
+      });
+
+      it('takes the width from a ratio beside a lone height', async () => {
+        const screen = await render(<Image src={OK} alt="A ridge" height={120} ratio="4 / 3" />);
+        const box = boxIn(screen.container);
+
+        expect(box.style.height).toBe('120px');
+        expect(box.style.width).toBe('auto');
+        expect(ratioOf(box)).toBeCloseTo(4 / 3);
+      });
+
+      // A mount or a button stretched to the container would draw its mat, its
+      // shadow or its focus ring out past a picture narrower than that.
+      it('shrinks a frame and a preview button to a narrowed box', async () => {
+        const framed = await render(
+          <Image
+            src={OK}
+            alt="A ridge"
+            width={240}
+            frame={{ mat: 8 }}
+            classNames={{ frame: 'mount' }}
+          />
+        );
+        expect((framed.container.querySelector('.mount') as HTMLElement).style.width).toBe(
+          'fit-content'
+        );
+
+        const previewed = await render(<Image src={OK} alt="A ridge" width={240} preview />);
+        await expect
+          .element(previewed.getByRole('button', { name: 'A ridge' }))
+          .toHaveClass('w-fit');
+      });
     });
 
     // `ratio` is the layout's shape and these two are the picture's, so an

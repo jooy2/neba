@@ -11553,8 +11553,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'width · height',
       type: 'number | string',
       description: {
-        ko: '파일 자체의 픽셀 크기. img가 받는 그대로 전달되고, 둘 다 주면 auto 비율이 그 비율이 됩니다. 1200×800이 3/2라는 걸 직접 계산할 필요가 없습니다',
-        en: "The file's own pixel dimensions, passed to the img as they are. Give both and an auto ratio becomes their proportion, so nobody has to work out that 1200 by 800 is 3/2"
+        ko: '파일 자체의 픽셀 크기. img가 받는 그대로 전달되고, 둘 다 주면 auto 비율이 그 비율이 됩니다. 하나만 주면 그 축의 상자 크기가 되며 숫자는 픽셀, 문자열은 CSS 길이입니다',
+        en: "The file's own pixel dimensions, passed to the img as they are. Give both and an auto ratio becomes their proportion. Give one and it sizes the box on that axis: a number is pixels, a string a CSS length"
       }
     },
     {
