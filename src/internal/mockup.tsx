@@ -705,12 +705,16 @@ function StartGlyph({ size }: { size: number }) {
   );
 }
 
-/** What a system puts on the screen, and how much room it takes. */
+/**
+ * What a system puts on the screen. Each bar sets its own height on itself, so
+ * the room it takes is whatever it draws: the screen lays the bars out in flow
+ * and nothing reads the number back.
+ */
 export interface MockupChrome {
-  top?: { size: number; node: React.ReactNode };
-  bottom?: { size: number; node: React.ReactNode };
+  top?: { node: React.ReactNode };
+  bottom?: { node: React.ReactNode };
   /** A dock down the leading edge. Only Linux has one. */
-  start?: { size: number; node: React.ReactNode };
+  start?: { node: React.ReactNode };
 }
 
 /**
@@ -740,7 +744,6 @@ export function mockupChrome(options: {
 
     return {
       top: {
-        size: height,
         node: (
           <div
             aria-hidden="true"
@@ -753,7 +756,6 @@ export function mockupChrome(options: {
         )
       },
       bottom: {
-        size: tablet ? 22 : 34,
         node: (
           <div
             aria-hidden="true"
@@ -777,7 +779,6 @@ export function mockupChrome(options: {
   if (os === 'android') {
     return {
       top: {
-        size: 34,
         node: (
           <div
             aria-hidden="true"
@@ -790,7 +791,6 @@ export function mockupChrome(options: {
         )
       },
       bottom: {
-        size: 48,
         node: (
           <div aria-hidden="true" className={`${barClasses} justify-center`} style={{ height: 48 }}>
             <NavGlyphs size={20} gap={72} />
@@ -803,7 +803,6 @@ export function mockupChrome(options: {
   if (os === 'macos') {
     return {
       top: {
-        size: 28,
         node: (
           <div
             aria-hidden="true"
@@ -826,7 +825,6 @@ export function mockupChrome(options: {
         )
       },
       bottom: {
-        size: 78,
         node: (
           // The dock is a sheet of its own floating clear of the edge, which is
           // the one thing about it that is unmistakable at any size.
@@ -858,7 +856,6 @@ export function mockupChrome(options: {
   if (os === 'windows') {
     return {
       bottom: {
-        size: 52,
         node: (
           <div
             aria-hidden="true"
@@ -884,7 +881,6 @@ export function mockupChrome(options: {
 
   return {
     top: {
-      size: 34,
       node: (
         <div
           aria-hidden="true"
@@ -906,7 +902,6 @@ export function mockupChrome(options: {
     // The one dock that runs down an edge rather than along one, which is what
     // makes a Linux desktop recognisable from across a room.
     start: {
-      size: 66,
       node: (
         <div
           aria-hidden="true"
