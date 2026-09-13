@@ -1182,6 +1182,24 @@ describe('grouping', () => {
     await expect.element(screen.getByRole('button', { name: /Oslo\s*1/ })).toBeInTheDocument();
   });
 
+  it('stripes grouped rows by where they sit on the page, across the headings', async () => {
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={CITIES}
+        getRowKey={key}
+        groupBy={(row) => row.city}
+        striped
+      />
+    );
+    const striped = (id: string) =>
+      screen.container
+        .querySelector(`tr[data-neba-row="${id}"]`)
+        ?.className.includes('--n-row:var(--n-stripe)');
+
+    expect([striped('a'), striped('b'), striped('c')]).toEqual([false, true, false]);
+  });
+
   it('folds a group away and back', async () => {
     const screen = await render(
       <DataTable headers={HEADERS} items={CITIES} getRowKey={key} groupBy={(row) => row.city} />

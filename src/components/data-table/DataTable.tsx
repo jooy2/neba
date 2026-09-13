@@ -949,6 +949,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * that walks a hundred thousand strings sixty times a second.
    */
   const pagedKeys = React.useMemo(() => paged.map((entry) => entry.key), [paged]);
+  /**
+   * Where each row on this page sits in it, by key. A grouped body asks that of
+   * every row of every group on each render, and answering by searching the
+   * page each time made a selection in a five-thousand-row grouped table cost
+   * tens of millions of comparisons.
+   */
+  const pageIndex = React.useMemo(
+    () => new Map(pagedKeys.map((rowKey, index) => [rowKey, index])),
+    [pagedKeys]
+  );
   const byKey = React.useMemo(() => new Map(entries.map((entry) => [entry.key, entry])), [entries]);
 
   /* -- Selection ----------------------------------------------------------- */
@@ -2475,12 +2485,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 {groups
                   ? groups.order.map((label) => {
                       const all = groups.byLabel.get(label) ?? [];
-                      const onPage = all.filter((entry) => pagedKeys.includes(entry.key));
+                      const onPage = all.filter((entry) => pageIndex.has(entry.key));
 
                       return (
                         <React.Fragment key={label || '\u0000'}>
                           {groupHeading(label, all)}
-                          {onPage.map((entry) => bodyRow(entry, paged.indexOf(entry)))}
+                          {onPage.map((entry) => bodyRow(entry, pageIndex.get(entry.key) ?? 0))}
                         </React.Fragment>
                       );
                     })
