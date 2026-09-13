@@ -2342,6 +2342,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     return (
       <input
         autoFocus
+        data-neba-editor=""
         type={column.editType === 'number' ? 'number' : 'text'}
         defaultValue={initial === null || initial === undefined ? '' : String(initial)}
         aria-label={typeof column.label === 'string' ? column.label : column.key}
@@ -2448,8 +2449,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       padded={false}
       className={cx(
         'flex flex-col overflow-hidden',
+        // The table's own focus, and a cell editor's, which draws no ring of its
+        // own. Not any focus inside the sheet: the search field and the footer's
+        // controls ring themselves, and a second ring around the whole table
+        // said the table had the focus when it did not.
         selects
-          ? 'has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[:focus-visible]:outline-offset-2'
+          ? 'has-[table:focus-visible,[data-neba-editor]:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[table:focus-visible,[data-neba-editor]:focus-visible]:outline-offset-2'
           : '',
         className
       )}

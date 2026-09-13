@@ -1376,6 +1376,34 @@ describe('editing', () => {
     expect(screen.getByRole('textbox').query()).toBeNull();
   });
 
+  // The sheet rang for any focus inside it, so the search field drew its own
+  // ring inside a second one around the whole table. What it rings for now is
+  // the table and the one control in it with no ring of its own, the editor.
+  // The ring itself is a stylesheet rule, and no component test loads one.
+  it('rings the sheet for the table and its editor rather than for any focus inside', async () => {
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable
+        headers={columns}
+        items={ITEMS}
+        getRowKey={key}
+        selectionMode="multiple"
+        searchable
+        onCellEdit={() => {}}
+      />
+    );
+    const sheet = screen.container.firstElementChild!;
+
+    expect(sheet.className).not.toContain('has-[:focus-visible]');
+    expect(sheet.className).toContain('has-[table:focus-visible,[data-neba-editor]:focus-visible]');
+
+    await screen.getByText('Ada').dblClick();
+
+    await expect
+      .element(screen.getByRole('textbox', { name: 'Name' }))
+      .toHaveAttribute('data-neba-editor');
+  });
+
   it('opens an editor on a double-click and commits on Enter', async () => {
     const onCellEdit = vi.fn();
     const columns: DataTableColumn<Person>[] = [

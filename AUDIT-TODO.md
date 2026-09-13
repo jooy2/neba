@@ -323,7 +323,7 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
   - [x] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`). A pinned heading was also stacked under the sticky headings beside it, found while checking this with the stylesheet loaded, and was fixed with it.
   - [x] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
   - [ ] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`).
-  - [ ] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
+  - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
   - [ ] The header being dragged shows its state with `opacity-60` (`:1948`).
 - [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`
 - [ ] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`

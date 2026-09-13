@@ -336,6 +336,8 @@
 
 - **Dragging a `DataTable` column reports the new order once.** The order was worked out and committed inside two nested state updaters, and React's StrictMode runs every updater twice, so `onColumnOrderChange` was called twice for one drag in development. The drag reads what it needs when it ends and commits outside them.
 
+- **A `DataTable` rings its sheet only when the table has the focus.** The ring around a selectable table answered any focus inside it, so the search field drew its own ring inside a second ring around the whole table, which said the table had the focus when it did not; the footer's page-size Select did the same. It answers the table itself and the cell editor now, which is the one control in it with no ring of its own.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
