@@ -78,11 +78,14 @@ Badge는 컨트롤 높이 단계를 쓰지 않고 자체 단계를 씁니다. `m
 ## 접근성
 
 - `content={3}`만 있으면 screen reader에는 "3"으로 읽힙니다. `label`에 문장을 주면 그 문장이 표식의 accessible name이 됩니다.
+- 표식은 대상 안이 아니라 옆에 그려지므로, Tab으로 배지가 붙은 버튼에 가면 버튼 이름만 들리고 개수는 들리지 않습니다. 배지에 `id`를 주고 컨트롤의 `aria-describedby`로 가리키면 버튼과 함께 문장이 읽힙니다.
 
 ```tsx
-<Badge content={3} label="읽지 않은 알림 3개">
-  <Button startIcon={<BellIcon />} aria-label="알림" />
-</Badge>
+const unread = React.useId();
+
+<Badge id={unread} content={3} label="읽지 않은 알림 3개">
+  <Button startIcon={<BellIcon />} aria-label="알림" aria-describedby={unread} />
+</Badge>;
 ```
 
 - `dot`일 때도 `content`는 DOM에 남아 시각적으로만 가려지므로, 점이 무엇을 뜻하는지 읽을 수 있습니다.

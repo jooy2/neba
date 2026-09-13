@@ -78,11 +78,14 @@ Badge has its own size steps rather than a step off the control heights. `md` is
 ## Accessibility
 
 - `content={3}` on its own is just "3" to a screen reader. A sentence in `label` becomes the marker's accessible name instead.
+- The marker is drawn beside what it sits on, not inside it, so a reader who tabs to a badged button hears the button's name and nothing about the count. Give the badge an `id` and point the control's `aria-describedby` at it, and the sentence is read with the button.
 
 ```tsx
-<Badge content={3} label="3 unread notifications">
-  <Button startIcon={<BellIcon />} aria-label="Notifications" />
-</Badge>
+const unread = React.useId();
+
+<Badge id={unread} content={3} label="3 unread notifications">
+  <Button startIcon={<BellIcon />} aria-label="Notifications" aria-describedby={unread} />
+</Badge>;
 ```
 
 - Under `dot` the `content` stays in the DOM, clipped rather than removed, so what the dot means is still readable.

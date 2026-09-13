@@ -126,6 +126,18 @@ describe('Badge', () => {
       expect(screen.getByText('3', { exact: true }).query()).toBeNull();
     });
 
+    it('describes a control that points at it by id with the sentence alone', async () => {
+      const screen = await render(
+        <Badge id="unread" content={3} label="3 unread notifications">
+          <Button aria-label="Notifications" aria-describedby="unread" />
+        </Badge>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Notifications' }))
+        .toHaveAccessibleDescription('3 unread notifications');
+    });
+
     it('takes a hidden badge out of the accessibility tree', async () => {
       const screen = await render(<Badge invisible content={4} />);
 
