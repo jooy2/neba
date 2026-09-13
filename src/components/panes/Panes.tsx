@@ -344,6 +344,9 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     resizable
       ? cx(
           horizontal ? 'cursor-col-resize' : 'cursor-row-resize',
+          // Or a finger moving across the handle starts a scroll, and the
+          // browser cancels the pointer a few pixels into the drag.
+          'touch-none',
           'hover:bg-(--n-soft) data-[dragging]:bg-(--n-soft)'
         )
       : ''

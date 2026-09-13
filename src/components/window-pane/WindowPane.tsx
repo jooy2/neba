@@ -647,7 +647,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
         className={cx(
           'relative flex shrink-0 items-center select-none',
           iconClasses,
-          draggable && !maximized ? 'cursor-grab active:cursor-grabbing' : ''
+          // `touch-none` with the grab, or a finger on the title bar scrolls the
+          // page and the browser cancels the drag a few pixels into it.
+          draggable && !maximized ? 'cursor-grab touch-none active:cursor-grabbing' : ''
         )}
         style={{
           height: metrics.bar,

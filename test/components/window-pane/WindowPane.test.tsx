@@ -524,6 +524,13 @@ describe('WindowPane', () => {
       expect(onOffsetChange).toHaveBeenLastCalledWith({ x: 40, y: 30 });
     });
 
+    it('keeps a finger on a draggable title bar from scrolling the page instead', async () => {
+      const screen = await render(<WindowPane title="Finder" draggable data-testid="window" />);
+      const bar = screen.getByTestId('window').element().querySelector('.cursor-grab');
+
+      expect(bar).toHaveClass('touch-none');
+    });
+
     it('does not move a window that was not made draggable', async () => {
       const onOffsetChange = vi.fn();
       const screen = await render(

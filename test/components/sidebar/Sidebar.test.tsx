@@ -103,6 +103,8 @@ describe('Sidebar', () => {
 
       expect(handle).toHaveAttribute('aria-orientation', 'vertical');
       expect(handle).toHaveAttribute('tabindex', '0');
+      // A finger dragging it would otherwise scroll the page and lose the pointer.
+      expect(handle).toHaveClass('touch-none');
     });
 
     it('names the handle so a keyboard reader knows what it does', async () => {

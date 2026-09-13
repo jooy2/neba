@@ -136,6 +136,8 @@
 
 - **Picking a month from a calendar's month grid keeps the focus in the calendar.** The day grid drew its first frame with the tab stop still in the previous month, found no day to focus and dropped the focus to the page; this happened in `Calendar` and in every date picker. The first day of the picked month takes the focus.
 
+- **`Panes`, `Sidebar` and a draggable `WindowPane` can be dragged with a finger.** Their handles and the window's title bar let the browser treat a moving finger as a scroll, so it cancelled the pointer a few pixels into every drag. They take `touch-action: none` now, as the window's resize handles already did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

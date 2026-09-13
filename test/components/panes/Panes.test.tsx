@@ -44,6 +44,10 @@ describe('Panes', () => {
       );
 
       await expect.poll(() => screen.getByRole('separator').elements()).toHaveLength(2);
+      // A finger dragging a handle would otherwise scroll the page and lose the pointer.
+      for (const handle of screen.getByRole('separator').elements()) {
+        expect(handle).toHaveClass('touch-none');
+      }
     });
 
     it('renders no handle for a single pane', async () => {

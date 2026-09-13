@@ -445,7 +445,9 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
             // pixel wide is a target one pixel wide, which is not a target. The
             // same split between what is drawn and what can be grabbed that a
             // scrollbar makes, and that Panes makes.
-            'absolute inset-y-0 z-1 w-2 cursor-col-resize',
+            // `touch-none`, or a finger dragging the edge scrolls the page and
+            // the browser cancels the pointer a few pixels in.
+            'absolute inset-y-0 z-1 w-2 cursor-col-resize touch-none',
             side === 'start' ? 'end-0 -me-1' : 'start-0 -ms-1',
             'bg-transparent hover:bg-(--n-soft) data-[dragging]:bg-(--n-soft)',
             transitionClasses,
