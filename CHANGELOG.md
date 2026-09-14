@@ -454,6 +454,8 @@
 
 - **A `NumberField`'s `ref` is its input.** It was a plain function component, so under React 18 a `ref` was dropped with a warning, and under React 19 it was passed along as a prop to the root `<div>`, so a form library focusing the field that failed validation focused nothing a reader can type into. It now forwards the ref to the `<input>`, as `TextField` does. Code that read the root `<div>` through the ref under React 19 gets the input instead.
 
+- **`IconButton`s in a `ButtonGroup` join like other buttons.** An IconButton drew itself round with an inline `border-radius`, which beat the classes a ButtonGroup uses to square off the corners between neighbours, so a row of icon buttons overlapped as circles. It now reaches round through the radius ladder Button's own class reads, so the group's joined corners apply and the ends of the row stay round. A caller's `style` still overrides the radius.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

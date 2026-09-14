@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { IconButton } from 'neba';
+import { ButtonGroup, IconButton } from 'neba';
 
 function Glyph() {
   return <svg viewBox="0 0 16 16" />;
@@ -45,9 +45,25 @@ describe('IconButton', () => {
       const screen = await render(<IconButton icon={<Glyph />} label="Add item" size="xl" />);
       const element = screen.getByRole('button').element() as HTMLElement;
 
-      // Inline rather than a utility on purpose: it has to beat the `rounded-*`
-      // class Button writes, and class order is not something to depend on.
-      expect(element.style.borderRadius).toBe('9999px');
+      // Through the ladder Button's own `rounded-*` class reads rather than a
+      // second class, whose win over Button's would depend on stylesheet order.
+      expect(element).toHaveClass('rounded-(--neba-radius-xl)');
+      expect(element.style.getPropertyValue('--neba-radius-xl')).toBe('9999px');
+    });
+
+    // An inline `border-radius` beat the corners a ButtonGroup squares off, so a
+    // row of icon buttons overlapped as circles.
+    it('leaves no inline radius for a ButtonGroup to lose to', async () => {
+      const screen = await render(
+        <ButtonGroup>
+          <IconButton icon={<Glyph />} label="Bold" />
+          <IconButton icon={<Glyph />} label="Italic" />
+        </ButtonGroup>
+      );
+
+      for (const button of screen.getByRole('button').elements() as HTMLElement[]) {
+        expect(button.style.borderRadius).toBe('');
+      }
     });
 
     it('lets a caller override the radius through style', async () => {

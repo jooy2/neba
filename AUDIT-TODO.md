@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F13 (149)** IconButton in a ButtonGroup: (a) move the round radius into a class, so the group's joined corners apply; (b) document that an IconButton is not joined.
 - **F14 (151)** Rating without `name`: (a) write no `name`, so nothing is submitted; (b) keep the generated name and document it.
 - **F15 (152)** FloatingActionButton `openOnHover`: (a) a click just after the hover opened the dial keeps it open; (b) turn `openOnHover` off by default.
 - **F16 (153)** BottomNavigation `labels="selected"`: (a) reserve the name line on every item, so the glyphs stay put; (b) leave it.
@@ -300,7 +299,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **146** **Checkbox**: `readOnly` together with `indeterminate` has no fill, so it does not look indeterminate. `Checkbox.tsx:111-117`
 - [x] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
 - [x] **148** [decision] **NumberField** has no `forwardRef`. Under React 18 it takes no ref, and under React 19 the ref lands on the root div, so react-hook-form cannot focus the field with the error. `NumberField.tsx:214`. See F12. Decided: (a) `forwardRef` to the input.
-- [ ] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`. See F13.
+- [x] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`. See F13. Decided: (a) the radius lives in Button's own `rounded-*` class, with the ladder's tokens pinned to 9999px on the IconButton, so the group's joined-corner classes outrank it; a separate `rounded-full` would have tied Button's class on stylesheet order.
 - [x] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
 - [ ] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`. See F14.
 - [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`. See F15.

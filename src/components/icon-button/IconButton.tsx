@@ -40,6 +40,15 @@ export interface IconButtonProps extends Omit<ButtonProps, 'children' | 'startIc
  * surrounding ButtonGroup sets. Two components that draw the same surface from
  * two copies of the same table are two components that will eventually disagree.
  */
+/** Every step of the radius ladder, pinned round on one element. */
+const roundRadius = {
+  '--neba-radius-xs': '9999px',
+  '--neba-radius-sm': '9999px',
+  '--neba-radius-md': '9999px',
+  '--neba-radius-lg': '9999px',
+  '--neba-radius-xl': '9999px'
+} as React.CSSProperties;
+
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
   { icon, label, style, ...props },
   ref
@@ -52,13 +61,13 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(f
       // puts Button on its icon-only path: square footprint, no horizontal
       // padding, and the spinner taking the glyph's place while `loading`.
       startIcon={icon}
-      // An inline style rather than `rounded-full`, and for once not as a
-      // shortcut. Button already writes a `rounded-*` utility of its own, and two
-      // utilities setting the same property resolve by their order in the
-      // generated stylesheet — which is not something a component may depend on.
-      // An inline declaration is the one form that wins deterministically, and it
-      // still leaves the caller's own `style` free to override it below.
-      style={{ borderRadius: '9999px', ...style }}
+      // Round through the radius ladder Button already reads, not through a
+      // second utility: two `rounded-*` classes resolve by stylesheet order, and
+      // an inline `border-radius` beat the corners a ButtonGroup squares off, so
+      // a row of icon buttons overlapped as circles. Pinning the ladder's steps on
+      // this element keeps Button's own class, which the group's joined corners
+      // outrank. A caller's own `style` still overrides it.
+      style={{ ...roundRadius, ...style }}
       {...props}
     />
   );
