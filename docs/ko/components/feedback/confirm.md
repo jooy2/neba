@@ -40,7 +40,7 @@ if (await confirm({ title: '프로젝트를 삭제할까요?', color: 'danger' }
 
 reject하지 않습니다. **아니오**로 답한 질문은 실패가 아니라 답이고, 그것으로 throw하는 promise는 모든 호출 지점을 `try`로 만듭니다.
 
-취소 · `Escape` · backdrop 클릭은 모두 `false`로 resolve합니다. 셋 다 취소 버튼을 다른 경로로 누른 것이므로, promise를 영원히 대기시키지 않고 같은 답을 냅니다.
+취소 · `Escape` · backdrop 클릭은 모두 `false`로 resolve합니다. 셋 다 취소 버튼을 다른 경로로 누른 것이므로, promise를 영원히 대기시키지 않고 같은 답을 냅니다. `alert`에는 취소 버튼이 없으므로 이때는 `true`로 resolve합니다.
 
 ## 예시
 

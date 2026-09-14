@@ -40,7 +40,7 @@ if (await confirm({ title: 'Delete the project?', color: 'danger' })) {
 
 It never rejects. A question answered _no_ is an answer, not a failure, and a promise that throws for it turns every call site into a `try`.
 
-Cancelling, `Escape` and a click on the backdrop all resolve `false`: they are the cancelling button by another route, so they answer the same way rather than leaving a promise pending forever.
+Cancelling, `Escape` and a click on the backdrop all resolve `false`: they are the cancelling button by another route, so they answer the same way rather than leaving a promise pending forever. An `alert` has no cancelling button, so on one they resolve `true`.
 
 ## Examples
 
