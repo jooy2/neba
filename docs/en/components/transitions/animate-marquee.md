@@ -70,6 +70,6 @@ On by default, and not decoration: content moving past a pointer cannot be click
 ## Accessibility
 
 - Only the first copy is read out and reached; the rest carry `aria-hidden` and `inert`, or a screen reader would announce the whole strip as many times as it was laid down and a keyboard would stop at each link as many times.
-- A reduced-motion preference stops the strip and leaves the content in place.
+- A reduced-motion preference stops the strip, draws its content once instead of `copies` times, and lets it wrap onto more lines rather than cutting it off at the edge.
 - `pauseOnHover` is what makes anything interactive inside it usable, and it covers both a pointer resting on the strip and the focus landing inside it. Do not turn it off for a strip with links or buttons in it.
 - A pointer resting on the strip is not something a touch screen can do, and the strip keeps moving past five seconds. Put a pause button beside it and bind its state to `paused`.

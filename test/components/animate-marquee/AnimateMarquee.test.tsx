@@ -2,6 +2,32 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AnimateMarquee } from 'neba';
 
+/*
+ * The reduced-motion answer, under the test's control. The library keeps one
+ * `MediaQueryList` per query and reads its `matches` live, so a stand-in handed
+ * out before the first render is the one every render in this file asks.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 describe('AnimateMarquee', () => {
   describe('rendering', () => {
     it('says which effect it is running', async () => {
@@ -31,6 +57,29 @@ describe('AnimateMarquee', () => {
         .querySelectorAll('.neba-marquee-track');
 
       expect(tracks).toHaveLength(2);
+    });
+
+    // Stopped with its copies still down, a short strip showed its content
+    // several times over and a long one was cut off at the edge.
+    it('lays the content down once for a reader who asked for less motion', async () => {
+      reduceMotion = true;
+
+      try {
+        const screen = await render(
+          <AnimateMarquee copies={4} data-testid="marquee">
+            <span>Alpha</span>
+          </AnimateMarquee>
+        );
+        const tracks = screen
+          .getByTestId('marquee')
+          .element()
+          .querySelectorAll('.neba-marquee-track');
+
+        expect(tracks).toHaveLength(1);
+        expect(tracks[0].hasAttribute('aria-hidden')).toBe(false);
+      } finally {
+        reduceMotion = false;
+      }
     });
 
     it('lays it down as many times as it was asked to', async () => {

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
 import { inertValue } from '../../internal/inert.js';
+import { usePrefersReducedMotion } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaOrientation } from '../../types.js';
@@ -115,6 +116,9 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
     const [travel, setTravel] = React.useState(0);
 
     const vertical = orientation === 'vertical';
+    // A strip that cannot move lays its content down once, so it wraps instead
+    // of repeating; `styles.css` does the same for the first paint.
+    const still = usePrefersReducedMotion();
 
     /**
      * How far one copy has to go, in pixels: its own length plus the gap after
@@ -225,7 +229,7 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
         {...props}
         {...run.handlers}
       >
-        {Array.from({ length: Math.max(1, copies) }, (_, index) => track(index))}
+        {Array.from({ length: still ? 1 : Math.max(1, copies) }, (_, index) => track(index))}
       </div>
     );
   }

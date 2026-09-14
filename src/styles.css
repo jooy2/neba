@@ -2842,4 +2842,24 @@
     background: var(--n-anim-glow, var(--n-accent));
     animation: none;
   }
+
+  /* A marquee that cannot move is a row of content, so it is drawn as one:
+     the copies go, and the strip stops clipping and wraps. Stopped with its
+     copies still laid down, it cut long content off at the edge and showed
+     short content two or four times over. The component renders one copy too;
+     this is what holds in the first paint, before it has asked. */
+  .neba-marquee {
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+
+  .neba-marquee-track {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .neba-marquee-track[aria-hidden='true'] {
+    display: none;
+  }
 }

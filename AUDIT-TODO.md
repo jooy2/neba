@@ -59,7 +59,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### D. Choices (decided: (a))
 
-- **D8 (90)** `AnimateMarquee` under reduced motion: (a) draw no copies and lift `overflow` so the content wraps; (b) hide the copies and keep the clipping.
 - **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
 - **D11 (95)** `Panes` separator: (a) a default name from i18n, a prop for the name, and `aria-controls` pointing at the adjacent panes; (b) a name prop only.
 - **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
@@ -226,7 +225,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 ### Transitions
 
 - [x] **89** AnimateMarquee copies kept links and buttons in the tab order.
-- [ ] **90** [major][decision] **AnimateMarquee**: under reduced motion the track stops but `overflow: hidden` and the copies remain, so long content is clipped and short content shows the same items four times. `src/styles.css:2494-2498, 2666-2668`. See D8.
+- [x] **90** [major][decision] **AnimateMarquee**: under reduced motion the track stops but `overflow: hidden` and the copies remain, so long content is clipped and short content shows the same items four times. `src/styles.css:2494-2498, 2666-2668`. Decided: (a) one copy, no clipping, content wraps; the component renders one copy and the reduced-motion block in `styles.css` covers the first paint.
 - [x] **91** AnimateScramble and AnimateCounter showed noise or `from` under reduced motion before a trigger.
 
 ### Other
