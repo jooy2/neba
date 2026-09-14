@@ -302,9 +302,17 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
                 rowPaddingClasses[density][size],
                 rail ? `${railClasses} ps-3` : ''
               )}
-              style={{
-                marginInlineStart: item.depth ? item.depth * indentSizes[size] : undefined
-              }}
+              // On the rail a nested row is indented inside its own box, which
+              // starts at the rail: indented with a margin, the box moved and
+              // its `border-s` highlight was drawn away from the rail it marks.
+              // `0.75rem` is the `ps-3` the rail rows already take.
+              style={
+                item.depth
+                  ? rail
+                    ? { paddingInlineStart: `calc(0.75rem + ${item.depth * indentSizes[size]}px)` }
+                    : { marginInlineStart: item.depth * indentSizes[size] }
+                  : undefined
+              }
             >
               {item.label}
             </a>

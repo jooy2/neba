@@ -424,6 +424,8 @@
 
 - **A vertical `DataList` keeps each label with its own value.** With `orientation="vertical"` the gap between every child fell between a label and its value as well as between pairs, and the label's own margin made the first of those larger, so a label read as belonging to the value above it. `dividers` drew its rule above every `<dd>` too, between a label and its value. The space now goes above each label after the first, and the rule runs only between pairs. A horizontal list is unchanged.
 
+- **A nested `Anchor` row marks its place on the rail.** On the `rail`, a row with a `depth` was indented with a margin, which moved its whole box and the `border-s` highlight with it, so the active nested row was marked a step away from the rail rather than on it. Nested rows on the rail are now indented with `padding-inline-start` inside a box that starts at the rail. Without the rail the indent is unchanged.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

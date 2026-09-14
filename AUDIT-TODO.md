@@ -61,7 +61,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### E. Approvals (approved)
 
-- **E6 (173)** `Anchor` `rail`: nested rows are indented with `padding-inline-start`, so their highlight stays on the rail.
 - **E7 (168, new)** `DataTable` that has a tab stop but no selection (`onRowActivate` or an editable column): ring the sheet while the table has the focus, as a selecting table does. Today it shows no focus indicator until an arrow key makes a row active.
 
 ### F. Choices (decided: (a))
@@ -352,7 +351,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`. See E4. Decided: approved; the stripe is `color-mix(in oklab, var(--neba-fg) 4%, transparent)`, as in DataTable.
 - [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`. See F25.
 - [x] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`. See E5. Decided: approved; a stacked list spaces and rules above each label after the first.
-- [ ] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`. See E6.
+- [x] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`. See E6. Decided: approved; on the rail a nested row's indent is `padding-inline-start`.
 - [ ] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`. See F26.
 - [ ] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`. See F27.
 - [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28.

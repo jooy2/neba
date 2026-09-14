@@ -60,7 +60,11 @@ describe('Anchor', () => {
       const screen = await render(<Page items={ITEMS} />);
       const link = screen.getByRole('link', { name: 'Setup' }).element() as HTMLElement;
 
-      expect(link.style.marginInlineStart).toBe('12px');
+      // On the rail, the default, the indent is inside the row: its own 0.75rem
+      // and one step of 12px.
+      // The browser is free to reorder the terms of a `calc()` it serializes.
+      expect(link.style.paddingInlineStart).toContain('0.75rem');
+      expect(link.style.paddingInlineStart).toContain('12px');
     });
 
     it('reflects a changed list on re-render', async () => {
@@ -174,6 +178,21 @@ describe('Anchor', () => {
       expect(
         (screen.getByRole('navigation').element().firstElementChild as HTMLElement).className
       ).not.toContain('border-s');
+    });
+
+    // A margin moved the nested row's box, and the `border-s` highlight with it,
+    // a step away from the rail.
+    it('indents a nested row on the rail inside its box, not by moving the box', async () => {
+      const screen = await render(<Page items={ITEMS} />);
+      const nested = screen.getByRole('link', { name: 'Setup' }).element() as HTMLElement;
+
+      expect(nested.style.marginInlineStart).toBe('');
+      expect(nested.style.paddingInlineStart).toContain('0.75rem');
+
+      await screen.rerender(<Page items={ITEMS} rail={false} />);
+
+      expect(nested.style.paddingInlineStart).toBe('');
+      expect(nested.style.marginInlineStart).not.toBe('');
     });
 
     it('maps color onto the accent slot', async () => {
