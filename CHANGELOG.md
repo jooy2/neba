@@ -380,6 +380,8 @@
 
 - **A `Dialog`, `Overlay` or `Drawer` that is not fully modal leaves the page clickable.** With `modal={false}` or `modal="trap-focus"` the page is meant to stay usable, but the scrim and the full-screen viewport the popup is centred in both covered it, so nothing behind them could be clicked. They let the pointer through now, and the popup takes it back. A fully modal one covers the page as before.
 
+- **A `PieChart` share is written in the ink its slice reads best under, and the plot answers `Home`, `End` and `Escape`.** Every label written by `valueLabels="all"` wore the surface colour, which is about 4:1 on the light theme's slots and disappears on a pale slice a caller coloured. Each of the eight slots now has its ink in `--neba-chart-on-1` to `--neba-chart-on-8`, per theme, and a slice given a literal colour gets black or white by contrast. The accessibility notes promised `Escape` to clear the selection, and only the arrow keys existed; `Home` and `End` now go to the first and the last slice, and `Escape` lets go of a selection.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

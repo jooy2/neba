@@ -19,6 +19,7 @@ import {
   chartFontSizes,
   compactNumber,
   formatCategory,
+  inkOn,
   markGap,
   plotHeights,
   seriesColor,
@@ -285,20 +286,31 @@ export function PieChart(rawProps: PieChartProps) {
         onPointerLeave={() => setActive(null)}
         onBlur={() => setActive(null)}
         onKeyDown={(event) => {
-          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
-            return;
-          }
-
           const order = arcs.map((arc) => arc.index);
 
-          if (order.length === 0) {
+          if (event.key === 'Escape') {
+            // Only a selection is dismissed; with none, Escape belongs to
+            // whatever the chart sits in, such as a dialog.
+            if (active === null) {
+              return;
+            }
+
+            setActive(null);
+          } else if (order.length === 0) {
+            return;
+          } else if (event.key === 'Home') {
+            setActive(order[0]);
+          } else if (event.key === 'End') {
+            setActive(order[order.length - 1]);
+          } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+            const at = active === null ? -1 : order.indexOf(active);
+            const next = event.key === 'ArrowRight' ? at + 1 : at - 1;
+
+            setActive(order[(next + order.length) % order.length]);
+          } else {
             return;
           }
 
-          const at = active === null ? -1 : order.indexOf(active);
-          const next = event.key === 'ArrowRight' ? at + 1 : at - 1;
-
-          setActive(order[(next + order.length) % order.length]);
           event.preventDefault();
         }}
         className={cx(
@@ -374,7 +386,7 @@ export function PieChart(rawProps: PieChartProps) {
                       // something other than an ink token, and it is chosen by
                       // the fill rather than fixed: white on every slice would
                       // vanish on the pale ones.
-                      fill="var(--neba-surface)"
+                      fill={inkOn(values[arc.index].color, arc.index)}
                       className="tabular-nums"
                     >
                       {text}

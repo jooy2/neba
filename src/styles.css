@@ -343,6 +343,20 @@
   --neba-chart-div-on-3: var(--neba-fg);
   --neba-chart-div-on-4: var(--neba-fg);
   --neba-chart-div-on-5: var(--neba-surface);
+
+  /* The same decision for a label on one of the eight series colours: a share
+     written on a pie slice. The eight sit at one lightness, so the two inks
+     are within a tenth of each other on the light sheet and the slightly
+     better one is taken per slot; on the dark sheet the surface wins by more
+     than 2:1 on every one of them. */
+  --neba-chart-on-1: var(--neba-fg);
+  --neba-chart-on-2: var(--neba-surface);
+  --neba-chart-on-3: var(--neba-fg);
+  --neba-chart-on-4: var(--neba-surface);
+  --neba-chart-on-5: var(--neba-fg);
+  --neba-chart-on-6: var(--neba-surface);
+  --neba-chart-on-7: var(--neba-fg);
+  --neba-chart-on-8: var(--neba-fg);
 }
 
 /* ---------------------------------------------------------------------------
@@ -506,6 +520,15 @@
     --neba-chart-div-on-3: var(--neba-surface);
     --neba-chart-div-on-4: var(--neba-surface);
     --neba-chart-div-on-5: var(--neba-fg);
+
+    --neba-chart-on-1: var(--neba-surface);
+    --neba-chart-on-2: var(--neba-surface);
+    --neba-chart-on-3: var(--neba-surface);
+    --neba-chart-on-4: var(--neba-surface);
+    --neba-chart-on-5: var(--neba-surface);
+    --neba-chart-on-6: var(--neba-surface);
+    --neba-chart-on-7: var(--neba-surface);
+    --neba-chart-on-8: var(--neba-surface);
   }
 }
 
@@ -611,6 +634,15 @@
   --neba-chart-div-on-3: var(--neba-surface);
   --neba-chart-div-on-4: var(--neba-surface);
   --neba-chart-div-on-5: var(--neba-fg);
+
+  --neba-chart-on-1: var(--neba-surface);
+  --neba-chart-on-2: var(--neba-surface);
+  --neba-chart-on-3: var(--neba-surface);
+  --neba-chart-on-4: var(--neba-surface);
+  --neba-chart-on-5: var(--neba-surface);
+  --neba-chart-on-6: var(--neba-surface);
+  --neba-chart-on-7: var(--neba-surface);
+  --neba-chart-on-8: var(--neba-surface);
 }
 
 /* ---------------------------------------------------------------------------

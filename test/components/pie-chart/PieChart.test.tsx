@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { PieChart } from 'neba';
 
 const PLANS = ['Free', 'Pro', 'Team'];
@@ -99,6 +100,26 @@ describe('PieChart', () => {
       await expect.element(status).toBeInTheDocument();
       expect(plot.element().contains(status.element())).toBe(false);
     });
+
+    // The docs promised Escape, Home and End; only the arrows existed.
+    it('jumps to the ends with Home and End and lets go with Escape', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />
+      );
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+      const status = screen.getByRole('status');
+
+      plot.element().focus();
+
+      await userEvent.keyboard('{End}');
+      await expect.element(status).toMatchTextContent(PLANS[2]);
+
+      await userEvent.keyboard('{Home}');
+      await expect.element(status).toMatchTextContent(PLANS[0]);
+
+      await userEvent.keyboard('{Escape}');
+      await expect.element(status).toBeEmptyDOMElement();
+    });
   });
 
   describe('shape', () => {
@@ -183,6 +204,28 @@ describe('PieChart', () => {
 
       expect(texts).toContain('50%');
       expect(texts).toContain('25%');
+    });
+
+    // Every share was written in the surface colour, which is about 4:1 on the
+    // light theme's slots and vanishes on a caller's pale slice.
+    it('writes each share in the ink its slice reads best under', async () => {
+      const screen = await render(
+        <PieChart
+          label="Accounts"
+          valueLabels="all"
+          size="xl"
+          categories={['Slot', 'Yellow', 'Navy']}
+          data={[50, { y: 25, color: '#ffe066' }, { y: 25, color: '#1e2a5a' }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const fills = [...plot.element().querySelectorAll('text')].map((t) => t.getAttribute('fill'));
+
+      expect(fills).toEqual(['var(--neba-chart-on-1)', '#000000', '#ffffff']);
     });
   });
 });

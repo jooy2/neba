@@ -17,6 +17,7 @@
  */
 
 import type * as React from 'react';
+import { parseColor, readableInk } from './color.js';
 import { dateFormatter, numberFormatter } from './format.js';
 import type {
   NebaChartCategory,
@@ -153,6 +154,25 @@ export const chartPalette: readonly string[] = [
   'var(--neba-chart-7)',
   'var(--neba-chart-8)'
 ];
+
+/**
+ * The ink a label wears inside a mark of this colour.
+ *
+ * A palette slot has its answer in `styles.css`, per theme, where the slot's own
+ * lightness is known. A literal colour is decided here, black or white by
+ * contrast, because a caller's yellow slice is exactly where a fixed white
+ * label disappears. A `var()` or a family this cannot read keeps the surface
+ * ink, which is what the slots were solved against.
+ */
+export function inkOn(explicit: string | undefined, index: number): string {
+  if (!explicit) {
+    return `var(--neba-chart-on-${(index % chartPalette.length) + 1})`;
+  }
+
+  const parsed = colorFamilies.has(explicit) ? null : parseColor(explicit);
+
+  return parsed ? readableInk(parsed.hsv) : 'var(--neba-surface)';
+}
 
 const colorFamilies = new Set<string>([
   'primary',
