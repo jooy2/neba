@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TimelineChart } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 
 registerMessages('ko', ko);
 
@@ -404,6 +405,26 @@ describe('TimelineChart', () => {
       expect(status.element().textContent).toContain('Wireframes');
       expect(status.element().textContent).toContain('Design');
       expect(status.element().textContent).toContain('–');
+    });
+
+    it('leaves a span outside a pinned min out of the keyboard walk', async () => {
+      const screen = await render(
+        <TimelineChart
+          label="Plan"
+          locale="en-GB"
+          height={200}
+          min={at('2026-03-20T00:00:00')}
+          series={PLAN}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Plan' });
+
+      await expect.poll(() => bars(plot.element()).length).toBeGreaterThan(0);
+
+      plot.element().focus();
+      await userEvent.keyboard('{Home}');
+
+      await expect.element(screen.getByRole('status')).toMatchTextContent(/Visual/);
     });
 
     it('picks the span the pointer is inside, not the one with the nearer centre', async () => {

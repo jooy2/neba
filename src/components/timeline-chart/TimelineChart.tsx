@@ -195,7 +195,9 @@ export function TimelineChart(rawProps: TimelineChartProps) {
         const top = layout.plot.top + layout.categoryPx(index) - group / 2 + height / 2;
 
         row.spans.forEach((one, at) => {
-          if (!one) {
+          // A span wholly outside a pinned `min` or `max` is not drawn, so it is
+          // not something the arrow keys can stop on either.
+          if (!one || one.to < layout.scale.min || one.from > layout.scale.max) {
             return;
           }
 

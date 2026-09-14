@@ -30,8 +30,23 @@ import {
   toValues,
   truncate,
   valueScale,
-  toFullShares
+  toFullShares,
+  timeScale
 } from '../../src/internal/chart.js';
+
+describe('timeScale', () => {
+  // The ticks were walked from the pinned `min`, and a month after 31 January
+  // is 3 March.
+  it('ticks on the calendar when min is pinned off a boundary', () => {
+    const min = new Date(2026, 0, 31).getTime();
+    const max = new Date(2026, 5, 15).getTime();
+    const scale = timeScale({ min, max }, { min, max });
+
+    expect(scale.unit).toBe('month');
+    expect(scale.min).toBe(min);
+    expect(scale.ticks.map((tick) => new Date(tick).getDate())).toEqual(scale.ticks.map(() => 1));
+  });
+});
 
 describe('valueScale', () => {
   it('rounds the top outward to a tick, so the tallest mark stops short of the frame', () => {

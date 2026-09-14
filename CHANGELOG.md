@@ -520,6 +520,8 @@
 
 - **`TimelineChart` writes a span's dates to the day.** The tooltip, the table and the summary wrote them at the axis unit, so a two-week span on a one-year range read `Mar 2025 – Mar 2025`.
 
+- **`TimelineChart` with a pinned `min` ticks on the calendar and skips the spans it does not draw.** Ticks were walked from `min` itself, so `min` on 31 January put the next tick on 3 March and February had none. A span wholly outside `min` or `max` was not drawn but was still a stop for the arrow keys.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -923,7 +923,9 @@ export function timeScale(
      span whose last day is the last pixel reads as clipped rather than as
      finished. The 500 is a guard and not a limit: a step small enough to need
      more of them means the unit table was outrun. */
-  let tick = start;
+  // Counted from the calendar even when `min` pins the start somewhere else:
+  // walked from 31 January, a month on is 3 March and February has no tick.
+  let tick = alignTime(low, unit, count);
 
   for (let index = 0; index < 500; index++) {
     ticks.push(tick);
