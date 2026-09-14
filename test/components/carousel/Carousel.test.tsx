@@ -207,6 +207,29 @@ describe('Carousel', () => {
       }
     });
 
+    // The first effect skipped every scroll, so the dots said slide 3 while
+    // the track still showed slide 1.
+    it('scrolls the strip to a defaultValue past the first slide', async () => {
+      const sheet = document.createElement('style');
+
+      sheet.textContent =
+        '.flex{display:flex}.overflow-x-auto{overflow-x:auto}.shrink-0{flex-shrink:0}.basis-full{flex-basis:100%}';
+      document.head.append(sheet);
+
+      try {
+        const screen = await render(
+          <div style={{ width: 300 }}>
+            <Carousel defaultValue={2}>{slides}</Carousel>
+          </div>
+        );
+        const track = screen.getByRole('group', { name: 'Carousel' }).element() as HTMLElement;
+
+        await expect.poll(() => track.scrollLeft).toBeGreaterThan(0);
+      } finally {
+        sheet.remove();
+      }
+    });
+
     it('starts on defaultValue', async () => {
       const screen = await render(<Carousel defaultValue={2}>{slides}</Carousel>);
 

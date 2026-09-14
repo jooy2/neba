@@ -530,6 +530,8 @@
 
 - **`Tour` dims the page from its portal.** The dim was a `fixed` element left where the Tour sits, so inside a Card with a `backdrop-filter` it was fixed to the card: only the card was dimmed and the hole was in the wrong place.
 
+- **`Carousel` opens on a non-zero `defaultValue`.** The first effect skipped scrolling altogether, so the dots said slide 3 while the track showed slide 1. It now moves the strip there at once.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

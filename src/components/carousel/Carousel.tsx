@@ -258,10 +258,14 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         return;
       }
 
-      // The first pass would otherwise scroll the page down to a carousel nobody
-      // has looked at yet, just to put slide 0 where the browser already had it.
-      if (!mounted.current) {
-        mounted.current = true;
+      // The first pass has nothing to do on slide 0, which is where the browser
+      // already has the strip. On any other `defaultValue` it has to move, or the
+      // dots say slide 3 over a track still showing slide 1 — and it moves at
+      // once, since there is nothing yet for a reader to watch travel.
+      const first = !mounted.current;
+      mounted.current = true;
+
+      if (first && index === 0) {
         return;
       }
 
@@ -276,7 +280,10 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       if (track) {
         const sign = getComputedStyle(track).direction === 'rtl' ? -1 : 1;
 
-        track.scrollTo({ left: sign * index * track.clientWidth });
+        track.scrollTo({
+          left: sign * index * track.clientWidth,
+          ...(first ? { behavior: 'instant' as ScrollBehavior } : null)
+        });
       }
 
       settling.current = true;
