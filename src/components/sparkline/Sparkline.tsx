@@ -117,9 +117,19 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
     const radius = markerRadii[size];
 
     const extent = extentOf([values], false);
-    const low = min ?? (extent ? Math.min(extent.min, baseline ?? extent.min) : 0);
-    const high = max ?? (extent ? Math.max(extent.max, baseline ?? extent.max) : 1);
+    // A bar grows from zero, so zero is inside the band: without it an
+    // all-negative strip hung its bars from a baseline above the box, over the
+    // text around it, and equal values drew one-pixel bars that read as zero.
+    const bars = shape === 'bar';
+    const low =
+      min ?? (extent ? Math.min(extent.min, baseline ?? extent.min, bars ? 0 : extent.min) : 0);
+    const high =
+      max ?? (extent ? Math.max(extent.max, baseline ?? extent.max, bars ? 0 : extent.max) : 1);
     const span = high - low || 1;
+    // A line with nothing to rise or fall between sits in the middle of the
+    // strip rather than on its floor, where it read as a drop to the bottom.
+    const level = high === low && !bars;
+    const zero = Math.min(Math.max(low, 0), high);
 
     const width = typeof widthProp === 'number' ? widthProp : measured;
     const fill = resolveColor(color ?? 'var(--neba-chart-1)');
@@ -131,7 +141,8 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
     const top = inset;
     const usable = Math.max(1, height - inset * 2);
 
-    const y = (value: number) => top + (1 - (value - low) / span) * usable;
+    const y = (value: number) =>
+      level ? top + usable / 2 : top + (1 - (value - low) / span) * usable;
     const step = values.length > 1 ? width / (values.length - 1) : width;
 
     const points = values.map((value, index) =>
@@ -208,9 +219,9 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
                       d={barPath(
                         index * (width / Math.max(1, values.length)) +
                           (width / Math.max(1, values.length) - barWidth) / 2,
-                        Math.min(y(value.value), y(Math.max(low, 0))),
+                        Math.min(y(value.value), y(zero)),
                         barWidth,
-                        Math.max(1, Math.abs(y(value.value) - y(Math.max(low, 0)))),
+                        Math.max(1, Math.abs(y(value.value) - y(zero))),
                         barRadius / 2,
                         value.value >= 0 ? 'up' : 'down'
                       )}

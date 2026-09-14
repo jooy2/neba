@@ -96,6 +96,56 @@ describe('Sparkline', () => {
     });
   });
 
+  describe('scale', () => {
+    // The baseline was zero, above the band of an all-negative strip, so the
+    // bars ran out of the top of the box.
+    it('keeps the bars of an all-negative strip inside the box', async () => {
+      const screen = await render(
+        <Sparkline data={[-4, -8, -6]} shape="bar" width={120} label="Losses" />
+      );
+      const strip = screen.getByRole('img', { name: 'Losses' });
+
+      await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(3);
+
+      const svg = strip.element() as unknown as SVGSVGElement;
+      const height = Number(svg.getAttribute('height'));
+
+      for (const bar of svg.querySelectorAll('path')) {
+        const box = bar.getBBox();
+
+        expect(box.y).toBeGreaterThanOrEqual(0);
+        expect(box.y + box.height).toBeLessThanOrEqual(height + 0.5);
+      }
+    });
+
+    it('draws equal bars at full height rather than as one pixel', async () => {
+      const screen = await render(
+        <Sparkline data={[5, 5, 5]} shape="bar" width={120} label="Steady" />
+      );
+      const strip = screen.getByRole('img', { name: 'Steady' });
+
+      await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(3);
+
+      const svg = strip.element() as unknown as SVGSVGElement;
+
+      expect(svg.querySelector('path')!.getBBox().height).toBeGreaterThan(
+        Number(svg.getAttribute('height')) / 2
+      );
+    });
+
+    it('puts a level line in the middle of the strip rather than on its floor', async () => {
+      const screen = await render(<Sparkline data={[5, 5, 5]} width={120} label="Level" />);
+      const strip = screen.getByRole('img', { name: 'Level' });
+
+      await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(1);
+
+      const svg = strip.element() as unknown as SVGSVGElement;
+      const box = svg.querySelector('path')!.getBBox();
+
+      expect(box.y).toBeCloseTo(Number(svg.getAttribute('height')) / 2, 0);
+    });
+  });
+
   describe('accessibility', () => {
     it('reads its values out when it is given a label', async () => {
       const screen = await render(<Sparkline data={[4, 8, 6]} label="Signups" />);

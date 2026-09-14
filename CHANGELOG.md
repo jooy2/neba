@@ -510,6 +510,8 @@
 
 - **`Statistic` writes its percentage in the `locale`, and a delta that rounds to zero is flat.** The percentage was written with `toFixed`, so `de-DE` showed `+71.4%` beside a figure written `1.250`. The arrow, the sign and the colour came from the unrounded difference, which put an up arrow next to `+0%`; they now follow what is written. A `NaN` on either side writes no delta instead of `NaN%`.
 
+- **`Sparkline` bars grow from zero inside the strip, and a level line sits in its middle.** An all-negative `shape="bar"` put its baseline above the box, so the bars covered the text above it. Equal values drew one-pixel bars and a line on the floor, both of which read as zero.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
