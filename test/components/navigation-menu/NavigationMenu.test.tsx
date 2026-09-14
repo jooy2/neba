@@ -218,5 +218,20 @@ describe('NavigationMenu', () => {
 
       expect(list).toHaveClass('flex-col');
     });
+
+    // The panel hung below the item and covered the next one down.
+    it('opens a panel beside a vertical rail', async () => {
+      const screen = await render(<Nav orientation="vertical" />);
+      const trigger = screen.getByRole('button', { name: /Product/ });
+
+      await trigger.click();
+
+      const link = screen.getByRole('link', { name: /Analytics/ });
+
+      await expect.element(link).toBeVisible();
+      await expect
+        .poll(() => link.element().getBoundingClientRect().left)
+        .toBeGreaterThanOrEqual(trigger.element().getBoundingClientRect().right);
+    });
   });
 });

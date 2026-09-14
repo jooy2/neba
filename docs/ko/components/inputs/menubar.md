@@ -53,7 +53,7 @@ Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. �
 
 ### orientation
 
-`vertical`은 단어를 세로로 쌓고, 방향키도 그 방향을 따릅니다.
+`vertical`은 단어를 세로로 쌓고, 방향키도 그 방향을 따르며, 각 메뉴는 단어 아래가 아니라 바의 inline 끝 쪽 옆으로 열립니다.
 
 <Demo src="menubar/orientation">
 

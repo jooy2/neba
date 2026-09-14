@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import type { NebaColor, NebaDensity, NebaSize } from '../types.js';
+import type { NebaColor, NebaDensity, NebaOrientation, NebaSize } from '../types.js';
 
 /**
  * What a menu item inherits from the menu around it.
@@ -19,6 +19,11 @@ export interface MenuContextValue {
   size: NebaSize;
   color: NebaColor;
   density: NebaDensity;
+  /**
+   * Which way the bar runs, set only by a Menubar. A menu on a vertical bar
+   * opens beside it rather than downward over the next word.
+   */
+  orientation?: NebaOrientation;
 }
 
 export const MenuContext = React.createContext<MenuContextValue>({

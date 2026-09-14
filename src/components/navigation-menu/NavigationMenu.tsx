@@ -369,6 +369,9 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
                 the subtree a host may have scoped its CSS reset to. */}
             <BaseUINavigationMenu.Positioner
               className="neba-portal z-(--neba-z-portal) [outline:none]"
+              // A nav rail's panels open beside it; left to its default, the
+              // panel hung below the item and covered the next one down.
+              side={orientation === 'vertical' ? 'inline-end' : 'bottom'}
               sideOffset={sideOffset}
               collisionPadding={12}
             >

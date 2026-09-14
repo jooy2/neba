@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useDirection } from '@base-ui/react/direction-provider';
 import { Menubar as BaseUIMenubar } from '@base-ui/react/menubar';
 import { Menu } from '../menu/Menu.js';
 import { MenuContext } from '../../internal/menu.js';
@@ -94,7 +95,8 @@ const triggerClasses = [
  * `MenuSubmenu` a [Menu](./menu) takes, because it is the same menu.
  */
 export function MenubarMenu({ label, startIcon, disabled = false, children }: MenubarMenuProps) {
-  const { size, color, density } = React.useContext(MenuContext);
+  const { size, color, density, orientation } = React.useContext(MenuContext);
+  const direction = useDirection();
 
   return (
     <Menu
@@ -102,6 +104,10 @@ export function MenubarMenu({ label, startIcon, disabled = false, children }: Me
       color={color}
       density={density}
       disabled={disabled}
+      // A menu on a vertical bar opens beside it. Hanging off the bottom, it
+      // covered the word below the one that opened it. The side is the inline
+      // end, read from the same direction Base UI places the popup by.
+      side={orientation === 'vertical' ? (direction === 'rtl' ? 'left' : 'right') : undefined}
       // The whole reason a menu bar is not a row of separate menus: once one of
       // them is open, crossing the bar walks through the others rather than
       // closing the one you left.
@@ -160,7 +166,10 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density']);
 
-    const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+    const context = React.useMemo(
+      () => ({ size, color, density, orientation }),
+      [size, color, density, orientation]
+    );
 
     return (
       <MenuContext.Provider value={context}>

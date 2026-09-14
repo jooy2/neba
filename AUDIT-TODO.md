@@ -61,7 +61,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### E. Approvals (approved)
 
-- **E2 (140)** `Menubar` and `NavigationMenu` with `orientation="vertical"`: popups open beside the bar, toward the inline end, instead of downward over the next item.
 - **E3 (157)** `TimePicker`: the default `referenceDate` becomes the start of today, so pressing an hour on an empty picker gives that hour at 00 minutes and 00 seconds.
 - **E4 (170)** `Table` `striped`: rows take the 4% mix of `--neba-fg` that DataTable uses, so the stripes show on a white page.
 - **E5 (172)** `DataList` `orientation="vertical"`: the gap inside a pair becomes smaller than the gap between pairs, and `dividers` rules between pairs rather than inside them.
@@ -310,7 +309,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **137** [major] Form without `onSubmit` blocked `action`. Decided: fixed (breaking).
 - [x] **138** [major][decision] TreeSelect branches could not be expanded. Decided: `TreeItem` `selectable`.
 - [x] **139** [major] MenuItem and NavigationMenuItem ignored `disabled` with `href`. Decided: fixed (breaking).
-- [ ] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`. See E2.
+- [x] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`. See E2. Decided: approved; a vertical Menubar passes the inline-end side to each Menu, and a vertical NavigationMenu's Positioner takes `inline-end`.
 - [x] **141** **CommandPalette**: when a command runs and closes it, or a controlled `open` becomes `false`, the query stays, so reopening shows a filtered list. `CommandPalette.tsx:265-284`
 - [ ] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`. See F9.
 - [ ] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`. See F10.

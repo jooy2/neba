@@ -61,6 +61,30 @@ describe('Menubar', () => {
 
       expect(screen.getByRole('menubar').element()).toHaveClass('flex-col');
     });
+
+    // It opened downward and covered the word below the one pressed.
+    it('opens a menu beside a vertical bar', async () => {
+      const screen = await render(
+        <Menubar aria-label="Application" orientation="vertical">
+          <MenubarMenu label="File">
+            <MenuItem>New file</MenuItem>
+          </MenubarMenu>
+          <MenubarMenu label="Edit">
+            <MenuItem>Undo</MenuItem>
+          </MenubarMenu>
+        </Menubar>
+      );
+      const file = screen.getByRole('menuitem', { name: 'File' });
+
+      await file.click();
+
+      const row = screen.getByRole('menuitem', { name: 'New file' });
+
+      await expect.element(row).toBeInTheDocument();
+      await expect
+        .poll(() => row.element().getBoundingClientRect().left)
+        .toBeGreaterThanOrEqual(file.element().getBoundingClientRect().right);
+    });
   });
 
   describe('behaviour', () => {

@@ -53,7 +53,7 @@ Its own ladder, one rung below the control heights at every step: a menu bar is 
 
 ### orientation
 
-`vertical` stacks the words instead, and the arrow keys follow.
+`vertical` stacks the words instead, the arrow keys follow, and each menu opens beside the bar at its inline end rather than below the word.
 
 <Demo src="menubar/orientation">
 
