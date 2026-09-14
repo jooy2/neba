@@ -127,6 +127,27 @@ describe('BarChart', () => {
       );
     });
 
+    // Only the final category was labelled, and a series whose final value is a
+    // gap had no label anywhere.
+    it('labels the last value there is when the series ends in a gap', async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          valueLabels="last"
+          categories={TEAMS}
+          series={[{ name: 'Deploys', data: [37, 41, null] }]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.poll(() => plot.element().querySelectorAll('path').length).toBeGreaterThan(0);
+
+      const written = [...plot.element().querySelectorAll('text')].map((t) => t.textContent);
+
+      expect(written).toContain('41');
+      expect(written).not.toContain('37');
+    });
+
     it('writes every value with all', async () => {
       const screen = await render(
         <BarChart

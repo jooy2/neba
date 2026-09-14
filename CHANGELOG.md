@@ -512,6 +512,8 @@
 
 - **`Sparkline` bars grow from zero inside the strip, and a level line sits in its middle.** An all-negative `shape="bar"` put its baseline above the box, so the bars covered the text above it. Equal values drew one-pixel bars and a line on the floor, both of which read as zero.
 
+- **`BarChart` with `valueLabels="last"` labels the last value there is.** A series ending in `null` got no label, where LineChart writes it on the last value that is not a gap.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

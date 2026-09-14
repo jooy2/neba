@@ -187,7 +187,12 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
       {drawn.map(({ one, index }, lane) => {
         const color = colors[index];
         const dimmed = hovered !== null && hovered !== index;
-        const extreme = valueLabels === 'extremes' ? labelledPoints(one, 'extremes') : null;
+        // `last` is the last value there is, as LineChart reads it: a trailing
+        // `null` left the series with no label at all.
+        const extreme =
+          valueLabels === 'extremes' || valueLabels === 'last'
+            ? labelledPoints(one, valueLabels)
+            : null;
 
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
@@ -258,9 +263,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                     className={markTransitionClasses}
                   />
 
-                  {valueLabels === 'none' ||
-                  (extreme && !extreme(category)) ? null : valueLabels === 'last' &&
-                    category !== one.length - 1 ? null : (
+                  {valueLabels === 'none' || (extreme && !extreme(category)) ? null : (
                     // Always just past the data end, on the outside — which for
                     // a bar that grows downward means *below* it. Kept at the
                     // end rather than inside the fill so it never has to be
