@@ -55,8 +55,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### C. Approvals (approved)
 
-- **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
-
 ### D. Choices (decided: (a))
 
 - **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
@@ -230,7 +228,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### Other
 
-- [ ] **92** [major] **RTL**: these places do not follow the direction. See C3.
+- [x] **92** [major] **RTL**: these places do not follow the direction. Decided: approved; all six follow the direction, one commit each.
   - [x] The Switch thumb uses a physical `left`, so on and off do not flip (`Switch.tsx:79-85, 144`). Now `inset-inline-start`; `CLAUDE.md` and the design language say so.
   - [x] Transfer's move arrows point the wrong way, and the comment "it is logical" is wrong (`Transfer.tsx:426-429`). Both glyphs take an `rtl:` turn, and the comment is corrected.
   - [x] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`). The default is Base UI's `inline-end`, and the chevron reads Base UI's direction.
