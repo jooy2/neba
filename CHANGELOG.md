@@ -522,6 +522,8 @@
 
 - **`TimelineChart` with a pinned `min` ticks on the calendar and skips the spans it does not draw.** Ticks were walked from `min` itself, so `min` on 31 January put the next tick on 3 March and February had none. A span wholly outside `min` or `max` was not drawn but was still a stop for the arrow keys.
 
+- **`ScatterChart` writes x and z as numbers.** The table and the tooltip wrote x through `String()`, so the axis said `24K` while the table said `24000`, and `0.1 + 0.2` came out as `0.30000000000000004`. `z` took y's `format`, which put a currency sign on a population. Both are now written with the locale's number format.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

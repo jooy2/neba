@@ -1617,6 +1617,13 @@ export function CartesianChart(rawProps: CartesianProps) {
       activeMark.index)
     : undefined;
 
+  /* A mark's own x on a value axis is a number, which `formatCategory` wrote
+     through `String`: `24000` under an axis reading `24K`. */
+  const markHeading = (category: Parameters<typeof formatCategory>[0]) =>
+    typeof category === 'number' && categoryScale
+      ? numberFormatter(locale, {}).format(category)
+      : formatCategory(category, locale);
+
   const anchorX = activeMark
     ? activeMark.x
     : horizontal
@@ -1830,9 +1837,7 @@ export function CartesianChart(rawProps: CartesianProps) {
           ) : (
             <ChartTooltipPanel
               heading={
-                supplied
-                  ? supplied.heading
-                  : formatCategory(markCategory ?? labels[activeIndex], locale)
+                supplied ? supplied.heading : markHeading(markCategory ?? labels[activeIndex])
               }
               items={items}
               x={anchorX}
@@ -1856,7 +1861,7 @@ export function CartesianChart(rawProps: CartesianProps) {
           heading={
             activeIndex === null
               ? undefined
-              : (supplied?.heading ?? formatCategory(markCategory ?? labels[activeIndex], locale))
+              : (supplied?.heading ?? markHeading(markCategory ?? labels[activeIndex]))
           }
           items={items}
         />

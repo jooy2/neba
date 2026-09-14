@@ -20,6 +20,7 @@ import {
   pointX,
   type MarkShape
 } from '../../internal/chart.js';
+import { numberFormatter } from '../../internal/format.js';
 import { chartMessages, useMessages } from '../../internal/i18n.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
@@ -341,13 +342,24 @@ const ScatterTable = React.memo(function ScatterTable({
             return (
               <tr key={`${index}-${at}`}>
                 <th scope="row">{one.name ?? index + 1}</th>
-                <td>{formatCategory(x, locale)}</td>
+                {/* x and z are numbers of their own. `String` wrote `24000` and
+                    `0.30000000000000004`, and `format` is the y axis', which put a
+                    currency sign on a population. */}
+                <td>
+                  {typeof x === 'number'
+                    ? numberFormatter(locale, {}).format(x)
+                    : formatCategory(x, locale)}
+                </td>
                 {/* A `null` is a gap and prints as an empty cell, exactly as it
                     does on every other chart's table. A zero written here would
                     be the one place the library reported missing data as a
                     number. */}
                 <td>{y === null || !Number.isFinite(y) ? '' : format(y)}</td>
-                {sized ? <td>{point?.z === undefined ? '' : format(point.z)}</td> : null}
+                {sized ? (
+                  <td>
+                    {point?.z === undefined ? '' : numberFormatter(locale, {}).format(point.z)}
+                  </td>
+                ) : null}
               </tr>
             );
           })

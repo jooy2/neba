@@ -583,6 +583,28 @@ describe('ScatterChart', () => {
       ]);
     });
 
+    it('writes x and z as numbers of their own rather than through format', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Cities"
+          format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+          series={[
+            {
+              name: 'A',
+              data: [
+                { x: 24000, y: 1200, z: 5000 },
+                { x: 0.1 + 0.2, y: 10 }
+              ]
+            }
+          ]}
+        />
+      );
+
+      await expect.element(screen.getByRole('cell', { name: '24,000' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('cell', { name: '0.3' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('cell', { name: '5,000' })).toBeInTheDocument();
+    });
+
     it('passes format through to the values', async () => {
       const screen = await render(
         <ScatterChart
