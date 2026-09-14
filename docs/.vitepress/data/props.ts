@@ -8048,8 +8048,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'maxFiles',
       type: 'number',
       description: {
-        ko: '한 번에 들고 있을 수 있는 개수. 한 번의 드롭이 아니라 이미 들고 있는 것과 합쳐서 셉니다',
-        en: 'How many files may be held at once: counted against what is already chosen, not against one drop'
+        ko: '한 번에 들고 있을 수 있는 개수. 한 번의 드롭이 아니라 이미 들고 있는 것과 합쳐서 세며, multiple일 때만 셉니다',
+        en: 'How many files may be held at once: counted against what is already chosen, not against one drop, and only when multiple is on'
       }
     },
     {

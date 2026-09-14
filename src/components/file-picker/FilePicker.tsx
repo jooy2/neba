@@ -56,8 +56,8 @@ export interface FilePickerProps
   /** The largest a single file may be, in bytes. */
   maxSize?: number;
   /**
-   * How many files may be held at once. Implies `multiple`, and is checked
-   * against what is already chosen rather than against one drop.
+   * How many files may be held at once, counted only when `multiple` is on,
+   * and checked against what is already chosen rather than against one drop.
    */
   maxFiles?: number;
   /** The chosen files. Use with `onFilesChange` for a controlled picker. */
@@ -451,6 +451,41 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       next?.focus();
     }, [files]);
 
+    /*
+     * The real input holds exactly the files in the list. A form reads its
+     * `files`, and the input only ever had the last batch the browser dialog
+     * handed it: nothing dropped, and every file removed from the list still
+     * there. So the list is written back into it whenever it changes, and again
+     * when the dialog is dismissed, because opening it cleared the input first.
+     */
+    const syncInput = React.useCallback(() => {
+      const input = inputRef.current;
+
+      if (!input || typeof DataTransfer === 'undefined') {
+        return;
+      }
+
+      try {
+        const transfer = new DataTransfer();
+
+        files.forEach((one) => transfer.items.add(one));
+        input.files = transfer.files;
+      } catch {
+        // A browser that will not let a script set an input's files. The list
+        // and `onFilesChange` still have every file.
+      }
+    }, [files]);
+
+    React.useEffect(() => {
+      syncInput();
+
+      const input = inputRef.current;
+
+      input?.addEventListener('cancel', syncInput);
+
+      return () => input?.removeEventListener('cancel', syncInput);
+    }, [syncInput]);
+
     const browse = () => {
       if (inert) {
         return;
@@ -595,7 +630,9 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
             accept={accept}
             multiple={multiple}
             required={required && files.length === 0}
-            disabled={inert}
+            // Only `disabled` takes it out of the form. A read-only picker still
+            // submits what it holds; it only stops taking new files.
+            disabled={disabled}
             tabIndex={-1}
             aria-hidden="true"
             className="absolute size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"

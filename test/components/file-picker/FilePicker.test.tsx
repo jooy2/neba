@@ -368,6 +368,58 @@ describe('FilePicker', () => {
     });
   });
 
+  // The hidden input held only the last batch from the browser dialog: a
+  // dropped file was never submitted, a removed one still was, and a read-only
+  // picker disabled the input and submitted nothing.
+  describe('in a form', () => {
+    const submitted = (form: HTMLFormElement) =>
+      new FormData(form).getAll('attachments').map((entry) => (entry as File).name);
+
+    it('submits the files it was given by a drop', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <FilePicker name="attachments" multiple />
+        </form>
+      );
+
+      await drop(screen.getByRole('button', { name: /Drop files here/ }).element(), [
+        file('a.txt'),
+        file('b.txt')
+      ]);
+
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      await expect.poll(() => submitted(form)).toEqual(['a.txt', 'b.txt']);
+    });
+
+    it('stops submitting a file taken out of the list', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <FilePicker name="attachments" multiple defaultValue={[file('a.txt'), file('b.txt')]} />
+        </form>
+      );
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      await expect.poll(() => submitted(form)).toEqual(['a.txt', 'b.txt']);
+
+      await screen.getByRole('button', { name: 'Remove a.txt' }).click();
+
+      await expect.poll(() => submitted(form)).toEqual(['b.txt']);
+    });
+
+    it('still submits what it holds while read-only', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <FilePicker name="attachments" readOnly defaultValue={[file('a.txt')]} />
+        </form>
+      );
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      expect(form.querySelector('input[type="file"]')).not.toBeDisabled();
+      await expect.poll(() => submitted(form)).toEqual(['a.txt']);
+    });
+  });
+
   describe('inert states', () => {
     it('disables the browse button and the input', async () => {
       const screen = await render(<FilePicker disabled />);

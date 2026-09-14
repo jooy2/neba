@@ -73,5 +73,5 @@ Reports the files that were turned away and why. Without this handler a rejected
 
 - The shell is a `<div>` and the pressable area inside it is a real `<button>`. The file list sits outside that button, so the remove buttons are never nested inside the browse button.
 - The button is named by `label` followed by what the box says, so two pickers on one form are told apart by what each is for.
-- The `<input type="file">` is moved off-screen rather than set to `display: none`, which makes an input unfocusable in some browsers and would block `required` validation messages.
+- The `<input type="file">` is moved off-screen rather than set to `display: none`, which makes an input unfocusable in some browsers and would block `required` validation messages. It holds exactly the files in the list, so a form submits a dropped file and not a removed one. A `readOnly` picker still submits what it holds; only `disabled` takes it out of the form.
 - The drag state is tracked by counting events, so it does not flicker as the pointer crosses children of the dropzone.

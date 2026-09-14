@@ -448,6 +448,8 @@
 
 - **A `Combobox` with a `limit` still offers to add what was typed.** The row that adds a value the list does not have came last, and `limit` cut the list to that many rows, so once enough options matched the row was cut off: the typed value could not be added, and Enter chose the first option instead. `limit` now counts options only, and the row is drawn after as many of them as it allows.
 
+- **A `FilePicker` in a form submits the files it lists.** Its hidden input held only the batch last picked in the browser dialog, so a dropped file was never submitted and a file removed from the list still was, and a `readOnly` picker disabled the input, so a form got nothing from it at all. The input now holds exactly the files in the list, written back whenever the list changes and again when the dialog is dismissed, and only `disabled` takes it out of the form. `required` still applies while the list is empty. The `maxFiles` docs said it implied `multiple`; it is counted only when `multiple` is on, and now says so.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
