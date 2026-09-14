@@ -29,7 +29,8 @@ import {
   toValue,
   toValues,
   truncate,
-  valueScale
+  valueScale,
+  toFullShares
 } from '../../src/internal/chart.js';
 
 describe('valueScale', () => {
@@ -404,5 +405,34 @@ describe('labelledPoints', () => {
 
   it('names every point with all', () => {
     expect(chosen(labelledPoints(series(1, null, 3), 'all'), 3)).toEqual([0, 1, 2]);
+  });
+});
+
+describe('toFullShares', () => {
+  const format = (value: number) => value.toFixed(1);
+
+  it('shares each category out of a hundred and keeps the original as the label', () => {
+    const [a, b] = toFullShares([[{ value: 1 }], [{ value: 3 }]], [true, true], format);
+
+    expect(a[0]).toEqual({ value: 25, label: '1.0' });
+    expect(b[0]).toEqual({ value: 75, label: '3.0' });
+  });
+
+  // A hidden series counted towards the total, so what was left stopped short.
+  it('leaves a hidden series out of the total', () => {
+    const [a] = toFullShares([[{ value: 1 }], [{ value: 3 }]], [true, false], format);
+
+    expect(a[0].value).toBe(100);
+  });
+
+  it('keeps a gap a gap and a label the caller wrote', () => {
+    const [a, b] = toFullShares(
+      [[{ value: null }], [{ value: 2, label: 'two' }]],
+      [true, true],
+      format
+    );
+
+    expect(a[0].value).toBeNull();
+    expect(b[0]).toEqual({ value: 100, label: 'two' });
   });
 });

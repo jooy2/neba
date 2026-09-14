@@ -226,6 +226,51 @@ export interface ChartValue {
   label?: React.ReactNode;
 }
 
+/**
+ * Every category renormalised to a hundred, for `stacked="full"`.
+ *
+ * A change to the data rather than to the drawing, so the axis, the marks and
+ * the table all read shares. Two things make it the frame's job rather than
+ * each chart's. The total counts only the series still shown, because hiding
+ * one in the legend has to leave the rest filling the band rather than a gap
+ * where it was. And the number the caller passed survives as the point's label,
+ * written through the chart's own `format` and locale, because a chart stacked
+ * to full that can only say percentages has thrown the data away.
+ */
+export function toFullShares(
+  values: readonly (readonly ChartValue[])[],
+  visible: readonly boolean[],
+  format: (value: number) => string
+): ChartValue[][] {
+  const totals: number[] = [];
+
+  values.forEach((row, index) => {
+    if (visible[index] === false) {
+      return;
+    }
+
+    row.forEach((one, category) => {
+      totals[category] = (totals[category] ?? 0) + Math.abs(one.value ?? 0);
+    });
+  });
+
+  return values.map((row) =>
+    row.map((one, category) => {
+      if (one.value === null) {
+        return one;
+      }
+
+      const total = totals[category] ?? 0;
+
+      return {
+        ...one,
+        value: total === 0 ? 0 : (one.value / total) * 100,
+        label: one.label ?? format(one.value)
+      };
+    })
+  );
+}
+
 const isPoint = (datum: NebaChartDatum): datum is NebaChartPoint =>
   typeof datum === 'object' && datum !== null;
 

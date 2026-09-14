@@ -15,15 +15,9 @@ import {
   chartFontSizes,
   labelledPoints,
   markGap,
-  toValues,
   type ChartValue
 } from '../../internal/chart.js';
-import type {
-  NebaChartSeries,
-  NebaChartValueLabels,
-  NebaOrientation,
-  NebaSize
-} from '../../types.js';
+import type { NebaChartValueLabels, NebaOrientation, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 export interface BarChartProps extends CartesianChartProps {
@@ -103,47 +97,13 @@ export function BarChart(rawProps: BarChartProps) {
   const horizontal = orientation === 'horizontal';
   const full = stacked === 'full';
 
-  /* 100% stacking renormalises the data before anything is drawn, so the axis,
-     the tooltip and the table all agree about what the number is. The original
-     value survives as the point's label — a chart that can only tell you
-     percentages has thrown away what it was given. */
-  const shown = React.useMemo<readonly NebaChartSeries[]>(() => {
-    if (!full) {
-      return series;
-    }
-
-    const values = toValues(series);
-    const totals: number[] = [];
-
-    for (const one of values) {
-      one.forEach((value, index) => {
-        totals[index] = (totals[index] ?? 0) + Math.abs(value.value ?? 0);
-      });
-    }
-
-    return series.map((one, index) => ({
-      ...one,
-      data: values[index].map((value, category) => {
-        if (value.value === null) {
-          return null;
-        }
-
-        const total = totals[category];
-
-        return {
-          x: value.x,
-          y: total === 0 ? 0 : (value.value / total) * 100,
-          color: value.color,
-          label: value.label ?? String(value.value)
-        };
-      })
-    }));
-  }, [series, full]);
-
   return (
     <CartesianChart
       {...props}
-      series={shown}
+      series={series}
+      // 100% stacking is done by the frame, which knows which series the legend
+      // has hidden and so which ones the hundred is shared between.
+      stackedFull={full}
       size={size}
       density={density}
       horizontal={horizontal}

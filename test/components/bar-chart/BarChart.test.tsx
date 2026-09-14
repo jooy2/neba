@@ -197,6 +197,62 @@ describe('BarChart', () => {
       expect(cells).toEqual(['40', '160']);
     });
 
+    // The original went through `String()`, so a table of money read `1234.5678`.
+    it("writes the caller's numbers through format when stacking to full", async () => {
+      const screen = await render(
+        <BarChart
+          label="Mix"
+          stacked="full"
+          format={{ maximumFractionDigits: 0 }}
+          categories={['Jan']}
+          series={[
+            { name: 'New', data: [1234.5678] },
+            { name: 'Renewed', data: [100] }
+          ]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Mix' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const cells = [...table.element().querySelectorAll('tbody td')].map((cell) =>
+        cell.textContent?.trim()
+      );
+
+      expect(cells).toEqual(['1,235', '100']);
+    });
+
+    // A hidden series still counted towards the hundred, so the bars that were
+    // left stopped short of the top.
+    it('shares the hundred between the series still shown', async () => {
+      const screen = await render(
+        <BarChart
+          label="Mix"
+          stacked="full"
+          height={200}
+          categories={['Jan']}
+          series={[
+            { name: 'New', data: [1] },
+            { name: 'Renewed', data: [3] }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Mix' });
+      const bar = () =>
+        plot.element().querySelector('path[fill="var(--neba-chart-1)"]') as SVGPathElement | null;
+
+      await expect.poll(() => bar()?.getBoundingClientRect().height ?? 0).toBeGreaterThan(0);
+
+      const quarter = bar()!.getBoundingClientRect().height;
+
+      await screen.getByRole('button', { name: 'Renewed' }).click();
+
+      await expect
+        .poll(() => (bar()?.getBoundingClientRect().height ?? 0) / quarter)
+        .toBeGreaterThan(3.5);
+    });
+
     it('puts the percentage on the value axis in either orientation', async () => {
       const mix = (orientation: 'vertical' | 'horizontal') => (
         <BarChart

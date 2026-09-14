@@ -434,6 +434,8 @@
 
 - **A server-rendered `Calendar` or `NebaProvider` hydrates without a mismatch.** A calendar marked today while it rendered, so a server in UTC and a reader in Seoul disagreed about which day to mark for nine hours of every day, and React reported the hydration failing; the month and year grids did the same with the current month and year. `NebaProvider` read the stored colour scheme in its first render, which a server has no `localStorage` for, so the server rendered the default and a returning reader's browser rendered their choice. Today is now marked, and the stored scheme read, once the page has hydrated; `colorSchemeScript()` still puts the stored scheme on `<html>` for the first paint, and the provider does not write the attribute until it has read the same value. The chart docs now tell a server-rendered page to pass `locale`, since a chart without one writes dates in the language and time zone of wherever it renders.
 
+- **A `stacked="full"` chart writes the caller's numbers through `format` and shares the hundred between the series still shown.** An `AreaChart` or `BarChart` stacked to full kept each original value as `String(value)`, so its tooltip and its table ignored `format` and the locale and read `1234.5678` where the rest of the chart said `1,235`. Hiding a series in the legend left it counted in each category's total, so the bars and bands that remained stopped short of 100%. The originals are now written through the chart's own `format` and `locale`, and the total counts only the series still shown. The normalisation, which both charts had a copy of, is done once in the shared chart frame.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

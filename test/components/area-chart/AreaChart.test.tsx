@@ -121,6 +121,32 @@ describe('AreaChart', () => {
       expect(ticks).toContain('0%');
     });
 
+    // The original went through `String()`, ignoring `format` and the locale.
+    it("writes the caller's numbers through format when stacking to full", async () => {
+      const screen = await render(
+        <AreaChart
+          label="Mix"
+          stacked="full"
+          format={{ maximumFractionDigits: 0 }}
+          categories={['Jan']}
+          series={[
+            { name: 'New', data: [1234.5678] },
+            { name: 'Renewed', data: [100] }
+          ]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Mix' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const cells = [...table.element().querySelectorAll('tbody td')].map((cell) =>
+        cell.textContent?.trim()
+      );
+
+      expect(cells).toEqual(['1,235', '100']);
+    });
+
     it('keeps the caller’s own numbers in the table when stacking to full', async () => {
       const screen = await render(
         <AreaChart

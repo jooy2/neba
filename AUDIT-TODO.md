@@ -8,7 +8,7 @@ The working list for the audit of every public component, started on 2026-09-12.
 - On 2026-09-13 the maintainer answered every question C1–F35 with "모두 권장대로". Ten are implemented (C1, C4, C5, D1, D2, D9, D15, D16, D17, D18). The 56 still listed under [Pending decisions](#pending-decisions) are decided as recommended and wait only to be implemented; the maintainer stopped the session there.
 - The next session implements those 56 first, one commit per unit, ticking each item with its `Decided:` line and removing it from the list, and pushes before starting a batch. It asks nothing about them again.
 - The next batch starts after item 190. The first open item without a tag is 191.
-- Item 109 waits for 129 and is done together with it.
+- Item 109 was done together with 129.
 - The next batch labels its questions G (approvals) and H (choices), so an answer like "H3 (b)" names exactly one question.
 
 ## How to run a batch
@@ -65,7 +65,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F4 (129, with 109)** `stacked="full"`: (a) keep each original value as a number, write it with `format` and the locale, count only visible series toward 100%, and move the shared normalisation into `internal/`; (b) fix the formatting only.
 - **F5 (130)** A string chart `height`: (a) measure the height, so every chart takes any CSS length; (b) narrow `height` to `number` (breaking).
 - **F6 (131)** Stacked LineChart and AreaChart with negative values: (a) stack marks by sign, as the axis already does; (b) document that stacking takes non-negative values.
 - **F7 (133)** Legend hidden state: (a) remember hidden series by name, falling back to the index, so reordered data hides the same series; (b) reset it whenever the series change.
@@ -243,7 +242,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 - [ ] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. See D14.
 - [x] **108** i18n had two placeholder fillers; the old `fill` is gone.
-- [ ] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`
+- [x] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136` Done with 129: `toFullShares` in `internal/chart.ts`, applied by the frame.
 - [x] **110** responsive.ts `lengthOf` duplicated `toLength`.
 - [x] **111** **date.ts**: `clampDate`, `isDayInRange` and `minutesOfDay` are unused in `src/` and imported only by tests. `clampDate` can serve the fix for 158; the other two need a decision to delete. `src/internal/date.ts:175, 183, 237`. Decided: (a) `isDayInRange`, `minutesOfDay` and their tests are deleted; `clampDate` stays for 158.
 - [x] **112** mockup.tsx `MockupChrome.size` was never read.
@@ -288,7 +287,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### Charts common
 
-- [ ] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`. See F4.
+- [x] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`. See F4. Decided: (a) the frame renormalises with `toFullShares` over the visible series and writes each original through `format` and the locale.
 - [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`. See F5.
 - [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`. See F6.
 - [x] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1. Decided: approved; the return type is `string | number`, held by a `@ts-expect-error` in the LineChart tests.

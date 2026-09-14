@@ -37,6 +37,7 @@ import {
   showsTick,
   textWidth,
   tickStride,
+  toFullShares,
   toValues,
   truncate,
   valueScale,
@@ -948,6 +949,8 @@ interface CartesianProps extends CartesianChartProps {
   horizontal?: boolean;
   /** The value axis measures totals rather than parts. */
   stacked?: boolean;
+  /** Every category is renormalised to a hundred — `stacked="full"`. See `toFullShares`. */
+  stackedFull?: boolean;
   /** A line chart is free to leave zero out; a bar chart is not. */
   includeZero?: boolean;
   /** How much of a band the marks take — bars need room reserved, lines do not. */
@@ -990,6 +993,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     yAxis,
     horizontal = false,
     stacked = false,
+    stackedFull = false,
     includeZero = true,
     bandRatio = 1,
     inset = false,
@@ -1048,7 +1052,15 @@ export function CartesianChart(rawProps: CartesianProps) {
     [formatKey, locale]
   );
 
-  const values = React.useMemo(() => toValues(series), [series]);
+  const given = React.useMemo(() => toValues(series), [series]);
+  // Keyed on what is shown rather than on the array, which is a new one on
+  // every render: a pointer crossing the plot must not renormalise the data.
+  const shownKey = visibility.visible.map(Number).join('');
+  const values = React.useMemo(
+    () => (stackedFull ? toFullShares(given, visibility.visible, formatValue) : given),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [given, stackedFull, shownKey, formatValue]
+  );
   const colors = React.useMemo(() => series.map((one, index) => seriesColor(one, index)), [series]);
 
   const count = categoryCount(series);
