@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
@@ -188,6 +189,48 @@ describe('Toast', () => {
   });
 
   describe('style props', () => {
+    // An update wrote `data` and `actionProps` even when they were not given,
+    // which took the colour and the action button off the toast.
+    it('keeps what an update does not mention', async () => {
+      function Updater() {
+        const toast = useToast();
+        const [id, setId] = useState<string | null>(null);
+
+        return (
+          <>
+            <Button
+              onClick={() =>
+                setId(
+                  toast.add({ title: 'Upload', color: 'danger', actionLabel: 'Retry', timeout: 0 })
+                )
+              }
+            >
+              Raise
+            </Button>
+            <Button onClick={() => id && toast.update(id, { description: 'Halfway' })}>
+              Update
+            </Button>
+          </>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Updater />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.element(screen.getByText('Upload')).toBeInTheDocument();
+      await screen.getByRole('button', { name: 'Update' }).click();
+      await expect.element(screen.getByText('Halfway')).toBeInTheDocument();
+
+      const toast = screen.getByText('Upload').element().closest('[style]') as HTMLElement;
+
+      expect(toast.style.getPropertyValue('--n-fill')).toBe('var(--neba-danger-fill)');
+      await expect.element(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+    });
+
     it('takes its colour from the provider', async () => {
       const screen = await render(
         <Harness color="success" options={{ title: 'Saved', timeout: 0 }} />

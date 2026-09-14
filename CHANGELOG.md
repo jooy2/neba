@@ -524,6 +524,8 @@
 
 - **`ScatterChart` writes x and z as numbers.** The table and the tooltip wrote x through `String()`, so the axis said `24K` while the table said `24000`, and `0.1 + 0.2` came out as `0.30000000000000004`. `z` took y's `format`, which put a currency sign on a population. Both are now written with the locale's number format.
 
+- **A partial `useToast().update` keeps the rest of the toast.** `update(id, { description })` replaced `data` and `actionProps` with empty values, which took off the colour, the variant, the icon and the action button. Only the fields given are changed now, and a style prop given is merged over the toast's own.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

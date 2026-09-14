@@ -205,6 +205,37 @@ function toManagerOptions(options: ToastOptions) {
 }
 
 /**
+ * The same, for an update: only what the caller wrote.
+ *
+ * `update(id, { description })` went through the function above, which writes
+ * `data` and `actionProps` whether or not they were given — so the colour, the
+ * variant, the icon and the action button were replaced with nothing. A style
+ * prop that is given is merged over the toast's own.
+ */
+function toUpdateOptions(options: ToastOptions, previous: { data?: ToastData }) {
+  const { color, variant, icon, actionLabel, onAction, ...rest } = options;
+  const written = Object.fromEntries(
+    Object.entries(rest).filter(([, value]) => value !== undefined)
+  );
+  const style = Object.fromEntries(
+    Object.entries({ color, variant, icon }).filter(([, value]) => value !== undefined)
+  );
+
+  return {
+    ...written,
+    ...(Object.keys(style).length === 0 ? null : { data: { ...previous.data, ...style } }),
+    ...(actionLabel === undefined
+      ? null
+      : {
+          actionProps: {
+            children: actionLabel,
+            onClick: onAction as React.MouseEventHandler<HTMLButtonElement>
+          }
+        })
+  };
+}
+
+/**
  * Raises toasts from anywhere under a `ToastProvider`.
  *
  * A hook rather than a component, because the thing a caller has at the moment
@@ -235,7 +266,7 @@ export function useToast() {
       close: (id?: string) => managerRef.current.close(id),
       /** Changes a toast already on screen. */
       update: (id: string, options: ToastOptions) =>
-        managerRef.current.update(id, toManagerOptions(options)),
+        managerRef.current.update(id, (previous) => toUpdateOptions(options, previous)),
       /**
        * One toast that follows a promise: the loading message while it runs,
        * then the success or the error. `timeout: 0` is applied to the loading
