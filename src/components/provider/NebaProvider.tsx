@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { DefaultsContext, type NebaDefaults } from '../../internal/defaults.js';
-import { useMediaQuery } from '../../internal/media.js';
+import { useHydrated, useMediaQuery } from '../../internal/media.js';
 
 /** What a reader asked for. `system` is a deferral, not a third appearance. */
 export type NebaColorScheme = 'light' | 'dark' | 'system';
@@ -148,13 +148,19 @@ export function NebaProvider({
   colorSchemeElement,
   direction
 }: NebaProviderProps) {
-  // The remembered choice is read once, lazily: `localStorage` on a server is
-  // absent and on the client is synchronous, and reading it in an effect means
-  // the first paint is the wrong scheme even when the inline script was used.
-  const [uncontrolled, setUncontrolled] = React.useState<NebaColorScheme>(
-    () => readStored(storageKey) ?? defaultColorScheme
+  // The remembered choice is read past hydration rather than as the state's
+  // first value: a server has no `localStorage`, so the server rendered the
+  // default and the hydrating client the stored scheme, which React reports as
+  // the two renders disagreeing. The inline script has already put the stored
+  // scheme on `<html>` for the first paint, and the attribute below is not
+  // written until the stored value has been read, so nothing flips in between.
+  const hydrated = useHydrated();
+  const [chosen, setChosen] = React.useState<NebaColorScheme | null>(null);
+  const stored = React.useMemo(
+    () => (hydrated ? readStored(storageKey) : null),
+    [hydrated, storageKey]
   );
-  const colorScheme = colorSchemeProp ?? uncontrolled;
+  const colorScheme = colorSchemeProp ?? chosen ?? stored ?? defaultColorScheme;
 
   const systemIsDark = useMediaQuery(DARK_QUERY);
   const resolved = colorScheme === 'system' ? (systemIsDark ? 'dark' : 'light') : colorScheme;
@@ -162,7 +168,7 @@ export function NebaProvider({
   const setColorScheme = React.useCallback(
     (next: NebaColorScheme) => {
       if (colorSchemeProp === undefined) {
-        setUncontrolled(next);
+        setChosen(next);
       }
       if (storageKey !== false) {
         try {
@@ -178,6 +184,10 @@ export function NebaProvider({
   );
 
   React.useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
     // Only falls back when the prop was not given: a caller who did give one
     // and got `null` back meant nowhere, not `<html>`.
     const element = colorSchemeElement ? colorSchemeElement() : document.documentElement;
@@ -191,7 +201,7 @@ export function NebaProvider({
     // an overscroll. A page that changes only its own colours keeps a white
     // scrollbar down the side of a dark one.
     (element as HTMLElement).style.colorScheme = resolved;
-  }, [resolved, colorSchemeElement]);
+  }, [hydrated, resolved, colorSchemeElement]);
 
   React.useEffect(() => {
     if (!direction) {

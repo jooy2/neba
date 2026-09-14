@@ -430,6 +430,8 @@
 
 - **A nested `Anchor` row marks its place on the rail.** On the `rail`, a row with a `depth` was indented with a margin, which moved its whole box and the `border-s` highlight with it, so the active nested row was marked a step away from the rail rather than on it. Nested rows on the rail are now indented with `padding-inline-start` inside a box that starts at the rail. Without the rail the indent is unchanged.
 
+- **A server-rendered `Calendar` or `NebaProvider` hydrates without a mismatch.** A calendar marked today while it rendered, so a server in UTC and a reader in Seoul disagreed about which day to mark for nine hours of every day, and React reported the hydration failing; the month and year grids did the same with the current month and year. `NebaProvider` read the stored colour scheme in its first render, which a server has no `localStorage` for, so the server rendered the default and a returning reader's browser rendered their choice. Today is now marked, and the stored scheme read, once the page has hydrated; `colorSchemeScript()` still puts the stored scheme on `<html>` for the first paint, and the provider does not write the attribute until it has read the same value. The chart docs now tell a server-rendered page to pass `locale`, since a chart without one writes dates in the language and time zone of wherever it renders.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

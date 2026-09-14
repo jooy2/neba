@@ -40,6 +40,7 @@ import {
 } from './date.js';
 import { dateFormatter } from './format.js';
 import { pickerMessages, useMessages, type PickerMessages } from './i18n.js';
+import { useHydrated } from './media.js';
 import type {
   NebaColor,
   NebaDateGranularity,
@@ -841,7 +842,9 @@ function DayGrid({
   const long = weekdayLabels(locale, weekStartsOn, 'long');
   const fullDate = dateFormatter(locale, { dateStyle: 'full' });
   const band = orderedRange(rangeStart, rangeEnd);
-  const now = today();
+  // Marked only past hydration: a server in another time zone has another
+  // today, and a mark the two renders disagree about is a hydration error.
+  const now = useHydrated() ? today() : null;
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
     const offsetInWeek = (date.getDay() - weekStartsOn + 7) % 7;
@@ -933,7 +936,7 @@ function DayGrid({
                           ? 'end'
                           : 'middle'
                 }
-                current={isSameDay(date, now) && !isChosen}
+                current={now !== null && isSameDay(date, now) && !isChosen}
                 muted={outside}
                 disabled={isDisabled(date)}
                 focused={isSameDay(date, focusedDate)}
@@ -999,7 +1002,7 @@ function MonthGrid({
   // `July 2026`, `2026년 7월` — and not a month name with the year stuck on.
   const monthOfYear = dateFormatter(locale, { year: 'numeric', month: 'long' });
   const year = month.getFullYear();
-  const now = new Date();
+  const now = useHydrated() ? new Date() : null;
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     const ahead = isRtl(event.currentTarget) ? -1 : 1;
@@ -1045,7 +1048,7 @@ function MonthGrid({
                 selected={chosen.some(
                   (entry) => entry.getFullYear() === year && entry.getMonth() === index
                 )}
-                current={now.getFullYear() === year && now.getMonth() === index}
+                current={now !== null && now.getFullYear() === year && now.getMonth() === index}
                 disabled={
                   isUnitOutside(first, 'month', minDate, maxDate) ||
                   (shouldDisable?.(first) ?? false)
@@ -1095,7 +1098,7 @@ function YearGrid({
   onPick
 }: YearGridProps) {
   const pageStart = yearPageStart(month.getFullYear());
-  const now = new Date().getFullYear();
+  const now = useHydrated() ? new Date().getFullYear() : null;
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     const ahead = isRtl(event.currentTarget) ? -1 : 1;

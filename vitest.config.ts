@@ -50,6 +50,13 @@ export default defineConfig({
       neba: resolve(rootDir, 'src/index.ts')
     }
   },
+  // Pre-bundled up front. A test that hydrates server HTML imports it directly,
+  // and a dependency Vite first meets in the middle of a run is optimised then,
+  // which reloads the page under the file that was running: a second React, an
+  // invalid hook call, and the next test file never becoming ready.
+  optimizeDeps: {
+    include: ['react-dom/client']
+  },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
     // One file at a time. Test files run as frames of one browser, and a

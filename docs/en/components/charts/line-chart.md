@@ -153,7 +153,7 @@ Series take palette slots in the order they are passed: eight hues, fixed, never
 
 ### format
 
-`format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`).
+`format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`). A chart with no `locale` writes its numbers and dates in the language and time zone of wherever it renders, so on a server-rendered page pass `locale`, or the server's `Mar 3` and the reader's may disagree when the page hydrates.
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }} … />

@@ -153,7 +153,7 @@ series는 넘긴 순서대로 팔레트 slot을 가져갑니다. 여덟 개의 �
 
 ### format
 
-`format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`).
+`format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`). `locale`이 없는 차트는 렌더링되는 곳의 언어와 시간대로 숫자와 날짜를 쓰므로, 서버에서 렌더링하는 페이지라면 `locale`을 넘기세요. 그러지 않으면 서버의 `Mar 3`과 독자의 표기가 하이드레이션할 때 어긋날 수 있습니다.
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }} … />

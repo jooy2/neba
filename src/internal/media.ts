@@ -174,6 +174,25 @@ const readMotion = () => queryMatches(reducedMotionQuery);
  * a ScrollZone can ask without pulling the eleven animation effects in with the
  * answer.
  */
+const subscribeToNothing = () => () => {};
+const pastHydration = () => true;
+const duringHydration = () => false;
+
+/**
+ * Whether this render is past hydration.
+ *
+ * `false` on the server and in the render that hydrates what the server sent,
+ * `true` in every render after that, and `true` straight away in a tree that
+ * was never server-rendered. It is for a value the server cannot know the
+ * reader's answer to — the day it is where they are, the scheme they chose last
+ * visit — which has to be left out of the hydrating render or React reports the
+ * two renders disagreeing. `useSyncExternalStore` rather than an effect, so a
+ * client-only tree does not render once without the value and then again with it.
+ */
+export function useHydrated(): boolean {
+  return React.useSyncExternalStore(subscribeToNothing, pastHydration, duringHydration);
+}
+
 export function usePrefersReducedMotion(): boolean {
   return React.useSyncExternalStore(subscribeToMotion, readMotion, noMatchOnServer);
 }

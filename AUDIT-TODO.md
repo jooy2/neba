@@ -65,7 +65,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F2 (126)** Server and client renders disagree: (a) Calendar marks today and NebaProvider reads the stored scheme after hydration, and the chart docs tell server-rendered pages to pass `locale`; (b) document all three.
 - **F3 (127)** Nested NebaProvider: (a) an inner provider merges its `defaults` over the outer ones, inherits the direction when it has none, and only the outermost provider writes the scheme to `<html>`; (b) document that providers do not nest and drop the guide's recommendation.
 - **F4 (129, with 109)** `stacked="full"`: (a) keep each original value as a number, write it with `format` and the locale, count only visible series toward 100%, and move the shared normalisation into `internal/`; (b) fix the formatting only.
 - **F5 (130)** A string chart `height`: (a) measure the height, so every chart takes any CSS length; (b) narrow `height` to `number` (breaking).
@@ -281,7 +280,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] Avatar, AppLogo: `imageProps.className` replaced `size-full object-cover`.
   - [x] [decision] FloatingActionButton: `style` replaces the round radius, and `className` lands on the outer div instead of the button (`FloatingActionButton.tsx:471-495`). See D19. Decided: (a) `className` and `style` go on the button, `style` merged over the radius, and the box is `classNames.frame`.
 - [x] **125** [major][decision] **Hydration errors inside `<p>`**: the root or a child is a `<div>`. Image (the default Skeleton and `AspectRatio` are divs; it happens with an MDX `img` mapping, `Image.tsx:1070, 1167`), Stack (its JSDoc says it can sit inside a paragraph, `Stack.tsx:140`), AnimateTyping, AnimateHeadline and AnimateMarquee (no `render` prop, so the Headline demo drops the heading semantics). See F1. Decided: (a) Image and Stack draw spans, and AnimateTyping, AnimateHeadline and AnimateMarquee render a span and take `render`.
-- [ ] **126** [decision] **Server and client renders disagree.** See F2.
+- [x] **126** [decision] **Server and client renders disagree.** See F2. Decided: (a) Calendar marks today and NebaProvider reads the stored scheme past hydration, through `useHydrated` in `internal/media.ts`; the LineChart format docs tell a server-rendered page to pass `locale`.
   - Calendar reads `today()` and the runtime locale during render. With a UTC server and a reader in KST, the "today" mark differs between 00:00 and 09:00 every day, and the shown month differs at the end of a month (`Calendar.tsx:164-166`, `src/internal/date.ts:545`).
   - Charts without `locale` format with the server's locale and time zone, so `Mar 3` on the server does not match the client's localised date (`chart-frame.tsx:655, 668`).
   - NebaProvider reads the stored scheme in the `useState` initialiser, so the server renders `light` and the client `dark` (`NebaProvider.tsx:152-155`).

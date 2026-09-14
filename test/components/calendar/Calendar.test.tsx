@@ -3,6 +3,7 @@
  * is the three modes and the value each hands back.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Calendar } from 'neba';
@@ -60,6 +61,20 @@ describe('Calendar', () => {
     await expect
       .element(screen.getByRole('gridcell', { name: 'Sunday, July 26, 2026' }))
       .toHaveFocus();
+  });
+
+  // A server in another time zone has another today, and a mark the server and
+  // the hydrating client disagree about is a hydration error.
+  it('marks today only once it is past hydration', async () => {
+    const html = renderToString(<Calendar locale={LOCALE} />);
+
+    expect(html).not.toContain('aria-current="date"');
+
+    const screen = await render(<Calendar locale={LOCALE} />);
+
+    await expect
+      .poll(() => screen.container.querySelectorAll('[aria-current="date"]').length)
+      .toBe(1);
   });
 
   describe('header', () => {

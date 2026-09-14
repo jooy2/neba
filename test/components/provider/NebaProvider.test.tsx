@@ -4,6 +4,8 @@
  */
 import { Component, memo, Profiler, type ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import {
   Alert,
@@ -254,6 +256,33 @@ describe('colour scheme', () => {
     );
 
     await expect.element(second.getByText('dark → dark').first()).toBeInTheDocument();
+  });
+
+  // The server has no `localStorage`, so it rendered the default while the
+  // hydrating client rendered the stored scheme, and React reported the mismatch.
+  it('reads the stored scheme after hydrating, so the two renders agree', async () => {
+    const tree = (
+      <NebaProvider defaultColorScheme="light">
+        <Switcher />
+      </NebaProvider>
+    );
+    const container = document.createElement('div');
+
+    document.body.append(container);
+    container.innerHTML = renderToString(tree);
+    localStorage.setItem('neba-color-scheme', 'dark');
+
+    const onRecoverableError = vi.fn();
+    const hydrated = hydrateRoot(container, tree, { onRecoverableError });
+
+    try {
+      await expect.poll(() => container.querySelector('p')?.textContent).toBe('dark → dark');
+      expect(onRecoverableError).not.toHaveBeenCalled();
+      await expect.poll(() => root().getAttribute('data-theme')).toBe('dark');
+    } finally {
+      hydrated.unmount();
+      container.remove();
+    }
   });
 
   it('forgets it when told to', async () => {
