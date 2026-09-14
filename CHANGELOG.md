@@ -458,6 +458,8 @@
 
 - **A `Rating` without `name` submits nothing.** Its radios were given a generated `name` so they would act as one group, and a form then submitted that name as a field of its own, so a form's data gained an entry like `«r3»=4`. An unnamed Rating's radios still share a name, so they keep one Tab stop and the arrow keys still move between the stars, but they belong to no form. Pass `name` for a Rating a form should submit; without it `required` has nothing to hold back.
 
+- **Clicking a `FloatingActionButton` with a mouse no longer shuts the dial the pointer just opened.** With `openOnHover`, the default, the dial opened as the pointer reached the button, and the click that followed toggled it straight back shut, so a mouse user who clicked the button saw the dial flash and close. A click on a dial the pointer opened now keeps it open, and the next click closes it. A dial opened by a press still closes on the next press.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -129,6 +129,28 @@ describe('FloatingActionButton', () => {
       </FloatingActionButton>
     );
 
+    // With the default `openOnHover` the pointer opened the dial on its way to
+    // the button, and the click that followed shut it again. Every other test
+    // turns hover off, which is why nothing caught it.
+    it('keeps a dial the pointer opened up when the button is then clicked', async () => {
+      const screen = await render(
+        <FloatingActionButton label="Share">
+          <FloatingAction label="Copy link" />
+          <FloatingAction label="Email" />
+        </FloatingActionButton>
+      );
+      const button = screen.getByRole('button', { name: 'Share' });
+
+      await button.hover();
+      await expect.element(screen.getByRole('button', { name: 'Copy link' })).toBeInTheDocument();
+
+      await button.click();
+      await expect.element(button).toHaveAttribute('aria-expanded', 'true');
+
+      await button.click();
+      await expect.element(button).toHaveAttribute('aria-expanded', 'false');
+    });
+
     it('starts closed and says so', async () => {
       const screen = await render(dial());
 

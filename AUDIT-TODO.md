@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F15 (152)** FloatingActionButton `openOnHover`: (a) a click just after the hover opened the dial keeps it open; (b) turn `openOnHover` off by default.
 - **F16 (153)** BottomNavigation `labels="selected"`: (a) reserve the name line on every item, so the glyphs stay put; (b) leave it.
 - **F17 (154)** Calendar `elevation` and `bordered`: (a) `elevation` draws its shadow and `bordered` draws the popup's sheet; (b) remove `elevation` (breaking).
 - **F18 (155)** Pressing a date before the start of a range: (a) Calendar and DateRangePicker both start a new range there; (b) both swap the ends.
@@ -301,7 +300,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **149** [decision] **IconButton**: the inline `borderRadius: 9999px` beats ButtonGroup's joined-corner classes, so circles overlap inside a group. `IconButton.tsx:61`. See F13. Decided: (a) the radius lives in Button's own `rounded-*` class, with the ladder's tokens pinned to 9999px on the IconButton, so the group's joined-corner classes outrank it; a separate `rounded-full` would have tied Button's class on stylesheet order.
 - [x] **150** **Slider**: `marks={true}` uses `Math.floor(span / step)`, which drops the last mark for `max=0.6 step=0.1`. `Slider.tsx:185`
 - [x] **151** [decision] **Rating**: without `name` it still uses a `useId` value as the radio `name`, so FormData gains fields such as `«r3»=4`. `Rating.tsx:152-153, 270`. See F14. Decided: (a) nothing is submitted without `name`. The radios keep a generated `name` and take a `form` that names no form, because native grouping is what gives the stars one Tab stop and arrow keys; writing no `name` at all would have taken both away.
-- [ ] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`. See F15.
+- [x] **152** [decision] **FloatingActionButton**: with the default `openOnHover`, the pointer entering opens the dial and the click that follows closes it, so clicking with a mouse closes the dial. Every test uses `openOnHover={false}`. `FloatingActionButton.tsx:379-385, 414-417`. See F15. Decided: (a) the first click on a dial the pointer opened keeps it open, through an `openedByHover` ref.
 - [ ] **153** [major][decision] **BottomNavigation**: with `labels="selected"` the unselected names are absolutely positioned and reserve no line, so the glyphs jump up and down whenever the selection changes. `BottomNavigation.tsx:392-403`. See F16.
 
 ### Date and time pickers

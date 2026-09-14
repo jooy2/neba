@@ -335,6 +335,15 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
 
     const close = React.useCallback(() => setOpen(false), [setOpen]);
 
+    /*
+     * Whether the dial is up because the pointer arrived rather than because
+     * the button was pressed. With `openOnHover` a mouse opens the dial on its
+     * way to the button, and the click that follows toggled it straight back
+     * shut, so clicking the button with a mouse closed the dial it was reaching
+     * for. That first click keeps it open instead; the next one closes it.
+     */
+    const openedByHover = React.useRef(false);
+
     // A press anywhere else puts the dial away. `pointerdown` rather than
     // `click`, so the dial is gone before whatever was pressed reacts.
     React.useEffect(() => {
@@ -418,6 +427,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
         }}
         onPointerEnter={(event) => {
           if (openOnHover && hasActions && !disabled && event.pointerType === 'mouse') {
+            openedByHover.current = !open;
             setOpen(true);
           }
 
@@ -425,6 +435,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
         }}
         onPointerLeave={(event) => {
           if (openOnHover && event.pointerType === 'mouse') {
+            openedByHover.current = false;
             close();
           }
 
@@ -457,7 +468,11 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
           style={{ borderRadius: '9999px', ...style }}
           onClick={(event) => {
             if (hasActions) {
-              setOpen(!open);
+              if (open && openedByHover.current) {
+                openedByHover.current = false;
+              } else {
+                setOpen(!open);
+              }
             }
 
             onClick?.(event);
