@@ -76,6 +76,25 @@ describe('DataList', () => {
       expect(list).toHaveClass('flex-col');
       expect(list).not.toHaveClass('grid');
     });
+
+    // A gap between every child put as much space inside a pair as between
+    // pairs, so the labels drifted towards the value above them.
+    it('keeps a stacked label nearer its own value than the pair before it', async () => {
+      const screen = await render(<Details orientation="vertical" />);
+      const list = screen.getByTestId('details').element();
+
+      expect(list.className).not.toMatch(/(^| )gap-y-/);
+      expect(list).toHaveClass('[&>dt:nth-of-type(n+2)]:mt-3');
+    });
+
+    // The rule was drawn above every `<dd>` too, between a label and its value.
+    it('rules between stacked pairs and never inside one', async () => {
+      const screen = await render(<Details orientation="vertical" dividers />);
+      const list = screen.getByTestId('details').element();
+
+      expect(list).toHaveClass('[&>dt:nth-of-type(n+2)]:border-t');
+      expect(list.className).not.toContain('[&>dd:nth-of-type(n+2)]:border-t');
+    });
   });
 
   describe('appearance', () => {

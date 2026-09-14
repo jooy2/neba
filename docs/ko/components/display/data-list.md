@@ -34,7 +34,7 @@ import { DataList, DataListItem } from 'neba';
 
 ### orientation
 
-`horizontal`은 값 옆에 라벨만의 열을 두며, 상세 패널이 취하는 모양입니다. `vertical`은 라벨을 위에 둡니다. 폭이 좁은 열이나, 값이 길어서 옆에 라벨을 두면 행 대부분이 비는 경우에 씁니다.
+`horizontal`은 값 옆에 라벨만의 열을 두며, 상세 패널이 취하는 모양입니다. `vertical`은 라벨을 위에 둡니다. 폭이 좁은 열이나, 값이 길어서 옆에 라벨을 두면 행 대부분이 비는 경우에 씁니다. 위에 놓인 라벨은 앞 쌍보다 자기 값에 더 가깝게 붙습니다.
 
 <Demo src="data-list/orientation">
 
@@ -54,7 +54,7 @@ import { DataList, DataListItem } from 'neba';
 
 ### dividers
 
-행 사이의 하이라인입니다. 쌍이 많아 구분이 필요한 긴 목록에 씁니다.
+행 사이의 하이라인입니다. 쌍이 많아 구분이 필요한 긴 목록에 씁니다. `vertical` 목록에서는 라벨 위, 즉 쌍과 쌍 사이에만 그어지고 라벨과 값 사이에는 그어지지 않습니다.
 
 <Demo src="data-list/dividers">
 

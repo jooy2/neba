@@ -107,6 +107,56 @@ const dividerPadClasses: Record<NebaDensity, Record<NebaSize, string>> = {
 };
 
 /**
+ * Between one pair and the next when the labels sit above their values.
+ *
+ * A stacked list cannot use the row gap: its `<dt>` and `<dd>` are siblings in
+ * one column, so a gap between every child put as much space between a label
+ * and its own value as between that value and the next label, and the pairs
+ * stopped reading as pairs. The space goes above each label after the first
+ * instead, and inside a pair there is only the label's own small margin.
+ */
+const pairGapClasses: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: {
+    xs: '[&>dt:nth-of-type(n+2)]:mt-2',
+    sm: '[&>dt:nth-of-type(n+2)]:mt-2.5',
+    md: '[&>dt:nth-of-type(n+2)]:mt-3',
+    lg: '[&>dt:nth-of-type(n+2)]:mt-3.5',
+    xl: '[&>dt:nth-of-type(n+2)]:mt-4'
+  },
+  compact: {
+    xs: '[&>dt:nth-of-type(n+2)]:mt-1',
+    sm: '[&>dt:nth-of-type(n+2)]:mt-1.5',
+    md: '[&>dt:nth-of-type(n+2)]:mt-2',
+    lg: '[&>dt:nth-of-type(n+2)]:mt-2',
+    xl: '[&>dt:nth-of-type(n+2)]:mt-2.5'
+  }
+};
+
+/**
+ * The hairline of a stacked list, which goes between pairs: above each label
+ * after the first, and never between a label and its value.
+ */
+const stackedDividerClasses =
+  '[&>dt:nth-of-type(n+2)]:border-t [&>dt]:[border-color:var(--neba-border)]';
+
+const stackedDividerPadClasses: Record<NebaDensity, Record<NebaSize, string>> = {
+  default: {
+    xs: '[&>dt:nth-of-type(n+2)]:pt-2',
+    sm: '[&>dt:nth-of-type(n+2)]:pt-2.5',
+    md: '[&>dt:nth-of-type(n+2)]:pt-3',
+    lg: '[&>dt:nth-of-type(n+2)]:pt-3.5',
+    xl: '[&>dt:nth-of-type(n+2)]:pt-4'
+  },
+  compact: {
+    xs: '[&>dt:nth-of-type(n+2)]:pt-1',
+    sm: '[&>dt:nth-of-type(n+2)]:pt-1.5',
+    md: '[&>dt:nth-of-type(n+2)]:pt-2',
+    lg: '[&>dt:nth-of-type(n+2)]:pt-2',
+    xl: '[&>dt:nth-of-type(n+2)]:pt-2.5'
+  }
+};
+
+/**
  * One pair: what it is called, and what it is.
  *
  * A fragment rather than an element, so the `<dt>` and the `<dd>` land as direct
@@ -178,9 +228,14 @@ export const DataList = React.forwardRef<HTMLDListElement, DataListProps>(
             orientation === 'vertical'
               ? 'flex flex-col'
               : 'grid [grid-template-columns:var(--n-label)_minmax(0,1fr)] items-baseline',
-            columnGapClasses[density][size],
-            rowGapClasses[density][size],
-            dividers ? `${dividerClasses} ${dividerPadClasses[density][size]}` : '',
+            orientation === 'vertical'
+              ? pairGapClasses[density][size]
+              : `${columnGapClasses[density][size]} ${rowGapClasses[density][size]}`,
+            dividers
+              ? orientation === 'vertical'
+                ? `${stackedDividerClasses} ${stackedDividerPadClasses[density][size]}`
+                : `${dividerClasses} ${dividerPadClasses[density][size]}`
+              : '',
             className ?? ''
           ]
             .filter(Boolean)

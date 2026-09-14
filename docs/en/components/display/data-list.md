@@ -34,7 +34,7 @@ Not a two-column [Table](./table). A table is a grid of rows all of the same sha
 
 ### orientation
 
-`horizontal` puts the label in a column of its own beside the value, which is the shape a details panel takes. `vertical` puts it above: for a narrow column, and for values long enough that a label beside them would leave most of the row empty.
+`horizontal` puts the label in a column of its own beside the value, which is the shape a details panel takes. `vertical` puts it above: for a narrow column, and for values long enough that a label beside them would leave most of the row empty. A stacked label sits closer to its own value than to the pair above it.
 
 <Demo src="data-list/orientation">
 
@@ -54,7 +54,7 @@ Left out, the label column is as wide as the widest label, which is what makes e
 
 ### dividers
 
-A hairline between the rows, for a long list where the pairs need separating.
+A hairline between the rows, for a long list where the pairs need separating. In a `vertical` list it runs between pairs, above each label, and never between a label and its value.
 
 <Demo src="data-list/dividers">
 

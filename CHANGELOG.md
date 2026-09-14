@@ -422,6 +422,8 @@
 
 - **A striped `Table` shows its stripes on a white page.** Every other row took the panel hover token, which is 82% white, so on a white page the stripes were not there at all. They now take the 4% mix of the ink that a striped `DataTable` already uses, which shows on any surface and in both themes.
 
+- **A vertical `DataList` keeps each label with its own value.** With `orientation="vertical"` the gap between every child fell between a label and its value as well as between pairs, and the label's own margin made the first of those larger, so a label read as belonging to the value above it. `dividers` drew its rule above every `<dd>` too, between a label and its value. The space now goes above each label after the first, and the rule runs only between pairs. A horizontal list is unchanged.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
