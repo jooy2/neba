@@ -446,6 +446,8 @@
 
 - **A `DataTable` that takes the focus without selecting rings its sheet.** A table with `selectionMode="none"` that still takes a tab stop, because its rows have `onRowActivate` or a column is editable, drew no focus indicator at all when it was tabbed to, and nothing showed until an arrow key marked a row. It now rings its sheet while the table holds the focus, as a selecting table already did.
 
+- **A `Combobox` with a `limit` still offers to add what was typed.** The row that adds a value the list does not have came last, and `limit` cut the list to that many rows, so once enough options matched the row was cut off: the typed value could not be added, and Enter chose the first option instead. `limit` now counts options only, and the row is drawn after as many of them as it allows.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

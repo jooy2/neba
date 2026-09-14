@@ -96,7 +96,7 @@ A single-select Combobox is exactly as tall as a [TextField](./text-field) of th
 
 ### clearable · limit
 
-`clearable` adds a button that empties the value. `limit` caps how many items the popup shows at once.
+`clearable` adds a button that empties the value. `limit` caps how many options the popup shows at once. The row that offers to add what was typed is drawn beyond it, so a full list can still take a new value.
 
 ### filter
 

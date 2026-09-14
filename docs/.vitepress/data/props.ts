@@ -8411,8 +8411,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: '-1',
       description: {
-        ko: '한 번에 보여 줄 최대 행 수. -1은 전부',
-        en: 'The most rows the list will show at once. -1 is all of them'
+        ko: '한 번에 보여 줄 최대 옵션 수. -1은 전부. 입력한 값을 추가하는 행은 이 수에 들어가지 않습니다',
+        en: 'The most options the list will show at once. -1 is all of them. The row that adds what was typed is drawn beyond it'
       }
     },
     {

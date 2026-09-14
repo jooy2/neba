@@ -179,6 +179,26 @@ describe('Combobox', () => {
       expect(onValueChange).toHaveBeenCalledWith('qwik');
     });
 
+    // A full list cut the row off, so the typed value could not be added and
+    // Enter chose the first option instead.
+    it('draws the row beyond the limit, after as many options as the limit allows', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <Combobox items={FRAMEWORKS} label="Framework" limit={2} onValueChange={onValueChange} />
+      );
+
+      await screen.getByRole('combobox').fill('e');
+
+      const add = screen.getByRole('option', { name: 'Add “e”' });
+
+      await expect.element(add).toBeInTheDocument();
+      expect(screen.getByRole('option').elements()).toHaveLength(3);
+
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+
+      expect(onValueChange).toHaveBeenCalledWith('e');
+    });
+
     it('lets the row say something else', async () => {
       const screen = await render(
         <Combobox

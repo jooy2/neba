@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F9 (142)** Combobox `limit` and the "Add" row: (a) `limit` counts options only, so the add row is always drawn; (b) the add row takes the place of the last option when the list is full.
 - **F10 (143)** FilePicker in a form: (a) keep the hidden input's files in step with the list through `DataTransfer`, keep `required` while the list is empty, use `readOnly` rather than `disabled`, and fix the `maxFiles` JSDoc; (b) document that the files are read from `onValueChange`.
 - **F11 (144)** Transfer ids missing from `items`: (a) keep them in the value in both directions; (b) drop them in both directions.
 - **F12 (148)** NumberField ref: (a) `forwardRef` to the input, as TextField does; (b) `forwardRef` to the root.
@@ -297,7 +296,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **139** [major] MenuItem and NavigationMenuItem ignored `disabled` with `href`. Decided: fixed (breaking).
 - [x] **140** [major] **Menubar, NavigationMenu**: with `orientation="vertical"` popups still open downward and cover the next item. Menubar because `Menu` states `side='bottom'`, NavigationMenu because its Positioner has no `side`. `Menubar.tsx:100-110`, `Menu.tsx:676, 709`, `NavigationMenu.tsx:347-351`. See E2. Decided: approved; a vertical Menubar passes the inline-end side to each Menu, and a vertical NavigationMenu's Positioner takes `inline-end`.
 - [x] **141** **CommandPalette**: when a command runs and closes it, or a controlled `open` becomes `false`, the query stays, so reopening shows a filtered list. `CommandPalette.tsx:265-284`
-- [ ] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`. See F9.
+- [x] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`. See F9. Decided: (a) with an add row, the options are filtered with Base UI's own `useFilter` and cut to `limit`, and the row goes after them.
 - [ ] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`. See F10.
 - [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`. See F11.
 - [x] **145** **SegmentedButton, FloatingBottomNavigation**: when no item matches `value`, the highlight tile stays at its previous place and shows a wrong selection. FloatingBottomNavigation's default `labels="selected"` measures the width when the transition starts, so the tile can stay narrow (confirmed in the docs with two names of the same width). `SegmentedButton.tsx:265-268`, `FloatingBottomNavigation.tsx:285-288, 313-324`

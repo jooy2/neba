@@ -152,7 +152,12 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
    * to the `locale`'s wording.
    */
   emptyMessage?: React.ReactNode;
-  /** The most rows the list will show at once. `-1` is all of them. @default -1 */
+  /**
+   * The most options the list will show at once. `-1` is all of them. The row
+   * that offers to add what was typed is drawn beyond it, so a full list can
+   * still take a new value.
+   * @default -1
+   */
   limit?: number;
   /** Shown in the input while nothing is typed. */
   placeholder?: string;
@@ -447,13 +452,36 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     selection.some((item) => String(item).toLocaleLowerCase() === folded);
   const customValue = allowCustom && !readOnly && !disabled && !alreadyKnown ? trimmed : null;
 
-  const listItems = React.useMemo<Entry[]>(
-    () =>
-      customValue === null
+  // Base UI's own matcher, for the one case this component filters itself.
+  const matcher = BaseUICombobox.useFilter({ locale });
+
+  /* With a `limit`, Base UI cuts the filtered list to that many rows in order,
+     and the row that adds what was typed is last, so a full list cut it off and
+     Enter chose the first option instead. When there is such a row the options
+     are filtered and cut here, with the same matcher, and the row goes after
+     them; everywhere else Base UI filters as it always has. */
+  const cutsItself = customValue !== null && limit !== undefined && limit > -1;
+
+  const listItems = React.useMemo<Entry[]>(() => {
+    if (customValue === null) {
+      return options;
+    }
+
+    const custom: Entry = { value: customValue, label: customValue, custom: true };
+
+    if (!cutsItself) {
+      return [...options, custom];
+    }
+
+    const matching =
+      filter === false
         ? options
-        : [...options, { value: customValue, label: customValue, custom: true }],
-    [options, customValue]
-  );
+        : options.filter((option) =>
+            filter ? filter(option, customValue) : matcher.contains(option.label, customValue)
+          );
+
+    return [...matching.slice(0, limit), custom];
+  }, [options, customValue, cutsItself, filter, matcher, limit]);
 
   const baseValue = isMultiple
     ? selection.map(entryFor)
@@ -588,11 +616,11 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         itemToStringLabel={(entry) => entry.label}
         itemToStringValue={(entry) => String(entry.value)}
         isItemEqualToValue={(a, b) => a.value === b.value}
-        limit={limit}
+        limit={cutsItself ? -1 : limit}
         // `null` is Base UI's "keep everything", and the custom row is exempt
         // from a caller's own answer because it is the query written out.
         filter={
-          filter === false
+          cutsItself || filter === false
             ? null
             : filter
               ? (entry: Entry, query: string) => entry.custom === true || filter(entry, query)

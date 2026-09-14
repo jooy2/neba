@@ -96,7 +96,7 @@ interface ComboboxOption {
 
 ### clearable · limit
 
-`clearable`은 값을 비우는 버튼을 붙입니다. `limit`은 팝업에 한 번에 표시할 항목 수를 제한합니다.
+`clearable`은 값을 비우는 버튼을 붙입니다. `limit`은 팝업에 한 번에 표시할 옵션 수를 제한합니다. 입력한 값을 추가하는 행은 그 수에 들어가지 않으므로, 목록이 가득 차도 새 값을 받을 수 있습니다.
 
 ### filter
 
