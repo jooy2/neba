@@ -7,7 +7,7 @@ import type {
   BottomNavigationLabels,
   BottomNavigationValue
 } from '../../internal/bottom-navigation.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   cx,
   hasContent,
@@ -284,7 +284,7 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
     {
       value,
       icon,
-      href,
+      href: hrefProp,
       target,
       rel,
       disabled: disabledProp = false,
@@ -415,6 +415,8 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
       bar.change(value);
       onClick?.(event as React.MouseEvent<HTMLButtonElement>);
     };
+
+    const href = safeHref(hrefProp);
 
     if (href) {
       return (

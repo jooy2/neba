@@ -221,6 +221,19 @@ describe('ChatBubble', () => {
 
       expect(screen.getByRole('link').element()).toHaveAttribute('target', '_blank');
     });
+
+    // A preview is built from a message somebody else sent, and React 18 writes
+    // a `javascript:` URL as it is.
+    it('writes no href for a preview whose address could run a script', async () => {
+      const screen = await render(
+        <ChatBubble preview={{ url: 'javascript:alert(1)', title: 'Totally a post' }}>
+          Read this
+        </ChatBubble>
+      );
+
+      await expect.element(screen.getByText('Totally a post')).toBeInTheDocument();
+      expect(screen.container.querySelector('a')).not.toHaveAttribute('href');
+    });
   });
 
   describe('actions', () => {

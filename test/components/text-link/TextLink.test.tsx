@@ -27,6 +27,13 @@ describe('TextLink', () => {
       expect(screen.getByRole('link').element()).toHaveAttribute('href', '/two');
     });
 
+    it('writes no href whose scheme could run a script', async () => {
+      const screen = await render(<TextLink href="JavaScript:alert(1)">Go</TextLink>);
+
+      await expect.element(screen.getByText('Go')).toBeInTheDocument();
+      expect(screen.container.querySelector('a')).not.toHaveAttribute('href');
+    });
+
     it('keeps caller-supplied class names alongside its own', async () => {
       const screen = await render(
         <TextLink href="/docs" className="my-own-class">

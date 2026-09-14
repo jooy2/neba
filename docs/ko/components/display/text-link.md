@@ -102,3 +102,4 @@ import Link from 'next/link';
 - 새 탭에서 열리는 링크는 그 사실을 accessible name에 담습니다. 페이지의 언어로 읽히도록 `locale`을 지정하세요.
 - `underline="none"`은 색만을 링크의 단서로 남깁니다. 색만으로는 모든 독자에게 전달되지 않으므로, 주변 레이아웃이 이미 링크임을 말하고 있는 자리에만 쓰세요.
 - focus ring은 `color`가 없어도 그려집니다. 사라지는 대신 primary ring으로 돌아갑니다.
+- scheme이 `http`, `https`, `mailto`, `tel`이 아닌 `href`는 쓰지 않으므로, 사용자 콘텐츠에서 온 `javascript:` 주소는 실행되지 않습니다. 상대 주소, `#fragment`, `//host`는 그대로 둡니다. `href`를 받는 모든 컴포넌트가 같은 규칙을 따릅니다.

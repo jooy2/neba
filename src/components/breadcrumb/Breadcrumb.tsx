@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { safeHref } from '../../internal/link.js';
 import { breadcrumbMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';
 import {
@@ -244,7 +245,8 @@ function breadcrumbListData(
   baseUrl?: string
 ): string {
   const itemListElement = steps.map((step, index) => {
-    const { href, children } = step.props;
+    const { children } = step.props;
+    const href = safeHref(step.props.href);
 
     return {
       '@type': 'ListItem',
@@ -467,10 +469,21 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
  */
 export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
   function BreadcrumbItem(
-    { href, onClick, startIcon, endIcon, current, disabled = false, className, children, ...props },
+    {
+      href: hrefProp,
+      onClick,
+      startIcon,
+      endIcon,
+      current,
+      disabled = false,
+      className,
+      children,
+      ...props
+    },
     ref
   ) {
     const { size, last } = React.useContext(BreadcrumbContext);
+    const href = safeHref(hrefProp);
     const isCurrent = current ?? last;
     const interactive = Boolean(href || onClick) && !isCurrent && !disabled;
 

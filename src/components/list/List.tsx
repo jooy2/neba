@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { safeHref } from '../../internal/link.js';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses } from '../box/Box.js';
 import {
@@ -238,7 +239,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
     endIcon,
     description,
     action,
-    href,
+    href: hrefProp,
     selected = false,
     disabled = false,
     className,
@@ -249,6 +250,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
   ref
 ) {
   const { size, density, dividers } = React.useContext(ListContext);
+  const href = safeHref(hrefProp);
   const interactive = Boolean(onClick || href) && !disabled;
 
   const padX = boxPaddingXClasses[density][size];

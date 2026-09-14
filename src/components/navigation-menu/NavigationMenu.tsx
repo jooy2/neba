@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { NavigationMenu as BaseUINavigationMenu } from '@base-ui/react/navigation-menu';
 import { ChevronIcon } from '../../internal/icons.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   controlHeightClasses,
   controlTextClasses,
@@ -187,7 +187,7 @@ export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, Navigation
     return (
       <BaseUINavigationMenu.Link
         ref={ref}
-        href={href}
+        href={safeHref(href)}
         target={target}
         rel={safeRel(target, rel)}
         className={cx(
@@ -224,7 +224,7 @@ export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, Navigation
  */
 export function NavigationMenuItem({
   label,
-  href,
+  href: hrefProp,
   target,
   rel,
   startIcon,
@@ -235,6 +235,7 @@ export function NavigationMenuItem({
   children
 }: NavigationMenuItemProps) {
   const { size, density } = React.useContext(NavigationMenuContext);
+  const href = safeHref(hrefProp);
   const isLink = href !== undefined && !hasContent(children);
 
   const chrome = [

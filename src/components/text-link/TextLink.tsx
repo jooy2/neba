@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { linkMessages, useMessages } from '../../internal/i18n.js';
 import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -223,7 +223,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
       render: render ?? <a />,
       ref,
       props: {
-        href,
+        href: safeHref(href),
         target,
         className: classNames,
         style: { ...slots, ...style },

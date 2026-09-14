@@ -6,7 +6,7 @@ import { useDirection } from '@base-ui/react/direction-provider';
 import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
 import { MenuContext } from '../../internal/menu.js';
 import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -355,7 +355,7 @@ function RowBody({
  */
 export function MenuItem({
   onClick,
-  href,
+  href: hrefProp,
   target,
   rel,
   startIcon,
@@ -403,6 +403,8 @@ export function MenuItem({
   // A disabled destination is drawn as a disabled row rather than a link:
   // Base UI's link row has no `disabled`, and an `<a>` with an `href` still
   // navigates when it is pressed however it is painted.
+  const href = safeHref(hrefProp);
+
   if (href !== undefined && !disabled) {
     return (
       <BaseUIMenu.LinkItem

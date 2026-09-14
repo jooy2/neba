@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { safeHref } from '../../internal/link.js';
 import { Button } from '../button/Button.js';
 import { fillMessage, paginationMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
@@ -260,7 +261,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
 
       return inert
         ? { render: <a role="link" aria-disabled="true" tabIndex={0} /> }
-        : { render: <a href={getPageHref(to)} rel={rel} /> };
+        : { render: <a href={safeHref(getPageHref(to))} rel={rel} /> };
     };
 
     /*

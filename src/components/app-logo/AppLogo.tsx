@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { initialsOf } from '../../internal/initials.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -257,7 +257,7 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
     elevation = 0,
     padded = true,
     height,
-    href,
+    href: hrefProp,
     target,
     rel: relProp,
     imageProps,
@@ -366,6 +366,9 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
       )}
     </span>
   );
+
+  // An address with a scheme a link must not run is no address at all.
+  const href = safeHref(hrefProp);
 
   return useRender({
     render: render ?? (href ? <a /> : <span />),

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { safeHref } from '../../internal/link.js';
 import { anchorMessages, useMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
@@ -290,7 +291,7 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
         {items.map((item) => (
           <li key={item.href} className={rail ? '[margin-inline-start:-1px]' : ''}>
             <a
-              href={item.href}
+              href={safeHref(item.href)}
               // `location` rather than `true`: this is where the reader is
               // within a set of links, which is the one thing that value means
               // and exactly what a table of contents is reporting.

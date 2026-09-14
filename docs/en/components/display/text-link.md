@@ -102,3 +102,4 @@ import Link from 'next/link';
 - A link that opens a new tab carries the notice in its accessible name. Set `locale` so it is read out in the page's own language.
 - `underline="none"` leaves colour as the only thing marking the link, and colour alone is not enough for every reader. Use it where the surrounding layout already says what the element is.
 - The focus ring is drawn even with no `color`: it falls back to the primary ring rather than disappearing.
+- An `href` whose scheme is not `http`, `https`, `mailto` or `tel` is not written, so a `javascript:` address from user content cannot run. A relative address, a `#fragment` and a `//host` are kept. Every component that takes an `href` follows the same rule.

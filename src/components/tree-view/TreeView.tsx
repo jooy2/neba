@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { safeHref } from '../../internal/link.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextClasses,
@@ -905,9 +906,9 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
       {...props}
     >
       <div className="flex w-full items-center">
-        {href && !disabled ? (
+        {safeHref(href) !== undefined && !disabled ? (
           <a
-            href={href}
+            href={safeHref(href)}
             // Inside the tab stop, not another one: a tree is a single widget,
             // and the arrow keys are how the rows in it are reached.
             tabIndex={-1}

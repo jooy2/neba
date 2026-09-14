@@ -122,3 +122,4 @@ The delivery marks and the typing dots are read out as words, and `locale` is wh
 - The status mark is a glyph with the word behind it in text only a screen reader reaches. Set `locale`, or write the word out in `statusLabel`.
 - A ChatBubble is one message, not a thread. Wrap the conversation in the markup the page needs: a list, or a container with `role="log"` for one that keeps updating.
 - `media` carries no `alt` of its own: pass a real `<img alt="…">`, or an empty one where the text beside it already says what the picture is.
+- A `preview.url` with a scheme other than `http`, `https`, `mailto` or `tel` is not written as the card's `href`, so a preview built from another user's message cannot run a `javascript:` address.

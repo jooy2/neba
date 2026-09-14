@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { chatMessages, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons.js';
-import { safeRel } from '../../internal/link.js';
+import { safeHref, safeRel } from '../../internal/link.js';
 import {
   controlSlots,
   cx,
@@ -476,7 +476,7 @@ function LinkPreview({ preview }: { preview: ChatBubbleLinkPreview }) {
 
   return (
     <a
-      href={url}
+      href={safeHref(url)}
       target={target}
       rel={safeRel(target, undefined)}
       className={previewSurfaceClasses}

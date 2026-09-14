@@ -122,3 +122,4 @@ import { Avatar, ChatBubble } from 'neba';
 - 상태 표식은 글리프이고, 그 뒤의 단어는 screen reader만 닿는 텍스트로 들어갑니다. `locale`을 지정하거나 `statusLabel`에 단어를 직접 쓰세요.
 - ChatBubble은 메시지 하나이지 스레드가 아닙니다. 대화 전체는 페이지에 맞는 마크업으로 감싸세요. 목록이거나, 계속 갱신되는 대화라면 `role="log"`를 가진 컨테이너입니다.
 - `media`는 자체 `alt`를 갖지 않습니다. `<img alt="…">`를 직접 넘기거나, 옆의 텍스트가 이미 그림을 설명하고 있다면 빈 `alt`를 쓰세요.
+- scheme이 `http`, `https`, `mailto`, `tel`이 아닌 `preview.url`은 카드의 `href`로 쓰지 않으므로, 다른 사용자의 메시지로 만든 미리보기가 `javascript:` 주소를 실행할 수 없습니다.
