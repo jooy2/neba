@@ -456,6 +456,8 @@
 
 - **`IconButton`s in a `ButtonGroup` join like other buttons.** An IconButton drew itself round with an inline `border-radius`, which beat the classes a ButtonGroup uses to square off the corners between neighbours, so a row of icon buttons overlapped as circles. It now reaches round through the radius ladder Button's own class reads, so the group's joined corners apply and the ends of the row stay round. A caller's `style` still overrides the radius.
 
+- **A `Rating` without `name` submits nothing.** Its radios were given a generated `name` so they would act as one group, and a form then submitted that name as a field of its own, so a form's data gained an entry like `«r3»=4`. An unnamed Rating's radios still share a name, so they keep one Tab stop and the arrow keys still move between the stars, but they belong to no form. Pass `name` for a Rating a form should submit; without it `required` has nothing to hold back.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

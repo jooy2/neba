@@ -13021,8 +13021,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'name',
       type: 'string',
       description: {
-        ko: '폼 전송 시 값을 식별합니다',
-        en: 'Identifies the value when a form is submitted'
+        ko: '폼 전송 시 값을 식별합니다. 없으면 폼에 아무것도 전송되지 않습니다',
+        en: 'Identifies the value when a form is submitted. Without it the Rating submits nothing'
       }
     },
     {

@@ -68,7 +68,10 @@ export interface RatingProps extends Omit<
   readOnly?: boolean;
   /** Unavailable. Drops the colour family for neutral grey. */
   disabled?: boolean;
-  /** Identifies the value when a form is submitted. */
+  /**
+   * Identifies the value when a form is submitted. Without one a Rating
+   * submits nothing, and `required` has nothing to hold back.
+   */
   name?: string;
   /** A form will not submit until a star has been chosen. */
   required?: boolean;
@@ -149,8 +152,14 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
   } = useStyleDefaults(rawProps, ['size', 'locale']);
 
   const messages = useMessages(ratingMessages, locale);
+  /* The stars are native radios, and a shared `name` is what makes them one
+     group: one Tab stop, and arrow keys that move between them. So an unnamed
+     Rating still gives them a name, but ties them to no form, because that
+     generated name was being submitted as a field called `«r3»`. Radios with
+     the same name and no form are still one group. */
   const generatedName = React.useId();
   const name = nameProp ?? generatedName;
+  const formless = nameProp === undefined ? `${generatedName}-no-form` : undefined;
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue);
   const controlled = valueProp !== undefined;
@@ -272,6 +281,7 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
                     type="radio"
                     className={srOnlyClasses}
                     name={name}
+                    form={formless}
                     value={score}
                     checked={value === score}
                     disabled={disabled}

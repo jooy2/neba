@@ -138,6 +138,26 @@ describe('Rating', () => {
       await expect.element(screen.getByRole('radio', { name: '3 out of 5' })).toBeDisabled();
     });
 
+    // With no `name`, the generated id was submitted as a field of its own, so a
+    // form's data gained an entry called something like `«r3»`.
+    it('submits nothing without a name, and keeps its stars one group', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <Rating defaultValue={3} />
+        </form>
+      );
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+      const radios = screen.getByRole('radio').elements() as HTMLInputElement[];
+
+      await expect.element(screen.getByRole('radio', { name: '3 out of 5' })).toBeChecked();
+      expect([...new FormData(form).keys()]).toEqual([]);
+
+      const names = new Set(radios.map((radio) => radio.name));
+
+      expect(names.size).toBe(1);
+      expect([...names][0]).not.toBe('');
+    });
+
     it('carries the name a form submits it under', async () => {
       const screen = await render(<Rating name="score" value={2} />);
 
