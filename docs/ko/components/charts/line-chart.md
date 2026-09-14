@@ -128,7 +128,7 @@ LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 �
 
 ### legend
 
-범례는 series가 둘 이상이면 자동으로 나타나고, 하나면 나타나지 않습니다. `side`와 `align`이 위치를 정하고, 항목을 클릭하면 해당 series가 숨겨지며 남은 series는 원래 색을 그대로 유지합니다. `legend={false}`는 범례를 없애고, `interactive: false`는 클릭되지 않는 범례로 만듭니다.
+범례는 series가 둘 이상이면 자동으로 나타나고, 하나면 나타나지 않습니다. `side`와 `align`이 위치를 정하고, 항목을 클릭하면 해당 series가 숨겨지며 남은 series는 원래 색을 그대로 유지합니다. 새 데이터가 series의 순서를 바꿔도 `name`이 같다면 숨긴 series는 계속 숨겨져 있습니다. `legend={false}`는 범례를 없애고, `interactive: false`는 클릭되지 않는 범례로 만듭니다.
 
 <Demo src="line-chart/legend">
 

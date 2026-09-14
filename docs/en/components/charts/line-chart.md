@@ -128,7 +128,7 @@ A line chart crops its value axis to the data, because a line encodes a _positio
 
 ### legend
 
-The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. `legend={false}` removes it, `interactive: false` makes it a key rather than a control.
+The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. A hidden series stays hidden when new data puts the series in another order, as long as it keeps its `name`. `legend={false}` removes it, `interactive: false` makes it a key rather than a control.
 
 <Demo src="line-chart/legend">
 

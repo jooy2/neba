@@ -440,6 +440,8 @@
 
 - **A stacked `LineChart` or `AreaChart` stacks negative values down from zero.** The value axis summed each category's positive and negative values apart, but the lines and bands added every value together, so a series below zero pulled every band above it down: the top of the stack no longer met the axis, and bands drew over each other. Positive values now stack up from the zero line and negative ones down from it, as the axis and a stacked `BarChart` already did.
 
+- **A chart keeps the same series hidden when new data reorders them.** The legend remembered hidden series by their position, so a refresh that brought the same series back in another order hid whichever series now sat where the hidden one had been, and a series added later with `hidden` was drawn anyway because the prop was only read on the first render. What the reader chose is now remembered by each series' `name`, falling back to its index when it has none, and a series nobody has toggled follows its own `hidden`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

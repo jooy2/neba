@@ -197,6 +197,44 @@ describe('LineChart', () => {
       await expect.element(entry).toHaveAttribute('aria-pressed', 'false');
     });
 
+    // The hidden state was kept by index, so a refresh that put the series in
+    // another order hid whichever series now sat where the hidden one had been.
+    it('keeps the same series hidden when new data reorders the series', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Web', data: [1, 2] },
+            { name: 'Mobile', data: [3, 4] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Web' }).click();
+      await expect
+        .element(screen.getByRole('button', { name: 'Web' }))
+        .toHaveAttribute('aria-pressed', 'false');
+
+      await screen.rerender(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Mobile', data: [3, 4] },
+            { name: 'Web', data: [1, 2] }
+          ]}
+        />
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Web' }))
+        .toHaveAttribute('aria-pressed', 'false');
+      await expect
+        .element(screen.getByRole('button', { name: 'Mobile' }))
+        .toHaveAttribute('aria-pressed', 'true');
+    });
+
     it('starts a series hidden when it says so', async () => {
       const screen = await render(
         <LineChart

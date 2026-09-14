@@ -265,43 +265,69 @@ interface Visibility {
 }
 
 /**
+ * What a series is called for the legend's memory: its name, and which of the
+ * series with that name it is, or its index when it has no name.
+ *
+ * Not the index alone. The hidden state outlives the data, and a refresh that
+ * brings the same series back in another order moved the hiding onto whichever
+ * series now sat at that index. The occurrence count keeps two series that
+ * share a name apart.
+ */
+function seriesKeys(series: readonly NebaChartSeries[]): string[] {
+  const seen = new Map<string, number>();
+
+  return series.map((one, index) => {
+    if (one.name === undefined) {
+      return `index:${index}`;
+    }
+
+    const count = seen.get(one.name) ?? 0;
+
+    seen.set(one.name, count + 1);
+
+    return `name:${count}:${one.name}`;
+  });
+}
+
+/**
  * Which series are drawn, and which one the pointer is resting on in the legend.
  *
- * Keyed by index into the array as it was passed, which is what keeps a hidden
- * series from renumbering the ones after it. The colours come off the same
- * index, so hiding Europe leaves Asia exactly the colour it was.
+ * What the reader chose is remembered per series key rather than per index, so
+ * hiding Europe keeps Europe hidden when new data puts it somewhere else in the
+ * list. A series nobody has toggled follows its own `hidden`, on every render
+ * and not only the first. The colours still come off the index the series was
+ * passed at, so hiding Europe leaves Asia exactly the colour it was.
  */
 function useVisibility(series: readonly NebaChartSeries[]): Visibility {
-  const [hidden, setHidden] = React.useState<ReadonlySet<number>>(() => {
-    const initial = new Set<number>();
-
-    series.forEach((one, index) => {
-      if (one.hidden) {
-        initial.add(index);
-      }
-    });
-
-    return initial;
-  });
-
+  const [chosen, setChosen] = React.useState<ReadonlyMap<string, boolean>>(() => new Map());
   const [hovered, setHovered] = React.useState<number | null>(null);
 
-  const toggle = React.useCallback((index: number) => {
-    setHidden((current) => {
-      const next = new Set(current);
+  const keys = seriesKeys(series);
+  const latest = React.useRef({ series, keys });
 
-      if (next.has(index)) {
-        next.delete(index);
-      } else {
-        next.add(index);
-      }
+  React.useEffect(() => {
+    latest.current = { series, keys };
+  });
+
+  const toggle = React.useCallback((index: number) => {
+    const { series: current, keys: currentKeys } = latest.current;
+    const key = currentKeys[index];
+
+    if (key === undefined) {
+      return;
+    }
+
+    setChosen((choices) => {
+      const next = new Map(choices);
+
+      next.set(key, !(choices.get(key) ?? !current[index]?.hidden));
 
       return next;
     });
   }, []);
 
   return {
-    visible: series.map((_, index) => !hidden.has(index)),
+    visible: series.map((one, index) => chosen.get(keys[index]) ?? !one.hidden),
     hovered,
     toggle,
     setHovered
