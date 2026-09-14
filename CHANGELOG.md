@@ -526,6 +526,8 @@
 
 - **A partial `useToast().update` keeps the rest of the toast.** `update(id, { description })` replaced `data` and `actionProps` with empty values, which took off the colour, the variant, the icon and the action button. Only the fields given are changed now, and a style prop given is merged over the toast's own.
 
+- **Dismissing an `alert: true` confirm resolves `true`.** An alert has only the confirming button, and Escape or a press on the backdrop resolved `false`, which sent the caller down a cancel branch the reader was never offered.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -91,6 +91,15 @@ describe('ConfirmProvider', () => {
     await vi.waitFor(() => expect(onAnswer).toHaveBeenCalledWith(false));
   });
 
+  it('resolves true when an alert is dismissed with Escape', async () => {
+    const onAnswer = vi.fn();
+    await ask(onAnswer, { title: 'Your export is ready.', alert: true });
+
+    await userEvent.keyboard('{Escape}');
+
+    await vi.waitFor(() => expect(onAnswer).toHaveBeenCalledWith(true));
+  });
+
   it('opens on the confirming button', async () => {
     const screen = await ask(() => {});
 

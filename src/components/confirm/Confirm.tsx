@@ -149,8 +149,11 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
         onOpenChange={(next) => {
           // Escape and the backdrop are the cancelling button by another route,
           // so they answer the same way rather than leaving a promise pending.
+          // An alert has no cancelling button: dismissing it is acknowledging
+          // it, and answering `false` sent the caller down a branch that was
+          // never offered.
           if (!next) {
-            answer(false);
+            answer(merged.alert === true);
           }
         }}
         size={merged.size ?? 'sm'}

@@ -351,7 +351,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 - [x] **203** **Toast**: a partial update such as `update(id, { description })` overwrites `data` and `actionProps` with `undefined` keys, which removes the colour, variant, icon and action button. `Toast.tsx:188-199, 219` Fixed: `update` sends only the fields given and merges style props over the toast's `data`.
 - [ ] **204** [decision] **Toast**: toasts hidden by `limit` start their timer when they are added, so "appears when the stack clears" holds only for manual dismissal. Pause the timer while hidden or fix the docs. `Toast.tsx:108-113`
-- [ ] **205** **Confirm**: with `alert: true`, Escape or a backdrop click resolves `false`, which sends the caller down the cancel branch. Use `answer(merged.alert === true)`. `Confirm.tsx:129-135`
+- [x] **205** **Confirm**: with `alert: true`, Escape or a backdrop click resolves `false`, which sends the caller down the cancel branch. Use `answer(merged.alert === true)`. `Confirm.tsx:129-135` Fixed: a dismissed alert answers `true`.
 - [x] **206** Tour's card stayed beside the first step's target.
 - [ ] **207** **Tour**: the Mask is `fixed z-40` outside the portal, so inside a Card with `backdrop-filter` the dim is trapped inside the card and the hole is misplaced. Move the Mask into the Portal. `Tour.tsx:169, 178, 357-359`
 - [ ] **208** [decision] **Popconfirm**: a rejected `onConfirm` has no catch and becomes "Uncaught (in promise)". `Popconfirm.tsx:118-126`
