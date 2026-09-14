@@ -69,7 +69,7 @@ const [color, setColor] = useState('#1a58d1');
 
 ### 폼 안에서
 
-`label`, `description`, `error`는 라이브러리의 모든 필드가 갖는 그 세 슬롯이고, `name`은 값을 폼과 함께 전송합니다. `clearable`은 값을 비우는 ×를 답니다. 비운 뒤의 값은 빈 문자열입니다.
+`label`, `description`, `error`는 라이브러리의 모든 필드가 갖는 그 세 슬롯이고, `name`은 값을 폼과 함께 전송합니다. `disabled`인 picker는 아무것도 전송하지 않고, 비어 있는 `required` picker는 제출을 막습니다. `clearable`은 값을 비우는 ×를 답니다. 비운 뒤의 값은 빈 문자열입니다.
 
 <Demo src="color-picker/field">
 

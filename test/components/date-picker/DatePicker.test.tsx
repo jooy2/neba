@@ -563,6 +563,56 @@ describe('DatePicker', () => {
       const hidden = screen.container.querySelector<HTMLInputElement>('input[name="ships_on"]');
       expect(hidden?.value).toBe('2026-07-27');
     });
+
+    // A disabled picker's hidden input went out with the form all the same.
+    it('submits nothing while disabled', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <DatePicker
+            locale={LOCALE}
+            label="Ships on"
+            name="ships_on"
+            defaultValue={JULY_27}
+            disabled
+          />
+        </form>
+      );
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Ships on', exact: false }))
+        .toBeInTheDocument();
+      expect(new FormData(form).has('ships_on')).toBe(false);
+    });
+
+    // `required` only set `aria-required`: a hidden input is never validated, so
+    // an empty picker let the form go.
+    it('holds an empty required picker back from a submit, and submits nothing extra', async () => {
+      const picker = (value: Date | null) => (
+        <form data-testid="form">
+          <DatePicker
+            locale={LOCALE}
+            label="Ships on"
+            name="ships_on"
+            required
+            value={value}
+            onValueChange={() => {}}
+          />
+        </form>
+      );
+      const screen = await render(picker(null));
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Ships on', exact: false }))
+        .toBeInTheDocument();
+      expect(form.checkValidity()).toBe(false);
+
+      await screen.rerender(picker(JULY_27));
+
+      expect(form.checkValidity()).toBe(true);
+      expect([...new FormData(form).keys()]).toEqual(['ships_on']);
+    });
   });
 
   describe('keyboard', () => {

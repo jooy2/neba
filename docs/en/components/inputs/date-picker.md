@@ -23,7 +23,7 @@ Native `<div>` attributes pass through to the root. Only `color`, `defaultValue`
 
 `value` is a `Date | null`. There is no date library underneath.
 
-Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local string too (`YYYY-MM-DD` for a day), so nothing shifts by a day the way `toISOString()` would.
+Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local string too (`YYYY-MM-DD` for a day), so nothing shifts by a day the way `toISOString()` would. A `disabled` picker submits nothing, and a `required` one that is empty holds the form back through the browser's own validation and moves the focus to its trigger; the same holds for every picker.
 
 ### Three views
 

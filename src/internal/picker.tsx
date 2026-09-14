@@ -233,7 +233,9 @@ export function PickerShell({
       disabled={disabled}
       invalid={isInvalid}
       className={cx(
-        'flex-col align-top',
+        // `relative` for the validation input below, which sits inside the field
+        // so a browser's message about it points at the field.
+        'relative flex-col align-top',
         stackGapClasses[size],
         fullWidth ? 'flex w-full' : 'inline-flex',
         className
@@ -366,8 +368,38 @@ export function PickerShell({
       ) : null}
 
       {hiddenValues?.map((entry, index) => (
-        <input key={index} type="hidden" name={entry.name} value={entry.value} />
+        // Disabled with the picker, which is what keeps a disabled field out of
+        // the form: a hidden input went out with it whatever the picker said.
+        <input
+          key={index}
+          type="hidden"
+          name={entry.name}
+          value={entry.value}
+          disabled={disabled}
+        />
       ))}
+
+      {/*
+        The value's inputs are `type="hidden"`, which a form never validates, so
+        `required` only ever reached the trigger's ARIA and an empty picker let
+        the form submit. This input exists to be validated: it has no name, so it
+        submits nothing, and it is empty exactly when the picker is. A read-only
+        picker is left out, as a read-only input is, because a reader cannot
+        fill it in.
+      */}
+      {required && !inert ? (
+        <input
+          aria-hidden="true"
+          tabIndex={-1}
+          required
+          value={empty ? '' : 'chosen'}
+          onChange={() => {}}
+          // By id rather than through a second ref on the trigger: the caller's
+          // `triggerRef` is theirs, and the id is already the shell's.
+          onInvalid={() => document.getElementById(triggerId)?.focus()}
+          className="pointer-events-none absolute start-0 bottom-0 size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
+        />
+      ) : null}
     </Field.Root>
   );
 }

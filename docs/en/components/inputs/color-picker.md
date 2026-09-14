@@ -69,7 +69,7 @@ By default the panel lives in a popup hanging off a trigger, which is what a for
 
 ### In a form
 
-`label`, `description` and `error` are the same three slots every field in the library takes, and `name` submits the value with the form. `clearable` offers the × that empties the control, after which the value is an empty string.
+`label`, `description` and `error` are the same three slots every field in the library takes, and `name` submits the value with the form. A `disabled` picker submits nothing, and a `required` one that is empty holds the submit back. `clearable` offers the × that empties the control, after which the value is an empty string.
 
 <Demo src="color-picker/field">
 

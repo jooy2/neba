@@ -470,6 +470,8 @@
 
 - **A `Calendar`'s `elevation` draws a shadow, and `bordered` draws the popup's own sheet.** `elevation` wrote the shadow slot every surface writes, but nothing on the calendar read it, so the prop changed nothing. `bordered` drew a sheet of its own with one padding for every size and no glass edge, although the prop says it draws the sheet a picker's popup draws. The calendar now takes its shadow from `elevation`, with or without the sheet, and a bordered calendar draws the popup's edge and its padding for each `size`.
 
+- **A picker in a form submits nothing while disabled, and `required` holds back an empty one.** The value of a `DatePicker`, `DateRangePicker`, `TimePicker`, `DateTimePicker`, `TreeSelect` or `ColorPicker` goes out through hidden inputs, which were submitted even while the picker was `disabled`, and which a browser never validates, so `required` only reached the trigger's ARIA and an empty picker let the form submit. The hidden inputs are now disabled with the picker, and a required picker that is empty blocks the submit through the form's own validation and hands the focus to its trigger. A read-only picker is not held back, as a read-only input is not.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

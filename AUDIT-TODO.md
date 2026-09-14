@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F21 (160)** Pickers in a form: (a) submit nothing while `disabled`, and let `required` block an empty submit through the form's own validation; (b) fix `disabled` only and document `required`.
 - **F22 (165)** DataTable `manual={['pages']}` selection: (a) keep the keys chosen on other pages when a range or the header tick is used; (b) document that a manual table selects one page at a time.
 - **F23 (168)** DataTable rows with no group: (a) head them with a word from i18n, "No group", in all 18 locales; (b) show the count with no title; (c) draw no heading row for them.
 - **F24 (169)** DataTable `Date` cell without `render`: (a) write it as a date in the table's locale; (b) document that a `Date` needs `render`.
@@ -306,7 +305,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3. Decided: approved; the default `referenceDate` is `startOfDay(new Date())`.
 - [x] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`. See F20. Decided: (a) both clamp on commit with `clampDate`; TimePicker puts `minTime` and `maxTime` on the value's own day first.
 - [x] **159** **DateTimePicker**: on a daylight-saving change day, the check that disables hour rows is an hour off (with `TZ=America/New_York` on 2026-11-01, 09:30–09:59 cannot be chosen; confirmed in Node). Build the interval ends with `withTime`. `DateTimePicker.tsx:184-190`. The row's ends are `timeUnitRange` in `date.ts` now, which is the pure function 250 asks for.
-- [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`. See F21.
+- [x] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`. See F21. Decided: (a) the shell disables its hidden inputs with the picker and adds a nameless, off-screen `required` input that is empty exactly when the picker is, focusing the trigger on `invalid`.
 - [x] **161** **date.ts**: `DISPLAY_SAMPLES` has no Friday, so a `format` with a weekday can change width (for `el` full the sample is 27 characters and the real maximum 29). `src/internal/date.ts:349-367`
 
 ### Display
