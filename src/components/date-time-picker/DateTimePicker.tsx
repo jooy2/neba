@@ -11,6 +11,7 @@ import {
   type PickerShellProps
 } from '../../internal/picker.js';
 import {
+  clampDate,
   displaySamples,
   formatDate,
   isDayOutside,
@@ -166,11 +167,17 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       onOpenChange?.(next);
     };
 
+    // Every way of choosing a moment ends here — a day, a clock row, Now — so
+    // the bounds are held here. Choosing the day `minDate` falls on used to
+    // give midnight, and pressing an hour could give a minute before the
+    // bound, both committed as they were.
     const commit = (next: Date | null) => {
+      const bounded = next === null ? null : clampDate(next, minDate, maxDate);
+
       if (valueProp === undefined) {
-        setUncontrolledValue(next);
+        setUncontrolledValue(bounded);
       }
-      onValueChange?.(next);
+      onValueChange?.(bounded);
     };
 
     /**

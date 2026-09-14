@@ -31,7 +31,7 @@ Choosing a day leaves the time alone, and choosing a time leaves the day alone, 
 
 ### minDate · maxDate
 
-The bounds are read at **full precision**, not just to the day. A `minDate` of 09:30 on the 27th leaves the 27th selectable in the calendar and greys out only the times before 09:30 in the clock; on any later day nothing is blocked.
+The bounds are read at **full precision**, not just to the day. A `minDate` of 09:30 on the 27th leaves the 27th selectable in the calendar and greys out only the times before 09:30 in the clock; on any later day nothing is blocked. A moment chosen outside the bounds, such as the 27th picked while the clock still says midnight, is moved to the nearest bound before it is committed.
 
 That is what a rule like "no earlier than now" needs.
 

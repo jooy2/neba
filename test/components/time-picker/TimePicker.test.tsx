@@ -198,6 +198,29 @@ describe('TimePicker', () => {
       await expect.poll(() => screen.getByRole('listbox', { name: 'Minute' }).query()).toBeNull();
     });
 
+    // The hour `9` stays pressable under a 09:30 minimum, because it contains
+    // allowed minutes, and pressing it on 10:15 committed 09:15.
+    it('moves a time chosen before minTime up to the bound', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <TimePicker
+          locale={LOCALE}
+          label="Starts at"
+          minTime={new Date(2026, 0, 1, 9, 30)}
+          defaultValue={new Date(2026, 6, 27, 10, 15)}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
+      await screen
+        .getByRole('listbox', { name: 'Hour' })
+        .getByRole('option', { name: '9' })
+        .click();
+
+      expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 6, 27, 9, 30));
+    });
+
     it('writes onto the day referenceDate names', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

@@ -13,6 +13,7 @@ import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal
 import {
   displaySamples,
   formatDate,
+  clampDate,
   isHour12,
   isValidDate,
   secondsOfDay,
@@ -162,11 +163,27 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
       onOpenChange?.(next);
     };
 
+    // The bounds are times of day, so they are put on the value's own day
+    // before it is held to them. A row whose span only overlaps the bounds
+    // stays pressable, and pressing it gave a time outside them: with a
+    // minimum of 09:30, the hour `9` on 10:15 gave 09:15.
+    const onDayOf = (date: Date, time: Date | null | undefined) =>
+      isValidDate(time)
+        ? withTime(date, {
+            hours: time.getHours(),
+            minutes: time.getMinutes(),
+            seconds: time.getSeconds()
+          })
+        : null;
+
     const commit = (next: Date | null) => {
+      const bounded =
+        next === null ? null : clampDate(next, onDayOf(next, minTime), onDayOf(next, maxTime));
+
       if (valueProp === undefined) {
-        setUncontrolledValue(next);
+        setUncontrolledValue(bounded);
       }
-      onValueChange?.(next);
+      onValueChange?.(bounded);
     };
 
     const isBlocked = React.useCallback(

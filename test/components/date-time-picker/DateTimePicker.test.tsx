@@ -99,6 +99,25 @@ describe('DateTimePicker', () => {
   });
 
   describe('bounds', () => {
+    // Choosing the day `minDate` falls on gave midnight, before the bound.
+    it('moves a moment chosen before minDate up to the bound', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <DateTimePicker
+          locale={LOCALE}
+          label="Runs at"
+          defaultMonth={new Date(2026, 6, 1)}
+          minDate={new Date(2026, 6, 27, 9, 30)}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Runs at', exact: false }).click();
+      await screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }).click();
+
+      expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 6, 27, 9, 30));
+    });
+
     it('reads minDate at full precision', async () => {
       // The boundary day stays selectable and the hours before the minimum grey
       // out — which is the behaviour a "not before 09:30 on the 27th" rule needs
