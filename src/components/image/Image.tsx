@@ -737,15 +737,13 @@ function featherStyle(distance: string): React.CSSProperties {
 }
 
 /**
- * One tile of a repeating mark, as an SVG data URI.
+ * How large one tile of a repeating mark is, in units of a 16px type size.
  *
- * A tile rather than a wall of `<span>`s: a mark dense enough to be worth
- * having is a hundred elements on a large picture, and this is one declaration
- * that costs nothing to lay out. The SVG is written in its own units against a
- * type size of 16, so the caller's `size` scales the whole tile through
- * `background-size` and no length has to be resolved to a number here.
+ * A pattern rather than a wall of `<span>`s: a mark dense enough to be worth
+ * having is a hundred elements on a large picture, and a pattern is one
+ * element that costs nothing to lay out.
  */
-function markTile(text: string, color: string): { uri: string; width: number; height: number } {
+function markTile(text: string): { width: number; height: number } {
   // How wide the mark runs, in ems. An estimate, and it decides the space
   // between copies and nothing else: anything CJK is close to a full em where
   // the Latin average is nearer 0.6.
@@ -755,18 +753,78 @@ function markTile(text: string, color: string): { uri: string; width: number; he
     ems += /[ᄀ-ᇿ⺀-꓏가-퟿豈-﫿︰-﹏]/.test(character) ? 1 : 0.6;
   }
 
-  const width = Math.max(16, Math.round(16 * (ems + 2.4)));
-  const height = 52;
-  const escaped = text.replace(/[&<>]/g, (character) =>
-    character === '&' ? '&amp;' : character === '<' ? '&lt;' : '&gt;'
-  );
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-    `<text x="0" y="32" font-family="system-ui, sans-serif" font-size="16" fill="${color}"` +
-    ` stroke="rgba(0,0,0,0.28)" stroke-width="0.6" paint-order="stroke">${escaped}</text>` +
-    `</svg>`;
+  return { width: Math.max(16, Math.round(16 * (ems + 2.4))), height: 52 };
+}
 
-  return { uri: `data:image/svg+xml,${encodeURIComponent(svg)}`, width, height };
+/**
+ * The mark tiled across the picture, as an inline `<svg>` pattern.
+ *
+ * Inline rather than a data URI in `background-image`, which is what it was: a
+ * data URI is a document of its own, where `var(--neba-…)` resolves to nothing,
+ * so a mark given a colour token drew black. Here the ink is a style on the
+ * text, in this document. The tile is sized in ems against the mark's own type
+ * size, so `size` scales the whole tile and no length is resolved here.
+ */
+function TiledMark({
+  text,
+  color,
+  opacity,
+  rotate,
+  fontSize,
+  slot
+}: {
+  text: string;
+  color: string;
+  opacity: number;
+  rotate: number;
+  fontSize: string;
+  slot: string | undefined;
+}) {
+  // An id a `url(#…)` reference can carry: React's own has punctuation in it.
+  const id = `neba-mark-${React.useId().replace(/[^\w-]/g, '')}`;
+  const tile = markTile(text);
+
+  return (
+    <svg
+      aria-hidden="true"
+      className={cx('pointer-events-none absolute select-none', slot)}
+      // Bigger than the box and turned, so the tiling has no seam where the
+      // rotation runs out. The box it sits in already clips.
+      style={{
+        top: '-40%',
+        left: '-40%',
+        width: '180%',
+        height: '180%',
+        opacity,
+        fontSize,
+        transform: `rotate(${rotate}deg)`
+      }}
+    >
+      <defs>
+        <pattern
+          id={id}
+          patternUnits="userSpaceOnUse"
+          width={`${tile.width / 16}em`}
+          height={`${tile.height / 16}em`}
+        >
+          <text
+            x="0"
+            y="2em"
+            style={{
+              fill: color,
+              fontFamily: 'system-ui, sans-serif',
+              stroke: 'rgba(0, 0, 0, 0.28)',
+              strokeWidth: '0.0375em',
+              paintOrder: 'stroke'
+            }}
+          >
+            {text}
+          </text>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${id})`} />
+    </svg>
+  );
 }
 
 /**
@@ -1381,21 +1439,14 @@ function renderMark(watermark: NebaImageWatermark, slot: string | undefined) {
   const rotate = options.rotate ?? (repeat && typeof content === 'string' ? -24 : 0);
 
   if (repeat && typeof content === 'string') {
-    const tile = markTile(content, color);
-
     return (
-      <span
-        aria-hidden="true"
-        className={cx('pointer-events-none absolute select-none', slot)}
-        // Bigger than the box and turned, so the tiling has no seam where the
-        // rotation runs out. The box it sits in already clips.
-        style={{
-          inset: '-40%',
-          opacity,
-          transform: `rotate(${rotate}deg)`,
-          backgroundImage: `url("${tile.uri}")`,
-          backgroundSize: `calc(${fontSize} * ${tile.width / 16}) calc(${fontSize} * ${tile.height / 16})`
-        }}
+      <TiledMark
+        text={content}
+        color={color}
+        opacity={opacity}
+        rotate={rotate}
+        fontSize={fontSize}
+        slot={slot}
       />
     );
   }

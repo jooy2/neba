@@ -172,7 +172,7 @@ The line is drawn as an inset shadow rather than a `border`, which is what lets 
 
 A mark drawn over the picture. A string is placed once in the bottom corner; the options form takes `content`, `position`, `repeat`, `opacity`, `rotate`, `size` and `color`.
 
-`repeat` tiles the mark across the whole picture, which is the arrangement that actually deters a screenshot. It needs text: a node cannot be drawn into the tile, and is placed once instead.
+`repeat` tiles the mark across the whole picture, which is the arrangement that actually deters a screenshot. It needs text: a node cannot be drawn into the tile, and is placed once instead. `color` takes any CSS colour, a `var(--neba-…)` token included, in either arrangement.
 
 <Demo src="image/watermark">
 

@@ -500,6 +500,8 @@
 
 - **`align` and `gutter` work on a `caption` and an `overline`.** Both levels are `<span>` elements, where `text-align` and a bottom margin do nothing. Either prop now makes them a block.
 
+- **A tiled `Image` watermark takes a colour token.** `repeat: true` drew the mark as an SVG data URI, a separate document where `var(--neba-…)` resolves to nothing, so a mark given a token drew black. It is now an inline `<svg>` pattern and the colour resolves in the page.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

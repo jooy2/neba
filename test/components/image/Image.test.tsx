@@ -925,12 +925,35 @@ describe('Image', () => {
           classNames={{ watermark: 'mark' }}
         />
       );
-      const mark = screen.container.querySelector('.mark') as HTMLElement;
+      const mark = screen.container.querySelector('.mark') as SVGSVGElement;
+      const pattern = mark.querySelector('pattern') as SVGPatternElement;
 
-      expect(mark.style.backgroundImage).toContain('data:image/svg+xml');
-      expect(decodeURIComponent(mark.style.backgroundImage)).toContain('>PROOF<');
+      expect(mark.closest('[aria-hidden="true"]')).not.toBeNull();
+      expect(pattern.querySelector('text')?.textContent).toBe('PROOF');
+      expect(mark.querySelector('rect')?.getAttribute('fill')).toBe(`url(#${pattern.id})`);
+      // The tile is sized in ems, and a browser that could not read them would
+      // resolve it to nothing and draw no mark at all.
+      expect(pattern.width.baseVal.value).toBeGreaterThan(0);
       // Turned as a whole layer rather than per tile, so the tiling has no seam.
       expect(mark.style.transform).toBe('rotate(-24deg)');
+    });
+
+    // It was a data URI, a document of its own where the token resolved to
+    // nothing, so the mark drew black.
+    it('draws a tiled mark in a colour token', async () => {
+      const screen = await render(
+        <div style={{ '--probe': 'rgb(1, 2, 3)' } as React.CSSProperties}>
+          <Image
+            src={OK}
+            alt="A ridge"
+            watermark={{ content: 'PROOF', repeat: true, color: 'var(--probe)' }}
+            classNames={{ watermark: 'mark' }}
+          />
+        </div>
+      );
+      const text = screen.container.querySelector('.mark text') as SVGTextElement;
+
+      expect(getComputedStyle(text).fill).toBe('rgb(1, 2, 3)');
     });
 
     it('places a node once rather than trying to tile it', async () => {

@@ -172,7 +172,7 @@ import { Image } from 'neba';
 
 그림 위에 그리는 표식입니다. 문자열은 아래 모서리에 하나 놓이고, 객체 형태는 `content` · `position` · `repeat` · `opacity` · `rotate` · `size` · `color`를 받습니다.
 
-`repeat`은 표식을 그림 전체에 타일로 깝니다. 화면 캡처를 실제로 망설이게 하는 쪽은 이쪽입니다. 텍스트여야 하며, 노드는 타일로 그릴 수 없어 한 번만 놓입니다.
+`repeat`은 표식을 그림 전체에 타일로 깝니다. 화면 캡처를 실제로 망설이게 하는 쪽은 이쪽입니다. 텍스트여야 하며, 노드는 타일로 그릴 수 없어 한 번만 놓입니다. `color`는 어느 배치에서든 `var(--neba-…)` 토큰을 포함한 CSS 색을 받습니다.
 
 <Demo src="image/watermark">
 

@@ -63,8 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F35 (188)** Image `watermark` with `repeat`: (a) draw it as an inline `<svg>` pattern, where the colour tokens resolve; (b) document that `repeat` needs a literal colour.
-
 ## 1. Performance
 
 - [x] **1** [major][decision] Toast: `useToast()` returned a new object on every change. Decided: stable methods, same API.
@@ -330,7 +328,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and ~~a `lines` of 7 or more silently clamps at 6~~ (fixed: the count is an `--n-lines` slot). `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`. See F33. Decided: (a) `caption` and `overline` become `block` when `align` or `gutter` is given.
 - [x] **186** Image stayed invisible when given `onLoad` or `onError`; `protect` could be undone.
 - [x] **187** [major][decision] **Image**: with `preview`, `className` and `style` land on the element inside the button, so the button spans the whole line and clicking empty space beside the picture opens it. `Image.tsx:1158, 1199, 1234`. See F34. Decided: (a) with `preview`, `className` and `style` go on the button, whose default width is at zero specificity.
-- [ ] **188** **Image**: ~~the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request~~ (fixed: `srcSet`, `crossOrigin` and `referrerPolicy` pass; `sizes` stays with the thumbnail so the preview picks a larger candidate). `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`. See F35.
+- [x] **188** **Image**: ~~the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request~~ (fixed: `srcSet`, `crossOrigin` and `referrerPolicy` pass; `sizes` stays with the thumbnail so the preview picks a larger candidate). `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`. See F35. Decided: (a) `repeat` draws an inline `<svg>` pattern, so colour tokens resolve.
 - [x] **189** **Gallery**: with `hover="zoom"` the same `<img>` carries two `transition` shorthands and Image's wins, so the zoom jumps without a transition. `Gallery.tsx:440`, `Image.tsx:965`
 - [x] **190** **CodeBlock**: when `code` or `language` changes, the old code stays on screen until the new highlighting finishes, while the copy button already copies the new code. Store which source a result belongs to. `CodeBlock.tsx:415, 450-453`
 - [ ] **191** **CodeBlock**: the Ctrl/Cmd+A handling checks only `event.key`, so on non-Latin keyboard layouts the whole page is selected. Without `language` and with `copyable={false}`, an empty toolbar is drawn. `CodeBlock.tsx:489, 613`
