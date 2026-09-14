@@ -534,6 +534,8 @@
 
 - **An uncontrolled inline `Drawer` closes from its ×.** The button only called `onOpenChange(false)`, so without `open` managed by the caller it did nothing.
 
+- **A `Pill` that starts `expanded` is open from the first frame.** Its details were drawn at a height of 0 and animated open after mount, which pushed the content below down. The height is now `auto` until it is measured, and it is measured before paint.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

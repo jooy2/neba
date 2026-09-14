@@ -279,14 +279,17 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
 
   const detailsRef = React.useRef<HTMLDivElement>(null);
   const detailsId = React.useId();
-  const [detailsHeight, setDetailsHeight] = React.useState(0);
+  // `null` until measured, which draws an expanded pill open at its own height
+  // from the first frame — and on the server — instead of at 0 and then animating
+  // open after mount, pushing everything under it down.
+  const [detailsHeight, setDetailsHeight] = React.useState<number | null>(null);
   // Keyed on whether there are details rather than on the details themselves:
   // inline JSX is a new object on every render of the parent, and each one
   // re-subscribed and forced a layout to read a height the observer below
   // already follows.
   const hasDetails = hasContent(details);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const element = detailsRef.current;
     if (!element) {
       return;
@@ -406,7 +409,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
             '[transition:height_var(--neba-duration)_var(--neba-ease)]',
             'motion-reduce:[transition-duration:0ms]'
           ].join(' ')}
-          style={{ height: expanded ? detailsHeight : 0 }}
+          style={{ height: expanded ? (detailsHeight ?? 'auto') : 0 }}
           // `inert` rather than `aria-hidden`: a collapsed panel is a zero-height
           // box that its content is still perfectly focusable inside, and
           // `aria-hidden` alone would leave a keyboard reader tabbing into

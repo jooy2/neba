@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Pill } from 'neba';
 
@@ -118,6 +119,18 @@ describe('Pill', () => {
 
       expect(panel.style.height).not.toBe('0px');
       expect(panel).not.toHaveAttribute('inert');
+    });
+
+    // It started at a height of 0 and animated open after mount, pushing the
+    // content below it down.
+    it('draws an expanded pill open from the first frame', () => {
+      const html = renderToString(
+        <Pill details={<span>02:14 elapsed</span>} expanded>
+          Recording
+        </Pill>
+      );
+
+      expect(html).not.toContain('height:0');
     });
 
     it('tells a screen reader that pressing it reveals the details', async () => {
