@@ -235,7 +235,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] Transfer's move arrows point the wrong way, and the comment "it is logical" is wrong (`Transfer.tsx:426-429`). Both glyphs take an `rtl:` turn, and the comment is corrected.
   - [x] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`). The default is Base UI's `inline-end`, and the chevron reads Base UI's direction.
   - [x] Panes keyboard direction (`Panes.tsx:398-404`).
-  - [ ] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
+  - [x] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
   - [ ] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).
 - [x] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. Decided: (a) the default stays on, as `CLAUDE.md` records; no change.
 - [ ] **94** [decision] **PageLayout**: `<main>`, `id="main"` and the skip link cannot be turned off, so a PageLayout inside a Mockup inside an app's PageLayout gives two `<main>` elements and a duplicate id. `PageLayout.tsx:188, 409`. See D10.

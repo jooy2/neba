@@ -400,6 +400,8 @@
 
 - **A `Panes` boundary moves towards the arrow pressed under RTL.** A drag already followed the direction, but ArrowLeft and ArrowRight on an upright bar moved the boundary as if the page ran left to right, so on a right-to-left page each key moved it the other way from the arrow. The keys now follow the direction too.
 
+- **A calendar's left and right arrows follow RTL.** The day, month and year grids are laid out in the reading direction, but ArrowLeft always went back and ArrowRight always went forward, so on a right-to-left page each arrow moved the focus away from the cell it pointed at. Under RTL ArrowLeft is now the next day, month or year. This covers `Calendar` and every date picker.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

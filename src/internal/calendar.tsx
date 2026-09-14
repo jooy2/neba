@@ -813,6 +813,11 @@ interface DayGridProps {
   onMoveFocus: (date: Date) => void;
 }
 
+/** Whether an element is laid out right to left, as the page resolved it. */
+function isRtl(element: Element): boolean {
+  return getComputedStyle(element).direction === 'rtl';
+}
+
 function DayGrid({
   labelledBy,
   multiselectable,
@@ -840,9 +845,12 @@ function DayGrid({
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
     const offsetInWeek = (date.getDay() - weekStartsOn + 7) % 7;
+    // The grid is laid out in the reading direction, so under RTL the day to
+    // the left is the next one.
+    const ahead = isRtl(event.currentTarget) ? -1 : 1;
     const moves: Record<string, () => Date> = {
-      ArrowLeft: () => addDays(date, -1),
-      ArrowRight: () => addDays(date, 1),
+      ArrowLeft: () => addDays(date, -ahead),
+      ArrowRight: () => addDays(date, ahead),
       ArrowUp: () => addDays(date, -7),
       ArrowDown: () => addDays(date, 7),
       Home: () => addDays(date, -offsetInWeek),
@@ -994,9 +1002,10 @@ function MonthGrid({
   const now = new Date();
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    const ahead = isRtl(event.currentTarget) ? -1 : 1;
     const steps: Record<string, number> = {
-      ArrowLeft: -1,
-      ArrowRight: 1,
+      ArrowLeft: -ahead,
+      ArrowRight: ahead,
       ArrowUp: -3,
       ArrowDown: 3,
       PageUp: -12,
@@ -1089,9 +1098,10 @@ function YearGrid({
   const now = new Date().getFullYear();
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    const ahead = isRtl(event.currentTarget) ? -1 : 1;
     const steps: Record<string, number> = {
-      ArrowLeft: -1,
-      ArrowRight: 1,
+      ArrowLeft: -ahead,
+      ArrowRight: ahead,
       ArrowUp: -4,
       ArrowDown: 4,
       PageUp: -YEAR_PAGE_SIZE,

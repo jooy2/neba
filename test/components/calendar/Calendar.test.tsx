@@ -4,6 +4,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Calendar } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
@@ -33,6 +34,31 @@ describe('Calendar', () => {
 
     await expect
       .element(screen.getByRole('gridcell', { name: 'Sunday, November 1, 2026' }))
+      .toHaveFocus();
+  });
+
+  // The grid is laid out in the reading direction, and the arrows ignored it.
+  it('moves to the next day on the left arrow under RTL', async () => {
+    const screen = await render(
+      <div dir="rtl">
+        <Calendar locale={LOCALE} defaultMonth={JULY} />
+      </div>
+    );
+    const monday = screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' });
+
+    await expect.element(monday).toBeInTheDocument();
+    monday.element().focus();
+
+    await userEvent.keyboard('{ArrowLeft}');
+
+    await expect
+      .element(screen.getByRole('gridcell', { name: 'Tuesday, July 28, 2026' }))
+      .toHaveFocus();
+
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+
+    await expect
+      .element(screen.getByRole('gridcell', { name: 'Sunday, July 26, 2026' }))
       .toHaveFocus();
   });
 
