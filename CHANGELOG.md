@@ -504,6 +504,8 @@
 
 - **`CodeBlock` answers Ctrl/Cmd+A on any keyboard layout, and draws no empty toolbar.** The shortcut checked only `event.key`, so on a Russian or a Greek layout it selected the whole page; the physical A key now counts too. A block with no `language`, `copyable={false}` and no `title` drew a bar with nothing on it.
 
+- **`CodeBlock` tries again after the highlighter failed to load, and a registered language wins over an alias.** A core chunk that failed once stayed failed, so every block on the page was plain until a reload. `registerLanguage` under a name that is also an alias, such as `vue`, was shadowed by the alias.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

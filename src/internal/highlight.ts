@@ -203,6 +203,11 @@ export function canonicalLanguage(language: string | undefined): string | null {
   const key = language.trim().toLowerCase();
   if (!key) return null;
 
+  // A registered name is the caller's word for their own grammar, so it wins
+  // over an alias spelled the same: `registerLanguage('vue', …)` was otherwise
+  // highlighted as HTML.
+  if (extra.has(key)) return key;
+
   return aliases[key] ?? key;
 }
 
@@ -219,7 +224,15 @@ async function prepare(name: string): Promise<string | null> {
 
   if (!registered && !load) return null;
 
-  core ??= import('highlight.js/lib/core').then((module) => module.default);
+  // Forgotten if it fails, for the reason `highlight` forgets a grammar: a core
+  // that did not arrive once left every block on the page plain for good.
+  core ??= import('highlight.js/lib/core')
+    .then((module) => module.default)
+    .catch((error: unknown) => {
+      core = null;
+
+      throw error;
+    });
 
   const hljs = await core;
 

@@ -12,6 +12,7 @@ import {
   canonicalLanguage,
   highlight,
   plainLines,
+  registerLanguage,
   tokenize
 } from '../../src/internal/highlight.js';
 
@@ -110,6 +111,17 @@ describe('canonicalLanguage', () => {
     // Whether the grammar can be loaded is a later question. This one is only
     // what the caller's spelling means.
     expect(canonicalLanguage('elixir')).toBe('elixir');
+  });
+
+  // An alias was looked up first, so a grammar registered under `htm` was
+  // highlighted as the XML the alias points at.
+  it('prefers a registered language over an alias of the same name', () => {
+    registerLanguage('htm', (() => ({ contains: [] })) as unknown as Parameters<
+      typeof registerLanguage
+    >[1]);
+
+    expect(canonicalLanguage('htm')).toBe('htm');
+    expect(canonicalLanguage('html')).toBe('xml');
   });
 
   it('answers null for no language at all', () => {
