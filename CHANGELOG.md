@@ -398,6 +398,8 @@
 
 - **A `Transfer`'s move arrows point the way the items go under RTL.** Both glyphs were turned for a left-to-right layout only, so on a right-to-left page, where the chosen list sits on the left, each arrow pointed away from the list it moves items into. Both now turn the other way under RTL.
 
+- **A `Panes` boundary moves towards the arrow pressed under RTL.** A drag already followed the direction, but ArrowLeft and ArrowRight on an upright bar moved the boundary as if the page ran left to right, so on a right-to-left page each key moved it the other way from the arrow. The keys now follow the direction too.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

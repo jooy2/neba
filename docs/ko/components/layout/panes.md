@@ -89,6 +89,6 @@ import { Pane, Panes } from 'neba';
 ## 접근성
 
 - 각 바는 `separator`이며, 앞에 있는 pane의 비율(%)을 `aria-valuenow`로 실어 나릅니다.
-- 바는 focus를 받습니다. 세로 바는 ArrowLeft·ArrowRight로, 가로 바는 ArrowUp·ArrowDown으로 움직입니다.
+- 바는 focus를 받습니다. 세로 바는 ArrowLeft·ArrowRight로 화살표가 가리키는 쪽으로 움직이고 RTL에서도 같습니다. 가로 바는 ArrowUp·ArrowDown으로 움직입니다.
 - `aria-orientation`은 pane이 아니라 바를 설명합니다. 좌우로 놓인 pane 사이의 세로 바는 `vertical`입니다.
 - RTL에서도 끌기는 포인터가 간 방향으로 경계를 옮깁니다.

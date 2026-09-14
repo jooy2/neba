@@ -234,7 +234,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] The Switch thumb uses a physical `left`, so on and off do not flip (`Switch.tsx:79-85, 144`). Now `inset-inline-start`; `CLAUDE.md` and the design language say so.
   - [x] Transfer's move arrows point the wrong way, and the comment "it is logical" is wrong (`Transfer.tsx:426-429`). Both glyphs take an `rtl:` turn, and the comment is corrected.
   - [x] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`). The default is Base UI's `inline-end`, and the chevron reads Base UI's direction.
-  - [ ] Panes keyboard direction (`Panes.tsx:398-404`).
+  - [x] Panes keyboard direction (`Panes.tsx:398-404`).
   - [ ] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
   - [ ] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).
 - [x] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. Decided: (a) the default stays on, as `CLAUDE.md` records; no change.

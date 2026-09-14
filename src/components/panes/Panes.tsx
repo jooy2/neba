@@ -401,8 +401,11 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
                 beginDrag(index - 1, event);
               }}
               onKeyDown={(event) => {
-                const back = horizontal ? 'ArrowLeft' : 'ArrowUp';
-                const forward = horizontal ? 'ArrowRight' : 'ArrowDown';
+                // Under RTL the panes run right to left, so the boundary moves
+                // towards the end on the left arrow, as a drag already does.
+                const rtl = horizontal && getComputedStyle(event.currentTarget).direction === 'rtl';
+                const back = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
+                const forward = horizontal ? (rtl ? 'ArrowLeft' : 'ArrowRight') : 'ArrowDown';
                 if (event.key !== back && event.key !== forward) return;
                 event.preventDefault();
                 nudge(index - 1, event.key === forward ? KEYBOARD_STEP : -KEYBOARD_STEP);

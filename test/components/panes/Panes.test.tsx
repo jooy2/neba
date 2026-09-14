@@ -220,6 +220,30 @@ describe('Panes', () => {
       await expect.poll(() => shares(screen)).toEqual([46]);
     });
 
+    // A drag already followed the direction; the arrows moved the boundary
+    // away from the key that was pressed.
+    it('moves the boundary towards the arrow pressed under RTL', async () => {
+      const screen = await render(
+        <div dir="rtl">
+          <Sample>
+            <Pane>One</Pane>
+            <Pane>Two</Pane>
+          </Sample>
+        </div>
+      );
+      await expect.poll(() => shares(screen)).toEqual([50]);
+
+      screen.getByRole('separator').element().focus();
+      await userEvent.keyboard('{ArrowLeft}');
+
+      // The first pane is on the right, so moving the boundary left grows it.
+      await expect.poll(() => shares(screen)).toEqual([54]);
+
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+
+      await expect.poll(() => shares(screen)).toEqual([46]);
+    });
+
     it('holds a pane at its own minimum', async () => {
       const screen = await render(
         <Sample>
