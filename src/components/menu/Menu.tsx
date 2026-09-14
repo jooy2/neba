@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Menu as BaseUIMenu } from '@base-ui/react/menu';
+import { useDirection } from '@base-ui/react/direction-provider';
 import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
 import { MenuContext } from '../../internal/menu.js';
 import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
@@ -153,7 +154,10 @@ export interface MenuSubmenuProps {
   label?: React.ReactNode;
   startIcon?: React.ReactNode;
   disabled?: boolean;
-  /** Which edge of the parent row it opens against. @default 'right' */
+  /**
+   * Which edge of the parent row it opens against. Left out, it opens at the
+   * row's inline end: to the right, or to the left under RTL.
+   */
   side?: NebaSide;
   /** Distance from the parent menu, in pixels. @default 4 */
   sideOffset?: number;
@@ -603,7 +607,7 @@ export function MenuSubmenu({
   label,
   startIcon,
   disabled = false,
-  side = 'right',
+  side,
   sideOffset = 4,
   children,
   className,
@@ -611,6 +615,7 @@ export function MenuSubmenu({
 }: MenuSubmenuProps) {
   const menu = React.useContext(MenuContext);
   const { size, density, color } = menu;
+  const direction = useDirection();
 
   return (
     <BaseUIMenu.SubmenuRoot>
@@ -621,9 +626,14 @@ export function MenuSubmenu({
         <span className="min-w-0 flex-1 truncate text-start">{label}</span>
         {/* The chevron is drawn pointing down and turned — the one allowance
             the no-transform rule makes, because a glyph has no text to resample.
-            `-rotate-90` in a logical world would be wrong under RTL, so it reads
-            the side Base UI actually placed the submenu on. */}
-        <span className={`${slotClasses} text-(--neba-muted-fg) -rotate-90`}>
+            A rotation is physical, so it turns the other way under RTL, where
+            the submenu opens to the left; the direction is Base UI's, the same
+            one that places the popup and binds the arrow key that opens it. */}
+        <span
+          className={`${slotClasses} text-(--neba-muted-fg) ${
+            direction === 'rtl' ? 'rotate-90' : '-rotate-90'
+          }`}
+        >
           <ChevronIcon />
         </span>
       </BaseUIMenu.SubmenuTrigger>
@@ -631,7 +641,7 @@ export function MenuSubmenu({
       <BaseUIMenu.Portal>
         <BaseUIMenu.Positioner
           className="neba-portal z-(--neba-z-portal) [outline:none]"
-          side={side}
+          side={side ?? 'inline-end'}
           sideOffset={sideOffset}
           align="start"
         >

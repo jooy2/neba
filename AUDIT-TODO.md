@@ -233,7 +233,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [ ] **92** [major] **RTL**: these places do not follow the direction. See C3.
   - [x] The Switch thumb uses a physical `left`, so on and off do not flip (`Switch.tsx:79-85, 144`). Now `inset-inline-start`; `CLAUDE.md` and the design language say so.
   - [x] Transfer's move arrows point the wrong way, and the comment "it is logical" is wrong (`Transfer.tsx:426-429`). Both glyphs take an `rtl:` turn, and the comment is corrected.
-  - [ ] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`).
+  - [x] The Menu submenu chevron is fixed at `-rotate-90`, and the default `side='right'` is physical; the comment is wrong too (`Menu.tsx:602, 618-622`). The default is Base UI's `inline-end`, and the chevron reads Base UI's direction.
   - [ ] Panes keyboard direction (`Panes.tsx:398-404`).
   - [ ] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
   - [ ] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).

@@ -126,6 +126,8 @@
 
 - **Under a reduced-motion preference an `AnimateMarquee` lays its content down once and lets it wrap.** The strip stopped, but its `overflow: hidden` and its copies stayed, so long content was cut off at the edge for good and short content sat on the page two or four times over. It now renders a single copy, stops clipping and wraps the content onto more lines, and the stylesheet does the same in the first paint, before the component has read the preference.
 
+- **A `MenuSubmenu` opens towards the row's inline end.** Its `side` defaulted to `'right'` and its chevron was always turned to point right, so under RTL the submenu opened over the menu it came from and the chevron pointed away from it. Left out, `side` is now the inline end, to the left under RTL, and the chevron follows the same direction Base UI places the popup by. A `side` passed explicitly is unchanged.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

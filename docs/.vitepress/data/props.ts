@@ -7595,11 +7595,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'side',
       type: "'top' | 'right' | 'bottom' | 'left'",
-      default: "'right'",
       shared: true,
       description: {
-        ko: '부모 행의 어느 쪽으로 열릴지',
-        en: 'Which edge of the parent row it opens against'
+        ko: '부모 행의 어느 쪽으로 열릴지. 생략하면 행의 inline 끝 쪽, 즉 오른쪽이고 RTL에서는 왼쪽입니다',
+        en: "Which edge of the parent row it opens against. Left out, the row's inline end: the right, or the left under RTL"
       }
     },
     {

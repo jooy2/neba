@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import {
+  NebaProvider,
   Button,
   ContextMenu,
   Menu,
@@ -325,6 +326,40 @@ describe('Menu', () => {
   // against, so Base UI leaves it at the origin with nothing to reach into — a
   // submenu hung off that is a submenu nobody can hover.
   describe('submenus', () => {
+    // The chevron was fixed at `-rotate-90` and the popup at `side="right"`,
+    // both pointing away from where an RTL submenu belongs.
+    it('points the chevron and opens the submenu towards the inline end under RTL', async () => {
+      const screen = await render(
+        <NebaProvider direction="rtl">
+          <Menu trigger={<Button>Actions</Button>}>
+            <MenuSubmenu label="Share">
+              <MenuItem>Copy link</MenuItem>
+            </MenuSubmenu>
+          </Menu>
+        </NebaProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Actions' }).click();
+
+      const row = screen.getByRole('menuitem', { name: 'Share' });
+
+      await expect.element(row).toBeInTheDocument();
+
+      const chevron = row.element().querySelector('svg')?.parentElement;
+
+      expect(chevron?.className).toContain('rotate-90');
+      expect(chevron?.className).not.toContain('-rotate-90');
+
+      await row.hover();
+
+      const item = screen.getByRole('menuitem', { name: 'Copy link' });
+
+      await expect.element(item).toBeInTheDocument();
+      expect(item.element().getBoundingClientRect().right).toBeLessThanOrEqual(
+        row.element().getBoundingClientRect().left + 1
+      );
+    });
+
     it('renders the row that opens a submenu, with the submenu closed', async () => {
       const screen = await render(
         <Menu trigger={<Button>Actions</Button>}>
