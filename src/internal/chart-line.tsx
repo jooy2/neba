@@ -86,14 +86,21 @@ export function LineSeries({
   /** The band that sits on the axis, and so the one with nothing to be parted from. */
   const first = visible.indexOf(true);
 
-  /* The running total each band sits on. Only the visible series contribute:
+  /* The running totals each band sits on, one per sign. A positive value
+     stacks up from the zero line and a negative one down from it, which is how
+     `extentOf` sums the axis: added together regardless of sign, a negative
+     series pulled every band above it down, so the top of the stack no longer
+     met the axis and the bands overlapped. Only the visible series contribute:
      hiding one from the legend has to close the gap it left, or a stacked chart
      with a series turned off reads as a chart with a hole in it. */
   const baselines: number[][] = [];
-  const running: number[] = [];
+  const above: number[] = [];
+  const below: number[] = [];
 
   values.forEach((one, index) => {
-    const under = one.map((_, category) => running[category] ?? 0);
+    const under = one.map((value, category) =>
+      (value.value ?? 0) < 0 ? (below[category] ?? 0) : (above[category] ?? 0)
+    );
 
     baselines.push(under);
 
@@ -102,7 +109,13 @@ export function LineSeries({
     }
 
     one.forEach((value, category) => {
-      running[category] = (running[category] ?? 0) + (value.value ?? 0);
+      const amount = value.value ?? 0;
+
+      if (amount < 0) {
+        below[category] = (below[category] ?? 0) + amount;
+      } else {
+        above[category] = (above[category] ?? 0) + amount;
+      }
     });
   });
 

@@ -793,4 +793,39 @@ describe('LineChart', () => {
         .toBe('160');
     });
   });
+
+  // The marks summed every value while the axis summed each sign apart, so a
+  // negative series pulled the top of the stack below the axis's own maximum.
+  describe('stacking values of both signs', () => {
+    it('stacks a negative series down from zero and leaves the positive ones above it', async () => {
+      const screen = await render(
+        <LineChart
+          label="Flow"
+          stacked
+          markers="all"
+          height={240}
+          categories={['Jan']}
+          series={[
+            { name: 'In', data: [10] },
+            { name: 'Out', data: [-5] },
+            { name: 'More in', data: [10] }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Flow' });
+
+      await expect
+        .poll(() => plot.element().querySelectorAll('circle').length)
+        .toBeGreaterThanOrEqual(3);
+
+      const [first, negative, top] = [...plot.element().querySelectorAll('circle')]
+        .slice(0, 3)
+        .map((dot) => Number(dot.getAttribute('cy')));
+
+      // First at 10, the negative at -5 and the top of the positive stack at
+      // 20: fifteen units apart below, ten above. Summed regardless of sign the
+      // top sat at 15, five units above the first.
+      expect((first - top) / (negative - first)).toBeCloseTo(10 / 15, 2);
+    });
+  });
 });

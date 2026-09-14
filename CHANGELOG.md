@@ -438,6 +438,8 @@
 
 - **A chart takes any CSS length as its `height`.** The type and the docs said a string was any CSS length, but a `LineChart`, `AreaChart`, `BarChart`, `ScatterChart` or `TimelineChart` given `height="16rem"` drew into a plot 0 pixels tall and showed nothing, and a `PieChart`, `HeatmapChart` or `GaugeChart` ignored the string and took its `size`. A string height is now written on the chart's box and the drawing is laid out against the height that box comes to, following it when it changes. A number is still used as it is, with nothing measured.
 
+- **A stacked `LineChart` or `AreaChart` stacks negative values down from zero.** The value axis summed each category's positive and negative values apart, but the lines and bands added every value together, so a series below zero pulled every band above it down: the top of the stack no longer met the axis, and bands drew over each other. Positive values now stack up from the zero line and negative ones down from it, as the axis and a stacked `BarChart` already did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
