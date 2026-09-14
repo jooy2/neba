@@ -506,6 +506,8 @@
 
 - **`CodeBlock` tries again after the highlighter failed to load, and a registered language wins over an alias.** A core chunk that failed once stayed failed, so every block on the page was plain until a reload. `registerLanguage` under a name that is also an alias, such as `vue`, was shadowed by the alias.
 
+- **Initials keep a whole emoji.** An `Avatar` or an `AppLogo` named `👩‍💻 Dev` drew `👩D`, and `🇰🇷 Team` drew half a flag, because the first letter was taken by code point. It is now taken by grapheme.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -9,12 +9,14 @@
  * ways on the same page.
  */
 
+import { graphemesOf } from './text.js';
+
 /**
  * The first character of the first word, plus the first of the last.
  *
- * `Array.from` rather than `[0]`, so a name that starts with an emoji or with
- * any character outside the basic plane is not cut in half between its two code
- * units. `normalize('NFC')` first, so a name whose accents arrived decomposed —
+ * A grapheme rather than `[0]` or a code point, so a name that starts with an
+ * emoji is not cut apart: `👩‍💻` is three code points and `🇰🇷` is two, and
+ * taking the first of them drew `👩` and a lone `🇰`. `normalize('NFC')` first, so a name whose accents arrived decomposed —
  * which is what a macOS filename and a good many APIs hand you — yields `Ä`
  * rather than a bare `A`.
  *
@@ -29,8 +31,8 @@ export function initialsOf(name: string): string {
     return '';
   }
 
-  const first = Array.from(words[0])[0] ?? '';
-  const last = words.length > 1 ? (Array.from(words[words.length - 1])[0] ?? '') : '';
+  const first = graphemesOf(words[0])[0] ?? '';
+  const last = words.length > 1 ? (graphemesOf(words[words.length - 1])[0] ?? '') : '';
 
   return (first + last).toLocaleUpperCase();
 }

@@ -39,6 +39,13 @@ describe('initialsOf', () => {
     expect([...initialsOf('𝒥ane Doe')][0]).toBe('𝒥');
   });
 
+  // Sliced by code point, a joined emoji lost its second half and a flag its
+  // second letter.
+  it('takes a whole emoji, joined or a flag', () => {
+    expect(initialsOf('👩‍💻 Dev')).toBe('👩‍💻D');
+    expect(initialsOf('🇰🇷 Team')).toBe('🇰🇷T');
+  });
+
   it('reads a name written in a script with no case', () => {
     expect(initialsOf('이 주영')).toBe('이주');
     expect(initialsOf('山田 太郎')).toBe('山太');
