@@ -38,6 +38,19 @@ describe('Tour', () => {
       await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
     });
 
+    // Inside an ancestor with a `backdrop-filter`, a `fixed` element is
+    // positioned against that ancestor, so the dim stayed inside it.
+    it('dims the page from the portal rather than from where the tour sits', async () => {
+      const screen = await render(<Page steps={STEPS} defaultOpen />);
+
+      await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
+
+      const mask = document.querySelector('[aria-hidden="true"].fixed.z-40');
+
+      expect(mask).not.toBeNull();
+      expect(screen.container.contains(mask)).toBe(false);
+    });
+
     it('counts the steps', async () => {
       const screen = await render(<Page steps={STEPS} defaultOpen />);
 

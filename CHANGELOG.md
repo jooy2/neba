@@ -528,6 +528,8 @@
 
 - **Dismissing an `alert: true` confirm resolves `true`.** An alert has only the confirming button, and Escape or a press on the backdrop resolved `false`, which sent the caller down a cancel branch the reader was never offered.
 
+- **`Tour` dims the page from its portal.** The dim was a `fixed` element left where the Tour sits, so inside a Card with a `backdrop-filter` it was fixed to the card: only the card was dimmed and the hole was in the wrong place.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

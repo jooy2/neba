@@ -403,11 +403,15 @@ export function Tour(rawProps: TourProps) {
         setOpen(next);
       }}
     >
-      {running && mask ? (
-        <Mask spot={spot} radius={spot ? 8 : 0} className={classNames?.mask} />
-      ) : null}
-
       <BaseUIPopover.Portal>
+        {/* In the portal with the card. Left where the Tour sits, a `fixed`
+            dim inside a Card with a `backdrop-filter` is fixed to that card
+            instead of the window, so it dimmed only the card and cut its hole
+            in the wrong place. */}
+        {running && mask ? (
+          <Mask spot={spot} radius={spot ? 8 : 0} className={classNames?.mask} />
+        ) : null}
+
         <BaseUIPopover.Positioner
           className="neba-portal z-(--neba-z-portal) [outline:none]"
           side={current?.side ?? 'bottom'}
