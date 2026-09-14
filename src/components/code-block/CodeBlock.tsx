@@ -549,7 +549,14 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     }, []);
 
     const selectEverything = (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key !== 'a' && event.key !== 'A') return;
+      // The physical key as well, when the layout typed something that is not
+      // a Latin letter: on a Russian or a Greek keyboard `key` is `ф` or `α`,
+      // and the browser went on to select the whole page.
+      const isA =
+        event.key === 'a' ||
+        event.key === 'A' ||
+        (!/^[a-z]$/i.test(event.key) && event.code === 'KeyA');
+      if (!isA) return;
       if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
 
       const node = codeRef.current;
@@ -675,7 +682,10 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
         }
         {...props}
       >
-        {toolbar && (showLanguage || copyable || rawToggle || hasContent(title)) ? (
+        {/* Only for something the bar will actually draw: `showLanguage` with no
+          language and `rawToggle` with nothing coloured drew an empty bar. */}
+        {toolbar &&
+        ((showLanguage && name) || copyable || (rawToggle && highlight) || hasContent(title)) ? (
           <div
             className={cx(
               'flex min-w-0 items-center gap-1 border-b [border-color:var(--n-code-rule)]',

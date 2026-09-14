@@ -502,6 +502,8 @@
 
 - **A tiled `Image` watermark takes a colour token.** `repeat: true` drew the mark as an SVG data URI, a separate document where `var(--neba-…)` resolves to nothing, so a mark given a token drew black. It is now an inline `<svg>` pattern and the colour resolves in the page.
 
+- **`CodeBlock` answers Ctrl/Cmd+A on any keyboard layout, and draws no empty toolbar.** The shortcut checked only `event.key`, so on a Russian or a Greek layout it selected the whole page; the physical A key now counts too. A block with no `language`, `copyable={false}` and no `title` drew a bar with nothing on it.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

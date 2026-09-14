@@ -172,6 +172,13 @@ describe('CodeBlock', () => {
       expect(screen.getByText('answer.ts').query()).toBeNull();
     });
 
+    it('draws no bar when there is nothing to put on it', async () => {
+      const screen = await render(<CodeBlock code={SOURCE} copyable={false} data-testid="block" />);
+      const block = screen.getByTestId('block').element();
+
+      expect(block.querySelector('.border-b')).toBeNull();
+    });
+
     it('offers the raw toggle only when it is asked for', async () => {
       const screen = await render(<CodeBlock code={SOURCE} language="ts" />);
 
@@ -493,6 +500,27 @@ describe('CodeBlock', () => {
       // lines while stringifying a range: WebKit puts a newline after the last
       // one and Firefox on Windows separates them with CRLF.
       expect(selection()).toBe('const a = 1;\nconst b = 2;');
+    });
+
+    // A layout that does not type Latin letters reports `ф` for the A key, and
+    // the browser selected the whole page.
+    it('selects the code on Ctrl+A under a layout that types another letter', async () => {
+      const screen = await render(<CodeBlock code="const a = 1;" maxHeight={8} />);
+      const region = screen.getByRole('region', { name: 'Code' }).element() as HTMLElement;
+
+      region.focus();
+
+      const event = new KeyboardEvent('keydown', {
+        key: 'ф',
+        code: 'KeyA',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true
+      });
+
+      region.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
     });
 
     it('leaves a plain A alone', async () => {
