@@ -48,7 +48,7 @@ The default is `fixed`, against the `static` everything else in the library defa
 
 ### labels
 
-`all` draws every name. `selected` draws only the current one, and `none` draws none of them.
+`all` draws every name. `selected` draws only the current one, and `none` draws none of them. With `selected` every item keeps the line a name takes, so the glyphs stay where they are as the selection moves.
 
 An undrawn name is still in the document. A button whose whole label is a glyph has no accessible name at all, so what goes is the pixels and nothing else.
 

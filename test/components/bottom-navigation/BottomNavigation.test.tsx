@@ -259,16 +259,21 @@ describe('BottomNavigation', () => {
       expect(screen.getByText('Search').element()).toHaveClass('size-px');
     });
 
-    it('draws only the current one when it is told to', async () => {
+    // The undrawn names were clipped to a pixel and took no line, so each glyph
+    // moved down as the selection left its item and up as it arrived.
+    it('draws only the current one when it is told to, keeping every line', async () => {
       const screen = await render(
         <BottomNavigation value="home" labels="selected">
           <BottomNavigationItem value="home">Home</BottomNavigationItem>
           <BottomNavigationItem value="search">Search</BottomNavigationItem>
         </BottomNavigation>
       );
+      const search = screen.getByText('Search').element();
 
-      expect(screen.getByText('Home').element()).not.toHaveClass('size-px');
-      expect(screen.getByText('Search').element()).toHaveClass('size-px');
+      expect(screen.getByText('Home').element()).not.toHaveClass('opacity-0');
+      expect(search).not.toHaveClass('size-px');
+      expect(search).toHaveClass('opacity-0');
+      await expect.element(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
     });
   });
 });

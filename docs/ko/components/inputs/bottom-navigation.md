@@ -48,7 +48,7 @@ import { BottomNavigation, BottomNavigationItem } from 'neba';
 
 ### labels
 
-`all`은 모든 이름을 그립니다. `selected`는 지금 있는 목적지의 이름만, `none`은 아무 이름도 그리지 않습니다.
+`all`은 모든 이름을 그립니다. `selected`는 지금 있는 목적지의 이름만, `none`은 아무 이름도 그리지 않습니다. `selected`에서는 모든 항목이 이름 한 줄만큼의 자리를 유지하므로, 선택이 옮겨 가도 글리프가 움직이지 않습니다.
 
 그리지 않은 이름도 문서에는 남습니다. 글리프 하나뿐인 버튼은 접근성 이름이 아예 없으므로, 사라지는 것은 픽셀뿐입니다.
 

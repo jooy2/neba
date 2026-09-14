@@ -396,7 +396,15 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
               className={
                 named
                   ? cx('max-w-full truncate leading-tight', metaTextClasses[bar.size])
-                  : srOnlyClasses
+                  : bar.labels === 'selected'
+                    ? // Laid out and not drawn. A clipped name took no line, so
+                      // the item it left was a line shorter and its glyph moved
+                      // down every time the selection moved away from it. With
+                      // no ink rather than no visibility, because a hidden
+                      // element leaves the accessibility tree and takes the
+                      // item's only name with it.
+                      cx('max-w-full truncate leading-tight opacity-0', metaTextClasses[bar.size])
+                    : srOnlyClasses
               }
             >
               {children}
