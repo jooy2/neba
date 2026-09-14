@@ -25,7 +25,7 @@ import type { NebaSize, NebaStaggerProps, NebaTransition } from '../../types.js'
 export type StackDirection = 'horizontal' | 'vertical' | 'diagonal';
 
 export interface StackProps
-  extends NebaStaggerProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
+  extends NebaStaggerProps, Omit<React.ComponentPropsWithoutRef<'span'>, 'color'> {
   /** Which way the pile grows. @default 'horizontal' */
   direction?: StackDirection;
   /**
@@ -152,7 +152,7 @@ const overlapSizes: Record<NebaSize, string> = {
  * has to follow the shape it is around: a hairline on the wrapper of a circular
  * avatar is a square.
  */
-export const Stack = React.forwardRef<HTMLDivElement, StackProps>(function Stack(rawProps, ref) {
+export const Stack = React.forwardRef<HTMLSpanElement, StackProps>(function Stack(rawProps, ref) {
   const {
     direction = 'horizontal',
     overlap,
@@ -192,8 +192,11 @@ export const Stack = React.forwardRef<HTMLDivElement, StackProps>(function Stack
   const parts = transitionParts(transition);
   const effectClass = parts ? `${animBaseClass} ${animationClasses[parts.effect]}` : '';
 
+  // A `<span>`, and so is every wrapper inside it: a pile of avatars in a line
+  // of text is what a Stack is for, and a `<div>` inside a `<p>` is invalid
+  // markup that React reports as a hydration error.
   return (
-    <div
+    <span
       ref={ref}
       className={cx(
         // `isolate`, so the z-order below is resolved against the stack rather
@@ -261,6 +264,6 @@ export const Stack = React.forwardRef<HTMLDivElement, StackProps>(function Stack
           </span>
         );
       })}
-    </div>
+    </span>
   );
 });

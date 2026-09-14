@@ -6,6 +6,7 @@
  * always decodes, and a string that never will.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Image } from 'neba';
 
@@ -1018,5 +1019,21 @@ describe('Image', () => {
     const screen = await render(<Image src={OK} alt="A ridge" data-analytics="hero" />);
 
     expect(screen.container.querySelector('img[data-analytics="hero"]')).not.toBeNull();
+  });
+
+  // A Markdown renderer puts an Image inside a `<p>`, where the `<div>` its
+  // proportion box and its placeholder were drawn in is a hydration error.
+  describe('inside a paragraph', () => {
+    it('draws no block element while it loads, with or without a ratio', () => {
+      const html = renderToString(
+        <p>
+          <Image src="/cliff.jpg" alt="A cliff" ratio={4 / 3} />
+          <Image src="/ridge.jpg" alt="A ridge" width={320} height={240} />
+        </p>
+      );
+
+      expect(html).toContain('<img');
+      expect(html).not.toContain('<div');
+    });
   });
 });

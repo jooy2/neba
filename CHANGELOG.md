@@ -64,6 +64,8 @@
 
 - **A chart axis's `tickFormat` returns a string or a number.** It was typed to return any `ReactNode`, but a tick is SVG text and the result went through `String()`, so a callback that handed back an element type-checked and drew `[object Object]` on the axis. The type now says what the axis can write. A `tickFormat` returning JSX stops compiling, and should return the text instead.
 
+- **An `Image` and a `Stack` draw only `<span>` elements, so they can sit inside a `<p>`.** An Image drew its proportion box and its loading placeholder as `<div>`s, and a Stack's root was a `<div>`, although a Markdown renderer puts an Image inside a paragraph and a pile of avatars in a line of text is what a Stack is for. A `<div>` inside a `<p>` is invalid markup, which the browser rewrites and React reports as a hydration error. Both now draw spans with the same display they had. A `Stack`'s `ref` is an `HTMLSpanElement` and its props are a `<span>`'s, so code that typed the ref as `HTMLDivElement` needs the new type.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

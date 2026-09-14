@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Avatar, Stack } from 'neba';
 
@@ -239,6 +240,24 @@ describe('Stack', () => {
       await screen.rerender(<Letters names={['Cai', 'Ada', 'Bo']} />);
 
       expect(screen.getByText('Ada').element()).toBe(ada);
+    });
+  });
+
+  // A pile of faces in a line of text is what a Stack is for, and its `<div>`
+  // inside a `<p>` is invalid markup React reports as a hydration error.
+  describe('inside a paragraph', () => {
+    it('draws no block element', () => {
+      const html = renderToString(
+        <p>
+          Reviewed by{' '}
+          <Stack>
+            <Avatar name="Ada" />
+            <Avatar name="Bo" />
+          </Stack>
+        </p>
+      );
+
+      expect(html).not.toContain('<div');
     });
   });
 });

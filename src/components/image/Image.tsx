@@ -1107,7 +1107,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     ) : phase === 'loading' && placeholder !== false && stand === null && !priority ? (
       <span className={cx('absolute inset-0', classNames?.placeholder)}>
         {(placeholder as React.ReactNode) ?? (
-          <Skeleton shape="rect" className={cx('size-full', radius)} />
+          // A `<span>`, like everything else an Image draws: an Image is the
+          // one component a Markdown renderer puts inside a `<p>`, and a
+          // `<div>` there is a hydration error.
+          <Skeleton render={<span />} shape="rect" className={cx('block size-full', radius)} />
         )}
       </span>
     ) : null;
@@ -1205,9 +1208,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       // `fit` is already on the `<img>`; AspectRatio's own is for a direct
       // child, and the stack is in the way.
       <AspectRatio
+        render={<span />}
         ratio={ratio}
         className={cx(
-          'overflow-hidden',
+          'block overflow-hidden',
           shape === null ? radius : '',
           shape === null ? className : ''
         )}
