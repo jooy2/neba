@@ -15,7 +15,8 @@ import {
   startOfUnit,
   today
 } from '../../internal/date.js';
-import { cx, radiusClasses, surfaceSlots } from '../../internal/styles.js';
+import { popupPaddingClasses } from '../../internal/picker.js';
+import { cx, radiusClasses, surfaceClasses, surfaceSlots } from '../../internal/styles.js';
 import type {
   NebaColor,
   NebaDateGranularity,
@@ -222,8 +223,19 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
         ref={ref}
         className={cx(
           'inline-block',
-          bordered && 'border p-3 [border-color:var(--n-line)] bg-(--n-panel-press)',
-          bordered && radiusClasses[size],
+          // The popup's own sheet — its glass edge and its padding per size — so
+          // a calendar on a page and one in a picker are the same object. The
+          // shadow is `elevation`'s, read from the slot every surface writes;
+          // nothing read it before, so the prop drew nothing.
+          bordered
+            ? cx(
+                surfaceClasses,
+                'border bg-(--n-panel-press) [border-color:var(--n-line)]',
+                '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
+                radiusClasses[size],
+                popupPaddingClasses[size]
+              )
+            : '[box-shadow:var(--n-elev)]',
           className
         )}
         style={{ ...surfaceSlots(color, elevation), ...style }}

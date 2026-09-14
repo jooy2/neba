@@ -71,7 +71,7 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 
 ### bordered and elevation
 
-`bordered` draws the sheet the picker's popup draws. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` is `0` by default: a calendar sitting in a page is not floating.
+`bordered` draws the sheet the picker's popup draws, with the same edge and the same padding for each `size`. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` gives the calendar a shadow from the same ladder as every surface, with or without the sheet, and is `0` by default: a calendar sitting in a page is not floating.
 
 ## Keyboard
 

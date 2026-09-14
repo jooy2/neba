@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F17 (154)** Calendar `elevation` and `bordered`: (a) `elevation` draws its shadow and `bordered` draws the popup's sheet; (b) remove `elevation` (breaking).
 - **F18 (155)** Pressing a date before the start of a range: (a) Calendar and DateRangePicker both start a new range there; (b) both swap the ends.
 - **F19 (156)** DateRangePicker closed after one click: (a) drop the half range and keep the previous one, as the docs say; (b) keep the half range and fix the docs.
 - **F20 (158)** A value outside `minDate`, `maxDate` or `minTime`: (a) clamp it on commit with `clampDate`, which also settles D15; (b) commit it and mark the field `invalid`.
@@ -304,7 +303,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### Date and time pickers
 
-- [ ] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`. See F17.
+- [x] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`. See F17. Decided: (a) `elevation` is read through `[box-shadow:var(--n-elev)…]` and `bordered` uses the popup's surface, glass plate and `popupPaddingClasses`.
 - [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`. See F18.
 - [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`. See F19.
 - [x] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3. Decided: approved; the default `referenceDate` is `startOfDay(new Date())`.

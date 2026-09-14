@@ -462,6 +462,8 @@
 
 - **Clicking a `FloatingActionButton` with a mouse no longer shuts the dial the pointer just opened.** With `openOnHover`, the default, the dial opened as the pointer reached the button, and the click that followed toggled it straight back shut, so a mouse user who clicked the button saw the dial flash and close. A click on a dial the pointer opened now keeps it open, and the next click closes it. A dial opened by a press still closes on the next press.
 
+- **A `Calendar`'s `elevation` draws a shadow, and `bordered` draws the popup's own sheet.** `elevation` wrote the shadow slot every surface writes, but nothing on the calendar read it, so the prop changed nothing. `bordered` drew a sheet of its own with one padding for every size and no glass edge, although the prop says it draws the sheet a picker's popup draws. The calendar now takes its shadow from `elevation`, with or without the sheet, and a bordered calendar draws the popup's edge and its padding for each `size`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

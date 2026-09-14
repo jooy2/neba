@@ -27,6 +27,37 @@ describe('Calendar', () => {
       .toBeInTheDocument();
   });
 
+  // `elevation` wrote a slot nothing read, and `bordered` drew a sheet of its own
+  // rather than the popup's, with one padding for every size.
+  describe('its sheet', () => {
+    it('draws the popup sheet, padded for its size, and a shadow from elevation', async () => {
+      const screen = await render(
+        <Calendar locale={LOCALE} defaultMonth={JULY} size="sm" elevation={2} data-testid="cal" />
+      );
+      const root = screen.getByTestId('cal').element() as HTMLElement;
+
+      expect(root).toHaveClass('p-2');
+      expect(root.className).toContain('[box-shadow:var(--n-elev),var(--neba-plate-glass)]');
+      expect(root.style.getPropertyValue('--n-elev')).toBe('var(--neba-shadow-2)');
+    });
+
+    it('keeps the shadow on a bare grid', async () => {
+      const screen = await render(
+        <Calendar
+          locale={LOCALE}
+          defaultMonth={JULY}
+          bordered={false}
+          elevation={1}
+          data-testid="cal"
+        />
+      );
+      const root = screen.getByTestId('cal').element() as HTMLElement;
+
+      expect(root.className).toContain('[box-shadow:var(--n-elev)]');
+      expect(root.className).not.toContain('border');
+    });
+  });
+
   it('keeps the focus in the calendar after a month is picked from the month grid', async () => {
     const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
 

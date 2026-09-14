@@ -71,7 +71,7 @@ import { Calendar } from 'neba';
 
 ### bordered와 elevation
 
-`bordered`는 picker 팝업이 그리는 시트를 그립니다. 이미 테두리가 있는 [Card](../surfaces/card) 안에 넣을 때는 끄고 맨 그리드만 쓰세요. `elevation`의 기본값은 `0`입니다. 페이지 안에 앉은 달력은 떠 있지 않습니다.
+`bordered`는 picker 팝업이 그리는 시트를 같은 가장자리, `size`마다 같은 여백으로 그립니다. 이미 테두리가 있는 [Card](../surfaces/card) 안에 넣을 때는 끄고 맨 그리드만 쓰세요. `elevation`은 시트가 있든 없든 모든 표면과 같은 단계의 그림자를 주며, 기본값은 `0`입니다. 페이지 안에 앉은 달력은 떠 있지 않습니다.
 
 ## 키보드
 
