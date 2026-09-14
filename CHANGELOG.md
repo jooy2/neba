@@ -532,6 +532,8 @@
 
 - **`Carousel` opens on a non-zero `defaultValue`.** The first effect skipped scrolling altogether, so the dots said slide 3 while the track showed slide 1. It now moves the strip there at once.
 
+- **An uncontrolled inline `Drawer` closes from its ×.** The button only called `onOpenChange(false)`, so without `open` managed by the caller it did nothing.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

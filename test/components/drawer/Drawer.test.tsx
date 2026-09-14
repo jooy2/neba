@@ -189,6 +189,16 @@ describe('Drawer', () => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
 
+    // The × called `onOpenChange(false)` and nothing else, so an uncontrolled
+    // inline drawer stayed exactly where it was.
+    it('closes an uncontrolled drawer from its ×', async () => {
+      const screen = await render(<Drawer mode="inline" showClose title="Projects" />);
+
+      await screen.getByRole('button', { name: 'Close' }).click();
+
+      await expect.poll(() => screen.getByText('Projects').query()).toBeNull();
+    });
+
     it('does not render a trigger, because there is nothing to open', async () => {
       const screen = await render(
         <Drawer mode="inline" trigger={<Button>Menu</Button>} title="Projects" />

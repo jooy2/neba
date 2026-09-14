@@ -363,7 +363,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 - [x] **212** Carousel scrolled the whole page on every slide change.
 - [x] **213** **Carousel**: a non-zero `defaultValue` makes the first effect skip scrolling, so the dots say slide 3 while the track shows slide 1. The test only checks `aria-current`. `Carousel.tsx:246-249` Fixed: the first pass scrolls, instantly, unless the index is 0.
-- [ ] **214** **Drawer**: an uncontrolled `inline` drawer with `showClose` has a close button that only calls `onOpenChange(false)` and does nothing. `Drawer.tsx:427-432, 479`
+- [x] **214** **Drawer**: an uncontrolled `inline` drawer with `showClose` has a close button that only calls `onOpenChange(false)` and does nothing. `Drawer.tsx:427-432, 479` Fixed: an uncontrolled inline drawer keeps its own open state.
 - [ ] **215** [decision] **Tabs**: a `TabPanel` inside a Fragment or a wrapper fails the `child.type === TabPanel` check and renders inside the tablist. `overflow="wrap"` with `lines` does not count the 1px `border-b`, which adds a vertical scroll. `Tabs.tsx:194, 413-419, 549-552`
 - [ ] **216** [major][decision] **Collapsible**: `title` and `subtitle` always `truncate`, which hides the end of a question-style title on a narrow screen. Follow Accordion's `lines` rule. `Collapsible.tsx:222, 227`
 - [ ] **217** **Pill**: when it starts `expanded`, it draws with a `detailsHeight` of 0 and then animates open after mount, pushing the content below. Start from `null` or `auto` and measure in a layout effect. `Pill.tsx:257-268, 374`

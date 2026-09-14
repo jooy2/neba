@@ -382,6 +382,9 @@ export function Drawer(rawProps: DrawerProps) {
   const overlay = mode === 'overlay';
   const along = side === 'left' || side === 'right';
   const showCloseButton = showClose ?? overlay;
+  // An inline drawer has no Base UI root to keep its state, so an uncontrolled
+  // one keeps it here. Without it the × only reported a close that nothing did.
+  const [inlineOpen, setInlineOpen] = React.useState(defaultOpen ?? true);
 
   const insetX = boxPaddingXClasses[density][size];
   const insetY = boxPaddingYClasses[density][size];
@@ -458,7 +461,10 @@ export function Drawer(rawProps: DrawerProps) {
                 type="button"
                 aria-label={closeLabel ?? messages.close}
                 className={closeButtonClasses}
-                onClick={() => onOpenChange?.(false)}
+                onClick={() => {
+                  if (open === undefined) setInlineOpen(false);
+                  onOpenChange?.(false);
+                }}
               >
                 <CloseIcon />
               </button>
@@ -506,7 +512,7 @@ export function Drawer(rawProps: DrawerProps) {
     // An inline drawer is in the flow, so "closed" is "not in the layout".
     // There is nothing to animate on the way out: the page around it is what
     // moves, and moving the page is not this component's to do.
-    if (!(open ?? defaultOpen ?? true)) {
+    if (!(open ?? inlineOpen)) {
       return null;
     }
 
