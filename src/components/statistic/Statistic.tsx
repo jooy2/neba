@@ -205,23 +205,48 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
      * month is the kind of thing a dashboard does exactly once before nobody
      * trusts it again.
      */
+    // Only between two real numbers: a `NaN` on either side wrote `NaN%`.
     const difference =
-      numeric !== null && previousValue !== undefined ? numeric - previousValue : null;
+      numeric !== null &&
+      Number.isFinite(numeric) &&
+      previousValue !== undefined &&
+      Number.isFinite(previousValue)
+        ? numeric - previousValue
+        : null;
     const ratio =
       difference !== null && previousValue !== 0 && previousValue !== undefined
         ? difference / Math.abs(previousValue)
         : null;
 
+    const figure = numberFormatter(locale, format);
+
+    /*
+     * The direction of what is written, not of the arithmetic under it. A change
+     * too small to survive the rounding reads `0%`, and an arrow and a colour
+     * beside a zero say something the number does not. The percentage is the
+     * figure a reader sees unless only the difference is written.
+     */
+    const byPercent = delta !== 'absolute' && ratio !== null;
+    const digits = byPercent ? 3 : (figure.resolvedOptions().maximumFractionDigits ?? 0);
+    const written = byPercent ? ratio : difference;
+    const direction =
+      written === null || Math.round(Math.abs(written) * 10 ** digits) === 0
+        ? 0
+        : Math.sign(written);
+
     const trend: Trend | null =
-      difference === null ? null : difference > 0 ? 'up' : difference < 0 ? 'down' : 'flat';
+      difference === null ? null : direction > 0 ? 'up' : direction < 0 ? 'down' : 'flat';
 
     let deltaText: string | null = null;
 
     if (difference !== null && trend !== null && delta !== 'none') {
-      const sign = difference > 0 ? '+' : difference < 0 ? '-' : '';
-      const absolute = `${sign}${numberFormatter(locale, format).format(Math.abs(difference))}`;
+      const sign = trend === 'up' ? '+' : trend === 'down' ? '-' : '';
+      const absolute = `${sign}${figure.format(Math.abs(difference))}`;
+      // In the locale, like the figure: `de-DE` writes `71,4 %`.
       const percent =
-        ratio === null ? null : `${sign}${(Math.abs(ratio) * 100).toFixed(1).replace(/\.0$/, '')}%`;
+        ratio === null
+          ? null
+          : `${sign}${numberFormatter(locale, { style: 'percent', maximumFractionDigits: 1 }).format(Math.abs(ratio))}`;
 
       deltaText =
         delta === 'absolute'

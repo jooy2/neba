@@ -338,7 +338,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### Charts
 
-- [ ] **195** **Statistic**: the percentage delta ignores `locale` (`de-DE` shows `+1.250` for the absolute delta and `+71.4%` for the percentage). Sign and colour come from the unrounded difference, which puts an up arrow next to `+0%`, and `value=NaN` shows `NaN%`. `Statistic.tsx:196-231`
+- [x] **195** **Statistic**: the percentage delta ignores `locale` (`de-DE` shows `+1.250` for the absolute delta and `+71.4%` for the percentage). Sign and colour come from the unrounded difference, which puts an up arrow next to `+0%`, and `value=NaN` shows `NaN%`. `Statistic.tsx:196-231` Fixed: the percentage goes through `Intl.NumberFormat`, the direction follows the rounded figure, and a non-finite value writes no delta.
 - [ ] **196** **Sparkline**: an all-negative `shape="bar"` has its baseline outside the band, so the bars cover the text above. With all values equal, the line sits on the floor and the bars are 1px, which reads as zero. `Sparkline.tsx:122, 211-213`
 - [ ] **197** **BarChart**: `valueLabels="last"` writes no label when the last value is `null`; LineChart writes it on the last non-null value. `BarChart.tsx:299-301`
 - [ ] **198** **PieChart**: with `tooltip={false}` the arrow keys still change `active` and dim the other slices, with no status to read. Negative values become positive slices through `Math.abs`, while the treemap drops negatives ([decision]). `PieChart.tsx:152-156, 210, 287, 328-330`

@@ -152,6 +152,35 @@ describe('Statistic', () => {
       expect(worse.style.getPropertyValue('--n-accent')).toBe('var(--neba-danger-accent)');
     });
 
+    // The percentage was written with `toFixed` whatever the locale was.
+    it('writes the percentage in the locale it was given', async () => {
+      const screen = await render(
+        <Statistic label="Umsatz" value={1200} previousValue={700} locale="de-DE" />
+      );
+
+      await expect.element(screen.getByText(/^\+71,4\s%$/)).toBeInTheDocument();
+    });
+
+    // The sign came from the unrounded difference, so an up arrow and a plus sat
+    // beside a change that reads as zero.
+    it('reads a change too small to write as flat', async () => {
+      const screen = await render(
+        <Statistic label="Active users" value={100.0001} previousValue={100} />
+      );
+      const chip = screen.getByText('0%').element().closest('[style]') as HTMLElement;
+
+      expect(chip.style.getPropertyValue('--n-accent')).toBe('var(--neba-secondary-accent)');
+      expect(screen.getByText('+0%').query()).toBeNull();
+    });
+
+    it('writes no delta for a value that is not a number', async () => {
+      const screen = await render(
+        <Statistic label="Active users" value={Number.NaN} previousValue={100} />
+      );
+
+      expect(screen.getByText(/%$/).query()).toBeNull();
+    });
+
     it('leaves the delta out entirely when told to', async () => {
       const screen = await render(
         <Statistic label="Active users" value={120} previousValue={100} delta="none" />

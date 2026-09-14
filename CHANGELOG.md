@@ -508,6 +508,8 @@
 
 - **Initials keep a whole emoji.** An `Avatar` or an `AppLogo` named `👩‍💻 Dev` drew `👩D`, and `🇰🇷 Team` drew half a flag, because the first letter was taken by code point. It is now taken by grapheme.
 
+- **`Statistic` writes its percentage in the `locale`, and a delta that rounds to zero is flat.** The percentage was written with `toFixed`, so `de-DE` showed `+71.4%` beside a figure written `1.250`. The arrow, the sign and the colour came from the unrounded difference, which put an up arrow next to `+0%`; they now follow what is written. A `NaN` on either side writes no delta instead of `NaN%`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
