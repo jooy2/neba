@@ -67,5 +67,5 @@ import { GaugeChart } from 'neba';
 
 ## 접근성
 
-- `label`이 있으면 계기판 전체가 하나의 `role="img"`가 되고, 읽은 값과 범위의 위쪽 끝으로 이름이 붙습니다. 없으면 평범한 상자로 남고, 가운데의 숫자는 이미 그러한 텍스트로 읽힙니다.
+- `label`이 있으면 계기판은 그 이름을 가진 `role="meter"`가 되고, `value`, `min`, `max`가 `aria-valuenow`, `aria-valuemin`, `aria-valuemax`로 들어갑니다. `aria-valuetext`는 읽은 값 뒤에 텍스트인 `caption`을 붙인 문장이므로 단위는 `caption`에 넘기면 됩니다. `value={null}`이면 label로 이름이 붙은 `role="img"`입니다. `label`이 없으면 평범한 상자로 남고, 가운데의 숫자는 그대로 텍스트로 읽힙니다.
 - 색이 유일한 전달 수단이 되지 않습니다. threshold를 넘은 값은 호도 더 많이 채웠고, 숫자도 쓰여 있습니다.

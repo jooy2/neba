@@ -67,5 +67,5 @@ The value in the middle is real text: selectable, findable, and in the accessibi
 
 ## Accessibility
 
-- Given a `label`, the dial is one `role="img"` named with the reading and the top of its range. Without one it is a plain box, and the number in the middle is read as the text it already is.
+- Given a `label`, the dial is a `role="meter"` named by it, with `aria-valuenow`, `aria-valuemin` and `aria-valuemax` from `value`, `min` and `max`. Its `aria-valuetext` is the reading followed by `caption` when the caption is text, so pass the unit there. With `value={null}` it is a `role="img"` named by the label. Without a `label` it is a plain box, and the number in the middle is read as the text it already is.
 - Colour is never the only carrier: a reading that has crossed a threshold has also filled more of the arc, and the number is written out.

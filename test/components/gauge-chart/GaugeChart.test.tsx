@@ -29,10 +29,26 @@ describe('GaugeChart', () => {
       expect(html).not.toContain('Nothing here');
     });
 
-    it('names itself with the reading and the top of the range', async () => {
+    it('is a meter named by its label, carrying the value and both ends', async () => {
       const screen = await render(<Tile value={64} label="CPU" />);
+      const meter = screen.getByRole('meter', { name: 'CPU' });
 
-      await expect.element(screen.getByRole('img', { name: 'CPU: 64 / 100' })).toBeInTheDocument();
+      await expect.element(meter).toHaveAttribute('aria-valuenow', '64');
+      await expect.element(meter).toHaveAttribute('aria-valuemin', '0');
+      await expect.element(meter).toHaveAttribute('aria-valuemax', '100');
+      await expect.element(meter).toHaveAttribute('aria-valuetext', '64');
+    });
+
+    // The name used to be "value / max", which read a scale starting below
+    // zero as a fraction of its top and dropped the caption.
+    it('states a range that starts below zero and the caption with the value', async () => {
+      const screen = await render(
+        <Tile value={0} min={-50} max={50} caption="degrees" label="Offset" />
+      );
+      const meter = screen.getByRole('meter', { name: 'Offset' });
+
+      await expect.element(meter).toHaveAttribute('aria-valuemin', '-50');
+      await expect.element(meter).toHaveAttribute('aria-valuetext', '0 degrees');
     });
 
     it('writes the two ends of the scale', async () => {
@@ -102,14 +118,14 @@ describe('GaugeChart', () => {
     // it, so the family lands on `stroke`.
     it('keeps its own family below every threshold', async () => {
       const screen = await render(<Tile value={40} thresholds={thresholds} label="CPU" />);
-      const arc = screen.getByRole('img').element().querySelectorAll('path')[1];
+      const arc = screen.getByRole('meter').element().querySelectorAll('path')[1];
 
       expect(arc?.getAttribute('stroke')).toBe('var(--neba-primary-fill)');
     });
 
     it('takes the family of the last one it has reached', async () => {
       const screen = await render(<Tile value={95} thresholds={thresholds} label="CPU" />);
-      const arc = screen.getByRole('img').element().querySelectorAll('path')[1];
+      const arc = screen.getByRole('meter').element().querySelectorAll('path')[1];
 
       expect(arc?.getAttribute('stroke')).toBe('var(--neba-danger-fill)');
     });
@@ -125,7 +141,7 @@ describe('GaugeChart', () => {
      */
     it('sweeps to a new value rather than jumping to it', async () => {
       const screen = await render(<Tile value={25} label="CPU" />);
-      const arc = () => screen.getByRole('img').element().querySelectorAll('path')[1];
+      const arc = () => screen.getByRole('meter').element().querySelectorAll('path')[1];
 
       expect(arc()?.getAttribute('pathLength')).toBe('1');
       expect(arc()?.getAttribute('stroke-dasharray')).toBe('1');
@@ -141,7 +157,7 @@ describe('GaugeChart', () => {
 
     it('draws none of the arc at zero, and all of it at full', async () => {
       const screen = await render(<Tile value={0} label="CPU" />);
-      const arc = () => screen.getByRole('img').element().querySelectorAll('path')[1];
+      const arc = () => screen.getByRole('meter').element().querySelectorAll('path')[1];
 
       expect(parseFloat(arc()?.getAttribute('stroke-dashoffset') ?? '')).toBeCloseTo(1);
 
@@ -159,7 +175,7 @@ describe('GaugeChart', () => {
       const screen = await render(
         <Tile value={0.38} min={0} max={1} format={{ style: 'percent' }} label="CPU" />
       );
-      const svg = screen.getByRole('img').element().querySelector('svg');
+      const svg = screen.getByRole('meter').element().querySelector('svg');
       const box = svg?.getBoundingClientRect();
 
       expect(svg?.querySelectorAll('text')).toHaveLength(2);
@@ -175,7 +191,7 @@ describe('GaugeChart', () => {
     it('writes no range on a closed ring, where the two ends are one point', async () => {
       const screen = await render(<Tile value={64} sweep={360} label="CPU" />);
 
-      expect(screen.getByRole('img').element().querySelectorAll('text')).toHaveLength(0);
+      expect(screen.getByRole('meter').element().querySelectorAll('text')).toHaveLength(0);
     });
 
     it('shrinks a long reading rather than running it over the arc', async () => {
@@ -208,13 +224,13 @@ describe('GaugeChart', () => {
     it('draws no marks unless it is asked for them', async () => {
       const screen = await render(<Tile value={40} label="CPU" />);
 
-      expect(screen.getByRole('img').element().querySelectorAll('line')).toHaveLength(0);
+      expect(screen.getByRole('meter').element().querySelectorAll('line')).toHaveLength(0);
     });
 
     it('draws the marks it was asked for', async () => {
       const screen = await render(<Tile value={40} ticks={5} label="CPU" />);
 
-      expect(screen.getByRole('img').element().querySelectorAll('line')).toHaveLength(5);
+      expect(screen.getByRole('meter').element().querySelectorAll('line')).toHaveLength(5);
     });
 
     it('draws only the track when the reading is empty', async () => {

@@ -332,18 +332,32 @@ export function GaugeChart(rawProps: GaugeChartProps) {
         ref={hostRef}
         className="relative w-full"
         style={{ height: plotHeight }}
-        // Named, the dial is one image saying one thing — which is what it is,
-        // and it saves a reader hearing the two end labels as loose numbers.
-        // Unnamed there is nothing to call it, so it stays a plain box and the
-        // reading in the middle is read as the text it already is.
-        role={label === undefined ? undefined : 'img'}
-        aria-label={
-          label === undefined
-            ? undefined
-            : value === null
-              ? label
-              : `${label}: ${formatValue(value)} / ${formatValue(max)}`
-        }
+        // Named, the dial is a meter: the value and both ends of its scale are
+        // numbers a screen reader can state, so `min={-50}` is not read as a
+        // fraction of `max`. The caption is the unit, and it travels in the
+        // value text. With no reading there is no `aria-valuenow` to give, and
+        // a meter without one is invalid, so the dial is a named picture of
+        // nothing. Unnamed there is nothing to call it, so it stays a plain
+        // box and the reading in the middle is read as the text it already is.
+        {...(label === undefined
+          ? {}
+          : fraction === null || value === null
+            ? { role: 'img', 'aria-label': label }
+            : {
+                role: 'meter',
+                'aria-label': label,
+                'aria-valuenow': value,
+                'aria-valuemin': min,
+                'aria-valuemax': max,
+                'aria-valuetext': [
+                  typeof reading === 'string' || typeof reading === 'number'
+                    ? String(reading)
+                    : formatValue(value),
+                  typeof caption === 'string' || typeof caption === 'number' ? String(caption) : ''
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+              })}
       >
         {nothing ? (
           <div

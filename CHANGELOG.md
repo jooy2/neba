@@ -56,6 +56,8 @@
 
 - **An `Overlay` with no `label` is named "Loading".** The default name was the word "Overlay", so the common case — a sheet holding only a spinner — was announced as "Overlay, dialog", which says nothing about why the page went out of reach. The default is the locale's word for "Loading" now, in all eighteen registered languages. A test that found an unlabelled overlay by the name "Overlay" should use "Loading", and an overlay that means something else should pass `label`.
 
+- **A labelled `GaugeChart` is a `meter`.** It was a `role="img"` named "label: value / max", so a dial from `-50` to `50` reading `0` was announced as "0 / 50" and its `caption` was never read. It is now `role="meter"` named by `label`, with `aria-valuenow`, `aria-valuemin` and `aria-valuemax`, and an `aria-valuetext` of the reading followed by a text caption. A dial with no reading stays a `role="img"` named by its label. A test that found the dial with `getByRole('img', { name: 'CPU: 64 / 100' })` finds it with `getByRole('meter', { name: 'CPU' })`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
