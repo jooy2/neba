@@ -311,7 +311,12 @@ export function Table<Row>(rawProps: TableProps<Row>) {
                 key={getRowKey ? getRowKey(row, index) : index}
                 className={cx(
                   rowClasses,
-                  striped && index % 2 === 1 ? '[--n-row:var(--n-panel-hover)]' : '',
+                  // A 4% mix of the ink, the stripe DataTable draws: the panel
+                  // hover token is 82% white, so on a white page the stripes it
+                  // drew were not there at all.
+                  striped && index % 2 === 1
+                    ? '[--n-row:color-mix(in_oklab,var(--neba-fg)_4%,transparent)]'
+                    : '',
                   lit ? 'hover:[--n-row:var(--n-soft)]' : '',
                   clickable ? clickableRowClasses : '',
                   classNames?.row

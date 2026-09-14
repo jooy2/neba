@@ -239,8 +239,19 @@ describe('Table', () => {
       const screen = await render(<Table headers={HEADERS} items={ITEMS} striped />);
       const rows = screen.container.querySelectorAll('tbody tr');
 
-      expect(rows[0]).not.toHaveClass('[--n-row:var(--n-panel-hover)]');
-      expect(rows[1]).toHaveClass('[--n-row:var(--n-panel-hover)]');
+      const stripe = '[--n-row:color-mix(in_oklab,var(--neba-fg)_4%,transparent)]';
+
+      expect(rows[0]).not.toHaveClass(stripe);
+      expect(rows[1]).toHaveClass(stripe);
+    });
+
+    // The panel hover token is 82% white, so its stripe vanished on a white page.
+    it('mixes the stripe from the ink rather than from the white panel', async () => {
+      const screen = await render(<Table headers={HEADERS} items={ITEMS} striped />);
+      const striped = screen.container.querySelectorAll('tbody tr')[1] as HTMLElement;
+
+      expect(striped.className).not.toContain('--n-panel-hover');
+      expect(striped.className).toContain('var(--neba-fg)');
     });
 
     it('pins the header only when asked', async () => {

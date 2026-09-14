@@ -420,6 +420,8 @@
 
 - **The `Gallery` viewer's arrow keys follow RTL.** Its Previous and Next buttons already swapped sides on a right-to-left page, but ArrowRight still went to the next picture, so the key pointing at the Next button went back. ArrowLeft is now the next picture under RTL.
 
+- **A striped `Table` shows its stripes on a white page.** Every other row took the panel hover token, which is 82% white, so on a white page the stripes were not there at all. They now take the 4% mix of the ink that a striped `DataTable` already uses, which shows on any surface and in both themes.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
