@@ -615,6 +615,32 @@ describe('WindowPane', () => {
       await expect.poll(() => root.style.width).toBe(`${before + 16}px`);
     });
 
+    // The bounding box is the size on screen, so inside a scaled ancestor one
+    // key press wrote back a fraction of the width.
+    it('resizes in its own pixels inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ transform: 'scale(0.5)', transformOrigin: '0 0' }}>
+          <WindowPane title="Finder" resizable width={320} height={200} data-testid="window">
+            <p>Body</p>
+          </WindowPane>
+        </div>
+      );
+
+      const corner = screen.getByRole('button', { name: 'Resize window' });
+
+      await expect.element(corner).toBeInTheDocument();
+
+      const root = screen.getByTestId('window').element() as HTMLElement;
+      const before = root.offsetWidth;
+
+      corner.element().focus();
+      await expect.poll(() => document.activeElement).toBe(corner.element());
+
+      await userEvent.keyboard('{ArrowRight}');
+
+      await expect.poll(() => root.style.width).toBe(`${before + 16}px`);
+    });
+
     it('reports the size a drag settled on', async () => {
       const onResize = vi.fn();
       const screen = await render(

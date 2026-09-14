@@ -464,6 +464,15 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       const target = event.currentTarget;
       const fromX = event.clientX;
       const fromY = event.clientY;
+      // The pointer moves in screen pixels and the window is laid out in its own.
+      // Inside a scaled ancestor — a Mockup at 0.3 — the two differ, and a drag
+      // taken one to one moved the window a third as far as the hand did.
+      const root = rootRef.current;
+      const bounds = root?.getBoundingClientRect();
+      const scaleX =
+        root && bounds && root.offsetWidth > 0 ? bounds.width / root.offsetWidth || 1 : 1;
+      const scaleY =
+        root && bounds && root.offsetHeight > 0 ? bounds.height / root.offsetHeight || 1 : 1;
 
       // The window eases into a new size when a button put it there and follows
       // the pointer exactly when a hand is doing it. A transition on `width` while
@@ -481,7 +490,8 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       const stop = beginPointerDrag({
         target,
         pointerId: event.pointerId,
-        onMove: (moveEvent) => onMove(moveEvent.clientX - fromX, moveEvent.clientY - fromY),
+        onMove: (moveEvent) =>
+          onMove((moveEvent.clientX - fromX) / scaleX, (moveEvent.clientY - fromY) / scaleY),
         onEnd: finish
       });
 
@@ -512,8 +522,10 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       const root = rootRef.current;
       if (!root || maximized) return;
 
-      const rect = root.getBoundingClientRect();
-      const from = { width: rect.width, height: rect.height, x: offset.x, y: offset.y };
+      // Layout pixels, which a transform above the window does not change. The
+      // bounding box is the size on screen, and written back as a width it shrank
+      // a window inside a scaled Mockup to a fraction of itself.
+      const from = { width: root.offsetWidth, height: root.offsetHeight, x: offset.x, y: offset.y };
 
       const east = edge.includes('e');
       const west = edge.includes('w');
@@ -549,10 +561,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       const root = rootRef.current;
       if (!root) return;
 
-      const rect = root.getBoundingClientRect();
       resizeTo({
-        width: Math.max(floor.width, rect.width + dx),
-        height: Math.max(floor.height, rect.height + dy)
+        width: Math.max(floor.width, root.offsetWidth + dx),
+        height: Math.max(floor.height, root.offsetHeight + dy)
       });
     }
 
@@ -590,7 +601,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       const auto = (sized?.height ?? height) === undefined;
 
       if (next && auto && root) {
-        setPinned(root.getBoundingClientRect().height);
+        setPinned(root.offsetHeight);
         requestAnimationFrame(() => setMinimized(true));
         return;
       }

@@ -536,6 +536,8 @@
 
 - **A `Pill` that starts `expanded` is open from the first frame.** Its details were drawn at a height of 0 and animated open after mount, which pushed the content below down. The height is now `auto` until it is measured, and it is measured before paint.
 
+- **`WindowPane` moves and resizes in its own pixels inside a scaled ancestor.** Sizes were read from `getBoundingClientRect()`, which includes transforms, so inside a Mockup at scale 0.3 one key press shrank the window to 180px and a drag followed only 30% of the pointer.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
