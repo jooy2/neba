@@ -199,12 +199,20 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         return;
       }
 
-      // The second. Clicking backwards is not a mistake to be rejected, it is
-      // the same range typed in the other order.
-      const [from, to] = compareDay(day, anchor) < 0 ? [day, anchor] : [anchor, day];
+      // The second, when it lands before the first: a new start rather than the
+      // other end of a range, which is what a Calendar does with the same
+      // press. Sorting the two turned a reader's fresh start into an end they
+      // had not meant to choose.
+      if (compareDay(day, anchor) < 0) {
+        setAnchor(day);
+        setPreview(day);
+        commit({ start: day, end: null });
+        return;
+      }
+
       setAnchor(null);
       setPreview(null);
-      commit({ start: from, end: to });
+      commit({ start: anchor, end: day });
 
       if (closeOnSelect) {
         setOpen(false);

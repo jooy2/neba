@@ -32,7 +32,7 @@ interface DateRange {
 
 `onValueChange` is always called with an object, so a cleared range is `{ start: null, end: null }` and there is never a second kind of empty to test for.
 
-The half state between the first and second click is reported as `{ start, end: null }`, and closing the popup without a second click throws it away. A second click that lands before the first is not an error: it is the same range in the other order, so the ends are sorted.
+The half state between the first and second click is reported as `{ start, end: null }`, and closing the popup without a second click throws it away. A second click that lands before the first starts a new range there, as a [Calendar](./calendar) in `range` mode does.
 
 The remaining props (`minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size`) behave as they do on [DatePicker](./date-picker).
 

@@ -95,7 +95,9 @@ describe('DateRangePicker', () => {
       await expect.poll(() => screen.getByRole('grid').query()).toBeNull();
     });
 
-    it('accepts the two ends in either order', async () => {
+    // The picker sorted a backwards second press into the start of the range,
+    // while a Calendar took the same press as a new start.
+    it('starts a new range at a day before the start', async () => {
       const onValueChange = vi.fn();
       const screen = await render(
         <DateRangePicker
@@ -110,11 +112,14 @@ describe('DateRangePicker', () => {
       await screen.getByRole('gridcell', { name: 'Thursday, July 9, 2026' }).click();
       await screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }).click();
 
-      // Clicking backwards is not a mistake to be rejected — it is the same
-      // range typed in the other order.
-      expect(onValueChange.mock.calls[1][0]).toEqual({
+      expect(onValueChange).toHaveBeenLastCalledWith({ start: new Date(2026, 6, 3), end: null });
+      await expect.element(screen.getByRole('grid').first()).toBeInTheDocument();
+
+      await screen.getByRole('gridcell', { name: 'Tuesday, July 7, 2026' }).click();
+
+      expect(onValueChange).toHaveBeenLastCalledWith({
         start: new Date(2026, 6, 3),
-        end: new Date(2026, 6, 9)
+        end: new Date(2026, 6, 7)
       });
     });
 

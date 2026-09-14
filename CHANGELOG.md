@@ -154,6 +154,8 @@
 
 - **A `BottomNavigation` with `labels="selected"` keeps its glyphs still as the selection moves.** An unselected name was clipped to a pixel and took no line, so an item was a line shorter while it was not selected, and each glyph moved down as the selection left its item and up as it came back. Every item now keeps the line its name takes, with the name drawn only on the current one and still read out on the rest. A `labels="none"` bar is unchanged.
 
+- **A `DateRangePicker` starts a new range at a day before the start, as a `Calendar` does.** With a start chosen, pressing an earlier day sorted the two and made the first press the end of the range, while a `Calendar` in `range` mode took the same press as a new start. The picker now starts over at the earlier day and waits for the end, so the one gesture means the same thing in both.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

@@ -32,7 +32,7 @@ interface DateRange {
 
 `onValueChange`는 항상 객체로 호출됩니다. 비워진 범위는 `{ start: null, end: null }`이므로 두 종류의 "비어 있음"을 검사할 필요가 없습니다.
 
-첫 클릭과 두 번째 클릭 사이의 절반 상태는 `{ start, end: null }`로 보고되고, 두 번째 클릭 없이 팝업을 닫으면 버려집니다. 두 번째 클릭이 첫 번째보다 앞선 날짜여도 오류가 아니라 순서를 바꿔 말한 같은 범위로 보고 정렬합니다.
+첫 클릭과 두 번째 클릭 사이의 절반 상태는 `{ start, end: null }`로 보고되고, 두 번째 클릭 없이 팝업을 닫으면 버려집니다. 두 번째 클릭이 첫 번째보다 앞선 날짜라면 `range` 모드의 [Calendar](./calendar)처럼 그 날짜에서 새 범위를 시작합니다.
 
 나머지 prop(`minDate` · `maxDate` · `shouldDisableDate` · `variant` · `size`)은 [DatePicker](./date-picker)와 동일하게 동작합니다.
 

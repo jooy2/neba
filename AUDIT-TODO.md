@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F18 (155)** Pressing a date before the start of a range: (a) Calendar and DateRangePicker both start a new range there; (b) both swap the ends.
 - **F19 (156)** DateRangePicker closed after one click: (a) drop the half range and keep the previous one, as the docs say; (b) keep the half range and fix the docs.
 - **F20 (158)** A value outside `minDate`, `maxDate` or `minTime`: (a) clamp it on commit with `clampDate`, which also settles D15; (b) commit it and mark the field `invalid`.
 - **F21 (160)** Pickers in a form: (a) submit nothing while `disabled`, and let `required` block an empty submit through the form's own validation; (b) fix `disabled` only and document `required`.
@@ -304,7 +303,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 ### Date and time pickers
 
 - [x] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`. See F17. Decided: (a) `elevation` is read through `[box-shadow:var(--n-elev)…]` and `bordered` uses the popup's surface, glass plate and `popupPaddingClasses`.
-- [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`. See F18.
+- [x] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`. See F18. Decided: (a) both start a new range at a day before the start.
 - [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`. See F19.
 - [x] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3. Decided: approved; the default `referenceDate` is `startOfDay(new Date())`.
 - [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`. See F20.
