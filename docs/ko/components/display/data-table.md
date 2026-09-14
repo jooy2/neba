@@ -209,7 +209,7 @@ const rowKey = (row: Build) => row.id;
 
 ### 서버에서 오는 행
 
-`manual`은 caller가 이미 끝낸 단계를 지목합니다. `'sort'`, `'filter'`, `'pages'`, 또는 셋 다를 뜻하는 `true`입니다. 표는 `items`를 도착한 그대로 그리고, 요청받은 것만 보고합니다. 목록에 `'pages'`가 있으면 `items`는 한 페이지이고 `rowCount`가 전체 행 수입니다.
+`manual`은 caller가 이미 끝낸 단계를 지목합니다. `'sort'`, `'filter'`, `'pages'`, 또는 셋 다를 뜻하는 `true`입니다. 표는 `items`를 도착한 그대로 그리고, 요청받은 것만 보고합니다. 목록에 `'pages'`가 있으면 `items`는 한 페이지이고 `rowCount`가 전체 행 수입니다. 한 페이지에서 고른 행은 다른 페이지에서 고르는 동안에도 선택된 채로 남습니다. `onSelectedChange`는 그 key를 넘기지만, 표가 지금 들고 있지 않은 페이지의 key에는 행을 넘기지 않습니다.
 
 <Demo src="data-table/manual" minHeight="420">
 

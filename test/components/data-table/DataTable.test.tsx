@@ -617,6 +617,38 @@ describe('DataTable', () => {
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(1);
     });
 
+    // A caller-paged table only holds its page, and every additive selection was
+    // rebuilt from those rows, so choosing a row on page 2 dropped page 1.
+    it('keeps the rows chosen on other pages when the caller does the paging', async () => {
+      const onSelectedChange = vi.fn();
+      const second = manyItems(3);
+      const page = (rows: Person[], at: number) => (
+        <DataTable
+          headers={HEADERS}
+          items={rows}
+          getRowKey={key}
+          selectionMode="multiple"
+          paging="pages"
+          manual={['pages']}
+          rowCount={6}
+          defaultPageSize={3}
+          page={at}
+          onSelectedChange={onSelectedChange}
+        />
+      );
+      const screen = await render(page(ITEMS, 1));
+
+      await screen.getByText('Seoul').click();
+      expect(onSelectedChange).toHaveBeenLastCalledWith(['a'], [ITEMS[0]]);
+
+      await screen.rerender(page(second, 2));
+      await userEvent.keyboard('{Control>}');
+      await screen.getByText('City 1').click();
+      await userEvent.keyboard('{/Control}');
+
+      expect(onSelectedChange).toHaveBeenLastCalledWith(['a', '1'], [second[1]]);
+    });
+
     it('adds a row with the meta key and takes a run with shift', async () => {
       const onSelectedChange = vi.fn();
       const screen = await render(

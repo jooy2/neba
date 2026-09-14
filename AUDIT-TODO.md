@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F22 (165)** DataTable `manual={['pages']}` selection: (a) keep the keys chosen on other pages when a range or the header tick is used; (b) document that a manual table selects one page at a time.
 - **F23 (168)** DataTable rows with no group: (a) head them with a word from i18n, "No group", in all 18 locales; (b) show the count with no title; (c) draw no heading row for them.
 - **F24 (169)** DataTable `Date` cell without `render`: (a) write it as a date in the table's locale; (b) document that a `Date` needs `render`.
 - **F25 (171)** Table `stickyHeader` in a height-limited box: (a) a `maxHeight` prop that makes the Table's own sheet scroll; (b) change the docs to what works now.
@@ -313,7 +312,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **162** DataTable row checkboxes pressed with a mouse did not add to the selection.
 - [x] **163** **DataTable**: after scrolling to the bottom of 5,000 rows, a search that leaves 10 rows shows an empty body, because `virtualWindow` does not clamp `first` to the row count. `src/internal/data-table.ts:281-290`, `DataTable.tsx:1090-1099`
 - [x] **164** [major] DataTable put empty values first in descending order. Decided: always last (breaking).
-- [ ] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`. See F22.
+- [x] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`. See F22. Decided: (a) under manual paging `commitSelection` keeps the identity of an already-chosen key whose row is not on the page.
 - [x] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`
 - [x] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (confirmed with a real mouse in Chromium, Firefox and WebKit). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
 - [ ] **168** **DataTable**, small defects:

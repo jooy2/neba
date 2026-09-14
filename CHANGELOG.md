@@ -472,6 +472,8 @@
 
 - **A picker in a form submits nothing while disabled, and `required` holds back an empty one.** The value of a `DatePicker`, `DateRangePicker`, `TimePicker`, `DateTimePicker`, `TreeSelect` or `ColorPicker` goes out through hidden inputs, which were submitted even while the picker was `disabled`, and which a browser never validates, so `required` only reached the trigger's ARIA and an empty picker let the form submit. The hidden inputs are now disabled with the picker, and a required picker that is empty blocks the submit through the form's own validation and hands the focus to its trigger. A read-only picker is not held back, as a read-only input is not.
 
+- **A `DataTable` paged by its caller keeps the rows chosen on other pages.** With `manual={['pages']}` the table only holds the page it was given, and every Ctrl-click, range or press of the header tick rebuilt the selection from those rows, so choosing a row on page 2 dropped everything chosen on page 1. A key already chosen is now kept when its row is not on the page. `onSelectedChange` still hands over the row behind each key the table was given; a key chosen on another page of a manual table comes without one.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -6125,8 +6125,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onSelectedChange',
       type: '(keys: Key[], rows: Row[]) => void',
       description: {
-        ko: 'key와 그 뒤의 행. 다른 페이지의 행도 포함합니다',
-        en: 'The keys, and the rows behind them: including rows on other pages'
+        ko: 'key와 그 뒤의 행. 다른 페이지의 행도 포함합니다. caller가 페이지를 나누는 표는 다른 페이지에서 고른 key를 행 없이 유지합니다',
+        en: 'The keys, and the rows behind them: including rows on other pages. A table the caller pages keeps keys chosen on other pages, without their rows'
       }
     },
     {

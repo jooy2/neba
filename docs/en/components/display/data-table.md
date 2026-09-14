@@ -209,7 +209,7 @@ The file leads with a byte-order mark, and that is not decoration: Excel reads a
 
 ### Rows from a server
 
-`manual` names the stages the caller has already done: `'sort'`, `'filter'`, `'pages'`, or `true` for all three. The table then draws `items` as they arrive and only reports what was asked for. With `'pages'` in the list, `items` is one page and `rowCount` is how many rows there are altogether.
+`manual` names the stages the caller has already done: `'sort'`, `'filter'`, `'pages'`, or `true` for all three. The table then draws `items` as they arrive and only reports what was asked for. With `'pages'` in the list, `items` is one page and `rowCount` is how many rows there are altogether. Rows chosen on one page stay chosen while the reader chooses on another; `onSelectedChange` hands over their keys, and no row for a key whose page the table is not holding.
 
 <Demo src="data-table/manual" minHeight="420">
 

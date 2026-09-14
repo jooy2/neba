@@ -344,7 +344,11 @@ export interface DataTableProps<Row>
   selected?: readonly React.Key[];
   /** Which start chosen, for an uncontrolled table. */
   defaultSelected?: readonly React.Key[];
-  /** The keys, and the rows behind them — including rows on other pages. */
+  /**
+   * The keys, and the rows behind them — including rows on other pages. A table
+   * whose caller does the paging keeps a key chosen on another page, and hands
+   * over no row for it, because it was never given one.
+   */
   onSelectedChange?: (selected: React.Key[], rows: Row[]) => void;
   /**
    * Adds a column of ticks, and one in the header that chooses every displayed
@@ -1012,11 +1016,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * the current rows, and none of them can be re-bound on every render without
    * tearing a drag in half. They read this instead.
    */
-  const latest = React.useRef({ paged, pagedKeys, byKey, selectedKeys, multiple });
+  const latest = React.useRef({ paged, pagedKeys, byKey, selectedKeys, selectedValues, multiple });
   // Read by handlers and by window listeners, never during a render — and
   // re-binding those per render is what a drag cannot survive.
   // eslint-disable-next-line react-hooks/refs
-  latest.current = { paged, pagedKeys, byKey, selectedKeys, multiple };
+  latest.current = { paged, pagedKeys, byKey, selectedKeys, selectedValues, multiple };
 
   /**
    * Turns a set of string keys back into what the caller handed over.
@@ -1030,6 +1034,13 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     (keys: readonly string[]) => {
       const chosen: React.Key[] = [];
       const rows: Row[] = [];
+      // A table the caller pages only holds the page it was given, so a key
+      // chosen on another page has no row here. It is kept as the identity it
+      // already had rather than dropped: every Ctrl-click, range and header tick
+      // on page 2 used to throw away what was chosen on page 1.
+      const held = stages.has('pages')
+        ? new Map(latest.current.selectedValues.map((value) => [String(value), value]))
+        : null;
 
       for (const key of keys) {
         const entry = latest.current.byKey.get(key);
@@ -1037,6 +1048,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         if (entry) {
           chosen.push(entry.identity);
           rows.push(entry.row);
+        } else if (held?.has(key)) {
+          chosen.push(held.get(key) as React.Key);
         }
       }
 
@@ -1046,7 +1059,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
       onSelectedChange?.(chosen, rows);
     },
-    [selected, onSelectedChange]
+    [selected, onSelectedChange, stages]
   );
 
   /** Replaces the selection with one row, which is what a plain click does. */
