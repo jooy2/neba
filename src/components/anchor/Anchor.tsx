@@ -164,6 +164,20 @@ function activeAt(
     if (target.getBoundingClientRect().top <= line) current = item.href;
   }
 
+  const range = container
+    ? container.scrollHeight - container.clientHeight
+    : document.documentElement.scrollHeight - window.innerHeight;
+
+  // Nothing to scroll: the reader is at the top and at the bottom at once, and
+  // the bottom used to win, marking the last heading on a page that had just
+  // opened at the first. It starts on the first heading instead, once that
+  // heading is in the document.
+  if (range <= 2) {
+    const first = items[0];
+
+    return first && headingFor(first.href, headings) ? first.href : current;
+  }
+
   const atEnd = container
     ? container.scrollTop + container.clientHeight >= container.scrollHeight - 2
     : window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
@@ -233,9 +247,10 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
 
   const keys = items.map((item) => item.href).join('\u0000');
 
+  // Runs whether or not the row is controlled: `onActiveChange` is how a
+  // controlled caller hears which heading the reader reached, and returning
+  // early here left it with nothing to set `activeHref` from.
   React.useEffect(() => {
-    if (controlled) return undefined;
-
     const scroller: HTMLElement | Window = container?.current ?? window;
     const headings = new Map<string, HTMLElement>();
     let frame = 0;
@@ -266,7 +281,7 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
       scroller.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
     };
-  }, [keys, offset, container, controlled]);
+  }, [keys, offset, container]);
 
   return (
     <nav

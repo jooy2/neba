@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F26 (174)** Anchor `activeHref`: (a) keep tracking in controlled mode and call `onActiveChange`, and start on the first heading when nothing scrolls; (b) document that `activeHref` turns tracking off.
 - **F27 (175)** Badge without `content`: (a) draw the dot the docs describe, and rewrite the tests that pass on an invisible one; (b) document that no content draws nothing.
 - **F28 (176)** Breadcrumb: (a) reset `unfolded` when `items` change, and give BreadcrumbItem `render` and `target`; (b) add `render` and `target` only.
 - **F29 (179)** Highlight and accents: (a) fold accents as `internal/search.ts` does, with a map back to positions in the original text; (b) document the difference.
@@ -325,7 +324,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`. See F25. Decided: (a) a `maxHeight` prop on the sheet, which is the Table's own scroll container.
 - [x] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`. See E5. Decided: approved; a stacked list spaces and rules above each label after the first.
 - [x] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`. See E6. Decided: approved; on the rail a nested row's indent is `padding-inline-start`.
-- [ ] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`. See F26.
+- [x] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`. See F26. Decided: (a) tracking runs while controlled and calls `onActiveChange`, and a page with no scroll range starts on the first heading.
 - [ ] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`. See F27.
 - [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28.
 - [x] **177** Highlight remounted its children when a query started or cleared.

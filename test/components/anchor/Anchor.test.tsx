@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Anchor } from 'neba';
@@ -110,6 +111,51 @@ describe('Anchor', () => {
       await expect
         .element(screen.getByRole('link', { name: 'Install' }))
         .not.toHaveAttribute('aria-current');
+    });
+
+    // Passing `activeHref` turned the tracking off, so `onActiveChange` never
+    // told a controlled caller where the reader had got to.
+    it('keeps reporting the row the reader is in while it is controlled', async () => {
+      const onActiveChange = vi.fn();
+      const screen = await render(
+        <Page items={ITEMS} activeHref="#usage" onActiveChange={onActiveChange} />
+      );
+
+      window.scrollTo(0, 200);
+
+      await expect.poll(() => onActiveChange.mock.calls.at(-1)?.[0]).toBe('#install');
+      await expect
+        .element(screen.getByRole('link', { name: 'Usage' }))
+        .toHaveAttribute('aria-current', 'location');
+
+      window.scrollTo(0, 0);
+    });
+
+    // On a page with nothing to scroll the "at the bottom" rule held from the
+    // first frame, so the last heading was marked on a page opened at the first.
+    it('starts on the first heading when nothing scrolls', async () => {
+      // Its own scroller, with room to spare, so the test does not depend on how
+      // tall the page running it happens to be.
+      const box = createRef<HTMLDivElement>();
+      const screen = await render(
+        <div>
+          <Anchor items={ITEMS} container={box} />
+          <div ref={box} style={{ height: 400, overflowY: 'auto' }}>
+            {ITEMS.map((item) => (
+              <section key={item.href} id={item.href.slice(1)} style={{ height: 20 }}>
+                <h2>{item.label}</h2>
+              </section>
+            ))}
+          </div>
+        </div>
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Install' }))
+        .toHaveAttribute('aria-current', 'location');
+      expect(screen.getByRole('link', { name: 'Usage' }).element()).not.toHaveAttribute(
+        'aria-current'
+      );
     });
 
     it('follows a controlled value as it changes', async () => {

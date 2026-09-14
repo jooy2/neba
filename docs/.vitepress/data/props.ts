@@ -3854,8 +3854,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'activeHref',
       type: 'string | null',
       description: {
-        ko: '표시할 행의 href. 주면 스크롤 추적을 멈추고 지시받은 대로 표시합니다',
-        en: 'Which row is marked, by its href. Given, the list stops tracking the scroll and says what it is told'
+        ko: '표시할 행의 href. 주면 이 값대로 표시하고, 스크롤 추적은 계속되어 onActiveChange가 독자가 있는 행을 알려 줍니다',
+        en: 'Which row is marked, by its href. Given, the list marks it, and keeps tracking the scroll so onActiveChange still reports where the reader is'
       }
     },
     {

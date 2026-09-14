@@ -36,7 +36,7 @@ The headings are given rather than scraped out of the document. Anything that pr
 
 ### activeHref and onActiveChange
 
-Left alone, the list tracks the scroll: the marked row is the last heading whose top has passed the line, which reads correctly going up as well as down, and the last heading is marked once the scroll reaches the bottom. Pass `activeHref` and it stops tracking and says what it is told.
+Left alone, the list tracks the scroll: the marked row is the last heading whose top has passed the line, which reads correctly going up as well as down, and the last heading is marked once the scroll reaches the bottom. A page with nothing to scroll starts on the first heading. Pass `activeHref` to decide which row is marked yourself: the tracking keeps running, so `onActiveChange` still reports the heading the reader is in, which is what `activeHref` is usually set from.
 
 Nothing is marked while the reader is still above the first heading.
 

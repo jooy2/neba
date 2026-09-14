@@ -162,6 +162,8 @@
 
 - **A `DateTimePicker` or `TimePicker` holds a chosen value to its bounds.** A row stays pressable when its span only overlaps the bounds, so pressing it could commit a value outside them: with a `minTime` of 09:30 and a value of 10:15, the hour `9` gave 09:15, and choosing the day a `minDate` falls on, with no time yet, gave midnight. A value outside the bounds is now moved to the nearest bound before it is committed, so those presses give 09:30.
 
+- **A controlled `Anchor` still reports the heading the reader is in, and a page with nothing to scroll starts on its first heading.** Passing `activeHref` switched the scroll tracking off, so `onActiveChange`, which the docs pair with it, never fired and a controlled caller had nothing to set `activeHref` from. On a page too short to scroll, the rule that marks the last heading at the bottom of the page already held on the first frame, so the last heading was marked on a page that had just opened at the first. Tracking now runs in both modes, and when nothing scrolls the first heading is marked once it is in the document.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
