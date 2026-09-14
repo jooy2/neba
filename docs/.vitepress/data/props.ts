@@ -5909,6 +5909,15 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Takes the CSV instead of downloading it'
       }
     },
+    {
+      name: 'exportEscapeFormulas',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: "=, +, -, @, 탭, 캐리지 리턴으로 시작하는 텍스트 셀 앞에 '를 붙여 스프레드시트가 수식으로 실행하지 않게 합니다",
+        en: "Puts a ' in front of a text cell that starts with =, +, -, @, a tab or a carriage return, so a spreadsheet does not run it as a formula"
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'sm'",

@@ -134,6 +134,8 @@
 
 - **A `MenuSubmenu` opens towards the row's inline end.** Its `side` defaulted to `'right'` and its chevron was always turned to point right, so under RTL the submenu opened over the menu it came from and the chevron pointed away from it. Left out, `side` is now the inline end, to the left under RTL, and the chevron follows the same direction Base UI places the popup by. A `side` passed explicitly is unchanged.
 
+- **A `DataTable` export writes a text cell a spreadsheet would run with a `'` in front.** A cell starting with `=`, `+`, `-`, `@`, a tab or a carriage return went into the CSV as it was, so a name a user had typed as `=HYPERLINK(...)` ran as a formula in whatever spreadsheet opened the file. Such text is now written as `'=HYPERLINK(...)`, which a spreadsheet shows as text. Numbers are untouched. `exportEscapeFormulas={false}` writes the cells as they are, for a file no spreadsheet opens.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

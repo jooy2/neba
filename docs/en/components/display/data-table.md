@@ -193,7 +193,7 @@ Grouping turns **virtual scrolling off**. The window arithmetic counts every chi
 
 `exportValue` on a column is what the file gets, separate from `render` on purpose: a cell that draws a Chip, an Avatar or a progress bar has no text to put in a file. `exportable: false` on a column leaves it out.
 
-The file leads with a byte-order mark, and that is not decoration: Excel reads a UTF-8 CSV without one as the local code page, so every non-ASCII name in it arrives as mojibake.
+The file leads with a byte-order mark, and that is not decoration: Excel reads a UTF-8 CSV without one as the local code page, so every non-ASCII name in it arrives as mojibake. A text cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return is written with a `'` in front, so a spreadsheet shows it rather than running it as a formula; `exportEscapeFormulas={false}` writes it as it is.
 
 `onExport` takes the CSV instead of downloading it.
 

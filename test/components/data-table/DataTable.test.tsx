@@ -1802,6 +1802,24 @@ describe('export', () => {
     expect(csv).toContain('"Ada, the first"');
   });
 
+  // A name typed as a formula ran in whatever spreadsheet opened the export.
+  it('writes a cell a spreadsheet would run as text', async () => {
+    const csv = await csvFor({
+      items: [{ id: 'a', name: '=HYPERLINK("x")', city: 'Seoul', score: -1 }]
+    });
+
+    expect(csv).toContain(`"'=HYPERLINK(""x"")",Seoul,-1`);
+  });
+
+  it('writes it as it is when told not to', async () => {
+    const csv = await csvFor({
+      items: [{ id: 'a', name: '=HYPERLINK("x")', city: 'Seoul', score: -1 }],
+      exportEscapeFormulas: false
+    });
+
+    expect(csv).toContain('"=HYPERLINK(""x"")",Seoul,-1');
+  });
+
   it('takes the text a column says rather than what it draws', async () => {
     // A cell that draws a Chip has no text to put in a file.
     const csv = await csvFor({

@@ -31,6 +31,26 @@ describe('csvField', () => {
     expect(csvField('')).toBe('');
   });
 
+  // A cell a user typed as `=HYPERLINK(...)` ran as a formula in whatever
+  // spreadsheet opened the export.
+  it('puts a quote mark in front of a text cell a spreadsheet would run', () => {
+    for (const text of ['=1+1', '+1', '-2', '@SUM(A1)', '\tx', '\rx']) {
+      expect(csvField(text).replace(/^"/, '')).toMatch(/^'/);
+    }
+
+    expect(csvField('=HYPERLINK("x")')).toBe('"\'=HYPERLINK(""x"")"');
+    expect(csvField('Ada')).toBe('Ada');
+  });
+
+  it('leaves a number alone, however it starts', () => {
+    expect(csvField(-5)).toBe('-5');
+  });
+
+  it('writes a formula as it is when asked to', () => {
+    expect(csvField('=1+1', ',', false)).toBe('=1+1');
+    expect(toCsv([['=1+1']], { bom: false, escapeFormulas: false })).toBe('=1+1');
+  });
+
   it('writes a date as an instant rather than as a locale', () => {
     expect(csvField(new Date(Date.UTC(2026, 6, 27)))).toBe('2026-07-27T00:00:00.000Z');
   });

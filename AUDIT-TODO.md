@@ -57,7 +57,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### D. Choices (decided: (a))
 
-- **D13 (103)** CSV formula injection: (a) prefix `'` by default, with an option to turn it off; (b) an option only, off by default.
 - **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
 - **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
 
@@ -245,7 +244,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **100** TextLink with a hand-written `target="_blank"` lost its `rel` protection. Decided: the new-tab sentence is added, the icon stays with `newTab`.
 - [x] **101** NavigationMenuLink did not go through `safeRel`.
 - [x] **102** [decision] **ChatBubble and other `href` components**: `preview.url` goes into `href` unchecked. Previews usually come from messages other users sent, and React 18, inside the peer range, renders `javascript:` URLs as they are (19 blocks them). Decide whether `internal/link.ts` gets a scheme allow list and whether the other `href` components follow the same policy. `ChatBubble.tsx:446-449`. See D12. Decided: (a) `safeHref` in `internal/link.ts` allows http, https, mailto, tel and addresses with no scheme, applied in all twelve components that write an `href`.
-- [ ] **103** [decision] **DataTable CSV export**: strings starting with `=`, `+`, `-`, `@`, a tab or a CR are written as they are, so Excel runs formulas such as `=HYPERLINK(...)`. Options are a `'` prefix on string cells or an option. `src/internal/csv.ts:18-33`. See D13.
+- [x] **103** [decision] **DataTable CSV export**: strings starting with `=`, `+`, `-`, `@`, a tab or a CR are written as they are, so Excel runs formulas such as `=HYPERLINK(...)`. Options are a `'` prefix on string cells or an option. `src/internal/csv.ts:18-33`. See D13. Decided: (a) `escapeFormulas` on `toCsv`, on by default, and `exportEscapeFormulas` on DataTable.
 - [x] **104** Tour threw on an unparsable selector and unmounted the app.
 - [x] **105** CodeBlock `highlightLines` with a huge range hung and threw.
 - [x] **106** `threshold` outside 0–1 made `IntersectionObserver` throw.

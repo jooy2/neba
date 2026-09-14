@@ -421,6 +421,13 @@ export interface DataTableProps<Row>
    */
   onExport?: (csv: string) => void;
   /**
+   * Puts a `'` in front of an exported text cell that starts with `=`, `+`, `-`,
+   * `@`, a tab or a carriage return, so a spreadsheet shows it rather than
+   * running it as a formula. Turn it off only for a file no spreadsheet opens.
+   * @default true
+   */
+  exportEscapeFormulas?: boolean;
+  /**
    * Called when an edited cell is committed. Without it, nothing is editable.
    *
    * The table holds no copy of the rows: it hands the new value over and draws
@@ -672,6 +679,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     exportable = false,
     exportFileName = 'table.csv',
     onExport,
+    exportEscapeFormulas = true,
     onCellEdit,
     groupBy,
     collapsibleGroups = true,
@@ -945,7 +953,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       )
     );
 
-    const csv = toCsv([header, ...body]);
+    const csv = toCsv([header, ...body], { escapeFormulas: exportEscapeFormulas });
 
     if (onExport) {
       onExport(csv);

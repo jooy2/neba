@@ -14,18 +14,26 @@
  * quote inside a quoted field is written twice. `null` and `undefined` are
  * empty rather than the words "null" and "undefined", which is what `String()`
  * would put in a spreadsheet cell.
+ *
+ * A string that starts with `=`, `+`, `-`, `@`, a tab or a carriage return gets a
+ * `'` in front unless `escapeFormulas` is off. Excel, Numbers and Sheets read
+ * such a cell as a formula, so a name a user typed as `=HYPERLINK(...)` would
+ * otherwise run on the machine of whoever opened the export. Only strings are
+ * touched: a negative number is a number and stays one.
  */
-export function csvField(value: unknown, separator = ','): string {
+export function csvField(value: unknown, separator = ',', escapeFormulas = true): string {
   if (value === null || value === undefined) {
     return '';
   }
 
-  const text =
+  const raw =
     value instanceof Date
       ? value.toISOString()
       : typeof value === 'object'
         ? JSON.stringify(value)
         : String(value);
+  const text =
+    escapeFormulas && typeof value === 'string' && /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
 
   return /["\r\n]/.test(text) || text.includes(separator)
     ? `"${text.replaceAll('"', '""')}"`
@@ -43,16 +51,21 @@ export interface CsvOptions {
    * mojibake. Every other reader ignores the mark.
    */
   bom?: boolean;
+  /**
+   * Puts a `'` in front of a text cell a spreadsheet would read as a formula.
+   * On by default; turn it off only for a file that is not opened in one.
+   */
+  escapeFormulas?: boolean;
 }
 
 /** Rows of already-stringable values, as one CSV document. */
 export function toCsv(rows: readonly (readonly unknown[])[], options: CsvOptions = {}): string {
-  const { separator = ',', bom = true } = options;
+  const { separator = ',', bom = true, escapeFormulas = true } = options;
 
   // CRLF, which is what RFC 4180 says and what the spreadsheets that care
   // about the BOM also expect.
   const body = rows
-    .map((row) => row.map((field) => csvField(field, separator)).join(separator))
+    .map((row) => row.map((field) => csvField(field, separator, escapeFormulas)).join(separator))
     .join('\r\n');
 
   // Written as an escape rather than as the character: a lone zero-width

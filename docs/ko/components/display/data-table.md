@@ -193,7 +193,7 @@ const rowKey = (row: Build) => row.id;
 
 열의 `exportValue`가 파일에 들어가는 값이고, `render`와 별개인 것은 의도입니다. Chip이나 Avatar나 진행 막대를 그리는 셀에는 파일에 넣을 글자가 없습니다. 열의 `exportable: false`는 그 열을 빼냅니다.
 
-파일은 byte-order mark로 시작하며, 이것은 장식이 아닙니다. Excel은 BOM 없는 UTF-8 CSV를 로컬 코드 페이지로 읽어서 ASCII가 아닌 이름이 전부 깨져 도착합니다.
+파일은 byte-order mark로 시작하며, 이것은 장식이 아닙니다. Excel은 BOM 없는 UTF-8 CSV를 로컬 코드 페이지로 읽어서 ASCII가 아닌 이름이 전부 깨져 도착합니다. `=`, `+`, `-`, `@`, 탭, 캐리지 리턴으로 시작하는 텍스트 셀은 앞에 `'`를 붙여 쓰므로, 스프레드시트가 수식으로 실행하지 않고 글자로 보여 줍니다. `exportEscapeFormulas={false}`면 그대로 씁니다.
 
 `onExport`는 내려받는 대신 CSV를 받아 갑니다.
 
