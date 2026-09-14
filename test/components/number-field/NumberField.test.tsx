@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
@@ -100,6 +101,24 @@ describe('NumberField', () => {
       const screen = await render(<NumberField label="Seats" className="my-own-class" />);
 
       expect(screen.getByText('Seats').element().closest('.my-own-class')).not.toBeNull();
+    });
+  });
+
+  // With no `forwardRef`, a ref was dropped under React 18 and landed on the
+  // root `<div>` under React 19, so a form library focusing the field with an
+  // error focused nothing that takes input.
+  describe('ref', () => {
+    it('points at the input', async () => {
+      const ref = createRef<HTMLInputElement>();
+      const screen = await render(<NumberField label="Quantity" ref={ref} />);
+      const input = screen.getByRole('textbox', { name: 'Quantity' });
+
+      await expect.element(input).toBeInTheDocument();
+      expect(ref.current).toBe(input.element());
+
+      ref.current?.focus();
+
+      await expect.element(input).toHaveFocus();
     });
   });
 

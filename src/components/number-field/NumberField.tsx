@@ -217,234 +217,239 @@ const stepperClasses = [
  * clamping, the press-and-hold repeat on the steppers, and the hidden input
  * that submits with a form.
  */
-export function NumberField(rawProps: NumberFieldProps) {
-  const {
-    variant = 'outline',
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    elevation = 0,
-    value,
-    defaultValue,
-    onValueChange,
-    onValueCommitted,
-    min,
-    max,
-    step,
-    largeStep,
-    smallStep,
-    snapOnStep,
-    allowWheelScrub = false,
-    format,
-    locale,
-    steppers = 'end',
-    incrementLabel,
-    decrementLabel,
-    label,
-    description,
-    error,
-    invalid,
-    startIcon,
-    endIcon,
-    fullWidth = false,
-    disabled: disabledProp,
-    readOnly = false,
-    required = false,
-    name,
-    placeholder,
-    id,
-    className,
-    classNames,
-    shortcuts,
-    style,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    ...props
-  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
-  const disabled = useFieldsetDisabled(disabledProp);
+export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
+  function NumberField(rawProps, ref) {
+    const {
+      variant = 'outline',
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      elevation = 0,
+      value,
+      defaultValue,
+      onValueChange,
+      onValueCommitted,
+      min,
+      max,
+      step,
+      largeStep,
+      smallStep,
+      snapOnStep,
+      allowWheelScrub = false,
+      format,
+      locale,
+      steppers = 'end',
+      incrementLabel,
+      decrementLabel,
+      label,
+      description,
+      error,
+      invalid,
+      startIcon,
+      endIcon,
+      fullWidth = false,
+      disabled: disabledProp,
+      readOnly = false,
+      required = false,
+      name,
+      placeholder,
+      id,
+      className,
+      classNames,
+      shortcuts,
+      style,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+    const disabled = useFieldsetDisabled(disabledProp);
 
-  // `Intl` takes more shapes than a message tag does; only a plain string names
-  // anything here, and anything else falls back to English.
-  const messages = useMessages(numberMessages, typeof locale === 'string' ? locale : undefined);
-  const hasError = hasContent(error);
-  const isInvalid = invalid ?? hasError;
-  // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
-  // the caret and the message all turn over together.
-  const family: NebaColor = isInvalid ? 'danger' : color;
+    // `Intl` takes more shapes than a message tag does; only a plain string names
+    // anything here, and anything else falls back to English.
+    const messages = useMessages(numberMessages, typeof locale === 'string' ? locale : undefined);
+    const hasError = hasContent(error);
+    const isInvalid = invalid ?? hasError;
+    // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
+    // the caret and the message all turn over together.
+    const family: NebaColor = isInvalid ? 'danger' : color;
 
-  // The steppers bring their own padding; stacking the shell's on top of them
-  // would leave the buttons floating in the middle of a gap. The shell keeps
-  // the padding on whichever side has no button.
-  const padX = paddingXClasses[density][size];
-  const insetClasses: Record<NumberFieldSteppers, string> = {
-    end: `${padX} pe-1`,
-    split: 'px-1',
-    none: padX
-  };
+    // The steppers bring their own padding; stacking the shell's on top of them
+    // would leave the buttons floating in the middle of a gap. The shell keeps
+    // the padding on whichever side has no button.
+    const padX = paddingXClasses[density][size];
+    const insetClasses: Record<NumberFieldSteppers, string> = {
+      end: `${padX} pe-1`,
+      split: 'px-1',
+      none: padX
+    };
 
-  const decrement = (
-    <BaseUINumberField.Decrement
-      aria-label={decrementLabel ?? messages.decrease}
-      className={cx(stepperClasses, classNames?.stepper)}
-    >
-      <MinusIcon />
-    </BaseUINumberField.Decrement>
-  );
-
-  const increment = (
-    <BaseUINumberField.Increment
-      aria-label={incrementLabel ?? messages.increase}
-      className={cx(stepperClasses, classNames?.stepper)}
-    >
-      <PlusIcon />
-    </BaseUINumberField.Increment>
-  );
-
-  const showSteppers = steppers !== 'none' && !readOnly;
-
-  return (
-    <Field.Root
-      disabled={disabled}
-      invalid={isInvalid}
-      className={cx(
-        'flex-col align-top',
-        stackGapClasses[size],
-        fullWidth ? 'flex w-full' : 'inline-flex',
-        className ?? ''
-      )}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
-      {...props}
-    >
-      {label ? (
-        <Field.Label
-          className={cx(
-            metaTextClasses[size],
-            'font-medium',
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
-            classNames?.label
-          )}
-        >
-          {label}
-        </Field.Label>
-      ) : null}
-
-      {/* `contents` so the Group below is a direct child of the Field's column
-          — the Root is a grouping element, not a box in the layout. */}
-      <BaseUINumberField.Root
-        id={id}
-        name={name}
-        className="contents"
-        value={value}
-        defaultValue={defaultValue}
-        onValueChange={(next) => onValueChange?.(next)}
-        onValueCommitted={(next) => onValueCommitted?.(next)}
-        min={min}
-        max={max}
-        step={step}
-        largeStep={largeStep}
-        smallStep={smallStep}
-        snapOnStep={snapOnStep}
-        allowWheelScrub={allowWheelScrub}
-        format={format}
-        locale={locale}
-        disabled={disabled}
-        readOnly={readOnly}
-        required={required}
+    const decrement = (
+      <BaseUINumberField.Decrement
+        aria-label={decrementLabel ?? messages.decrease}
+        className={cx(stepperClasses, classNames?.stepper)}
       >
-        <BaseUINumberField.Group
-          className={cx(
-            shellBaseClasses,
-            fieldHeightClasses[size],
-            controlTextLeadingClasses[size],
-            radiusClasses[size],
-            gapClasses[size],
-            showSteppers ? insetClasses[steppers] : padX,
-            // An if/else rather than stacked variants: two Tailwind classes of
-            // equal specificity resolve by their order in the generated sheet.
-            disabled
-              ? disabledClasses[variant]
-              : readOnly
-                ? fieldReadOnlyClasses[variant]
-                : fieldRestClasses[variant],
-            disabled ? '' : 'cursor-text',
-            classNames?.shell
-          )}
+        <MinusIcon />
+      </BaseUINumberField.Decrement>
+    );
+
+    const increment = (
+      <BaseUINumberField.Increment
+        aria-label={incrementLabel ?? messages.increase}
+        className={cx(stepperClasses, classNames?.stepper)}
+      >
+        <PlusIcon />
+      </BaseUINumberField.Increment>
+    );
+
+    const showSteppers = steppers !== 'none' && !readOnly;
+
+    return (
+      <Field.Root
+        disabled={disabled}
+        invalid={isInvalid}
+        className={cx(
+          'flex-col align-top',
+          stackGapClasses[size],
+          fullWidth ? 'flex w-full' : 'inline-flex',
+          className ?? ''
+        )}
+        style={{ ...surfaceSlots(family, elevation), ...style }}
+        {...props}
+      >
+        {label ? (
+          <Field.Label
+            className={cx(
+              metaTextClasses[size],
+              'font-medium',
+              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)',
+              classNames?.label
+            )}
+          >
+            {label}
+          </Field.Label>
+        ) : null}
+
+        {/* `contents` so the Group below is a direct child of the Field's column
+          — the Root is a grouping element, not a box in the layout. */}
+        <BaseUINumberField.Root
+          id={id}
+          name={name}
+          className="contents"
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(next) => onValueChange?.(next)}
+          onValueCommitted={(next) => onValueCommitted?.(next)}
+          min={min}
+          max={max}
+          step={step}
+          largeStep={largeStep}
+          smallStep={smallStep}
+          snapOnStep={snapOnStep}
+          allowWheelScrub={allowWheelScrub}
+          format={format}
+          locale={locale}
+          disabled={disabled}
+          readOnly={readOnly}
+          required={required}
         >
-          {showSteppers && steppers === 'split' ? decrement : null}
+          <BaseUINumberField.Group
+            className={cx(
+              shellBaseClasses,
+              fieldHeightClasses[size],
+              controlTextLeadingClasses[size],
+              radiusClasses[size],
+              gapClasses[size],
+              showSteppers ? insetClasses[steppers] : padX,
+              // An if/else rather than stacked variants: two Tailwind classes of
+              // equal specificity resolve by their order in the generated sheet.
+              disabled
+                ? disabledClasses[variant]
+                : readOnly
+                  ? fieldReadOnlyClasses[variant]
+                  : fieldRestClasses[variant],
+              disabled ? '' : 'cursor-text',
+              classNames?.shell
+            )}
+          >
+            {showSteppers && steppers === 'split' ? decrement : null}
 
-          {startIcon ? (
-            <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-              {startIcon}
-            </span>
-          ) : null}
+            {startIcon ? (
+              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+                {startIcon}
+              </span>
+            ) : null}
 
-          <BaseUINumberField.Input
-            // A name written on the component is the input's. On the root it
-            // named a `<div>`, so a quantity field in a table cell had none.
-            aria-label={ariaLabel}
-            aria-labelledby={ariaLabelledBy}
-            onKeyDown={keyHandler(shortcuts)}
-            placeholder={placeholder}
-            className={[
-              'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
-              // Not `outline-none`: that utility zeroes `--tw-outline-style`,
-              // and the shell's focus ring is drawn from the same family.
-              '[outline:none]',
-              'tabular-nums',
-              // Split steppers put the number between the two buttons, so it
-              // belongs in the middle rather than against an edge.
-              steppers === 'split' && showSteppers ? 'text-center' : '',
-              'placeholder:text-(--neba-muted-fg)',
-              'caret-(--n-accent) selection:bg-(--n-soft-press)',
-              'disabled:cursor-not-allowed',
-              classNames?.control
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            <BaseUINumberField.Input
+              // The ref is the input's, as a TextField's is: it is what a form
+              // library focuses when this field fails validation.
+              ref={ref}
+              // A name written on the component is the input's. On the root it
+              // named a `<div>`, so a quantity field in a table cell had none.
+              aria-label={ariaLabel}
+              aria-labelledby={ariaLabelledBy}
+              onKeyDown={keyHandler(shortcuts)}
+              placeholder={placeholder}
+              className={[
+                'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
+                // Not `outline-none`: that utility zeroes `--tw-outline-style`,
+                // and the shell's focus ring is drawn from the same family.
+                '[outline:none]',
+                'tabular-nums',
+                // Split steppers put the number between the two buttons, so it
+                // belongs in the middle rather than against an edge.
+                steppers === 'split' && showSteppers ? 'text-center' : '',
+                'placeholder:text-(--neba-muted-fg)',
+                'caret-(--n-accent) selection:bg-(--n-soft-press)',
+                'disabled:cursor-not-allowed',
+                classNames?.control
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            />
+
+            {endIcon ? (
+              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+                {endIcon}
+              </span>
+            ) : null}
+
+            {showSteppers && steppers === 'end' ? (
+              <span
+                className="flex shrink-0 items-center gap-0.5"
+                style={{ '--n-hit-gap': '0.125rem' } as React.CSSProperties}
+              >
+                {decrement}
+                {increment}
+              </span>
+            ) : null}
+            {showSteppers && steppers === 'split' ? increment : null}
+          </BaseUINumberField.Group>
+        </BaseUINumberField.Root>
+
+        {description ? (
+          <Field.Description
+            className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
+          >
+            {description}
+          </Field.Description>
+        ) : null}
+
+        {hasError ? (
+          <Field.Error
+            match
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
+          >
+            {error}
+          </Field.Error>
+        ) : (
+          // No message of our own, so whatever the validity has: the browser's
+          // own text for a failed constraint, or the entry a Form's `errors`
+          // put here. Renders nothing at all while the field is valid.
+          <Field.Error
+            className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
           />
-
-          {endIcon ? (
-            <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-              {endIcon}
-            </span>
-          ) : null}
-
-          {showSteppers && steppers === 'end' ? (
-            <span
-              className="flex shrink-0 items-center gap-0.5"
-              style={{ '--n-hit-gap': '0.125rem' } as React.CSSProperties}
-            >
-              {decrement}
-              {increment}
-            </span>
-          ) : null}
-          {showSteppers && steppers === 'split' ? increment : null}
-        </BaseUINumberField.Group>
-      </BaseUINumberField.Root>
-
-      {description ? (
-        <Field.Description
-          className={cx(metaTextClasses[size], 'text-(--neba-muted-fg)', classNames?.description)}
-        >
-          {description}
-        </Field.Description>
-      ) : null}
-
-      {hasError ? (
-        <Field.Error
-          match
-          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
-        >
-          {error}
-        </Field.Error>
-      ) : (
-        // No message of our own, so whatever the validity has: the browser's
-        // own text for a failed constraint, or the entry a Form's `errors`
-        // put here. Renders nothing at all while the field is valid.
-        <Field.Error
-          className={cx(metaTextClasses[size], 'text-(--n-accent)', classNames?.error)}
-        />
-      )}
-    </Field.Root>
-  );
-}
+        )}
+      </Field.Root>
+    );
+  }
+);
