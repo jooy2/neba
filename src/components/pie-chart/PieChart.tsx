@@ -316,7 +316,9 @@ export function PieChart(rawProps: PieChartProps) {
             }
 
             setActive(null);
-          } else if (order.length === 0) {
+          } else if (tooltipOff || order.length === 0) {
+            // With the tooltip off there is no readout to move through, and
+            // walking the slices only dimmed the others with nothing said.
             return;
           } else if (event.key === 'Home') {
             setActive(order[0]);

@@ -133,6 +133,24 @@ describe('PieChart', () => {
       await expect.element(status).toBeEmptyDOMElement();
     });
 
+    it('leaves the slices alone under the arrow keys when the tooltip is off', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} tooltip={false} />
+      );
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+
+      await expect.poll(() => plot.element().querySelectorAll('path').length).toBe(3);
+      await userEvent.unhover(plot);
+      plot.element().focus();
+
+      await userEvent.keyboard('{ArrowRight}');
+
+      const dimmed = [...plot.element().querySelectorAll('path')].filter(
+        (path) => path.getAttribute('opacity') !== '1'
+      );
+      expect(dimmed).toHaveLength(0);
+    });
+
     it('keeps a tapped slice until a press lands elsewhere', async () => {
       const screen = await render(
         <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />

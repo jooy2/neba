@@ -514,6 +514,8 @@
 
 - **`BarChart` with `valueLabels="last"` labels the last value there is.** A series ending in `null` got no label, where LineChart writes it on the last value that is not a gap.
 
+- **`PieChart` with `tooltip={false}` ignores the arrow keys.** They still moved the active slice and dimmed the others, with no readout to say which slice it was.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
