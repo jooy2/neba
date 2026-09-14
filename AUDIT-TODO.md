@@ -61,8 +61,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### E. Approvals (approved)
 
-- **E7 (168, new)** `DataTable` that has a tab stop but no selection (`onRowActivate` or an editable column): ring the sheet while the table has the focus, as a selecting table does. Today it shows no focus indicator until an arrow key makes a row active.
-
 ### F. Choices (decided: (a))
 
 - **F9 (142)** Combobox `limit` and the "Add" row: (a) `limit` counts options only, so the add row is always drawn; (b) the add row takes the place of the last option when the list is full.
@@ -336,7 +334,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`). A pinned heading was also stacked under the sticky headings beside it, found while checking this with the stylesheet loaded, and was fixed with it.
   - [x] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
   - [ ] [decision] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`). See F23.
-  - [ ] [major] A table with a tab stop and no selection draws no focus ring on its sheet, and no row is marked until an arrow key moves; found while fixing the ring above. See E7.
+  - [x] [major] A table with a tab stop and no selection draws no focus ring on its sheet, and no row is marked until an arrow key moves; found while fixing the ring above. See E7. Decided: approved; the sheet's ring follows `navigable` rather than `selects`.
   - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
   - [x] The header being dragged shows its state with `opacity-60` (`:1948`). It takes the `--n-soft` wash the Sidebar and Panes handles take while dragged.
 - [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`. See F24.

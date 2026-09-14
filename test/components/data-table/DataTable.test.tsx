@@ -1437,6 +1437,27 @@ describe('editing', () => {
       .toHaveAttribute('data-neba-editor');
   });
 
+  // Only a selecting table rang, so one whose rows open something took the focus
+  // and showed nothing until an arrow key marked a row.
+  it('rings the sheet of a table that takes the focus without selecting', async () => {
+    const screen = await render(
+      <>
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          onRowActivate={() => {}}
+          data-testid="opens"
+        />
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} data-testid="still" />
+      </>
+    );
+    const ring = 'has-[table:focus-visible,[data-neba-editor]:focus-visible]';
+
+    expect(screen.getByTestId('opens').element().className).toContain(ring);
+    expect(screen.getByTestId('still').element().className).not.toContain(ring);
+  });
+
   it('opens an editor on a double-click and commits on Enter', async () => {
     const onCellEdit = vi.fn();
     const columns: DataTableColumn<Person>[] = [

@@ -444,6 +444,8 @@
 
 - **A chart keeps the same series hidden when new data reorders them.** The legend remembered hidden series by their position, so a refresh that brought the same series back in another order hid whichever series now sat where the hidden one had been, and a series added later with `hidden` was drawn anyway because the prop was only read on the first render. What the reader chose is now remembered by each series' `name`, falling back to its index when it has none, and a series nobody has toggled follows its own `hidden`.
 
+- **A `DataTable` that takes the focus without selecting rings its sheet.** A table with `selectionMode="none"` that still takes a tab stop, because its rows have `onRowActivate` or a column is editable, drew no focus indicator at all when it was tabbed to, and nothing showed until an arrow key marked a row. It now rings its sheet while the table holds the focus, as a selecting table already did.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

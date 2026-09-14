@@ -2465,8 +2465,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         // The table's own focus, and a cell editor's, which draws no ring of its
         // own. Not any focus inside the sheet: the search field and the footer's
         // controls ring themselves, and a second ring around the whole table
-        // said the table had the focus when it did not.
-        selects
+        // said the table had the focus when it did not. Every table that takes
+        // the focus rings, not only one that selects: a table whose rows open
+        // or whose cells edit showed nothing until an arrow key marked a row.
+        navigable
           ? 'has-[table:focus-visible,[data-neba-editor]:focus-visible]:[outline:2px_solid_var(--n-ring)] has-[table:focus-visible,[data-neba-editor]:focus-visible]:outline-offset-2'
           : '',
         className
