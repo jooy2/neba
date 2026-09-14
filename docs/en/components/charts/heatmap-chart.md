@@ -84,6 +84,6 @@ The legend is a scale bar with its two ends labelled, not a list of swatches: no
 
 ## Accessibility
 
-- The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category.
+- The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category. A treemap's columns are every tile name its groups use, and each value sits under its own name.
 - The plot is focusable; `←` / `→` walk the cells, `Escape` clears the tooltip.
 - The scale legend gives the two ends of the range as numbers, so the ramp never has to be read by eye alone.

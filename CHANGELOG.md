@@ -382,6 +382,8 @@
 
 - **A `PieChart` share is written in the ink its slice reads best under, and the plot answers `Home`, `End` and `Escape`.** Every label written by `valueLabels="all"` wore the surface colour, which is about 4:1 on the light theme's slots and disappears on a pale slice a caller coloured. Each of the eight slots now has its ink in `--neba-chart-on-1` to `--neba-chart-on-8`, per theme, and a slice given a literal colour gets black or white by contrast. The accessibility notes promised `Escape` to clear the selection, and only the arrow keys existed; `Home` and `End` now go to the first and the last slice, and `Escape` lets go of a selection.
 
+- **A treemap `HeatmapChart`'s hidden table puts every value under its own name.** Its column headings were taken from the first group's tile names, so a second group's tiles were written under the first group's headings and a screen reader read the wrong figure against each name. The columns are now every tile name the groups use, in the order they first appear, and a group's row is blank under a name it does not have.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

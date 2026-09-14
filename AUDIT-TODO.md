@@ -55,7 +55,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### C. Approvals (approved)
 
-- **C2 (85)** `HeatmapChart` treemap: build the hidden table's columns from every series' `x` and put each value under its own column. The hidden table's structure changes.
 - **C3 (92)** RTL in six places follows `dir`: the Switch thumb, the Transfer arrows, the Menu submenu chevron and its default `side`, and the arrow keys of Panes, Calendar and the Gallery viewer. Moving the Switch thumb to a logical property also changes the `CLAUDE.md` sentence "a Switch's thumb on `left`".
 
 ### D. Choices (decided: (a))
@@ -222,7 +221,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **82** GaugeChart reading was missing from the server render.
 - [x] **83** [decision] **GaugeChart**: `aria-label` is `value / max`, so `min=-50, max=50, value=0` reads "0 / 50" and the `caption` is lost. Consider `role="meter"` with `aria-value*`. `GaugeChart.tsx:335-342`. Decided: (a) a labelled dial is `role="meter"` with `aria-value*` and an `aria-valuetext` carrying the caption; a dial with no reading stays a named `img`.
 - [x] **84** [decision] **PieChart**: share labels are white on every slice, about 4.0:1 in the light theme. The `Escape` dismissal and `Home`/`End` the docs describe do not exist. `PieChart.tsx:287-303, 377`. Decided: (a) per-slot `--neba-chart-on-*` inks and black or white by contrast for a literal colour; `Escape`, `Home` and `End` implemented. The two inks are within 0.1 of each other on the light slots, so the better one is still about 4.1:1.
-- [ ] **85** [major] **HeatmapChart**: the treemap's hidden table takes its column headers from the first series' `x`, so tiles outside the first group are written under the wrong column and a screen reader gets wrong data. `HeatmapChart.tsx:152-155, 358-381`. See C2.
+- [x] **85** [major] **HeatmapChart**: the treemap's hidden table takes its column headers from the first series' `x`, so tiles outside the first group are written under the wrong column and a screen reader gets wrong data. `HeatmapChart.tsx:152-155, 358-381`. Decided: approved; a treemap's columns are every tile name in first-seen order, and each value sits under its own.
 - [ ] **86** [decision] **HeatmapChart**: the keyboard only moves row by row and `ArrowDown` equals `ArrowRight`; the treemap moves in size order. `HeatmapChart.tsx:401-418`. See D5.
 - [ ] **87** [decision] **Charts**: tooltips cannot be opened by touch. They rely on `onPointerMove` or `pointerenter`/`pointerleave`, so a tap shows nothing or flashes. See D6.
 - [ ] **88** [decision] **Charts**: `aria-describedby` points at the whole hidden table, so a 365-point chart reads hundreds of numbers on every focus. `chart-frame.tsx:1482`, `PieChart.tsx:284`, `HeatmapChart.tsx:398`. See D7.

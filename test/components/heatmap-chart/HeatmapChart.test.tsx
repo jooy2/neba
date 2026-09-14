@@ -447,6 +447,39 @@ describe('HeatmapChart', () => {
       await expect.element(screen.getByRole('columnheader', { name: '18' })).toBeInTheDocument();
       await expect.element(screen.getByRole('cell', { name: '48' })).toBeInTheDocument();
     });
+
+    // The columns came from the first group's names, so a second group's tiles
+    // were written under the first group's headings.
+    it('puts every treemap tile under a column of its own name', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Storage"
+          shape="treemap"
+          height={220}
+          series={[
+            { name: 'Platform', data: [{ x: 'Builds', y: 300 }] },
+            { name: 'Product', data: [{ x: 'Media', y: 120 }] }
+          ]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Storage' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const heads = [...table.element().querySelectorAll('thead th')].map((th) => th.textContent);
+
+      expect(heads).toEqual(['', 'Builds', 'Media']);
+
+      const rows = [...table.element().querySelectorAll('tbody tr')].map((tr) =>
+        [...tr.children].map((cell) => cell.textContent)
+      );
+
+      expect(rows).toEqual([
+        ['Platform', '300', ''],
+        ['Product', '', '120']
+      ]);
+    });
   });
 
   describe('tooltip', () => {

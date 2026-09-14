@@ -305,6 +305,46 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     [categories, labels, locale]
   );
 
+  /* The hidden table's columns. A grid's are its categories, in place. A
+     treemap's groups each name their own tiles, so its columns are every name
+     any group uses, in the order they first appear, and each value goes under
+     its own name rather than under whatever the first group had at its index. */
+  const table = React.useMemo(() => {
+    if (shape !== 'treemap') {
+      return {
+        heads: labels.map((category) => formatCategory(category, locale)),
+        rows: values.map((row) => labels.map((_, index) => row[index]))
+      };
+    }
+
+    const heads: string[] = [];
+    const columnOf = new Map<string, number>();
+
+    const rows = values.map((row) => {
+      const out: (ChartValue | undefined)[] = [];
+
+      row.forEach((cell, index) => {
+        const head = formatCategory(
+          cell.x ?? categories?.[index] ?? labels[index] ?? index,
+          locale
+        );
+        let column = columnOf.get(head);
+
+        if (column === undefined) {
+          column = heads.length;
+          columnOf.set(head, column);
+          heads.push(head);
+        }
+
+        out[column] = cell;
+      });
+
+      return out;
+    });
+
+    return { heads, rows };
+  }, [shape, labels, values, categories, locale]);
+
   const hovered =
     active === null
       ? null
@@ -355,18 +395,18 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
             <thead>
               <tr>
                 <th scope="col" />
-                {labels.map((category, index) => (
+                {table.heads.map((head, index) => (
                   <th key={index} scope="col">
-                    {formatCategory(category, locale)}
+                    {head}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {values.map((row, at) => (
+              {table.rows.map((row, at) => (
                 <tr key={at}>
                   <th scope="row">{names[at]}</th>
-                  {labels.map((_, index) => {
+                  {table.heads.map((_, index) => {
                     const cell = row[index];
 
                     return (
