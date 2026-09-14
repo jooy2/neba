@@ -1903,6 +1903,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'main',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'content를 mainId가 붙은 main에 넣고 앞에 skip link를 둘지. 끄면 id도 skip link도 없는 div에 넣습니다. Mockup 화면 안에서는 따로 주지 않으면 꺼집니다',
+        en: 'Whether the content goes in a main named by mainId, with the skip link in front of it. Off, it goes in a div with no id and no skip link. Off by default on a Mockup screen'
+      }
+    },
+    {
       name: 'mainId',
       type: 'string',
       default: "'main'",

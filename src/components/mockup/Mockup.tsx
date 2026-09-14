@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { ScreenContext } from '../../internal/screen.js';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
 import {
@@ -315,7 +316,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
           className={`min-w-0 flex-1 ${scroll ? 'overflow-auto' : 'overflow-hidden'}`}
           style={{ containerType: 'size', containerName: 'neba-screen' }}
         >
-          {children}
+          <ScreenContext.Provider value={true}>{children}</ScreenContext.Provider>
         </div>
       </div>
       {chrome.bottom?.node}

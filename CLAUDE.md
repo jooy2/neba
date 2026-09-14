@@ -72,7 +72,7 @@ Three things are deliberately **left unmarked**, and each would break if it were
 
 - **`src/index.ts` and the component barrels.** A barrel only re-exports. Unmarked, it is a module either graph may pull in, so a Server Component importing `neba` reaches the client modules behind it; marked, it would become a boundary of its own and drag the whole barrel across.
 - **`src/locales/**` and `src/internal/i18n.ts`.** `registerMessages` is a plain function a consumer calls at module scope, and `useMessages` is a `useMemo`, which the `react-server` build does export. Marked, `registerMessages` would come back to a consumer's server module as a client reference instead of a function, and calling it would throw.
-- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the nine that hold a context, an effect or a store (`animate.tsx`, `button-group.ts`, `media.ts`, `menu.ts`, `page-layout.ts`, `bottom-navigation.ts`, `calendar.tsx`, `chart-frame.tsx`) are marked.
+- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the nine that hold a context, an effect or a store (`animate.tsx`, `button-group.ts`, `media.ts`, `menu.ts`, `page-layout.ts`, `bottom-navigation.ts`, `calendar.tsx`, `chart-frame.tsx`, `screen.ts`) are marked.
 
 The directive only survives the build because `terser.config.json` says `compress.directives: false`. See [Toolchain notes](#toolchain-notes).
 

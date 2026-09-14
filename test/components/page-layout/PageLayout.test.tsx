@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { Footer, Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
+import { Footer, Header, Mockup, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
 registerMessages('ko', ko);
@@ -82,6 +82,40 @@ describe('PageLayout', () => {
       const screen = await render(<PageLayout className="my-own-class" data-testid="root" />);
 
       expect(screen.getByTestId('root').element()).toHaveClass('my-own-class');
+    });
+  });
+
+  describe('main', () => {
+    // A layout previewed inside the page's own layout gave the document two
+    // `<main>` elements, two `id="main"` and two skip links.
+    it('puts the page in a plain box with no id and no skip link when turned off', async () => {
+      const screen = await render(<PageLayout main={false}>Page</PageLayout>);
+
+      await expect.element(screen.getByText('Page')).toBeInTheDocument();
+      expect(screen.getByRole('main').query()).toBeNull();
+      expect(screen.container.querySelector('#main')).toBeNull();
+      expect(screen.getByRole('link').query()).toBeNull();
+    });
+
+    it('is off on a Mockup screen unless it says otherwise', async () => {
+      const screen = await render(
+        <Mockup device="mobile">
+          <PageLayout height="auto">Page</PageLayout>
+        </Mockup>
+      );
+
+      await expect.element(screen.getByText('Page')).toBeInTheDocument();
+      expect(screen.getByRole('main').query()).toBeNull();
+
+      await screen.rerender(
+        <Mockup device="mobile">
+          <PageLayout height="auto" main>
+            Page
+          </PageLayout>
+        </Mockup>
+      );
+
+      await expect.element(screen.getByRole('main')).toBeInTheDocument();
     });
   });
 

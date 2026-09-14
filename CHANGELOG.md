@@ -92,6 +92,8 @@
 
 - **`Toolbar`, `Pill`, `Footer`, `FloatingActionButton` and `Drawer` take `safeArea`.** On a page laid out under a phone's notch and home indicator with `viewport-fit=cover`, a bar or button pinned to the edge of the screen sat underneath them. With `safeArea` on, the default, a `fixed` or `sticky` one adds the screen's `env(safe-area-inset-*)` on the edge it is held against, and an overlay `Drawer` keeps its contents inside the insets on the edges it runs to; the sheets still reach the edge of the screen. A `static` one is left alone.
 
+- **`PageLayout` takes `main`.** With `main={false}` the content goes in a plain `<div>` rather than a `<main>`, with no `id` and no skip link, for a layout that is not the page — an app shell previewed inside the page's own layout. A `PageLayout` on a `Mockup`'s screen is off unless it passes `main`, so a device preview no longer gives the document a second `<main>`, a second `id="main"` and a second skip link.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.

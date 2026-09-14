@@ -57,7 +57,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### D. Choices (decided: (a))
 
-- **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
 - **D11 (95)** `Panes` separator: (a) a default name from i18n, a prop for the name, and `aria-controls` pointing at the adjacent panes; (b) a name prop only.
 - **D12 (102)** `href` scheme check: (a) an allow list in `internal/link.ts` (http, https, mailto, tel and relative URLs) applied to every component that takes an `href`; (b) ChatBubble `preview.url` only; (c) a warning in the docs.
 - **D13 (103)** CSV formula injection: (a) prefix `'` by default, with an option to turn it off; (b) an option only, off by default.
@@ -236,7 +235,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] Calendar arrow keys (`src/internal/calendar.tsx:795-803, 936-943, 1020-1027`).
   - [x] Gallery viewer left and right keys (`GalleryViewer.tsx:77-83`).
 - [x] **93** [decision] **Tabs**: the `wheel` handling, on by default, captures the wheel when an overflowing tab bar passes under the pointer while the reader scrolls the page, and holds it at the ends. This is the reason ScrollZone's default is off. `Tabs.tsx:389`, `src/internal/wheel.ts:61-78`. Decided: (a) the default stays on, as `CLAUDE.md` records; no change.
-- [ ] **94** [decision] **PageLayout**: `<main>`, `id="main"` and the skip link cannot be turned off, so a PageLayout inside a Mockup inside an app's PageLayout gives two `<main>` elements and a duplicate id. `PageLayout.tsx:188, 409`. See D10.
+- [x] **94** [decision] **PageLayout**: `<main>`, `id="main"` and the skip link cannot be turned off, so a PageLayout inside a Mockup inside an app's PageLayout gives two `<main>` elements and a duplicate id. `PageLayout.tsx:188, 409`. See D10. Decided: (a) a `main` prop, off by default on a Mockup screen through `internal/screen.ts`.
 - [ ] **95** [decision] **Panes**: the `role="separator"` has no name and no `aria-controls`, so it reads only "separator 50". `Panes.tsx:380-388`. See D11.
 - [x] **96** Sidebar's focusable separator had no `aria-valuenow`, `aria-valuemin` or `aria-valuemax`.
 - [x] **97** Docs PropsTable marked required props only with a red asterisk and a `title`.

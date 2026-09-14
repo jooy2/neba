@@ -15,6 +15,7 @@ import { observeResize } from '../../internal/observe.js';
 import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { ScreenContext } from '../../internal/screen.js';
 
 export type {
   PageLayoutCollapse,
@@ -120,6 +121,17 @@ export interface PageLayoutProps extends React.ComponentPropsWithoutRef<'div'> {
   /** What that link says. Defaults to the `locale`'s word for it. */
   skipLabel?: string;
   /**
+   * Whether the content goes in a `<main>` named by `mainId`, with the skip
+   * link in front of it.
+   *
+   * A document has one `<main>` and one element for each `id`, so a layout that
+   * is not the page — a preview of an app shell inside the page's own layout —
+   * turns it off, and the content goes in a plain `<div>` with no skip link. A
+   * layout on a [Mockup]'s screen is off unless it says otherwise.
+   * @default true
+   */
+  main?: boolean;
+  /**
    * The `id` the skip link jumps to, put on the `<main>`.
    * @default 'main'
    */
@@ -185,6 +197,7 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
       onEndSidebarOpenChange,
       skipLink = true,
       skipLabel,
+      main,
       mainId = 'main',
       mainProps,
       locale,
@@ -196,6 +209,10 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
     } = useStyleDefaults(rawProps, ['locale']);
 
     const messages = useMessages(layoutMessages, locale);
+    // A picture of a page on a Mockup's screen is not the page, and must not
+    // hand the document a second `<main>` or a second `id="main"`.
+    const onScreen = React.useContext(ScreenContext);
+    const landmark = main ?? !onScreen;
 
     const [ownStart, setOwnStart] = React.useState(defaultSidebarOpen);
     const [ownEnd, setOwnEnd] = React.useState(defaultEndSidebarOpen);
@@ -368,7 +385,7 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
           }
           {...props}
         >
-          {skipLink ? (
+          {skipLink && landmark ? (
             <a
               href={`#${mainId}`}
               // Clipped to a pixel until it is tabbed to, and a real chip from
@@ -406,17 +423,30 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
             >
               {headerSpan === 'content' ? headerSlot : null}
 
-              <main
-                {...mainProps}
-                id={mainId}
-                className={cx(
-                  'min-w-0 flex-1',
-                  fills ? 'min-h-0 overflow-y-auto' : '',
-                  mainProps?.className
-                )}
-              >
-                {children}
-              </main>
+              {landmark ? (
+                <main
+                  {...mainProps}
+                  id={mainId}
+                  className={cx(
+                    'min-w-0 flex-1',
+                    fills ? 'min-h-0 overflow-y-auto' : '',
+                    mainProps?.className
+                  )}
+                >
+                  {children}
+                </main>
+              ) : (
+                <div
+                  {...mainProps}
+                  className={cx(
+                    'min-w-0 flex-1',
+                    fills ? 'min-h-0 overflow-y-auto' : '',
+                    mainProps?.className
+                  )}
+                >
+                  {children}
+                </div>
+              )}
 
               {footerSpan === 'content' ? footerSlot : null}
             </div>
