@@ -191,11 +191,13 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       const day = startOfDay(date);
 
       // The first click of a new selection — either there is no anchor, or the
-      // range is already complete and this click starts over.
+      // range is already complete and this click starts over. It only marks the
+      // start. The value is left as it was until the second end is chosen, so
+      // closing the popup here keeps the range that was there; committing half
+      // a range lost it the moment the first day was pressed.
       if (anchor === null) {
         setAnchor(day);
         setPreview(day);
-        commit({ start: day, end: null });
         return;
       }
 
@@ -206,7 +208,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       if (compareDay(day, anchor) < 0) {
         setAnchor(day);
         setPreview(day);
-        commit({ start: day, end: null });
         return;
       }
 

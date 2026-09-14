@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { DateRangePicker } from 'neba';
 
 const LOCALE = 'en-US';
@@ -82,13 +83,14 @@ describe('DateRangePicker', () => {
       await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }).click();
 
-      // Half a range: the first end is reported, the second is still open.
-      expect(onValueChange.mock.calls[0][0]).toEqual({ start: new Date(2026, 6, 3), end: null });
+      // Half a range is the picker's own business: nothing is reported yet.
+      expect(onValueChange).not.toHaveBeenCalled();
       await expect.element(screen.getByRole('grid').first()).toBeInTheDocument();
 
       await screen.getByRole('gridcell', { name: 'Thursday, July 9, 2026' }).click();
 
-      expect(onValueChange.mock.calls[1][0]).toEqual({
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.calls[0][0]).toEqual({
         start: new Date(2026, 6, 3),
         end: new Date(2026, 6, 9)
       });
@@ -112,7 +114,7 @@ describe('DateRangePicker', () => {
       await screen.getByRole('gridcell', { name: 'Thursday, July 9, 2026' }).click();
       await screen.getByRole('gridcell', { name: 'Friday, July 3, 2026' }).click();
 
-      expect(onValueChange).toHaveBeenLastCalledWith({ start: new Date(2026, 6, 3), end: null });
+      expect(onValueChange).not.toHaveBeenCalled();
       await expect.element(screen.getByRole('grid').first()).toBeInTheDocument();
 
       await screen.getByRole('gridcell', { name: 'Tuesday, July 7, 2026' }).click();
@@ -138,7 +140,8 @@ describe('DateRangePicker', () => {
       await screen.getByRole('gridcell', { name: 'Monday, July 27, 2026' }).click();
       await screen.getByRole('gridcell', { name: 'Monday, August 3, 2026' }).click();
 
-      expect(onValueChange.mock.calls[1][0]).toEqual({
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange.mock.calls[0][0]).toEqual({
         start: new Date(2026, 6, 27),
         end: new Date(2026, 7, 3)
       });
@@ -183,7 +186,40 @@ describe('DateRangePicker', () => {
       await screen.getByRole('button', { name: 'Stay', exact: false }).click();
       await screen.getByRole('gridcell', { name: 'Monday, July 20, 2026' }).click();
 
-      expect(onValueChange.mock.calls[0][0]).toEqual({ start: new Date(2026, 6, 20), end: null });
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      await screen.getByRole('gridcell', { name: 'Wednesday, July 22, 2026' }).click();
+
+      expect(onValueChange).toHaveBeenCalledWith({
+        start: new Date(2026, 6, 20),
+        end: new Date(2026, 6, 22)
+      });
+    });
+
+    // The first press committed half a range, so closing the popup there lost
+    // the range that had been chosen, although the docs said it was kept.
+    it('keeps the previous range when the popup closes after one press', async () => {
+      const onValueChange = vi.fn();
+      const before = { start: new Date(2026, 6, 3), end: new Date(2026, 6, 9) };
+      const screen = await render(
+        <DateRangePicker
+          locale={LOCALE}
+          label="Stay"
+          defaultMonth={JULY}
+          defaultValue={before}
+          onValueChange={onValueChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
+      await screen.getByRole('gridcell', { name: 'Monday, July 20, 2026' }).click();
+      await userEvent.keyboard('{Escape}');
+
+      await expect.poll(() => screen.getByRole('grid').query()).toBeNull();
+      expect(onValueChange).not.toHaveBeenCalled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Stay', exact: false }))
+        .toMatchTextContent(/Jul 3.*Jul 9/);
     });
   });
 

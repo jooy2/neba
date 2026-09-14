@@ -68,6 +68,8 @@
 
 - **`AnimateTyping`, `AnimateHeadline` and `AnimateMarquee` render a `<span>` and take `render`.** Each rendered a `<div>`, so none could sit inside a `<p>` without invalid markup and a hydration error, and a headline being typed or turned could not be a heading. Each now renders a `<span>` with the display it had, and `render` puts it on another element: `<AnimateHeadline render={<h2 />}>`. The `ref` of all three is an `HTMLElement` and their props are a `<span>`'s, so code that typed the ref as `HTMLDivElement` needs the new type.
 
+- **A `DateRangePicker` reports a range only once it has both ends, and keeps the old one until then.** The first press called `onValueChange` with `{ start, end: null }`, so the range that had been chosen was gone as soon as a new start was pressed, and closing the popup before the second press left the half range as the value, although the docs said it was thrown away. The first press now only marks the start, the value changes once when the second end is chosen, and closing early keeps the range that was there. A caller that acted on the half-range call gets no call until the range is complete.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
