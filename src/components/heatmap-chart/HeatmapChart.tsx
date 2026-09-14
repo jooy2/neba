@@ -448,12 +448,29 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
               ? -1
               : cells.findIndex((one) => one.row === active.row && one.index === active.index);
 
-          if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-            const next = cells[Math.min(cells.length - 1, at + 1)];
+          // On a grid the vertical arrows keep the column and change the row,
+          // skipping a row whose cell in that column is a gap. A treemap has no
+          // columns to keep, so every arrow walks its tiles largest first.
+          const vertical = shape !== 'treemap' && at !== -1;
+          const forward = event.key === 'ArrowRight' || event.key === 'ArrowDown';
 
-            setActive({ row: next.row, index: next.index });
-          } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-            const next = cells[Math.max(0, (at === -1 ? cells.length : at) - 1)];
+          if (vertical && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+            const here = cells[at];
+            const below = event.key === 'ArrowDown';
+            const next = cells
+              .filter(
+                (one) =>
+                  one.index === here.index && (below ? one.row > here.row : one.row < here.row)
+              )
+              .sort((a, b) => (below ? a.row - b.row : b.row - a.row))[0];
+
+            if (next) {
+              setActive({ row: next.row, index: next.index });
+            }
+          } else if (forward || event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+            const next = forward
+              ? cells[Math.min(cells.length - 1, at + 1)]
+              : cells[Math.max(0, (at === -1 ? cells.length : at) - 1)];
 
             setActive({ row: next.row, index: next.index });
           } else if (event.key === 'Escape') {

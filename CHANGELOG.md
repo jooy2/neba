@@ -120,6 +120,8 @@
 
 - **`AnimateHeadline` holds its line under a reduced-motion preference.** It already dropped the slide, but the reel went on changing every few seconds for as long as it was on the page, which is still motion and never ends. It now stays on the line it is showing; a controlled `index` still changes it. The docs of every `Animate*` that keeps moving past five seconds now say to pair it with a pause button bound to `paused`, and `transition="blink"` is documented as the one `transition` that repeats.
 
+- **On a `HeatmapChart` grid, `↑` and `↓` keep the column and change the row.** Both vertical arrows did what the horizontal ones did and walked the cells row by row, so following one hour down a week of rows took a key press per cell in between. They now move to the same column in the row above or below, skipping a row whose cell there is a gap. A treemap has no columns, so every arrow still walks its tiles from the largest to the smallest, which the docs now say.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

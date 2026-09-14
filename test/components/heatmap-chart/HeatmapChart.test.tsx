@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HeatmapChart } from 'neba';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 
 const HOURS = ['00', '06', '12', '18'];
 
@@ -479,6 +480,64 @@ describe('HeatmapChart', () => {
         ['Platform', '300', ''],
         ['Product', '', '120']
       ]);
+    });
+  });
+
+  describe('keyboard', () => {
+    // Down used to mean the same as right, so a column could not be followed.
+    it('moves along the column with the vertical arrows on a grid', async () => {
+      const screen = await render(
+        <HeatmapChart label="Sessions" height={200} categories={HOURS} series={TRAFFIC} />
+      );
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      plot.element().focus();
+
+      const status = screen.getByRole('status');
+
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+      await expect.element(status).toMatchTextContent('Mon · 06');
+
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(status).toMatchTextContent('Tue · 06');
+
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+      await expect.element(status).toMatchTextContent('Wed · 06');
+
+      await userEvent.keyboard('{ArrowUp}');
+      await expect.element(status).toMatchTextContent('Tue · 06');
+    });
+
+    it('walks a treemap largest tile first whichever arrow is pressed', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Storage"
+          shape="treemap"
+          height={220}
+          series={[
+            {
+              name: 'Platform',
+              data: [
+                { x: 'Logs', y: 100 },
+                { x: 'Builds', y: 300 }
+              ]
+            }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Storage' });
+
+      await expect.element(plot).toBeInTheDocument();
+      plot.element().focus();
+
+      const status = screen.getByRole('status');
+
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(status).toMatchTextContent('Builds');
+
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(status).toMatchTextContent('Logs');
     });
   });
 
