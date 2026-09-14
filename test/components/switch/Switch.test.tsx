@@ -142,11 +142,12 @@ describe('Switch', () => {
       expect(track.className).toContain('backdrop-filter');
     });
 
-    it('moves the thumb with left rather than a transform', async () => {
+    // `inset-inline-start`, so on and off swap ends under RTL.
+    it('moves the thumb with a logical offset rather than a transform', async () => {
       const screen = await render(<Switch label="Alerts" checked onCheckedChange={() => {}} />);
       const thumb = screen.getByRole('switch').element().firstElementChild as HTMLElement;
 
-      expect(thumb).toHaveClass('data-[checked]:left-[calc(100%-1.125rem)]');
+      expect(thumb).toHaveClass('start-0.5', 'data-[checked]:start-[calc(100%-1.125rem)]');
       expect(thumb.outerHTML).not.toContain('translate');
       expect(thumb.outerHTML).not.toContain('scale');
     });

@@ -239,7 +239,7 @@ transition-duration: var(--neba-duration-fill), var(--neba-duration), …;  /* 3
 
 위 규칙은 라벨이 얹힌 상자, 즉 **컨트롤**에 적용됩니다. 그 안의 표식은 경우가 다릅니다. 글자를 담지 않아 리샘플링될 것이 없고, 표식 자체가 상태를 나타냅니다. 그래서 움직여도 되며, `transform`이 아니라 실제 속성 위에서 움직입니다.
 
-움직이는 표식은 넷뿐입니다. Switch의 thumb은 `left`로 이동합니다. Checkbox의 체크 표시는 `pathLength="1"`로 정규화한 path 위에서 `stroke-dashoffset`을 따라 스스로 그려집니다. Radio의 점은 ring 중앙에서 `width`/`height`로 자랍니다. Rating의 채움은 포인터가 있는 별까지 `width`로 쓸려갑니다.
+움직이는 표식은 넷뿐입니다. Switch의 thumb은 `inset-inline-start`로 이동하므로 RTL에서는 켜짐과 꺼짐의 위치가 서로 바뀝니다. Checkbox의 체크 표시는 `pathLength="1"`로 정규화한 path 위에서 `stroke-dashoffset`을 따라 스스로 그려집니다. Radio의 점은 ring 중앙에서 `width`/`height`로 자랍니다. Rating의 채움은 포인터가 있는 별까지 `width`로 쓸려갑니다.
 
 넷 중 어느 것도 scale하지 않습니다. 1.4배에서 시작해 제자리로 줄어드는 표식은 오는 동안 두 번 리샘플링되는데, 그것이 바로 컨트롤에 `transform`을 쓰지 않는 이유입니다.
 

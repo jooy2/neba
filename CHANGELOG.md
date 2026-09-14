@@ -392,6 +392,8 @@
 
 - **A tap on a chart pins its tooltip until a press lands outside the plot.** On a touch screen a `LineChart`, `AreaChart`, `BarChart`, `ScatterChart`, `TimelineChart`, `PieChart` or `HeatmapChart` cleared its tooltip on `pointerleave`, which a finger sends the moment it lifts, so a tap showed the tooltip for a frame at most; a tap that did not move never read a point at all, because only `pointermove` did. A tap now reads the nearest point and keeps its tooltip up, and a press anywhere outside the plot puts it down. A mouse still clears it by leaving.
 
+- **A `Switch` under RTL puts "on" at the end of the line.** The thumb travelled on a physical `left`, so in a right-to-left page it still sat on the left when off and moved right when on, the reverse of what the reader expects. It now travels on `inset-inline-start`, and on and off swap ends with the direction. A caller who moved the thumb through `classNames.thumb` with a `left-*` utility should use `start-*`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

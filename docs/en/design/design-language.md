@@ -239,7 +239,7 @@ The colour lands on the frame of the press and then takes 340ms to drain back ou
 
 The rule above is about the control: the box with the label on it. The mark _inside_ it is a different object: it carries no text, nothing about it is resampled, and it is the whole of what the state says. Those are allowed to move, and they move on a real property rather than on a `transform`.
 
-There are four of them, and they are the whole list. A Switch's thumb travels on `left`. A Checkbox's tick draws itself along its own length, on `stroke-dashoffset` over a path normalised with `pathLength="1"`. A Radio's dot grows out of the centre of its ring, on `width` and `height`. A Rating's fill sweeps across the star the pointer is on, on `width`.
+There are four of them, and they are the whole list. A Switch's thumb travels on `inset-inline-start`, so on and off swap ends under RTL. A Checkbox's tick draws itself along its own length, on `stroke-dashoffset` over a path normalised with `pathLength="1"`. A Radio's dot grows out of the centre of its ring, on `width` and `height`. A Rating's fill sweeps across the star the pointer is on, on `width`.
 
 What none of them does is scale. A mark that arrived at 1.4× and settled would be resampled twice on the way, which is the same objection the control's own rule makes.
 

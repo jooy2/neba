@@ -65,7 +65,8 @@ export interface SwitchProps extends BaseSwitchProps {
  * Track and thumb.
  *
  * The thumb is inset 2px on every side, so its diameter is the track's height
- * minus 4 and the `left` it travels to is `100% − 2px − diameter`. That is the
+ * minus 4 and the `inset-inline-start` it travels to is `100% − 2px − diameter`,
+ * which puts "on" at the end of the line under either direction. That is the
  * one number per step that has to be written out; everything else falls out of
  * `inset-y-0.5` and `aspect-square`.
  */
@@ -78,11 +79,11 @@ const trackClasses: Record<NebaSize, string> = {
 };
 
 const thumbTravelClasses: Record<NebaSize, string> = {
-  xs: 'data-[checked]:left-[calc(100%-0.75rem)]',
-  sm: 'data-[checked]:left-[calc(100%-0.875rem)]',
-  md: 'data-[checked]:left-[calc(100%-1.125rem)]',
-  lg: 'data-[checked]:left-[calc(100%-1.375rem)]',
-  xl: 'data-[checked]:left-[calc(100%-1.625rem)]'
+  xs: 'data-[checked]:start-[calc(100%-0.75rem)]',
+  sm: 'data-[checked]:start-[calc(100%-0.875rem)]',
+  md: 'data-[checked]:start-[calc(100%-1.125rem)]',
+  lg: 'data-[checked]:start-[calc(100%-1.375rem)]',
+  xl: 'data-[checked]:start-[calc(100%-1.625rem)]'
 };
 
 /**
@@ -100,7 +101,7 @@ const trackBaseClasses = [
   hitAreaClasses,
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   'rounded-full',
-  // `left` has to be in the property list here, which it is not in the shared
+  // The thumb's offset has to be in the property list here, which it is not in the shared
   // transition: this is the only component in the library where something
   // actually moves. It is the thumb, it carries no text, and it is the whole
   // point of the control.
@@ -142,9 +143,9 @@ const disabledTrackClasses = [
  * coloured track is two things fighting for the same 16 pixels.
  */
 const thumbClasses = [
-  'absolute inset-y-0.5 left-0.5 aspect-square rounded-full bg-(--neba-surface)',
+  'absolute inset-y-0.5 start-0.5 aspect-square rounded-full bg-(--neba-surface)',
   '[box-shadow:var(--neba-shadow-1)]',
-  '[transition:left_var(--neba-duration)_var(--neba-ease)]'
+  '[transition:inset-inline-start_var(--neba-duration)_var(--neba-ease)]'
 ].join(' ');
 
 /**
