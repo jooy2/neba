@@ -78,7 +78,7 @@ What to show when `items` is empty. It renders as a single cell spanning every c
 
 ### stickyHeader
 
-Pins the header row while the body scrolls. It only does anything if something around the table constrains its height.
+Pins the header row while the body scrolls. The sheet the table draws is what scrolls, so limit it with `maxHeight`, a number of pixels or any CSS length. A height limited on a box around the table scrolls that box instead, and the header scrolls away with the rows.
 
 ### classNames
 

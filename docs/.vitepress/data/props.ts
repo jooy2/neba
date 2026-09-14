@@ -5811,8 +5811,16 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '본문이 스크롤될 때 머리행을 고정합니다. 표의 높이가 제한되어 있어야 의미가 있습니다',
-        en: 'Pins the header while the body scrolls. Only does anything if the height is constrained'
+        ko: '본문이 스크롤될 때 머리행을 고정합니다. 높이는 maxHeight로 제한하세요',
+        en: 'Pins the header while the body scrolls. Limit the height with maxHeight'
+      }
+    },
+    {
+      name: 'maxHeight',
+      type: 'number | string',
+      description: {
+        ko: '행이 시트 안에서 스크롤되기 전까지 시트가 가질 수 있는 최대 높이. 픽셀 수나 CSS 길이',
+        en: 'The tallest the sheet gets before its rows scroll inside it: a number of pixels or any CSS length'
       }
     },
     {

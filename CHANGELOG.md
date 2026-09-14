@@ -108,6 +108,8 @@
 
 - **A `Panes` handle is named, and says which panes it resizes.** A handle was a `role="separator"` with a value and nothing else, so a screen reader announced "separator, 50" with no word for what the number was the share of. Each handle is now named by the new `panes` namespace's "Resize panes", in all eighteen registered languages, and its `aria-controls` names the pane on either side; a pane without an `id` is given one. `handleLabel` takes a name of its own, as a string or as a function of the handle's index, and `locale` picks the language.
 
+- **`Table` takes `maxHeight`, and `stickyHeader` sticks under it.** A Table's sheet scrolls sideways, which makes it the box its sticky header sticks to, so limiting the height on a box around the table, as the docs said to, scrolled that outer box instead and the header scrolled away with the rows. `maxHeight` limits the sheet itself, as a number of pixels or any CSS length, so the rows scroll inside it and a `stickyHeader` stays at its top.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.

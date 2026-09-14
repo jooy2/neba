@@ -254,6 +254,25 @@ describe('Table', () => {
       expect(striped.className).toContain('var(--neba-fg)');
     });
 
+    // A height limited around the table scrolled that outer box, which is not the
+    // box a sticky header sticks to, so the header scrolled away with the rows.
+    it('limits its own sheet with maxHeight, keeping a style of its own', async () => {
+      const screen = await render(
+        <Table
+          headers={HEADERS}
+          items={Array.from({ length: 30 }, () => ITEMS[0])}
+          maxHeight={120}
+          stickyHeader
+          style={{ marginTop: 4 }}
+        />
+      );
+      const sheet = screen.container.firstElementChild as HTMLElement;
+
+      expect(sheet.style.maxHeight).toBe('120px');
+      expect(sheet.style.marginTop).toBe('4px');
+      expect(sheet.scrollHeight).toBeGreaterThan(sheet.clientHeight);
+    });
+
     it('pins the header only when asked', async () => {
       const screen = await render(<Table headers={HEADERS} items={ITEMS} />);
 

@@ -7,7 +7,8 @@ import {
   controlTextLeadingClasses,
   cx,
   metaTextClasses,
-  paddingXValues
+  paddingXValues,
+  toLength
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaDensity, NebaSize, NebaSlots } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -104,11 +105,17 @@ export interface TableProps<Row> extends Omit<
   /** Lights the row under the pointer. @default false */
   hoverable?: boolean;
   /**
-   * Pins the header while the body scrolls. Only does anything if something
-   * around the table actually constrains its height.
+   * Pins the header while the body scrolls. The sheet the table draws is what
+   * scrolls, so its height is limited with `maxHeight`; a height limited on a
+   * box around the table scrolls that box, and the header goes with the rows.
    * @default false
    */
   stickyHeader?: boolean;
+  /**
+   * The tallest the sheet gets before its rows scroll inside it: a number of
+   * pixels or any CSS length.
+   */
+  maxHeight?: number | string;
   /** Makes rows activatable. Also turns on the hover treatment. */
   onRowClick?: (row: Row, index: number) => void;
   /**
@@ -204,11 +211,13 @@ export function Table<Row>(rawProps: TableProps<Row>) {
     striped = false,
     hoverable = false,
     stickyHeader = false,
+    maxHeight,
     onRowClick,
     size = 'md',
     density = 'default',
     className,
     classNames,
+    style,
     ...boxProps
   } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
@@ -235,6 +244,9 @@ export function Table<Row>(rawProps: TableProps<Row>) {
       density={density}
       padded={false}
       className={cx('overflow-x-auto', className ?? '')}
+      // The sheet already scrolls sideways, which makes it the box a sticky
+      // header sticks to, so it is the one whose height is limited.
+      style={maxHeight === undefined ? style : { maxHeight: toLength(maxHeight), ...style }}
       {...boxProps}
     >
       <table
