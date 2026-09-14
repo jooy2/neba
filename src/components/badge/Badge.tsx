@@ -240,9 +240,15 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
   const anchored = hasContent(children);
   // `0` is content, and `hasContent` would agree — this is the one place the
   // library asks a second question, because a count of nothing is not news.
-  const empty = !hasContent(content) || (content === 0 && !showZero);
+  const zero = content === 0 && !showZero;
+  const empty = !hasContent(content) || zero;
   const asDot = dot || empty;
-  const hidden = invisible || (empty && !dot);
+  // A count of zero is not news, so it goes. A badge given no content at all is
+  // a dot, which is what leaving `content` out has always been documented to
+  // draw; it was drawn invisible, so a caller's status dot never appeared.
+  const hidden = invisible || (zero && !dot);
+  // A dot with nothing to read — no count, no `label` — is decoration.
+  const silent = hidden || (asDot && label === undefined && !hasContent(content));
 
   const markerClasses = cx(
     'pointer-events-none z-10 inline-flex shrink-0 items-center justify-center',
@@ -275,7 +281,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
       // A hidden badge says nothing, and a marker whose whole meaning is already
       // in `label` would otherwise be read twice — once as "3", once as the
       // sentence. Everything else is left to speak for itself.
-      aria-hidden={hidden ? true : undefined}
+      aria-hidden={silent ? true : undefined}
       {...props}
     >
       {/* Four cases, one element. A plain badge shows its count. A badge with a
@@ -287,7 +293,9 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
           page still finds. */}
       {hidden ? null : (
         <>
-          {asDot || label ? <span className={srOnlyClasses}>{label ?? capped}</span> : null}
+          {(asDot || label) && !silent ? (
+            <span className={srOnlyClasses}>{label ?? capped}</span>
+          ) : null}
           {asDot ? null : <span aria-hidden={label ? true : undefined}>{capped}</span>}
         </>
       )}

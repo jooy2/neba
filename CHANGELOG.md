@@ -70,6 +70,8 @@
 
 - **A `DateRangePicker` reports a range only once it has both ends, and keeps the old one until then.** The first press called `onValueChange` with `{ start, end: null }`, so the range that had been chosen was gone as soon as a new start was pressed, and closing the popup before the second press left the half range as the value, although the docs said it was thrown away. The first press now only marks the start, the value changes once when the second end is chosen, and closing early keeps the range that was there. A caller that acted on the half-range call gets no call until the range is complete.
 
+- **A `Badge` with no `content` draws its dot.** Leaving `content` out was documented to draw a dot, and the dot was drawn with `invisible` and `aria-hidden`, so a status marker such as `<Badge color="success"><Avatar /></Badge>` never appeared. It is now a visible dot, hidden from a screen reader only when it has no `label` to read. A `content` of `0` is still hidden unless `showZero` is passed, and a caller who relied on an empty Badge drawing nothing should pass `invisible`.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

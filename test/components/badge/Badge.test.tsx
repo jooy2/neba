@@ -79,16 +79,26 @@ describe('Badge', () => {
       await expect.element(screen.getByText('0')).toBeInTheDocument();
     });
 
-    it('goes to a dot when there is no content at all', async () => {
+    // The dot was drawn `invisible`, and this test only looked for its radius,
+    // so it passed on a marker nobody could see.
+    it('draws a visible dot when there is no content at all', async () => {
       const screen = await render(
         <Badge>
           <Button>Inbox</Button>
         </Badge>
       );
+      const marker = screen.getByRole('button').element().nextElementSibling as HTMLElement;
 
-      expect(screen.getByRole('button').element().parentElement?.innerHTML).toContain(
-        'rounded-full'
-      );
+      expect(marker.className).toContain('rounded-full');
+      expect(marker).not.toHaveClass('invisible');
+      // Nothing to read, so nothing is read.
+      expect(marker).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('reads a label on a dot that has no content', async () => {
+      const screen = await render(<Badge label="Online" />);
+
+      await expect.element(screen.getByText('Online')).toBeInTheDocument();
     });
 
     it('keeps the count in the DOM under a dot, for a reader', async () => {

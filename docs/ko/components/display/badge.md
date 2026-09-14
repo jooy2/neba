@@ -45,7 +45,7 @@ import { Badge, Button } from 'neba';
 
 `content`가 표식에 들어갈 내용입니다. 숫자가 `max`(기본 `99`)를 넘으면 `99+`로 표시되고, 문자열은 자르지 않습니다.
 
-`content`가 `0`이면 기본적으로 그리지 않습니다. `showZero`로 켤 수 있습니다. 셀 것은 없지만 알릴 것이 있을 때는 `dot`으로 점만 찍고, `invisible`은 레이아웃을 유지한 채 표식만 감춥니다.
+`content`가 `0`이면 기본적으로 그리지 않습니다. `showZero`로 켤 수 있습니다. 셀 것은 없지만 알릴 것이 있을 때는 `dot`으로 점만 찍고, `invisible`은 레이아웃을 유지한 채 표식만 감춥니다. `content`를 생략하면 표식은 점으로 그려집니다.
 
 <Demo src="badge/content">
 
