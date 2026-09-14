@@ -103,6 +103,45 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
   return width;
 }
 
+/**
+ * The host's height, for a chart whose `height` is a CSS length rather than a
+ * number. A drawing is laid out in pixels, so `height="16rem"` has to be read
+ * back off the box it produced; without this a Cartesian chart drew into a
+ * `viewBox` 0 pixels tall and a pie, a heatmap and a gauge ignored the string.
+ * It measures nothing when the height is already a number.
+ */
+function useMeasuredHeight(ref: React.RefObject<HTMLElement | null>, enabled: boolean): number {
+  const [height, setHeight] = React.useState(0);
+
+  useMeasureEffect(() => {
+    const host = ref.current;
+
+    if (!enabled || !host) {
+      return;
+    }
+
+    const measure = () => setHeight(host.clientHeight);
+
+    measure();
+
+    return observeResize(host, measure);
+  }, [ref, enabled]);
+
+  return height;
+}
+
+/**
+ * How tall a chart draws, in pixels: the number it was given, the `size`
+ * ladder when it was given nothing, and the measured box for a CSS length.
+ */
+function chartHeight(
+  height: number | string | undefined,
+  size: NebaSize,
+  measured: number
+): number {
+  return typeof height === 'number' ? height : height === undefined ? plotHeights[size] : measured;
+}
+
 /* ---------------------------------------------------------------------------
  * Shared props
  * ------------------------------------------------------------------------- */
@@ -1076,8 +1115,8 @@ export function CartesianChart(rawProps: CartesianProps) {
   // `shownValues` and cost the compiler every memo below.
   const described = summary ?? summarise(shownValues, formatValue);
 
-  const plotHeight =
-    typeof height === 'number' ? height : height === undefined ? plotHeights[size] : null;
+  const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
+  const plotHeight = chartHeight(height, size, measuredHeight);
 
   const fontSize = chartFontSizes[size];
 
@@ -1229,7 +1268,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   // `markInset` is reserving on the other three sides.
   const topPad = markerRadii[size] + 4 + headroom + markInset + (namesLeftAxis ? axisLabelBand : 0);
 
-  const boxHeight = plotHeight ?? 0;
+  const boxHeight = plotHeight;
   const plot: PlotBox = {
     left: left + markInset,
     top: topPad,
@@ -1666,7 +1705,7 @@ export function CartesianChart(rawProps: CartesianProps) {
           'rounded-(--neba-radius-xs)',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
         )}
-        style={{ height: plotHeight ?? height }}
+        style={{ height: typeof height === 'string' ? height : plotHeight }}
       >
         {nothing ? (
           <div
@@ -2105,6 +2144,8 @@ export {
   ChartSurface,
   ChartTooltipPanel,
   summarise,
+  chartHeight,
+  useMeasuredHeight,
   useMeasuredWidth,
   useReleaseOutside,
   useVisibility

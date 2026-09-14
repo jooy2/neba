@@ -11,7 +11,9 @@ import {
   summarise,
   type ChartTooltipItem,
   useMeasuredWidth,
-  useReleaseOutside
+  useReleaseOutside,
+  chartHeight,
+  useMeasuredHeight
 } from '../../internal/chart-frame.js';
 import {
   categoryAt,
@@ -19,7 +21,6 @@ import {
   compactNumber,
   formatCategory,
   markGap,
-  plotHeights,
   rampFill,
   rampInk,
   rampStep,
@@ -199,7 +200,8 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     [low, high, scale, midpoint]
   );
 
-  const plotHeight = typeof height === 'number' ? height : (plotHeights[size] ?? 220);
+  const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
+  const plotHeight = chartHeight(height, size, measuredHeight);
   const fontSize = chartFontSizes[size];
 
   const legendOptions = legend === true || legend === undefined || legend === false ? {} : legend;
@@ -498,7 +500,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
           'relative w-full rounded-(--neba-radius-xs)',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
         )}
-        style={{ height: plotHeight }}
+        style={{ height: typeof height === 'string' ? height : plotHeight }}
       >
         {nothing ? (
           <div

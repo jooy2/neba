@@ -1,12 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { ChartSurface, useMeasuredWidth, type ChartBaseProps } from '../../internal/chart-frame.js';
+import {
+  ChartSurface,
+  useMeasuredWidth,
+  type ChartBaseProps,
+  chartHeight,
+  useMeasuredHeight
+} from '../../internal/chart-frame.js';
 import {
   arcPath,
   chartFontSizes,
   compactNumber,
-  plotHeights,
   ringPath,
   textWidth,
   truncate
@@ -156,7 +161,8 @@ export function GaugeChart(rawProps: GaugeChartProps) {
 
   const family = value === null ? color : thresholdColor(value, color, thresholds);
 
-  const plotHeight = typeof height === 'number' ? height : plotHeights[size];
+  const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
+  const plotHeight = chartHeight(height, size, measuredHeight);
   const fontSize = chartFontSizes[size];
 
   const band = Math.min(0.9, Math.max(0.05, thickness));
@@ -331,7 +337,7 @@ export function GaugeChart(rawProps: GaugeChartProps) {
       <div
         ref={hostRef}
         className="relative w-full"
-        style={{ height: plotHeight }}
+        style={{ height: typeof height === 'string' ? height : plotHeight }}
         // Named, the dial is a meter: the value and both ends of its scale are
         // numbers a screen reader can state, so `min={-50}` is not read as a
         // fraction of `max`. The caption is the unit, and it travels in the

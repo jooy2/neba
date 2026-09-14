@@ -239,4 +239,22 @@ describe('GaugeChart', () => {
       expect(screen.getByRole('img').element().querySelectorAll('path')).toHaveLength(1);
     });
   });
+
+  // A string `height` is any CSS length, as the type says, and it used to draw
+  // nothing or be ignored.
+  describe('a CSS length as the height', () => {
+    it('draws at the height the length comes to', async () => {
+      const screen = await render(
+        <div style={{ width: 320, fontSize: 16 }}>
+          <GaugeChart label="CPU" height="10rem" value={64} />
+        </div>
+      );
+      const plot = screen.getByRole('meter', { name: 'CPU' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await expect
+        .poll(() => plot.element().querySelector('svg')?.getAttribute('viewBox')?.split(' ')[3])
+        .toBe('160');
+    });
+  });
 });

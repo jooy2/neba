@@ -65,7 +65,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F5 (130)** A string chart `height`: (a) measure the height, so every chart takes any CSS length; (b) narrow `height` to `number` (breaking).
 - **F6 (131)** Stacked LineChart and AreaChart with negative values: (a) stack marks by sign, as the axis already does; (b) document that stacking takes non-negative values.
 - **F7 (133)** Legend hidden state: (a) remember hidden series by name, falling back to the index, so reordered data hides the same series; (b) reset it whenever the series change.
 - **F8 (134)** A ninth series: (a) a development warning, and the docs say the slots repeat from there; (b) fix the docs only.
@@ -288,7 +287,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 ### Charts common
 
 - [x] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`. See F4. Decided: (a) the frame renormalises with `toFullShares` over the visible series and writes each original through `format` and the locale.
-- [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`. See F5.
+- [x] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`. See F5. Decided: (a) `useMeasuredHeight` and `chartHeight` in `chart-frame.tsx`; a string height is measured on every chart that draws against one.
 - [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`. See F6.
 - [x] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1. Decided: approved; the return type is `string | number`, held by a `@ts-expect-error` in the LineChart tests.
 - [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`. See F7.

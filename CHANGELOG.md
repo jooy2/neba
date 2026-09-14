@@ -436,6 +436,8 @@
 
 - **A `stacked="full"` chart writes the caller's numbers through `format` and shares the hundred between the series still shown.** An `AreaChart` or `BarChart` stacked to full kept each original value as `String(value)`, so its tooltip and its table ignored `format` and the locale and read `1234.5678` where the rest of the chart said `1,235`. Hiding a series in the legend left it counted in each category's total, so the bars and bands that remained stopped short of 100%. The originals are now written through the chart's own `format` and `locale`, and the total counts only the series still shown. The normalisation, which both charts had a copy of, is done once in the shared chart frame.
 
+- **A chart takes any CSS length as its `height`.** The type and the docs said a string was any CSS length, but a `LineChart`, `AreaChart`, `BarChart`, `ScatterChart` or `TimelineChart` given `height="16rem"` drew into a plot 0 pixels tall and showed nothing, and a `PieChart`, `HeatmapChart` or `GaugeChart` ignored the string and took its `size`. A string height is now written on the chart's box and the drawing is laid out against the height that box comes to, following it when it changes. A number is still used as it is, with nothing measured.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

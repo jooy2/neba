@@ -14,7 +14,9 @@ import {
   type ChartTooltipItem,
   useMeasuredWidth,
   useReleaseOutside,
-  useVisibility
+  useVisibility,
+  chartHeight,
+  useMeasuredHeight
 } from '../../internal/chart-frame.js';
 import {
   arcPath,
@@ -24,7 +26,6 @@ import {
   formatCategory,
   inkOn,
   markGap,
-  plotHeights,
   seriesColor,
   toValue
 } from '../../internal/chart.js';
@@ -164,7 +165,8 @@ export function PieChart(rawProps: PieChartProps) {
   );
 
   const semi = shape === 'semi';
-  const plotHeight = typeof height === 'number' ? height : plotHeights[size];
+  const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
+  const plotHeight = chartHeight(height, size, measuredHeight);
   const fontSize = chartFontSizes[size];
 
   const legendOptions: NebaChartLegend =
@@ -330,7 +332,7 @@ export function PieChart(rawProps: PieChartProps) {
           'relative w-full rounded-(--neba-radius-xs)',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
         )}
-        style={{ height: plotHeight }}
+        style={{ height: typeof height === 'string' ? height : plotHeight }}
       >
         {nothing ? (
           <div
