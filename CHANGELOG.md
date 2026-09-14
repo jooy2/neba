@@ -402,6 +402,8 @@
 
 - **A calendar's left and right arrows follow RTL.** The day, month and year grids are laid out in the reading direction, but ArrowLeft always went back and ArrowRight always went forward, so on a right-to-left page each arrow moved the focus away from the cell it pointed at. Under RTL ArrowLeft is now the next day, month or year. This covers `Calendar` and every date picker.
 
+- **The `Gallery` viewer's arrow keys follow RTL.** Its Previous and Next buttons already swapped sides on a right-to-left page, but ArrowRight still went to the next picture, so the key pointing at the Next button went back. ArrowLeft is now the next picture under RTL.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -74,12 +74,16 @@ export function GalleryViewer({
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (index === null || event.metaKey || event.ctrlKey || event.altKey) return;
 
+    // The buttons swap sides under RTL, and the keys follow them: the arrow
+    // that points at "next" is the one that goes there.
+    const ahead = getComputedStyle(event.currentTarget).direction === 'rtl' ? -1 : 1;
+
     if (event.key === 'ArrowRight') {
       event.preventDefault();
-      go(index + 1);
+      go(index + ahead);
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      go(index - 1);
+      go(index - ahead);
     }
   };
 

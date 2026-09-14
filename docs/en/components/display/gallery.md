@@ -98,7 +98,7 @@ What a tile does under the pointer, and under the keyboard focus: both, always, 
 
 ### preview
 
-Opens the picture full size, with the rest of the set an arrow key away. `←` and `→` move, `Esc` closes, and the counter under the picture is announced when it changes.
+Opens the picture full size, with the rest of the set an arrow key away. `←` and `→` move the way the arrow points, so under RTL `←` is the next picture; `Esc` closes, and the counter under the picture is announced when it changes.
 
 An item's `full` is used if it has one, so a grid of thumbnails can open the file it is a thumbnail of. `watermark` and `protect` follow the picture into the viewer, because a mark that came off the moment somebody enlarged the picture would not be a mark.
 

@@ -396,6 +396,27 @@ describe('Gallery', () => {
       await expect.element(screen.getByText('Image 2 of 4')).toBeInTheDocument();
     });
 
+    // The buttons swap sides under RTL and the keys did not follow them.
+    it('moves to the next picture on the left arrow under RTL', async () => {
+      document.documentElement.dir = 'rtl';
+
+      try {
+        const screen = await render(<Gallery items={items} preview />);
+
+        await screen.getByRole('button', { name: /A ridge/ }).click();
+        await expect.element(screen.getByText('Image 1 of 4')).toBeInTheDocument();
+
+        screen
+          .getByRole('dialog')
+          .element()
+          .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+
+        await expect.element(screen.getByText('Image 2 of 4')).toBeInTheDocument();
+      } finally {
+        document.documentElement.removeAttribute('dir');
+      }
+    });
+
     // It stops at the ends rather than looping: a gallery is one picture with a
     // way to the next, not a carousel showing a set in order.
     it('stops at the two ends', async () => {
