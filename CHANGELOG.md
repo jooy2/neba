@@ -496,6 +496,8 @@
 
 - **`Typography` with no `color` inherits.** Every level was pinned to `--neba-fg`, so a Typography inside a solid Alert drew dark text on the dark fill, and a host's heading colour never reached it. It now states no colour and takes the one around it, as the docs said; `caption` and `overline` stay muted.
 
+- **`align` and `gutter` work on a `caption` and an `overline`.** Both levels are `<span>` elements, where `text-align` and a bottom margin do nothing. Either prop now makes them a block.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

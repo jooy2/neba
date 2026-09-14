@@ -239,6 +239,9 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     levelClasses[level],
     weightClasses[weight ?? levelWeights[level]],
     align ? alignClasses[align] : '',
+    // `caption` and `overline` are spans, and a span has no line of its own to
+    // align or to leave room under — both props did nothing on them.
+    levelElements[level] === 'span' && (align || gutter) ? 'block' : '',
     lines ? clampClasses(lines) : '',
     gutter ? gutterClasses[level] : '[&.neba-typography]:my-0',
     // Doubled for `.prose h1`–`h4`, which write `color` on a heading. With no

@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F33 (185)** Typography `caption` and `overline` with `align` or `gutter`: (a) make them `block` when either is given; (b) document that both apply to block levels only.
 - **F34 (187)** Image with `preview`: (a) put `className` and `style` on the button, so it is the size of the picture (breaking where a caller styled the inner element); (b) document where they land.
 - **F35 (188)** Image `watermark` with `repeat`: (a) draw it as an inline `<svg>` pattern, where the colour tokens resolve; (b) document that `repeat` needs a literal colour.
 
@@ -329,7 +328,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **182** **keys.ts**: the `event.code` fallback applies even when `event.key` is a different letter, so on AZERTY Ctrl+Z matches both `Ctrl+Z` and `Ctrl+W`. Fall back to `code` only when `event.key` is not an ASCII letter or digit. `keys.ts:218-221`
 - [x] **183** **useShortcut** does not skip keydown during IME composition, so a `Mod+Enter` bound with `ignoreWhileTyping: false` can fire in the middle of Korean composition. Skip when `isComposing` is set or `keyCode === 229`. `useShortcut.ts:75-86`, `keys.ts:156-163`
 - [x] **184** [major][decision] **Typography**: an empty `color` is pinned to `--neba-fg` instead of inheriting, so inside a solid Alert it draws dark text on a dark fill. The docs say it inherits. `Typography.tsx:247-251`. See F32. Decided: (a) no `color` writes no ink class, so the text inherits; the quiet levels stay muted.
-- [ ] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and ~~a `lines` of 7 or more silently clamps at 6~~ (fixed: the count is an `--n-lines` slot). `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`. See F33.
+- [x] **185** **Typography**: `caption` and `overline` are inline `<span>` elements, so `align` and `gutter` do nothing ([decision]), and ~~a `lines` of 7 or more silently clamps at 6~~ (fixed: the count is an `--n-lines` slot). `Typography.tsx:154-155, 241-243`, `src/internal/styles.ts:572-583`. See F33. Decided: (a) `caption` and `overline` become `block` when `align` or `gutter` is given.
 - [x] **186** Image stayed invisible when given `onLoad` or `onError`; `protect` could be undone.
 - [ ] **187** [major][decision] **Image**: with `preview`, `className` and `style` land on the element inside the button, so the button spans the whole line and clicking empty space beside the picture opens it. `Image.tsx:1158, 1199, 1234`. See F34.
 - [ ] **188** **Image**: ~~the preview `<img>` takes no `srcSet`, `sizes`, `crossOrigin` or `referrerPolicy`, so an Image given only `srcSet` has an empty preview and makes one more request~~ (fixed: `srcSet`, `crossOrigin` and `referrerPolicy` pass; `sizes` stays with the thumbnail so the preview picks a larger candidate). `watermark` with `repeat: true` is an SVG data URI, so token colours do not resolve and it draws black ([decision]). `Image.tsx:759, 1249-1260`. See F35.

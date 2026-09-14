@@ -7177,7 +7177,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'align',
       type: "'start' | 'center' | 'end' | 'justify'",
-      description: { ko: '텍스트 정렬', en: 'Text alignment' }
+      description: {
+        ko: '텍스트 정렬. caption과 overline은 블록으로 바뀝니다',
+        en: 'Text alignment. Makes caption and overline a block'
+      }
     },
     {
       name: 'lines',
@@ -7192,8 +7195,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '아래 여백을 붙입니다. 기본이 꺼짐인 이유는 여백을 스스로 만드는 컴포넌트는 레이아웃이 싸워야 할 대상이기 때문입니다',
-        en: 'Adds the space below. Off by default: a component that injects margins is one a layout has to fight'
+        ko: '아래 여백을 붙입니다. 기본이 꺼짐인 이유는 여백을 스스로 만드는 컴포넌트는 레이아웃이 싸워야 할 대상이기 때문입니다. caption과 overline은 블록으로 바뀝니다',
+        en: 'Adds the space below. Off by default: a component that injects margins is one a layout has to fight. Makes caption and overline a block'
       }
     },
     {

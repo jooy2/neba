@@ -155,6 +155,28 @@ describe('Typography', () => {
       expect(element.style.color).toBe('red');
     });
 
+    // Both levels are spans, where `text-align` and a bottom margin do nothing.
+    it('makes a quiet level a block when it is aligned or given a gutter', async () => {
+      const screen = await render(<Typography level="caption">Note</Typography>);
+      const note = () => screen.getByText('Note').element();
+
+      expect(note()).not.toHaveClass('block');
+
+      await screen.rerender(
+        <Typography level="caption" align="center">
+          Note
+        </Typography>
+      );
+      expect(note()).toHaveClass('block');
+
+      await screen.rerender(
+        <Typography level="overline" gutter>
+          Note
+        </Typography>
+      );
+      expect(note()).toHaveClass('block');
+    });
+
     it('adds no margin unless asked', async () => {
       const screen = await render(<Typography level="h2">Heading</Typography>);
 
