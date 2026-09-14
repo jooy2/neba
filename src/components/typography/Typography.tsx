@@ -241,14 +241,15 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(functio
     align ? alignClasses[align] : '',
     lines ? clampClasses(lines) : '',
     gutter ? gutterClasses[level] : '[&.neba-typography]:my-0',
-    // Doubled for `.prose h1`–`h4`, which write `color` on a heading. The rest of
-    // the scale is doubled anyway, and an ink that followed the host while the
-    // size did not would be the worst of both.
+    // Doubled for `.prose h1`–`h4`, which write `color` on a heading. With no
+    // `color`, every level but the two quiet ones states no ink and inherits:
+    // pinned to the page foreground, a Typography inside a solid Alert drew dark
+    // text on the dark fill, and a host's own heading colour never reached it.
     color
       ? '[&.neba-typography]:text-(--n-accent)'
       : mutedLevels.has(level)
         ? '[&.neba-typography]:text-(--neba-muted-fg)'
-        : '[&.neba-typography]:text-(--neba-fg)',
+        : '',
     animation.className,
     className ?? ''
   );

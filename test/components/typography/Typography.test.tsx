@@ -71,11 +71,13 @@ describe('Typography', () => {
   });
 
   describe('style props', () => {
-    it('inherits the page foreground when no colour role is asked for', async () => {
+    // It was pinned to `--neba-fg`, which the docs said it inherited: dark text
+    // on a solid Alert's dark fill.
+    it('states no ink when no colour role is asked for, so it inherits', async () => {
       const screen = await render(<Typography>Body</Typography>);
       const element = screen.getByText('Body').element() as HTMLElement;
 
-      expect(element).toHaveClass('[&.neba-typography]:text-(--neba-fg)');
+      expect(element.className).not.toContain('text-(');
       expect(element.style.getPropertyValue('--n-accent')).toBe('');
     });
 

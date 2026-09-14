@@ -7162,8 +7162,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: COLOR,
       shared: true,
       description: {
-        ko: '의미론적 색 역할. 다른 컴포넌트와 달리 기본값이 없습니다. 지정하지 않으면 페이지의 글자색을 그대로 씁니다',
-        en: 'Semantic colour role. Unlike every other component this has no default: unset means the page’s own colour'
+        ko: '의미론적 색 역할. 다른 컴포넌트와 달리 기본값이 없습니다. 지정하지 않으면 감싼 요소의 글자색을 물려받으며, caption과 overline은 흐린 색을 유지합니다',
+        en: 'Semantic colour role. Unlike every other component this has no default: unset inherits the colour around it, and caption and overline stay muted'
       }
     },
     {

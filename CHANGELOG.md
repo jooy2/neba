@@ -494,6 +494,8 @@
 
 - **A shortcut on a punctuation key fires with Shift held.** `useShortcut('?')`, as the hooks guide shows it, never fired: `?` is typed with Shift and the modifiers were matched exactly. For a single key that is neither a letter nor a digit, Shift is no longer compared, so `?` fires however the layout types it. Letters and digits still need `Shift` written.
 
+- **`Typography` with no `color` inherits.** Every level was pinned to `--neba-fg`, so a Typography inside a solid Alert drew dark text on the dark fill, and a host's heading colour never reached it. It now states no colour and takes the one around it, as the docs said; `caption` and `overline` stay muted.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
