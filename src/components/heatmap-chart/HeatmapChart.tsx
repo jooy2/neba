@@ -237,6 +237,15 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
 
   const columnBand = shape === 'treemap' ? 0 : fontSize + 8;
 
+  /* The column labels, and one stride for all of them. Measured per label, a
+     short `Mar 9` kept a smaller stride than the `Mar 10` beside it, so the
+     two were both drawn and ran into each other. The widest decides. */
+  const columnTexts = labels.map((category) => formatCategory(category, locale));
+  const widestColumn = columnTexts.reduce(
+    (most, text) => Math.max(most, textWidth(text, fontSize)),
+    0
+  );
+
   const plot = {
     left: rowNames.band,
     width: Math.max(0, width - rowNames.band),
@@ -611,13 +620,10 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
             {shape === 'grid'
               ? labels.map((category, index) => {
                   const slot = plot.width / Math.max(1, columns);
-                  const text = formatCategory(category, locale);
+                  const text = columnTexts[index];
                   // Every nth, chosen so the labels clear each other — the same
                   // answer the cartesian axis gives, and never a rotated one.
-                  const stride = Math.max(
-                    1,
-                    Math.ceil((textWidth(text, fontSize) + 8) / Math.max(1, slot))
-                  );
+                  const stride = Math.max(1, Math.ceil((widestColumn + 8) / Math.max(1, slot)));
 
                   if (index % stride !== 0) {
                     return null;

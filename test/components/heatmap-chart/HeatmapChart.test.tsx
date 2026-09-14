@@ -82,6 +82,35 @@ describe('HeatmapChart', () => {
       expect(written).toContain('12');
     });
 
+    // The stride was worked out per label, so a short label kept a smaller one
+    // than the longer label next to it and the two overlapped.
+    it('thins the column labels on one stride', async () => {
+      // Short and long labels side by side, so a per-label stride disagrees.
+      const days = Array.from({ length: 30 }, (_, index) =>
+        index % 2 === 0 ? `D${index}` : `Day number ${index}`
+      );
+      const screen = await render(
+        <div style={{ width: 360 }}>
+          <HeatmapChart
+            label="March"
+            categories={days}
+            series={[{ name: 'Load', data: days.map((_, index) => index) }]}
+          />
+        </div>
+      );
+      const plot = screen.getByRole('img', { name: 'March' });
+
+      await expect.poll(() => cells(plot.element()).length).toBeGreaterThan(0);
+
+      const drawn = texts(plot.element())
+        .filter((text): text is string => text !== null && days.includes(text))
+        .map((text) => days.indexOf(text));
+      const gaps = drawn.slice(1).map((index, at) => index - drawn[at]);
+
+      expect(drawn.length).toBeGreaterThan(1);
+      expect(new Set(gaps).size).toBe(1);
+    });
+
     it('reflects a changed series on re-render', async () => {
       const screen = await render(
         <HeatmapChart label="Sessions" categories={HOURS} series={TRAFFIC} />

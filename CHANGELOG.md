@@ -516,6 +516,8 @@
 
 - **`PieChart` with `tooltip={false}` ignores the arrow keys.** They still moved the active slice and dimmed the others, with no readout to say which slice it was.
 
+- **`HeatmapChart` thins its column labels on one stride.** The interval was worked out per label, so a short `Mar 9` and a longer `Mar 10` were both drawn and overlapped. The widest label now sets it for all of them.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
