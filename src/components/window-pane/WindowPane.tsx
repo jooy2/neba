@@ -233,6 +233,15 @@ const resizeHandles = [
 ] as const;
 
 /**
+ * The uncontrolled windows on the page, the one brought forward last at the
+ * end. Each entry puts its window in front or behind. It exists for the moment
+ * the front window closes: every other one had been told it was behind, and
+ * nothing told any of them otherwise, so the page was left with no window in
+ * front at all.
+ */
+const attention: Array<(front: boolean) => void> = [];
+
+/**
  * A window, drawn the way one of four systems draws it, with anything at all
  * inside it.
  *
@@ -399,7 +408,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
     );
 
     React.useEffect(() => {
-      if (activeProp !== undefined) {
+      if (activeProp !== undefined || !open) {
         return;
       }
 
@@ -408,6 +417,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
         return;
       }
 
+      const bring = (front: boolean) => setAttended(front);
+      attention.push(bring);
+
       const notice = (event: Event) => {
         const target = event.target;
         if (!(target instanceof Node)) {
@@ -415,6 +427,8 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
         }
 
         if (root.contains(target)) {
+          attention.splice(attention.indexOf(bring), 1);
+          attention.push(bring);
           setAttended(true);
           return;
         }
@@ -433,8 +447,15 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       return () => {
         document.removeEventListener('pointerdown', notice, true);
         document.removeEventListener('focusin', notice, true);
+
+        // Closed or gone: if it was in front, the one before it comes forward.
+        const place = attention.indexOf(bring);
+        const wasFront = place === attention.length - 1;
+
+        attention.splice(place, 1);
+        if (wasFront) attention[attention.length - 1]?.(true);
       };
-    }, [activeProp]);
+    }, [activeProp, open]);
 
     /*
      * A gesture is torn down by the pointerup that ends it, and that event never
@@ -587,6 +608,22 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
      * released once the journey back is over, so content that grows later still
      * grows the window.
      */
+    /*
+     * A window that starts rolled up never went through `rollUp`, which is where
+     * the rolled height is measured, so it fell back to the metrics table and
+     * the border clipped its title bar. Measured before paint instead.
+     */
+    React.useLayoutEffect(() => {
+      if (!minimized || rolled !== null) return;
+
+      const root = rootRef.current;
+      const bar = root?.firstElementChild;
+
+      if (root && bar instanceof HTMLElement) {
+        setRolled(bar.offsetHeight + (root.offsetHeight - root.clientHeight));
+      }
+    }, [minimized, rolled]);
+
     function rollUp(next: boolean) {
       const root = rootRef.current;
       const bar = root?.firstElementChild;
@@ -728,6 +765,9 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
             className="flex shrink-0 items-center"
             style={{ gap: Math.round(metrics.title * 0.5) }}
             onPointerDown={(event) => event.stopPropagation()}
+            // A double-click on a control in here is that control's, and bubbling
+            // up to the bar it maximised the window.
+            onDoubleClick={(event) => event.stopPropagation()}
           >
             {actions}
           </span>

@@ -310,6 +310,38 @@ describe('WindowPane', () => {
       expect(onMaximizedChange).toHaveBeenCalledWith(true);
     });
 
+    it('leaves a double click on an action to the action', async () => {
+      const onMaximizedChange = vi.fn();
+      const screen = await render(
+        <WindowPane
+          title="Finder"
+          actions={<button type="button">Share</button>}
+          onMaximizedChange={onMaximizedChange}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Share' }).dblClick();
+
+      expect(onMaximizedChange).not.toHaveBeenCalled();
+    });
+
+    // Never rolled up by a press, it was never measured, and the border cut
+    // into its title bar.
+    it('measures a window that starts rolled up', async () => {
+      const screen = await render(
+        <WindowPane
+          title="Finder"
+          defaultMinimized
+          style={{ borderStyle: 'solid', borderWidth: 3 }}
+          data-testid="window"
+        />
+      );
+      const root = screen.getByTestId('window').element() as HTMLElement;
+      const bar = root.firstElementChild as HTMLElement;
+
+      await expect.poll(() => root.style.height).toBe(`${bar.offsetHeight + 6}px`);
+    });
+
     it('reports a maximize a caller is driving without acting on it', async () => {
       const onMaximizedChange = vi.fn();
       const screen = await render(
@@ -413,6 +445,26 @@ describe('WindowPane', () => {
         .dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
 
       await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-muted-fg)');
+    });
+
+    // Every other window had been told it was behind, and closing the front one
+    // told none of them otherwise.
+    it('hands the front to the window before it when the front one closes', async () => {
+      const screen = await render(
+        <>
+          <WindowPane title="One" data-testid="window" />
+          <WindowPane title="Two" data-testid="other" />
+        </>
+      );
+
+      const other = screen.getByTestId('other').element() as HTMLElement;
+
+      other.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).toBe('var(--neba-muted-fg)');
+
+      (other.querySelector('[aria-label="Close"]') as HTMLElement).click();
+
+      await expect.poll(() => slot(screen, '--n-window-bar-fg')).not.toBe('var(--neba-muted-fg)');
     });
 
     it('comes back to the front when it is pressed itself', async () => {

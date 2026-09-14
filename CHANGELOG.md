@@ -538,6 +538,8 @@
 
 - **`WindowPane` moves and resizes in its own pixels inside a scaled ancestor.** Sizes were read from `getBoundingClientRect()`, which includes transforms, so inside a Mockup at scale 0.3 one key press shrank the window to 180px and a drag followed only 30% of the pointer.
 
+- **`WindowPane` hands the front on when the front window closes, keeps a double-click on its actions, and measures a window that starts rolled up.** Closing the front window left every other window marked inactive. A double-click on a control in `actions` bubbled to the title bar and maximised the window. `defaultMinimized` skipped the measurement a roll-up makes, so the border clipped the title bar.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
