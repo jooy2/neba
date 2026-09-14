@@ -423,7 +423,8 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
             label={messages.toTarget}
             disabled={disabled || !canSend}
             onClick={() => move(sourceRows, true)}
-            icon={<ArrowRightIcon />}
+            // Turned under RTL, where the chosen list is laid out on the left.
+            icon={<span className="flex rtl:rotate-180">{<ArrowRightIcon />}</span>}
           />
           <IconButton
             size={size}
@@ -433,9 +434,9 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
             disabled={disabled || !canReturn}
             onClick={() => move(targetRows, false)}
             // The same glyph turned, which is the one allowance the no-transform
-            // rule makes — and it is logical, so under RTL the arrows already
-            // point the way the lists are laid out.
-            icon={<span className="flex rotate-180">{<ArrowRightIcon />}</span>}
+            // rule makes. A rotation is physical, so under RTL, where the lists
+            // swap sides, both arrows turn back the other way.
+            icon={<span className="flex rotate-180 rtl:rotate-0">{<ArrowRightIcon />}</span>}
           />
         </div>
 

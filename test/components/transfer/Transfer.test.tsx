@@ -219,4 +219,19 @@ describe('Transfer', () => {
       expect(screen.getByRole('checkbox', { name: 'Status' }).query()).toBeNull();
     });
   });
+
+  // Both arrows were drawn for a left-to-right layout only, so under RTL, where
+  // the chosen list sits on the left, each pointed away from where it moves.
+  it('turns both move arrows round under RTL', async () => {
+    const screen = await render(<Transfer items={ITEMS} />);
+    const glyph = (name: string) =>
+      screen.getByRole('button', { name }).element().querySelector('svg')?.parentElement;
+
+    await expect
+      .element(screen.getByRole('button', { name: 'Move to selected' }))
+      .toBeInTheDocument();
+
+    expect(glyph('Move to selected')?.className).toContain('rtl:rotate-180');
+    expect(glyph('Move to available')?.className).toContain('rtl:rotate-0');
+  });
 });

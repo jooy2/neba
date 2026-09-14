@@ -394,6 +394,8 @@
 
 - **A `Switch` under RTL puts "on" at the end of the line.** The thumb travelled on a physical `left`, so in a right-to-left page it still sat on the left when off and moved right when on, the reverse of what the reader expects. It now travels on `inset-inline-start`, and on and off swap ends with the direction. A caller who moved the thumb through `classNames.thumb` with a `left-*` utility should use `start-*`.
 
+- **A `Transfer`'s move arrows point the way the items go under RTL.** Both glyphs were turned for a left-to-right layout only, so on a right-to-left page, where the chosen list sits on the left, each arrow pointed away from the list it moves items into. Both now turn the other way under RTL.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
