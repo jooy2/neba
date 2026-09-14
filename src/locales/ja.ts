@@ -47,7 +47,8 @@ export const ja: NebaLocale = {
     range: '{total} 件中 {start}–{end} 件',
     selected: '{count} 件を選択中',
     empty: 'データがありません',
-    exportCsv: 'CSVをエクスポート'
+    exportCsv: 'CSVをエクスポート',
+    noGroup: 'グループなし'
   },
   color: {
     area: '彩度と明度',

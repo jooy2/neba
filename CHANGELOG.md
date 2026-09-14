@@ -474,6 +474,8 @@
 
 - **A `DataTable` paged by its caller keeps the rows chosen on other pages.** With `manual={['pages']}` the table only holds the page it was given, and every Ctrl-click, range or press of the header tick rebuilt the selection from those rows, so choosing a row on page 2 dropped everything chosen on page 1. A key already chosen is now kept when its row is not on the page. `onSelectedChange` still hands over the row behind each key the table was given; a key chosen on another page of a manual table comes without one.
 
+- **A grouped `DataTable` heads its ungrouped rows "No group".** Rows `groupBy` put in no group were headed by the empty-state text, "Nothing here", above rows that were plainly there. They now take the `table` namespace's new `noGroup` word, in all eighteen registered languages and in the table's `locale`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

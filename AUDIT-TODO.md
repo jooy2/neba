@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F23 (168)** DataTable rows with no group: (a) head them with a word from i18n, "No group", in all 18 locales; (b) show the count with no title; (c) draw no heading row for them.
 - **F24 (169)** DataTable `Date` cell without `render`: (a) write it as a date in the table's locale; (b) document that a `Date` needs `render`.
 - **F25 (171)** Table `stickyHeader` in a height-limited box: (a) a `maxHeight` prop that makes the Table's own sheet scroll; (b) change the docs to what works now.
 - **F26 (174)** Anchor `activeHref`: (a) keep tracking in controlled mode and call `onActiveChange`, and start on the first heading when nothing scrolls; (b) document that `activeHref` turns tracking off.
@@ -315,11 +314,11 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **165** [decision] **DataTable**: with `manual={['pages']}`, choosing rows on page 1 and then Ctrl-clicking or pressing the header checkbox on page 2 drops page 1's selection, because `commitSelection` looks only in the current `items`. `DataTable.tsx:980-1001, 1669-1677`. See F22. Decided: (a) under manual paging `commitSelection` keeps the identity of an already-chosen key whose row is not on the page.
 - [x] **166** **DataTable**: moving the active row with arrow keys leaves it outside the viewport. `revealRow` does not add the `<thead>` and caption height, does not scroll without `height`, and does not count group title rows under `groupBy`; drag selection in a grouped table is off for the same reason. `DataTable.tsx:1284-1303, 1439-1454`
 - [x] **167** **DataTable**: in `multiple`, pressing a row sets pointer capture on the `<table>`, so in browsers that send the click to the capturing element, `onRowClick`, double-click `onRowActivate` and the cell editor may not work (confirmed with a real mouse in Chromium, Firefox and WebKit). The `<th>` sort buttons have the same problem with `reorderable`. `DataTable.tsx:1172-1175, 1583-1589`
-- [ ] **168** **DataTable**, small defects:
+- [x] **168** **DataTable**, small defects:
   - [x] Clearing an `editType: 'number'` cell and leaving it commits `0` (`:2147-2153`).
   - [x] With `checkboxes` and `pinned: 'start'`, the checkbox column is not sticky, which leaves a gap on horizontal scroll (`:1731, 2192-2196`). A pinned heading was also stacked under the sticky headings beside it, found while checking this with the stylesheet loaded, and was fixed with it.
   - [x] The column reorder commit runs as a side effect inside a nested state updater, which StrictMode may call twice (`:1199-1215`).
-  - [ ] [decision] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`). See F23.
+  - [x] [decision] Rows with no group get the empty-state text "Nothing here" as their title (`:2071`). See F23. Decided: (a) the `table.noGroup` word, "No group", in all 18 locales.
   - [x] [major] A table with a tab stop and no selection draws no focus ring on its sheet, and no row is marked until an arrow key moves; found while fixing the ring above. See E7. Decided: approved; the sheet's ring follows `navigable` rather than `selects`.
   - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
   - [x] The header being dragged shows its state with `opacity-60` (`:1948`). It takes the `--n-soft` wash the Sidebar and Panes handles take while dragged.

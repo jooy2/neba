@@ -47,7 +47,8 @@ export const vi: NebaLocale = {
     range: '{start}–{end} trên {total}',
     selected: 'Đã chọn {count}',
     empty: 'Không có dữ liệu',
-    exportCsv: 'Xuất CSV'
+    exportCsv: 'Xuất CSV',
+    noGroup: 'Không có nhóm'
   },
   color: {
     area: 'Độ bão hòa và độ sáng',

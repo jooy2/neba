@@ -47,7 +47,8 @@ export const tr: NebaLocale = {
     range: '{total} kayıttan {start}–{end}',
     selected: '{count} seçildi',
     empty: 'Veri yok',
-    exportCsv: 'CSV dışa aktar'
+    exportCsv: 'CSV dışa aktar',
+    noGroup: 'Grupsuz'
   },
   color: {
     area: 'Doygunluk ve parlaklık',

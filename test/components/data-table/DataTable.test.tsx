@@ -1805,6 +1805,24 @@ describe('grouping', () => {
   });
 });
 
+describe('ungrouped rows', () => {
+  // Rows `groupBy` put in no group were headed by the empty-state text,
+  // "Nothing here", above rows that were plainly there.
+  it('heads them with the word for no group rather than with the empty text', async () => {
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={ITEMS}
+        getRowKey={key}
+        groupBy={(row) => (row.city === 'Seoul' ? undefined : row.city)}
+      />
+    );
+
+    await expect.element(screen.getByText('No group')).toBeInTheDocument();
+    expect(screen.getByText('Nothing here').query()).toBeNull();
+  });
+});
+
 describe('export', () => {
   const csvFor = async (extra: Partial<Parameters<typeof DataTable<Person>>[0]> = {}) => {
     let csv = '';

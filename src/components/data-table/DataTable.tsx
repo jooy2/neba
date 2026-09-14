@@ -2266,7 +2266,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             <ChevronIcon />
           </span>
         ) : null}
-        <span className="truncate font-semibold">{label === '' ? emptyText.title : label}</span>
+        <span className="truncate font-semibold">{label === '' ? messages.noGroup : label}</span>
         <span className="shrink-0 text-(--neba-muted-fg) tabular-nums">
           {number.format(rows.length)}
         </span>

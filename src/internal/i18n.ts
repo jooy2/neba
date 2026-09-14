@@ -221,6 +221,11 @@ export interface TableMessages {
   empty: string;
   /** The button that writes what is on screen out as a file. */
   exportCsv: string;
+  /**
+   * The heading over the rows `groupBy` put in no group. Its own word rather
+   * than `empty`'s, which said there was nothing there over rows that were.
+   */
+  noGroup: string;
 }
 
 /** The `table` namespace, as Table and DataTable read it. */
@@ -233,7 +238,8 @@ export const tableMessages: MessageTable<TableMessages> = {
     range: '{start}–{end} of {total}',
     selected: '{count} selected',
     empty: 'No data',
-    exportCsv: 'Export CSV'
+    exportCsv: 'Export CSV',
+    noGroup: 'No group'
   }
 };
 

@@ -179,7 +179,7 @@ A double-click opens the editor, and so does <kbd>F2</kbd> on the active row; bl
 />
 ```
 
-The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in: except rows `groupBy` returned `undefined` for, which go above everything, because a heading that says nothing is not one a reader can interpret.
+The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in: except rows `groupBy` returned `undefined` for, which go above everything, because a heading that says nothing is not one a reader can interpret. Their heading reads "No group", in the table's `locale`.
 
 `aggregate` draws in the group heading, in its own column, which is the whole point: a group's total belongs in the same column as the numbers it is a total of. There is no `'sum' | 'avg'` shorthand: the moment a table has one column needing a weighted mean or a distinct count, half the columns are functions and half are strings.
 

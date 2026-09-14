@@ -47,7 +47,8 @@ export const pl: NebaLocale = {
     range: '{start}–{end} z {total}',
     selected: 'Zaznaczono: {count}',
     empty: 'Brak danych',
-    exportCsv: 'Eksportuj CSV'
+    exportCsv: 'Eksportuj CSV',
+    noGroup: 'Bez grupy'
   },
   color: {
     area: 'Nasycenie i jasność',
