@@ -371,7 +371,7 @@ describe('Image', () => {
         const previewed = await render(<Image src={OK} alt="A ridge" width={240} preview />);
         await expect
           .element(previewed.getByRole('button', { name: 'A ridge' }))
-          .toHaveClass('w-fit');
+          .toHaveClass('[:where(&)]:w-fit');
       });
     });
 
@@ -513,6 +513,20 @@ describe('Image', () => {
     expect(screen.getByRole('button', { name: 'A ridge' }).element().className).toContain(
       'var(--n-ring,var(--neba-primary-ring))'
     );
+  });
+
+  // They landed on the picture inside, so the button spanned the whole line
+  // and the empty space beside a smaller picture opened it.
+  it('puts className and style on the preview button', async () => {
+    const screen = await render(
+      <Image src={OK} alt="A ridge" preview className="thumb" style={{ width: 120 }} />
+    );
+    const button = screen.getByRole('button', { name: 'A ridge' }).element() as HTMLElement;
+
+    expect(button).toHaveClass('thumb');
+    expect(button.style.width).toBe('120px');
+    expect(button.querySelector('.thumb')).toBeNull();
+    expect(button.querySelector<HTMLElement>('[style*="width"]')).toBeNull();
   });
 
   it('opens the full picture when previewed', async () => {

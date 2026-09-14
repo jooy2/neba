@@ -136,6 +136,8 @@ import { Image } from 'neba';
 
 그림이 `alt`를 이름으로 갖는 `<button>`이 되므로 `Tab`으로 닿고 `Enter`로 열립니다. 포인터로만 확대할 수 있는 그림은 독자의 절반이 확대할 수 없는 그림입니다.
 
+`preview`가 켜지면 `className`과 `style`은 버튼에 붙습니다. 그래서 그림의 크기를 정하는 값이 누를 수 있는 영역의 크기도 정합니다.
+
 <Demo src="image/preview">
 
 <<< @/.vitepress/demos/image/preview.tsx

@@ -1189,7 +1189,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     ...sized,
     ...(shape === null ? null : shapeStyle(shape.shape, corner)),
     ...(feather === undefined ? null : featherStyle(feather)),
-    ...(shape === null ? style : null)
+    ...(shape === null && !preview ? style : null)
   };
 
   const framed =
@@ -1198,7 +1198,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         className={cx(
           'relative block overflow-hidden',
           shape === null ? radius : '',
-          shape === null ? className : ''
+          shape === null && !preview ? className : ''
         )}
         style={measured === null ? boxStyle : { aspectRatio: measured, ...boxStyle }}
       >
@@ -1213,7 +1213,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         className={cx(
           'block overflow-hidden',
           shape === null ? radius : '',
-          shape === null ? className : ''
+          shape === null && !preview ? className : ''
         )}
         style={boxStyle}
       >
@@ -1240,7 +1240,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       framed
     ) : (
       <span
-        className={cx('relative block', classNames?.frame, className)}
+        className={cx('relative block', classNames?.frame, preview ? '' : className)}
         style={{
           ...shapeStyle(shape.shape, outerCorner),
           padding: mat,
@@ -1248,7 +1248,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           boxShadow: shape.elevation ? `var(--neba-shadow-${shape.elevation})` : undefined,
           width: narrowed ? 'fit-content' : undefined,
           maxWidth: narrowed ? '100%' : undefined,
-          ...style
+          ...(preview ? null : style)
         }}
       >
         {framed}
@@ -1277,12 +1277,18 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         aria-label={alt || messages.preview}
         className={cx(
           'block cursor-zoom-in [outline:none]',
-          narrowed ? 'w-fit max-w-full' : 'w-full',
+          // At no specificity, so a width in the caller's `className` — which is
+          // here rather than on the picture inside, or the button would span the
+          // line beside a smaller picture and open it from the empty space —
+          // wins without depending on stylesheet order.
+          narrowed ? '[:where(&)]:w-fit [:where(&)]:max-w-full' : '[:where(&)]:w-full',
           // A fallback to the primary ring: the picture declares no colour family of
           // its own, and a `var()` with nothing behind it drops the whole outline.
           'focus-visible:[outline:2px_solid_var(--n-ring,var(--neba-primary-ring))] focus-visible:[outline-offset:2px]',
-          radius
+          radius,
+          className
         )}
+        style={style}
         onClick={() => setOpen(true)}
       >
         {mounted}

@@ -136,6 +136,8 @@ Opens the full picture in a [Dialog](../feedback/dialog) when it is clicked.
 
 The picture becomes a `<button>` carrying the `alt` as its name, so `Tab` reaches it and `Enter` opens it. An image only a pointer can enlarge is an image half the readers cannot enlarge.
 
+With `preview` on, `className` and `style` go on the button, so what sizes the picture also sizes what can be pressed.
+
 <Demo src="image/preview">
 
 <<< @/.vitepress/demos/image/preview.tsx
