@@ -157,6 +157,20 @@ describe('matchesShortcut', () => {
     expect(matchesShortcut(press('P', { ...mod, shiftKey: true }), 'Mod+P')).toBe(false);
   });
 
+  // `?` is typed with Shift held, and the exact Shift match meant the
+  // `useShortcut('?')` the docs show could never fire.
+  it('fires a punctuation key whichever way Shift had to be held to type it', () => {
+    expect(matchesShortcut(press('?', { shiftKey: true }), '?')).toBe(true);
+    expect(matchesShortcut(press('?'), '?')).toBe(true);
+    expect(matchesShortcut(press('?', { ...mod, shiftKey: true }), 'Mod+?')).toBe(true);
+    expect(matchesShortcut(press('?', { shiftKey: true }), 'Mod+?')).toBe(false);
+  });
+
+  it('still requires Shift to be named for a letter or a digit', () => {
+    expect(matchesShortcut(press('K', { shiftKey: true }), 'K')).toBe(false);
+    expect(matchesShortcut(press('1', { shiftKey: true }), '1')).toBe(false);
+  });
+
   it('falls back to the physical key when a modifier changed what was typed', () => {
     // Alt+K on a Mac reports a `key` of `˚`. Without the `code` fallback every
     // Alt combination in the library would quietly stop working there.

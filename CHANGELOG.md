@@ -492,6 +492,8 @@
 
 - **`Shortcut` draws the Mac modifiers in the order macOS uses.** `Mod+Shift+P` drew `⌘⇧P`; it now draws `⇧⌘P`, as every menu on a Mac and the docs do, whatever order the modifiers were written in. Windows and Linux keep the written order.
 
+- **A shortcut on a punctuation key fires with Shift held.** `useShortcut('?')`, as the hooks guide shows it, never fired: `?` is typed with Shift and the modifiers were matched exactly. For a single key that is neither a letter nor a digit, Shift is no longer compared, so `?` fires however the layout types it. Letters and digits still need `Shift` written.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

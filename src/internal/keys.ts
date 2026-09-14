@@ -191,6 +191,12 @@ function isComposing(event: KeyPress): boolean {
  * modifiers it wants, so `Enter` does not fire when `Mod+Enter` was pressed.
  * That is what makes a `shortcuts` map unambiguous — at most one entry can
  * match a keystroke, unless a caller spelled the same combination twice.
+ *
+ * Shift is the one exception, and only for a single key that is neither a
+ * letter nor a digit. On most layouts `?` is typed with Shift held, so asking
+ * for `?` and requiring Shift to be up was a shortcut that could never fire,
+ * and `Shift+/` fails too because `event.key` is already `?`. The character
+ * the reader typed says everything Shift did.
  */
 export function matchesShortcut(event: KeyPress, shortcut: string): boolean {
   const tokens = tokenize(shortcut).map(canonicalKey);
@@ -199,6 +205,8 @@ export function matchesShortcut(event: KeyPress, shortcut: string): boolean {
   }
 
   const wanted = { ctrl: false, meta: false, alt: false, shift: false };
+  const last = tokens[tokens.length - 1];
+  const punctuation = last.length === 1 && !/^[a-z0-9]$/.test(last);
   const mac = readOS() === 'mac';
 
   for (const token of tokens.slice(0, -1)) {
@@ -218,7 +226,7 @@ export function matchesShortcut(event: KeyPress, shortcut: string): boolean {
     event.ctrlKey === wanted.ctrl &&
     event.metaKey === wanted.meta &&
     event.altKey === wanted.alt &&
-    event.shiftKey === wanted.shift &&
+    (punctuation || event.shiftKey === wanted.shift) &&
     sameKey(event, tokens[tokens.length - 1])
   );
 }
