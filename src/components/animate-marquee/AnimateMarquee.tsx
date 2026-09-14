@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
 import { inertValue } from '../../internal/inert.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
@@ -9,7 +10,13 @@ import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps, NebaOrientation } from '../../types.js';
 
 export interface AnimateMarqueeProps
-  extends NebaAnimateProps, React.ComponentPropsWithoutRef<'div'> {
+  extends NebaAnimateProps, React.ComponentPropsWithoutRef<'span'> {
+  /**
+   * Renders something other than a `<span>`, such as `render={<ul />}`. A
+   * `<span>` by default, with a block display, so the component can sit inside a
+   * paragraph. Base UI's own escape hatch.
+   */
+  render?: useRender.RenderProp;
   /**
    * Which way the strip runs.
    * @default 'horizontal'
@@ -75,7 +82,7 @@ export interface AnimateMarqueeProps
  * many times as it was laid down, and a keyboard would stop at every link in
  * it as many times too.
  */
-export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueeProps>(
+export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>(
   function AnimateMarquee(
     {
       duration,
@@ -94,6 +101,7 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
       gap = '2rem',
       copies = 2,
       pauseOnHover = true,
+      render,
       className,
       style,
       children,
@@ -111,8 +119,8 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
       infinite: isInfinite(repeat)
     });
 
-    const boxRef = React.useRef<HTMLDivElement | null>(null);
-    const trackRef = React.useRef<HTMLDivElement | null>(null);
+    const boxRef = React.useRef<HTMLElement | null>(null);
+    const trackRef = React.useRef<HTMLElement | null>(null);
     const [travel, setTravel] = React.useState(0);
 
     const vertical = orientation === 'vertical';
@@ -166,7 +174,7 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
     const runDuration = duration ?? (travel > 0 ? (travel / speed) * 1000 : 12000);
 
     const track = (index: number) => (
-      <div
+      <span
         key={index}
         ref={index === 0 ? trackRef : undefined}
         className="neba-marquee-track"
@@ -177,7 +185,7 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
         inert={inertValue(index !== 0)}
       >
         {children}
-      </div>
+      </span>
     );
 
     // Held rather than written inline: an inline callback is a new function on
@@ -185,52 +193,52 @@ export const AnimateMarquee = React.forwardRef<HTMLDivElement, AnimateMarqueePro
     // the new one with the node — every render, for a ref that has not moved.
     const runRef = run.ref;
     const attach = React.useCallback(
-      (node: HTMLDivElement | null) => {
+      (node: HTMLElement | null) => {
         boxRef.current = node;
         runRef(node);
 
         if (typeof ref === 'function') {
           ref(node);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
         }
       },
       [ref, runRef]
     );
 
-    return (
-      <div
-        ref={attach}
-        className={cx('neba-marquee', vertical && 'neba-marquee-vertical', className)}
-        style={
-          {
-            '--n-anim-gap': lengthValue(gap),
-            // Linear unless a caller insists otherwise: an eased marquee slows
-            // at both ends of a loop that has no ends, which reads as the page
-            // stuttering.
-            ...(easing ? { '--n-anim-ease': easing } : {}),
-            '--n-anim-duration': `${Math.round(runDuration)}ms`,
-            '--n-anim-delay': `${delay}ms`,
-            '--n-anim-repeat': repeat === 'infinite' ? 'infinite' : String(repeat),
-            '--n-anim-direction': reverse
-              ? alternate
-                ? 'alternate-reverse'
-                : 'reverse'
-              : alternate
-                ? 'alternate'
-                : 'normal',
-            '--n-anim-state': run.state,
-            ...style
-          } as React.CSSProperties
-        }
-        data-neba-animation="marquee"
-        data-state={run.state}
-        data-pause-on-hover={pauseOnHover ? '' : undefined}
-        {...props}
-        {...run.handlers}
-      >
-        {Array.from({ length: still ? 1 : Math.max(1, copies) }, (_, index) => track(index))}
-      </div>
-    );
+    return useRender({
+      render: render ?? <span />,
+      ref: attach,
+      props: {
+        className: cx('neba-marquee', vertical && 'neba-marquee-vertical', className),
+        style: {
+          '--n-anim-gap': lengthValue(gap),
+          // Linear unless a caller insists otherwise: an eased marquee slows
+          // at both ends of a loop that has no ends, which reads as the page
+          // stuttering.
+          ...(easing ? { '--n-anim-ease': easing } : {}),
+          '--n-anim-duration': `${Math.round(runDuration)}ms`,
+          '--n-anim-delay': `${delay}ms`,
+          '--n-anim-repeat': repeat === 'infinite' ? 'infinite' : String(repeat),
+          '--n-anim-direction': reverse
+            ? alternate
+              ? 'alternate-reverse'
+              : 'reverse'
+            : alternate
+              ? 'alternate'
+              : 'normal',
+          '--n-anim-state': run.state,
+          ...style
+        } as React.CSSProperties,
+        'data-neba-animation': 'marquee',
+        'data-state': run.state,
+        'data-pause-on-hover': pauseOnHover ? '' : undefined,
+        ...props,
+        ...run.handlers,
+        children: Array.from({ length: still ? 1 : Math.max(1, copies) }, (_, index) =>
+          track(index)
+        )
+      }
+    });
   }
 );

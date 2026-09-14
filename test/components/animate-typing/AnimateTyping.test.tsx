@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AnimateTyping } from 'neba';
 
@@ -189,6 +190,28 @@ describe('AnimateTyping', () => {
       await vi.runAllTimersAsync();
 
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Half and half');
+    });
+  });
+
+  // Its root was a `<div>`, which inside a `<p>` is invalid markup that React
+  // reports as a hydration error, and there was no `render` to make it a heading.
+  describe('its element', () => {
+    it('draws no block element, so it can sit inside a paragraph', () => {
+      const html = renderToString(
+        <p>
+          <AnimateTyping text="Hello" />
+        </p>
+      );
+
+      expect(html).not.toContain('<div');
+    });
+
+    it('renders the element it is handed', async () => {
+      const screen = await render(
+        <AnimateTyping render={<h2 />} text="Hello" data-testid="root" />
+      );
+
+      expect(screen.getByTestId('root').element().tagName).toBe('H2');
     });
   });
 });

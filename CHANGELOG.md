@@ -66,6 +66,8 @@
 
 - **An `Image` and a `Stack` draw only `<span>` elements, so they can sit inside a `<p>`.** An Image drew its proportion box and its loading placeholder as `<div>`s, and a Stack's root was a `<div>`, although a Markdown renderer puts an Image inside a paragraph and a pile of avatars in a line of text is what a Stack is for. A `<div>` inside a `<p>` is invalid markup, which the browser rewrites and React reports as a hydration error. Both now draw spans with the same display they had. A `Stack`'s `ref` is an `HTMLSpanElement` and its props are a `<span>`'s, so code that typed the ref as `HTMLDivElement` needs the new type.
 
+- **`AnimateTyping`, `AnimateHeadline` and `AnimateMarquee` render a `<span>` and take `render`.** Each rendered a `<div>`, so none could sit inside a `<p>` without invalid markup and a hydration error, and a headline being typed or turned could not be a heading. Each now renders a `<span>` with the display it had, and `render` puts it on another element: `<AnimateHeadline render={<h2 />}>`. The `ref` of all three is an `HTMLElement` and their props are a `<span>`'s, so code that typed the ref as `HTMLDivElement` needs the new type.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

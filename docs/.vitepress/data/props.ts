@@ -14055,6 +14055,14 @@ export const propTables: Record<string, PropRow[]> = {
 
   AnimateTyping: [
     {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'span 대신 다른 요소로 렌더링합니다 (render={<h2 />}). Base UI의 render prop 그대로',
+        en: "Renders something other than a span (render={<h2 />}). Base UI's own escape hatch"
+      }
+    },
+    {
       name: 'text',
       type: 'string',
       description: {
@@ -14187,6 +14195,14 @@ export const propTables: Record<string, PropRow[]> = {
 
   AnimateMarquee: [
     {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'span 대신 다른 요소로 렌더링합니다 (render={<h2 />}). Base UI의 render prop 그대로',
+        en: "Renders something other than a span (render={<h2 />}). Base UI's own escape hatch"
+      }
+    },
+    {
       name: 'orientation',
       type: ORIENTATION,
       default: "'horizontal'",
@@ -14247,6 +14263,14 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   AnimateHeadline: [
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'span 대신 다른 요소로 렌더링합니다 (render={<h2 />}). Base UI의 render prop 그대로',
+        en: "Renders something other than a span (render={<h2 />}). Base UI's own escape hatch"
+      }
+    },
     {
       name: 'interval',
       type: 'number',

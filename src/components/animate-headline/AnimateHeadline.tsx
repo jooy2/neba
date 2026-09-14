@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRender } from '@base-ui/react/use-render';
 import {
   isInfinite,
   lengthValue,
@@ -11,7 +12,13 @@ import { cx } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 
 export interface AnimateHeadlineProps
-  extends Omit<NebaAnimateProps, 'alternate' | 'mode'>, React.ComponentPropsWithoutRef<'div'> {
+  extends Omit<NebaAnimateProps, 'alternate' | 'mode'>, React.ComponentPropsWithoutRef<'span'> {
+  /**
+   * Renders something other than a `<span>`, such as `render={<h1 />}`. A
+   * `<span>` by default, with a block display, so the component can sit inside a
+   * paragraph. Base UI's own escape hatch.
+   */
+  render?: useRender.RenderProp;
   /**
    * How long each line is held before the next one comes up, in milliseconds.
    * Counted from the moment a line arrives, so it is reading time rather than a
@@ -64,7 +71,7 @@ export interface AnimateHeadlineProps
  * are looking during the two seconds it is up, and a screen reader is given the
  * line that happens to be showing rather than the set.
  */
-export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineProps>(
+export const AnimateHeadline = React.forwardRef<HTMLElement, AnimateHeadlineProps>(
   function AnimateHeadline(
     {
       duration = 480,
@@ -82,6 +89,7 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
       onIndexChange,
       loop = true,
       rise = '100%',
+      render,
       className,
       style,
       children,
@@ -189,37 +197,35 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
     // line it turns.
     const runRef = run.ref;
     const attach = React.useCallback(
-      (node: HTMLDivElement | null) => {
+      (node: HTMLElement | null) => {
         runRef(node);
 
         if (typeof ref === 'function') {
           ref(node);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
         }
       },
       [ref, runRef]
     );
 
-    return (
-      <div
-        ref={attach}
-        className={cx('neba-headline', className)}
-        style={
-          {
-            '--n-anim-duration': `${duration}ms`,
-            '--n-anim-rise': lengthValue(rise),
-            ...(easing ? { '--n-anim-ease': easing } : {}),
-            '--n-anim-state': run.state,
-            ...style
-          } as React.CSSProperties
-        }
-        data-neba-animation="headline"
-        data-state={run.state}
-        {...props}
-        {...run.handlers}
-      >
-        {items.map((child, position) => {
+    return useRender({
+      render: render ?? <span />,
+      ref: attach,
+      props: {
+        className: cx('neba-headline', className),
+        style: {
+          '--n-anim-duration': `${duration}ms`,
+          '--n-anim-rise': lengthValue(rise),
+          ...(easing ? { '--n-anim-ease': easing } : {}),
+          '--n-anim-state': run.state,
+          ...style
+        } as React.CSSProperties,
+        'data-neba-animation': 'headline',
+        'data-state': run.state,
+        ...props,
+        ...run.handlers,
+        children: items.map((child, position) => {
           const state =
             position === active
               ? 'active'
@@ -244,8 +250,8 @@ export const AnimateHeadline = React.forwardRef<HTMLDivElement, AnimateHeadlineP
             className: cx('neba-headline-item', childProps.className),
             'data-state': state
           });
-        })}
-      </div>
-    );
+        })
+      }
+    });
   }
 );

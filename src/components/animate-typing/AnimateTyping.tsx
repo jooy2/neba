@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import { graphemesOf, textOf } from '../../internal/text.js';
@@ -9,7 +10,13 @@ import type { NebaAnimateProps } from '../../types.js';
 export interface AnimateTypingProps
   extends
     Omit<NebaAnimateProps, 'alternate' | 'easing'>,
-    Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
+    Omit<React.ComponentPropsWithoutRef<'span'>, 'children'> {
+  /**
+   * Renders something other than a `<span>`, such as `render={<h1 />}` for a
+   * headline being typed. A `<span>` by default, with a block display, so the
+   * component can sit inside a paragraph. Base UI's own escape hatch.
+   */
+  render?: useRender.RenderProp;
   /**
    * The text, when it is easier to pass than to nest. Overrides `children`.
    */
@@ -65,7 +72,7 @@ export interface AnimateTypingProps
  * contributes its text and nothing about its markup, because there is no honest
  * way to reveal half of a link.
  */
-export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps>(
+export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
   function AnimateTyping(
     {
       text,
@@ -83,6 +90,7 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
       play,
       once = true,
       threshold = 0.2,
+      render,
       className,
       style,
       children,
@@ -249,34 +257,38 @@ export const AnimateTyping = React.forwardRef<HTMLDivElement, AnimateTypingProps
     // character it types.
     const runRef = run.ref;
     const attach = React.useCallback(
-      (node: HTMLDivElement | null) => {
+      (node: HTMLElement | null) => {
         runRef(node);
 
         if (typeof ref === 'function') {
           ref(node);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
         }
       },
       [ref, runRef]
     );
 
-    return (
-      <div
-        ref={attach}
-        className={className}
-        style={style}
-        data-neba-animation="typing"
-        data-state={run.state}
-        {...props}
-        {...run.handlers}
-      >
-        <span className={srOnlyClasses}>{source}</span>
-        <span aria-hidden="true" className="whitespace-pre-wrap">
-          {graphemes.slice(0, shown).join('')}
-          {caret ? <span className={cx('neba-typing-caret')}>{caretChar}</span> : null}
-        </span>
-      </div>
-    );
+    return useRender({
+      render: render ?? <span />,
+      ref: attach,
+      props: {
+        className: cx('block', className),
+        style,
+        'data-neba-animation': 'typing',
+        'data-state': run.state,
+        ...props,
+        ...run.handlers,
+        children: (
+          <>
+            <span className={srOnlyClasses}>{source}</span>
+            <span aria-hidden="true" className="whitespace-pre-wrap">
+              {graphemes.slice(0, shown).join('')}
+              {caret ? <span className={cx('neba-typing-caret')}>{caretChar}</span> : null}
+            </span>
+          </>
+        )
+      }
+    });
   }
 );

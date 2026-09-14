@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AnimateMarquee } from 'neba';
 
@@ -208,9 +209,11 @@ describe('AnimateMarquee', () => {
     // so the track is a plain block and its width is the box's — which is
     // exactly the measurement being asserted on.
     it('works its own duration out from the speed and the width', async () => {
+      // The travel is one copy's own width, so the copy is given one. No
+      // stylesheet is loaded here to size it any other way.
       const screen = await render(
-        <AnimateMarquee speed={100} gap={0} style={{ width: 300 }} data-testid="marquee">
-          <span>Alpha</span>
+        <AnimateMarquee speed={100} gap={0} data-testid="marquee">
+          <span style={{ display: 'inline-block', width: 300 }}>Alpha</span>
         </AnimateMarquee>
       );
 
@@ -221,6 +224,32 @@ describe('AnimateMarquee', () => {
           )
         )
         .toBe('3000ms');
+    });
+  });
+
+  // Its root was a `<div>`, which inside a `<p>` is invalid markup that React
+  // reports as a hydration error, and there was no `render` to make it a heading.
+  describe('its element', () => {
+    it('draws no block element, so it can sit inside a paragraph', () => {
+      const html = renderToString(
+        <p>
+          <AnimateMarquee>
+            <span>Alpha</span>
+          </AnimateMarquee>
+        </p>
+      );
+
+      expect(html).not.toContain('<div');
+    });
+
+    it('renders the element it is handed', async () => {
+      const screen = await render(
+        <AnimateMarquee render={<h2 />} data-testid="root">
+          <span>Alpha</span>
+        </AnimateMarquee>
+      );
+
+      expect(screen.getByTestId('root').element().tagName).toBe('H2');
     });
   });
 });

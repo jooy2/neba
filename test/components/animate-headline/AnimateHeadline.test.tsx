@@ -1,5 +1,6 @@
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AnimateHeadline } from 'neba';
 
@@ -261,6 +262,34 @@ describe('AnimateHeadline', () => {
         'data-state',
         'active'
       );
+    });
+  });
+
+  // Its root was a `<div>`, which inside a `<p>` is invalid markup that React
+  // reports as a hydration error, and there was no `render` to make it a heading.
+  describe('its element', () => {
+    it('draws no block element, so it can sit inside a paragraph', () => {
+      const html = renderToString(
+        <p>
+          <AnimateHeadline>
+            <span>Fast</span>
+            <span>Calm</span>
+          </AnimateHeadline>
+        </p>
+      );
+
+      expect(html).not.toContain('<div');
+    });
+
+    it('renders the element it is handed', async () => {
+      const screen = await render(
+        <AnimateHeadline render={<h2 />} data-testid="root">
+          <span>Fast</span>
+          <span>Calm</span>
+        </AnimateHeadline>
+      );
+
+      expect(screen.getByTestId('root').element().tagName).toBe('H2');
     });
   });
 });
