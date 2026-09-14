@@ -43,6 +43,8 @@ import { Highlight } from 'neba';
 
 `caseSensitive`는 대소문자를 구분하고, `wholeWord`는 단어 경계에서만 일치시킵니다. 여기서 단어는 글자·숫자·밑줄의 연속이므로, 띄어쓰기로 단어를 구획하지 않는 한국어나 일본어에서는 효과가 거의 없습니다. 기본값이 꺼짐인 이유입니다.
 
+문자열 `query`는 악센트를 무시하므로 `jose`가 `José`를 표시합니다. DataTable 검색이 찾는 결과와 같습니다. RegExp는 쓴 그대로 일치시킵니다.
+
 문자열 배열은 **긴 것부터** 시도합니다. `['data', 'database']`를 짧은 쪽부터 맞추면 `data`만 잡히고 `base`가 표식 밖으로 남기 때문입니다.
 
 <Demo src="highlight/matching">

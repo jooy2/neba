@@ -141,6 +141,41 @@ describe('Highlight', () => {
     });
   });
 
+  // DataTable found `José` for `jose` and Highlight, given the same query,
+  // marked nothing in the row it found.
+  describe('accents', () => {
+    it('marks an accented word for a query without the accent', async () => {
+      const screen = await render(<Highlight query="jose">José, JOSÉ and Jose</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['José', 'JOSÉ', 'Jose']);
+    });
+
+    it('marks the whole of a decomposed letter, accent included', async () => {
+      const screen = await render(<Highlight query="cafe">{'Cafe\u0301 au lait'}</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['Cafe\u0301']);
+      expect(screen.container.textContent).toBe('Cafe\u0301 au lait');
+    });
+
+    it('marks an unaccented word for a query with the accent', async () => {
+      const screen = await render(<Highlight query="résumé">A resume</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['resume']);
+    });
+
+    it('does not mark part of a Hangul syllable', async () => {
+      const screen = await render(<Highlight query="가">각 가</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['가']);
+    });
+
+    it('matches a RegExp as written', async () => {
+      const screen = await render(<Highlight query={/jose/i}>José and Jose</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['Jose']);
+    });
+  });
+
   describe('whole words', () => {
     it('matches inside a word by default', async () => {
       const screen = await render(<Highlight query="cat">a cat concatenates</Highlight>);

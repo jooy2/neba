@@ -43,6 +43,8 @@ There is no `size`: a mark sits inside running text and takes the surrounding ty
 
 `caseSensitive` respects case; `wholeWord` matches only at word boundaries. A word here is a run of letters, digits and underscores, so it does very little for Korean or Japanese, where phrases are not delimited by spaces: which is why it is off by default.
 
+A string `query` ignores accents, so `jose` marks `José`, which is what a DataTable's search finds for it. A RegExp is matched as written.
+
 An array of strings is tried **longest first**: matching `['data', 'database']` shortest-first would mark `data` and leave `base` outside the mark.
 
 <Demo src="highlight/matching">

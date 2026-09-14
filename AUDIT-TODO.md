@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F29 (179)** Highlight and accents: (a) fold accents as `internal/search.ts` does, with a map back to positions in the original text; (b) document the difference.
 - **F30 (180)** Shortcut modifier order on macOS: (a) sort into ⌃⌥⇧⌘; (b) keep the written order and fix the docs.
 - **F31 (181)** Shortcuts on punctuation typed with Shift: (a) skip the Shift comparison for a single key that is neither a letter nor a digit, so `'?'` fires; (b) document `Shift+?`.
 - **F32 (184)** Typography with no `color`: (a) inherit, as the docs say, with the muted levels still muted; this lets a host's `.prose` heading colour through again; (b) fix the docs.
@@ -327,7 +326,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28. Decided: (a) the fold is kept per trail, so new steps fold again; `BreadcrumbItem` takes `render` and `target`.
 - [x] **177** Highlight remounted its children when a query started or cleared.
 - [x] **178** **Highlight**: `wholeWord` applies to a RegExp query although the docs say it is ignored. The `outline` variant leaves a 2px side border on each mark, so the text shifts as the reader types. `Highlight.tsx:78, 283, 297`
-- [ ] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`. See F29.
+- [x] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`. See F29. Decided: (a) a string query folds accents per character, with a map back to the original positions.
 - [ ] **180** [decision] **Shortcut** does not sort modifiers on macOS, so `Mod+Shift+P` draws `⌘⇧P`. The docs say `⇧⌘P` (Apple's order ⌃⌥⇧⌘). `Shortcut.tsx:287, 291`. See F30.
 - [ ] **181** [decision] **keys.ts**: punctuation shortcuts that need Shift never fire. `?` fails the `shiftKey` match, `Shift+/` fails because `event.key` is `?`, and only `Shift+?` works. The `useShortcut` JSDoc and the hooks guide use `'?'`. One option is to skip the Shift comparison for a single non-letter key. `src/internal/keys.ts:195-200, 214-227`. See F31.
 - [x] **182** **keys.ts**: the `event.code` fallback applies even when `event.key` is a different letter, so on AZERTY Ctrl+Z matches both `Ctrl+Z` and `Ctrl+W`. Fall back to `code` only when `event.key` is not an ASCII letter or digit. `keys.ts:218-221`

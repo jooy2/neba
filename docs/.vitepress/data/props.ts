@@ -9476,8 +9476,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'string | string[] | RegExp',
       required: true,
       description: {
-        ko: '무엇을 찾을지. 배열은 긴 것부터 시도하므로 database가 data보다 먼저 잡힙니다. RegExp는 그대로 쓰이며 global 플래그만 강제됩니다. 이때 caseSensitive와 wholeWord는 무시됩니다',
-        en: 'What to find. An array tries the longest term first, so `database` wins over `data`. A RegExp is used as written with the global flag forced on, and then caseSensitive and wholeWord are ignored'
+        ko: '무엇을 찾을지. 배열은 긴 것부터 시도하므로 database가 data보다 먼저 잡힙니다. RegExp는 그대로 쓰이며 global 플래그만 강제됩니다. 이때 caseSensitive와 wholeWord는 무시됩니다. 문자열은 악센트를 무시하므로 jose가 José를 표시합니다',
+        en: 'What to find. An array tries the longest term first, so `database` wins over `data`. A RegExp is used as written with the global flag forced on, and then caseSensitive and wholeWord are ignored. A string ignores accents, so jose marks José'
       }
     },
     {

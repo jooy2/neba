@@ -104,6 +104,69 @@ const weightClasses: Record<TypographyWeight, string> = {
 /** Letters, digits and underscores in any script — what `wholeWord` counts. */
 const wordCharacter = /[\p{L}\p{N}_]/u;
 
+/** The combining marks `NFD` splits an accented letter into, as `internal/search.ts` strips them. */
+const COMBINING = /[\u0300-\u036f]/g;
+
+/**
+ * One character without its accents: `é` is `e`. Composed again afterwards, so
+ * a Hangul syllable — which `NFD` also takes apart — stays one syllable and a
+ * query cannot mark half of it.
+ */
+function foldCharacter(character: string): string {
+  return character.normalize('NFD').replace(COMBINING, '').normalize('NFC');
+}
+
+/** Text with its accents folded, and where each folded unit came from. */
+interface FoldedText {
+  text: string;
+  /** For every UTF-16 unit of `text`, where its character starts in the original. */
+  starts: number[];
+  /** And where it ends, past any combining mark that followed it. */
+  ends: number[];
+}
+
+/**
+ * Folds a text node the way a search box folds a row, so `jose` marks `José`
+ * as DataTable finds it. The match is found in the folded text and marked in
+ * the original, which is what the two maps are for: folding changes lengths,
+ * and a decomposed `é` is two units that fold into one.
+ *
+ * `null` for printable ASCII, which is nearly every string and has nothing in
+ * it to fold.
+ */
+function foldText(text: string): FoldedText | null {
+  if (/^[\u0020-\u007e\s]*$/.test(text)) {
+    return null;
+  }
+
+  const starts: number[] = [];
+  const ends: number[] = [];
+  let folded = '';
+  let index = 0;
+
+  for (const character of text) {
+    const end = index + character.length;
+    const piece = foldCharacter(character);
+
+    if (piece === '') {
+      // A combining mark on its own belongs to the letter before it.
+      for (let unit = ends.length - 1; unit >= 0 && ends[unit] === index; unit -= 1) {
+        ends[unit] = end;
+      }
+    } else {
+      for (let unit = 0; unit < piece.length; unit += 1) {
+        starts.push(index);
+        ends.push(end);
+      }
+      folded += piece;
+    }
+
+    index = end;
+  }
+
+  return { text: folded, starts, ends };
+}
+
 /** The characters a regular expression treats as syntax. */
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -128,7 +191,7 @@ function buildPattern(query: string | string[] | RegExp, caseSensitive: boolean)
   }
 
   const terms = (Array.isArray(query) ? query : [query])
-    .map((term) => term.trim())
+    .map((term) => Array.from(term.trim(), foldCharacter).join(''))
     .filter(Boolean)
     .sort((a, b) => b.length - a.length);
 
@@ -163,23 +226,28 @@ function markString(
   text: string,
   pattern: RegExp,
   wholeWord: boolean,
+  fold: boolean,
   mark: (matched: string, key: string) => React.ReactNode
 ): React.ReactNode {
   pattern.lastIndex = 0;
 
+  const folded = fold ? foldText(text) : null;
+  const haystack = folded ? folded.text : text;
   const parts: React.ReactNode[] = [];
   let cursor = 0;
   let match: RegExpExecArray | null;
 
-  while ((match = pattern.exec(text)) !== null) {
+  while ((match = pattern.exec(haystack)) !== null) {
     // A pattern that can match nothing — `/x*/` — would otherwise never advance.
     if (match[0] === '') {
       pattern.lastIndex += 1;
       continue;
     }
 
-    const start = match.index;
-    const end = start + match[0].length;
+    const start = folded ? folded.starts[match.index] : match.index;
+    const end = folded
+      ? folded.ends[match.index + match[0].length - 1]
+      : match.index + match[0].length;
 
     if (wholeWord && !isWholeWord(text, start, end)) {
       // Rewound to just after where this match *started*, not to where it
@@ -187,7 +255,7 @@ function markString(
       // match is not a claim on the characters inside it: searching `cat` in
       // `concatenate cat` must not lose a second `cat` that begins one letter
       // in. Only ever forward, so it still terminates.
-      pattern.lastIndex = start + 1;
+      pattern.lastIndex = match.index + 1;
 
       continue;
     }
@@ -195,7 +263,7 @@ function markString(
     if (start > cursor) {
       parts.push(text.slice(cursor, start));
     }
-    parts.push(mark(match[0], `${start}`));
+    parts.push(mark(text.slice(start, end), `${start}`));
     cursor = end;
   }
 
@@ -229,18 +297,21 @@ function markNode(
   node: React.ReactNode,
   pattern: RegExp,
   wholeWord: boolean,
+  fold: boolean,
   mark: (matched: string, key: string) => React.ReactNode
 ): React.ReactNode {
   if (typeof node === 'string') {
-    return markString(node, pattern, wholeWord, mark);
+    return markString(node, pattern, wholeWord, fold, mark);
   }
 
   if (typeof node === 'number') {
-    return markString(String(node), pattern, wholeWord, mark);
+    return markString(String(node), pattern, wholeWord, fold, mark);
   }
 
   if (Array.isArray(node)) {
-    const marked = node.map((child: React.ReactNode) => markNode(child, pattern, wholeWord, mark));
+    const marked = node.map((child: React.ReactNode) =>
+      markNode(child, pattern, wholeWord, fold, mark)
+    );
 
     return marked.every((child, index) => child === node[index]) ? node : marked;
   }
@@ -254,7 +325,7 @@ function markNode(
       return node;
     }
 
-    const marked = markNode(children, pattern, wholeWord, mark);
+    const marked = markNode(children, pattern, wholeWord, fold, mark);
 
     if (marked === children) {
       return node;
@@ -335,7 +406,7 @@ export const Highlight = React.forwardRef<HTMLSpanElement, HighlightProps>(
     const byWord = wholeWord && !(query instanceof RegExp);
 
     const marked = pattern
-      ? markNode(children, pattern, byWord, (matched, key) => (
+      ? markNode(children, pattern, byWord, !(query instanceof RegExp), (matched, key) => (
           <mark key={key} className={markClasses}>
             {matched}
           </mark>
