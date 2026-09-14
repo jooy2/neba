@@ -75,11 +75,11 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 
 ## Keyboard
 
-| Key                   | What it does                                              |
-| --------------------- | --------------------------------------------------------- |
-| `←` `→` `↑` `↓`       | Moves by a day or a week, stepping the month at the edges; under RTL `←` is the next day |
-| `Home` / `End`        | To the start or the end of the week                       |
-| `PageUp` / `PageDown` | By a month: with `Shift`, by a year                       |
+| Key | What it does |
+| --- | --- |
+| `←` `→` `↑` `↓` | Moves by a day or a week, stepping the month at the edges; under RTL `←` is the next day |
+| `Home` / `End` | To the start or the end of the week |
+| `PageUp` / `PageDown` | By a month: with `Shift`, by a year |
 
 The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
 
