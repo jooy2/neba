@@ -311,6 +311,44 @@ interface LegendProps {
  * hue, and a legend that answered with eight identical squares would be back to
  * colour alone — which is the thing the shapes were added to fix.
  */
+/**
+ * Puts a reading down when a press lands anywhere outside the plot.
+ *
+ * A mouse puts it down by leaving. A finger cannot: a touch's `pointerleave`
+ * arrives the moment it lifts, so a plot that cleared on leave showed a tap's
+ * tooltip for one frame. A tap pins the reading instead, and this is the way
+ * out of it. It listens only while something is being read.
+ */
+function useReleaseOutside(
+  ref: React.RefObject<HTMLElement | null>,
+  active: boolean,
+  release: () => void
+) {
+  const latest = React.useRef(release);
+
+  React.useEffect(() => {
+    latest.current = release;
+  });
+
+  React.useEffect(() => {
+    if (!active) {
+      return;
+    }
+
+    const onPress = (event: PointerEvent) => {
+      const host = ref.current;
+
+      if (host && event.target instanceof Node && !host.contains(event.target)) {
+        latest.current();
+      }
+    };
+
+    document.addEventListener('pointerdown', onPress, true);
+
+    return () => document.removeEventListener('pointerdown', onPress, true);
+  }, [ref, active]);
+}
+
 function ChartLegendBar({
   series,
   colors,
@@ -1308,6 +1346,30 @@ export function CartesianChart(rawProps: CartesianProps) {
     setPointer(null);
   };
 
+  useReleaseOutside(hostRef, activeIndex !== null, clearActive);
+
+  const readPointer = (event: React.PointerEvent) => {
+    if (tooltipMode === 'none') {
+      return;
+    }
+
+    if (marks) {
+      setMarkIndex(nearestMark(event.clientX, event.clientY));
+    } else {
+      setColumnIndex(indexAt(event.clientX, event.clientY));
+    }
+
+    // Only `item` mode over a column reads this, and only it may pay for it.
+    // The index above settles to the same value everywhere inside one column,
+    // so React bails out of the re-render — but a pointer offset is a fresh
+    // pixel on every event, and storing one the tooltip never consults would
+    // re-lay the whole chart out for each pixel the pointer moves. A chart of
+    // marks never consults it: its item is the mark.
+    if (tooltipMode === 'item' && !marks) {
+      setPointer(valueAt(event.clientX, event.clientY));
+    }
+  };
+
   const goTo = (at: number | null) => {
     const bounded = at === null ? null : Math.min(walkLength - 1, Math.max(0, at));
 
@@ -1501,28 +1563,21 @@ export function CartesianChart(rawProps: CartesianProps) {
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
         aria-describedby={nothing ? undefined : tableId}
-        onPointerMove={(event) => {
-          if (tooltipMode === 'none') {
-            return;
-          }
-
-          if (marks) {
-            setMarkIndex(nearestMark(event.clientX, event.clientY));
-          } else {
-            setColumnIndex(indexAt(event.clientX, event.clientY));
-          }
-
-          // Only `item` mode over a column reads this, and only it may pay for
-          // it. The index above settles to the same value everywhere inside one
-          // column, so React bails out of the re-render — but a pointer offset
-          // is a fresh pixel on every event, and storing one the tooltip never
-          // consults would re-lay the whole chart out for each pixel the pointer
-          // moves. A chart of marks never consults it: its item is the mark.
-          if (tooltipMode === 'item' && !marks) {
-            setPointer(valueAt(event.clientX, event.clientY));
+        onPointerMove={readPointer}
+        // A tap moves nothing, so the press itself is what reads the point.
+        onPointerDown={(event) => {
+          if (event.pointerType === 'touch') {
+            readPointer(event);
           }
         }}
-        onPointerLeave={clearActive}
+        // A finger "leaves" the moment it lifts, which would take the reading
+        // away as soon as it appeared. A tap pins it instead, and a press
+        // anywhere else puts it down — see `useReleaseOutside`.
+        onPointerLeave={(event) => {
+          if (event.pointerType !== 'touch') {
+            clearActive();
+          }
+        }}
         // A key press moves the crosshair without a pointer, so `item` mode has
         // nothing to measure against and falls back to the whole column.
         onKeyDown={tooltipMode === 'none' ? undefined : onKeyDown}
@@ -1966,6 +2021,7 @@ export {
   ChartSurface,
   ChartTooltipPanel,
   useMeasuredWidth,
+  useReleaseOutside,
   useVisibility
 };
 export type { Visibility };

@@ -492,6 +492,8 @@ describe('HeatmapChart', () => {
       const plot = screen.getByRole('img', { name: 'Sessions' });
 
       await expect.element(plot).toBeInTheDocument();
+      // A mouse left over the plot by an earlier test would pick a cell of its own.
+      await userEvent.unhover(plot);
       plot.element().focus();
 
       const status = screen.getByRole('status');
@@ -529,6 +531,8 @@ describe('HeatmapChart', () => {
       const plot = screen.getByRole('img', { name: 'Storage' });
 
       await expect.element(plot).toBeInTheDocument();
+      // A mouse left over the plot by an earlier test would pick a cell of its own.
+      await userEvent.unhover(plot);
       plot.element().focus();
 
       const status = screen.getByRole('status');

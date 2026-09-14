@@ -59,7 +59,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### D. Choices (decided: (a))
 
-- **D6 (87)** Chart tooltips on touch: (a) a tap pins the nearest point's tooltip and a tap outside closes it; (b) document the limitation.
 - **D7 (88)** Chart `aria-describedby`: (a) stop pointing at the hidden table and describe the chart in one sentence with the point count and range; (b) link the table only when there are few points.
 - **D8 (90)** `AnimateMarquee` under reduced motion: (a) draw no copies and lift `overflow` so the content wraps; (b) hide the copies and keep the clipping.
 - **D10 (94)** `PageLayout`: (a) a prop that turns off `<main>`, `id="main"` and the skip link, off automatically inside a Mockup; (b) off automatically inside a Mockup only.
@@ -222,7 +221,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **84** [decision] **PieChart**: share labels are white on every slice, about 4.0:1 in the light theme. The `Escape` dismissal and `Home`/`End` the docs describe do not exist. `PieChart.tsx:287-303, 377`. Decided: (a) per-slot `--neba-chart-on-*` inks and black or white by contrast for a literal colour; `Escape`, `Home` and `End` implemented. The two inks are within 0.1 of each other on the light slots, so the better one is still about 4.1:1.
 - [x] **85** [major] **HeatmapChart**: the treemap's hidden table takes its column headers from the first series' `x`, so tiles outside the first group are written under the wrong column and a screen reader gets wrong data. `HeatmapChart.tsx:152-155, 358-381`. Decided: approved; a treemap's columns are every tile name in first-seen order, and each value sits under its own.
 - [x] **86** [decision] **HeatmapChart**: the keyboard only moves row by row and `ArrowDown` equals `ArrowRight`; the treemap moves in size order. `HeatmapChart.tsx:401-418`. Decided: (a) on a grid the vertical arrows keep the column, skipping gaps; the treemap keeps size order, documented.
-- [ ] **87** [decision] **Charts**: tooltips cannot be opened by touch. They rely on `onPointerMove` or `pointerenter`/`pointerleave`, so a tap shows nothing or flashes. See D6.
+- [x] **87** [decision] **Charts**: tooltips cannot be opened by touch. They rely on `onPointerMove` or `pointerenter`/`pointerleave`, so a tap shows nothing or flashes. Decided: (a) a touch press reads the point, a touch `pointerleave` is ignored, and `useReleaseOutside` in `chart-frame.tsx` clears it on a press outside the plot.
 - [ ] **88** [decision] **Charts**: `aria-describedby` points at the whole hidden table, so a 365-point chart reads hundreds of numbers on every focus. `chart-frame.tsx:1482`, `PieChart.tsx:284`, `HeatmapChart.tsx:398`. See D7.
 
 ### Transitions

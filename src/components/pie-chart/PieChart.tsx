@@ -11,6 +11,7 @@ import {
   type ChartBaseProps,
   type ChartTooltipItem,
   useMeasuredWidth,
+  useReleaseOutside,
   useVisibility
 } from '../../internal/chart-frame.js';
 import {
@@ -148,6 +149,8 @@ export function PieChart(rawProps: PieChartProps) {
   const visibility = useVisibility(slices);
   const [active, setActive] = React.useState<number | null>(null);
 
+  useReleaseOutside(hostRef, active !== null, () => setActive(null));
+
   const colors = slices.map((slice, index) => seriesColor(slice, index));
 
   const total = values.reduce(
@@ -283,7 +286,13 @@ export function PieChart(rawProps: PieChartProps) {
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
         aria-describedby={nothing ? undefined : tableId}
-        onPointerLeave={() => setActive(null)}
+        // A touch leaves as it lifts; a tap pins the slice until a press
+        // elsewhere, which `useReleaseOutside` handles.
+        onPointerLeave={(event) => {
+          if (event.pointerType !== 'touch') {
+            setActive(null);
+          }
+        }}
         onBlur={() => setActive(null)}
         onKeyDown={(event) => {
           const order = arcs.map((arc) => arc.index);

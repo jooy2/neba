@@ -386,6 +386,8 @@
 
 - **A treemap `HeatmapChart`'s hidden table puts every value under its own name.** Its column headings were taken from the first group's tile names, so a second group's tiles were written under the first group's headings and a screen reader read the wrong figure against each name. The columns are now every tile name the groups use, in the order they first appear, and a group's row is blank under a name it does not have.
 
+- **A tap on a chart pins its tooltip until a press lands outside the plot.** On a touch screen a `LineChart`, `AreaChart`, `BarChart`, `ScatterChart`, `TimelineChart`, `PieChart` or `HeatmapChart` cleared its tooltip on `pointerleave`, which a finger sends the moment it lifts, so a tap showed the tooltip for a frame at most; a tap that did not move never read a point at all, because only `pointermove` did. A tap now reads the nearest point and keeps its tooltip up, and a press anywhere outside the plot puts it down. A mouse still clears it by leaving.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

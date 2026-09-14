@@ -8,7 +8,8 @@ import {
   ChartTooltipPanel,
   markTransitionClasses,
   type ChartTooltipItem,
-  useMeasuredWidth
+  useMeasuredWidth,
+  useReleaseOutside
 } from '../../internal/chart-frame.js';
 import {
   categoryAt,
@@ -139,6 +140,8 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const tableId = React.useId();
 
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
+
+  useReleaseOutside(hostRef, active !== null, () => setActive(null));
 
   const formatValue = React.useCallback(
     (value: number) =>
@@ -436,7 +439,13 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
         aria-describedby={nothing ? undefined : tableId}
-        onPointerLeave={() => setActive(null)}
+        // A touch leaves as it lifts; a tap pins the cell until a press
+        // elsewhere, which `useReleaseOutside` handles.
+        onPointerLeave={(event) => {
+          if (event.pointerType !== 'touch') {
+            setActive(null);
+          }
+        }}
         onBlur={() => setActive(null)}
         onKeyDown={(event) => {
           if (tooltipOff || cells.length === 0) {

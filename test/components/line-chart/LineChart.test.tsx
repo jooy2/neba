@@ -322,6 +322,42 @@ describe('LineChart', () => {
       expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
     });
 
+    // A touch's `pointerleave` arrives as it lifts, so a tap's tooltip lasted a
+    // frame, and a tap that did not move never read a point at all.
+    it('pins the tooltip on a tap and puts it down on a press elsewhere', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          height={200}
+          series={[{ name: 'Visits', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const host = plot.element();
+      const rect = host.getBoundingClientRect();
+      const touch = (type: string, target: Element, init: PointerEventInit = {}) =>
+        target.dispatchEvent(
+          new PointerEvent(type, { bubbles: true, pointerType: 'touch', isPrimary: true, ...init })
+        );
+
+      touch('pointerdown', host, { clientX: rect.left + 40, clientY: rect.top + 60 });
+      touch('pointerup', host, { clientX: rect.left + 40, clientY: rect.top + 60 });
+      touch('pointerout', host);
+
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toMatchTextContent('Visits');
+
+      touch('pointerdown', document.body);
+
+      await expect.element(status).toBeEmptyDOMElement();
+    });
+
     it('does not format the category labels again when the pointer moves', async () => {
       const tickFormat = vi.fn((category: string | number | Date) => String(category));
       const screen = await render(

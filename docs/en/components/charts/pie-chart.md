@@ -90,7 +90,7 @@ The legend appears from two slices up and is interactive by default: clicking a 
 ## Accessibility
 
 - The data is also rendered as a **visually hidden table**, captioned with `label`.
-- The plot is focusable; `←` and `→` step between slices, `Home` and `End` go to the first and the last, and `Escape` clears the selection, so the tooltip is reachable without a pointer.
+- The plot is focusable; `←` and `→` step between slices, `Home` and `End` go to the first and the last, and `Escape` clears the selection, so the tooltip is reachable without a pointer. On a touch screen a tap keeps the slice's tooltip up until a tap lands outside the plot.
 - A share written with `valueLabels="all"` takes the ink that reads best on its slice. A slice given a literal colour, such as `#ffe066`, gets black or white by contrast.
 - Slices are separated by a gap of the surface colour, sized to stay 2px on screen at any radius, rather than by a stroke around each one.
 

@@ -109,6 +109,8 @@ describe('PieChart', () => {
       const plot = screen.getByRole('img', { name: 'Accounts' });
       const status = screen.getByRole('status');
 
+      // A mouse left over the plot by an earlier test would pick a slice of its own.
+      await userEvent.unhover(plot);
       plot.element().focus();
 
       await userEvent.keyboard('{End}');
@@ -118,6 +120,37 @@ describe('PieChart', () => {
       await expect.element(status).toMatchTextContent(PLANS[0]);
 
       await userEvent.keyboard('{Escape}');
+      await expect.element(status).toBeEmptyDOMElement();
+    });
+
+    it('keeps a tapped slice until a press lands elsewhere', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />
+      );
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const slice = plot.element().querySelector('path');
+
+      expect(slice).not.toBeNull();
+
+      const touch = (type: string, target: Element) =>
+        target.dispatchEvent(
+          new PointerEvent(type, { bubbles: true, pointerType: 'touch', isPrimary: true })
+        );
+
+      touch('pointerover', slice!);
+      touch('pointerdown', slice!);
+      touch('pointerup', slice!);
+      touch('pointerout', slice!);
+
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toMatchTextContent(PLANS[0]);
+
+      touch('pointerdown', document.body);
+
       await expect.element(status).toBeEmptyDOMElement();
     });
   });
