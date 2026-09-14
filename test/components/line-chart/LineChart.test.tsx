@@ -866,4 +866,49 @@ describe('LineChart', () => {
       expect((first - top) / (negative - first)).toBeCloseTo(10 / 15, 2);
     });
   });
+
+  // The palette repeats past its eighth slot, which the docs said it never did.
+  describe('more series than colours', () => {
+    it('warns once in development that the colours repeat', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const nine = Array.from({ length: 9 }, (_, index) => ({
+        name: `Series ${index + 1}`,
+        data: [index, index + 1]
+      }));
+
+      try {
+        const screen = await render(<LineChart label="Many" categories={MONTHS} series={nine} />);
+
+        await expect.element(screen.getByRole('img', { name: 'Many' })).toBeInTheDocument();
+        await screen.rerender(<LineChart label="Many" categories={MONTHS} series={[...nine]} />);
+
+        const said = warn.mock.calls.filter(([message]) => String(message).includes('9 series'));
+
+        expect(said).toHaveLength(1);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('says nothing for eight', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const eight = Array.from({ length: 8 }, (_, index) => ({
+        name: `Series ${index + 1}`,
+        data: [index, index + 1]
+      }));
+
+      try {
+        const screen = await render(
+          <LineChart label="Enough" categories={MONTHS} series={eight} />
+        );
+
+        await expect.element(screen.getByRole('img', { name: 'Enough' })).toBeInTheDocument();
+        expect(warn.mock.calls.some(([message]) => String(message).includes('palette'))).toBe(
+          false
+        );
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
 });

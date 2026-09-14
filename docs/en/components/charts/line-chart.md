@@ -138,7 +138,7 @@ The legend appears automatically from two series up and is left off below that. 
 
 ### Colour
 
-Series take palette slots in the order they are passed: eight hues, fixed, never cycled. A ninth series is not a ninth colour; fold the tail into an "Other" series or draw a second chart.
+Series take palette slots in the order they are passed: eight hues, fixed. From a ninth series the slots repeat, and a development build says so once in the console. A ninth series is not a ninth colour; fold the tail into an "Other" series or draw a second chart.
 
 `series.color` overrides the slot with a `NebaColor` family or any CSS colour, and a point's own `color` overrides that for one mark. See [colour](../../design/color) for the ramp and what it is solved for.
 

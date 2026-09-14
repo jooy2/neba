@@ -213,6 +213,36 @@ export function seriesColor(
   return resolveColor(palette[index % palette.length] ?? chartPalette[0]);
 }
 
+/** Replaced by the consumer's bundler, as it is in React and Base UI. */
+declare const process: { env: { NODE_ENV?: string } };
+
+const warnedCounts = new Set<number>();
+
+/**
+ * Says so, once per count, when a chart is given more series than the palette
+ * has slots.
+ *
+ * The slots are handed out by index and repeat past the eighth, and the docs
+ * used to say they never did. Nothing in the picture tells a reader that the
+ * ninth line is not the first one again, so the one who can act on it — the
+ * developer — is told in the console instead, and a production build says
+ * nothing.
+ */
+export function warnPaletteOverflow(count: number): void {
+  if (
+    process.env.NODE_ENV === 'production' ||
+    count <= chartPalette.length ||
+    warnedCounts.has(count)
+  ) {
+    return;
+  }
+
+  warnedCounts.add(count);
+  console.warn(
+    `Neba: a chart was given ${count} series and its palette has ${chartPalette.length} colours, so the colours repeat from the ninth series. Fold the smallest into an "Other" series, or draw a second chart.`
+  );
+}
+
 /* ---------------------------------------------------------------------------
  * Data
  * ------------------------------------------------------------------------- */
@@ -1340,7 +1370,7 @@ export function barPath(
  */
 export type MarkShape = 'circle' | 'square' | 'triangle' | 'diamond' | 'cross';
 
-/** The order shapes are handed out in, matching the palette: fixed, never cycled. */
+/** The order shapes are handed out in, matching the palette: fixed, and repeated past the end as the colours are. */
 export const markShapes: readonly MarkShape[] = [
   'circle',
   'square',

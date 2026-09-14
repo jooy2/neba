@@ -261,7 +261,7 @@
        clears 4:1 on white and 5.3:1 on the dark sheet.
 
      The order is the mechanism, not a preference: slots are handed out in
-     sequence and never cycled, which is what keeps the *adjacent* pairs — the
+     sequence, repeating only past the eighth, which is what keeps the *adjacent* pairs — the
      only ones that touch in a stack or a legend — the ones that were checked.
      A ninth series is not a ninth colour; it is an "Other" row, or a second
      chart. Series one is the primary hue because a one-series chart should look

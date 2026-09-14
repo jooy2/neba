@@ -65,7 +65,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F8 (134)** A ninth series: (a) a development warning, and the docs say the slots repeat from there; (b) fix the docs only.
 - **F9 (142)** Combobox `limit` and the "Add" row: (a) `limit` counts options only, so the add row is always drawn; (b) the add row takes the place of the last option when the list is full.
 - **F10 (143)** FilePicker in a form: (a) keep the hidden input's files in step with the list through `DataTransfer`, keep `required` while the list is empty, use `readOnly` rather than `disabled`, and fix the `maxFiles` JSDoc; (b) document that the files are read from `onValueChange`.
 - **F11 (144)** Transfer ids missing from `items`: (a) keep them in the value in both directions; (b) drop them in both directions.
@@ -289,7 +288,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`. See F6. Decided: (a) the line and area baselines are kept per sign in `chart-line.tsx`, matching `extentOf`.
 - [x] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1. Decided: approved; the return type is `string | number`, held by a `@ts-expect-error` in the LineChart tests.
 - [x] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`. See F7. Decided: (a) the reader's choice is kept per series key, the name with its occurrence or else the index, and an untouched series follows `hidden`.
-- [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`. See F8.
+- [x] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`. See F8. Decided: (a) `warnPaletteOverflow` in `chart.ts`, called by the Cartesian frame and PieChart, and the docs, `llms.txt`, `CLAUDE.md` and the stylesheet note say the slots repeat.
 - [x] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`
 - [x] **136** **Axis title placement**: on a horizontal chart `xAxis.label` reserves space and is never drawn. On a vertical chart `yAxis.label` is drawn at `plot.top - 8`, which can fall outside the top of the SVG, while its space is added to the left band. `chart-frame.tsx:1038, 1064, 1901, 1910`
 

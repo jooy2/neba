@@ -41,6 +41,7 @@ import {
   toValues,
   truncate,
   valueScale,
+  warnPaletteOverflow,
   type BandScale,
   type ChartValue,
   type PlotBox,
@@ -1094,6 +1095,10 @@ export function CartesianChart(rawProps: CartesianProps) {
   const summaryId = React.useId();
 
   const visibility = useVisibility(series);
+
+  React.useEffect(() => {
+    warnPaletteOverflow(series.length);
+  }, [series.length]);
   const [columnIndex, setColumnIndex] = React.useState<number | null>(null);
   /** Which entry of `markList` the pointer is on — the other way to be active. */
   const [markIndex, setMarkIndex] = React.useState<number | null>(null);

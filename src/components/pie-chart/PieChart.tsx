@@ -27,7 +27,8 @@ import {
   inkOn,
   markGap,
   seriesColor,
-  toValue
+  toValue,
+  warnPaletteOverflow
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { cx, metaTextClasses } from '../../internal/styles.js';
@@ -150,6 +151,10 @@ export function PieChart(rawProps: PieChartProps) {
   );
 
   const visibility = useVisibility(slices);
+
+  React.useEffect(() => {
+    warnPaletteOverflow(slices.length);
+  }, [slices.length]);
   const [active, setActive] = React.useState<number | null>(null);
 
   useReleaseOutside(hostRef, active !== null, () => setActive(null));
