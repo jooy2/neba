@@ -518,6 +518,8 @@
 
 - **`HeatmapChart` thins its column labels on one stride.** The interval was worked out per label, so a short `Mar 9` and a longer `Mar 10` were both drawn and overlapped. The widest label now sets it for all of them.
 
+- **`TimelineChart` writes a span's dates to the day.** The tooltip, the table and the summary wrote them at the axis unit, so a two-week span on a one-year range read `Mar 2025 – Mar 2025`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

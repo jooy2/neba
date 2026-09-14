@@ -166,8 +166,8 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       ? { count, min: '', max: '' }
       : {
           count,
-          min: formatTimeValue(first, scale.unit, locale),
-          max: formatTimeValue(last, scale.unit, locale)
+          min: formatTimeValue(first, spanUnit(scale.unit), locale),
+          max: formatTimeValue(last, spanUnit(scale.unit), locale)
         };
   }, [spans, scale.unit, locale]);
 
@@ -237,9 +237,9 @@ export function TimelineChart(rawProps: TimelineChartProps) {
           // A duration, which is the one number a span has. It is what a
           // caller's own `tooltip.render` gets handed.
           value: one.to - one.from,
-          formatted: `${formatTimeValue(one.from, scale.unit, locale)} – ${formatTimeValue(
+          formatted: `${formatTimeValue(one.from, spanUnit(scale.unit), locale)} – ${formatTimeValue(
             one.to,
-            scale.unit,
+            spanUnit(scale.unit),
             locale
           )}`
         }
@@ -279,7 +279,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
           names={names}
           series={series}
           spans={spans}
-          unit={scale.unit}
+          unit={spanUnit(scale.unit)}
           label={props.label}
           corner={xAxis?.label}
           locale={locale}
@@ -425,6 +425,17 @@ interface TableProps {
   label?: string;
   corner?: React.ReactNode;
   locale?: string;
+}
+
+/**
+ * The precision a span's own dates are written at: the axis' unit, but never
+ * coarser than a day. A fortnight on an axis that ticks in months was written
+ * `Mar 2025 – Mar 2025`, which says nothing about when it ran.
+ */
+function spanUnit(
+  unit: Parameters<typeof formatTimeValue>[1]
+): Parameters<typeof formatTimeValue>[1] {
+  return unit === 'month' || unit === 'quarter' || unit === 'year' ? 'day' : unit;
 }
 
 /**

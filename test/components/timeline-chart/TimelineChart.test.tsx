@@ -326,6 +326,30 @@ describe('TimelineChart', () => {
       await expect.element(screen.getByRole('cell', { name: 'Wireframes' })).toBeInTheDocument();
     });
 
+    // Written at the axis unit, a fortnight on a year-long axis was
+    // `Mar 2026 – Mar 2026`.
+    it('writes a span to the day on an axis that ticks in months', async () => {
+      const screen = await render(
+        <TimelineChart
+          label="Year"
+          locale="en-GB"
+          series={[
+            {
+              name: 'Design',
+              data: [{ start: at('2026-03-02T00:00:00'), end: at('2026-03-16T00:00:00') }]
+            },
+            {
+              name: 'Build',
+              data: [{ start: at('2026-01-05T00:00:00'), end: at('2026-12-20T00:00:00') }]
+            }
+          ]}
+        />
+      );
+
+      await expect.element(screen.getByRole('table', { name: 'Year' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('cell', { name: '2 Mar 2026' })).toBeInTheDocument();
+    });
+
     it('drops the label column when no span carries one', async () => {
       const screen = await render(
         <TimelineChart
