@@ -91,6 +91,6 @@ The components are built on logical properties (`margin-inline-start` and the re
 
 ## Nesting
 
-Providers nest, and the nearest one wins. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree.
+Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so `defaults={{ density: 'compact' }}` inside `defaults={{ size: 'sm' }}` keeps the small size, and an inner provider with no `direction` runs the way the outer one does.
 
-Two things are **not** scoped, because they are attributes on `<html>`: the colour scheme and the direction. A nested provider that wants to repaint only its own subtree points `colorSchemeElement` at an element of its own: which is exactly what the preview above does, and why that prop is a function rather than an element.
+The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own: which is exactly what the preview above does, and why that prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.

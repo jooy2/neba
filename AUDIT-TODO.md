@@ -65,7 +65,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F3 (127)** Nested NebaProvider: (a) an inner provider merges its `defaults` over the outer ones, inherits the direction when it has none, and only the outermost provider writes the scheme to `<html>`; (b) document that providers do not nest and drop the guide's recommendation.
 - **F4 (129, with 109)** `stacked="full"`: (a) keep each original value as a number, write it with `format` and the locale, count only visible series toward 100%, and move the shared normalisation into `internal/`; (b) fix the formatting only.
 - **F5 (130)** A string chart `height`: (a) measure the height, so every chart takes any CSS length; (b) narrow `height` to `number` (breaking).
 - **F6 (131)** Stacked LineChart and AreaChart with negative values: (a) stack marks by sign, as the axis already does; (b) document that stacking takes non-negative values.
@@ -284,7 +283,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - Calendar reads `today()` and the runtime locale during render. With a UTC server and a reader in KST, the "today" mark differs between 00:00 and 09:00 every day, and the shown month differs at the end of a month (`Calendar.tsx:164-166`, `src/internal/date.ts:545`).
   - Charts without `locale` format with the server's locale and time zone, so `Mar 3` on the server does not match the client's localised date (`chart-frame.tsx:655, 668`).
   - NebaProvider reads the stored scheme in the `useState` initialiser, so the server renders `light` and the client `dark` (`NebaProvider.tsx:152-155`).
-- [ ] **127** [major][decision] **Nested NebaProvider**: an inner `defaults={{ density: 'compact' }}` erases the outer `size` and `locale`. A provider with no `direction` still forces `DirectionProvider` to `'ltr'`, so it switches back to LTR inside an RTL tree. Every provider writes the scheme onto `<html>`, which fights the outer toggle. The guide recommends nesting. `NebaProvider.tsx:178-191, 212-214`. See F3.
+- [x] **127** [major][decision] **Nested NebaProvider**: an inner `defaults={{ density: 'compact' }}` erases the outer `size` and `locale`. A provider with no `direction` still forces `DirectionProvider` to `'ltr'`, so it switches back to LTR inside an RTL tree. Every provider writes the scheme onto `<html>`, which fights the outer toggle. The guide recommends nesting. `NebaProvider.tsx:178-191, 212-214`. See F3. Decided: (a) inner `defaults` merge over the outer ones, a missing `direction` is inherited through Base UI's `useDirection`, and only the outermost provider writes the scheme to `<html>`.
 - [x] **128** `typesVersions` had no `hooks` entry.
 
 ### Charts common

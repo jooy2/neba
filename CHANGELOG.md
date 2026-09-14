@@ -148,6 +148,8 @@
 
 - **An empty `TimePicker` writes a picked hour on the hour.** With no `value` and no `referenceDate`, the time was written onto the moment the picker mounted, so at 15:42:17 pressing the hour `9` gave 09:42:17, and the seconds stayed even with `showSeconds` off. The default `referenceDate` is now the start of today, so the same press gives 09:00:00. A `referenceDate` passed explicitly is unchanged.
 
+- **A nested `NebaProvider` builds on the one around it.** An inner provider replaced the outer `defaults` whole, so `defaults={{ density: 'compact' }}` inside `defaults={{ size: 'sm' }}` lost the small size; one with no `direction` reset Base UI's direction to left-to-right inside a right-to-left tree; and every provider wrote its scheme onto `<html>`, so a nested preview fought the page's own toggle, although the guide recommends nesting. An inner provider's `defaults` are now merged over the outer ones, a missing `direction` is inherited, and only the outermost provider writes the scheme to `<html>`. A nested provider still writes it to the element its `colorSchemeElement` names.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

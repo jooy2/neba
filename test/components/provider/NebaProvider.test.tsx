@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
+import { useDirection } from '@base-ui/react/direction-provider';
 import {
   Alert,
   Button,
@@ -368,6 +369,62 @@ describe('direction', () => {
     );
 
     expect(root().getAttribute('dir')).toBe('rtl');
+  });
+});
+
+describe('nesting', () => {
+  const heightOf = (element: Element) =>
+    [...element.classList].find((name) => /^h-\d/.test(name)) ?? '';
+
+  function Direction() {
+    return <output>{useDirection()}</output>;
+  }
+
+  // An inner `defaults={{ density: 'compact' }}` replaced the outer object
+  // whole, so the outer `size` was lost inside it.
+  it("merges an inner provider's defaults over the outer ones", async () => {
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ size: 'xs' }}>
+          <NebaProvider defaults={{ density: 'compact' }}>
+            <Button>Inner</Button>
+          </NebaProvider>
+        </NebaProvider>
+        <NebaProvider defaults={{ size: 'xs' }}>
+          <Button>Outer</Button>
+        </NebaProvider>
+      </>
+    );
+
+    expect(heightOf(screen.getByRole('button', { name: 'Inner' }).element())).toBe(
+      heightOf(screen.getByRole('button', { name: 'Outer' }).element())
+    );
+  });
+
+  // A provider with no `direction` forced left-to-right inside a right-to-left tree.
+  it('keeps the outer direction when it has none of its own', async () => {
+    const screen = await render(
+      <NebaProvider direction="rtl">
+        <NebaProvider defaults={{ size: 'sm' }}>
+          <Direction />
+        </NebaProvider>
+      </NebaProvider>
+    );
+
+    await expect.element(screen.getByText('rtl')).toBeInTheDocument();
+  });
+
+  // Every provider wrote `<html>`, so a nested preview fought the page's toggle.
+  it('leaves the scheme on <html> to the outermost provider', async () => {
+    await render(
+      <NebaProvider defaultColorScheme="light" storageKey={false}>
+        <NebaProvider defaultColorScheme="dark" storageKey={false}>
+          <Button>Preview</Button>
+        </NebaProvider>
+      </NebaProvider>
+    );
+
+    await expect.poll(() => root().getAttribute('data-theme')).toBe('light');
   });
 });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { DirectionProvider } from '@base-ui/react/direction-provider';
+import { DirectionProvider, useDirection } from '@base-ui/react/direction-provider';
 import { DefaultsContext, type NebaDefaults } from '../../internal/defaults.js';
 import { useHydrated, useMediaQuery } from '../../internal/media.js';
 
@@ -155,6 +155,13 @@ export function NebaProvider({
   // scheme on `<html>` for the first paint, and the attribute below is not
   // written until the stored value has been read, so nothing flips in between.
   const hydrated = useHydrated();
+  // What a provider above this one has already set. A nested provider starts
+  // from it rather than from nothing: its `defaults` are merged over the outer
+  // ones, it runs the same way unless told otherwise, and it leaves `<html>` to
+  // the outermost provider.
+  const outerDefaults = React.useContext(DefaultsContext);
+  const outerScheme = React.useContext(ColorSchemeContext);
+  const inheritedDirection = useDirection();
   const [chosen, setChosen] = React.useState<NebaColorScheme | null>(null);
   const stored = React.useMemo(
     () => (hydrated ? readStored(storageKey) : null),
@@ -189,8 +196,14 @@ export function NebaProvider({
     }
 
     // Only falls back when the prop was not given: a caller who did give one
-    // and got `null` back meant nowhere, not `<html>`.
-    const element = colorSchemeElement ? colorSchemeElement() : document.documentElement;
+    // and got `null` back meant nowhere, not `<html>`. A nested provider has no
+    // fallback at all: `<html>` belongs to the outermost one, and two providers
+    // writing it fought over the page's scheme.
+    const element = colorSchemeElement
+      ? colorSchemeElement()
+      : outerScheme === null
+        ? document.documentElement
+        : null;
 
     if (!element) {
       return;
@@ -201,7 +214,7 @@ export function NebaProvider({
     // an overscroll. A page that changes only its own colours keeps a white
     // scrollbar down the side of a dark one.
     (element as HTMLElement).style.colorScheme = resolved;
-  }, [hydrated, resolved, colorSchemeElement]);
+  }, [hydrated, resolved, colorSchemeElement, outerScheme]);
 
   React.useEffect(() => {
     if (!direction) {
@@ -226,8 +239,11 @@ export function NebaProvider({
    * object on every render of whatever renders the provider, and a context value
    * that changes identity re-renders every component under it that reads one.
    */
-  const given = defaults !== undefined && defaults !== null;
-  const { size, density, variant, locale } = defaults ?? {};
+  const size = defaults?.size ?? outerDefaults?.size;
+  const density = defaults?.density ?? outerDefaults?.density;
+  const variant = defaults?.variant ?? outerDefaults?.variant;
+  const locale = defaults?.locale ?? outerDefaults?.locale;
+  const given = (defaults !== undefined && defaults !== null) || outerDefaults !== null;
   const defaultsValue = React.useMemo<NebaDefaults | null>(
     () => (given ? { size, density, variant, locale } : null),
     [given, size, density, variant, locale]
@@ -236,7 +252,9 @@ export function NebaProvider({
   return (
     <DefaultsContext.Provider value={defaultsValue}>
       <ColorSchemeContext.Provider value={scheme}>
-        <DirectionProvider direction={direction ?? 'ltr'}>{children}</DirectionProvider>
+        <DirectionProvider direction={direction ?? inheritedDirection}>
+          {children}
+        </DirectionProvider>
       </ColorSchemeContext.Provider>
     </DefaultsContext.Provider>
   );
