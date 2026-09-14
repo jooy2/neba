@@ -887,10 +887,10 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'tickFormat',
-      type: '(value, index) => ReactNode',
+      type: '(value, index) => string | number',
       description: {
-        ko: '눈금 하나를 어떻게 쓸지. 차트의 format보다 우선합니다',
-        en: "How a tick is written, overriding the chart's own format"
+        ko: '눈금 하나를 어떻게 쓸지. 차트의 format보다 우선합니다. 눈금은 SVG 텍스트라 문자열이나 숫자를 돌려줍니다',
+        en: "How a tick is written, overriding the chart's own format. A tick is SVG text, so it returns a string or a number"
       }
     },
     {

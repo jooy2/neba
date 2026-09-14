@@ -62,6 +62,8 @@
 
 - **A `FloatingActionButton`'s `className` and `style` go on the button.** `className` landed on the box pinned to the corner, so a class meant for the button styled the invisible frame around it, and the button's own inline radius had nothing a caller could merge with. Both now go on the button, with `style` merged over the round radius instead of replacing it, and the box in the corner takes its classes through the new `classNames.frame`. A caller who positioned or spaced the box with `className` should move those classes to `classNames.frame`; every other `<div>` attribute still goes to the box.
 
+- **A chart axis's `tickFormat` returns a string or a number.** It was typed to return any `ReactNode`, but a tick is SVG text and the result went through `String()`, so a callback that handed back an element type-checked and drew `[object Object]` on the axis. The type now says what the axis can write. A `tickFormat` returning JSX stops compiling, and should return the text instead.
+
 ### Where the bytes went
 
 `Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.

@@ -61,7 +61,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### E. Approvals (approved)
 
-- **E1 (132)** Chart `tickFormat`: narrow the return type to `string | number`, which is what the axis can write. A callback returning JSX becomes a type error instead of `[object Object]`.
 - **E2 (140)** `Menubar` and `NavigationMenu` with `orientation="vertical"`: popups open beside the bar, toward the inline end, instead of downward over the next item.
 - **E3 (157)** `TimePicker`: the default `referenceDate` becomes the start of today, so pressing an hour on an empty picker gives that hour at 00 minutes and 00 seconds.
 - **E4 (170)** `Table` `striped`: rows take the 4% mix of `--neba-fg` that DataTable uses, so the stripes show on a white page.
@@ -300,7 +299,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [ ] **129** [decision] **AreaChart, BarChart**: `stacked="full"` stores the original value as `String(value.value)`, so the tooltip and the table ignore `format` and the locale (`24000`, `1234.5678`). Hidden series still count toward the total, so turning one off in the legend leaves bars short of 100%. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136`. See F4.
 - [ ] **130** [decision] **String `height`**: a Cartesian chart given `height="16rem"` gets a `viewBox` height of 0 and draws nothing, and Pie, Heatmap and Gauge ignore a string. The type and the docs say "any CSS length". Measure the height too, or narrow the type to `number`. `chart-frame.tsx:960-961, 1094, 1527-1528`. See F5.
 - [ ] **131** [decision] **Stacked line and area with negative values**: the marks sum regardless of sign while the axis sums by sign, so the top line and the axis disagree and bands overlap. `chart-line.tsx:87-99, 154`, `chart.ts:391-413`. See F6.
-- [ ] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1.
+- [x] **132** [major] **`tickFormat`** is typed to return `ReactNode`, but the result goes through `String()`, so JSX prints `[object Object]`. Narrow the type to `string | number`. `chart-frame.tsx:1010, 1020, 1025`. See E1. Decided: approved; the return type is `string | number`, held by a `@ts-expect-error` in the LineChart tests.
 - [ ] **133** [decision] **Legend hidden state** is stored by index and set only on mount, so when new data changes the series order a different series is hidden. `chart-frame.tsx:233-244`. See F7.
 - [ ] **134** [decision] **Colour slots cycle**: `index % 8` gives the ninth series the first one's colour, while the docs and `CLAUDE.md` say the slots never cycle. Scatter's `markShapes` also cycles, against its comment. Add a development warning or fix the docs. `chart.ts:192, 1261`, `ScatterChart.tsx:128`. See F8.
 - [x] **135** **valueScale**: with all values negative and `yAxis={{ min: 0 }}`, the step and `max` become NaN, the ticks are empty and marks are drawn outside the plot. `chart.ts:530-558`

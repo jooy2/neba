@@ -615,8 +615,12 @@ export interface NebaChartAxis {
   max?: number;
   /** Roughly how many ticks. The scale still rounds to clean numbers. */
   tickCount?: number;
-  /** How a tick is written, overriding the chart's own `format`. */
-  tickFormat?: (value: NebaChartCategory, index: number) => React.ReactNode;
+  /**
+   * How a tick is written, overriding the chart's own `format`. A tick is SVG
+   * text, so this returns a string or a number: an element has nowhere to go and
+   * was written out as `[object Object]`.
+   */
+  tickFormat?: (value: NebaChartCategory, index: number) => string | number;
   /**
    * How much room the axis keeps for its ticks and its label, in pixels.
    * Measured from the ticks themselves otherwise; set it when a long category

@@ -452,6 +452,16 @@ describe('LineChart', () => {
   });
 
   describe('axes', () => {
+    // A tick is SVG text, and an element handed back came out as "[object Object]".
+    it('takes only text from tickFormat', () => {
+      const axis: React.ComponentProps<typeof LineChart>['xAxis'] = {
+        // @ts-expect-error A tick is written as text, so an element is not one.
+        tickFormat: () => <b>Jan</b>
+      };
+
+      expect(axis).toBeDefined();
+    });
+
     it('writes each tick through tickFormat', async () => {
       const screen = await render(
         <LineChart
