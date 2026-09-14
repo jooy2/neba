@@ -41,6 +41,7 @@ describe('progressFraction', () => {
 
   it('has no answer for a value that is not a number', () => {
     expect(progressFraction(Number.NaN, 0, 100)).toBeNull();
+    expect(progressFraction(Number.POSITIVE_INFINITY, 0, 100)).toBeNull();
   });
 
   // A range of no width has no fraction to give. Answering `0` or `1` would be

@@ -540,6 +540,8 @@
 
 - **`WindowPane` hands the front on when the front window closes, keeps a double-click on its actions, and measures a window that starts rolled up.** Closing the front window left every other window marked inactive. A double-click on a control in `actions` bubbled to the title bar and maximised the window. `defaultMinimized` skipped the measurement a roll-up makes, so the border clipped the title bar.
 
+- **The progress indicators announce what they draw.** `value={0} max={0}` was drawn indeterminate while Base UI announced `aria-valuenow=0` and marked it complete, and `value={Infinity}` was drawn full while announced as no value. Both are indeterminate on screen and to a screen reader now; a `Meter` given `Infinity` reads 0% rather than 100%. `ProgressBox` with `count={NaN}` drew no plates and `count={Infinity}` threw; both draw one.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

@@ -68,12 +68,16 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
     const hasFormat = format !== undefined;
     // A row of no plates is not a loading indicator, and a fractional count is a
     // caller who divided something. Both land on one plate rather than on none.
-    const plates = Math.max(1, Math.floor(count));
+    // `NaN` drew no plates and `Infinity` threw building the row.
+    const plates = Number.isFinite(count) ? Math.max(1, Math.floor(count)) : 1;
 
     return (
       <Progress.Root
         ref={ref}
-        value={value ?? null}
+        // What is drawn is what is announced: a value with no fraction — an empty
+        // range, a non-finite reading — is indeterminate to Base UI too, which
+        // otherwise wrote `aria-valuenow` and `data-complete` over a sweep.
+        value={indeterminate ? null : value}
         min={min}
         max={max}
         format={format}

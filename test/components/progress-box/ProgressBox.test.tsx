@@ -20,6 +20,18 @@ function plates(root: Element): HTMLElement[] {
 
 describe('ProgressBox', () => {
   describe('rendering', () => {
+    it('draws one plate for a count that is not a finite number', async () => {
+      const screen = await render(<ProgressBox value={50} count={Number.POSITIVE_INFINITY} />);
+
+      await expect.element(screen.getByRole('progressbar')).toBeInTheDocument();
+
+      await screen.rerender(<ProgressBox value={50} count={Number.NaN} />);
+
+      expect(
+        screen.getByRole('progressbar').element().querySelectorAll('.bg-\\(--n-soft\\)').length
+      ).toBe(1);
+    });
+
     it('renders a progress bar', async () => {
       const screen = await render(<ProgressBox value={40} />);
 

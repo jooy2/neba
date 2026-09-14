@@ -206,7 +206,9 @@ export function progressFraction(
   min: number,
   max: number
 ): number | null {
-  if (value === null || value === undefined || Number.isNaN(value)) {
+  // `Infinity` is not a reading either. It clamped to a full bar while Base UI
+  // announced it as no value at all.
+  if (value === null || value === undefined || !Number.isFinite(value)) {
     return null;
   }
 

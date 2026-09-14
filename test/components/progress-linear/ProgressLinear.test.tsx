@@ -92,6 +92,22 @@ describe('ProgressLinear', () => {
   });
 
   describe('indeterminate', () => {
+    // Neba drew these indeterminate while Base UI announced a value, or the
+    // other way round.
+    it('announces no value where it draws none', async () => {
+      const screen = await render(<ProgressLinear value={0} max={0} />);
+      const element = screen.getByRole('progressbar');
+
+      await expect.element(element).toBeInTheDocument();
+      expect(element.element()).not.toHaveAttribute('aria-valuenow');
+      expect(element.element()).not.toHaveAttribute('data-complete');
+
+      await screen.rerender(<ProgressLinear value={Number.POSITIVE_INFINITY} />);
+
+      expect(element.element()).not.toHaveAttribute('aria-valuenow');
+      expect(element.element().querySelector('.neba-sweep')).not.toBeNull();
+    });
+
     it('is indeterminate by default', async () => {
       const screen = await render(<ProgressLinear />);
 

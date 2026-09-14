@@ -73,7 +73,10 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
     return (
       <Progress.Root
         ref={ref}
-        value={value ?? null}
+        // What is drawn is what is announced: a value with no fraction — an empty
+        // range, a non-finite reading — is indeterminate to Base UI too, which
+        // otherwise wrote `aria-valuenow` and `data-complete` over a sweep.
+        value={indeterminate ? null : value}
         min={min}
         max={max}
         format={format}
