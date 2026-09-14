@@ -363,8 +363,18 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
       if (moved.length === 0) return;
 
       const ids = new Set(moved.map((item) => item.value));
+      // An id in the value that `items` does not list — a row not loaded yet, or
+      // one the caller filtered out — is kept whichever way rows are moved. It
+      // was dropped on the way right and kept on the way left.
+      const known = new Set(items.map((item) => item.value));
+      const unlisted = selected.filter((item) => !known.has(item));
       const next = toTarget
-        ? items.filter((item) => chosen.has(item.value) || ids.has(item.value)).map((i) => i.value)
+        ? [
+            ...items
+              .filter((item) => chosen.has(item.value) || ids.has(item.value))
+              .map((item) => item.value),
+            ...unlisted
+          ]
         : selected.filter((item) => !ids.has(item));
 
       setTicked((current) => new Set([...current].filter((item) => !ids.has(item))));

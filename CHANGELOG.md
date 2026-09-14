@@ -450,6 +450,8 @@
 
 - **A `FilePicker` in a form submits the files it lists.** Its hidden input held only the batch last picked in the browser dialog, so a dropped file was never submitted and a file removed from the list still was, and a `readOnly` picker disabled the input, so a form got nothing from it at all. The input now holds exactly the files in the list, written back whenever the list changes and again when the dialog is dismissed, and only `disabled` takes it out of the form. `required` still applies while the list is empty. The `maxFiles` docs said it implied `multiple`; it is counted only when `multiple` is on, and now says so.
 
+- **A `Transfer` keeps a value it has no row for, whichever way rows are moved.** An id in `value` that `items` did not list — a row not loaded yet, or one filtered out before it reached the component — disappeared from the value the first time rows were sent to the right, and stayed when rows were sent back to the left. It now stays in both directions, after the listed rows.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

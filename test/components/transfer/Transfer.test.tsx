@@ -85,6 +85,25 @@ describe('Transfer', () => {
       await expect.element(screen.getByText('0/3')).toBeInTheDocument();
     });
 
+    // An id `items` did not list vanished on the way right and stayed on the way
+    // left, so the same value lost an entry depending on which button was pressed.
+    it('keeps a value it has no row for, whichever way rows move', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <Transfer items={ITEMS} defaultValue={['status', 'ghost']} onValueChange={onValueChange} />
+      );
+
+      await screen.getByText('Commit').click();
+      await screen.getByRole('button', { name: 'Move to selected' }).click();
+
+      expect(onValueChange).toHaveBeenLastCalledWith(['status', 'commit', 'ghost']);
+
+      await screen.getByText('Status').click();
+      await screen.getByRole('button', { name: 'Move to available' }).click();
+
+      expect(onValueChange).toHaveBeenLastCalledWith(['commit', 'ghost']);
+    });
+
     it('sends them back again', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

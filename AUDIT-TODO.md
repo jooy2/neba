@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F11 (144)** Transfer ids missing from `items`: (a) keep them in the value in both directions; (b) drop them in both directions.
 - **F12 (148)** NumberField ref: (a) `forwardRef` to the input, as TextField does; (b) `forwardRef` to the root.
 - **F13 (149)** IconButton in a ButtonGroup: (a) move the round radius into a class, so the group's joined corners apply; (b) document that an IconButton is not joined.
 - **F14 (151)** Rating without `name`: (a) write no `name`, so nothing is submitted; (b) keep the generated name and document it.
@@ -297,7 +296,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **141** **CommandPalette**: when a command runs and closes it, or a controlled `open` becomes `false`, the query stays, so reopening shows a filtered list. `CommandPalette.tsx:265-284`
 - [x] **142** [decision] **Combobox**: when `limit` is reached, the "Add …" row at the end is cut off, so the typed value cannot be added, and Enter commits the first option. `Combobox.tsx:440-446, 577`. See F9. Decided: (a) with an add row, the options are filtered with Base UI's own `useFilter` and cut to `limit`, and the row goes after them.
 - [x] **143** [decision] **FilePicker**: a form submit does not carry the files the picker holds. The hidden input has only the files last chosen through the browser dialog, none of the dropped ones, and keeps files removed from the list. Holding files lifts `required`, and `readOnly` makes the input `disabled`, so nothing is submitted. The `maxFiles` JSDoc "Implies `multiple`" disagrees with the code. `FilePicker.tsx:57-61, 377, 418-420, 542-554`. See F10. Decided: (a) the input's `files` follow the list through `DataTransfer`, `required` holds while the list is empty, only `disabled` disables the input, and the `maxFiles` JSDoc says it counts only with `multiple`.
-- [ ] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`. See F11.
+- [x] **144** [decision] **Transfer**: an id in a controlled `value` that is not in `items` disappears when moving right and stays when moving left. `Transfer.tsx:357-359`. See F11. Decided: (a) ids missing from `items` are kept after the listed rows in both directions.
 - [x] **145** **SegmentedButton, FloatingBottomNavigation**: when no item matches `value`, the highlight tile stays at its previous place and shows a wrong selection. FloatingBottomNavigation's default `labels="selected"` measures the width when the transition starts, so the tile can stay narrow (confirmed in the docs with two names of the same width). `SegmentedButton.tsx:265-268`, `FloatingBottomNavigation.tsx:285-288, 313-324`
 - [x] **146** **Checkbox**: `readOnly` together with `indeterminate` has no fill, so it does not look indeterminate. `Checkbox.tsx:111-117`
 - [x] **147** **ColorPicker**: `parseColor` reads percentage channels as 0–255, so `rgb(100% 0% 0%)` becomes `#640000`. `src/internal/color.ts:195-197, 245-249`
