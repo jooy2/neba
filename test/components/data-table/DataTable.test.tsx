@@ -1805,6 +1805,26 @@ describe('grouping', () => {
   });
 });
 
+describe('a Date in a column with no render', () => {
+  // The object went to React as a child, and the whole table failed to render.
+  it("is written as a date in the table's locale", async () => {
+    interface Run {
+      id: string;
+      when: Date;
+    }
+    const screen = await render(
+      <DataTable<Run>
+        headers={[{ key: 'when', label: 'When' }]}
+        items={[{ id: 'r', when: new Date(2026, 6, 27) }]}
+        getRowKey={(row) => row.id}
+        locale="en-US"
+      />
+    );
+
+    await expect.element(screen.getByText('Jul 27, 2026')).toBeInTheDocument();
+  });
+});
+
 describe('ungrouped rows', () => {
   // Rows `groupBy` put in no group were headed by the empty-state text,
   // "Nothing here", above rows that were plainly there.

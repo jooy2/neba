@@ -41,7 +41,7 @@ Define `headers`, `getRowKey`, `filter` and `manual` outside the component, or m
 
 <PropsTable name="DataTableColumn" />
 
-`render` decides what a reader sees; `value` decides what the sort and the search see. A column that draws a Chip needs `render`, and it needs `value` as well the moment it is sortable.
+`render` decides what a reader sees; `value` decides what the sort and the search see. Without `render`, a `Date` is written as a date in the table's `locale`, and anything else as it is. A column that draws a Chip needs `render`, and it needs `value` as well the moment it is sortable.
 
 ## Examples
 

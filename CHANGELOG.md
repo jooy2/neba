@@ -476,6 +476,8 @@
 
 - **A grouped `DataTable` heads its ungrouped rows "No group".** Rows `groupBy` put in no group were headed by the empty-state text, "Nothing here", above rows that were plainly there. They now take the `table` namespace's new `noGroup` word, in all eighteen registered languages and in the table's `locale`.
 
+- **A `DataTable` writes a `Date` in a column without `render` as a date.** Sorting and the CSV export already understood a `Date`, but a cell with no `render` of its own handed the object to React, and the whole table failed with "Objects are not valid as a React child". Such a cell is now written as a date in the table's `locale`. A column that needs another shape still passes `render`.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went

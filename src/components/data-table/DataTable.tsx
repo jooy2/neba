@@ -23,6 +23,7 @@ import {
   type SortEntry
 } from '../../internal/data-table.js';
 import { beginPointerDrag } from '../../internal/drag.js';
+import { dateFormatter } from '../../internal/format.js';
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
@@ -552,6 +553,24 @@ const PRESSABLE_IN_CELL =
 
 /** The magnifier on the search field. Local: nothing else in the library draws one. */
 /** The `<tr>` drawn for a key, or `null` when the window has not drawn it. */
+/**
+ * What a cell with no `render` writes.
+ *
+ * A `Date` is written as a date in the table's language. Handed to React as it
+ * came, it was an object where a child was expected, and the whole table failed
+ * to render, although the sort and the CSV export both knew what a date was.
+ * Anything else is written as it came, as before.
+ */
+function plainCell(value: unknown, locale: string | undefined): React.ReactNode {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime())
+      ? ''
+      : dateFormatter(locale, { dateStyle: 'medium' }).format(value);
+  }
+
+  return value as React.ReactNode;
+}
+
 function rowElement(body: HTMLTableSectionElement, key: string): HTMLTableRowElement | null {
   for (let index = 0; index < body.rows.length; index += 1) {
     if (body.rows[index].dataset.nebaRow === key) {
@@ -2099,7 +2118,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 ? cellEditor(entry, column)
                 : column.render
                   ? column.render(entry.row, displayOffset + index)
-                  : ((entry.row as Record<string, unknown>)[column.key] as React.ReactNode)}
+                  : plainCell((entry.row as Record<string, unknown>)[column.key], locale)}
             </td>
           );
         })}

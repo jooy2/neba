@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F24 (169)** DataTable `Date` cell without `render`: (a) write it as a date in the table's locale; (b) document that a `Date` needs `render`.
 - **F25 (171)** Table `stickyHeader` in a height-limited box: (a) a `maxHeight` prop that makes the Table's own sheet scroll; (b) change the docs to what works now.
 - **F26 (174)** Anchor `activeHref`: (a) keep tracking in controlled mode and call `onActiveChange`, and start on the first heading when nothing scrolls; (b) document that `activeHref` turns tracking off.
 - **F27 (175)** Badge without `content`: (a) draw the dot the docs describe, and rewrite the tests that pass on an invisible one; (b) document that no content draws nothing.
@@ -322,7 +321,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
   - [x] [major] A table with a tab stop and no selection draws no focus ring on its sheet, and no row is marked until an arrow key moves; found while fixing the ring above. See E7. Decided: approved; the sheet's ring follows `navigable` rather than `selects`.
   - [x] `has-[:focus-visible]` draws a ring around the whole table when the search field has focus (`:2254-2256`).
   - [x] The header being dragged shows its state with `opacity-60` (`:1948`). It takes the `--n-soft` wash the Sidebar and Panes handles take while dragged.
-- [ ] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`. See F24.
+- [x] **169** [decision] **DataTable**: a `Date` value in a column without `render` breaks the whole table with "Objects are not valid as a React child", although sorting and CSV support dates. `DataTable.tsx:1905-1909`. See F24. Decided: (a) a `Date` in a column without `render` is written through `dateFormatter` in the table's `locale`.
 - [x] **170** [major] **Table**: `striped` rows are 82% white and invisible on a white page. DataTable already moved to a 4% mix of `--neba-fg`. `Table.tsx:314`. See E4. Decided: approved; the stripe is `color-mix(in oklab, var(--neba-fg) 4%, transparent)`, as in DataTable.
 - [ ] **171** [decision] **Table**: the sheet's `overflow-x-auto` makes the Box a scroll container, so limiting the height around it as the docs describe keeps `stickyHeader` from sticking. `Table.tsx:237, 282`. See F25.
 - [x] **172** [major] **DataList**: with `orientation="vertical"` the gap between a label and its own value is wider than the gap to the previous value, so the pairs do not read as pairs, and `dividers` puts the rule between a label and its value. `DataList.tsx:87, 179-183`. See E5. Decided: approved; a stacked list spaces and rules above each label after the first.
