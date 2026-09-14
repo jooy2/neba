@@ -17,6 +17,7 @@ import type {
   NebaElevation,
   NebaPosition,
   NebaSize,
+  NebaSlots,
   NebaStyleProps,
   NebaVariant
 } from '../../types.js';
@@ -72,10 +73,19 @@ const FloatingActionContext = React.createContext<FloatingActionContextValue>({
   focusTrigger: () => {}
 });
 
+/**
+ * The parts of a FloatingActionButton a `classNames` entry can reach. `className`
+ * and `style` are the button's; `frame` is the box pinned to the corner, which
+ * holds the button and its dial.
+ */
+export type FloatingActionButtonSlot = 'frame';
+
 export interface FloatingActionButtonProps
   extends NebaStyleProps, Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'onClick'> {
   /** The glyph on the button. @default a plus */
   icon?: React.ReactNode;
+  /** Classes for the box pinned to the corner. `className` goes on the button itself. */
+  classNames?: NebaSlots<FloatingActionButtonSlot>;
   /**
    * What the button does, in words.
    *
@@ -290,6 +300,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
       showLabels = true,
       disabled = false,
       className,
+      classNames,
       style,
       children,
       onClick,
@@ -389,12 +400,11 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
             : safeArea && (position === 'fixed' || position === 'sticky')
               ? safeCornerClasses[corner]
               : cornerClasses[corner],
-          className
+          classNames?.frame
         )}
         style={
           {
-            '--n-fab-offset': typeof offset === 'number' ? `${offset}px` : offset,
-            ...style
+            '--n-fab-offset': typeof offset === 'number' ? `${offset}px` : offset
           } as React.CSSProperties
         }
         onKeyDown={(event) => {
@@ -439,8 +449,12 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
           // two utilities setting the same property resolve by their order in
           // the generated stylesheet. An inline declaration is the one form that
           // wins deterministically — and a stadium and a disc are the same
-          // declaration, since the radius is only ever half the height.
-          style={{ borderRadius: '9999px' }}
+          // declaration, since the radius is only ever half the height. The
+          // caller's `style` is merged over it rather than replacing it, and the
+          // caller's `className` is here too: the button is the thing a class
+          // for a floating action button is meant for.
+          className={className}
+          style={{ borderRadius: '9999px', ...style }}
           onClick={(event) => {
             if (hasActions) {
               setOpen(!open);

@@ -21,7 +21,7 @@ import { FloatingActionButton } from 'neba';
 
 <PropsTable name="FloatingAction" />
 
-나머지 `<div>` 속성은 루트로, 나머지 `<button>` 속성은 각 액션으로 전달됩니다. `onClick`은 버튼 자신의 것입니다.
+나머지 `<div>` 속성은 루트로, 나머지 `<button>` 속성은 각 액션으로 전달됩니다. `onClick`, `className`, `style`은 버튼 자신의 것이고, `style`을 줘도 버튼의 둥근 모서리는 유지됩니다. 모서리에 고정된 상자의 클래스는 `classNames.frame`으로 넘깁니다.
 
 공통 축(`variant` `size` `color` `density` `elevation` `corner`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 

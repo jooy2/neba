@@ -31,12 +31,35 @@ describe('FloatingActionButton', () => {
       await expect.element(screen.getByRole('button', { name: 'After' })).toBeInTheDocument();
     });
 
-    it('keeps caller-supplied class names alongside its own', async () => {
+    // `className` landed on the box in the corner rather than on the button, and
+    // `style` on the button replaced the round radius.
+    it('puts className and style on the button, keeping its round radius', async () => {
       const screen = await render(
-        <FloatingActionButton label="Compose" className="my-own-class" data-testid="fab" />
+        <FloatingActionButton
+          label="Compose"
+          className="my-own-class"
+          style={{ marginTop: 4 }}
+          data-testid="fab"
+        />
+      );
+      const button = screen.getByRole('button', { name: 'Compose' }).element() as HTMLElement;
+
+      expect(button).toHaveClass('my-own-class');
+      expect(button.style.marginTop).toBe('4px');
+      expect(button.style.borderRadius).toBe('9999px');
+      expect(screen.getByTestId('fab').element()).not.toHaveClass('my-own-class');
+    });
+
+    it('takes classes for the box in the corner through classNames.frame', async () => {
+      const screen = await render(
+        <FloatingActionButton
+          label="Compose"
+          classNames={{ frame: 'my-frame' }}
+          data-testid="fab"
+        />
       );
 
-      expect(screen.getByTestId('fab').element()).toHaveClass('my-own-class');
+      expect(screen.getByTestId('fab').element()).toHaveClass('my-frame');
     });
 
     it('forwards unknown props to the root', async () => {

@@ -58,7 +58,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 ### D. Choices (decided: (a))
 
 - **D14 (107)** Component names in the published build: (a) terser `keep_fnames: /^[A-Z]/`, measured, with the budgets updated; (b) leave it.
-- **D19 (124, FloatingActionButton)** (a) merge `style`, move `className` to the button, and expose the outer div as a `classNames` slot (breaking, because `className` lands elsewhere); (b) merge `style` only and document where `className` goes.
 
 ### E. Approvals (approved)
 
@@ -281,13 +280,13 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **121** Two cursor utilities were decided by stylesheet order on disabled fields and toggles.
 - [x] **122** Full-width ButtonGroup, ToggleGroup and SegmentedButton kept `inline-flex`.
 - [x] **123** Stack, Timeline and Carousel keyed wrappers by index and remounted children.
-- [ ] **124** **Caller props overwrite internal handling, or internal handling drops caller props.**
+- [x] **124** **Caller props overwrite internal handling, or internal handling drops caller props.**
   - [x] Carousel: `onFocus`, `onBlur`, `onPointerEnter` and `onPointerLeave` removed the autoplay pause.
   - [x] `Animate*` with `trigger="hover"`: fourteen dropped the caller's handlers, and Typing, Marquee and Headline let the caller's handlers remove the trigger.
   - [x] Tooltip: an `id` broke the trigger's `aria-describedby`.
   - [x] TimelineItem: `style` erased the slots and the bullet size.
   - [x] Avatar, AppLogo: `imageProps.className` replaced `size-full object-cover`.
-  - [ ] [decision] FloatingActionButton: `style` replaces the round radius, and `className` lands on the outer div instead of the button (`FloatingActionButton.tsx:471-495`). See D19.
+  - [x] [decision] FloatingActionButton: `style` replaces the round radius, and `className` lands on the outer div instead of the button (`FloatingActionButton.tsx:471-495`). See D19. Decided: (a) `className` and `style` go on the button, `style` merged over the radius, and the box is `classNames.frame`.
 - [ ] **125** [major][decision] **Hydration errors inside `<p>`**: the root or a child is a `<div>`. Image (the default Skeleton and `AspectRatio` are divs; it happens with an MDX `img` mapping, `Image.tsx:1070, 1167`), Stack (its JSDoc says it can sit inside a paragraph, `Stack.tsx:140`), AnimateTyping, AnimateHeadline and AnimateMarquee (no `render` prop, so the Headline demo drops the heading semantics). See F1.
 - [ ] **126** [decision] **Server and client renders disagree.** See F2.
   - Calendar reads `today()` and the runtime locale during render. With a UTC server and a reader in KST, the "today" mark differs between 00:00 and 09:00 every day, and the shown month differs at the end of a month (`Calendar.tsx:164-166`, `src/internal/date.ts:545`).

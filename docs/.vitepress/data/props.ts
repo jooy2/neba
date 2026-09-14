@@ -13496,6 +13496,14 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: { ko: 'FloatingAction들, 있다면', en: 'The FloatingActions, if there are any' }
+    },
+    {
+      name: 'classNames',
+      type: "Partial<Record<'frame', string>>",
+      description: {
+        ko: '모서리에 고정된 상자의 클래스. className과 style은 버튼에 붙습니다',
+        en: 'Classes for the box pinned to the corner. className and style go on the button itself'
+      }
     }
   ],
 

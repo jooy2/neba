@@ -21,7 +21,7 @@ import { FloatingActionButton } from 'neba';
 
 <PropsTable name="FloatingAction" />
 
-Every other `<div>` attribute passes through to the root and every other `<button>` attribute to each action. `onClick` belongs to the button itself.
+Every other `<div>` attribute passes through to the root and every other `<button>` attribute to each action. `onClick`, `className` and `style` belong to the button itself, and the button keeps its round radius under a `style` of its own. The box pinned to the corner takes its classes through `classNames.frame`.
 
 The shared axes (`variant` `size` `color` `density` `elevation` `corner`) are defined in [prop conventions](../../design/prop-conventions).
 
