@@ -118,7 +118,8 @@ export const ar: NebaLocale = {
     size: 'الحجم',
     title: 'التسمية',
     start: 'البداية',
-    end: 'النهاية'
+    end: 'النهاية',
+    summary: 'نقاط البيانات: {count}. النطاق: من {min} إلى {max}.'
   },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {

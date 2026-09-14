@@ -117,6 +117,16 @@ describe('HeatmapChart', () => {
       await expect.element(screen.getByRole('img', { name: 'Chart' })).toBeInTheDocument();
     });
 
+    it('is described by the cell count and range rather than by its table', async () => {
+      const screen = await render(
+        <HeatmapChart label="Sessions" categories={HOURS} series={TRAFFIC} />
+      );
+
+      await expect
+        .element(screen.getByRole('img', { name: 'Sessions' }))
+        .toHaveAccessibleDescription('Data points: 12. Range: 1 to 56.');
+    });
+
     it('keeps the readout outside the picture', async () => {
       const screen = await render(
         <HeatmapChart label="Sessions" categories={HOURS} series={TRAFFIC} />

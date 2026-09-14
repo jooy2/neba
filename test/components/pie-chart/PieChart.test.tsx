@@ -101,6 +101,16 @@ describe('PieChart', () => {
       expect(plot.element().contains(status.element())).toBe(false);
     });
 
+    it('is described by the slice count and range rather than by its table', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      await expect
+        .element(screen.getByRole('img', { name: 'Accounts' }))
+        .toHaveAccessibleDescription('Data points: 3. Range: 20 to 50.');
+    });
+
     // The docs promised Escape, Home and End; only the arrows existed.
     it('jumps to the ends with Home and End and lets go with Escape', async () => {
       const screen = await render(

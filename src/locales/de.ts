@@ -118,7 +118,8 @@ export const de: NebaLocale = {
     size: 'Größe',
     title: 'Bezeichnung',
     start: 'Beginn',
-    end: 'Ende'
+    end: 'Ende',
+    summary: 'Datenpunkte: {count}. Bereich: {min} bis {max}.'
   },
   scroll: { label: 'Scrollbarer Inhalt', previous: 'Zurückscrollen', next: 'Weiterscrollen' },
   breadcrumb: {

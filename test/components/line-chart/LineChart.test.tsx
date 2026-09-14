@@ -322,6 +322,28 @@ describe('LineChart', () => {
       expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(1);
     });
 
+    // The plot was described by the hidden table, so every focus read out
+    // every number in the chart.
+    it('is described by one sentence with the count and the range', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Visits', data: [10, 20, null, 40] },
+            { name: 'Signups', data: [5, 6, 7, 8] }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toHaveAccessibleDescription('Data points: 7. Range: 5 to 40.');
+      expect(
+        document.getElementById(plot.element().getAttribute('aria-describedby') ?? '')?.tagName
+      ).toBe('SPAN');
+    });
+
     // A touch's `pointerleave` arrives as it lifts, so a tap's tooltip lasted a
     // frame, and a tap that did not move never read a point at all.
     it('pins the tooltip on a tap and puts it down on a press elsewhere', async () => {

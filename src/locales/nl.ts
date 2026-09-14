@@ -118,7 +118,8 @@ export const nl: NebaLocale = {
     size: 'Grootte',
     title: 'Label',
     start: 'Begin',
-    end: 'Einde'
+    end: 'Einde',
+    summary: 'Datapunten: {count}. Bereik: {min} tot {max}.'
   },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {

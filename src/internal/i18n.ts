@@ -540,11 +540,25 @@ export interface ChartMessages {
   start: string;
   /** And where it ends. */
   end: string;
+  /**
+   * What the plot is described by: how many values it draws and between which
+   * two they fall. `{count}`, `{min}` and `{max}` are replaced with the numbers,
+   * already formatted. It is one sentence on purpose, because a description is
+   * read on every focus and the hidden table beside the plot holds the rest.
+   */
+  summary: string;
 }
 
 /** The `chart` namespace, as every chart reads it. */
 export const chartMessages: MessageTable<ChartMessages> = {
-  '': { label: 'Chart', size: 'Size', title: 'Label', start: 'Start', end: 'End' }
+  '': {
+    label: 'Chart',
+    size: 'Size',
+    title: 'Label',
+    start: 'Start',
+    end: 'End',
+    summary: 'Data points: {count}. Range: {min} to {max}.'
+  }
 };
 
 /**

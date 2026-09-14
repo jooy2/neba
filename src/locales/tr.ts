@@ -118,7 +118,8 @@ export const tr: NebaLocale = {
     size: 'Boyut',
     title: 'Etiket',
     start: 'Başlangıç',
-    end: 'Bitiş'
+    end: 'Bitiş',
+    summary: 'Veri noktası: {count}. Aralık: {min} ile {max} arası.'
   },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {

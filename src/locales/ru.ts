@@ -118,7 +118,8 @@ export const ru: NebaLocale = {
     size: 'Размер',
     title: 'Метка',
     start: 'Начало',
-    end: 'Конец'
+    end: 'Конец',
+    summary: 'Точек данных: {count}. Диапазон: от {min} до {max}.'
   },
   scroll: {
     label: 'Прокручиваемая область',

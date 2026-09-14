@@ -118,7 +118,8 @@ export const ko: NebaLocale = {
     size: '크기',
     title: '레이블',
     start: '시작',
-    end: '끝'
+    end: '끝',
+    summary: '데이터 {count}개. 범위: {min}~{max}.'
   },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {

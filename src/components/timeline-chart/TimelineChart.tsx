@@ -142,6 +142,35 @@ export function TimelineChart(rawProps: TimelineChartProps) {
     [spans]
   );
 
+  /* The plot is described by how many spans it draws and when the first starts
+     and the last ends. The frame would otherwise count the filler series, which
+     is a one per row and says nothing about time. */
+  const summary = React.useMemo(() => {
+    let count = 0;
+    let first = Infinity;
+    let last = -Infinity;
+
+    for (const row of spans) {
+      for (const one of row) {
+        if (!one) {
+          continue;
+        }
+
+        count += 1;
+        first = Math.min(first, one.from);
+        last = Math.max(last, one.to);
+      }
+    }
+
+    return count === 0
+      ? { count, min: '', max: '' }
+      : {
+          count,
+          min: formatTimeValue(first, scale.unit, locale),
+          max: formatTimeValue(last, scale.unit, locale)
+        };
+  }, [spans, scale.unit, locale]);
+
   const names = React.useMemo(
     () => series.map((row, index) => row.name ?? `${index + 1}`),
     [series]
@@ -243,6 +272,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       bandRatio={barBandRatio[density]}
       marks={marks}
       markTooltip={markTooltip}
+      summary={summary}
       table={(id) => (
         <TimelineTable
           id={id}

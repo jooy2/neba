@@ -118,7 +118,8 @@ export const es: NebaLocale = {
     size: 'Tamaño',
     title: 'Etiqueta',
     start: 'Inicio',
-    end: 'Fin'
+    end: 'Fin',
+    summary: 'Puntos de datos: {count}. Rango: de {min} a {max}.'
   },
   scroll: {
     label: 'Contenido desplazable',

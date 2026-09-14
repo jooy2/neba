@@ -118,7 +118,8 @@ export const pl: NebaLocale = {
     size: 'Rozmiar',
     title: 'Etykieta',
     start: 'Początek',
-    end: 'Koniec'
+    end: 'Koniec',
+    summary: 'Punkty danych: {count}. Zakres: od {min} do {max}.'
   },
   scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
   breadcrumb: {

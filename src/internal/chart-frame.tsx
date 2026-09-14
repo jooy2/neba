@@ -47,7 +47,7 @@ import {
 } from './chart.js';
 import { numberFormatter } from './format.js';
 import { observeResize } from './observe.js';
-import { chartMessages, emptyMessages, useMessages } from './i18n.js';
+import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
@@ -605,6 +605,61 @@ function ChartTooltipPanel({ heading, items, x, y, flip, size }: TooltipProps) {
  * Empty when nothing is active, so leaving the chart clears what was said
  * rather than leaving the last column standing in the region forever.
  */
+/**
+ * The sentence a plot is described by.
+ *
+ * The plot used to be described by the hidden table itself, so a year of daily
+ * points was three hundred and sixty-five numbers read out on every focus. This
+ * says how many there are and between which two they fall, and the table stays
+ * where a reader who wants the numbers can walk it. `hidden` keeps it out of the
+ * reading order: a description is computed from a hidden element all the same.
+ */
+function ChartSummary({
+  id,
+  template,
+  count,
+  min,
+  max,
+  locale
+}: {
+  id: string;
+  template: string;
+  count: number;
+  min: string;
+  max: string;
+  locale?: string;
+}) {
+  return (
+    <span id={id} hidden>
+      {fillMessage(template, { count: numberFormatter(locale, {}).format(count), min, max })}
+    </span>
+  );
+}
+
+/** The count and extremes of every non-`null` value in the rows still shown. */
+function summarise(
+  rows: readonly (readonly ChartValue[])[],
+  format: (value: number) => string
+): { count: number; min: string; max: string } {
+  let count = 0;
+  let low = Infinity;
+  let high = -Infinity;
+
+  for (const row of rows) {
+    for (const one of row) {
+      if (one.value === null || Number.isNaN(one.value)) {
+        continue;
+      }
+
+      count += 1;
+      low = Math.min(low, one.value);
+      high = Math.max(high, one.value);
+    }
+  }
+
+  return count === 0 ? { count, min: '', max: '' } : { count, min: format(low), max: format(high) };
+}
+
 function ChartStatus({
   heading,
   items
@@ -860,6 +915,12 @@ interface CartesianProps extends CartesianChartProps {
    * than building a formatter that a pointer moving over the picture rebuilds.
    */
   table?: (id: string, format: (value: number) => string) => React.ReactNode;
+  /**
+   * What the plot's one-sentence description counts, for a chart whose drawn
+   * values are not its series' values — a timeline's spans. Left out, it is
+   * every visible non-`null` value and their extremes, through `format`.
+   */
+  summary?: { count: number; min: string; max: string };
   /** The legend's swatch, for a chart whose marks are not all the same shape. */
   swatch?: (index: number, color: string) => React.ReactNode;
   /**
@@ -938,6 +999,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     marks,
     markRadius = 24,
     table,
+    summary,
     swatch,
     scale: givenScale,
     markTooltip,
@@ -960,6 +1022,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
   const tableId = React.useId();
+  const summaryId = React.useId();
 
   const visibility = useVisibility(series);
   const [columnIndex, setColumnIndex] = React.useState<number | null>(null);
@@ -996,6 +1059,10 @@ export function CartesianChart(rawProps: CartesianProps) {
 
   const shownValues = values.filter((_, index) => visibility.visible[index]);
   const extent = extentOf(shownValues, stacked);
+  // Worked out here, beside the extent, rather than where it is drawn: read
+  // after the scales are memoised, the call would count as a possible change to
+  // `shownValues` and cost the compiler every memo below.
+  const described = summary ?? summarise(shownValues, formatValue);
 
   const plotHeight =
     typeof height === 'number' ? height : height === undefined ? plotHeights[size] : null;
@@ -1562,7 +1629,7 @@ export function CartesianChart(rawProps: CartesianProps) {
         // Never the bare prop: `label` is optional, and a focusable `role="img"`
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
-        aria-describedby={nothing ? undefined : tableId}
+        aria-describedby={nothing ? undefined : summaryId}
         onPointerMove={readPointer}
         // A tap moves nothing, so the press itself is what reads the point.
         onPointerDown={(event) => {
@@ -1698,6 +1765,10 @@ export function CartesianChart(rawProps: CartesianProps) {
       {/* Only where there is a crosshair to report. A chart with its tooltip
           turned off has nothing to announce, and a live region standing empty
           in the tree forever is a promise it never keeps. */}
+      {nothing ? null : (
+        <ChartSummary id={summaryId} template={chartWords.summary} locale={locale} {...described} />
+      )}
+
       {tooltipMode === 'none' ? null : (
         <ChartStatus
           heading={
@@ -2018,8 +2089,10 @@ export {
   ChartLegendBar,
   ChartScaleLegend,
   ChartStatus,
+  ChartSummary,
   ChartSurface,
   ChartTooltipPanel,
+  summarise,
   useMeasuredWidth,
   useReleaseOutside,
   useVisibility

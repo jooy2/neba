@@ -118,7 +118,8 @@ export const th: NebaLocale = {
     size: 'ขนาด',
     title: 'ป้ายกำกับ',
     start: 'เริ่มต้น',
-    end: 'สิ้นสุด'
+    end: 'สิ้นสุด',
+    summary: 'จุดข้อมูล: {count} ช่วง: {min} ถึง {max}'
   },
   scroll: { label: 'เนื้อหาที่เลื่อนได้', previous: 'เลื่อนย้อนกลับ', next: 'เลื่อนไปข้างหน้า' },
   breadcrumb: {

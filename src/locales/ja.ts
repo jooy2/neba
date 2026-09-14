@@ -118,7 +118,8 @@ export const ja: NebaLocale = {
     size: 'サイズ',
     title: 'ラベル',
     start: '開始',
-    end: '終了'
+    end: '終了',
+    summary: 'データ点: {count}。範囲: {min}〜{max}。'
   },
   scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {

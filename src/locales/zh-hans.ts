@@ -121,7 +121,8 @@ export const zhHans: NebaLocale = {
     size: '大小',
     title: '标签',
     start: '开始',
-    end: '结束'
+    end: '结束',
+    summary: '数据点：{count} 个。范围：{min} 至 {max}。'
   },
   scroll: { label: '可滚动内容', previous: '向前滚动', next: '向后滚动' },
   breadcrumb: {

@@ -37,6 +37,16 @@ describe('TimelineChart', () => {
       await expect.element(screen.getByRole('img', { name: 'Release plan' })).toBeInTheDocument();
     });
 
+    // The frame would count its filler series, a one per row, which says
+    // nothing about time.
+    it('is described by its span count and when the first starts and the last ends', async () => {
+      const screen = await render(<TimelineChart label="Plan" series={PLAN} />);
+
+      await expect
+        .element(screen.getByRole('img', { name: 'Plan' }))
+        .toHaveAccessibleDescription(/^Data points: 3\. Range: Mar.* to May.*\.$/);
+    });
+
     it('draws one bar per span', async () => {
       const screen = await render(<TimelineChart label="Plan" series={PLAN} />);
 

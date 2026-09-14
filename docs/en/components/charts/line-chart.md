@@ -162,7 +162,7 @@ Series take palette slots in the order they are passed: eight hues, fixed, never
 
 ## Accessibility
 
-- Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table.
+- Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table. The plot is described by one sentence with the number of values and their range rather than by the table, so a focus does not read every number out.
 - The plot is focusable. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it, so the tooltip is reachable without a pointer.
 - On a touch screen a tap shows the tooltip of the nearest point and keeps it up; a tap anywhere outside the plot puts it down. The same holds on every chart with a tooltip.
 - The legend is a list of `aria-pressed` buttons, so which series are drawn is stated rather than implied by colour.

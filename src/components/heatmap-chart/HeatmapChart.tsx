@@ -4,9 +4,11 @@ import * as React from 'react';
 import {
   ChartScaleLegend,
   ChartStatus,
+  ChartSummary,
   ChartSurface,
   ChartTooltipPanel,
   markTransitionClasses,
+  summarise,
   type ChartTooltipItem,
   useMeasuredWidth,
   useReleaseOutside
@@ -142,6 +144,8 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
 
   useReleaseOutside(hostRef, active !== null, () => setActive(null));
+
+  const summaryId = React.useId();
 
   const formatValue = React.useCallback(
     (value: number) =>
@@ -438,7 +442,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
         // Never the bare prop: `label` is optional, and a focusable `role="img"`
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
-        aria-describedby={nothing ? undefined : tableId}
+        aria-describedby={nothing ? undefined : summaryId}
         // A touch leaves as it lifts; a tap pins the cell until a press
         // elsewhere, which `useReleaseOutside` handles.
         onPointerLeave={(event) => {
@@ -660,6 +664,15 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
           )
         ) : null}
       </div>
+
+      {nothing ? null : (
+        <ChartSummary
+          id={summaryId}
+          template={chartWords.summary}
+          locale={locale}
+          {...summarise(values, formatValue)}
+        />
+      )}
 
       {/* Only where there is a crosshair to report — see `ChartStatus`. */}
       {tooltipOff ? null : (

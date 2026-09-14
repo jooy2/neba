@@ -118,7 +118,8 @@ export const vi: NebaLocale = {
     size: 'Kích thước',
     title: 'Nhãn',
     start: 'Bắt đầu',
-    end: 'Kết thúc'
+    end: 'Kết thúc',
+    summary: 'Điểm dữ liệu: {count}. Phạm vi: từ {min} đến {max}.'
   },
   scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },
   breadcrumb: {

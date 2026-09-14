@@ -118,7 +118,8 @@ export const id: NebaLocale = {
     size: 'Ukuran',
     title: 'Label',
     start: 'Mulai',
-    end: 'Selesai'
+    end: 'Selesai',
+    summary: 'Titik data: {count}. Rentang: {min} sampai {max}.'
   },
   scroll: {
     label: 'Konten yang dapat digulir',

@@ -118,7 +118,8 @@ export const hi: NebaLocale = {
     size: 'आकार',
     title: 'लेबल',
     start: 'शुरुआत',
-    end: 'अंत'
+    end: 'अंत',
+    summary: 'डेटा बिंदु: {count}. सीमा: {min} से {max} तक।'
   },
   scroll: {
     label: 'स्क्रॉल करने योग्य सामग्री',

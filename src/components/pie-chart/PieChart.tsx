@@ -5,9 +5,11 @@ import {
   ChartDataTable,
   ChartLegendBar,
   ChartStatus,
+  ChartSummary,
   ChartSurface,
   ChartTooltipPanel,
   markTransitionClasses,
+  summarise,
   type ChartBaseProps,
   type ChartTooltipItem,
   useMeasuredWidth,
@@ -151,6 +153,8 @@ export function PieChart(rawProps: PieChartProps) {
 
   useReleaseOutside(hostRef, active !== null, () => setActive(null));
 
+  const summaryId = React.useId();
+
   const colors = slices.map((slice, index) => seriesColor(slice, index));
 
   const total = values.reduce(
@@ -285,7 +289,7 @@ export function PieChart(rawProps: PieChartProps) {
         // Never the bare prop: `label` is optional, and a focusable `role="img"`
         // with nothing to be called by is a tab stop that announces silence.
         aria-label={label ?? chartWords.label}
-        aria-describedby={nothing ? undefined : tableId}
+        aria-describedby={nothing ? undefined : summaryId}
         // A touch leaves as it lifts; a tap pins the slice until a press
         // elsewhere, which `useReleaseOutside` handles.
         onPointerLeave={(event) => {
@@ -441,6 +445,18 @@ export function PieChart(rawProps: PieChartProps) {
           )
         ) : null}
       </div>
+
+      {nothing ? null : (
+        <ChartSummary
+          id={summaryId}
+          template={chartWords.summary}
+          locale={locale}
+          {...summarise(
+            values.filter((_, index) => visibility.visible[index]).map((one) => [one]),
+            formatValue
+          )}
+        />
+      )}
 
       {/* Only where there is a crosshair to report — see `ChartStatus`. */}
       {tooltipOff ? null : (
