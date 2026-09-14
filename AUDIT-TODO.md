@@ -63,7 +63,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### F. Choices (decided: (a))
 
-- **F28 (176)** Breadcrumb: (a) reset `unfolded` when `items` change, and give BreadcrumbItem `render` and `target`; (b) add `render` and `target` only.
 - **F29 (179)** Highlight and accents: (a) fold accents as `internal/search.ts` does, with a map back to positions in the original text; (b) document the difference.
 - **F30 (180)** Shortcut modifier order on macOS: (a) sort into ⌃⌥⇧⌘; (b) keep the written order and fix the docs.
 - **F31 (181)** Shortcuts on punctuation typed with Shift: (a) skip the Shift comparison for a single key that is neither a letter nor a digit, so `'?'` fires; (b) document `Shift+?`.
@@ -325,7 +324,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [x] **173** [major] **Anchor**: in `rail`, the highlight of rows with `depth ≥ 1` is drawn away from the rail, because the indent is a `margin` and moves `border-s` with it. Use `padding-inline-start`. `Anchor.tsx:302-306`. See E6. Decided: approved; on the rail a nested row's indent is `padding-inline-start`.
 - [x] **174** [decision] **Anchor**: passing `activeHref` makes the tracking effect return early, so `onActiveChange` is never called, although the docs present the two as a pair. With nothing to scroll, the last heading is active from the first render. `Anchor.tsx:166-170, 210-236`. See F26. Decided: (a) tracking runs while controlled and calls `onActiveChange`, and a page with no scroll range starts on the first heading.
 - [x] **175** [decision] **Badge**: with `content` left out, the JSDoc and the props table say a dot is drawn, but the dot gets `invisible` and `aria-hidden`. The existing tests pass against the invisible dot. `Badge.tsx:243-245`. See F27. Decided: (a) no `content` draws a visible dot, silent without a `label`; the test that passed on the invisible dot is rewritten.
-- [ ] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28.
+- [x] **176** [decision] **Breadcrumb**: once `unfolded` is on, it stays on across route changes. `BreadcrumbItem` has no `render` or `target`, so a router `Link` cannot be used and every step reloads the page. `Breadcrumb.tsx:109-116, 308, 486-489`. See F28. Decided: (a) the fold is kept per trail, so new steps fold again; `BreadcrumbItem` takes `render` and `target`.
 - [x] **177** Highlight remounted its children when a query started or cleared.
 - [x] **178** **Highlight**: `wholeWord` applies to a RegExp query although the docs say it is ignored. The `outline` variant leaves a 2px side border on each mark, so the text shifts as the reader types. `Highlight.tsx:78, 283, 297`
 - [ ] **179** [decision] **Highlight** does not fold accents, so for the same query DataTable finds `José` and Highlight does not mark it. Folding needs a map back to positions in the original text. `Highlight.tsx:109-128`. See F29.

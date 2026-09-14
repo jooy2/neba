@@ -69,6 +69,16 @@ The last step is the page you are on, so it is not a link even when it is given 
 
 </Demo>
 
+### render
+
+A step with an `href` is an `<a>`, which reloads the page. Pass a router's `Link` as `render` to move without a reload; `href` still goes through, so it is written once. A trail that stays mounted across a route change folds again when its steps change.
+
+```tsx
+<BreadcrumbItem href="/projects" render={<Link to="/projects" />}>
+  Projects
+</BreadcrumbItem>
+```
+
 ### size
 
 <Demo src="breadcrumb/sizes">

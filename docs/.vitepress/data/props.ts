@@ -10503,6 +10503,22 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'render',
+      type: 'RenderProp',
+      description: {
+        ko: '링크를 <a> 대신 다른 요소로 렌더링합니다. 보통 라우터의 Link이며, 페이지를 다시 불러오지 않고 이동합니다. href는 그대로 전달됩니다. 현재 단계와 disabled 단계는 텍스트로 남습니다',
+        en: 'Renders the link as something other than an <a>, usually a router Link, so the step moves without reloading the page. href still goes through. The current step and a disabled one stay text'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크를 열 곳. 이 탭이 아니면 rel="noopener noreferrer"가 붙습니다',
+        en: 'Where the link opens. Anything but this tab also gets rel="noopener noreferrer"'
+      }
+    },
+    {
       name: 'startIcon',
       type: 'ReactNode',
       description: {

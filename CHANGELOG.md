@@ -112,6 +112,8 @@
 
 - **`Table` takes `maxHeight`, and `stickyHeader` sticks under it.** A Table's sheet scrolls sideways, which makes it the box its sticky header sticks to, so limiting the height on a box around the table, as the docs said to, scrolled that outer box instead and the header scrolled away with the rows. `maxHeight` limits the sheet itself, as a number of pixels or any CSS length, so the rows scroll inside it and a `stickyHeader` stays at its top.
 
+- **`BreadcrumbItem` takes `render` and `target`.** A step with an `href` could only be an `<a>`, so every step in an app with a router reloaded the page. `render={<Link to="/projects" />}` draws the router's link with `href` passed through, and a `target` other than this tab gets `rel="noopener noreferrer"`.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
@@ -483,6 +485,8 @@
 - **A grouped `DataTable` heads its ungrouped rows "No group".** Rows `groupBy` put in no group were headed by the empty-state text, "Nothing here", above rows that were plainly there. They now take the `table` namespace's new `noGroup` word, in all eighteen registered languages and in the table's `locale`.
 
 - **A `DataTable` writes a `Date` in a column without `render` as a date.** Sorting and the CSV export already understood a `Date`, but a cell with no `render` of its own handed the object to React, and the whole table failed with "Objects are not valid as a React child". Such a cell is now written as a date in the table's `locale`. A column that needs another shape still passes `render`.
+
+- **A `Breadcrumb` folds again when its steps change.** Once the `…` was pressed the trail stayed unfolded for as long as it was mounted, so a layout that keeps the breadcrumb across a route change showed every later trail in full.
 
 ## 1.13.0 (2026-09-11)
 

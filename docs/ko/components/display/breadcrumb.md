@@ -69,6 +69,16 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 </Demo>
 
+### render
+
+`href`가 있는 단계는 `<a>`이므로 페이지를 다시 불러옵니다. 라우터의 `Link`를 `render`로 넘기면 다시 불러오지 않고 이동합니다. `href`는 그대로 전달되므로 한 번만 쓰면 됩니다. 경로가 바뀌어도 마운트된 채 남는 트레일은 단계가 바뀌면 다시 접힙니다.
+
+```tsx
+<BreadcrumbItem href="/projects" render={<Link to="/projects" />}>
+  Projects
+</BreadcrumbItem>
+```
+
 ### size
 
 <Demo src="breadcrumb/sizes">

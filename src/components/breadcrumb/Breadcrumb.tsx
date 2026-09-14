@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { safeHref } from '../../internal/link.js';
+import { useRender } from '@base-ui/react/use-render';
+import { safeHref, safeRel } from '../../internal/link.js';
 import { breadcrumbMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';
 import {
@@ -115,6 +116,15 @@ export interface BreadcrumbItemProps extends Omit<
   href?: string;
   /** Fires when the step is pressed. Renders it as a button when there is no `href`. */
   onClick?: React.MouseEventHandler<HTMLElement>;
+  /**
+   * Renders the link as something other than an `<a>` — the `Link` a router
+   * brings, so a step moves without reloading the page. `href` still goes
+   * through. Only a step that is a link uses it: the current step and a
+   * disabled one stay text.
+   */
+  render?: useRender.RenderProp;
+  /** Where the link opens. Anything but this tab also gets `rel="noopener noreferrer"`. */
+  target?: string;
   /** Content before the label — a home glyph, a repository avatar. */
   startIcon?: React.ReactNode;
   /** Content after the label. */
@@ -307,7 +317,25 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
     } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
     const messages = useMessages(breadcrumbMessages, locale);
-    const [unfolded, setUnfolded] = React.useState(false);
+    const steps = React.Children.toArray(children).filter(
+      React.isValidElement
+    ) as React.ReactElement<BreadcrumbItemProps>[];
+    const total = steps.length;
+    /*
+     * What the trail is, as far as unfolding it goes. A trail that stays mounted
+     * across a route change — which is where a breadcrumb lives — is a new trail,
+     * and one unfolded on the last page must fold again on this one. Keeping the
+     * trail the fold was opened for, rather than a flag, makes that a comparison
+     * instead of an effect that resets state after the folded frame has painted.
+     */
+    const trail = steps
+      .map(
+        (step) =>
+          `${step.key ?? ''}\u0000${step.props.href ?? ''}\u0000${textOf(step.props.children)}`
+      )
+      .join('\u0001');
+    const [unfoldedTrail, setUnfoldedTrail] = React.useState<string | null>(null);
+    const unfolded = unfoldedTrail === trail;
     const listRef = React.useRef<HTMLOListElement | null>(null);
     /*
      * Set when the `…` is pressed while it holds the focus. The button leaves
@@ -329,11 +357,6 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
 
       step?.querySelector<HTMLElement>('a, button')?.focus();
     }, [unfolded, itemsBeforeCollapse]);
-
-    const steps = React.Children.toArray(children).filter(
-      React.isValidElement
-    ) as React.ReactElement<BreadcrumbItemProps>[];
-    const total = steps.length;
 
     /*
      * The last step is the page you are on — unless a step says it is. Exactly one
@@ -439,7 +462,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
                       aria-label={expandLabel ?? messages.expand}
                       onClick={(event) => {
                         refocus.current = event.currentTarget === document.activeElement;
-                        setUnfolded(true);
+                        setUnfoldedTrail(trail);
                       }}
                     >
                       <EllipsisIcon />
@@ -472,6 +495,8 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
     {
       href: hrefProp,
       onClick,
+      render,
+      target,
       startIcon,
       endIcon,
       current,
@@ -485,7 +510,8 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
     const { size, last } = React.useContext(BreadcrumbContext);
     const href = safeHref(hrefProp);
     const isCurrent = current ?? last;
-    const interactive = Boolean(href || onClick) && !isCurrent && !disabled;
+    const interactive = Boolean(href || onClick || render) && !isCurrent && !disabled;
+    const link = interactive && Boolean(href || render);
 
     const stepClassNames = cx(
       'inline-flex min-w-0 items-center px-1',
@@ -519,12 +545,24 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
       </>
     );
 
+    // Called whatever the step turns out to be, because it is a hook; only a
+    // link reads it.
+    const linkElement = useRender({
+      render: render ?? <a />,
+      props: {
+        href,
+        target,
+        rel: safeRel(target, undefined),
+        className: stepClassNames,
+        onClick,
+        children: body
+      }
+    });
+
     return (
       <li ref={ref} className={cx('flex min-w-0 items-center', className)} {...props}>
-        {interactive && href ? (
-          <a href={href} className={stepClassNames} onClick={onClick}>
-            {body}
-          </a>
+        {link ? (
+          linkElement
         ) : interactive ? (
           <button type="button" className={stepClassNames} onClick={onClick}>
             {body}

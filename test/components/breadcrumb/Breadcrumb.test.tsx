@@ -50,6 +50,49 @@ describe('Breadcrumb', () => {
         .toHaveAttribute('href', '/settings');
     });
 
+    it('renders a link through render, keeping the href', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/projects" render={<a data-router="" />}>
+            Projects
+          </BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const link = screen.getByRole('link', { name: 'Projects' });
+
+      await expect.element(link).toHaveAttribute('data-router', '');
+      await expect.element(link).toHaveAttribute('href', '/projects');
+    });
+
+    it('opens a link in another target safely', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/docs" target="_blank">
+            Docs
+          </BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const link = screen.getByRole('link', { name: 'Docs' });
+
+      await expect.element(link).toHaveAttribute('target', '_blank');
+      await expect.element(link).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+
+    it('leaves the current step as text even when it has render', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/billing" render={<a data-router="" />}>
+            Billing
+          </BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      expect(screen.getByRole('link', { name: 'Billing' }).query()).toBeNull();
+    });
+
     it('renders a step with a handler as a button', async () => {
       const onClick = vi.fn();
       const screen = await render(
@@ -223,6 +266,45 @@ describe('Breadcrumb', () => {
       await screen.getByRole('button', { name: 'Show hidden steps' }).click();
 
       await expect.element(screen.getByText('Projects')).toBeInTheDocument();
+      await expect.element(screen.getByText('Neba')).toBeInTheDocument();
+    });
+
+    // A trail stays mounted across a route change, so the fold it was opened
+    // on stayed open on every page after it.
+    it('folds again when the steps change', async () => {
+      const trail = (leaf: string) => (
+        <Breadcrumb maxItems={3}>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
+          <BreadcrumbItem href="/b">Neba</BreadcrumbItem>
+          <BreadcrumbItem>{leaf}</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const screen = await render(trail('Billing'));
+
+      await screen.getByRole('button', { name: 'Show hidden steps' }).click();
+      await expect.element(screen.getByText('Neba')).toBeInTheDocument();
+
+      await screen.rerender(trail('Members'));
+
+      await expect.element(screen.getByText('Members')).toBeInTheDocument();
+      expect(screen.getByText('Neba').query()).toBeNull();
+    });
+
+    it('stays unfolded while the steps are the same', async () => {
+      const trail = () => (
+        <Breadcrumb maxItems={3}>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
+          <BreadcrumbItem href="/b">Neba</BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const screen = await render(trail());
+
+      await screen.getByRole('button', { name: 'Show hidden steps' }).click();
+      await screen.rerender(trail());
+
       await expect.element(screen.getByText('Neba')).toBeInTheDocument();
     });
 
