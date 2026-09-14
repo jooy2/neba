@@ -16,6 +16,7 @@ import {
   isHour12,
   isValidDate,
   secondsOfDay,
+  startOfDay,
   timeUnitSpan,
   toISOTime,
   withPlaceholder,
@@ -145,8 +146,11 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
     const open = openProp ?? uncontrolledOpen;
 
     // Held still for as long as the picker is mounted, so a popup left open across
-    // midnight does not quietly move the value it is writing onto a new day.
-    const [fallbackDay] = React.useState(() => referenceDate ?? new Date());
+    // midnight does not quietly move the value it is writing onto a new day. The
+    // start of the day rather than this instant: the hour pressed on an empty
+    // picker is that hour on the dot, not that hour with the minutes and seconds
+    // the page happened to be loaded at.
+    const [fallbackDay] = React.useState(() => referenceDate ?? startOfDay(new Date()));
 
     const setOpen = (next: boolean) => {
       if (next && (readOnly || disabled)) {

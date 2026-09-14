@@ -5310,10 +5310,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'referenceDate',
       type: 'Date',
-      default: 'today',
+      default: 'the start of today',
       description: {
-        ko: '값이 아직 없을 때 고른 시각이 얹히는 날',
-        en: 'The day a chosen time is written onto while there is no value yet'
+        ko: '값이 아직 없을 때 고른 시각이 얹히는 날. 기본값은 오늘 0시라 빈 피커에서 고른 시는 정각이 됩니다',
+        en: 'The day a chosen time is written onto while there is no value yet. It defaults to midnight today, so an hour picked on an empty picker lands on the hour'
       }
     },
     {

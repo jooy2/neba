@@ -61,7 +61,6 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 
 ### E. Approvals (approved)
 
-- **E3 (157)** `TimePicker`: the default `referenceDate` becomes the start of today, so pressing an hour on an empty picker gives that hour at 00 minutes and 00 seconds.
 - **E4 (170)** `Table` `striped`: rows take the 4% mix of `--neba-fg` that DataTable uses, so the stripes show on a white page.
 - **E5 (172)** `DataList` `orientation="vertical"`: the gap inside a pair becomes smaller than the gap between pairs, and `dividers` rules between pairs rather than inside them.
 - **E6 (173)** `Anchor` `rail`: nested rows are indented with `padding-inline-start`, so their highlight stays on the rail.
@@ -329,7 +328,7 @@ Every entry below was answered on 2026-09-13 as recommended: each approval is ap
 - [ ] **154** [major][decision] **Calendar**: `elevation` has no effect (no class reads `--n-elev`), and `bordered` is not the same sheet as the popup (glass edge, no per-size padding). `Calendar.tsx:223-229`. See F17.
 - [ ] **155** [major][decision] **Calendar, DateRangePicker**: pressing a date before the start begins a new range in Calendar and sorts the two ends in DateRangePicker. It is the same gesture, so pick one behaviour. `Calendar.tsx:205-211`, `DateRangePicker.tsx:204`. See F18.
 - [ ] **156** [major][decision] **DateRangePicker**: closing after only the first click leaves `{ start, end: null }` as the value and loses the previous range. The comment and the docs say it is discarded. `DateRangePicker.tsx:152-167, 195-199`. See F19.
-- [ ] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3.
+- [x] **157** [major] **TimePicker**: the default `referenceDate` is the current time, so on an empty picker at 15:42:17 pressing hour `9` gives 21:42:17, and 17 seconds remain even with `showSeconds` off. Use `startOfDay(new Date())`. `TimePicker.tsx:149`. See E3. Decided: approved; the default `referenceDate` is `startOfDay(new Date())`.
 - [ ] **158** [major][decision] **DateTimePicker, TimePicker**: a value outside `minDate`, `maxDate` or `minTime` can be committed. With no value, pressing the day equal to `minDate` gives 00:00; with a minimum of 09:30 and a value of 10:15, pressing `9` gives 09:15. Clamp on commit or mark the field `invalid`. `DateTimePicker.tsx:197-207`, `src/internal/calendar.tsx:1195-1209`. See F20.
 - [x] **159** **DateTimePicker**: on a daylight-saving change day, the check that disables hour rows is an hour off (with `TZ=America/New_York` on 2026-11-01, 09:30–09:59 cannot be chosen; confirmed in Node). Build the interval ends with `withTime`. `DateTimePicker.tsx:184-190`. The row's ends are `timeUnitRange` in `date.ts` now, which is the pure function 250 asks for.
 - [ ] **160** [major][decision] **Pickers**: a `disabled` picker's hidden input is still submitted, and `required` only adds `aria-required` without blocking an empty submit. `src/internal/picker.tsx:280, 366-368`. See F21.

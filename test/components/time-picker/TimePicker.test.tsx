@@ -221,6 +221,30 @@ describe('TimePicker', () => {
       expect(next.getDate()).toBe(2);
       expect(next.getMinutes()).toBe(45);
     });
+
+    // The fallback day was the moment the picker mounted, so an hour pressed on
+    // an empty picker kept that moment's minutes and seconds.
+    it('writes a picked hour on the hour when there is no value and no referenceDate', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <TimePicker locale={LOCALE} label="Starts at" onValueChange={onValueChange} />
+      );
+
+      await screen.getByRole('button', { name: 'Starts at', exact: false }).click();
+      await screen
+        .getByRole('listbox', { name: 'Hour' })
+        .getByRole('option', { name: '9' })
+        .click();
+
+      const next: Date = onValueChange.mock.calls[0][0];
+      const now = new Date();
+
+      expect(next.getHours()).toBe(9);
+      expect(next.getMinutes()).toBe(0);
+      expect(next.getSeconds()).toBe(0);
+      expect(next.getMilliseconds()).toBe(0);
+      expect(next.toDateString()).toBe(now.toDateString());
+    });
   });
 
   describe('bounds', () => {

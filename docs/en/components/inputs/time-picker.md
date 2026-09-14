@@ -21,7 +21,7 @@ import { TimePicker } from 'neba';
 
 Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
 
-`value` is a `Date | null`. `referenceDate` is the day a chosen time is written onto while the value is still empty; it defaults to today and is held still for as long as the picker is mounted, so a popup left open across midnight does not move the value onto a new day.
+`value` is a `Date | null`. `referenceDate` is the day a chosen time is written onto while the value is still empty; it defaults to the start of today, so an hour picked on an empty picker lands on the hour, and is held still for as long as the picker is mounted, so a popup left open across midnight does not move the value onto a new day.
 
 `closeOnSelect` defaults to `false`: an hour and a minute both have to be given, so the popup does not close on the first, and the footer carries a Done button.
 

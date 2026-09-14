@@ -142,6 +142,8 @@
 
 - **A vertical `Menubar` or `NavigationMenu` opens its popups beside the bar.** With `orientation="vertical"` a `Menubar`'s menus still hung below the word that opened them, and a `NavigationMenu`'s panels below their item, so each popup covered the next word or item down the rail. Both now open at the bar's inline end: to the right, or to the left under RTL. A horizontal bar is unchanged.
 
+- **An empty `TimePicker` writes a picked hour on the hour.** With no `value` and no `referenceDate`, the time was written onto the moment the picker mounted, so at 15:42:17 pressing the hour `9` gave 09:42:17, and the seconds stayed even with `showSeconds` off. The default `referenceDate` is now the start of today, so the same press gives 09:00:00. A `referenceDate` passed explicitly is unchanged.
+
 ### Fixed
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
