@@ -82,7 +82,7 @@ describe('Shortcut', () => {
     it('accepts the several names one key already has', async () => {
       const screen = await render(<Shortcut os="mac" keys="Cmd+Option+Esc" />);
 
-      expect(visibleText(screen.container)).toBe('⌘ ⌥ ⎋');
+      expect(visibleText(screen.container)).toBe('⌥ ⌘ ⎋');
     });
 
     it('draws the Mac modifiers as glyphs and the others as words', async () => {
@@ -92,6 +92,19 @@ describe('Shortcut', () => {
 
       await screen.rerender(<Shortcut os="windows" keys="Ctrl+Alt+Shift+Delete" />);
       expect(visibleText(screen.container)).toBe('Ctrl Alt Shift Del');
+    });
+
+    // `Mod+Shift+P` drew `⌘⇧P`, which no menu on a Mac ever shows.
+    it('draws the Mac modifiers in the order macOS writes them', async () => {
+      const screen = await render(<Shortcut os="mac" keys="Mod+Shift+Alt+Ctrl+P" />);
+
+      expect(visibleText(screen.container)).toBe('⌃ ⌥ ⇧ ⌘ P');
+    });
+
+    it('keeps the written order off a Mac', async () => {
+      const screen = await render(<Shortcut os="windows" keys="Shift+Ctrl+P" />);
+
+      expect(visibleText(screen.container)).toBe('Shift Ctrl P');
     });
 
     it('draws the arrows as arrows on every platform', async () => {

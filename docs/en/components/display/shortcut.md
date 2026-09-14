@@ -55,7 +55,7 @@ The same strings are what the library **binds**: `shortcut` on [CommandPalette](
 
 ### separator and variant
 
-Omit `separator` and the platform convention is used: macOS runs the symbols together (`⇧⌘P`), the others join with `+`. Pass one and that character is used instead.
+Omit `separator` and the platform convention is used: macOS runs the symbols together in its own modifier order, ⌃⌥⇧⌘, whatever order they were written in (`Mod+Shift+P` is `⇧⌘P`); the others join with `+`. Pass one and that character is used instead.
 
 Key caps sit one step below the control heights, like a [Chip](./chip), and are set in a monospaced face.
 

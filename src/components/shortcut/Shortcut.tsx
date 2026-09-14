@@ -157,6 +157,30 @@ const arrowLabels: Record<string, KeyLabel> = {
   arrowright: { symbol: '→', name: 'Arrow right' }
 };
 
+/** Apple's order for modifiers, which macOS draws the same way in every menu. */
+const macModifierRank: Record<string, number> = { ctrl: 0, alt: 1, shift: 2, meta: 3, mod: 3 };
+
+/**
+ * A Mac shortcut in the order macOS writes it: `Mod+Shift+P` is `⇧⌘P` in every
+ * menu on the system, and `⌘⇧P` reads as a different shortcut to anyone used to
+ * them. Left alone when something other than a modifier comes before the last
+ * key, since that is not a combination this can reorder safely.
+ */
+function inMacOrder(tokens: string[]): string[] {
+  const modifiers = tokens.slice(0, -1);
+
+  if (!modifiers.every((token) => canonicalKey(token) in macModifierRank)) {
+    return tokens;
+  }
+
+  return [
+    ...modifiers.sort(
+      (a, b) => macModifierRank[canonicalKey(a)] - macModifierRank[canonicalKey(b)]
+    ),
+    ...tokens.slice(-1)
+  ];
+}
+
 /** Resolves one token into what to draw and what to announce. */
 function labelFor(token: string, os: ResolvedOS): KeyLabel {
   const canonical = canonicalKey(token);
@@ -283,7 +307,7 @@ export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(
     const resolved: ResolvedOS = os === 'auto' ? detected : os;
 
     const step = keyScale[size];
-    const tokens = tokenize(keys);
+    const tokens = resolved === 'mac' ? inMacOrder(tokenize(keys)) : tokenize(keys);
     const labels = tokens.map((token) => labelFor(token, resolved));
 
     // macOS writes a shortcut as a run of symbols with nothing between them; the

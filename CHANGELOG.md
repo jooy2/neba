@@ -490,6 +490,8 @@
 
 - **A `Breadcrumb` folds again when its steps change.** Once the `…` was pressed the trail stayed unfolded for as long as it was mounted, so a layout that keeps the breadcrumb across a route change showed every later trail in full.
 
+- **`Shortcut` draws the Mac modifiers in the order macOS uses.** `Mod+Shift+P` drew `⌘⇧P`; it now draws `⇧⌘P`, as every menu on a Mac and the docs do, whatever order the modifiers were written in. Windows and Linux keep the written order.
+
 ## 1.13.0 (2026-09-11)
 
 ### Where the bytes went
