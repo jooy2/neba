@@ -121,6 +121,7 @@ export const pt: NebaLocale = {
     end: 'Fim',
     summary: 'Pontos de dados: {count}. Intervalo: de {min} a {max}.'
   },
+  panes: { handle: 'Redimensionar painéis' },
   scroll: { label: 'Conteúdo rolável', previous: 'Rolar para trás', next: 'Rolar para a frente' },
   breadcrumb: {
     label: 'Trilha de navegação',

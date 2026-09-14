@@ -10315,6 +10315,22 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'handleLabel',
+      type: 'string | ((index: number) => string)',
+      description: {
+        ko: '각 바의 이름. 문자열은 모든 바에, 함수는 0부터 센 바의 순서를 받아 바마다 이름을 붙입니다. 기본값은 locale의 “패널 크기 조절”',
+        en: "Names each handle. A string names them all; a function is handed the handle's index, from 0. Defaults to the locale's words for resizing panes"
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '바의 기본 이름에 쓸 언어. BCP 47 태그',
+        en: "Which language the handle's default name is in, as a BCP 47 tag"
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

@@ -121,6 +121,7 @@ export const ar: NebaLocale = {
     end: 'النهاية',
     summary: 'نقاط البيانات: {count}. النطاق: من {min} إلى {max}.'
   },
+  panes: { handle: 'تغيير حجم الأجزاء' },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },
   breadcrumb: {
     label: 'مسار التنقل',

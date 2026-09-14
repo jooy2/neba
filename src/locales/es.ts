@@ -121,6 +121,7 @@ export const es: NebaLocale = {
     end: 'Fin',
     summary: 'Puntos de datos: {count}. Rango: de {min} a {max}.'
   },
+  panes: { handle: 'Cambiar el tamaño de los paneles' },
   scroll: {
     label: 'Contenido desplazable',
     previous: 'Desplazar hacia atrás',

@@ -121,6 +121,7 @@ export const it: NebaLocale = {
     end: 'Fine',
     summary: 'Punti dati: {count}. Intervallo: da {min} a {max}.'
   },
+  panes: { handle: 'Ridimensiona i riquadri' },
   scroll: { label: 'Contenuto scorrevole', previous: 'Scorri indietro', next: 'Scorri avanti' },
   breadcrumb: {
     label: 'Percorso di navigazione',

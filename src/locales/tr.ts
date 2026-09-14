@@ -121,6 +121,7 @@ export const tr: NebaLocale = {
     end: 'Bitiş',
     summary: 'Veri noktası: {count}. Aralık: {min} ile {max} arası.'
   },
+  panes: { handle: 'Bölmeleri yeniden boyutlandır' },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },
   breadcrumb: {
     label: 'Gezinti yolu',

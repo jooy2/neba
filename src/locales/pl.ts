@@ -121,6 +121,7 @@ export const pl: NebaLocale = {
     end: 'Koniec',
     summary: 'Punkty danych: {count}. Zakres: od {min} do {max}.'
   },
+  panes: { handle: 'Zmień rozmiar paneli' },
   scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },
   breadcrumb: {
     label: 'Ścieżka nawigacji',

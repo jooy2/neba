@@ -88,7 +88,7 @@ A `Panes` inside a `Pane` is a split inside a split, which is how a three-region
 
 ## Accessibility
 
-- Each bar is a `separator` with `aria-valuenow` carrying the share, in percent, of the pane in front of it.
+- Each bar is a `separator` with `aria-valuenow` carrying the share, in percent, of the pane in front of it. It is named "Resize panes" in the `locale`, or by `handleLabel`, and its `aria-controls` names the two panes on either side.
 - A bar takes focus. ArrowLeft and ArrowRight move an upright bar the way the arrow points, under RTL too; ArrowUp and ArrowDown move one that lies across.
 - `aria-orientation` describes the bar, not the panes: an upright bar between panes that run across is `vertical`.
 - A drag under RTL moves the boundary the way the pointer went.

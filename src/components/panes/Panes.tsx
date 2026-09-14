@@ -6,6 +6,7 @@ import { observeResize } from '../../internal/observe.js';
 import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { panesMessages, useMessages } from '../../internal/i18n.js';
 
 /**
  * A pane's share of the split, as a percentage of the container or as a CSS
@@ -48,6 +49,17 @@ export interface PanesProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 
   onResize?: (sizes: number[]) => void;
   /** Fires once, with the same shape, when the handle is let go. */
   onResizeEnd?: (sizes: number[]) => void;
+  /**
+   * Names each handle. A string names them all; a function is handed the
+   * handle's index, from 0, for a split of more than two panes where each handle
+   * wants a name of its own. Defaults to the `locale`'s words for resizing panes.
+   */
+  handleLabel?: string | ((index: number) => string);
+  /**
+   * Which language the handle's default name is in — a BCP 47 tag such as `ko`,
+   * `pt-BR` or `zh-Hant`.
+   */
+  locale?: string;
   /** The Panes. Anything that is not a Pane is still laid out, but has no size. */
   children?: React.ReactNode;
 }
@@ -160,16 +172,24 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     size = 'md',
     onResize,
     onResizeEnd,
+    handleLabel,
+    locale,
     className,
     style,
     children,
     ...props
-  } = useStyleDefaults(rawProps, ['size']);
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
 
   const items = React.Children.toArray(children).filter(
     React.isValidElement
   ) as React.ReactElement<PaneProps>[];
   const count = items.length;
+
+  const messages = useMessages(panesMessages, locale);
+  // A handle says which two panes it resizes, so each pane needs an id; one a
+  // caller gave is kept.
+  const baseId = React.useId();
+  const paneId = (index: number) => items[index]?.props.id ?? `${baseId}-pane-${index}`;
 
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const setRootRef = React.useCallback(
@@ -384,6 +404,12 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
           {index > 0 ? (
             <div
               role="separator"
+              aria-label={
+                typeof handleLabel === 'function'
+                  ? handleLabel(index - 1)
+                  : (handleLabel ?? messages.handle)
+              }
+              aria-controls={`${paneId(index - 1)} ${paneId(index)}`}
               aria-orientation={horizontal ? 'vertical' : 'horizontal'}
               aria-valuenow={fractions ? Math.round(fractions[index - 1] * 100) : undefined}
               aria-valuemin={0}
@@ -437,7 +463,7 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
                 : null
             }}
           >
-            {item}
+            {item.props.id === undefined ? React.cloneElement(item, { id: paneId(index) }) : item}
           </PaneContext.Provider>
         </React.Fragment>
       ))}

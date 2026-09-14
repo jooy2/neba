@@ -121,6 +121,7 @@ export const nl: NebaLocale = {
     end: 'Einde',
     summary: 'Datapunten: {count}. Bereik: {min} tot {max}.'
   },
+  panes: { handle: 'Grootte van deelvensters wijzigen' },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },
   breadcrumb: {
     label: 'Kruimelpad',

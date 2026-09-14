@@ -121,6 +121,7 @@ export const hi: NebaLocale = {
     end: 'अंत',
     summary: 'डेटा बिंदु: {count}. सीमा: {min} से {max} तक।'
   },
+  panes: { handle: 'पैन का आकार बदलें' },
   scroll: {
     label: 'स्क्रॉल करने योग्य सामग्री',
     previous: 'पीछे स्क्रॉल करें',

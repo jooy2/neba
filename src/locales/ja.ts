@@ -121,6 +121,7 @@ export const ja: NebaLocale = {
     end: '終了',
     summary: 'データ点: {count}。範囲: {min}〜{max}。'
   },
+  panes: { handle: 'ペインのサイズを変更' },
   scroll: { label: 'スクロールできる領域', previous: '前へスクロール', next: '次へスクロール' },
   breadcrumb: {
     label: 'パンくずリスト',

@@ -593,6 +593,23 @@ export const scrollMessages: MessageTable<ScrollMessages> = {
   }
 };
 
+/** Panes. */
+export interface PanesMessages {
+  /**
+   * Names a handle between two panes.
+   *
+   * A `separator` that takes the focus is announced by its name and its value,
+   * and with no name all a reader heard was "separator, 50" — a number with
+   * nothing to say what it was the share of or what the keys would do.
+   */
+  handle: string;
+}
+
+/** The `panes` namespace, as Panes read it. */
+export const panesMessages: MessageTable<PanesMessages> = {
+  '': { handle: 'Resize panes' }
+};
+
 /** Breadcrumb. */
 export interface BreadcrumbMessages {
   /** Names the `<nav>` landmark. */
@@ -1096,6 +1113,8 @@ export interface NebaLocale {
   chart?: Partial<ChartMessages>;
   /** Scroll. */
   scroll?: Partial<ScrollMessages>;
+  /** Panes. */
+  panes?: Partial<PanesMessages>;
   /** Breadcrumb. */
   breadcrumb?: Partial<BreadcrumbMessages>;
   /** Anchor. */
@@ -1147,6 +1166,7 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   image: imageMessages as MessageTable<never>,
   chart: chartMessages as MessageTable<never>,
   scroll: scrollMessages as MessageTable<never>,
+  panes: panesMessages as MessageTable<never>,
   breadcrumb: breadcrumbMessages as MessageTable<never>,
   anchor: anchorMessages as MessageTable<never>,
   transfer: transferMessages as MessageTable<never>,

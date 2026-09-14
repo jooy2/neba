@@ -121,6 +121,7 @@ export const id: NebaLocale = {
     end: 'Selesai',
     summary: 'Titik data: {count}. Rentang: {min} sampai {max}.'
   },
+  panes: { handle: 'Ubah ukuran panel' },
   scroll: {
     label: 'Konten yang dapat digulir',
     previous: 'Gulir ke belakang',

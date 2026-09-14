@@ -121,6 +121,7 @@ export const ru: NebaLocale = {
     end: 'Конец',
     summary: 'Точек данных: {count}. Диапазон: от {min} до {max}.'
   },
+  panes: { handle: 'Изменить размер панелей' },
   scroll: {
     label: 'Прокручиваемая область',
     previous: 'Прокрутить назад',

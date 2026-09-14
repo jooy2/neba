@@ -121,6 +121,7 @@ export const ko: NebaLocale = {
     end: '끝',
     summary: '데이터 {count}개. 범위: {min}~{max}.'
   },
+  panes: { handle: '패널 크기 조절' },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },
   breadcrumb: {
     label: '탐색 경로',

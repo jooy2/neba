@@ -94,6 +94,8 @@
 
 - **`PageLayout` takes `main`.** With `main={false}` the content goes in a plain `<div>` rather than a `<main>`, with no `id` and no skip link, for a layout that is not the page — an app shell previewed inside the page's own layout. A `PageLayout` on a `Mockup`'s screen is off unless it passes `main`, so a device preview no longer gives the document a second `<main>`, a second `id="main"` and a second skip link.
 
+- **A `Panes` handle is named, and says which panes it resizes.** A handle was a `role="separator"` with a value and nothing else, so a screen reader announced "separator, 50" with no word for what the number was the share of. Each handle is now named by the new `panes` namespace's "Resize panes", in all eighteen registered languages, and its `aria-controls` names the pane on either side; a pane without an `id` is given one. `handleLabel` takes a name of its own, as a string or as a function of the handle's index, and `locale` picks the language.
+
 ### Changed
 
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.

@@ -200,6 +200,38 @@ describe('Panes', () => {
       await expect.element(screen.getByRole('separator')).toHaveAttribute('tabindex', '0');
     });
 
+    // A handle was read as "separator, 50", with nothing to say what it moved.
+    it('names each handle and points it at the two panes it resizes', async () => {
+      const screen = await render(
+        <Sample>
+          <Pane>One</Pane>
+          <Pane id="editor">Two</Pane>
+        </Sample>
+      );
+      const handle = screen.getByRole('separator', { name: 'Resize panes' });
+
+      await expect.element(handle).toBeInTheDocument();
+
+      const [before, after] = (handle.element().getAttribute('aria-controls') ?? '').split(' ');
+
+      expect(document.getElementById(before)).toHaveTextContent('One');
+      expect(after).toBe('editor');
+    });
+
+    it('takes a name of its own, per handle', async () => {
+      const screen = await render(
+        <Sample handleLabel={(index) => `Resize column ${index + 1}`}>
+          <Pane>One</Pane>
+          <Pane>Two</Pane>
+          <Pane>Three</Pane>
+        </Sample>
+      );
+
+      await expect
+        .element(screen.getByRole('separator', { name: 'Resize column 2' }))
+        .toBeInTheDocument();
+    });
+
     it('moves the boundary with the arrow keys', async () => {
       const screen = await render(
         <Sample>

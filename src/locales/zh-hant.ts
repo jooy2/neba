@@ -124,6 +124,7 @@ export const zhHant: NebaLocale = {
     end: '結束',
     summary: '資料點：{count} 個。範圍：{min} 至 {max}。'
   },
+  panes: { handle: '調整窗格大小' },
   scroll: { label: '可捲動內容', previous: '向前捲動', next: '向後捲動' },
   breadcrumb: {
     label: '麵包屑導覽',
