@@ -23,6 +23,11 @@ import { graphemesOf } from './text.js';
  * One word gives one character on purpose. Korean, Japanese and Chinese names
  * are a single token, and two of their characters at 32px is a smudge where one
  * is a name.
+ *
+ * `toUpperCase()` rather than `toLocaleUpperCase()`, which with no argument
+ * takes the runtime's language: a server in one locale and a browser in Turkish
+ * would draw `I` and `İ` for the same name, and React reports the difference as
+ * a hydration mismatch.
  */
 export function initialsOf(name: string): string {
   const words = name.normalize('NFC').trim().split(/\s+/).filter(Boolean);
@@ -34,5 +39,5 @@ export function initialsOf(name: string): string {
   const first = graphemesOf(words[0])[0] ?? '';
   const last = words.length > 1 ? (graphemesOf(words[words.length - 1])[0] ?? '') : '';
 
-  return (first + last).toLocaleUpperCase();
+  return (first + last).toUpperCase();
 }

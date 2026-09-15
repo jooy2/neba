@@ -5,7 +5,7 @@
  * no artwork both have to answer the same question — and a library with two of
  * these spells the same person's initials two ways on one page.
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { initialsOf } from '../../src/internal/initials.js';
 
 describe('initialsOf', () => {
@@ -18,8 +18,25 @@ describe('initialsOf', () => {
     expect(initialsOf('Prince')).toBe('P');
   });
 
-  it('upper-cases the way the letter’s own language does', () => {
+  it('upper-cases the letters', () => {
     expect(initialsOf('jane doe')).toBe('JD');
+  });
+
+  // The runtime's language cannot be changed from inside a test, so a Turkish
+  // one is stood in for: its locale-aware upper case turns `i` into `İ`. A
+  // server rendering in English would have drawn `II` for the same name.
+  it('upper-cases the same way whatever language the runtime is in', () => {
+    const turkish = vi.spyOn(String.prototype, 'toLocaleUpperCase').mockImplementation(function (
+      this: string
+    ) {
+      return this.replace(/i/g, 'İ').toUpperCase();
+    });
+
+    try {
+      expect(initialsOf('ivan ilić')).toBe('II');
+    } finally {
+      turkish.mockRestore();
+    }
   });
 
   it('does not care about the spacing it was given', () => {

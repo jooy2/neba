@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **Initials are upper-cased the same way on every machine.** An `Avatar` or an `AppLogo` with no picture upper-cased its initials in the language of whatever was running it, so a server in English and a browser in Turkish drew `I` and `İ` for the same name, and React reported the difference as a hydration mismatch. The letters are upper-cased without a language now, which costs the rules of languages such as Turkish on the one letter where they differ.
+
 - **A `FloatingAction`'s `style` is merged over its round radius.** The radius is an inline declaration and the action spread its remaining props after it, so a `style` written on an action replaced the radius and left the action square. It is merged over now, as the button the dial came out of merges its own.
 
 - **A scroll-driven `AnimateAppear` or `AnimateSplit` runs whatever its trigger.** Under `timeline="view"` the scroll position is what plays the effect, and the other `Animate*` components already ignored `trigger` there. These two still waited for theirs, so with `trigger="visible"` or `trigger="manual"` the effect was held paused and the children stayed on their first frame until the trigger came.
