@@ -59,6 +59,20 @@ describe('ProgressLinear', () => {
         .toHaveAttribute('aria-valuetext', '75%');
     });
 
+    it('writes a formatted value in the locale it was given', async () => {
+      const screen = await render(
+        <ProgressLinear
+          value={1234.5}
+          max={2000}
+          showValue
+          format={{ maximumFractionDigits: 1 }}
+          locale="de-DE"
+        />
+      );
+
+      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
+    });
+
     it('uses the caller-supplied format when there is one', async () => {
       const screen = await render(
         <ProgressLinear value={1200} max={4000} showValue format={{ useGrouping: false }} />

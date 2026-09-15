@@ -44,7 +44,7 @@ import { ProgressLinear } from 'neba';
 
 ### min · max · format
 
-표시되는 백분율은 100이 아니라 `min`…`max` 구간에 대한 비율입니다. `showValue`로 값을 옆에 띄우고, `format`에 `Intl.NumberFormat` 옵션을 주면 바이트나 파일 수, 금액처럼 숫자 자체를 보여 줄 수 있습니다.
+표시되는 백분율은 100이 아니라 `min`…`max` 구간에 대한 비율입니다. `showValue`로 값을 옆에 띄우고, `format`에 `Intl.NumberFormat` 옵션을 주면 바이트나 파일 수, 금액처럼 숫자 자체를 보여 줄 수 있습니다. `locale`은 그 값을 쓰는 언어이며, 주지 않으면 provider의 값을 따르므로 서버와 브라우저가 같은 글자를 씁니다.
 
 <Demo src="progress-linear/values">
 

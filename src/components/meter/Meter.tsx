@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Meter as BaseUIMeter } from '@base-ui/react/meter';
 import {
   barThicknessClasses,
+  progressAriaText,
   progressFraction,
   progressSlots,
   thresholdColor,
@@ -41,6 +42,12 @@ export interface MeterProps extends Omit<
    * this matters more than it does on a progress bar.
    */
   format?: Intl.NumberFormatOptions;
+  /**
+   * The language the value is written in, as a BCP 47 tag such as `de-DE`. Left
+   * out, it is a provider's `locale`, and then the reader's runtime, which a
+   * server and a browser do not always share.
+   */
+  locale?: string;
   /**
    * Where the bar changes colour, smallest `from` first. The family of the last
    * threshold the value has reached wins; below all of them `color` stands.
@@ -83,6 +90,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     label,
     showValue = false,
     format,
+    locale,
     thresholds,
     thickness,
     size = 'md',
@@ -90,7 +98,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     className,
     style,
     ...props
-  } = useStyleDefaults(rawProps, ['size']);
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
 
   const fraction = progressFraction(value, min, max);
   const family = thresholdColor(value, color, thresholds);
@@ -103,6 +111,11 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
       min={min}
       max={max}
       format={format}
+      locale={locale}
+      // The reading announced is the reading drawn. Base UI's own writes the
+      // share with `Intl`, which in some languages puts a space before the `%`
+      // that the text beside the bar does not have.
+      getAriaValueText={progressAriaText(fraction, hasFormat)}
       className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
       style={{ ...progressSlots(family), ...style }}
       {...props}

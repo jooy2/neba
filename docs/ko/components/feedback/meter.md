@@ -41,7 +41,7 @@ import { Meter } from 'neba';
 
 ### min · max · format
 
-`showValue`는 라벨 옆에 값을 씁니다. `format`이 없으면 `min`…`max`에 대한 비율이고, 있으면 `Intl.NumberFormat`을 거친 숫자 그 자체입니다. Meter는 대개 실제 단위를 가지므로 이쪽이 일반적인 경우입니다.
+`showValue`는 라벨 옆에 값을 씁니다. `format`이 없으면 `min`…`max`에 대한 비율이고, 있으면 `Intl.NumberFormat`을 거친 숫자 그 자체입니다. Meter는 대개 실제 단위를 가지므로 이쪽이 일반적인 경우입니다. `locale`은 그 값을 쓰는 언어이며, 주지 않으면 provider의 값을 따르므로 서버와 브라우저가 같은 글자를 씁니다.
 
 <Demo src="meter/values">
 

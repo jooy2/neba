@@ -44,7 +44,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### min · max · format
 
-The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself: bytes, files, currency.
+The percentage shown is a proportion of `min`…`max`, not of 100. `showValue` prints it beside the bar, and `format` takes `Intl.NumberFormat` options so you can show the number itself: bytes, files, currency. `locale` is the language that writes it in, and falls back to a provider's, so a server and a browser write the same thing.
 
 <Demo src="progress-linear/values">
 

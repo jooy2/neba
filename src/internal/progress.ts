@@ -88,6 +88,12 @@ export interface ProgressSharedProps extends Omit<
    * range nobody described.
    */
   format?: Intl.NumberFormatOptions;
+  /**
+   * The language the value is written in, as a BCP 47 tag such as `de-DE`. Left
+   * out, it is a provider's `locale`, and then the reader's runtime, which a
+   * server and a browser do not always share.
+   */
+  locale?: string;
 }
 
 /**

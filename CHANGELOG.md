@@ -84,6 +84,8 @@
 
 ### Added
 
+- **`ProgressLinear`, `ProgressCircular` and `Meter` take `locale`, and fall back to a provider's.** The value was written in the runtime's language, which a server and a browser do not always share, and there was no typed way to say otherwise. `locale` is passed to Base UI's formatter now, and a `NebaProvider`'s `locale` is used when it is left out. A `Meter` also announces the reading it draws: its `aria-valuetext` came from Base UI's own formatting, which in some languages put a space before the `%` the text beside it does not have.
+
 - **`play` takes a number on every `Animate*`.** A number that changes starts the effect over, the way `false` → `true` does, and `0` is stopped, so a count of failed attempts replays an `AnimateShake` on every failure without remounting what is inside it. The docs used a fresh `key` for that, which took the focus away from the field that had just failed.
 
 - **`play` takes a number on every `Animate*`.** A number that changes starts the effect over, the way `false` → `true` does, and `0` is stopped, so a count of failed attempts replays an `AnimateShake` on every failure without remounting what is inside it. The docs used a fresh `key` for that, which took the focus away from the field that had just failed.

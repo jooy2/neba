@@ -41,7 +41,7 @@ Where the bar changes colour. Each entry is a point on the scale and the family 
 
 ### min · max · format
 
-`showValue` prints the reading beside the label. Without a `format` it is a share of `min`…`max`; with one it is the number itself, through `Intl.NumberFormat`: which is the usual case here, because a meter normally has real units.
+`showValue` prints the reading beside the label. Without a `format` it is a share of `min`…`max`; with one it is the number itself, through `Intl.NumberFormat`: which is the usual case here, because a meter normally has real units. `locale` is the language that writes it in, and falls back to a provider's, so a server and a browser write the same thing.
 
 <Demo src="meter/values">
 

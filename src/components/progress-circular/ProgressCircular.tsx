@@ -52,11 +52,12 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       label,
       showValue = false,
       format,
+      locale,
       thickness,
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size']);
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -90,6 +91,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
         min={min}
         max={max}
         format={format}
+        locale={locale}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx(
           'inline-flex items-center',

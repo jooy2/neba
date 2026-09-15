@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Meter } from 'neba';
+import { Meter, NebaProvider } from 'neba';
 
 describe('Meter', () => {
   describe('rendering', () => {
@@ -61,6 +61,40 @@ describe('Meter', () => {
 
       await expect.element(screen.getByText(/12/)).toBeInTheDocument();
       expect(screen.getByText('60%').query()).toBeNull();
+    });
+  });
+
+  // There was no way to give Base UI a locale, so the value was written in the
+  // runtime's language, which a server and a browser do not always share.
+  describe('locale', () => {
+    it('writes the value in the locale it was given', async () => {
+      const screen = await render(
+        <Meter
+          value={1234.5}
+          max={2000}
+          showValue
+          format={{ maximumFractionDigits: 1 }}
+          locale="de-DE"
+        />
+      );
+
+      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
+    });
+
+    it('takes the locale from a provider', async () => {
+      const screen = await render(
+        <NebaProvider defaults={{ locale: 'de-DE' }}>
+          <Meter value={1234.5} max={2000} showValue format={{ maximumFractionDigits: 1 }} />
+        </NebaProvider>
+      );
+
+      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
+    });
+
+    it('announces the reading it draws', async () => {
+      const screen = await render(<Meter value={50} label="Disk" showValue locale="de-DE" />);
+
+      await expect.element(screen.getByRole('meter')).toHaveAttribute('aria-valuetext', '50%');
     });
   });
 

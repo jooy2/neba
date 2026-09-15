@@ -336,6 +336,14 @@ function progressProps(sizeDescription: Text): PropRow[] {
         ko: '값을 어떻게 쓸지. 없으면 min…max에 대한 백분율, 설명되지 않은 범위에서 유일하게 성립하는 표기입니다',
         en: 'How to write the value. Without it the value is a percentage of min…max, the only formatting that holds for a range nobody described'
       }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '값을 쓰는 언어의 BCP 47 태그. 주지 않으면 provider의 locale을, 그것도 없으면 런타임의 언어를 씁니다',
+        en: "The BCP 47 tag the value is written in. Falls back to the provider's locale, then to the runtime's"
+      }
     }
   ];
 }
@@ -3129,6 +3137,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '값을 쓰는 방식. meter는 대개 실제 단위를 가지므로 프로그레스 바보다 자주 쓰입니다',
         en: 'How to write the value. A meter usually has real units, which is when this matters more than it does on a progress bar'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '값을 쓰는 언어의 BCP 47 태그. 주지 않으면 provider의 locale을, 그것도 없으면 런타임의 언어를 씁니다',
+        en: "The BCP 47 tag the value is written in. Falls back to the provider's locale, then to the runtime's"
       }
     },
     {
