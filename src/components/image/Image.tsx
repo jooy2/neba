@@ -317,7 +317,7 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * what was meant to be there is a better answer than a blank space.
    */
   fallback?: React.ReactNode;
-  /** Called when the file fails. Useful for swapping a `src` you control. */
+  /** Called with `loaded` or `failed` once the file settles. `failed` is the moment to swap a `src` you control. */
   onLoadingStatusChange?: (status: Phase) => void;
   /**
    * Marks the picture a page is judged by — usually the largest thing above

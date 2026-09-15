@@ -53,7 +53,7 @@ export interface PopconfirmProps {
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  /** BCP 47 tag deciding the two default labels. Defaults to the browser's. */
+  /** BCP 47 tag deciding the two default labels. Falls back to the provider's, then to English. */
   locale?: string;
   /** How wide the bubble is. */
   width?: number | string;

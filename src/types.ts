@@ -583,7 +583,7 @@ export interface NebaChartTooltipContext {
 
 /** The tooltip, when a bare `true` or `false` is not enough. */
 export interface NebaChartTooltip {
-  /** @default 'index' */
+  /** @default 'index', or 'item' on ScatterChart and TimelineChart */
   mode?: NebaChartTooltipMode;
   /**
    * The line dropped through the plot at the active category. On in `index`

@@ -201,7 +201,8 @@ interface SharedOptions {
   variant: string;
   size: string;
   color?: string;
-  density?: string;
+  /** `false` for a component that takes no `density`. */
+  density?: string | false;
   elevation?: string;
   variantDescription?: Text;
   sizeDescription?: Text;
@@ -243,16 +244,20 @@ function sharedProps(options: SharedOptions): PropRow[] {
         en: 'Semantic colour role. Arbitrary colour values are not accepted'
       }
     },
-    {
-      name: 'density',
-      type: DENSITY,
-      default: options.density ?? "'default'",
-      shared: true,
-      description: options.densityDescription ?? {
-        ko: '여백만 바꿉니다. 높이와 글자 크기는 그대로',
-        en: 'Padding only: never the height, never the type scale'
-      }
-    },
+    ...(options.density === false
+      ? []
+      : [
+          {
+            name: 'density',
+            type: DENSITY,
+            default: options.density ?? "'default'",
+            shared: true,
+            description: options.densityDescription ?? {
+              ko: '여백만 바꿉니다. 높이와 글자 크기는 그대로',
+              en: 'Padding only: never the height, never the type scale'
+            }
+          }
+        ]),
     {
       name: 'elevation',
       type: ELEVATION,
@@ -567,6 +572,8 @@ interface AnimateOptions {
   /** Milliseconds, as the component's own default. */
   duration: string;
   repeat?: string;
+  /** The easing a component falls back to, where that is not the house curve. */
+  easing?: string;
   /** Left out by the four that write their own motion. */
   mode?: boolean;
   /**
@@ -678,10 +685,14 @@ function animateProps(options: AnimateOptions): PropRow[] {
     {
       name: 'easing',
       type: 'string',
-      description: {
-        ko: 'CSS 이징 곡선. 기본값은 라이브러리의 곡선',
-        en: 'The easing curve, as CSS writes it. Defaults to the house curve'
-      }
+      ...(options.easing === undefined ? {} : { default: options.easing }),
+      description:
+        options.easing === undefined
+          ? {
+              ko: 'CSS 이징 곡선. 기본값은 라이브러리의 곡선',
+              en: 'The easing curve, as CSS writes it. Defaults to the house curve'
+            }
+          : { ko: 'CSS 이징 곡선', en: 'The easing curve, as CSS writes it' }
     },
     {
       name: 'repeat',
@@ -765,7 +776,7 @@ const CHART_LABELS = "'none' | 'last' | 'extremes' | 'all'";
  * `tooltip` and `format` have to mean the same thing on all of them, and two
  * tables that describe them differently is how that stops being true.
  */
-function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
+function chartBaseProps(options: { height: string; size?: string; legend?: false }): PropRow[] {
   return [
     ...sharedProps({
       variant: "'text'",
@@ -798,7 +809,7 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
       default: "locale's word",
       description: {
         ko: '차트의 접근 가능한 이름. 그림 대신 읽히고, 아래에 숨겨진 데이터 표의 caption이 됩니다. 없으면 locale의 일반 명사가 쓰이지만, 무엇에 대한 차트인지는 여기서만 말할 수 있습니다',
-        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it. Without it the locale's generic word stands in, but what the chart is *of* can only be said here"
+        en: "The chart's accessible name. Read out in place of the drawing, and the caption of the hidden data table under it. Without it the locale's generic word stands in, but only this can say what the chart shows"
       }
     },
     {
@@ -817,15 +828,19 @@ function chartBaseProps(options: { height: string; size?: string }): PropRow[] {
         en: "The language of the chart's own words and dates"
       }
     },
-    {
-      name: 'legend',
-      type: 'boolean | NebaChartLegend',
-      default: 'series ≥ 2',
-      description: {
-        ko: 'series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다. 색 하나짜리 범례는 제목을 반복할 뿐입니다',
-        en: 'Shown automatically from two series up and left off below that: a legend with one swatch restates the title'
-      }
-    },
+    ...(options.legend === false
+      ? []
+      : [
+          {
+            name: 'legend',
+            type: 'boolean | NebaChartLegend',
+            default: 'series ≥ 2',
+            description: {
+              ko: 'series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다. 색 하나짜리 범례는 제목을 반복할 뿐입니다',
+              en: 'Shown automatically from two series up and left off below that: a legend with one swatch restates the title'
+            }
+          }
+        ]),
     {
       name: 'tooltip',
       type: 'boolean | NebaChartTooltip',
@@ -1080,7 +1095,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'mode',
       type: "'index' | 'item' | 'none'",
-      default: "'index'",
+      default: {
+        ko: "'index'. ScatterChart와 TimelineChart는 'item'",
+        en: "'index', or 'item' on ScatterChart and TimelineChart"
+      },
       description: {
         ko: 'index는 포인터가 있는 category의 모든 series를 crosshair와 함께, item은 가리킨 마크 하나만 보여 줍니다',
         en: 'index shows every series at the category under the pointer, with a crosshair; item shows the one mark being pointed at'
@@ -1314,7 +1332,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'maxRadius',
       type: 'number',
-      default: { ko: 'plot 짧은 변의 1/12', en: 'a twelfth of the plot' },
+      default: { ko: '차트 높이의 1/12', en: "a twelfth of the chart's height" },
       description: {
         ko: '가장 큰 bubble의 반지름(px). 나머지는 반지름이 아니라 넓이로 그 아래에 맞춰집니다. z를 반지름에 쓰면 두 배인 값이 네 배로 보입니다',
         en: 'The radius of the largest bubble, in pixels. Everything else is scaled under it by area, not by radius: encode z as a radius and a value twice as large draws a mark four times the size'
@@ -1399,7 +1417,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'A scale bar with its ends labelled, not a list of swatches: nothing here has a name and the order is the meaning'
       }
     },
-    ...chartBaseProps({ height: 'size' })
+    ...chartBaseProps({ height: 'size', legend: false })
   ],
 
   NebaTimelinePoint: [
@@ -1493,7 +1511,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Cuts the corners off a span. Both ends, unlike a BarChart: a span grows from nothing, so neither end is a baseline'
       }
     },
-    ...chartBaseProps({ height: 'size' })
+    ...chartBaseProps({ height: 'size', legend: false })
   ],
 
   PieChart: [
@@ -1854,8 +1872,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onChange',
       type: 'ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>',
       description: {
-        ko: '네이티브 change 이벤트. 값만 필요하면 `onValueChange`를 쓰세요',
-        en: 'The native change event. Reach for `onValueChange` when only the value matters'
+        ko: '네이티브 change 이벤트. 새 값은 event.target.value에 있습니다',
+        en: 'The native change event. The new value is event.target.value'
       }
     },
     slotsProp('label', 'shell', 'control', 'description', 'error')
@@ -2537,6 +2555,7 @@ export const propTables: Record<string, PropRow[]> = {
     ...sharedProps({
       variant: "'solid'",
       size: "'md'",
+      density: false,
       elevation: '0',
       variantDescription: {
         ko: '마크 뒤 타일의 무게. bare에서는 타일이 없으므로 아무 일도 하지 않습니다',
@@ -6324,8 +6343,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onRowClick',
       type: '(row, index, event) => void',
       description: {
-        ko: '행을 누를 때마다, 선택이 바뀌기 전에',
-        en: 'Fires on every press of a row, before the selection changes'
+        ko: '행을 누를 때마다 호출됩니다. 선택은 그보다 먼저 pointerdown에서 바뀝니다',
+        en: 'Fires on every press of a row, after the selection has changed on pointerdown'
       }
     },
     {
@@ -9122,8 +9141,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'ReactNode',
       description: {
-        ko: '숫자의 이름. Card가 title이라 부르는 자리지만, 여기 있는 것은 *값*의 이름이고 그것은 라이브러리가 이미 label이라 쓰고 있는 것입니다',
-        en: 'The name of the number. Card calls the same slot `title`, but what this names is a *value*: which is the thing the library already spells `label` on every field it has'
+        ko: '숫자의 이름. Card가 title이라 부르는 자리지만, 여기 있는 것은 값의 이름이고, 라이브러리는 모든 필드에서 값의 이름을 label이라 씁니다',
+        en: 'The name of the number. Card calls the same slot `title`, but what this names is a value, and the library already spells the name of a value `label` on every field it has'
       }
     },
     {
@@ -11643,7 +11662,7 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'side',
-      type: "'top' | 'bottom' | 'start' | 'end'",
+      type: SIDE,
       default: "'top'",
       description: {
         ko: 'trigger의 어느 쪽에 앉을지. 어떤 줄에 대한 질문은 아래 줄을 덮는 것보다 위에 있는 편이 읽기 쉽습니다',
@@ -11679,8 +11698,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'locale',
       type: 'string',
       description: {
-        ko: '두 기본 라벨을 정하는 BCP 47 태그. 기본값은 브라우저의 로케일',
-        en: "BCP 47 tag deciding the two default labels. Defaults to the browser's"
+        ko: '두 기본 라벨을 정하는 BCP 47 태그. 주지 않으면 NebaProvider의 locale을, 그것도 없으면 영어를 씁니다',
+        en: "BCP 47 tag deciding the two default labels. Without one it takes NebaProvider's, and English after that"
       }
     },
     {
@@ -12188,8 +12207,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onLoadingStatusChange',
       type: "(status: 'loading' | 'loaded' | 'failed') => void",
       description: {
-        ko: '상태가 바뀔 때. src가 바뀌면 loading부터 다시 시작합니다',
-        en: 'Called as the status changes. A new src starts over at loading'
+        ko: '파일을 다 받았거나 받지 못했을 때 loaded나 failed로 호출됩니다. src가 바뀌면 새 파일이 끝난 뒤 다시 호출됩니다',
+        en: "Called with 'loaded' or 'failed' once the file has arrived or failed. A new src is reported again when it settles"
       }
     },
     {
@@ -14027,7 +14046,13 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   AnimateFloat: [
-    ...animateProps({ duration: '3200', repeat: "'infinite'", mode: false, stagger: '0' }),
+    ...animateProps({
+      easing: "'ease-in-out'",
+      duration: '3200',
+      repeat: "'infinite'",
+      mode: false,
+      stagger: '0'
+    }),
     {
       name: 'from',
       type: SIDE,
@@ -14052,7 +14077,7 @@ export const propTables: Record<string, PropRow[]> = {
   ],
 
   AnimateShake: [
-    ...animateProps({ duration: '420', mode: false, stagger: '0' }),
+    ...animateProps({ easing: "'ease-in-out'", duration: '420', mode: false, stagger: '0' }),
     {
       name: 'distance',
       type: 'number | string',
@@ -14504,7 +14529,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Stops while the pointer is on it or the focus is inside it, because content moving past a pointer cannot be clicked. Not applied with trigger="hover", where those two are what start it'
       }
     },
-    ...animateProps({ duration: '—', repeat: "'infinite'", mode: false }),
+    ...animateProps({ easing: "'linear'", duration: '—', repeat: "'infinite'", mode: false }),
     {
       name: 'children',
       type: 'ReactNode',

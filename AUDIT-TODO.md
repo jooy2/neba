@@ -465,18 +465,18 @@ The line numbers in this section are from the audit. `CLAUDE.md` has changed sin
 
 - [x] **271** **Korean defaults on English pages**: `default` is not split by locale, so rows whose default is written only in Korean (`:1095`, `:2269`, `:2337`, `:6295`, `:12391`) and rows with both languages in one string (`:846`, `:1165`, `:1441`) show on English pages. Type `default` as `Text` too. Fixed: `default` is a string or a `Text`, the props table renders the locale's text, and the eight rows are written once per locale.
 - [x] **272** **Missing rows**: IconButton `render`; Table `classNames`; Menu's `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem`, `MenuGroup` and `MenuSeparator` (no tables at all, and `MenuGroup` is not mentioned on the page); GaugeChart `size`, `variant`, `locale` and `padded`; `startIcon` and `required` on the four pickers; all the shared rows of AnimateSplit (`duration`, `stagger`, `trigger`, `play`, `paused`); `timeline` and `range` on all 11 components that take them; HoverCard's `delay` and `closeDelay` defaults (600 and 300). Fixed: IconButton `render`; tables for MenuGroup, MenuCheckboxItem, MenuRadioGroup and MenuRadioItem, the checkable two reusing MenuItem's rows, and a line for MenuSeparator, all on the Menu page; GaugeChart `size`, `variant`, `locale` and `padded`; `startIcon` and `required` on the four pickers; AnimateSplit's shared rows; `timeline` and `range` on the eleven components that take them; HoverCard's 600 and 300, read off Base UI's constants. Table's `classNames` was already there.
-- [ ] **273** **Wrong or extra rows**
-  - [ ] HeatmapChart `legend` appears twice with different defaults (`:768`, `:1242`), which is a duplicate Vue key.
-  - [ ] An AppLogo `density` row that does not exist (`:2358`), and a TimelineChart `legend` row for a prop that is omitted.
-  - [ ] TextField `onChange` recommends a nonexistent `onValueChange` (`:1695-1697`).
-  - [ ] Popconfirm `side` is typed `'start' | 'end'` (it is `NebaSide`, `:11188`), and `locale` "Defaults to the browser's" (it is the provider's, then English, `:11225`).
-  - [ ] AnimateMarquee `easing` default "house curve" (it is `linear`), and Float and Shake `ease-in-out` (`:633`).
-  - [ ] Statistic `*value*` (`:8785`, `:8850`) and the chart `label` `*of*` (`:748`) show literally.
-  - [ ] Chart `tooltip.mode` default `'index'` (Scatter and Timeline use `'item'`, `:929-931`).
-  - [ ] DataTable `onRowClick` "before the selection changes" (the selection changes first, on `pointerdown`, `:6064`).
-  - [ ] ScatterChart `maxRadius` "1/12 of the plot's short side" (it is 1/12 of the chart height).
-  - [ ] Image `onLoadingStatusChange` is said to report `'loading'` (`:11730`).
-  - [ ] ProgressCircular `thickness` "half the radius" (`:6906`), fixed together with 210.
+- [ ] **273** **Wrong or extra rows** Fixed all but the ProgressCircular row: HeatmapChart and TimelineChart leave out the shared `legend` row, AppLogo the `density` one; TextField names no `onValueChange`; Popconfirm is `SIDE` and falls back to the provider and then English, in its JSDoc too; the animate rows take an easing default, `linear` on Marquee and `ease-in-out` on Float and Shake; the asterisks are gone; the tooltip default names Scatter and Timeline; DataTable selects before `onRowClick`; ScatterChart's bubble is a twelfth of the chart's height; Image reports only `loaded` and `failed`, in its JSDoc too.
+  - [x] HeatmapChart `legend` appears twice with different defaults (`:768`, `:1242`), which is a duplicate Vue key.
+  - [x] An AppLogo `density` row that does not exist (`:2358`), and a TimelineChart `legend` row for a prop that is omitted.
+  - [x] TextField `onChange` recommends a nonexistent `onValueChange` (`:1695-1697`).
+  - [x] Popconfirm `side` is typed `'start' | 'end'` (it is `NebaSide`, `:11188`), and `locale` "Defaults to the browser's" (it is the provider's, then English, `:11225`).
+  - [x] AnimateMarquee `easing` default "house curve" (it is `linear`), and Float and Shake `ease-in-out` (`:633`).
+  - [x] Statistic `*value*` (`:8785`, `:8850`) and the chart `label` `*of*` (`:748`) show literally.
+  - [x] Chart `tooltip.mode` default `'index'` (Scatter and Timeline use `'item'`, `:929-931`).
+  - [x] DataTable `onRowClick` "before the selection changes" (the selection changes first, on `pointerdown`, `:6064`).
+  - [x] ScatterChart `maxRadius` "1/12 of the plot's short side" (it is 1/12 of the chart height).
+  - [x] Image `onLoadingStatusChange` is said to report `'loading'` (`:11730`).
+  - [ ] ProgressCircular `thickness` "half the radius" (`:6906`), fixed together with 210. Left for 210, whose decision decides what the row says.
 
 ### Component pages
 
