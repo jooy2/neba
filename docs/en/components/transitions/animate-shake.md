@@ -33,10 +33,6 @@ There is no `mode`. It starts and ends where the element sits, so a run that is 
 
 How far it travels at the widest point: a CSS length, or a number of pixels. `6` by default: this is a head shaken, not a thing thrown.
 
-### Why this one is an exception
-
-The house rule is that a control is never transformed. It applies to a control's resting states (hover, press, on, off), which colour expresses more clearly than movement does. A shake is not a state: it is a one-off reply to something the reader just did, it is over in four hundred milliseconds, and no colour reports a failure as unmistakably.
-
 ## Accessibility
 
 - A reduced-motion preference cuts the shake to its last frame, where nothing has moved, so the shake is never the only thing carrying the message. Say it in words too: the `error` on the field is what a screen reader reads.
