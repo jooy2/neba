@@ -65,7 +65,7 @@ It repeats forever unless told otherwise, because a single blink is a flicker ra
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content sits at full opacity.
+- A reduced-motion preference cuts the animation to its last frame, and the content sits at full opacity.
 - `duration` is one blink, and anything under 334ms is raised to it: more than three flashes a second can bring on a seizure. The same floor holds for `transition="blink"` and a blinking `AnimateSplit`.
 - Because of that, the blink is never the only thing carrying the message. Say it in words too: a `Chip` that reads "Recording" says it whether or not it is pulsing.
 - Something that never stops moving in the corner of a page being read is the one kind of motion this library otherwise refuses. Use it for a state that is genuinely live, and stop it when the state ends.

@@ -60,6 +60,29 @@ describe('prefers-reduced-motion', () => {
     }
   });
 
+  // `animation: none` left `mode="out"` content on screen and never fired
+  // `animationend`, so a component unmounted on it never went.
+  it('cuts a running effect to its last frame and leaves a waiting one as it is', () => {
+    const rules = [...(sheet.sheet?.cssRules ?? [])]
+      .filter(
+        (rule): rule is CSSMediaRule =>
+          rule instanceof CSSMediaRule && rule.conditionText.includes('prefers-reduced-motion')
+      )
+      .flatMap((media) => [...media.cssRules])
+      .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule);
+    const running = rules.find((rule) => rule.selectorText === '.neba-anim');
+    const held = document.createElement('div');
+
+    held.className = 'neba-anim neba-anim-fade';
+    held.setAttribute('data-state', 'paused');
+
+    expect(running?.style.animationDuration).toBe('1ms');
+    expect(running?.style.animationName).toBe('');
+    expect(
+      rules.some((rule) => held.matches(rule.selectorText) && rule.style.animationName === 'none')
+    ).toBe(true);
+  });
+
   // The case the redeclaration exists for: a light box inside a dark one, which
   // is a preview of the other theme on a page that is already in one.
   it('reaches a light root nested inside a dark one', () => {

@@ -65,5 +65,5 @@ A CSS length or a number in pixels. `'100%'` (the default) is the element's own 
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content is simply there, in place.
+- A reduced-motion preference cuts the animation to its last frame, so the content is simply there in place, or gone if it was leaving.
 - The element is moved with `translate`, so nothing on the page reflows while it runs and no layout under it changes.

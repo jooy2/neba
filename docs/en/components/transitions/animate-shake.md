@@ -39,5 +39,5 @@ The house rule is that a control is never transformed. It applies to a control's
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off, so the shake is never the only thing carrying the message. Say it in words too: the `error` on the field is what a screen reader reads.
+- A reduced-motion preference cuts the shake to its last frame, where nothing has moved, so the shake is never the only thing carrying the message. Say it in words too: the `error` on the field is what a screen reader reads.
 - Move the focus to the control that failed as well. A reader who is not looking at it has been told nothing by a movement.

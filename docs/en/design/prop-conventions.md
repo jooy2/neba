@@ -97,7 +97,7 @@ Five more go on the eleven whose motion is a `@keyframes` on the element or on t
 
 `timeline="view"` costs `duration`, `delay`, `repeat` and every `trigger`: a scroll-driven animation has no time in it, and the scroll position is what starts it. Where the browser has no `animation-timeline` the effect falls back to running once on mount.
 
-Every effect in the library is switched off entirely by a reduced-motion preference, and none of them is ever the only thing carrying a message.
+A reduced-motion preference cuts every effect in the library to its last frame, and none of them is ever the only thing carrying a message.
 
 ## State props
 

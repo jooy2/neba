@@ -54,7 +54,7 @@ It re-renders on a resize, which the CSS form does not. Reach for it when the va
 const still = usePrefersReducedMotion();
 ```
 
-The CSS half of this is already handled: every keyframe in the stylesheet is switched off at once when a reader asks for less motion. This is for motion written in JavaScript, where there is no rule to switch off: a timer that advances a carousel, a count that animates, a scroll you drive yourself.
+The CSS half of this is already handled: every effect in the stylesheet is cut to its last frame when a reader asks for less motion. This is for motion written in JavaScript, where there is no rule to switch off: a timer that advances a carousel, a count that animates, a scroll you drive yourself.
 
 ## useElementSize
 

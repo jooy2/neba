@@ -2898,12 +2898,32 @@
    * about whether anything is happening; an entrance that does not play has
    * still delivered its content, which is the only thing it was ever carrying.
    *
-   * `animation: none` rather than a zero duration, because the shorthand also
-   * clears `fill-mode` — and it is the fill that was holding an untriggered
-   * element on its own first frame at `opacity: 0`. Left in place, respecting a
-   * reader's preference would blank the page.
+   * So an effect that runs is cut to its last frame, a millisecond once on the
+   * clock. That is where `mode="out"` leaves content gone and a rotation leaves
+   * it at its `to` angle, and a run that ends fires `animationend`, which a
+   * pattern that unmounts on it is waiting for. `animation: none` switched all
+   * of that off and left leaving content on screen.
+   *
+   * An effect that has not been let go, or is held, has no animation at all and
+   * shows the element as it is. The fill would otherwise keep it on its first
+   * frame, which for an entrance waiting on a hover is an invisible element. A
+   * float never ends, so it has no last frame and simply stops.
    */
-  .neba-anim,
+  .neba-anim {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+    animation-iteration-count: 1;
+  }
+
+  @supports (animation-timeline: view()) {
+    .neba-anim {
+      animation-timeline: auto;
+    }
+  }
+
+  .neba-anim[data-state='paused'],
+  [data-state='paused'] .neba-anim,
+  .neba-anim-float,
   .neba-marquee-track,
   .neba-headline-item,
   .neba-typing-caret {

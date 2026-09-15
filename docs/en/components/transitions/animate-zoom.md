@@ -63,5 +63,5 @@ The most common use of a zoom is a figure that lands as the reader reaches it. `
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content is simply there, at full size.
+- A reduced-motion preference cuts the animation to its last frame, so the content is simply there at full size, or gone if it was leaving.
 - A strong zoom over a large area is the most likely effect in this set to bother a reader who is sensitive to motion. Prefer a small `from`, or a fade, for anything covering much of the viewport.

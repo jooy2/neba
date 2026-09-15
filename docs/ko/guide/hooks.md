@@ -54,7 +54,7 @@ CSS 쪽과 달리 이 hook은 크기가 바뀔 때 다시 렌더합니다. 몇 �
 const still = usePrefersReducedMotion();
 ```
 
-CSS 쪽은 이미 처리되어 있어서, 스타일시트의 모든 keyframe이 한꺼번에 꺼집니다. 이 hook은 끌 rule 자체가 없는, JavaScript로 쓴 움직임에 씁니다. carousel을 넘기는 타이머, 애니메이션되는 숫자, 직접 굴리는 스크롤이 그렇습니다.
+CSS 쪽은 이미 처리되어 있어서, 스타일시트의 모든 효과가 마지막 프레임으로 바로 넘어갑니다. 이 hook은 끌 rule 자체가 없는, JavaScript로 쓴 움직임에 씁니다. carousel을 넘기는 타이머, 애니메이션되는 숫자, 직접 굴리는 스크롤이 그렇습니다.
 
 ## useElementSize
 

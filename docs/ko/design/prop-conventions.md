@@ -97,7 +97,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 `timeline="view"`를 쓰면 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`가 무시됩니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
 
-라이브러리의 모든 효과는 축소된 모션 설정에서 통째로 꺼집니다. 어느 효과도 그것만으로 정보를 전달하지 않기 때문입니다.
+축소된 모션 설정에서는 라이브러리의 모든 효과가 마지막 프레임으로 바로 넘어갑니다. 어느 효과도 그것만으로 정보를 전달하지 않기 때문입니다.
 
 ## 상태 prop
 

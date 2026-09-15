@@ -51,5 +51,5 @@ Fades as it wipes, from this opacity. `1` (the default) is a wipe and nothing el
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off and the content is drawn whole, which is what it was always going to be.
+- A reduced-motion preference cuts the animation to its last frame, and the content is drawn whole.
 - The content is in the document and in the accessibility tree the entire time. A clip hides pixels, not information.

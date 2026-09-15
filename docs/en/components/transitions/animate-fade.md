@@ -83,5 +83,5 @@ The step is per _child_, so what you pass matters: five children are five steps,
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content is simply there. It is never left invisible.
+- A reduced-motion preference cuts the animation to its last frame, so content arriving is simply there and content leaving is gone. An element still waiting for its trigger is shown as it is, and is never left invisible.
 - The wrapper adds no role and no name; whatever is inside keeps its own.

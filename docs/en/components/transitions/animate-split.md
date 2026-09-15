@@ -48,4 +48,4 @@ Which language the text is in, for finding the boundaries. A word boundary is no
 ## Accessibility
 
 - The whole line is in the document once for a screen reader, in a clipped box, and the pieces are hidden from it. Without that a sentence is read as a list of forty-six separate letters and a find-in-page matches nothing.
-- A reduced-motion preference switches the animation off and the line is drawn whole.
+- A reduced-motion preference cuts the animation to its last frame, and the line is drawn whole.

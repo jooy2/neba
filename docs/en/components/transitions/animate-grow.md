@@ -61,5 +61,5 @@ Any CSS `transform-origin`: the point that stays put while the rest moves. `top`
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content is simply there, at full size.
+- A reduced-motion preference cuts the animation to its last frame, so the content is simply there at full size, or gone if it was leaving.
 - Scale is applied with the standalone `scale` property rather than the `transform` shorthand, so a transform of your own on the same element survives.

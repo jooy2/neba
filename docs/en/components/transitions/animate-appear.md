@@ -62,5 +62,5 @@ The natural pairing: a block of content that settles in as the reader reaches it
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the whole list is simply there.
+- A reduced-motion preference cuts the animation to its last frame, so the whole list is simply there.
 - The wrapper adds no role and no name. Give it a real element with `render` (`render={<ul />}`) when the list is a list.

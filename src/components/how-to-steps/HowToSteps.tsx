@@ -146,7 +146,7 @@ export interface HowToStepsProps extends Omit<
    * and the list rows hold still, and what animates is the content they
    * changed.
    *
-   * A reduced-motion preference switches it off entirely, as it does every
+   * A reduced-motion preference cuts it to its last frame, as it does every
    * other effect in the library.
    * @default 'fade'
    */

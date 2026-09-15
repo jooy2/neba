@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **Under a reduced-motion preference an `Animate*` lands on its last frame.** `animation: none` switched every effect off, so content leaving with `mode="out"` stayed on screen, an `AnimateRotate` rested at `0deg` rather than at its `to`, and `animationend` never fired, so a component unmounted on it never went. A running effect is cut to a one-millisecond run that ends on its last frame now. An effect still waiting for its trigger, or held with `paused`, shows the element as it is, and a float stops. Content that should stay visible under reduced motion while it leaves should be rendered conditionally rather than faded out.
+
 - **A `Sidebar` outside a `PageLayout` does not hold its place by default.** `sticky` was on everywhere, and on its own a Sidebar became a column the height of the window, which inside a shorter box put its last items out of reach. It defaults to `true` inside a PageLayout and `false` outside one; a standalone sidebar that should stick passes `sticky`. A Sidebar whose own `collapseBelow` differs from its layout's now warns in development, because a SidebarTrigger follows the layout, and the page says that `ref` reaches the column and is `null` while the sidebar is collapsed.
 
 - **An `AnimateCounter` counts a new `value` on from the number on screen.** Every change of `value` counted up from `from` again, after `delay` again, so a live figure going from 100 to 105 dropped to 0 and climbed back. A counter that has counted now runs from wherever it is to the new value; `from` and `delay` are for the first count and for one that starts over when its trigger lets go. A counter meant to start from `from` on every change should be given a new `key`.

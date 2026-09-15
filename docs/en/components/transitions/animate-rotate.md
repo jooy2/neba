@@ -61,6 +61,6 @@ On by default, and the first thing to turn off for anything repeating: a fade th
 
 ## Accessibility
 
-- A reduced-motion preference switches the animation off entirely and the content is simply there, at its `to` angle.
+- A reduced-motion preference cuts the animation to its last frame, so the content is simply there, at its `to` angle.
 - Do not rotate text. A rotated word is resampled along its whole length, which is exactly what the design language's rule against transforms exists to prevent. Rotation is for glyphs.
 - With `repeat="infinite"` it keeps moving past five seconds, so the page needs a way to stop it: put a pause button beside it and bind its state to `paused`.
