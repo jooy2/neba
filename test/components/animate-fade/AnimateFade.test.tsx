@@ -288,7 +288,10 @@ describe('AnimateFade', () => {
       });
 
       (screen.getByRole('button', { name: 'Two' }).element() as HTMLElement).focus();
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      // React commits a focus's update in a microtask, which runs ahead of this
+      // one. A timer would also let in the pointer events for an element that
+      // appeared under the pointer a hover test left resting, and those start it.
+      await Promise.resolve();
 
       records.push(...observer.takeRecords());
       observer.disconnect();
@@ -319,7 +322,7 @@ describe('AnimateFade', () => {
       });
 
       (screen.getByRole('button', { name: 'Inside' }).element() as HTMLElement).focus();
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await Promise.resolve();
 
       records.push(...observer.takeRecords());
       observer.disconnect();
@@ -332,7 +335,7 @@ describe('AnimateFade', () => {
         attributeOldValue: true
       });
       (screen.getByRole('button', { name: 'Inside' }).element() as HTMLElement).focus();
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await Promise.resolve();
 
       records.push(...observer.takeRecords());
       observer.disconnect();
