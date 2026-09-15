@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A responsive map whose `xs` is `undefined` keeps the default there.** `withBaseline` spread the caller's map over the default, so `spacing={{ xs: undefined, md: 4 }}`, the shape a map built from optional values takes, copied the `undefined` over it. A `GridContainer` then had no gutter at all below `md` instead of its default of 2. An `xs` of `undefined` now means the same as leaving it out.
+
 - **A component shows its own name in React DevTools and in React's warnings.** Every component is a named function handed to `forwardRef`, and the published build dropped that name, because terser removes a function expression's name when nothing inside the function calls it. A consumer's DevTools showed a tree of `ForwardRef`, and a warning's component stack named nothing. Names that start with a capital letter now survive the minifier. That adds 0.2 kB gzipped across the package, and a production bundle, which its own build minifies again, moves by a few dozen bytes either way.
 
 - **A `Rating` shows where the focus is in Firefox 113 to 120.** Its only focus indicator is a ring keyed to `:has(:focus-visible)`, which those versions do not have, so a keyboard user there saw no focus at all. In a browser without `:has()` the star holding the focus now rings through `:focus-within`, which also rings a star that was clicked. Every browser with `:has()` draws exactly what it drew before.

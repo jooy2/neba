@@ -59,6 +59,12 @@ describe('withBaseline', () => {
     expect(withBaseline({ xs: 0, md: 4 }, 2)).toEqual({ xs: 0, md: 4 });
   });
 
+  // A map built from optional values says `xs: undefined` as often as it leaves
+  // the key out, and the two mean the same thing.
+  it('fills in an xs that is present but undefined', () => {
+    expect(withBaseline({ xs: undefined, md: 4 }, 2)).toEqual({ xs: 2, md: 4 });
+  });
+
   it('passes a bare value and an absent one straight through', () => {
     expect(withBaseline(4, 2)).toBe(4);
     expect(withBaseline(undefined, 2)).toBe(2);

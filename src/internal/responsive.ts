@@ -80,7 +80,12 @@ export function withBaseline<T>(
 ): NebaResponsive<T> {
   if (value === undefined || value === null) return baseline;
   if (typeof value === 'object') {
-    return { xs: baseline, ...(value as Partial<Record<NebaBreakpoint, T>>) };
+    const map = value as Partial<Record<NebaBreakpoint, T>>;
+
+    // Read rather than spread over the baseline: a map built from optional
+    // values says `xs: undefined` as often as it leaves the key out, and a
+    // spread would copy that over the default.
+    return { ...map, xs: map.xs ?? baseline };
   }
 
   return value;
