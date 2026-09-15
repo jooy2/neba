@@ -70,7 +70,7 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 `draggable` moves the window on `left` and `top` (never a transform, so no glyph is resampled for the length of the drag), and reports where it went through `onOffsetChange`. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
 
-Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport.
+Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport. A fixed or absolute window is held so that its title bar stays inside that box, and a `width` or `height` passed after a resize replaces the size the resize gave it.
 
 <Demo src="window-pane/interactive" minHeight="400">
 

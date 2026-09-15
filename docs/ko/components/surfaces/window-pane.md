@@ -70,7 +70,7 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이기도 합니다
 
 `draggable`은 창을 `left`와 `top`으로 옮기며(transform이 아니므로 끄는 동안 글자가 다시 샘플링되지 않습니다) 어디로 갔는지를 `onOffsetChange`로 알려줍니다. `resizable`은 네 가장자리와 네 모서리 전부에 핸들을 답니다. `minWidth`와 `minHeight`가 한계를 정하고, 움직이는 동안 `onResize`가 픽셀 크기와 함께 호출됩니다.
 
-둘 다 흐름 안에서도 동작하며, 이때 offset은 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `position="absolute"`와 positioned 조상을, 뷰포트를 기준으로 하려면 `position="fixed"`를 주세요.
+둘 다 흐름 안에서도 동작하며, 이때 offset은 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `position="absolute"`와 positioned 조상을, 뷰포트를 기준으로 하려면 `position="fixed"`를 주세요. fixed나 absolute 창은 제목표시줄이 그 상자 안에 남도록 붙잡히고, 크기를 바꾼 뒤 새로 준 `width`나 `height`는 손으로 정한 크기를 대신합니다.
 
 <Demo src="window-pane/interactive" minHeight="400">
 

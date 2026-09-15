@@ -337,6 +337,15 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
     /** The size a drag has given the window, which outranks `width`/`height`. */
     const [sized, setSized] = React.useState<WindowPaneSize | null>(null);
 
+    // Until the caller says something new: a `width` or `height` passed after a
+    // resize is the newest word on the size, and it used to change nothing.
+    const [sizedAgainst, setSizedAgainst] = React.useState({ width, height });
+
+    if (sizedAgainst.width !== width || sizedAgainst.height !== height) {
+      setSizedAgainst({ width, height });
+      setSized(null);
+    }
+
     /**
      * Whether this window has the page's attention, when the caller has not said.
      *
@@ -526,7 +535,36 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       if (!draggable || maximized) return;
 
       const from = { ...offset };
-      beginGesture(event, (dx, dy) => setOffset({ x: from.x + dx, y: from.y + dy }));
+      const root = rootRef.current;
+      // A window placed against something is kept where its title bar can be
+      // grabbed again, since the bar is the only handle it has: the bar stays
+      // inside the box, and a strip of it inside either side. Measured once, at
+      // the press, in layout pixels.
+      const box =
+        position === 'fixed'
+          ? {
+              width: document.documentElement.clientWidth,
+              height: document.documentElement.clientHeight
+            }
+          : position === 'absolute' && root?.offsetParent instanceof HTMLElement
+            ? { width: root.offsetParent.clientWidth, height: root.offsetParent.clientHeight }
+            : null;
+      const span = root?.offsetWidth ?? 0;
+      const grip = Math.min(span, 48);
+
+      beginGesture(event, (dx, dy) => {
+        const x = from.x + dx;
+        const y = from.y + dy;
+
+        setOffset(
+          box
+            ? {
+                x: Math.min(Math.max(x, grip - span), box.width - grip),
+                y: Math.min(Math.max(y, 0), Math.max(0, box.height - metrics.bar))
+              }
+            : { x, y }
+        );
+      });
     }
 
     const floor = {

@@ -190,6 +190,8 @@
 
 ### Fixed
 
+- **A `WindowPane` can always be grabbed again, and takes a new size from its props.** A fixed or absolute window could be dragged until its title bar, its only handle, left the screen or its container. It is held now so that the bar stays inside. A size given by a resize also outranked `width` and `height` for good; a `width` or `height` passed afterwards replaces it.
+
 - **An `AnimateHeadline` holds each line for the whole `interval` once it has arrived.** The interval was counted from when a line started arriving, so it rested for `interval` less `duration`, and not at all once `duration` reached `interval`, although the docs said it counts from arrival. A cycle is `duration` longer now. The line on its way out also no longer disappears for a frame before it leaves.
 
 - **A `CodeBlock` colours the script and style inside HTML whatever else is on the page.** A grammar that hands part of its source to another only coloured that part when the other grammar had already been fetched by some other block, so an HTML block's `<script>` was plain on a page with no JavaScript block. HTML now fetches JavaScript and CSS with it, Markdown fetches HTML, JavaScript and TypeScript fetch HTML for JSX, and shell and Dockerfile fetch Bash, each as its own chunk after the first paint.

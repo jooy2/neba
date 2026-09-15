@@ -609,6 +609,42 @@ describe('WindowPane', () => {
       });
     });
 
+    // Nothing bounded a drag, so a fixed window dragged off the screen took its
+    // only handle with it and could not be grabbed again.
+    it('keeps the title bar of a fixed window on the screen', async () => {
+      const onOffsetChange = vi.fn();
+      const screen = await render(
+        <WindowPane title="Finder" position="fixed" draggable onOffsetChange={onOffsetChange} />
+      );
+
+      const bar = screen.getByText('Finder').element().closest('div') as HTMLElement;
+      bar.setPointerCapture = () => {};
+
+      bar.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          button: 0,
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100
+        })
+      );
+      bar.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          pointerId: 1,
+          clientX: -5000,
+          clientY: -5000
+        })
+      );
+      bar.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      const [last] = onOffsetChange.mock.calls.at(-1) as [{ x: number; y: number }];
+
+      expect(last.y).toBe(0);
+      expect(last.x).toBeGreaterThan(-5000);
+    });
+
     it('keeps a finger on a draggable title bar from scrolling the page instead', async () => {
       const screen = await render(<WindowPane title="Finder" draggable data-testid="window" />);
       const bar = screen.getByTestId('window').element().querySelector('.cursor-grab');
@@ -724,6 +760,32 @@ describe('WindowPane', () => {
       await userEvent.keyboard('{ArrowRight}');
 
       await expect.poll(() => root.style.width).toBe(`${before + 16}px`);
+    });
+
+    // A size a hand gave the window outranked the props for good, so a width the
+    // caller passed afterwards changed nothing.
+    it('takes a width passed after a resize over the size the resize gave it', async () => {
+      const pane = (width: number) => (
+        <WindowPane title="Finder" resizable width={width} height={200} data-testid="window">
+          <p>Body</p>
+        </WindowPane>
+      );
+      const screen = await render(pane(320));
+      const corner = screen.getByRole('button', { name: 'Resize window' });
+
+      await expect.element(corner).toBeInTheDocument();
+
+      const root = screen.getByTestId('window').element() as HTMLElement;
+      const before = root.offsetWidth;
+
+      corner.element().focus();
+      await expect.poll(() => document.activeElement).toBe(corner.element());
+      await userEvent.keyboard('{ArrowRight}');
+      await expect.poll(() => root.style.width).toBe(`${before + 16}px`);
+
+      await screen.rerender(pane(400));
+
+      await expect.poll(() => root.style.width).toBe('400px');
     });
 
     it('reports the size a drag settled on', async () => {
