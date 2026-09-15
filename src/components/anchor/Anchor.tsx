@@ -37,8 +37,9 @@ export interface AnchorProps extends Omit<
   /** The headings, in the order they appear on the page. */
   items: readonly AnchorItem[];
   /**
-   * Which row is marked, by its `href`. Given, the list stops tracking the
-   * scroll and says what it is told.
+   * Which row is marked, by its `href`. Given, the list marks what it is told,
+   * and keeps tracking the scroll so `onActiveChange` still reports where the
+   * reader is.
    */
   activeHref?: string | null;
   /** Called whenever the row the reader is in changes. */

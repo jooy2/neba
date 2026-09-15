@@ -11922,8 +11922,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'none' | 'below' | 'overlay' | 'hover'",
       default: "'none'",
       description: {
-        ko: '항목의 title과 description이 놓이는 곳. below는 사진 아래, overlay는 사진 위 그러데이션, hover는 pointer와 함께 나타나는 overlay',
-        en: "Where an item's title and description go. below is under the picture, overlay is across the foot of it, hover is overlay that arrives with the pointer"
+        ko: '항목의 title과 description이 놓이는 곳. below는 사진 아래, overlay는 사진 위 그러데이션, hover는 pointer나 keyboard focus와 함께 나타나는 overlay이며 hover할 수 없는 화면에서는 늘 보입니다',
+        en: "Where an item's title and description go. below is under the picture, overlay is across the foot of it, hover is overlay that arrives with the pointer or the keyboard focus, and stays up on a screen that cannot hover"
       }
     },
     {

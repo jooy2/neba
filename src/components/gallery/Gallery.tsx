@@ -163,12 +163,13 @@ export interface GalleryProps extends Omit<
   /**
    * Where a tile's `title` and `description` go. `below` puts them under the
    * picture, `overlay` writes them across the foot of it, and `hover` is
-   * `overlay` that arrives with the pointer.
+   * `overlay` that arrives with the pointer or the keyboard focus, and stays up
+   * on a screen that cannot hover.
    * @default 'none'
    */
   caption?: NebaGalleryCaption;
   /**
-   * What a tile does under the pointer.
+   * What a tile does under the pointer, and under the keyboard focus.
    *
    * `lift` and `dim` are depth and colour, which is how everything else in the
    * library answers a pointer. `zoom` is the one that scales, and it is the
