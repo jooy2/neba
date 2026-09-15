@@ -96,6 +96,26 @@ describe('AnimateScramble', () => {
     }
   });
 
+  // Pausing tore the settling down, and resuming started it again from the
+  // first letter, so a paused heading went back to noise.
+  it('picks up where it was paused rather than starting over', async () => {
+    const step = 60_000;
+    const props = { text: 'ABCD', characters: '#', duration: step * 4, tick: step * 100 };
+    const screen = await render(<AnimateScramble {...props} data-testid="s" />);
+    const root = screen.getByTestId('s').element();
+
+    await vi.advanceTimersByTimeAsync(step * 2);
+    await expect.poll(() => shown(root)).toBe('AB##');
+
+    await screen.rerender(<AnimateScramble {...props} paused data-testid="s" />);
+    await screen.rerender(<AnimateScramble {...props} data-testid="s" />);
+
+    await expect.poll(() => shown(root)).toBe('AB##');
+
+    await vi.advanceTimersByTimeAsync(step);
+    await expect.poll(() => shown(root)).toBe('ABC#');
+  });
+
   // The box never changes size, which is the whole reason to reach for this
   // rather than for a typewriter.
   it('is the finished length from the first frame', async () => {

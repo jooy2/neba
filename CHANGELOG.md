@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **An `AnimateScramble` picks up where it was paused.** Pausing tore the settling down, and resuming started it again from the first letter, so a heading that had nearly landed went back to noise. The letters that had settled are kept across a pause now.
+
 - **An `AnimateTyping` keeps its place across a pause, and types a new string of the same length.** Pausing tore the loop down, and the one that resumed started on its first pass and never deleting, so every pause gave `repeat={2} erase` another pass, and a pause in the middle of a delete typed forward instead. A new string was also noticed only by its length, so one of the same length replaced the last at once without being typed. The pass and the direction are kept with the count now, and any new string starts a new performance.
 
 - **A hover-triggered animation does not start again as the focus moves inside it.** React's focus events bubble, so a Tab from one field of a form inside `<AnimateFade trigger="hover">` to the next reached the trigger as a new focus and rewound the effect, and an endless effect stopped and started again on the way. A focus or a blur that stays inside the element is ignored now, on every `Animate*` that takes a hover trigger.

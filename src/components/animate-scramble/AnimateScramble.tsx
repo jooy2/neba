@@ -138,8 +138,28 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
       return 1000 / Math.max(1, speed);
     }, [duration, speed, total]);
 
+    /**
+     * How many letters have settled, outside React's state. A pause tears the
+     * timers down, and the ones that resume have to start from where those
+     * stopped: counting from zero again sent a paused heading back to noise.
+     */
+    const progress = React.useRef(0);
+
+    // A text of another length starts again from its first letter, as it did
+    // before the count was kept.
     React.useEffect(() => {
-      if (!run.started || paused) {
+      progress.current = 0;
+    }, [total]);
+
+    React.useEffect(() => {
+      if (!run.started) {
+        // The next start is a new run rather than a resumed one.
+        progress.current = 0;
+
+        return;
+      }
+
+      if (paused) {
         return;
       }
 
@@ -150,10 +170,17 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
       }
 
       let settle: ReturnType<typeof setTimeout>;
-      let done = 0;
+      let done = Math.min(progress.current, total);
+
+      if (done >= total) {
+        setSettled(total);
+
+        return;
+      }
 
       const advance = () => {
         done += 1;
+        progress.current = done;
         setSettled(done);
 
         if (done < total) {
@@ -163,11 +190,13 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
         }
       };
 
-      setSettled(0);
+      setSettled(done);
 
       const noise = setInterval(redraw, tick);
 
-      settle = setTimeout(advance, delay + settleDelay);
+      // Starting waits out the delay as well; resuming waits only for the next
+      // letter.
+      settle = setTimeout(advance, done === 0 ? delay + settleDelay : settleDelay);
 
       return () => {
         clearTimeout(settle);
