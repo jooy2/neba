@@ -6,7 +6,7 @@ aside: false
 
 # All components
 
-<p class="neba-lede">All 129 components released so far. The preview inside each card is the component itself, running.</p>
+<p class="neba-lede">All 129 components released so far. The preview inside each card is the component itself, running. Confirm and Portal are the exceptions and are drawn instead, because each would have to leave its card to show itself.</p>
 
 <Demo src="catalog/all" plain />
 
