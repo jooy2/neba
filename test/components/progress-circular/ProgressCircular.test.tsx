@@ -88,14 +88,14 @@ describe('ProgressCircular', () => {
       expect(ring).toHaveAttribute('stroke-width', '6');
     });
 
-    it('holds the stroke inside the ring it describes', async () => {
-      // Past half the radius there is no hole left in the middle of it, and
-      // past the diameter the radius the arc is drawn on goes negative.
+    // Held to the whole radius, a `md` ring given a thick stroke filled in to a
+    // disc, although the JSDoc and the page promised half the radius.
+    it('holds the stroke to half the radius, so a hole remains', async () => {
       const screen = await render(<ProgressCircular value={40} size="md" thickness={400} />);
       const ring = screen.getByRole('progressbar').element().querySelector('circle');
 
-      expect(Number(ring?.getAttribute('stroke-width'))).toBeLessThanOrEqual(10);
-      expect(Number(ring?.getAttribute('r'))).toBeGreaterThan(0);
+      expect(ring).toHaveAttribute('stroke-width', '5');
+      expect(Number(ring?.getAttribute('r'))).toBe(7.5);
     });
   });
 

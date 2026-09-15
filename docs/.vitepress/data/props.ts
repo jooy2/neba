@@ -7211,7 +7211,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       description: {
         ko: '고리 선의 두께를 픽셀로 직접 정합니다. size는 지름을 계속 맡습니다. 반지름의 절반을 넘지 않게 잡힙니다',
-        en: "The ring's stroke in pixels, when the step's own is not the one you want. size still sets the diameter, and the stroke is held inside the ring"
+        en: "The ring's stroke in pixels, when the step's own is not the one you want. size still sets the diameter, and the stroke is held to half the radius"
       }
     }
   ],

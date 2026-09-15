@@ -178,6 +178,8 @@
 
 ### Fixed
 
+- **A `ProgressCircular` keeps a hole in the middle whatever its `thickness`.** The stroke was held to the whole radius, so a thick `thickness` on a `md` ring filled it in to a disc, although the JSDoc and the page said it stopped at half the radius. It stops there now.
+
 - **A disabled `ColorPicker` takes its text field out of the tab order.** The field was only ever read-only, so a disabled picker kept a stop in the tab order that could do nothing. It is disabled with the picker now; a `readOnly` picker still leaves it focusable, so its value can be selected and copied.
 
 - **A `TimelineChart` writes the time of its spans once one of them needs it.** On an axis that ticks in days or weeks every date was written to the day, so a two-hour meeting read `3 Mar 2026 – 3 Mar 2026` in the tooltip and the hidden table. When any span starts or ends away from midnight, every start and end in the chart is written with its time; a chart whose spans all fall on midnight is written as before.

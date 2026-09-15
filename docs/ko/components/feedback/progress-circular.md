@@ -36,7 +36,7 @@ import { ProgressCircular } from 'neba';
 
 ### thickness
 
-`size`는 고리의 지름이고, `thickness`는 고리 선의 두께를 픽셀로 정합니다. 화면이 그 수치 하나를 위해 존재할 때 쓰는 prop입니다. 두께는 고리 안쪽으로 잡히며, 반지름의 절반을 넘으면 가운데 구멍이 사라지므로 거기서 멈춥니다.
+`size`는 고리의 지름이고, `thickness`는 고리 선의 두께를 픽셀로 정합니다. 화면이 그 수치 하나를 위해 존재할 때 쓰는 prop입니다. 두께는 반지름의 절반까지만 커지므로 가운데 구멍이 늘 남습니다.
 
 ```tsx
 <ProgressCircular value={62} size="xl" thickness={6} />

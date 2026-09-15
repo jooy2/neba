@@ -64,10 +64,10 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
 
     const diameter = ringDiameters[size];
     const centre = diameter / 2;
-    // A stroke thicker than the radius has no hole left in the middle of it,
-    // and one past the diameter inverts the arithmetic below into a negative
-    // radius — so the caller's number is held inside the ring it describes.
-    const stroke = Math.min(Math.max(thickness ?? ringStrokes[size], 0.5), centre);
+    // Past half the radius the hole in the middle is too small to read as a
+    // ring, and past the diameter the arithmetic below turns negative, so the
+    // caller's number is held to half the radius.
+    const stroke = Math.min(Math.max(thickness ?? ringStrokes[size], 0.5), centre / 2);
     // The stroke straddles the path, so the radius has to come in by half of it
     // or the ring is clipped by its own viewBox.
     const radius = centre - stroke / 2;

@@ -36,7 +36,7 @@ Native `<div>` attributes pass through to the root. Only `color` and `children` 
 
 ### thickness
 
-`size` is the ring's diameter; `thickness` is its stroke in pixels, for a dial a screen is actually about. The stroke is held inside the ring — past half the radius there would be no hole left in the middle of it.
+`size` is the ring's diameter; `thickness` is its stroke in pixels, for a dial a screen is actually about. The stroke is held to half the radius, so a hole always remains in the middle.
 
 ```tsx
 <ProgressCircular value={62} size="xl" thickness={6} />
