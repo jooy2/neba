@@ -4,11 +4,11 @@ The working list for the audit of every public component, started on 2026-09-12.
 
 ## State
 
-- Seven batches are done, and the last push was `5a4564fa` on 2026-09-15.
-- Every decision answered so far is implemented. G1, H1, I1, I2, I3, J1 and J2 were answered as recommended on 2026-09-15.
-- The next batch starts after item 276. What is left without a tag is 277, 278 and 279, and the untagged parts of 280 and 281. Item 273 is ticked but for its ProgressCircular row, which waits for 210.
+- Eight batches are done, and the last push was `f13b6284` on 2026-09-15.
+- Every decision answered so far is implemented. K1, K2 and L1 to L4 were answered as recommended on 2026-09-15: K1 leaves documentation and test work out of the changelog, and L4 keeps the Overview screen as it is.
+- No item without a tag is left. What stays open is every tagged item, 273's ProgressCircular row (it waits for 210), the Flex part of 280, and 281, whose AnimateRotate sentence is fixed with 234.
+- All of them are asked below as M (approvals) and N (choices). The next batch implements the answers, one commit per unit; when nothing is left, this file and its `.npmignore` line are deleted.
 - Item 109 was done together with 129.
-- The next batch labels its questions M (approvals) and N (choices), so an answer like "N2 (b)" names exactly one question.
 
 ## How to run a batch
 
@@ -50,19 +50,41 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ## Pending decisions
 
-Questions from the batch pushed on 2026-09-15, labelled K and L. The recommended option comes first.
+Every remaining tagged item, asked on 2026-09-15 as K2 approved. The recommended option comes first.
 
-### K. Approvals
+### M. Approvals
 
-- **K1** This batch was documentation and tests, and none of it has a changelog entry, because the changelog records what changed in the package. The source files it touched changed only in their JSDoc: Popconfirm's `locale`, Image's `onLoadingStatusChange`, the tooltip `mode` default in `types.ts`, Slider's `marks` and CodeBlock's `theme`. Approve leaving all of it out of the changelog.
-- **K2** After 277 to 281 no item without a tag is left, and about thirty tagged items are still open (193 to 247, 258, 259, 274, and the tagged parts of 280 and 281). Approve having the next batch finish the untagged items and then list every remaining tagged item as a question, so they can be answered at once.
+- **M1 (210)** ProgressCircular: clamp `thickness` to half the radius, as the JSDoc and both pages already promise, so a hole always remains. Only values past that limit render thinner (md 5, xl 8). Also settles 273's ProgressCircular row.
+- **M2 (215)** Tabs: flatten a Fragment when sorting panels, say on the page that a wrapper component is not recognised, and add the 1px border to the `lines` cap of an outline bar.
+- **M3 (225)** Sidebar: close an open drawer when the layout widens past `collapseBelow`, so rotating a tablet does not reopen a modal drawer. A controlled caller hears `onSidebarOpenChange(false)`.
+- **M4 (236)** AnimateBlink: rest at full opacity while it is not running, so `paused` or `play={false}` never leaves the content half drawn or invisible.
+- **M5 (237)** Widen `play` to `boolean | number` on every `Animate*`, so a changed number replays without remounting; the AnimateShake docs and demo stop using `key`. The runtime already replays on a changed truthy value.
+- **M6 (243)** `textOf` reads an element's children, so `<AnimateTyping>Hello <b>world</b></AnimateTyping>` types both words, as the docs of Typing, Split and Scramble already say.
+- **M7 (247)** Add one CI job on ubuntu with chromium that installs React 18 and runs `npm test`, so the peer range is a claim the suite checks.
+- **M8 (259)** Write DataTable's exception into the "density changes padding only" rule in `CLAUDE.md`, design-language and prop-conventions, in both locales. DataTable's own page already states it.
+- **M9 (280)** Flex: document `rowSpacing` as the vertical gap and `columnSpacing` as the horizontal one whatever `direction` is, which is what the code and GridContainer do.
 
-### L. Choices
+### N. Choices
 
-- **L1 (255)** A TimelineChart span shorter than a day, on an axis that ticks in days or weeks, is written as its date alone in the table and the tooltip, so a two-hour meeting reads `3 Mar 2026 – 3 Mar 2026`. (a) when any span in the chart starts or ends away from midnight, write every start and end with its time; (b) decide it per span, so rows of one table can differ; (c) leave it.
-- **L2 (273)** Image's `onLoadingStatusChange` is typed to report `loading`, `loaded` and `failed`, and only ever reports the last two. (a) report `loading` when a new `src` starts, which matches the type; (b) narrow the type to `loaded` and `failed`, which breaks a caller that compares against `loading`; (c) leave it, as the docs now describe.
-- **L3 (275)** A `disabled` ColorPicker takes its panel, rails and swatches out of the tab order but leaves the hex text field in it, read-only, the same as `readOnly` does. (a) `disabled` disables the text field too, and `readOnly` keeps it focusable; (b) leave it, as the docs now describe.
-- **L4 (270)** The Overview screen lacks LineChart, Portal and six `Animate*` components, and its lede now says "most of the components". (a) leave the screen as it is; (b) add the eight so the lede can say every component.
+- **N1 (193)** CodeBlock embedded grammars: an html block colours its `<script>` only if JavaScript was loaded first. (a) load the embedded grammars with their parent (html with javascript and css, markdown with xml, shell with bash, JS and TS with xml), about 11 kB more after first paint for an html block; (b) load a sub-grammar only when the source contains `<script` or `<style`; (c) document it.
+- **N2 (198)** PieChart negative values draw as positive slices. (a) like the treemap, a negative gets no slice and no share but stays in the table and the legend; (b) keep it and document it; (c) (a) plus a development warning.
+- **N3 (199)** HeatmapChart all-equal values take the darkest step. (a) read a flat sequential range against zero, so zeros take the lightest step, as the diverging scale already does; (b) a flat range takes the middle step; (c) document that `min` and `max` together pin the scale.
+- **N4 (204)** Toasts hidden by `limit` keep their timer running and can expire unseen. (a) fix the docs and report it to Base UI, and hold the timer ourselves only if they decline; (b) hold the timer now, through Base UI's store; (c) docs only.
+- **N5 (208)** Popconfirm with a rejected `onConfirm` stays open and the rejection is uncaught. (a) keep it, say so on the page and add a test, since the error belongs to the caller's error reporting; (b) catch it and log in development; (c) (b) plus an `onError` prop.
+- **N6 (211)** ProgressLinear, ProgressCircular and Meter format with the runtime locale. (a) add `locale`, filled from the provider, passed to Base UI, and give Meter the same `aria-valuetext` the progress components use; (b) give Meter that `aria-valuetext` and document the locale; (c) leave it.
+- **N7 (216, major)** Collapsible truncates `title` and `subtitle`. (a) wrap by default and take `lines`, as Accordion does; (b) take `lines` but default to one; (c) leave it.
+- **N8 (220)** WindowPane can be dragged out of reach, and after one resize ignores its `width` and `height`. (a) keep the title bar inside the viewport or the offset parent while dragging, and let a changed `width` or `height` prop win; (b) a controlled size pair and no clamping; (c) docs only.
+- **N9 (222, major)** Show adds `contents` even to `render={<td />}`, removing the cell's padding and border. (a) add `contents` only without `render`; (b) docs only, dropping the `<td>` example; (c) leave it.
+- **N10 (226)** Every Header and Footer inside a PageLayout registers as its slot, so an article header zeroes the site header's height. (a) only the `header` and `footer` PageLayout places register, and they measure again when `position` changes; (b) the first to register wins; (c) an opt-out prop.
+- **N11 (227, major)** Sidebar's `ref` is null when collapsed, a standalone Sidebar is sticky at `100dvh`, and a Sidebar's own `collapseBelow` can leave no trigger. (a) a development warning when the two `collapseBelow` values disagree, `sticky` off outside a PageLayout, and `ref` documented as the column only; (b) fix all three in code, with a first-paint flash of the trigger; (c) docs only.
+- **N12 (230)** CodeBlock `theme="auto"` does not follow the nearest theme root. (a) declare the auto palette as tokens in each theme root, as the derived colour tokens are; (b) add `:not(.light)` to the media rule, which fixes the reported case only; (c) derive the colours from `--neba-surface` and `--neba-fg`.
+- **N13 (233)** `--n-anim-*` slots inherit, so a `transition` inside an `Animate*` stays paused or loses its fade. (a) reset the shape slots on `.neba-anim` and have `transition` write its own running state; (b) JavaScript writes every slot with its default; (c) `@property` with `inherits: false`, which Firefox before 128 ignores.
+- **N14 (234, major)** Under reduced motion `animation: none` leaves `mode="out"` content visible and never fires `animationend`. (a) a 1ms run that lands on the end frame, with the page wording "switched off" changed on 17 pages; (b) a JavaScript check in every `Animate*`; (c) docs only.
+- **N15 (241, major)** AnimateCounter counts a new `value` from `from` again, so 100 to 105 climbs from 0. (a) count from the number on screen, using `from` and `delay` only for the first run; (b) docs only; (c) a prop that turns (a) on.
+- **N16 (242)** AnimateHeadline counts `interval` from when a line starts arriving, so a line rests `interval` minus `duration`. (a) count from arrival, as the JSDoc and page say, making each cycle longer by `duration`; (b) docs only; (c) leave it.
+- **N17 (258)** `CLAUDE.md`'s module notes have no headings. (a) keep the prose, give it a section with one heading per module and a short index; (b) a one-line table per module with only the load-bearing rules kept; (c) leave it.
+- **N18 (274)** 41 component pages (82 files) break the page skeleton. (a) clean them in one pass, a commit per group, moving rationale to design-language or the source; (b) the mechanical fixes now and the rationale when a page is touched; (c) when a page is touched.
+- **N19 (281)** AnimateTyping's box grows a line at a time as it wraps, and AnimateScramble keeps its size only on one line or in a monospace font. (a) lay the final string invisibly under the animated one, as AnimateHeadline stacks its lines, so the box is full size from the first frame; (b) correct the two sentences; (c) reserve space for Typing and correct Scramble's sentence.
 
 ## 1. Performance
 
