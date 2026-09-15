@@ -1297,7 +1297,8 @@ export function CartesianChart(rawProps: CartesianProps) {
   // A mark is drawn from its centre, so half of the widest one hangs over the
   // top of the plot. On a scatter that half is a whole bubble, which is what
   // `markInset` is reserving on the other three sides.
-  const topPad = markerRadii[size] + 4 + headroom + markInset + (namesLeftAxis ? axisLabelBand : 0);
+  const topPad =
+    markerRadii[size] + 4 + headroom + markInset + (namesLeftAxis ? axisLabelBand + 2 : 0);
 
   const boxHeight = plotHeight;
   const plot: PlotBox = {
@@ -2140,9 +2141,12 @@ function ChartAxes({
           bottom axis' under its ticks at the far end. A hidden axis has neither
           a band nor a name. */}
       {leftAxis?.label && !leftAxis.hidden ? (
+        // Two pixels below one em, and the band two taller: a font with a tall
+        // ascent (the Noto Sans many Linux systems default to) reaches above a
+        // baseline set at one em, and the SVG clips at its top edge.
         <text
           x={plot.left}
-          y={fontSize}
+          y={fontSize + 2}
           textAnchor="start"
           fontSize={fontSize}
           fill="var(--neba-muted-fg)"

@@ -194,6 +194,8 @@
 
 ### Fixed
 
+- **A chart's axis name above the plot stays inside the chart's box in every font.** Its baseline sat one em below the top edge, and a font with a taller ascent, such as the Noto Sans many Linux systems use, reached past the edge the SVG clips at.
+
 - **`ScatterChart` grows the mark under the crosshair on React 18.** The pixel it grows by was a unitless number in a `style`, and React 18 wrote it as a length, which the browser discarded, so the mark stayed the same size.
 
 - **`AnimateTyping` and `AnimateScramble` hold the size of their final text from the first frame.** A typewriter's box was only as big as the characters that had arrived, so it grew a line at a time as it wrapped and pushed the page down, although its docs said nothing reflows, and a scramble kept its size only on one line or in a monospace font. Both lay the final string out underneath, invisible and unfindable, and draw the animation over it.
