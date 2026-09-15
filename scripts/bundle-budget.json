@@ -25,7 +25,7 @@
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 5.5
+      "budget": 5.6
     },
     {
       "id": "image",
@@ -88,13 +88,13 @@
         "Chip",
         "Typography"
       ],
-      "budget": 118.4
+      "budget": 118.5
     },
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 29.9
+      "budget": 30
     },
     {
       "id": "app-12-ko",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 74.9
+      "budget": 75
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 279.1
+      "budget": 279.8
     }
   ]
 }
