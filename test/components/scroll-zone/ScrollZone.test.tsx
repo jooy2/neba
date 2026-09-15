@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { ScrollZone } from 'neba';
@@ -134,6 +135,34 @@ describe('ScrollZone', () => {
 
       expect(screen.getByTestId('zone').element()).toHaveClass('my-own-class');
       expect(screen.getByTestId('zone').element()).toHaveAttribute('id', 'shelf');
+    });
+
+    it('hands the scrolling box to scrollerRef and keeps ref on the root', async () => {
+      const ref = createRef<HTMLDivElement>();
+      const scrollerRef = createRef<HTMLDivElement>();
+      const screen = await render(
+        <ScrollZone ref={ref} scrollerRef={scrollerRef} data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+
+      expect(ref.current).toBe(screen.getByTestId('zone').element());
+      expect(scrollerRef.current).toBe(scroller(screen));
+    });
+
+    // A scroll does not bubble, so an `onScroll` passed through to the root never
+    // heard the box inside it scroll.
+    it('calls onScroll when the strip scrolls', async () => {
+      const onScroll = vi.fn();
+      const screen = await render(
+        <ScrollZone onScroll={onScroll} data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+
+      scroller(screen).dispatchEvent(new Event('scroll'));
+
+      await expect.poll(() => onScroll.mock.calls.length).toBe(1);
     });
   });
 

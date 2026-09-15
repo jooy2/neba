@@ -23,7 +23,7 @@ import { ScrollZone } from 'neba';
 
 <PropsTable name="ScrollZone" />
 
-나머지 `<div>` 속성은 그대로 루트에 전달됩니다. 공용 축(`variant` `size` `color` `density` `orientation`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<div>` 속성과 `ref`는 그대로 루트에 전달됩니다. `scrollerRef`와 `onScroll`은 그 안에서 스크롤되는 상자에 붙습니다. 공용 축(`variant` `size` `color` `density` `orientation`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 

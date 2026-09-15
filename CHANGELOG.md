@@ -80,6 +80,8 @@
 
 ### Added
 
+- **`ScrollZone` takes `scrollerRef`.** It is a ref to the box that scrolls, which is what a caller restoring a scroll position needs. `ref` stays on the root, which also holds the buttons.
+
 - **`Image` turns and mirrors a picture with `rotate` and `flip`.** `rotate` takes quarter turns, clockwise, and `flip` mirrors along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture was turned. A picture on its side reserves a box on its side: `width` and `height` still describe the file, and with neither the box takes the turned shape once the file arrives. The preview opens turned and mirrored the same way.
 
 - **`fit` takes `scale-down` on `AspectRatio` and `Image`.** It is `contain` that never enlarges, for a file that may be smaller than the box it is given.
@@ -173,6 +175,8 @@
 - **`Highlight` ignores accents in a string `query`.** `jose` marks `José`, as a DataTable's search finds it; before, a DataTable found the row and a Highlight in it marked nothing. The match is marked in the original text, so a decomposed accent stays inside the mark. A RegExp is still matched as written.
 
 ### Fixed
+
+- **A `ScrollZone`'s `onScroll` fires when the strip scrolls.** It was passed through to the root with every other attribute, and the box that scrolls is inside the root, where a scroll does not bubble out of, so the handler was never called. It is the scrolling box's handler now.
 
 - **Initials are upper-cased the same way on every machine.** An `Avatar` or an `AppLogo` with no picture upper-cased its initials in the language of whatever was running it, so a server in English and a browser in Turkish drew `I` and `İ` for the same name, and React reported the difference as a hydration mismatch. The letters are upper-cased without a language now, which costs the rules of languages such as Turkish on the one letter where they differ.
 

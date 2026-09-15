@@ -140,6 +140,16 @@ export interface ScrollZoneProps
   /** Overrides the buttons' own names. */
   previousLabel?: string;
   nextLabel?: string;
+  /**
+   * A ref to the box that scrolls. `ref` is the root, which also holds the
+   * buttons, so this is the one to read or restore a scroll position through.
+   */
+  scrollerRef?: React.Ref<HTMLDivElement>;
+  /**
+   * Called when the strip scrolls. It is the scrolling box's event rather than
+   * the root's, because a scroll does not bubble.
+   */
+  onScroll?: React.UIEventHandler<HTMLDivElement>;
   /** What is being laid out. Every top-level child is one item of the strip. */
   children?: React.ReactNode;
 }
@@ -222,6 +232,8 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       label,
       previousLabel,
       nextLabel,
+      scrollerRef: scrollerRefProp,
+      onScroll,
       className,
       style,
       children,
@@ -235,6 +247,16 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
 
     const scrollerRef = React.useRef<HTMLDivElement>(null);
     const trackRef = React.useRef<HTMLDivElement>(null);
+
+    const setScrollerRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        scrollerRef.current = node;
+
+        if (typeof scrollerRefProp === 'function') scrollerRefProp(node);
+        else if (scrollerRefProp) scrollerRefProp.current = node;
+      },
+      [scrollerRefProp]
+    );
 
     /** Whether there is anything left in each direction, as one object so a
      *  measurement that changed nothing costs no render. */
@@ -626,7 +648,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
         {drawn && inline ? scrollButton(false) : null}
 
         <div
-          ref={scrollerRef}
+          ref={setScrollerRef}
           // Focusable, so the strip can be scrolled with the arrow keys by whoever
           // is not using a pointer. That is the browser's own key handling on a
           // scroll container, which means it is already right under RTL — a
@@ -657,7 +679,10 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
               : '',
             'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
           )}
-          onScroll={measure}
+          onScroll={(event) => {
+            measure();
+            onScroll?.(event);
+          }}
           onPointerDown={beginDrag}
         >
           <div

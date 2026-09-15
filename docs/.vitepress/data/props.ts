@@ -10269,6 +10269,22 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '앞으로 가는 버튼의 이름', en: "The forward button's own name" }
     },
     {
+      name: 'scrollerRef',
+      type: 'Ref<HTMLDivElement>',
+      description: {
+        ko: '실제로 스크롤되는 상자를 가리키는 ref. `ref`는 버튼까지 담은 루트에 붙으므로, 스크롤 위치를 읽거나 되돌릴 때는 이쪽을 씁니다',
+        en: 'A ref to the box that scrolls. `ref` is the root, which also holds the buttons, so this is the one to read or restore a scroll position through'
+      }
+    },
+    {
+      name: 'onScroll',
+      type: '(event: UIEvent) => void',
+      description: {
+        ko: '띠가 스크롤될 때 호출됩니다. scroll 이벤트는 버블링되지 않으므로 루트가 아니라 스크롤되는 상자의 이벤트입니다',
+        en: "Called when the strip scrolls. It is the scrolling box's event rather than the root's, because a scroll does not bubble"
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

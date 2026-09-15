@@ -23,7 +23,7 @@ import { ScrollZone } from 'neba';
 
 <PropsTable name="ScrollZone" />
 
-Every other `<div>` attribute passes through to the root. The shared axes (`variant` `size` `color` `density` `orientation`) are defined in [prop conventions](../../design/prop-conventions).
+Every other `<div>` attribute passes through to the root, and so does `ref`. `scrollerRef` and `onScroll` belong to the box inside it that scrolls. The shared axes (`variant` `size` `color` `density` `orientation`) are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 
