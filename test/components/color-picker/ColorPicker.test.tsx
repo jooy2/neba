@@ -270,6 +270,22 @@ describe('ColorPicker', () => {
       );
     });
 
+    // The text field was only ever read-only, so a disabled picker still had a
+    // stop in the tab order that could do nothing.
+    it('takes the text field out of the tab order when disabled', async () => {
+      const screen = await render(<ColorPicker inline disabled />);
+
+      expect(screen.container.querySelector('input[type="text"]')).toBeDisabled();
+    });
+
+    it('leaves a read-only text field where the keyboard can reach it', async () => {
+      const screen = await render(<ColorPicker inline readOnly defaultValue="#ff0000" />);
+      const field = screen.container.querySelector('input[type="text"]');
+
+      expect(field).not.toBeDisabled();
+      expect(field).toHaveAttribute('readonly');
+    });
+
     it('ignores the arrow keys when read-only', async () => {
       const onValueChange = vi.fn();
       const screen = await render(

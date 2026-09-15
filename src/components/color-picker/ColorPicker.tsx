@@ -217,6 +217,8 @@ interface PanelProps {
   editable: boolean;
   size: NebaSize;
   inert: boolean;
+  /** Disabled rather than only read-only, which also takes the text field out of the tab order. */
+  disabled: boolean;
   labels: ColorPickerLabels;
 }
 
@@ -264,6 +266,7 @@ function ColorPanel({
   editable,
   size,
   inert,
+  disabled,
   labels
 }: PanelProps) {
   const thumb = thumbSizes[size];
@@ -460,6 +463,7 @@ function ColorPanel({
             type="text"
             value={text}
             readOnly={inert}
+            disabled={disabled}
             spellCheck={false}
             autoComplete="off"
             aria-label={labels.value}
@@ -692,6 +696,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
         editable={editable}
         size={size}
         inert={inert}
+        disabled={Boolean(disabled)}
         labels={labels}
       />
     );
