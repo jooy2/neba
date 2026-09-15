@@ -17,6 +17,19 @@ describe('Header', () => {
       await expect.element(screen.getByRole('banner', { name: 'Site' })).toBeInTheDocument();
     });
 
+    // Inside an article a `<header>` is the article's own, and a second banner
+    // would be a second top of the page in a screen reader's list of landmarks.
+    it('is not a banner inside an article', async () => {
+      const screen = await render(
+        <article>
+          <Header>Post</Header>
+        </article>
+      );
+
+      await expect.element(screen.getByText('Post')).toBeInTheDocument();
+      expect(screen.getByRole('banner').query()).toBeNull();
+    });
+
     it('draws all three slots', async () => {
       const screen = await render(
         <Header brand={<span>Neba</span>} actions={<button type="button">Sign in</button>}>

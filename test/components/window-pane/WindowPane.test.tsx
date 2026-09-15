@@ -576,6 +576,39 @@ describe('WindowPane', () => {
       expect(onOffsetChange).toHaveBeenLastCalledWith({ x: 40, y: 30 });
     });
 
+    // The pointer moves in screen pixels and the window is laid out in its own,
+    // so at half scale the same hand has to move the window twice as far.
+    it('follows the hand inside a scaled ancestor', async () => {
+      const onOffsetChange = vi.fn();
+      const screen = await render(
+        <div style={{ transform: 'scale(0.5)', transformOrigin: '0 0' }}>
+          <WindowPane title="Finder" draggable onOffsetChange={onOffsetChange} />
+        </div>
+      );
+
+      const bar = screen.getByText('Finder').element().closest('div') as HTMLElement;
+      bar.setPointerCapture = () => {};
+
+      bar.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          button: 0,
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100
+        })
+      );
+      bar.dispatchEvent(
+        new PointerEvent('pointermove', { bubbles: true, pointerId: 1, clientX: 140, clientY: 130 })
+      );
+      bar.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      expect(onOffsetChange).toHaveBeenLastCalledWith({
+        x: expect.closeTo(80, 0),
+        y: expect.closeTo(60, 0)
+      });
+    });
+
     it('keeps a finger on a draggable title bar from scrolling the page instead', async () => {
       const screen = await render(<WindowPane title="Finder" draggable data-testid="window" />);
       const bar = screen.getByTestId('window').element().querySelector('.cursor-grab');

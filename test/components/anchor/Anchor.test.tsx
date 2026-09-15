@@ -158,6 +158,30 @@ describe('Anchor', () => {
       );
     });
 
+    it('follows the scroll of the container it was given', async () => {
+      const box = createRef<HTMLDivElement>();
+      const screen = await render(
+        <div>
+          <Anchor items={ITEMS} container={box} />
+          <div ref={box} style={{ height: 300, overflowY: 'auto' }}>
+            {ITEMS.map((item) => (
+              <section key={item.href} id={item.href.slice(1)} style={{ height: 600 }}>
+                <h2>{item.label}</h2>
+              </section>
+            ))}
+          </div>
+        </div>
+      );
+
+      box.current?.scrollTo(0, 1300);
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Usage' }))
+        .toHaveAttribute('aria-current', 'location');
+      // The window did not move, so the container's own scroll is what was heard.
+      expect(window.scrollY).toBe(0);
+    });
+
     it('follows a controlled value as it changes', async () => {
       const screen = await render(<Page items={ITEMS} activeHref="#usage" />);
 
