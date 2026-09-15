@@ -459,6 +459,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
           el.setPointerCapture(moveEvent.pointerId);
           el.dataset.dragging = 'true';
           document.body.style.setProperty('-webkit-user-select', 'none');
+          // A mandatory snap answers every offset written below by jumping to
+          // the nearest child, so the strip stepped instead of following the
+          // pointer. It is held off for the drag and handed back on release,
+          // where the strip settles on the nearest child once.
+          if (snap) el.style.scrollSnapType = 'none';
         }
 
         if (horizontal) el.scrollLeft = fromLeft - dx;
@@ -471,6 +476,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
         el.removeEventListener('pointerup', end);
         el.removeEventListener('pointercancel', release);
         delete el.dataset.dragging;
+        el.style.removeProperty('scroll-snap-type');
 
         if (selection) document.body.style.setProperty('-webkit-user-select', selection);
         else document.body.style.removeProperty('-webkit-user-select');

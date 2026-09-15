@@ -488,4 +488,47 @@ describe('ScrollZone', () => {
       expect(scrollBy).not.toHaveBeenCalled();
     });
   });
+
+  describe('dragging', () => {
+    // A mandatory snap answers every offset a drag writes by jumping to the
+    // nearest card, so the strip stepped under the pointer instead of following
+    // it.
+    it('holds a snap off while the strip is dragged, and hands it back after', async () => {
+      const screen = await render(
+        <ScrollZone snap data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      // A synthetic press cannot capture a pointer the browser has no record of,
+      // and capturing one is not what is being tested.
+      box.setPointerCapture = () => {};
+
+      box.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          button: 0,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: 400,
+          clientY: 20
+        })
+      );
+      box.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: 300,
+          clientY: 20
+        })
+      );
+
+      expect(box.style.scrollSnapType).toBe('none');
+
+      box.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      expect(box.style.scrollSnapType).toBe('');
+    });
+  });
 });

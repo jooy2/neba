@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **Dragging a `ScrollZone` with `snap` follows the pointer.** A mandatory snap answers every scroll offset a drag writes by jumping to the nearest child, so a mouse or a pen moved the strip in steps rather than along with the pointer. The snap is held off while the strip is dragged and handed back when it is let go, and the strip then settles on the nearest child.
+
 - **A `ScrollArea` with only `maxHeight` scrolls.** Its viewport is `100%` of the root's height, and a root with a ceiling and no height has no height for that to resolve against, so the viewport grew as tall as its content and the root cut it off at the ceiling with nothing to scroll. The viewport takes the root's ceiling now, whether it came from `maxHeight`, a class or a style.
 
 - **An `AspectRatio` fits a `canvas` inside it.** `fit` reached an `img`, a `video` and the `img` in a `picture`, so a `canvas` was stretched to the box and squashed out of its own proportion, although the docs listed it among the media `fit` applies to. A `canvas` is fitted like the others now. The docs also stop saying that `fit` reaches an `svg` or an `iframe`: both are stretched to the box and lay their own content out, as they always did.
