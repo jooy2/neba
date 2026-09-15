@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A `Rating` shows where the focus is in Firefox 113 to 120.** Its only focus indicator is a ring keyed to `:has(:focus-visible)`, which those versions do not have, so a keyboard user there saw no focus at all. In a browser without `:has()` the star holding the focus now rings through `:focus-within`, which also rings a star that was clicked. Every browser with `:has()` draws exactly what it drew before.
+
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.
 
 - **A `Chip`'s count plate carries its own bed instead of another wash on top of the chip's.** `--n-on-tint` is solved for one wash, and the plate was `--n-soft-press` painted over whatever wash the chip already had: a count on a `text` chip read 4.2:1 and on a selected one 3.5:1. It is a fill now on every variant that is not itself filled, which holds 4.6:1 or better wherever the chip is sitting; a filled chip keeps the hole punched in its own fill.

@@ -507,9 +507,19 @@ export const popupFadeClasses = [
 export const focusRingClasses =
   '[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]';
 
-/** The same ring, drawn by whichever descendant actually takes focus. */
+/**
+ * The same ring, drawn by whichever descendant actually takes focus.
+ *
+ * `:has()` is what keeps it to keyboard focus, and it is newer than the rest of
+ * the library's floor: Firefox 113 to 120 have no `:has()`, and a Rating there
+ * had no focus indicator at all, because the ring is the only one it draws. The
+ * fallback asks `:focus-within` instead, in exactly the browsers that cannot ask
+ * the other question — so it also rings a star that was clicked, which is the
+ * price of having no way to tell the two apart. The two rules never both apply,
+ * so their order in the stylesheet decides nothing.
+ */
 export const focusWithinRingClasses =
-  '[outline:0_solid_var(--n-ring)] outline-offset-2 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]';
+  '[outline:0_solid_var(--n-ring)] outline-offset-2 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] supports-[not_selector(:has(*))]:focus-within:[outline:2px_solid_var(--n-ring)]';
 
 /**
  * The ring a **field's shell** takes, and the one place in the library it is

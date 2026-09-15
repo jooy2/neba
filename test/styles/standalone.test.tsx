@@ -33,6 +33,7 @@ import {
   List,
   ListItem,
   Overlay,
+  Rating,
   Switch,
   TextField,
   Typography
@@ -222,6 +223,39 @@ describe('neba/styles.css', () => {
       expect(styles.outlineStyle).toBe('solid');
       expect(styles.outlineWidth).toBe('0px');
       expect(styles.transitionProperty).toContain('outline-width');
+    });
+
+    it('ring a focused star where the browser has no :has()', async () => {
+      // A Rating draws no focus indicator but the ring, and the ring is keyed
+      // to `:has(:focus-visible)`, which Firefox 113 to 120 do not have. Every
+      // browser this suite runs in does, so the fallback can never show up in
+      // a computed style here. What can be checked is that it exists and what
+      // it would match: the star holding the focus, and not a star without it.
+      const screen = await render(<Rating />);
+      const radio = screen.getByRole('radio').first().element() as HTMLInputElement;
+      const star = radio.closest('label')?.parentElement as HTMLElement;
+
+      // The condition comes back with or without a pair of parentheses around
+      // it, depending on whether the stylesheet went through the minifier.
+      const noHas = /^\(?not selector\(:has\(\*\)\)\)?$/;
+      const fallbackRules = (rules: CSSRuleList): CSSStyleRule[] =>
+        [...rules].flatMap((rule) =>
+          rule instanceof CSSSupportsRule && noHas.test(rule.conditionText)
+            ? [...rule.cssRules].filter((inner) => inner instanceof CSSStyleRule)
+            : rule instanceof CSSGroupingRule
+              ? fallbackRules(rule.cssRules)
+              : []
+        );
+      const ringing = () =>
+        fallbackRules(sheet.sheet!.cssRules).filter(
+          (rule) => star.matches(rule.selectorText) && rule.style.getPropertyValue('outline') !== ''
+        );
+
+      expect(ringing()).toHaveLength(0);
+
+      radio.focus();
+
+      expect(ringing()).not.toHaveLength(0);
     });
 
     it('outrank the reset where the two meet', async () => {
