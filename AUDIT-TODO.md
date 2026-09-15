@@ -4,11 +4,11 @@ The working list for the audit of every public component, started on 2026-09-12.
 
 ## State
 
-- Six batches are done, and the last push was `8b080789` on 2026-09-15.
-- Every decision answered so far is implemented, D14 included: `terser` is a devDependency and `scripts/minify.mjs` keeps the component names.
-- The next batch starts after item 253. The first open item without a tag is 254.
+- Seven batches are done, and the last push was `5a4564fa` on 2026-09-15.
+- Every decision answered so far is implemented. G1, H1, I1, I2, I3, J1 and J2 were answered as recommended on 2026-09-15.
+- The next batch starts after item 276. What is left without a tag is 277, 278 and 279, and the untagged parts of 280 and 281. Item 273 is ticked but for its ProgressCircular row, which waits for 210.
 - Item 109 was done together with 129.
-- The next batch labels its questions K (approvals) and L (choices), so an answer like "L3 (b)" names exactly one question.
+- The next batch labels its questions M (approvals) and N (choices), so an answer like "N2 (b)" names exactly one question.
 
 ## How to run a batch
 
@@ -50,24 +50,19 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ## Pending decisions
 
-Questions from the batch pushed on 2026-09-15, labelled I and J, and the two carried over, which keep the labels they were asked under. The recommended option comes first.
+Questions from the batch pushed on 2026-09-15, labelled K and L. The recommended option comes first.
 
-### Carried over
+### K. Approvals
 
-- **G1 (151)** Rating without `name`: nothing is submitted, through a `form` attribute that names no form, rather than by writing no `name`, which would take away the single Tab stop and the arrow keys. Approve keeping it.
-- **H1 (194)** Initials upper-casing without a locale: (a) `toUpperCase()`, so a server and a browser always agree, at the cost of language rules such as Turkish `i`; (b) a `locale` passed through Avatar and AppLogo to `toLocaleUpperCase`; (c) leave it.
+- **K1** This batch was documentation and tests, and none of it has a changelog entry, because the changelog records what changed in the package. The source files it touched changed only in their JSDoc: Popconfirm's `locale`, Image's `onLoadingStatusChange`, the tooltip `mode` default in `types.ts`, Slider's `marks` and CodeBlock's `theme`. Approve leaving all of it out of the changelog.
+- **K2** After 277 to 281 no item without a tag is left, and about thirty tagged items are still open (193 to 247, 258, 259, 274, and the tagged parts of 280 and 281). Approve having the next batch finish the untagged items and then list every remaining tagged item as a question, so they can be answered at once.
 
-### I. Approvals
+### L. Choices
 
-- **I1 (107)** `terser-glob` is unused now that the minify step is `scripts/minify.mjs`, which calls terser's own API, and it is still in `devDependencies`. Approve removing it.
-- **I2 (248)** A `FloatingAction` spread its remaining props after its own `style`, so a caller's `style` replaced the round radius — the per-declaration spread check is what found it. It is merged over now, as 124 (a) decided for the button the dial comes out of. Approve.
-
-- **I3** Two entries of this batch sit under `### Fixed` although a consumer may have to act on them: `AnimateCounter` now sets `tabular-nums` on its root, where a caller who wants proportional figures has to write `proportional-nums!`, and an `AnimateSplit` cut by character now holds each word's pieces in a span of their own, where a test that queried the pieces as direct children of the hidden copy finds the wrappers. Approve leaving both under `### Fixed`, or say which to move to `### Breaking changes`.
-
-### J. Choices
-
-- **J1 (248)** A `FloatingAction`'s `className` goes on the row that holds the button and its name, while every other prop goes on the button — the same split 124 (a) took out of the main button. (a) leave it, since the row is what a caller positions; (b) move `className` to the button and give the row `classNames.frame`, as the main button has.
-- **J2 (224)** ScrollZone's `ref` and `onScroll` go to the root rather than to the scroller. React does not bubble a scroll, so a caller's `onScroll` never fires and scroll restoration cannot reach the box that scrolls. (a) `onScroll` goes to the scroller and a new `scrollerRef` reaches the box, with `ref` left on the root; (b) both `ref` and `onScroll` go to the scroller, which moves the ref a caller already has; (c) leave it and say so on the page.
+- **L1 (255)** A TimelineChart span shorter than a day, on an axis that ticks in days or weeks, is written as its date alone in the table and the tooltip, so a two-hour meeting reads `3 Mar 2026 – 3 Mar 2026`. (a) when any span in the chart starts or ends away from midnight, write every start and end with its time; (b) decide it per span, so rows of one table can differ; (c) leave it.
+- **L2 (273)** Image's `onLoadingStatusChange` is typed to report `loading`, `loaded` and `failed`, and only ever reports the last two. (a) report `loading` when a new `src` starts, which matches the type; (b) narrow the type to `loaded` and `failed`, which breaks a caller that compares against `loading`; (c) leave it, as the docs now describe.
+- **L3 (275)** A `disabled` ColorPicker takes its panel, rails and swatches out of the tab order but leaves the hex text field in it, read-only, the same as `readOnly` does. (a) `disabled` disables the text field too, and `readOnly` keeps it focusable; (b) leave it, as the docs now describe.
+- **L4 (270)** The Overview screen lacks LineChart, Portal and six `Animate*` components, and its lede now says "most of the components". (a) leave the screen as it is; (b) add the eight so the lede can say every component.
 
 ## 1. Performance
 
@@ -421,7 +416,7 @@ These are defects in existing tests and missing areas. Regression tests for the 
   - [x] `LineChart.test.tsx:352`: the name "is not focusable when turned off" says the opposite of the behaviour. It looked for the status inside the plot, where it never is. It now hovers the plot and finds no reading and no tooltip, as the Heatmap and Timeline tests do.
   - [x] `AnimateTyping.test.tsx:151-155`: claims to cover element children but passes only strings. Renamed for what it passes; element children are D-pending under 243.
 - [ ] **247** [decision] **No React 18 test path**: the suite runs on React 19 only, so problems that exist only on 18, such as 21 (`inert`) and 102 (`javascript:` URLs), are not caught. The peer range promises 18; decide whether CI gets a React 18 job.
-- [x] **248** **resolution.test.ts**: `spreadCollisions` skips a whole file when any component in it destructures `style,`, which is how it missed the TimelineItem bug in 124. Check per component. Also add structural checks for components that read `var(--n-ring)` without declaring it (31) and for `typesVersions.hooks` (128). `test/package/resolution.test.ts:155-158` Fixed: the scan runs per top-level declaration and counts only a spread of the props themselves, which found a `FloatingAction`'s `style` replacing its radius; the ring slot has to be set wherever it is read, with the three modules drawn inside one that sets it listed and explained. `typesVersions.hooks` was already covered by the subpath test beside it.
+- [x] **248** **resolution.test.ts**: `spreadCollisions` skips a whole file when any component in it destructures `style,`, which is how it missed the TimelineItem bug in 124. Check per component. Also add structural checks for components that read `var(--n-ring)` without declaring it (31) and for `typesVersions.hooks` (128). `test/package/resolution.test.ts:155-158` Fixed: the scan runs per top-level declaration and counts only a spread of the props themselves, which found a `FloatingAction`'s `style` replacing its radius; the ring slot has to be set wherever it is read, with the three modules drawn inside one that sets it listed and explained. `typesVersions.hooks` was already covered by the subpath test beside it. I2 approved: the `style` merge stays. J1 decided: (a) a `FloatingAction`'s `className` stays on the row.
 - [x] **249** **The 17 `Animate*` test files** do not cover `trigger="hover"`, `trigger="visible"` or the reduced-motion branches. At minimum: no restart when focus moves inside, nested `transition` children are not rewound, Typing, Scramble and Counter show the final value under a faked `matchMedia`, and Marquee copies take no focus. Partly covered since 89 (Marquee copies), 91 (Scramble and Counter under reduced motion) and 124 (hover handlers on Fade, Split and Typing). Done: 231 added the focus moving inside a hover trigger, 232 the nested `transition` child that must not be rewound and the parts of Appear, Split and Marquee that must, Typing now shows its text under a faked `matchMedia`, and Fade covers `trigger="visible"`, which nothing did.
 - [x] **250** **Internal pure functions**: `test/internal/chart.test.ts` has no cases for `timeScale` (fixed `min`, month end, DST), `formatTimeValue`, `rampStep` (all-equal values), `squarify` or `markPath`. Pulling DateTimePicker's hour-row interval math into a pure function would let DST be tested in `test/internal/`. Done: `timeScale` gains a single instant, a run of days ticking at midnight, whole years above a year and every tick inside the axis it returns; `formatTimeValue`, `rampStep`, `squarify` and `markPath` are covered, the last including the equal area the shapes are scaled for. DST is not: the browser takes its time zone from the machine, so a case that means anything needs the whole run in a zone that has one. The interval math is `timeUnitRange`, pulled out with 159 and covered in `date.test.ts`.
 - [x] **251** **Toast**: untested are `promise` going from loading to success or error, `close()` with no argument, exceeding `limit`, `add` again with the same `id`, and the identity stability of `useToast()` (check whether the fix for 1 added it). Done: all five. The object `useToast` returns holds the live list beside the methods, so what is asserted is that the four methods keep one identity while the stack changes.
