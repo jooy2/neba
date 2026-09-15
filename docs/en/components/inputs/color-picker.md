@@ -107,4 +107,4 @@ Hex in all four lengths (`#abc`, `#abcd`, `#aabbcc`, `#aabbccdd`), `rgb()`/`rgba
 - The square reports both axes through `aria-valuetext`, since one `aria-valuenow` cannot describe a point in two dimensions.
 - Every swatch is a real button named with its own colour, and the chosen one carries `aria-pressed`. Its tick is drawn in black or white depending on which can be read on that colour.
 - Set `locale` so the names of the square, the rails and the field are read out in the page's own language, or write them yourself with `labels`.
-- `disabled` and `readOnly` both take the panel out of the tab order and stop it answering to the pointer and the keyboard.
+- `disabled` and `readOnly` both take the panel, the rails and the swatches out of the tab order and stop them answering to the pointer and the keyboard. The text field stays in the tab order, read-only, so its value can still be selected and copied.

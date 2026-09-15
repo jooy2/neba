@@ -70,7 +70,7 @@ export interface SliderProps extends BaseSliderProps {
    * An array is the marks, each at its own `value`, and a mark with no `label`
    * is a tick on its own. `true` is a tick at every `step`, which is worth
    * pairing with a step you chose — the default `step={1}` over the default
-   * range is a hundred of them.
+   * range is a hundred and one of them, and past a hundred steps none are drawn.
    *
    * A mark is read by the eye and not by a screen reader: the value is already
    * announced by the thumb, and a second reading of the same numbers is noise.

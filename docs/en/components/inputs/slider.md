@@ -25,7 +25,7 @@ When an exact number has to be typed, use [NumberField](./number-field).
 
 ## Examples
 
-### An array value makes it a range
+### A range from an array value
 
 Pass an array of numbers as the `value` and you get that many thumbs: a range slider. There is no separate prop for it.
 
@@ -43,7 +43,7 @@ Pass an array of numbers as the `value` and you get that many thumbs: a range sl
 
 `marks` names points along the track: `1 / 100 / 250 / 500` under a count, or the two ends of a style axis. Pass an array of `{ value, label? }`, and a mark with no label is a tick on its own.
 
-`marks` without a value is a tick at every `step`, which is worth pairing with a step you chose — the default `step={1}` over the default range would be a hundred of them, so that case draws none at all.
+`marks` without a value is a tick at every `step`, which is worth pairing with a step you chose — the default `step={1}` over the default range draws a hundred and one of them, and a range of more than a hundred steps draws none at all.
 
 The row is hidden from screen readers: the thumb already announces the value and the range.
 

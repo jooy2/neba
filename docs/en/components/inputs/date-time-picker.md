@@ -48,4 +48,4 @@ The trigger wears the calendar glyph and not the clock. The value is written as 
 ## Accessibility
 
 - The calendar is a `role="grid"` and the clock a set of `role="listbox"` columns. See [DatePicker](./date-picker#accessibility) and [TimePicker](./time-picker#accessibility) for the details.
-- The trigger's accessible name reads as one sentence covering both halves.
+- The trigger is named by its label, when it has one, followed by the value, which is one `Intl` string holding both the date and the time.

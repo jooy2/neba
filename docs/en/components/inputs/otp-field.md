@@ -19,7 +19,7 @@ import { OtpField } from 'neba';
 
 <PropsTable name="OtpField" />
 
-Every other `<div>` attribute passes through to the row of slots. `color`, `size` and `onChange` are excluded: the first two are Neba props, and the value is reported by `onValueChange`. The shared axes are in [prop conventions](../../design/prop-conventions).
+Every other `<div>` attribute passes through to the row of slots. The field's own `color`, `defaultValue`, `onChange` and `children` replace the `<div>`'s. The value is reported by `onValueChange`, and the slots are drawn by the field from `length`. The shared axes are in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 

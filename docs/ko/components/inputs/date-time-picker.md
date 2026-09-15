@@ -48,4 +48,4 @@ trigger는 달력 글리프만 표시하고 시계 글리프는 표시하지 않
 ## 접근성
 
 - 달력은 `role="grid"`, 시계는 `role="listbox"` 열로 렌더링됩니다. 세부 동작은 [DatePicker](./date-picker)와 [TimePicker](./time-picker)를 보세요.
-- trigger의 accessible name은 날짜와 시각이 합쳐진 하나의 문장으로 읽힙니다.
+- trigger의 accessible name은 label이 있으면 label 뒤에 값이 이어진 것이며, 값은 날짜와 시각을 함께 담은 `Intl` 문자열 하나입니다.

@@ -39,7 +39,7 @@ Native `<div>` attributes pass through to the root. Only `color`, `defaultValue`
 
 ### minTime · maxTime · shouldDisableTime
 
-`minTime` and `maxTime` are compared against the **span a row stands for**, not a single instant. With a minimum of 09:30, the hour `9` covers 09:00–09:59 and overlaps what is allowed, so it stays available while `00` through `25` grey out in the minute column. That is what keeps 09:30 reachable. A time that lands outside the bounds when a row is pressed, such as the hour `9` on 10:15, is moved to the nearest bound, 09:30, before it is committed.
+`minTime` and `maxTime` are compared against the **span a row stands for**, not a single instant. With a minimum of 09:30, the hour `9` covers 09:00–09:59 and overlaps what is allowed, so it stays available while `00` through `29` grey out in the minute column. That is what keeps 09:30 reachable. A time that lands outside the bounds when a row is pressed, such as the hour `9` on 10:15, is moved to the nearest bound, 09:30, before it is committed.
 
 `shouldDisableTime` is handed the instant a row would produce and the column it belongs to, so a rule may be as coarse as "no lunch hour" or as fine as one minute.
 
