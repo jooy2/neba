@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **An `AnimateCounter` counts in the decimal places of its two ends, in figures of one width.** The default `format` writes up to three decimals, so a count to `37251` read `29,851.407` on the way there, and the line changed width on every frame. The count is rounded to the decimal places of `value` or `from`, whichever has more, and the root sets `tabular-nums`; `className="proportional-nums!"` takes the figures back.
+
 - **An `AnimateScramble` picks up where it was paused.** Pausing tore the settling down, and resuming started it again from the first letter, so a heading that had nearly landed went back to noise. The letters that had settled are kept across a pause now.
 
 - **An `AnimateTyping` keeps its place across a pause, and types a new string of the same length.** Pausing tore the loop down, and the one that resumed started on its first pass and never deleting, so every pause gave `repeat={2} erase` another pass, and a pause in the middle of a delete typed forward instead. A new string was also noticed only by its length, so one of the same length replaced the last at once without being typed. The pass and the direction are kept with the count now, and any new string starts a new performance.

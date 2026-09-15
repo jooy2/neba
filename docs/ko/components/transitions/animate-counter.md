@@ -27,7 +27,7 @@ import { AnimateCounter, Statistic } from 'neba';
 
 ### format과 locale
 
-`Intl.NumberFormat` 옵션입니다. 통화, 백분율, `1.2M` 같은 compact 표기가 `format` 콜백이 아니라 prop입니다. [Statistic](../charts/statistic)과 진행 표시기들이 받는 것과 같은 prop입니다.
+`Intl.NumberFormat` 옵션입니다. 통화, 백분율, `1.2M` 같은 compact 표기가 `format` 콜백이 아니라 prop입니다. [Statistic](../charts/statistic)과 진행 표시기들이 받는 것과 같은 prop입니다. 세는 동안에는 `value`와 `from` 중 소수 자릿수가 많은 쪽에 맞춰 반올림하므로, 정수까지 세는 동안에는 정수만 보입니다. 숫자는 모두 같은 폭으로 그려집니다.
 
 <Demo src="animate-counter/formats" minHeight="240">
 

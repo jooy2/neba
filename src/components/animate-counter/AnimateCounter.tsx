@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
 import { numberFormatter } from '../../internal/format.js';
-import { srOnlyClasses } from '../../internal/styles.js';
+import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -30,6 +30,8 @@ export interface AnimateCounterProps
   /**
    * How the number is written — `Intl.NumberFormat` options, so a currency, a
    * percentage or a compact `1.2M` is a prop rather than a `format` callback.
+   * While it counts, the number keeps the decimal places of `value` or `from`,
+   * whichever has more.
    */
   format?: Intl.NumberFormatOptions;
   /** Which language it is written in. Defaults to the reader's own. */
@@ -48,6 +50,21 @@ export interface AnimateCounterProps
  */
 function easeOut(t: number): number {
   return 1 - (1 - t) ** 3;
+}
+
+/**
+ * How many decimal places a number is written with, read off the shortest
+ * string that stands for it, so `0.1` is one place and `1e-7` is seven.
+ */
+function decimalsOf(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  const [digits, exponent = '0'] = String(Math.abs(value)).split('e');
+  const places = (digits.split('.')[1]?.length ?? 0) - Number(exponent);
+
+  return Math.min(20, Math.max(0, places));
 }
 
 /**
@@ -162,12 +179,20 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       return () => cancelAnimationFrame(frame);
     }, [run.started, reduced, value, from, duration, delay]);
 
+    // Held to the decimal places of whichever end has more while it counts. The
+    // default format writes up to three, which put `29,851.407` on the screen on
+    // the way to a whole number and changed the width of the line every frame.
+    const places = Math.max(decimalsOf(value), decimalsOf(from));
+    const counted = Math.round(shown * 10 ** places) / 10 ** places;
+
     return useRender({
       render,
       ref: [ref, run.ref],
       props: {
         ...props,
-        className,
+        // Figures of one width, so the words beside the count stay where they
+        // are while it runs.
+        className: cx('tabular-nums', className),
         style,
         'data-neba-animation': 'counter',
         'data-state': run.state,
@@ -175,7 +200,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
         children: (
           <>
             <span className={srOnlyClasses}>{formatter.format(value)}</span>
-            <span aria-hidden="true">{formatter.format(reduced ? value : shown)}</span>
+            <span aria-hidden="true">{formatter.format(reduced ? value : counted)}</span>
           </>
         )
       }

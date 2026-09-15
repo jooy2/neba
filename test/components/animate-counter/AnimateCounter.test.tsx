@@ -102,6 +102,39 @@ describe('AnimateCounter', () => {
     expect(midway).toBeLessThan(100);
   });
 
+  // The default format writes up to three decimals, so a count to a whole
+  // number read `29,851.407` on its way and its width shook.
+  it('counts in whole numbers towards a whole number', async () => {
+    const screen = await render(
+      <AnimateCounter value={37251} duration={4000} locale="en-US" data-testid="c" />
+    );
+    const root = screen.getByTestId('c').element();
+
+    await vi.advanceTimersByTimeAsync(1500);
+    await expect.poll(() => shown(root)).not.toBe('0');
+
+    expect(shown(root)).toMatch(/^[\d,]+$/);
+  });
+
+  it('keeps the decimal places of whichever end has more', async () => {
+    const screen = await render(
+      <AnimateCounter value={12.5} duration={4000} locale="en-US" data-testid="c" />
+    );
+    const root = screen.getByTestId('c').element();
+
+    await vi.advanceTimersByTimeAsync(1500);
+    await expect.poll(() => shown(root)).not.toBe('0');
+
+    expect(shown(root)).toMatch(/^\d+(\.\d)?$/);
+  });
+
+  // A figure that changes width on every frame shakes the words beside it.
+  it('sets its figures at one width', async () => {
+    const screen = await render(<AnimateCounter value={1} duration={0} data-testid="c" />);
+
+    expect(screen.getByTestId('c').element()).toHaveClass('tabular-nums');
+  });
+
   /*
    * The answer is in the document from the first frame, in a clipped box: a
    * screen reader is told the number rather than a hundred intermediate ones.

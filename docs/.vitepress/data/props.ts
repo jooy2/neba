@@ -13973,8 +13973,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'format',
       type: 'Intl.NumberFormatOptions',
       description: {
-        ko: '숫자를 쓰는 방식. 통화·백분율·compact 표기가 콜백이 아니라 prop입니다',
-        en: 'How the number is written: Intl.NumberFormat options, so a currency, a percentage or a compact 1.2M is a prop rather than a callback'
+        ko: '숫자를 쓰는 방식. 통화·백분율·compact 표기가 콜백이 아니라 prop입니다. 세는 동안에는 value와 from 중 소수 자릿수가 많은 쪽에 맞춰 반올림합니다',
+        en: 'How the number is written: Intl.NumberFormat options, so a currency, a percentage or a compact 1.2M is a prop rather than a callback. While it counts, the number keeps the decimal places of value or from, whichever has more'
       }
     },
     {
