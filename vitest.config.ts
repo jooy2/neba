@@ -73,7 +73,10 @@ export default defineConfig({
     // than polyfilling a DOM emulator.
     browser: {
       enabled: true,
-      provider: playwright(),
+      // Every browser reads the same locale, whatever the machine running it
+      // is set to. WebKit otherwise takes the host's, so a table cell a chart
+      // writes as `24K` came out as `2.4만` on a Korean Mac and nowhere else.
+      provider: playwright({ contextOptions: { locale: 'en-US' } }),
       headless: true,
       screenshotFailures: false,
       instances: resolveBrowsers().map((browser) => ({ browser }))
