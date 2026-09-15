@@ -339,7 +339,10 @@ export function transitionProps(transition: NebaTransition | undefined): {
 
   return {
     className: `${animBaseClass} ${animationClasses[parts.effect]}`,
-    style: animationSlots(parts.slots)
+    // Running, written out: an entrance runs on mount, and left to inherit, one
+    // inside an Animate* that had not been triggered sat paused on its first
+    // frame until the wrapper around it ran.
+    style: { ...animationSlots(parts.slots), '--n-anim-state': 'running' } as React.CSSProperties
   };
 }
 

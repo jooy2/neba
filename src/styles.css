@@ -2443,6 +2443,24 @@
   animation-direction: var(--n-anim-direction, normal);
   animation-fill-mode: both;
   animation-play-state: var(--n-anim-state, running);
+
+  /* The shape of an effect is its own. The slots inherit like any custom
+     property, and only the ones an effect uses are written, so an effect nested
+     in another took the outer one's start state: a fade inside an AnimateReveal
+     ran from full opacity to full opacity. `initial` leaves each keyframe on its
+     own fallback, and a value written on the element itself still wins. The
+     play state is not reset here, because a split's pieces and a staggered
+     child read it from their root; a `transition` writes its own instead. */
+  --n-anim-opacity: initial;
+  --n-anim-scale: initial;
+  --n-anim-x: initial;
+  --n-anim-y: initial;
+  --n-anim-angle: initial;
+  --n-anim-angle-to: initial;
+  --n-anim-clip: initial;
+  --n-anim-ease: initial;
+  --n-anim-timeline: initial;
+  --n-anim-range: initial;
 }
 
 /*
