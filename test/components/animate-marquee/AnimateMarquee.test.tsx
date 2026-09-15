@@ -193,6 +193,18 @@ describe('AnimateMarquee', () => {
       expect(screen.getByTestId('marquee').element()).not.toHaveAttribute('data-pause-on-hover');
     });
 
+    // The pointer that starts a hover-triggered strip is the pointer a pause
+    // would stop it for, so it never moved at all.
+    it('does not stop for the hover that starts it', async () => {
+      const screen = await render(
+        <AnimateMarquee trigger="hover" data-testid="marquee">
+          <span>Alpha</span>
+        </AnimateMarquee>
+      );
+
+      expect(screen.getByTestId('marquee').element()).not.toHaveAttribute('data-pause-on-hover');
+    });
+
     it('takes an explicit duration over the measured one', async () => {
       const screen = await render(
         <AnimateMarquee duration={5000} data-testid="marquee">

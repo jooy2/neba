@@ -49,7 +49,7 @@ Pixels per second, measured against the strip's own width, so four logos and for
 
 ### pauseOnHover
 
-On by default, and not decoration: content moving past a pointer cannot be clicked reliably, and a link inside a strip that never stops is a link nobody can follow. The strip answers the focus as well as the pointer, so a link reached by tabbing to it stops travelling too.
+On by default, and not decoration: content moving past a pointer cannot be clicked reliably, and a link inside a strip that never stops is a link nobody can follow. The strip answers the focus as well as the pointer, so a link reached by tabbing to it stops travelling too. With `trigger="hover"` it does not apply, because the pointer and the focus are what start the strip.
 
 <Demo src="animate-marquee/pause">
 

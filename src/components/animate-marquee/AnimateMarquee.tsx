@@ -49,7 +49,8 @@ export interface AnimateMarqueeProps
   copies?: number;
   /**
    * Stops while the pointer is on it, or while the focus is inside it, so
-   * something scrolling past can actually be read, clicked or tabbed to.
+   * something scrolling past can actually be read, clicked or tabbed to. Not
+   * applied with `trigger="hover"`, where those two are what start it.
    * @default true
    */
   pauseOnHover?: boolean;
@@ -232,7 +233,10 @@ export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>
         } as React.CSSProperties,
         'data-neba-animation': 'marquee',
         'data-state': run.state,
-        'data-pause-on-hover': pauseOnHover ? '' : undefined,
+        // Not under a hover trigger, where resting on the strip and focusing
+        // inside it are what start it: a pause on the same two would hold it
+        // still for exactly as long as it was meant to run.
+        'data-pause-on-hover': pauseOnHover && trigger !== 'hover' ? '' : undefined,
         ...props,
         ...run.handlers,
         children: Array.from({ length: still ? 1 : Math.max(1, copies) }, (_, index) =>
