@@ -6956,8 +6956,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: '3',
       description: {
-        ko: '동시에 보이는 개수. 넘친 것은 버려지지 않고 스택이 빠지면 나타납니다',
-        en: 'How many are shown at once. The rest are kept and revealed as the stack drains'
+        ko: '동시에 보이는 개수. 넘친 것은 버려지지 않고 스택이 빠지면 나타나며, 기다리는 동안에도 타이머가 흐릅니다',
+        en: 'How many are shown at once. The rest are kept and revealed as the stack drains, and their timers run while they wait'
       }
     },
     {

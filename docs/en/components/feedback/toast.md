@@ -50,6 +50,8 @@ Where the stack is pinned, given as one word combining the vertical edge (`top`/
 
 `timeout` is how long before the toast closes itself. Give a toast the reader has to act on `timeout: 0` so it does not leave on its own. `actionLabel` and `onAction` add a single button to it.
 
+Toasts past `limit` wait out of sight, and their timers run while they wait, so a toast that waits longer than its `timeout` closes without ever having been shown. Give a toast that must be seen `timeout: 0`, or raise `limit`.
+
 <Demo src="toast/action">
 
 <<< @/.vitepress/demos/toast/action.tsx

@@ -108,7 +108,8 @@ export interface ToastProviderProps extends Pick<NebaStyleProps, 'variant' | 'si
   timeout?: number;
   /**
    * How many are shown at once. The rest are kept and revealed as the stack
-   * drains rather than being thrown away.
+   * drains rather than being thrown away. Their timers run while they wait, so
+   * a toast that waits longer than its `timeout` closes without being shown.
    * @default 3
    */
   limit?: number;

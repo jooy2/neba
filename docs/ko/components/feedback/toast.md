@@ -50,6 +50,8 @@ hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { lo
 
 `timeout`은 자동으로 닫히기까지의 시간입니다. 사용자가 조치를 취해야 하는 Toast에는 `timeout: 0`을 주어 자동으로 닫히지 않게 하세요. `actionLabel`과 `onAction`은 Toast 안에 버튼 하나를 붙입니다.
 
+`limit`을 넘은 Toast는 보이지 않는 곳에서 기다리는데, 기다리는 동안에도 타이머가 흐르므로 `timeout`보다 오래 기다린 Toast는 한 번도 보이지 않고 닫힙니다. 꼭 보여야 하는 Toast에는 `timeout: 0`을 주거나 `limit`을 늘리세요.
+
 <Demo src="toast/action">
 
 <<< @/.vitepress/demos/toast/action.tsx
