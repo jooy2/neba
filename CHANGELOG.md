@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A component shows its own name in React DevTools and in React's warnings.** Every component is a named function handed to `forwardRef`, and the published build dropped that name, because terser removes a function expression's name when nothing inside the function calls it. A consumer's DevTools showed a tree of `ForwardRef`, and a warning's component stack named nothing. Names that start with a capital letter now survive the minifier. That adds 0.2 kB gzipped across the package, and a production bundle, which its own build minifies again, moves by a few dozen bytes either way.
+
 - **A `Rating` shows where the focus is in Firefox 113 to 120.** Its only focus indicator is a ring keyed to `:has(:focus-visible)`, which those versions do not have, so a keyboard user there saw no focus at all. In a browser without `:has()` the star holding the focus now rings through `:focus-within`, which also rings a star that was clicked. Every browser with `:has()` draws exactly what it drew before.
 
 - **A secondary line inside a tinted or filled surface is the same ink, one step smaller.** `Pill`'s description was `currentColor` at 72% and a selected `List` row's was `--neba-muted-fg`, and neither could hold 4.5:1 — the description on a `solid` pill read 3.2:1 and the row's 3.1:1. The reason is the same in both: the ink on those beds was already solved to the minimum, `--n-on-solid` on `--n-fill` being 4.6:1 at full strength, so there is nothing to take away. Size and weight carry the step now, which they do on every variant and need no number. A row that is _not_ selected keeps the neutral grey, because on the bare sheet that is what quiet means.

@@ -5,7 +5,7 @@ The working list for the audit of every public component, started on 2026-09-12.
 ## State
 
 - Five batches are done, and the last push was `9b3aeb2c` on 2026-09-14.
-- The decisions answered on 2026-09-13 are implemented, apart from D14, which is blocked and asked again under [Pending decisions](#pending-decisions).
+- The decisions answered on 2026-09-13 are implemented. D14 was unblocked once the lock files were committed.
 - The next batch starts after item 219. The first open item without a tag is 221.
 - Item 109 was done together with 129.
 - The next batch labels its questions I (approvals) and J (choices), so an answer like "J3 (b)" names exactly one question.
@@ -51,10 +51,6 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 ## Pending decisions
 
 Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choices H, and the recommended option comes first.
-
-### D. Choices (carried over)
-
-- **D14 (107)** Component names in the published build. (a) was chosen on 2026-09-13 and is blocked: passing a regular expression means the minify step imports terser, terser is not a direct dependency, and adding it edits `package-lock.json` and `pnpm-lock.yaml`, which hold uncommitted work. Measured on `dist/`: `keep_fnames: /^[A-Z]/` adds 377 B gzipped and `keep_fnames: true` adds 1951 B; neither moves a consumer scenario. (a) add `terser` as a devDependency once the lock files are committed, then `keep_fnames: /^[A-Z]/`; (b) `keep_fnames: true` in `terser.config.json` now; (c) leave it.
 
 ### G. Approvals
 
@@ -207,7 +203,7 @@ Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choi
 
 ## 4. Optimisation
 
-- [ ] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. See D14.
+- [x] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. Decided: (a) `terser` is a devDependency and `scripts/minify.mjs` runs it with `keep_fnames: /^[A-Z]/`, which adds 239 B gzipped across `dist/`.
 - [x] **108** i18n had two placeholder fillers; the old `fill` is gone.
 - [x] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136` Done with 129: `toFullShares` in `internal/chart.ts`, applied by the frame.
 - [x] **110** responsive.ts `lengthOf` duplicated `toLength`.
