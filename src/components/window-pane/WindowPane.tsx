@@ -98,7 +98,7 @@ export interface WindowPaneProps extends Omit<
    *
    * What being in front looks like is the system's: coloured traffic lights on
    * macOS against grey ones, an accent title bar and an accent border on
-   * Windows 10, a tinted header bar on GNOME — and, on all four, a window one
+   * Windows 10, a tinted header bar on GNOME — and, on every one of them, a window one
    * step further off the page than the ones behind it.
    */
   active?: boolean;
@@ -242,7 +242,7 @@ const resizeHandles = [
 const attention: Array<(front: boolean) => void> = [];
 
 /**
- * A window, drawn the way one of four systems draws it, with anything at all
+ * A window, drawn the way one of eight systems draws it, with anything at all
  * inside it.
  *
  * It is not a real window and does not pretend to be one: there is no desktop,
@@ -722,7 +722,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
           backgroundColor: 'var(--n-window-bar)',
           backgroundImage: 'var(--n-window-bar-image)',
           color: 'var(--n-window-bar-fg)',
-          // Windows 10 is the one of the four that rules its title bar off from
+          // Windows 10 is the one system that rules its title bar off from
           // the body. On the others the two are one sheet in two shades.
           borderBlockEnd: chrome.rule ? '1px solid var(--n-window-line)' : undefined
         }}

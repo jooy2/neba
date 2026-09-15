@@ -78,7 +78,7 @@ controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수
 
 ## 제공하지 않는 것
 
-- **한 화면에 여러 장**: `overflow-x-auto`를 얹은 [Grid](../layout/grid)를 쓰세요.
+- **한 화면에 여러 장**: [ScrollZone](../layout/scroll-zone)을 쓰세요.
 - **세로 방향**: 스크롤되는 목록이면 충분합니다.
 - **fade 전환**: 스크롤 기반 구현과 함께 쓸 수 없습니다.
 - region 이름, 화살표, 각 슬라이드의 이름을 `locale`이 정합니다. `label`과 `slideLabel`로 직접 쓸 수도 있습니다.

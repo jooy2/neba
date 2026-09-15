@@ -27,7 +27,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ## Examples
 
-### maxHeight
+### maxHeight and reversible
 
 Left out, the box is exactly as tall as what it holds: right for a paragraph or a picture. The cover keeps its place once the content is out, so a notice and a button taller than the line they were covering do not shrink the box on the press, and nothing on the page below moves.
 
@@ -51,7 +51,7 @@ The button and the line above it are the only words the component invents, and `
 
 </Demo>
 
-### label, description and action
+### label, description, action and blur
 
 `label` changes the button's words and `description` changes the line above it; `description={false}` leaves the cover with nothing written on it. `blur` decides how hard the content is blurred, in pixels.
 

@@ -10,7 +10,7 @@ order: 11
 <Demo src="popover/hero" align="center" minHeight="80" />
 
 ```tsx
-import { Button, Popover } from 'neba';
+import { Button, Popover, TextField } from 'neba';
 
 <Popover trigger={<Button variant="outline">Share</Button>} title="Share this page">
   <TextField size="sm" label="Link" defaultValue="https://…" readOnly />

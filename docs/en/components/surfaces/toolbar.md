@@ -58,7 +58,7 @@ A Toolbar has no height of its own. It is as tall as the controls in it plus its
 
 ### color
 
-`color` reaches the rule and the focus ring. A bar that holds other people's controls does not fill its own sheet.
+`color` reaches the rule. A bar that holds other people's controls does not fill its own sheet.
 
 ## Accessibility
 

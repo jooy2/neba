@@ -10,7 +10,7 @@ order: 2
 <Demo src="card/hero" />
 
 ```tsx
-import { Card } from 'neba';
+import { Button, Card } from 'neba';
 
 <Card title="Starter" subtitle="프로젝트 하나" footer={<Button>선택</Button>}>
   본문
@@ -57,7 +57,7 @@ sheet의 반경과 여백, 그리고 헤더와 본문의 타입 스케일을 함
 
 ### 컨트롤 담기
 
-`title`에 `title={<h2>…</h2>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 브라우저 기본 크기 대신 Card의 타입 스케일을 물려받습니다.
+Card는 글만큼 폼도 잘 담으며, 폼의 액션은 `footer`에 둡니다. `title`에 `title={<h2>…</h2>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 브라우저 기본 크기 대신 Card의 타입 스케일을 물려받습니다.
 
 <Demo src="card/form">
 

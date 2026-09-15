@@ -10,7 +10,7 @@ order: 2
 <Demo src="card/hero" />
 
 ```tsx
-import { Card } from 'neba';
+import { Button, Card } from 'neba';
 
 <Card title="Starter" subtitle="One project" footer={<Button>Choose</Button>}>
   Body
@@ -57,7 +57,7 @@ Sets the sheet's radius and padding together with the type scale of the header a
 
 ### Holding controls
 
-Pass a real heading as `title` to put it in the document outline: `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
+A Card holds a form as readily as text, with its actions in `footer`. Pass a real heading as `title` to put the card in the document outline: `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
 
 <Demo src="card/form">
 

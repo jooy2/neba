@@ -5,7 +5,7 @@ order: 14
 
 # WindowPane
 
-<p class="neba-lede">무엇이든 담아, 네 가지 운영체제 중 하나가 창을 그리는 방식으로 보여 줍니다. 제목표시줄은 끌리고 모서리는 크기가 바뀌며 버튼 세 개는 진짜 버튼이므로, 스크린샷이나 데모, 랜딩 페이지의 한 조각을 그림이 아니라 그것이 될 물건으로 보여 줄 수 있습니다.</p>
+<p class="neba-lede">무엇이든 담아, 여덟 가지 운영체제 중 하나가 창을 그리는 방식으로 보여 줍니다. 제목표시줄은 끌리고 모서리는 크기가 바뀌며 버튼 세 개는 진짜 버튼이므로, 스크린샷이나 데모, 랜딩 페이지의 한 조각을 그림이 아니라 그것이 될 물건으로 보여 줄 수 있습니다.</p>
 
 <Demo src="window-pane/hero" minHeight="340" />
 
@@ -70,7 +70,7 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이기도 합니다
 
 `draggable`은 창을 `left`와 `top`으로 옮기며(transform이 아니므로 끄는 동안 글자가 다시 샘플링되지 않습니다) 어디로 갔는지를 `onOffsetChange`로 알려줍니다. `resizable`은 네 가장자리와 네 모서리 전부에 핸들을 답니다. `minWidth`와 `minHeight`가 한계를 정하고, 움직이는 동안 `onResize`가 픽셀 크기와 함께 호출됩니다.
 
-둘 다 움직일 자리가 있어야 합니다. 창에 `position="absolute"`와 positioned 조상을 주거나 `position="fixed"`를 주세요.
+둘 다 흐름 안에서도 동작하며, 이때 offset은 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `position="absolute"`와 positioned 조상을, 뷰포트를 기준으로 하려면 `position="fixed"`를 주세요.
 
 <Demo src="window-pane/interactive" minHeight="400">
 

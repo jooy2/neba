@@ -27,7 +27,7 @@ import { Spoiler } from 'neba';
 
 ## 예시
 
-### maxHeight
+### maxHeight와 reversible
 
 지정하지 않으면 상자는 담고 있는 것의 높이 그대로입니다. 문단이나 사진에는 그쪽이 맞습니다. 덮개는 내용이 드러난 뒤에도 자리를 지키므로, 덮고 있던 줄보다 안내문과 버튼이 더 높더라도 누르는 순간 상자가 줄어들지 않고 아래 내용도 밀리지 않습니다.
 
@@ -51,7 +51,7 @@ import { Spoiler } from 'neba';
 
 </Demo>
 
-### label, description, action
+### label, description, action, blur
 
 `label`은 버튼의 말을, `description`은 그 위의 줄을 바꿉니다. `description={false}`면 덮개에 아무것도 쓰지 않습니다. `blur`는 흐림의 세기를 픽셀로 정합니다.
 

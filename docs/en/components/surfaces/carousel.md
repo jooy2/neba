@@ -78,7 +78,7 @@ If every slide has to be read, consider [Tabs](./tabs) or a plain vertical stack
 
 ## What is not offered
 
-- **More than one slide in view**: use [Grid](../layout/grid) with `overflow-x-auto`.
+- **More than one slide in view**: use [ScrollZone](../layout/scroll-zone).
 - **Vertical**: a scrolling list already does that.
 - **Fade**: it cannot be combined with a scroll-based implementation.
 - `locale` decides the region name, the arrows and every slide name; `label` and `slideLabel` write them out instead.

@@ -10,7 +10,7 @@ order: 10
 <Demo src="drawer/hero" align="center" />
 
 ```tsx
-import { Button, Drawer } from 'neba';
+import { Button, Drawer, List } from 'neba';
 
 <Drawer trigger={<Button variant="outline">Open navigation</Button>} title="Workspace">
   <List>…</List>

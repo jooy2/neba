@@ -1,4 +1,4 @@
-import { Button, Card } from 'neba';
+import { Button, Card, Chip } from 'neba';
 
 export default function CardHero() {
   return (
@@ -25,9 +25,9 @@ export default function CardHero() {
         title="Team"
         subtitle="Up to twelve seats"
         headerAction={
-          <Button size="xs" variant="outline" color="secondary">
+          <Chip size="sm" variant="outline" color="secondary">
             Popular
-          </Button>
+          </Chip>
         }
         footer={
           <Button size="sm" fullWidth>

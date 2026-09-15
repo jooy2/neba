@@ -5,7 +5,7 @@ order: 14
 
 # WindowPane
 
-<p class="neba-lede">Anything at all, drawn the way one of four operating systems draws a window. The title bar drags, the corners resize and the three buttons are real buttons, so a screenshot, a demo or a piece of a landing page can be shown as the thing it will be rather than as a picture of it.</p>
+<p class="neba-lede">Anything at all, drawn the way one of eight operating systems draws a window. The title bar drags, the corners resize and the three buttons are real buttons, so a screenshot, a demo or a piece of a landing page can be shown as the thing it will be rather than as a picture of it.</p>
 
 <Demo src="window-pane/hero" minHeight="340" />
 
@@ -70,7 +70,7 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 `draggable` moves the window on `left` and `top` (never a transform, so no glyph is resampled for the length of the drag), and reports where it went through `onOffsetChange`. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
 
-Both need somewhere to move: give the window `position="absolute"` and a positioned ancestor, or `position="fixed"`.
+Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport.
 
 <Demo src="window-pane/interactive" minHeight="400">
 

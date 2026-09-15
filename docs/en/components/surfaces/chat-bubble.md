@@ -33,7 +33,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### side
 
-`start` is the default and `end` is the other party. It runs the row the other way (avatar, bubble and actions all flip), and cuts the corner nearest the speaker short, which is what says where the message came from without hanging a tail off the sheet.
+`start` is the default and the side the other party's messages usually take; `end` is the side for your own. It runs the row the other way (avatar, bubble and actions all flip), and cuts the corner nearest the speaker short, which is what says where the message came from without hanging a tail off the sheet.
 
 `variant` is what tells your own messages from everyone else's, and it is deliberately not tied to `side`: filling the trailing column is a convention, not a law.
 
