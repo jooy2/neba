@@ -397,7 +397,7 @@ Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choi
 - [ ] **242** [decision] **AnimateHeadline** counts `interval` from when a line starts arriving rather than when it has arrived, so with `duration >= interval` no line ever rests. The leaving line may vanish for a frame (unverified). `AnimateHeadline.tsx:112-117, 160-180, 208-214`
 - [ ] **243** [decision] **AnimateSplit, AnimateTyping**: the docs say element children contribute their text, but they are dropped, so `<AnimateTyping>Hello <b>world</b></AnimateTyping>` leaves only "Hello ". The test passes an array of strings. `src/internal/text.ts:24-34`, `AnimateSplit.tsx:64, 131`
 - [x] **244** **AnimateSplit**: `by="character"` makes every piece `inline-block`, so lines break in the middle of a word (by the spec; not checked in a render). `effect="blink"` passes the default `repeat` of 1, so it blinks once and stops. `AnimateSplit.tsx:96, 139-166` Fixed: a word's character pieces sit in a span that does not wrap, and a blink repeats without end unless it is given `repeat`.
-- [ ] **245** **AnimateAppear, AnimateSplit** do not ignore `trigger` under `timeline="view"`, so with `trigger="visible"` they stay paused until visible. `AnimateAppear.tsx:126-129`, `AnimateSplit.tsx:178-181`
+- [x] **245** **AnimateAppear, AnimateSplit** do not ignore `trigger` under `timeline="view"`, so with `trigger="visible"` they stay paused until visible. `AnimateAppear.tsx:126-129`, `AnimateSplit.tsx:178-181` Fixed: both report `running` under `timeline="view"`, as `useAnimateElement` does.
 
 ## 6. Tests
 

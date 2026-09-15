@@ -136,6 +136,11 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       infinite: isInfinite(cycles)
     });
 
+    // A scroll-driven animation has no clock to be paused against, and one held
+    // for a trigger shows nothing at all: the scroll position is the trigger.
+    // The rule `useAnimateElement` keeps for the effects built on it.
+    const state = timeline === 'view' ? 'running' : run.state;
+
     const source = text ?? textOf(children);
     const words = React.useMemo(() => wordsOf(source, locale), [source, locale]);
 
@@ -223,10 +228,10 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
         className,
         // Only the play state lives on the root. Every other slot is per piece,
         // because the delay is what the whole effect is made of.
-        style: { '--n-anim-state': run.state, ...style } as React.CSSProperties,
+        style: { '--n-anim-state': state, ...style } as React.CSSProperties,
         ...run.handlers,
         'data-neba-animation': 'split',
-        'data-state': run.state,
+        'data-state': state,
         children: (
           <>
             <span className={cx(srOnlyClasses)}>{source}</span>

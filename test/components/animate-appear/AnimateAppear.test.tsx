@@ -186,5 +186,19 @@ describe('AnimateAppear', () => {
         true
       );
     });
+
+    // A scroll-driven animation has no clock to wait against, and one held for
+    // a trigger showed nothing at all.
+    it('never waits for a trigger when the scroll drives it', async () => {
+      const screen = await render(
+        <AnimateAppear timeline="view" trigger="manual" data-testid="appear">
+          <p>First</p>
+        </AnimateAppear>
+      );
+      const root = screen.getByTestId('appear').element() as HTMLElement;
+
+      expect(root).toHaveAttribute('data-state', 'running');
+      expect(root.style.getPropertyValue('--n-anim-state')).toBe('running');
+    });
   });
 });

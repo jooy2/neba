@@ -150,6 +150,20 @@ describe('AnimateSplit', () => {
       );
     });
 
+    // A scroll-driven animation has no clock to wait against, and one held for
+    // a trigger showed nothing at all.
+    it('never waits for a trigger when the scroll drives it', async () => {
+      const screen = await render(
+        <AnimateSplit timeline="view" trigger="manual" data-testid="split">
+          One two
+        </AnimateSplit>
+      );
+      const root = screen.getByTestId('split').element() as HTMLElement;
+
+      expect(root).toHaveAttribute('data-state', 'running');
+      expect(root.style.getPropertyValue('--n-anim-state')).toBe('running');
+    });
+
     // An inline box cannot be translated up.
     it('makes every piece an inline block', async () => {
       const screen = await render(<AnimateSplit>One two</AnimateSplit>);

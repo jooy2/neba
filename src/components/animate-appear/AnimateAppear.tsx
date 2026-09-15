@@ -107,6 +107,10 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
     });
 
     const { x, y } = slideOffsets(from, distance);
+    // A scroll-driven animation has no clock to be paused against, and one held
+    // for a trigger shows nothing at all: the scroll position is the trigger.
+    // The rule `useAnimateElement` keeps for the effects built on it.
+    const state = timeline === 'view' ? 'running' : run.state;
 
     // The same helper the other six reach for once they are given a step. Appear
     // is the one that cannot be turned off — a slide with no order to it is an
@@ -126,10 +130,10 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
         className,
         // Only the play state lives on the root. Every other slot is per child,
         // because the delay is what the whole effect is made of.
-        style: { '--n-anim-state': run.state, ...style } as React.CSSProperties,
+        style: { '--n-anim-state': state, ...style } as React.CSSProperties,
         ...run.handlers,
         'data-neba-animation': 'appear',
-        'data-state': run.state,
+        'data-state': state,
         children: animated
       }
     });

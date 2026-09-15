@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A scroll-driven `AnimateAppear` or `AnimateSplit` runs whatever its trigger.** Under `timeline="view"` the scroll position is what plays the effect, and the other `Animate*` components already ignored `trigger` there. These two still waited for theirs, so with `trigger="visible"` or `trigger="manual"` the effect was held paused and the children stayed on their first frame until the trigger came.
+
 - **An `AnimateSplit` cut by character breaks a line only between words, and its blink keeps blinking.** Every character piece is an inline block, and a line may break between any two of them, so a word cut into characters could end one line and start the next. The characters of each word are held together now, with the space after the word left as text where the line can break. `effect="blink"` also took the split's own default of one repeat, so it blinked once and stopped; like a blink anywhere else in the library, it now blinks until it is given a `repeat`.
 
 - **Replaying an `Animate*` rewinds only what it animates.** A replay cleared the animation of every descendant that had one, so an `<Alert transition="fade">` inside `<AnimateShake>` faded in again on every shake, and an `Animate*` nested in another started over with it. Each component now names its own parts: its root, the children it hands an effect to, a split's pieces and a marquee's tracks.
