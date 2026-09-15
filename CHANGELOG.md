@@ -194,6 +194,8 @@
 
 ### Fixed
 
+- **`AnimateTyping` and `AnimateScramble` hold the size of their final text from the first frame.** A typewriter's box was only as big as the characters that had arrived, so it grew a line at a time as it wrapped and pushed the page down, although its docs said nothing reflows, and a scramble kept its size only on one line or in a monospace font. Both lay the final string out underneath, invisible and unfindable, and draw the animation over it.
+
 - **An effect inside another `Animate*` keeps its own settings.** The `--n-anim-*` slots inherit and only the ones an effect uses are written, so a `<Box transition="fade">` inside an `AnimateFade` waiting for its trigger stayed on its first frame until the wrapper ran, and a fade inside an `AnimateReveal` ran from full opacity to full opacity. Each animated element now starts from its own shape, and a `transition` writes its own running state.
 
 - **A `CodeBlock` with `theme="auto"` follows the nearest theme root.** It turned dark through a selector that asked whether any ancestor was dark, so a light panel inside a dark page drew a dark block, and an `html` forced to light under a dark system setting drew one too. The two palettes are tokens on every theme root now, as the colour tokens are, and `auto` reads whichever the nearest root declares.

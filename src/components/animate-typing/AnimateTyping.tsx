@@ -61,8 +61,9 @@ export interface AnimateTypingProps
  * for a screen reader, which reads it once and is not made to sit through the
  * performance — and what animates is a visible copy that is `aria-hidden`. So
  * the effect costs a reader who cannot see it nothing, and costs a reader who
- * can nothing either: the box is not laid out from the characters that have
- * arrived, so the text around it does not reflow on every frame.
+ * can nothing either: the box is laid out from the whole string rather than
+ * from the characters that have arrived, so the text around it does not reflow
+ * on every frame.
  *
  * `repeat`, `hold` and `erase` are what make it a loop: type, hold, delete,
  * type again. Without `erase` a repeat clears in one frame, which is right for
@@ -286,7 +287,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
       render: render ?? <span />,
       ref: attach,
       props: {
-        className: cx('block', className),
+        className: cx('grid', className),
         style,
         'data-neba-animation': 'typing',
         'data-state': run.state,
@@ -295,10 +296,20 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
         children: (
           <>
             <span className={srOnlyClasses}>{source}</span>
-            <span aria-hidden="true" className="whitespace-pre-wrap">
+            <span aria-hidden="true" className="whitespace-pre-wrap [grid-area:1/1]">
               {graphemes.slice(0, shown).join('')}
               {caret ? <span className={cx('neba-typing-caret')}>{caretChar}</span> : null}
             </span>
+            {/* The final string, laid out underneath and drawn by nobody, so the box
+                takes its size from what the line will be rather than from what
+                has arrived. Generated content off `data-sample`, as the width
+                sizer draws its samples, so it leaves nothing for a find-in-page
+                or a query for the text to match. */}
+            <span
+              aria-hidden="true"
+              data-sample={source}
+              className="invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
+            />
           </>
         )
       }

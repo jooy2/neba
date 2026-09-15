@@ -21,7 +21,7 @@ import { AnimateScramble } from 'neba';
 
 Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
-The box never changes size, which is the whole reason to choose this over [AnimateTyping](./animate-typing): nothing around it reflows, and a heading does not push the page down as it lands.
+The box is laid out from the final text, so it holds its size while the noise settles. Nothing around it reflows, and a heading does not push the page down as it lands. In a proportional font the noise can be wider than the text for a moment, and spills past the box without moving anything.
 
 Whitespace is never scrambled. A space that flickered into a letter and back would read as the words having moved, which is the one thing this effect exists to avoid.
 

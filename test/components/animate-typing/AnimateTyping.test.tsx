@@ -94,6 +94,18 @@ describe('AnimateTyping', () => {
       }
     });
 
+    // The box took its size from the characters that had arrived, so the text
+    // around it reflowed on every one of them.
+    it('lays its box out from the whole string before anything is typed', async () => {
+      const screen = await render(
+        <AnimateTyping text="Hello there" trigger="manual" caret={false} data-testid="typing" />
+      );
+      const sample = screen.getByTestId('typing').element().querySelector('[data-sample]');
+
+      expect(sample).toHaveAttribute('data-sample', 'Hello there');
+      expect(sample?.textContent).toBe('');
+    });
+
     it('draws a caret unless told not to', async () => {
       const screen = await render(<AnimateTyping data-testid="typing">Hello</AnimateTyping>);
 

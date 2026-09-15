@@ -41,6 +41,18 @@ function shown(root: Element): string {
  * its own, so the DOM is waited for after the clock moves.
  */
 describe('AnimateScramble', () => {
+  // The docs said the box never changed size, and in a proportional font the
+  // noise was wider or narrower than the text it settled into.
+  it('lays its box out from the final text', async () => {
+    const screen = await render(
+      <AnimateScramble text="Hello there" trigger="manual" data-testid="scramble" />
+    );
+    const sample = screen.getByTestId('scramble').element().querySelector('[data-sample]');
+
+    expect(sample).toHaveAttribute('data-sample', 'Hello there');
+    expect(sample?.textContent).toBe('');
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
   });

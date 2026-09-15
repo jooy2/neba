@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
 import { graphemesOf, textOf } from '../../internal/text.js';
-import { srOnlyClasses } from '../../internal/styles.js';
+import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -72,9 +72,11 @@ function glyphAt(tick: number, index: number, size: number): number {
  * Text arriving through noise, one character at a time.
  *
  * `AnimateTyping`'s sibling: a typewriter reveals a string from an empty line,
- * this one resolves it out of a line that was already the right length. That is
- * the whole reason to choose it — the box never changes size, so nothing around
- * it reflows and a heading does not push the page down as it lands.
+ * this one resolves it out of a line that was already the right length. The box
+ * is laid out from the final text, so nothing around it reflows and a heading
+ * does not push the page down as it lands. In a proportional font the noise can
+ * be wider than the text for a moment, and spills past the box without moving
+ * anything.
  *
  * Whitespace is never scrambled. A space that flickers into a letter and back
  * reads as the words having moved, which is the one thing this effect is for
@@ -223,7 +225,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
       ref: [ref, run.ref],
       props: {
         ...props,
-        className,
+        className: cx('inline-grid', className),
         style,
         'data-neba-animation': 'scramble',
         'data-state': run.state,
@@ -231,9 +233,19 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
         children: (
           <>
             <span className={srOnlyClasses}>{source}</span>
-            <span aria-hidden="true" className="whitespace-pre-wrap">
+            <span aria-hidden="true" className="whitespace-pre-wrap [grid-area:1/1]">
               {shown}
             </span>
+            {/* The final string, laid out underneath and drawn by nobody, so the box
+                takes its size from what the line will be rather than from what
+                has arrived. Generated content off `data-sample`, as the width
+                sizer draws its samples, so it leaves nothing for a find-in-page
+                or a query for the text to match. */}
+            <span
+              aria-hidden="true"
+              data-sample={source}
+              className="invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
+            />
           </>
         )
       }
