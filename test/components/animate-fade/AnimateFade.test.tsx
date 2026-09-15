@@ -351,6 +351,18 @@ describe('AnimateFade', () => {
       expect(screen.getByTestId('fade').element()).toHaveAttribute('data-state', 'running');
     });
 
+    // The trigger the other sixteen share and none of them covered: an effect
+    // that runs when its element comes into view.
+    it('runs when its element is on the screen', async () => {
+      const screen = await render(
+        <AnimateFade trigger="visible" data-testid="fade">
+          Arriving
+        </AnimateFade>
+      );
+
+      await expect.element(screen.getByTestId('fade')).toHaveAttribute('data-state', 'running');
+    });
+
     it('waits to be told when the trigger is manual', async () => {
       const screen = await render(
         <AnimateFade trigger="manual" data-testid="fade">

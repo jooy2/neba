@@ -4,6 +4,32 @@ import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AnimateTyping } from 'neba';
 
+/*
+ * The reduced-motion answer, under the test's control. The library keeps one
+ * `MediaQueryList` per query and reads its `matches` live, so a stand-in handed
+ * out before the first render is the one every render in this file asks.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 /** What is actually drawn — the clipped copy for a screen reader is separate. */
 function typed(root: Element): string {
   return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
@@ -50,6 +76,22 @@ describe('AnimateTyping', () => {
       const screen = await render(<AnimateTyping text="From a prop" speed={1} />);
 
       await expect.element(screen.getByText('From a prop')).toBeInTheDocument();
+    });
+
+    // `hover` and `manual` may never be triggered, and an empty line waiting for
+    // one is the whole string withheld from a reader who asked for less motion.
+    it('shows the text itself, untriggered, to a reader who asked for less motion', async () => {
+      reduceMotion = true;
+
+      try {
+        const screen = await render(
+          <AnimateTyping text="Hello there" trigger="manual" caret={false} data-testid="typing" />
+        );
+
+        expect(typed(screen.getByTestId('typing').element())).toBe('Hello there');
+      } finally {
+        reduceMotion = false;
+      }
     });
 
     it('draws a caret unless told not to', async () => {
