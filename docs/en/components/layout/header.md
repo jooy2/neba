@@ -71,6 +71,6 @@ A hairline along the bottom edge, on by default. A bar pinned over a scrolling p
 
 ## Accessibility
 
-- It renders `<header>`, which is the `banner` landmark when it is not inside an `<article>` or a `<section>`.
-- Give it a `label` when a page has more than one `<header>` in it (an article's own and the site's), or a landmark list names neither.
+- It renders `<header>`, which is the `banner` landmark unless it is inside an `<article>`, `<aside>`, `<main>`, `<nav>` or `<section>`.
+- `label` names the banner in a landmark list. Inside one of those elements the header is not a landmark, so a `label` there has nothing to name.
 - The navigation in the middle slot should be a `<nav>` of your own, with its own accessible name when a page has more than one.

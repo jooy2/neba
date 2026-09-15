@@ -110,7 +110,7 @@ What it takes it keeps, at the ends as well, so a flick that runs out of strip d
 ## Accessibility
 
 - The strip is focusable and scrolls with the arrow keys, which is the browser's own key handling on a scroll container, so it is already right under RTL.
-- `label` names the region and is what a screen reader reads before its contents. Without one the strip is focusable but unnamed.
+- `label` names the region and is what a screen reader reads before its contents. Without one it is named with the locale's generic word, so it is never unnamed, but only `label` says what is in it.
 - The scroll buttons are real buttons with real names, and `previousLabel` / `nextLabel` (or `locale`) decide what those names are.
 - In `hold` mode the buttons answer Enter and Space the same way they answer a press, scrolling while the key is down.
 - A button with nowhere to go is marked `aria-disabled` rather than `disabled`, so the press that reaches the end leaves the focus on it. An overlaid one that `auto` would remove stays until the focus moves on.

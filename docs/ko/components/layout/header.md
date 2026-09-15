@@ -71,6 +71,6 @@ import { AppLogo, Button, Header } from 'neba';
 
 ## 접근성
 
-- `<header>`를 렌더링하며, `<article>`이나 `<section>` 안이 아니라면 `banner` 랜드마크입니다.
-- 한 페이지에 `<header>`가 둘 이상일 때(글 자체의 header와 사이트의 header) `label`을 주세요. 그러지 않으면 랜드마크 목록이 어느 쪽도 구분해 주지 못합니다.
+- `<header>`를 렌더링하며, `<article>`, `<aside>`, `<main>`, `<nav>`, `<section>` 안이 아니라면 `banner` 랜드마크입니다.
+- `label`은 랜드마크 목록에서 banner의 이름이 됩니다. 위 요소들 안의 header는 랜드마크가 아니므로 `label`을 주어도 이름이 붙을 곳이 없습니다.
 - 가운데 자리의 탐색은 직접 `<nav>`로 감싸고, 한 페이지에 `<nav>`가 둘 이상이면 각각에 접근성 이름을 주세요.

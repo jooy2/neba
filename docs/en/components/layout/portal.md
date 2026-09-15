@@ -51,6 +51,6 @@ Renders in place instead of portalling: for a subtree that is already inside a p
 
 ## Accessibility
 
-- A portal moves the DOM, not the reading order a screen reader announces from: which is the DOM. Content that belongs _with_ something needs `aria-controls`, `aria-describedby` or a focus move to say so.
+- A portal moves the element in the DOM, and a screen reader reads in DOM order, so portalled content is read where it lands rather than where it was written. Content that belongs _with_ something needs `aria-controls`, `aria-describedby` or a focus move to say so.
 - Focus does not follow the children. A portalled dialog needs its own focus management; use [Dialog](../feedback/dialog) or [Drawer](../surfaces/drawer), which already have it.
 - `Escape` and click-outside are not handled here either. This is placement and nothing else.
