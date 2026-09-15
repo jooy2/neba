@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Button, Form, TextField } from 'neba';
@@ -52,20 +53,25 @@ describe('Form', () => {
       expect(onSubmit.mock.calls[0][0]).toMatchObject({ email: 'a@b.com' });
     });
 
-    it('lets an action run when there is no onSubmit', async () => {
-      const action = vi.fn();
-      const screen = await render(
-        <Form aria-label="Sign up" action={action}>
-          <TextField label="Email" name="email" defaultValue="a@b.com" />
-          <Button type="submit">Sign up</Button>
-        </Form>
-      );
+    // A function `action` is React 19's. React 18 drops it, and the submit
+    // then navigates the test frame away.
+    it.skipIf(React.version.startsWith('18.'))(
+      'lets an action run when there is no onSubmit',
+      async () => {
+        const action = vi.fn();
+        const screen = await render(
+          <Form aria-label="Sign up" action={action}>
+            <TextField label="Email" name="email" defaultValue="a@b.com" />
+            <Button type="submit">Sign up</Button>
+          </Form>
+        );
 
-      await screen.getByRole('button', { name: 'Sign up' }).click();
+        await screen.getByRole('button', { name: 'Sign up' }).click();
 
-      await expect.poll(() => action.mock.calls.length).toBe(1);
-      expect((action.mock.calls[0][0] as FormData).get('email')).toBe('a@b.com');
-    });
+        await expect.poll(() => action.mock.calls.length).toBe(1);
+        expect((action.mock.calls[0][0] as FormData).get('email')).toBe('a@b.com');
+      }
+    );
 
     it('keeps an action from running while a required field is empty', async () => {
       const action = vi.fn();

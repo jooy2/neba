@@ -145,3 +145,38 @@ jobs:
         run: npm run test
         env:
           VITEST_BROWSER: ${{ matrix.browser }}
+
+  react-18:
+    runs-on: ubuntu-latest
+    name: Test on React 18 (chromium)
+    # The peer range promises React 18 and the devDependency is 19, so without
+    # this job nothing here ever renders on 18. The two differ in ways only a
+    # render shows: `inert`, a `javascript:` URL and a unitless `scale` in a
+    # `style` have all been one. One pairing is enough, since the browser is
+    # not what differs; ubuntu and chromium are the quickest.
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      # `--no-save` leaves the lockfile alone, and `--ignore-scripts` skips the
+      # build that `prepare` has already run once on `npm ci`.
+      - name: Install React 18
+        run: npm install --no-save --ignore-scripts react@18 react-dom@18
+      - name: Check the React version
+        run: node -e "const v = require('react-dom/package.json').version; if (!v.startsWith('18.')) throw new Error('react-dom ' + v)"
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+      - name: Test module script
+        timeout-minutes: 15
+        run: npm run test
+        env:
+          VITEST_BROWSER: chromium

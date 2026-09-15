@@ -39,7 +39,8 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
   /**
    * Called on a valid submit, with the form's values. When it is given, the
    * native submit event is prevented, so nothing navigates. Without it the
-   * submit goes ahead, which is what lets an `action` run.
+   * submit goes ahead, which is what lets an `action` run (a function `action`
+   * is React 19's).
    */
   onSubmit?: (values: Record<string, unknown>) => void;
   /**

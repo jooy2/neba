@@ -30,7 +30,7 @@ children은 `size`가 정한 간격의 세로 열로 놓입니다. 다른 배치
 
 ### onSubmit
 
-모든 field가 유효할 때만 호출되며, 각 field의 `name`을 키로 하는 값 객체를 받습니다. `onSubmit`을 주면 네이티브 submit 이벤트가 막혀 페이지가 이동하지 않습니다. 빼면 같은 검증을 거친 뒤 submit이 그대로 진행되어, React `action`이나 `action`에 적은 URL이 실행됩니다.
+모든 field가 유효할 때만 호출되며, 각 field의 `name`을 키로 하는 값 객체를 받습니다. `onSubmit`을 주면 네이티브 submit 이벤트가 막혀 페이지가 이동하지 않습니다. 빼면 같은 검증을 거친 뒤 submit이 그대로 진행되어, React 19에서는 함수 `action`이, 모든 버전에서는 `action`에 적은 URL이 실행됩니다.
 
 ### validationMode
 
