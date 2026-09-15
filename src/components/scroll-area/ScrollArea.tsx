@@ -131,7 +131,12 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
           // inline, where nothing a caller passes can leave the box unbounded and
           // silently take the scrolling with it. Base UI supplies the
           // `overflow: scroll` beside it, also inline.
-          style={{ height: '100%', width: '100%' }}
+          //
+          // The ceiling is inherited for the root that has one and no height:
+          // there `100%` resolves to `auto`, so the viewport grew to its content
+          // and the root cut it off with nothing to scroll. Inheriting it follows
+          // `maxHeight`, a class or a style alike.
+          style={{ height: '100%', width: '100%', maxHeight: 'inherit' }}
           className={cx(
             'overscroll-contain',
             // The ring is declared at zero width, so it is also what takes the

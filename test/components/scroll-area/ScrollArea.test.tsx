@@ -56,6 +56,21 @@ describe('ScrollArea', () => {
       expect(element.style.maxHeight).toBe('12rem');
     });
 
+    // With only a ceiling the root has no height for the viewport's `100%` to
+    // resolve against, so the viewport grew to its content and nothing scrolled.
+    it('scrolls under a ceiling with no height', async () => {
+      const screen = await render(
+        <ScrollArea maxHeight={80} data-testid="area">
+          <Tall />
+        </ScrollArea>
+      );
+      const viewport = screen.getByTestId('area').element().firstElementChild as HTMLElement;
+
+      expect(viewport.getBoundingClientRect().height).toBeLessThanOrEqual(80);
+      expect(viewport.scrollHeight).toBeGreaterThan(viewport.clientHeight);
+      await expect.element(screen.getByTestId('area')).toHaveAttribute('data-has-overflow-y');
+    });
+
     it('reflects changed children on re-render', async () => {
       const screen = await render(<ScrollArea height={80}>Before</ScrollArea>);
 

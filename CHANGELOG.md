@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A `ScrollArea` with only `maxHeight` scrolls.** Its viewport is `100%` of the root's height, and a root with a ceiling and no height has no height for that to resolve against, so the viewport grew as tall as its content and the root cut it off at the ceiling with nothing to scroll. The viewport takes the root's ceiling now, whether it came from `maxHeight`, a class or a style.
+
 - **An `AspectRatio` fits a `canvas` inside it.** `fit` reached an `img`, a `video` and the `img` in a `picture`, so a `canvas` was stretched to the box and squashed out of its own proportion, although the docs listed it among the media `fit` applies to. A `canvas` is fitted like the others now. The docs also stop saying that `fit` reaches an `svg` or an `iframe`: both are stretched to the box and lay their own content out, as they always did.
 
 - **A responsive map whose `xs` is `undefined` keeps the default there.** `withBaseline` spread the caller's map over the default, so `spacing={{ xs: undefined, md: 4 }}`, the shape a map built from optional values takes, copied the `undefined` over it. A `GridContainer` then had no gutter at all below `md` instead of its default of 2. An `xs` of `undefined` now means the same as leaving it out.
