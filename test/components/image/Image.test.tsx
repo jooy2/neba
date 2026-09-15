@@ -81,6 +81,26 @@ describe('Image', () => {
     await expect.element(screen.getByRole('img', { name: 'A lake' })).toHaveClass('opacity-100');
   });
 
+  // The type named `loading` and nothing ever reported it, so a caller could not
+  // tell a file on its way from one that had not been asked for.
+  it('reports loading before the file arrives', async () => {
+    const onLoadingStatusChange = vi.fn();
+    await render(
+      <Image
+        src="/docs/public/samples/photos/alpine-lake-dawn.jpg?status"
+        alt="A lake"
+        onLoadingStatusChange={onLoadingStatusChange}
+      />
+    );
+
+    await vi.waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('loaded'));
+
+    expect(onLoadingStatusChange.mock.calls.map(([status]) => status)).toEqual([
+      'loading',
+      'loaded'
+    ]);
+  });
+
   it('draws a fallback of its own when given one', async () => {
     const screen = await render(
       <Image src={BROKEN} alt="A ridge" fallback={<span>Could not load</span>} />

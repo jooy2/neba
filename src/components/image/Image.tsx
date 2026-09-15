@@ -317,7 +317,10 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * what was meant to be there is a better answer than a blank space.
    */
   fallback?: React.ReactNode;
-  /** Called with `loaded` or `failed` once the file settles. `failed` is the moment to swap a `src` you control. */
+  /**
+   * Called with `loading` when a file is asked for, then `loaded` or `failed`
+   * once it settles. `failed` is the moment to swap a `src` you control.
+   */
   onLoadingStatusChange?: (status: Phase) => void;
   /**
    * Marks the picture a page is judged by — usually the largest thing above
@@ -950,9 +953,9 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       settled === 'loaded' && node ? { width: node.naturalWidth, height: node.naturalHeight } : null
     );
 
-    if (settled) {
-      reportRef.current?.(settled);
-    }
+    // Said as soon as a new file is asked for, so a caller hears `loading` as
+    // well as how it ended.
+    reportRef.current?.(settled ?? 'loading');
   }, [src]);
 
   const settle = (next: Phase, node: HTMLImageElement) => {

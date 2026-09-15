@@ -12207,8 +12207,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onLoadingStatusChange',
       type: "(status: 'loading' | 'loaded' | 'failed') => void",
       description: {
-        ko: '파일을 다 받았거나 받지 못했을 때 loaded나 failed로 호출됩니다. src가 바뀌면 새 파일이 끝난 뒤 다시 호출됩니다',
-        en: "Called with 'loaded' or 'failed' once the file has arrived or failed. A new src is reported again when it settles"
+        ko: '파일을 요청할 때 loading으로, 다 받았거나 받지 못했을 때 loaded나 failed로 호출됩니다. src가 바뀌면 다시 loading부터 호출됩니다',
+        en: "Called with 'loading' when the file is asked for, then 'loaded' or 'failed' once it settles. A new src starts over at 'loading'"
       }
     },
     {

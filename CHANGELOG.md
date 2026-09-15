@@ -120,6 +120,8 @@
 
 ### Changed
 
+- **An `Image` reports `loading` when it asks for a file.** `onLoadingStatusChange` was typed with `loading` and only ever called with `loaded` or `failed`, so a caller could not tell a file on its way from one that had not been asked for. It is called with `loading` on mount and whenever `src` changes, then with how the file settled. A handler written for the two endings is now also called once before them.
+
 - **A `NebaProvider` with inline `defaults` no longer re-renders everything under it.** `defaults={{ size: 'sm' }}` is a new object on every render of the component around the provider, and it was handed to the context as it came, so every Neba component below re-rendered with the page even when nothing had changed. The four values are kept by value now.
 
 - **Dragging a run of `DataTable` rows reports the selection once per row it reaches.** Every `pointermove` committed the run again, so a drag held still inside one row called `onSelectedChange` and re-rendered the table on every frame the pointer shook.
