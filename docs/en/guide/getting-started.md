@@ -33,7 +33,7 @@ import 'neba/styles.css';
 
 ### About the reset
 
-`neba/styles.css` includes the global reset the components are written against: Tailwind's Preflight cut down to what they actually need. It does not change the font size of your paragraphs or the look of your links.
+`neba/styles.css` includes the global reset the components are written against: Tailwind's Preflight cut down to what they actually need. It leaves the font size of your paragraphs and the look of your links alone, but it does change headings and a few margins, which the list below names.
 
 Every rule in it is wrapped in `:where()`, so it has **specificity 0**. A single type selector of your own (`p { margin: 1rem }`) beats it, whatever the import order. The reset is a floor under the components, not a claim on your page.
 
@@ -142,13 +142,13 @@ The default follows `prefers-color-scheme`. To force it either way, put a class 
 
 For light, use `data-theme="light"` or `class="light"`. `.dark` is supported alongside it to match Tailwind's own convention.
 
+## Browser support
+
+Neba supports Chrome and Edge 111, Firefox 113 and Safari 16.4 or later. [Browser support](../browser-support) covers what sets that range and which details differ inside it.
+
 ## Next
 
 - [All components](../components/): everything released, on one page
 - [Examples](../examples/overview): the components together on a single screen
 - [Prop conventions](../design/prop-conventions): what the shared props mean
 - [Design language](../design/design-language): why the surfaces, colours and motion look like this
-
-## Browser support
-
-Neba supports Chrome and Edge 111, Firefox 113 and Safari 16.4 or later. [Browser support](../browser-support) covers what sets that range and which details differ inside it.

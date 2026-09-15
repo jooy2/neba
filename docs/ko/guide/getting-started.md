@@ -33,7 +33,7 @@ import 'neba/styles.css';
 
 ### 함께 들어 있는 reset
 
-`neba/styles.css`에는 컴포넌트가 전제하는 전역 reset이 들어 있습니다. Tailwind의 Preflight를 컴포넌트에 실제로 필요한 만큼으로 줄인 것입니다. 문단의 글자 크기나 링크 모양은 바꾸지 않습니다.
+`neba/styles.css`에는 컴포넌트가 전제하는 전역 reset이 들어 있습니다. Tailwind의 Preflight를 컴포넌트에 실제로 필요한 만큼으로 줄인 것입니다. 문단의 글자 크기와 링크 모양은 그대로 두지만, 제목과 몇몇 margin은 바꿉니다. 바뀌는 항목은 아래 목록에 있습니다.
 
 모든 규칙은 `:where()`로 감싸 **명시도가 0**입니다. 따라서 직접 쓴 `p { margin: 1rem }` 같은 타입 선택자 하나가 import 순서와 무관하게 언제나 우선합니다. reset은 컴포넌트가 전제하는 최소한의 바탕일 뿐이며, 페이지 전체의 스타일을 정하지 않습니다.
 
@@ -142,13 +142,13 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 라이트로 고정하려면 `data-theme="light"` 또는 `class="light"`을 씁니다. `.dark`는 Tailwind의 관례를 따르기 위해 함께 지원합니다.
 
+## 브라우저 지원
+
+Chrome과 Edge 111, Firefox 113, Safari 16.4 이상을 지원합니다. 이 범위를 정하는 요소와 범위 안에서 달라지는 세부 표현은 [브라우저 지원](../browser-support)에 정리했습니다.
+
 ## 다음으로
 
 - [모든 컴포넌트](../components/): 배포된 컴포넌트를 한 페이지에서
 - [예제](../examples/overview): 한 화면 안에서 함께 쓰인 모습
 - [Prop 규약](../design/prop-conventions): 모든 컴포넌트가 공유하는 prop의 의미
 - [디자인 언어](../design/design-language): 표면·색·모션이 왜 이렇게 생겼는지
-
-## 브라우저 요구사항
-
-Chrome과 Edge 111, Firefox 113, Safari 16.4 이상을 지원합니다. 이 범위를 정하는 요소와 범위 안에서 달라지는 세부 표현은 [브라우저 지원](../browser-support)에 정리했습니다.
