@@ -231,7 +231,7 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | 12 components — a typical app | 71.6 kB  | 13.2 kB                     |
 | 25 components — a large one   | 118.4 kB | 20.2 kB                     |
 | a whole page shell            | 29.9 kB  | 9.7 kB                      |
-| all 175 exports               | 279.0 kB | 141.8 kB                    |
+| all 175 exports               | 279.1 kB | 141.8 kB                    |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is.
 
