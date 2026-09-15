@@ -176,6 +176,8 @@
 
 ### Fixed
 
+- **A `TimelineChart` writes the time of its spans once one of them needs it.** On an axis that ticks in days or weeks every date was written to the day, so a two-hour meeting read `3 Mar 2026 – 3 Mar 2026` in the tooltip and the hidden table. When any span starts or ends away from midnight, every start and end in the chart is written with its time; a chart whose spans all fall on midnight is written as before.
+
 - **A `ScrollZone`'s `onScroll` fires when the strip scrolls.** It was passed through to the root with every other attribute, and the box that scrolls is inside the root, where a scroll does not bubble out of, so the handler was never called. It is the scrolling box's handler now.
 
 - **Initials are upper-cased the same way on every machine.** An `Avatar` or an `AppLogo` with no picture upper-cased its initials in the language of whatever was running it, so a server in English and a browser in Turkish drew `I` and `İ` for the same name, and React reported the difference as a hydration mismatch. The letters are upper-cased without a language now, which costs the rules of languages such as Turkish on the one letter where they differ.

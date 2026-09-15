@@ -106,6 +106,13 @@ describe('formatTimeValue', () => {
   it('writes a time on the 24-hour clock', () => {
     expect(formatTimeValue(new Date(2026, 2, 2, 14, 5).getTime(), 'minute', 'en-US')).toBe('14:05');
   });
+
+  it('adds the time of day to a date when it is asked for', () => {
+    const text = formatTimeValue(new Date(2026, 2, 2, 14, 5).getTime(), 'day', 'en-GB', true);
+
+    expect(text).toContain('2 Mar 2026');
+    expect(text).toContain('14:05');
+  });
 });
 
 describe('rampStep', () => {

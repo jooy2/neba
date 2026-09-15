@@ -142,6 +142,22 @@ export function TimelineChart(rawProps: TimelineChartProps) {
     [spans]
   );
 
+  /* Whether the dates the spans are written with need their time. A span that
+     starts or ends away from midnight on an axis that ticks in days was written
+     as its date alone, so a two-hour meeting read as starting and ending at
+     once; and one span written with its time beside others written without
+     would be a table whose columns disagree, so it is decided for them all. */
+  const clock = React.useMemo(() => {
+    const unit = spanUnit(scale.unit);
+
+    return (
+      (unit === 'day' || unit === 'week') &&
+      spans.some((row) =>
+        row.some((one) => one !== null && (offMidnight(one.from) || offMidnight(one.to)))
+      )
+    );
+  }, [spans, scale.unit]);
+
   /* The plot is described by how many spans it draws and when the first starts
      and the last ends. The frame would otherwise count the filler series, which
      is a one per row and says nothing about time. */
@@ -166,10 +182,10 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       ? { count, min: '', max: '' }
       : {
           count,
-          min: formatTimeValue(first, spanUnit(scale.unit), locale),
-          max: formatTimeValue(last, spanUnit(scale.unit), locale)
+          min: formatTimeValue(first, spanUnit(scale.unit), locale, clock),
+          max: formatTimeValue(last, spanUnit(scale.unit), locale, clock)
         };
-  }, [spans, scale.unit, locale]);
+  }, [spans, scale.unit, locale, clock]);
 
   const names = React.useMemo(
     () => series.map((row, index) => row.name ?? `${index + 1}`),
@@ -239,10 +255,11 @@ export function TimelineChart(rawProps: TimelineChartProps) {
           // A duration, which is the one number a span has. It is what a
           // caller's own `tooltip.render` gets handed.
           value: one.to - one.from,
-          formatted: `${formatTimeValue(one.from, spanUnit(scale.unit), locale)} – ${formatTimeValue(
+          formatted: `${formatTimeValue(one.from, spanUnit(scale.unit), locale, clock)} – ${formatTimeValue(
             one.to,
             spanUnit(scale.unit),
-            locale
+            locale,
+            clock
           )}`
         }
       ];
@@ -251,7 +268,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       // rather than a repeat of the first.
       return { heading: one.span.label ?? names[mark.series], items };
     },
-    [spans, names, colors, scale.unit, locale]
+    [spans, names, colors, scale.unit, locale, clock]
   );
 
   return (
@@ -282,6 +299,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
           series={series}
           spans={spans}
           unit={spanUnit(scale.unit)}
+          clock={clock}
           label={props.label}
           corner={xAxis?.label}
           locale={locale}
@@ -424,9 +442,17 @@ interface TableProps {
   series: readonly NebaTimelineSeries[];
   spans: readonly (readonly Placed[])[];
   unit: TimeScale['unit'];
+  clock: boolean;
   label?: string;
   corner?: React.ReactNode;
   locale?: string;
+}
+
+/** Whether an instant falls anywhere but on the start of its own day. */
+function offMidnight(value: number): boolean {
+  const date = new Date(value);
+
+  return date.getTime() !== new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 }
 
 /**
@@ -454,6 +480,7 @@ const TimelineTable = React.memo(function TimelineTable({
   series,
   spans,
   unit,
+  clock,
   label,
   corner,
   locale
@@ -478,8 +505,8 @@ const TimelineTable = React.memo(function TimelineTable({
             <tr key={`${index}-${at}`}>
               <th scope="row">{names[index]}</th>
               {titled ? <td>{series[index].data[at]?.label ?? ''}</td> : null}
-              <td>{one ? formatTimeValue(one.from, unit, locale) : ''}</td>
-              <td>{one ? formatTimeValue(one.to, unit, locale) : ''}</td>
+              <td>{one ? formatTimeValue(one.from, unit, locale, clock) : ''}</td>
+              <td>{one ? formatTimeValue(one.to, unit, locale, clock) : ''}</td>
             </tr>
           ))
         )}

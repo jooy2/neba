@@ -979,9 +979,26 @@ function timeParts(unit: TimeUnit, withYear: boolean): Intl.DateTimeFormatOption
   return withYear ? { ...parts, year: 'numeric' } : parts;
 }
 
-/** One instant on a time axis, written unambiguously — for a tooltip or a table. */
-export function formatTimeValue(value: number, unit: TimeUnit, locale?: string): string {
-  return dateFormatter(locale, timeParts(unit, true)).format(new Date(value));
+/**
+ * One instant on a time axis, written unambiguously — for a tooltip or a table.
+ *
+ * `clock` adds the hour and the minute to a unit that has none, for a date
+ * whose time of day is part of what it says.
+ */
+export function formatTimeValue(
+  value: number,
+  unit: TimeUnit,
+  locale?: string,
+  clock = false
+): string {
+  const parts = timeParts(unit, true);
+
+  return dateFormatter(
+    locale,
+    clock && parts.hour === undefined
+      ? { ...parts, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+      : parts
+  ).format(new Date(value));
 }
 
 /**

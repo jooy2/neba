@@ -374,6 +374,38 @@ describe('TimelineChart', () => {
       await expect.element(screen.getByRole('cell', { name: '16:30' })).toBeInTheDocument();
     });
 
+    // Written to the day, a two-hour meeting on an axis that ticks in days read
+    // as starting and ending on the same moment.
+    it('writes every span with its time once one starts or ends away from midnight', async () => {
+      const screen = await render(
+        <TimelineChart
+          label="Week"
+          locale="en-GB"
+          series={[
+            {
+              name: 'Build',
+              data: [{ start: at('2026-03-02T00:00:00'), end: at('2026-03-09T00:00:00') }]
+            },
+            {
+              name: 'Meeting',
+              data: [{ start: at('2026-03-03T09:00:00'), end: at('2026-03-03T11:00:00') }]
+            }
+          ]}
+        />
+      );
+      const table = screen.getByRole('table', { name: 'Week' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const cells = [...table.element().querySelectorAll('tbody td')].map(
+        (cell) => cell.textContent
+      );
+
+      expect(cells[0]).toMatch(/2 Mar 2026.*00:00/);
+      expect(cells[2]).toMatch(/3 Mar 2026.*09:00/);
+      expect(cells[3]).toMatch(/3 Mar 2026.*11:00/);
+    });
+
     it('drops the label column when no span carries one', async () => {
       const screen = await render(
         <TimelineChart
