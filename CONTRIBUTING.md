@@ -26,15 +26,15 @@ When creating an issue, keep the following in mind:
 Here's the process for contributing to the project:
 
 1. Clone the project (or rebase to the latest commit in the main branch)
-2. Install the package (if the package manager exists)
-3. Set up the linter and formatter in your IDE and install the matching plugins, if the project includes them. Some projects use a specific command to check the rules and format the code after installing modules and before committing.
+2. Install the dependencies with `npm install`, and the browser the tests run in with `npx playwright install chromium`
+3. Set up ESLint and Prettier in your editor. CI runs `npm run lint`, `npx prettier --check .` and `npm run typecheck`, so run them before you push
 4. Write the code that needs to be fixed
-5. Update the documentation (if it exists) or create a new one. If your project supports multilingual documentation, update the documentation for all languages. You can fill in the content in your own language and not translate it.
-6. Add or modify tests as needed (if test code exists). You should also verify that existing tests pass.
+5. Update the documentation under `docs/` in every locale. The English and Korean pages mirror each other, with the same headings, demos and examples, and a changed prop is updated in `docs/.vitepress/data/props.ts` in both languages
+6. Add or change the tests under `test/` in the same commit as the code they cover, and run `npm test` to confirm the whole suite passes
 
 ### Write a commit message
 
-While we don't have strict restrictions on commit messages, we recommend that you follow the recommendations below whenever possible:
+Commit messages follow these rules:
 
 - Write in English.
 - Use the ` symbol to name functions, variables, or folders and files.
@@ -44,7 +44,7 @@ While we don't have strict restrictions on commit messages, we recommend that yo
 
 Include a tag at the beginning of the commit message, and separate the tag from the message with `: `.
 
-Tags conform to the ["Udacity Git Commit Message Style Guide"](https://udacity.github.io/git-styleguide). However, you are welcome to use tags not listed here for additional situations.
+Tags conform to the ["Udacity Git Commit Message Style Guide"](https://udacity.github.io/git-styleguide).
 
 - `feat`: A new feature
 - `fix`: A bug fix
