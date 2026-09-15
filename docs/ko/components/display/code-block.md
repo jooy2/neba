@@ -48,7 +48,7 @@ registerLanguage('elixir', elixir);
 
 블록이 입는 팔레트이며, 페이지의 light·dark와는 별개입니다.
 
-넷은 라이브러리 자신의 것입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 페이지를 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다. 여기에 공개된 값을 그대로 옮겨 온 여덟 개가 더 있습니다. `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github`, `solarized-light`입니다.
+넷은 라이브러리 자신의 것입니다. `dark`가 기본이고 `light`가 그 짝, `auto`는 가장 가까운 `.dark` · `.light` · `data-theme` 루트를, 루트가 없으면 시스템 설정을 따라가며, `mono`는 색을 전부 버리고 굵기와 흐림 정도로만 구조를 나타냅니다. 여기에 공개된 값을 그대로 옮겨 온 여덟 개가 더 있습니다. `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github`, `solarized-light`입니다.
 
 <Demo src="code-block/theme" minHeight="480">
 

@@ -59,6 +59,23 @@
 :root,
 .light,
 [data-theme='light'] {
+  /* CodeBlock's `auto` palette, declared on every theme root as the colour tokens
+     are, so a block follows the nearest root rather than the document's. */
+  --neba-code-auto-bg: oklch(98.4% 0.003 262);
+  --neba-code-auto-fg: oklch(30% 0.016 262);
+  --neba-code-auto-comment: oklch(58% 0.022 262);
+  --neba-code-auto-keyword: oklch(48% 0.19 322);
+  --neba-code-auto-string: oklch(46% 0.12 148);
+  --neba-code-auto-number: oklch(50% 0.14 48);
+  --neba-code-auto-function: oklch(48% 0.17 264);
+  --neba-code-auto-type: oklch(45% 0.1 214);
+  --neba-code-auto-variable: oklch(45% 0.12 28);
+  --neba-code-auto-tag: oklch(48% 0.18 22);
+  --neba-code-auto-attr: oklch(47% 0.13 82);
+  --neba-code-auto-meta: oklch(52% 0.05 262);
+  --neba-code-auto-add: oklch(45% 0.14 152);
+  --neba-code-auto-del: oklch(48% 0.18 25);
+
   /* Neutral surfaces and content */
   --neba-surface: oklch(100% 0 0);
   --neba-fg: oklch(24% 0.015 262);
@@ -411,6 +428,21 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not([data-theme='light']) {
+    --neba-code-auto-bg: oklch(19.5% 0.014 262);
+    --neba-code-auto-fg: oklch(90% 0.012 262);
+    --neba-code-auto-comment: oklch(60% 0.024 262);
+    --neba-code-auto-keyword: oklch(76% 0.13 324);
+    --neba-code-auto-string: oklch(80% 0.13 148);
+    --neba-code-auto-number: oklch(81% 0.12 62);
+    --neba-code-auto-function: oklch(78% 0.12 258);
+    --neba-code-auto-type: oklch(82% 0.1 210);
+    --neba-code-auto-variable: oklch(82% 0.09 32);
+    --neba-code-auto-tag: oklch(77% 0.13 22);
+    --neba-code-auto-attr: oklch(85% 0.11 92);
+    --neba-code-auto-meta: oklch(70% 0.05 262);
+    --neba-code-auto-add: oklch(80% 0.14 152);
+    --neba-code-auto-del: oklch(75% 0.15 25);
+
     --neba-surface: oklch(19% 0.012 262);
     --neba-fg: oklch(95% 0.008 262);
     --neba-muted-fg: oklch(72% 0.014 262);
@@ -534,6 +566,21 @@
 
 .dark,
 [data-theme='dark'] {
+  --neba-code-auto-bg: oklch(19.5% 0.014 262);
+  --neba-code-auto-fg: oklch(90% 0.012 262);
+  --neba-code-auto-comment: oklch(60% 0.024 262);
+  --neba-code-auto-keyword: oklch(76% 0.13 324);
+  --neba-code-auto-string: oklch(80% 0.13 148);
+  --neba-code-auto-number: oklch(81% 0.12 62);
+  --neba-code-auto-function: oklch(78% 0.12 258);
+  --neba-code-auto-type: oklch(82% 0.1 210);
+  --neba-code-auto-variable: oklch(82% 0.09 32);
+  --neba-code-auto-tag: oklch(77% 0.13 22);
+  --neba-code-auto-attr: oklch(85% 0.11 92);
+  --neba-code-auto-meta: oklch(70% 0.05 262);
+  --neba-code-auto-add: oklch(80% 0.14 152);
+  --neba-code-auto-del: oklch(75% 0.15 25);
+
   --neba-surface: oklch(19% 0.012 262);
   --neba-fg: oklch(95% 0.008 262);
   --neba-muted-fg: oklch(72% 0.014 262);
@@ -1229,8 +1276,28 @@
   --n-code-mark-edge: color-mix(in oklab, var(--n-code-fg) 45%, transparent);
 }
 
-.neba-code[data-code-theme='dark'],
-:where(.dark, [data-theme='dark']) .neba-code[data-code-theme='auto'] {
+.neba-code[data-code-theme='auto'] {
+  /* The theme roots hold both palettes, so the nearest `.dark`, `.light` or
+     `data-theme` decides, and the system setting where there is none. A
+     descendant selector could only ask whether any ancestor was dark, which
+     painted a light panel inside a dark page with the dark palette. */
+  --n-code-bg: var(--neba-code-auto-bg);
+  --n-code-fg: var(--neba-code-auto-fg);
+  --n-code-comment: var(--neba-code-auto-comment);
+  --n-code-keyword: var(--neba-code-auto-keyword);
+  --n-code-string: var(--neba-code-auto-string);
+  --n-code-number: var(--neba-code-auto-number);
+  --n-code-function: var(--neba-code-auto-function);
+  --n-code-type: var(--neba-code-auto-type);
+  --n-code-variable: var(--neba-code-auto-variable);
+  --n-code-tag: var(--neba-code-auto-tag);
+  --n-code-attr: var(--neba-code-auto-attr);
+  --n-code-meta: var(--neba-code-auto-meta);
+  --n-code-add: var(--neba-code-auto-add);
+  --n-code-del: var(--neba-code-auto-del);
+}
+
+.neba-code[data-code-theme='dark'] {
   --n-code-bg: oklch(19.5% 0.014 262);
   --n-code-fg: oklch(90% 0.012 262);
 
@@ -1246,26 +1313,6 @@
   --n-code-meta: oklch(70% 0.05 262);
   --n-code-add: oklch(80% 0.14 152);
   --n-code-del: oklch(75% 0.15 25);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .neba-code[data-code-theme='auto'] {
-    --n-code-bg: oklch(19.5% 0.014 262);
-    --n-code-fg: oklch(90% 0.012 262);
-
-    --n-code-comment: oklch(60% 0.024 262);
-    --n-code-keyword: oklch(76% 0.13 324);
-    --n-code-string: oklch(80% 0.13 148);
-    --n-code-number: oklch(81% 0.12 62);
-    --n-code-function: oklch(78% 0.12 258);
-    --n-code-type: oklch(82% 0.1 210);
-    --n-code-variable: oklch(82% 0.09 32);
-    --n-code-tag: oklch(77% 0.13 22);
-    --n-code-attr: oklch(85% 0.11 92);
-    --n-code-meta: oklch(70% 0.05 262);
-    --n-code-add: oklch(80% 0.14 152);
-    --n-code-del: oklch(75% 0.15 25);
-  }
 }
 
 /*

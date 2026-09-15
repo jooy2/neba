@@ -48,7 +48,7 @@ registerLanguage('elixir', elixir);
 
 Which palette the block wears, independent of the page's light and dark.
 
-Four are the library's own: `dark` is the default, `light` is its counterpart, `auto` follows the page, and `mono` drops the hues entirely and carries the structure in weight and muting. Eight more are ports kept at their published values: `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`.
+Four are the library's own: `dark` is the default, `light` is its counterpart, `auto` follows the nearest `.dark`, `.light` or `data-theme` root, and the system setting where there is none, and `mono` drops the hues entirely and carries the structure in weight and muting. Eight more are ports kept at their published values: `one-dark`, `dracula`, `monokai`, `nord`, `night-owl`, `gruvbox`, `github` and `solarized-light`.
 
 <Demo src="code-block/theme" minHeight="480">
 

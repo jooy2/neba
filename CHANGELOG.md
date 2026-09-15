@@ -192,6 +192,8 @@
 
 ### Fixed
 
+- **A `CodeBlock` with `theme="auto"` follows the nearest theme root.** It turned dark through a selector that asked whether any ancestor was dark, so a light panel inside a dark page drew a dark block, and an `html` forced to light under a dark system setting drew one too. The two palettes are tokens on every theme root now, as the colour tokens are, and `auto` reads whichever the nearest root declares.
+
 - **Only the `header` and the `footer` a `PageLayout` was handed are its bars.** Every Header and Footer inside a layout registered as its bar, so an article's own header overwrote the site header's height with its own and, once it unmounted, left the layout with none. A bar switched between `static` and `fixed` was not measured again either. The two the layout places are the only ones measured now, and a change of `position` measures again.
 
 - **A `WindowPane` can always be grabbed again, and takes a new size from its props.** A fixed or absolute window could be dragged until its title bar, its only handle, left the screen or its container. It is held now so that the bar stays inside. A size given by a resize also outranked `width` and `height` for good; a `width` or `height` passed afterwards replaces it.
