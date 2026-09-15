@@ -195,6 +195,7 @@ Wrappers that make anything move. Every one takes the same settings: `duration` 
 
 ## Optional
 
+- [Browser support](https://neba.cdget.com/browser-support): Chrome and Edge 111, Firefox 113 and Safari 16.4 or later. The range is set by `color-mix()` in the colour tokens and by the range Base UI declares, so transpiling or polyfilling cannot lower it. Lists the details that differ in older browsers inside the range, such as the `:has()` focus ring on fields before Firefox 121.
 - [Changelog](https://neba.cdget.com/changelog): What changed in each release, including the setup changes a consumer has to act on.
 - [Korean documentation](https://neba.cdget.com/ko/): The same site in Korean. Every path above works with a `/ko` prefix.
 - [GitHub repository](https://github.com/jooy2/neba): Source, issues and contribution guide.

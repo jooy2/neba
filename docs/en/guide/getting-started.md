@@ -151,4 +151,4 @@ For light, use `data-theme="light"` or `class="light"`. `.dark` is supported alo
 
 ## Browser support
 
-The tokens use `oklch()`, `color-mix()` and `backdrop-filter`. That means Chrome, Safari and Firefox from 2023 onwards. Where `backdrop-filter` is missing only the blur drops out; everything else still works.
+Neba supports Chrome and Edge 111, Firefox 113 and Safari 16.4 or later. [Browser support](../browser-support) covers what sets that range and which details differ inside it.

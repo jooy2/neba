@@ -151,4 +151,4 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 ## 브라우저 요구사항
 
-토큰은 `oklch()`, `color-mix()`, `backdrop-filter`를 사용합니다. 2023년 이후의 Chrome, Safari, Firefox에서 동작합니다. `backdrop-filter`가 없는 환경에서는 흐림 효과만 빠지고 나머지는 정상 동작합니다.
+Chrome과 Edge 111, Firefox 113, Safari 16.4 이상을 지원합니다. 이 범위를 정하는 요소와 범위 안에서 달라지는 세부 표현은 [브라우저 지원](../browser-support)에 정리했습니다.
