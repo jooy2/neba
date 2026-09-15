@@ -212,7 +212,7 @@ Questions from the batch pushed on 2026-09-15, labelled I and J, and the two car
 
 ## 4. Optimisation
 
-- [x] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. Decided: (a) `terser` is a devDependency and `scripts/minify.mjs` runs it with `keep_fnames: /^[A-Z]/`, which adds 239 B gzipped across `dist/`.
+- [x] **107** [decision] **Build**: terser strips function names, so every `forwardRef` in the published build is anonymous and consumers' React DevTools and warning stacks show only `ForwardRef`. `keep_fnames: /^[A-Z]/` or `displayName` adds a little to the bundle. `terser.config.json:3-9`. Decided: (a) `terser` is a devDependency and `scripts/minify.mjs` runs it with `keep_fnames: /^[A-Z]/`, which adds 239 B gzipped across `dist/`. I1 approved: `terser-glob`, which nothing ran any more, is removed from `devDependencies`.
 - [x] **108** i18n had two placeholder fillers; the old `fill` is gone.
 - [x] **109** **AreaChart, BarChart**: the `stacked="full"` normalisation is duplicated in both files. Move it into `internal/` while fixing 129. `AreaChart.tsx:85-107`, `BarChart.tsx:117-136` Done with 129: `toFullShares` in `internal/chart.ts`, applied by the frame.
 - [x] **110** responsive.ts `lengthOf` duplicated `toLength`.

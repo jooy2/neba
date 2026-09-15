@@ -87,9 +87,6 @@ importers:
       terser:
         specifier: ^5.51.2
         version: 5.51.2
-      terser-glob:
-        specifier: ^1.2.1
-        version: 1.2.1
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
@@ -1937,10 +1934,6 @@ packages:
   mdast-util-to-hast@13.2.1:
     resolution: {integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==}
 
-  meow@14.1.0:
-    resolution: {integrity: sha512-EDYo6VlmtnumlcBCbh1gLJ//9jvM/ndXHfVXIFrZVr6fGcwTUyCTFNTLCKuY3ffbK8L/+3Mzqnd58RojiZqHVw==}
-    engines: {node: '>=20'}
-
   micromark-util-character@2.1.1:
     resolution: {integrity: sha512-wv8tdUTJ3thSFFFJKtpYKOYiGP2+v96Hvk4Tu8KpCAsTMs6yi+nVmGh1syvSCsaxz45J6Jbw+9DD6g97+NV67Q==}
 
@@ -2274,11 +2267,6 @@ packages:
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
-
-  terser-glob@1.2.1:
-    resolution: {integrity: sha512-GP/NCND6cnvhSvxKZVp6SVyzYhca5VnliToN/vTvXOTbbYvO9L8+W4e89tRqe5RRZNCwZCUoeGaE2/qQwwDIPg==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
 
   terser@5.51.2:
     resolution: {integrity: sha512-bWnjSNscmuI+GJze6ZupnHP8G/cTcsJF+bXCeQknk2SHQsgbNJnLrqiH9jZ2W4STPVXH2mDKKRX3iwPhc9Cn/Q==}
@@ -4258,8 +4246,6 @@ snapshots:
       unist-util-visit: 5.1.0
       vfile: 6.0.3
 
-  meow@14.1.0: {}
-
   micromark-util-character@2.1.1:
     dependencies:
       micromark-util-symbol: 2.0.1
@@ -4534,12 +4520,6 @@ snapshots:
   tailwindcss@4.3.3: {}
 
   tapable@2.3.3: {}
-
-  terser-glob@1.2.1:
-    dependencies:
-      glob: 13.0.6
-      meow: 14.1.0
-      terser: 5.51.2
 
   terser@5.51.2:
     dependencies:
