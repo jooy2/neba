@@ -35,7 +35,7 @@ Pass `previousValue` and the change against the current value is calculated and 
 
 </Demo>
 
-The figure and the delta change shape as well as colour: a rising arrow, a falling one, a short dash when nothing moved. Direction is never carried by colour alone.
+The delta changes shape as well as colour: a rising arrow, a falling one, a short dash when nothing moved. Direction is never carried by colour alone.
 
 ### icon · unit · caption · align
 

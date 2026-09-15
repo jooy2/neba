@@ -22,7 +22,7 @@ import { BarChart } from 'neba';
 
 The data model is the one every chart shares: `series`, `categories`, and a `null` that means a gap rather than a zero. It is written out on the [LineChart](./line-chart#the-data) page.
 
-A bar's **length** is its value, which is why its axis starts at zero and cannot be talked out of it: crop the scale and a bar twice as long stops meaning twice as much. Where the categories have a natural order and the shape of the change is the point, a [LineChart](./line-chart) is the better mark.
+A bar's **length** is its value, which is why its axis includes zero by default. `yAxis.min` and `yAxis.max` still pin the ends, but a cropped scale makes a bar twice as long stop meaning twice as much. Where the categories have a natural order and the shape of the change is the point, a [LineChart](./line-chart) is the better mark.
 
 ## Props
 

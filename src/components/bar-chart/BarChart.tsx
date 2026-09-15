@@ -71,7 +71,7 @@ export interface BarChartProps extends CartesianChartProps {
  * Lengths, compared.
  *
  * A bar says *how much*, and it says it by being longer — which is the whole
- * reason its axis starts at zero and cannot be talked out of it. Crop the scale
+ * reason its axis includes zero unless `yAxis` pins an end. Crop the scale
  * and a bar twice as long stops meaning twice as much, and the reader has no
  * way to know it happened. Reach for a [LineChart](./line-chart) when what
  * matters is the shape of a change rather than the size of each value.

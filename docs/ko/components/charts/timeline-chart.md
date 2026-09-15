@@ -86,5 +86,5 @@ import { TimelineChart } from 'neba';
 ## 접근성
 
 - 데이터는 `label`을 caption으로 하는 **화면에 보이지 않는 표**로도 렌더링됩니다. span 하나가 한 행이고, 그 행이 속한 행 이름 아래에 놓입니다.
-- plot에 focus할 수 있습니다. `←`·`→`로 데이터 순서대로 span을 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 tooltip을 해제합니다.
+- plot에 focus할 수 있습니다. `↑`·`↓`로 데이터 순서대로 span을 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 tooltip을 해제합니다.
 - 포인터는 중심이 가장 가까운 span이 아니라 **안에 들어와 있는** span을 고릅니다. 긴 막대의 hover를 옆의 짧은 막대가 가로채지 않습니다.

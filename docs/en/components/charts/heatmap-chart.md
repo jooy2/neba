@@ -24,7 +24,7 @@ import { HeatmapChart } from 'neba';
 
 ## The data
 
-The `series` shape is the one every chart shares: see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid or a **group** of the treemap, `y` is the magnitude, and `x` names the column or the tile.
+The `series` shape is the one every chart shares: see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid. A treemap packs every series' tiles together by size, so there a series names its tiles in the table rather than keeping them in one place. `y` is the magnitude, and `x` names the column or the tile.
 
 A `null` is a gap and the cell is left as surface. It is not drawn as the bottom of the scale, because "nothing happened" and "the least of anything" are two different readings and only one of them is in the data.
 

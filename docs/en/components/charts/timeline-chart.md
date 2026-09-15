@@ -86,5 +86,5 @@ A row takes its palette slot from its place in the `series` array. `series.color
 ## Accessibility
 
 - The data is also rendered as a **visually hidden table**, captioned with `label`, with one row per span under the name of the row it belongs to.
-- The plot is focusable; `←` / `→` walk the spans in the order the data was given, `Home` / `End` jump to the ends, `Escape` clears the tooltip.
+- The plot is focusable; `↑` / `↓` walk the spans in the order the data was given, `Home` / `End` jump to the ends, `Escape` clears the tooltip.
 - The pointer picks the span it is **inside** rather than the one with the nearest centre, so a long bar is not stolen by a short neighbour.

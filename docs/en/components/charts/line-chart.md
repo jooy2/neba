@@ -45,6 +45,7 @@ type NebaChartDatum = number | null | NebaChartPoint;
 interface NebaChartPoint {
   x?: string | number | Date; // its place on the category axis
   y: number | null; // the value
+  z?: number; // a second magnitude: a bubble's radius, a tile's weight
   color?: string; // overrides the series colour for this point
   label?: ReactNode; // what the tooltip says instead of the number
 }
@@ -105,6 +106,8 @@ A line chart crops its value axis to the data, because a line encodes a _positio
 </Demo>
 
 ### connectNulls
+
+Draws the line straight through a `null` instead of breaking at it. Leave it off unless the gap comes from how the data was collected, because a bridged gap is a value the chart made up.
 
 <Demo src="line-chart/gaps">
 

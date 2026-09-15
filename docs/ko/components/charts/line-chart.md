@@ -45,6 +45,7 @@ type NebaChartDatum = number | null | NebaChartPoint;
 interface NebaChartPoint {
   x?: string | number | Date; // category 축에서의 위치
   y: number | null; // 값
+  z?: number; // 두 번째 크기: bubble의 반지름, 타일의 무게
   color?: string; // 이 점만 series 색을 덮어씁니다
   label?: ReactNode; // 숫자 대신 tooltip에 쓸 내용
 }
@@ -105,6 +106,8 @@ LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 �
 </Demo>
 
 ### connectNulls
+
+`null`에서 선을 끊지 않고 곧게 이어 그립니다. 데이터를 모으는 방식 때문에 생긴 빈틈이 아니라면 켜지 마세요. 이어 그린 구간은 차트가 지어낸 값입니다.
 
 <Demo src="line-chart/gaps">
 

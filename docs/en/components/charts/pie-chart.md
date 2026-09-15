@@ -37,7 +37,7 @@ A pie has one series, so it takes `data` directly rather than an array of series
 />
 ```
 
-Slices are drawn in the order they are given and are not re-sorted, so a chart that is refiltered keeps every category the colour and the position it had.
+Slices are drawn in the order they are given and are not re-sorted. A slice's colour follows its place in `data`, so a filter that drops one moves every slice after it onto the next colour; a point's own `color` holds it.
 
 ## Props
 
