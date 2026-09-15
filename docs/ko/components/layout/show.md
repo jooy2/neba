@@ -47,7 +47,7 @@ import { Show } from 'neba';
 
 ### 상자를 더하지 않습니다
 
-wrapper는 `display: contents`입니다. 그래서 [GridContainer](./grid)와 [Grid](./grid) 사이의 `Show`는 셀을 셀로 남겨 두고, flex row 안의 `Show`는 children을 flex item으로 남겨 둡니다. padding이나 배경처럼 스타일로 준 것은 내려앉을 곳이 없으므로, 안쪽 요소에 주거나 `render`로 요소를 지정하세요.
+`render`가 없으면 wrapper는 `display: contents`입니다. 그래서 [GridContainer](./grid)와 [Grid](./grid) 사이의 `Show`는 셀을 셀로 남겨 두고, flex row 안의 `Show`는 children을 flex item으로 남겨 둡니다. padding이나 배경처럼 스타일로 준 것은 내려앉을 곳이 없으므로, 안쪽 요소에 주거나 `render`로 요소를 지정하세요.
 
 <Demo src="show/transparent">
 
@@ -71,7 +71,7 @@ return wide ? <Map /> : <StaticImage />;
 
 ### render
 
-`render`는 요소를 지정합니다. 테이블이나 리스트 안의 `Show`에 필요한 것으로, `<tr>`과 `<td>` 사이에 `<div>`는 올 수 없기 때문입니다.
+`render`는 요소를 지정합니다. 테이블이나 리스트 안의 `Show`에 필요한 것으로, `<tr>`과 `<td>` 사이에 `<div>`는 올 수 없기 때문입니다. 지정한 요소는 자기 상자를 그대로 가지므로, `<td>`는 여백과 테두리를 유지하고 숨기는 동작만 더해집니다.
 
 ```tsx
 <tr>

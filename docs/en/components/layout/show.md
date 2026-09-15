@@ -47,7 +47,7 @@ Given together they are a floor and a ceiling: `above="sm" below="lg"` is drawn 
 
 ### It adds no box
 
-The wrapper is `display: contents`, so a `Show` between a [GridContainer](./grid) and a [Grid](./grid) leaves the cell a cell, and one inside a flex row leaves its children flex items. Nothing given to it to style (padding, a background) has anywhere to land; put those on an element inside it, or name the element with `render`.
+Without `render` the wrapper is `display: contents`, so a `Show` between a [GridContainer](./grid) and a [Grid](./grid) leaves the cell a cell, and one inside a flex row leaves its children flex items. Nothing given to it to style (padding, a background) has anywhere to land; put those on an element inside it, or name the element with `render`.
 
 <Demo src="show/transparent">
 
@@ -71,7 +71,7 @@ return wide ? <Map /> : <StaticImage />;
 
 ### render
 
-`render` names the element, which is what a `Show` inside a table or a list needs: a `<div>` is not allowed between a `<tr>` and a `<td>`.
+`render` names the element, which is what a `Show` inside a table or a list needs: a `<div>` is not allowed between a `<tr>` and a `<td>`. The element keeps its own box, so a `<td>` keeps its padding and border and only the hiding is added.
 
 ```tsx
 <tr>

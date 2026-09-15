@@ -57,18 +57,19 @@ export interface ShowProps extends React.ComponentPropsWithoutRef<'div'> {
  * {useBreakpoint('md') && <Map />}
  * ```
  *
- * The wrapper is `display: contents`, so it adds no box: a `Show` inside a
- * `GridContainer` leaves its children as grid items, and one inside a flex row
- * leaves them as flex items. Nothing it is given to style — padding, a
- * background — would have anywhere to land, so put those on an element inside
- * it or name the element with `render`.
+ * Without `render` the wrapper is `display: contents`, so it adds no box: a
+ * `Show` inside a `GridContainer` leaves its children as grid items, and one
+ * inside a flex row leaves them as flex items. Nothing it is given to style —
+ * padding, a background — would have anywhere to land, so put those on an
+ * element inside it. An element named with `render` keeps its own box, so a
+ * `<td>` keeps its padding and border and only the hiding is added.
  */
 export const Show = React.forwardRef<HTMLDivElement, ShowProps>(function Show(
   { above, below, render, className, children, ...props },
   ref
 ) {
   const classNames = cx(
-    'contents',
+    render ? '' : 'contents',
     above ? hiddenBelowClasses[above] : '',
     below ? hiddenFromClasses[below] : '',
     className ?? ''

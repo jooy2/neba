@@ -124,6 +124,25 @@ describe('Show', () => {
     expect(marker(screen).tagName).toBe('TD');
   });
 
+  // `contents` went on the element `render` named too, which takes a table
+  // cell's padding, border and background away, and a list item's marker.
+  it('leaves the element it was told to render with a box of its own', async () => {
+    const screen = await render(
+      <table>
+        <tbody>
+          <tr>
+            <Show above="md" render={<td />}>
+              <span data-testid="content">Cell</span>
+            </Show>
+          </tr>
+        </tbody>
+      </table>
+    );
+
+    expect(marker(screen)).not.toHaveClass('contents');
+    expect(marker(screen).className).toContain('max-md:hidden');
+  });
+
   it('keeps the className and the style it was handed', async () => {
     const screen = await render(
       <Show above="md" className="custom" style={{ color: 'rgb(1, 2, 3)' }}>
