@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.14.0 (2026-09-15)
+
 ### Breaking changes
 
 - **Under a reduced-motion preference an `Animate*` lands on its last frame.** `animation: none` switched every effect off, so content leaving with `mode="out"` stayed on screen, an `AnimateRotate` rested at `0deg` rather than at its `to`, and `animationend` never fired, so a component unmounted on it never went. A running effect is cut to a one-millisecond run that ends on its last frame now. An effect still waiting for its trigger, or held with `paused`, shows the element as it is, and a float stops. Content that should stay visible under reduced motion while it leaves should be rendered conditionally rather than faded out.
@@ -86,7 +88,31 @@
 
 ### Where the bytes went
 
-`Image` is 7.1 kB → 8.6 kB and `Gallery` 10.4 kB → 11.4 kB, gzipped with `react` external. The 1.5 kB is the props above, and all of it is in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL.
+| What you import               | 1.13.0   | 1.14.0   |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.2 kB   | 5.2 kB   |
+| `Chip`                        | 3.4 kB   | 3.5 kB   |
+| `LineChart`                   | 11.8 kB  | 12.7 kB  |
+| `CodeBlock`                   | 5.1 kB   | 5.6 kB   |
+| `Image`                       | 7.1 kB   | 8.9 kB   |
+| `Gallery`                     | 10.4 kB  | 11.8 kB  |
+| a whole page shell            | 29.2 kB  | 30.0 kB  |
+| 12 components — a typical app | 71.0 kB  | 71.6 kB  |
+| 12 components, with Korean    | 73.8 kB  | 75.0 kB  |
+| 25 components — a large one   | 116.9 kB | 118.5 kB |
+| all exports                   | 265.8 kB | 279.8 kB |
+
+`Image` and `Gallery` are the rows that moved most. 1.5 kB of `Image`'s is the props above, all of it in `Image` itself: the quarter-turn layout and its preview box, the `position` reader that follows a turn and a mirror, the blurred letterbox, the picture stand-in and its object URL. `Gallery` carries 1.0 kB of that because it draws an `Image`, and most of the rest of its growth is a tile named by its caption and answering the keyboard focus the way it answers the pointer.
+
+`LineChart` is the chart frame and `internal/chart.ts` doing more, and every chart carries both: a tap pins the tooltip, the left axis is named above the plot, the plot is described in one sentence, `height` takes any CSS length, a hidden series is remembered by name, and a full-stacked chart writes its numbers through `format`.
+
+`CodeBlock` checks whether it scrolls before it becomes a region, tries a highlighter again after a failed load, and fetches the grammars a language embeds.
+
+Registering a language costs 3.4 kB now against 2.8 kB. Words that were hardcoded English are in every language's module: those of a `Combobox`, a `ToastProvider` and the chart tables, a `FilePicker`, each `OtpField` slot, a `Panes` handle, a `Timeline` step, a `WindowPane`'s resize corner, an unlabelled `Overlay`, a failed `Image` and a `DataTable` row with no group.
+
+All exports grew 14.0 kB, and no dependency was added. Measured one module at a time, the largest shares are `Image` at 1.7 kB, the chart frame and its arithmetic at 1.4 kB, `DataTable` at 0.8 kB, and the calendar, `WindowPane` and `Sidebar` at 0.4 kB each. The rest is a few hundred bytes on each component the fixes below touch.
+
+`neba/styles.css` is 1.8 kB larger, 24.1 kB gzipped. It carries the classes the new props and fixes use, `CodeBlock`'s `auto` tokens written out for each theme root, the forced-colour rules and the larger hit area on small controls.
 
 ### Added
 
