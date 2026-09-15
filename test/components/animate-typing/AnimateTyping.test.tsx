@@ -136,6 +136,67 @@ describe('AnimateTyping', () => {
     });
 
     /*
+     * A pause tears the loop down, and the loop it resumed with started on its
+     * first pass, so every pause gave a repeat one pass more than it asked for.
+     * A minute a character and a minute's hold, for the reason given below; the
+     * deletes are a few milliseconds each and are never asserted in the middle.
+     */
+    it('keeps count of its passes across a pause', async () => {
+      const step = 60_000;
+      const typing = (paused: boolean) => (
+        <AnimateTyping
+          text="ab"
+          duration={step * 2}
+          hold={step}
+          repeat={2}
+          erase
+          paused={paused}
+          caret={false}
+          data-testid="typing"
+        />
+      );
+      const screen = await render(typing(false));
+      const root = screen.getByTestId('typing').element();
+
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(step);
+      await expect.poll(() => typed(root)).toBe('ab');
+
+      // The hold, then the line deleted, which puts it on its second pass.
+      await vi.advanceTimersByTimeAsync(step + 1000);
+      await expect.poll(() => typed(root)).toBe('');
+
+      await screen.rerender(typing(true));
+      await screen.rerender(typing(false));
+
+      await vi.advanceTimersByTimeAsync(step * 2);
+      await expect.poll(() => typed(root)).toBe('ab');
+
+      // The second pass is the last, so nothing is deleted after its hold.
+      await vi.advanceTimersByTimeAsync(step + 1000);
+      await expect.poll(() => typed(root)).toBe('ab');
+    });
+
+    // Keyed on the length of the text, a new string of the same length was drawn
+    // whole instead of being typed.
+    it('types a new string of the same length instead of showing it whole', async () => {
+      const screen = await render(
+        <AnimateTyping text="abc" speed={200} caret={false} data-testid="typing" />
+      );
+      const root = screen.getByTestId('typing').element();
+
+      await vi.runAllTimersAsync();
+      await expect.poll(() => typed(root)).toBe('abc');
+
+      await screen.rerender(
+        <AnimateTyping text="xyz" duration={180_000} caret={false} data-testid="typing" />
+      );
+      await vi.advanceTimersByTimeAsync(0);
+
+      await expect.poll(() => typed(root)).toBe('x');
+    });
+
+    /*
      * A code point is not a character: a family emoji is five of them, and a
      * typewriter that advanced by code points would spend four frames drawing
      * fragments that mean nothing on their own. So every frame is asserted, not

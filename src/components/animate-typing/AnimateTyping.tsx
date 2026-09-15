@@ -116,14 +116,17 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
     const [shown, setShown] = React.useState(0);
 
     /**
-     * How far along it is, outside React's state.
+     * Where the performance is, outside React's state: how many characters are
+     * showing, which pass it is on, and whether it is deleting.
      *
      * The typing loop is a chain of timeouts rather than a render, so pausing
      * tears it down and resuming builds a new one — and a new one has to know
-     * where the old one stopped. Reading `shown` would put the effect in a loop
-     * with its own output.
+     * where the old one stopped, all three of those included. Keeping only the
+     * count started a resumed loop on its first pass, so every pause gave a
+     * repeat one pass more than it asked for. Reading `shown` would put the
+     * effect in a loop with its own output.
      */
-    const progress = React.useRef(0);
+    const progress = React.useRef({ count: 0, pass: 1, deleting: false });
 
     /**
      * `duration` is honoured as the time for the whole string, because a caller
@@ -136,9 +139,11 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
     const deleteDelay = 1000 / Math.max(eraseSpeed ?? speed * 2, 1);
 
     // A new string starts a new performance rather than continuing the last.
+    // Keyed on the string itself: keyed on its length, a replacement of the same
+    // length appeared whole.
     React.useEffect(() => {
-      progress.current = 0;
-    }, [total]);
+      progress.current = { count: 0, pass: 1, deleting: false };
+    }, [source]);
 
     React.useEffect(() => {
       if (reduced || total === 0) {
@@ -153,7 +158,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
         // Waiting is empty, not finished: a typewriter that showed its whole
         // string until it scrolled into view and then blanked would be worse
         // than no effect at all.
-        progress.current = 0;
+        progress.current = { count: 0, pass: 1, deleting: false };
         setShown(0);
 
         return;
@@ -165,13 +170,10 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
 
       let cancelled = false;
       let timer: ReturnType<typeof setTimeout>;
-      let count = progress.current;
-      let pass = 1;
-      let deleting = false;
-
+      const position = progress.current;
       const passes = repeat === 'infinite' ? Infinity : Math.max(1, repeat);
 
-      if (count >= total && passes === 1) {
+      if (position.count >= total && position.pass >= passes && !position.deleting) {
         return;
       }
 
@@ -180,58 +182,68 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
           return;
         }
 
-        if (deleting) {
-          count -= 1;
-          progress.current = count;
-          setShown(count);
+        if (position.deleting) {
+          position.count -= 1;
+          setShown(position.count);
 
-          if (count <= 0) {
-            deleting = false;
-            pass += 1;
+          if (position.count <= 0) {
+            position.deleting = false;
+            position.pass += 1;
           }
 
-          timer = setTimeout(step, deleting ? deleteDelay : typeDelay);
+          timer = setTimeout(step, position.deleting ? deleteDelay : typeDelay);
 
           return;
         }
 
-        count += 1;
-        progress.current = count;
-        setShown(count);
+        // A loop resumed at the end of a pass has nothing left to type before
+        // the hold.
+        if (position.count < total) {
+          position.count += 1;
+          setShown(position.count);
+        }
 
-        if (count < total) {
+        if (position.count < total) {
           timer = setTimeout(step, typeDelay);
 
           return;
         }
 
-        if (pass >= passes) {
+        if (position.pass >= passes) {
           return;
         }
 
         if (erase) {
-          deleting = true;
+          position.deleting = true;
           timer = setTimeout(step, hold);
 
           return;
         }
 
-        pass += 1;
         timer = setTimeout(() => {
           if (cancelled) {
             return;
           }
 
-          count = 0;
-          progress.current = 0;
+          // Counted when the line clears rather than when the hold begins, so a
+          // pause inside the hold does not skip the pass that follows it.
+          position.count = 0;
+          position.pass += 1;
           setShown(0);
           timer = setTimeout(step, typeDelay);
         }, hold);
       };
 
-      setShown(count);
-      // Resuming picks up at the next character; starting waits out the delay.
-      timer = setTimeout(step, count === 0 ? delay : typeDelay);
+      setShown(position.count);
+      // Resuming picks up at the next step; starting waits out the delay.
+      timer = setTimeout(
+        step,
+        position.count === 0 && position.pass === 1
+          ? delay
+          : position.deleting
+            ? deleteDelay
+            : typeDelay
+      );
 
       return () => {
         cancelled = true;
@@ -242,6 +254,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
       run.offscreen,
       paused,
       reduced,
+      source,
       total,
       typeDelay,
       deleteDelay,

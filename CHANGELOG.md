@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **An `AnimateTyping` keeps its place across a pause, and types a new string of the same length.** Pausing tore the loop down, and the one that resumed started on its first pass and never deleting, so every pause gave `repeat={2} erase` another pass, and a pause in the middle of a delete typed forward instead. A new string was also noticed only by its length, so one of the same length replaced the last at once without being typed. The pass and the direction are kept with the count now, and any new string starts a new performance.
+
 - **A hover-triggered animation does not start again as the focus moves inside it.** React's focus events bubble, so a Tab from one field of a form inside `<AnimateFade trigger="hover">` to the next reached the trigger as a new focus and rewound the effect, and an endless effect stopped and started again on the way. A focus or a blur that stays inside the element is ignored now, on every `Animate*` that takes a hover trigger.
 
 - **An `AnimateMarquee` with `trigger="hover"` moves while the pointer is on it.** `pauseOnHover`, which is on by default, stops the strip under the pointer and while the focus is inside it, and those are exactly what start a hover trigger, so the strip never moved at all. It no longer applies under a hover trigger.
