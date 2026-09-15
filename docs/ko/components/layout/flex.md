@@ -38,7 +38,7 @@ import { Flex } from 'neba';
 
 ### spacing
 
-거터이며 Tailwind의 spacing 스케일 위에 있습니다. `spacing={4}`는 `1rem`으로 `gap-4`와 같은 길이입니다. [GridContainer](./grid)와 같은 prop, 같은 스케일이라 숫자 하나가 두 컴포넌트에서 같은 길이를 뜻하며, 다른 것들처럼 map도 받습니다. `rowSpacing`과 `columnSpacing`은 한 축만 정하는데, 각각 `spacing`을 대체하는 것이 아니라 그 _위에_ 덮이므로 한 breakpoint만 적어도 나머지에서 거터가 사라지지 않습니다.
+거터이며 Tailwind의 spacing 스케일 위에 있습니다. `spacing={4}`는 `1rem`으로 `gap-4`와 같은 길이입니다. [GridContainer](./grid)와 같은 prop, 같은 스케일이라 숫자 하나가 두 컴포넌트에서 같은 길이를 뜻하며, 다른 것들처럼 map도 받습니다. `rowSpacing`은 세로 간격, `columnSpacing`은 가로 간격이며 `direction`과 상관없이 그렇습니다. 각각 `spacing`을 대체하는 것이 아니라 그 _위에_ 덮이므로 한 breakpoint만 적어도 나머지에서 거터가 사라지지 않습니다.
 
 <Demo src="flex/spacing">
 

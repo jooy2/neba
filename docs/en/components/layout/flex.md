@@ -38,7 +38,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The per-
 
 ### spacing
 
-The gutter, on Tailwind's spacing scale: `spacing={4}` is `1rem`, the same length `gap-4` is. The same prop and the same scale a [GridContainer](./grid) uses, so one number means one length across both, and it takes a map like everything else. `rowSpacing` and `columnSpacing` set one axis; each is laid _over_ `spacing` rather than replacing it, so naming one breakpoint does not drop the gutter everywhere else.
+The gutter, on Tailwind's spacing scale: `spacing={4}` is `1rem`, the same length `gap-4` is. The same prop and the same scale a [GridContainer](./grid) uses, so one number means one length across both, and it takes a map like everything else. `rowSpacing` is the vertical gap and `columnSpacing` the horizontal one, whatever `direction` is; each is laid _over_ `spacing` rather than replacing it, so naming one breakpoint does not drop the gutter everywhere else.
 
 <Demo src="flex/spacing">
 

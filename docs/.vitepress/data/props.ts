@@ -12316,16 +12316,16 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'rowSpacing',
       type: RESPONSIVE,
       description: {
-        ko: '줄바꿈된 줄 사이의 거터만. spacing 위에 덮어씌워지므로, 한 breakpoint만 적어도 나머지에서 spacing이 사라지지 않습니다',
-        en: 'The gutter between wrapped lines only. Laid over spacing rather than replacing it, so naming one breakpoint does not drop the gutter elsewhere'
+        ko: '세로 간격만. direction과 상관없이 행에서는 줄바꿈된 줄 사이, 열에서는 자식 사이입니다. spacing 위에 덮어씌워지므로, 한 breakpoint만 적어도 나머지에서 spacing이 사라지지 않습니다',
+        en: 'The vertical gap only, whatever direction is: between wrapped lines in a row, between the children of a column. Laid over spacing rather than replacing it, so naming one breakpoint does not drop the gutter elsewhere'
       }
     },
     {
       name: 'columnSpacing',
       type: RESPONSIVE,
       description: {
-        ko: '줄을 따라가는 거터만. rowSpacing과 같은 방식으로 spacing 위에 덮어씌워집니다',
-        en: 'The gutter along the row only. Laid over spacing the same way rowSpacing is'
+        ko: '가로 간격만. direction과 상관없이 행에서는 자식 사이, 열에서는 줄바꿈된 줄 사이입니다. rowSpacing과 같은 방식으로 spacing 위에 덮어씌워집니다',
+        en: 'The horizontal gap only, whatever direction is: between the children of a row, between wrapped lines in a column. Laid over spacing the same way rowSpacing is'
       }
     },
     {

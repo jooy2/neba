@@ -50,9 +50,15 @@ export interface FlexProps extends React.ComponentPropsWithoutRef<'div'> {
    * @default 0
    */
   spacing?: NebaResponsive<number>;
-  /** The gutter between wrapped lines only. Falls back to `spacing`. */
+  /**
+   * The vertical gap only, whatever `direction` is: between wrapped lines in a
+   * row and between the children of a column. Falls back to `spacing`.
+   */
   rowSpacing?: NebaResponsive<number>;
-  /** The gutter along the row only. Falls back to `spacing`. */
+  /**
+   * The horizontal gap only, whatever `direction` is: between the children of a
+   * row and between wrapped lines in a column. Falls back to `spacing`.
+   */
   columnSpacing?: NebaResponsive<number>;
   /** How the row distributes the space its children did not use. */
   justifyContent?: NebaJustifyContent;
