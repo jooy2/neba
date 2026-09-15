@@ -21,11 +21,7 @@ import { Calendar } from 'neba';
 
 Native `<div>` attributes pass through to the root. The shared axes are described in [prop conventions](../../design/prop-conventions).
 
-### What it is not
-
-A scheduler. The cells are the control ladder's heights (32px at `md`), so `renderDay` is room for a dot, a count or a bar under the number, and not for a day's worth of entries. A component that drew those would need a different grid, and calling this one that would be a promise the sizes cannot keep.
-
-Use it for choosing, filtering and marking. Reach for [DatePicker](./date-picker) when the date should be behind a field instead.
+When the date should be behind a field instead, use [DatePicker](./date-picker).
 
 ## Examples
 
@@ -39,9 +35,9 @@ Use it for choosing, filtering and marking. Reach for [DatePicker](./date-picker
 | `multiple`         | `Date[]`                                     |
 | `range`            | `{ start: Date \| null, end: Date \| null }` |
 
-In `multiple`, clicking a day that is already held takes it back out: the only way a pointer can undo one.
+In `multiple`, clicking a day that is already held takes it back out.
 
-In `range`, the first click sets the start and the second sets the end. A click **below** the start begins a new span rather than inverting the old one, because inverting is the behaviour that makes a reader believe they mis-clicked. Once a span is finished, the next click starts another.
+In `range`, the first click sets the start and the second sets the end. A click **below** the start begins a new span rather than inverting the old one. Once a span is finished, the next click starts another.
 
 <Demo src="calendar/modes">
 
@@ -51,9 +47,7 @@ In `range`, the first click sets the start and the second sets the end. A click 
 
 ### renderDay
 
-Whatever it returns is drawn inside the day cell, under the number. The cell is `position: relative`, so an absolutely positioned mark lands where you put it.
-
-A hook rather than an `events` prop: the caller is the only one who knows what a day _has_ on it, and taking a data shape here would mean having an opinion about one.
+Whatever it returns is drawn inside the day cell, under the number. The cell is `position: relative`, so an absolutely positioned mark lands where you put it. A cell is as tall as a control (32px at `md`), which is room for a dot, a count or a bar and not for a day's worth of entries.
 
 <Demo src="calendar/marks">
 
@@ -71,21 +65,14 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 
 ### bordered and elevation
 
-`bordered` draws the sheet the picker's popup draws, with the same edge and the same padding for each `size`. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` gives the calendar a shadow from the same ladder as every surface, with or without the sheet, and is `0` by default: a calendar sitting in a page is not floating.
-
-## Keyboard
-
-| Key | What it does |
-| --- | --- |
-| `←` `→` `↑` `↓` | Moves by a day or a week, stepping the month at the edges; under RTL `←` is the next day |
-| `Home` / `End` | To the start or the end of the week |
-| `PageUp` / `PageDown` | By a month: with `Shift`, by a year |
-
-The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
+`bordered` draws the sheet the picker's popup draws, with the same edge and the same padding for each `size`. Turn it off for a bare grid to put inside a [Card](../surfaces/card) that already has an edge. `elevation` gives the calendar a shadow from the same ladder as every surface, with or without the sheet, and is `0` by default.
 
 ## Accessibility
 
 - The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
+- The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
+- The arrow keys move by a day or a week and step the month at the edges. Under RTL, `←` is the next day.
+- `Home` and `End` move to the start or the end of the week. `PageUp` and `PageDown` move by a month, or by a year with `Shift`.
 - A held day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number. In `multiple` and `range` mode the grid carries `aria-multiselectable`.
 - The grid is named by the month on screen, in a polite live region that says the new month again when a stepper or an arrow key changes it. The month and year buttons are named by the month and year they show and described by what pressing them does.
 - Anything `renderDay` draws is inside the cell's accessible name unless you mark it `aria-hidden`. A dot that repeats what a label already says should be hidden; a count that adds something should not.

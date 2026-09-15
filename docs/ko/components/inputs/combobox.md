@@ -28,6 +28,8 @@ import { Combobox } from 'neba';
 
 `<div>`의 native 속성은 root로 전달됩니다. 다만 `aria-label`과 `aria-labelledby`는 `<input>`의 이름이 됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
 
+팝업은 [Select](./select)의 팝업과 같습니다. `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.
+
 ### items
 
 [Select](./select)와 같은 배열 형태이며, `label`의 타입만 다릅니다.
@@ -115,21 +117,17 @@ interface ComboboxOption {
 
 함수를 넘기면 옵션마다 직접 판단합니다. label뿐 아니라 `value`까지 보거나, 단어 중간이 아니라 앞부터 맞는 것만 남기는 식입니다. 입력한 값을 추가하겠다고 제안하는 행은 어떤 경우에도 걸러지지 않습니다.
 
-## 팝업
-
-[Select](./select)의 팝업과 동일합니다. `<body>` 끝으로 portal되며 positioner에 `neba-portal` 클래스가 붙습니다.
-
 ### shortcuts
 
-Combobox에서는 이것이 유일한 통로입니다. 화살표는 highlight를 옮기고 `Escape`는 팝업을 닫고 `Enter`는 확정합니다. 이 키들은 목록의 것이라 root에 쓴 `onKeyDown`에는 아예 도달하지 않습니다.
+`shortcuts`는 키 조합과 그 조합이 할 일을 짝지어 받으며, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 합니다.
 
 ```tsx
 <Combobox label="Framework" items={frameworks} shortcuts={{ 'Mod+Enter': createAndOpen }} />
 ```
 
-조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 쓰고, `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 합니다.
+화살표는 highlight를 옮기고 `Escape`는 팝업을 닫고 `Enter`는 확정합니다. 이 키들은 root에 쓴 `onKeyDown`에 도달하지 않으므로, Combobox에서 이 키에 반응하려면 `shortcuts`를 써야 합니다.
 
-`<input>`에 붙어 목록이 키를 처리하기 **전에** 실행되지만, 목록이 하는 일을 **대신하지는** 않습니다. `Enter`에 건 shortcut은 확정과 함께 실행되지 그것을 막지 않습니다. 키를 온전히 가져야 한다면 목록이 관심 없는 조합을 쓰세요.
+shortcut은 `<input>`에 붙어 목록이 키를 처리하기 **전에** 실행되지만, 목록이 하는 일을 **대신하지는** 않습니다. `Enter`에 건 shortcut은 확정과 함께 실행되지 그것을 막지 않습니다. 키를 온전히 가져야 한다면 목록이 쓰지 않는 조합을 고르세요.
 
 ### classNames
 

@@ -27,6 +27,8 @@ import { Segment, SegmentedButton } from 'neba';
 
 `value` with `onValueChange` makes it controlled; `defaultValue` makes it uncontrolled. The set needs a name, so pass `aria-label` or `aria-labelledby`.
 
+For a row of actions rather than a choice, use [ButtonGroup](./button-group), and when there are panels underneath, use [Tabs](../surfaces/tabs). More than about five options or long labels want a [Select](./select), and a set that needs a visible label fits a [RadioGroup](./radio-group) better.
+
 ### Segment
 
 <PropsTable name="Segment" />
@@ -70,11 +72,3 @@ Stretches the set to the container width, with the segments sharing the space eq
 ## Accessibility
 
 - Renders `role="radiogroup"`. The set takes one tab stop, the arrow keys move within it, and the chosen segment carries `aria-checked`.
-- The selection tile moves via `left` · `top` · `width` · `height`, so no label is resampled. The first render and a window resize are not animated.
-
-## When to use something else
-
-- A row of actions rather than a choice is a [ButtonGroup](./button-group).
-- More than about five options, or long labels, wants a [Select](./select).
-- If there are panels underneath, it is [Tabs](../surfaces/tabs).
-- If the set needs a visible label, a [RadioGroup](./radio-group) fits better.

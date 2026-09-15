@@ -29,7 +29,7 @@ import { Rating } from 'neba';
 
 `count`는 별의 개수이자 만점이고, `precision`은 고를 수 있는 최소 단위입니다. `0.5`면 별 하나가 두 개의 hit area로 나뉘어 반 개씩 고를 수 있습니다.
 
-`precision`은 **고르는** 범위만 정합니다. `value`가 `4.3`이면 어떤 `precision`에서도 별 네 개와 3분의 1로 그려집니다. 평균은 선택이 아니고, 그것을 반올림하는 것은 받은 것과 다른 수를 보고하는 일이기 때문입니다.
+`precision`은 **고르는** 범위만 정합니다. `value`가 `4.3`이면 어떤 `precision`에서도 별 네 개와 3분의 1로 그려집니다.
 
 <Demo src="rating/precision">
 
@@ -39,9 +39,7 @@ import { Rating } from 'neba';
 
 ### readOnly
 
-`readOnly`는 컨트롤이 아니라 그림입니다. input이 하나도 남지 않고 `role="img"` 하나가 점수를 문장으로 들고 있으므로, 스무 개의 tab 정지점이 숫자 하나를 보고하는 일이 생기지 않습니다.
-
-라이브러리에서 채도를 빼지 않는 유일한 `readOnly`이기도 합니다. 붙잡아 둔 컨트롤이 아니라 값 자체를 그린 것이고, 회색 별은 점수를 쓸 수 없다는 말이 되기 때문입니다.
+`readOnly`는 컨트롤이 아니라 그림입니다. input이 하나도 렌더링되지 않고 `role="img"` 하나가 점수를 문장으로 들고 있으므로, 별이 tab 정지점을 하나도 차지하지 않습니다. 채도도 낮추지 않고 별의 색을 그대로 둡니다.
 
 <Demo src="rating/readonly">
 
@@ -51,7 +49,7 @@ import { Rating } from 'neba';
 
 ### size, color
 
-`size`는 별 하나의 높이를 독립 글리프 사다리에서 가져옵니다. `color`는 라이브러리에서 유일하게 `warning`이 기본값인 자리입니다. 별에 기대되는 호박색이기 때문입니다.
+`size`는 별 하나의 높이를 독립 글리프 사다리에서 가져옵니다. `color`의 기본값은 `warning`입니다.
 
 <Demo src="rating/appearance">
 
@@ -101,6 +99,6 @@ import { Rating } from 'neba';
 ## 접근성
 
 - 고를 수 있는 Rating은 진짜 `<input type="radio">`로 만들어진 `role="radiogroup"`입니다. 줄 전체가 tab 정지점 하나이고, 그 안에서 방향키가 움직이며, 고른 것에 `aria-checked`가 붙고, 폼 전송에 값이 실립니다.
-- 별 하나하나가 "5점 만점에 3점"처럼 읽힙니다. 개수가 아니라 분수로 말하는 이유는 별의 개수가 대부분의 언어에서 복수형이기 때문입니다.
+- 별 하나하나가 "5점 만점에 3점"처럼 읽힙니다.
 - `readOnly`는 input을 모두 없애고 `role="img"` 하나만 남깁니다.
 - 페이지의 언어로 읽히도록 `locale`을 지정하거나, `label`과 `valueLabel`에 직접 쓰세요.

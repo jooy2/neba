@@ -28,6 +28,8 @@ import { Select } from 'neba';
 
 Native `<div>` attributes pass through to the root, except `aria-label` and `aria-labelledby`, which name the trigger. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
 
+The popup renders in a portal at the end of `<body>`, so it leaves any subtree your app scoped a CSS reset to. The positioner carries a `neba-portal` class to hang that reset off. An app with Tailwind's Preflight applied globally needs nothing.
+
 When the options have to be searched, use [Combobox](./combobox); with only two or three, use [RadioGroup](./radio-group) or [SegmentedButton](./segmented-button).
 
 ### items
@@ -43,7 +45,7 @@ interface SelectOption {
 }
 ```
 
-`value` is a string or a number. It is what gets submitted with a form, so objects are not accepted: keep the identifier here and look the object up at the call site.
+`value` is a string or a number. It is what gets submitted with a form, so objects are not accepted. Keep the identifier here and look the object up at the call site.
 
 ## Examples
 
@@ -85,10 +87,6 @@ A group is a **run of adjacent options**, so the array's order is the list's ord
 
 </Demo>
 
-## The popup
-
-The popup renders in a portal at the end of `<body>`, so it leaves any subtree your app scoped a CSS reset to. The positioner carries a `neba-portal` class to hang that reset off. An app with Tailwind's Preflight applied globally needs nothing.
-
 ### classNames
 
 `className` lands on the root (the column holding the label, the trigger and the two lines under it), so the trigger is reached through `classNames.control`.
@@ -101,7 +99,7 @@ The popup renders in a portal at the end of `<body>`, so it leaves any subtree y
 />
 ```
 
-The slots are `label`, `control`, `description`, `error`, `popup` and `item`. The last two matter more than the rest: the popup renders at the end of `<body>`, so a descendant selector written against the root will not reach it and these are the only way in. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+The slots are `label`, `control`, `description`, `error`, `popup` and `item`. `popup` and `item` render at the end of `<body>`, so a descendant selector written against the root will not reach them, and these two slots are the only way in. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
 
 ## Accessibility
 

@@ -27,9 +27,9 @@ The shared axes (`size` `color`) are defined in [prop conventions](../../design/
 
 ### count, precision
 
-`count` is how many stars there are and therefore the highest score. `precision` is the smallest step that can be chosen: at `0.5` each star is split into two hit areas and half stars can be picked.
+`count` is how many stars there are and therefore the highest score. `precision` is the smallest step that can be chosen, and at `0.5` each star is split into two hit areas so half stars can be picked.
 
-`precision` bounds what can be **chosen** and nothing else. A `value` of `4.3` is drawn as four stars and a third at every precision: an average is not a choice, and rounding it to the nearest half would be reporting a different number from the one it was handed.
+`precision` bounds what can be **chosen** and nothing else. A `value` of `4.3` is drawn as four stars and a third at every precision.
 
 <Demo src="rating/precision">
 
@@ -39,9 +39,7 @@ The shared axes (`size` `color`) are defined in [prop conventions](../../design/
 
 ### readOnly
 
-`readOnly` is a picture rather than a control. No inputs are rendered at all and one `role="img"` carries the score as a sentence, so a star display never leaves twenty tab stops on a page that was reporting a number.
-
-It is also the one `readOnly` in the library that does not drain the saturation: this is not a control being held still, it is the value itself, and a row of grey stars would say the score was unavailable.
+`readOnly` makes it a picture rather than a control. No inputs are rendered at all and one `role="img"` carries the score as a sentence, so the stars take no tab stops. The stars keep their colour rather than draining the saturation.
 
 <Demo src="rating/readonly">
 
@@ -51,7 +49,7 @@ It is also the one `readOnly` in the library that does not drain the saturation:
 
 ### size, color
 
-`size` takes the height of one star from the standalone-glyph ladder. `color` is the one place in the library where the default is `warning`: the amber a star is expected to be.
+`size` takes the height of one star from the standalone-glyph ladder. `color` defaults to `warning`.
 
 <Demo src="rating/appearance">
 
@@ -101,6 +99,6 @@ Give it a `name` and the radios are submitted under it. `required` stops the for
 ## Accessibility
 
 - A choosable Rating is a `role="radiogroup"` built out of real `<input type="radio">`s: one tab stop for the row, arrow keys within it, `aria-checked` on the one that is taken, and a value in a form submission.
-- Each star is read out as "3 out of 5" rather than as "3 stars", because a count of stars is a plural in most languages and a fraction in none of them.
+- Each star is read out as "3 out of 5".
 - `readOnly` removes every input and leaves a single `role="img"`.
 - Set `locale` so the names are read in the page's language, or write them yourself with `label` and `valueLabel`.

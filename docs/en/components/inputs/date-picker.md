@@ -21,18 +21,9 @@ import { DatePicker } from 'neba';
 
 Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
 
-`value` is a `Date | null`. There is no date library underneath.
+`value` is a `Date | null`. Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local string too (`YYYY-MM-DD` for a day), so nothing shifts by a day the way `toISOString()` would. A `disabled` picker submits nothing, and a `required` one that is empty holds the form back through the browser's own validation and moves the focus to its trigger; the same holds for every picker.
 
-Everything is compared on the **local calendar day** rather than on a UTC timestamp. The hidden input a form submits is a local string too (`YYYY-MM-DD` for a day), so nothing shifts by a day the way `toISOString()` would. A `disabled` picker submits nothing, and a `required` one that is empty holds the form back through the browser's own validation and moves the focus to its trigger; the same holds for every picker.
-
-### Three views
-
-The two buttons in the header each open a different grid.
-
-- **The month name**: a grid of twelve months.
-- **The year**: a grid of twelve years, with the steppers moving a page at a time.
-
-Choosing a year hands over to the month view. The two buttons are printed in the order the locale writes them. All three views are the same width and height, so switching between them never resizes the popup.
+The popup is portalled to the end of `<body>`, with `neba-portal` on the positioner.
 
 ## Examples
 
@@ -56,11 +47,15 @@ A day cell uses the control heights: 32px at `md`, the same as a [Button](./butt
 
 </Demo>
 
+### Three views
+
+The month name in the header opens a grid of twelve months, and the year opens a grid of twelve years, where the steppers move a page at a time. Choosing a year hands over to the month view, and the two buttons are printed in the order the locale writes them. All three views are the same width and height, so switching between them never resizes the popup.
+
 ### granularity
 
-`granularity` says which of the three grids the reader may stop on. At `month` and `year` the calendar opens on that grid and a click there is the answer: there is no day view to fall into.
+`granularity` says which of the three grids the reader may stop on. At `month` and `year` the calendar opens on that grid and a click there is the answer. There is no day view to fall into.
 
-The value stays a `Date`, normalised to the first day of what was chosen: 1 March for March, 1 January for 2026. Three other things follow it. The trigger's default `format` becomes `{ year: 'numeric', month: 'long' }` or `{ year: 'numeric' }`; the footer's shortcut says "This month" or "This year"; and `name` submits `YYYY-MM` or `YYYY`. The shape a native `<input type="month">` submits, rather than a day nobody chose.
+The value stays a `Date`, normalised to the first day of what was chosen, so March is 1 March and 2026 is 1 January. The trigger's default `format` becomes `{ year: 'numeric', month: 'long' }` or `{ year: 'numeric' }`, the footer's shortcut says "This month" or "This year", and `name` submits `YYYY-MM` or `YYYY`.
 
 Climbing is unchanged, so a month picker still reaches any month of any year in two clicks.
 
@@ -94,24 +89,12 @@ A blocked cell keeps its place in the grid and is marked with `aria-disabled` ra
 
 `showTodayButton` adds a button in the popup footer that jumps to the current unit: today, this month or this year, whichever `granularity` is asking for. `clearable` adds a button on the trigger that empties the value.
 
-## Keyboard
-
-The trigger is a button rather than a text input: the date comes from the calendar.
-
-| Key                   | What it does                                              |
-| --------------------- | --------------------------------------------------------- |
-| `Space` / `Enter`     | Opens the calendar and focuses the chosen cell            |
-| `←` `→` `↑` `↓`       | Moves by a day or a week, stepping the month at the edges |
-| `Home` / `End`        | To the start or the end of the week                       |
-| `PageUp` / `PageDown` | By a month: with `Shift`, by a year                       |
-| `Escape`              | Closes without choosing                                   |
-
-The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
-
 ## Accessibility
 
+- The trigger is a button rather than a text input, and the date is chosen in the calendar. `Space` or `Enter` opens the calendar and focuses the chosen cell, and `Escape` closes it without choosing.
+- The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
+- The arrow keys move by a day or a week and step the month at the edges. `Home` and `End` move to the start or the end of the week. `PageUp` and `PageDown` move by a month, or by a year with `Shift`.
 - The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
 - The chosen cell carries `aria-selected`; the current day, month or year carries `aria-current="date"` and a dot under the number.
 - The grid is named by the month on screen, in a polite live region that says the new month again when a stepper or an arrow key changes it. The month and year buttons are named by the month and year they show and described by what pressing them does.
 - The trigger's accessible name is `label` followed by what the trigger shows, so a reader hears the date that is chosen and not only what the field is for. `description` and `error` are wired to it with `aria-describedby`.
-- The popup is portalled to the end of `<body>`, with `neba-portal` on the positioner.

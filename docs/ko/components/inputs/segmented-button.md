@@ -27,6 +27,8 @@ import { Segment, SegmentedButton } from 'neba';
 
 `value`와 `onValueChange`로 controlled, `defaultValue`로 uncontrolled 컴포넌트가 됩니다. 세트에는 이름이 필요하므로 `aria-label`이나 `aria-labelledby`를 주세요.
 
+선택이 아니라 액션의 줄이라면 [ButtonGroup](./button-group)을, 아래에 패널이 딸린다면 [Tabs](../surfaces/tabs)를 쓰세요. 선택지가 다섯 개를 넘거나 라벨이 길다면 [Select](./select)가, 눈에 보이는 라벨이 필요하다면 [RadioGroup](./radio-group)이 적합합니다.
+
 ### Segment
 
 <PropsTable name="Segment" />
@@ -70,11 +72,3 @@ import { Segment, SegmentedButton } from 'neba';
 ## 접근성
 
 - `role="radiogroup"`으로 렌더링됩니다. 세트 전체가 tab 정지 하나이고, 그 안에서는 방향키로 이동하며, 선택된 항목에 `aria-checked`가 붙습니다.
-- 선택 타일은 `left` · `top` · `width` · `height`로 이동하므로 라벨이 다시 그려지지 않습니다. 첫 렌더와 창 크기 변경 시에는 애니메이션하지 않습니다.
-
-## 이럴 때는 다른 컴포넌트를
-
-- 선택이 아니라 액션의 줄이라면 [ButtonGroup](./button-group)을 쓰세요.
-- 선택지가 다섯 개를 넘거나 라벨이 길다면 [Select](./select)를 쓰세요.
-- 아래에 패널이 딸린다면 [Tabs](../surfaces/tabs)를 쓰세요.
-- 눈에 보이는 라벨이 필요하다면 [RadioGroup](./radio-group)이 적합합니다.

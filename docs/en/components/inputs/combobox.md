@@ -28,6 +28,8 @@ import { Combobox } from 'neba';
 
 Native `<div>` attributes pass through to the root, except `aria-label` and `aria-labelledby`, which name the `<input>`. Only `color` and `defaultValue` are excluded, since the table above spells them differently.
 
+The popup is the same as [Select](./select)'s. It renders in a portal at the end of `<body>`, with `neba-portal` on the positioner.
+
 ### items
 
 The same array shape [Select](./select) takes; only `label`'s type differs.
@@ -115,21 +117,17 @@ By default the typed text narrows the list here, accent- and case-insensitively,
 
 A function decides per option instead — matching the `value` as well as the label, or matching from the start of a word rather than anywhere in it. The row that offers to add what was typed is never filtered out.
 
-## The popup
-
-Identical to [Select](./select)'s: portalled to the end of `<body>`, with `neba-portal` on the positioner.
-
 ### shortcuts
 
-On a Combobox this is the only way in. The arrows move the highlight, `Escape` closes the popup and `Enter` commits: those keys belong to the list, and they never reach an `onKeyDown` written on the root at all.
+`shortcuts` maps a key combination to what it does, written the way [Shortcut](../display/shortcut) draws it. `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly.
 
 ```tsx
 <Combobox label="Framework" items={frameworks} shortcuts={{ 'Mod+Enter': createAndOpen }} />
 ```
 
-Combinations are written the way [Shortcut](../display/shortcut) draws them, `Mod` is Command on a Mac and Control everywhere else, and the modifiers are matched exactly.
+The arrows move the highlight, `Escape` closes the popup and `Enter` commits. Those keys never reach an `onKeyDown` written on the root, so on a Combobox `shortcuts` is the only way to act on them.
 
-It is bound to the `<input>` and runs before the list acts on the key, but it does not _replace_ what the list does. A shortcut on `Enter` fires alongside the commit, not instead of it. Bind a combination the list has no opinion about when you need the key to itself.
+A shortcut is bound to the `<input>` and runs before the list acts on the key, but it does not _replace_ what the list does. A shortcut on `Enter` fires alongside the commit, not instead of it. Bind a combination the list does not use when you need the key to yourself.
 
 ### classNames
 

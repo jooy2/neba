@@ -22,21 +22,19 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 </FloatingBottomNavigation>;
 ```
 
-목적지는 `BottomNavigationItem`으로, [BottomNavigation](./bottom-navigation)이 받는 것과 같은 항목입니다. `value`, `icon`, `href`, `disabled` 등 항목에 관한 것은 모두 그 페이지에 있습니다.
-
 ## Props
 
 <PropsTable name="FloatingBottomNavigation" />
 
 `onChange`를 빼면 나머지 `<nav>` 속성은 그대로 루트에 전달됩니다. 들을 만한 변화는 `onValueChange`입니다. 공용 축(`variant` `size` `color` `density` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
+목적지는 `BottomNavigationItem`으로, [BottomNavigation](./bottom-navigation)이 받는 것과 같은 항목입니다. `value`, `icon`, `href`, `disabled` 등 항목에 관한 것은 모두 그 페이지에 있습니다.
+
 ## 예시
 
-### offset
+### offset · safeArea
 
-바가 아래 가장자리에서 얼마나 떠 있는지를 픽셀 수나 CSS 길이로 정합니다. [BottomNavigation](./bottom-navigation)과의 차이는 전부 여기서 나옵니다. 아래로 페이지가 계속 이어지기 때문에 시트는 모서리 두 개짜리 바가 아니라 스타디움이고, 그림자를 지며, 담긴 것만큼만 넓습니다.
-
-`safeArea`는 그 간격에 `env(safe-area-inset-bottom)`을 더해 폰의 홈 인디케이터를 피합니다. 전체 너비 바와 달리 시트 전체가 올라가는데, 아래에 덮고 있어야 할 것이 없기 때문입니다.
+`offset`은 바가 아래 가장자리에서 얼마나 떠 있는지를 픽셀 수나 CSS 길이로 정합니다. `safeArea`는 그 간격에 `env(safe-area-inset-bottom)`을 더해 폰의 홈 인디케이터를 피하며, 안쪽 줄만이 아니라 시트 전체를 올립니다.
 
 ```tsx
 <FloatingBottomNavigation offset={24} safeArea={false} />
@@ -54,9 +52,7 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 ### labels
 
-여기서의 기본값 `selected`는 읽는 사람이 지금 있는 목적지의 이름만 그립니다. 떠 있는 바는 담긴 것만큼만 넓으므로, 이름 다섯 개를 그리면 화면을 가로지르게 되고 더 이상 로젠지가 아니게 됩니다.
-
-`all`은 모든 이름을, `none`은 아무 이름도 그리지 않습니다. 그리지 않은 이름도 문서에는 남아, 옆의 글리프에게 접근성 이름을 주는 것이 바로 그 이름입니다.
+기본값 `selected`는 읽는 사람이 지금 있는 목적지의 이름만 그리고, `all`은 모든 이름을, `none`은 아무 이름도 그리지 않습니다. `selected`에서 목적지를 누르면 그 이름이 자라고 옆의 목적지들이 비켜서는 동안 하이라이트가 그 아래로 미끄러져 들어옵니다. 그리지 않은 이름도 문서에는 남아 옆의 글리프에게 접근성 이름을 줍니다.
 
 <Demo src="floating-bottom-navigation/labels" minHeight="340">
 
@@ -64,15 +60,9 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 </Demo>
 
-### 하이라이트
-
-하이라이트는 지금 선택된 목적지가 아니라 바의 것입니다. 그래서 움직일 수 있습니다. `aria-current`를 단 항목을 재어 `left`, `top`, `width`, `height`를 다음 항목까지 애니메이션합니다. transform은 쓰지 않으므로 그 위에 올라탄 이름이 다시 샘플링되는 일은 없습니다.
-
-`labels`가 그리지 않는 이름은 잘리는 대신 접힙니다. 그 이름이 든 상자가 0과 글자 너비 사이를 오가므로, 목적지를 누르면 바가 새 배치로 튀는 대신 그 목적지를 중심으로 모양을 다시 잡습니다. 이름이 자라고, 옆의 것들이 비켜서고, 하이라이트가 그 아래로 미끄러져 들어오는 일이 같은 시계 위에서 일어납니다. 움직임을 줄여 달라고 한 사용자에게는 여정 없이 결과만 주어집니다.
-
 ### variant · color · size
 
-`variant`는 다른 모든 컨테이너에서와 같은 말을 합니다. 시트에는 색을 들이지 않으며, 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다. 가장자리가 없는 시트 대신 `outline`이 기본인데, 아래로 지나가는 것과 떠 있는 로젠지를 갈라 주는 것이 그 헤어라인이기 때문입니다.
+`variant`는 시트에 색을 들이지 않으며, 색 계열을 입는 것은 지금 있는 목적지 하나뿐입니다. 기본값은 `outline`입니다.
 
 <Demo src="floating-bottom-navigation/appearance" minHeight="320">
 
@@ -94,8 +84,9 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 ## 접근성
 
-- 루트는 `<nav>`이고 `label`이 그 이름입니다. `role="tablist"`가 아닙니다. tab list는 전체에 tab stop 하나와 그 안의 방향키 이동을 약속하지만, 하단 내비게이션은 패널이 아니라 페이지를 바꿉니다.
+- 루트는 `<nav>`이고 `label`이 그 이름입니다. `role="tablist"`가 아니므로 목적지마다 tab 정지점이 따로 있고, 방향키로 목적지 사이를 옮겨 다니지 않습니다.
 - 지금 있는 목적지는 `aria-current="page"`를 답니다.
 - 각 목적지는 진짜 `<button>`이며, `href`를 주면 진짜 `<a>`입니다.
 - `labels`가 그리지 않은 이름도 문서에는 남아 목적지의 접근성 이름이 됩니다. 글리프뿐인 항목에게는 그것이 이름의 전부입니다.
+- 움직임을 줄이도록 설정한 사용자에게는 하이라이트와 이름이 움직이지 않고 바로 새 배치로 바뀝니다.
 - `position="fixed"`일 때는 페이지 아래쪽에 바의 높이와 `offset`만큼 여백을 두세요. 그렇지 않으면 마지막 줄이 가려집니다.

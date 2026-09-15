@@ -22,21 +22,19 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 </FloatingBottomNavigation>;
 ```
 
-Its destinations are `BottomNavigationItem`, the same item [BottomNavigation](./bottom-navigation) takes. Everything about an item (`value`, `icon`, `href`, `disabled`) is documented there.
-
 ## Props
 
 <PropsTable name="FloatingBottomNavigation" />
 
 Every other `<nav>` attribute passes through to the root, except `onChange`: the change worth listening for is `onValueChange`. The shared axes (`variant` `size` `color` `density` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
 
+Its destinations are `BottomNavigationItem`, the same item [BottomNavigation](./bottom-navigation) takes. Everything about an item (`value`, `icon`, `href`, `disabled`) is documented there.
+
 ## Examples
 
-### offset
+### offset, safeArea
 
-How far the bar floats above the bottom edge, as a number of pixels or any CSS length. This is the whole difference between this component and [BottomNavigation](./bottom-navigation): because the page keeps going underneath, the sheet is a stadium rather than a bar with two corners, it carries a shadow, and it is sized by its contents.
-
-`safeArea` adds `env(safe-area-inset-bottom)` to that gap, so the bar clears a phone's home indicator. Unlike on a full-width bar it moves the whole sheet, because there is nothing under it to keep covered.
+`offset` is how far the bar floats above the bottom edge, as a number of pixels or any CSS length. `safeArea` adds `env(safe-area-inset-bottom)` to that gap so the bar clears a phone's home indicator, and it moves the whole sheet up rather than only the row inside it.
 
 ```tsx
 <FloatingBottomNavigation offset={24} safeArea={false} />
@@ -54,9 +52,7 @@ How far the bar floats above the bottom edge, as a number of pixels or any CSS l
 
 ### labels
 
-`selected` (the default here) draws only the name of the destination the reader is on. A floating bar is as wide as what is in it, so five drawn names would stretch it across the screen and it would stop being a lozenge.
-
-`all` draws every name and `none` draws none of them. An undrawn name is still in the document, where it is what gives the glyph beside it an accessible name.
+`selected` (the default) draws only the name of the destination the reader is on, `all` draws every name, and `none` draws none of them. Under `selected`, pressing a destination grows its name and moves its neighbours over while the highlight slides under it. An undrawn name is still in the document, where it gives the glyph beside it an accessible name.
 
 <Demo src="floating-bottom-navigation/labels" minHeight="340">
 
@@ -64,15 +60,9 @@ How far the bar floats above the bottom edge, as a number of pixels or any CSS l
 
 </Demo>
 
-### The highlight
-
-The highlight belongs to the bar rather than to the destination that is current, which is why it can travel: it is measured off whichever item carries `aria-current` and animates its `left`, `top`, `width` and `height` to the next one. Nothing is transformed, so the name riding over it is never resampled.
-
-A name that `labels` is not drawing is collapsed rather than clipped (the box it sits in travels between nothing and the width of the words), so pressing a destination re-shapes the bar around it instead of jumping to the new arrangement: the name grows, its neighbours move over, and the highlight slides under it on the same clock. A reader who has asked for reduced motion gets the new arrangement without the journey.
-
 ### variant, color, size
 
-`variant` says what it says on every other container: the sheet is never dyed, and what carries the colour family is the one destination that is current. `outline` is the default here rather than the sheet with no edge: the hairline is what separates a floating lozenge from whatever is passing underneath it.
+`variant` never dyes the sheet, and what carries the colour family is the one destination that is current. The default is `outline`.
 
 <Demo src="floating-bottom-navigation/appearance" minHeight="320">
 
@@ -94,8 +84,9 @@ Pass `value` and the bar keeps no state of its own, which is the shape to use wh
 
 ## Accessibility
 
-- The root is a `<nav>` and `label` names it. It is not a `role="tablist"`: a tab list promises one tab stop for the set and arrow keys within it, and a bottom navigation changes the page rather than which panel of one is showing.
+- The root is a `<nav>` and `label` names it. It is not a `role="tablist"`, so each destination is its own tab stop and the arrow keys do not move between them.
 - The current destination carries `aria-current="page"`.
 - Each destination is a real `<button>`, or a real `<a>` when it is given an `href`.
-- A name that `labels` keeps undrawn stays in the document, where it is the destination's accessible name: which is the whole accessible name of an item that is only a glyph.
+- A name that `labels` keeps undrawn stays in the document as the destination's accessible name. For an item that is only a glyph, that is its whole accessible name.
+- For a reader who has asked for reduced motion, the highlight and the names change to the new arrangement without travelling.
 - With `position="fixed"`, pad the bottom of the page by the bar's height plus its `offset`, or its last line is covered.

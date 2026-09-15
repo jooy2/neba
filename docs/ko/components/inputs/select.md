@@ -28,6 +28,8 @@ import { Select } from 'neba';
 
 `<div>`의 native 속성은 root로 전달됩니다. 다만 `aria-label`과 `aria-labelledby`는 trigger의 이름이 됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
 
+팝업은 portal로 `<body>` 끝에 렌더링되므로, CSS reset을 특정 subtree에만 적용한 앱에서는 그 범위를 벗어납니다. positioner에 `neba-portal` 클래스가 붙어 있으니 그 경우 reset을 이 클래스에 걸어 주세요. Tailwind Preflight를 전역으로 적용했다면 아무것도 하지 않아도 됩니다.
+
 선택지를 검색해서 찾아야 한다면 [Combobox](./combobox)를, 선택지가 두세 개뿐이라면 [RadioGroup](./radio-group)이나 [SegmentedButton](./segmented-button)을 쓰세요.
 
 ### items
@@ -85,10 +87,6 @@ group은 **이웃한 옵션들의 묶음**이라 배열 순서가 곧 목록 순
 
 </Demo>
 
-## 팝업
-
-팝업은 portal을 통해 `<body>` 끝에 렌더링되므로, CSS reset을 특정 subtree에만 적용한 앱에서는 그 범위를 벗어납니다. positioner에 `neba-portal` 클래스가 붙어 있으니 그 경우 reset을 이 클래스에 걸어 주세요. Tailwind Preflight를 전역으로 적용했다면 아무것도 하지 않아도 됩니다.
-
 ### classNames
 
 `className`은 루트(라벨과 trigger, 그 아래 두 줄을 담는 열)에 붙고, trigger 자체는 `classNames.control`로 갑니다.
@@ -101,7 +99,7 @@ group은 **이웃한 옵션들의 묶음**이라 배열 순서가 곧 목록 순
 />
 ```
 
-slot은 `label`, `control`, `description`, `error`, `popup`, `item`입니다. 뒤의 둘이 특히 중요합니다. popup은 `<body>` 끝에 그려지므로 루트를 기준으로 쓴 하위 선택자로는 닿지 않고, 이 slot이 유일한 경로입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+slot은 `label`, `control`, `description`, `error`, `popup`, `item`입니다. `popup`과 `item`은 `<body>` 끝에 그려지므로 루트를 기준으로 쓴 하위 선택자로는 닿지 않고, 이 두 slot이 유일한 경로입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
 ## 접근성
 
