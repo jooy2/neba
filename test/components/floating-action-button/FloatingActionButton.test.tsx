@@ -247,6 +247,20 @@ describe('FloatingActionButton', () => {
       await expect.element(screen.getByRole('button', { name: 'Share' })).toHaveFocus();
     });
 
+    // The radius is an inline declaration, and the action's other props were
+    // spread after it, so a style of the caller's left the action square.
+    it('keeps an action round when the action is given a style of its own', async () => {
+      const screen = await render(
+        <FloatingActionButton label="Share" openOnHover={false} defaultOpen>
+          <FloatingAction label="Copy link" style={{ marginInlineEnd: '4px' }} />
+        </FloatingActionButton>
+      );
+      const action = screen.getByRole('button', { name: 'Copy link' }).element() as HTMLElement;
+
+      expect(action.style.borderRadius).toBe('9999px');
+      expect(action.style.marginInlineEnd).toBe('4px');
+    });
+
     it('keeps the dial up when it was told to', async () => {
       const screen = await render(
         <FloatingActionButton label="Share" openOnHover={false} closeOnAction={false} defaultOpen>

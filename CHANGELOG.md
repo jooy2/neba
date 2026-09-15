@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A `FloatingAction`'s `style` is merged over its round radius.** The radius is an inline declaration and the action spread its remaining props after it, so a `style` written on an action replaced the radius and left the action square. It is merged over now, as the button the dial came out of merges its own.
+
 - **A scroll-driven `AnimateAppear` or `AnimateSplit` runs whatever its trigger.** Under `timeline="view"` the scroll position is what plays the effect, and the other `Animate*` components already ignored `trigger` there. These two still waited for theirs, so with `trigger="visible"` or `trigger="manual"` the effect was held paused and the children stayed on their first frame until the trigger came.
 
 - **An `AnimateSplit` cut by character breaks a line only between words, and its blink keeps blinking.** Every character piece is an inline block, and a line may break between any two of them, so a word cut into characters could end one line and start the next. The characters of each word are held together now, with the space after the word left as text where the line can break. `effect="blink"` also took the split's own default of one repeat, so it blinked once and stopped; like a blink anywhere else in the library, it now blinks until it is given a `repeat`.

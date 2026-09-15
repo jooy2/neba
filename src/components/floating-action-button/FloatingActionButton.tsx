@@ -523,7 +523,10 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
  * mean the same thing for every action.
  */
 export const FloatingAction = React.forwardRef<HTMLButtonElement, FloatingActionProps>(
-  function FloatingAction({ icon, label, disabled = false, className, onClick, ...props }, ref) {
+  function FloatingAction(
+    { icon, label, disabled = false, className, style, onClick, ...props },
+    ref
+  ) {
     const dial = React.useContext(FloatingActionContext);
 
     return (
@@ -546,7 +549,10 @@ export const FloatingAction = React.forwardRef<HTMLButtonElement, FloatingAction
           disabled={disabled}
           aria-label={label}
           startIcon={icon}
-          style={{ borderRadius: '9999px' }}
+          // Merged over rather than replaced, as the button this dial came out
+          // of merges its own: the radius is an inline declaration, and a style
+          // spread after it left the action square.
+          style={{ borderRadius: '9999px', ...style }}
           onClick={(event) => {
             // Read before anything closes: the dial and this button leave the
             // document together, and a focus that goes with them lands on the
