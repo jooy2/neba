@@ -55,11 +55,10 @@ A handful of layout props take a per-breakpoint map on top of their own value: a
 
 Two vocabularies, and which one you want depends on whether the motion needs a trigger.
 
-`transition` is an entrance, run once on mount (`blink` repeats until its `repeat` says otherwise, since a blink that ran once would be a flicker), on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography and Blockquote. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
+`transition` is an entrance, run once on mount (`blink` repeats until its `repeat` says otherwise, since a blink that ran once would be a flicker), on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote, Empty, Mockup and Stack. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
 
 ```ts
-type NebaAnimation =
-  'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal' | 'float' | 'shake';
+type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal';
 type NebaTransition = NebaAnimation | NebaTransitionOptions;
 ```
 
@@ -86,7 +85,7 @@ Anything past a mount (a replay, a scroll trigger, a hover, your own control) is
 | `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen   |
 | `paused`             | Holds the animation where it is                                          |
 
-Two more go on the nine whose motion is one `@keyframes` on the element itself: everything but AnimateAppear's own stagger, AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting, whose motion is written elsewhere:
+Five more go on the eleven whose motion is a `@keyframes` on the element or on the pieces it cuts: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear and AnimateSplit. AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting write their motion elsewhere and take none of them:
 
 | Prop           | The rule                                                                        |
 | -------------- | ------------------------------------------------------------------------------- |
@@ -122,7 +121,7 @@ Every component takes one, and it is **merged** with the classes the component w
 <Button className="w-full" />
 ```
 
-[ToastProvider](../components/feedback/toast) is the one component that takes none, and that is the answer rather than an omission: it renders no element of its own, so there is nothing for a root class name to land on.
+The four providers take none: [NebaProvider](../guide/provider), [ToastProvider](../components/feedback/toast), [ConfirmProvider](../components/feedback/confirm) and [TooltipProvider](../components/feedback/tooltip). That is the answer rather than an omission: none of them draws an element around its children, so there is nothing for a root class name to land on.
 
 ### `classNames`: the parts behind it
 
@@ -175,7 +174,7 @@ Overriding with a class is only meaningful on the `neba/tailwind.css` path, wher
 
 ## Checklist for a new component
 
-1. A `src/components/{lowercase-name}/` folder with `{PascalCase}.tsx` and an `index.ts` barrel
+1. A `src/components/{lowercase-name}/` folder with `{PascalCase}.tsx`, which starts with `'use client';`, and an `index.ts` barrel
 2. Named exports only (never `export default`)
 3. Re-export the barrel from `src/index.ts`
 4. Delegate behaviour and accessibility to a Base UI primitive
@@ -184,4 +183,5 @@ Overriding with a class is only meaningful on the `neba/tailwind.css` path, wher
 7. Write `docs/{locale}/components/{group}/{name}.md`: title, lede, preview, props, examples. One page **per locale**
 8. Add its rows to `docs/.vitepress/data/props.ts` and its demos to `docs/.vitepress/demos/{name}/`
 9. Give it a card in `demos/catalog/all.tsx` and a place on `demos/showcase/app.tsx`
-10. `npm run typecheck && npm test && npm run lint` all pass
+10. A line for it in `docs/public/llms.txt`
+11. `npm run typecheck && npm test && npm run lint` all pass

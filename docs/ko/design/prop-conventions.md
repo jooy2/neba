@@ -55,11 +55,10 @@ export interface ButtonProps
 
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.
 
-`transition`은 mount 시 한 번 실행되는 등장 효과이며(`blink`는 한 번이면 깜빡임에 그치므로 `repeat`로 따로 정하지 않는 한 계속 반복합니다), 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
+`transition`은 mount 시 한 번 실행되는 등장 효과이며(`blink`는 한 번이면 깜빡임에 그치므로 `repeat`로 따로 정하지 않는 한 계속 반복합니다), 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote, Empty, Mockup, Stack입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
 
 ```ts
-type NebaAnimation =
-  'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal' | 'float' | 'shake';
+type NebaAnimation = 'fade' | 'grow' | 'slide' | 'zoom' | 'rotate' | 'blink' | 'reveal';
 type NebaTransition = NebaAnimation | NebaTransitionOptions;
 ```
 
@@ -86,7 +85,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 | `once` / `threshold` | `'visible'`용: 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
 | `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
 
-움직임이 요소 자신에게 걸린 `@keyframes` 하나인 아홉 개는 두 가지를 더 받습니다. AnimateAppear의 자체 stagger와 AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline, AnimateLighting은 움직임이 다른 곳에 쓰여 있어 해당되지 않습니다.
+움직임이 요소 자신이나 요소가 자른 조각에 걸린 `@keyframes`인 열한 개는 아래 다섯 가지를 더 받습니다. AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit입니다. AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline, AnimateLighting은 움직임이 다른 곳에 쓰여 있어 받지 않습니다.
 
 | Prop           | 규칙                                                                |
 | -------------- | ------------------------------------------------------------------- |
@@ -122,7 +121,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 <Button className="w-full" />
 ```
 
-[ToastProvider](../components/feedback/toast) 하나만 받지 않습니다. 자기 요소를 그리지 않으므로 루트 class가 붙을 곳이 없기 때문입니다.
+provider 네 개는 받지 않습니다. [NebaProvider](../guide/provider), [ToastProvider](../components/feedback/toast), [ConfirmProvider](../components/feedback/confirm), [TooltipProvider](../components/feedback/tooltip)는 자식을 감싸는 요소를 그리지 않으므로 루트 class가 붙을 곳이 없습니다.
 
 ### `classNames`: 그 뒤의 파트들
 
@@ -175,7 +174,7 @@ class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있�
 
 ## 새 컴포넌트 체크리스트
 
-1. `src/components/{소문자-이름}/` 폴더, `{PascalCase}.tsx` + `index.ts` 배럴
+1. `src/components/{소문자-이름}/` 폴더, `'use client';`로 시작하는 `{PascalCase}.tsx` + `index.ts` 배럴
 2. named export만 사용 (`export default` 금지)
 3. `src/index.ts`에서 배럴을 re-export
 4. 동작·접근성은 Base UI 프리미티브에 위임
@@ -184,4 +183,5 @@ class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있�
 7. `docs/{로케일}/components/{그룹}/{이름}.md` 작성: 제목 · lede · 미리보기 · Props · 예시 순서. **로케일마다** 한 장씩
 8. `docs/.vitepress/data/props.ts`에 props 테이블(로케일별 설명), `docs/.vitepress/demos/{이름}/`에 예시 데모 추가
 9. `docs/.vitepress/demos/catalog/all.tsx`(모든 컴포넌트)와 `showcase/app.tsx`(예제)에 한 자리씩
-10. `npm run typecheck && npm test && npm run lint` 통과
+10. `docs/public/llms.txt`에 한 줄 추가
+11. `npm run typecheck && npm test && npm run lint` 통과
