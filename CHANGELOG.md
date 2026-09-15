@@ -194,6 +194,8 @@
 
 ### Fixed
 
+- **`ScatterChart` grows the mark under the crosshair on React 18.** The pixel it grows by was a unitless number in a `style`, and React 18 wrote it as a length, which the browser discarded, so the mark stayed the same size.
+
 - **`AnimateTyping` and `AnimateScramble` hold the size of their final text from the first frame.** A typewriter's box was only as big as the characters that had arrived, so it grew a line at a time as it wrapped and pushed the page down, although its docs said nothing reflows, and a scramble kept its size only on one line or in a monospace font. Both lay the final string out underneath, invisible and unfindable, and draw the animation over it.
 
 - **An effect inside another `Animate*` keeps its own settings.** The `--n-anim-*` slots inherit and only the ones an effect uses are written, so a `<Box transition="fade">` inside an `AnimateFade` waiting for its trigger stayed on its first frame until the wrapper ran, and a fade inside an `AnimateReveal` ran from full opacity to full opacity. Each animated element now starts from its own shape, and a `transition` writes its own running state.

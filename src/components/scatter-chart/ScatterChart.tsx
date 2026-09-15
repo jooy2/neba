@@ -269,10 +269,12 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
             // nothing can travel along. The origin is the point the mark is
             // pinned to rather than the middle of its own bounding box, so a
             // triangle grows where it stands instead of drifting as it grows.
+            // A string, because React 18 does not know `scale` is unitless and
+            // writes a number as `1.2px`, which the browser throws away.
             style={{
               transformBox: 'view-box',
               transformOrigin: `${mark.x}px ${mark.y}px`,
-              scale: active && mark.r > 0 ? (mark.r + 1) / mark.r : 1
+              scale: String(active && mark.r > 0 ? (mark.r + 1) / mark.r : 1)
             }}
           />
         );
