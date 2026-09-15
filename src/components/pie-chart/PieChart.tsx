@@ -165,7 +165,9 @@ export function PieChart(rawProps: PieChartProps) {
 
   const total = values.reduce(
     (sum, value, index) =>
-      visibility.visible[index] && value.value !== null ? sum + Math.abs(value.value) : sum,
+      // A negative has no share of a whole to be, as on a treemap: it stays in
+      // the table and the legend and takes nothing from the total.
+      visibility.visible[index] && value.value !== null ? sum + Math.max(0, value.value) : sum,
     0
   );
 
@@ -218,11 +220,11 @@ export function PieChart(rawProps: PieChartProps) {
   let angle = from;
 
   values.forEach((value, index) => {
-    if (!visibility.visible[index] || value.value === null || value.value === 0) {
+    if (!visibility.visible[index] || value.value === null || value.value <= 0) {
       return;
     }
 
-    const share = Math.abs(value.value) / total;
+    const share = value.value / total;
     const span = share * sweep;
 
     arcs.push({ index, start: angle, end: angle + span, value: value.value, share });
@@ -240,7 +242,7 @@ export function PieChart(rawProps: PieChartProps) {
             value: values[active]?.value ?? null,
             formatted: `${formatValue(values[active]?.value ?? 0)} · ${
               Math.round(
-                ((Math.abs(values[active]?.value ?? 0) / total) * 100 + Number.EPSILON) * 10
+                ((Math.max(0, values[active]?.value ?? 0) / total) * 100 + Number.EPSILON) * 10
               ) / 10
             }%`,
             label: values[active]?.label

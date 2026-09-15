@@ -39,6 +39,8 @@ A pie has one series, so it takes `data` directly rather than an array of series
 
 Slices are drawn in the order they are given and are not re-sorted. A slice's colour follows its place in `data`, so a filter that drops one moves every slice after it onto the next colour; a point's own `color` holds it.
 
+A negative value has no share of a whole to be, so it draws no slice and adds nothing to the total. It stays in the table and the legend, as it does on a treemap.
+
 ## Props
 
 <PropsTable name="PieChart" />

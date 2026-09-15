@@ -180,6 +180,8 @@
 
 ### Fixed
 
+- **A `PieChart` draws no slice for a negative value.** The share was worked out from the absolute value, so −20 among 50 and 30 was drawn as a fifth of the pie, beside a tooltip reading `−20 · 20%`. A negative now draws nothing and adds nothing to the total, as a treemap already did; it stays in the table and the legend.
+
 - **A paused `AnimateBlink` rests at full opacity.** Holding it with `paused`, or with `play={false}`, froze the blink wherever the pulse had got to, so the docs' own `paused={!recording}` left a recording light translucent, or invisible at `min={0}`. It stops at full opacity now and starts over when it runs again.
 
 - **A `Sidebar` closes its drawer when the window widens back into a column.** The drawer's open state outlived the column, so narrowing the window again, which is what turning a tablet to landscape and back does, reopened a modal drawer nobody asked for and trapped the focus in it. The drawer is closed as the column returns, and a controlled sidebar hears `onOpenChange(false)`.

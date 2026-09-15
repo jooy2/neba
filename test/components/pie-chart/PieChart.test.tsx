@@ -29,6 +29,18 @@ describe('PieChart', () => {
       expect(plot.element().querySelectorAll('path').length).toBe(2);
     });
 
+    // The absolute value was drawn, so −20 became a fifth of the pie.
+    it('draws no slice for a negative value and keeps it in the table', async () => {
+      const screen = await render(
+        <PieChart label="Balance" categories={PLANS} data={[50, -20, 30]} />
+      );
+      const plot = screen.getByRole('img', { name: 'Balance' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(plot.element().querySelectorAll('path').length).toBe(2);
+      await expect.element(screen.getByRole('cell', { name: '-20' })).toBeInTheDocument();
+    });
+
     it('names every slice in its table', async () => {
       const screen = await render(
         <PieChart label="Accounts by plan" categories={PLANS} data={[50, 30, 20]} />
