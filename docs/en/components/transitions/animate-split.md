@@ -23,7 +23,7 @@ Every other `<div>` attribute passes through to the root. The settings shared by
 
 Only text is split. Pass a string, or `text`; an element among the children contributes its words and nothing about its markup, because there is no honest way to animate half of a link.
 
-Every piece is an `inline-block` (an inline box cannot be translated up), and each keeps the space that followed it, so a line still breaks between words and never inside the gap.
+Every piece is an `inline-block` (an inline box cannot be translated up), and each keeps the space that followed it, so a line still breaks between words and never inside the gap. Split by character, the pieces of each word are held together, so a word is never broken across two lines.
 
 ## Examples
 

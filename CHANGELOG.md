@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **An `AnimateSplit` cut by character breaks a line only between words, and its blink keeps blinking.** Every character piece is an inline block, and a line may break between any two of them, so a word cut into characters could end one line and start the next. The characters of each word are held together now, with the space after the word left as text where the line can break. `effect="blink"` also took the split's own default of one repeat, so it blinked once and stopped; like a blink anywhere else in the library, it now blinks until it is given a `repeat`.
+
 - **Replaying an `Animate*` rewinds only what it animates.** A replay cleared the animation of every descendant that had one, so an `<Alert transition="fade">` inside `<AnimateShake>` faded in again on every shake, and an `Animate*` nested in another started over with it. Each component now names its own parts: its root, the children it hands an effect to, a split's pieces and a marquee's tracks.
 
 - **An `AnimateCounter` counts in the decimal places of its two ends, in figures of one width.** The default `format` writes up to three decimals, so a count to `37251` read `29,851.407` on the way there, and the line changed width on every frame. The count is rounded to the decimal places of `value` or `from`, whichever has more, and the root sets `tabular-nums`; `className="proportional-nums!"` takes the figures back.

@@ -3,9 +3,9 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 import { AnimateSplit } from 'neba';
 
-/** The visible copy — the clipped one is for a screen reader. */
+/** The visible copy's pieces — the clipped copy is for a screen reader. */
 function pieces(container: HTMLElement): HTMLElement[] {
-  return [...container.querySelectorAll<HTMLElement>('[aria-hidden="true"] > span')];
+  return [...container.querySelectorAll<HTMLElement>('[aria-hidden="true"] .neba-anim')];
 }
 
 describe('AnimateSplit', () => {
@@ -32,6 +32,25 @@ describe('AnimateSplit', () => {
       const screen = await render(<AnimateSplit by="character">abc</AnimateSplit>);
 
       expect(pieces(screen.container).map((piece) => piece.textContent)).toEqual(['a', 'b', 'c']);
+    });
+
+    // A character piece is an inline block, and a line may break between any
+    // two of them, so a word cut into characters broke in its middle.
+    it('keeps the characters of a word together on one line', async () => {
+      const screen = await render(<AnimateSplit by="character">ab cd</AnimateSplit>);
+      const copy = screen.container.querySelector('[aria-hidden="true"]') as HTMLElement;
+      const words = [...copy.children] as HTMLElement[];
+
+      expect(words.map((word) => word.textContent)).toEqual(['ab', 'cd']);
+      expect(words.every((word) => word.classList.contains('whitespace-nowrap'))).toBe(true);
+      // The space between them is text, which is where the line breaks.
+      expect(copy.textContent).toBe('ab cd');
+      expect(pieces(screen.container).map((piece) => piece.textContent)).toEqual([
+        'a',
+        'b',
+        'c',
+        'd'
+      ]);
     });
 
     it('takes the text as a prop over the children', async () => {
@@ -80,6 +99,16 @@ describe('AnimateSplit', () => {
       const fading = await render(<AnimateSplit effect="fade">One two</AnimateSplit>);
 
       expect(pieces(fading.container)[0]).toHaveClass('neba-anim-fade');
+    });
+
+    // A blink that ran once was a flicker, where the same effect named anywhere
+    // else blinks until it is told to stop.
+    it('blinks without end unless it is given a repeat', async () => {
+      const screen = await render(<AnimateSplit effect="blink">One two</AnimateSplit>);
+
+      expect(pieces(screen.container)[0].style.getPropertyValue('--n-anim-repeat')).toBe(
+        'infinite'
+      );
     });
 
     it('runs the line the other way when reversed', async () => {

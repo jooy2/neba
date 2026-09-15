@@ -83,7 +83,9 @@ export interface AnimateSplitProps
  *
  * Every piece is an `inline-block`, which is what lets it be moved at all — an
  * inline box cannot be translated up. Each keeps the space that followed it, so
- * a line still breaks between words and never inside the gap.
+ * a line still breaks between words and never inside the gap. Split by
+ * character, the pieces of a word are held in a span that does not wrap, and
+ * the space after it is left as text, which is where the line breaks.
  */
 export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
   function AnimateSplit(rawProps, ref) {
@@ -94,7 +96,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       duration = 520,
       delay = 0,
       easing,
-      repeat = 1,
+      repeat,
       alternate,
       paused,
       trigger = 'mount',
@@ -118,6 +120,9 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       children,
       ...props
     } = useStyleDefaults(rawProps, ['locale']);
+    // A blink that ran once would be a flicker, so a blink has no end unless it
+    // is given one, as it does everywhere else; the trigger has to agree.
+    const cycles = repeat ?? (effect === 'blink' ? 'infinite' : 1);
     const run = useAnimationRun({
       caller: props,
       // The pieces, anywhere inside the copy a screen reader is not read. They
@@ -128,13 +133,42 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       once,
       threshold,
       paused,
-      infinite: isInfinite(repeat)
+      infinite: isInfinite(cycles)
     });
 
     const source = text ?? textOf(children);
+    const words = React.useMemo(() => wordsOf(source, locale), [source, locale]);
+
+    /**
+     * The characters of each word, and the space after it, when split by
+     * character.
+     *
+     * A line may break between any two inline blocks, so a word cut into
+     * character pieces could end one line and start the next. Each word's
+     * pieces go in a span that does not wrap, and the space after it stays
+     * outside as text, where the line can break.
+     */
+    const groups = React.useMemo(() => {
+      if (by === 'word') {
+        return null;
+      }
+
+      let start = 0;
+
+      return words.map((word) => {
+        const gap = /\s*$/.exec(word)?.[0] ?? '';
+        const letters = graphemesOf(word.slice(0, word.length - gap.length), locale);
+        const group = { start, letters, gap };
+
+        start += letters.length;
+
+        return group;
+      });
+    }, [by, words, locale]);
+
     const pieces = React.useMemo(
-      () => (by === 'word' ? wordsOf(source, locale) : graphemesOf(source, locale)),
-      [by, source, locale]
+      () => (groups ? groups.flatMap((group) => group.letters) : words),
+      [groups, words]
     );
 
     // Read through the same table the `transition` prop reads, so an effect
@@ -144,7 +178,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       duration,
       delay,
       easing,
-      repeat,
+      repeat: cycles,
       alternate,
       from,
       distance,
@@ -168,6 +202,19 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       { stagger, durationStep, reverse }
     );
 
+    const line = groups
+      ? groups.map((group, index) => (
+          <React.Fragment key={index}>
+            {group.letters.length > 0 ? (
+              <span className="whitespace-nowrap">
+                {animated.slice(group.start, group.start + group.letters.length)}
+              </span>
+            ) : null}
+            {group.gap}
+          </React.Fragment>
+        ))
+      : animated;
+
     return useRender({
       render,
       ref: [ref, run.ref],
@@ -183,7 +230,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
         children: (
           <>
             <span className={cx(srOnlyClasses)}>{source}</span>
-            <span aria-hidden="true">{animated}</span>
+            <span aria-hidden="true">{line}</span>
           </>
         )
       }
