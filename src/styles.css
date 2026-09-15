@@ -2497,6 +2497,15 @@
   animation-name: neba-anim-blink;
 }
 
+/* Held still, a blink rests at full opacity rather than wherever the pulse had
+   got to: a paused recording light left half drawn, or invisible at a floor of
+   zero, is a rendering fault rather than a pause. It starts over when it runs
+   again. The second selector is a staggered blink's pieces. */
+.neba-anim-blink[data-state='paused'],
+[data-state='paused'] > .neba-anim-blink {
+  animation-name: none;
+}
+
 /*
  * Reveal: an edge travelling across something that is already there.
  *

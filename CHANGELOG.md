@@ -178,6 +178,8 @@
 
 ### Fixed
 
+- **A paused `AnimateBlink` rests at full opacity.** Holding it with `paused`, or with `play={false}`, froze the blink wherever the pulse had got to, so the docs' own `paused={!recording}` left a recording light translucent, or invisible at `min={0}`. It stops at full opacity now and starts over when it runs again.
+
 - **A `Sidebar` closes its drawer when the window widens back into a column.** The drawer's open state outlived the column, so narrowing the window again, which is what turning a tablet to landscape and back does, reopened a modal drawer nobody asked for and trapped the focus in it. The drawer is closed as the column returns, and a controlled sidebar hears `onOpenChange(false)`.
 
 - **A `TabPanel` inside a Fragment goes to the panel area, and an outline tab bar capped with `lines` stops scrolling by a pixel.** Panels were told apart from tabs by type, so one grouped in a Fragment was put into the tab list, inside `role="tablist"`. A Fragment is looked through now; a component of your own that renders a `TabPanel` is still not recognised, as the page says. The `lines` cap also left out the 1px rule under an outline bar, which scrolled the bar it was meant to fit.

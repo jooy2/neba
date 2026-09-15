@@ -51,7 +51,7 @@ import { AnimateBlink } from 'neba';
 
 ### paused
 
-`paused`는 애니메이션을 있는 자리에 붙들어 둡니다. 실시간 표시를 unmount하지 않고 멈추는 방법입니다.
+`paused`는 깜빡임이 어디까지 진행됐든 완전히 불투명한 상태로 멈춥니다. 실시간 표시를 unmount하지 않고 멈추는 방법이며, 다시 풀면 처음부터 시작합니다.
 
 ```tsx
 <AnimateBlink paused={!recording} min={0.35}>

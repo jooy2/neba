@@ -51,7 +51,7 @@ It repeats forever unless told otherwise, because a single blink is a flicker ra
 
 ### paused
 
-`paused` holds the animation where it is, which is how to stop a live indicator without unmounting it.
+`paused` stops the blink at full opacity rather than wherever the pulse had got to, which is how to stop a live indicator without unmounting it. Let go, it starts over.
 
 ```tsx
 <AnimateBlink paused={!recording} min={0.35}>
