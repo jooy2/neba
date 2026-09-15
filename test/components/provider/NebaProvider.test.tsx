@@ -401,6 +401,31 @@ describe('nesting', () => {
     );
   });
 
+  // The merge has to keep both halves: the outer size and the inner density.
+  it('takes the inner density together with the outer size', async () => {
+    const paddingOf = (element: Element) =>
+      [...element.classList].find((name) => /^px-/.test(name)) ?? '';
+
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ size: 'xs' }}>
+          <NebaProvider defaults={{ density: 'compact' }}>
+            <Button>Nested</Button>
+          </NebaProvider>
+        </NebaProvider>
+        <Button size="xs" density="compact">
+          Spelled out
+        </Button>
+      </>
+    );
+    const nested = screen.getByRole('button', { name: 'Nested' }).element();
+    const spelled = screen.getByRole('button', { name: 'Spelled out' }).element();
+
+    expect(paddingOf(nested)).not.toBe('');
+    expect(paddingOf(nested)).toBe(paddingOf(spelled));
+    expect(heightOf(nested)).toBe(heightOf(spelled));
+  });
+
   // A provider with no `direction` forced left-to-right inside a right-to-left tree.
   it('keeps the outer direction when it has none of its own', async () => {
     const screen = await render(

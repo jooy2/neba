@@ -59,4 +59,23 @@ describe('prefers-reduced-motion', () => {
       themed.remove();
     }
   });
+
+  // The case the redeclaration exists for: a light box inside a dark one, which
+  // is a preview of the other theme on a page that is already in one.
+  it('reaches a light root nested inside a dark one', () => {
+    const rules = reducedMotionRules();
+    const dark = document.createElement('div');
+    const light = document.createElement('div');
+
+    dark.className = 'dark';
+    light.className = 'light';
+    dark.append(light);
+    document.body.append(dark);
+
+    try {
+      expect(rules.some((rule) => light.matches(rule.selectorText))).toBe(true);
+    } finally {
+      dark.remove();
+    }
+  });
 });

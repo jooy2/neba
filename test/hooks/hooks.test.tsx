@@ -279,6 +279,36 @@ describe('useOnScreen', () => {
     await expect.element(screen.getByText('seen')).toBeInTheDocument();
   });
 
+  // `once` is the default because the answer usually only has to arrive once.
+  // Turned off, it has to go back to `false` when the element leaves again.
+  it('reports an element leaving the screen again when once is off', async () => {
+    function Watched() {
+      const [ref, visible] = useOnScreen<HTMLDivElement>({ once: false });
+
+      return (
+        <div>
+          <div style={{ height: '200vh' }} />
+          <div ref={ref}>watched</div>
+          <p>{visible ? 'seen' : 'unseen'}</p>
+        </div>
+      );
+    }
+
+    const screen = await render(<Watched />);
+
+    try {
+      await expect.element(screen.getByText('unseen')).toBeInTheDocument();
+
+      window.scrollTo(0, document.body.scrollHeight);
+      await expect.element(screen.getByText('seen')).toBeInTheDocument();
+
+      window.scrollTo(0, 0);
+      await expect.element(screen.getByText('unseen')).toBeInTheDocument();
+    } finally {
+      window.scrollTo(0, 0);
+    }
+  });
+
   it('watches an element that arrives after the first render', async () => {
     function Late({ ready }: { ready: boolean }) {
       const [ref, visible] = useOnScreen<HTMLDivElement>();
@@ -315,6 +345,24 @@ describe('useShortcut', () => {
     await userEvent.keyboard(
       mac ? '{Meta>}{Shift>}P{/Shift}{/Meta}' : '{Control>}{Shift>}P{/Shift}{/Control}'
     );
+
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
+  // The combination the JSDoc and the hooks guide both use. A `?` is Shift and a
+  // key whose own name is already `?`, so comparing Shift strictly never matched
+  // what a reader actually pressed.
+  it('runs on a punctuation shortcut that needs Shift', async () => {
+    const run = vi.fn();
+
+    function Bound() {
+      useShortcut('?', run);
+      return <p>bound</p>;
+    }
+
+    await render(<Bound />);
+
+    await userEvent.keyboard('?');
 
     expect(run).toHaveBeenCalledTimes(1);
   });
