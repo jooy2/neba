@@ -28,6 +28,8 @@ import { List, ListItem, Sidebar } from 'neba';
 
 `<aside>`의 native 속성은 그대로 전달됩니다. 다만 `color`와 `title`은 예외입니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
+`ref`는 열에 붙습니다. 사이드바가 접혀 있는 동안에는 열이 없으므로 `null`입니다.
+
 자기 children만 배치합니다. 페이지가 사이드바를 _둘러싸도록_ 하려면 [PageLayout](./page-layout)의 `sidebar`나 `endSidebar` 자리에 넣으세요.
 
 ## 예시
@@ -64,7 +66,7 @@ import { List, ListItem, Sidebar } from 'neba';
 
 ### sticky
 
-기본값은 켜짐입니다. 페이지가 스크롤될 때는 header 아래에서 시작해 남은 창 높이만큼인 sticky 열이 되고, 내용만 스크롤될 때는 이미 레이아웃 높이만큼이라 아무것도 달라지지 않습니다.
+PageLayout 안에서는 켜져 있고 밖에서는 꺼져 있습니다. 밖에서는 창 높이만큼인 열이 자신을 담은 상자를 넘어가기 때문입니다. 페이지가 스크롤될 때는 header 아래에서 시작해 남은 창 높이만큼인 sticky 열이 되고, 내용만 스크롤될 때는 이미 레이아웃 높이만큼이라 아무것도 달라지지 않습니다.
 
 ## SidebarTrigger
 

@@ -24,6 +24,9 @@ import {
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
+/** What a bundler replaces, for the development-only warning below. */
+declare const process: { env: { NODE_ENV?: string } };
+
 export type { SidebarSide } from '../../internal/page-layout.js';
 
 export interface SidebarProps extends Omit<
@@ -92,11 +95,13 @@ export interface SidebarProps extends Omit<
   /**
    * Whether the column holds its place while the page scrolls past it.
    *
-   * On by default, and it costs nothing when it is not needed: with the page
-   * scrolling it becomes a `sticky` column as tall as what is left of the
-   * window under the header, and with only the content scrolling it is already
-   * as tall as the layout and this changes nothing.
-   * @default true
+   * On inside a PageLayout, where it costs nothing when it is not needed: with
+   * the page scrolling it becomes a `sticky` column as tall as what is left of
+   * the window under the header, and with only the content scrolling it is
+   * already as tall as the layout and this changes nothing. Off outside one,
+   * where a column the height of the window would reach past the box it was put
+   * in and leave its last items out of reach.
+   * @default true inside a PageLayout, false outside one
    */
   sticky?: boolean;
   /**
@@ -219,7 +224,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     open: openProp,
     defaultOpen = false,
     onOpenChange,
-    sticky = true,
+    sticky: stickyProp,
     title,
     variant = 'outline',
     size = 'md',
@@ -244,6 +249,24 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
   const collapseBelow = collapseBelowProp ?? (layout.present ? layout.collapseBelow : 'none');
   const collapsed = useCollapsed(collapseBelow);
+  const sticky = stickyProp ?? layout.present;
+
+  // A SidebarTrigger follows the layout's `collapseBelow`, so a Sidebar told a
+  // wider one of its own is a drawer with no way to open it between the two.
+  React.useEffect(() => {
+    if (
+      process.env.NODE_ENV === 'production' ||
+      !layout.present ||
+      collapseBelowProp === undefined ||
+      collapseBelowProp === layout.collapseBelow
+    ) {
+      return;
+    }
+
+    console.warn(
+      `Neba: a Sidebar collapses below "${collapseBelowProp}" and its PageLayout below "${layout.collapseBelow}". A SidebarTrigger follows the layout, so between the two widths the drawer has nothing to open it. Set collapseBelow on the PageLayout instead.`
+    );
+  }, [layout.present, layout.collapseBelow, collapseBelowProp]);
 
   const [ownOpen, setOwnOpen] = React.useState(defaultOpen);
   const controlled = openProp !== undefined;

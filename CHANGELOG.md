@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **A `Sidebar` outside a `PageLayout` does not hold its place by default.** `sticky` was on everywhere, and on its own a Sidebar became a column the height of the window, which inside a shorter box put its last items out of reach. It defaults to `true` inside a PageLayout and `false` outside one; a standalone sidebar that should stick passes `sticky`. A Sidebar whose own `collapseBelow` differs from its layout's now warns in development, because a SidebarTrigger follows the layout, and the page says that `ref` reaches the column and is `null` while the sidebar is collapsed.
+
 - **An `AnimateCounter` counts a new `value` on from the number on screen.** Every change of `value` counted up from `from` again, after `delay` again, so a live figure going from 100 to 105 dropped to 0 and climbed back. A counter that has counted now runs from wherever it is to the new value; `from` and `delay` are for the first count and for one that starts over when its trigger lets go. A counter meant to start from `from` on every change should be given a new `key`.
 
 - **A `Collapsible`'s title and subtitle wrap.** Both were always cut to one line, so a title written as a question lost its end on a narrow screen. They wrap now, as an `AccordionItem`'s do, and the new `lines` cuts them off after that many lines with an ellipsis. A header that has to stay on one line should pass `lines={1}`.

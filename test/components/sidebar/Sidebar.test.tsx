@@ -164,12 +164,24 @@ describe('Sidebar', () => {
 
   describe('holding its place', () => {
     it('is a sticky column that starts below the header', async () => {
-      const screen = await render(<Sidebar />);
+      const screen = await render(
+        <PageLayout collapseBelow="none" sidebar={<Sidebar />}>
+          Page
+        </PageLayout>
+      );
 
       expect(screen.getByRole('complementary').element()).toHaveClass(
         'sticky',
         '[top:var(--n-layout-header,0px)]'
       );
+    });
+
+    // On its own it was a sticky column the height of the window, which inside a
+    // shorter box put its last items out of reach.
+    it('holds no place outside a layout unless it is told to', async () => {
+      const screen = await render(<Sidebar />);
+
+      expect(screen.getByRole('complementary').element()).not.toHaveClass('sticky');
     });
 
     it('scrolls away with the page when it is told not to hold', async () => {
@@ -180,6 +192,22 @@ describe('Sidebar', () => {
   });
 
   describe('collapsing', () => {
+    it('warns in development when it collapses at another width than its layout', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      try {
+        await render(
+          <PageLayout collapseBelow="md" sidebar={<Sidebar collapseBelow="lg" />}>
+            Page
+          </PageLayout>
+        );
+
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('collapses below "lg"'));
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
     it('stays a column at every width outside a layout', async () => {
       await widen(NARROW);
       const screen = await render(<Sidebar>Navigation</Sidebar>);

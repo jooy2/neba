@@ -28,6 +28,8 @@ import { List, ListItem, Sidebar } from 'neba';
 
 Every native `<aside>` attribute passes through, apart from `color` and `title`. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
+`ref` reaches the column. While the sidebar is collapsed there is no column, and it is `null`.
+
 It lays out its own children and nothing else. To have a page laid out _around_ it, put it in a [PageLayout](./page-layout)'s `sidebar` or `endSidebar` slot.
 
 ## Examples
@@ -64,7 +66,7 @@ It defaults to the PageLayout's own value and to `none` outside one, because a s
 
 ### sticky
 
-On by default. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
+On inside a PageLayout and off outside one, where a column the height of the window would reach past the box it was put in. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
 
 ## SidebarTrigger
 

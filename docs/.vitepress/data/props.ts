@@ -2386,7 +2386,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'sticky',
       type: 'boolean',
-      default: 'true',
+      default: {
+        ko: 'PageLayout 안에서 true, 밖에서 false',
+        en: 'true inside a PageLayout, false outside one'
+      },
       description: {
         ko: '페이지가 지나가는 동안 자리를 지키는지. 헤더 아래에서 시작해 남은 창 높이만큼인 sticky 열이 됩니다',
         en: 'Whether the column holds its place while the page scrolls past it: a sticky column as tall as what is left of the window under the header'
