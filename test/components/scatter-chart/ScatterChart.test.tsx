@@ -698,7 +698,10 @@ describe('ScatterChart', () => {
         );
 
       move(0);
-      await expect.element(screen.getByRole('status')).toBeInTheDocument();
+      // The tooltip rather than the status region, which is always there: a
+      // `pointermove` is not a discrete event, so React commits it a moment
+      // later, and on a slow runner that commit landed after the count began.
+      await expect.poll(() => document.querySelector('[data-neba-tooltip]')).not.toBeNull();
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       const before = commits;
