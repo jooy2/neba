@@ -30,8 +30,8 @@ import { VisuallyHidden } from 'neba';
 
 |  | 무엇이 잘못되나 |
 | --- | --- |
-| `hidden` · `display: none` | 화면과 함께 accessibility tree에서도 사라집니다: 목적의 정반대 |
-| `opacity: 0` · `visibility: hidden` | 글자 크기만 한 클릭 가능한 유령이 남고, 포인터가 그것을 찾습니다 |
+| `hidden` · `display: none` · `visibility: hidden` | 화면과 함께 accessibility tree에서도 사라집니다: 목적의 정반대 |
+| `opacity: 0` | 글자 크기만 한 클릭 가능한 유령이 남고, 포인터가 그것을 찾습니다 |
 | `text-indent: -9999px` | 그만큼 넓은 상자와 가로 스크롤바가 생깁니다 |
 | `font-size: 0` | 일부 스크린 리더가 아예 읽지 않습니다 |
 

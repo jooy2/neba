@@ -93,7 +93,7 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 `maxItems`로 접힌 단계도 모두 들어갑니다. 무엇을 접을지는 줄에 자리가 얼마나 있느냐의 문제이고, 경로는 어느 쪽이든 같은 경로이기 때문입니다. `href`가 없는 단계는 `item` 없이 나가는데, 마지막 단계가 대개 그렇습니다.
 
-기본값은 꺼짐입니다. 한 페이지에 `BreadcrumbList`는 하나여야 하고, 이미 SEO 레이어에서 직접 내보내는 앱이 많습니다.
+기본값은 꺼짐입니다. 이미 SEO 레이어에서 `BreadcrumbList`를 직접 내보내는 앱이 많고, 같은 경로를 한 번 더 내보내도 더해지는 정보가 없기 때문입니다.
 
 <Demo src="breadcrumb/structured-data">
 

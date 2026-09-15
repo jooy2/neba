@@ -81,9 +81,9 @@ export interface CodeBlockProps extends Omit<
    * The palette. Independent of the page's light and dark, except on `auto`.
    *
    * Any other string works too, and is how a project brings its own: write
-   * `[data-code-theme='ours'] { --n-code-bg: …; --n-code-keyword: … }` in your
-   * own CSS and pass the name. Sixteen slots, five of which are derived from
-   * the other two and need no declaration.
+   * `.neba-code[data-code-theme='ours'] { --n-code-bg: …; --n-code-keyword: … }`
+   * in your own CSS and pass the name. Nineteen slots, five of which are mixed
+   * from `--n-code-bg` and `--n-code-fg` and need no declaration.
    * @default 'dark'
    */
   theme?: CodeBlockTheme | (string & {});

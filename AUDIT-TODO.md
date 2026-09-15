@@ -490,18 +490,18 @@ The line numbers in this section are from the audit. `CLAUDE.md` has changed sin
   - transitions: animate-shake (`### Why this one is an exception`)
   - ko pages whose `## Examples` and `## Accessibility` headings are still English: how-to-steps (`:36, 124`), code-block (`:26, 140`)
 - [x] **275** **Factual errors on inputs pages**: Slider says there are no marks at the default `step={1}` but draws 101, and its example heading "An array value makes it a range" is a sentence. OtpField's "`color`, `size`, `onChange` are excluded" differs from the real Omit (`color`, `defaultValue`, `onChange`, `children`). ColorPicker's claim that both `disabled` and `readOnly` leave the tab order is wrong, since a `readOnly` input stays in it. DateTimePicker's description of the trigger name was wrong before 39; check it against the current name. TimePicker "`00` through `25` dim" is `00` through `29` at a one-minute step. Fixed: Slider says the default range draws 101 ticks and a range past a hundred steps draws none, and its heading is a noun phrase; OtpField names the four props it really replaces; ColorPicker says the text field stays in the tab order, read-only; DateTimePicker's trigger is named by its label and one `Intl` value; TimePicker greys out `00` through `29`.
-- [ ] **276** **Factual errors on display pages**
-  - [ ] Blockquote: said to be a single `<blockquote>` without an attribution, but it is wrapped in a `<div>`; the comma in the HTML example is not in the output.
-  - [ ] Breadcrumb: "one `BreadcrumbList` per page" differs from Google's documentation (unverified).
-  - [ ] Highlight: the usage example `query={/\d+/} caseSensitive` is a combination with no effect.
-  - [ ] Shortcut: "the key cap and the string you press are the same" is wrong for Shift punctuation.
-  - [ ] TextLink: the `render` example writes `href` twice while the text says once is enough.
-  - [ ] VisuallyHidden: the skip-link demo uses `focus:` classes instead of `visible`, which contradicts the text, and the table's `visibility: hidden` row is wrong.
-  - [ ] Image: says `frame.border` follows `cut` corners, but the diagonal has no line.
-  - [ ] Gallery: "every hover treatment is also a focus treatment" (43) and "Nothing is ever measured" (16); both items are fixed or documented now, so check the wording.
-  - [ ] CodeBlock: the custom theme example `[data-code-theme='ours']` has the same specificity as `.neba-code` and loses by load order; the slot count is "Eleven" in the docs and "Sixteen" in the JSDoc, while it is 14 plus 5.
-  - [ ] Badge, Tooltip: the icon-only buttons in the usage example and the hero have no name.
-  - [ ] DataTable: "`md` row 32px against a Button's 32px plus its own margin" is wrong (`:199`).
+- [x] **276** **Factual errors on display pages** Fixed: Blockquote's wrapper and caption match the output; Breadcrumb no longer states a one-per-page rule; the Highlight example uses a string with `caseSensitive`; Shortcut names the Shift punctuation exception; TextLink says why the example repeats `href`; the skip link uses `visible`, and `visibility: hidden` sits with `display: none`; Image says a cut corner's diagonal has no line; CodeBlock's example selector outranks the default and counts fourteen slots, in its JSDoc too; the Badge and Tooltip icon buttons have names; DataTable states the row heights. Gallery's two sentences were checked and hold.
+  - [x] Blockquote: said to be a single `<blockquote>` without an attribution, but it is wrapped in a `<div>`; the comma in the HTML example is not in the output.
+  - [x] Breadcrumb: "one `BreadcrumbList` per page" differs from Google's documentation (unverified).
+  - [x] Highlight: the usage example `query={/\d+/} caseSensitive` is a combination with no effect.
+  - [x] Shortcut: "the key cap and the string you press are the same" is wrong for Shift punctuation.
+  - [x] TextLink: the `render` example writes `href` twice while the text says once is enough.
+  - [x] VisuallyHidden: the skip-link demo uses `focus:` classes instead of `visible`, which contradicts the text, and the table's `visibility: hidden` row is wrong.
+  - [x] Image: says `frame.border` follows `cut` corners, but the diagonal has no line.
+  - [x] Gallery: "every hover treatment is also a focus treatment" (43) and "Nothing is ever measured" (16); both items are fixed or documented now, so check the wording.
+  - [x] CodeBlock: the custom theme example `[data-code-theme='ours']` has the same specificity as `.neba-code` and loses by load order; the slot count is "Eleven" in the docs and "Sixteen" in the JSDoc, while it is 14 plus 5.
+  - [x] Badge, Tooltip: the icon-only buttons in the usage example and the hero have no name.
+  - [x] DataTable: "`md` row 32px against a Button's 32px plus its own margin" is wrong (`:199`).
 - [ ] **277** **Factual errors on chart pages**: Statistic says both the value and the delta change shape (only the delta does). LineChart says slots are "never cycled" (see 134), `NebaChartPoint` lacks `z`, and `connectNulls` is not explained. BarChart says the axis starts at 0 and cannot be changed (`yAxis.min` changes it). PieChart says colours hold when data is filtered or sorted (they follow the index). TimelineChart says arrows ←/→ move (it is ↑/↓). HeatmapChart speaks of treemap groups (tiles are placed regardless of group).
 - [ ] **278** **Factual errors on feedback pages**: Toast says `update` restarts the timer (only `add` with the same `id` does). Alert says "Three drawings cover the six families" (four; the source comment was fixed in 116). Tour says focus moves in as each step opens (76 chose an announcement instead). Popover's `'trap-focus'` description is the behaviour of `modal={true}`. Overlay recommends `trap-focus` with the `clear` tone, which does not work because of 119.
 - [ ] **279** **Factual errors on surfaces pages**

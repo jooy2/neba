@@ -93,7 +93,7 @@ Correct markup alone is not what puts a path under a search result: the structur
 
 Every step goes in, including the ones a `maxItems` fold is hiding: what is collapsed is a matter of how much room the row has, and the path is the path either way. A step with no `href` is emitted without an `item`, which is the last step's usual case.
 
-It is off by default. A page can only have one `BreadcrumbList`, and a great many apps already emit theirs from an SEO layer of their own.
+It is off by default, because a great many apps already emit their `BreadcrumbList` from an SEO layer of their own, and a second copy of the same trail says nothing new.
 
 <Demo src="breadcrumb/structured-data">
 

@@ -87,7 +87,7 @@ hover는 선만 바꾸고 글자 색은 건드리지 않습니다. 포인터 아
 
 ### render
 
-`render`는 다른 것은 그대로 둔 채 요소만 바꿉니다. 대개는 router가 주는 `Link`입니다. `href`는 TextLink에 그대로 두면 되므로 한 번만 씁니다.
+`render`는 다른 것은 그대로 둔 채 요소만 바꿉니다. 대개는 router가 주는 `Link`입니다. TextLink의 `href`는 그 요소에 전달되고, 자기 `href`를 요구하는 타입의 `Link`에는 아래처럼 같은 값을 줍니다.
 
 ```tsx
 import Link from 'next/link';

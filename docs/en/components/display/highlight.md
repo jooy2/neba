@@ -14,7 +14,7 @@ import { Highlight } from 'neba';
 
 <Highlight query="acrylic">A sheet of cut acrylic.</Highlight>
 <Highlight query={['data', 'database']} variant="text" color="primary">…</Highlight>
-<Highlight query={/\d+/} caseSensitive>…</Highlight>;
+<Highlight query="Neba" caseSensitive>…</Highlight>;
 ```
 
 ## Props

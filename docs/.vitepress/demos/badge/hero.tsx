@@ -18,7 +18,12 @@ export default function BadgeHero() {
   return (
     <div className="flex flex-wrap items-center gap-6">
       <Badge content={4} label="4 unread notifications">
-        <Button variant="outline" color="secondary" startIcon={<BellIcon />} />
+        <Button
+          variant="outline"
+          color="secondary"
+          startIcon={<BellIcon />}
+          aria-label="Notifications"
+        />
       </Badge>
 
       <Badge content={128} label="128 open issues">

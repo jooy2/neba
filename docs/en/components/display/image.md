@@ -160,7 +160,7 @@ The treatment travels on the same clock as the picture's own fade, so a `classNa
 
 How the picture is mounted. A silhouette on its own (`frame="circle"`), or the whole arrangement written out: `shape`, `corner`, `border`, `borderColor`, `mat`, `background`, `elevation` and `feather`.
 
-The line is drawn as an inset shadow rather than a `border`, which is what lets it follow a cut corner or a circle and what keeps it out of the layout. `mat` is the one part that takes room: it is the mount between the line and the picture.
+The line is drawn as an inset shadow rather than a `border`, which is what lets it follow a rounded corner or a circle and what keeps it out of the layout. On a cut corner the diagonal is left without a line. `mat` is the one part that takes room: it is the mount between the line and the picture.
 
 <Demo src="image/frame">
 

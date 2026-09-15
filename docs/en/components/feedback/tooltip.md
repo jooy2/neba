@@ -13,7 +13,7 @@ order: 4
 import { Button, Tooltip } from 'neba';
 
 <Tooltip content="Copy the deploy URL">
-  <Button variant="outline" startIcon={<LinkIcon />} />
+  <Button variant="outline" startIcon={<LinkIcon />} aria-label="Copy the deploy URL" />
 </Tooltip>;
 ```
 

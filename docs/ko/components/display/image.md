@@ -160,7 +160,7 @@ import { Image } from 'neba';
 
 그림이 놓이는 방식입니다. 실루엣 하나만 주거나(`frame="circle"`) 전체를 적어 줍니다: `shape` · `corner` · `border` · `borderColor` · `mat` · `background` · `elevation` · `feather`.
 
-선은 `border`가 아니라 inset shadow로 그립니다. 잘린 모서리나 원을 따라갈 수 있는 것도, 레이아웃에서 자리를 차지하지 않는 것도 그 때문입니다. 자리를 차지하는 것은 `mat` 하나뿐이며, 선과 그림 사이의 여백입니다.
+선은 `border`가 아니라 inset shadow로 그립니다. 둥근 모서리나 원을 따라갈 수 있는 것도, 레이아웃에서 자리를 차지하지 않는 것도 그 때문입니다. 잘린 모서리의 대각선에는 선이 그려지지 않습니다. 자리를 차지하는 것은 `mat` 하나뿐이며, 선과 그림 사이의 여백입니다.
 
 <Demo src="image/frame">
 

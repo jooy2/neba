@@ -23,12 +23,12 @@ import { Blockquote } from 'neba';
 
 <PropsTable name="Blockquote" />
 
-출처가 없으면 `<blockquote>` 하나로 렌더링됩니다. `author`나 `source` 중 하나라도 있으면 `<figure>`로 감싸고 출처를 `<figcaption>`에 넣습니다.
+출처가 없으면 `<div>` 안의 `<blockquote>`로 렌더링됩니다. `author`나 `source` 중 하나라도 있으면 `<figure>`로 감싸고 출처를 `<figcaption>`에 넣습니다.
 
 ```html
 <figure>
   <blockquote cite="…">…</blockquote>
-  <figcaption>— 저자, <cite>출처</cite></figcaption>
+  <figcaption>— 저자 <cite>출처</cite></figcaption>
 </figure>
 ```
 

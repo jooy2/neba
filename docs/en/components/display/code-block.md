@@ -56,10 +56,10 @@ Four are the library's own: `dark` is the default, `light` is its counterpart, `
 
 </Demo>
 
-A theme is a set of `--n-code-*` custom properties under a `[data-code-theme]` selector and nothing else, so `theme` takes any string and a project can write its own:
+A theme is a set of `--n-code-*` custom properties under a `.neba-code[data-code-theme]` selector and nothing else, so `theme` takes any string and a project can write its own:
 
 ```css
-[data-code-theme='ours'] {
+.neba-code[data-code-theme='ours'] {
   --n-code-bg: #101418;
   --n-code-fg: #d7dce2;
   --n-code-comment: #59626e;
@@ -69,7 +69,7 @@ A theme is a set of `--n-code-*` custom properties under a `[data-code-theme]` s
 }
 ```
 
-Eleven slots to fill. The muted text, the hairline, the hover tint and the two used by `highlightLines` are all mixed from `--n-code-bg` and `--n-code-fg`, so they follow whatever you set without being declared.
+Fourteen slots to fill, with `.neba-code` in the selector so the theme outranks the default one whatever order the stylesheets load in. The muted text, the hairline, the hover tint and the two used by `highlightLines` are all mixed from `--n-code-bg` and `--n-code-fg`, so they follow whatever you set without being declared.
 
 ### highlightLines
 

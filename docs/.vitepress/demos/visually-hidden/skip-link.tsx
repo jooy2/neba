@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import { VisuallyHidden } from 'neba';
 
 export default function VisuallyHiddenSkipLink() {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div className="flex flex-col gap-3">
       <VisuallyHidden
         render={<a href="#main-content" />}
-        className="focus:relative focus:inline-flex focus:size-auto focus:overflow-visible focus:rounded-(--neba-radius-sm) focus:bg-(--neba-primary-fill) focus:px-3 focus:py-1.5 focus:text-(--neba-primary-on-solid) focus:[clip-path:none]"
+        visible={focused}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className={
+          focused
+            ? 'self-start rounded-(--neba-radius-sm) bg-(--neba-primary-fill) px-3 py-1.5 text-(--neba-primary-on-solid)'
+            : undefined
+        }
       >
         Skip to content
       </VisuallyHidden>

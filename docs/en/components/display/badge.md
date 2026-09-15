@@ -13,7 +13,7 @@ order: 6
 import { Badge, Button } from 'neba';
 
 <Badge content={4} label="4 unread notifications">
-  <Button startIcon={<BellIcon />} />
+  <Button startIcon={<BellIcon />} aria-label="Notifications" />
 </Badge>
 
 <Badge dot color="success" overlap="circle">

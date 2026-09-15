@@ -87,7 +87,7 @@ A `rel` of your own is merged with that rather than replacing it. `rel="nofollow
 
 ### render
 
-`render` swaps the element without changing anything else: the `Link` a router brings, most of the time. `href` still goes on the TextLink, so it is written once.
+`render` swaps the element without changing anything else: the `Link` a router brings, most of the time. The TextLink hands its `href` to that element, and a `Link` whose type insists on an `href` of its own is given the same value, as below.
 
 ```tsx
 import Link from 'next/link';

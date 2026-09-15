@@ -56,10 +56,10 @@ registerLanguage('elixir', elixir);
 
 </Demo>
 
-테마는 `[data-code-theme]` selector 아래의 `--n-code-*` custom property 묶음일 뿐이므로, `theme`은 아무 문자열이나 받고 프로젝트는 자기 테마를 직접 쓸 수 있습니다.
+테마는 `.neba-code[data-code-theme]` selector 아래의 `--n-code-*` custom property 묶음일 뿐이므로, `theme`은 아무 문자열이나 받고 프로젝트는 자기 테마를 직접 쓸 수 있습니다.
 
 ```css
-[data-code-theme='ours'] {
+.neba-code[data-code-theme='ours'] {
   --n-code-bg: #101418;
   --n-code-fg: #d7dce2;
   --n-code-comment: #59626e;
@@ -69,7 +69,7 @@ registerLanguage('elixir', elixir);
 }
 ```
 
-채워야 하는 slot은 열한 개입니다. 흐린 글자, 얇은 선, hover 틴트, 그리고 `highlightLines`가 쓰는 둘은 모두 `--n-code-bg`와 `--n-code-fg`에서 섞여 나오므로 따로 적지 않아도 따라옵니다.
+채워야 하는 slot은 열네 개입니다. 선택자에 `.neba-code`를 붙여야 stylesheet를 불러오는 순서와 상관없이 기본 테마보다 우선합니다. 흐린 글자, 얇은 선, hover 틴트, 그리고 `highlightLines`가 쓰는 둘은 모두 `--n-code-bg`와 `--n-code-fg`에서 섞여 나오므로 따로 적지 않아도 따라옵니다.
 
 ### highlightLines
 

@@ -199,7 +199,7 @@ const rowKey = (row: Build) => row.id;
 
 ### 크기와 밀도
 
-`size`는 타입 스케일과 셀 여백, 그리고 `rowHeight`의 기본값을 정합니다. `density`는 여백을 바꾸고, 이 컴포넌트에서만은 그 기본값도 함께 내립니다. 사다리는 라이브러리의 나머지보다 한 단계 아래에 있습니다. `md` 행은 32px이고, 같은 `md` Button은 높이 32px에 자기 여백이 더해집니다.
+`size`는 타입 스케일과 셀 여백, 그리고 `rowHeight`의 기본값을 정합니다. `density`는 여백을 바꾸고, 이 컴포넌트에서만은 그 기본값도 함께 내립니다. `md` 행은 32px로 `md` Button과 높이가 같고, `compact`에서는 28px이 됩니다.
 
 <Demo src="data-table/density" minHeight="360">
 

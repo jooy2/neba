@@ -23,12 +23,12 @@ import { Blockquote } from 'neba';
 
 <PropsTable name="Blockquote" />
 
-With no attribution it renders a single `<blockquote>`. Given either `author` or `source`, it wraps that in a `<figure>` and puts the attribution in a `<figcaption>`.
+With no attribution it renders a `<blockquote>` inside a `<div>`. Given either `author` or `source`, it wraps that in a `<figure>` and puts the attribution in a `<figcaption>`.
 
 ```html
 <figure>
   <blockquote cite="…">…</blockquote>
-  <figcaption>— Author, <cite>Source</cite></figcaption>
+  <figcaption>— Author <cite>Source</cite></figcaption>
 </figure>
 ```
 

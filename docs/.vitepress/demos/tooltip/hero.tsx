@@ -25,7 +25,7 @@ export default function TooltipHero() {
     // default wait — see the delay example below.
     <div className="flex flex-wrap items-center gap-3">
       <Tooltip content="Copy the deploy URL" delay={0}>
-        <Button variant="outline" startIcon={<LinkIcon />} />
+        <Button variant="outline" startIcon={<LinkIcon />} aria-label="Copy the deploy URL" />
       </Tooltip>
       <Tooltip content="Every commit on main deploys here" delay={0}>
         <Chip variant="text" color="success">

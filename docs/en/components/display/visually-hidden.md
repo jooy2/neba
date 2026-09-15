@@ -30,8 +30,8 @@ There is one form of this that works, and the near misses all fail in a way nobo
 
 |  | What goes wrong |
 | --- | --- |
-| `hidden`, `display: none` | Takes the text off the accessibility tree along with the screen: the opposite of the job |
-| `opacity: 0`, `visibility: hidden` | Leaves a clickable ghost the size of the words, and a pointer finds it |
+| `hidden`, `display: none`, `visibility: hidden` | Takes the text off the accessibility tree along with the screen: the opposite of the job |
+| `opacity: 0` | Leaves a clickable ghost the size of the words, and a pointer finds it |
 | `text-indent: -9999px` | Makes a box that wide, and a horizontal scrollbar with it |
 | `font-size: 0` | Announced by some screen readers as nothing at all |
 

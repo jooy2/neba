@@ -199,7 +199,7 @@ The file leads with a byte-order mark, and that is not decoration: Excel reads a
 
 ### Size and density
 
-`size` sets the type scale, the cell padding and the default `rowHeight`; `density` changes the padding and, here alone, lowers that default with it. The ladder sits one step below the rest of the library: a `md` row is 32px against a Button's 32px height plus its own padding.
+`size` sets the type scale, the cell padding and the default `rowHeight`; `density` changes the padding and, here alone, lowers that default with it. A `md` row is 32px, the same height as a `md` Button, and `compact` takes it to 28px.
 
 <Demo src="data-table/density" minHeight="360">
 
