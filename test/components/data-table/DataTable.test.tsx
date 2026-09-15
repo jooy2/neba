@@ -891,7 +891,7 @@ describe('DataTable', () => {
         const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="8"]')!;
 
         await expect.element(row).toHaveAttribute('aria-selected', 'true');
-        expect(inside(row, node.getBoundingClientRect())).toBe(true);
+        await expect.poll(() => inside(row, node.getBoundingClientRect())).toBe(true);
       });
 
       it('counts the group headings above a row', async () => {
@@ -914,7 +914,7 @@ describe('DataTable', () => {
         const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="10"]')!;
 
         await expect.element(row).toHaveAttribute('aria-selected', 'true');
-        expect(inside(row, node.getBoundingClientRect())).toBe(true);
+        await expect.poll(() => inside(row, node.getBoundingClientRect())).toBe(true);
       });
 
       // Without a height it is the page that scrolls, and nothing moved it.

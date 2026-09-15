@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Pagination } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
@@ -369,7 +370,10 @@ describe('Pagination', () => {
       const screen = await render(<Routed />);
       const next = screen.getByRole('link', { name: 'Next page' });
 
-      await next.click();
+      // By key rather than by a click: WebKit on macOS and Windows does not
+      // focus a link that is clicked, so a click left it no focus to keep.
+      (next.element() as HTMLElement).focus();
+      await userEvent.keyboard('{Enter}');
 
       await expect.element(next).toHaveAttribute('aria-disabled', 'true');
       await expect.element(next).toHaveFocus();

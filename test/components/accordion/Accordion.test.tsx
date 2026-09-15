@@ -103,7 +103,10 @@ describe('Accordion', () => {
       );
       const body = screen.getByText('How we charge.');
 
-      await expect.element(body).not.toBeVisible();
+      // The attribute rather than `toBeVisible`: WebKit's visibility check does
+      // not count a `content-visibility: hidden` ancestor, which is how
+      // `hidden="until-found"` hides the panel, so it calls the text visible.
+      await expect.element(body).toBeInTheDocument();
       expect(body.element().closest('[hidden]')).toHaveAttribute('hidden', 'until-found');
 
       await screen.rerender(

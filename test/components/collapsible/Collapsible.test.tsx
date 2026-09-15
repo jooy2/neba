@@ -35,7 +35,10 @@ describe('Collapsible', () => {
       await expect
         .element(screen.getByRole('button', { name: 'Advanced' }))
         .toHaveAttribute('aria-expanded', 'false');
-      await expect.element(screen.getByText('Everything else.')).not.toBeVisible();
+      // The panel's `hidden` rather than `toBeVisible` on the text: WebKit's
+      // visibility check does not count a `content-visibility: hidden`
+      // ancestor, which is how `hidden="until-found"` hides it.
+      expect(screen.getByText('Everything else.').element().closest('[hidden]')).not.toBeNull();
     });
 
     // In the markup, and so in a server render and a crawler's index, but
