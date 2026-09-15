@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **An `AnimateCounter` counts a new `value` on from the number on screen.** Every change of `value` counted up from `from` again, after `delay` again, so a live figure going from 100 to 105 dropped to 0 and climbed back. A counter that has counted now runs from wherever it is to the new value; `from` and `delay` are for the first count and for one that starts over when its trigger lets go. A counter meant to start from `from` on every change should be given a new `key`.
+
 - **A `Collapsible`'s title and subtitle wrap.** Both were always cut to one line, so a title written as a question lost its end on a narrow screen. They wrap now, as an `AccordionItem`'s do, and the new `lines` cuts them off after that many lines with an ellipsis. A header that has to stay on one line should pass `lines={1}`.
 
 - **A `Show` given `render` keeps the element's own box.** `display: contents` went on the element `render` named as well, so the `render={<td />}` and `render={<li />}` the docs recommend lost a cell's padding, border and background and a list item's marker. Only a `Show` without `render` is `display: contents` now. A `Show` whose `render` names a block element inside a grid or a flex row becomes a box of its own there: put the grid or flex items inside it, or drop `render`.

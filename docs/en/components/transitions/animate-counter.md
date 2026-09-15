@@ -37,7 +37,7 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 
 ### trigger
 
-`trigger="visible"` is the one worth reaching for on a dashboard below the fold: a count that has already finished by the time it is scrolled to has not been seen. Before it starts, the number sits at `from` rather than at its answer.
+`trigger="visible"` is the one worth reaching for on a dashboard below the fold: a count that has already finished by the time it is scrolled to has not been seen. Before it starts, the number sits at `from` rather than at its answer. Once it has counted, a new `value` counts on from the number on screen.
 
 ```tsx
 <AnimateCounter value={128400} trigger="visible" />

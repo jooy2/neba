@@ -102,6 +102,27 @@ describe('AnimateCounter', () => {
     expect(midway).toBeLessThan(100);
   });
 
+  // A new value counted up from `from` again, so a live figure going from 100 to
+  // 105 dropped to 0 and climbed back.
+  it('counts a new value on from the number on screen', async () => {
+    const screen = await render(<AnimateCounter value={100} duration={4000} data-testid="c" />);
+    const root = screen.getByTestId('c').element();
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('100');
+
+    await screen.rerender(<AnimateCounter value={105} duration={4000} data-testid="c" />);
+    await vi.advanceTimersByTimeAsync(2000);
+
+    const midway = Number(shown(root));
+
+    expect(midway).toBeGreaterThanOrEqual(100);
+    expect(midway).toBeLessThanOrEqual(105);
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('105');
+  });
+
   // The default format writes up to three decimals, so a count to a whole
   // number read `29,851.407` on its way and its width shook.
   it('counts in whole numbers towards a whole number', async () => {

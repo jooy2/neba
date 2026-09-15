@@ -14222,7 +14222,10 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'from',
       type: 'number',
       default: '0',
-      description: { ko: '출발할 숫자', en: 'Where it starts' }
+      description: {
+        ko: '첫 카운트가 출발할 숫자. 한 번 센 뒤 value가 바뀌면 화면의 숫자에서 이어서 셉니다',
+        en: 'Where the first count starts. Once it has counted, a new value counts on from the number on screen'
+      }
     },
     {
       name: 'duration',
@@ -14266,10 +14269,10 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'play',
-      type: 'boolean',
+      type: 'boolean | number',
       description: {
-        ko: 'trigger가 manual일 때 세기 시작합니다',
-        en: 'Runs it when trigger is manual'
+        ko: 'trigger가 manual일 때 세기 시작합니다. 숫자가 바뀌면 처음부터 다시 세고, 0이면 멈춰 있습니다',
+        en: 'Runs it when trigger is manual. A number that changes starts it over; 0 is stopped'
       }
     },
     {

@@ -37,7 +37,7 @@ import { AnimateCounter, Statistic } from 'neba';
 
 ### trigger
 
-화면 아래쪽 대시보드에서 손이 가는 것은 `trigger="visible"`입니다. 스크롤해서 닿았을 때 이미 끝나 있는 카운트는 본 적이 없는 것과 같습니다. 시작 전에는 정답이 아니라 `from`에 머뭅니다.
+화면 아래쪽 대시보드에서 손이 가는 것은 `trigger="visible"`입니다. 스크롤해서 닿았을 때 이미 끝나 있는 카운트는 본 적이 없는 것과 같습니다. 시작 전에는 정답이 아니라 `from`에 머뭅니다. 한 번 센 뒤에 `value`가 바뀌면 화면에 보이는 숫자에서부터 이어서 셉니다.
 
 ```tsx
 <AnimateCounter value={128400} trigger="visible" />

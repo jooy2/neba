@@ -129,6 +129,16 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       [locale, key]
     );
 
+    /*
+     * The number on screen, for a count that starts again. A new `value` counts
+     * on from wherever the last count had got to rather than from `from`: a live
+     * figure going from 100 to 105 dropped to nothing and climbed back. `from`
+     * and `delay` are for the first count, and for one that starts over after
+     * its trigger let go.
+     */
+    const onScreen = React.useRef(from);
+    const hasCounted = React.useRef(false);
+
     React.useEffect(() => {
       // Waiting shows the first frame, which is `from`. That is the same rule
       // the CSS effects follow — an untriggered animation is paused on its own
@@ -137,16 +147,24 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       // reader who asked for less motion is the exception: there is no count to
       // wait for, only the answer.
       if (!run.started && !reduced) {
+        hasCounted.current = false;
+        onScreen.current = from;
         setShown(from);
 
         return;
       }
 
       if (reduced || duration <= 0) {
+        onScreen.current = value;
         setShown(value);
 
         return;
       }
+
+      const origin = hasCounted.current ? onScreen.current : from;
+      const wait = hasCounted.current ? 0 : delay;
+
+      hasCounted.current = true;
 
       let frame = 0;
       let started: number | null = null;
@@ -156,7 +174,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
           started = now;
         }
 
-        const elapsed = now - started - delay;
+        const elapsed = now - started - wait;
 
         if (elapsed < 0) {
           frame = requestAnimationFrame(step);
@@ -165,15 +183,18 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
         }
 
         const t = Math.min(1, elapsed / duration);
+        const next = origin + (value - origin) * easeOut(t);
 
-        setShown(from + (value - from) * easeOut(t));
+        onScreen.current = next;
+        setShown(next);
 
         if (t < 1) {
           frame = requestAnimationFrame(step);
         }
       };
 
-      setShown(from);
+      onScreen.current = origin;
+      setShown(origin);
       frame = requestAnimationFrame(step);
 
       return () => cancelAnimationFrame(frame);
