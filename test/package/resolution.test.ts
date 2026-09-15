@@ -154,26 +154,72 @@ function spreadCollisions(attribute: string): string[] {
   const destructured = new RegExp(`(^|[\\s{,])${attribute},`);
   const inTag = new RegExp(`(^|\\s)${attribute}=\\{`);
   const inObject = new RegExp(`(^|[\\s{])${attribute}\\s*:`);
+  /* The props themselves, and not a handler object built on the spot:
+     `{...track(event => …)}` is three listeners and can carry no class name,
+     and counting it flagged every rail in ColorPicker. */
+  const spreadInTag = /\{\.\.\.[A-Za-z_$][\w$.]*\}/;
+  const spreadInObject = /\.\.\.[A-Za-z_$][\w$.]*\s*[,}]/;
 
   for (const [path, source] of Object.entries(sources)) {
-    if (destructured.test(source)) {
-      continue;
-    }
-
-    for (const tag of openingTags(source)) {
-      if (/\{\.\.\.[A-Za-z]/.test(tag) && inTag.test(tag)) {
-        offenders.push(`${path}: ${tag.split('\n')[0]}`);
+    /* One declaration at a time. A file holds a component and its rows, and one
+       of them taking the attribute out of its own props says nothing about the
+       others — which is how the `TimelineItem` that erased a caller's `style`
+       sat here unseen behind the `Timeline` above it. */
+    for (const declaration of source.split(/\n(?=(?:export\s+)?(?:const|function|let)\s)/)) {
+      if (destructured.test(declaration)) {
+        continue;
       }
-    }
 
-    for (const object of renderPropsObjects(source)) {
-      if (/\.\.\.[A-Za-z]/.test(object) && inObject.test(object)) {
-        offenders.push(`${path}: useRender props`);
+      for (const tag of openingTags(declaration)) {
+        if (spreadInTag.test(tag) && inTag.test(tag)) {
+          offenders.push(`${path}: ${tag.split('\n')[0]}`);
+        }
+      }
+
+      for (const object of renderPropsObjects(declaration)) {
+        if (spreadInObject.test(object) && inObject.test(object)) {
+          offenders.push(`${path}: useRender props`);
+        }
       }
     }
   }
 
   return offenders;
+}
+
+/**
+ * The modules that read the focus-ring slot and are only ever drawn inside one
+ * that sets it: the calendar grid, which `Calendar` and every picker popup draw
+ * on a surface of their own, and the two charts that draw through the chart
+ * frame's `Box`.
+ */
+const ringSetElsewhere = [
+  '../../src/internal/calendar.tsx',
+  '../../src/components/heatmap-chart/HeatmapChart.tsx',
+  '../../src/components/pie-chart/PieChart.tsx'
+];
+
+/**
+ * Every module that reads `var(--n-ring)` with nothing setting it.
+ *
+ * A ring is `outline: 2px solid var(--n-ring)`, and a custom property nobody
+ * has set takes the whole declaration out with it — so a component that reads
+ * the slot where it is never set draws no focus ring at all rather than a
+ * differently coloured one. Image and Gallery did exactly that.
+ *
+ * It is set by `controlSlots`, `surfaceSlots` and `windowSlots`, by a `Box`,
+ * which calls the second of them, or by the module itself; a read that carries
+ * its own fallback — `var(--n-ring, …)` — needs none of them.
+ */
+function ringReadsWithNoSlot(): string[] {
+  const sets = /'--n-ring'|controlSlots\(|surfaceSlots\(|windowSlots\(|<Box[\s>]/;
+
+  return Object.entries(sources)
+    .filter(
+      ([path, source]) =>
+        source.includes('var(--n-ring)') && !sets.test(source) && !ringSetElsewhere.includes(path)
+    )
+    .map(([path]) => path);
 }
 
 /** The four slots every field-shaped component has, from `NebaFieldSlot`. */
@@ -520,6 +566,10 @@ describe('the published package', () => {
 
     it('takes the style out of the props it spreads', () => {
       expect(spreadCollisions('style')).toEqual([]);
+    });
+
+    it('sets the focus-ring slot wherever it reads it', () => {
+      expect(ringReadsWithNoSlot()).toEqual([]);
     });
 
     it('declares every slot union beside the component that offers it', () => {
