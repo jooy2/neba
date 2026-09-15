@@ -92,7 +92,7 @@ Lightness is not as free as it looks. With a white `on-solid` and a fill at 88%,
 
 ## Changing a colour
 
-Re-declare the five and the whole family follows. To give the dark theme its own values, declare the same five on `.dark`.
+Re-declare the five and the whole family follows.
 
 ```css
 :root {
@@ -101,6 +101,21 @@ Re-declare the five and the whole family follows. To give the dark theme its own
   --neba-primary-solid-active: oklch(38% 0.204 300);
   --neba-primary-on-solid: oklch(99% 0.004 300);
   --neba-primary-accent: oklch(54% 0.26 300);
+}
+```
+
+The dark theme is chosen in two ways, so values of its own go in two places: under the system preference, and on a `.dark` or `[data-theme='dark']` root, which is what `NebaProvider` writes. Declared on `.dark` alone, they would not reach a reader whose system is dark.
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme='light']) {
+    /* the same five, with their dark values */
+  }
+}
+
+.dark,
+[data-theme='dark'] {
+  /* the same five again */
 }
 ```
 

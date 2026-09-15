@@ -92,7 +92,7 @@ Neba는 임의의 색상값을 받지 않습니다. `color`는 `#4072cd`가 아�
 
 ## 색 바꾸기
 
-다섯 개만 다시 선언하면 계열 전체가 따라옵니다. 다크 테마 값을 따로 주려면 `.dark`에도 같은 다섯 줄을 선언하세요.
+다섯 개만 다시 선언하면 계열 전체가 따라옵니다.
 
 ```css
 :root {
@@ -101,6 +101,21 @@ Neba는 임의의 색상값을 받지 않습니다. `color`는 `#4072cd`가 아�
   --neba-primary-solid-active: oklch(38% 0.204 300);
   --neba-primary-on-solid: oklch(99% 0.004 300);
   --neba-primary-accent: oklch(54% 0.26 300);
+}
+```
+
+다크 테마는 두 가지 방법으로 정해지므로, 다크 테마 값도 두 곳에 선언합니다. 시스템 설정 아래와, `NebaProvider`가 쓰는 `.dark` 또는 `[data-theme='dark']` 루트입니다. `.dark`에만 선언하면 시스템이 다크인 독자에게는 닿지 않습니다.
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme='light']) {
+    /* 같은 다섯 개, 다크 테마 값으로 */
+  }
+}
+
+.dark,
+[data-theme='dark'] {
+  /* 같은 다섯 개를 한 번 더 */
 }
 ```
 
