@@ -21,12 +21,17 @@ import {
   categoryCount,
   chartPalette,
   extentOf,
+  formatTimeValue,
   labelledPoints,
   linePath,
+  markPath,
+  rampStep,
+  rampSteps,
   ringPath,
   seriesColor,
   tickStride,
   toValue,
+  squarify,
   toValues,
   truncate,
   valueScale,
@@ -45,6 +50,158 @@ describe('timeScale', () => {
     expect(scale.unit).toBe('month');
     expect(scale.min).toBe(min);
     expect(scale.ticks.map((tick) => new Date(tick).getDate())).toEqual(scale.ticks.map(() => 1));
+    expect(scale.ticks.every((tick) => tick >= scale.min && tick <= scale.max)).toBe(true);
+  });
+
+  // One reading is not a range, and dividing by its own span would draw every
+  // mark on one pixel.
+  it('opens a day around a single instant', () => {
+    const at = new Date(2026, 2, 2, 9, 30).getTime();
+    const scale = timeScale({ min: at, max: at });
+
+    expect(scale.max).toBeGreaterThan(scale.min);
+    expect(scale.ticks.length).toBeGreaterThan(0);
+  });
+
+  // A day is a day on the wall clock, not 86,400,000 milliseconds from the
+  // first reading — which is what walking the axis by arithmetic would give.
+  it('ticks at midnight across a run of days', () => {
+    const min = new Date(2026, 2, 2).getTime();
+    const max = new Date(2026, 2, 12).getTime();
+    const scale = timeScale({ min, max });
+
+    expect(scale.unit).toBe('day');
+
+    for (const tick of scale.ticks) {
+      const at = new Date(tick);
+
+      expect([at.getHours(), at.getMinutes(), at.getSeconds()]).toEqual([0, 0, 0]);
+    }
+  });
+
+  // Above a year the calendar has no units left, so the step is 1-2-5 again.
+  it('counts in whole years above a year', () => {
+    const scale = timeScale({
+      min: new Date(1996, 0, 1).getTime(),
+      max: new Date(2026, 0, 1).getTime()
+    });
+
+    expect(scale.unit).toBe('year');
+    expect([1, 2, 5, 10]).toContain(scale.step);
+    expect(scale.ticks.map((tick) => new Date(tick).getMonth())).toEqual(scale.ticks.map(() => 0));
+  });
+});
+
+describe('formatTimeValue', () => {
+  // A tooltip and a hidden table read one instant out of its axis, so the year
+  // is written whether or not the axis had room for it.
+  it('writes a day with its year', () => {
+    const text = formatTimeValue(new Date(2026, 2, 2).getTime(), 'day', 'en-US');
+
+    expect(text).toContain('2026');
+    expect(text).toContain('Mar');
+    expect(text).toContain('2');
+  });
+
+  it('writes a time on the 24-hour clock', () => {
+    expect(formatTimeValue(new Date(2026, 2, 2, 14, 5).getTime(), 'minute', 'en-US')).toBe('14:05');
+  });
+});
+
+describe('rampStep', () => {
+  it('spreads a sequential range over the whole ladder', () => {
+    expect(rampStep(0, 0, 100, 'sequential')).toBe(0);
+    expect(rampStep(50, 0, 100, 'sequential')).toBe(2);
+    expect(rampStep(100, 0, 100, 'sequential')).toBe(rampSteps - 1);
+  });
+
+  it('holds a value outside the range to the ends of the ladder', () => {
+    expect(rampStep(-40, 0, 100, 'sequential')).toBe(0);
+    expect(rampStep(400, 0, 100, 'sequential')).toBe(rampSteps - 1);
+  });
+
+  // A diverging scale is read from its middle, and by the longer of its two
+  // arms, so a set running from −2 to +40 does not paint every negative the
+  // deepest colour there is.
+  it('reads a diverging range from its midpoint, by its longer arm', () => {
+    expect(rampStep(0, -2, 40, 'diverging')).toBe(2);
+    expect(rampStep(40, -2, 40, 'diverging')).toBe(4);
+    expect(rampStep(-2, -2, 40, 'diverging')).toBe(2);
+    expect(rampStep(-40, -40, 40, 'diverging')).toBe(0);
+  });
+
+  // Flat, and flat on its own midpoint: there is no distance either side of the
+  // neutral to scale, so every value is the neutral. A flat range away from the
+  // midpoint still has reach, and reads at the end it is on.
+  it('takes the middle rung when a diverging range has no reach at all', () => {
+    expect(rampStep(7, 7, 7, 'diverging', 7)).toBe(2);
+    expect(rampStep(7, 7, 7, 'diverging')).toBe(4);
+  });
+});
+
+describe('squarify', () => {
+  it('fills the box with tiles whose areas follow the values', () => {
+    const values = [8, 4, 2, 2];
+    const tiles = squarify(values, 200, 100);
+    const total = values.reduce((sum, value) => sum + value, 0);
+
+    expect(tiles).toHaveLength(values.length);
+
+    for (const tile of tiles) {
+      expect(tile.width * tile.height).toBeCloseTo((values[tile.index] / total) * 200 * 100, 4);
+      expect(tile.x).toBeGreaterThanOrEqual(-0.000001);
+      expect(tile.y).toBeGreaterThanOrEqual(-0.000001);
+      expect(tile.x + tile.width).toBeLessThanOrEqual(200.000001);
+      expect(tile.y + tile.height).toBeLessThanOrEqual(100.000001);
+    }
+  });
+
+  // The layout sorts descending because the algorithm needs it to, and hands
+  // the caller's own index back on every tile so a colour and a name still
+  // belong to their value.
+  it('hands back the index each value came in at', () => {
+    const tiles = squarify([1, 9, 3], 100, 100);
+
+    expect(tiles.map((tile) => tile.index).sort()).toEqual([0, 1, 2]);
+    expect(tiles[0].index).toBe(1);
+  });
+
+  it('draws nothing for a box or a total with nothing in it', () => {
+    expect(squarify([1, 2], 0, 100)).toEqual([]);
+    expect(squarify([0, 0], 100, 100)).toEqual([]);
+    expect(squarify([5, -3], 100, 100).map((tile) => tile.index)).toEqual([0]);
+  });
+});
+
+describe('markPath', () => {
+  const shapes = ['circle', 'square', 'triangle', 'diamond', 'cross'] as const;
+
+  it('draws every shape as a path of its own', () => {
+    const paths = shapes.map((shape) => markPath(shape, 20, 20, 6));
+
+    expect(paths.every((path) => path.startsWith('M'))).toBe(true);
+    expect(new Set(paths).size).toBe(shapes.length);
+  });
+
+  it('draws nothing at all at no radius', () => {
+    expect(shapes.every((shape) => markPath(shape, 20, 20, 0) === '')).toBe(true);
+    expect(markPath('square', 20, 20, -4)).toBe('');
+  });
+
+  /*
+   * Equal area rather than equal radius, which is the whole reason the shapes
+   * are scaled at all: on a bubble chart the area is carrying a magnitude, so a
+   * square that covers a third more ink than the circle beside it is reporting
+   * a value it was not given.
+   */
+  it('covers the area of a circle of the same radius, whatever the shape', () => {
+    const radius = 10;
+    const area = Math.PI * radius * radius;
+    const side = Number(/h([\d.]+)/.exec(markPath('square', 0, 0, radius))![1]);
+    const half = Number(/^M0 -([\d.]+)/.exec(markPath('diamond', 0, 0, radius))![1]);
+
+    expect(side ** 2).toBeCloseTo(area, 0);
+    expect(2 * half ** 2).toBeCloseTo(area, 0);
   });
 });
 
