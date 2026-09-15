@@ -62,6 +62,8 @@ Questions from the batch pushed on 2026-09-15, labelled I and J, and the two car
 - **I1 (107)** `terser-glob` is unused now that the minify step is `scripts/minify.mjs`, which calls terser's own API, and it is still in `devDependencies`. Approve removing it.
 - **I2 (248)** A `FloatingAction` spread its remaining props after its own `style`, so a caller's `style` replaced the round radius — the per-declaration spread check is what found it. It is merged over now, as 124 (a) decided for the button the dial comes out of. Approve.
 
+- **I3** Two entries of this batch sit under `### Fixed` although a consumer may have to act on them: `AnimateCounter` now sets `tabular-nums` on its root, where a caller who wants proportional figures has to write `proportional-nums!`, and an `AnimateSplit` cut by character now holds each word's pieces in a span of their own, where a test that queried the pieces as direct children of the hidden copy finds the wrappers. Approve leaving both under `### Fixed`, or say which to move to `### Breaking changes`.
+
 ### J. Choices
 
 - **J1 (248)** A `FloatingAction`'s `className` goes on the row that holds the button and its name, while every other prop goes on the button — the same split 124 (a) took out of the main button. (a) leave it, since the row is what a caller positions; (b) move `className` to the button and give the row `classNames.frame`, as the main button has.
