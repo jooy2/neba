@@ -178,6 +178,8 @@
 
 ### Fixed
 
+- **A `HeatmapChart` whose values are all the same no longer looks like peak activity.** A flat sequential range took the darkest step, so a week of zeros painted every cell at full strength. A flat range is read against zero now: zero or less takes the lightest step and anything above zero the darkest.
+
 - **A `ProgressCircular` keeps a hole in the middle whatever its `thickness`.** The stroke was held to the whole radius, so a thick `thickness` on a `md` ring filled it in to a disc, although the JSDoc and the page said it stopped at half the radius. It stops there now.
 
 - **A disabled `ColorPicker` takes its text field out of the tab order.** The field was only ever read-only, so a disabled picker kept a stop in the tab order that could do nothing. It is disabled with the picker now; a `readOnly` picker still leaves it focusable, so its value can be selected and copied.

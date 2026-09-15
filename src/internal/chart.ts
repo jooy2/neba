@@ -1602,7 +1602,9 @@ export function rampStep(
   const span = max - min;
 
   if (!(span > 0)) {
-    return rampSteps - 1;
+    // Nothing to spread. Read against zero rather than as the top of a range,
+    // so a week of zeros is the lightest step and not peak activity.
+    return value > 0 ? rampSteps - 1 : 0;
   }
 
   return Math.min(rampSteps - 1, Math.max(0, Math.floor(((value - min) / span) * rampSteps)));

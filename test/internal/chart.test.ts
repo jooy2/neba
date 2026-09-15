@@ -122,6 +122,14 @@ describe('rampStep', () => {
     expect(rampStep(100, 0, 100, 'sequential')).toBe(rampSteps - 1);
   });
 
+  // A flat range took the top rung, so a week with no activity at all looked
+  // like the busiest week there could be.
+  it('reads a flat sequential range against zero', () => {
+    expect(rampStep(0, 0, 0, 'sequential')).toBe(0);
+    expect(rampStep(-3, -3, -3, 'sequential')).toBe(0);
+    expect(rampStep(5, 5, 5, 'sequential')).toBe(rampSteps - 1);
+  });
+
   it('holds a value outside the range to the ends of the ladder', () => {
     expect(rampStep(-40, 0, 100, 'sequential')).toBe(0);
     expect(rampStep(400, 0, 100, 'sequential')).toBe(rampSteps - 1);

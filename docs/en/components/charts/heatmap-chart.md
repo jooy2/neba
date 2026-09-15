@@ -70,7 +70,7 @@ Neither ramp is the eight-slot [categorical palette](../../design/color): colour
 
 `valueLabels="all"` writes each value on its cell, where the cell is big enough for the text with room either side; a label that does not fit is dropped rather than clipped. Inside a filled cell the label picks its ink from the step underneath it, so it stays readable at both ends of the ramp.
 
-`min` and `max` pin the scale. Left out, the ends come from the data: which means two charts of different data are not comparable until they are given the same bounds.
+`min` and `max` pin the scale. Left out, the ends come from the data: which means two charts of different data are not comparable until they are given the same bounds. On a sequential scale whose values are all the same there is no range to spread, so zero or less takes the lightest step and anything above zero the darkest.
 
 <Demo src="heatmap-chart/labels">
 
