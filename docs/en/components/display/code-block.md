@@ -21,8 +21,6 @@ import { CodeBlock } from 'neba';
 
 Every native `<div>` attribute passes through, apart from `color`, `title`, `prefix`, `children` and `onCopy`, which the component owns. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
-The code is a `code` prop rather than `children` because it is a string and not markup: a template literal keeps its own indentation, and JSX would collapse it.
-
 ## Examples
 
 ### language
@@ -85,7 +83,7 @@ The tint is mixed from the theme's own ink rather than the page's colour family,
 
 ### toolbar · showLanguage · copyable · rawToggle
 
-The bar over the code, and the three things on it. `toolbar={false}` removes the bar and everything on it whatever the other three say. `rawToggle` is off by default: it drops the colouring and shows the characters as they are, which is a second button on a bar that usually wants one.
+The bar over the code, and the three things on it. `toolbar={false}` removes the bar and everything on it whatever the other three say. `rawToggle` is off by default. Turned on, it adds a toggle that drops the colouring and shows the characters as they are.
 
 <Demo src="code-block/chrome" minHeight="300">
 
@@ -135,12 +133,11 @@ A shell symbol in front of every line that has something on it: `$`, `#`, `C:\>`
 
 ### highlight
 
-`highlight={false}` draws the code with no colouring at all, and nothing is fetched: the grammar engine is behind a dynamic import, so a block that does not highlight costs no more than the text in it. With it on, the block draws plain on the first frame and colours itself when the grammar lands.
+`highlight={false}` draws the code with no colouring at all and fetches no grammar. With it on, the block draws plain on the first frame and colours itself when the grammar lands.
 
 ## Accessibility
 
 - Code that is wider or taller than its box is a scrollable region with `tabIndex={0}` and a name, so a reader with no pointer to drag with can still scroll it. The name is the `title` when there is one, and the language otherwise. A block with nothing to scroll is neither, so a page of short snippets is not a page of landmarks and tab stops.
 - Prompts and line numbers are generated content with empty alternative text, which keeps them from being read out as well as off the clipboard. A browser without the alternative-text syntax (Firefox before 128, Safari before 17.4) still reads them.
-- The copy button announces the result through a polite live region, because the only other signal (the button's own label changing) is not something a screen reader reading the page would hear.
-- <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else. A reader who tabbed to a code block and pressed the shortcut every editor has meant this code, not the article around it. Prompts and line numbers are outside the selection for the same reason they are outside the clipboard.
-- `theme` is the one colour decision in the library that does not follow the page. A block set to `dark` stays dark under a light system preference, which is deliberate; `auto` is the opt-out.
+- The copy button announces the result through a polite live region.
+- <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd> inside the focused block selects the code and nothing else. Prompts and line numbers are left out of the selection, as they are left out of the clipboard.

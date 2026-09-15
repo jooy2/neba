@@ -49,7 +49,7 @@ Define `headers`, `getRowKey`, `filter` and `manual` outside the component, or m
 
 Set a `height` (or a `maxHeight`) and the body scrolls with only the visible rows in the DOM. Without one there is nothing to measure against, so every row is rendered whatever `virtual` says, and `virtual={false}` turns it off for a table small enough that find-in-page matters more than the DOM count.
 
-Every row is `rowHeight` tall and cells truncate rather than wrap, which is what makes the scroll offset arithmetic. Raise `rowHeight` for cells holding an Avatar or two lines.
+Every row is `rowHeight` tall, and cells truncate rather than wrap. Raise `rowHeight` for cells holding an Avatar or two lines.
 
 <Demo src="data-table/virtual" minHeight="400">
 
@@ -136,15 +136,15 @@ Adjacent columns carrying the same `group` string are merged under one heading i
 
 `pinned: 'start' | 'end'` on a column freezes it against that edge while the rest scroll past.
 
-Pinning also **moves** the column: everything pinned to the start is drawn first and everything pinned to the end last, whatever `columnOrder` said. A frozen column in the middle of the scrolling ones would slide over its neighbours instead of holding still.
+Pinning also **moves** the column. Everything pinned to the start is drawn first and everything pinned to the end last, whatever `columnOrder` said.
 
-Give a pinned column a `width`. The offsets the sticky cells sit at are the sum of the widths before them, and a column that has not said how wide it is has no number to add: it is measured at the default instead, which is a guess.
+Give a pinned column a `width`. Without one, the offsets the sticky cells sit at are worked out from a default width rather than the column's real one.
 
 ### Column order and reordering
 
 `columnOrder` is a list of keys. **A key it does not mention keeps its place**, so an order that names two columns moves those two and leaves the rest alone, and a column added to `headers` later appears without the stored order having to be migrated.
 
-`reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable, since where they sit is what pinning decided.
+`reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable.
 
 ### Editing a cell
 
@@ -158,11 +158,11 @@ Give a pinned column a `width`. The offsets the sticky cells sit at are the sum 
 />
 ```
 
-Neither works alone. A column with no handler above it is not editable however `editable` is set, because the table holds **no copy of the rows**: it hands the new value over and draws whatever comes back in `items`. A table that wrote into its own copy would be a table showing something the application does not know about.
+Neither works alone. A column with no handler above it is not editable however `editable` is set. The table holds **no copy of the rows**. It hands the new value over and draws whatever comes back in `items`.
 
 `editable` may be a function, for a locked record or a computed field. `editType: 'number'` keeps the keypad on a phone and hands back a number rather than a string.
 
-A double-click opens the editor, and so does <kbd>F2</kbd> on the active row; blur and `Enter` commit, `Escape` cancels, and either key hands the focus back to the table. `onRowActivate` does **not** also fire for a cell that opened an editor: the cell answered the double-click.
+A double-click opens the editor, and so does <kbd>F2</kbd> on the active row; blur and `Enter` commit, `Escape` cancels, and either key hands the focus back to the table. `onRowActivate` does **not** also fire for a double-click that opened an editor.
 
 ### Grouping and aggregates
 
@@ -179,21 +179,21 @@ A double-click opens the editor, and so does <kbd>F2</kbd> on the active row; bl
 />
 ```
 
-The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in: except rows `groupBy` returned `undefined` for, which go above everything, because a heading that says nothing is not one a reader can interpret. Their heading reads "No group", in the table's `locale`.
+The grouping runs **after** the search and the sort, so a sorted table stays sorted inside each group and a filtered one groups only what is left. Groups keep the order their first row appeared in. The exception is rows `groupBy` returned `undefined` for, which go above everything under a heading that reads "No group" in the table's `locale`.
 
-`aggregate` draws in the group heading, in its own column, which is the whole point: a group's total belongs in the same column as the numbers it is a total of. There is no `'sum' | 'avg'` shorthand: the moment a table has one column needing a weighted mean or a distinct count, half the columns are functions and half are strings.
+`aggregate` on a column is called with the rows of one group, and what it returns is drawn in the group heading, in that column. It is always a function, with no `'sum' | 'avg'` shorthand.
 
-Grouping turns **virtual scrolling off**. The window arithmetic counts every child of the body as one row of `rowHeight`, and a heading row is one more than that.
+Grouping turns **virtual scrolling off**.
 
 ### Exporting
 
 `exportable` adds a button that writes the rows out as a CSV file.
 
-**Every row the reader is currently looking at, not the page they are on.** The search and the sort are applied and the paging is not, because a file of page 3 is not a file anybody asked for.
+The file holds every row the reader is currently looking at, not only the page they are on. The search and the sort are applied, and the paging is not.
 
-`exportValue` on a column is what the file gets, separate from `render` on purpose: a cell that draws a Chip, an Avatar or a progress bar has no text to put in a file. `exportable: false` on a column leaves it out.
+`exportValue` on a column is what the file gets. Without one it falls back to `value` and then to `row[key]`, and never to what `render` draws. `exportable: false` on a column leaves it out.
 
-The file leads with a byte-order mark, and that is not decoration: Excel reads a UTF-8 CSV without one as the local code page, so every non-ASCII name in it arrives as mojibake. A text cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return is written with a `'` in front, so a spreadsheet shows it rather than running it as a formula; `exportEscapeFormulas={false}` writes it as it is.
+The file leads with a byte-order mark, so Excel reads its non-ASCII text correctly. A text cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return is written with a `'` in front, so a spreadsheet shows it rather than running it as a formula; `exportEscapeFormulas={false}` writes it as it is.
 
 `onExport` takes the CSV instead of downloading it.
 
@@ -219,9 +219,9 @@ The file leads with a byte-order mark, and that is not decoration: Excel reads a
 
 ## Accessibility
 
-- With a `selectionMode` the table is a `grid` with one tab stop and `aria-activedescendant`, because a virtual row cannot hold the focus: the row that had it is unmounted the moment it scrolls away. Rows carry `aria-selected`.
+- With a `selectionMode` the table is a `grid` with one tab stop, and `aria-activedescendant` points at the active row. Rows carry `aria-selected`.
 - Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
-- The resize handles are pointer-only and hidden from assistive technology. Column widths are a preference, not information: nothing in the table is unreachable without them.
+- The resize handles are pointer-only and hidden from assistive technology. Nothing in the table is out of reach without them.
 - Pass `locale` when the markup is rendered on a server: it is what the default sort compares strings with, and a server that disagrees with the browser about the runtime locale produces two different row orders for the same table.

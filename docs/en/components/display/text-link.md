@@ -31,15 +31,13 @@ The root carries the class `neba-link`. It is the hook a stylesheet that styles 
 
 ### underline
 
-`always` is the default, `hover` draws the line only under the pointer, and `none` draws none at all. Reach for `none` where something else is already saying "this is a link": a nav bar, a footer, a row of them under a heading.
+`always` is the default, `hover` draws the line only under the pointer, and `none` draws none at all. Hovering changes the line, never the text colour. Reach for `none` where something else is already saying "this is a link": a nav bar, a footer, a row of them under a heading.
 
 <Demo src="text-link/underline">
 
 <<< @/.vitepress/demos/text-link/underline.tsx
 
 </Demo>
-
-Hovering changes the line, never the text colour. A word that changes colour under the pointer moves the reader's eye off the line they were reading.
 
 ### color
 
@@ -63,9 +61,9 @@ Also unset by default, and not filled in by a `NebaProvider`: a link in a senten
 
 ### newTab and icon
 
-`newTab` sets `target="_blank"` and the `rel` that stops the new page reaching back through `window.opener`. It also turns `icon` on, because a window changing under the reader is the one thing about a link that cannot be seen until it has happened.
+`newTab` sets `target="_blank"` and the `rel` that stops the new page reaching back through `window.opener`. It also turns `icon` on.
 
-A `rel` of your own is merged with that rather than replacing it. `rel="nofollow"` is an SEO decision and not a security one, so writing it never costs the link its `noopener`: `newTab rel="nofollow"` comes out as `nofollow noopener noreferrer`. On a link that stays in the tab, your `rel` is left exactly as written. A `target` you write yourself gets the same `rel` and the same spoken sentence as `newTab`, but not the glyph: pass `icon` to draw it.
+A `rel` of your own is merged with that rather than replacing it, so `newTab rel="nofollow"` comes out as `nofollow noopener noreferrer`. On a link that stays in the tab, your `rel` is left exactly as written. A `target` you write yourself gets the same `rel` and the same spoken sentence as `newTab`, but not the glyph: pass `icon` to draw it.
 
 `icon` overrides that either way: `false` for a new-tab link with no mark, `true` for a same-tab link that wants one, or a node of your own to replace the glyph.
 

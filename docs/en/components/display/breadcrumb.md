@@ -49,7 +49,7 @@ Every other `<li>` attribute passes through to the step.
 
 A trail past `maxItems` steps folds its middle away behind a `…`, which puts it back when pressed. `itemsBeforeCollapse` and `itemsAfterCollapse` decide how many stay at each end; both default to `1`. `expandable={false}` leaves the fold as a plain mark.
 
-The fold only happens when it removes more than one step, since standing in for a single step makes the trail longer rather than shorter.
+The fold only happens when it removes more than one step.
 
 <Demo src="breadcrumb/collapse">
 
@@ -89,11 +89,11 @@ A step with an `href` is an `<a>`, which reloads the page. Pass a router's `Link
 
 ### structuredData
 
-Correct markup alone is not what puts a path under a search result: the structured data is. Turning `structuredData` on emits a schema.org `BreadcrumbList` in a `<script type="application/ld+json">` beside the trail. `baseUrl` is what relative `href`s are resolved against, since a search engine wants an absolute URL.
+Turning `structuredData` on emits a schema.org `BreadcrumbList` for search engines, in a `<script type="application/ld+json">` beside the trail. It draws nothing on screen. `baseUrl` is what relative `href`s are resolved against, since a search engine wants an absolute URL.
 
-Every step goes in, including the ones a `maxItems` fold is hiding: what is collapsed is a matter of how much room the row has, and the path is the path either way. A step with no `href` is emitted without an `item`, which is the last step's usual case.
+Every step goes in, including the ones a `maxItems` fold is hiding. A step with no `href` is emitted without an `item`, which is the last step's usual case.
 
-It is off by default, because a great many apps already emit their `BreadcrumbList` from an SEO layer of their own, and a second copy of the same trail says nothing new.
+It is off by default. Leave it off when the app already emits a `BreadcrumbList` for the page from an SEO layer of its own.
 
 <Demo src="breadcrumb/structured-data">
 
@@ -108,4 +108,3 @@ It is off by default, because a great many apps already emit their `BreadcrumbLi
 - The separators are `aria-hidden`, so a reader hears the steps and not the punctuation between them.
 - The `…` is a real button named by `expandLabel`. With `expandable={false}` it is a mark and is hidden from readers.
 - `locale` names the nav landmark and the `…` button; `label` and `expandLabel` write them out instead.
-- `structuredData` is not an accessibility feature: it is read by a crawler and draws nothing on screen.

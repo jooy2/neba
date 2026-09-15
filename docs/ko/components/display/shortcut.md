@@ -21,12 +21,6 @@ import { Shortcut } from 'neba';
 
 <PropsTable name="Shortcut" />
 
-[MenuItem](../inputs/menu)의 `shortcut` prop이 이 컴포넌트를 넣도록 마련된 자리입니다.
-
-```tsx
-<MenuItem shortcut={<Shortcut keys="Mod+E" />}>이름 바꾸기</MenuItem>
-```
-
 ## 예시
 
 ### keys
@@ -43,7 +37,7 @@ import { Shortcut } from 'neba';
 
 `Mod`는 "그 플랫폼의 기본 수식 키"를 뜻하는 토큰입니다. macOS에서는 Command(`⌘`), 그 외에서는 Control로 해석됩니다. 표기만 바뀌는 다른 토큰과 달리 `Mod`는 가리키는 키 자체가 달라지는 유일한 토큰입니다.
 
-`os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. `mac` · `windows` · `linux`를 명시하는 것은 특정 플랫폼을 설명하는 문서를 위한 것입니다.
+`os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. SSR에서는 첫 프레임이 기본 표기로 렌더링되고 hydration 뒤에 실제 플랫폼 표기로 바뀌므로, macOS에서는 `Ctrl`이 잠깐 보였다가 `⌘`로 바뀝니다. 특정 플랫폼을 설명하는 문서나 이 전환을 피해야 하는 화면에서는 `mac` · `windows` · `linux`를 명시하세요.
 
 같은 문자열을 라이브러리가 **바인딩**에도 씁니다. [CommandPalette](../inputs/command-palette)의 `shortcut`, [TextField](../inputs/text-field) · [NumberField](../inputs/number-field) · [Combobox](../inputs/combobox)의 `shortcuts`가 모두 이 어휘를 읽습니다. 별칭도 마찬가지입니다. `Cmd` · `Command` · `Meta` · `Win`은 한 키이고, `Esc` · `Return` · `Opt` · `Up`은 각각 `Escape` · `Enter` · `Alt` · `ArrowUp`의 다른 표기입니다. 화면에 그린 키캡과 실제로 발동하는 키가 같은 문자열이며, 예외가 하나 있습니다. Shift를 눌러 입력하는 문장부호는 Shift를 검사하지 않으므로 입력되는 문자 그대로 적습니다. `?`는 발동하고 `Shift+/`는 발동하지 않습니다.
 
@@ -65,9 +59,13 @@ import { Shortcut } from 'neba';
 
 </Demo>
 
-## 서버 렌더링
+### MenuItem 안에서
 
-`os="auto"`는 브라우저에 의존하므로 SSR에서는 첫 프레임이 기본값으로 렌더링된 뒤 hydration 이후 실제 플랫폼 표기로 바뀝니다. macOS에서는 `Ctrl`이 잠깐 보였다가 `⌘`로 교체됩니다. 이 전환을 피해야 하는 화면에서는 `os`를 명시하세요.
+[MenuItem](../inputs/menu)의 `shortcut` prop이 Shortcut을 주로 넣는 자리입니다.
+
+```tsx
+<MenuItem shortcut={<Shortcut keys="Mod+E" />}>이름 바꾸기</MenuItem>
+```
 
 ## 접근성
 

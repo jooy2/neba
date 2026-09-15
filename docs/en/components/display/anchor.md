@@ -30,8 +30,6 @@ Every native `<nav>` attribute passes through, apart from `color` and `children`
 
 <PropsTable name="AnchorItem" />
 
-The headings are given rather than scraped out of the document. Anything that produces this list (an MDX pipeline, a CMS, a route's frontmatter) already knows the ids, and a component that went looking for them would be guessing at which headings were content and which were chrome.
-
 ## Examples
 
 ### activeHref and onActiveChange
@@ -50,7 +48,7 @@ What scrolls, when it is not the document: the element a [PageLayout](../layout/
 
 ### rail
 
-The line down the leading edge, with the active row lit. It is a border on the row rather than a marker that travels, because nothing in the library slides under a reader who is already moving.
+`rail` draws a line down the leading edge and lights it beside the active row. It is on by default.
 
 <Demo src="anchor/rail">
 
@@ -68,7 +66,7 @@ The line down the leading edge, with the active row lit. It is a border on the r
 
 ## Accessibility
 
-- Renders a real `<nav>` of real `<a href="#…">`s. They work with JavaScript off and they are in the link list a screen reader can pull up; the tracking is added on top rather than being load-bearing.
+- Renders a real `<nav>` of real `<a href="#…">`s. They work with JavaScript off, and they are in the link list a screen reader can pull up.
 - The marked row carries `aria-current="location"`, which is the value for where the reader is within a set of links.
 - The `<nav>` is named from `locale`, or from `label`.
 - A heading with no `id` cannot be tracked, and its row is a link to nothing.

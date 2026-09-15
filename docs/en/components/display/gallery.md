@@ -30,9 +30,7 @@ Every other `<ul>` attribute passes through to the list. The shared axes are def
 
 <PropsTable name="NebaGalleryItem" />
 
-`ratio` is the one worth writing down even when it feels optional. `masonry` and `justified` are laid out from it, and they are laid out before a single file has arrived: which is what makes the arrangement right in the first frame and stops a wall of forty photographs reflowing forty times as they land. No picture is ever measured.
-
-The one thing `masonry` reads in JavaScript is the breakpoint, to know how many columns it deals into. A page rendered on a server deals into the `xs` count and deals again once it hydrates on a wider screen, and crossing a breakpoint deals again, which mounts every tile afresh in its new column. `grid`, `quilted` and `justified` take their columns from CSS and never move a tile.
+`masonry` and `justified` are laid out from each item's `ratio` before any file has arrived, so the arrangement is right in the first frame and does not reflow as the pictures load. No picture is ever measured. An item with no `ratio` falls back to the Gallery's own.
 
 An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which reach its picture as they do on an [Image](./image), and `rotate` and `flip` follow it into the viewer. `ratio` stays the proportion of the file as stored, so an item turned onto its side is laid out on its side.
 
@@ -41,6 +39,8 @@ An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which r
 ### layout
 
 `grid` gives every tile the same shape, whatever shape the files are. `masonry` keeps each picture's own proportion and stacks the columns, dealing each item into the shortest one so the first row is the first three pictures rather than the first three of column one. `justified` keeps the proportions and fills every row to the edge, scaling each row to a common height: the arrangement where nothing is cropped and no space is left over. `quilted` is a grid whose tiles may take more than one cell.
+
+`masonry` reads the breakpoint in JavaScript, to know how many columns it deals into. A page rendered on a server deals into the `xs` count and deals again once it hydrates on a wider screen, and crossing a breakpoint deals again, which mounts every tile afresh in its new column. `grid`, `quilted` and `justified` take their columns from CSS and never move a tile.
 
 <Demo src="gallery/layouts">
 
@@ -84,9 +84,9 @@ Reach for `overlay` or `hover` in `justified`: a caption below the picture makes
 
 ### hover
 
-What a tile does under the pointer, and under the keyboard focus: both, always, so a tile is never a state only a mouse can reach.
+`hover` sets what a tile does under the pointer, and a tile whose button has the keyboard focus does the same.
 
-`lift` raises the tile on the shadow ladder and `dim` darkens the picture, which is how the rest of the library answers a pointer. `zoom` scales the photograph inside a frame that does not move: the one place in Neba where something is scaled, and it is allowed here because a photograph carries no text to resample and the tile's own edges stay exactly where they were.
+`lift` raises the tile on the shadow ladder and `dim` darkens the picture. `zoom` scales the photograph inside a frame that does not move, so the tile's own edges stay exactly where they were.
 
 `filter`, `frame`, `watermark` and `protect` pass straight through to every tile's [Image](./image), so a gallery of greyed thumbnails or a marked proof set is one prop.
 
@@ -100,9 +100,7 @@ What a tile does under the pointer, and under the keyboard focus: both, always, 
 
 Opens the picture full size, with the rest of the set an arrow key away. `←` and `→` move the way the arrow points, so under RTL `←` is the next picture; `Esc` closes, and the counter under the picture is announced when it changes.
 
-An item's `full` is used if it has one, so a grid of thumbnails can open the file it is a thumbnail of. `watermark` and `protect` follow the picture into the viewer, because a mark that came off the moment somebody enlarged the picture would not be a mark.
-
-The viewer is fetched on demand. A Gallery that does not offer one does not carry it.
+An item's `full` is used if it has one, so a grid of thumbnails can open the file it is a thumbnail of. `watermark` and `protect` follow the picture into the viewer.
 
 <Demo src="gallery/preview">
 
@@ -116,8 +114,8 @@ Called with the item and its index when a tile is chosen, whether or not there i
 
 ## Accessibility
 
-- The list is a `role="list"` named by `label`, or by the `locale`'s word for "Gallery". Name it after what the set _is_: a page with two galleries and one name on both is a page with one name.
+- The list is a `role="list"` named by `label`, or by the `locale`'s word for "Gallery". Name it after what the set _is_, and give two galleries on one page different names.
 - A tile's button is named by its caption and its place in the set, so a reader tabbing a wall of thumbnails is told which one of how many they are on, and a voice-control user can say the words on the tile to press it. A tile with no caption drawn is named by the picture's `alt` instead.
 - `masonry` is read a column at a time. `Tab` and a screen reader go down the first column before the second, so with three columns the order is 1, 4, 7 and then 2, 5, 8, which is not the order the items were given in. Where the order matters, as in a sequence of steps or a ranking, use `justified`, which keeps it row by row.
-- Every hover treatment is also a focus treatment. A tile that only responds to a pointer responds to half the readers.
+- Every `hover` treatment is also a focus treatment.
 - The viewer's counter is a live region, so an arrow key says where it landed to a reader who cannot see the picture it landed on.

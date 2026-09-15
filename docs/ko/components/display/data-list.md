@@ -24,8 +24,6 @@ import { DataList, DataListItem } from 'neba';
 
 `<dl>`의 모든 속성이 `color`를 제외하고 그대로 전달됩니다. 표면은 그리지 않습니다. 필요하면 [Card](../surfaces/card)나 [Box](../surfaces/box) 안에 두세요.
 
-두 열짜리 [Table](./table)이 아닙니다. 표는 같은 모양의 행이 격자로 놓인 것이고 격자로 읽힙니다. 이쪽은 쌍의 모음이고 각 쌍이 라벨과 값으로 읽힙니다.
-
 ### DataListItem
 
 <PropsTable name="DataListItem" />

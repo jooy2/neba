@@ -49,7 +49,7 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 `maxItems`를 넘는 트레일은 가운데를 `…` 뒤로 접고, 그것을 누르면 다시 펼칩니다. 양 끝에 몇 개를 남길지는 `itemsBeforeCollapse`와 `itemsAfterCollapse`가 정하며 둘 다 기본값은 `1`입니다. `expandable={false}`는 접힘을 표시로만 남깁니다.
 
-접기는 두 단계 이상을 걷어낼 때만 일어납니다. 한 단계를 대신 서는 것은 트레일을 짧게 하는 대신 길게 만들기 때문입니다.
+접기는 두 단계 이상을 걷어낼 때만 일어납니다.
 
 <Demo src="breadcrumb/collapse">
 
@@ -89,11 +89,11 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 ### structuredData
 
-검색 결과 아래에 경로가 표시되려면 마크업만으로는 부족하고 구조화 데이터가 필요합니다. `structuredData`를 켜면 schema.org의 `BreadcrumbList`가 `<script type="application/ld+json">`으로 함께 나갑니다. `baseUrl`은 상대 `href`를 절대 URL로 만드는 기준입니다. 검색엔진은 절대 URL을 원합니다.
+`structuredData`를 켜면 검색엔진이 읽는 schema.org `BreadcrumbList`가 `<script type="application/ld+json">`으로 트레일 옆에 함께 나갑니다. 화면에는 아무것도 그리지 않습니다. `baseUrl`은 상대 `href`를 절대 URL로 만드는 기준입니다. 검색엔진은 절대 URL을 원합니다.
 
-`maxItems`로 접힌 단계도 모두 들어갑니다. 무엇을 접을지는 줄에 자리가 얼마나 있느냐의 문제이고, 경로는 어느 쪽이든 같은 경로이기 때문입니다. `href`가 없는 단계는 `item` 없이 나가는데, 마지막 단계가 대개 그렇습니다.
+`maxItems`로 접힌 단계도 모두 들어갑니다. `href`가 없는 단계는 `item` 없이 나가는데, 마지막 단계가 대개 그렇습니다.
 
-기본값은 꺼짐입니다. 이미 SEO 레이어에서 `BreadcrumbList`를 직접 내보내는 앱이 많고, 같은 경로를 한 번 더 내보내도 더해지는 정보가 없기 때문입니다.
+기본값은 꺼짐입니다. 앱의 SEO 레이어가 이미 그 페이지의 `BreadcrumbList`를 내보낸다면 꺼 두세요.
 
 <Demo src="breadcrumb/structured-data">
 
@@ -108,4 +108,3 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 - 구분자는 `aria-hidden`이므로 screen reader는 단계만 읽고 사이의 기호는 읽지 않습니다.
 - `…`는 `expandLabel`이 이름을 주는 실제 버튼입니다. `expandable={false}`이면 표시일 뿐이며 reader에게는 감춰집니다.
 - nav 이름과 `…` 버튼의 이름을 `locale`이 정합니다. `label`과 `expandLabel`로 직접 쓸 수도 있습니다.
-- `structuredData`는 접근성과는 무관합니다. 크롤러가 읽는 것이고, 화면에는 아무것도 그리지 않습니다.

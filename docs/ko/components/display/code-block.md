@@ -21,9 +21,7 @@ import { CodeBlock } from 'neba';
 
 `color`, `title`, `prefix`, `children`, `onCopy`를 뺀 모든 네이티브 `<div>` 속성이 그대로 전달됩니다. 이 다섯은 컴포넌트가 직접 씁니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
-코드를 `children`이 아니라 `code` prop으로 받는 이유는 그것이 마크업이 아니라 문자열이기 때문입니다. 템플릿 리터럴은 자기 들여쓰기를 그대로 유지하지만 JSX는 그것을 뭉갭니다.
-
-## Examples
+## 예시
 
 ### language
 
@@ -85,7 +83,7 @@ registerLanguage('elixir', elixir);
 
 ### toolbar · showLanguage · copyable · rawToggle
 
-코드 위의 바와 거기 놓이는 세 가지입니다. `toolbar={false}`는 나머지 셋이 무엇이라고 하든 바와 그 위의 모든 것을 없앱니다. `rawToggle`은 기본이 꺼짐입니다. 하이라이팅을 걷어내고 문자를 있는 그대로 보여주는데, 보통 버튼 하나면 충분한 바에 붙는 두 번째 버튼이기 때문입니다.
+코드 위의 바와 거기 놓이는 세 가지입니다. `toolbar={false}`는 나머지 셋이 무엇이라고 하든 바와 그 위의 모든 것을 없앱니다. `rawToggle`은 기본이 꺼짐입니다. 켜면 하이라이팅을 걷어내고 문자를 있는 그대로 보여주는 토글이 바에 붙습니다.
 
 <Demo src="code-block/chrome" minHeight="300">
 
@@ -135,12 +133,11 @@ registerLanguage('elixir', elixir);
 
 ### highlight
 
-`highlight={false}`는 색을 전혀 입히지 않고 코드를 그리며, 이때는 아무것도 내려받지 않습니다. 문법 엔진이 dynamic import 뒤에 있기 때문에, 하이라이팅하지 않는 블록은 그 안의 텍스트 이상의 비용이 들지 않습니다. 켜져 있으면 첫 프레임에는 색 없이 그려지고 문법이 도착하면 스스로 색을 입힙니다.
+`highlight={false}`는 색을 전혀 입히지 않고 코드를 그리며, 문법도 내려받지 않습니다. 켜져 있으면 첫 프레임에는 색 없이 그려지고 문법이 도착하면 스스로 색을 입힙니다.
 
-## Accessibility
+## 접근성
 
 - 상자보다 넓거나 긴 코드는 `tabIndex={0}`과 이름을 가진 스크롤 가능한 region이라, 드래그할 포인터가 없는 독자도 스크롤할 수 있습니다. 이름은 `title`이 있으면 그것, 없으면 language입니다. 스크롤할 것이 없는 블록은 region도 tab 정지점도 아니므로, 짧은 스니펫이 많은 페이지가 landmark와 tab 정지점으로 가득 차지 않습니다.
 - 프롬프트와 줄 번호는 대체 텍스트가 빈 생성 콘텐츠라 클립보드에서 빠지고 읽히지도 않습니다. 대체 텍스트 문법이 없는 브라우저(Firefox 128 미만, Safari 17.4 미만)에서는 여전히 읽힙니다.
-- 복사 버튼은 결과를 polite live region으로 알립니다. 그 외의 유일한 신호인 버튼 자신의 label 변화는 페이지를 읽고 있는 screen reader가 듣지 못하기 때문입니다.
-- 블록에 focus가 있는 상태의 <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd>는 그 코드만 선택합니다. 코드 블록까지 tab으로 이동해 온 독자가 어느 편집기에나 있는 그 단축키를 눌렀다면 뜻한 것은 주변의 글이 아니라 이 코드입니다. 프롬프트와 줄 번호는 클립보드에서 빠지는 것과 같은 이유로 선택에서도 빠집니다.
-- `theme`은 라이브러리에서 페이지를 따라가지 않는 유일한 색 결정입니다. `dark`로 둔 블록은 시스템이 light여도 어두운 채로 남으며, 이것은 의도된 것입니다. `auto`가 그 예외입니다.
+- 복사 버튼은 결과를 polite live region으로 알립니다.
+- 블록에 focus가 있는 상태의 <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>A</kbd>는 그 코드만 선택합니다. 프롬프트와 줄 번호는 클립보드에서 빠지듯 선택에서도 빠집니다.

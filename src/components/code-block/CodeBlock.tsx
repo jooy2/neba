@@ -66,6 +66,9 @@ export interface CodeBlockProps extends Omit<
    * The code. Trailing whitespace is trimmed off the end of the block — a
    * template literal is almost always written with a newline before its closing
    * backtick, and that newline is a blank line at the bottom of every block.
+   *
+   * A prop rather than `children`, because it is a string and not markup: a
+   * template literal keeps its own indentation, and JSX would collapse it.
    */
   code: string;
   /**

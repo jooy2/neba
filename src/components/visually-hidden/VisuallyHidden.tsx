@@ -27,13 +27,15 @@ export interface VisuallyHiddenProps extends React.ComponentPropsWithoutRef<'spa
  * screen reader instead of a picture. This is the same 1px clipped box, offered
  * so an application's own markup can say the same things.
  *
- * The form matters and there is only one that works. `hidden` and
- * `display: none` take the text off the accessibility tree along with the
- * screen, which is the opposite of the job. `opacity: 0` leaves a clickable
- * ghost the size of the words, and a pointer finds it. `text-indent: -9999px`
- * makes a box that wide and a horizontal scrollbar with it. A 1px box with its
- * contents clipped is invisible to a sighted reader and present to every other
- * kind, and it is what every serious implementation converged on.
+ * The form matters and there is only one that works. `hidden`,
+ * `display: none` and `visibility: hidden` take the text off the accessibility
+ * tree along with the screen, which is the opposite of the job. `opacity: 0`
+ * leaves a clickable ghost the size of the words, and a pointer finds it.
+ * `text-indent: -9999px` makes a box that wide and a horizontal scrollbar with
+ * it, and `font-size: 0` is announced by some screen readers as nothing at all.
+ * A 1px box with its contents clipped is invisible to a sighted reader and
+ * present to every other kind, and it is what every serious implementation
+ * converged on.
  *
  * There is no `aria-hidden` here, deliberately: that is the *other* half of the
  * pair — visible and not announced — and it is an attribute rather than a

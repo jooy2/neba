@@ -534,6 +534,10 @@ const sortButtonClasses = [
  * to hit exactly is the reason people give up on resizing columns. It sits half
  * outside its own cell so the target straddles the boundary the way the cursor
  * says it does.
+ *
+ * It is pointer-only and `aria-hidden`, on purpose: a column's width is a
+ * preference and not information, and nothing in the table is out of reach
+ * without it.
  */
 const resizeHandleClasses = [
   'absolute inset-y-0 z-10 w-2 cursor-col-resize select-none',

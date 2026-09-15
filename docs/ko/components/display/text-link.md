@@ -31,15 +31,13 @@ import { TextLink } from 'neba';
 
 ### underline
 
-기본값은 `always`입니다. `hover`는 포인터가 올라갔을 때만 선을 긋고, `none`은 아예 긋지 않습니다. `none`은 링크임을 이미 다른 것이 말해 주고 있을 때(nav 바, footer, 제목 아래 나란히 놓인 줄) 씁니다.
+기본값은 `always`입니다. `hover`는 포인터가 올라갔을 때만 선을 긋고, `none`은 아예 긋지 않습니다. 포인터를 올리면 선만 바뀌고 글자 색은 그대로입니다. `none`은 링크임을 이미 다른 것이 말해 주고 있을 때(nav 바, footer, 제목 아래 나란히 놓인 줄) 씁니다.
 
 <Demo src="text-link/underline">
 
 <<< @/.vitepress/demos/text-link/underline.tsx
 
 </Demo>
-
-hover는 선만 바꾸고 글자 색은 건드리지 않습니다. 포인터 아래에서 색이 바뀌는 단어는 읽고 있던 줄에서 시선을 떼어 놓습니다.
 
 ### color
 
@@ -63,9 +61,9 @@ hover는 선만 바꾸고 글자 색은 건드리지 않습니다. 포인터 아
 
 ### newTab과 icon
 
-`newTab`은 `target="_blank"`와, 새 페이지가 `window.opener`로 되돌아오지 못하게 하는 `rel`을 함께 붙입니다. 동시에 `icon`을 켭니다. 독자 아래에서 창이 바뀌는 것은 링크에서 유일하게 벌어지고 난 뒤에야 알 수 있는 일이기 때문입니다.
+`newTab`은 `target="_blank"`와, 새 페이지가 `window.opener`로 되돌아오지 못하게 하는 `rel`을 함께 붙입니다. 동시에 `icon`을 켭니다.
 
-`rel`을 직접 넘기면 덮어쓰는 대신 합쳐집니다. `rel="nofollow"`는 SEO 결정이지 보안 결정이 아니므로, 그것 때문에 `noopener`가 빠지는 일은 없습니다. `newTab rel="nofollow"`는 `nofollow noopener noreferrer`가 됩니다. 같은 탭 링크의 `rel`은 그대로 둡니다. `target`을 직접 쓰면 `newTab`과 같은 `rel`과 읽히는 문장이 붙지만 글리프는 붙지 않습니다. 글리프가 필요하면 `icon`을 넘깁니다.
+`rel`을 직접 넘기면 덮어쓰는 대신 합쳐지므로, `newTab rel="nofollow"`는 `nofollow noopener noreferrer`가 됩니다. 같은 탭 링크의 `rel`은 그대로 둡니다. `target`을 직접 쓰면 `newTab`과 같은 `rel`과 읽히는 문장이 붙지만 글리프는 붙지 않습니다. 글리프가 필요하면 `icon`을 넘깁니다.
 
 `icon`은 양쪽 모두를 덮어씁니다. 새 탭 링크에 표식을 없애려면 `false`, 같은 탭 링크에 표식을 붙이려면 `true`, 글리프 자체를 바꾸려면 노드를 넘깁니다.
 

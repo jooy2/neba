@@ -24,8 +24,6 @@ import { DataList, DataListItem } from 'neba';
 
 Every native `<dl>` attribute passes through, apart from `color`. It draws no surface: put it in a [Card](../surfaces/card) or a [Box](../surfaces/box) when one is wanted.
 
-Not a two-column [Table](./table). A table is a grid of rows all of the same shape, walked as a grid; this is a set of pairs, each read as a label and its value.
-
 ### DataListItem
 
 <PropsTable name="DataListItem" />

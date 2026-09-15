@@ -27,7 +27,7 @@ The artwork is `children` if there is any, otherwise `src`, otherwise the name. 
 
 ### src · children
 
-Where the artwork comes from. `src` links a file (a PNG, an SVG, whatever the brand ships), and `children` takes the markup instead, which is what an inline `<svg>` needs in order to inherit the colour around it. `children` wins when both are given, so one component serves a project that links a file and a project that inlines its icon. With neither, the tile falls back to the initials of `name`.
+Where the artwork comes from. `src` links a file (a PNG, an SVG, whatever the brand ships), and `children` takes the markup instead, which is what an inline `<svg>` needs in order to inherit the colour around it. `children` wins when both are given. With neither, the tile falls back to the initials of `name`.
 
 <Demo src="app-logo/artwork" minHeight="120">
 
@@ -38,8 +38,6 @@ Where the artwork comes from. `src` links a file (a PNG, an SVG, whatever the br
 ### shape
 
 How the artwork is framed. `bare` (the default) draws it as it was given, at the height `size` asks for and whatever width that comes to: no plate, no crop, no padding. `app` insets it into a filled tile with the corners cut off, and `circle` is the same tile, round. `padded={false}` lets a mark reach the tile's own edges.
-
-`bare` is the default because a logo file very often has a background, a margin or the product's name set into it, and a square crop would eat all three.
 
 <Demo src="app-logo/shape" minHeight="120">
 
@@ -59,7 +57,7 @@ With no artwork at all the name _is_ the mark: the logotype on a `bare` logo, an
 
 ### showName
 
-Draws the name beside the mark, as the words half of a lockup. Off by default, because the common case is a file that already says the name. What is drawn becomes the accessible name from then on, so nothing is read out twice.
+Draws the name beside the mark, as the words half of a lockup. It is off by default. What is drawn becomes the accessible name from then on, so nothing is read out twice.
 
 ### variant · color
 

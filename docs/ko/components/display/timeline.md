@@ -21,8 +21,6 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
-[TimelineChart](../charts/timeline-chart)와 다른 컴포넌트입니다. 그쪽은 달력 위에 기간을 그리는 Gantt 차트로 각 작업이 얼마나 걸렸는지를 보여 주고, 이쪽은 단계의 목록이라 단계 사이의 간격은 실제 시간에 비례하지 않습니다.
-
 ## Props
 
 ### Timeline
@@ -76,8 +74,3 @@ import { Timeline, TimelineItem } from 'neba';
 - `<ol>`로 렌더링되므로 순서가 있는 목록으로 읽힙니다.
 - `current` 상태의 항목에는 `aria-current="step"`이 붙습니다.
 - `complete`와 `upcoming` 항목은 화면에 보이지 않는 글로 상태를 말합니다. 불릿은 모양으로만 말하기 때문입니다. 낱말은 `locale`이나 `labels`에서 옵니다.
-
-## 이럴 때는 다른 컴포넌트를
-
-- 지난 기록이 아니라 현재 진행률을 보여 준다면 [ProgressLinear](../feedback/progress-linear)를 쓰세요.
-- 순서에 의미가 없는 나열이라면 [List](./list)를 쓰세요. Timeline의 선은 "그다음"이라는 의미를 갖습니다.

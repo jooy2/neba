@@ -21,8 +21,6 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
-This is not [TimelineChart](../charts/timeline-chart). That one draws spans against a calendar (a Gantt) for how long each piece of work took. This one is a list of steps, and the gaps between them are not to scale.
-
 ## Props
 
 ### Timeline
@@ -76,8 +74,3 @@ The three states each use a different shape (a filled disc (`complete`), a fille
 - Renders an `<ol>`, so it is announced as an ordered list.
 - The `current` item carries `aria-current="step"`.
 - A `complete` or `upcoming` item says so in visually hidden text, since its bullet says it only by shape. The words come from `locale`, or from `labels`.
-
-## When to use something else
-
-- To show current progress rather than a record of what happened, use [ProgressLinear](../feedback/progress-linear).
-- If the order carries no meaning, use [List](./list). A Timeline's line asserts that one thing came after another.
