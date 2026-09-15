@@ -46,9 +46,10 @@ Tailwind only ever sees class names written out literally, so a per-breakpoint c
 | Responsive | Not responsive |
 | --- | --- |
 | `span`, `offset` on [Grid](../components/layout/grid) | `size` |
-| `columns`, `spacing`, `rowSpacing`, `columnSpacing` on [GridContainer](../components/layout/grid) and [Flex](../components/layout/flex) | `variant` |
-| `direction` on [Flex](../components/layout/flex) | `color` |
+| `columns`, `spacing`, `rowSpacing`, `columnSpacing` on [GridContainer](../components/layout/grid) | `variant` |
+| `direction`, `spacing`, `rowSpacing`, `columnSpacing` on [Flex](../components/layout/flex) | `color` |
 | `maxWidth` on [Container](../components/layout/container), [Header](../components/layout/header) and [Footer](../components/layout/footer) | `elevation` |
+| `columns` on [Gallery](../components/display/gallery) |  |
 
 The list on the left is short on purpose. Each slot needs four hand-written media blocks that every page then downloads, so adding an axis is not a decision taken lightly.
 

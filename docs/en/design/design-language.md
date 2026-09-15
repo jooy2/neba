@@ -35,7 +35,7 @@ Lowering the alpha does not by itself make glass. **The blur radius is what deci
 
 That rule is about a **dyed** fill. `--neba-glass-bg` (the base under the outline and text variants, and the default surface of Card, Box and TextField) has no colour in it, so alpha is the only axis there is. Here alpha does not decide whether the backdrop is legible; it decides **whether the sheet reads as white**.
 
-In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%**: the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went 5% → 7% for the same reason.
+In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%**: the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went the other way, from 7% to 5%: on a near-black page every step of opacity lightens the sheet the ink is read on, and [colour](./color) measures the ink there.
 
 ### Container surfaces are never dyed
 

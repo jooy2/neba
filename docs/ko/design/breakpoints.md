@@ -46,9 +46,10 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 | 반응형 | 반응형 아님 |
 | --- | --- |
 | [Grid](../components/layout/grid)의 `span`, `offset` | `size` |
-| [GridContainer](../components/layout/grid)와 [Flex](../components/layout/flex)의 `columns`, `spacing`, `rowSpacing`, `columnSpacing` | `variant` |
-| [Flex](../components/layout/flex)의 `direction` | `color` |
+| [GridContainer](../components/layout/grid)의 `columns`, `spacing`, `rowSpacing`, `columnSpacing` | `variant` |
+| [Flex](../components/layout/flex)의 `direction`, `spacing`, `rowSpacing`, `columnSpacing` | `color` |
 | [Container](../components/layout/container)·[Header](../components/layout/header)·[Footer](../components/layout/footer)의 `maxWidth` | `elevation` |
+| [Gallery](../components/display/gallery)의 `columns` |  |
 
 왼쪽 목록이 짧은 것은 의도한 것입니다. 슬롯 하나마다 손으로 쓴 media block이 네 개 필요하고, 그 네 개는 모든 페이지가 함께 내려받습니다. 그래서 축을 하나 더하는 일은 가볍게 정하지 않습니다.
 
