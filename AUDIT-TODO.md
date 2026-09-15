@@ -4,11 +4,11 @@ The working list for the audit of every public component, started on 2026-09-12.
 
 ## State
 
-- Five batches are done, and the last push was `9b3aeb2c` on 2026-09-14.
-- The decisions answered on 2026-09-13 are implemented. D14 was unblocked once the lock files were committed.
-- The next batch starts after item 219. The first open item without a tag is 221.
+- Six batches are done, and the last push was `8b080789` on 2026-09-15.
+- Every decision answered so far is implemented, D14 included: `terser` is a devDependency and `scripts/minify.mjs` keeps the component names.
+- The next batch starts after item 253. The first open item without a tag is 254.
 - Item 109 was done together with 129.
-- The next batch labels its questions I (approvals) and J (choices), so an answer like "J3 (b)" names exactly one question.
+- The next batch labels its questions K (approvals) and L (choices), so an answer like "L3 (b)" names exactly one question.
 
 ## How to run a batch
 
@@ -50,15 +50,22 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ## Pending decisions
 
-Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choices H, and the recommended option comes first.
+Questions from the batch pushed on 2026-09-15, labelled I and J, and the two carried over, which keep the labels they were asked under. The recommended option comes first.
 
-### G. Approvals
+### Carried over
 
 - **G1 (151)** Rating without `name`: nothing is submitted, through a `form` attribute that names no form, rather than by writing no `name`, which would take away the single Tab stop and the arrow keys. Approve keeping it.
-
-### H. Choices
-
 - **H1 (194)** Initials upper-casing without a locale: (a) `toUpperCase()`, so a server and a browser always agree, at the cost of language rules such as Turkish `i`; (b) a `locale` passed through Avatar and AppLogo to `toLocaleUpperCase`; (c) leave it.
+
+### I. Approvals
+
+- **I1 (107)** `terser-glob` is unused now that the minify step is `scripts/minify.mjs`, which calls terser's own API, and it is still in `devDependencies`. Approve removing it.
+- **I2 (248)** A `FloatingAction` spread its remaining props after its own `style`, so a caller's `style` replaced the round radius — the per-declaration spread check is what found it. It is merged over now, as 124 (a) decided for the button the dial comes out of. Approve.
+
+### J. Choices
+
+- **J1 (248)** A `FloatingAction`'s `className` goes on the row that holds the button and its name, while every other prop goes on the button — the same split 124 (a) took out of the main button. (a) leave it, since the row is what a caller positions; (b) move `className` to the button and give the row `classNames.frame`, as the main button has.
+- **J2 (224)** ScrollZone's `ref` and `onScroll` go to the root rather than to the scroller. React does not bubble a scroll, so a caller's `onScroll` never fires and scroll restoration cannot reach the box that scrolls. (a) `onScroll` goes to the scroller and a new `scrollerRef` reaches the box, with `ref` left on the root; (b) both `ref` and `onScroll` go to the scroller, which moves the ref a caller already has; (c) leave it and say so on the page.
 
 ## 1. Performance
 
