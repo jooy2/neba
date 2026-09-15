@@ -1,0 +1,47 @@
+{
+  "source": "@mdn/browser-compat-data",
+  "docs": "docs/en/browser-support.md and docs/ko/browser-support.md state these targets, and describe what each exception costs a reader",
+  "targets": {
+    "chrome": "111",
+    "chrome_android": "111",
+    "edge": "111",
+    "firefox": "113",
+    "firefox_android": "113",
+    "safari": "16.4",
+    "safari_ios": "16.4"
+  },
+  "exceptions": [
+    {
+      "feature": "css.selectors.has",
+      "reason": "The focus ring around a field shell, a Rating star and a selectable DataTable. A field still shows focus through its border or fill and a DataTable through its active row, and a Rating falls back to :focus-within under @supports not selector(:has(*))."
+    },
+    {
+      "feature": "css.types.length.lh",
+      "reason": "Centres the box or icon beside a label on the label's first line. Without it the box sits at the top of that line."
+    },
+    {
+      "feature": "css.at-rules.property",
+      "reason": "Registers the angle AnimateLighting animates. Without it the light stays in one place. Tailwind's own registered properties carry a fallback of their own."
+    },
+    {
+      "feature": "css.selectors.dir",
+      "reason": "Swaps ScrollArea's left and right edge fades in a right-to-left layout. Without it the fades are not swapped."
+    },
+    {
+      "feature": "css.properties.scrollbar-width",
+      "reason": "Hides the scrollbar of a strip that draws its own controls. The same rule hides it through ::-webkit-scrollbar in the browsers that lack this property."
+    },
+    {
+      "feature": "css.properties.resize",
+      "reason": "A multiline TextField's resize handle, and WindowPane's. Safari on iOS and Firefox for Android draw no resize handle at all, so there is nothing to fall back to."
+    },
+    {
+      "feature": "css.properties.cursor",
+      "reason": "The pointer's shape over a control. Safari on iOS only draws a pointer on an iPad with a pointing device attached, and falls back to the default one for every keyword the data lists as unsupported."
+    },
+    {
+      "feature": "css.selectors.selection",
+      "reason": "The colour of selected text in a field. Safari on iOS keeps its own selection colour."
+    }
+  ]
+}

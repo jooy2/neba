@@ -261,6 +261,16 @@ Five things hold the numbers above in place. Each of them, broken, is invisible 
 
 Things measured and **rejected**, so they do not get re-litigated: minifier option tuning (under 1%), splitting the stylesheet per component (above), dropping Tailwind's `@property` fallback for older Safari (0.4 kB gzip), and per-key tree-shaking of the size and density ladders in `internal/styles.ts` (impossible in principle, and they are a few hundred bytes).
 
+## Browser support
+
+The floor is **Chrome and Edge 111, Firefox 113 and Safari 16.4**. It is stated to consumers in `docs/{en,ko}/browser-support.md` and to the check in [scripts/browser-support.json](scripts/browser-support.json), and the two have to agree. What sets it is `color-mix()` in the token sheet and the range Base UI declares, not the JavaScript — which is why a transpiler or a polyfill cannot lower it, and why lowering it would mean replacing the colour system.
+
+`npm run compat` is what keeps it true. It reads `dist/styles.css` and type-checks `src/`, resolves every feature it finds to its entry in `@mdn/browser-compat-data`, and fails on anything a target lacks that nothing guards. Like `npm run size` it needs a build first, and CI runs it as a job of its own. What it counts as a guard, and what it cannot see at all (CSS in a `style` prop or a JavaScript string, JSX attributes, event names), is written at the top of [scripts/check-browsers.mjs](scripts/check-browsers.mjs); a `style={{ fieldSizing: 'content' }}` is the author's to catch.
+
+A feature used past the floor on purpose is an **exception** in the JSON, and the reason is part of the exception: what a reader in an older browser loses. If that loss is visible, the "Differences inside the range" table on the docs page says it too. An exception that nothing uses fails the run, so a permission cannot outlive the use it was written for.
+
+When a feature past the floor is the only thing drawing something a reader needs, the answer is a fallback rather than an exception. `focusWithinRingClasses` is the pattern: Rating's ring is `:has(:focus-visible)`, which Firefox 113 to 120 lack, so it also carries `supports-[not_selector(:has(*))]:focus-within:` — a rule that applies in exactly the browsers the first one does not. No browser the suite runs in will ever apply it, so `test/styles/standalone.test.tsx` checks it through the CSSOM instead: that the rule exists under that condition and matches the focused element.
+
 ## Documentation
 
 The docs are VitePress, and VitePress compiles Markdown to **Vue** — so a React component cannot be written into a page. Every live preview is a React island: `theme/components/Demo.vue` owns a `<div>` and hands it to `createRoot()` on mount.
@@ -294,6 +304,7 @@ docs/{ko,en}/
   examples/overview.md      # every component on one sample screen
   examples/concept-*.md     # one fictional screen per page (landing, dashboard, signup)
   design/*.md               # design language, colour, prop conventions
+  browser-support.md        # minimum browser versions; a loose page, under Discover more
   changelog.md              # generated from the root CHANGELOG.md; git-ignored
 ```
 
@@ -382,6 +393,7 @@ npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignore
 npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
 npm run size          # bundle the budget scenarios against dist/ and fail if one is over
 npm run size:update   # record what they weigh now as the new budgets
+npm run compat        # check dist/styles.css and src/ against the minimum browser versions
 npm run lint          # ESLint
 npm run lint:fix      # ESLint with --fix
 npm run format:fix    # Prettier write
@@ -458,8 +470,10 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
 - Docs are VitePress with `vitepress-i18n` + `vitepress-sidebar`. Two locales, and which one is the root is a single constant: `defaultLocale` in `docs/.vitepress/config.ts`, currently `en`. The root locale is served from `/` (rewritten from `docs/en/`) and every other locale keeps its folder as its URL prefix, so `ko` is served from `/ko/`. Changing that constant swings the locale config, the sidebar's base path and the `rewrites` together.
-- CI is [.github/workflows/run-test.yml](.github/workflows/run-test.yml), on PRs to `main`, pushes to `main` touching source/test/config paths, and `workflow_dispatch`. Two jobs:
+- CI is [.github/workflows/run-test.yml](.github/workflows/run-test.yml), on PRs to `main`, pushes to `main` touching source/test/config paths, and `workflow_dispatch`. Four jobs:
   - `lint` — lint, prettier check, typecheck. Ubuntu + Node 26 only; these are platform-independent, so running them once is enough.
+  - `bundle` — build, then `npm run size`. Ubuntu only.
+  - `compat` — build, then `npm run compat`. Ubuntu only; see [Browser support](#browser-support).
   - `run-test` — a 9-way matrix: `{ubuntu, windows, macos} × {chromium, firefox, webkit}` on Node 26, `fail-fast: false`. Each job installs only its own browser. `node_version` is kept as a matrix axis with a single value so older versions can be added back by editing one line.
 - `npx playwright install --with-deps` is safe on all three runners: Playwright's `installDeps` only acts on Windows and Linux and is a no-op on macOS. On Windows it is not free, though — `windows-latest` is Windows Server, where `installDeps` runs `Install-WindowsFeature Server-Media-Foundation`, and only for chromium. That is four silent minutes on every windows/chromium run, and the reason that one job starts its suite while the other eight have nearly finished theirs. It is not removable: Playwright validates the Media Foundation DLLs when it launches chromium and **throws** if they are missing, and the runner image does not ship them.
 - **Every job carries a `timeout-minutes`, and the test step carries one of its own.** GitHub's default is six hours, and the failure mode below is a browser that stops answering rather than one that exits — a run has sat wedged for seventy minutes and was only ended by hand. The step-level cap is what makes the report say which part stopped.

@@ -74,6 +74,31 @@ jobs:
       - name: Check the bundle budgets
         run: npm run size
 
+  compat:
+    runs-on: ubuntu-latest
+    name: Browser support
+    # The build is most of this; the check itself reads one stylesheet and
+    # type-checks `src/` once, in a few seconds.
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      # The same reason as the bundle job: the check reads `dist/styles.css`,
+      # and should build it itself rather than inherit `prepare`'s.
+      - name: Build
+        run: npm run build
+      - name: Check the minimum browser versions
+        run: npm run compat
+
   run-test:
     runs-on: ${{ matrix.os }}
     name: Test Node.js ${{ matrix.node_version }} on ${{ matrix.os }} (${{ matrix.browser }})

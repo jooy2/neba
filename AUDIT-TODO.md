@@ -31,7 +31,7 @@ The maintainer starts a batch with a short request such as "전수조사 항목 
    - After editing, run `git merge-file -p <working file> <base copy> <HEAD version>`. The result is `HEAD` plus your edit only.
    - Write it with `git hash-object -w <result>`, stage it with `git update-index --cacheinfo <mode>,<blob>,<path>`, then copy the working file over the base again before the next edit.
    - Never `git add` such a file.
-1. After 20 items, run the full check: `npm run lint`, `npx prettier --check .`, `npm run typecheck`, `npm test`, `npm run build`, `npm run size`, and `npm run compat` (or `node scripts/check-browsers.mjs` while that script is still uncommitted). `npm run build` runs `format:fix`, so confirm that `git status --porcelain` and `git diff` match what you saved at the start. A deliberate size change goes through `npm run size:update` and the bundle table in `CLAUDE.md`.
+1. After 20 items, run the full check: `npm run lint`, `npx prettier --check .`, `npm run typecheck`, `npm test`, `npm run build`, `npm run size`, and `npm run compat`. `npm run build` runs `format:fix`, so confirm that `git status --porcelain` and `git diff` match what you saved at the start. A deliberate size change goes through `npm run size:update` and the bundle table in `CLAUDE.md`.
 1. Push with `git push origin main`, then update [State](#state) and [Pending decisions](#pending-decisions) in this file, commit and push that too.
 1. Report to the maintainer in Korean, formal and concise:
    - the pushed commit range

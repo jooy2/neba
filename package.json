@@ -25,6 +25,7 @@
     "minify": "terser-glob 'dist/**/*.js' --config-file terser.config.json",
     "size": "node scripts/measure-bundle.mjs",
     "size:update": "node scripts/measure-bundle.mjs --update",
+    "compat": "node scripts/check-browsers.mjs",
     "prepare": "npm run build",
     "format": "prettier .",
     "format:fix": "prettier . --write",
@@ -141,6 +142,7 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@mdn/browser-compat-data": "^8.1.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
