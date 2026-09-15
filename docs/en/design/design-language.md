@@ -84,7 +84,7 @@ The base colour is `#4072cd`; everything else comes off its palette.
 | `danger`    | A split-complementary vermilion        |
 | `info`      | The analogous cyan                     |
 
-Every colour is defined in `oklch()`, because its lightness axis matches perception: which is what lets all six families be pinned to the same number.
+Every colour is defined in `oklch()`, because its lightness axis matches perception, and that is what lets all six families be pinned to the same number.
 
 ### Only five values are hand-picked per family
 
@@ -102,7 +102,7 @@ The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color
 
 When a family looks muddy, the cause is usually not its lightness but its **chroma**. The `oklch()` chroma ceiling in sRGB differs per hue and per lightness, and a colour sitting well under that ceiling reads as grey at the very same brightness. Neba's chroma is held at roughly **90% of the maximum** for each family's lightness: vivid, with enough margin that the browser never has to clip.
 
-Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, holding 4.5:1 over a white page pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink**: which is exactly what `warning`, the one family that does it, is doing. Every step is checked against this, hover and active included.
+Lightness is not nearly as free. With a white `on-solid` and a fill at 88%, holding 4.5:1 over a white page pins the fill to the high 40s / low 50s. **A brighter fill means a darker ink**, and `warning` is the one family that makes that trade. Every step is checked against this, hover and active included.
 
 > **Moving the hue a few degrees is also an option.** `success` went 152 → 148 and `info` 218 → 223. Both sit where sRGB is unusually narrow at mid lightness, and a few degrees to the side buys chroma that no amount of tuning at the original hue could.
 

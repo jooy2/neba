@@ -34,7 +34,7 @@ A call site still wins. The order is **the caller, then the provider, then the c
 |  |  |
 | --- | --- |
 | `size` `density` `variant` `locale` | The right value is a property of the product. A dense application is dense everywhere; a Korean one is Korean everywhere. |
-| `color` | **Not defaultable.** A component's colour default is often semantic: an [Alert](../components/feedback/alert) is `info`, a [Popconfirm](../components/feedback/popconfirm) is `danger`, severity carries meaning: and one global override would silently repaint those into something that means something else. |
+| `color` | **Not defaultable.** A component's colour default is often semantic. An [Alert](../components/feedback/alert) is `info` and a [Popconfirm](../components/feedback/popconfirm) is `danger` because severity carries meaning, and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 
 Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node, and `size` on an `<input>` is a real attribute that would quietly resize the field. One axis a component declares is left out on purpose: a [TextLink](../components/display/text-link) takes no `size` from the provider, because a link in a sentence is the size of the sentence.
@@ -93,4 +93,4 @@ The components are built on logical properties (`margin-inline-start` and the re
 
 Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so `defaults={{ density: 'compact' }}` inside `defaults={{ size: 'sm' }}` keeps the small size, and an inner provider with no `direction` runs the way the outer one does.
 
-The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own: which is exactly what the preview above does, and why that prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.
+The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own. The preview above does exactly that, and it is why the prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.

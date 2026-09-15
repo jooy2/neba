@@ -6,7 +6,7 @@ aside: false
 
 # Sign-up page
 
-<p class="neba-lede">Registration for Kestrel, in three steps. This is the library's fields with nothing else in the way: every kind of answer a form can ask for, and the states around them: <code>label</code>, <code>description</code> and <code>error</code> are the same three slots on all of them.</p>
+<p class="neba-lede">Registration for Kestrel, in three steps. It is the library's fields with nothing else in the way, covering every kind of answer a form can ask for and the states around them. <code>label</code>, <code>description</code> and <code>error</code> are the same three slots on all of them.</p>
 
 <Demo src="concepts/signup" min-height="620px" />
 

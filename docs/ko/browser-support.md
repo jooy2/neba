@@ -21,7 +21,7 @@ Neba는 Chrome과 Edge 111, Firefox 113, Safari 16.4 이상을 데스크톱과 �
 
 테스트는 Chromium, Firefox, WebKit의 현재 릴리스에서 돌리므로, 최소 버전을 브라우저에서 직접 테스트하지는 않습니다. 이 값은 다음 섹션의 기능과 Neba가 의존하는 패키지가 선언한 지원 범위에서 끌어냈고, 변경이 있을 때마다 CI가 stylesheet와 소스에서 쓰는 기능을 [MDN 호환성 데이터](https://github.com/mdn/browser-compat-data)와 대조합니다.
 
-Neba가 그려지지 않는 브라우저를 위해 빌드가 transpile하는 일이 없도록 build target도 같은 범위로 맞추십시오. [Browserslist](https://browsersl.ist) query로는 다음과 같습니다.
+Neba가 그려지지 않는 브라우저를 위해 빌드가 transpile하는 일이 없도록 build target도 같은 범위로 맞추세요. [Browserslist](https://browsersl.ist) query로는 다음과 같습니다.
 
 ```text
 chrome >= 111, edge >= 111, firefox >= 113, safari >= 16.4, ios_saf >= 16.4
@@ -36,7 +36,7 @@ chrome >= 111, edge >= 111, firefox >= 113, safari >= 16.4, ios_saf >= 16.4
 | [Base UI](https://base-ui.com/react/overview/about) 1.x | 111 | 113 | 16.4 | 인터랙티브 컴포넌트의 동작과 접근성 |
 | [Tailwind CSS](https://tailwindcss.com/docs/compatibility) v4 | 111 | 128 | 16.4 | `neba/styles.css`에 컴파일해 넣은 utility class |
 
-브라우저마다 그 열에서 가장 높은 숫자가 최소 버전이며, 예외가 하나 있습니다. Tailwind CSS는 `@property` 때문에 Firefox 128을 적어 두었지만, v4.1부터 fallback을 함께 내보내므로 Firefox 113~127에서도 같은 utility가 그려집니다. `neba/tailwind.css`를 직접 운영하는 Tailwind 빌드에 import한다면, 이 fallback이 빠지지 않도록 Tailwind CSS v4.1 이상을 쓰십시오.
+브라우저마다 그 열에서 가장 높은 숫자가 최소 버전이며, 예외가 하나 있습니다. Tailwind CSS는 `@property` 때문에 Firefox 128을 적어 두었지만, v4.1부터 fallback을 함께 내보내므로 Firefox 113~127에서도 같은 utility가 그려집니다. `neba/tailwind.css`를 직접 운영하는 Tailwind 빌드에 import한다면, 이 fallback이 빠지지 않도록 Tailwind CSS v4.1 이상을 쓰세요.
 
 ### 더 낮출 수 없는 이유
 

@@ -81,7 +81,7 @@ It is also why the three steps rise in **opacity** rather than lightness: an eng
 
 ## Contrast
 
-Every colour is defined in `oklch()`, because its lightness axis matches perception: which is what lets all six families be pinned to the same number.
+Every colour is defined in `oklch()`, because its lightness axis matches perception, and that is what lets all six families be pinned to the same number.
 
 - **Text on a fill holds 4.5:1.** All three steps (`solid`, `hover`, `active`) checked against the 88%-opaque fill over a white page.
 - **`accent` clears 5:1 on white**, which is the surface it is for. On a bed made of its own colour the ink is `on-tint`, which clears 4.5:1 on every step of both the `panel` and the `soft` ladder, in both themes.

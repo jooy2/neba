@@ -33,7 +33,7 @@ import { NebaProvider } from 'neba';
 
 |  |  |
 | --- | --- |
-| `size` `density` `variant` `locale` | 옳은 값이 제품의 속성입니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어입니다. |
+| `size` `density` `variant` `locale` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어입니다. |
 | `color` | **기본값으로 줄 수 없습니다.** 컴포넌트의 색 기본값이 의미를 나타내는 경우가 많습니다. [Alert](../components/feedback/alert)는 `info`, [Popconfirm](../components/feedback/popconfirm)은 `danger`이며, 전역으로 한 번 덮으면 이 뜻이 모두 바뀝니다. |
 | `elevation` | **기본값으로 줄 수 없습니다.** [디자인 언어](../design/design-language)가 그림자를 표면마다 opt-in으로 정하고 있으며, 전역 그림자는 그 규칙과 어긋납니다. |
 

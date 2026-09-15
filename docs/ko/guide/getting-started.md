@@ -111,7 +111,7 @@ stylesheet는 root layout에서 한 번만 import합니다.
 import 'neba/styles.css';
 ```
 
-의도적으로 client module이 **아닌** 것이 둘 있습니다. `neba` barrel과 `neba/locales`입니다. barrel은 re-export만 하므로 Server Component가 import하면 별도의 경계가 생기는 대신 뒤에 있는 컴포넌트에 그대로 닿고, `registerMessages`는 어디서든 호출할 수 있는 평범한 함수로 남습니다. 다만 컴포넌트는 render하는 시점에 등록된 언어를 읽고 그 render는 서버에서 한 번, 브라우저에서 한 번 일어나므로, 등록은 client graph에 속한 module에서 하십시오.
+의도적으로 client module이 **아닌** 것이 둘 있습니다. `neba` barrel과 `neba/locales`입니다. barrel은 re-export만 하므로 Server Component가 import하면 별도의 경계가 생기는 대신 뒤에 있는 컴포넌트에 그대로 닿고, `registerMessages`는 어디서든 호출할 수 있는 평범한 함수로 남습니다. 다만 컴포넌트는 render하는 시점에 등록된 언어를 읽고 그 render는 서버에서 한 번, 브라우저에서 한 번 일어나므로, 등록은 client graph에 속한 module에서 하세요.
 
 ```tsx
 // app/neba-locale.tsx
