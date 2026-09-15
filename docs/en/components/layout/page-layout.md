@@ -23,6 +23,8 @@ import { Footer, Header, PageLayout, Sidebar } from 'neba';
 
 Every native `<div>` attribute passes through. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
+Only the `header` and the `footer` handed to it are measured as its bars. A [Header](./header) or a [Footer](./footer) anywhere else in the page, such as an article's own, is a header or footer of that part and leaves the layout alone.
+
 The children go inside a real `<main>`, which is what `mainId` names and what the skip link jumps to. A layout that is not the page, such as an app shell previewed inside the page's own layout, passes `main={false}` to put them in a plain `<div>` with no `id` and no skip link. On a [Mockup](../surfaces/mockup)'s screen that is the default.
 
 It draws no gutter and no measure: put a [Container](./container) inside, where a page can hold a wide dashboard on one route and a narrow article on the next.

@@ -243,6 +243,59 @@ describe('PageLayout', () => {
       expect(root.style.getPropertyValue('--n-layout-header-inset')).toBe('0px');
     });
 
+    // Every Header inside the layout registered as its bar, so an article's own
+    // header, attached after the site's, wrote the bar's height as nothing.
+    it('measures only the header it was handed, not one inside the page', async () => {
+      const screen = await render(
+        <PageLayout
+          data-testid="root"
+          collapseBelow="none"
+          header={<Header style={{ position: 'sticky' }}>Site</Header>}
+        >
+          <article>
+            <Header position="static">Post</Header>
+          </article>
+        </PageLayout>
+      );
+
+      const root = screen.getByTestId('root').element() as HTMLElement;
+      const bar = screen.getByRole('banner').element() as HTMLElement;
+
+      await expect
+        .poll(() => root.style.getPropertyValue('--n-layout-header'))
+        .toBe(`${bar.offsetHeight}px`);
+    });
+
+    it('measures the header again when it leaves the flow', async () => {
+      const layout = (position: 'static' | 'fixed') => (
+        <PageLayout
+          data-testid="root"
+          collapseBelow="none"
+          header={
+            // Inline as well as the prop: no stylesheet is loaded here, and the
+            // layout reads the position the bar actually has.
+            <Header position={position} style={{ position }}>
+              Site
+            </Header>
+          }
+        >
+          Page
+        </PageLayout>
+      );
+      const screen = await render(layout('static'));
+      const root = screen.getByTestId('root').element() as HTMLElement;
+
+      expect(root.style.getPropertyValue('--n-layout-header-inset')).toBe('0px');
+
+      await screen.rerender(layout('fixed'));
+
+      const bar = screen.getByRole('banner').element() as HTMLElement;
+
+      await expect
+        .poll(() => root.style.getPropertyValue('--n-layout-header-inset'))
+        .toBe(`${bar.offsetHeight}px`);
+    });
+
     it('reserves the height of a header that has left the flow', async () => {
       const screen = await render(
         <PageLayout

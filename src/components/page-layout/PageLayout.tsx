@@ -9,7 +9,8 @@ import {
   type PageLayoutScroll,
   type PageLayoutSlot,
   type PageLayoutSpan,
-  type SidebarSide
+  type SidebarSide,
+  PageLayoutSlotContext
 } from '../../internal/page-layout.js';
 import { observeResize } from '../../internal/observe.js';
 import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
@@ -359,8 +360,12 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
             ? 'h-dvh'
             : 'min-h-dvh';
 
-    const headerSlot = hasContent(header) ? header : null;
-    const footerSlot = hasContent(footer) ? footer : null;
+    const headerSlot = hasContent(header) ? (
+      <PageLayoutSlotContext.Provider value="header">{header}</PageLayoutSlotContext.Provider>
+    ) : null;
+    const footerSlot = hasContent(footer) ? (
+      <PageLayoutSlotContext.Provider value="footer">{footer}</PageLayoutSlotContext.Provider>
+    ) : null;
 
     return (
       <PageLayoutContext.Provider value={context}>

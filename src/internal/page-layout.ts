@@ -107,6 +107,16 @@ export const PageLayoutContext = React.createContext<PageLayoutContextValue>({
 });
 
 /**
+ * Which bar the element being rendered right now was handed to the layout as.
+ *
+ * Only the `header` and the `footer` a PageLayout places are its bars. A Header
+ * anywhere else in the page, such as an article's own inside `<main>`, is a
+ * header of that part, and letting it register too overwrote the site header's
+ * height with its own and, once it unmounted, left the layout with none.
+ */
+export const PageLayoutSlotContext = React.createContext<PageLayoutSlot | null>(null);
+
+/**
  * Which end of the band the sidebar being rendered right now takes.
  *
  * A second, one-value context rather than a field on the one above, because it

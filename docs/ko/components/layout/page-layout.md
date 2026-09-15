@@ -23,6 +23,8 @@ import { Footer, Header, PageLayout, Sidebar } from 'neba';
 
 `<div>`의 native 속성은 그대로 전달됩니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
+레이아웃의 바로 재는 것은 넘겨받은 `header`와 `footer`뿐입니다. 글 자체의 header처럼 페이지의 다른 곳에 있는 [Header](./header)나 [Footer](./footer)는 그 부분의 머리글이나 바닥글이며 레이아웃에 영향을 주지 않습니다.
+
 children은 실제 `<main>` 안에 놓입니다. `mainId`가 그 요소의 id이며 skip link가 향하는 곳입니다. 페이지 자체가 아닌 레이아웃, 예를 들어 페이지의 레이아웃 안에서 미리 보여 주는 앱 셸은 `main={false}`를 넘겨 id도 skip link도 없는 평범한 `<div>`에 넣습니다. [Mockup](../surfaces/mockup)의 화면 안에서는 이것이 기본값입니다.
 
 거터나 최대 너비는 정하지 않습니다. 그것은 [Container](./container)의 일이고, 안에 넣어 두면 한 경로에서는 넓은 대시보드를, 다음 경로에서는 좁은 본문을 담을 수 있습니다.

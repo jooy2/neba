@@ -190,6 +190,8 @@
 
 ### Fixed
 
+- **Only the `header` and the `footer` a `PageLayout` was handed are its bars.** Every Header and Footer inside a layout registered as its bar, so an article's own header overwrote the site header's height with its own and, once it unmounted, left the layout with none. A bar switched between `static` and `fixed` was not measured again either. The two the layout places are the only ones measured now, and a change of `position` measures again.
+
 - **A `WindowPane` can always be grabbed again, and takes a new size from its props.** A fixed or absolute window could be dragged until its title bar, its only handle, left the screen or its container. It is held now so that the bar stays inside. A size given by a resize also outranked `width` and `height` for good; a `width` or `height` passed afterwards replaces it.
 
 - **An `AnimateHeadline` holds each line for the whole `interval` once it has arrived.** The interval was counted from when a line started arriving, so it rested for `interval` less `duration`, and not at all once `duration` reached `interval`, although the docs said it counts from arrival. A cycle is `duration` longer now. The line on its way out also no longer disappears for a frame before it leaves.
