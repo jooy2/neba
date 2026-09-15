@@ -30,8 +30,6 @@ import { Tour } from 'neba';
 
 <PropsTable name="TourStep" />
 
-[HowToSteps](../surfaces/how-to-steps)를 뒤집은 것입니다. 그쪽은 설명을 페이지 _안에_ 두고 독자가 따라가게 하고, 이쪽은 페이지를 그대로 둔 채 그 위에 섭니다. 그래서 단계는 selector로 지정합니다. tour가 말하는 대상은 이미 화면에 있고, 카드 안에서 한 번 더 설명하면 관리해야 할 사본이 둘이 됩니다.
-
 ## 예시
 
 ### steps · target
@@ -50,7 +48,7 @@ import { Tour } from 'neba';
 
 ### mask
 
-페이지를 어둡게 하고 대상만 그 어둠에서 도려냅니다. 어두운 층은 포인터를 가로채지 않으므로 가리키는 대상을 그대로 쓸 수 있습니다. 이것이 tour와 dialog의 연속을 가르는 차이입니다.
+페이지를 어둡게 하고 대상만 그 어둠에서 도려냅니다. 어두운 층은 포인터를 가로채지 않으므로 가리키는 대상을 그대로 쓸 수 있습니다.
 
 <Demo src="tour/mask">
 
@@ -80,5 +78,5 @@ slot은 `mask`, `title`, `description`, `close`, `footer`입니다. 넘긴 class
 
 - 카드는 제목이 이름이 되고 본문이 설명이 되는 dialog입니다. 단계를 바꿔도 focus는 누른 버튼에 그대로 남습니다.
 - Next와 Previous는 카드를 제자리에서 바꾸므로, 새 단계를 polite live region이 "Step 2: Deploy"처럼 읽어 줍니다.
-- `dismissible`을 끄지 않는 한 Escape로 tour가 끝납니다. 바깥을 누르는 것으로는 끝나지 않습니다. 페이지를 쓰는 것이 tour의 목적이기 때문입니다.
+- `dismissible`을 끄지 않는 한 Escape로 tour가 끝납니다. 카드 바깥을 누르는 것으로는 끝나지 않습니다.
 - tour가 어떤 것에 이르는 유일한 통로가 되어서는 안 됩니다. tour가 가리키는 것은 tour 없이도 찾을 수 있어야 합니다. 이미 닫아버린 독자나 애초에 보지 못한 독자에게 두 번째 기회는 없습니다.

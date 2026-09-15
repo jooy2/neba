@@ -34,15 +34,11 @@ if (await confirm({ title: '프로젝트를 삭제할까요?', color: 'danger' }
 
 `confirm('프로젝트를 삭제할까요?')`는 `confirm({ title: '프로젝트를 삭제할까요?' })`의 축약형입니다.
 
-## 반환되는 promise
-
-"정말 하시겠습니까?"는 가장 흔한 dialog이고, 손으로 쓰면 질문마다 state 하나, dialog가 열릴 때 무엇을 지우려던 것이었는지 담을 `useState` 하나, 그리고 그것을 옮겨 주는 콜백 하나가 필요합니다. `onConfirm`은 하나의 결정을 두 함수로 쪼갭니다. `await`는 결정을 내린 자리에 그대로 둡니다.
-
-reject하지 않습니다. **아니오**로 답한 질문은 실패가 아니라 답이고, 그것으로 throw하는 promise는 모든 호출 지점을 `try`로 만듭니다.
-
-취소 · `Escape` · backdrop 클릭은 모두 `false`로 resolve합니다. 셋 다 취소 버튼을 다른 경로로 누른 것이므로, promise를 영원히 대기시키지 않고 같은 답을 냅니다. `alert`에는 취소 버튼이 없으므로 이때는 `true`로 resolve합니다.
-
 ## 예시
+
+### 반환값
+
+`confirm()`은 사용자가 확인하면 `true`로, 취소하거나 `Escape`를 누르거나 backdrop을 클릭하면 `false`로 resolve합니다. reject하지 않습니다.
 
 ### color와 파괴적인 질문
 
@@ -59,7 +55,7 @@ await confirm({
 
 ### alert
 
-취소 버튼을 없애고 나가는 길을 하나만 남깁니다. 묻는 것이 아니라 알리는 경우입니다. 그래도 resolve하며 값은 항상 `true`이므로 같은 `await`가 양쪽에 그대로 쓰입니다.
+`alert`는 취소 버튼을 없애고 나가는 길을 하나만 남기므로, 묻는 대신 알릴 때 씁니다. 그래도 resolve하며 `Escape`나 backdrop으로 닫아도 값은 항상 `true`이므로, 같은 `await`를 양쪽에 그대로 쓸 수 있습니다.
 
 ```tsx
 await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
@@ -67,7 +63,7 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 
 ### dismissible
 
-`false`면 버튼으로만 답할 수 있는 질문이 됩니다. `Escape`와 backdrop이 동작하지 않습니다. 실수로 닫는 것이 비싼 답이 되는 경우에만 쓰고, 그 밖에는 거의 쓰지 마세요. 나갈 길이 없는 모달은 사람들이 제보하는 바로 그것입니다.
+`false`면 버튼으로만 답할 수 있는 질문이 되고, `Escape`와 backdrop으로는 시트가 닫히지 않습니다. 실수로 닫는 것이 비싼 답이 되는 경우에만 쓰세요.
 
 ### defaults
 
@@ -77,11 +73,9 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 <ConfirmProvider defaults={{ size: 'md', locale: 'ko' }}>
 ```
 
-### 두 개가 동시에
+### 질문 대기열
 
-**질문은 큐에 쌓입니다.** 첫 번째가 떠 있는 동안 두 번째를 올리면 뒤에 줄을 섭니다. 사용자를 대신해 답해 버리는 일은 없습니다.
-
-이 동작은 보이는 것보다 중요합니다. 자리를 만들려고 앞선 질문을 `false`로 resolve하면 아무도 하지 않은 답을 보고하는 셈이고, 호출 지점에서 `false`는 "아니오라고 했다"로 읽힙니다. 화면에 뜬 적도 없는 질문에 대해 취소 분기를 타게 됩니다.
+첫 번째 질문이 떠 있는 동안 두 번째를 올리면 그 뒤에 줄을 섭니다. 사용자를 대신해 답하는 일은 없으므로, 각 promise는 사용자가 그 질문에 답해야 resolve합니다.
 
 ## 접근성
 

@@ -34,15 +34,11 @@ if (await confirm({ title: 'Delete the project?', color: 'danger' })) {
 
 `confirm('Delete the project?')` is shorthand for `confirm({ title: 'Delete the project?' })`.
 
-## The promise it returns
-
-"Are you sure?" is the most common dialog there is, and writing it by hand means a piece of state per question, a `useState` for what was being deleted when the dialog opened, and a callback that has to carry it. `onConfirm` splits one decision across two functions; awaiting it keeps the decision where it was made.
-
-It never rejects. A question answered _no_ is an answer, not a failure, and a promise that throws for it turns every call site into a `try`.
-
-Cancelling, `Escape` and a click on the backdrop all resolve `false`: they are the cancelling button by another route, so they answer the same way rather than leaving a promise pending forever. An `alert` has no cancelling button, so on one they resolve `true`.
-
 ## Examples
+
+### Return value
+
+`confirm()` resolves `true` when the reader confirms, and `false` when they cancel, press `Escape` or click the backdrop. It never rejects.
 
 ### color and destructive questions
 
@@ -59,7 +55,7 @@ await confirm({
 
 ### alert
 
-Drops the cancelling button, leaving one way out: for telling rather than asking. It still resolves, always `true`, so the same `await` works either way.
+`alert` drops the cancelling button and leaves one way out, for telling rather than asking. It still resolves, always `true`, even when `Escape` or the backdrop closes the sheet, so the same `await` works either way.
 
 ```tsx
 await confirm({ title: 'Your export is ready.', alert: true });
@@ -67,7 +63,7 @@ await confirm({ title: 'Your export is ready.', alert: true });
 
 ### dismissible
 
-`false` makes a question the reader has to answer with a button: `Escape` and the backdrop stop working. Use it where an accidental dismissal is the expensive answer, and almost nowhere else: a modal with no way out is the thing people report.
+`false` makes a question the reader has to answer with a button, and `Escape` and the backdrop no longer close the sheet. Use it only where an accidental dismissal is the expensive answer.
 
 ### defaults
 
@@ -77,11 +73,9 @@ await confirm({ title: 'Your export is ready.', alert: true });
 <ConfirmProvider defaults={{ size: 'md', locale: 'ko' }}>
 ```
 
-### Two at once
+### Queued questions
 
-**Questions queue.** Raising a second one while the first is up puts it behind the first; nothing is answered on the reader's behalf.
-
-That matters more than it looks. Resolving the older one `false` to make room would report an answer nobody gave, and at the call site, `false` reads as "they said no", so the code would take the cancelled branch for a question that was never shown.
+Raising a second question while the first is up puts it behind the first. Nothing is answered on the reader's behalf, so each promise resolves only when the reader answers its own question.
 
 ## Accessibility
 

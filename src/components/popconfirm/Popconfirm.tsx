@@ -25,7 +25,12 @@ export interface PopconfirmProps {
   description?: React.ReactNode;
   /** Called when the reader confirms. May return a promise; see `onConfirm`. */
   onConfirm?: () => void | Promise<unknown>;
-  /** Called when the reader cancels. Dismissing does not call it. */
+  /**
+   * Called when the reader cancels. Dismissing does not call it.
+   *
+   * Walking away from a question is not answering it _no_, so a handler that
+   * undoes something here does not run every time somebody presses Escape.
+   */
   onCancel?: () => void;
   /** Overrides the confirming button's label. Defaults to the locale's word. */
   confirmLabel?: React.ReactNode;
@@ -94,6 +99,8 @@ export function Popconfirm(rawProps: PopconfirmProps) {
     color = 'danger',
     size = 'sm',
     icon = true,
+    // Above the trigger: a question about a row is easier to read there than
+    // laid over the rows below it.
     side = 'top',
     align = 'center',
     open: openProp,
