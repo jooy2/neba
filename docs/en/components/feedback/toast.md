@@ -58,7 +58,7 @@ Where the stack is pinned, given as one word combining the vertical edge (`top`/
 
 ### update and promise
 
-Calling `update` with the `id` that `add` returned refreshes that toast in place and restarts its timer: for a single toast that changes state, like "uploading → uploaded".
+Calling `update` with the `id` that `add` returned refreshes that toast in place, for a single toast that changes state, like "uploading → uploaded". Its timer keeps running; calling `add` again with the same `id` is what starts it over.
 
 ```tsx
 const toast = useToast();

@@ -58,7 +58,7 @@ hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { lo
 
 ### update와 promise
 
-`add`가 돌려준 `id`로 `update`를 부르면 그 Toast를 제자리에서 갱신하고 타이머를 다시 시작합니다. "업로드 중 → 업로드 완료"처럼 하나의 Toast가 상태를 바꾸는 경우에 씁니다.
+`add`가 돌려준 `id`로 `update`를 부르면 그 Toast를 제자리에서 갱신합니다. 타이머는 그대로 흐르고, 같은 `id`로 `add`를 다시 불러야 처음부터 다시 셉니다. "업로드 중 → 업로드 완료"처럼 하나의 Toast가 상태를 바꾸는 경우에 씁니다.
 
 ```tsx
 const toast = useToast();

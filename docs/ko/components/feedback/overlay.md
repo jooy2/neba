@@ -56,7 +56,7 @@ Overlay에는 표면도, 테두리도, 제목도, 액션도 없습니다. 사용
 
 ### modal
 
-`modal="trap-focus"`는 페이지 스크롤과 클릭을 허용하면서 focus만 Overlay 안에 붙잡아 둡니다. `clear` tone과 함께 쓰기에 적합합니다.
+`modal="trap-focus"`는 페이지 스크롤과 클릭을 허용하면서 focus만 Overlay 안에 붙잡아 둡니다. 이때는 scrim도 포인터를 통과시키므로, 포인터를 막는 것이 전부인 `clear` tone은 아무것도 막지 못합니다.
 
 ## 접근성
 

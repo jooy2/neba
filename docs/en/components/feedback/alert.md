@@ -48,7 +48,7 @@ An alert is the thing being coloured, so unlike a [Box](../surfaces/box) its she
 
 ### color
 
-`color` sets the severity, and the glyph changes with it. Three drawings cover the six families, so the kind of message carries even where the colour does not.
+`color` sets the severity, and the glyph changes with it. Four drawings cover the six families, so the kind of message carries even where the colour does not.
 
 <Demo src="alert/colors">
 

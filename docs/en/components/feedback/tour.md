@@ -78,7 +78,7 @@ The slots are `mask`, `title`, `description`, `close` and `footer`. See [prop co
 
 ## Accessibility
 
-- The card is a dialog named by its title and described by its content, and focus moves into it as each step opens.
+- The card is a dialog named by its title and described by its content. Changing step keeps the focus on the button that was pressed.
 - Next and Previous rewrite the card in place, so the new step is read out through a polite live region, as "Step 2: Deploy".
 - Escape ends the tour unless `dismissible` is off. A press outside it does not: using the page is what the tour is for.
 - A tour is never the only way to something. Whatever it points at has to be findable without it: a reader who dismissed it, or never saw it, gets no second showing.

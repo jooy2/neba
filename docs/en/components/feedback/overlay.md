@@ -56,7 +56,7 @@ Off by default, which is the other way round from [Dialog](./dialog). An Overlay
 
 ### modal
 
-`modal="trap-focus"` leaves the page scrollable and clickable while holding focus inside the overlay: a good fit with the `clear` tone.
+`modal="trap-focus"` leaves the page scrollable and clickable while holding focus inside the overlay. The scrim lets the pointer through as well, so the `clear` tone, whose only job is to block the pointer, blocks nothing with it.
 
 ## Accessibility
 
