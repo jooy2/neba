@@ -196,6 +196,8 @@
 
 ### Fixed
 
+- **A bounded `DataTable` brings a row fully on screen when its edge falls between pixels.** The arrow keys measured the row with a rounded `offsetHeight` and set a fractional scroll offset, which WebKit truncates, so a row of 32.2px could stay more than a pixel under the edge of the box.
+
 - **A chart's axis name above the plot stays inside the chart's box in every font.** Its baseline sat one em below the top edge, and a font with a taller ascent, such as the Noto Sans many Linux systems use, reached past the edge the SVG clips at.
 
 - **`ScatterChart` grows the mark under the crosshair on React 18.** The pixel it grows by was a unitless number in a `style`, and React 18 wrote it as a length, which the browser discarded, so the mark stayed the same size.

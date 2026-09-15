@@ -1404,16 +1404,23 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       // caption and the head sit above the first row, and a grouped table has a
       // heading above each group. A row the window has not drawn is still a
       // whole number of rows below the top of the body, spacer included.
+      //
+      // Heights are read unrounded and the scroll is rounded outward: `offsetHeight`
+      // rounds a row of 32.2px down to 32, and WebKit drops the fraction of a
+      // scroll offset, so a row whose edge fell between two pixels was left
+      // more than a pixel under the edge of the box.
       const origin = node.getBoundingClientRect().top + node.clientTop - node.scrollTop;
-      const top =
-        (row ?? body).getBoundingClientRect().top - origin + (row ? 0 : index * rowHeight);
-      const bottom = top + (row ? row.offsetHeight : rowHeight);
-      const covered = stickyHeader ? (tableRef.current?.tHead?.offsetHeight ?? 0) : 0;
+      const box = (row ?? body).getBoundingClientRect();
+      const top = box.top - origin + (row ? 0 : index * rowHeight);
+      const bottom = top + (row ? box.height : rowHeight);
+      const covered = stickyHeader
+        ? (tableRef.current?.tHead?.getBoundingClientRect().height ?? 0)
+        : 0;
 
       if (top < node.scrollTop + covered) {
-        node.scrollTop = Math.max(0, top - covered);
+        node.scrollTop = Math.max(0, Math.floor(top - covered));
       } else if (bottom > node.scrollTop + node.clientHeight) {
-        node.scrollTop = bottom - node.clientHeight;
+        node.scrollTop = Math.ceil(bottom - node.clientHeight);
       }
     },
     [bounded, stickyHeader, rowHeight]

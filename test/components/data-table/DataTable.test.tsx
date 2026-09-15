@@ -891,7 +891,32 @@ describe('DataTable', () => {
         const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="8"]')!;
 
         await expect.element(row).toHaveAttribute('aria-selected', 'true');
-        await expect.poll(() => inside(row, node.getBoundingClientRect())).toBe(true);
+        expect(inside(row, node.getBoundingClientRect())).toBe(true);
+      });
+
+      // WebKit drops the fraction of a scroll offset, and a row's rounded
+      // `offsetHeight` is shorter than a row of 32.2px, so the arrows used to
+      // leave the row more than a pixel under the bottom of the box.
+      it('scrolls a row whose edge falls between pixels all the way on', async () => {
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(40)}
+            getRowKey={key}
+            selectionMode="single"
+            height={200}
+            rowHeight={32.2}
+          />
+        );
+        const node = scroller(screen.container);
+
+        await screen.getByText('Person 0', { exact: true }).click();
+        await userEvent.keyboard('{ArrowDown>10/}');
+
+        const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="10"]')!;
+
+        await expect.element(row).toHaveAttribute('aria-selected', 'true');
+        expect(inside(row, node.getBoundingClientRect())).toBe(true);
       });
 
       it('counts the group headings above a row', async () => {
@@ -914,7 +939,7 @@ describe('DataTable', () => {
         const row = screen.container.querySelector<HTMLElement>('tr[data-neba-row="10"]')!;
 
         await expect.element(row).toHaveAttribute('aria-selected', 'true');
-        await expect.poll(() => inside(row, node.getBoundingClientRect())).toBe(true);
+        expect(inside(row, node.getBoundingClientRect())).toBe(true);
       });
 
       // Without a height it is the page that scrolls, and nothing moved it.
