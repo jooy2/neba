@@ -39,7 +39,7 @@ A pie has one series, so it takes `data` directly rather than an array of series
 
 Slices are drawn in the order they are given and are not re-sorted. A slice's colour follows its place in `data`, so a filter that drops one moves every slice after it onto the next colour; a point's own `color` holds it.
 
-A negative value has no share of a whole to be, so it draws no slice and adds nothing to the total. It stays in the table and the legend, as it does on a treemap.
+A negative value draws no slice and adds nothing to the total. It stays in the table and the legend, as it does on a treemap.
 
 ## Props
 
@@ -61,7 +61,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### center
 
-Whatever goes in the hole of a `donut` or a `semi`. A ring with nothing in the middle is a pie with a bite out of it; the total, or the one figure the chart is about, is what it was drawn around.
+`center` is drawn in the hole of a `donut` or a `semi`. Put the total there, or the one figure the chart is about.
 
 ```tsx
 <PieChart shape="donut" center={<Typography level="h4">38.6K</Typography>} … />
@@ -69,11 +69,11 @@ Whatever goes in the hole of a `donut` or a `semi`. A ring with nothing in the m
 
 ### valueLabels
 
-`all` writes each slice's **share** on it: a share is what a pie is a picture of, and the value is one hover away. A label is only drawn where the slice is wide enough for the text with room on both sides; one that does not fit is dropped rather than clipped, and the tooltip and the table still have it.
+`all` writes each slice's **share** on it rather than its value, which stays in the tooltip. A label is only drawn where the slice is wide enough for the text with room on both sides; one that does not fit is dropped rather than clipped, and the tooltip and the table still have it.
 
 ### Colour
 
-Slices take palette slots in the order they are passed. A point's own `color` overrides that, which is the right move when the slices _mean_ something: passed and failed are not "series one" and "series two".
+Slices take palette slots in the order they are passed. A point's own `color` overrides that. Use it when the slices _mean_ something, such as passed and failed.
 
 <Demo src="pie-chart/colors">
 
@@ -95,7 +95,3 @@ The legend appears from two slices up and is interactive by default: clicking a 
 - The plot is focusable; `←` and `→` step between slices, `Home` and `End` go to the first and the last, and `Escape` clears the selection, so the tooltip is reachable without a pointer. On a touch screen a tap keeps the slice's tooltip up until a tap lands outside the plot.
 - A share written with `valueLabels="all"` takes the ink that reads best on its slice. A slice given a literal colour, such as `#ffe066`, gets black or white by contrast.
 - Slices are separated by a gap of the surface colour, sized to stay 2px on screen at any radius, rather than by a stroke around each one.
-
-## When not to use it
-
-An angle is a poor thing to compare: two slices within a few percent of each other are indistinguishable, and no reader can rank six of them. Past six slices, or when the question is "how do these rank", use a [BarChart](./bar-chart). A two-slice pie is a [Statistic](./statistic).

@@ -95,10 +95,12 @@ export interface PieChartProps extends ChartBaseProps {
  * a poor thing to compare — two slices within a few percent of each other are
  * indistinguishable, and a reader cannot rank six of them — so the pie is right
  * for exactly one question: *is one of these most of it?* Anything finer than
- * that, and anything past six slices, is a [BarChart](./bar-chart).
+ * that, and anything past six slices, is a [BarChart](./bar-chart); a pie of
+ * two slices is a [Statistic](./statistic).
  *
- * A slice's colour follows the slice and not its size, so a chart that is
- * refiltered or resorted keeps every category the colour it had.
+ * A slice's colour follows its place in `data`, so a filter that drops one
+ * moves every slice after it onto the next colour; a point's own `color`
+ * holds it.
  */
 export function PieChart(rawProps: PieChartProps) {
   const {

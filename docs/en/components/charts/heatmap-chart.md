@@ -26,9 +26,9 @@ import { HeatmapChart } from 'neba';
 
 The `series` shape is the one every chart shares: see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid. A treemap packs every series' tiles together by size, so there a series names its tiles in the table rather than keeping them in one place. `y` is the magnitude, and `x` names the column or the tile.
 
-A `null` is a gap and the cell is left as surface. It is not drawn as the bottom of the scale, because "nothing happened" and "the least of anything" are two different readings and only one of them is in the data.
+A `null` is a gap, and the cell is left as surface rather than drawn as the bottom of the scale.
 
-The scale runs across every cell in the chart rather than per row. A colour has to mean the same number wherever it appears, which is the whole promise a heatmap makes; `min` and `max` pin the ends where a comparison needs a fixed frame.
+The scale runs across every cell in the chart rather than per row, so a colour means the same number wherever it appears. `min` and `max` pin the ends where a comparison needs a fixed frame.
 
 ## Props
 
@@ -40,9 +40,7 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### shape
 
-`grid` is the shape for two categorical axes and one number: hours against weekdays, a cohort against a week. `treemap` packs a tile per datum, sized by its share, and fills the box.
-
-A treemap is squarified rather than sliced: tiles are laid in rows and each row is closed the moment its aspect ratios stop improving. Sliced, twenty values end as slivers a pixel wide, and a sliver's area is unreadable however exact it is.
+`grid` is the shape for two categorical axes and one number: hours against weekdays, a cohort against a week. `treemap` packs a tile per datum into the box, sized by its share and kept as close to square as it can be.
 
 A treemap has no axes (every tile is named on its own face), and a negative value has no area to be, so it stays in the table and off the picture.
 
@@ -56,9 +54,7 @@ A treemap has no axes (every tile is named on its own face), and a negative valu
 
 `sequential` is one hue from pale to deep, and it is right whenever more is simply more. `diverging` is two hues either side of a neutral grey, for a value with a **middle** that means something: over and under target, gained and lost. `midpoint` says where that middle is.
 
-Reach for `diverging` only when there is a real zero to diverge about. On a plain magnitude it invents a boundary the data has none of, and the reader spends the chart looking for what changed at the grey.
-
-Neither ramp is the eight-slot [categorical palette](../../design/color): colour here encodes size, not identity, and a heatmap in eight hues says its cells are eight unrelated things.
+Reach for `diverging` only when there is a real zero to diverge about. Neither ramp takes its colours from the eight-slot [categorical palette](../../design/color).
 
 <Demo src="heatmap-chart/diverging">
 
@@ -70,7 +66,7 @@ Neither ramp is the eight-slot [categorical palette](../../design/color): colour
 
 `valueLabels="all"` writes each value on its cell, where the cell is big enough for the text with room either side; a label that does not fit is dropped rather than clipped. Inside a filled cell the label picks its ink from the step underneath it, so it stays readable at both ends of the ramp.
 
-`min` and `max` pin the scale. Left out, the ends come from the data: which means two charts of different data are not comparable until they are given the same bounds. On a sequential scale whose values are all the same there is no range to spread, so zero or less takes the lightest step and anything above zero the darkest.
+`min` and `max` pin the scale. Left out, the ends come from the data, so two charts of different data are comparable only once they are given the same bounds. On a sequential scale whose values are all the same there is no range to spread, so zero or less takes the lightest step and anything above zero the darkest.
 
 <Demo src="heatmap-chart/labels">
 
@@ -80,7 +76,7 @@ Neither ramp is the eight-slot [categorical palette](../../design/color): colour
 
 ### legend
 
-The legend is a scale bar with its two ends labelled, not a list of swatches: nothing here has a name, and the order is the meaning. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
+The legend is a scale bar with its two ends labelled, not a list of swatches. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
 
 ## Accessibility
 
