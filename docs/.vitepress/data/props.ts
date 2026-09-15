@@ -19,8 +19,11 @@ type Text = Record<Locale, string>;
 export interface PropRow {
   name: string;
   type: string;
-  /** Omitted when the prop has no default — rendered as `—`. */
-  default?: string;
+  /**
+   * Omitted when the prop has no default — rendered as `—`. A code value is a
+   * string; a default that is words is written once per locale.
+   */
+  default?: string | Text;
   required?: boolean;
   /** Part of the shared vocabulary in `src/types.ts`; tagged in the table. */
   shared?: boolean;
@@ -857,7 +860,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'grid',
       type: 'boolean',
-      default: '값 축은 true / true on the value axis',
+      default: { ko: '값 축은 true', en: 'true on the value axis' },
       description: {
         ko: '이 축이 plot을 가로질러 긋는 격자선. 값 축은 켜져 있고 category 축은 꺼져 있습니다. 양쪽 다 켜면 모눈종이가 됩니다',
         en: 'The gridlines this axis casts across the plot. On for the value axis and off for the category axis; both is graph paper'
@@ -1106,7 +1109,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'barSize',
       type: 'number',
-      default: 'size (md는 24px)',
+      default: { ko: 'size에 따름 (md는 24px)', en: 'from size (24px at md)' },
       description: {
         ko: '막대 두께의 상한(px). 상한 아래에서는 밴드의 자기 몫을 채우고, 넘으면 남은 자리는 여백이 됩니다',
         en: 'How thick a bar may get, in pixels. Below the cap bars fill their share of the band; above it the leftover stays as air'
@@ -1176,7 +1179,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'maxRadius',
       type: 'number',
-      default: 'plot 짧은 변의 1/12 / a twelfth of the plot',
+      default: { ko: 'plot 짧은 변의 1/12', en: 'a twelfth of the plot' },
       description: {
         ko: '가장 큰 bubble의 반지름(px). 나머지는 반지름이 아니라 넓이로 그 아래에 맞춰집니다. z를 반지름에 쓰면 두 배인 값이 네 배로 보입니다',
         en: 'The radius of the largest bubble, in pixels. Everything else is scaled under it by area, not by radius: encode z as a radius and a value twice as large draws a mark four times the size'
@@ -1452,7 +1455,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'color',
       type: `${COLOR} | string`,
-      default: '첫 번째 chart slot / the first chart slot',
+      default: { ko: '첫 번째 chart slot', en: 'the first chart slot' },
       description: {
         ko: '마크의 색. 전체 차트와 달리 색을 직접 받습니다. series가 하나이고 팔레트가 나눠 줄 범례도 없기 때문입니다',
         en: "The mark's colour, taken directly unlike the full charts: a sparkline has one series and no legend for a palette to hand out"
@@ -2307,7 +2310,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'icon',
       type: 'ReactNode',
-      default: '햄버거',
+      default: { ko: '세 줄', en: 'three lines' },
       description: {
         ko: '글리프. 기본은 세 줄',
         en: 'The glyph. Three lines, unless something else is given'
@@ -2375,7 +2378,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'initials',
       type: 'string',
-      default: 'name에서 유도',
+      default: { ko: 'name에서 유도', en: 'derived from name' },
       description: { ko: '타일 위 글자를 직접 씁니다', en: 'The letters on a tile, written out' }
     },
     {
@@ -6382,7 +6385,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'sortable / resizable',
       type: 'boolean',
-      default: '표의 값',
+      default: { ko: '표의 값', en: "the table's" },
       description: {
         ko: '표의 sortable·resizable을 이 열에서만 뒤집습니다',
         en: "Overrides the table's own sortable and resizable for this column"
@@ -12648,7 +12651,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'wallpaper',
       type: 'string',
-      default: '페이지의 surface 색',
+      default: { ko: '페이지의 surface 색', en: "the page's surface colour" },
       description: {
         ko: '내용 뒤에 놓이는 것. 색, gradient, url() 등 임의의 CSS background 값',
         en: 'What is behind the content: any CSS background value. A colour, a gradient, a url()'

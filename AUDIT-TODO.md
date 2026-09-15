@@ -463,7 +463,7 @@ The line numbers in this section are from the audit. `CLAUDE.md` has changed sin
 
 ### Props data (`docs/.vitepress/data/props.ts`)
 
-- [ ] **271** **Korean defaults on English pages**: `default` is not split by locale, so rows whose default is written only in Korean (`:1095`, `:2269`, `:2337`, `:6295`, `:12391`) and rows with both languages in one string (`:846`, `:1165`, `:1441`) show on English pages. Type `default` as `Text` too.
+- [x] **271** **Korean defaults on English pages**: `default` is not split by locale, so rows whose default is written only in Korean (`:1095`, `:2269`, `:2337`, `:6295`, `:12391`) and rows with both languages in one string (`:846`, `:1165`, `:1441`) show on English pages. Type `default` as `Text` too. Fixed: `default` is a string or a `Text`, the props table renders the locale's text, and the eight rows are written once per locale.
 - [ ] **272** **Missing rows**: IconButton `render`; Table `classNames`; Menu's `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem`, `MenuGroup` and `MenuSeparator` (no tables at all, and `MenuGroup` is not mentioned on the page); GaugeChart `size`, `variant`, `locale` and `padded`; `startIcon` and `required` on the four pickers; all the shared rows of AnimateSplit (`duration`, `stagger`, `trigger`, `play`, `paused`); `timeline` and `range` on all 11 components that take them; HoverCard's `delay` and `closeDelay` defaults (600 and 300).
 - [ ] **273** **Wrong or extra rows**
   - [ ] HeatmapChart `legend` appears twice with different defaults (`:768`, `:1242`), which is a duplicate Vue key.

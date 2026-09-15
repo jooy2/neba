@@ -17,6 +17,12 @@ const { lang } = useData();
 const locale = computed(() => localeOf(lang.value));
 const rows = computed(() => propTables[props.name] ?? []);
 const hasRequired = computed(() => rows.value.some((row) => row.required));
+
+/** A default written in words has one per locale; a code value is the same in both. */
+function defaultOf(row) {
+  if (row.default === undefined) return '—';
+  return typeof row.default === 'string' ? row.default : row.default[locale.value];
+}
 </script>
 
 <template>
@@ -46,7 +52,7 @@ const hasRequired = computed(() => rows.value.some((row) => row.required));
             </span>
           </td>
           <td class="neba-props-type">{{ row.type }}</td>
-          <td class="neba-props-default">{{ row.default ?? '—' }}</td>
+          <td class="neba-props-default">{{ defaultOf(row) }}</td>
           <td class="neba-props-desc">{{ row.description[locale] }}</td>
         </tr>
       </tbody>
