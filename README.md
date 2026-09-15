@@ -34,6 +34,10 @@ Everything is documented at **[neba.cdget.com](https://neba.cdget.com)**, where 
 | [**Design language**](https://neba.cdget.com/design/design-language) | Why a Neba surface looks and behaves the way it does. |
 | [**Prop conventions**](https://neba.cdget.com/design/prop-conventions) | The shared vocabulary every component draws from. |
 | [**Color**](https://neba.cdget.com/design/color) | The token families, and how to theme them. |
+| [**NebaProvider**](https://neba.cdget.com/guide/provider) | Defaults for a whole subtree, the colour scheme, and the direction. |
+| [**Hooks**](https://neba.cdget.com/guide/hooks) | The hooks the library exports, and what each one is for. |
+| [**Breakpoints**](https://neba.cdget.com/design/breakpoints) | The widths a responsive prop changes at, and which props take a map. |
+| [**Browser support**](https://neba.cdget.com/browser-support) | The oldest browser versions the library works in. |
 | [**Changelog**](https://neba.cdget.com/changelog) | What changed in each release, and the setup changes worth acting on. |
 
 ## Installation
@@ -90,7 +94,7 @@ Every component carries `'use client'`, so it can be imported straight into a Se
 
 The `neba` barrel and `neba/locales` are deliberately left unmarked, so a Server Component importing the barrel reaches the components behind it rather than a boundary of its own, and `registerMessages` stays a plain function. Bundlers that do not implement Server Components ignore the directive entirely.
 
-A few components provide context and are mounted once, near the root, only if you use them: `ToastProvider` (paired with the `useToast()` hook) and `TooltipProvider`.
+A few components provide context and are mounted once, near the root, only if you use them: `ToastProvider` (paired with the `useToast()` hook), `ConfirmProvider` (paired with `useConfirm()`, which throws without one) and `TooltipProvider`.
 
 Every component is also its own entry point, named after its folder:
 
@@ -165,7 +169,7 @@ The reason a Neba screen looks composed rather than assembled is that the props 
 | `density` | `default` `compact` | Padding only: never the height, never the type scale, so a compact control still lines up with a default one. |
 | `elevation` | `0` `1` `2` `3` | How far a surface floats off the page. `0` is the default and means no shadow at all. |
 
-Placement props are logical, not physical (`start`/`end` rather than `left`/`right`) so layouts flip correctly under RTL. The full rules are in [**Prop conventions**](https://neba.cdget.com/design/prop-conventions).
+`align` is logical (`start`/`end` rather than `left`/`right`), so it flips under RTL. `side` names a physical edge (`top`, `right`, `bottom` or `left`) and does not flip. The full rules are in [**Prop conventions**](https://neba.cdget.com/design/prop-conventions).
 
 ```tsx
 <Button size="sm" color="danger" variant="outline">Delete</Button>
@@ -178,13 +182,19 @@ The components come in seven groups: inputs, surfaces, display, charts, feedback
 
 ### Theming and dark mode
 
-Colours, radii, and surface strengths are CSS custom properties declared in the stylesheet you imported. Override any of them in your own CSS and the whole library follows:
+Colours, radii, and surface strengths are CSS custom properties declared in the stylesheet you imported. A colour family is five base values, and everything else in it is derived from them, so override those five in your own CSS and the whole library follows:
 
 ```css
 :root {
-  --neba-primary-fill: oklch(0.62 0.19 265);
+  --neba-primary-solid: oklch(50% 0.24 300);
+  --neba-primary-solid-hover: oklch(45.5% 0.232 300);
+  --neba-primary-solid-active: oklch(38% 0.204 300);
+  --neba-primary-on-solid: oklch(99% 0.004 300);
+  --neba-primary-accent: oklch(54% 0.26 300);
 }
 ```
+
+A derived token such as `--neba-primary-fill` is not meant to be overridden: it changes that one token and leaves the rest of the family on the old colour. [**Color**](https://neba.cdget.com/design/color) has the dark-theme values and scoped overrides.
 
 Dark mode responds to `prefers-color-scheme` on its own. To force it, put `.dark` or `[data-theme='dark']` (or `'light'`) on any ancestor: it applies to that subtree, so a dark panel on a light page is one attribute.
 
