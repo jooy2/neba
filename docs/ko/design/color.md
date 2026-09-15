@@ -132,7 +132,7 @@ Neba의 다크 테마는 `prefers-color-scheme`을 따르고, `.dark` / `[data-t
 
 ## 계열 추가하기
 
-라이브러리에 새 계열을 넣는 것은 두 군데를 고치는 일입니다. [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)의 `NebaColor` 유니언과 `styles.css`의 다섯 줄(테마마다). 나머지는 파생 블록이 계산합니다.
+라이브러리에 새 계열을 넣으려면 네 군데를 고칩니다. [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)의 `NebaColor` 유니언, `styles.css`의 세 테마 블록마다 기준값 다섯 줄, 그 다섯 값을 `color-mix()`로 섞는 파생 블록의 파생 토큰 열세 개, 그리고 타입 검사가 요구하는 `Alert`의 역할 표 항목입니다. 세 테마 블록은 라이트 테마, 시스템 설정을 따르는 다크 테마, 클래스나 속성으로 강제한 다크 테마입니다.
 
 소비자 쪽에서는 `NebaColor`가 닫힌 유니언이라 새 이름을 넘길 수 없습니다. 계열이 하나 더 필요하다면 이슈로 올려 주세요.
 

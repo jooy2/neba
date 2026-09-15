@@ -96,7 +96,7 @@ Every colour is defined in `oklch()`, because its lightness axis matches percept
 --neba-{color}-accent         readable on a surface (for the text/outline variants)
 ```
 
-The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color-mix()` in the derived block. **Adding a colour family is two edits**: one entry in the `NebaColor` union and five lines in `styles.css`.
+The rest (`-fill`, `-panel`, `-soft`, `-line`, `-ring`) are computed with `color-mix()` in the derived block. **Adding a colour family** is an entry in the `NebaColor` union, the five base values in each theme block and the derived tokens that mix them; [colour](./color#adding-a-family) lists every edit.
 
 ### Chroma goes to the gamut edge; lightness goes as far as contrast allows
 

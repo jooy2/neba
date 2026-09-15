@@ -132,7 +132,7 @@ The two panels below are exactly the same markup. Only the right one is wrapped 
 
 ## Adding a family
 
-Adding one to the library is two edits: the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts) and five lines in `styles.css` per theme. The derived block computes the rest.
+Adding one to the library takes four edits: the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts); the five base values in each of the three theme blocks in `styles.css`, which are the light theme, the dark theme chosen by the system and the dark theme forced with a class or an attribute; the thirteen derived tokens in the derived block, which mix those five with `color-mix()`; and the family's entry in `Alert`'s table of roles, which the type checker asks for.
 
 From the consuming side, `NebaColor` is a closed union, so a new name cannot be passed in. If you need another family, please open an issue.
 

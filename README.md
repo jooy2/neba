@@ -198,7 +198,7 @@ A derived token such as `--neba-primary-fill` is not meant to be overridden: it 
 
 Dark mode responds to `prefers-color-scheme` on its own. To force it, put `.dark` or `[data-theme='dark']` (or `'light'`) on any ancestor: it applies to that subtree, so a dark panel on a light page is one attribute.
 
-Adding a whole new colour family is two edits: an entry in `NebaColor` and five tokens; everything else derives from them.
+Adding a whole new colour family to the library takes an entry in `NebaColor`, five base values in each theme block and the derived tokens that mix them. [**Color**](https://neba.cdget.com/design/color#adding-a-family) lists every edit.
 
 ## Development
 
