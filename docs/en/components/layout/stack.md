@@ -22,11 +22,11 @@ import { Avatar, Stack } from 'neba';
 
 <PropsTable name="Stack" />
 
-Every native `<div>` attribute passes through. It draws no surface of its own, so there is no `variant`, `color` or `elevation`: those belong to whatever is being stacked.
+Every native `<span>` attribute passes through. It draws no surface of its own, so there is no `variant`, `color` or `elevation`.
 
-The overlap is a margin rather than a translate, so the box is exactly as big as what is in it and the content after a Stack is laid out against the right width. `size` is read only to pick the default `overlap`.
+The box is exactly as big as the pile, so the content after a Stack is laid out against the right width. `size` is read only to pick the default `overlap`.
 
-Each item is drawn into a wrapper of its own and the child is passed through untouched, so anything can be stacked: including a [Tooltip](../feedback/tooltip) around an avatar, or anything produced by another component's `.map()`. `ring` is the one thing written onto the children themselves, because a hairline has to follow the shape it is around.
+Each child is passed through untouched, so anything can be stacked, including a [Tooltip](../feedback/tooltip) around an avatar or anything produced by another component's `.map()`. `ring` is drawn on the children themselves, so it follows their shape.
 
 See [prop conventions](../../design/prop-conventions) for the shared axes.
 
@@ -76,5 +76,5 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ## Accessibility
 
-- A Stack is a `<div>` and announces nothing. When the pile stands for a group (the people on a task, the files in a folder), give it a `role` and an accessible name, or put the count in text beside it.
+- A Stack is a `<span>` and announces nothing. When the pile stands for a group (the people on a task, the files in a folder), give it a `role` and an accessible name, or put the count in text beside it.
 - The overflow marker is drawn as an ordinary item, so whatever it renders is what a screen reader reads. `+38` on its own says very little; an `aria-label` on it says the rest.

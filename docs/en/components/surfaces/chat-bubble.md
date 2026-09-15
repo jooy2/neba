@@ -25,7 +25,7 @@ import { Avatar, ChatBubble } from 'neba';
 
 <PropsTable name="ChatBubble" />
 
-Every other `<div>` attribute passes through to the row, except `title`: a bubble has no headline, and the browser's tooltip on a whole message is rarely what anyone wants.
+Every other `<div>` attribute passes through to the row, except `title`.
 
 The shared axes (`variant` `size` `color` `density` `elevation`) are defined in [prop conventions](../../design/prop-conventions).
 
@@ -33,9 +33,9 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### side
 
-`start` is the default and the side the other party's messages usually take; `end` is the side for your own. It runs the row the other way (avatar, bubble and actions all flip), and cuts the corner nearest the speaker short, which is what says where the message came from without hanging a tail off the sheet.
+`start` is the default and the side the other party's messages usually take, and `end` is the side for your own. `end` runs the row the other way, so the avatar, the bubble and the actions all flip. On either side the corner nearest the speaker is cut short.
 
-`variant` is what tells your own messages from everyone else's, and it is deliberately not tied to `side`: filling the trailing column is a convention, not a law.
+`side` does not set `variant`, so set `variant` yourself to tell your own messages from everyone else's.
 
 <Demo src="chat-bubble/sides">
 
@@ -55,9 +55,9 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### status
 
-Five steps: `sending`, `sent`, `delivered`, `read` and `failed`. Only the last two carry a colour: a thread where every message is marked in colour is a thread where the colour has stopped meaning anything. Each step is also its own shape, `read` being the double tick in a filled disc, so the mark says which step it is without the colour; a visually hidden word says it to a screen reader.
+The five steps are `sending`, `sent`, `delivered`, `read` and `failed`, and only `read` and `failed` carry a colour. Each step is also its own shape, with `read` drawn as the double tick in a filled disc, so the mark says which step it is without the colour.
 
-The mark is the whole of what is drawn. The word behind it is read out but never shown; `statusLabel` replaces it.
+The mark is the whole of what is drawn. A visually hidden word says the step to a screen reader, and `statusLabel` replaces that word.
 
 <Demo src="chat-bubble/status">
 
@@ -69,7 +69,7 @@ The mark is the whole of what is drawn. The word behind it is read out but never
 
 `typing` draws three dots in place of the message. `children` is left alone, so the same bubble goes back to the message the moment it arrives.
 
-The dots light in sequence and never move: colour is the axis every indeterminate indicator in the library uses, and something bouncing in the corner of a thread being read is exactly what the design language has no time for.
+The dots light in sequence and never move.
 
 <Demo src="chat-bubble/typing">
 
@@ -89,7 +89,7 @@ The dots light in sequence and never move: colour is the axis every indeterminat
 
 ### preview
 
-`preview` unfurls a link into a card under the text: `url`, `title`, `description`, `image`, `site`, and `newTab` for the ones that should leave the app. The card's surface is mixed out of the bubble's own text colour, so it works on a filled bubble and a bare one alike.
+`preview` unfurls a link into a card under the text: `url`, `title`, `description`, `image`, `site`, and `newTab` for the ones that should leave the app. The card works on a filled bubble and a bare one alike.
 
 <Demo src="chat-bubble/preview">
 

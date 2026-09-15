@@ -28,7 +28,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The per-
 
 ### direction
 
-`horizontal` is a row and `vertical` a column: the library's own two words rather than CSS's four, so a Flex and a [Stack](./stack) say the same thing the same way. It is responsive, and this is the prop the component exists for: a pair of controls side by side once there is room, and stacked before there is.
+`horizontal` is a row and `vertical` a column. It takes a per-breakpoint map, so a pair of controls can sit side by side once there is room and stack before there is.
 
 <Demo src="flex/direction">
 
@@ -38,7 +38,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The per-
 
 ### spacing
 
-The gutter, on Tailwind's spacing scale: `spacing={4}` is `1rem`, the same length `gap-4` is. The same prop and the same scale a [GridContainer](./grid) uses, so one number means one length across both, and it takes a map like everything else. `rowSpacing` is the vertical gap and `columnSpacing` the horizontal one, whatever `direction` is; each is laid _over_ `spacing` rather than replacing it, so naming one breakpoint does not drop the gutter everywhere else.
+`spacing` is the gutter on Tailwind's spacing scale, so `spacing={4}` is `1rem`, the same length `gap-4` is. It is the same scale a [GridContainer](./grid) uses, and it takes a per-breakpoint map. `rowSpacing` is the vertical gap and `columnSpacing` the horizontal one, whatever `direction` is; each is laid _over_ `spacing` rather than replacing it, so naming one breakpoint does not drop the gutter everywhere else.
 
 <Demo src="flex/spacing">
 
@@ -48,7 +48,7 @@ The gutter, on Tailwind's spacing scale: `spacing={4}` is `1rem`, the same lengt
 
 ### justifyContent · alignItems
 
-The flexbox vocabulary, spelled the way the rest of the library spells it. `justifyContent` distributes what is left over along the row; `alignItems` decides where the children sit across it. Neither is responsive: they are class names, and a per-breakpoint class map would put five complete ladders in the bundle of every page that draws a Flex.
+`justifyContent` distributes what is left over along the row, and `alignItems` decides where the children sit across it. Neither takes a per-breakpoint map.
 
 <Demo src="flex/alignment">
 
@@ -58,7 +58,7 @@ The flexbox vocabulary, spelled the way the rest of the library spells it. `just
 
 ### wrap
 
-Off by default, which is the opposite of a [GridContainer](./grid). A grid is columns and wrapping is what columns do; a Flex is most often a toolbar or a field row that should stay on one line and let its children shrink.
+Off by default, so a row stays on one line and its children shrink. Turn it on to let a row that runs out of width continue on the next line, as a run of chips does.
 
 ```tsx
 <Flex wrap spacing={2}>
@@ -67,10 +67,6 @@ Off by default, which is the opposite of a [GridContainer](./grid). A grid is co
   ))}
 </Flex>
 ```
-
-### Flex or Grid
-
-A Flex sizes its children by what they are; a [Grid](./grid) sizes them against a column count. Reach for a Flex when the answer is "these things, in a line": a toolbar, a field and its button, a card's footer. Reach for a Grid when the widths have to line up with something else on the page, which is what columns are for.
 
 ### reverse
 

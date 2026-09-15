@@ -18,15 +18,13 @@ import { Carousel } from 'neba';
 </Carousel>;
 ```
 
-Every top-level child becomes one slide. There is no slide sub-component: the snap point, the width and the `role="group"` / `aria-roledescription="slide"` pair are added for you.
+Every top-level child becomes one slide. There is no slide sub-component: the snap point, the width and the `role="group"` / `aria-roledescription="slide"` pair are added for you. To show several slides in view at once, use [ScrollZone](../layout/scroll-zone).
 
 ## Props
 
 <PropsTable name="Carousel" />
 
 Every native `<div>` attribute passes through.
-
-Underneath it is a scroll container with CSS scroll snapping. That is what makes swiping the browser's own behaviour, flips the direction automatically under RTL, and puts the transition on `scroll-behavior: smooth`. Which becomes an instant cut under `prefers-reduced-motion` through the same code path.
 
 ## Examples
 
@@ -66,19 +64,15 @@ Controlled, the strip can be driven by something else on the page. `onValueChang
 
 `autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, and in a background tab, and it does not start at all under `prefers-reduced-motion`. The live region announcing the current slide stays silent while it runs, and starts again once the slides are stopped.
 
-Turning it on also draws a button that stops the rotation, in the row under the frame beside the dots. It has no prop to remove it: hover and focus are not a mechanism for a reader on a phone or a magnifier. `pauseLabel` and `playLabel` name it.
+Turning it on also draws a button that stops the rotation, in the row under the frame beside the dots. It has no prop to remove it, and `pauseLabel` and `playLabel` name it.
 
-If every slide has to be read, consider [Tabs](./tabs) or a plain vertical stack instead.
+### locale
+
+`locale` sets the language of the region name, the control names and every slide name. It takes a BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`, and a tag with no translation falls back to English. `label` and the other `*Label` props write the words out instead.
 
 ## Accessibility
 
 - `label` becomes the carousel's accessible name. `previousLabel` · `nextLabel` · `pauseLabel` · `playLabel` · `slideLabel` name the controls.
 - `autoPlay` draws its own stop button under the frame, so the rotation can be stopped by a reader who neither hovers nor tabs.
 - Each slide carries `role="group"` and `aria-roledescription="slide"`.
-
-## What is not offered
-
-- **More than one slide in view**: use [ScrollZone](../layout/scroll-zone).
-- **Vertical**: a scrolling list already does that.
-- **Fade**: it cannot be combined with a scroll-based implementation.
-- `locale` decides the region name, the arrows and every slide name; `label` and `slideLabel` write them out instead.
+- Under `prefers-reduced-motion` a slide change is an instant cut rather than a smooth scroll.

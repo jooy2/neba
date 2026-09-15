@@ -21,13 +21,13 @@ import { Footer } from 'neba';
 
 Every native `<footer>` attribute passes through, apart from `color` and `title`. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
-It has no slots, which is the difference between it and [Header](./header): a footer's content is four columns on one site and one line on the next, and a fixed arrangement would be one every second site fights.
+It has no slots, so its children are laid out as you write them.
 
 ## Examples
 
 ### position
 
-`static` is the default and is the opposite of Header's: a footer is the thing at the end of the document, reached by scrolling to it. `sticky` holds it against the bottom of the window, and `fixed` takes it out of the flow: inside a [PageLayout](./page-layout) its height is then reserved rather than sitting on top of the last paragraph.
+`static` is the default, so the footer sits at the end of the document and is reached by scrolling to it. `sticky` holds it against the bottom of the window, and `fixed` takes it out of the flow. Inside a [PageLayout](./page-layout) a `fixed` footer's height is reserved, so it does not sit on top of the last paragraph.
 
 ### variant
 
@@ -51,7 +51,7 @@ Holds the content to a measure and centres it while the sheet still spans the wi
 
 ### divider · padded
 
-`divider` draws a hairline along the top edge and is on by default: a footer is the one sheet with content directly above it and nothing below, so the line is the whole of what says the document ended. `padded={false}` drops the gutter for a footer that brings its own.
+`divider` draws a hairline along the top edge and is on by default. `padded={false}` drops the gutter for a footer that brings its own.
 
 ## Accessibility
 

@@ -29,11 +29,11 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### maxHeight and reversible
 
-Left out, the box is exactly as tall as what it holds: right for a paragraph or a picture. The cover keeps its place once the content is out, so a notice and a button taller than the line they were covering do not shrink the box on the press, and nothing on the page below moves.
+Without `maxHeight` the box is exactly as tall as what it holds. The cover keeps its place once the content is out, so the box does not shrink on the press and nothing on the page below moves.
 
-`maxHeight` is the one thing that does change the height. It clamps the covered box, and revealing lets go of the clamp so the content takes whatever height it needs; a clamp that stayed on would leave the reader a scrollbar instead. It takes a CSS length or a number in pixels.
+`maxHeight` clamps the covered box to a CSS length or a number in pixels. Revealing releases the clamp, and the content takes whatever height it needs.
 
-`reversible` puts the cover back on afterwards, with a hide button under the content. Its row is held open while the content is still covered, so the way back costs the box no height either.
+`reversible` puts a hide button under the content so the cover can go back on. Its row is held open while the content is still covered, so covering it again does not change the box's height either.
 
 <Demo src="spoiler/clamped">
 
@@ -97,6 +97,6 @@ const [revealed, setRevealed] = useState(false);
 
 ## Accessibility
 
-- While it is covered the content is `inert`: out of the tab order, off the accessibility tree, and out of a select-all. A spoiler that could be defeated by a select-all is not a spoiler.
+- While it is covered the content is `inert`: out of the tab order, off the accessibility tree, and out of a select-all.
 - The reveal button carries `aria-expanded` and `aria-controls`, pointing at the content it uncovers.
 - Set `locale` so the button and the notice are read out in the page's own language, or write them out in `label` and `description`.

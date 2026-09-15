@@ -152,6 +152,9 @@ export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(function Flex(
     // change them without React re-rendering.
     '[flex-direction:var(--n-flex-dir)] gap-x-(--n-gap-x) gap-y-(--n-gap-y)',
     wrap ? 'flex-wrap' : 'flex-nowrap',
+    // Class names rather than slots, so these three take no per-breakpoint map:
+    // a map of classes would put every value at every breakpoint into the
+    // bundle of every page that draws a Flex.
     justifyContent ? justifyContentClasses[justifyContent] : '',
     alignItems ? alignItemsClasses[alignItems] : '',
     alignContent ? alignContentClasses[alignContent] : '',

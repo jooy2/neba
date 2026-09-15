@@ -56,6 +56,8 @@ export interface ChatBubbleLinkPreview {
 
 export interface ChatBubbleProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
+  // No `title`: a bubble has no headline, and the browser's tooltip over a
+  // whole message is rarely what anyone wants.
   'color' | 'title'
 > {
   /**

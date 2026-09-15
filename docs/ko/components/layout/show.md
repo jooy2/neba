@@ -45,7 +45,7 @@ import { Show } from 'neba';
 
 </Demo>
 
-### 상자를 더하지 않습니다
+### 그리드나 flex row 안에서
 
 `render`가 없으면 wrapper는 `display: contents`입니다. 그래서 [GridContainer](./grid)와 [Grid](./grid) 사이의 `Show`는 셀을 셀로 남겨 두고, flex row 안의 `Show`는 children을 flex item으로 남겨 둡니다. padding이나 배경처럼 스타일로 준 것은 내려앉을 곳이 없으므로, 안쪽 요소에 주거나 `render`로 요소를 지정하세요.
 

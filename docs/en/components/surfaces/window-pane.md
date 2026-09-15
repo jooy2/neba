@@ -29,7 +29,7 @@ Every other `<div>` attribute passes through to the root, except `title` (here i
 
 ### os
 
-Eight systems, and a version is its own entry wherever the title bar is what changed:
+`os` takes eight systems, and a version is its own entry wherever the title bar is what changed.
 
 | `os` | What it draws |
 | --- | --- |
@@ -42,11 +42,11 @@ Eight systems, and a version is its own entry wherever the title bar is what cha
 | `windowsxp` | Luna: the glossy blue caption curve, a band of the same blue down the sides and along the bottom, coloured button plates |
 | `linux` | A GNOME header bar: taller, with circular buttons and a centred title |
 
-The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark: the same choice [Mockup](./mockup)'s finishes make, because hardware and system chrome are not the theme.
+The older systems paint their own chrome rather than the page's, so Luna stays blue and Aqua stays grey on a page switched to dark.
 
-XP and Aero are also the two that have a **band** rather than a hairline: the content is sunk into a stretch of the system's own material down both sides and along the bottom, which is most of what makes either of them recognisable. `accent` dyes the band with the caption, so a window in your own colour is framed in it too.
+XP and Aero are the two with a **band** rather than a hairline, so the content is sunk into the system's own material down both sides and along the bottom. `accent` dyes the band with the caption, so a window in your own colour is framed in it too.
 
-The buttons carry no other party's marks (a minimize is a line, a maximize is a box, a close is a cross), and none of the chrome writes a word except the title you gave it.
+A minimize button is drawn as a line, a maximize button as a box and a close button as a cross, and the chrome writes no text except `title`.
 
 <Demo src="window-pane/os" minHeight="760">
 
@@ -58,7 +58,7 @@ The buttons carry no other party's marks (a minimize is a line, a maximize is a 
 
 `true` is all three buttons, `false` is none, and an array is exactly the ones named. The order is the system's rather than the array's, so `['close', 'minimize']` still puts close last on Windows.
 
-Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`, each with a `default*` and an `on*Change`. Closing an uncontrolled window renders nothing; minimizing rolls it up to its title bar, because a page has no dock to send it to; maximizing fills whatever is holding the window, which is the nearest positioned ancestor with `position="absolute"` and the viewport with `fixed`. A double click on the title bar maximizes too.
+Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`, each with a `default*` and an `on*Change`. Closing an uncontrolled window renders nothing, and minimizing rolls it up to its title bar. Maximizing fills whatever is holding the window, which is the nearest positioned ancestor with `position="absolute"` and the viewport with `fixed`. A double click on the title bar maximizes too.
 
 <Demo src="window-pane/controls" minHeight="400">
 
@@ -68,7 +68,7 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 ### draggable and resizable
 
-`draggable` moves the window on `left` and `top` (never a transform, so no glyph is resampled for the length of the drag), and reports where it went through `onOffsetChange`. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
+`draggable` lets the title bar move the window, and `onOffsetChange` reports where it went. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
 
 Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport. A fixed or absolute window is held so that its title bar stays inside that box, and a `width` or `height` passed after a resize replaces the size the resize gave it.
 
@@ -80,19 +80,13 @@ Both work in the flow, where the offset moves the window from the place the layo
 
 ### Which window is in front
 
-Left out, `active` looks after itself: a window is in front until another WindowPane on the page is pressed or takes the focus. A press on the page _around_ the windows changes nothing: a paragraph is not a desktop.
+Left out, `active` looks after itself. A window is in front until another WindowPane on the page is pressed or takes the focus, and a press on the page around the windows changes nothing.
 
-Being in front is drawn the way each system draws it: coloured traffic lights against grey ones on macOS, an accent title bar and an accent border on Windows 10, a tinted header bar on GNOME. And, on all four, one step more shadow than the windows behind it. Pass `active` to drive that yourself, which is what a caller keeping its own z-order wants.
-
-### Motion
-
-Maximizing, restoring and rolling up are journeys between two geometries, so the window travels rather than jumps: `left`, `top`, `width` and `height` are what move, never a transform, so no glyph in the window is resampled on the way. A window that was never given a `height` is measured and pinned for the length of the roll-up, because `auto` is not a length a transition can start from.
-
-A rolled-up window keeps its body in the tree, `inert` and clipped, which is what the roll-up travels over. A closed one fades before it goes rather than stopping existing. Every one of these is instant for a reader who has asked for reduced motion.
+Being in front is drawn the way each system draws it, such as coloured traffic lights against grey ones on macOS, an accent title bar and border on Windows 10, and a tinted header bar on GNOME. On every system the window in front also has one step more shadow than the windows behind it. Pass `active` to drive this yourself when you keep your own z-order.
 
 ### accent, transparency, active
 
-`accent` dyes the title bar with `color`, the way Windows offers to, and on `windows10` it takes the window's border with it, which is what that version does. `transparency` is how much of the page shows through the chrome, from `0` to `1`; it applies to the title bar, the body's own fill and the border, never to the content on them, and anything above `0` also turns the acrylic on so what is behind is blurred rather than merely visible. `active={false}` pins the window behind whatever else is on the page.
+`accent` dyes the title bar with `color`, and on `windows10` it dyes the window's border too. `transparency` is how much of the page shows through the chrome, from `0` to `1`. It applies to the title bar, the body's own fill and the border and never to the content on them, and anything above `0` also blurs what is behind the window. `active={false}` pins the window behind whatever else is on the page.
 
 <Demo src="window-pane/appearance" minHeight="420">
 
@@ -106,3 +100,5 @@ A rolled-up window keeps its body in the tree, `inert` and clipped, which is wha
 - The three title bar buttons are real `<button>`s with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized. On macOS the glyph inside each dot shows under the pointer, while one of them has the keyboard focus, and always on a screen that cannot hover, so the three are never told apart by colour alone.
 - One resize handle (the bottom-right corner) is reachable from the keyboard and resizes with the arrow keys, which its description says. The other seven are pointer affordances and are hidden from the accessibility tree; a keyboard reader has the same range through `maximize`.
 - Dragging is a pointer affordance as well. A window that must be movable without one should be given its `offset` by the caller.
+- A minimized window keeps its body in the document, `inert` and clipped, so its content is out of the tab order and the accessibility tree.
+- Maximizing, restoring and minimizing animate the window's position and size, and a closed window fades out while it is already `inert`. All of them are instant for a reader who has asked for reduced motion.

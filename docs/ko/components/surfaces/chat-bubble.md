@@ -25,7 +25,7 @@ import { Avatar, ChatBubble } from 'neba';
 
 <PropsTable name="ChatBubble" />
 
-나머지 `<div>` 속성은 모두 줄로 전달됩니다. 예외는 `title` 하나입니다. 말풍선에는 제목이 없고, 메시지 전체에 브라우저 tooltip이 붙는 것을 원하는 경우도 드물기 때문입니다.
+나머지 `<div>` 속성은 모두 줄로 전달됩니다. 예외는 `title` 하나입니다.
 
 공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
@@ -33,9 +33,9 @@ import { Avatar, ChatBubble } from 'neba';
 
 ### side
 
-기본값은 `start`로 보통 상대편 메시지가 놓이는 쪽이고, `end`는 내 메시지 쪽입니다. 줄이 반대 방향으로 흐르면서 아바타와 말풍선, 액션이 함께 뒤집히고, 말하는 쪽에 가까운 모서리가 짧게 잘립니다. 시트에 꼬리를 달지 않고도 어느 쪽에서 온 메시지인지를 말하는 방법입니다.
+기본값은 `start`로 보통 상대편 메시지가 놓이는 쪽이고, `end`는 내 메시지 쪽입니다. `end`에서는 줄이 반대 방향으로 흐르므로 아바타와 말풍선, 액션이 함께 뒤집힙니다. 어느 쪽이든 말하는 쪽에 가까운 모서리가 짧게 잘립니다.
 
-내 메시지를 구분하는 것은 `variant`이고, 이것을 `side`에 묶지 않은 것은 의도한 것입니다. 뒤쪽 열을 채우는 것은 관습이지 규칙이 아닙니다.
+`side`는 `variant`를 정하지 않습니다. 내 메시지를 다른 사람의 메시지와 구분하려면 `variant`를 직접 지정하세요.
 
 <Demo src="chat-bubble/sides">
 
@@ -55,9 +55,9 @@ import { Avatar, ChatBubble } from 'neba';
 
 ### status
 
-다섯 단계입니다. `sending`, `sent`, `delivered`, `read`, `failed`. 색을 지니는 것은 뒤의 둘뿐입니다. 모든 메시지가 색으로 표시되는 스레드는 색이 아무 뜻도 갖지 못하는 스레드입니다. 단계마다 모양도 다르므로(`read`는 채운 원 안의 두 겹 체크) 색 없이도 어느 단계인지 보이고, 스크린 리더에는 보이지 않는 낱말이 말해 줍니다.
+다섯 단계는 `sending`, `sent`, `delivered`, `read`, `failed`이며, 색을 지니는 것은 `read`와 `failed`뿐입니다. 단계마다 모양도 달라서(`read`는 채운 원 안의 두 겹 체크) 색 없이도 어느 단계인지 보입니다.
 
-그려지는 것은 표식이 전부입니다. 그 뒤의 단어는 읽히기만 하고 보이지 않으며, `statusLabel`로 바꿀 수 있습니다.
+그려지는 것은 표식이 전부입니다. 보이지 않는 단어가 스크린 리더에 단계를 알려 주며, `statusLabel`로 그 단어를 바꿀 수 있습니다.
 
 <Demo src="chat-bubble/status">
 
@@ -69,7 +69,7 @@ import { Avatar, ChatBubble } from 'neba';
 
 `typing`은 메시지 대신 점 세 개를 그립니다. `children`은 건드리지 않으므로, 메시지가 도착하는 순간 같은 말풍선이 그대로 돌아옵니다.
 
-점은 순서대로 불이 들어올 뿐 움직이지 않습니다. 색은 라이브러리의 모든 불확정 인디케이터가 쓰는 축이고, 읽고 있는 스레드 한구석에서 무언가가 튀어 오르는 것은 이 디자인 언어가 가장 피하는 것입니다.
+점은 순서대로 불이 들어올 뿐 움직이지 않습니다.
 
 <Demo src="chat-bubble/typing">
 
@@ -89,7 +89,7 @@ import { Avatar, ChatBubble } from 'neba';
 
 ### preview
 
-`preview`는 메시지 속 링크를 텍스트 아래 카드로 펼칩니다. `url`, `title`, `description`, `image`, `site`, 그리고 앱을 벗어나야 하는 링크를 위한 `newTab`을 받습니다. 카드의 표면은 말풍선 자신의 글자 색에서 섞여 나오므로, 채워진 말풍선에서도 비어 있는 말풍선에서도 똑같이 보입니다.
+`preview`는 메시지 속 링크를 텍스트 아래 카드로 펼칩니다. `url`, `title`, `description`, `image`, `site`, 그리고 앱을 벗어나야 하는 링크를 위한 `newTab`을 받습니다. 카드는 채워진 말풍선에서도 비어 있는 말풍선에서도 잘 보입니다.
 
 <Demo src="chat-bubble/preview">
 

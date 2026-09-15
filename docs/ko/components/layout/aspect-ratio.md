@@ -37,7 +37,7 @@ import { AspectRatio } from 'neba';
 
 ### fit
 
-`fit`은 직계 자식인 미디어 하나(`img`, `picture`, `video`, `canvas`)에 적용되는 `object-fit`입니다. 미디어는 먼저 상자에 맞게 늘어나는데, 이 컴포넌트를 쓸 때마다 반드시 먼저 쓰게 되는 선언 두 줄이 바로 그것입니다. `svg`와 `iframe`도 상자에 맞게 늘어나지만 안의 내용은 스스로 배치하며, `svg`는 `preserveAspectRatio`로 맞춰집니다. `cover`는 잘라내고, `contain`은 여백을 남기며, `fill`은 찌그러뜨립니다. `none`은 파일 원래 크기를 유지하고, `scale-down`은 `none`과 `contain` 중 더 작게 그려지는 쪽이라 작은 파일을 키우지 않습니다.
+`fit`은 직계 자식인 미디어 하나(`img`, `picture`, `video`, `canvas`)에 적용되는 `object-fit`입니다. 미디어는 먼저 상자에 맞게 늘어납니다. `svg`와 `iframe`도 상자에 맞게 늘어나지만 안의 내용은 스스로 배치하며, `svg`는 `preserveAspectRatio`로 맞춰집니다. `cover`는 잘라내고, `contain`은 여백을 남기며, `fill`은 찌그러뜨립니다. `none`은 파일 원래 크기를 유지하고, `scale-down`은 `none`과 `contain` 중 더 작게 그려지는 쪽이라 작은 파일을 키우지 않습니다.
 
 <Demo src="aspect-ratio/fit">
 
@@ -57,7 +57,7 @@ import { AspectRatio } from 'neba';
 
 ### rounded
 
-`rounded`는 `size` 단계의 반경 사다리로 모서리를 깎습니다. 레이아웃 컴포넌트는 아무것도 그리지 않으므로 기본은 꺼짐이며, 이것이 유일한 예외입니다. 카드 안의 사진은 거의 언제나 이것을 원하기 때문입니다.
+`rounded`는 반경 사다리의 `size` 단계로 모서리를 깎으며, 기본은 꺼짐입니다.
 
 ```tsx
 <AspectRatio ratio={4 / 3} rounded size="lg">

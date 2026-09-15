@@ -45,7 +45,7 @@ Given together they are a floor and a ceiling: `above="sm" below="lg"` is drawn 
 
 </Demo>
 
-### It adds no box
+### Inside a grid or flex row
 
 Without `render` the wrapper is `display: contents`, so a `Show` between a [GridContainer](./grid) and a [Grid](./grid) leaves the cell a cell, and one inside a flex row leaves its children flex items. Nothing given to it to style (padding, a background) has anywhere to land; put those on an element inside it, or name the element with `render`.
 

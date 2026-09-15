@@ -77,11 +77,9 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 ### wheel
 
-A mouse has one wheel and it points down the page, which is the one axis a scrolling tab bar does not run along. `wheel` turns a wheel rolled over the bar into travel along it. It is on by default: the bar has no scroll buttons and its scrollbar is hidden, so a wheel the page answers instead leaves the tabs past the edge reachable only by keyboard.
+`wheel` turns a mouse wheel rolled over the bar into travel along it. It is on by default, and `wheel={false}` turns it off.
 
-What it takes it keeps, at the ends as well, so a flick that runs out of bar does not turn into a jump down the article. Moving the pointer off the bar is what gives the page its wheel back. A bar that fits takes nothing, so a page with three tabs on it is unaffected. A trackpad swiping sideways is left to the browser, which scrolls it better.
-
-Pass `wheel={false}` to turn it off.
+While the pointer is over a bar that overflows, the wheel moves only the bar, even at its ends, and the page takes the wheel back once the pointer moves off. A bar that fits takes nothing, and a sideways trackpad swipe is left to the browser.
 
 <Demo src="tabs/wheel" minHeight="320">
 
@@ -116,4 +114,3 @@ Set on a `TabPanel`, it keeps an unselected panel's React tree alive. An unselec
 - The whole bar is one tab stop, with the arrow keys and Home/End moving within it (a roving tab index).
 - The `tab` / `tabpanel` roles and the `aria-controls` between them are wired up.
 - A panel with nothing focusable inside it takes focus itself, so the content stays reachable by keyboard.
-- The indicator moves via `left` / `top` and `width` / `height`, so no label is resampled.

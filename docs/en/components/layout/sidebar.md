@@ -24,6 +24,8 @@ import { List, ListItem, Sidebar } from 'neba';
 
 ## Props
 
+### Sidebar
+
 <PropsTable name="Sidebar" />
 
 Every native `<aside>` attribute passes through, apart from `color` and `title`. The shared axes are described under [prop conventions](../../design/prop-conventions).
@@ -31,6 +33,12 @@ Every native `<aside>` attribute passes through, apart from `color` and `title`.
 `ref` reaches the column. While the sidebar is collapsed there is no column, and it is `null`.
 
 It lays out its own children and nothing else. To have a page laid out _around_ it, put it in a [PageLayout](./page-layout)'s `sidebar` or `endSidebar` slot.
+
+### SidebarTrigger
+
+<PropsTable name="SidebarTrigger" />
+
+Everything else an [IconButton](../inputs/icon-button) takes passes through. It has to be inside a PageLayout to have something to open; outside one it renders nothing. It is hidden at and above the breakpoint with CSS rather than left out of the markup, so it never appears in a header a moment after the page arrives.
 
 ## Examples
 
@@ -40,7 +48,7 @@ It lays out its own children and nothing else. To have a page laid out _around_ 
 
 ### resizable
 
-Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step and `onResizeEnd` once when the edge is let go: which is where a remembered width should be stored. The handle is a focusable `role="separator"`, so the left and right arrow keys do the same thing.
+Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step, and `onResizeEnd` fires once when the edge is let go, which is where to store a width you want to remember. The handle is a focusable `role="separator"`, so the left and right arrow keys do the same thing.
 
 <Demo src="sidebar/resizable" minHeight="300">
 
@@ -50,7 +58,7 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 ### side
 
-`start` and `end` rather than left and right, because a navigation rail is beside the text it belongs to in every writing direction. Inside a [PageLayout](./page-layout) the slot decides and the prop is not needed.
+`start` puts the sidebar on the leading edge and `end` on the trailing one, so the two swap sides under RTL. Inside a [PageLayout](./page-layout) the slot decides and the prop is not needed.
 
 <Demo src="sidebar/sides" minHeight="300">
 
@@ -60,17 +68,13 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 ### collapseBelow
 
-The width below which the column becomes a [Drawer](../surfaces/drawer) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way. `title` is drawn only in that shape: a column has the page around it to say what it is, a panel that has covered the page does not.
+The width below which the column becomes a [Drawer](../surfaces/drawer) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way, and `title` is drawn only in the drawer.
 
-It defaults to the PageLayout's own value and to `none` outside one, because a sidebar that collapsed with nothing on the page able to bring it back is a sidebar the reader has lost.
+It defaults to the PageLayout's own value, and to `none` outside one.
 
-### sticky
+### Reopening a collapsed sidebar
 
-On inside a PageLayout and off outside one, where a column the height of the window would reach past the box it was put in. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
-
-## SidebarTrigger
-
-The button that brings back a sidebar the window has become too narrow to hold. Put it in a [Header](./header)'s `brand` slot, ahead of the logo.
+A SidebarTrigger brings back a sidebar the window has become too narrow to hold. Put it in a [Header](./header)'s `brand` slot, ahead of the logo.
 
 ```tsx
 import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
@@ -80,9 +84,9 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 </PageLayout>;
 ```
 
-<PropsTable name="SidebarTrigger" />
+### sticky
 
-Everything else an [IconButton](../inputs/icon-button) takes passes through. It has to be inside a PageLayout to have something to open; outside one it renders nothing. It is hidden at and above the breakpoint by a class rather than by being absent, so it never pops into a header a moment after the page arrives.
+On inside a PageLayout and off outside one, so a standalone Sidebar is not sticky unless `sticky` is set. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
 
 ## Accessibility
 

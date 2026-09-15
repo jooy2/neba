@@ -33,7 +33,7 @@ The three slots. `brand` is the leading one: the logo, the product's name; `chil
 
 ### align
 
-Where the middle slot sits. `start` (the default) packs it against the brand. `center` puts it on the bar's own midline rather than in the space left over, which is why the two ends are given equal shares. `end` packs it against the actions.
+Where the middle slot sits. `start` (the default) packs it against the brand. `center` puts it on the bar's own midline rather than in the space left over, and gives the brand and the actions equal shares of the rest. `end` packs it against the actions.
 
 <Demo src="header/align" minHeight="180">
 
@@ -47,7 +47,7 @@ Where the middle slot sits. `start` (the default) packs it against the brand. `c
 
 ### variant
 
-The three weights say what they say everywhere: filled, hairline, none. The bar is never dyed by `color` (what is on it arrives with colours of its own), so the family shows up in the hairline and the focus rings.
+The three weights say what they say everywhere: filled, hairline, none. `color` never dyes the bar and shows up in the hairline and the focus rings instead.
 
 <Demo src="header/variant" minHeight="220">
 
@@ -67,7 +67,7 @@ Holds the row of slots to a measure and centres it while the sheet still spans t
 
 ### divider
 
-A hairline along the bottom edge, on by default. A bar pinned over a scrolling page has content passing underneath it at every moment, and a translucent sheet with nothing marking its edge reads as part of that.
+`divider` draws a hairline along the bottom edge and is on by default.
 
 ## Accessibility
 

@@ -28,7 +28,7 @@ import { Flex } from 'neba';
 
 ### direction
 
-`horizontal`은 row, `vertical`은 column입니다. CSS의 네 단어 대신 라이브러리 자신의 두 단어를 쓰므로 Flex와 [Stack](./stack)이 같은 것을 같은 말로 말합니다. 반응형이고, 이 컴포넌트가 존재하는 이유가 바로 이 prop입니다. 자리가 나면 나란히, 나기 전에는 위아래로 놓이는 컨트롤 한 쌍.
+`horizontal`은 row, `vertical`은 column입니다. breakpoint별 map을 받으므로, 자리가 나면 나란히 놓이고 나기 전에는 위아래로 쌓이는 컨트롤 한 쌍을 만들 수 있습니다.
 
 <Demo src="flex/direction">
 
@@ -38,7 +38,7 @@ import { Flex } from 'neba';
 
 ### spacing
 
-거터이며 Tailwind의 spacing 스케일 위에 있습니다. `spacing={4}`는 `1rem`으로 `gap-4`와 같은 길이입니다. [GridContainer](./grid)와 같은 prop, 같은 스케일이라 숫자 하나가 두 컴포넌트에서 같은 길이를 뜻하며, 다른 것들처럼 map도 받습니다. `rowSpacing`은 세로 간격, `columnSpacing`은 가로 간격이며 `direction`과 상관없이 그렇습니다. 각각 `spacing`을 대체하는 것이 아니라 그 _위에_ 덮이므로 한 breakpoint만 적어도 나머지에서 거터가 사라지지 않습니다.
+`spacing`은 Tailwind의 spacing 스케일 위의 거터입니다. `spacing={4}`는 `1rem`으로 `gap-4`와 같은 길이입니다. [GridContainer](./grid)와 같은 스케일이고, breakpoint별 map도 받습니다. `rowSpacing`은 세로 간격, `columnSpacing`은 가로 간격이며 `direction`과 상관없이 그렇습니다. 각각 `spacing`을 대체하는 것이 아니라 그 _위에_ 덮이므로 한 breakpoint만 적어도 나머지에서 거터가 사라지지 않습니다.
 
 <Demo src="flex/spacing">
 
@@ -48,7 +48,7 @@ import { Flex } from 'neba';
 
 ### justifyContent · alignItems
 
-flexbox의 어휘를, 라이브러리의 나머지가 쓰는 철자로 씁니다. `justifyContent`는 줄에서 남은 공간을 나누고, `alignItems`는 children이 줄을 가로질러 어디에 서는지를 정합니다. 둘 다 반응형이 아닙니다. 이들은 class name이고, breakpoint별 class map은 Flex를 그리는 모든 페이지의 번들에 사다리 다섯 벌을 넣게 됩니다.
+`justifyContent`는 줄에서 남은 공간을 나누고, `alignItems`는 children이 줄을 가로질러 어디에 서는지를 정합니다. 둘 다 breakpoint별 map은 받지 않습니다.
 
 <Demo src="flex/alignment">
 
@@ -58,7 +58,7 @@ flexbox의 어휘를, 라이브러리의 나머지가 쓰는 철자로 씁니다
 
 ### wrap
 
-기본이 꺼짐이며, 이는 [GridContainer](./grid)와 반대입니다. 그리드는 열이고 줄바꿈은 열이 하는 일이지만, Flex는 대개 한 줄에 머무르면서 children이 줄어들게 두어야 하는 툴바나 필드 줄입니다.
+기본은 꺼짐이라 row는 한 줄에 머물고 children이 줄어듭니다. 너비가 모자랄 때 다음 줄로 이어지게 하려면 켜세요. chip을 늘어놓은 줄이 그런 경우입니다.
 
 ```tsx
 <Flex wrap spacing={2}>
@@ -67,10 +67,6 @@ flexbox의 어휘를, 라이브러리의 나머지가 쓰는 철자로 씁니다
   ))}
 </Flex>
 ```
-
-### Flex와 Grid 중에서
-
-Flex는 children이 무엇인지에 따라 크기를 정하고, [Grid](./grid)는 열 개수에 맞춰 정합니다. 툴바나 필드와 그 버튼, 카드의 footer처럼 "이것들을 한 줄에"가 답이면 Flex를 쓰세요. 너비가 페이지의 다른 요소와 맞아떨어져야 한다면 Grid를 쓰면 되고, 열이 있는 것도 그 때문입니다.
 
 ### reverse
 

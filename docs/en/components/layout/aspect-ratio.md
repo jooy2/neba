@@ -37,7 +37,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The shar
 
 ### fit
 
-`fit` is `object-fit` applied to a single piece of media that is a direct child: an `img`, a `picture`, a `video` or a `canvas`. The media is stretched to the box first, which is the pair of declarations every use of this component would otherwise start with. An `svg` or an `iframe` is stretched to the box too and lays its own content out; an `svg` fits itself through `preserveAspectRatio`. `cover` crops, `contain` letterboxes, `fill` squashes. `none` keeps the file's own size, and `scale-down` is whichever of `none` and `contain` draws the media smaller, so a small file is never enlarged.
+`fit` is `object-fit` applied to a single piece of media that is a direct child: an `img`, a `picture`, a `video` or a `canvas`. The media is stretched to the box first. An `svg` or an `iframe` is stretched to the box too and lays its own content out; an `svg` fits itself through `preserveAspectRatio`. `cover` crops, `contain` letterboxes, `fill` squashes. `none` keeps the file's own size, and `scale-down` is whichever of `none` and `contain` draws the media smaller, so a small file is never enlarged.
 
 <Demo src="aspect-ratio/fit">
 
@@ -57,7 +57,7 @@ The proportion holds whether or not the content has arrived, so a [Skeleton](../
 
 ### rounded
 
-`rounded` cuts the corners to the `size` step of the house radius ladder. It is off by default (a layout component draws nothing), and it is the one exception, because a photograph in a card almost always wants it.
+`rounded` cuts the corners to the `size` step of the radius ladder, and it is off by default.
 
 ```tsx
 <AspectRatio ratio={4 / 3} rounded size="lg">

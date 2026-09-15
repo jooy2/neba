@@ -21,19 +21,17 @@ import { HoverCard, TextLink } from 'neba';
 
 <PropsTable name="HoverCard" />
 
-Every native `<div>` attribute passes through to the popup, apart from `color`, `title` and `children`, which the component owns. There is no `variant` and no `elevation`, for the reason [Popover](./popover) has neither: a surface that had to be hovered has already asserted itself, and a card that floats over the page cannot be sat flat.
-
-It sits between the library's other two popups. A [Tooltip](../feedback/tooltip) is a label: one line, and the pointer never reaches it. A Popover was _asked for_ by a press, so it can hold a form. This one is uninvited like a tooltip and reachable like a popover: the pointer can cross into it and a link inside it can be followed.
+Every native `<div>` attribute passes through to the popup, apart from `color`, `title` and `children`, which the component owns. There is no `variant` and no `elevation`.
 
 ## Examples
 
 ### trigger
 
-The trigger is an element rather than children, and the card merges onto it: no wrapper, so the layout is unchanged and a link stays a link. Usually a [TextLink](../display/text-link) or an [Avatar](../display/avatar).
+`trigger` takes one element rather than children, and the card merges onto it without a wrapper, so the layout is unchanged and a link stays a link. It is usually a [TextLink](../display/text-link) or an [Avatar](../display/avatar).
 
 ### delay · closeDelay
 
-`delay` is how long the pointer has to rest before the card opens, and `closeDelay` how long it stays after the pointer leaves: which is what makes the gap between the trigger and the card crossable.
+`delay` is how long the pointer has to rest before the card opens, and `closeDelay` is how long the card stays after the pointer leaves. `closeDelay` is what lets the pointer cross the gap between the trigger and the card.
 
 <Demo src="hover-card/delay">
 
@@ -43,7 +41,7 @@ The trigger is an element rather than children, and the card merges onto it: no 
 
 ### side · align · arrow
 
-`side` is the edge of the trigger the card appears on, flipping when there is no room; `align` is where it sits along that edge. `arrow` draws the wedge, and is off by default because a translucent sheet's wedge cannot carry the blurred backdrop with it.
+`side` is the edge of the trigger the card appears on, flipping when there is no room; `align` is where it sits along that edge. `arrow` draws the wedge and is off by default.
 
 <Demo src="hover-card/placement">
 

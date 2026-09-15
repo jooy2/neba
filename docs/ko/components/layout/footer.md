@@ -21,13 +21,13 @@ import { Footer } from 'neba';
 
 `<footer>`의 native 속성은 그대로 전달됩니다. 다만 `color`와 `title`은 예외입니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
-자리를 나누지 않는다는 점이 [Header](./header)와 다릅니다. footer의 내용은 어떤 사이트에서는 네 개의 열이고 다음 사이트에서는 한 줄이라, 배치를 미리 정해 두면 절반의 사이트가 그것과 싸우게 됩니다.
+나누어 둔 자리가 없으므로 children은 쓴 그대로 배치됩니다.
 
 ## 예시
 
 ### position
 
-기본값은 `static`으로 Header와 반대입니다. footer는 스크롤해서 닿는 문서의 끝이기 때문입니다. `sticky`는 창 아래에 붙이고, `fixed`는 흐름에서 빼냅니다. [PageLayout](./page-layout) 안에서는 그 높이만큼 자리가 비워지므로 마지막 문단 위에 겹치지 않습니다.
+기본값은 `static`이라 footer는 문서 끝에 놓이고 스크롤해서 닿습니다. `sticky`는 창 아래에 붙이고, `fixed`는 흐름에서 빼냅니다. [PageLayout](./page-layout) 안에서는 `fixed` footer의 높이만큼 자리가 비워지므로 마지막 문단 위에 겹치지 않습니다.
 
 ### variant
 
@@ -51,7 +51,7 @@ import { Footer } from 'neba';
 
 ### divider · padded
 
-`divider`는 위 가장자리에 헤어라인을 그리며 기본값은 켜짐입니다. footer는 위에는 내용이 있고 아래에는 아무것도 없는 유일한 시트라, 이 선이 문서가 끝났다고 말하는 전부입니다. `padded={false}`는 여백을 직접 다루는 footer를 위해 거터를 없앱니다.
+`divider`는 위 가장자리에 헤어라인을 그리며 기본값은 켜짐입니다. `padded={false}`는 여백을 직접 다루는 footer를 위해 거터를 없앱니다.
 
 ## 접근성
 

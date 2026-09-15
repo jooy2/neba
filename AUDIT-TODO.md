@@ -497,7 +497,7 @@ The line numbers in this section are from the audit. `CLAUDE.md` has changed sin
 
 ### Component pages
 
-- [ ] **274** [decision] **Pages that break the page skeleton** with design rationale, internals or sections outside the skeleton. Decide whether to clean them up in one pass or whenever a component is touched.
+- [x] **274** [decision] **Pages that break the page skeleton** with design rationale, internals or sections outside the skeleton. Decide whether to clean them up in one pass or whenever a component is touched. Decided: (a) one pass, in five groups (charts, feedback, inputs, display, surfaces and layout, transitions). A reason a page no longer gives is in the component's source, where it was not already.
   - inputs: select (`## The popup`), combobox (where `### shortcuts` sits), file-picker (the drag counter in Accessibility), segmented-button (implementation notes in Accessibility, "When to use something else"), rating, calendar ("What it is not", `## Keyboard`), date-picker (`### Three views` under Props, `## Keyboard`), floating-bottom-navigation (`### The highlight`)
   - display: anchor (`:33, 53`), text-link (`:42, 66`), breadcrumb (`:82, 86`), visually-hidden ("Why not display: none"), shortcut ("Server rendering"), timeline ("When to use something else", the paragraph before Props), data-list (`:27`), data-table (`:136, 158, 179-193, 223`), gallery (hover, preview), app-logo, code-block (the Props section)
   - charts: pie-chart ("When not to use it"), heatmap-chart (the squarify explanation)

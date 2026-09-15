@@ -18,15 +18,13 @@ import { Carousel } from 'neba';
 </Carousel>;
 ```
 
-최상위 자식 하나가 슬라이드 하나가 됩니다. 별도의 슬라이드 컴포넌트는 없고, snap 지점과 폭, `role="group"` · `aria-roledescription="slide"`는 컴포넌트가 붙입니다.
+최상위 자식 하나가 슬라이드 하나가 됩니다. 별도의 슬라이드 컴포넌트는 없고, snap 지점과 폭, `role="group"` · `aria-roledescription="slide"`는 컴포넌트가 붙입니다. 여러 슬라이드를 한 화면에 함께 보여 주려면 [ScrollZone](../layout/scroll-zone)을 쓰세요.
 
 ## Props
 
 <PropsTable name="Carousel" />
 
 `<div>`의 native 속성은 그대로 전달됩니다.
-
-내부 구현은 CSS scroll snap이 걸린 스크롤 컨테이너입니다. 그래서 스와이프가 브라우저 기본 동작으로 처리되고, RTL에서 방향이 자동으로 뒤집히며, 전환은 `scroll-behavior: smooth`를 씁니다. `prefers-reduced-motion`에서는 같은 경로로 즉시 전환됩니다.
 
 ## 예시
 
@@ -66,19 +64,15 @@ controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수
 
 `autoPlay`의 기본값은 꺼짐입니다. 켜더라도 hover, 내부 focus, 백그라운드 탭에서 멈추고, `prefers-reduced-motion`에서는 시작하지 않습니다. 자동 재생 중에는 현재 슬라이드를 알리는 live region도 침묵하고, 멈추면 다시 알립니다.
 
-켜면 회전을 멈추는 버튼이 프레임 아래 점 줄 옆에 그려집니다. 이 버튼을 없애는 prop은 없습니다. hover와 focus는 휴대폰을 든 독자나 화면 확대를 쓰는 독자에게는 멈출 방법이 되지 못하기 때문입니다. 이름은 `pauseLabel`과 `playLabel`로 지정합니다.
+켜면 회전을 멈추는 버튼이 프레임 아래 점 줄 옆에 그려집니다. 이 버튼을 없애는 prop은 없으며, 이름은 `pauseLabel`과 `playLabel`로 지정합니다.
 
-모든 슬라이드가 반드시 읽혀야 하는 내용이라면 [Tabs](./tabs)나 세로 나열을 고려하세요.
+### locale
+
+`locale`은 region 이름, 컨트롤 이름, 각 슬라이드 이름의 언어를 정합니다. `ko`, `pt-BR`, `zh-Hant` 같은 BCP 47 태그를 받으며, 번역이 없는 태그는 영어로 돌아갑니다. `label`을 비롯한 `*Label` prop으로 직접 쓸 수도 있습니다.
 
 ## 접근성
 
 - `label`이 캐러셀의 accessible name이 됩니다. `previousLabel` · `nextLabel` · `pauseLabel` · `playLabel` · `slideLabel`로 컨트롤 이름을 지정합니다.
-- `autoPlay`는 회전을 멈추는 버튼을 프레임 아래에 함께 그립니다. hover도 tab도 쓰지 않는 독자가 멈출 수 있어야 하기 때문입니다.
+- `autoPlay`는 회전을 멈추는 버튼을 프레임 아래에 함께 그리므로, hover도 tab도 쓰지 않는 독자도 회전을 멈출 수 있습니다.
 - 각 슬라이드는 `role="group"`과 `aria-roledescription="slide"`를 갖습니다.
-
-## 제공하지 않는 것
-
-- **한 화면에 여러 장**: [ScrollZone](../layout/scroll-zone)을 쓰세요.
-- **세로 방향**: 스크롤되는 목록이면 충분합니다.
-- **fade 전환**: 스크롤 기반 구현과 함께 쓸 수 없습니다.
-- region 이름, 화살표, 각 슬라이드의 이름을 `locale`이 정합니다. `label`과 `slideLabel`로 직접 쓸 수도 있습니다.
+- `prefers-reduced-motion`에서는 슬라이드가 부드럽게 스크롤되지 않고 즉시 바뀝니다.

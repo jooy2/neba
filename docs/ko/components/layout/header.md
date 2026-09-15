@@ -33,7 +33,7 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### align
 
-가운데 자리가 어디에 놓이는지 정합니다. 기본값 `start`는 brand 바로 다음에 붙이고, `center`는 남는 공간이 아니라 바 자체의 중심선에 놓습니다. 그러려고 양끝에 같은 몫을 줍니다. `end`는 actions 쪽에 붙입니다.
+가운데 자리가 어디에 놓이는지 정합니다. 기본값 `start`는 brand 바로 다음에 붙이고, `center`는 남는 공간이 아니라 바 자체의 중심선에 놓고, brand와 actions에 나머지 공간을 같은 몫으로 나눠 줍니다. `end`는 actions 쪽에 붙입니다.
 
 <Demo src="header/align" minHeight="180">
 
@@ -47,7 +47,7 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### variant
 
-세 가지 무게는 다른 곳에서와 같은 뜻으로, 각각 채움과 헤어라인, 없음입니다. 바는 `color`로 물들지 않습니다. 위에 놓이는 것들이 자기 색을 갖고 오기 때문이며, 색 계열은 헤어라인과 focus 링에서 드러납니다.
+세 가지 무게는 다른 곳에서와 같은 뜻으로, 각각 채움과 헤어라인, 없음입니다. `color`는 바를 물들이지 않고 헤어라인과 focus 링에서 드러납니다.
 
 <Demo src="header/variant" minHeight="220">
 
@@ -67,7 +67,7 @@ import { AppLogo, Button, Header } from 'neba';
 
 ### divider
 
-아래 가장자리의 헤어라인으로 기본값은 켜짐입니다. 스크롤되는 페이지 위에 고정된 바에는 언제나 내용이 지나가고 있어서, 가장자리를 표시하지 않은 반투명 시트는 그 내용의 일부처럼 보입니다.
+`divider`는 아래 가장자리에 헤어라인을 그리며 기본값은 켜짐입니다.
 
 ## 접근성
 

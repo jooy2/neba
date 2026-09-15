@@ -157,6 +157,10 @@ const dotGapValues: Record<NebaSize, string> = {
  * for reduced motion gets an instant cut from the same code path rather than
  * from a second one written to remember them.
  *
+ * The same choice is what the component leaves out. A fade cannot be drawn
+ * over a scroll offset, a vertical strip is what a scrolling list already is,
+ * and several slides in view at once is a ScrollZone.
+ *
  * Slides are not a sub-component. Every top-level child is wrapped in its own
  * slide, so `<Carousel><img /><img /></Carousel>` is the whole API — and the
  * wrapper is what carries the snap point, the width and the
