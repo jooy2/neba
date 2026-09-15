@@ -12,7 +12,7 @@ order: 9
 ```tsx
 import { AnimateShake } from 'neba';
 
-<AnimateShake key={attempts} play={failed}>
+<AnimateShake play={attempts}>
   <TextField label="Passphrase" error={message} />
 </AnimateShake>;
 ```
@@ -23,7 +23,7 @@ import { AnimateShake } from 'neba';
 
 Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
-Unlike every other effect here it defaults to `trigger="manual"`: a shake that runs on mount is decoration, and decoration that moves is what a reader learns to ignore. Bind `play` to the thing that failed. A fresh `key` on each rejection is what rewinds it, so the second wrong answer moves as much as the first.
+Unlike every other effect here it defaults to `trigger="manual"`: a shake that runs on mount is decoration, and decoration that moves is what a reader learns to ignore. Bind `play` to a count of the failures. Each new number replays the shake without remounting what is inside it, so the second wrong answer moves as much as the first and the focus stays where it was.
 
 There is no `mode`. It starts and ends where the element sits, so a run that is interrupted leaves nothing off its mark, and never give it a `repeat`.
 

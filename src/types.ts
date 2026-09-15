@@ -307,8 +307,12 @@ export interface NebaAnimateProps {
   paused?: boolean;
   /** What starts it. @default 'mount' */
   trigger?: NebaAnimateTrigger;
-  /** Runs it, when `trigger` is `manual`. Each `false` → `true` starts it over. */
-  play?: boolean;
+  /**
+   * Runs it, when `trigger` is `manual`. Each `false` → `true` starts it over,
+   * and so does a number that changes: a count of failed attempts replays a
+   * shake on every failure without remounting what is inside it. `0` is stopped.
+   */
+  play?: boolean | number;
   /**
    * With `trigger="visible"`, whether it runs only the first time. Off, it runs
    * again every time the element comes back into view.

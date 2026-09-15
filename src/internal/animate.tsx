@@ -422,7 +422,7 @@ export { usePrefersReducedMotion } from './media.js';
 
 export interface AnimationRunOptions {
   trigger: NebaAnimateTrigger;
-  play?: boolean;
+  play?: boolean | number;
   once: boolean;
   threshold: number;
   paused?: boolean;

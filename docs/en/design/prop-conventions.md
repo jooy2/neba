@@ -73,17 +73,17 @@ It is offered on no component that is pressed. A control that moves under the po
 
 Anything past a mount (a replay, a scroll trigger, a hover, your own control) is an [`Animate*` component](../components/transitions/animate-fade), and any component can be wrapped in one. They share these settings, which mean the same thing on all of them:
 
-| Prop                 | The rule                                                                 |
-| -------------------- | ------------------------------------------------------------------------ |
-| `duration` / `delay` | Milliseconds, always. Never a CSS string                                 |
-| `easing`             | A CSS easing curve. Defaults to the house one                            |
-| `repeat`             | A count, or `'infinite'`: the word CSS uses                              |
-| `alternate`          | Every other pass runs backwards, so a repeat returns instead of jumping  |
-| `mode`               | `'in'` or `'out'`. `out` is the same animation reversed, held at the end |
-| `trigger`            | `'mount'` (default), `'visible'`, `'hover'` or `'manual'`                |
-| `play`               | Runs a `manual` one. Each `false` → `true` starts it over                |
-| `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen   |
-| `paused`             | Holds the animation where it is                                          |
+| Prop | The rule |
+| --- | --- |
+| `duration` / `delay` | Milliseconds, always. Never a CSS string |
+| `easing` | A CSS easing curve. Defaults to the house one |
+| `repeat` | A count, or `'infinite'`: the word CSS uses |
+| `alternate` | Every other pass runs backwards, so a repeat returns instead of jumping |
+| `mode` | `'in'` or `'out'`. `out` is the same animation reversed, held at the end |
+| `trigger` | `'mount'` (default), `'visible'`, `'hover'` or `'manual'` |
+| `play` | Runs a `manual` one. Each `false` → `true`, or a new number, starts it over |
+| `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen |
+| `paused` | Holds the animation where it is |
 
 Five more go on the eleven whose motion is a `@keyframes` on the element or on the pieces it cuts: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear and AnimateSplit. AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting write their motion elsewhere and take none of them:
 

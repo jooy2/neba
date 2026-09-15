@@ -13,9 +13,9 @@ export default function AnimateShakeHero() {
         if (value !== 'neba') setWrong((n) => n + 1);
       }}
     >
-      {/* A new `key` on every rejection, which is what rewinds the shake so the
-          second wrong answer moves as much as the first did. */}
-      <AnimateShake key={wrong} play={wrong > 0} className="flex-1">
+      {/* The count of wrong answers, so every rejection replays the shake
+          without remounting the field, and the focus stays in it. */}
+      <AnimateShake play={wrong} className="flex-1">
         <TextField
           label="Passphrase"
           value={value}

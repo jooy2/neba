@@ -73,6 +73,36 @@ describe('AnimateShake', () => {
     expect(rewound(inner)).toBe(false);
   });
 
+  // A counter replays the shake without remounting what is inside it. The docs
+  // used a fresh `key` for that, which took the focus away from the field that
+  // had just failed.
+  it('replays on a new number and keeps what is inside it', async () => {
+    const shake = (play: number) => (
+      <AnimateShake play={play} data-testid="s">
+        <input aria-label="Passphrase" />
+      </AnimateShake>
+    );
+    const screen = await render(shake(1));
+    const outer = screen.getByTestId('s').element() as HTMLElement;
+    const input = screen.getByRole('textbox').element();
+    const records: MutationRecord[] = [];
+    const observer = new MutationObserver((list) => records.push(...list));
+
+    observer.observe(outer, {
+      attributes: true,
+      attributeFilter: ['style'],
+      attributeOldValue: true
+    });
+
+    await screen.rerender(shake(2));
+
+    records.push(...observer.takeRecords());
+    observer.disconnect();
+
+    expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(true);
+    expect(screen.getByRole('textbox').element()).toBe(input);
+  });
+
   it('travels as far as it was told', async () => {
     const screen = await render(
       <AnimateShake distance="1rem" data-testid="s">

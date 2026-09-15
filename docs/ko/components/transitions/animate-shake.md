@@ -12,7 +12,7 @@ order: 9
 ```tsx
 import { AnimateShake } from 'neba';
 
-<AnimateShake key={attempts} play={failed}>
+<AnimateShake play={attempts}>
   <TextField label="Passphrase" error={message} />
 </AnimateShake>;
 ```
@@ -23,7 +23,7 @@ import { AnimateShake } from 'neba';
 
 나머지 `<div>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
-여기 있는 다른 효과와 달리 기본값이 `trigger="manual"`입니다. mount에서 실행되는 흔들림은 장식이고, 움직이는 장식은 독자가 무시하는 법을 배우는 것입니다. 실패한 것에 `play`를 묶으세요. 거절될 때마다 새 `key`를 주는 것이 되감기라서, 두 번째 오답도 첫 번째만큼 움직입니다.
+여기 있는 다른 효과와 달리 기본값이 `trigger="manual"`입니다. mount에서 실행되는 흔들림은 장식이고, 움직이는 장식은 독자가 무시하는 법을 배우는 것입니다. 실패한 횟수를 `play`에 묶으세요. 숫자가 바뀔 때마다 안의 것을 remount하지 않고 흔들림을 다시 재생하므로, 두 번째 오답도 첫 번째만큼 움직이고 focus도 제자리에 남습니다.
 
 `mode`는 없습니다. 요소가 앉아 있는 자리에서 시작해 그 자리에서 끝나므로 도중에 끊겨도 어긋난 채 남지 않고, `repeat`는 절대 주지 마세요.
 

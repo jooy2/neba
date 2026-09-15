@@ -726,10 +726,10 @@ function animateProps(options: AnimateOptions): PropRow[] {
     },
     {
       name: 'play',
-      type: 'boolean',
+      type: 'boolean | number',
       description: {
-        ko: 'trigger가 manual일 때 재생합니다. false → true 될 때마다 처음부터 다시 시작합니다',
-        en: 'Runs it when trigger is manual. Each false → true starts it over'
+        ko: 'trigger가 manual일 때 재생합니다. false → true 될 때와 숫자가 바뀔 때마다 처음부터 다시 시작하고, 0이면 멈춰 있습니다',
+        en: 'Runs it when trigger is manual. Each false → true, and each change of number, starts it over; 0 is stopped'
       }
     },
     {

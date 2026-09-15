@@ -81,7 +81,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 | `alternate` | 한 번 걸러 거꾸로 재생해, 반복이 처음으로 튀지 않고 되돌아옵니다 |
 | `mode` | `'in'` 또는 `'out'`. `out`은 같은 애니메이션을 거꾸로 재생하고 끝에서 멈춥니다 |
 | `trigger` | `'mount'`(기본값), `'visible'`, `'hover'`, `'manual'` |
-| `play` | `manual`을 재생합니다. `false` → `true`마다 처음부터 다시 |
+| `play` | `manual`을 재생합니다. `false` → `true`, 또는 새 숫자마다 처음부터 다시 |
 | `once` / `threshold` | `'visible'`용: 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
 | `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
 

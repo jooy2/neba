@@ -82,6 +82,10 @@
 
 ### Added
 
+- **`play` takes a number on every `Animate*`.** A number that changes starts the effect over, the way `false` → `true` does, and `0` is stopped, so a count of failed attempts replays an `AnimateShake` on every failure without remounting what is inside it. The docs used a fresh `key` for that, which took the focus away from the field that had just failed.
+
+- **`play` takes a number on every `Animate*`.** A number that changes starts the effect over, the way `false` → `true` does, and `0` is stopped, so a count of failed attempts replays an `AnimateShake` on every failure without remounting what is inside it. The docs used a fresh `key` for that, which took the focus away from the field that had just failed.
+
 - **`ScrollZone` takes `scrollerRef`.** It is a ref to the box that scrolls, which is what a caller restoring a scroll position needs. `ref` stays on the root, which also holds the buttons.
 
 - **`Image` turns and mirrors a picture with `rotate` and `flip`.** `rotate` takes quarter turns, clockwise, and `flip` mirrors along the axes the picture is shown on, so `flip="horizontal"` swaps left and right whether or not the picture was turned. A picture on its side reserves a box on its side: `width` and `height` still describe the file, and with neither the box takes the turned shape once the file arrives. The preview opens turned and mirrored the same way.
