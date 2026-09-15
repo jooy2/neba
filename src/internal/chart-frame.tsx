@@ -1503,10 +1503,17 @@ export function CartesianChart(rawProps: CartesianProps) {
       return;
     }
 
+    // Compared before it is set, not left to React's bail-out: a same-value
+    // update right after a real one still renders the chart once before React
+    // notices, so the first pixel inside a mark cost a full layout.
     if (marks) {
-      setMarkIndex(nearestMark(event.clientX, event.clientY));
+      const next = nearestMark(event.clientX, event.clientY);
+
+      if (next !== markIndex) setMarkIndex(next);
     } else {
-      setColumnIndex(indexAt(event.clientX, event.clientY));
+      const next = indexAt(event.clientX, event.clientY);
+
+      if (next !== columnIndex) setColumnIndex(next);
     }
 
     // Only `item` mode over a column reads this, and only it may pay for it.
