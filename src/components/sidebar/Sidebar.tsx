@@ -258,6 +258,31 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     onOpenChange?.(next);
   };
 
+  /*
+   * An open drawer's `true` means nothing once the column is back, and kept, it
+   * reopened a modal drawer on its own the next time the window narrowed — a
+   * tablet turned to landscape and back had its focus trapped in a drawer
+   * nobody asked for. So the drawer is closed as the column returns. The newest
+   * `open` and `changeOpen` are read through refs, so the effect answers only to
+   * `collapsed` changing.
+   */
+  const openRef = React.useRef(open);
+  const changeOpenRef = React.useRef(changeOpen);
+  const wasCollapsed = React.useRef(collapsed);
+
+  React.useEffect(() => {
+    openRef.current = open;
+    changeOpenRef.current = changeOpen;
+  });
+
+  React.useEffect(() => {
+    if (wasCollapsed.current && !collapsed && openRef.current) {
+      changeOpenRef.current(false);
+    }
+
+    wasCollapsed.current = collapsed;
+  }, [collapsed]);
+
   const width = toLength(widthProp) ?? widthValues[size];
 
   const rootRef = React.useRef<HTMLElement | null>(null);

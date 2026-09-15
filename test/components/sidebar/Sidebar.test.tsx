@@ -236,6 +236,30 @@ describe('Sidebar', () => {
       await expect.element(screen.getByRole('complementary')).toBeInTheDocument();
     });
 
+    // The open drawer's `true` outlived the column, so narrowing the window again
+    // reopened a modal drawer on its own and trapped the focus in it.
+    it('closes the drawer as the column returns, so narrowing again leaves it shut', async () => {
+      await widen(NARROW);
+      const onOpenChange = vi.fn();
+      const screen = await render(
+        <Sidebar collapseBelow="md" defaultOpen onOpenChange={onOpenChange}>
+          Navigation
+        </Sidebar>
+      );
+
+      await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+
+      await widen(WIDE);
+
+      await expect.element(screen.getByRole('complementary')).toBeInTheDocument();
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+
+      await widen(NARROW);
+
+      await expect.poll(() => screen.getByRole('complementary').query()).toBeNull();
+      expect(screen.getByRole('dialog').query()).toBeNull();
+    });
+
     /**
      * The worst shape a dropped prop takes: it survives on the wide screen the
      * component was developed against and vanishes on the narrow one. The
