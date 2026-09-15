@@ -590,8 +590,8 @@ function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
  *   for the reason `groupLabels` explains.
  *
  * Inside a group the pages are sorted by name rather than by their `order`
- * frontmatter. A group holds up to nineteen components and nobody remembers
- * where Slider sits in a curated order.
+ * frontmatter. The inputs group alone holds thirty-five components, and nobody
+ * remembers where Slider sits in a curated order.
  *
  * The groups themselves are sorted by name too, with `charts/` pinned last: it
  * is the one group a reader either came for or has no use for at all, and
