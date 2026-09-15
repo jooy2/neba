@@ -68,6 +68,12 @@ export const animationClasses: Record<NebaAnimation, string> = {
 export const animBaseClass = 'neba-anim';
 
 /**
+ * The parts a replay rewinds when the effect was handed to each child rather
+ * than run on the root, read from the root. See `AnimationRunOptions.parts`.
+ */
+export const childAnimations = ':scope > .neba-anim';
+
+/**
  * How long each effect takes when nobody said.
  *
  * They are not one number because they do not travel the same distance. A fade
@@ -423,6 +429,13 @@ export interface AnimationRunOptions {
   /** An infinite effect stops when the pointer leaves; a finite one finishes. */
   infinite: boolean;
   /**
+   * The descendants a replay rewinds along with the root, as a selector read
+   * from it: `childAnimations` for an effect handed to each child. Only the
+   * component's own parts, so an animation of somebody else's inside it is
+   * left where it is.
+   */
+  parts?: string;
+  /**
    * The caller's own props, read for the four events a `hover` trigger listens
    * to. Their handlers run beside the trigger's: spread in one order the
    * trigger threw them away, and spread in the other they took the trigger off.
@@ -482,7 +495,8 @@ export function useAnimationRun({
   threshold,
   paused,
   infinite,
-  caller
+  caller,
+  parts
 }: AnimationRunOptions): AnimationRun {
   const node = React.useRef<HTMLElement | null>(null);
   const [started, setStarted] = React.useState(trigger === 'mount');
@@ -510,12 +524,14 @@ export function useAnimationRun({
       return;
     }
 
-    // The element itself for an effect on its own root, and its descendants for
-    // the ones that animate their children rather than themselves — a staggered
-    // Appear has nothing to rewind on its own root.
+    // The element itself for an effect on its own root, and the parts it names
+    // for the ones that animate their children rather than themselves — a
+    // staggered Appear has nothing to rewind on its own root. Named rather than
+    // found by class: every animation below matched, so an Alert's entrance
+    // inside a field played again on every shake of the field.
     const targets: HTMLElement[] = [
       element,
-      ...element.querySelectorAll<HTMLElement>('.neba-anim, .neba-marquee-track')
+      ...(parts ? element.querySelectorAll<HTMLElement>(parts) : [])
     ];
 
     for (const target of targets) {
@@ -527,7 +543,7 @@ export function useAnimationRun({
     for (const target of targets) {
       target.style.animationName = '';
     }
-  }, [run]);
+  }, [run, parts]);
 
   React.useEffect(() => {
     if (trigger !== 'visible') {
@@ -710,10 +726,19 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
     ...slots
   } = params;
 
-  const run = useAnimationRun({ trigger, play, once, threshold, paused, infinite, caller });
   const keyframe = effect ? animationClasses[effect] : ownClass;
   const effectClass = keyframe ? `${animBaseClass} ${keyframe}` : '';
   const spread = effectClass !== '' && staggers({ stagger, durationStep, reverse });
+  const run = useAnimationRun({
+    trigger,
+    play,
+    once,
+    threshold,
+    paused,
+    infinite,
+    caller,
+    parts: spread ? childAnimations : undefined
+  });
   // A scroll-driven animation has no clock to be paused against, so the trigger
   // machinery has nothing to hold back and holding it back would show nothing at
   // all: the scroll position is the trigger.

@@ -205,6 +205,37 @@ describe('AnimateMarquee', () => {
       expect(screen.getByTestId('marquee').element()).not.toHaveAttribute('data-pause-on-hover');
     });
 
+    // A replay has to reach the tracks, which are what move.
+    it('rewinds its tracks when it is played again', async () => {
+      const screen = await render(
+        <AnimateMarquee trigger="manual" data-testid="marquee">
+          <span>Alpha</span>
+        </AnimateMarquee>
+      );
+      const track = screen.getByTestId('marquee').element().firstElementChild as HTMLElement;
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      observer.observe(track, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+
+      await screen.rerender(
+        <AnimateMarquee trigger="manual" play data-testid="marquee">
+          <span>Alpha</span>
+        </AnimateMarquee>
+      );
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(
+        true
+      );
+    });
+
     it('takes an explicit duration over the measured one', async () => {
       const screen = await render(
         <AnimateMarquee duration={5000} data-testid="marquee">

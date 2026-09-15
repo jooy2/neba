@@ -155,5 +155,36 @@ describe('AnimateAppear', () => {
 
       await expect.element(screen.getByTestId('appear')).toHaveAttribute('data-state', 'running');
     });
+
+    // What it animates is its children, so a replay has to reach them.
+    it('rewinds the children it animates when it is played again', async () => {
+      const screen = await render(
+        <AnimateAppear trigger="manual" data-testid="appear">
+          <p>First</p>
+        </AnimateAppear>
+      );
+      const child = screen.getByText('First').element() as HTMLElement;
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      observer.observe(child, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+
+      await screen.rerender(
+        <AnimateAppear trigger="manual" play data-testid="appear">
+          <p>First</p>
+        </AnimateAppear>
+      );
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(
+        true
+      );
+    });
   });
 });

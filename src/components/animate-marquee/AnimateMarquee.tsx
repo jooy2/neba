@@ -112,6 +112,7 @@ export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>
   ) {
     const run = useAnimationRun({
       caller: props,
+      parts: ':scope > .neba-marquee-track',
       trigger,
       play,
       once,

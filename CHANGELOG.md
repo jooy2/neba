@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **Replaying an `Animate*` rewinds only what it animates.** A replay cleared the animation of every descendant that had one, so an `<Alert transition="fade">` inside `<AnimateShake>` faded in again on every shake, and an `Animate*` nested in another started over with it. Each component now names its own parts: its root, the children it hands an effect to, a split's pieces and a marquee's tracks.
+
 - **An `AnimateCounter` counts in the decimal places of its two ends, in figures of one width.** The default `format` writes up to three decimals, so a count to `37251` read `29,851.407` on the way there, and the line changed width on every frame. The count is rounded to the decimal places of `value` or `from`, whichever has more, and the root sets `tabular-nums`; `className="proportional-nums!"` takes the figures back.
 
 - **An `AnimateScramble` picks up where it was paused.** Pausing tore the settling down, and resuming started it again from the first letter, so a heading that had nearly landed went back to noise. The letters that had settled are kept across a pause now.

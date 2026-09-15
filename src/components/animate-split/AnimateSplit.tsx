@@ -120,6 +120,9 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
     } = useStyleDefaults(rawProps, ['locale']);
     const run = useAnimationRun({
       caller: props,
+      // The pieces, anywhere inside the copy a screen reader is not read. They
+      // hold only text, so nothing of anybody else's can match below them.
+      parts: ':scope > [aria-hidden] .neba-anim',
       trigger,
       play,
       once,

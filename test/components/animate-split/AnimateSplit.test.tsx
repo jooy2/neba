@@ -94,6 +94,33 @@ describe('AnimateSplit', () => {
       ).toEqual(['50ms', '0ms']);
     });
 
+    // What it animates is its pieces, so a replay has to reach them.
+    it('rewinds its pieces when it is played again', async () => {
+      const screen = await render(<AnimateSplit trigger="manual">One two</AnimateSplit>);
+      const piece = pieces(screen.container)[0];
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      observer.observe(piece, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+
+      await screen.rerender(
+        <AnimateSplit trigger="manual" play>
+          One two
+        </AnimateSplit>
+      );
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(
+        true
+      );
+    });
+
     // An inline box cannot be translated up.
     it('makes every piece an inline block', async () => {
       const screen = await render(<AnimateSplit>One two</AnimateSplit>);

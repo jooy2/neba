@@ -5,6 +5,7 @@ import { useRender } from '@base-ui/react/use-render';
 import {
   animBaseClass,
   animationClasses,
+  childAnimations,
   isInfinite,
   slideOffsets,
   staggerChildren,
@@ -96,6 +97,7 @@ export const AnimateAppear = React.forwardRef<HTMLDivElement, AnimateAppearProps
   ) {
     const run = useAnimationRun({
       caller: props,
+      parts: childAnimations,
       trigger,
       play,
       once,
