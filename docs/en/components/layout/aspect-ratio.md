@@ -37,7 +37,7 @@ Native `<div>` attributes pass through, and `render` swaps the element. The shar
 
 ### fit
 
-`fit` is `object-fit` applied to a single piece of media that is a direct child: an `img`, a `video`, a `canvas`, an `svg` or an `iframe`. The media is stretched to the box first, which is the pair of declarations every use of this component would otherwise start with. `cover` crops, `contain` letterboxes, `fill` squashes. `none` keeps the file's own size, and `scale-down` is whichever of `none` and `contain` draws the media smaller, so a small file is never enlarged.
+`fit` is `object-fit` applied to a single piece of media that is a direct child: an `img`, a `picture`, a `video` or a `canvas`. The media is stretched to the box first, which is the pair of declarations every use of this component would otherwise start with. An `svg` or an `iframe` is stretched to the box too and lays its own content out; an `svg` fits itself through `preserveAspectRatio`. `cover` crops, `contain` letterboxes, `fill` squashes. `none` keeps the file's own size, and `scale-down` is whichever of `none` and `contain` draws the media smaller, so a small file is never enlarged.
 
 <Demo src="aspect-ratio/fit">
 

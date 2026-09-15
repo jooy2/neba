@@ -98,6 +98,14 @@ describe('AspectRatio', () => {
       expect(screen.getByTestId('box').element()).toHaveClass('[&>img]:object-scale-down');
     });
 
+    // A canvas is a replaced element with a bitmap of its own size, so it is
+    // fitted like a picture rather than squashed to the box.
+    it('fits a canvas the way it fits a picture', async () => {
+      const screen = await render(<AspectRatio data-testid="box" fit="contain" />);
+
+      expect(screen.getByTestId('box').element()).toHaveClass('[&>canvas]:object-contain');
+    });
+
     // Whatever the fit, the media has to fill the box first — `object-fit` has
     // nothing to act on until the element is the size of the proportion.
     it('stretches the media to the box whatever the fit', async () => {

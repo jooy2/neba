@@ -370,7 +370,7 @@ Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choi
 
 ### Layout
 
-- [ ] **221** **AspectRatio**: `fit` sets `object-*` only on `img` and `video`, so the `<canvas>` the docs mention is stretched. `AspectRatio.tsx:77-84`
+- [x] **221** **AspectRatio**: `fit` sets `object-*` only on `img` and `video`, so the `<canvas>` the docs mention is stretched. `AspectRatio.tsx:77-84` Fixed: `fit` reaches a `canvas`, and the docs say an `svg` and an `iframe` are only stretched.
 - [ ] **222** [major][decision] **Show**: `contents` is added even for the `render={<td />}` and `<li />` the docs recommend, which removes the cell's padding, border and background (a missing role in Safari 16 is unverified). `Show.tsx:71`
 - [ ] **223** **ScrollArea**: with only `maxHeight`, the viewport's `height: 100%` resolves to auto, so it does not scroll and the overflow is clipped. The showcase list with `maxHeight={220}` is affected. `ScrollArea.tsx:122, 134`
 - [ ] **224** **ScrollZone**: `snap` with mouse dragging snaps every `scrollLeft` write and jumps; turn `scroll-snap-type` off during a drag. [decision] `ref` and `onScroll` go to the root rather than the scroller, so scroll restoration does not work. `ScrollZone.tsx:461-462, 587-607`

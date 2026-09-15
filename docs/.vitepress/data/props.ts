@@ -12191,8 +12191,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'cover' | 'contain' | 'fill' | 'none' | 'scale-down'",
       default: "'cover'",
       description: {
-        ko: '안의 미디어를 상자에 맞추는 방식. 직계 자식인 img, video, canvas, svg, iframe에 적용되며 그 밖의 것은 평소대로 배치됩니다',
-        en: 'How a single piece of media inside is fitted. Applies to an img, video, canvas, svg or iframe that is a direct child; anything else is laid out normally'
+        ko: '안의 미디어를 상자에 맞추는 방식. 직계 자식인 img, picture, video, canvas에 적용됩니다. svg와 iframe은 상자에 맞게 늘어나기만 하고, 그 밖의 것은 평소대로 배치됩니다',
+        en: 'How a single piece of media inside is fitted. Applies to an img, picture, video or canvas that is a direct child. An svg or an iframe is only stretched to the box, and anything else is laid out normally'
       }
     },
     {

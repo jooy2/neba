@@ -24,9 +24,11 @@ export interface AspectRatioProps extends React.ComponentPropsWithoutRef<'div'> 
   ratio?: number | string;
   /**
    * How a single piece of media inside is fitted. Applies to an `img`, a
-   * `video`, a `canvas`, an `svg` or an `iframe` that is a direct child; those
-   * are stretched to the full box and then fitted. Anything else is laid out
-   * normally and this prop does not reach it.
+   * `picture`, a `video` or a `canvas` that is a direct child, which is
+   * stretched to the full box and then fitted. An `svg` or an `iframe` is
+   * stretched and lays its own content out, an `svg` through its
+   * `preserveAspectRatio`. Anything else is laid out normally and this prop does
+   * not reach it.
    * @default 'cover'
    */
   fit?: NebaAspectFit;
@@ -61,8 +63,10 @@ export interface AspectRatioProps extends React.ComponentPropsWithoutRef<'div'> 
  * Tailwind only ever sees class names that appear literally in the source and a
  * grouped arbitrary variant is one string it has to parse rather than match.
  *
- * `iframe` takes the sizing and not the fit: an embed lays its own content out
- * and `object-fit` has nothing to act on.
+ * `svg` and `iframe` take the sizing and not the fit. An embed lays its own
+ * content out, and an inline `svg` is not a replaced element, so `object-fit`
+ * has nothing to act on in either; an `svg` fits itself through
+ * `preserveAspectRatio`.
  */
 const stretchClasses = [
   '[&>img]:size-full',
@@ -75,12 +79,36 @@ const stretchClasses = [
 ].join(' ');
 
 const fitClasses: Record<NebaAspectFit, string> = {
-  cover: '[&>img]:object-cover [&>video]:object-cover [&>picture>img]:object-cover',
-  contain: '[&>img]:object-contain [&>video]:object-contain [&>picture>img]:object-contain',
-  fill: '[&>img]:object-fill [&>video]:object-fill [&>picture>img]:object-fill',
-  none: '[&>img]:object-none [&>video]:object-none [&>picture>img]:object-none',
-  'scale-down':
-    '[&>img]:object-scale-down [&>video]:object-scale-down [&>picture>img]:object-scale-down'
+  cover: [
+    '[&>img]:object-cover',
+    '[&>video]:object-cover',
+    '[&>canvas]:object-cover',
+    '[&>picture>img]:object-cover'
+  ].join(' '),
+  contain: [
+    '[&>img]:object-contain',
+    '[&>video]:object-contain',
+    '[&>canvas]:object-contain',
+    '[&>picture>img]:object-contain'
+  ].join(' '),
+  fill: [
+    '[&>img]:object-fill',
+    '[&>video]:object-fill',
+    '[&>canvas]:object-fill',
+    '[&>picture>img]:object-fill'
+  ].join(' '),
+  none: [
+    '[&>img]:object-none',
+    '[&>video]:object-none',
+    '[&>canvas]:object-none',
+    '[&>picture>img]:object-none'
+  ].join(' '),
+  'scale-down': [
+    '[&>img]:object-scale-down',
+    '[&>video]:object-scale-down',
+    '[&>canvas]:object-scale-down',
+    '[&>picture>img]:object-scale-down'
+  ].join(' ')
 };
 
 /**

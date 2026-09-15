@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **An `AspectRatio` fits a `canvas` inside it.** `fit` reached an `img`, a `video` and the `img` in a `picture`, so a `canvas` was stretched to the box and squashed out of its own proportion, although the docs listed it among the media `fit` applies to. A `canvas` is fitted like the others now. The docs also stop saying that `fit` reaches an `svg` or an `iframe`: both are stretched to the box and lay their own content out, as they always did.
+
 - **A responsive map whose `xs` is `undefined` keeps the default there.** `withBaseline` spread the caller's map over the default, so `spacing={{ xs: undefined, md: 4 }}`, the shape a map built from optional values takes, copied the `undefined` over it. A `GridContainer` then had no gutter at all below `md` instead of its default of 2. An `xs` of `undefined` now means the same as leaving it out.
 
 - **A component shows its own name in React DevTools and in React's warnings.** Every component is a named function handed to `forwardRef`, and the published build dropped that name, because terser removes a function expression's name when nothing inside the function calls it. A consumer's DevTools showed a tree of `ForwardRef`, and a warning's component stack named nothing. Names that start with a capital letter now survive the minifier. That adds 0.2 kB gzipped across the package, and a production bundle, which its own build minifies again, moves by a few dozen bytes either way.
