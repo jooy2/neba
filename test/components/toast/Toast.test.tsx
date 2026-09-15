@@ -68,6 +68,74 @@ describe('Toast', () => {
       await expect.element(screen.getByText('Saved').first()).toBeInTheDocument();
       expect(screen.getByText('Saved').elements()).toHaveLength(2);
     });
+
+    // A toast past the limit is kept and marked rather than thrown away, so it
+    // can come back as the stack drains.
+    it('marks the toasts past the limit rather than dropping them', async () => {
+      function Three() {
+        const toast = useToast();
+
+        return (
+          <Button
+            onClick={() => {
+              toast.add({ title: 'One', timeout: 0 });
+              toast.add({ title: 'Two', timeout: 0 });
+              toast.add({ title: 'Three', timeout: 0 });
+            }}
+          >
+            Raise
+          </Button>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider limit={2}>
+          <Three />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.element(screen.getByText('Three')).toBeInTheDocument();
+
+      const limited = [...document.querySelectorAll('[data-limited]')];
+
+      expect(limited).toHaveLength(1);
+      expect(limited[0].textContent).toContain('One');
+    });
+
+    // The shape a caller reaches for to follow a job: raise it once, then say
+    // how it went under the same id.
+    it('changes the toast it has when one is raised with the same id', async () => {
+      function Sync() {
+        const toast = useToast();
+
+        return (
+          <>
+            <Button onClick={() => toast.add({ id: 'sync', title: 'Syncing', timeout: 0 })}>
+              Start
+            </Button>
+            <Button onClick={() => toast.add({ id: 'sync', title: 'Synced', timeout: 0 })}>
+              Finish
+            </Button>
+          </>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Sync />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Start' }).click();
+      await expect.element(screen.getByText('Syncing')).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Finish' }).click();
+
+      await expect.element(screen.getByText('Synced')).toBeInTheDocument();
+      expect(screen.getByText('Syncing').query()).toBeNull();
+      expect(screen.getByText('Synced').elements()).toHaveLength(1);
+    });
   });
 
   describe('the hook', () => {
@@ -96,6 +164,122 @@ describe('Toast', () => {
 
       expect(screen.getByText('Connection lost').elements()).toHaveLength(1);
     });
+
+    // Only the toast list changes when one is raised, and the four methods are
+    // what a caller holds on to — an effect keyed on one of them runs again
+    // every time its identity moves.
+    it('keeps every method it hands back while the stack changes', async () => {
+      const seen: Array<Record<string, unknown>> = [];
+
+      function Watcher() {
+        const toast = useToast();
+
+        seen.push({
+          add: toast.add,
+          close: toast.close,
+          update: toast.update,
+          promise: toast.promise
+        });
+
+        return <Button onClick={() => toast.add({ title: 'Saved', timeout: 0 })}>Raise</Button>;
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Watcher />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.element(screen.getByText('Saved')).toBeInTheDocument();
+
+      expect(seen.length).toBeGreaterThan(1);
+
+      for (const name of ['add', 'close', 'update', 'promise']) {
+        expect(new Set(seen.map((methods) => methods[name])).size, name).toBe(1);
+      }
+    });
+  });
+
+  describe('following a promise', () => {
+    it('shows the loading message, then the success', async () => {
+      let settle!: (value: string) => void;
+      const promise = new Promise<string>((resolve) => {
+        settle = resolve;
+      });
+
+      function Run() {
+        const toast = useToast();
+
+        return (
+          <Button
+            onClick={() =>
+              toast.promise(promise, {
+                loading: { title: 'Saving' },
+                success: (value) => ({ title: value, timeout: 0 }),
+                error: { title: 'Failed', timeout: 0 }
+              })
+            }
+          >
+            Save
+          </Button>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Run />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+      await expect.element(screen.getByText('Saving')).toBeInTheDocument();
+
+      settle('Saved');
+
+      await expect.element(screen.getByText('Saved')).toBeInTheDocument();
+      await expect.element(screen.getByText('Saving')).not.toBeInTheDocument();
+    });
+
+    it('shows the error when the promise does not keep', async () => {
+      let fail!: (reason: Error) => void;
+      const promise = new Promise<string>((_, reject) => {
+        fail = reject;
+      });
+
+      function Run() {
+        const toast = useToast();
+
+        return (
+          <Button
+            onClick={() =>
+              void Promise.resolve(
+                toast.promise(promise, {
+                  loading: { title: 'Saving' },
+                  success: { title: 'Saved', timeout: 0 },
+                  error: (reason) => ({ title: (reason as Error).message, timeout: 0 })
+                })
+              ).catch(() => {})
+            }
+          >
+            Save
+          </Button>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Run />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+      await expect.element(screen.getByText('Saving')).toBeInTheDocument();
+
+      fail(new Error('Offline'));
+
+      await expect.element(screen.getByText('Offline')).toBeInTheDocument();
+    });
   });
 
   describe('dismissing', () => {
@@ -113,6 +297,42 @@ describe('Toast', () => {
       await screen.getByRole('button', { name: 'Close' }).click();
 
       await expect.element(screen.getByText('Saved')).not.toBeInTheDocument();
+    });
+
+    it('closes every toast at once when close is called with nothing', async () => {
+      function Two() {
+        const toast = useToast();
+
+        return (
+          <>
+            <Button
+              onClick={() => {
+                toast.add({ title: 'One', timeout: 0 });
+                toast.add({ title: 'Two', timeout: 0 });
+              }}
+            >
+              Raise
+            </Button>
+            <Button onClick={() => toast.close()}>Clear</Button>
+          </>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Two />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.element(screen.getByText('Two')).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Clear' }).click();
+
+      // The retrying form: a toast on its way out stays mounted while its exit
+      // transition might still run.
+      await expect.element(screen.getByText('One')).not.toBeInTheDocument();
+      await expect.element(screen.getByText('Two')).not.toBeInTheDocument();
     });
 
     it('takes a custom accessible name for the × button', async () => {
