@@ -116,6 +116,33 @@ describe('Popconfirm', () => {
     await expect.poll(() => screen.getByText('Delete this row?').query()).toBeNull();
   });
 
+  // A rejection is the caller's error. The bubble stays open, the button is
+  // ready to try again, and the error is left uncaught for the page to report.
+  it('stays open and ready again when onConfirm rejects', async () => {
+    const swallow = (event: PromiseRejectionEvent) => event.preventDefault();
+    window.addEventListener('unhandledrejection', swallow);
+
+    try {
+      const screen = await render(
+        <Popconfirm
+          trigger={trigger}
+          title="Delete this row?"
+          onConfirm={() => Promise.reject(new Error('Failed'))}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Delete' }).click();
+      await screen.getByRole('button', { name: 'Confirm' }).click();
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Confirm' }))
+        .not.toHaveAttribute('aria-busy');
+      await expect.element(screen.getByText('Delete this row?')).toBeInTheDocument();
+    } finally {
+      window.removeEventListener('unhandledrejection', swallow);
+    }
+  });
+
   it('takes its own labels and a description', async () => {
     const screen = await render(
       <Popconfirm

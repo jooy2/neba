@@ -75,8 +75,10 @@ export interface PopconfirmProps {
  * So the rule is about *reach* rather than about danger: one row, a Popconfirm;
  * the page, a Confirm.
  *
- * It closes itself once `onConfirm` settles, so an async handler keeps the
+ * It closes itself once `onConfirm` resolves, so an async handler keeps the
  * bubble up — and its confirming button busy — until the work is actually done.
+ * A handler that rejects leaves the bubble open with its button ready again, and
+ * the error is not caught: it belongs to the page's own error reporting.
  * A question that vanished before its answer landed is a question the reader
  * has no way to know was heard.
  */

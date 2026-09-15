@@ -39,7 +39,7 @@ A Popconfirm stays anchored to what raised it, so the reader can still see the t
 
 ### onConfirm and async work
 
-The bubble closes when `onConfirm` **settles**, not when the button is clicked. Return a promise and it stays up with its confirming button busy until the work is done.
+The bubble closes when `onConfirm` **resolves**, not when the button is clicked. Return a promise and it stays up with its confirming button busy until the work is done. A promise that rejects leaves the bubble open and the button ready again, and the error is not caught, so it reaches the page's own error reporting.
 
 ```tsx
 <Popconfirm title="Revoke the key?" onConfirm={() => api.revoke(id)} trigger={…} />

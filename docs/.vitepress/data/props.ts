@@ -11608,8 +11608,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onConfirm',
       type: '() => void | Promise<unknown>',
       description: {
-        ko: '확인했을 때. promise를 반환하면 그것이 settle될 때까지 버블이 떠 있고 확인 버튼이 busy로 남습니다. 답이 닿기 전에 사라진 질문은 전달됐는지 알 수 없는 질문입니다',
-        en: 'Called when the reader confirms. Return a promise and the bubble stays up, its confirming button busy, until it settles: a question that vanished before its answer landed is one the reader cannot know was heard'
+        ko: '확인했을 때. promise를 반환하면 resolve될 때까지 버블이 떠 있고 확인 버튼이 busy로 남습니다. reject되면 버블은 열린 채로 남고 에러는 잡지 않습니다',
+        en: 'Called when the reader confirms. Return a promise and the bubble stays up, its confirming button busy, until it resolves. A rejection leaves the bubble open and is not caught'
       }
     },
     {

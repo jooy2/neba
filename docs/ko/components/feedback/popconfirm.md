@@ -39,7 +39,7 @@ Popconfirm은 자기를 띄운 것에 붙어 있으므로 독자가 지우려는
 
 ### onConfirm과 비동기 작업
 
-버블은 클릭할 때가 아니라 `onConfirm`이 **settle될 때** 닫힙니다. promise를 반환하면 작업이 끝날 때까지 확인 버튼이 busy 상태로 남은 채 버블이 떠 있습니다.
+버블은 클릭할 때가 아니라 `onConfirm`이 **resolve될 때** 닫힙니다. promise를 반환하면 작업이 끝날 때까지 확인 버튼이 busy 상태로 남은 채 버블이 떠 있습니다. promise가 reject되면 버블은 열린 채 버튼이 다시 누를 수 있는 상태로 돌아가고, 에러는 잡지 않으므로 페이지의 에러 보고로 그대로 전달됩니다.
 
 ```tsx
 <Popconfirm title="키를 폐기할까요?" onConfirm={() => api.revoke(id)} trigger={…} />
