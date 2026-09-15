@@ -235,6 +235,31 @@ describe('useElementSize', () => {
 
     await expect.element(screen.getByText('measured')).toBeInTheDocument();
   });
+
+  // The shape a data-driven component takes: a placeholder first, and the
+  // element only once there is something to put in it.
+  it('measures an element that arrives after the first render', async () => {
+    function Late({ ready }: { ready: boolean }) {
+      const [ref, size] = useElementSize<HTMLDivElement>();
+
+      if (!ready) {
+        return <p>loading</p>;
+      }
+
+      return (
+        <div>
+          <div ref={ref} style={{ width: 90, height: 40 }} />
+          <p>{Math.round(size.width)}</p>
+        </div>
+      );
+    }
+
+    const screen = await render(<Late ready={false} />);
+
+    await screen.rerender(<Late ready />);
+
+    await expect.element(screen.getByText('90')).toBeInTheDocument();
+  });
 });
 
 describe('useOnScreen', () => {
@@ -250,6 +275,26 @@ describe('useOnScreen', () => {
     }
 
     const screen = await render(<Watched />);
+
+    await expect.element(screen.getByText('seen')).toBeInTheDocument();
+  });
+
+  it('watches an element that arrives after the first render', async () => {
+    function Late({ ready }: { ready: boolean }) {
+      const [ref, visible] = useOnScreen<HTMLDivElement>();
+      return (
+        <div>
+          {ready ? <div ref={ref}>watched</div> : null}
+          <p>{visible ? 'seen' : 'unseen'}</p>
+        </div>
+      );
+    }
+
+    const screen = await render(<Late ready={false} />);
+
+    await expect.element(screen.getByText('unseen')).toBeInTheDocument();
+
+    await screen.rerender(<Late ready />);
 
     await expect.element(screen.getByText('seen')).toBeInTheDocument();
   });

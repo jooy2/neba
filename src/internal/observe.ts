@@ -209,3 +209,26 @@ export function observeVisibility(
     }
   };
 }
+
+/**
+ * A ref object that says when an element is put on it or taken off.
+ *
+ * An effect that reads a `useRef` once watches only the element that was there
+ * at the first commit, so a hook whose caller draws a spinner first and the
+ * element after it never watches anything. React writes an object ref's
+ * `current` on every attach and detach, whichever component renders the
+ * element, so a setter hears both.
+ */
+export function attachedRef<E>(onChange: (element: E | null) => void): { current: E | null } {
+  let current: E | null = null;
+
+  return {
+    get current() {
+      return current;
+    },
+    set current(element) {
+      current = element;
+      onChange(element);
+    }
+  };
+}

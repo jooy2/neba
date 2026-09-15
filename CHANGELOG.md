@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **`useElementSize` and `useOnScreen` watch an element that arrives after the first render.** Both read the ref once, in an effect that ran on mount, so a component that drew a placeholder first and the element after it, as `if (!data) return <Spinner />` does, was measured at `0 × 0` and reported as off screen for good. The hook now hears an element being put on the ref or taken off it, whichever component renders it.
+
 - **Dragging a `ScrollZone` with `snap` follows the pointer.** A mandatory snap answers every scroll offset a drag writes by jumping to the nearest child, so a mouse or a pen moved the strip in steps rather than along with the pointer. The snap is held off while the strip is dragged and handed back when it is let go, and the strip then settles on the nearest child.
 
 - **A `ScrollArea` with only `maxHeight` scrolls.** Its viewport is `100%` of the root's height, and a root with a ceiling and no height has no height for that to resolve against, so the viewport grew as tall as its content and the root cut it off at the ceiling with nothing to scroll. The viewport takes the root's ceiling now, whether it came from `maxHeight`, a class or a style.

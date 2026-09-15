@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { observeResize } from '../internal/observe.js';
+import { attachedRef, observeResize } from '../internal/observe.js';
 
 /** A box, in CSS pixels. `0` × `0` before the first measurement and on a server. */
 export interface ElementSize {
@@ -20,18 +20,19 @@ export interface ElementSize {
  * The ref goes on the element to watch. It measures once as soon as that
  * element is there rather than waiting to be told, because a `ResizeObserver`
  * that is missing — an old browser, a server — never says anything at all, and
- * a component sized `0 × 0` forever is worse than one measured once.
+ * a component sized `0 × 0` forever is worse than one measured once. An element
+ * put on the ref after the first render, behind a loading state for instance, is
+ * measured when it arrives.
  */
 export function useElementSize<E extends Element = HTMLElement>(): [
   React.RefObject<E | null>,
   ElementSize
 ] {
-  const ref = React.useRef<E | null>(null);
+  const [element, setElement] = React.useState<E | null>(null);
+  const [ref] = React.useState(() => attachedRef<E>(setElement));
   const [size, setSize] = React.useState<ElementSize>({ width: 0, height: 0 });
 
   React.useLayoutEffect(() => {
-    const element = ref.current;
-
     if (!element) {
       return undefined;
     }
@@ -51,7 +52,7 @@ export function useElementSize<E extends Element = HTMLElement>(): [
     measure();
 
     return observeResize(element, measure);
-  }, []);
+  }, [element]);
 
   return [ref, size];
 }
