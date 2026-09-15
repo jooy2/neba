@@ -73,6 +73,37 @@ describe('AnimateHeadline', () => {
       expect(root.children[0]).toHaveAttribute('data-state', 'active');
     });
 
+    // `leaving` was set in an effect after the commit that moved `active`, and
+    // that commit drew the old line with no state, which hides it for a frame.
+    it('hands the old line straight from showing to leaving', async () => {
+      const screen = await render(
+        <AnimateHeadline index={0} data-testid="headline">
+          {LINES}
+        </AnimateHeadline>
+      );
+      const first = screen.getByTestId('headline').element().children[0];
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      observer.observe(first, {
+        attributes: true,
+        attributeFilter: ['data-state'],
+        attributeOldValue: true
+      });
+
+      await screen.rerender(
+        <AnimateHeadline index={1} data-testid="headline">
+          {LINES}
+        </AnimateHeadline>
+      );
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(first).toHaveAttribute('data-state', 'leaving');
+      expect(records.map((record) => record.oldValue)).toEqual(['active']);
+    });
+
     it('keeps a line’s own class names', async () => {
       const screen = await render(
         <AnimateHeadline data-testid="headline">
@@ -155,7 +186,9 @@ describe('AnimateHeadline', () => {
       );
       const root = screen.getByTestId('headline').element();
 
-      await elapse(step - 1);
+      // The first line takes `duration` to arrive, and is then held for the whole
+      // `interval`. Counted from when it started arriving, it rested 20ms less.
+      await elapse(step + 20 - 1);
       expect(showing(root)).toBe(0);
       expect(onIndexChange).not.toHaveBeenCalled();
 
@@ -174,7 +207,7 @@ describe('AnimateHeadline', () => {
       const root = screen.getByTestId('headline').element();
 
       for (const line of [1, 2, 0]) {
-        await elapse(step);
+        await elapse(step + 10);
         expect(showing(root)).toBe(line);
       }
     });

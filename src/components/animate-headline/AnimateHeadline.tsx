@@ -114,16 +114,19 @@ export const AnimateHeadline = React.forwardRef<HTMLElement, AnimateHeadlineProp
     const [uncontrolled, setUncontrolled] = React.useState(defaultIndex);
     const active = Math.min(index ?? uncontrolled, Math.max(count - 1, 0));
 
-    /** The line on its way out. Cleared once its animation has had its time. */
+    /*
+     * The line on its way out, cleared once its animation has had its time.
+     * Worked out while rendering rather than in an effect: an effect runs after
+     * the commit that moved `active`, and that commit drew the old line with no
+     * state at all, which is hidden, so it vanished for a frame before leaving.
+     */
     const [leaving, setLeaving] = React.useState<number | null>(null);
-    const previous = React.useRef(active);
+    const [previous, setPrevious] = React.useState(active);
 
-    React.useEffect(() => {
-      if (previous.current !== active) {
-        setLeaving(previous.current);
-        previous.current = active;
-      }
-    }, [active]);
+    if (previous !== active) {
+      setPrevious(active);
+      setLeaving(previous);
+    }
 
     React.useEffect(() => {
       if (leaving === null) {
@@ -178,18 +181,21 @@ export const AnimateHeadline = React.forwardRef<HTMLElement, AnimateHeadlineProp
         return;
       }
 
-      // `delay` is what happens before the reel starts turning at all, so it is
-      // added once rather than to every line — which is what an `interval` is.
+      // `interval` is counted from when a line has arrived, so its arrival, which
+      // is `duration`, comes first; counted from when it started arriving, a line
+      // rested for `interval` less `duration`, and not at all once `duration`
+      // reached `interval`. `delay` is what happens before the reel starts
+      // turning at all, so it is added once rather than to every line.
       const timer = setTimeout(
         () => {
           turned.current = true;
           advance();
         },
-        interval + (turned.current ? 0 : delay)
+        duration + interval + (turned.current ? 0 : delay)
       );
 
       return () => clearTimeout(timer);
-    }, [index, count, run.state, interval, delay, advance, loop, active, reduced]);
+    }, [index, count, run.state, duration, interval, delay, advance, loop, active, reduced]);
 
     // Held rather than written inline: an inline callback is a new function on
     // every render, which React answers by calling the old one with `null` and
