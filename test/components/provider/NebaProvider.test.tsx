@@ -18,6 +18,7 @@ import {
   NebaProvider,
   TextField,
   Toggle,
+  ToggleGroup,
   useColorScheme
 } from 'neba';
 
@@ -115,6 +116,24 @@ describe('defaults', () => {
 
     expect(heightOf(screen.getByRole('button', { name: 'Grouped' }).element())).toBe(bare);
     expect(heightOf(screen.getByRole('button', { name: 'Pinned' }).element())).toBe(bare);
+  });
+
+  // The same again for the other group, which reads the same context.
+  it('loses to a toggle group around the call site', async () => {
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ size: 'xs' }}>
+          <ToggleGroup size="xl" aria-label="Provided">
+            <Toggle value="bold">Bold</Toggle>
+          </ToggleGroup>
+        </NebaProvider>
+        <Toggle size="xl">Bare</Toggle>
+      </>
+    );
+
+    expect(heightOf(screen.getByRole('button', { name: 'Bold' }).element())).toBe(
+      heightOf(screen.getByRole('button', { name: 'Bare' }).element())
+    );
   });
 
   // A chart asked nothing of the provider: its size came from its own default.

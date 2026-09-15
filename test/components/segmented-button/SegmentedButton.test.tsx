@@ -267,6 +267,16 @@ describe('SegmentedButton', () => {
       expect(box.style.getPropertyValue('--n-seg-x')).toBe(`${month.offsetLeft}px`);
     });
 
+    // The tile going is only half of it: nothing may be announced as taken
+    // either, or a reader is told a choice was made that was not.
+    it('marks no segment for a value none of them carries', async () => {
+      const screen = await render(<Basic value="year" />);
+
+      for (const name of ['Day', 'Week', 'Month']) {
+        await expect.element(screen.getByRole('radio', { name })).not.toBeChecked();
+      }
+    });
+
     // The whole point of the component moves, and it moves without a transform:
     // the tile is an empty box, so no label is ever resampled.
     it('never applies a transform', async () => {

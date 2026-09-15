@@ -281,6 +281,19 @@ describe('FloatingBottomNavigation', () => {
       expect(tile(screen)?.hidden).toBe(true);
     });
 
+    // And nothing is announced as the page being on, either.
+    it('marks no destination for a value none of them carries', async () => {
+      const screen = await render(
+        <FloatingBottomNavigation value="settings" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+      const root = screen.getByTestId('bar').element();
+
+      expect(root.querySelector('[data-nav-item][aria-current]')).toBeNull();
+    });
+
     // Two names of the same width travel without changing the bar's width, so
     // no resize follows them; the end of their transition is what re-measures.
     it('lands where the destination finished when its name has arrived', async () => {

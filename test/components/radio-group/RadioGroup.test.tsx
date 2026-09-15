@@ -108,6 +108,24 @@ describe('RadioGroup', () => {
       );
     });
 
+    it('takes no choice while the group is disabled', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <RadioGroup label="Plan" disabled onValueChange={onValueChange}>
+          <Radio value="free" label="Free" />
+        </RadioGroup>
+      );
+      const radio = screen.getByRole('radio', { name: 'Free' });
+
+      await expect.element(radio).toBeDisabled();
+
+      // A press the browser itself refuses, which is what `disabled` is for.
+      (radio.element() as HTMLElement).click();
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      await expect.element(radio).not.toBeChecked();
+    });
+
     it('leaves a disabled option out of reach', async () => {
       const screen = await render(<Plans label="Plan" />);
 
