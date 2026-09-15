@@ -223,8 +223,16 @@ describe('Carousel', () => {
           </div>
         );
         const track = screen.getByRole('group', { name: 'Carousel' }).element() as HTMLElement;
+        const third = screen.getByText('Charlie').element() as HTMLElement;
 
-        await expect.poll(() => track.scrollLeft).toBeGreaterThan(0);
+        // On the third slide, within the fraction of a pixel a flex basis leaves,
+        // and not merely somewhere past the first.
+        await expect
+          .poll(() =>
+            Math.abs(third.getBoundingClientRect().left - track.getBoundingClientRect().left)
+          )
+          .toBeLessThan(1);
+        expect(track.scrollLeft).toBeGreaterThan(0);
       } finally {
         sheet.remove();
       }

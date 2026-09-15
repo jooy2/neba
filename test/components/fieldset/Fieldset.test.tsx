@@ -12,7 +12,7 @@ describe('Fieldset', () => {
       );
 
       await expect
-        .element(screen.getByRole('group', { name: /Billing address/ }))
+        .element(screen.getByRole('group', { name: 'Billing address' }))
         .toBeInTheDocument();
     });
 

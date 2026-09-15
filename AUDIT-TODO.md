@@ -403,14 +403,14 @@ Questions from the batch pushed on 2026-09-14. Approvals are labelled G and choi
 
 These are defects in existing tests and missing areas. Regression tests for the bugs above ship with their fixes and are not listed.
 
-- [ ] **246** **Tests that always pass**
-  - [ ] `TreeView.test.tsx:390-403`: `onAction` is not wired to the Button, so the assertion always passes.
+- [x] **246** **Tests that always pass**
+  - [x] `TreeView.test.tsx:390-403`: `onAction` is not wired to the Button, so the assertion always passes. Not a defect: the spy is the `action` Button's own `onClick`, and the test presses that button; what it tests of the tree is that the row is not selected by the press.
   - [x] `Badge.test.tsx:82-92, 189-194`: passes on an invisible dot, and passes children instead of `content`. Rewritten with 175.
-  - [ ] `Gallery.test.tsx:298`: checks focus styling only as a class string (43 is fixed; check whether the test changed with it).
-  - [ ] Fieldset: queries the name with the regex `/Billing address/`, which hid 50 (50 is fixed; check whether the test changed with it).
-  - [ ] `Carousel.test.tsx:160`: checks `defaultValue` only through `aria-current`, so it misses 213.
-  - [ ] `LineChart.test.tsx:352`: the name "is not focusable when turned off" says the opposite of the behaviour.
-  - [ ] `AnimateTyping.test.tsx:151-155`: claims to cover element children but passes only strings.
+  - [x] `Gallery.test.tsx:298`: checks focus styling only as a class string (43 is fixed; check whether the test changed with it). The test moved to the class 43 added and asserts the old one is gone; with no stylesheet in the run, a class string is as far as it goes.
+  - [x] Fieldset: queries the name with the regex `/Billing address/`, which hid 50 (50 is fixed; check whether the test changed with it). Now the exact name; the description is asserted in the test beside it.
+  - [x] `Carousel.test.tsx:160`: checks `defaultValue` only through `aria-current`, so it misses 213. The scroll test now asserts the third slide sits at the strip's edge rather than that the offset is above zero.
+  - [x] `LineChart.test.tsx:352`: the name "is not focusable when turned off" says the opposite of the behaviour. It looked for the status inside the plot, where it never is. It now hovers the plot and finds no reading and no tooltip, as the Heatmap and Timeline tests do.
+  - [x] `AnimateTyping.test.tsx:151-155`: claims to cover element children but passes only strings. Renamed for what it passes; element children are D-pending under 243.
 - [ ] **247** [decision] **No React 18 test path**: the suite runs on React 19 only, so problems that exist only on 18, such as 21 (`inert`) and 102 (`javascript:` URLs), are not caught. The peer range promises 18; decide whether CI gets a React 18 job.
 - [ ] **248** **resolution.test.ts**: `spreadCollisions` skips a whole file when any component in it destructures `style,`, which is how it missed the TimelineItem bug in 124. Check per component. Also add structural checks for components that read `var(--n-ring)` without declaring it (31) and for `typesVersions.hooks` (128). `test/package/resolution.test.ts:155-158`
 - [ ] **249** **The 17 `Animate*` test files** do not cover `trigger="hover"`, `trigger="visible"` or the reduced-motion branches. At minimum: no restart when focus moves inside, nested `transition` children are not rewound, Typing, Scramble and Counter show the final value under a faked `matchMedia`, and Marquee copies take no focus. Partly covered since 89 (Marquee copies), 91 (Scramble and Counter under reduced motion) and 124 (hover handlers on Fade, Split and Typing).

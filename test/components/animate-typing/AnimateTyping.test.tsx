@@ -241,7 +241,7 @@ describe('AnimateTyping', () => {
       expect(ref.mock.calls.filter(([node]) => node === null)).toHaveLength(0);
     });
 
-    it('takes only the text out of an element among the children', async () => {
+    it('joins an array of strings into one line', async () => {
       const screen = await render(
         <AnimateTyping speed={200} caret={false} data-testid="typing">
           {['Half ', 'and half']}

@@ -472,7 +472,8 @@ describe('LineChart', () => {
       expect(document.querySelectorAll('[data-neba-tooltip] li').length).toBe(2);
     });
 
-    it('is not focusable when it is turned off', async () => {
+    // Pointing at the plot reads nothing out and draws nothing.
+    it('reads nothing out when it is turned off', async () => {
       const screen = await render(
         <LineChart
           label="Sessions"
@@ -485,7 +486,11 @@ describe('LineChart', () => {
       const plot = screen.getByRole('img', { name: 'Sessions' });
 
       await expect.element(plot).toBeInTheDocument();
-      expect(plot.element().querySelectorAll('[role="status"]').length).toBe(0);
+
+      await plot.hover({ position: { x: 120, y: 12 } });
+
+      expect(screen.getByRole('status').query()).toBeNull();
+      expect(document.querySelectorAll('[data-neba-tooltip]').length).toBe(0);
     });
   });
 
