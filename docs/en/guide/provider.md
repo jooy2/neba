@@ -91,6 +91,14 @@ The components are built on logical properties (`margin-inline-start` and the re
 
 ## Nesting
 
-Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so `defaults={{ density: 'compact' }}` inside `defaults={{ size: 'sm' }}` keeps the small size, and an inner provider with no `direction` runs the way the outer one does.
+Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so an inner `density` keeps the outer `size`, and an inner provider with no `direction` runs the way the outer one does.
+
+```tsx
+<NebaProvider defaults={{ size: 'sm' }}>
+  <NebaProvider defaults={{ density: 'compact' }}>
+    <Toolbar>{/* compact, and still small */}</Toolbar>
+  </NebaProvider>
+</NebaProvider>
+```
 
 The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own. The preview above does exactly that, and it is why the prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.

@@ -91,6 +91,14 @@ React는 문서가 한 번 그려진 다음에 실행되므로, 다크 모드를
 
 ## 중첩
 
-provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나, 여유 있는 페이지 안의 조밀한 툴바는 그 subtree를 감싸는 두 번째 provider입니다. 안쪽 provider의 `defaults`는 바깥 것 위에 합쳐지므로 `defaults={{ size: 'sm' }}` 안의 `defaults={{ density: 'compact' }}`도 작은 크기를 유지하고, `direction`이 없는 안쪽 provider는 바깥과 같은 방향을 따릅니다.
+provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나, 여유 있는 페이지 안의 조밀한 툴바는 그 subtree를 감싸는 두 번째 provider입니다. 안쪽 provider의 `defaults`는 바깥 것 위에 합쳐지므로 안쪽에서 `density`만 정해도 바깥의 `size`가 유지되고, `direction`이 없는 안쪽 provider는 바깥과 같은 방향을 따릅니다.
+
+```tsx
+<NebaProvider defaults={{ size: 'sm' }}>
+  <NebaProvider defaults={{ density: 'compact' }}>
+    <Toolbar>{/* compact, and still small */}</Toolbar>
+  </NebaProvider>
+</NebaProvider>
+```
 
 `<html>`의 색 스킴은 가장 바깥 provider의 것이고, 중첩 provider는 이를 쓰지 않습니다. 자기 subtree만 다시 칠하려는 중첩 provider는 `colorSchemeElement`로 대상 element를 지정하면 됩니다. 위 미리보기가 그렇게 동작하며, 그래서 이 prop은 element가 아니라 함수를 받습니다. 중첩 provider가 `direction`을 지정하면 그 값은 여전히 `<html>`에 쓰입니다.
