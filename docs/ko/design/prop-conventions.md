@@ -46,7 +46,7 @@ export interface ButtonProps
 | `variant` | 표면의 무게. `solid`는 화면당 하나(주 액션), `outline`은 보조 액션, `text`는 가장 낮은 무게 |
 | `size` | 컨트롤의 높이와 타입 스케일. [디자인 언어](./design-language) 참고 |
 | `color` | 의미론적 역할. 임의 색상값을 받지 않습니다 |
-| `density` | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않습니다 |
+| `density` | **여백만** 바꿉니다. 높이도 글자 크기도 건드리지 않으며, DataTable의 기본 행 높이만 예외입니다 |
 | `elevation` | 그림자 깊이. 기본 0(그림자 없음) |
 
 레이아웃 prop 몇 개는 값 하나 대신 `span`에 주는 `{ xs: 12, md: 6 }` 같은 breakpoint별 map도 받습니다. 어떤 prop이 그렇고 위의 다섯 축이 왜 거기에 들지 않는지는 [breakpoints](./breakpoints)에 있습니다.

@@ -106,7 +106,7 @@ The governing idea: **a Neba surface is a sheet of cut acrylic, not a moulded pl
 - **`elevation` defaults to `0` and `0` means no shadow at all.** The acrylic edge separates a surface from the page; a drop shadow is opt-in. Shadows are never tinted with the control's own colour.
 - **No dark bottom bevel** (`inset 0 -1px 0 black`). Top light edge plus a full white hairline only — and no plate at all on a Checkbox, a Radio or a Switch, where a 1px line is a fifteenth of the object rather than light on an edge.
 - **Translucency is tuned with the blur radius, not just the alpha.** Too much blur smears the backdrop into flat colour and the surface reads opaque again.
-- **`density` changes padding only** — never height, never type scale.
+- **`density` changes padding only** — never height, never type scale. DataTable is the one exception: its default `rowHeight` steps down with `density`, because a table row is not a row of controls that has to keep a baseline.
 - **A field's height is a floor** (`fieldHeightClasses`, `min-h-*`) and everything else's is exact (`controlHeightClasses`, `h-*`). A field holds a caller's own text, which may be set larger than the step; a Button is a flex child of a row a caller arranges, where a minimum height is a control that stretches to its neighbour.
 - **Don't express state with `opacity`.** Each state gets its own axis (saturation, colour family, flatness).
 

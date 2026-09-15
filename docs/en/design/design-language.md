@@ -169,6 +169,8 @@ compact    6 /  8 / 10 / 12 / 16px
 
 **Density touches neither the height nor the type scale.** Two controls of the same `size` are the same height whatever their density, so a row of mixed-density controls keeps its baseline. The two tracks are roughly 2:1, so the difference is legible at a glance.
 
+DataTable is the one exception. A compact table lowers its default row height as well, because a table row is not a row of controls that has to share a baseline.
+
 ---
 
 ## 4. Elevation

@@ -46,7 +46,7 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 | `variant` | Weight of the surface. One `solid` per screen (the primary action), `outline` for secondary actions, `text` for the lowest weight |
 | `size` | The control's height and type scale. See the [design language](./design-language) |
 | `color` | A semantic role. Arbitrary colour values are not accepted |
-| `density` | **Padding only.** Never the height, never the type scale |
+| `density` | **Padding only.** Never the height, never the type scale, except for a DataTable's default row height |
 | `elevation` | Drop shadow depth. `0` by default, meaning no shadow at all |
 
 A handful of layout props take a per-breakpoint map on top of their own value: a `span` of `{ xs: 12, md: 6 }`. Which ones, and why the five axes above are deliberately not among them, is [breakpoints](./breakpoints).
