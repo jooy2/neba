@@ -261,6 +261,87 @@ describe('AnimateFade', () => {
       await expect.element(screen.getByTestId('fade')).toHaveAttribute('data-state', 'running');
     });
 
+    // Focus events bubble, so a Tab from one field of a form inside a hover
+    // trigger to the next reached it as a fresh focus and rewound the effect.
+    it('does not start again when the focus moves between things inside it', async () => {
+      const screen = await render(
+        <AnimateFade trigger="hover" data-testid="fade">
+          <button type="button">One</button>
+          <button type="button">Two</button>
+        </AnimateFade>
+      );
+      const root = screen.getByTestId('fade').element() as HTMLElement;
+
+      (screen.getByRole('button', { name: 'One' }).element() as HTMLElement).focus();
+
+      await expect.element(screen.getByTestId('fade')).toHaveAttribute('data-state', 'running');
+
+      // A rewind clears `animation-name` and puts it back, which leaves a style
+      // mutation whose old value still says `none`.
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      observer.observe(root, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+
+      (screen.getByRole('button', { name: 'Two' }).element() as HTMLElement).focus();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(
+        false
+      );
+    });
+
+    it('starts again when the focus arrives from outside', async () => {
+      const screen = await render(
+        <div>
+          <button type="button">Outside</button>
+          <AnimateFade trigger="hover" data-testid="fade">
+            <button type="button">Inside</button>
+          </AnimateFade>
+        </div>
+      );
+      const root = screen.getByTestId('fade').element() as HTMLElement;
+      const records: MutationRecord[] = [];
+      const observer = new MutationObserver((list) => records.push(...list));
+
+      (screen.getByRole('button', { name: 'Outside' }).element() as HTMLElement).focus();
+      observer.observe(root, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+
+      (screen.getByRole('button', { name: 'Inside' }).element() as HTMLElement).focus();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      // The first run has nothing to rewind; a second arrival does.
+      (screen.getByRole('button', { name: 'Outside' }).element() as HTMLElement).focus();
+      observer.observe(root, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      });
+      (screen.getByRole('button', { name: 'Inside' }).element() as HTMLElement).focus();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      records.push(...observer.takeRecords());
+      observer.disconnect();
+
+      expect(records.some((record) => record.oldValue?.includes('animation-name: none'))).toBe(
+        true
+      );
+    });
+
     it('runs on mount by default', async () => {
       const screen = await render(<AnimateFade data-testid="fade">Arriving</AnimateFade>);
 

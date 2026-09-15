@@ -174,6 +174,8 @@
 
 ### Fixed
 
+- **A hover-triggered animation does not start again as the focus moves inside it.** React's focus events bubble, so a Tab from one field of a form inside `<AnimateFade trigger="hover">` to the next reached the trigger as a new focus and rewound the effect, and an endless effect stopped and started again on the way. A focus or a blur that stays inside the element is ignored now, on every `Animate*` that takes a hover trigger.
+
 - **An `AnimateMarquee` with `trigger="hover"` moves while the pointer is on it.** `pauseOnHover`, which is on by default, stops the strip under the pointer and while the focus is inside it, and those are exactly what start a hover trigger, so the strip never moved at all. It no longer applies under a hover trigger.
 
 - **`useElementSize` and `useOnScreen` watch an element that arrives after the first render.** Both read the ref once, in an effect that ran on mount, so a component that drew a placeholder first and the element after it, as `if (!data) return <Spinner />` does, was measured at `0 × 0` and reported as off screen for good. The hook now hears an element being put on the ref or taken off it, whichever component renders it.

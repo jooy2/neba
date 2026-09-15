@@ -593,6 +593,12 @@ export function useAnimationRun({
     }
   }, [trigger, play, start]);
 
+  // React's focus events bubble, so the focus moving from one thing inside the
+  // element to another arrives here as well. Answered, it started the effect
+  // again on every Tab through a form inside it.
+  const movesWithin = (event: React.FocusEvent<HTMLElement>) =>
+    event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget);
+
   const handlers: TriggerHandlers =
     trigger === 'hover'
       ? {
@@ -604,7 +610,9 @@ export function useAnimationRun({
           // never run for a reader who is not holding a mouse.
           onFocus: (event) => {
             caller?.onFocus?.(event);
-            start();
+            if (!movesWithin(event)) {
+              start();
+            }
           },
           onPointerLeave: (event) => {
             caller?.onPointerLeave?.(event);
@@ -614,7 +622,7 @@ export function useAnimationRun({
           },
           onBlur: (event) => {
             caller?.onBlur?.(event);
-            if (infinite) {
+            if (infinite && !movesWithin(event)) {
               setStarted(false);
             }
           }
