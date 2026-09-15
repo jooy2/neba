@@ -38,6 +38,26 @@ Rows are written as components rather than passed as an array, because each carr
 
 <PropsTable name="MenuSubmenu" />
 
+### MenuGroup
+
+<PropsTable name="MenuGroup" />
+
+### MenuCheckboxItem
+
+<PropsTable name="MenuCheckboxItem" />
+
+### MenuRadioGroup
+
+<PropsTable name="MenuRadioGroup" />
+
+### MenuRadioItem
+
+<PropsTable name="MenuRadioItem" />
+
+### MenuSeparator
+
+A rule between rows. It takes the attributes of a `<div>` and nothing else.
+
 ### ContextMenu
 
 <PropsTable name="ContextMenu" />

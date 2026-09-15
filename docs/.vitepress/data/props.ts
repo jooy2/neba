@@ -433,6 +433,21 @@ function pickerProps(options: PickerOptions): PropRow[] {
       description: options.submitted
     },
     {
+      name: 'startIcon',
+      type: 'ReactNode',
+      default: { ko: '달력, TimePicker는 시계', en: 'a calendar, or a clock on TimePicker' },
+      description: { ko: '값 앞의 글리프', en: 'The glyph before the value' }
+    },
+    {
+      name: 'required',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '값이 있어야 합니다. 비어 있으면 폼 제출이 막히고 focus가 trigger로 옮겨집니다. 읽기 전용인 picker는 검사하지 않습니다',
+        en: 'A value is needed. An empty picker stops its form from submitting and takes the focus to its trigger; a read-only one is not checked'
+      }
+    },
+    {
       name: 'fullWidth',
       type: 'boolean',
       default: 'false',
@@ -555,8 +570,9 @@ interface AnimateOptions {
   /** Left out by the four that write their own motion. */
   mode?: boolean;
   /**
-   * The component's own default step, for the seven that can hand the effect to
-   * their children. Left out by the ones that already read what a child *is*.
+   * The component's own default step, for the eleven that can hand the effect to
+   * their children, which are also the eleven a scroll timeline can drive. Left
+   * out by the ones that already read what a child *is*.
    */
   stagger?: string;
   /**
@@ -608,6 +624,26 @@ function animateProps(options: AnimateOptions): PropRow[] {
             description: {
               ko: '마지막 자식부터 실행합니다. 순서만 뒤집히고 각 자식은 그대로 재생됩니다',
               en: 'Runs the children from the last to the first. Only the order reverses'
+            }
+          },
+          {
+            name: 'timeline',
+            type: "'time' | 'view'",
+            default: "'time'",
+            shared: true,
+            description: {
+              ko: "무엇이 진행을 이끄는지. 'view'면 요소가 화면을 지나가는 정도가 효과를 재생하고 duration, delay, repeat, trigger는 무시됩니다. animation-timeline이 없는 브라우저에서는 mount 시 한 번 재생됩니다",
+              en: "What drives the progress. With 'view' the element's way through the viewport plays the effect, and duration, delay, repeat and trigger are ignored; where the browser has no animation-timeline it runs once on mount"
+            }
+          },
+          {
+            name: 'range',
+            type: 'string',
+            default: "'entry 0% cover 45%'",
+            shared: true,
+            description: {
+              ko: "'view' timeline이 매핑되는 스크롤 구간. CSS animation-range와 같은 형식입니다",
+              en: "The scroll range a 'view' timeline is mapped over, written as CSS animation-range"
             }
           }
         ] satisfies PropRow[])),
@@ -840,6 +876,105 @@ const cartesianDataProps: PropRow[] = [
     description: { ko: '값 축', en: 'The value axis' }
   }
 ];
+
+/** A menu row's props. A checkbox or radio row takes all but six of them. */
+const menuItemRows: PropRow[] = [
+  {
+    name: 'onClick',
+    type: '(event) => void',
+    description: { ko: '행이 하는 일', en: 'What the row does' }
+  },
+  {
+    name: 'href',
+    type: 'string',
+    description: {
+      ko: '넘기면 진짜 a가 됩니다. 링크로 이뤄진 메뉴는 링크여야 새 탭으로 열 수 있습니다',
+      en: 'Passing it renders a real anchor. A menu of links has to be links, or none of them opens in a new tab'
+    }
+  },
+  {
+    name: 'target',
+    type: 'string',
+    description: {
+      ko: '링크가 열리는 곳. href가 없으면 무시됩니다. 이 탭이 아닌 곳으로 열면 rel에 noopener noreferrer가 더해집니다',
+      en: 'Where the link opens. Ignored without href. Anything other than this tab also gets noopener noreferrer added to rel'
+    }
+  },
+  {
+    name: 'rel',
+    type: 'string',
+    description: {
+      ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다. nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+      en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
+    }
+  },
+  {
+    name: 'startIcon',
+    type: 'ReactNode',
+    description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
+  },
+  {
+    name: 'endIcon',
+    type: 'ReactNode',
+    description: {
+      ko: '라벨 뒤, shortcut 앞의 내용',
+      en: 'Content after the label, before any shortcut'
+    }
+  },
+  {
+    name: 'shortcut',
+    type: 'ReactNode',
+    description: {
+      ko: '같은 일을 하는 단축키. 행 끝에 흐리게 놓입니다. 표시만 하고 바인딩하지는 않습니다',
+      en: 'The keystroke that does the same thing, set muted at the end. Shown, never bound'
+    }
+  },
+  {
+    name: 'description',
+    type: 'ReactNode',
+    description: { ko: '라벨 아래 한 줄', en: 'A second line under the label' }
+  },
+  {
+    name: 'color',
+    type: COLOR,
+    shared: true,
+    description: {
+      ko: '이 행만 다른 색 계열로. 지우는 행에 danger. 기본값은 메뉴의 색입니다',
+      en: "Re-points this row's colour family: danger for the one that deletes. Defaults to the menu's own"
+    }
+  },
+  {
+    name: 'closeOnClick',
+    type: 'boolean',
+    default: 'true',
+    description: { ko: '고르면 메뉴가 닫힐지', en: 'Whether picking the row closes the menu' }
+  },
+  {
+    name: 'disabled',
+    type: 'boolean',
+    default: 'false',
+    description: {
+      ko: '사용 불가. 목록에는 남고 타이핑 검색에도 걸립니다. href가 있어도 비활성인 동안에는 링크가 아닙니다',
+      en: 'Unavailable. Still listed, and still found by typeahead. A row with an href is not a link while it is disabled'
+    }
+  },
+  {
+    name: 'label',
+    type: 'string',
+    description: {
+      ko: '타이핑 검색이 맞춰 볼 문자열. 라벨이 평범한 문자열이 아닐 때',
+      en: 'What typeahead matches against, when the label is not a plain string'
+    }
+  },
+  {
+    name: 'children',
+    type: 'ReactNode',
+    description: { ko: '라벨', en: 'The label' }
+  }
+];
+
+/** What a checkbox or radio row leaves out of a plain row, or means differently. */
+const checkableOmitted = new Set(['onClick', 'href', 'target', 'rel', 'startIcon', 'closeOnClick']);
 
 export const propTables: Record<string, PropRow[]> = {
   NebaChartAxis: [
@@ -3146,6 +3281,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'delay',
       type: 'number',
+      default: '600',
       description: {
         ko: '카드가 열리기까지 포인터가 머물러야 하는 시간 (ms)',
         en: 'How long the pointer has to rest on the trigger before the card opens, in milliseconds'
@@ -3154,6 +3290,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'closeDelay',
       type: 'number',
+      default: '300',
       description: {
         ko: '포인터가 떠난 뒤 카드가 남아 있는 시간 (ms). trigger와 카드 사이의 빈틈을 건널 수 있게 합니다',
         en: 'How long the card stays after the pointer has left, in milliseconds. This is what makes the gap crossable'
@@ -4606,6 +4743,40 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '그릴 것이 없을 때 그리는 것',
         en: 'What to draw when there is nothing to draw'
       }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '글자 크기, 그리고 height를 주지 않았을 때의 높이',
+        en: 'The type size, and the height when none is given'
+      }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'text'",
+      shared: true,
+      description: {
+        ko: '표면의 무게. 차트는 시트가 아니라 그림이므로 기본값이 text입니다',
+        en: 'Weight of the surface. A chart is a drawing rather than a sheet, so this defaults to text'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '차트가 스스로 쓰는 말과 숫자의 언어',
+        en: "The language of the chart's own words and numbers"
+      }
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      default: 'false',
+      description: { ko: '표면의 안쪽 여백', en: 'Inner padding on the surface' }
     }
   ],
 
@@ -7518,100 +7689,7 @@ export const propTables: Record<string, PropRow[]> = {
     }
   ],
 
-  MenuItem: [
-    {
-      name: 'onClick',
-      type: '(event) => void',
-      description: { ko: '행이 하는 일', en: 'What the row does' }
-    },
-    {
-      name: 'href',
-      type: 'string',
-      description: {
-        ko: '넘기면 진짜 a가 됩니다. 링크로 이뤄진 메뉴는 링크여야 새 탭으로 열 수 있습니다',
-        en: 'Passing it renders a real anchor. A menu of links has to be links, or none of them opens in a new tab'
-      }
-    },
-    {
-      name: 'target',
-      type: 'string',
-      description: {
-        ko: '링크가 열리는 곳. href가 없으면 무시됩니다. 이 탭이 아닌 곳으로 열면 rel에 noopener noreferrer가 더해집니다',
-        en: 'Where the link opens. Ignored without href. Anything other than this tab also gets noopener noreferrer added to rel'
-      }
-    },
-    {
-      name: 'rel',
-      type: 'string',
-      description: {
-        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다. nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
-        en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
-      }
-    },
-    {
-      name: 'startIcon',
-      type: 'ReactNode',
-      description: { ko: '라벨 앞의 내용', en: 'Content before the label' }
-    },
-    {
-      name: 'endIcon',
-      type: 'ReactNode',
-      description: {
-        ko: '라벨 뒤, shortcut 앞의 내용',
-        en: 'Content after the label, before any shortcut'
-      }
-    },
-    {
-      name: 'shortcut',
-      type: 'ReactNode',
-      description: {
-        ko: '같은 일을 하는 단축키. 행 끝에 흐리게 놓입니다. 표시만 하고 바인딩하지는 않습니다',
-        en: 'The keystroke that does the same thing, set muted at the end. Shown, never bound'
-      }
-    },
-    {
-      name: 'description',
-      type: 'ReactNode',
-      description: { ko: '라벨 아래 한 줄', en: 'A second line under the label' }
-    },
-    {
-      name: 'color',
-      type: COLOR,
-      shared: true,
-      description: {
-        ko: '이 행만 다른 색 계열로. 지우는 행에 danger. 기본값은 메뉴의 색입니다',
-        en: "Re-points this row's colour family: danger for the one that deletes. Defaults to the menu's own"
-      }
-    },
-    {
-      name: 'closeOnClick',
-      type: 'boolean',
-      default: 'true',
-      description: { ko: '고르면 메뉴가 닫힐지', en: 'Whether picking the row closes the menu' }
-    },
-    {
-      name: 'disabled',
-      type: 'boolean',
-      default: 'false',
-      description: {
-        ko: '사용 불가. 목록에는 남고 타이핑 검색에도 걸립니다. href가 있어도 비활성인 동안에는 링크가 아닙니다',
-        en: 'Unavailable. Still listed, and still found by typeahead. A row with an href is not a link while it is disabled'
-      }
-    },
-    {
-      name: 'label',
-      type: 'string',
-      description: {
-        ko: '타이핑 검색이 맞춰 볼 문자열. 라벨이 평범한 문자열이 아닐 때',
-        en: 'What typeahead matches against, when the label is not a plain string'
-      }
-    },
-    {
-      name: 'children',
-      type: 'ReactNode',
-      description: { ko: '라벨', en: 'The label' }
-    }
-  ],
+  MenuItem: menuItemRows,
 
   MenuSubmenu: [
     {
@@ -7653,6 +7731,115 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The nested rows: one of which may be another MenuSubmenu, to any depth'
       }
     }
+  ],
+
+  MenuGroup: [
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '그룹 위의 제목. 그룹의 이름으로 연결됩니다',
+        en: "The heading over the group, wired up as the group's name"
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '그룹에 속한 행', en: 'The rows in the group' }
+    }
+  ],
+
+  MenuCheckboxItem: [
+    {
+      name: 'checked',
+      type: 'boolean',
+      description: {
+        ko: '체크 여부. onCheckedChange와 함께 쓰면 controlled가 됩니다',
+        en: 'Whether the row is ticked. With onCheckedChange it makes it controlled'
+      }
+    },
+    {
+      name: 'defaultChecked',
+      type: 'boolean',
+      description: {
+        ko: '체크된 채로 시작할지 여부 (uncontrolled)',
+        en: 'Whether it starts ticked, uncontrolled'
+      }
+    },
+    {
+      name: 'onCheckedChange',
+      type: '(checked: boolean) => void',
+      description: {
+        ko: '체크가 바뀔 때 호출됩니다',
+        en: 'Fired when the row is ticked or unticked'
+      }
+    },
+    {
+      name: 'closeOnClick',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '체크하면 메뉴를 닫을지 여부. 여러 개를 체크하는 목록이므로 일반 행과 달리 기본값이 false입니다',
+        en: 'Whether ticking the row closes the menu. false, unlike a plain row, because a list of things to tick is a list you tick more than one of'
+      }
+    },
+    ...menuItemRows.filter((row) => !checkableOmitted.has(row.name))
+  ],
+
+  MenuRadioGroup: [
+    {
+      name: 'value',
+      type: 'string | number',
+      description: {
+        ko: '선택된 행의 값. onValueChange와 함께 쓰면 controlled가 됩니다',
+        en: "The chosen row's value. With onValueChange it makes it controlled"
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string | number',
+      description: {
+        ko: '처음 선택된 행의 값 (uncontrolled)',
+        en: 'The value chosen to begin with, uncontrolled'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string | number) => void',
+      description: { ko: '다른 행을 고를 때 호출됩니다', en: 'Fired when another row is chosen' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      description: {
+        ko: '그룹의 모든 행을 쓸 수 없게 합니다',
+        en: 'Makes every row in the group unavailable'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'MenuRadioItem 행', en: 'The MenuRadioItem rows' }
+    }
+  ],
+
+  MenuRadioItem: [
+    {
+      name: 'value',
+      type: 'string | number',
+      required: true,
+      description: { ko: '이 행이 그룹에 설정하는 값', en: 'What this row sets the group to' }
+    },
+    {
+      name: 'closeOnClick',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '고르면 메뉴를 닫을지 여부',
+        en: 'Whether choosing the row closes the menu'
+      }
+    },
+    ...menuItemRows.filter((row) => !checkableOmitted.has(row.name))
   ],
 
   ContextMenu: [
@@ -8918,6 +9105,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '사용 불가. 색 계열을 버리고 중립 회색이 됩니다',
         en: 'Unavailable. Drops the colour family for neutral grey'
+      }
+    },
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'button 대신 다른 요소로 렌더링합니다 (<a href>, 라우터의 Link). 링크는 링크로 남습니다',
+        en: 'Renders something other than a button (an <a href>, a router Link). A link stays a link'
       }
     }
   ],
@@ -13950,6 +14145,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
 
+    ...animateProps({
+      duration: '520',
+      stagger: '45',
+      mode: false,
+      repeatDescription: {
+        ko: "반복 횟수. effect가 blink이면 기본값이 'infinite'입니다",
+        en: 'How many times it runs. With effect="blink" it defaults to \'infinite\''
+      }
+    }),
     renderProp('render={<h1 />}'),
     {
       name: 'children',

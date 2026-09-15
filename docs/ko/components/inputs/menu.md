@@ -38,6 +38,26 @@ import { Button, Menu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 
 <PropsTable name="MenuSubmenu" />
 
+### MenuGroup
+
+<PropsTable name="MenuGroup" />
+
+### MenuCheckboxItem
+
+<PropsTable name="MenuCheckboxItem" />
+
+### MenuRadioGroup
+
+<PropsTable name="MenuRadioGroup" />
+
+### MenuRadioItem
+
+<PropsTable name="MenuRadioItem" />
+
+### MenuSeparator
+
+행 사이의 구분선입니다. `<div>`의 속성만 받습니다.
+
 ### ContextMenu
 
 <PropsTable name="ContextMenu" />
