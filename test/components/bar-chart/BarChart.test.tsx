@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { BarChart } from 'neba';
+import { BarChart, NebaProvider } from 'neba';
 
 const TEAMS = ['Platform', 'Payments', 'Growth'];
 
@@ -340,6 +340,71 @@ describe('BarChart', () => {
 
       expect(series.getAttribute('class')).toContain('transition:opacity');
       expect(bar.getAttribute('class')).toContain('transition:opacity');
+    });
+  });
+
+  // A negative segment grows down from zero while the positive ones grow up, so
+  // it neither eats into the stack above the axis nor moves where it starts.
+  describe('stacking values of both signs', () => {
+    it('stacks a negative series down from zero and the positive ones on each other', async () => {
+      const screen = await render(
+        <BarChart
+          label="Flow"
+          stacked
+          height={240}
+          categories={['Jan']}
+          series={[
+            { name: 'In', data: [10] },
+            { name: 'Out', data: [-5] },
+            { name: 'More in', data: [10] }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Flow' });
+      const box = (slot: number) =>
+        plot
+          .element()
+          .querySelector(`path[fill="var(--neba-chart-${slot})"]`)
+          ?.getBoundingClientRect();
+
+      await expect.poll(() => box(1)?.height ?? 0).toBeGreaterThan(0);
+
+      const [first, negative, top] = [box(1)!, box(2)!, box(3)!];
+
+      expect(negative.top).toBeGreaterThanOrEqual(first.bottom - 1);
+      expect(top.bottom).toBeLessThanOrEqual(first.top + 1);
+      expect(negative.height / first.height).toBeCloseTo(0.5, 1);
+    });
+  });
+
+  describe('under a provider', () => {
+    it('takes its size and its locale from the provider', async () => {
+      const chart = (label: string, size?: 'xs') => (
+        <BarChart
+          label={label}
+          size={size}
+          categories={['Jan']}
+          series={[{ name: 'Revenue', data: [1234.5] }]}
+        />
+      );
+      const screen = await render(
+        <div>
+          <NebaProvider defaults={{ size: 'xs', locale: 'de-DE' }}>
+            {chart('Provided')}
+          </NebaProvider>
+          {chart('Given', 'xs')}
+          {chart('Default')}
+        </div>
+      );
+      const height = (label: string) =>
+        screen.getByRole('img', { name: label }).element().getBoundingClientRect().height;
+      const table = screen.getByRole('table', { name: 'Provided' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      expect(height('Provided')).toBe(height('Given'));
+      expect(height('Provided')).not.toBe(height('Default'));
+      expect(table.element().querySelector('tbody td')?.textContent?.trim()).toBe('1.234,5');
     });
   });
 });

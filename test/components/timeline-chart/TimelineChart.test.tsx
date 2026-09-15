@@ -351,6 +351,29 @@ describe('TimelineChart', () => {
       await expect.element(screen.getByRole('cell', { name: '2 Mar 2026' })).toBeInTheDocument();
     });
 
+    it('writes a span to the minute on an axis that ticks in hours', async () => {
+      const screen = await render(
+        <TimelineChart
+          label="Day"
+          locale="en-GB"
+          series={[
+            {
+              name: 'Standup',
+              data: [{ start: at('2026-03-02T09:00:00'), end: at('2026-03-02T09:15:00') }]
+            },
+            {
+              name: 'Review',
+              data: [{ start: at('2026-03-02T14:00:00'), end: at('2026-03-02T16:30:00') }]
+            }
+          ]}
+        />
+      );
+
+      await expect.element(screen.getByRole('table', { name: 'Day' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('cell', { name: '09:15' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('cell', { name: '16:30' })).toBeInTheDocument();
+    });
+
     it('drops the label column when no span carries one', async () => {
       const screen = await render(
         <TimelineChart

@@ -872,6 +872,29 @@ describe('LineChart', () => {
     });
   });
 
+  // A string `height` is any CSS length, read back off the box it produced.
+  describe('a CSS length as the height', () => {
+    it('draws at the height the length comes to', async () => {
+      const screen = await render(
+        <div style={{ width: 320 }}>
+          <LineChart
+            label="Visits"
+            height="10rem"
+            categories={MONTHS}
+            series={[{ name: 'Web', data: [1, 2, 3, 4] }]}
+          />
+        </div>
+      );
+      const plot = screen.getByRole('img', { name: 'Visits' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(plot.element().getBoundingClientRect().height).toBe(160);
+      await expect
+        .poll(() => plot.element().querySelector('svg')?.getAttribute('viewBox')?.split(' ')[3])
+        .toBe('160');
+    });
+  });
+
   // The palette repeats past its eighth slot, which the docs said it never did.
   describe('more series than colours', () => {
     it('warns once in development that the colours repeat', async () => {
