@@ -150,6 +150,24 @@ const aliases: Record<string, string> = {
   zsh: 'bash'
 };
 
+/**
+ * The grammars a grammar hands part of its source to, fetched with it.
+ *
+ * highlight.js writes a sub-language it has not been given as plain text, so an
+ * html block coloured its `<script>` only when a JavaScript block had happened to
+ * load first on the same page, and a block already drawn was never coloured
+ * later. Flat rather than followed: loading javascript for an html block does
+ * not go on to load what javascript embeds, which is xml, already there.
+ */
+const embedded: Record<string, readonly string[]> = {
+  dockerfile: ['bash'],
+  javascript: ['xml'],
+  markdown: ['xml'],
+  shell: ['bash'],
+  typescript: ['xml'],
+  xml: ['javascript', 'css']
+};
+
 /** Languages the consumer brought, waiting for the core to arrive. */
 const extra = new Map<string, LanguageDefinition>();
 
@@ -238,6 +256,18 @@ async function prepare(name: string): Promise<string | null> {
 
   if (registered) hljs.registerLanguage(name, registered);
   else if (!hljs.getLanguage(name)) hljs.registerLanguage(name, (await load!()).default);
+
+  const inner = Object.hasOwn(embedded, name) ? embedded[name] : [];
+
+  await Promise.all(
+    inner.map(async (language) => {
+      if (hljs.getLanguage(language)) return;
+
+      const own = extra.get(language);
+
+      hljs.registerLanguage(language, own ?? (await loaders[language]()).default);
+    })
+  );
 
   return name;
 }

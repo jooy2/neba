@@ -180,6 +180,8 @@
 
 ### Fixed
 
+- **A `CodeBlock` colours the script and style inside HTML whatever else is on the page.** A grammar that hands part of its source to another only coloured that part when the other grammar had already been fetched by some other block, so an HTML block's `<script>` was plain on a page with no JavaScript block. HTML now fetches JavaScript and CSS with it, Markdown fetches HTML, JavaScript and TypeScript fetch HTML for JSX, and shell and Dockerfile fetch Bash, each as its own chunk after the first paint.
+
 - **A `PieChart` draws no slice for a negative value.** The share was worked out from the absolute value, so −20 among 50 and 30 was drawn as a fifth of the pie, beside a tooltip reading `−20 · 20%`. A negative now draws nothing and adds nothing to the total, as a treemap already did; it stays in the table and the legend.
 
 - **A paused `AnimateBlink` rests at full opacity.** Holding it with `paused`, or with `play={false}`, froze the blink wherever the pulse had got to, so the docs' own `paused={!recording}` left a recording light translucent, or invisible at `min={0}`. It stops at full opacity now and starts over when it runs again.

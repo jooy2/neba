@@ -136,6 +136,14 @@ describe('highlight', () => {
     await expect(highlight('let x = 1', 'no-such-language')).resolves.toBeNull();
   });
 
+  // An html block's `<style>` was plain unless a CSS block had loaded first on
+  // the same page, because the grammar it hands the style to was never fetched.
+  it('fetches the grammars a language embeds along with it', async () => {
+    const lines = await highlight('<style>a { color: red }</style>', 'xml');
+
+    expect(JSON.stringify(lines)).toContain('selector-tag');
+  });
+
   it('does not take a name off the prototype of the loader table for a grammar', async () => {
     await expect(highlight('let x = 1', 'constructor')).resolves.toBeNull();
     await expect(highlight('let x = 1', 'hasOwnProperty')).resolves.toBeNull();
