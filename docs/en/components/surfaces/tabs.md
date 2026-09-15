@@ -21,7 +21,7 @@ import { Tab, TabPanel, Tabs } from 'neba';
 </Tabs>;
 ```
 
-There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and the component sorts them into the bar and the panel area.
+There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and the component sorts them into the bar and the panel area. A Fragment is looked through, but a component of your own that renders a `TabPanel` is not recognised, so write the `TabPanel` itself among the children.
 
 ## Props
 

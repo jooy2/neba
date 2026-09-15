@@ -18,6 +18,22 @@ function Basic(props: React.ComponentProps<typeof Tabs>) {
 
 describe('Tabs', () => {
   describe('rendering', () => {
+    // A panel inside a Fragment failed the type check and was put into the tab
+    // list, inside `role="tablist"`.
+    it('finds a panel inside a Fragment', async () => {
+      const screen = await render(
+        <Tabs defaultValue="overview">
+          <Tab value="overview">Overview</Tab>
+          <>
+            <TabPanel value="overview">What this project is.</TabPanel>
+          </>
+        </Tabs>
+      );
+      const panel = screen.getByText('What this project is.').element();
+
+      expect(screen.getByRole('tablist').element().contains(panel)).toBe(false);
+    });
+
     it('renders a tablist of its tabs', async () => {
       const screen = await render(<Basic defaultValue="overview" />);
 
@@ -267,11 +283,24 @@ describe('Tabs', () => {
     // The cap is in rows, and a row is the control height ladder — the same one
     // a `md` tab and a `md` Button share.
     it('caps a wrapping bar at the number of rows it was given', async () => {
-      const screen = await render(<Basic defaultValue="overview" overflow="wrap" lines={2} />);
+      const screen = await render(
+        <Basic defaultValue="overview" overflow="wrap" lines={2} variant="text" />
+      );
       const list = screen.getByRole('tablist').element() as HTMLElement;
 
       expect(list.style.maxHeight).toBe('calc(4rem)');
       expect(list).toHaveClass('overflow-y-auto');
+    });
+
+    // The outline bar's 1px rule was left out of the cap, so the rows it named
+    // did not fit and the bar scrolled by a pixel.
+    it('counts the rule under an outline bar into the cap', async () => {
+      const screen = await render(
+        <Basic defaultValue="overview" overflow="wrap" lines={2} variant="outline" />
+      );
+      const list = screen.getByRole('tablist').element() as HTMLElement;
+
+      expect(list.style.maxHeight).toBe('calc(1px + 4rem)');
     });
 
     it('ignores lines on a bar that does not wrap', async () => {

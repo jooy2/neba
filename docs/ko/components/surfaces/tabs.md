@@ -21,7 +21,7 @@ import { Tab, TabPanel, Tabs } from 'neba';
 </Tabs>;
 ```
 
-`<TabList>` 같은 wrapper는 없습니다. `Tab`과 `TabPanel`을 나란히 두면 컴포넌트가 알아서 탭 바와 패널 영역으로 나눕니다.
+`<TabList>` 같은 wrapper는 없습니다. `Tab`과 `TabPanel`을 나란히 두면 컴포넌트가 알아서 탭 바와 패널 영역으로 나눕니다. Fragment 안은 들여다보지만, `TabPanel`을 렌더링하는 직접 만든 컴포넌트는 알아보지 못하므로 `TabPanel`을 자식에 직접 쓰세요.
 
 ## Props
 

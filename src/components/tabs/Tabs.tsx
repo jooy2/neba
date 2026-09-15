@@ -409,13 +409,21 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   const tabs: React.ReactNode[] = [];
   const panels: React.ReactNode[] = [];
 
-  React.Children.forEach(children, (child) => {
-    if (React.isValidElement(child) && child.type === TabPanel) {
-      panels.push(child);
-    } else if (child !== null && child !== undefined && child !== false) {
-      tabs.push(child);
-    }
-  });
+  // A Fragment is looked through, so panels grouped in one are still panels. A
+  // component of the caller's own that renders a TabPanel has a type of its own
+  // and cannot be told apart from a tab; the docs say to write the panel itself.
+  const sort = (nodes: React.ReactNode) =>
+    React.Children.forEach(nodes, (child) => {
+      if (React.isValidElement(child) && child.type === React.Fragment) {
+        sort((child.props as { children?: React.ReactNode }).children);
+      } else if (React.isValidElement(child) && child.type === TabPanel) {
+        panels.push(child);
+      } else if (child !== null && child !== undefined && child !== false) {
+        tabs.push(child);
+      }
+    });
+
+  sort(children);
 
   /*
    * Which ends of the bar have more bar past them, written onto the root as the
@@ -543,11 +551,12 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
             {
               '--n-fade': '2rem',
               // A cap in rows, turned into the length a row actually is. The
-              // `solid` trough's own `p-1` is 4px at each end and has to be in the
-              // number, or the cap lands a padding short of the row it names.
+              // `solid` trough's own `p-1` is 4px at each end, and an `outline`
+              // bar's rule is 1px under it, and each has to be in the number, or
+              // the cap lands short of the row it names and the bar scrolls.
               maxHeight:
                 wraps && lines !== undefined
-                  ? `calc(${controlHeightValues[size]} * ${Math.max(1, Math.round(lines))}${variant === 'solid' ? ' + 0.5rem' : ''})`
+                  ? `calc(${controlHeightValues[size]} * ${Math.max(1, Math.round(lines))}${variant === 'solid' ? ' + 0.5rem' : variant === 'outline' && horizontal ? ' + 1px' : ''})`
                   : undefined
             } as React.CSSProperties
           }

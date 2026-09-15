@@ -178,6 +178,8 @@
 
 ### Fixed
 
+- **A `TabPanel` inside a Fragment goes to the panel area, and an outline tab bar capped with `lines` stops scrolling by a pixel.** Panels were told apart from tabs by type, so one grouped in a Fragment was put into the tab list, inside `role="tablist"`. A Fragment is looked through now; a component of your own that renders a `TabPanel` is still not recognised, as the page says. The `lines` cap also left out the 1px rule under an outline bar, which scrolled the bar it was meant to fit.
+
 - **`AnimateTyping`, `AnimateSplit` and `AnimateScramble` read the text inside element children.** Only strings and numbers were read, so `<AnimateTyping>Hello <b>world</b></AnimateTyping>` typed `Hello ` and a screen reader heard the same, although the docs said an element's text counts. The text inside an element is read now, and its markup is dropped as before.
 
 - **A `HeatmapChart` whose values are all the same no longer looks like peak activity.** A flat sequential range took the darkest step, so a week of zeros painted every cell at full strength. A flat range is read against zero now: zero or less takes the lightest step and anything above zero the darkest.
