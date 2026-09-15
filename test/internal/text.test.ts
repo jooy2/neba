@@ -12,6 +12,7 @@
  * a space in Japanese or Thai, and the piece a punctuation mark belongs to is
  * the word in front of it rather than one of its own.
  */
+import { createElement } from 'react';
 import { describe, expect, it } from 'vitest';
 import { graphemesOf, textOf, wordsOf } from '../../src/internal/text.js';
 
@@ -26,12 +27,16 @@ describe('textOf', () => {
     expect(textOf(['a', 1, 'b'])).toBe('a1b');
   });
 
-  /*
-   * An element is skipped rather than descended into. There is no honest way to
-   * animate half of a link — what would come out is the words with the anchor
-   * thrown away — so the component renders its children as they are instead.
-   */
-  it('contributes nothing for anything that is not a string or a number', () => {
+  // The docs said an element's text counted, and it was dropped, so
+  // `Hello <b>world</b>` was typed as `Hello `.
+  it('reads the text inside an element and drops its markup', () => {
+    expect(textOf(['Hello ', createElement('b', null, 'world')])).toBe('Hello world');
+    expect(
+      textOf(createElement('a', { href: '#' }, 'Read ', createElement('em', null, 'more')))
+    ).toBe('Read more');
+  });
+
+  it('contributes nothing for a node with no text in it', () => {
     expect(textOf(null)).toBe('');
     expect(textOf(undefined)).toBe('');
     expect(textOf(false)).toBe('');

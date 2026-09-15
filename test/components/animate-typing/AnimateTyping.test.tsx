@@ -283,6 +283,18 @@ describe('AnimateTyping', () => {
       expect(ref.mock.calls.filter(([node]) => node === null)).toHaveLength(0);
     });
 
+    it('types the text inside element children', async () => {
+      const screen = await render(
+        <AnimateTyping speed={200} caret={false} data-testid="typing">
+          Hello <b>world</b>
+        </AnimateTyping>
+      );
+
+      await vi.runAllTimersAsync();
+
+      await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello world');
+    });
+
     it('joins an array of strings into one line', async () => {
       const screen = await render(
         <AnimateTyping speed={200} caret={false} data-testid="typing">

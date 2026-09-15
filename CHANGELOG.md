@@ -178,6 +178,8 @@
 
 ### Fixed
 
+- **`AnimateTyping`, `AnimateSplit` and `AnimateScramble` read the text inside element children.** Only strings and numbers were read, so `<AnimateTyping>Hello <b>world</b></AnimateTyping>` typed `Hello ` and a screen reader heard the same, although the docs said an element's text counts. The text inside an element is read now, and its markup is dropped as before.
+
 - **A `HeatmapChart` whose values are all the same no longer looks like peak activity.** A flat sequential range took the darkest step, so a week of zeros painted every cell at full strength. A flat range is read against zero now: zero or less takes the lightest step and anything above zero the darkest.
 
 - **A `ProgressCircular` keeps a hole in the middle whatever its `thickness`.** The stroke was held to the whole radius, so a thick `thickness` on a `md` ring filled it in to a disc, although the JSDoc and the page said it stopped at half the radius. It stops there now.

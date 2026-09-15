@@ -17,9 +17,9 @@ import { segmenter } from './format.js';
 /**
  * The text inside a node, and nothing about its markup.
  *
- * Only strings and numbers contribute. An element among the children is skipped
- * rather than descended into, because there is no honest way to animate half of
- * a link: what would come out is the words with the anchor thrown away.
+ * Strings and numbers are the text, and an element contributes the text inside
+ * it: `Hello <b>world</b>` reads `Hello world`. The markup itself is dropped,
+ * because there is no honest way to animate half of a link.
  */
 export function textOf(node: unknown): string {
   if (typeof node === 'string' || typeof node === 'number') {
@@ -28,6 +28,10 @@ export function textOf(node: unknown): string {
 
   if (Array.isArray(node)) {
     return node.map(textOf).join('');
+  }
+
+  if (node !== null && typeof node === 'object' && 'props' in node) {
+    return textOf((node as { props: { children?: unknown } }).props.children);
   }
 
   return '';
