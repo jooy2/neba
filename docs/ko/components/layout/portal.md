@@ -52,5 +52,5 @@ portal 대신 제자리에 그립니다. 이미 portal 안에 있는 subtree, �
 ## 접근성
 
 - portal은 DOM을 옮기지만, 스크린 리더가 읽는 순서는 그 DOM 자체입니다. 무언가와 **함께** 속하는 내용이라면 `aria-controls` · `aria-describedby`나 focus 이동으로 그렇다고 말해야 합니다.
-- focus는 children을 따라가지 않습니다. portal된 dialog는 자기 focus 관리가 필요하니 이미 그것을 갖춘 [Dialog](../feedback/dialog)나 [Drawer](../surfaces/card)를 쓰세요.
+- focus는 children을 따라가지 않습니다. portal된 dialog는 자기 focus 관리가 필요하니 이미 그것을 갖춘 [Dialog](../feedback/dialog)나 [Drawer](../surfaces/drawer)를 쓰세요.
 - `Escape`와 바깥 클릭도 여기서 처리하지 않습니다. 이것은 배치일 뿐 그 이상이 아닙니다.

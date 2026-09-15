@@ -15,7 +15,7 @@ Every one of these is machinery the library needed for itself. That is the whole
 
 ## useDisclosure
 
-The caller's half of the `open` / `onOpenChange` pair that [Dialog](../components/feedback/dialog), [Drawer](../components/surfaces/card), [Popover](../components/surfaces/popover), [Tour](../components/feedback/tour), [Menu](../components/inputs/menu) and all four pickers take.
+The caller's half of the `open` / `onOpenChange` pair that [Dialog](../components/feedback/dialog), [Drawer](../components/surfaces/drawer), [Popover](../components/surfaces/popover), [Tour](../components/feedback/tour), [Menu](../components/inputs/menu) and all four pickers take.
 
 ```tsx
 const { open, onOpen, onClose, onToggle, setOpen } = useDisclosure();

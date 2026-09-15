@@ -58,7 +58,7 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 ### collapseBelow
 
-The width below which the column becomes a [Drawer](../feedback/dialog) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way. `title` is drawn only in that shape: a column has the page around it to say what it is, a panel that has covered the page does not.
+The width below which the column becomes a [Drawer](../surfaces/drawer) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way. `title` is drawn only in that shape: a column has the page around it to say what it is, a panel that has covered the page does not.
 
 It defaults to the PageLayout's own value and to `none` outside one, because a sidebar that collapsed with nothing on the page able to bring it back is a sidebar the reader has lost.
 

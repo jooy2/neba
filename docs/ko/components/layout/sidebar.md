@@ -58,7 +58,7 @@ import { List, ListItem, Sidebar } from 'neba';
 
 ### collapseBelow
 
-열이 scrim 위의 [Drawer](../feedback/dialog)가 되는 너비입니다. focus가 안에 갇히고, Escape로 닫히며, 닫으면 focus가 trigger로 돌아갑니다. 어느 모습이든 children은 문서에 한 번만 존재합니다. `title`은 drawer일 때만 그려집니다. 열에는 주위의 페이지가 그것이 무엇인지 말해 주지만, 페이지를 덮은 패널에는 없기 때문입니다.
+열이 scrim 위의 [Drawer](../surfaces/drawer)가 되는 너비입니다. focus가 안에 갇히고, Escape로 닫히며, 닫으면 focus가 trigger로 돌아갑니다. 어느 모습이든 children은 문서에 한 번만 존재합니다. `title`은 drawer일 때만 그려집니다. 열에는 주위의 페이지가 그것이 무엇인지 말해 주지만, 페이지를 덮은 패널에는 없기 때문입니다.
 
 기본값은 PageLayout의 값이며 레이아웃 밖에서는 `none`입니다. 되돌릴 방법이 없는 채로 접힌 사이드바는 독자가 잃어버린 사이드바이기 때문입니다.
 

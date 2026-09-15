@@ -15,7 +15,7 @@ import { useDisclosure, useMediaQuery, useShortcut } from 'neba/hooks';
 
 ## useDisclosure
 
-[Dialog](../components/feedback/dialog), [Drawer](../components/surfaces/card), [Popover](../components/surfaces/popover), [Tour](../components/feedback/tour), [Menu](../components/inputs/menu)와 네 개의 picker가 받는 `open` / `onOpenChange` 쌍을 호출하는 쪽에서 만들어 줍니다.
+[Dialog](../components/feedback/dialog), [Drawer](../components/surfaces/drawer), [Popover](../components/surfaces/popover), [Tour](../components/feedback/tour), [Menu](../components/inputs/menu)와 네 개의 picker가 받는 `open` / `onOpenChange` 쌍을 호출하는 쪽에서 만들어 줍니다.
 
 ```tsx
 const { open, onOpen, onClose, onToggle, setOpen } = useDisclosure();
