@@ -15,7 +15,9 @@ import {
   sheetTitleClasses,
   surfaceClasses,
   surfaceSlots,
-  transitionClasses
+  transitionClasses,
+  clampClasses,
+  clampSlot
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -42,6 +44,12 @@ export interface CollapsibleProps
   title?: React.ReactNode;
   /** A second line under the title, one step down the type scale and muted. */
   subtitle?: React.ReactNode;
+  /**
+   * Cuts the title and the subtitle off after this many lines, with an
+   * ellipsis. Unset, both wrap, as on an AccordionItem: a title that is a
+   * question loses the question when it ends in an ellipsis.
+   */
+  lines?: number;
   /** Content before the title — an icon, a status dot, a count. */
   startIcon?: React.ReactNode;
   /**
@@ -154,6 +162,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
       onOpenChange,
       title,
       subtitle,
+      lines,
       startIcon,
       action,
       trigger,
@@ -167,6 +176,9 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
       children,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+
+    const clamp = lines ? clampClasses(lines) : '';
+    const clampStyle = clampSlot(lines);
 
     const padX = boxPaddingXClasses[density][size];
     const padY = boxPaddingYClasses[density][size];
@@ -226,12 +238,18 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
 
               <span className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
                 {hasContent(title) ? (
-                  <span className={`truncate font-semibold ${sheetTitleClasses[size]}`}>
+                  <span
+                    className={`${clamp} font-semibold ${sheetTitleClasses[size]}`}
+                    style={clampStyle}
+                  >
                     {title}
                   </span>
                 ) : null}
                 {hasContent(subtitle) ? (
-                  <span className={`truncate text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+                  <span
+                    className={`${clamp} text-(--neba-muted-fg) ${metaTextClasses[size]}`}
+                    style={clampStyle}
+                  >
                     {subtitle}
                   </span>
                 ) : null}

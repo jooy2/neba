@@ -29,7 +29,7 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 ### title, subtitle, startIcon, action
 
-`title` is the heading on the header and `subtitle` is the line under it. `startIcon` goes before the title; `action` goes at the end of the header but outside the trigger: a header that both folds and holds a switch has two things to press, and one of them cannot be nested inside the other.
+`title` is the heading on the header and `subtitle` is the line under it. Both wrap, and `lines` cuts them off after that many lines with an ellipsis. `startIcon` goes before the title; `action` goes at the end of the header but outside the trigger: a header that both folds and holds a switch has two things to press, and one of them cannot be nested inside the other.
 
 `indicator={false}` drops the chevron, which leaves the header reporting its state in colour alone.
 

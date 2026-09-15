@@ -16,6 +16,19 @@ describe('Collapsible', () => {
       await expect.element(screen.getByText('Rarely needed')).toBeInTheDocument();
     });
 
+    // The title was always cut to one line, so a title that is a question lost
+    // its end on a narrow screen. It wraps unless `lines` says otherwise.
+    it('wraps the title and the subtitle unless lines cuts them', async () => {
+      const screen = await render(<Collapsible title="Advanced" subtitle="Rarely needed" />);
+
+      expect(screen.getByText('Advanced').element()).not.toHaveClass('truncate');
+      expect(screen.getByText('Rarely needed').element()).not.toHaveClass('truncate');
+
+      await screen.rerender(<Collapsible title="Advanced" subtitle="Rarely needed" lines={1} />);
+
+      expect(screen.getByText('Advanced').element()).toHaveClass('truncate');
+    });
+
     it('starts closed', async () => {
       const screen = await render(<Collapsible title="Advanced">Everything else.</Collapsible>);
 

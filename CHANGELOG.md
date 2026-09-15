@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **A `Collapsible`'s title and subtitle wrap.** Both were always cut to one line, so a title written as a question lost its end on a narrow screen. They wrap now, as an `AccordionItem`'s do, and the new `lines` cuts them off after that many lines with an ellipsis. A header that has to stay on one line should pass `lines={1}`.
+
 - **A `Show` given `render` keeps the element's own box.** `display: contents` went on the element `render` named as well, so the `render={<td />}` and `render={<li />}` the docs recommend lost a cell's padding, border and background and a list item's marker. Only a `Show` without `render` is `display: contents` now. A `Show` whose `render` names a block element inside a grid or a flex row becomes a box of its own there: put the grid or flex items inside it, or drop `render`.
 
 - **A lone `width` or `height` on an `Image` sizes its box.** One dimension is not a proportion, so it used to reach the `<img>` and change nothing on the page. `height={200}` is now a box 200 pixels tall across the width it is given, and `width={320}` one 320 wide, capped at the container, with `fit` deciding what the picture does inside. A number is pixels and a string a CSS length, and beside a `ratio` a lone `height` takes its width from the ratio. An `Image` given only one of the two as a hint about the file draws at that size now: pass both, or remove the one. Both together still reserve their proportion, as before.

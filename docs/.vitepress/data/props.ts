@@ -13121,6 +13121,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'lines',
+      type: 'number',
+      description: {
+        ko: '제목과 부제목을 이 줄 수에서 자릅니다. 지정하지 않으면 줄바꿈해서 다 보여 줍니다',
+        en: 'Cuts the title and the subtitle off after this many lines. Unset, both wrap'
+      }
+    },
+    {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
