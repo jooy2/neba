@@ -116,18 +116,27 @@ const trackBaseClasses = [
  * hairline around a 20px groove is a bevel rather than light on a cut edge, and
  * a bevelled groove with a domed thumb in it is the skeuomorphic switch this
  * design language is not. The acrylic surface stays; only the highlight goes.
+ *
+ * `--neba-groove` and not `--neba-panel`, which is the one place a control in
+ * this library turns the surface ladder over. Every other rest surface here is
+ * white laid on the page, and on a light theme that made the off track lighter
+ * than what it sits on — with a thumb that is `--neba-surface`, which is white.
+ * A white disc on a white track is not a thumb, it is an empty pill. The groove
+ * darkens instead, which is what a track is, and the thumb has something to be
+ * the light on. It is read straight off the token rather than through a slot,
+ * because a groove is never dyed: the family arrives when the switch is on.
  */
 const restTrackClasses = [
   surfaceClasses,
-  'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
+  'cursor-pointer bg-(--neba-groove) [border-color:var(--n-line)]',
+  'hover:bg-(--neba-groove-hover) hover:[border-color:var(--n-line-hover)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]',
   'data-[checked]:hover:bg-(--n-fill-hover)'
 ].join(' ');
 
 const readOnlyTrackClasses = [
   surfaceClasses,
-  'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
+  'cursor-default bg-(--neba-groove) [border-color:var(--n-line)]',
   '[filter:saturate(0.55)]',
   'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]'
 ].join(' ');
@@ -181,8 +190,6 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     '--n-fill': `var(--neba-${family}-fill)`,
     '--n-fill-hover': `var(--neba-${family}-fill-hover)`,
     '--n-accent': `var(--neba-${family}-accent)`,
-    '--n-panel': 'var(--neba-panel)',
-    '--n-panel-hover': 'var(--neba-panel-hover)',
     '--n-line': `var(--neba-${family}-line)`,
     '--n-line-hover': `var(--neba-${family}-line-hover)`,
     '--n-ring': `var(--neba-${family}-ring)`

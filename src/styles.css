@@ -150,6 +150,25 @@
   --neba-panel-hover: rgb(255 255 255 / 0.82);
   --neba-panel-press: rgb(255 255 255 / 0.92);
 
+  /* The one surface in the library that is a groove rather than a sheet: the
+     track a Switch's thumb runs along.
+
+     It is the ladder above turned over, and it has to be. The panel is white
+     laid on the page, so on a light theme the track came out *lighter* than
+     what it sits on — and the thumb is `--neba-surface`, which is white. A
+     white disc on a white track is what made an off switch read as an empty
+     pill: 1.02:1, which is no edge at all. The thumb is the light on the track,
+     and light needs something under it to be light against.
+
+     So the groove darkens what is behind it instead of brightening it, which is
+     also what a groove is. It stays translucent for the same reason every other
+     surface here does — the blur behind it is what makes it acrylic rather than
+     paint — and it stays neutral because the family is what "on" says. On the
+     dark theme the panel was already darker than the thumb, so these are the
+     panel's own two steps and nothing moves. */
+  --neba-groove: rgb(16 24 40 / 0.14);
+  --neba-groove-hover: rgb(16 24 40 / 0.19);
+
   /* Pointer spotlight and release afterglow, over a filled surface. Tinted
      variants use their own accent instead — see the derived block. The flash is
      only a shade brighter than the spotlight it replaces: the press is carried
@@ -466,6 +485,9 @@
     --neba-panel-hover: rgb(255 255 255 / 0.07);
     --neba-panel-press: rgb(255 255 255 / 0.09);
 
+    --neba-groove: rgb(255 255 255 / 0.05);
+    --neba-groove-hover: rgb(255 255 255 / 0.07);
+
     --neba-glow-on-fill: rgb(255 255 255 / 0.13);
     --neba-flash-on-fill: rgb(255 255 255 / 0.18);
 
@@ -603,6 +625,9 @@
   --neba-panel: rgb(255 255 255 / 0.05);
   --neba-panel-hover: rgb(255 255 255 / 0.07);
   --neba-panel-press: rgb(255 255 255 / 0.09);
+
+  --neba-groove: rgb(255 255 255 / 0.05);
+  --neba-groove-hover: rgb(255 255 255 / 0.07);
 
   --neba-glow-on-fill: rgb(255 255 255 / 0.13);
   --neba-flash-on-fill: rgb(255 255 255 / 0.18);

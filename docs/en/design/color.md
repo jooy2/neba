@@ -79,6 +79,15 @@ It is also why the three steps rise in **opacity** rather than lightness: an eng
 
 > **One consequence.** On a `solid` Box or Card, which has no border, `color` has nothing left to reach and makes no visible difference. On a container, `color` is effectively the prop that picks the edge.
 
+One surface turns that ladder over, and only one: the track a Switch's thumb runs along.
+
+```css
+--neba-groove        /* black 14% (dark: white 5%) */
+--neba-groove-hover  /* black 19% (dark: white 7%) */
+```
+
+A panel lays white on the page, so on a light theme the off track came out lighter than what it sits on — and the thumb is `--neba-surface`, which is white. A white disc on a white track is not a thumb, it is an empty pill. A groove darkens what is behind it instead, which is also what a groove is, and the thumb has something to be the light on. It stays neutral because the family is what "on" says.
+
 ## Contrast
 
 Every colour is defined in `oklch()`, because its lightness axis matches perception, and that is what lets all six families be pinned to the same number.
