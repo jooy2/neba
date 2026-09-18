@@ -231,9 +231,7 @@ describe('NumberField', () => {
     });
 
     it('can be turned off', async () => {
-      const screen = await render(
-        <NumberField label="Seats" defaultValue={3} allowWheelScrub={false} />
-      );
+      const screen = await render(<NumberField label="Seats" defaultValue={3} wheel={false} />);
       const input = screen.getByRole('textbox').element() as HTMLInputElement;
 
       input.focus();

@@ -107,9 +107,14 @@ export interface NumberFieldProps
    *
    * Off is for a field inside something that scrolls under a pointer that has
    * to stay put — a long form in a Drawer, a cell in a table body.
+   *
+   * The same prop [ScrollZone](../layout/scroll-zone) and
+   * [Tabs](../surfaces/tabs) have, and deliberately the same word: "does this
+   * answer the wheel" is one question, and a library that spells it three ways
+   * is a library you have to look up three times.
    * @default true
    */
-  allowWheelScrub?: boolean;
+  wheel?: boolean;
   /**
    * How the number is written — currency, percent, decimal places. Passed
    * straight to `Intl.NumberFormat`, so the field shows `$1,240.00` and still
@@ -244,7 +249,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
       largeStep,
       smallStep,
       snapOnStep,
-      allowWheelScrub = true,
+      wheel = true,
       format,
       locale,
       steppers = 'end',
@@ -354,7 +359,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           largeStep={largeStep}
           smallStep={smallStep}
           snapOnStep={snapOnStep}
-          allowWheelScrub={allowWheelScrub}
+          allowWheelScrub={wheel}
           format={format}
           locale={locale}
           disabled={disabled}

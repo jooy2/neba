@@ -8839,7 +8839,7 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
-      name: 'allowWheelScrub',
+      name: 'wheel',
       type: 'boolean',
       default: 'true',
       description: {

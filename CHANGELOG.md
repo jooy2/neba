@@ -4,7 +4,7 @@
 
 ### Breaking changes
 
-- **A `NumberField` answers the wheel by default.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop. It is on now, and both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number. A reader who has not put the caret in the field scrolls the page over it exactly as before. Pass `allowWheelScrub={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
+- **A `NumberField` answers the wheel by default, through a prop now called `wheel`.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop — and it was a second spelling of a question `ScrollZone` and `Tabs` already ask as `wheel`. It is `wheel`, and it is on. Both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number, so a reader who has not put the caret in the field scrolls the page over it exactly as before. Rename `allowWheelScrub` to `wheel` where it was passed, and pass `wheel={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
 
 ### Fixed
 

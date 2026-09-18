@@ -41,7 +41,11 @@ The shell is identical to [TextField](./text-field)'s, so a field of the same `s
 
 The arrow keys move by `step`, Shift by `largeStep` and Alt by `smallStep`. `snapOnStep` rounds the result to a multiple of `step`.
 
-The wheel moves by `step` too, while the field holds the focus and the pointer is over the number. Both have to be true, so the page scrolls as usual over a field nobody has put the caret in. `allowWheelScrub={false}` turns it off, for a field inside something that has to keep scrolling under a pointer resting on it.
+### wheel
+
+`wheel` turns a mouse wheel rolled over the number into a step. It is on by default, and `wheel={false}` turns it off.
+
+Both halves have to be true before anything happens: the field holds the focus, and the pointer is over the number. So the page scrolls as usual over a field nobody has put the caret in, and the gesture is taken from it only while the field is being worked. Turn it off for a field inside something that has to keep scrolling under a pointer resting on it.
 
 ### format and locale
 
