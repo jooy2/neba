@@ -212,5 +212,12 @@ export const id: NebaLocale = {
   tool: {
     arguments: 'Argumen',
     result: 'Hasil'
+  },
+  approval: {
+    request: 'Perlu izin',
+    answered: 'Sudah dijawab',
+    low: 'Risiko rendah',
+    medium: 'Risiko sedang',
+    high: 'Risiko tinggi'
   }
 };

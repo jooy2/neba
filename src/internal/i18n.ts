@@ -992,6 +992,36 @@ export const toolMessages: MessageTable<ToolMessages> = {
   }
 };
 
+/** Approval. */
+export interface ApprovalMessages {
+  /** The heading over a request that was not given one. */
+  request: string;
+  /** What the record line is called once the request has been answered. */
+  answered: string;
+  /** The three risk levels, as the chip beside the heading draws them. */
+  low: string;
+  medium: string;
+  high: string;
+}
+
+/**
+ * The `approval` namespace, as Approval reads it.
+ *
+ * The three risk words are written out in full — "Low risk" rather than "Low" —
+ * because the chip is the only thing on the card that says what the level is
+ * *of*, and a lone adjective beside a heading reads as a description of the
+ * heading.
+ */
+export const approvalMessages: MessageTable<ApprovalMessages> = {
+  '': {
+    request: 'Permission needed',
+    answered: 'Answered',
+    low: 'Low risk',
+    medium: 'Medium risk',
+    high: 'High risk'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1204,6 +1234,8 @@ export interface NebaLocale {
   run?: Partial<RunMessages>;
   /** ToolCall. */
   tool?: Partial<ToolMessages>;
+  /** Approval. */
+  approval?: Partial<ApprovalMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1241,7 +1273,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   file: fileMessages as MessageTable<never>,
   timeline: timelineMessages as MessageTable<never>,
   run: runMessages as MessageTable<never>,
-  tool: toolMessages as MessageTable<never>
+  tool: toolMessages as MessageTable<never>,
+  approval: approvalMessages as MessageTable<never>
 };
 
 /**

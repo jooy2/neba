@@ -18,6 +18,7 @@ import {
   hasContent,
   iconClasses,
   metaTextClasses,
+  preformattedClasses,
   radiusClasses,
   sheetBodyClasses,
   sheetTitleClasses,
@@ -152,16 +153,6 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
 
 /** The name, one step above the two headings inside the panel. */
 const nameClasses: Record<NebaSize, string> = sheetTitleClasses;
-
-/**
- * A block of preformatted text inside the panel.
- *
- * `overflow-x-auto` rather than a wrap: JSON and a stack trace both mean
- * something by where their lines break, and re-breaking them to fit a column is
- * what turns an argument list into a paragraph.
- */
-const preClasses =
-  'm-0 max-h-64 overflow-auto rounded-(--neba-radius-sm) bg-(--neba-groove) p-2 font-mono text-[0.9em]/[1.5] whitespace-pre';
 
 /** Which block a status shows, and which of the two headings goes over it. */
 function bodyOf(
@@ -433,7 +424,9 @@ function Block({
         {label}
       </span>
       {typeof value === 'string' ? (
-        <pre className={cx(preClasses, accent ? 'text-(--n-accent)' : '')}>{value}</pre>
+        <pre className={cx(preformattedClasses, 'max-h-64', accent ? 'text-(--n-accent)' : '')}>
+          {value}
+        </pre>
       ) : (
         <div className={accent ? 'text-(--n-accent)' : undefined}>{value}</div>
       )}

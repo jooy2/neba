@@ -208,5 +208,12 @@ export const ja: NebaLocale = {
   tool: {
     arguments: '引数',
     result: '結果'
+  },
+  approval: {
+    request: '許可が必要です',
+    answered: '回答済み',
+    low: 'リスク 低',
+    medium: 'リスク 中',
+    high: 'リスク 高'
   }
 };

@@ -212,5 +212,12 @@ export const hi: NebaLocale = {
   tool: {
     arguments: 'आर्ग्युमेंट',
     result: 'परिणाम'
+  },
+  approval: {
+    request: 'अनुमति चाहिए',
+    answered: 'उत्तर दिया गया',
+    low: 'कम जोखिम',
+    medium: 'मध्यम जोखिम',
+    high: 'उच्च जोखिम'
   }
 };

@@ -208,5 +208,12 @@ export const it: NebaLocale = {
   tool: {
     arguments: 'Argomenti',
     result: 'Risultato'
+  },
+  approval: {
+    request: 'Serve un permesso',
+    answered: 'Risposto',
+    low: 'Rischio basso',
+    medium: 'Rischio medio',
+    high: 'Rischio alto'
   }
 };

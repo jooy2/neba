@@ -208,5 +208,12 @@ export const vi: NebaLocale = {
   tool: {
     arguments: 'Đối số',
     result: 'Kết quả'
+  },
+  approval: {
+    request: 'Cần quyền',
+    answered: 'Đã trả lời',
+    low: 'Rủi ro thấp',
+    medium: 'Rủi ro trung bình',
+    high: 'Rủi ro cao'
   }
 };

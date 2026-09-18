@@ -208,5 +208,12 @@ export const ko: NebaLocale = {
   tool: {
     arguments: '인자',
     result: '결과'
+  },
+  approval: {
+    request: '권한이 필요합니다',
+    answered: '응답함',
+    low: '위험 낮음',
+    medium: '위험 보통',
+    high: '위험 높음'
   }
 };

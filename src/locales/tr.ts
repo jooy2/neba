@@ -208,5 +208,12 @@ export const tr: NebaLocale = {
   tool: {
     arguments: 'Bağımsız değişkenler',
     result: 'Sonuç'
+  },
+  approval: {
+    request: 'İzin gerekiyor',
+    answered: 'Yanıtlandı',
+    low: 'Düşük risk',
+    medium: 'Orta risk',
+    high: 'Yüksek risk'
   }
 };

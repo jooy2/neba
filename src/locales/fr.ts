@@ -212,5 +212,12 @@ export const fr: NebaLocale = {
   tool: {
     arguments: 'Arguments',
     result: 'Résultat'
+  },
+  approval: {
+    request: 'Autorisation requise',
+    answered: 'Répondu',
+    low: 'Risque faible',
+    medium: 'Risque moyen',
+    high: 'Risque élevé'
   }
 };

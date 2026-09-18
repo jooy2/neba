@@ -212,5 +212,12 @@ export const ru: NebaLocale = {
   tool: {
     arguments: 'Аргументы',
     result: 'Результат'
+  },
+  approval: {
+    request: 'Нужно разрешение',
+    answered: 'Дан ответ',
+    low: 'Низкий риск',
+    medium: 'Средний риск',
+    high: 'Высокий риск'
   }
 };

@@ -15263,5 +15263,181 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Anything to put under the result: a follow-up action, a note'
       }
     }
+  ],
+
+  ApprovalOption: [
+    {
+      name: 'value',
+      type: 'string',
+      required: true,
+      description: {
+        ko: 'onDecide로 전해지는 값이자, 이후 그 답을 식별하는 값',
+        en: 'What is reported to onDecide, and what identifies the answer afterwards'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      required: true,
+      description: { ko: '버튼에 쓰이는 말', en: 'The word on the button' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '버튼 줄 아래에 놓이는 한 줄. 그 답이 무엇을 약속하는지',
+        en: 'A line under the row of buttons, saying what this answer commits to'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '이 버튼 하나의 색 계열',
+        en: "Overrides the card's family for this one button"
+      }
+    },
+    {
+      name: 'variant',
+      type: VARIANT,
+      default: "'outline'",
+      shared: true,
+      description: {
+        ko: '이 버튼 하나의 무게. 기본값이 outline인 것은 결정이며, 강조할 답은 호출하는 쪽이 고릅니다',
+        en: 'Overrides the weight of this one button. outline by default, and that is the decision rather than the absence of one'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: { ko: '라벨 앞의 글리프', en: 'A glyph before the label' }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제시는 되지만 고를 수 없는 답',
+        en: 'Offered but not available'
+      }
+    }
+  ],
+
+  Approval: [
+    {
+      name: 'options',
+      type: 'readonly ApprovalOption[]',
+      required: true,
+      description: { ko: '고를 수 있는 답들. 보통 셋', en: 'The answers. Three is the usual shape' }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      default: { ko: "locale의 'Permission needed'", en: "the locale's 'Permission needed'" },
+      description: { ko: '무엇을 묻고 있는지', en: 'What is being asked' }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄. 왜 묻는지',
+        en: 'The sentence under the heading, saying why'
+      }
+    },
+    {
+      name: 'details',
+      type: 'ReactNode',
+      description: {
+        ko: '에이전트가 하려는 일. 문자열은 서식이 있는 텍스트로, 노드는 그대로 그립니다. 인자를 고칠 수 있는 폼이 들어가는 자리',
+        en: 'What the agent is asking to do. A string is drawn as preformatted text; a node is rendered as it is, which is where an editable form of the arguments goes'
+      }
+    },
+    {
+      name: 'risk',
+      type: "'low' | 'medium' | 'high'",
+      description: {
+        ko: '무엇이 걸려 있는지. 제목 옆 칩에 단어로 쓰이고, 카드의 색 계열을 가져갑니다. low는 info, medium은 warning, high는 danger',
+        en: "How much is at stake. Drawn as a word on a chip, and it takes over the card's family: low is info, medium is warning, high is danger"
+      }
+    },
+    {
+      name: 'decision',
+      type: 'string | null',
+      default: 'null',
+      description: {
+        ko: '어떤 답이 선택됐는지. null은 아직 기다리는 중. 직접 제어할 때 씁니다',
+        en: 'Which option was taken. null is a request still waiting. Pass it to drive the Approval yourself'
+      }
+    },
+    {
+      name: 'onDecide',
+      type: '(value: string) => void',
+      description: {
+        ko: '버튼이 눌렸을 때 그 value로',
+        en: "Called with an option's value when its button is pressed"
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      default: { ko: '색 계열의 severity 표시', en: "the family's severity mark" },
+      description: {
+        ko: '맨 앞의 글리프. false면 그리지 않습니다',
+        en: 'The glyph at the start. false drops it'
+      }
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '모든 답이 답하지 않게 됩니다. 나머지는 그대로입니다',
+        en: 'Every option stops answering. The card stays exactly as it is otherwise'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      color: "'warning'",
+      colorDescription: {
+        ko: '색 계열. risk를 주면 그쪽이 이깁니다. 기본값이 warning인 것은, 승인 요청이 곧 진행해도 되느냐는 질문이기 때문입니다',
+        en: 'The colour family; risk wins over it. warning by default, because an approval is a question about whether to go ahead'
+      },
+      variantDescription: {
+        ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않습니다',
+        en: 'Weight of the sheet, said the way a container says it: never dyed'
+      }
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '기본 제목과 risk 칩을 쓸 언어. BCP 47 태그',
+        en: 'Which language the default heading and the risk chip are written in, as a BCP 47 tag'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<ApprovalMessages>',
+      description: { ko: '그 단어들을 직접 씁니다', en: 'Those words, written out' }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'title' | 'description' | 'details' | 'actions'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 className입니다',
+        en: 'Class names for the parts behind the root. className is the root'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'details 아래, 답 위에 놓을 것',
+        en: 'Anything else the body needs, under the details and above the answers'
+      }
+    }
   ]
 };

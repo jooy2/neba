@@ -8,9 +8,13 @@
 
 ### Added
 
-- **`ToolCall`** — one tool invocation in an agent transcript: the name, what it was called with, what came back and how long it took, with everything but the header folded away behind it. `status` is the new shared `NebaRunStatus` — `pending`, `running`, `success`, `error` — and each of the four gets its own shape as well as its own colour, so a reader who cannot tell the two reds apart still has a dashed ring, a turning ring, a tick and a cross. `color` decides only what a *running* call looks like: a failed one is `danger` and a finished one is `success` on every ToolCall on the page, because a red row that meant the product's accent colour would have spent the one signal it had.
+- **`ToolCall`** — one tool invocation in an agent transcript: the name, what it was called with, what came back and how long it took, with everything but the header folded away behind it. `status` is the new shared `NebaRunStatus` — `pending`, `running`, `success`, `error` — and each of the four gets its own shape as well as its own colour, so a reader who cannot tell the two reds apart still has a dashed ring, a turning ring, a tick and a cross. `color` decides only what a _running_ call looks like: a failed one is `danger` and a finished one is `success` on every ToolCall on the page, because a red row that meant the product's accent colour would have spent the one signal it had.
 
   A string `args` or `result` goes into a `<pre>` with its own line breaks kept, since indented JSON, a stack trace and a diff all mean something by where their lines break; anything else is rendered as the node it is. Leave `duration` out and a `running` call counts its own seconds, saying nothing for the first one and stopping the moment a real figure arrives. And a call that fails opens itself, unless `open` is holding it — a reader should not have to go looking for the reason something did not work.
+
+- **`Approval`** — the agent asking permission, and the record of what was answered. A `Confirm` and a `Popconfirm` are opened by the reader, offer two answers, and are gone the moment one is taken; this is opened by the agent, offers as many as the agent has, and stays, because a transcript in which the question disappears once it is answered cannot be read back to find out what was agreed to. `risk` is `low`, `medium` or `high`, written out as a word on a chip and never as a colour alone, and it takes over the card's family.
+
+  **No option is emphasised by default.** Every button is `outline` in the card's family and an option's own `variant` is how one is singled out — a permission request whose loudest button is "Allow" is a request answered by the shape of the buttons rather than by the reader.
 
 ### Changed
 

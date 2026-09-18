@@ -211,5 +211,12 @@ export const zhHant: NebaLocale = {
   tool: {
     arguments: '參數',
     result: '結果'
+  },
+  approval: {
+    request: '需要授權',
+    answered: '已回應',
+    low: '低風險',
+    medium: '中風險',
+    high: '高風險'
   }
 };

@@ -211,5 +211,12 @@ export const zhHans: NebaLocale = {
   tool: {
     arguments: '参数',
     result: '结果'
+  },
+  approval: {
+    request: '需要授权',
+    answered: '已回应',
+    low: '低风险',
+    medium: '中风险',
+    high: '高风险'
   }
 };

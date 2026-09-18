@@ -208,5 +208,12 @@ export const th: NebaLocale = {
   tool: {
     arguments: 'อาร์กิวเมนต์',
     result: 'ผลลัพธ์'
+  },
+  approval: {
+    request: 'ต้องขออนุญาต',
+    answered: 'ตอบแล้ว',
+    low: 'ความเสี่ยงต่ำ',
+    medium: 'ความเสี่ยงปานกลาง',
+    high: 'ความเสี่ยงสูง'
   }
 };

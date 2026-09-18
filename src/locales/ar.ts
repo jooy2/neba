@@ -208,5 +208,12 @@ export const ar: NebaLocale = {
   tool: {
     arguments: 'الوسائط',
     result: 'النتيجة'
+  },
+  approval: {
+    request: 'يلزم إذن',
+    answered: 'تمت الإجابة',
+    low: 'خطر منخفض',
+    medium: 'خطر متوسط',
+    high: 'خطر مرتفع'
   }
 };

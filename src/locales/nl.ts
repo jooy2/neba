@@ -208,5 +208,12 @@ export const nl: NebaLocale = {
   tool: {
     arguments: 'Argumenten',
     result: 'Resultaat'
+  },
+  approval: {
+    request: 'Toestemming nodig',
+    answered: 'Beantwoord',
+    low: 'Laag risico',
+    medium: 'Gemiddeld risico',
+    high: 'Hoog risico'
   }
 };

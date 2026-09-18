@@ -628,6 +628,26 @@ export function clampSlot(lines: number | undefined): React.CSSProperties | unde
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 
 /**
+ * A block of text that arrived already formatted.
+ *
+ * What a tool was called with, what it answered, and the arguments an
+ * [Approval](../components/agent/approval) is asking about are all the same
+ * thing: a string somebody else laid out. Indented JSON, a stack trace and a
+ * diff each mean something by where their lines break, so the block scrolls
+ * rather than wraps — re-breaking those to fit a column is what turns an
+ * argument list into a paragraph.
+ *
+ * It sits in the groove rather than on a tinted sheet, for the reason
+ * `surfaceSlots` leaves a container's panel undyed: what is in here arrives
+ * with its own colours, and a syntax palette was not chosen against an accent.
+ *
+ * No height is set. How tall a block may get is the component's decision, and
+ * the two that draw one want different answers.
+ */
+export const preformattedClasses =
+  'm-0 overflow-auto rounded-(--neba-radius-sm) bg-(--neba-groove) p-2 font-mono text-[0.9em]/[1.5] whitespace-pre';
+
+/**
  * Text for a screen reader and nobody else: the sentence behind a bare number
  * on a Badge, the page number under a Pagination chevron, the file count a
  * FilePicker reports.

@@ -4,6 +4,7 @@ import {
   AccordionItem,
   Alert,
   Anchor,
+  Approval,
   AnimateAppear,
   AnimateBlink,
   AnimateSplit,
@@ -2428,6 +2429,27 @@ const GROUPS: Group[] = [
               result="4 hits"
             />
             <ToolCall size="sm" name="read_file" status="running" />
+          </div>
+        )
+      },
+      {
+        name: 'Approval',
+        summary: {
+          ko: '에이전트가 권한을 묻고, 답을 그대로 남깁니다',
+          en: 'The agent asking permission, and the record of the answer'
+        },
+        path: '/components/agent/approval',
+        preview: (
+          <div className="w-full max-w-64">
+            <Approval
+              size="sm"
+              risk="high"
+              title="Delete a branch?"
+              options={[
+                { value: 'allow', label: 'Allow' },
+                { value: 'deny', label: 'Deny', color: 'danger' }
+              ]}
+            />
           </div>
         )
       }

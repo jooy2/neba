@@ -5,6 +5,7 @@ export * from './components/alert/index.js';
 export * from './components/anchor/index.js';
 export * from './components/animate-appear/index.js';
 export * from './components/app-logo/index.js';
+export * from './components/approval/index.js';
 export * from './components/animate-blink/index.js';
 export * from './components/animate-counter/index.js';
 export * from './components/animate-fade/index.js';
