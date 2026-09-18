@@ -99,6 +99,25 @@ export type NebaWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type NebaDateGranularity = 'day' | 'month' | 'year';
 
 /**
+ * How far a piece of work an agent is doing has got.
+ *
+ * One vocabulary rather than one per component, for the reason `NebaSize` is
+ * one: a tool call and a step of a plan are the same lifecycle seen at two
+ * scales, and a library that said `running` on one and `current` on the other
+ * would make a caller translate between them in the middle of a transcript.
+ * [Timeline](../components/display/timeline) keeps its own three words on
+ * purpose — a step of a checkout is `upcoming` rather than `pending`, because
+ * nothing is waiting on it.
+ *
+ * Four, and the list is closed. `success` and `error` are two endings and not
+ * one `done` with a flag beside it, because what a reader needs from a failed
+ * step is the thing a boolean would bury; and there is no `cancelled`, because
+ * a run that was stopped ended without succeeding, which is what `error`
+ * already says.
+ */
+export type NebaRunStatus = 'pending' | 'running' | 'success' | 'error';
+
+/**
  * The viewport widths the layout components branch on, smallest first.
  *
  * Deliberately the same five names as `NebaSize`, and deliberately *not* the

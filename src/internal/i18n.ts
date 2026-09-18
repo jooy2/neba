@@ -943,6 +943,55 @@ export const stepsMessages: MessageTable<StepsMessages> = {
   }
 };
 
+/** ToolCall and AgentSteps. */
+export interface RunMessages {
+  /** Not started. */
+  pending: string;
+  /** Going on now. */
+  running: string;
+  /** Ended, and did what it was asked. */
+  success: string;
+  /** Ended, and did not. */
+  error: string;
+}
+
+/**
+ * The `run` namespace, as ToolCall and AgentSteps read it.
+ *
+ * Its own rather than four keys on `tool`, because what it names is the
+ * `NebaRunStatus` vocabulary and not one component's chrome: an AgentSteps
+ * draws a marker per step and never says the words "Arguments" or "Result", so
+ * a step list that reached those through one table would carry them.
+ *
+ * Every one of the four is read out and none of them is drawn. The shape says
+ * which state a row is in — a hollow ring, a turning ring, a tick, a cross —
+ * and these are the same sentence for a reader who has no shape to look at.
+ */
+export const runMessages: MessageTable<RunMessages> = {
+  '': {
+    pending: 'Waiting',
+    running: 'Running',
+    success: 'Finished',
+    error: 'Failed'
+  }
+};
+
+/** ToolCall. */
+export interface ToolMessages {
+  /** The heading over what the tool was called with. */
+  arguments: string;
+  /** And over what it answered. */
+  result: string;
+}
+
+/** The `tool` namespace, as ToolCall reads it. */
+export const toolMessages: MessageTable<ToolMessages> = {
+  '': {
+    arguments: 'Arguments',
+    result: 'Result'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1151,6 +1200,10 @@ export interface NebaLocale {
   file?: Partial<FileMessages>;
   /** Timeline. */
   timeline?: Partial<TimelineMessages>;
+  /** ToolCall and AgentSteps. */
+  run?: Partial<RunMessages>;
+  /** ToolCall. */
+  tool?: Partial<ToolMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1186,7 +1239,9 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   steps: stepsMessages as MessageTable<never>,
   otp: otpMessages as MessageTable<never>,
   file: fileMessages as MessageTable<never>,
-  timeline: timelineMessages as MessageTable<never>
+  timeline: timelineMessages as MessageTable<never>,
+  run: runMessages as MessageTable<never>,
+  tool: toolMessages as MessageTable<never>
 };
 
 /**

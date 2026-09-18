@@ -198,5 +198,15 @@ export const ar: NebaLocale = {
   timeline: {
     complete: 'مكتمل',
     upcoming: 'قادم'
+  },
+  run: {
+    pending: 'في الانتظار',
+    running: 'قيد التنفيذ',
+    success: 'اكتمل',
+    error: 'فشل'
+  },
+  tool: {
+    arguments: 'الوسائط',
+    result: 'النتيجة'
   }
 };

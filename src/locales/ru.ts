@@ -202,5 +202,15 @@ export const ru: NebaLocale = {
   timeline: {
     complete: 'Завершено',
     upcoming: 'Предстоит'
+  },
+  run: {
+    pending: 'Ожидание',
+    running: 'Выполняется',
+    success: 'Завершено',
+    error: 'Ошибка'
+  },
+  tool: {
+    arguments: 'Аргументы',
+    result: 'Результат'
   }
 };

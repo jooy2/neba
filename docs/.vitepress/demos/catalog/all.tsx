@@ -140,6 +140,7 @@ import {
   Toggle,
   ToggleGroup,
   Toolbar,
+  ToolCall,
   Tooltip,
   Tour,
   Transfer,
@@ -2398,6 +2399,35 @@ const GROUPS: Group[] = [
           <div className="flex flex-col items-center gap-4">
             <ProgressBox size="lg" />
             <ProgressBox size="lg" value={62} color="info" />
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'Agent',
+    note: {
+      ko: '에이전트가 무엇을 하고 있는지 보여 주는 것들',
+      en: 'The things that show what an agent is doing'
+    },
+    entries: [
+      {
+        name: 'ToolCall',
+        summary: {
+          ko: '도구 호출 하나. 무엇을 불렀고 무엇이 돌아왔는지',
+          en: 'One tool invocation: what was called and what came back'
+        },
+        path: '/components/agent/tool-call',
+        preview: (
+          <div className="flex w-full max-w-64 flex-col gap-2">
+            <ToolCall
+              size="sm"
+              name="search_docs"
+              status="success"
+              duration={412}
+              result="4 hits"
+            />
+            <ToolCall size="sm" name="read_file" status="running" />
           </div>
         )
       }

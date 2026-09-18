@@ -447,6 +447,31 @@ export function DotIcon() {
   );
 }
 
+/**
+ * The empty ring: something that has not started.
+ *
+ * The third member of the set a run status is drawn with — a hollow ring, a
+ * turning ring, a tick in a circle, a cross in a circle — so `pending`,
+ * `running`, `success` and `error` are four shapes at one diameter rather than
+ * four colours of one shape. A reader who cannot tell the colours apart still
+ * has four marks.
+ */
+export function CircleIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle
+        cx="8"
+        cy="8"
+        r="6.25"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="2 2.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** The neutral note: a circled `i` without the serif problem an `i` has at 16px. */
 export function NoteIcon() {
   return (

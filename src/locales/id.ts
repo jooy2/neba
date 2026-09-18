@@ -202,5 +202,15 @@ export const id: NebaLocale = {
   timeline: {
     complete: 'Selesai',
     upcoming: 'Mendatang'
+  },
+  run: {
+    pending: 'Menunggu',
+    running: 'Berjalan',
+    success: 'Selesai',
+    error: 'Gagal'
+  },
+  tool: {
+    arguments: 'Argumen',
+    result: 'Hasil'
   }
 };

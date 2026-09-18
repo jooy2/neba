@@ -35,6 +35,7 @@ const COLOR = "'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'inf
 const VARIANT = "'solid' | 'outline' | 'text'";
 const DENSITY = "'default' | 'compact'";
 const ELEVATION = '0 | 1 | 2 | 3';
+const RUN_STATUS = "'pending' | 'running' | 'success' | 'error'";
 const ORIENTATION = "'horizontal' | 'vertical'";
 const SIDE = "'top' | 'right' | 'bottom' | 'left'";
 const POSITION = "'static' | 'sticky' | 'fixed'";
@@ -15122,6 +15123,144 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '그 그림이 볼 수 없는 독자에게 하는 말',
         en: 'What that picture says for a reader who cannot see it'
+      }
+    }
+  ],
+
+  ToolCall: [
+    {
+      name: 'name',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '호출된 도구의 이름. 문장이 아니라 식별자이므로 고정폭 글꼴로 그립니다',
+        en: 'What was called. Drawn in the monospaced face, because a tool name is an identifier rather than a phrase'
+      }
+    },
+    {
+      name: 'status',
+      type: RUN_STATUS,
+      default: "'pending'",
+      shared: true,
+      description: {
+        ko: '호출이 어디까지 갔는지. 표시와 색 계열, 그리고 패널이 무엇을 보여 줄지를 정합니다',
+        en: 'How far the call has got. It decides the mark, the colour family and what the panel shows'
+      }
+    },
+    {
+      name: 'args',
+      type: 'ReactNode',
+      description: {
+        ko: '도구에 넘긴 인자. 문자열은 서식이 있는 텍스트로, 노드는 그대로 그립니다',
+        en: 'What the tool was called with. A string is drawn as preformatted text; a node is rendered as it is'
+      }
+    },
+    {
+      name: 'result',
+      type: 'ReactNode',
+      description: {
+        ko: '도구가 돌려준 값. 같은 규칙',
+        en: 'What it answered, under the same rule'
+      }
+    },
+    {
+      name: 'error',
+      type: 'ReactNode',
+      description: {
+        ko: 'status가 error일 때 result 대신 보여 줄 내용. 없으면 result를 그대로 씁니다',
+        en: 'What went wrong, shown in place of result while status is error. Without it a failed call shows its result'
+      }
+    },
+    {
+      name: 'duration',
+      type: 'number',
+      description: {
+        ko: '호출에 걸린 시간(ms). 주지 않으면 running인 동안 스스로 세고, 첫 1초 동안은 아무 말도 하지 않습니다',
+        en: 'How long the call took, in milliseconds. Left out, a running call counts its own time and says nothing for the first second'
+      }
+    },
+    {
+      name: 'meta',
+      type: 'ReactNode',
+      description: {
+        ko: '헤더 줄에 함께 놓을 것. 서버 이름, 토큰 수, 재시도 표시 같은 것',
+        en: 'Anything else that belongs on the header line: a server name, a token count, a retry badge'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      default: { ko: 'status의 표시', en: "the status's mark" },
+      description: {
+        ko: '맨 앞의 표시. false면 그리지 않습니다',
+        en: 'The mark at the start. false drops it'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '패널이 열려 있는지. 직접 제어할 때 씁니다',
+        en: 'Whether the panel is showing. Pass it to drive the disclosure yourself'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제어하지 않을 때의 시작 상태. 실패한 호출은 이 값과 무관하게 스스로 열립니다',
+        en: 'Where an uncontrolled ToolCall starts. A call that fails opens itself whatever this said'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '헤더가 패널을 열거나 닫았을 때',
+        en: 'Called when the header opens or closes the panel'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '시트의 무게. 컨테이너의 방식대로 색을 들이지 않습니다. transcript에는 text가 맞습니다',
+        en: 'Weight of the sheet, said the way a container says it: never dyed. `text` is what a transcript wants'
+      },
+      colorDescription: {
+        ko: 'running일 때의 색 계열. success는 success로, error는 danger로, pending은 secondary로 고정입니다',
+        en: 'The family a running call takes. success, error and pending are fixed to success, danger and secondary'
+      }
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '상태와 두 제목을 말할 언어. BCP 47 태그',
+        en: 'Which language the status and the two headings are said in, as a BCP 47 tag'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<RunMessages & ToolMessages>',
+      description: { ko: '그 단어들을 직접 씁니다', en: 'Those words, written out' }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'header' | 'body' | 'args' | 'result'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 className입니다',
+        en: 'Class names for the parts behind the root. className is the root'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: 'result 아래에 놓을 것. 후속 액션이나 메모',
+        en: 'Anything to put under the result: a follow-up action, a note'
       }
     }
   ]

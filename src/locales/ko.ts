@@ -198,5 +198,15 @@ export const ko: NebaLocale = {
   timeline: {
     complete: '완료',
     upcoming: '예정'
+  },
+  run: {
+    pending: '대기 중',
+    running: '실행 중',
+    success: '완료',
+    error: '실패'
+  },
+  tool: {
+    arguments: '인자',
+    result: '결과'
   }
 };

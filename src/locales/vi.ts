@@ -198,5 +198,15 @@ export const vi: NebaLocale = {
   timeline: {
     complete: 'Đã hoàn thành',
     upcoming: 'Sắp tới'
+  },
+  run: {
+    pending: 'Đang chờ',
+    running: 'Đang chạy',
+    success: 'Hoàn tất',
+    error: 'Thất bại'
+  },
+  tool: {
+    arguments: 'Đối số',
+    result: 'Kết quả'
   }
 };

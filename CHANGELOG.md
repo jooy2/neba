@@ -6,6 +6,12 @@
 
 - **A `NumberField` answers the wheel by default, through a prop now called `wheel`.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop — and it was a second spelling of a question `ScrollZone` and `Tabs` already ask as `wheel`. It is `wheel`, and it is on. Both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number, so a reader who has not put the caret in the field scrolls the page over it exactly as before. Rename `allowWheelScrub` to `wheel` where it was passed, and pass `wheel={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
 
+### Added
+
+- **`ToolCall`** — one tool invocation in an agent transcript: the name, what it was called with, what came back and how long it took, with everything but the header folded away behind it. `status` is the new shared `NebaRunStatus` — `pending`, `running`, `success`, `error` — and each of the four gets its own shape as well as its own colour, so a reader who cannot tell the two reds apart still has a dashed ring, a turning ring, a tick and a cross. `color` decides only what a *running* call looks like: a failed one is `danger` and a finished one is `success` on every ToolCall on the page, because a red row that meant the product's accent colour would have spent the one signal it had.
+
+  A string `args` or `result` goes into a `<pre>` with its own line breaks kept, since indented JSON, a stack trace and a diff all mean something by where their lines break; anything else is rendered as the node it is. Leave `duration` out and a `running` call counts its own seconds, saying nothing for the first one and stopping the moment a real figure arrives. And a call that fails opens itself, unless `open` is holding it — a reader should not have to go looking for the reason something did not work.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

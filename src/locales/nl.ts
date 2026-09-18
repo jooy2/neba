@@ -198,5 +198,15 @@ export const nl: NebaLocale = {
   timeline: {
     complete: 'Voltooid',
     upcoming: 'Gepland'
+  },
+  run: {
+    pending: 'Wacht',
+    running: 'Bezig',
+    success: 'Klaar',
+    error: 'Mislukt'
+  },
+  tool: {
+    arguments: 'Argumenten',
+    result: 'Resultaat'
   }
 };

@@ -202,5 +202,15 @@ export const hi: NebaLocale = {
   timeline: {
     complete: 'पूरा हुआ',
     upcoming: 'आगामी'
+  },
+  run: {
+    pending: 'प्रतीक्षारत',
+    running: 'चल रहा है',
+    success: 'पूर्ण',
+    error: 'विफल'
+  },
+  tool: {
+    arguments: 'आर्ग्युमेंट',
+    result: 'परिणाम'
   }
 };

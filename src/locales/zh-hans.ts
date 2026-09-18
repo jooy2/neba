@@ -201,5 +201,15 @@ export const zhHans: NebaLocale = {
   timeline: {
     complete: '已完成',
     upcoming: '未开始'
+  },
+  run: {
+    pending: '等待中',
+    running: '运行中',
+    success: '已完成',
+    error: '已失败'
+  },
+  tool: {
+    arguments: '参数',
+    result: '结果'
   }
 };

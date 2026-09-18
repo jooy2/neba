@@ -198,5 +198,15 @@ export const pt: NebaLocale = {
   timeline: {
     complete: 'Concluído',
     upcoming: 'Pendente'
+  },
+  run: {
+    pending: 'Aguardando',
+    running: 'Em execução',
+    success: 'Concluído',
+    error: 'Falhou'
+  },
+  tool: {
+    arguments: 'Argumentos',
+    result: 'Resultado'
   }
 };

@@ -198,5 +198,15 @@ export const ja: NebaLocale = {
   timeline: {
     complete: '完了',
     upcoming: '未着手'
+  },
+  run: {
+    pending: '待機中',
+    running: '実行中',
+    success: '完了',
+    error: '失敗'
+  },
+  tool: {
+    arguments: '引数',
+    result: '結果'
   }
 };

@@ -198,5 +198,15 @@ export const tr: NebaLocale = {
   timeline: {
     complete: 'Tamamlandı',
     upcoming: 'Sırada'
+  },
+  run: {
+    pending: 'Bekliyor',
+    running: 'Çalışıyor',
+    success: 'Tamamlandı',
+    error: 'Başarısız'
+  },
+  tool: {
+    arguments: 'Bağımsız değişkenler',
+    result: 'Sonuç'
   }
 };

@@ -72,7 +72,7 @@ Three things are deliberately **left unmarked**, and each would break if it were
 
 - **`src/index.ts` and the component barrels.** A barrel only re-exports. Unmarked, it is a module either graph may pull in, so a Server Component importing `neba` reaches the client modules behind it; marked, it would become a boundary of its own and drag the whole barrel across.
 - **`src/locales/**` and `src/internal/i18n.ts`.** `registerMessages` is a plain function a consumer calls at module scope, and `useMessages` is a `useMemo`, which the `react-server` build does export. Marked, `registerMessages` would come back to a consumer's server module as a client reference instead of a function, and calling it would throw.
-- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the eleven that hold a context, an effect or a store (`animate.tsx`, `bottom-navigation.ts`, `button-group.ts`, `calendar.tsx`, `chart-frame.tsx`, `defaults.ts`, `fieldset.ts`, `media.ts`, `menu.ts`, `page-layout.ts`, `screen.ts`) are marked.
+- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the twelve that hold a context, an effect or a store (`animate.tsx`, `bottom-navigation.ts`, `button-group.ts`, `calendar.tsx`, `chart-frame.tsx`, `defaults.ts`, `fieldset.ts`, `media.ts`, `menu.ts`, `page-layout.ts`, `run.tsx`, `screen.ts`) are marked.
 
 The directive only survives the build because `terser.config.json` says `compress.directives: false`. See [Toolchain notes](#toolchain-notes).
 
@@ -136,6 +136,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `sizer.tsx` | `WidthSizer`, which pins a control to its widest value |
 | `responsive.ts` | The table behind every prop that changes at a breakpoint |
 | `progress.ts`, `icons.tsx` | The progress arithmetic, `thresholdColor`, and the shared glyphs |
+| `run.tsx` | What a `NebaRunStatus` looks like, and the clock behind an elapsed time |
 | `animate.tsx`, `text.ts` | The effect table and slots, and grapheme cutting |
 | `chart.ts`, `chart-frame.tsx`, `chart-line.tsx` | Chart arithmetic, everything that is not a mark, and the line marks |
 | `page-layout.ts` | The context the page shell reads |
@@ -169,6 +170,14 @@ The line it draws is the load-bearing part, and it is the same one `styleSlots()
 #### `internal/progress.ts` and `internal/icons.tsx`
 
 More files in `internal/` exist for the same "written once" reason. `progress.ts` is the arithmetic and the ladders the three progress indicators share — they are one component in three shapes, and a `value` of `null` has to mean the same thing on all of them. `thresholdColor` is there too, for `Meter` and `GaugeChart`: two implementations of "which band is this number in" is two chances to disagree about a boundary, on the two components a dashboard is most likely to draw side by side. `icons.tsx` is the glyphs more than one component draws: the × that Chip, Alert, Dialog, Toast and FilePicker all need; the turning ring a Button that is submitting and a TextField that is checking both draw, which has to be one drawing or the two stop reading as the same object in motion; the chevron, drawn pointing **down** once and turned by whoever needs it — Select's trigger, Accordion's header, a submenu's arrow, Pagination's steppers — because rotating a glyph is the one allowance the no-transform rule makes; the tick and the dot that Select and the menu's checkable rows share; and the severity set, which is a piece of the design language rather than a convenience — an alert that says "this went wrong" only in red says it only to some readers, so the shape has to carry the meaning too, and that only holds if every component uses the same shape for the same family. That set is reached through `severityIcon(color)` rather than a `Record` of elements, for the reason the i18n tables are one per namespace: a component that draws a single mark imports that mark, and no React elements are built at import time for a page that may draw none of them.
+
+#### `internal/run.tsx`
+
+`src/internal/run.tsx` is the mark, the colour family and the clock a `NebaRunStatus` comes with. Three components ask the same two questions — ToolCall and AgentSteps ask which mark and which family a status is drawn in, ToolCall and Reasoning ask how long something has been going on — and a transcript draws all three at once, so a tick that is one green on a tool call and another on the step above it is a difference a reader has to decide whether to read anything into.
+
+Two of the four families are deliberately **not** the caller's: `success` is `success` and `error` is `danger` whatever `color` says, because a page where a red row means the product's accent colour has spent the one signal it had. `running` takes the component's family and `pending` is `secondary`, which is the family that says nothing about how something went.
+
+The clock is here for a reason of its own. A component that counts while something runs re-renders on every tick, so the tick rate is a decision about a whole transcript rather than about one row — twenty running calls at ten frames a second is two hundred renders a second for a number nobody reads that closely. It ticks once a second, returns `null` for the first one rather than claiming a precision it does not have, and stops dead the moment a real `duration` arrives.
 
 #### `internal/animate.tsx` and `internal/text.ts`
 
@@ -366,7 +375,7 @@ docs/{ko,en}/
   index.md                  # home — `layout: home`, with a live hero and body sections
   guide/*.md                # getting started, the provider and the hooks
   components/index.md       # the index grid of every component
-  components/{group}/*.md   # one page per component, grouped (charts, display, feedback, inputs, layout, surfaces, transitions)
+  components/{group}/*.md   # one page per component, grouped (agent, charts, display, feedback, inputs, layout, surfaces, transitions)
   examples/overview.md      # every component on one sample screen
   examples/concept-*.md     # one fictional screen per page (landing, dashboard, signup)
   design/*.md               # design language, colour, prop conventions, breakpoints
@@ -390,6 +399,7 @@ The groups are folders, and which one a component belongs in is decided by what 
 - **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Confirm, Popconfirm, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox, Meter, Skeleton, Empty, Tour.
 - **`surfaces`** — it draws a sheet and holds other things on it. Box, Card, Accordion, Collapsible, Tabs, Carousel, Toolbar, Pill, Spoiler, HowToSteps, ChatBubble, HoverCard, Popover, Drawer, WindowPane, Mockup.
 - **`layout`** — it decides where things go. Container, Grid + GridContainer, Flex, Panes, Stack, Show, AspectRatio, ScrollArea, ScrollZone, Portal, and the four that build a page's shell: PageLayout, Header, Footer, Sidebar. `Flex` and `Show` are the two that answer a breakpoint directly — one is a row that becomes a column, the other is its children at some widths and not at others — and both are here rather than in a group of their own because what they decide is still where something goes. The first three draw nothing at all; the page shell is the exception, and a deliberate one — a header and a sidebar are _regions_, and a region has an edge. What they still do not decide is the gutter or the measure inside them, which is Container's, so a PageLayout with a Container in it is the ordinary arrangement.
+- **`agent`** — it shows what an agent is doing. ToolCall, Approval, Reasoning, AgentSteps, Context, Sources, InlineCitation, StreamingText, PromptInput. Its own group rather than spread across `feedback`, `display` and `inputs`, which is where each one would go on its own: what a reader is looking for is not "a component that discloses something" but "the parts an assistant screen is made of", and the nine only make sense next to each other — a `ToolCall` inside an `AgentSteps` under a `Reasoning` above a `PromptInput` is the whole of what this is for. They share a vocabulary the rest of the library does not use (`NebaRunStatus`, a stream that owns the open state, a body that is not there on the first render), and a group is the one place that vocabulary can be stated once.
 - **`transitions`** — it draws nothing either, and moves what is inside it. The seventeen `Animate*` wrappers: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit, AnimateTyping, AnimateScramble, AnimateCounter, AnimateLighting, AnimateMarquee, AnimateHeadline. They are their own group rather than part of `layout` because a layout component is about where something sits and these are about how it got there; and they are one group rather than two — the nine that are only a keyframe and the eight that have to understand their children — because a reader looking for "the animation ones" is looking for one place.
 
 `layout` is separate from `surfaces` for that last reason: a Container is a gutter and a Grid is a width, and the moment either one had a surface it would stop being usable as the outermost thing on a page. Header, Footer and Sidebar sit here rather than in `surfaces` on the other half of the same argument — a Card is a sheet you put things on and could be anywhere, while a header is the top of the page and is only ever one thing.
