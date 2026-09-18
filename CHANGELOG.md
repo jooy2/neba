@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **A `Radio`'s dot sits on whole pixels inside its ring.** The ring is an even box with a 1px border on each side, so what centres the dot is an even content box — and the dot was 5, 7 and 9 pixels across at `xs`, `md` and `xl`. An odd dot in an even box leaves a half-pixel on every side and is drawn half a device pixel out of step with the ring around it, which reads as a dot pushed off centre. The three grow by a pixel, to 6, 8 and 10; `sm` and `lg` were already even and do not move.
+
 - **A focus ring fades in rather than stepping through two widths.** The ring travelled on `outline-width`, and a browser rounds an outline to a whole device pixel: from the first frame past zero it was already a full 1px ring, it held there for the whole 160ms, and it snapped to 2px at the end. Two jumps with a dead interval between them, which is what made every field in the library look like it stuttered into focus. The house transition carries `outline-color` now, and the resting ring is declared transparent — so what moves is a colour, which has 256 steps and rounds to none of them. The resting width stays at zero, so a forced palette still has nothing to paint, and the ring goes at once when the focus leaves. The resize handles on `Sidebar` and `Panes` lose the `[outline:none]` they carried beside their ring, which is the mistake the design notes already described.
 
 ## 1.14.0 (2026-09-15)

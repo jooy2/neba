@@ -194,13 +194,13 @@ describe('RadioGroup', () => {
       const dot = screen.getByRole('radio', { name: 'Team' }).element()
         .firstElementChild as HTMLElement;
 
-      expect(dot).toHaveClass('size-[0.4375rem]');
+      expect(dot).toHaveClass('size-2');
       expect(dot.className).not.toContain('%');
 
       await screen.rerender(<Plans label="Plan" defaultValue="team" size="xl" />);
 
       expect(screen.getByRole('radio', { name: 'Team' }).element().firstElementChild).toHaveClass(
-        'size-[0.5625rem]'
+        'size-2.5'
       );
     });
 

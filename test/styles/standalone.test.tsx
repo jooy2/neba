@@ -33,6 +33,8 @@ import {
   List,
   ListItem,
   Overlay,
+  Radio,
+  RadioGroup,
   Rating,
   Switch,
   TextField,
@@ -276,6 +278,41 @@ describe('neba/styles.css', () => {
       const padding = getComputedStyle(screen.getByRole('list').element()).paddingLeft;
 
       expect(parseFloat(padding)).toBeGreaterThan(0);
+    });
+
+    it("centre a Radio's dot on whole pixels at every size", async () => {
+      // The ring is an even box with a 1px border on each side, so the flex row
+      // centres the dot in an even content box. An odd dot leaves a half-pixel
+      // on every side and is drawn half a device pixel out of step with the
+      // ring around it, which the eye reads as an offset in whichever direction
+      // the rounding fell. Not a design value: the gap may be any whole number
+      // the ladder wants, and this only asks that it is one.
+      const screen = await render(
+        <RadioGroup defaultValue="team">
+          <Radio value="team" label="Team" />
+        </RadioGroup>
+      );
+
+      for (const size of ['xs', 'sm', 'md', 'lg', 'xl'] as const) {
+        await screen.rerender(
+          <RadioGroup defaultValue="team" size={size}>
+            <Radio value="team" label="Team" />
+          </RadioGroup>
+        );
+
+        const ring = screen.getByRole('radio', { name: 'Team' }).element();
+        const box = ring.getBoundingClientRect();
+        const dot = (ring.firstElementChild as HTMLElement).getBoundingClientRect();
+
+        for (const gap of [
+          dot.left - box.left,
+          box.right - dot.right,
+          dot.top - box.top,
+          box.bottom - dot.bottom
+        ]) {
+          expect(gap, `${size} leaves ${gap}px`).toBe(Math.round(gap));
+        }
+      }
     });
   });
 

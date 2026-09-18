@@ -252,13 +252,25 @@ export const tickRadiusClasses: Record<NebaSize, string> = {
  * `38%` of an 18px box is 6.08px, and a circle whose diameter lands between two
  * device pixels is antialiased unevenly on its four sides — which is exactly
  * what reads as "the dot is not centred" even when the box says it is.
+ *
+ * **And an even number of them**, which is the half of that rule the diameters
+ * missed. A ring is an even box with a 1px border on each side, so what the
+ * flex row centres the dot in is an even content box: 12, 14, 16, 18 and 22
+ * pixels. An odd dot in an even box leaves a half-pixel on every side, and is
+ * then drawn half a device pixel out of step with the ring it sits in — the
+ * ring antialiased on one grid and the dot on another, which the eye reads as
+ * an offset in whichever direction the rounding fell. Three of the five steps
+ * were odd, the default among them.
+ *
+ * The even ladder is the old one with the gap around the dot rounded down to a
+ * whole pixel — 3, 4, 4, 5 and 6. `sm` and `lg` do not move at all.
  */
 export const tickDotClasses: Record<NebaSize, string> = {
-  xs: 'size-[0.3125rem]',
+  xs: 'size-1.5',
   sm: 'size-1.5',
-  md: 'size-[0.4375rem]',
+  md: 'size-2',
   lg: 'size-2',
-  xl: 'size-[0.5625rem]'
+  xl: 'size-2.5'
 };
 
 /**
