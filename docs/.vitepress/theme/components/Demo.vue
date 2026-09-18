@@ -50,6 +50,20 @@ const props = defineProps({
   /** Drops the frame — for previews that bring their own, like the index grid. */
   plain: { type: Boolean, default: false },
   /**
+   * Keeps VitePress's router out of the preview's links.
+   *
+   * The router listens for a click on `window` in the capture phase, so it sees
+   * every `<a>` in the page before React does, and for a same-page `#fragment`
+   * it prevents the default and scrolls the *window* to the heading. In an
+   * Anchor preview that is exactly wrong twice over: the page moves, and the
+   * box the headings are actually in does not. `vp-raw` is the router's own
+   * opt-out — it skips any link inside one — and it is not applied to every
+   * preview because most of the demos that carry links point at real docs
+   * pages, which the router is what keeps as SPA navigation rather than a full
+   * page load.
+   */
+  raw: { type: Boolean, default: false },
+  /**
    * Height the mount point holds, in px or as a CSS length.
    *
    * The box is empty until React is in the browser, so without this the page
@@ -184,7 +198,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="neba-demo" :class="{ 'neba-demo--plain': plain }">
+  <div class="neba-demo" :class="{ 'neba-demo--plain': plain, 'vp-raw': raw }">
     <div class="neba-demo-canvas" :data-align="align" :data-theme="override">
       <button
         v-if="!plain"

@@ -4057,8 +4057,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'container',
       type: 'RefObject<HTMLElement | null>',
       description: {
-        ko: '문서가 아닌 다른 것이 스크롤될 때 그 요소',
-        en: 'What scrolls, when it is not the document'
+        ko: '문서가 아닌 다른 것이 스크롤될 때 그 요소. 주어지면 행을 눌렀을 때 페이지가 아니라 이 컨테이너가 스크롤됩니다',
+        en: 'What scrolls, when it is not the document. Given one, pressing a row scrolls that container rather than the page'
       }
     },
     {

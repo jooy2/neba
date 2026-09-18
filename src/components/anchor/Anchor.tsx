@@ -189,6 +189,76 @@ function activeAt(
 }
 
 /**
+ * Take a row's click and scroll the container, rather than letting the browser
+ * jump the document to the fragment.
+ *
+ * Only when there *is* a container. A trail whose headings are on the page has
+ * nothing to improve on: the browser already scrolls the right thing, it moves
+ * the sequential focus point, and it writes the fragment into the URL, which is
+ * what makes the row shareable.
+ *
+ * With a container the browser does the wrong thing twice. It scrolls the box,
+ * and then it scrolls every ancestor of the box as well so that the box is in
+ * view — so a trail beside a panel drags the whole page under the reader to
+ * land a heading they could already see. And `offset`, which is how a caller
+ * says how much of the top of the scrollport a sticky bar has taken, is not
+ * something a fragment jump knows about, so the heading arrived underneath it.
+ *
+ * The fragment is deliberately not written to the URL here. Setting it is what
+ * makes the browser jump, which is the thing being prevented; and a heading
+ * inside a box a caller scrolls is somewhere in that caller's app, not a place
+ * this component can name.
+ *
+ * Everything the browser would still have been right about is left to it: a
+ * middle click, a modified click and a click something else has already handled
+ * all fall through untouched.
+ */
+function scrollToHeading(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  href: string,
+  scroller: HTMLElement | null,
+  offset: number
+): void {
+  if (
+    !scroller ||
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
+    return;
+  }
+
+  const target = document.getElementById(href.replace(/^#/, ''));
+
+  if (!target) return;
+
+  event.preventDefault();
+
+  // Measured against the container's own box, which is the line `activeAt`
+  // reads too — so the heading lands exactly where the tracker calls it
+  // reached, and the row is marked on the frame the scroll ends.
+  const top =
+    scroller.scrollTop +
+    target.getBoundingClientRect().top -
+    scroller.getBoundingClientRect().top -
+    offset;
+
+  scroller.scrollTo({ top });
+
+  // What `preventDefault` took away besides the scroll: a fragment jump also
+  // moves the point the next Tab starts from, so without this a keyboard reader
+  // is returned to the top of the trail and a screen reader never leaves it.
+  // `tabindex` is only added where there is none, and `-1` keeps the heading out
+  // of the tab order it was never in.
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+
+  target.focus({ preventScroll: true });
+}
+
+/**
  * The list of headings on the page being read, with the one the reader is in
  * marked.
  *
@@ -312,6 +382,9 @@ export const Anchor = React.forwardRef<HTMLElement, AnchorProps>(function Anchor
               // within a set of links, which is the one thing that value means
               // and exactly what a table of contents is reporting.
               aria-current={active === item.href ? 'location' : undefined}
+              onClick={(event) =>
+                scrollToHeading(event, item.href, container?.current ?? null, offset)
+              }
               className={cx(
                 linkClasses,
                 controlTextLeadingClasses[size],

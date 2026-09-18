@@ -7,7 +7,7 @@ order: 21
 
 <p class="neba-lede">The list of headings on the page being read, with the one the reader is in marked. Real fragment links, so they jump to their headings whether or not the tracking is running.</p>
 
-<Demo src="anchor/hero" />
+<Demo src="anchor/hero" raw />
 
 ```tsx
 import { Anchor } from 'neba';
@@ -45,6 +45,8 @@ How far below the top of the scrollport a heading counts as reached. Set it to t
 ### container
 
 What scrolls, when it is not the document: the element a [PageLayout](../layout/page-layout) with `scroll="content"` puts the page inside, for instance.
+
+Given one, a row scrolls that container itself rather than letting the browser jump to the fragment — which would scroll the box and then scroll the page as well so that the box is in view, and would land the heading under whatever `offset` describes. The URL's fragment is left alone; a heading inside a box the caller scrolls is somewhere in the caller's app. Without a `container` the click is the browser's, as it always was.
 
 ### rail
 

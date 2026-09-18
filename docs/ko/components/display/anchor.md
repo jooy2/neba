@@ -7,7 +7,7 @@ order: 21
 
 <p class="neba-lede">지금 읽고 있는 페이지의 제목 목록이고, 독자가 있는 위치가 표시됩니다. 진짜 fragment 링크라서 추적이 동작하든 말든 해당 제목으로 이동합니다.</p>
 
-<Demo src="anchor/hero" />
+<Demo src="anchor/hero" raw />
 
 ```tsx
 import { Anchor } from 'neba';
@@ -45,6 +45,8 @@ scrollport 상단에서 얼마나 내려온 지점을 "제목에 도달했다"�
 ### container
 
 문서가 아닌 다른 것이 스크롤될 때 그 요소입니다. 예를 들어 `scroll="content"`인 [PageLayout](../layout/page-layout)이 페이지를 담는 요소입니다.
+
+`container`를 주면 행이 브라우저의 fragment 점프 대신 그 컨테이너를 직접 스크롤합니다. 브라우저에 맡기면 상자를 스크롤한 다음 그 상자를 보이게 하려고 페이지까지 스크롤하고, `offset`이 말하는 바 아래로 제목이 들어가 버립니다. URL의 fragment는 건드리지 않습니다. 호출자가 스크롤하는 상자 안의 제목은 호출자의 앱 어딘가에 있는 것이니까요. `container`가 없으면 클릭은 예전처럼 브라우저의 몫입니다.
 
 ### rail
 

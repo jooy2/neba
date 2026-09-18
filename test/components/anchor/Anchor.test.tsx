@@ -236,6 +236,79 @@ describe('Anchor', () => {
     });
   });
 
+  describe('pressing a row', () => {
+    /** The same arrangement the container tests use: a trail beside a box. */
+    function Boxed(props: Partial<React.ComponentProps<typeof Anchor>>) {
+      const box = createRef<HTMLDivElement>();
+
+      return (
+        <div>
+          <Anchor items={ITEMS} container={box} {...props} />
+          <div ref={box} style={{ height: 300, overflowY: 'auto' }}>
+            {ITEMS.map((item) => (
+              <section key={item.href} id={item.href.slice(1)} style={{ height: 600 }}>
+                <h2>{item.label}</h2>
+              </section>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    it('scrolls the container it was given, and leaves the document alone', async () => {
+      const screen = await render(<Boxed />);
+      const box = screen.container.querySelector('[style*="overflow"]') as HTMLElement;
+
+      await screen.getByRole('link', { name: 'Usage' }).click();
+
+      expect(box.scrollTop).toBeGreaterThan(1000);
+      expect(window.scrollY).toBe(0);
+    });
+
+    it('lands the heading below an offset rather than under it', async () => {
+      const screen = await render(<Boxed offset={80} />);
+      const box = screen.container.querySelector('[style*="overflow"]') as HTMLElement;
+
+      await screen.getByRole('link', { name: 'Setup' }).click();
+
+      const heading = document.getElementById('setup') as HTMLElement;
+      const gap = heading.getBoundingClientRect().top - box.getBoundingClientRect().top;
+
+      expect(Math.round(gap)).toBe(80);
+    });
+
+    // A fragment jump also moves the point the next Tab starts from, and
+    // `preventDefault` takes that with it.
+    it('puts the focus on the heading it scrolled to', async () => {
+      const screen = await render(<Boxed />);
+
+      await screen.getByRole('link', { name: 'Setup' }).click();
+
+      expect(document.activeElement).toBe(document.getElementById('setup'));
+    });
+
+    // With nothing to scroll but the document, the browser is already right —
+    // and it is the browser that writes the fragment into the URL.
+    it('leaves the click to the browser when there is no container', async () => {
+      const screen = await render(<Page items={ITEMS} />);
+      let prevented: boolean | null = null;
+
+      const watch = (event: MouseEvent) => {
+        prevented = event.defaultPrevented;
+      };
+
+      document.addEventListener('click', watch);
+
+      try {
+        await screen.getByRole('link', { name: 'Setup' }).click();
+      } finally {
+        document.removeEventListener('click', watch);
+      }
+
+      expect(prevented).toBe(false);
+    });
+  });
+
   describe('appearance', () => {
     it('draws the rail by default and drops it on request', async () => {
       const screen = await render(<Page items={ITEMS} />);
