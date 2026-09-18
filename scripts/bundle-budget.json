@@ -121,6 +121,12 @@
       "label": "every export",
       "imports": null,
       "budget": 279.8
+    },
+    {
+      "id": "stylesheet",
+      "label": "neba/styles.css — every page carries it",
+      "file": "styles.css",
+      "budget": 24.2
     }
   ]
 }

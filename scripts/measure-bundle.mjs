@@ -21,7 +21,9 @@
  * It measures `dist/`, so `npm run build` has to have run first. The scenarios
  * and their budgets are in `bundle-budget.json` beside this file — one file, so
  * that changing what is measured and changing what it is allowed to weigh are
- * the same edit.
+ * the same edit. Most of them name imports and are bundled; one names a `file`
+ * in `dist/` and is weighed as it is, because the stylesheet is the one thing a
+ * consumer downloads that no import shakes.
  *
  * The bundler is rollup, driven through Vite's library build, with terser and
  * gzip -9, and `react`/`react-dom` external because every consumer already has
@@ -82,7 +84,11 @@ function entrySource({ imports, locales }) {
   return `${lines.join('\n')}\n`;
 }
 
-/**
+/** One file, gzipped the way every number in this report is. */
+function gzipped(path) {
+  return gzipSync(readFileSync(path), { level: 9 }).length / 1024;
+}
+
 /**
  * The chunks the entry cannot start without: itself, and everything reachable
  * from it through *static* imports.
@@ -129,8 +135,18 @@ function staticallyReachable(outDir) {
  * measurement that only reported the entry would be quietly hiding a megabyte.
  * So the deferred total is printed beside it and nothing is budgeted against
  * it: the figure is the sum of *every* chunk, and a page fetches one of them.
+ *
+ * A scenario may name a `file` in `dist/` instead of an import list, and then
+ * there is nothing to bundle: the stylesheet is the one thing a consumer
+ * downloads that no import shakes, so every page carries all of it and a
+ * bundler has no opinion about it. It was measured by hand and written into a
+ * document, which is a number that drifts the moment nobody re-measures.
  */
 async function measure(scenario, work) {
+  if (scenario.file) {
+    return { entry: gzipped(join(dist, scenario.file)), async: 0 };
+  }
+
   const entry = join(work, `${scenario.id}.js`);
   const outDir = join(work, `out-${scenario.id}`);
 
@@ -159,7 +175,7 @@ async function measure(scenario, work) {
     }
   });
 
-  const weigh = (name) => gzipSync(readFileSync(join(outDir, name)), { level: 9 }).length / 1024;
+  const weigh = (name) => gzipped(join(outDir, name));
   const chunks = readdirSync(outDir).filter((name) => name.endsWith('.js'));
   const upfront = staticallyReachable(outDir);
   const sum = (names) => names.reduce((total, name) => total + weigh(name), 0);
