@@ -219,5 +219,10 @@ export const ru: NebaLocale = {
     low: 'Низкий риск',
     medium: 'Средний риск',
     high: 'Высокий риск'
+  },
+  reasoning: {
+    thinking: 'Размышляет…',
+    thought: 'Размышлял {duration}',
+    done: 'Размышление завершено'
   }
 };

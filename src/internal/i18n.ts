@@ -1022,6 +1022,31 @@ export const approvalMessages: MessageTable<ApprovalMessages> = {
   }
 };
 
+/** Reasoning. */
+export interface ReasoningMessages {
+  /** While the stream is still arriving. */
+  thinking: string;
+  /** Once it has stopped, when the time it took is known. `{duration}` is the length. */
+  thought: string;
+  /** And when it is not. */
+  done: string;
+}
+
+/**
+ * The `reasoning` namespace, as Reasoning reads it.
+ *
+ * `thought` is a whole sentence with a placeholder in it rather than a word and
+ * a number set beside each other, for `tableMessages.range`'s reason: where the
+ * length goes in the sentence is exactly what differs between languages.
+ */
+export const reasoningMessages: MessageTable<ReasoningMessages> = {
+  '': {
+    thinking: 'Thinking…',
+    thought: 'Thought for {duration}',
+    done: 'Finished thinking'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1236,6 +1261,8 @@ export interface NebaLocale {
   tool?: Partial<ToolMessages>;
   /** Approval. */
   approval?: Partial<ApprovalMessages>;
+  /** Reasoning. */
+  reasoning?: Partial<ReasoningMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1274,7 +1301,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   timeline: timelineMessages as MessageTable<never>,
   run: runMessages as MessageTable<never>,
   tool: toolMessages as MessageTable<never>,
-  approval: approvalMessages as MessageTable<never>
+  approval: approvalMessages as MessageTable<never>,
+  reasoning: reasoningMessages as MessageTable<never>
 };
 
 /**

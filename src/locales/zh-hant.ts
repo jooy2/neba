@@ -218,5 +218,10 @@ export const zhHant: NebaLocale = {
     low: '低風險',
     medium: '中風險',
     high: '高風險'
+  },
+  reasoning: {
+    thinking: '思考中…',
+    thought: '思考了 {duration}',
+    done: '思考完成'
   }
 };

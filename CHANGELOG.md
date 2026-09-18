@@ -16,6 +16,10 @@
 
   **No option is emphasised by default.** Every button is `outline` in the card's family and an option's own `variant` is how one is singled out — a permission request whose loudest button is "Allow" is a request answered by the shape of the buttons rather than by the reader.
 
+- **`Reasoning`** — a thinking panel that the stream opens and closes. On a `Spoiler` and a `Collapsible` the reader owns the open state; here the stream does, which is the whole of what the component is for: the panel fills while the model is working, folds itself away when the working stops, and leaves one line saying that it happened and how long it took. It follows the _edges_ of `streaming` rather than its value, so a reader who folds it away mid-stream is not overruled on the next token, and one that mounts mid-stream starts open because no edge is coming to open it.
+
+  `variant` defaults to `text` here and nowhere else in the library: thinking is an aside, and a bordered box around every aside in a conversation is a conversation made of boxes. The panel is deliberately not a live region — thinking is long and is revised as it arrives, and a screen reader reading every revision aloud would bury the answer it is on the way to.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

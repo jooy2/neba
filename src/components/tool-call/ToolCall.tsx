@@ -230,8 +230,7 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
       previous.current = status;
     }, [status, controlled]);
 
-    const elapsed = useElapsed(status === 'running', duration);
-    const millis = duration ?? elapsed;
+    const millis = useElapsed(status === 'running', duration);
     const family = runColor(status, color);
     const mark = icon === undefined ? runIcon(status) : icon;
     const body = bodyOf(status, result, error);

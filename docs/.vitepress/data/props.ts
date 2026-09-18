@@ -15439,5 +15439,109 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Anything else the body needs, under the details and above the answers'
       }
     }
+  ],
+
+  Reasoning: [
+    {
+      name: 'streaming',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '사고가 아직 도착하는 중인지. 헤더가 하는 말, 표시의 움직임, 그리고 autoOpen이 켜져 있으면 패널의 열림까지 이 하나가 정합니다',
+        en: 'Whether the thinking is still arriving. It is what the header says, what the mark does, and whether the panel is open'
+      }
+    },
+    {
+      name: 'duration',
+      type: 'number',
+      description: {
+        ko: '사고에 걸린 시간(ms). 주지 않으면 streaming이 켜진 시점부터 스스로 세고, 멈춘 뒤 마지막 값을 유지합니다',
+        en: 'How long the thinking took, in milliseconds. Left out, the panel counts its own and keeps the last figure once it stops'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '패널이 열려 있는지. 직접 제어할 때 씁니다',
+        en: 'Whether the panel is showing. Pass it to drive the disclosure yourself'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '스트림이 돌기 전, 제어하지 않을 때의 시작 상태',
+        en: 'Where an uncontrolled Reasoning starts, before any stream has run'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '헤더가, 또는 스트림이 패널을 열거나 닫았을 때',
+        en: 'Called when the header, or the stream, opens or closes the panel'
+      }
+    },
+    {
+      name: 'autoOpen',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '스트림이 도는 동안 열고 끝나면 닫습니다. Collapsible과의 차이가 바로 이것입니다',
+        en: 'Opens the panel while the stream runs and closes it when the stream ends'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: { ko: '헤더가 하는 말을 대신합니다', en: 'Replaces what the header says' }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      default: { ko: '스트림이 도는 동안 도는 링', en: 'the turning ring while the stream runs' },
+      description: {
+        ko: '맨 앞의 표시. false면 그리지 않습니다',
+        en: 'The mark at the start. false drops it'
+      }
+    },
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      color: "'secondary'",
+      variantDescription: {
+        ko: '시트의 무게. 여기서만 기본값이 text입니다. 사고는 곁말이고, 곁말마다 상자를 두르면 대화가 상자가 됩니다',
+        en: 'Weight of the sheet. text by default here and nowhere else: thinking is an aside, and a box around every aside makes a conversation of boxes'
+      }
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '헤더의 문장을 쓸 언어. BCP 47 태그',
+        en: "Which language the header's own sentence is written in, as a BCP 47 tag"
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<ReasoningMessages>',
+      description: { ko: '그 문장들을 직접 씁니다', en: 'Those sentences, written out' }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'header' | 'body'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 className입니다',
+        en: 'Class names for the parts behind the root. className is the root'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '사고 내용', en: 'The thinking' }
+    }
   ]
 };

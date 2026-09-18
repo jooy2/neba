@@ -215,5 +215,10 @@ export const vi: NebaLocale = {
     low: 'Rủi ro thấp',
     medium: 'Rủi ro trung bình',
     high: 'Rủi ro cao'
+  },
+  reasoning: {
+    thinking: 'Đang suy nghĩ…',
+    thought: 'Đã suy nghĩ trong {duration}',
+    done: 'Đã suy nghĩ xong'
   }
 };

@@ -215,5 +215,10 @@ export const th: NebaLocale = {
     low: 'ความเสี่ยงต่ำ',
     medium: 'ความเสี่ยงปานกลาง',
     high: 'ความเสี่ยงสูง'
+  },
+  reasoning: {
+    thinking: 'กำลังคิด…',
+    thought: 'คิดอยู่ {duration}',
+    done: 'คิดเสร็จแล้ว'
   }
 };

@@ -215,5 +215,10 @@ export const ar: NebaLocale = {
     low: 'خطر منخفض',
     medium: 'خطر متوسط',
     high: 'خطر مرتفع'
+  },
+  reasoning: {
+    thinking: 'يفكر…',
+    thought: 'فكّر لمدة {duration}',
+    done: 'انتهى من التفكير'
   }
 };

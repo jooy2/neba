@@ -219,5 +219,10 @@ export const id: NebaLocale = {
     low: 'Risiko rendah',
     medium: 'Risiko sedang',
     high: 'Risiko tinggi'
+  },
+  reasoning: {
+    thinking: 'Sedang berpikir…',
+    thought: 'Berpikir selama {duration}',
+    done: 'Selesai berpikir'
   }
 };

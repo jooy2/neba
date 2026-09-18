@@ -103,17 +103,23 @@ export function formatDuration(ms: number, locale?: string): string {
 }
 
 /**
- * How long the current run has been going, in milliseconds, or `null`.
+ * How long a run has been going, in milliseconds, or `null`.
  *
- * `null` is "there is nothing to say", and it is what the first second returns
- * as well as every moment something is not running. A counter that starts at
- * "0s" claims a precision the tick rate does not have, and a tool that answers
- * in 300ms would have spent its whole life saying zero.
+ * A `duration` the caller knows wins outright; without one the clock counts,
+ * and what it counts is *whole seconds*, because a component that re-renders
+ * ten times a second is a decision about a whole transcript rather than about
+ * one row.
  *
- * It restarts whenever `running` goes true, so a retried call counts its own
- * attempt rather than carrying the first one's number forward, and it stops
- * dead the moment a `duration` arrives — at which point the caller knows the
- * real figure and this one was only ever a stand-in for it.
+ * `null` is "there is nothing to say", and the first second of every run
+ * returns it: a counter that starts at "0s" claims a precision the tick rate
+ * does not have, and a tool that answers in 300ms would have spent its whole
+ * life saying zero.
+ *
+ * The last figure is **kept** once the run ends, which is what turns a live
+ * count into a total — a thinking panel that says "Thought for 4s" is reading
+ * the same number it was ticking a moment ago. It is cleared when a new run
+ * starts, so a retried call counts its own attempt rather than carrying the
+ * first one's number forward.
  */
 export function useElapsed(running: boolean, duration: number | undefined): number | null {
   const measure = running && duration === undefined;
@@ -122,13 +128,16 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
 
   /*
    * React's own "adjusting state when a prop changes", done in the render
-   * rather than in an effect. An effect would reset the count one commit late,
-   * which is a frame of the *previous* run's number on the row of a call that
-   * has only just started.
+   * rather than in an effect. An effect would clear the count one commit late,
+   * which is a frame of the *previous* run's number on a row that has only
+   * just started.
    */
   if (measuring !== measure) {
     setMeasuring(measure);
-    setElapsed(null);
+
+    if (measure) {
+      setElapsed(null);
+    }
   }
 
   React.useEffect(() => {
@@ -142,5 +151,5 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
     return () => clearInterval(id);
   }, [measure]);
 
-  return measure ? elapsed : null;
+  return duration ?? elapsed;
 }

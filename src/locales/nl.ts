@@ -215,5 +215,10 @@ export const nl: NebaLocale = {
     low: 'Laag risico',
     medium: 'Gemiddeld risico',
     high: 'Hoog risico'
+  },
+  reasoning: {
+    thinking: 'Denkt na…',
+    thought: '{duration} nagedacht',
+    done: 'Klaar met nadenken'
   }
 };

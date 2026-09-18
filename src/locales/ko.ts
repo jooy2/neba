@@ -215,5 +215,10 @@ export const ko: NebaLocale = {
     low: '위험 낮음',
     medium: '위험 보통',
     high: '위험 높음'
+  },
+  reasoning: {
+    thinking: '생각하는 중…',
+    thought: '{duration} 동안 생각함',
+    done: '생각을 마침'
   }
 };

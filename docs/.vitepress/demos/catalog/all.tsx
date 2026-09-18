@@ -111,6 +111,7 @@ import {
   Radio,
   RadioGroup,
   Rating,
+  Reasoning,
   ScatterChart,
   ScrollArea,
   ScrollZone,
@@ -2429,6 +2430,21 @@ const GROUPS: Group[] = [
               result="4 hits"
             />
             <ToolCall size="sm" name="read_file" status="running" />
+          </div>
+        )
+      },
+      {
+        name: 'Reasoning',
+        summary: {
+          ko: '스트림이 열고 닫는 사고 패널',
+          en: 'A thinking panel the stream opens and closes'
+        },
+        path: '/components/agent/reasoning',
+        preview: (
+          <div className="w-full max-w-64">
+            <Reasoning size="sm" duration={4200} defaultOpen>
+              Two options, and the second one costs a media query per slot.
+            </Reasoning>
           </div>
         )
       },

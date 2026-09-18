@@ -215,5 +215,10 @@ export const it: NebaLocale = {
     low: 'Rischio basso',
     medium: 'Rischio medio',
     high: 'Rischio alto'
+  },
+  reasoning: {
+    thinking: 'Sta ragionando…',
+    thought: 'Ha ragionato per {duration}',
+    done: 'Ragionamento concluso'
   }
 };

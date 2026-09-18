@@ -215,5 +215,10 @@ export const ja: NebaLocale = {
     low: 'リスク 低',
     medium: 'リスク 中',
     high: 'リスク 高'
+  },
+  reasoning: {
+    thinking: '思考中…',
+    thought: '{duration} 考えました',
+    done: '思考を終えました'
   }
 };
