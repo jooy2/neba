@@ -6,6 +6,10 @@
 
 - **A `NumberField` answers the wheel by default, through a prop now called `wheel`.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop — and it was a second spelling of a question `ScrollZone` and `Tabs` already ask as `wheel`. It is `wheel`, and it is on. Both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number, so a reader who has not put the caret in the field scrolls the page over it exactly as before. Rename `allowWheelScrub` to `wheel` where it was passed, and pass `wheel={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
 
+### Changed
+
+- **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.
+
 ### Fixed
 
 - **An `Anchor` with a `container` scrolls that container when a row is pressed.** The rows are real fragment links, so the browser answered them: it scrolled the box, and then scrolled every ancestor of the box as well so the box would be in view — dragging the whole page under a reader to land a heading they could already see. It also knows nothing about `offset`, so the heading arrived underneath whatever sticky bar the offset describes. A row now scrolls the container itself, lands the heading below the offset, and moves the focus there, which is what the prevented fragment jump would have done. The URL's fragment is left alone, and an `Anchor` without a `container` still leaves the click to the browser.

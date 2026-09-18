@@ -36,7 +36,8 @@ import {
   metaTextClasses,
   paddingXValues,
   srOnlyClasses,
-  toLength
+  toLength,
+  transitionClasses
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -2325,7 +2326,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 <button
                   type="button"
                   aria-expanded={!folded}
-                  className="flex w-full min-w-0 items-center text-start [outline:none] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]"
+                  // No `[outline:none]` beside the ring: the house transition
+                  // declares it at rest for the colour to travel from, and two
+                  // `outline` shorthands of equal specificity are decided by the
+                  // order Tailwind generated them in rather than by intent.
+                  className={`flex w-full min-w-0 items-center text-start ${transitionClasses} focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]`}
                   onClick={toggle}
                 >
                   {heading}

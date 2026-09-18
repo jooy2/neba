@@ -5,7 +5,13 @@ import { AspectRatio } from '../aspect-ratio/AspectRatio.js';
 import { Skeleton } from '../skeleton/Skeleton.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { imageMessages, useMessages } from '../../internal/i18n.js';
-import { cx, metaTextValues, radiusClasses, toLength } from '../../internal/styles.js';
+import {
+  cx,
+  metaTextValues,
+  radiusClasses,
+  toLength,
+  transitionClasses
+} from '../../internal/styles.js';
 import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
 import type { NebaCorner, NebaElevation, NebaSide, NebaSize, NebaSlots } from '../../types.js';
 
@@ -1337,7 +1343,12 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // as nothing at all, so it says what it does instead.
         aria-label={alt || messages.preview}
         className={cx(
-          'block cursor-zoom-in [outline:none]',
+          'block cursor-zoom-in',
+          // No `[outline:none]` beside the ring: the house transition declares
+          // it at rest for the colour to travel from, and two `outline`
+          // shorthands of equal specificity are decided by the order Tailwind
+          // generated them in rather than by intent.
+          transitionClasses,
           // At no specificity, so a width in the caller's `className` — which is
           // here rather than on the picture inside, or the button would span the
           // line beside a smaller picture and open it from the empty space —

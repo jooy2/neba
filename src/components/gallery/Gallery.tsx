@@ -11,7 +11,8 @@ import {
   metaTextClasses,
   radiusClasses,
   sheetTitleClasses,
-  toLength
+  toLength,
+  transitionClasses
 } from '../../internal/styles.js';
 import type { NebaAspectFit } from '../aspect-ratio/AspectRatio.js';
 import type {
@@ -564,8 +565,13 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
                   : undefined
               }
               className={cx(
-                'block w-full text-start [outline:none]',
+                'block w-full text-start',
                 preview ? 'cursor-zoom-in' : 'cursor-pointer',
+                // No `[outline:none]` beside the ring: the house transition
+                // declares it at rest for the colour to travel from, and two
+                // `outline` shorthands of equal specificity are decided by the
+                // order Tailwind generated them in rather than by intent.
+                transitionClasses,
                 // A fallback to the primary ring: the picture declares no colour family of
                 // its own, and a `var()` with nothing behind it drops the whole outline.
                 'focus-visible:[outline:2px_solid_var(--n-ring,var(--neba-primary-ring))] focus-visible:[outline-offset:2px]',
