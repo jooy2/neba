@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import {
   Accordion,
+  AgentStep,
+  AgentSteps,
   AccordionItem,
   Alert,
   Anchor,
@@ -2413,6 +2415,22 @@ const GROUPS: Group[] = [
       en: 'The things that show what an agent is doing'
     },
     entries: [
+      {
+        name: 'AgentSteps',
+        summary: {
+          ko: '실행되면서 자라는 단계 사슬',
+          en: 'A chain of steps that grows as it runs'
+        },
+        path: '/components/agent/agent-steps',
+        preview: (
+          <div className="w-full max-w-64">
+            <AgentSteps size="sm" density="compact" running>
+              <AgentStep title="Read the request" duration={120} />
+              <AgentStep title="Searched the docs" meta="4 hits" />
+            </AgentSteps>
+          </div>
+        )
+      },
       {
         name: 'ToolCall',
         summary: {

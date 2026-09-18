@@ -15543,5 +15543,126 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'ReactNode',
       description: { ko: '사고 내용', en: 'The thinking' }
     }
+  ],
+
+  AgentSteps: [
+    {
+      name: 'running',
+      type: 'ReactNode | boolean',
+      default: 'false',
+      description: {
+        ko: '아직 더 올 것이 있다는 표시를 마지막 단계 아래에 하나 더 그립니다. true면 라벨 없이, 노드를 주면 그것을 라벨로',
+        en: 'That there is more to come, drawn as one more marker under the last step. true gives it no label; a node labels it'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '표시와 타입 스케일, 간격을 함께 움직입니다',
+        en: 'Moves the marker, the type scale and the gaps together'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'running인 단계의 색 계열. success와 error, pending은 고정입니다',
+        en: 'The family a running step takes. success, error and pending are fixed'
+      }
+    },
+    {
+      name: 'density',
+      type: DENSITY,
+      default: "'default'",
+      shared: true,
+      description: {
+        ko: '두 단계 사이의 간격만 바꿉니다',
+        en: 'How far apart two steps sit, and nothing else'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '단계의 상태를 읽어 줄 언어. BCP 47 태그',
+        en: "Which language a step's status is read out in, as a BCP 47 tag"
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<RunMessages>',
+      description: { ko: '그 네 단어를 직접 씁니다', en: 'Those four words, written out' }
+    },
+    renderProp('<ul />'),
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: '단계들', en: 'The steps' }
+    }
+  ],
+
+  AgentStep: [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: { ko: '이 단계가 무엇인지', en: 'What the step is' }
+    },
+    {
+      name: 'status',
+      type: RUN_STATUS,
+      default: "'success'",
+      shared: true,
+      description: {
+        ko: '어디까지 갔는지. 이미 목록에 있는 단계는 보통 이미 실행된 것이라 기본값이 success입니다',
+        en: 'How far it has got. success by default, because a step already in the list has usually already run'
+      }
+    },
+    {
+      name: 'duration',
+      type: 'number',
+      description: {
+        ko: '걸린 시간(ms). 주지 않으면 running인 단계가 스스로 셉니다',
+        en: 'How long it took, in milliseconds. Left out, a running step counts its own'
+      }
+    },
+    {
+      name: 'meta',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 줄에 함께 올릴 것. 파일 이름, 개수, 모델 이름 같은 것',
+        en: 'Anything else on the title line: a file name, a count, a model'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode | false',
+      default: { ko: 'status의 표시', en: "the status's mark" },
+      description: {
+        ko: '상태 표시를 대신합니다. 상태는 그대로 읽힙니다',
+        en: 'Replaces the status mark. The status is still read out'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      shared: true,
+      description: {
+        ko: '이 단계 하나의 색 계열',
+        en: "Overrides the chain's family for this one step"
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '이 단계가 한 일. 검색한 질의, 읽은 파일, ToolCall 하나',
+        en: 'What the step did: a search query, a file that was read, a ToolCall of its own'
+      }
+    }
   ]
 };

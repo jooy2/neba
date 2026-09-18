@@ -20,6 +20,10 @@
 
   `variant` defaults to `text` here and nowhere else in the library: thinking is an aside, and a bordered box around every aside in a conversation is a conversation made of boxes. The panel is deliberately not a live region — thinking is long and is revised as it arrives, and a screen reader reading every revision aloud would bury the answer it is on the way to.
 
+- **`AgentSteps` and `AgentStep`** — a chain of steps that grows as it runs. A `Timeline` and a `HowToSteps` draw a list that is known in advance; this one does not know how many items it has, so a step's place is not a prop and appending or inserting one renumbers nothing. `running` draws one more marker under the last step for the case where the next step has no name yet, with no visible label, because the turning ring has already said what it is and the status is read out either way.
+
+  A step takes the same `NebaRunStatus` a `ToolCall` does, and the same four marks; `success` is its default, since a step that is already in the list has usually already run. Its `children` hold whatever it did — a query, a file, a whole `ToolCall`.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.
