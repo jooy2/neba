@@ -423,22 +423,56 @@ export const surfaceClasses =
   '[background-image:var(--neba-grain),var(--neba-sheen)] [background-blend-mode:overlay,normal] [backdrop-filter:var(--neba-blur)]';
 
 /**
+ * The colour a focus ring travels from: an outline that is declared, so that it
+ * has a starting colour, and no width, so that nothing is painted until the
+ * focus lands.
+ *
+ * The width is what stays at zero rather than sitting at 2px waiting to be
+ * coloured in, and that is what keeps a forced palette honest: a browser in
+ * forced colours replaces every colour it is given, `transparent` included, so
+ * a ring held at full width would be painted around every control on the page.
+ * There is nothing to replace in an outline that is not drawn.
+ *
+ * What it costs is the way out — the width drops the moment the focus leaves,
+ * so a ring fades in and then goes at once. That is the right way round for the
+ * one mark that says where the keyboard is: a ring on its way out while the
+ * next one is on its way in is two answers to a question with one.
+ */
+export const ringRestClasses = '[outline:0_solid_transparent]';
+
+/**
  * The house transition. Per-property durations in the order the property list
  * declares them: the fill drains back slowly while edges and shadows keep up
  * with the pointer.
  *
- * `outline-width` is in the list so the focus ring *arrives* rather than
+ * `outline-color` is in the list so the focus ring *arrives* rather than
  * appears, at the same 160ms the hairline under it turns — the two are one
  * edge, and an edge half of which is instant reads as two things happening.
- * It costs nothing where there is no ring: an outline nobody declared has no
- * width to travel.
+ *
+ * It is the **colour** and deliberately not the width, which is what this
+ * carried first. A browser paints an outline at a whole device pixel, so a
+ * width travelling from 0 to 2px does not grow: it is a full 1px ring from the
+ * first frame after zero, holds there for the whole duration, and snaps to 2px
+ * at the end. Two jumps with a dead interval between them, which is exactly
+ * what "the focus stutters" describes, and no easing can smooth a property the
+ * compositor rounds. Colour has 256 steps per channel and none of them round.
+ *
+ * Which is why the resting ring is in here rather than beside each ring that is
+ * drawn. `outline-color` initialises to `currentColor`, so an element that only
+ * declares the *focused* half fades its ring in from whatever colour its text
+ * is — white on a solid Button, the muted grey on a table row. There are around
+ * thirty of those, and the one that got missed would be the bug. Anything that
+ * takes the house transition takes the colour it starts from with it, and the
+ * four ring strings below repeat the same class for the handful of elements
+ * that draw a ring without taking the transition.
  *
  * No `transform` is in the list, and none should ever be added — scaling a
  * control resamples its label, and a label that shimmers under the cursor is
  * what reads as cheap.
  */
 export const transitionClasses = [
-  '[transition-property:background-color,border-color,box-shadow,color,outline-width]',
+  ringRestClasses,
+  '[transition-property:background-color,border-color,box-shadow,color,outline-color]',
   '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
   '[transition-timing-function:var(--neba-ease)]'
 ].join(' ');
@@ -489,23 +523,22 @@ export const popupFadeClasses = [
  * `--tw-outline-style`, which any `outline-none` on the element (ours or a
  * consumer's) would zero out.
  *
- * Declared at **zero width** in the resting state as well, which is the whole
- * of what lets it arrive rather than appear. `outline-style` is a discrete
- * property, so a ring that exists only in the focused state has nothing to
- * travel from; a width has. Whatever draws the house transition gets that for
- * nothing, and a reader who has asked for less motion gets it instantly,
- * because every duration in this library is one token.
+ * Declared at rest as well — `ringRestClasses` — which is the whole of what
+ * lets it arrive rather than appear. `outline-style` is a discrete property, so
+ * a ring that exists only in the focused state has nothing to travel from; a
+ * colour has. Whatever draws the house transition gets that for nothing, and a
+ * reader who has asked for less motion gets it instantly, because every
+ * duration in this library is one token.
  *
  * The focused state still carries the **whole shorthand** rather than the
- * width alone, and that is not a duplicate: the resting declaration is one
+ * colour alone, and that is not a duplicate: the resting declaration is one
  * class, and a host stylesheet's `:focus-visible { outline: auto }` — which
  * normalize and several site themes ship — is also one selector, so the two
  * would be decided by whichever was generated last. Written as a class plus a
  * pseudo-class it outranks them and the ring cannot be taken away by a
  * stylesheet that has never heard of this library.
  */
-export const focusRingClasses =
-  '[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]';
+export const focusRingClasses = `${ringRestClasses} outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]`;
 
 /**
  * The same ring, drawn by whichever descendant actually takes focus.
@@ -518,8 +551,7 @@ export const focusRingClasses =
  * price of having no way to tell the two apart. The two rules never both apply,
  * so their order in the stylesheet decides nothing.
  */
-export const focusWithinRingClasses =
-  '[outline:0_solid_var(--n-ring)] outline-offset-2 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] supports-[not_selector(:has(*))]:focus-within:[outline:2px_solid_var(--n-ring)]';
+export const focusWithinRingClasses = `${ringRestClasses} outline-offset-2 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)] supports-[not_selector(:has(*))]:focus-within:[outline:2px_solid_var(--n-ring)]`;
 
 /**
  * The ring a **field's shell** takes, and the one place in the library it is
@@ -538,8 +570,7 @@ export const focusWithinRingClasses =
  * makes a field the exception is that its sheet is the undyed panel, so the
  * ring has the page to be seen against however the control is variant-ed.
  */
-export const fieldRingClasses =
-  '[outline:0_solid_var(--n-ring)] outline-offset-0 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]';
+export const fieldRingClasses = `${ringRestClasses} outline-offset-0 has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]`;
 
 /**
  * How long a field takes to answer the focus.

@@ -212,17 +212,22 @@ describe('neba/styles.css', () => {
       );
     });
 
-    it('leave a focus ring with a width to travel from', async () => {
+    it('leave a focus ring a colour to travel from, and no width to travel', async () => {
       // The mechanism behind a ring that arrives rather than appears:
       // `outline-style` is a discrete property, so the ring is declared at
-      // rest with no width, and the width is what the transition moves.
+      // rest, and the colour is what the transition moves. The width stays at
+      // zero — an outline that is painted at 2px waiting to be coloured in is
+      // an outline a forced palette would paint around every control, and a
+      // width is rounded to a whole device pixel, so moving it steps.
       const screen = await render(<TextField label="Email" />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
       const styles = getComputedStyle(shell);
 
       expect(styles.outlineStyle).toBe('solid');
       expect(styles.outlineWidth).toBe('0px');
-      expect(styles.transitionProperty).toContain('outline-width');
+      expect(styles.outlineColor).toBe('rgba(0, 0, 0, 0)');
+      expect(styles.transitionProperty).toContain('outline-color');
+      expect(styles.transitionProperty).not.toContain('outline-width');
     });
 
     it('ring a focused star where the browser has no :has()', async () => {

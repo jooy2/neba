@@ -10,6 +10,7 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   metaTextClasses,
+  ringRestClasses,
   stackGapClasses,
   surfaceSlots,
   transitionClasses
@@ -257,10 +258,10 @@ export const OtpField = React.forwardRef<HTMLDivElement, OtpFieldProps>(
       // as often as by typing into it, and the ring is the only thing saying which
       // character the next keystroke lands on.
       //
-      // Flush with the edge and travelling from no width at all, which is what
+      // Flush with the edge and travelling from no colour at all, which is what
       // every other field's shell does — a slot *is* a field's shell, one
       // character wide.
-      '[outline:0_solid_var(--n-ring)] outline-offset-0 focus:[outline:2px_solid_var(--n-ring)]',
+      `${ringRestClasses} outline-offset-0 focus:[outline:2px_solid_var(--n-ring)]`,
       'focus:[transition-duration:var(--neba-duration)]',
       // An if/else rather than stacked variants: two Tailwind classes of equal
       // specificity resolve by their order in the generated stylesheet.

@@ -360,7 +360,11 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     'group/handle relative z-1 flex shrink-0 grow-0 items-center justify-center',
     handleTrackClasses[size],
     transitionClasses,
-    '[outline:none] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0',
+    // No `[outline:none]` beside it: the house transition already declares the
+    // ring at rest for the colour to travel from, and two `outline` shorthands
+    // of equal specificity are decided by the order Tailwind generated them in
+    // rather than by intent.
+    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0',
     resizable
       ? cx(
           horizontal ? 'cursor-col-resize' : 'cursor-row-resize',

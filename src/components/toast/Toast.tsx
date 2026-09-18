@@ -351,10 +351,10 @@ function ToastItem({
         // A toast pushed out by the limit is kept in the DOM so it can come
         // back; it just has nothing to say while it waits.
         'data-[limited]:hidden',
-        // No `[outline:none]` beside it: the ring is declared at zero width
-        // and is already the whole of what the UA would have drawn, and two
-        // `outline` shorthands of equal specificity are decided by the order
-        // Tailwind generated them in rather than by intent.
+        // No `[outline:none]` beside it: the ring is already declared at rest
+        // and is the whole of what the UA would have drawn, and two `outline`
+        // shorthands of equal specificity are decided by the order Tailwind
+        // generated them in rather than by intent.
         focusRingClasses,
         classNames?.toast
       )}

@@ -526,7 +526,11 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
             side === 'start' ? 'end-0 -me-1' : 'start-0 -ms-1',
             'bg-transparent hover:bg-(--n-soft) data-[dragging]:bg-(--n-soft)',
             transitionClasses,
-            '[outline:none] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0'
+            // No `[outline:none]` beside it: the house transition already declares
+            // the ring at rest for the colour to travel from, and two `outline`
+            // shorthands of equal specificity are decided by the order Tailwind
+            // generated them in rather than by intent.
+            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0'
           )}
           onPointerDown={beginDrag}
           onKeyDown={(event) => {

@@ -205,14 +205,15 @@ describe('TextField', () => {
       expect(shell).toHaveClass('has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]');
     });
 
-    it('is declared at no width rather than not declared', async () => {
+    it('is declared at rest rather than only when focused', async () => {
       // `outline-style` is discrete: a ring that exists only in the focused
       // state has nothing to travel from, and appears rather than arrives.
       const screen = await render(<TextField label="Email" />);
       const shell = screen.getByRole('textbox').element().parentElement;
 
-      expect(shell).toHaveClass('[outline:0_solid_var(--n-ring)]');
-      expect(shell?.className).toContain('outline-width');
+      expect(shell).toHaveClass('[outline:0_solid_transparent]');
+      expect(shell?.className).toContain('outline-color');
+      expect(shell?.className).not.toContain('outline-width');
     });
 
     it('gives the focus a duration of its own rather than none', async () => {

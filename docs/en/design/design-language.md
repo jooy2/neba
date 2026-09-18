@@ -273,7 +273,11 @@ Both layers respect `@media (hover: hover)` and `prefers-reduced-motion`.
 
 ### The focus ring arrives, and on a field it is flush
 
-The ring is declared at rest with **no width** rather than not declared at all, and what the focus changes is that width. `outline-style` is a discrete property, so a ring that exists only in the focused state has nothing to travel from; a width has. It moves at the house duration, beside the hairline under it — the two are one edge, and an edge half of which is instant reads as two things happening.
+The ring is declared at rest rather than not declared at all, at **no width and no colour**, and what the focus moves is the colour. `outline-style` is a discrete property, so a ring that exists only in the focused state has nothing to travel from; a colour has. It moves at the house duration, beside the hairline under it — the two are one edge, and an edge half of which is instant reads as two things happening.
+
+It is the colour and deliberately not the width. A browser paints an outline at a whole device pixel, so a width travelling from 0 to 2px does not grow: it is a full 1px ring from the first frame after zero, holds there for the whole duration, and snaps to 2px at the end. Two jumps with a dead interval between them, which no easing can smooth.
+
+The width stays at zero rather than sitting at 2px waiting to be coloured in, and that is what keeps a forced palette honest: a browser in forced colours replaces every colour it is given, `transparent` included, so a ring held at full width would be painted around every control on the page. What it costs is the way out — the ring fades in and then goes at once, which is the right way round for the one mark that says where the keyboard is.
 
 On a **field's shell** the ring is flush with that edge rather than held two pixels off it. A field's hairline turns the ring's own colour the moment the focus lands, so an offset ring draws a second line with a stripe of page between the two — the shape that reads as a control wearing a halo instead of an edge that has thickened.
 
@@ -334,9 +338,9 @@ This is the only kind of reason to step outside Tailwind: **step outside only wh
 Tailwind v4's `outline-*` utilities route the style through `--tw-outline-style`. An `outline-none` anywhere on the element sets that variable to `none` and **the focus ring disappears entirely.** Use the shorthand.
 
 ```
-[outline:0_solid_var(--n-ring)] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]
+[outline:0_solid_transparent] outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]
 ```
 
-The resting declaration is what the focused one travels from, and the focused one carries the whole shorthand rather than the width alone — a host stylesheet's `:focus-visible { outline: auto }`, which normalize and several site themes ship, is one selector, and a class alone would be decided against it by generation order.
+The resting declaration is what the focused one travels from, and the focused one carries the whole shorthand rather than the colour alone — a host stylesheet's `:focus-visible { outline: auto }`, which normalize and several site themes ship, is one selector, and a class alone would be decided against it by generation order.
 
 An `[outline:none]` beside that is the same mistake in the other spelling: two `outline` declarations of equal specificity. The ring is already declared at no width, which is what takes the browser's own outline off.
