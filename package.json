@@ -188,5 +188,9 @@
     "@types/react": {
       "optional": true
     }
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false
   }
 }
