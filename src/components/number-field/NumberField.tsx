@@ -95,10 +95,19 @@ export interface NumberFieldProps
   /** Whether stepping snaps to multiples of the step. @default false */
   snapOnStep?: boolean;
   /**
-   * Whether the wheel changes the value while the field is focused and hovered.
-   * Off by default: a page that scrolls under the pointer and a field that
-   * changes under it are the same gesture, and only one of them was meant.
-   * @default false
+   * Whether the wheel changes the value while the field is focused and the
+   * pointer is over the number.
+   *
+   * On, because both halves of that sentence have to be true before anything
+   * happens: a reader who has not put the caret in the field scrolls the page
+   * over it as they would over any other box, and one who has is working the
+   * field and expects the wheel to reach it — which is what a browser's own
+   * number input does. The gesture is taken from the page only for as long as
+   * the field holds the focus and the pointer is on it.
+   *
+   * Off is for a field inside something that scrolls under a pointer that has
+   * to stay put — a long form in a Drawer, a cell in a table body.
+   * @default true
    */
   allowWheelScrub?: boolean;
   /**
@@ -235,7 +244,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
       largeStep,
       smallStep,
       snapOnStep,
-      allowWheelScrub = false,
+      allowWheelScrub = true,
       format,
       locale,
       steppers = 'end',

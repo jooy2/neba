@@ -8841,10 +8841,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'allowWheelScrub',
       type: 'boolean',
-      default: 'false',
+      default: 'true',
       description: {
-        ko: '포커스된 채 호버 중일 때 휠이 값을 바꾸는지. 포인터 아래에서 스크롤되는 페이지와 바뀌는 필드는 같은 제스처이고, 의도된 것은 하나뿐입니다',
-        en: 'Whether the wheel changes the value while focused and hovered. A page that scrolls under the pointer and a field that changes under it are the same gesture, and only one was meant'
+        ko: '필드가 포커스를 쥐고 포인터가 숫자 위에 있을 때 휠이 값을 바꾸는지. 둘 다 참일 때만 동작하므로, 캐럿을 두지 않은 필드 위에서는 페이지가 그대로 스크롤됩니다',
+        en: 'Whether the wheel changes the value while the field holds the focus and the pointer is over the number. Both have to be true, so the page still scrolls over a field nobody has put the caret in'
       }
     },
     {

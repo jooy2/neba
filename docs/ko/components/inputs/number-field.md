@@ -41,7 +41,7 @@ shell은 [TextField](./text-field)와 동일하므로 같은 `size`의 필드와
 
 방향키는 `step`만큼, Shift와 함께 누르면 `largeStep`만큼, Alt와 함께 누르면 `smallStep`만큼 값을 움직입니다. `snapOnStep`은 그 결과를 `step`의 배수에 맞춥니다.
 
-`allowWheelScrub`은 기본값이 꺼짐입니다. 켜면 필드 위에서 휠로 값을 조절할 수 있지만, 페이지 스크롤과 같은 제스처를 공유하게 됩니다.
+필드가 포커스를 쥐고 포인터가 숫자 위에 있으면 휠도 `step`만큼 값을 움직입니다. 두 조건이 모두 맞아야 하므로, 캐럿을 두지 않은 필드 위에서는 페이지가 평소대로 스크롤됩니다. `allowWheelScrub={false}`로 끌 수 있고, 포인터가 얹힌 채로도 계속 스크롤되어야 하는 곳에 든 필드가 그 경우입니다.
 
 ### format과 locale
 

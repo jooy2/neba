@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **A `NumberField` answers the wheel by default.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop. It is on now, and both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number. A reader who has not put the caret in the field scrolls the page over it exactly as before. Pass `allowWheelScrub={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
+
 ### Fixed
 
 - **A focus ring fades in rather than stepping through two widths.** The ring travelled on `outline-width`, and a browser rounds an outline to a whole device pixel: from the first frame past zero it was already a full 1px ring, it held there for the whole 160ms, and it snapped to 2px at the end. Two jumps with a dead interval between them, which is what made every field in the library look like it stuttered into focus. The house transition carries `outline-color` now, and the resting ring is declared transparent — so what moves is a colour, which has 256 steps and rounds to none of them. The resting width stays at zero, so a forced palette still has nothing to paint, and the ring goes at once when the focus leaves. The resize handles on `Sidebar` and `Panes` lose the `[outline:none]` they carried beside their ring, which is the mistake the design notes already described.

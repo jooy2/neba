@@ -192,6 +192,57 @@ describe('NumberField', () => {
     });
   });
 
+  describe('the wheel', () => {
+    /* A real wheel, because the listener that answers it is a native
+       non-passive one on the `<input>` — React's own `onWheel` is passive, and
+       the gesture is the `preventDefault` that keeps the page still. */
+    const roll = (input: HTMLElement, deltaY: number) =>
+      input.dispatchEvent(new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true }));
+
+    it('steps the value while the field holds the focus', async () => {
+      const screen = await render(<NumberField label="Seats" defaultValue={3} />);
+      const input = screen.getByRole('textbox').element() as HTMLInputElement;
+
+      input.focus();
+      roll(input, -1);
+
+      await expect.element(screen.getByRole('textbox')).toHaveValue('4');
+
+      roll(input, 1);
+
+      await expect.element(screen.getByRole('textbox')).toHaveValue('3');
+    });
+
+    // Both halves have to be true, and this is the half a test can ask about:
+    // a field nobody has put the caret in leaves the page its scroll.
+    it('leaves the value alone while the field does not hold the focus', async () => {
+      const screen = await render(
+        <>
+          <NumberField label="Seats" defaultValue={3} />
+          <button type="button">Elsewhere</button>
+        </>
+      );
+      const input = screen.getByRole('textbox').element() as HTMLInputElement;
+
+      (screen.getByRole('button', { name: 'Elsewhere' }).element() as HTMLElement).focus();
+      roll(input, -1);
+
+      await expect.element(screen.getByRole('textbox')).toHaveValue('3');
+    });
+
+    it('can be turned off', async () => {
+      const screen = await render(
+        <NumberField label="Seats" defaultValue={3} allowWheelScrub={false} />
+      );
+      const input = screen.getByRole('textbox').element() as HTMLInputElement;
+
+      input.focus();
+      roll(input, -1);
+
+      await expect.element(screen.getByRole('textbox')).toHaveValue('3');
+    });
+  });
+
   describe('formatting', () => {
     it('writes the value through Intl and still reports the number', async () => {
       const onValueChange = vi.fn();
