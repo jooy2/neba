@@ -13,6 +13,7 @@ import {
   type ToolMessages
 } from '../../internal/i18n.js';
 import {
+  collapsiblePanelClasses,
   cx,
   gapClasses,
   hasContent,
@@ -346,14 +347,7 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
           </span>
         </BaseUICollapsible.Trigger>
 
-        <BaseUICollapsible.Panel
-          className={[
-            'h-(--collapsible-panel-height) overflow-hidden',
-            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-            'motion-reduce:[transition-duration:0ms]',
-            'data-[starting-style]:h-0 data-[ending-style]:h-0'
-          ].join(' ')}
-        >
+        <BaseUICollapsible.Panel className={collapsiblePanelClasses}>
           <div
             className={cx(
               'flex min-w-0 flex-col gap-2 pb-4',

@@ -229,5 +229,9 @@ export const tr: NebaLocale = {
     cached: 'Önbellekten',
     cost: 'Tahmini maliyet',
     usage: '{max} içinde {used}'
+  },
+  sources: {
+    title: 'Kaynaklar',
+    citation: 'Kaynak {index}'
   }
 };

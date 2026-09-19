@@ -628,6 +628,26 @@ export function clampSlot(lines: number | undefined): React.CSSProperties | unde
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 
 /**
+ * How a Base UI collapsible panel opens: a window over its measured height.
+ *
+ * The height *is* animated, which looks like an exception to the rule against
+ * moving things and is not — nothing is transformed, no text is resampled, and
+ * the content does not shift relative to the panel it is in. The panel is a
+ * window opening onto it, and `overflow-hidden` is what makes it one rather
+ * than something that spills past the sheet's own corners on the way.
+ *
+ * Written here because five things in the library open this way and the five
+ * have to agree on the duration: a reader watching a tool call and the thinking
+ * panel above it fold at two different speeds is watching two components.
+ */
+export const collapsiblePanelClasses = [
+  'h-(--collapsible-panel-height) overflow-hidden',
+  '[transition:height_var(--neba-duration)_var(--neba-ease)]',
+  'motion-reduce:[transition-duration:0ms]',
+  'data-[starting-style]:h-0 data-[ending-style]:h-0'
+].join(' ');
+
+/**
  * A block of text that arrived already formatted.
  *
  * What a tool was called with, what it answered, and the arguments an
@@ -857,6 +877,25 @@ export const fieldReadOnlyClasses: Record<NebaVariant, string> = {
  * you click; a read-only field is still something you select text out of.
  */
 export const readOnlyFilterClasses = '[filter:saturate(0.55)]';
+
+/**
+ * The numbered square a source is cited by.
+ *
+ * Two components draw it — the rows of a [Sources] list and the mark an
+ * [InlineCitation] leaves in a sentence — and they have to be the same object:
+ * the whole arrangement is a reader seeing `2` in a paragraph and finding `2`
+ * in the list, and two drawings of one number is two chances for the pair to
+ * stop matching.
+ *
+ * Sized in `em` for the same reason. In the list it tracks the row's text; in a
+ * paragraph it tracks the sentence it interrupts, whatever that sentence is set
+ * at.
+ */
+export const citationMarkClasses = [
+  'inline-flex shrink-0 items-center justify-center rounded-[0.3em]',
+  'min-w-[1.5em] px-[0.35em] py-[0.05em]',
+  'bg-(--n-soft) text-[0.8em]/[1.6] font-semibold text-(--n-on-tint) tabular-nums'
+].join(' ');
 
 /**
  * The × that removes a chip.

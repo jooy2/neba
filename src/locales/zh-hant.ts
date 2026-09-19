@@ -232,5 +232,9 @@ export const zhHant: NebaLocale = {
     cached: '快取',
     cost: '預估費用',
     usage: '{max} 中的 {used}'
+  },
+  sources: {
+    title: '來源',
+    citation: '來源 {index}'
   }
 };

@@ -229,5 +229,9 @@ export const nl: NebaLocale = {
     cached: 'Gecachet',
     cost: 'Geschatte kosten',
     usage: '{used} van {max}'
+  },
+  sources: {
+    title: 'Bronnen',
+    citation: 'Bron {index}'
   }
 };

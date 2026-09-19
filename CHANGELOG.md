@@ -28,6 +28,10 @@
 
   The four parts take the first four chart palette slots rather than four colour families, because input and output are _entities_ and nothing about either means success or danger. Base UI's Meter owns the semantics, and `aria-valuetext` is the same compact sentence the gauge draws rather than a percentage of a range nobody described.
 
+- **`Sources` and `InlineCitation`** — the list of things an answer was built out of, and the numbered footnote in the body that points into it. A `List` would draw the rows; what makes this a component is that they are _numbered_, and numbering a list by hand is numbering it twice — once in the list and once in every sentence that cites it, which is the copy that goes wrong. The two marks are one class in `internal/styles.ts` for the same reason, so a reader who sees `2` in a paragraph finds `2` underneath.
+
+  A citation's `index` is the caller's rather than counted, because a citation sits in a paragraph and the list is elsewhere on the page — a component that numbered itself by render order would renumber the whole answer whenever a sentence moved. The preview is a `HoverCard`, so it opens on keyboard focus and not only under a pointer, and the mark's accessible name is the sentence "Source 2" rather than the digit. Both go through the same `safeHref` and `safeRel` every other link in the library does.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

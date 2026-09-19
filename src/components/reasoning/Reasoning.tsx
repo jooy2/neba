@@ -12,6 +12,7 @@ import {
   type ReasoningMessages
 } from '../../internal/i18n.js';
 import {
+  collapsiblePanelClasses,
   cx,
   gapClasses,
   hasContent,
@@ -241,14 +242,7 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
           </span>
         </BaseUICollapsible.Trigger>
 
-        <BaseUICollapsible.Panel
-          className={[
-            'h-(--collapsible-panel-height) overflow-hidden',
-            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-            'motion-reduce:[transition-duration:0ms]',
-            'data-[starting-style]:h-0 data-[ending-style]:h-0'
-          ].join(' ')}
-        >
+        <BaseUICollapsible.Panel className={collapsiblePanelClasses}>
           {/*
             The rule down the inside edge rather than a second sheet: what is in
             here is prose, and a box around prose inside a box around a message

@@ -1082,6 +1082,25 @@ export const contextMessages: MessageTable<ContextMessages> = {
   }
 };
 
+/** Sources and InlineCitation. */
+export interface SourcesMessages {
+  /** The heading over the list, when it was not given one. */
+  title: string;
+  /**
+   * What a numbered citation in the body is called. `{index}` is its number,
+   * which is the only thing the mark itself says.
+   */
+  citation: string;
+}
+
+/** The `sources` namespace, as Sources and InlineCitation read it. */
+export const sourcesMessages: MessageTable<SourcesMessages> = {
+  '': {
+    title: 'Sources',
+    citation: 'Source {index}'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1300,6 +1319,8 @@ export interface NebaLocale {
   reasoning?: Partial<ReasoningMessages>;
   /** ContextWindow. */
   context?: Partial<ContextMessages>;
+  /** Sources and InlineCitation. */
+  sources?: Partial<SourcesMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1340,7 +1361,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   tool: toolMessages as MessageTable<never>,
   approval: approvalMessages as MessageTable<never>,
   reasoning: reasoningMessages as MessageTable<never>,
-  context: contextMessages as MessageTable<never>
+  context: contextMessages as MessageTable<never>,
+  sources: sourcesMessages as MessageTable<never>
 };
 
 /**

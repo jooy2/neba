@@ -232,5 +232,9 @@ export const zhHans: NebaLocale = {
     cached: '缓存',
     cost: '预估费用',
     usage: '{max} 中的 {used}'
+  },
+  sources: {
+    title: '来源',
+    citation: '来源 {index}'
   }
 };

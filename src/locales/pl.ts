@@ -229,5 +229,9 @@ export const pl: NebaLocale = {
     cached: 'W pamięci',
     cost: 'Szacowany koszt',
     usage: '{used} z {max}'
+  },
+  sources: {
+    title: 'Źródła',
+    citation: 'Źródło {index}'
   }
 };

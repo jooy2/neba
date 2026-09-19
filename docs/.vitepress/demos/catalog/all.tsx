@@ -81,6 +81,7 @@ import {
   Icon,
   Gallery,
   Image,
+  InlineCitation,
   IconButton,
   LineChart,
   List,
@@ -128,6 +129,7 @@ import {
   Slider,
   Sparkline,
   Spoiler,
+  Sources,
   Stack,
   Statistic,
   Switch,
@@ -2430,6 +2432,46 @@ const GROUPS: Group[] = [
               <AgentStep title="Searched the docs" meta="4 hits" />
             </AgentSteps>
           </div>
+        )
+      },
+      {
+        name: 'Sources',
+        summary: {
+          ko: '답이 무엇을 근거로 만들어졌는지',
+          en: 'The list of things an answer was built out of'
+        },
+        path: '/components/agent/sources',
+        preview: (
+          <div className="w-full max-w-64">
+            <Sources
+              size="sm"
+              defaultOpen
+              items={[
+                { title: 'The design language', site: 'neba.cdget.com', href: '#gallery-source' },
+                { title: 'Breakpoints', site: 'neba.cdget.com', href: '#gallery-source' }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'InlineCitation',
+        summary: {
+          ko: '본문 속 번호 각주. hover하면 출처가 올라옵니다',
+          en: 'A numbered footnote in the body, with the source a hover away'
+        },
+        path: '/components/agent/inline-citation',
+        preview: (
+          <p className="m-0 w-full max-w-64 text-[0.8125rem]/[1.6]">
+            A control never moves under the pointer
+            <InlineCitation
+              index={1}
+              title="The design language"
+              site="neba.cdget.com"
+              description="A sheet of cut acrylic, not a moulded plastic key."
+            />
+            .
+          </p>
         )
       },
       {

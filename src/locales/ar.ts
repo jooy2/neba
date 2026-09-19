@@ -229,5 +229,9 @@ export const ar: NebaLocale = {
     cached: 'مخزَّن مؤقتًا',
     cost: 'التكلفة التقديرية',
     usage: '{used} من {max}'
+  },
+  sources: {
+    title: 'المصادر',
+    citation: 'المصدر {index}'
   }
 };

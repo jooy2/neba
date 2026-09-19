@@ -229,5 +229,9 @@ export const th: NebaLocale = {
     cached: 'แคช',
     cost: 'ค่าใช้จ่ายโดยประมาณ',
     usage: '{used} จาก {max}'
+  },
+  sources: {
+    title: 'แหล่งที่มา',
+    citation: 'แหล่งที่มา {index}'
   }
 };

@@ -15809,5 +15809,250 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Anything to put under the split: a model name, a "clear the thread" link'
       }
     }
+  ],
+
+  SourceItem: [
+    {
+      name: 'title',
+      type: 'ReactNode',
+      required: true,
+      description: {
+        ko: '출처의 이름. 링크 문구이자 InlineCitation 미리보기의 제목',
+        en: "Its name. The link text, and the heading of an InlineCitation's preview"
+      }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '가리키는 주소. http, https, mailto, tel 밖의 스킴이면 링크를 걸지 않습니다',
+        en: 'Where it points. A scheme outside http, https, mailto and tel leaves the row without a link'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: {
+        ko: '제목 아래 한 줄. 인용된 대목, 발행처, 날짜',
+        en: 'The line under the title: the passage that matched, the publisher, a date'
+      }
+    },
+    {
+      name: 'site',
+      type: 'ReactNode',
+      description: {
+        ko: '출처가 어디인지. 제목 옆에',
+        en: 'Where it came from, set beside the title'
+      }
+    },
+    {
+      name: 'icon',
+      type: 'ReactNode',
+      description: {
+        ko: '번호 앞 정사각형에 들어갈 파비콘이나 썸네일',
+        en: 'A favicon or a thumbnail, in the square before the number'
+      }
+    },
+    {
+      name: 'index',
+      type: 'number',
+      default: { ko: '목록에서의 순번', en: 'its place in the list' },
+      description: {
+        ko: '이 출처가 인용되는 번호. 더 긴 목록 중 실제 인용된 것만 보여 줄 때',
+        en: 'The number this source is cited by, for a list that shows only the sources actually cited'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크가 열리는 곳. 탭을 벗어나면 rel에 noopener noreferrer가 더해집니다',
+        en: 'Where the link opens. rel gains noopener noreferrer whenever it leaves the tab'
+      }
+    },
+    {
+      name: 'rel',
+      type: 'string',
+      description: { ko: '직접 쓰는 rel', en: 'A rel of your own' }
+    }
+  ],
+
+  Sources: [
+    {
+      name: 'items',
+      type: 'readonly SourceItem[]',
+      required: true,
+      description: {
+        ko: '출처들. 번호가 붙는 순서대로',
+        en: 'The sources, in the order they are numbered'
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      default: { ko: "locale의 'Sources'", en: "the locale's 'Sources'" },
+      description: { ko: '제목', en: 'The heading' }
+    },
+    {
+      name: 'collapsible',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '목록을 제목 뒤로 접습니다. 끄면 제목은 그냥 한 줄이고 목록은 열려 있습니다',
+        en: 'Folds the list behind the heading. Off, the heading is a plain line and the list is open'
+      }
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '목록이 열려 있는지. 직접 제어할 때 씁니다',
+        en: 'Whether the list is showing. Pass it to drive the disclosure yourself'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '제어하지 않을 때의 시작 상태',
+        en: 'Where an uncontrolled Sources starts'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '제목이 목록을 열거나 닫았을 때',
+        en: 'Called when the heading opens or closes the list'
+      }
+    },
+    {
+      name: 'numbered',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '줄에 번호를 붙입니다. 본문의 인용이 가리킬 대상이 됩니다',
+        en: 'Numbers the rows, so a citation in the body has something to point at'
+      }
+    },
+    ...sharedProps({
+      variant: "'text'",
+      size: "'md'",
+      variantDescription: {
+        ko: '시트의 무게. 기본값이 text인 것은, 답 아래의 목록이 제목 하나와 링크 몇 줄이기 때문입니다',
+        en: 'Weight of the sheet. text by default, because a list under an answer is a heading and some links'
+      }
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '제목을 쓸 언어. BCP 47 태그',
+        en: 'Which language the heading is written in, as a BCP 47 tag'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<SourcesMessages>',
+      description: { ko: '그 단어들을 직접 씁니다', en: 'Those words, written out' }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'header' | 'list' | 'item'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 className입니다',
+        en: 'Class names for the parts behind the root. className is the root'
+      }
+    }
+  ],
+
+  InlineCitation: [
+    {
+      name: 'index',
+      type: 'number',
+      required: true,
+      description: {
+        ko: '몇 번째 출처인지. 표시가 말하는 전부이며, 여기서 세는 번호가 아니라 호출하는 쪽의 번호입니다',
+        en: "Which source this is, and the only thing the mark says. The caller's number rather than one counted here"
+      }
+    },
+    {
+      name: 'title',
+      type: 'ReactNode',
+      description: {
+        ko: '미리보기의 제목. 없으면 미리볼 것이 없습니다',
+        en: 'The heading of the preview. Without it there is nothing to preview'
+      }
+    },
+    {
+      name: 'description',
+      type: 'ReactNode',
+      description: { ko: '제목 아래 한 줄', en: 'The line under it' }
+    },
+    {
+      name: 'site',
+      type: 'ReactNode',
+      description: {
+        ko: '출처가 어디인지. 미리보기의 제목 옆에',
+        en: 'Where it came from, set beside the title in the preview'
+      }
+    },
+    {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '가리키는 주소. http, https, mailto, tel 밖의 스킴이면 표시는 평범한 텍스트로 남습니다',
+        en: 'Where the citation points. A scheme outside http, https, mailto and tel leaves the mark as plain text'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크가 열리는 곳. 탭을 벗어나면 rel에 noopener noreferrer가 더해집니다',
+        en: 'Where the link opens. rel gains noopener noreferrer whenever it leaves the tab'
+      }
+    },
+    {
+      name: 'preview',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'hover와 focus에서 미리보기를 엽니다. 끄면 표시는 그냥 링크입니다',
+        en: 'Shows the preview on hover and on focus. Off, the mark is a bare link'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: {
+        ko: '미리보기의 타입 스케일. 표시 자체는 em으로 문장을 따라갑니다',
+        en: 'The type scale of the preview. The mark itself is sized in em'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: { ko: '표시의 색 계열', en: "The mark's colour family" }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '표시의 접근 가능한 이름을 쓸 언어. BCP 47 태그',
+        en: "Which language the mark's accessible name is written in, as a BCP 47 tag"
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<SourcesMessages>',
+      description: { ko: '그 문장을 직접 씁니다', en: 'That sentence, written out' }
+    }
   ]
 };

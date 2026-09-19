@@ -229,5 +229,9 @@ export const vi: NebaLocale = {
     cached: 'Bộ nhớ đệm',
     cost: 'Chi phí ước tính',
     usage: '{used} trên {max}'
+  },
+  sources: {
+    title: 'Nguồn',
+    citation: 'Nguồn {index}'
   }
 };

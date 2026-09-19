@@ -229,5 +229,9 @@ export const ja: NebaLocale = {
     cached: 'キャッシュ',
     cost: '推定コスト',
     usage: '{max} 中 {used}'
+  },
+  sources: {
+    title: '出典',
+    citation: '出典 {index}'
   }
 };

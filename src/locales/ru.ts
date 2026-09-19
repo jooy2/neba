@@ -233,5 +233,9 @@ export const ru: NebaLocale = {
     cached: 'Из кэша',
     cost: 'Примерная стоимость',
     usage: '{used} из {max}'
+  },
+  sources: {
+    title: 'Источники',
+    citation: 'Источник {index}'
   }
 };

@@ -233,5 +233,9 @@ export const id: NebaLocale = {
     cached: 'Tersimpan',
     cost: 'Perkiraan biaya',
     usage: '{used} dari {max}'
+  },
+  sources: {
+    title: 'Sumber',
+    citation: 'Sumber {index}'
   }
 };

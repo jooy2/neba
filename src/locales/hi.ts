@@ -233,5 +233,9 @@ export const hi: NebaLocale = {
     cached: 'कैश',
     cost: 'अनुमानित लागत',
     usage: '{max} में से {used}'
+  },
+  sources: {
+    title: 'स्रोत',
+    citation: 'स्रोत {index}'
   }
 };

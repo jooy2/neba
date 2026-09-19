@@ -229,5 +229,9 @@ export const ko: NebaLocale = {
     cached: '캐시',
     cost: '예상 비용',
     usage: '{max} 중 {used}'
+  },
+  sources: {
+    title: '출처',
+    citation: '출처 {index}'
   }
 };
