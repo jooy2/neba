@@ -8,11 +8,19 @@
 
 ### Added
 
+- **An A2UI renderer to go with the catalog, as `neba/a2ui`.** `createNebaCatalog()` returns a `Catalog` for `@a2ui/react`'s v0.9 surface with the eighteen components implemented against this library and the protocol's own fourteen functions registered, so an agent's JSON comes out as Neba components with nothing in between to write.
+
+  **The Zod schemas the renderer binds against are derived from `catalog.json` at load time**, rather than written a second time. A hand-written mirror is a mirror that drifts, and the copy that drifts is the one the agent was never told about: a model writing exactly what the JSON allows and a renderer rejecting it. The converter handles the subset the catalog uses and throws on anything else, rather than quietly returning `z.any()` for a construct it has not met.
+
+  The functions are `@a2ui/web_core`'s own. `required`, `formatCurrency` and the rest are the _protocol's_ semantics rather than this library's, and a second implementation of them would be a second chance to disagree with the agent about the one thing both sides have to read the same way.
+
+  `@a2ui/react`, `@a2ui/web_core` and `zod` are **optional** peer dependencies, which is safe here because `neba/a2ui` is not re-exported from `neba` — a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Nothing about any bundle moved.
+
 - **An [A2UI](https://a2ui.org) catalog, as `neba/a2ui/catalog.json`.** A2UI is the protocol for an agent describing an interface as JSON that the _host_ renders with the host's own design system, and a catalog is how the two sides agree on the vocabulary. This one is written against v1.0 and is also served from the URL it names itself by, `https://neba.cdget.com/a2ui/catalog.json`.
 
   Eighteen components and the specification's fourteen functions. Eighteen is the Basic Catalog's count and the number is the decision rather than an accident: a model chooses badly from a list of a hundred and thirty-eight, and what is left out is everything whose useful props are functions, `ReactNode`s or render props. The names are the library's own, which makes a host's mapping a lookup rather than a translation, and the `instructions` field carries the four things a screen gets wrong without being told — that nothing has a margin, that colour is semantic, that `size` is one ladder, and that a field draws its own label and its own error.
 
-  **The catalog alone ships**: no renderer, no adapter and no new dependency. It is JSON, so it never enters a bundle and `npm run size` does not move; what it costs is about 57 kB of the tarball.
+  **The catalog is JSON**, so it never enters a bundle and `npm run size` does not move; what it costs is about 57 kB of the tarball. Take it alone and the mapping to your components is yours — or take `neba/a2ui` below and it is already written.
 
 - **`ToolCall`** — one tool invocation in an agent transcript: the name, what it was called with, what came back and how long it took, with everything but the header folded away behind it. `status` is the new shared `NebaRunStatus` — `pending`, `running`, `success`, `error` — and each of the four gets its own shape as well as its own colour, so a reader who cannot tell the two reds apart still has a dashed ring, a turning ring, a tick and a cross. `color` decides only what a _running_ call looks like: a failed one is `danger` and a finished one is `success` on every ToolCall on the page, because a red row that meant the product's accent colour would have spent the one signal it had.
 

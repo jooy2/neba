@@ -19,7 +19,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 | `src/components/{name}/` | One folder per component (lowercase folder name). |
 | `src/internal/` | The library talking to itself. Shipped but never re-exported from `src/index.ts`. |
 | `src/locales/` | One module per language, plus `registerMessages`. Public, reached as `neba/locales`; **not** re-exported from `src/index.ts`, because nothing here should be in a bundle that did not ask for it. |
-| `src/a2ui/` | The [A2UI](https://a2ui.org) catalog, as JSON. Copied to `dist/` by the build and served from the docs site; never imported by anything in `src/`. |
+| `src/a2ui/` | The [A2UI](https://a2ui.org) catalog as JSON, and the adapter that renders it. Off the barrel: nothing in `src/` imports it, which is what makes its three dependencies optional peers. |
 | `test/` | Test suite (Vitest). Mirrors the `src/` tree. Self-contained: owns its `tsconfig.json`. |
 | `docs/` | VitePress site — developer-facing documentation for library consumers, and the only place components are rendered during development. Self-contained: owns its `tsconfig.json`. Not published to npm. |
 | `dist/` | Build output (`tsc` + terser). Generated; never edit by hand, never commit. |
@@ -374,6 +374,20 @@ Four things about it are decisions rather than details:
 - **The names are Neba's own.** A catalog names the _renderer's_ components, and using ours makes a host's mapping a lookup rather than a translation.
 - **The `$ref`s are absolute.** The specification's own catalog writes `common_types.json#/$defs/DynamicString`, which resolves only for a file sitting beside it; this one is served from somewhere else, so it reaches the spec by the `$id` those definitions declare.
 - **The function definitions are written here rather than copied.** The names, the argument shapes and the return types are the protocol's interface and conforming to them is the point; A2UI is Apache-2.0, and its descriptions are its own.
+
+### The adapter
+
+`neba/a2ui` is the other half: a `Catalog` for `@a2ui/react`'s **v0.9** surface, with the eighteen components implemented against this library and the protocol's own fourteen functions registered. Three things about it are the decisions.
+
+**The Zod is derived, not written.** A `ComponentApi` carries a Zod schema — that is what the renderer binds and validates against — and `catalog.json` is JSON Schema. Writing both by hand is writing the eighteen components twice, and the copy that drifts is the one the agent was never told about: a model writing exactly what the JSON allows and a renderer rejecting it. `src/a2ui/schema.ts` converts the subset the catalog actually uses and **throws** on anything else, rather than returning `z.any()` for a construct it has not met. `componentId()` and `childList()` are load-bearing there: the node layer reads a marker off those schemas to work out which props are child references, so a `Card.child` built from a bare `z.string()` is a card that never resolves its child.
+
+**The functions are `web_core`'s.** `required`, `formatCurrency` and the rest are the _protocol's_ semantics rather than this library's, and `BASIC_FUNCTIONS` already implements every name the catalog declares. A second implementation would be a second chance to disagree with the agent on the one thing both sides have to read the same way.
+
+**The three packages are optional peers**, and that is safe only because `src/a2ui/` is off the barrel. `highlight.js` is a real dependency for the opposite reason: `CodeBlock` _is_ on the barrel, so a specifier a bundler cannot resolve fails the whole build. Nothing in `src/` imports `src/a2ui/`, a bundler walking `neba` never reaches it, and `npm run size` moving by nothing when the adapter landed is the check that says so.
+
+The catalog is v1.0 and the renderer is v0.9, which is the one seam. The eighteen components use only constructs the two share; the two differences are that v1.0 moved `accessibility` into the envelope, which `schema.ts` puts back, and that v1.0's `Action` gained a `userMessage` the v0.9 schema strips rather than rejects. When there is a v1.0 React renderer, what changes is one import.
+
+`test/a2ui/adapter.test.tsx` is the only thing in the repository that finds out whether any of this works: it feeds a `MessageProcessor` the messages an agent sends and asserts that Neba components come out, that a binding resolves, that a field writes back and that a failed check lands in the field's own error. The schemas are built at runtime, so a prop misspelled in `components.tsx` type-checks against nothing at all.
 
 `test/package/a2ui.test.ts` holds the shape: the ten keys, a `component` const that matches its key, a `$defs` listing everything, a component name that is really exported, and every `$ref` pointing at a `common_types.json` definition somebody read. Adding a component is an entry in `components`, an entry in `$defs.anyComponent`, and a line on the docs page — nothing else in the repository knows the file exists.
 

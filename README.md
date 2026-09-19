@@ -20,7 +20,7 @@ You install one package, add one line to your CSS, and import components. There 
 - **Dark mode with no work**: follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file**: a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
 - **ESM only**, TypeScript declarations included, and genuinely tree-shakeable: every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3.5 kB, and a twelve-component app is ~70 kB; the whole library, all one hundred and eighty-five exports at once, is ~286 kB.
-- **Two runtime dependencies**: Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later.
+- **Two runtime dependencies**: Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later. The [A2UI](https://neba.cdget.com/guide/a2ui) renderer at `neba/a2ui` has three more, and they are optional peers: a project that never imports that subpath never meets them.
 
 ## Documentation
 

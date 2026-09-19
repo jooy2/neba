@@ -42,6 +42,10 @@
     {
       "feature": "css.selectors.selection",
       "reason": "The colour of selected text in a field. Safari on iOS keeps its own selection colour."
+    },
+    {
+      "feature": "javascript.statements.import.import_attributes",
+      "reason": "`neba/a2ui` reads its own catalog with `import … with { type: 'json' }`, which is the only form Node's ESM resolver accepts for JSON. It is not on the package's barrel and cannot be reached without also installing `@a2ui/react`, so the only way to meet it is a build that bundles an A2UI renderer — and every bundler that can parse the attribute resolves the specifier at build time, which is where it stops. Nothing a reader can see depends on it; what it rules out is loading that one subpath as raw ESM in a browser older than Chrome 123, which is not a way a React renderer is loaded. The rest of the package never imports it."
     }
   ]
 }

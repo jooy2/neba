@@ -54,8 +54,14 @@ export default defineConfig({
   // and a dependency Vite first meets in the middle of a run is optimised then,
   // which reloads the page under the file that was running: a second React, an
   // invalid hook call, and the next test file never becoming ready.
+  //
+  // The two A2UI subpaths are here for the *other* half of that: they ship
+  // their own React import, and optimised separately they get a second copy of
+  // it — which is `Cannot read properties of null (reading 'useMemo')` the
+  // first time the adapter's surface renders. Listed together, they and the
+  // test tree share one.
   optimizeDeps: {
-    include: ['react-dom/client']
+    include: ['react-dom/client', '@a2ui/react/v0_9', '@a2ui/web_core/v0_9']
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],

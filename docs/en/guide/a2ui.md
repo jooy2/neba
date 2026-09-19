@@ -5,13 +5,17 @@ order: 4
 
 # A2UI catalog
 
-<p class="neba-lede">The package ships an A2UI catalog: a JSON Schema file that tells an agent which Neba components it may describe and what each one takes. An agent writes a surface as JSON, your renderer draws it with the components you already have.</p>
+<p class="neba-lede">The package ships an A2UI catalog and a renderer to go with it. The catalog tells an agent which Neba components it may describe; the adapter turns what the agent writes back into those components. An agent writes a surface as JSON and it comes out as your design system.</p>
 
 ```ts
+// What the agent is handed.
 import catalog from 'neba/a2ui/catalog.json' with { type: 'json' };
+
+// What draws what it writes back.
+import { createNebaCatalog } from 'neba/a2ui';
 ```
 
-It is also served from the URL it names itself by:
+The catalog is also served from the URL it names itself by:
 
 ```
 https://neba.cdget.com/a2ui/catalog.json
@@ -23,11 +27,38 @@ https://neba.cdget.com/a2ui/catalog.json
 
 A catalog is how the two sides agree on the vocabulary. It is a single JSON Schema file with a `catalogId`, a set of `components`, a set of `functions` the renderer will execute, and `instructions` written for the model rather than for a reader. There is no registry: the `catalogId` is an identifier that only looks like a URL, and the spec says it does not have to point at anything. This one does anyway.
 
-## What ships, and what does not
+## Two halves, and you can take one
 
-**The catalog, and nothing else.** There is no renderer in this package, no adapter, and no new dependency — a catalog is JSON, so it never enters a bundle and `npm run size` does not move. What it costs is about 57 kB of the published tarball.
+**`neba/a2ui/catalog.json` costs nothing.** It is JSON, so it never enters a bundle, and whether you render it with this library's adapter or with a renderer of your own is your decision. Take it alone and the mapping is yours.
 
-Wiring it up is yours, and it is two things: tell the agent the vocabulary, and map a component name onto the component. Both are small, and both belong in your application rather than here, because only you know which model you are calling and how your surfaces reach the page.
+**`neba/a2ui` is the adapter**, and it needs three packages this library does not install for you:
+
+```bash
+npm install @a2ui/react @a2ui/web_core zod
+```
+
+They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in.
+
+```tsx
+import { MessageProcessor } from '@a2ui/web_core/v0_9';
+import { A2uiSurface } from '@a2ui/react/v0_9';
+import { createNebaCatalog } from 'neba/a2ui';
+
+const processor = new MessageProcessor([createNebaCatalog()]);
+
+processor.processMessages(whateverTheAgentSent);
+
+// …then render each surface the agent created.
+<A2uiSurface surface={surface} />;
+```
+
+That is the whole of it. The adapter registers the eighteen components and the fourteen functions, and the `catalogId` a surface names is the one in the file the agent was given — so the two halves cannot drift apart.
+
+### What the adapter does, and does not
+
+The renderer does the work: a prop the agent wrote as a literal, as a path into the data model or as a function call arrives at the component already resolved; a field's edits are written back to the data model; an action arrives as a function with its context gathered; a `checks` rule is evaluated as the data changes. What this package adds is the rename — `Alert`'s `child` is its children, `Select`'s `options` are its `items` — and putting a failed check's message where the field draws its own error.
+
+The Zod schemas the renderer binds against are **derived from `catalog.json` at load time** rather than written a second time. That is the point: a hand-written mirror is a mirror that drifts, and the copy that drifts is the one the agent was never told about — a model writing exactly what the JSON allows, and a renderer rejecting it.
 
 ## The eighteen
 
@@ -62,7 +93,11 @@ Declaring one is a claim that your renderer implements it. Ten of the fourteen a
 
 ## Versions
 
-Written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`. The packages under `@a2ui/*` are still on 0.11.x while the specification is at 1.0, so expect the tooling around it to move before the format does.
+The catalog is written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`.
+
+**The adapter registers with `@a2ui/react/v0_9`**, because 0.11 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and the two differences that exist are both harmless: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back, and v1.0's `Action` gained a `userMessage` that the v0.9 schema strips rather than rejects.
+
+The `@a2ui/*` packages are on 0.11.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
 
 ## Next
 
