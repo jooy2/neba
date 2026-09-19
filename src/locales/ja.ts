@@ -220,5 +220,14 @@ export const ja: NebaLocale = {
     thinking: '思考中…',
     thought: '{duration} 考えました',
     done: '思考を終えました'
+  },
+  context: {
+    label: 'コンテキスト',
+    input: '入力',
+    output: '出力',
+    reasoning: '推論',
+    cached: 'キャッシュ',
+    cost: '推定コスト',
+    usage: '{max} 中 {used}'
   }
 };

@@ -220,5 +220,14 @@ export const tr: NebaLocale = {
     thinking: 'Düşünüyor…',
     thought: '{duration} düşündü',
     done: 'Düşünmeyi bitirdi'
+  },
+  context: {
+    label: 'Bağlam',
+    input: 'Girdi',
+    output: 'Çıktı',
+    reasoning: 'Akıl yürütme',
+    cached: 'Önbellekten',
+    cost: 'Tahmini maliyet',
+    usage: '{max} içinde {used}'
   }
 };

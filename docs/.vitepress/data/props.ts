@@ -15664,5 +15664,150 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'What the step did: a search query, a file that was read, a ToolCall of its own'
       }
     }
+  ],
+
+  ContextTokens: [
+    {
+      name: 'input',
+      type: 'number',
+      description: {
+        ko: '보낸 것 전부. 프롬프트, 대화 기록, 도구 정의',
+        en: 'Everything sent: the prompt, the history, the tool definitions'
+      }
+    },
+    {
+      name: 'output',
+      type: 'number',
+      description: { ko: '모델이 써 보낸 것 전부', en: 'Everything the model wrote back' }
+    },
+    {
+      name: 'reasoning',
+      type: 'number',
+      description: {
+        ko: '생각에 쓴 양. 모델이 이것을 따로 계산하는 경우',
+        en: 'What it spent thinking, where the model bills that separately'
+      }
+    },
+    {
+      name: 'cached',
+      type: 'number',
+      description: {
+        ko: '입력 가운데 캐시에서 나온 부분',
+        en: 'The part of the input that was served from a cache'
+      }
+    }
+  ],
+
+  ContextWindow: [
+    {
+      name: 'max',
+      type: 'number',
+      required: true,
+      description: { ko: '창이 담는 토큰 수', en: 'How many tokens the window holds' }
+    },
+    {
+      name: 'used',
+      type: 'number',
+      default: { ko: 'tokens의 합', en: 'the sum of tokens' },
+      description: {
+        ko: '쓴 양. 내역을 아는 쪽은 합계도 알고 있으므로 보통 생략합니다',
+        en: 'How many have gone. Left out, it is the sum of tokens'
+      }
+    },
+    {
+      name: 'tokens',
+      type: 'ContextTokens',
+      description: {
+        ko: '내역. 링 아래에 항목마다 한 줄씩, 보고된 것만 그립니다',
+        en: 'The split. A row per part under the ring, only for the parts that were reported'
+      }
+    },
+    {
+      name: 'cost',
+      type: 'number',
+      description: { ko: '이번 턴의 비용', en: 'What the turn cost' }
+    },
+    {
+      name: 'currency',
+      type: 'string',
+      default: "'USD'",
+      description: {
+        ko: 'cost의 통화. ISO 4217 코드',
+        en: 'The currency cost is in, as an ISO 4217 code'
+      }
+    },
+    {
+      name: 'thresholds',
+      type: 'readonly NebaThreshold[]',
+      description: {
+        ko: '링의 색이 바뀌는 지점. 비율이 아니라 토큰 수로 씁니다',
+        en: 'Where the ring changes colour, in tokens rather than as a share'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      default: { ko: "locale의 'Context'", en: "the locale's 'Context'" },
+      description: { ko: '이 게이지의 이름', en: 'What the gauge is called' }
+    },
+    {
+      name: 'breakdown',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '링 아래에 내역을 그립니다. 끄면 링과 숫자만 남아 Toolbar에 들어갑니다',
+        en: 'Draws the split under the ring. Off, the gauge is the ring and the counts beside it'
+      }
+    },
+    {
+      name: 'size',
+      type: SIZE,
+      default: "'md'",
+      shared: true,
+      description: { ko: '링의 지름과 타입 스케일', en: "The ring's diameter and the type scale" }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: {
+        ko: 'threshold에 닿기 전 링이 띠는 색 계열',
+        en: 'The family the ring carries before any threshold is reached'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '토큰 수와 금액을 쓸 언어. 124,000을 124K로 쓸지 12.4만으로 쓸지를 정합니다',
+        en: 'The language the counts and the money are written in: whether 124,000 reads as 124K or 12.4만'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<ContextMessages>',
+      description: {
+        ko: '게이지가 하는 말을 직접 씁니다',
+        en: "The gauge's own words, written out"
+      }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'ring' | 'label' | 'breakdown'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 className입니다',
+        en: 'Class names for the parts behind the root. className is the root'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '내역 아래에 놓을 것. 모델 이름이나 대화 비우기 링크 같은 것',
+        en: 'Anything to put under the split: a model name, a "clear the thread" link'
+      }
+    }
   ]
 };

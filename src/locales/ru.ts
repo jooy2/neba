@@ -224,5 +224,14 @@ export const ru: NebaLocale = {
     thinking: 'Размышляет…',
     thought: 'Размышлял {duration}',
     done: 'Размышление завершено'
+  },
+  context: {
+    label: 'Контекст',
+    input: 'Ввод',
+    output: 'Вывод',
+    reasoning: 'Рассуждение',
+    cached: 'Из кэша',
+    cost: 'Примерная стоимость',
+    usage: '{used} из {max}'
   }
 };

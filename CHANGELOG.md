@@ -24,6 +24,10 @@
 
   A step takes the same `NebaRunStatus` a `ToolCall` does, and the same four marks; `success` is its default, since a step that is already in the list has usually already run. Its `children` hold whatever it did — a query, a file, a whole `ToolCall`.
 
+- **`ContextWindow`** — how much of the context window has gone, and what went into it. A `Meter` draws the same reading as a bar and would do most of it; what it cannot do is the part that makes this a component: token counts are five and six digits long and have to be written compactly _in the reader's own language_, the split into input, output, reasoning and cached only means anything with the four next to each other, and the money underneath is a third unit again. `used` defaults to the sum of `tokens`, and a part that is `0` is still reported — a cache that returned nothing is a different fact from a model that has no cache.
+
+  The four parts take the first four chart palette slots rather than four colour families, because input and output are _entities_ and nothing about either means success or danger. Base UI's Meter owns the semantics, and `aria-valuetext` is the same compact sentence the gauge draws rather than a percentage of a range nobody described.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

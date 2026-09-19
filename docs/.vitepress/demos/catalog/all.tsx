@@ -50,6 +50,7 @@ import {
   CommandPalette,
   Collapsible,
   Container,
+  ContextWindow,
   DataList,
   DataListItem,
   DataTable,
@@ -2448,6 +2449,24 @@ const GROUPS: Group[] = [
               result="4 hits"
             />
             <ToolCall size="sm" name="read_file" status="running" />
+          </div>
+        )
+      },
+      {
+        name: 'ContextWindow',
+        summary: {
+          ko: '컨텍스트 창을 얼마나 썼고 무엇으로 채웠는지',
+          en: 'How much of the context window has gone, and what went into it'
+        },
+        path: '/components/agent/context-window',
+        preview: (
+          <div className="w-full max-w-64">
+            <ContextWindow
+              size="sm"
+              max={200_000}
+              tokens={{ input: 94_200, output: 12_400 }}
+              cost={0.42}
+            />
           </div>
         )
       },

@@ -223,5 +223,14 @@ export const zhHans: NebaLocale = {
     thinking: '思考中…',
     thought: '思考了 {duration}',
     done: '思考完成'
+  },
+  context: {
+    label: '上下文',
+    input: '输入',
+    output: '输出',
+    reasoning: '推理',
+    cached: '缓存',
+    cost: '预估费用',
+    usage: '{max} 中的 {used}'
   }
 };

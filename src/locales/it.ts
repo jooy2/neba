@@ -220,5 +220,14 @@ export const it: NebaLocale = {
     thinking: 'Sta ragionando…',
     thought: 'Ha ragionato per {duration}',
     done: 'Ragionamento concluso'
+  },
+  context: {
+    label: 'Contesto',
+    input: 'Ingresso',
+    output: 'Uscita',
+    reasoning: 'Ragionamento',
+    cached: 'In cache',
+    cost: 'Costo stimato',
+    usage: '{used} su {max}'
   }
 };

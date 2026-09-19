@@ -224,5 +224,14 @@ export const hi: NebaLocale = {
     thinking: 'सोच रहा है…',
     thought: '{duration} तक सोचा',
     done: 'सोचना पूरा हुआ'
+  },
+  context: {
+    label: 'कॉन्टेक्स्ट',
+    input: 'इनपुट',
+    output: 'आउटपुट',
+    reasoning: 'तर्क',
+    cached: 'कैश',
+    cost: 'अनुमानित लागत',
+    usage: '{max} में से {used}'
   }
 };

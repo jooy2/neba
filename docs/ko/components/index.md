@@ -6,7 +6,7 @@ aside: false
 
 # 모든 컴포넌트
 
-<p class="neba-lede">현재 배포된 컴포넌트 133개 전부입니다. 각 카드 안의 미리보기는 실제로 동작하는 컴포넌트입니다. Confirm과 Portal만 예외로, 자기 카드를 벗어나야 보여 줄 수 있어서 그림으로 그렸습니다.</p>
+<p class="neba-lede">현재 배포된 컴포넌트 134개 전부입니다. 각 카드 안의 미리보기는 실제로 동작하는 컴포넌트입니다. Confirm과 Portal만 예외로, 자기 카드를 벗어나야 보여 줄 수 있어서 그림으로 그렸습니다.</p>
 
 <Demo src="catalog/all" plain />
 

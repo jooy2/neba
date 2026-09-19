@@ -1047,6 +1047,41 @@ export const reasoningMessages: MessageTable<ReasoningMessages> = {
   }
 };
 
+/** ContextWindow. */
+export interface ContextMessages {
+  /** What the gauge is called when it was not given a name. */
+  label: string;
+  /** The four things a context window is spent on. */
+  input: string;
+  output: string;
+  reasoning: string;
+  cached: string;
+  /** Over the money. */
+  cost: string;
+  /** How much of the window has gone. `{used}` and `{max}` are the two counts. */
+  usage: string;
+}
+
+/**
+ * The `context` namespace, as ContextWindow reads it.
+ *
+ * Nothing here is a number: the counts and the money are `Intl`'s, which speaks
+ * more languages than this file ever will, and `usage` is a whole sentence with
+ * two placeholders in it because where the two numbers sit is exactly what
+ * differs between languages.
+ */
+export const contextMessages: MessageTable<ContextMessages> = {
+  '': {
+    label: 'Context',
+    input: 'Input',
+    output: 'Output',
+    reasoning: 'Reasoning',
+    cached: 'Cached',
+    cost: 'Estimated cost',
+    usage: '{used} of {max}'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1263,6 +1298,8 @@ export interface NebaLocale {
   approval?: Partial<ApprovalMessages>;
   /** Reasoning. */
   reasoning?: Partial<ReasoningMessages>;
+  /** ContextWindow. */
+  context?: Partial<ContextMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1302,7 +1339,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   run: runMessages as MessageTable<never>,
   tool: toolMessages as MessageTable<never>,
   approval: approvalMessages as MessageTable<never>,
-  reasoning: reasoningMessages as MessageTable<never>
+  reasoning: reasoningMessages as MessageTable<never>,
+  context: contextMessages as MessageTable<never>
 };
 
 /**

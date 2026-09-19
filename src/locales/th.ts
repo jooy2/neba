@@ -220,5 +220,14 @@ export const th: NebaLocale = {
     thinking: 'กำลังคิด…',
     thought: 'คิดอยู่ {duration}',
     done: 'คิดเสร็จแล้ว'
+  },
+  context: {
+    label: 'บริบท',
+    input: 'อินพุต',
+    output: 'เอาต์พุต',
+    reasoning: 'การให้เหตุผล',
+    cached: 'แคช',
+    cost: 'ค่าใช้จ่ายโดยประมาณ',
+    usage: '{used} จาก {max}'
   }
 };

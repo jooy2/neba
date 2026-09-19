@@ -47,6 +47,7 @@ export * from './components/combobox/index.js';
 export * from './components/command-palette/index.js';
 export * from './components/confirm/index.js';
 export * from './components/container/index.js';
+export * from './components/context-window/index.js';
 export * from './components/data-list/index.js';
 export * from './components/data-table/index.js';
 export * from './components/date-picker/index.js';

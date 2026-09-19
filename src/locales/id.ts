@@ -224,5 +224,14 @@ export const id: NebaLocale = {
     thinking: 'Sedang berpikir…',
     thought: 'Berpikir selama {duration}',
     done: 'Selesai berpikir'
+  },
+  context: {
+    label: 'Konteks',
+    input: 'Masukan',
+    output: 'Keluaran',
+    reasoning: 'Penalaran',
+    cached: 'Tersimpan',
+    cost: 'Perkiraan biaya',
+    usage: '{used} dari {max}'
   }
 };

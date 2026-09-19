@@ -220,5 +220,14 @@ export const ar: NebaLocale = {
     thinking: 'يفكر…',
     thought: 'فكّر لمدة {duration}',
     done: 'انتهى من التفكير'
+  },
+  context: {
+    label: 'السياق',
+    input: 'المدخلات',
+    output: 'المخرجات',
+    reasoning: 'الاستدلال',
+    cached: 'مخزَّن مؤقتًا',
+    cost: 'التكلفة التقديرية',
+    usage: '{used} من {max}'
   }
 };

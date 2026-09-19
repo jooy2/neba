@@ -220,5 +220,14 @@ export const vi: NebaLocale = {
     thinking: 'Đang suy nghĩ…',
     thought: 'Đã suy nghĩ trong {duration}',
     done: 'Đã suy nghĩ xong'
+  },
+  context: {
+    label: 'Ngữ cảnh',
+    input: 'Đầu vào',
+    output: 'Đầu ra',
+    reasoning: 'Suy luận',
+    cached: 'Bộ nhớ đệm',
+    cost: 'Chi phí ước tính',
+    usage: '{used} trên {max}'
   }
 };

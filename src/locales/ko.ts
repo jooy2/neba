@@ -220,5 +220,14 @@ export const ko: NebaLocale = {
     thinking: '생각하는 중…',
     thought: '{duration} 동안 생각함',
     done: '생각을 마침'
+  },
+  context: {
+    label: '컨텍스트',
+    input: '입력',
+    output: '출력',
+    reasoning: '추론',
+    cached: '캐시',
+    cost: '예상 비용',
+    usage: '{max} 중 {used}'
   }
 };

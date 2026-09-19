@@ -220,5 +220,14 @@ export const nl: NebaLocale = {
     thinking: 'Denkt na…',
     thought: '{duration} nagedacht',
     done: 'Klaar met nadenken'
+  },
+  context: {
+    label: 'Context',
+    input: 'Invoer',
+    output: 'Uitvoer',
+    reasoning: 'Redenering',
+    cached: 'Gecachet',
+    cost: 'Geschatte kosten',
+    usage: '{used} van {max}'
   }
 };
