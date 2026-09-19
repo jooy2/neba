@@ -8,6 +8,12 @@
 
 ### Added
 
+- **An [A2UI](https://a2ui.org) catalog, as `neba/a2ui/catalog.json`.** A2UI is the protocol for an agent describing an interface as JSON that the _host_ renders with the host's own design system, and a catalog is how the two sides agree on the vocabulary. This one is written against v1.0 and is also served from the URL it names itself by, `https://neba.cdget.com/a2ui/catalog.json`.
+
+  Eighteen components and the specification's fourteen functions. Eighteen is the Basic Catalog's count and the number is the decision rather than an accident: a model chooses badly from a list of a hundred and thirty-eight, and what is left out is everything whose useful props are functions, `ReactNode`s or render props. The names are the library's own, which makes a host's mapping a lookup rather than a translation, and the `instructions` field carries the four things a screen gets wrong without being told — that nothing has a margin, that colour is semantic, that `size` is one ladder, and that a field draws its own label and its own error.
+
+  **The catalog alone ships**: no renderer, no adapter and no new dependency. It is JSON, so it never enters a bundle and `npm run size` does not move; what it costs is about 57 kB of the tarball.
+
 - **`ToolCall`** — one tool invocation in an agent transcript: the name, what it was called with, what came back and how long it took, with everything but the header folded away behind it. `status` is the new shared `NebaRunStatus` — `pending`, `running`, `success`, `error` — and each of the four gets its own shape as well as its own colour, so a reader who cannot tell the two reds apart still has a dashed ring, a turning ring, a tick and a cross. `color` decides only what a _running_ call looks like: a failed one is `danger` and a finished one is `success` on every ToolCall on the page, because a red row that meant the product's accent colour would have spent the one signal it had.
 
   A string `args` or `result` goes into a `<pre>` with its own line breaks kept, since indented JSON, a stack trace and a diff all mean something by where their lines break; anything else is rendered as the node it is. Leave `duration` out and a `running` call counts its own seconds, saying nothing for the first one and stopping the moment a real figure arrives. And a call that fails opens itself, unless `open` is holding it — a reader should not have to go looking for the reason something did not work.

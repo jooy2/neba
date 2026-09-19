@@ -47,45 +47,37 @@ Notes for whoever picks these up:
 - **`Sandbox` and `JSX Preview`.** Executing code adds a security surface.
 - **`ModelSelector`, `MicSelector`, `VoiceSelector`, `Actions`, suggestion chips, a conversation list, a welcome screen.** All of them compose out of `Select`, `Toolbar`, `Chip` with `ScrollZone`, `List` and `Empty` — and `PromptInput`'s `start` and `end` are where the first four of them now go.
 
-## An A2UI catalog
+## An A2UI adapter
 
-A2UI is the standard for an agent describing UI as JSON that the host renders with its own design system. It is the one agentic-UI standard a component library benefits from: MCP Apps, the competing one, puts HTML in a sandboxed iframe, where a host design system cannot reach. Ant Design X has already shipped this as `@ant-design/x-card`.
+**The catalog has shipped.** `src/a2ui/catalog.json` is written against A2UI v1.0, copied to `dist/a2ui/catalog.json` by `scripts/build-catalog.mjs` and served from `https://neba.cdget.com/a2ui/catalog.json`; eighteen components and the specification's fourteen functions, with `test/package/a2ui.test.ts` holding the shape and [CLAUDE.md](CLAUDE.md) recording the four decisions behind it. That was shape A below, and on its own it is already enough for an agent to drive a host that uses this library.
+
+What is left is shape B: `neba/a2ui`, a module that registers these components with `@a2ui/react` so a consumer does not write the mapping themselves.
 
 ### What was verified
 
-Read against the v1.0 spec and against `@a2ui/web_core@0.11.0` unpacked from npm.
+Read against the v1.0 specification in September 2026 — the v0.9 notes this section used to carry were re-checked and several of them had moved.
 
-- **A catalog is one JSON Schema file** with three keys: `components` (type name to a JSON Schema of its props), `functions` (what the renderer will execute, such as `required`, `email`, `formatCurrency`, `openUrl`), and `theme`. The standard Basic Catalog is 46 kB, 18 components, 14 functions.
+- **A catalog is one JSON Schema file** validated by `specification/v1_0/json/catalog_definition.json`: `additionalProperties: false` over `$schema`, `$id`, `protocolVersion`, `title`, `description`, `catalogId`, `instructions`, `components`, `functions` and `$defs`, with `catalogId` the only required key. `components` and `functions` are **maps**, not arrays.
+- **v1.0 dropped `theme`** and the `ComponentCommon` wrapper the v0.9 catalog put round every component, and added `instructions` — Markdown design guidance written for the model — and a `$defs` that must hold both `anyComponent` and `anyFunction` or neither.
 - **`description` in a catalog entry is written for the model, not for a reader.** The Basic Catalog's `Button.child` says "Use a 'Text' component for a labeled button. Only use an 'Icon' if the requirements explicitly ask for an icon-only button."
-- **There is no registry.** `catalogId` is a string identifier that only looks like a URL; the spec states it "does not need to point to any deployed resource or downloadable file".
-- **Registration happens twice at runtime.** The renderer advertises `a2uiRendererCapabilities.v1.0.supportedCatalogIds` in message metadata, and the agent side puts the catalog schema into the prompt. `inlineCatalogs` is a third path that needs no prior agreement at all.
-- **The file ships inside the npm package.** `@a2ui/web_core` carries `src/v0_9/schemas/catalogs/basic/catalog.json` plus about twenty example message files, and exports `./v0_9/basic_catalog`. The same file is also served from the docs site.
+- **There is no registry.** `catalogId` is a string identifier that only looks like a URL; the spec states it does not need to point at anything.
+- **Registration happens twice at runtime.** The renderer advertises its supported catalog IDs in message metadata, and the agent side puts the catalog schema into the prompt. `inlineCatalogs` is a third path that needs no prior agreement at all.
 - **The wire format is a flat map with id references**, not a tree, and values are either literals or `{"path": "/json/pointer"}` bindings against a data model the renderer owns. Input components are two-way; what the reader typed is resolved and sent up when an action fires.
-- **A React renderer exists.** `@a2ui/react` 0.11.1, published 2026-09-12, depending on `@a2ui/web_core`, `markdown-it`, `zod` and `clsx`.
+- **A2UI is Apache-2.0**, which is why this repository's catalog states the protocol's names, argument shapes and return types — the interface — and writes its own descriptions.
 
-### Two shapes it can take
+### What an adapter would cost
 
 |  | What ships | Dependencies |
 | --- | --- | --- |
-| **A. The catalog alone** | `dist/a2ui/catalog.json`, exported as `neba/a2ui/catalog.json`, and the same file under `docs/public/a2ui/`. The renderer is the consumer's problem | None |
-| **B. The catalog and an adapter** | A, plus `neba/a2ui` registering this library's components with `@a2ui/react` | `markdown-it`, `zod`, inside the subpath only |
-
-A is a prerequisite for B, and A on its own is already enough for an agent to drive a host that uses this library.
+| **A. The catalog alone** | Done. `neba/a2ui/catalog.json` | None |
+| **B. An adapter** | A, plus `neba/a2ui` registering these components with `@a2ui/react` | `@a2ui/react`, and its `markdown-it` and `zod`, inside the subpath only |
 
 ### What will bite
 
-- **The children model differs.** A2UI passes `child: "someId"`, a string, where a component here takes `children: ReactNode`. Resolving that gap is most of what an adapter is.
-- **Only half of the schema can be generated.** `docs/.vitepress/data/props.ts` holds 167 prop tables as data, and a union like `'solid' | 'outline' | 'text'` falls straight out as an `enum`. `ReactNode`, `useRender.RenderProp` and every callback cannot go in a catalog at all. The real work is deciding what to leave out.
-- **Do not expose all 131 components.** The Basic Catalog is 18 on purpose; the spec calls it "intentionally sparse". A model cannot choose well from a long list. Picking the subset is the design.
-- **The `theme` key is small** — `primaryColor` as a hex string, `iconUrl`, `agentDisplayName`. Anything beyond that rides on `additionalProperties: true` and other renderers will ignore it.
-- **`.npmignore` is an allow-nothing list**, so a new path has to be opened there deliberately. Confirm with `npm pack --dry-run`.
-- A catalog is JSON, so it never enters a bundle. `sideEffects` is unaffected and `npm run size` will not move; only `unpackedSize` grows.
-
-### Still unchecked
-
-- The Basic Catalog that was read came from the **v0.9** path. The v1.0 spec document was read, but the v1.0 catalog file was not.
-- The custom-component registration code was only seen as an **Angular** example. The `@a2ui/react` registration API has not been opened. This is the next thing to look at, and wiring one component through it is the cheapest way to find out whether shape B is worth it.
-- The packages are at 0.11.x while the spec has just moved to v1.0. Breaking changes are still likely.
+- **The children model differs.** A2UI passes `child: "someId"`, a string, where a component here takes `children: ReactNode`. Resolving that gap is most of what an adapter is, and it is the reason the catalog is useful without one: a host that already has a renderer has already solved it.
+- **Four of the eighteen have no one-to-one prop.** `DataList` takes `items` in the catalog and `DataListItem` children in the library; `RadioGroup` and `Select` take an `options` array where the library takes children and an `items` array respectively; `Alert` takes a `child` where the library takes `children`. Each is three lines in an adapter and none of them is a question about the catalog.
+- **The packages are at 0.11.x while the spec is at 1.0.** Breaking changes are likelier in the tooling than in the format.
+- **The `@a2ui/react` registration API has still not been opened.** It was only ever seen as an Angular example. Wiring one component through it is the cheapest way to find out whether B is worth it.
 
 ## Sources
 

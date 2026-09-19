@@ -19,6 +19,7 @@ Guidance for Claude Code (and other AI agents) working in this repository.
 | `src/components/{name}/` | One folder per component (lowercase folder name). |
 | `src/internal/` | The library talking to itself. Shipped but never re-exported from `src/index.ts`. |
 | `src/locales/` | One module per language, plus `registerMessages`. Public, reached as `neba/locales`; **not** re-exported from `src/index.ts`, because nothing here should be in a bundle that did not ask for it. |
+| `src/a2ui/` | The [A2UI](https://a2ui.org) catalog, as JSON. Copied to `dist/` by the build and served from the docs site; never imported by anything in `src/`. |
 | `test/` | Test suite (Vitest). Mirrors the `src/` tree. Self-contained: owns its `tsconfig.json`. |
 | `docs/` | VitePress site — developer-facing documentation for library consumers, and the only place components are rendered during development. Self-contained: owns its `tsconfig.json`. Not published to npm. |
 | `dist/` | Build output (`tsc` + terser). Generated; never edit by hand, never commit. |
@@ -360,6 +361,21 @@ Five things hold the numbers above in place. Each of them, broken, is invisible 
 `test/package/resolution.test.ts` asserts them as structure; `npm run size` asserts the bytes they add up to. Both are needed: a change can keep every invariant above and still double what a consumer downloads, and a change can break one of them without moving a scenario the budget happens to measure.
 
 Things measured and **rejected**, so they do not get re-litigated: minifier option tuning (under 1%), splitting the stylesheet per component (above), dropping Tailwind's `@property` fallback for older Safari (0.4 kB gzip), and per-key tree-shaking of the size and density ladders in `internal/styles.ts` (impossible in principle, and they are a few hundred bytes).
+
+## The A2UI catalog
+
+`src/a2ui/catalog.json` is the one file in `src/` that no component imports and no bundler ever sees. It is an [A2UI](https://a2ui.org) catalog: the JSON Schema an agent is handed so it can describe a surface out of this library's components, and the schema a host's renderer validates that surface against. `scripts/build-catalog.mjs` copies it to `dist/a2ui/catalog.json` — exported as `neba/a2ui/catalog.json` — and, with `--docs`, to `docs/public/a2ui/catalog.json`, which is the URL its own `catalogId` names. The docs copy is generated and git-ignored, for `copy-changelog.mjs`' reason.
+
+It is written against **v1.0**, and the shape is `catalog_definition.json`'s: `additionalProperties: false` over exactly ten keys, `catalogId` the only required one, `components` and `functions` as maps rather than arrays, and a `$defs` that must hold `anyComponent` and `anyFunction` or neither. v0.9 had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither and adds `instructions`.
+
+Four things about it are decisions rather than details:
+
+- **Eighteen components, which is the Basic Catalog's count.** The specification calls its own "intentionally sparse", and the reason is that a model chooses badly from a long list. What is left out is everything whose useful props are functions, `ReactNode`s or render props — `Table` above all, whose columns carry render functions, so a catalog entry for it would be a schema the adapter invented rather than one the component has.
+- **The names are Neba's own.** A catalog names the _renderer's_ components, and using ours makes a host's mapping a lookup rather than a translation.
+- **The `$ref`s are absolute.** The specification's own catalog writes `common_types.json#/$defs/DynamicString`, which resolves only for a file sitting beside it; this one is served from somewhere else, so it reaches the spec by the `$id` those definitions declare.
+- **The function definitions are written here rather than copied.** The names, the argument shapes and the return types are the protocol's interface and conforming to them is the point; A2UI is Apache-2.0, and its descriptions are its own.
+
+`test/package/a2ui.test.ts` holds the shape: the ten keys, a `component` const that matches its key, a `$defs` listing everything, a component name that is really exported, and every `$ref` pointing at a `common_types.json` definition somebody read. Adding a component is an entry in `components`, an entry in `$defs.anyComponent`, and a line on the docs page — nothing else in the repository knows the file exists.
 
 ## Browser support
 

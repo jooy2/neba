@@ -1,0 +1,1466 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://neba.cdget.com/a2ui/catalog.json",
+  "protocolVersion": "1.0",
+  "title": "Neba",
+  "description": "The subset of the Neba component library an agent can describe: eighteen components whose every prop is a literal, an enumerated value or a reference to another component by ID.",
+  "catalogId": "https://neba.cdget.com/a2ui/catalog.json",
+  "instructions": "Neba is a React component library. Every component below is a real one, and what you write here is turned into that component rather than into markup.\n\n## Laying a surface out\n\nNothing has a margin of its own. Two components sit beside each other only inside a `Flex`, and the gutter between them is that `Flex`'s `spacing`. Nest a vertical `Flex` inside a horizontal one to build a grid.\n\nA component that takes a child takes an **ID**, never an inline definition, and a `Card` and an `Alert` take exactly one — wrap several in a `Flex` and pass that.\n\n## Colour means something here\n\n`color` is one of six semantic families and never a decorative choice. `success`, `warning` and `danger` say how something went; `info` is a note; `primary` is the product's own accent and `secondary` is the quiet one. Do not reach for a family because a screen needs variety, and do not use `danger` for anything but something that failed or something that destroys.\n\nThere is **one** `solid` control in a view — the action the view exists for. Everything else is `outline` or `text`.\n\n## One ladder\n\n`size` is the same five steps on every component, so an `md` Button, an `md` TextField and an `md` Select are the same height and line up in a row. Pick one size for a screen and stay on it; `density` is the prop for making something tighter, and it changes padding only.\n\n## Fields carry their own words\n\nA `TextField`, a `Select`, a `Checkbox` and the rest each draw their own label, helper line and error message. Never add a `Typography` above a field to label it, and never add one below it to show an error — put the message in the field's own `checks`.\n\n## Text\n\nEvery string a reader sees is a `Typography`. Its `level` says what the text *is* rather than how big it should be: use `h1`…`h6` in order for real headings, and do not pick a heading level because you want larger text.\n\n## Building a sentence out of a value\n\nThere are no operators. `formatString(\"Hello ${/user/name}\")` is how a value is put into a sentence, and `formatNumber`, `formatCurrency`, `formatDate` and `pluralize` are how a number or a date is written in the reader's own language. Never assemble a date out of its parts.",
+  "components": {
+    "Flex": {
+      "type": "object",
+      "description": "The layout component. A row or a column of other components, with a gutter between them. Everything that is not one thing on its own goes inside one of these: there is no other way to place two components beside each other.",
+      "properties": {
+        "component": {
+          "const": "Flex"
+        },
+        "children": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+          "description": "The components inside it, by ID, in the order they are laid out."
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["horizontal", "vertical"],
+          "default": "horizontal",
+          "description": "Which way the children run. `horizontal` is a row and `vertical` is a column."
+        },
+        "spacing": {
+          "type": "number",
+          "default": 0,
+          "description": "The gutter between the children, in steps of 0.25rem: `4` is 1rem. It is the only spacing there is — components carry no margins of their own."
+        },
+        "justifyContent": {
+          "type": "string",
+          "enum": [
+            "start",
+            "center",
+            "end",
+            "space-between",
+            "space-around",
+            "space-evenly",
+            "stretch"
+          ],
+          "default": "start",
+          "description": "How the leftover space along the direction is shared out. `space-between` pushes the first and last child to the ends."
+        },
+        "alignItems": {
+          "type": "string",
+          "enum": ["start", "center", "end", "stretch", "baseline"],
+          "default": "stretch",
+          "description": "Where the children sit across the direction."
+        },
+        "wrap": {
+          "type": "boolean",
+          "default": false,
+          "description": "Lets the children fall onto another line when they do not fit. Set it on a row of chips or of cards; leave it off on a row of two buttons."
+        }
+      },
+      "required": ["component", "children"]
+    },
+    "Card": {
+      "type": "object",
+      "description": "A sheet with a heading on it. Use it to group things that belong together and to give them a name. It holds exactly one child, so put a `Flex` inside it when there is more than one thing to show.",
+      "properties": {
+        "component": {
+          "const": "Card"
+        },
+        "child": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Child",
+          "description": "The single component inside the card, by ID. Wrap several in a `Flex` and pass that."
+        },
+        "title": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "The heading. A card with no title is usually a `Flex` with a border and should be one."
+        },
+        "subtitle": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "One line under the title."
+        },
+        "variant": {
+          "type": "string",
+          "enum": ["solid", "outline", "text"],
+          "default": "outline",
+          "description": "The weight of the sheet. `outline` is a hairline, `solid` a filled panel, `text` no sheet at all."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "The family the edge and the focus ring take. The sheet itself is never dyed: a card holds other people's content, and tinting the paper under it puts every colour on that content on a background nobody chose."
+        },
+        "density": {
+          "type": "string",
+          "enum": ["default", "compact"],
+          "default": "default",
+          "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+        },
+        "elevation": {
+          "type": "integer",
+          "enum": [0, 1, 2, 3],
+          "default": 0,
+          "description": "How far it sits off the page, as a drop shadow. `0` means no shadow at all, and is right for almost everything: the surface already has an edge. Raise it only for something that genuinely floats over the content around it."
+        }
+      },
+      "required": ["component"]
+    },
+    "Divider": {
+      "type": "object",
+      "description": "A rule between two sections, with an optional word set into it. Reach for it only when the space a `Flex` already gives is not enough to separate two things.",
+      "properties": {
+        "component": {
+          "const": "Divider"
+        },
+        "label": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "A word set into the line — \"or\", \"Today\"."
+        },
+        "orientation": {
+          "type": "string",
+          "enum": ["horizontal", "vertical"],
+          "default": "horizontal",
+          "description": "Which way the rule runs."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        }
+      },
+      "required": ["component"]
+    },
+    "Typography": {
+      "type": "object",
+      "description": "Text. Every word a reader sees goes through this: there is no other component that draws a string.",
+      "properties": {
+        "component": {
+          "const": "Typography"
+        },
+        "text": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What it says."
+        },
+        "level": {
+          "type": "string",
+          "enum": ["h1", "h2", "h3", "h4", "h5", "h6", "body", "lead", "caption", "overline"],
+          "default": "body",
+          "description": "What the text *is*, not how big it should be. `h1`…`h6` are headings and are drawn as real heading elements, so use them in order and do not pick one for its size; `lead` is the opening paragraph, `caption` a note under something, `overline` a small label above a figure."
+        },
+        "weight": {
+          "type": "string",
+          "enum": ["regular", "medium", "semibold", "bold"],
+          "default": "regular",
+          "description": "How heavy it is. A heading is already heavier than body text, so this is for the rare line that has to stand out inside one weight."
+        },
+        "align": {
+          "type": "string",
+          "enum": ["start", "center", "end", "justify"],
+          "default": "start",
+          "description": "Where the text sits in the width it has."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "A semantic family, and it is deliberately not set by default: text in a paragraph is the paragraph's colour. Set it only when the colour *means* something — a figure that is over budget."
+        },
+        "lines": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Cuts the text off after this many lines with an ellipsis. Do not put it on anything a reader has to read."
+        }
+      },
+      "required": ["component", "text"]
+    },
+    "Image": {
+      "type": "object",
+      "description": "A picture. It reserves its space before the file arrives, so nothing on the page moves when it lands.",
+      "properties": {
+        "component": {
+          "const": "Image"
+        },
+        "src": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "Where the picture is."
+        },
+        "alt": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What the picture says for a reader who cannot see it. Write the meaning, not the file name; an empty string is the right answer for a picture that is pure decoration."
+        },
+        "ratio": {
+          "type": "number",
+          "description": "The shape of the box, as width over height: `1` is a square, `1.7777` is 16:9. Give it one whenever you know it — it is what stops the page jumping when the picture loads."
+        },
+        "fit": {
+          "type": "string",
+          "enum": ["cover", "contain", "fill", "none", "scale-down"],
+          "default": "cover",
+          "description": "What the picture does inside that box. `cover` crops to fill it and `contain` fits the whole picture inside it."
+        },
+        "rounded": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "description": "Rounds the corners by one step of the radius ladder."
+        }
+      },
+      "required": ["component", "src", "alt"]
+    },
+    "Chip": {
+      "type": "object",
+      "description": "A short label on a small surface: a tag, a status, a filter that has been applied. One or two words — anything longer is `Typography`.",
+      "properties": {
+        "component": {
+          "const": "Chip"
+        },
+        "text": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "The label."
+        },
+        "variant": {
+          "type": "string",
+          "enum": ["solid", "outline", "text"],
+          "default": "outline",
+          "description": "The weight of the surface."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "sm",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "The family. It is the one thing a chip says beyond its word, so let it mean something: `success` for a state that is good, `danger` for one that is not."
+        },
+        "count": {
+          "type": "number",
+          "description": "A number set after the label, for a chip that stands for a group."
+        },
+        "selected": {
+          "type": "boolean",
+          "default": false,
+          "description": "Draws it as chosen. For a row of filters where some are on."
+        }
+      },
+      "required": ["component", "text"]
+    },
+    "Avatar": {
+      "type": "object",
+      "description": "The mark that stands for a person or an organisation. It falls back to the initials of `name` when there is no picture, so `name` is worth giving even when `src` is.",
+      "properties": {
+        "component": {
+          "const": "Avatar"
+        },
+        "src": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "The photograph."
+        },
+        "name": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "Whose it is. It becomes the accessible name, and its initials are what is drawn when there is no picture."
+        },
+        "shape": {
+          "type": "string",
+          "enum": ["circle", "square"],
+          "default": "circle",
+          "description": "A circle for a person, a square for an organisation or a thing."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "The family behind the initials, when they are what is drawn."
+        }
+      },
+      "required": ["component"]
+    },
+    "Statistic": {
+      "type": "object",
+      "description": "One figure with its name over it, and optionally how it has moved. The right component for a number a reader is meant to take in at a glance; a number inside a sentence is `Typography`.",
+      "properties": {
+        "component": {
+          "const": "Statistic"
+        },
+        "label": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What the figure is."
+        },
+        "value": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "The figure itself."
+        },
+        "unit": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What it is measured in, set after the value in smaller type."
+        },
+        "caption": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "A line under the figure — the period it covers, where it came from."
+        },
+        "previousValue": {
+          "type": "number",
+          "description": "What it was before. Giving it is what draws the delta; without it there is nothing to compare against."
+        },
+        "delta": {
+          "type": "string",
+          "enum": ["percent", "absolute", "both", "none"],
+          "default": "percent",
+          "description": "How the change is written."
+        },
+        "betterWhen": {
+          "type": "string",
+          "enum": ["up", "down"],
+          "default": "up",
+          "description": "Which direction is good news, and therefore which colour the delta takes. Set it to `down` for anything that should be falling — failures, latency, cost — or a drop will be drawn in red."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "align": {
+          "type": "string",
+          "enum": ["start", "center", "end"],
+          "default": "start",
+          "description": "Where the block sits in the width it has."
+        }
+      },
+      "required": ["component", "value"]
+    },
+    "DataList": {
+      "type": "object",
+      "description": "A list of label-and-value pairs: the details of one thing, in a column, with the values lined up. Use it instead of writing \"Status: open\" as a sentence.",
+      "properties": {
+        "component": {
+          "const": "DataList"
+        },
+        "items": {
+          "type": "array",
+          "description": "The rows, in the order they are read.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                "description": "What the value is called."
+              },
+              "value": {
+                "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                "description": "The value."
+              }
+            },
+            "required": ["label", "value"],
+            "additionalProperties": false
+          }
+        },
+        "orientation": {
+          "type": "string",
+          "enum": ["horizontal", "vertical"],
+          "default": "horizontal",
+          "description": "`horizontal` puts the label beside the value, which is what a details panel wants; `vertical` puts it above, for a narrow column or for values long enough that a label beside them would leave the row mostly empty."
+        },
+        "dividers": {
+          "type": "boolean",
+          "default": false,
+          "description": "Draws a hairline between the rows."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "density": {
+          "type": "string",
+          "enum": ["default", "compact"],
+          "default": "default",
+          "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+        }
+      },
+      "required": ["component", "items"]
+    },
+    "Alert": {
+      "type": "object",
+      "description": "A message about something that happened, set into the page it is about. Not a popup and not a toast: it sits where the thing it is about is.",
+      "properties": {
+        "component": {
+          "const": "Alert"
+        },
+        "child": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Child",
+          "description": "The body, by ID. Usually a `Typography`."
+        },
+        "title": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "The headline. With it the alert is a heading and the detail under it; without it the body is the whole alert."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "info",
+          "description": "Which kind of message it is, and the one prop here that carries meaning. `info` is a note, `success` something that went right, `warning` something to look at before it goes wrong, `danger` something that failed. The shape of the mark changes with it too, so the message is not carried by colour alone."
+        },
+        "variant": {
+          "type": "string",
+          "enum": ["solid", "outline", "text"],
+          "default": "outline",
+          "description": "The weight of the surface. `text` draws no box, which is right for an alert set among form fields."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "density": {
+          "type": "string",
+          "enum": ["default", "compact"],
+          "default": "default",
+          "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+        }
+      },
+      "required": ["component"]
+    },
+    "Button": {
+      "type": "object",
+      "description": "A control that runs something. Use it for an action, never for navigation between pages and never as a way of making text pressable.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Button"
+            },
+            "text": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What the button does, as a verb: \"Save\", \"Send the invite\". Not \"OK\"."
+            },
+            "action": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Action"
+            },
+            "variant": {
+              "type": "string",
+              "enum": ["solid", "outline", "text"],
+              "default": "solid",
+              "description": "How loud it is. There is **one** `solid` button in a view — the thing the view is for — and everything else is `outline` or `text`. Three filled buttons in a row is three buttons with no answer."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family. Use `danger` for something that destroys, and leave the rest alone: a button is not coloured for variety."
+            },
+            "density": {
+              "type": "string",
+              "enum": ["default", "compact"],
+              "default": "default",
+              "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+            },
+            "elevation": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3],
+              "default": 0,
+              "description": "How far it sits off the page, as a drop shadow. `0` means no shadow at all, and is right for almost everything: the surface already has an edge. Raise it only for something that genuinely floats over the content around it."
+            },
+            "loading": {
+              "type": "boolean",
+              "default": false,
+              "description": "Shows a turning ring and stops the button running again. For the moment between a press and its answer."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable. Say why somewhere the reader can see, or a disabled button is a dead end."
+            },
+            "fullWidth": {
+              "type": "boolean",
+              "default": false,
+              "description": "Stretches it to the width it is given."
+            }
+          },
+          "required": ["component", "text", "action"]
+        }
+      ]
+    },
+    "TextField": {
+      "type": "object",
+      "description": "A field a reader types into. The label, the helper line and the error message are all part of it — do not draw any of them as separate components.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "TextField"
+            },
+            "label": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What the field is asking for. Always give one: a placeholder is not a label, because it goes away as soon as anything is typed."
+            },
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What is in it."
+            },
+            "placeholder": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "An example of what to type, shown while it is empty."
+            },
+            "description": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "A helper line under the field — the format, the limit, why it is being asked."
+            },
+            "multiline": {
+              "type": "boolean",
+              "default": false,
+              "description": "Makes it a box rather than a line. For a sentence or more."
+            },
+            "rows": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3,
+              "description": "How tall a multiline field starts."
+            },
+            "variant": {
+              "type": "string",
+              "enum": ["solid", "outline", "text"],
+              "default": "outline",
+              "description": "The weight of the shell."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family the edge, the ring and the caret take."
+            },
+            "density": {
+              "type": "string",
+              "enum": ["default", "compact"],
+              "default": "default",
+              "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+            },
+            "required": {
+              "type": "boolean",
+              "default": false,
+              "description": "The field has to be filled in."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable."
+            },
+            "readOnly": {
+              "type": "boolean",
+              "default": false,
+              "description": "Shown but not editable. Different from `disabled`: the value still matters and can still be copied."
+            },
+            "fullWidth": {
+              "type": "boolean",
+              "default": false,
+              "description": "Stretches it to the width it is given."
+            }
+          },
+          "required": ["component", "label"]
+        }
+      ]
+    },
+    "NumberField": {
+      "type": "object",
+      "description": "A field that holds a number, with steppers and a format. Use it rather than a `TextField` whenever the answer is a quantity: it clamps, it steps, and it writes the number in the reader's own language.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "NumberField"
+            },
+            "label": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What the number is."
+            },
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber",
+              "description": "The number."
+            },
+            "description": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "A helper line under the field."
+            },
+            "min": {
+              "type": "number",
+              "description": "The smallest it may be."
+            },
+            "max": {
+              "type": "number",
+              "description": "And the largest."
+            },
+            "step": {
+              "type": "number",
+              "default": 1,
+              "description": "How much a stepper moves it."
+            },
+            "variant": {
+              "type": "string",
+              "enum": ["solid", "outline", "text"],
+              "default": "outline",
+              "description": "The weight of the shell."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family the edge, the ring and the caret take."
+            },
+            "density": {
+              "type": "string",
+              "enum": ["default", "compact"],
+              "default": "default",
+              "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+            },
+            "required": {
+              "type": "boolean",
+              "default": false,
+              "description": "The field has to be filled in."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable."
+            },
+            "readOnly": {
+              "type": "boolean",
+              "default": false,
+              "description": "Shown but not editable."
+            }
+          },
+          "required": ["component", "label"]
+        }
+      ]
+    },
+    "Checkbox": {
+      "type": "object",
+      "description": "One yes-or-no answer, or one member of a set that can have several. Use it when the answer is submitted with a form; use a `Switch` when it takes effect the moment it is pressed.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Checkbox"
+            },
+            "label": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What is being agreed to. Write it so that ticked means yes."
+            },
+            "checked": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean",
+              "description": "Whether it is ticked."
+            },
+            "description": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "A helper line under the label."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family the tick takes."
+            },
+            "required": {
+              "type": "boolean",
+              "default": false,
+              "description": "It has to be ticked."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable."
+            }
+          },
+          "required": ["component", "label"]
+        }
+      ]
+    },
+    "Switch": {
+      "type": "object",
+      "description": "An on-and-off that takes effect the moment it is pressed. The difference from a `Checkbox` is time, not shape: nothing is submitted, so there is no Save to press afterwards.",
+      "properties": {
+        "component": {
+          "const": "Switch"
+        },
+        "label": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What is being turned on. Write it as the thing, not as a question."
+        },
+        "checked": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean",
+          "description": "Whether it is on."
+        },
+        "description": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "A helper line under the label."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "The family the track takes when it is on."
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Unavailable."
+        }
+      },
+      "required": ["component", "label"]
+    },
+    "RadioGroup": {
+      "type": "object",
+      "description": "A set of options where exactly one is chosen and all of them are worth reading. Past about five, use a `Select` instead — a list of fifteen radios is a list.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "RadioGroup"
+            },
+            "label": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What is being chosen."
+            },
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "Which option is taken, by its `value`."
+            },
+            "options": {
+              "type": "array",
+              "description": "The options, in the order they are read.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                    "description": "What this option says."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "What it is worth."
+                  },
+                  "description": {
+                    "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                    "description": "A line under it, for an option that needs explaining."
+                  },
+                  "disabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Offered but not available."
+                  }
+                },
+                "required": ["label", "value"],
+                "additionalProperties": false
+              }
+            },
+            "description": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "A helper line under the set."
+            },
+            "orientation": {
+              "type": "string",
+              "enum": ["horizontal", "vertical"],
+              "default": "vertical",
+              "description": "Which way the options run. A column is nearly always right; a row only works while every label is one word."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family the chosen dot takes."
+            },
+            "required": {
+              "type": "boolean",
+              "default": false,
+              "description": "One has to be chosen."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable."
+            }
+          },
+          "required": ["component", "label", "options"]
+        }
+      ]
+    },
+    "Select": {
+      "type": "object",
+      "description": "One value chosen from a list that is folded away until it is opened. Use it when there are more options than a reader wants to read, or when the choice is a detail rather than the point of the screen.",
+      "allOf": [
+        {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Checkable"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Select"
+            },
+            "label": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What is being chosen."
+            },
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "Which option is taken, by its `value`."
+            },
+            "placeholder": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "What the trigger says while nothing is chosen."
+            },
+            "options": {
+              "type": "array",
+              "description": "The options, in the order they are listed.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                    "description": "What this option says. Left out, the value is shown."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "What it is worth."
+                  },
+                  "group": {
+                    "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+                    "description": "A heading over this option and the ones next to it that name the same group. A group is a run of adjacent options, so the order of the array is the order of the list."
+                  },
+                  "disabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Listed but not available."
+                  }
+                },
+                "required": ["value"],
+                "additionalProperties": false
+              }
+            },
+            "description": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "A helper line under the field."
+            },
+            "variant": {
+              "type": "string",
+              "enum": ["solid", "outline", "text"],
+              "default": "outline",
+              "description": "The weight of the trigger, which is a field's shell."
+            },
+            "size": {
+              "type": "string",
+              "enum": ["xs", "sm", "md", "lg", "xl"],
+              "default": "md",
+              "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+            },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+              "default": "primary",
+              "description": "The family the edge and the ring take."
+            },
+            "density": {
+              "type": "string",
+              "enum": ["default", "compact"],
+              "default": "default",
+              "description": "How tightly it packs its content. Padding only — never a height and never the type scale, so a compact control still lines up with a default one beside it."
+            },
+            "required": {
+              "type": "boolean",
+              "default": false,
+              "description": "Something has to be chosen."
+            },
+            "disabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unavailable."
+            },
+            "fullWidth": {
+              "type": "boolean",
+              "default": false,
+              "description": "Stretches it to the width it is given."
+            }
+          },
+          "required": ["component", "label", "options"]
+        }
+      ]
+    },
+    "Slider": {
+      "type": "object",
+      "description": "A number chosen along a range, where roughly right is good enough and the ends mean something. When the exact figure matters, use a `NumberField`.",
+      "properties": {
+        "component": {
+          "const": "Slider"
+        },
+        "label": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "What is being set."
+        },
+        "value": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber",
+          "description": "Where it is."
+        },
+        "min": {
+          "type": "number",
+          "default": 0,
+          "description": "The bottom of the range."
+        },
+        "max": {
+          "type": "number",
+          "default": 100,
+          "description": "And the top."
+        },
+        "step": {
+          "type": "number",
+          "default": 1,
+          "description": "What it moves in."
+        },
+        "description": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+          "description": "A helper line under it."
+        },
+        "size": {
+          "type": "string",
+          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "default": "md",
+          "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
+        },
+        "color": {
+          "type": "string",
+          "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
+          "default": "primary",
+          "description": "The family the filled part of the track takes."
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Unavailable."
+        }
+      },
+      "required": ["component", "label"]
+    }
+  },
+  "functions": {
+    "required": {
+      "type": "object",
+      "description": "True when the value is not empty. The check to put on every field that has to be answered.",
+      "properties": {
+        "call": {
+          "const": "required"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "length": {
+      "type": "object",
+      "description": "True when the value is between `min` and `max` characters long. Either bound may be left out.",
+      "properties": {
+        "call": {
+          "const": "length"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "regex": {
+      "type": "object",
+      "description": "True when the value matches the pattern. Reach for `email` before writing one of these.",
+      "properties": {
+        "call": {
+          "const": "regex"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            },
+            "pattern": {
+              "type": "string"
+            }
+          },
+          "required": ["value", "pattern"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "numeric": {
+      "type": "object",
+      "description": "True when the value is a number, and between `min` and `max` if either is given.",
+      "properties": {
+        "call": {
+          "const": "numeric"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "email": {
+      "type": "object",
+      "description": "True when the value looks like an email address.",
+      "properties": {
+        "call": {
+          "const": "email"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "formatString": {
+      "type": "object",
+      "description": "Fills the `${…}` placeholders in the string with what they point at in the data model. It is the only way to build a sentence out of a value: there is no string concatenation anywhere in this catalog.",
+      "properties": {
+        "call": {
+          "const": "formatString"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "string"
+    },
+    "formatNumber": {
+      "type": "object",
+      "description": "Writes a number in the reader's own language, with the digit grouping that language uses.",
+      "properties": {
+        "call": {
+          "const": "formatNumber"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber"
+            },
+            "minimumFractionDigits": {
+              "type": "number"
+            },
+            "maximumFractionDigits": {
+              "type": "number"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "string"
+    },
+    "formatCurrency": {
+      "type": "object",
+      "description": "Writes an amount of money, with the symbol and the placement that language uses.",
+      "properties": {
+        "call": {
+          "const": "formatCurrency"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber"
+            },
+            "currency": {
+              "type": "string",
+              "description": "An ISO 4217 code, such as `USD` or `KRW`."
+            }
+          },
+          "required": ["value", "currency"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "string"
+    },
+    "formatDate": {
+      "type": "object",
+      "description": "Writes a date in the reader's own language. Never assemble one out of numbers: the order of the parts is exactly what differs between languages.",
+      "properties": {
+        "call": {
+          "const": "formatDate"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+              "description": "An ISO 8601 date or date-time."
+            },
+            "dateStyle": {
+              "type": "string",
+              "enum": ["full", "long", "medium", "short"]
+            },
+            "timeStyle": {
+              "type": "string",
+              "enum": ["full", "long", "medium", "short"]
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "string"
+    },
+    "pluralize": {
+      "type": "object",
+      "description": "Picks the wording that goes with a count. English has two forms and other languages have up to six, which is why this is a function rather than a ternary.",
+      "properties": {
+        "call": {
+          "const": "pluralize"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber"
+            },
+            "one": {
+              "type": "string"
+            },
+            "other": {
+              "type": "string"
+            }
+          },
+          "required": ["count", "one", "other"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "string"
+    },
+    "openUrl": {
+      "type": "object",
+      "description": "Opens an address. It is an action rather than a value, and it is the renderer that decides whether a new tab is involved.",
+      "properties": {
+        "call": {
+          "const": "openUrl"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+            }
+          },
+          "required": ["url"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "void",
+      "allowedCallers": "rendererOnly",
+      "requiresUserActivation": true
+    },
+    "and": {
+      "type": "object",
+      "description": "True when every one of them is.",
+      "properties": {
+        "call": {
+          "const": "and"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean"
+              }
+            }
+          },
+          "required": ["values"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "or": {
+      "type": "object",
+      "description": "True when any one of them is.",
+      "properties": {
+        "call": {
+          "const": "or"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean"
+              }
+            }
+          },
+          "required": ["values"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    },
+    "not": {
+      "type": "object",
+      "description": "The opposite.",
+      "properties": {
+        "call": {
+          "const": "not"
+        },
+        "args": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean"
+            }
+          },
+          "required": ["value"],
+          "unevaluatedProperties": false
+        }
+      },
+      "required": ["call", "args"],
+      "returnType": "boolean"
+    }
+  },
+  "$defs": {
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/Flex"
+        },
+        {
+          "$ref": "#/components/Card"
+        },
+        {
+          "$ref": "#/components/Divider"
+        },
+        {
+          "$ref": "#/components/Typography"
+        },
+        {
+          "$ref": "#/components/Image"
+        },
+        {
+          "$ref": "#/components/Chip"
+        },
+        {
+          "$ref": "#/components/Avatar"
+        },
+        {
+          "$ref": "#/components/Statistic"
+        },
+        {
+          "$ref": "#/components/DataList"
+        },
+        {
+          "$ref": "#/components/Alert"
+        },
+        {
+          "$ref": "#/components/Button"
+        },
+        {
+          "$ref": "#/components/TextField"
+        },
+        {
+          "$ref": "#/components/NumberField"
+        },
+        {
+          "$ref": "#/components/Checkbox"
+        },
+        {
+          "$ref": "#/components/Switch"
+        },
+        {
+          "$ref": "#/components/RadioGroup"
+        },
+        {
+          "$ref": "#/components/Select"
+        },
+        {
+          "$ref": "#/components/Slider"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "component"
+      }
+    },
+    "anyFunction": {
+      "oneOf": [
+        {
+          "$ref": "#/functions/required"
+        },
+        {
+          "$ref": "#/functions/length"
+        },
+        {
+          "$ref": "#/functions/regex"
+        },
+        {
+          "$ref": "#/functions/numeric"
+        },
+        {
+          "$ref": "#/functions/email"
+        },
+        {
+          "$ref": "#/functions/formatString"
+        },
+        {
+          "$ref": "#/functions/formatNumber"
+        },
+        {
+          "$ref": "#/functions/formatCurrency"
+        },
+        {
+          "$ref": "#/functions/formatDate"
+        },
+        {
+          "$ref": "#/functions/pluralize"
+        },
+        {
+          "$ref": "#/functions/openUrl"
+        },
+        {
+          "$ref": "#/functions/and"
+        },
+        {
+          "$ref": "#/functions/or"
+        },
+        {
+          "$ref": "#/functions/not"
+        }
+      ]
+    }
+  }
+}
