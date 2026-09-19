@@ -132,6 +132,7 @@ import {
   Sources,
   Stack,
   Statistic,
+  StreamingText,
   Switch,
   Tab,
   Table,
@@ -2472,6 +2473,21 @@ const GROUPS: Group[] = [
             />
             .
           </p>
+        )
+      },
+      {
+        name: 'StreamingText',
+        summary: {
+          ko: '바깥에서 한 조각씩 도착하는 텍스트',
+          en: 'Text arriving from somewhere else, a piece at a time'
+        },
+        path: '/components/agent/streaming-text',
+        preview: (
+          <div className="w-full max-w-64 text-[0.8125rem]/[1.6]">
+            <StreamingText streaming lines={2}>
+              A sheet of cut acrylic, not a moulded
+            </StreamingText>
+          </div>
         )
       },
       {

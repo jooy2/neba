@@ -2862,6 +2862,43 @@
   animation: neba-anim-caret 1s step-end infinite;
 }
 
+/* ---------------------------------------------------------------------------
+ * Text arriving from somewhere else
+ *
+ * One word of a streamed answer, fading in as it lands. The animation is on the
+ * word's own element and runs **once, on mount**, which is the whole mechanism:
+ * React keys the words by position, so a word already on screen keeps its
+ * element as the text grows and never fades again, and only the ones that have
+ * just arrived are new elements. The last word grows a character at a time
+ * inside the element it already has, so it does not flicker either.
+ *
+ * Opacity and nothing else, for the reason every floating surface in this
+ * library arrives that way: a word that also travels drags the rest of the line
+ * with it, and a reader is in the middle of the sentence it is joining.
+ * ------------------------------------------------------------------------- */
+
+@keyframes neba-stream-word-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.neba-stream-word {
+  animation: neba-stream-word-in var(--neba-duration) var(--neba-ease) both;
+}
+
+/* The block at the end of a stream. The same caret an `AnimateTyping` draws,
+   because two blinking blocks at two rates on one screen is two cursors. */
+.neba-stream-caret {
+  display: inline-block;
+  inline-size: 0.5em;
+  block-size: 1em;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  background-color: var(--n-accent);
+  animation: neba-anim-caret 1s step-end infinite;
+}
+
 /* Respect a reduced-motion preference. Both layers track the pointer, so they
    are motion in the sense that matters here — drop them entirely. */
 @media (prefers-reduced-motion: reduce) {
@@ -2946,12 +2983,19 @@
     }
   }
 
+  /* The word has arrived either way; the fade was only ever how it got there.
+     A millisecond, so it still ends on its last frame. */
+  .neba-stream-word {
+    animation-duration: 1ms;
+  }
+
   .neba-anim[data-state='paused'],
   [data-state='paused'] .neba-anim,
   .neba-anim-float,
   .neba-marquee-track,
   .neba-headline-item,
-  .neba-typing-caret {
+  .neba-typing-caret,
+  .neba-stream-caret {
     animation: none;
   }
 

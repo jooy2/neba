@@ -16054,5 +16054,60 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'Partial<SourcesMessages>',
       description: { ko: '그 문장을 직접 씁니다', en: 'That sentence, written out' }
     }
+  ],
+
+  StreamingText: [
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '지금까지 도착한 텍스트. 문자열이면 단어로 잘라 하나씩 나타나게 합니다. 그 밖의 값은 손대지 않고 그립니다',
+        en: 'The text so far. A string is cut into words and each fades in; anything else is rendered untouched'
+      }
+    },
+    {
+      name: 'streaming',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '더 올 것이 있는지. 커서를 그리고 블록을 busy로 표시합니다. 이미 있는 것은 바꾸지 않습니다',
+        en: 'Whether more is still coming. It draws the caret and marks the block busy'
+      }
+    },
+    {
+      name: 'cursor',
+      type: 'ReactNode | boolean',
+      default: 'true',
+      description: {
+        ko: '스트림이 도는 동안 끝에 그리는 블록. false면 그리지 않고, 노드를 주면 그것으로 바뀝니다',
+        en: 'The block at the end while the stream runs. false drops it; a node replaces it'
+      }
+    },
+    {
+      name: 'fade',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '도착하는 단어마다 하나씩 나타나게 합니다. 단어당 요소 하나가 드는 값이며, 아주 긴 답에서는 끄세요',
+        en: 'Fades each word in as it arrives. It costs one element per word; turn it off for a very long answer'
+      }
+    },
+    {
+      name: 'lines',
+      type: 'number',
+      default: '1',
+      description: {
+        ko: '아무것도 도착하기 전에 잡아 둘 높이를 줄 수로. 1lh 단위이고, 텍스트가 들어온 뒤에도 바닥값으로 남습니다',
+        en: 'How many lines of height to hold before anything arrives, in 1lh. It stays a floor afterwards'
+      }
+    },
+    {
+      name: 'color',
+      type: COLOR,
+      default: "'primary'",
+      shared: true,
+      description: { ko: '커서의 색 계열', en: "The caret's colour family" }
+    },
+    renderProp('<p />')
   ]
 };

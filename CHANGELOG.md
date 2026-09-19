@@ -32,6 +32,10 @@
 
   A citation's `index` is the caller's rather than counted, because a citation sits in a paragraph and the list is elsewhere on the page — a component that numbered itself by render order would renumber the whole answer whenever a sentence moved. The preview is a `HoverCard`, so it opens on keyboard focus and not only under a pointer, and the mark's accessible name is the sentence "Source 2" rather than the digit. Both go through the same `safeHref` and `safeRel` every other link in the library does.
 
+- **`StreamingText`** — text arriving from somewhere else, a piece at a time. `AnimateTyping` types out a string it already has; this is the opposite direction, where nobody knows how long the answer will be and the job is to make it land without the page moving under whoever is reading it. The block holds a floor of `lines` before the first word arrives _and keeps holding it afterwards_, because a reservation given up on arrival is the same jump twice; each word fades in on its own, because a transition on the block would replay the entire answer every time a token landed; and a caret sits at the end until the stream stops.
+
+  The fade needs no bookkeeping at all: words are keyed by position, so one already on screen keeps its element and never animates again, and the last word grows a character at a time inside the element it already has. It is deliberately not a live region, and it has no `size` — what it draws is the caller's own text inside the caller's own block.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

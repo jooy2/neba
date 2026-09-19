@@ -117,6 +117,7 @@ export * from './components/spoiler/index.js';
 export * from './components/sources/index.js';
 export * from './components/stack/index.js';
 export * from './components/statistic/index.js';
+export * from './components/streaming-text/index.js';
 export * from './components/switch/index.js';
 export * from './components/table/index.js';
 export * from './components/tabs/index.js';
