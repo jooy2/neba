@@ -35,7 +35,9 @@ A [Meter](../feedback/meter) draws the same reading as a bar and would do most o
 
 ### max · used · tokens
 
-`max` is the window; `used` is what has gone. Leave `used` out and it is the sum of `tokens`, which is the usual case — a caller who has the split has the total.
+`max` is the window; `used` is what has gone. Leave `used` out and it is `input` plus `output` plus `reasoning`, which is the usual case — a caller who has the split has the total.
+
+`cached` is **not** in that sum. Every model that reports it means "this much of the input came out of a cache", so those tokens are already inside `input`; adding them again would report the window as fuller than it is by exactly the number the cache saved. It is still drawn as a row, because how much was free is worth knowing.
 
 Every part of `tokens` is optional, and only the ones reported are drawn. A part that is `0` **is** reported: a cache that returned nothing is a different fact from a model that has no cache.
 

@@ -4,6 +4,7 @@ export default function ContextWindowHero() {
   return (
     <div className="w-full max-w-sm">
       <ContextWindow
+        locale="en-US"
         max={200_000}
         tokens={{ input: 94_200, output: 12_400, reasoning: 8_100, cached: 61_000 }}
         cost={0.42}

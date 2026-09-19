@@ -2429,7 +2429,7 @@ const GROUPS: Group[] = [
         path: '/components/agent/agent-steps',
         preview: (
           <div className="w-full max-w-64">
-            <AgentSteps size="sm" density="compact" running>
+            <AgentSteps locale="en-US" size="sm" density="compact" running>
               <AgentStep title="Read the request" duration={120} />
               <AgentStep title="Searched the docs" meta="4 hits" />
             </AgentSteps>
@@ -2521,6 +2521,7 @@ const GROUPS: Group[] = [
         preview: (
           <div className="w-full max-w-64">
             <ContextWindow
+              locale="en-US"
               size="sm"
               max={200_000}
               tokens={{ input: 94_200, output: 12_400 }}
@@ -2551,7 +2552,7 @@ const GROUPS: Group[] = [
         path: '/components/agent/reasoning',
         preview: (
           <div className="w-full max-w-64">
-            <Reasoning size="sm" duration={4200} defaultOpen>
+            <Reasoning locale="en-US" size="sm" duration={4200} defaultOpen>
               Two options, and the second one costs a media query per slot.
             </Reasoning>
           </div>

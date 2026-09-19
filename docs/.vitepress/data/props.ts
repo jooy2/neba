@@ -15692,8 +15692,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'cached',
       type: 'number',
       description: {
-        ko: '입력 가운데 캐시에서 나온 부분',
-        en: 'The part of the input that was served from a cache'
+        ko: '입력 가운데 캐시에서 나온 부분. input의 일부이므로 줄로는 그리고 합계에는 더하지 않습니다',
+        en: 'The part of the input that was served from a cache. A portion of input, so it is drawn as a row and left out of the total'
       }
     }
   ],
@@ -15708,10 +15708,13 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'used',
       type: 'number',
-      default: { ko: 'tokens의 합', en: 'the sum of tokens' },
+      default: {
+        ko: 'input + output + reasoning',
+        en: 'input plus output plus reasoning'
+      },
       description: {
-        ko: '쓴 양. 내역을 아는 쪽은 합계도 알고 있으므로 보통 생략합니다',
-        en: 'How many have gone. Left out, it is the sum of tokens'
+        ko: '쓴 양. 내역을 아는 쪽은 합계도 알고 있으므로 보통 생략합니다. cached는 input의 일부라 합계에 들어가지 않습니다',
+        en: 'How many have gone. Left out, it is input plus output plus reasoning; cached is a portion of input and is not in that sum'
       }
     },
     {

@@ -59,7 +59,9 @@ export default function PromptInputHero() {
             />
           </>
         }
-        end={<ContextWindow size="xs" max={200_000} used={48_000} breakdown={false} />}
+        end={
+          <ContextWindow locale="en-US" size="xs" max={200_000} used={48_000} breakdown={false} />
+        }
       >
         <div className="flex flex-wrap gap-1.5">
           <Chip size="sm" onDelete={() => {}}>

@@ -2232,10 +2232,11 @@ function ShowcaseBody() {
           </Caption>
           <Card size="sm" title="Assistant" subtitle="Deploy assistant · Opus">
             <div className="flex flex-col gap-4">
-              <AgentSteps size="sm" density="compact">
+              <AgentSteps locale="en-US" size="sm" density="compact">
                 <AgentStep title="Read the request" duration={120} />
                 <AgentStep title="Searched the runbook" meta="4 hits" duration={412}>
                   <ToolCall
+                    locale="en-US"
                     size="sm"
                     variant="text"
                     name="search_runbook"
@@ -2248,7 +2249,7 @@ function ShowcaseBody() {
                 <AgentStep title="Checked the last deploy" duration={86} />
               </AgentSteps>
 
-              <Reasoning size="sm" duration={3200}>
+              <Reasoning locale="en-US" size="sm" duration={3200}>
                 The Seoul region is the only one still on the previous build, and the runbook wants
                 the rollback run from the region rather than from the global control plane.
               </Reasoning>
@@ -2308,6 +2309,7 @@ function ShowcaseBody() {
                 maxRows={4}
                 end={
                   <ContextWindow
+                    locale="en-US"
                     size="xs"
                     max={200_000}
                     used={42_800}

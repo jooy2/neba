@@ -9,6 +9,7 @@ export default function ContextWindowFilling() {
   return (
     <div className="flex w-full max-w-sm flex-col gap-6">
       <ContextWindow
+        locale="en-US"
         max={MAX}
         used={used}
         tokens={{ input: Math.round(used * 0.72), output: Math.round(used * 0.28) }}

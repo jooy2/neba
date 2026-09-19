@@ -37,14 +37,26 @@ export interface ContextTokens {
   output?: number;
   /** What it spent thinking, where the model bills that separately. */
   reasoning?: number;
-  /** The part of the input that was served from a cache. */
+  /**
+   * The part of the input that was served from a cache.
+   *
+   * A **portion of `input`** rather than a fifth thing beside it, which is what
+   * every model that reports it means by it — so it is drawn as a row and left
+   * out of the total. Adding it would report the window as fuller than it is,
+   * by exactly the number the cache saved.
+   */
   cached?: number;
 }
 
 /** The parts a ContextWindow draws behind its root. */
 export type ContextWindowSlot = 'ring' | 'label' | 'breakdown';
 
-/** The four rows, and the palette slot each takes. */
+/**
+ * The four rows, and the palette slot each takes.
+ *
+ * `cached` is last because it is the odd one: the other three are what the turn
+ * *spent*, and this one is how much of the first of them was free.
+ */
 const PARTS: ReadonlyArray<{ key: keyof ContextTokens; slot: number }> = [
   { key: 'input', slot: 1 },
   { key: 'output', slot: 2 },
@@ -56,8 +68,11 @@ export interface ContextWindowProps extends Omit<React.ComponentPropsWithoutRef<
   /** How many tokens the window holds. */
   max: number;
   /**
-   * How many have gone. Left out, it is the sum of `tokens` — which is the
-   * usual case, since a caller who has the split has the total.
+   * How many have gone. Left out, it is `input` plus `output` plus `reasoning`
+   * — which is the usual case, since a caller who has the split has the total.
+   *
+   * `cached` is deliberately not in that sum: it is a portion of `input`, and
+   * counting it twice would report the window as fuller than it is.
    */
   used?: number;
   /**
@@ -174,7 +189,15 @@ export const ContextWindow = React.forwardRef<HTMLDivElement, ContextWindowProps
     const words = { ...messages, ...labels };
 
     const parts = PARTS.filter(({ key }) => typeof tokens?.[key] === 'number');
-    const total = used ?? parts.reduce((sum, { key }) => sum + (tokens?.[key] ?? 0), 0);
+    /*
+     * `cached` is drawn and not added. Every model that reports it means "this
+     * much of the input came out of a cache", so it is already inside `input`;
+     * a total counting it again would say the window was fuller than it is by
+     * exactly the number the cache saved.
+     */
+    const total =
+      used ??
+      parts.reduce((sum, { key }) => (key === 'cached' ? sum : sum + (tokens?.[key] ?? 0)), 0);
 
     const fraction = progressFraction(total, 0, max);
     const family = thresholdColor(total, color, thresholds);

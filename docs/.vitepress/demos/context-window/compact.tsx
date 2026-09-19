@@ -6,7 +6,14 @@ export default function ContextWindowCompact() {
       <Toolbar
         density="compact"
         start={
-          <ContextWindow size="xs" max={200_000} used={124_000} breakdown={false} cost={0.42} />
+          <ContextWindow
+            locale="en-US"
+            size="xs"
+            max={200_000}
+            used={124_000}
+            breakdown={false}
+            cost={0.42}
+          />
         }
       />
     </div>

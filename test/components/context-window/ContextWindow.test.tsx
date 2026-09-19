@@ -73,6 +73,25 @@ describe('ContextWindow', () => {
       expect(screen.getByText('Cached').query()).toBeNull();
     });
 
+    // Every model that reports a cache means "this much of the input came out
+    // of it", so the tokens are already inside `input`.
+    it('leaves the cached part out of a total it works out itself', async () => {
+      const screen = await render(
+        <ContextWindow max={100_000} tokens={{ input: 40_000, output: 10_000, cached: 30_000 }} />
+      );
+
+      await expect.element(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '50000');
+      await expect.element(screen.getByText('Cached')).toBeInTheDocument();
+    });
+
+    it('still takes a total it was handed', async () => {
+      const screen = await render(
+        <ContextWindow max={100_000} used={80_000} tokens={{ input: 40_000, cached: 30_000 }} />
+      );
+
+      await expect.element(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '80000');
+    });
+
     it('draws a part that is zero, which is not the same as one that was not reported', async () => {
       const screen = await render(<ContextWindow max={100_000} tokens={{ cached: 0 }} />);
 
