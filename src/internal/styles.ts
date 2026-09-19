@@ -13,6 +13,13 @@
  * Tailwind only sees class names written out literally, so everything here is a
  * complete class string rather than something assembled at runtime. `@source
  * '.'` in `styles.css` covers this folder in the repository and in `dist/`.
+ *
+ * And a multi-part string is written with `+` or a template literal, never as
+ * `[…].join(' ')`. A bundler folds the first two at build time and drops the
+ * constant when nothing reads it; it cannot prove a *call* is free of side
+ * effects, so a `join` makes every export in this file a fixed cost on the
+ * smallest component in the library. Three of them were 0.1 kB gzipped on a
+ * Chip before anything imported them.
  */
 
 import type * as React from 'react';
@@ -482,12 +489,11 @@ export const ringRestClasses = '[outline:0_solid_transparent]';
  * control resamples its label, and a label that shimmers under the cursor is
  * what reads as cheap.
  */
-export const transitionClasses = [
-  ringRestClasses,
-  '[transition-property:background-color,border-color,box-shadow,color,outline-color]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration),var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]'
-].join(' ');
+export const transitionClasses =
+  `${ringRestClasses} ` +
+  '[transition-property:background-color,border-color,box-shadow,color,outline-color] ' +
+  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration),var(--neba-duration),var(--neba-duration)] ' +
+  '[transition-timing-function:var(--neba-ease)]';
 
 /**
  * Press is instant, release is slow — the house interaction signature. Pressing
@@ -524,10 +530,8 @@ export const popupFadeStateClasses =
  * prevent. Base UI supplies the `data-starting-style` / `data-ending-style` pair
  * on every popup, backdrop and toast, so the same two lines fit all of them.
  */
-export const popupFadeClasses = [
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  popupFadeStateClasses
-].join(' ');
+export const popupFadeClasses =
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)] ' + popupFadeStateClasses;
 
 /**
  * The focus ring, written as the `outline` shorthand rather than Tailwind's
@@ -628,7 +632,7 @@ export function clampSlot(lines: number | undefined): React.CSSProperties | unde
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 
 /**
- * How a Base UI collapsible panel opens: a window over its measured height.
+ * What a panel opening on a measured height does, apart from reading it.
  *
  * The height *is* animated, which looks like an exception to the rule against
  * moving things and is not — nothing is transformed, no text is resampled, and
@@ -636,12 +640,28 @@ export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_
  * window opening onto it, and `overflow-hidden` is what makes it one rather
  * than something that spills past the sheet's own corners on the way.
  *
- * Written here because five things in the library open this way and the five
- * have to agree on the duration: a reader watching a tool call and the thinking
- * panel above it fold at two different speeds is watching two components.
+ * The `motion-reduce` line is the one that gets forgotten. It was missing from
+ * the Accordion for as long as there were two copies of this, which is a reader
+ * who asked for less motion watching a section unfold anyway.
  */
-export const collapsiblePanelClasses =
-  'h-(--collapsible-panel-height) overflow-hidden [transition:height_var(--neba-duration)_var(--neba-ease)] motion-reduce:[transition-duration:0ms] data-[starting-style]:h-0 data-[ending-style]:h-0';
+const panelTravelClasses =
+  '[transition:height_var(--neba-duration)_var(--neba-ease)] ' +
+  'motion-reduce:[transition-duration:0ms] ' +
+  'data-[starting-style]:h-0 data-[ending-style]:h-0';
+
+/**
+ * A Base UI **Collapsible** panel: Collapsible itself, and the three agent
+ * components built on the same primitive.
+ *
+ * Two constants rather than one taking the variable's name, because the height
+ * is a class and Tailwind only ever sees a class written out literally. Base UI
+ * names the measurement after the component that made it, so this is the whole
+ * of what the two differ by.
+ */
+export const collapsiblePanelClasses = `h-(--collapsible-panel-height) overflow-hidden ${panelTravelClasses}`;
+
+/** And an **Accordion** section, which measures itself under its own name. */
+export const accordionPanelClasses = `h-(--accordion-panel-height) overflow-hidden ${panelTravelClasses}`;
 
 /**
  * A block of text that arrived already formatted.
@@ -904,16 +924,15 @@ export const citationMarkClasses =
  * not a control changing what it is, it is an affordance that stays out of the
  * way of the word beside it until the pointer is on it.
  */
-export const chipRemoveClasses = [
-  'relative ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full',
-  'size-[1.15em] cursor-pointer opacity-70',
+export const chipRemoveClasses =
+  'relative ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full ' +
+  'size-[1.15em] cursor-pointer opacity-70 ' +
   // Drawn at the size of the word beside it, pressed at the size of a finger.
-  hitAreaClasses,
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'hover:opacity-100 focus-visible:opacity-100',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-  'disabled:cursor-not-allowed'
-].join(' ');
+  `${hitAreaClasses} ` +
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)] ' +
+  'hover:opacity-100 focus-visible:opacity-100 ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1 ' +
+  'disabled:cursor-not-allowed';
 
 /** `false`, `null`, `undefined` and `''` all mean "this slot is not filled". */
 export function hasContent(node: React.ReactNode): boolean {

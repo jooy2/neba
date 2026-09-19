@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { droppedFiles } from '../../internal/drop.js';
+import { useDropZone } from '../../internal/drop.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { fileMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import {
@@ -303,36 +303,6 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
     // every render would rebuild all of them every render.
     const files = React.useMemo(() => (value ? [...value] : uncontrolled), [value, uncontrolled]);
 
-    // `dragenter`/`dragleave` fire for every child the pointer crosses, so a
-    // boolean flickers the whole time a file is over the box. The depth counter is
-    // the only thing that survives a zone with content in it.
-    const dragDepth = React.useRef(0);
-    const [over, setOver] = React.useState(false);
-
-    /*
-     * A drag can end without ever reaching the zone again. Escape cancels one,
-     * and a drop outside the window ends it somewhere the zone will never hear
-     * about — neither fires a `dragleave` here, so the counter stays up and the
-     * box keeps its lit edge until the next drag happens to balance it.
-     *
-     * `dragend` fires on the source, and `drop` on whatever accepted it, so both
-     * are listened for at the document with capture.
-     */
-    React.useEffect(() => {
-      const clear = () => {
-        dragDepth.current = 0;
-        setOver(false);
-      };
-
-      document.addEventListener('dragend', clear, true);
-      document.addEventListener('drop', clear, true);
-
-      return () => {
-        document.removeEventListener('dragend', clear, true);
-        document.removeEventListener('drop', clear, true);
-      };
-    }, []);
-
     const hasError = hasContent(error);
     const isInvalid = invalid ?? hasError;
     // Invalid re-points the whole slot family at `danger`, so the edge, the ring
@@ -398,6 +368,11 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       },
       [accepting, commit, files, multiple, onReject]
     );
+
+    // The depth count behind `over`, and the document listeners that put it out
+    // when a drag is abandoned rather than dropped, are `internal/drop.ts`' —
+    // a PromptInput's shell is the same box.
+    const { over, handlers } = useDropZone(inert ? undefined : add);
 
     const zoneRef = React.useRef<HTMLButtonElement | null>(null);
     const listRef = React.useRef<HTMLUListElement | null>(null);
@@ -520,44 +495,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
         {/* The drag listeners belong to the shell rather than to the button: a
           drop is a gesture over an *area*, and the file list under the box is
           part of the same area as far as the pointer is concerned. */}
-        <div
-          className="flex w-full flex-col"
-          onDragEnter={(event) => {
-            if (inert) {
-              return;
-            }
-            event.preventDefault();
-            dragDepth.current += 1;
-            setOver(true);
-          }}
-          onDragOver={(event) => {
-            if (inert) {
-              return;
-            }
-            // Without this the browser navigates to the file instead of dropping
-            // it, which is the default and is never what anybody wants.
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'copy';
-          }}
-          onDragLeave={() => {
-            if (inert) {
-              return;
-            }
-            dragDepth.current = Math.max(0, dragDepth.current - 1);
-            if (dragDepth.current === 0) {
-              setOver(false);
-            }
-          }}
-          onDrop={(event) => {
-            if (inert) {
-              return;
-            }
-            event.preventDefault();
-            dragDepth.current = 0;
-            setOver(false);
-            add(droppedFiles(event.dataTransfer));
-          }}
-        >
+        <div className="flex w-full flex-col" {...handlers}>
           <button
             ref={zoneRef}
             type="button"

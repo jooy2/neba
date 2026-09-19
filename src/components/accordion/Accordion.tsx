@@ -5,6 +5,7 @@ import { Accordion as BaseUIAccordion } from '@base-ui/react/accordion';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
+  accordionPanelClasses,
   clampClasses,
   clampSlot,
   cx,
@@ -395,17 +396,11 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         {/*
           `height` from Base UI's measured `--accordion-panel-height` down to 0,
           plus `overflow-hidden` so the body is clipped rather than squashed
-          while it moves. Written as utilities rather than as CSS in `styles.css`
-          because the Tailwind form is two legible lines, which is the bar for
-          keeping something here.
+          while it moves. The string is `internal/styles.ts`', because a
+          Collapsible and three of the agent components open the same way — and
+          because this copy was the one missing `motion-reduce`.
         */}
-        <BaseUIAccordion.Panel
-          className={[
-            'h-(--accordion-panel-height) overflow-hidden',
-            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-            'data-[starting-style]:h-0 data-[ending-style]:h-0'
-          ].join(' ')}
-        >
+        <BaseUIAccordion.Panel className={accordionPanelClasses}>
           <div
             className={[
               'text-(--neba-muted-fg)',

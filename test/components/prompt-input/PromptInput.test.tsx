@@ -279,6 +279,20 @@ describe('PromptInput', () => {
 
       await expect.poll(() => shell.dataset.dropping).toBeUndefined();
     });
+
+    // Escape cancels a drag, and a drop outside the window ends it somewhere
+    // the shell never hears about. Neither fires a `dragleave` on it.
+    it('puts the ready state out when a drag is abandoned rather than dropped', async () => {
+      const screen = await render(<PromptInput label="Message" onFiles={() => {}} />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+
+      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      await expect.poll(() => shell.dataset.dropping).toBe('true');
+
+      document.dispatchEvent(new DragEvent('dragend', { bubbles: true }));
+
+      await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+    });
   });
 
   describe('its own words', () => {

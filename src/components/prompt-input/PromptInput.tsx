@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
-import { droppedFiles } from '../../internal/drop.js';
+import { useDropZone } from '../../internal/drop.js';
 import { matchesShortcut } from '../../internal/keys.js';
 import { promptMessages, useMessages, type PromptMessages } from '../../internal/i18n.js';
 import {
@@ -216,8 +216,12 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     const controlled = valueProp !== undefined;
     const value = controlled ? valueProp : text;
 
-    const [dropping, setDropping] = React.useState(false);
-    const dragDepth = React.useRef(0);
+    /*
+     * The depth count behind the ready state, and the document listeners that
+     * put it out when a drag is abandoned rather than dropped, are
+     * `internal/drop.ts`' — a FilePicker's zone is the same box.
+     */
+    const { over: dropping, handlers } = useDropZone(onFiles);
     const controlId = React.useId();
     const controlRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setControlRef = React.useCallback(
@@ -287,57 +291,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
 
         <div
           data-dropping={dropping || undefined}
-          /*
-           * The depth count is what makes this stop flickering, and it is the
-           * same one a FilePicker keeps: `dragleave` bubbles, so a drag crossing
-           * from the shell onto the field inside it fires a leave the shell
-           * would otherwise believe.
-           */
-          onDragEnter={
-            onFiles
-              ? (event) => {
-                  event.preventDefault();
-                  dragDepth.current += 1;
-                  setDropping(true);
-                }
-              : undefined
-          }
-          onDragOver={
-            onFiles
-              ? (event) => {
-                  // Without this the browser opens the file instead of dropping
-                  // it, which is the default and is never what anybody wants.
-                  event.preventDefault();
-                  event.dataTransfer.dropEffect = 'copy';
-                }
-              : undefined
-          }
-          onDragLeave={
-            onFiles
-              ? () => {
-                  dragDepth.current = Math.max(0, dragDepth.current - 1);
-
-                  if (dragDepth.current === 0) {
-                    setDropping(false);
-                  }
-                }
-              : undefined
-          }
-          onDrop={
-            onFiles
-              ? (event) => {
-                  event.preventDefault();
-                  dragDepth.current = 0;
-                  setDropping(false);
-
-                  const files = droppedFiles(event.dataTransfer);
-
-                  if (files.length > 0) {
-                    onFiles(files);
-                  }
-                }
-              : undefined
-          }
+          {...handlers}
           onPointerDown={(event) => {
             // Pressing the shell's own padding puts the caret in the field, the
             // way pressing anywhere inside a native input does. A press on the

@@ -42,9 +42,15 @@
 
 ### Changed
 
+- **Every shared class string in `internal/styles.ts` is folded at build time.** Three of them were `[…].join(' ')`, and a bundler cannot drop a `const` whose value is a call — so `transitionClasses`, `popupFadeClasses` and `chipRemoveClasses` were in the bundle of every component whether it read them or not. Written with `+` they fold and drop, which takes about 0.1 kB gzipped off a single-component bundle. Nothing about the classes themselves changed.
+
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.
 
 ### Fixed
+
+- **A `PromptInput`'s drop target puts its ready state out when a drag is abandoned.** Escape cancels a drag, and a drop outside the window ends it somewhere the shell never hears about; neither fires a `dragleave` on it, so the shell stayed lit until some later drag happened to balance the count. `internal/drop.ts` is the whole drop zone now — the folder check, the depth count and the document listeners that clear it — and a `FilePicker` reads the same one. Nothing changes for a FilePicker, which already had all three.
+
+- **An `Accordion` section respects a reduced-motion preference.** Its panel carried the height transition without the `motion-reduce` line the `Collapsible`'s had, so a reader who asked for less motion watched the section unfold anyway. Both read one string from `internal/styles.ts` now, along with the three agent components built on the same primitive.
 
 - **A `FilePicker`'s folder check is now `internal/drop.ts`, which a `PromptInput` reads too.** A folder dragged onto a page arrives in `dataTransfer.files` as a `File` with no type and a size of zero, and the only thing that says so is `webkitGetAsEntry` on the _item_ rather than on the file. Nothing changes for a FilePicker; the second caller is the new one, and a second copy of the check would eventually have disagreed about folders.
 

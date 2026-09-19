@@ -5,6 +5,7 @@ import { Collapsible as BaseUICollapsible } from '@base-ui/react/collapsible';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
+  collapsiblePanelClasses,
   gapClasses,
   hasContent,
   iconClasses,
@@ -281,17 +282,13 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
         {/*
         `height` from Base UI's measured `--collapsible-panel-height` down to 0,
         plus `overflow-hidden` so the body is clipped rather than squashed while
-        it moves — the same two lines the Accordion panel is written with.
+        it moves. The string is `internal/styles.ts`', because an Accordion
+        section and three of the agent components open the same way.
       */}
         <BaseUICollapsible.Panel
           hiddenUntilFound={hiddenUntilFound}
           keepMounted={keepMounted}
-          className={[
-            'h-(--collapsible-panel-height) overflow-hidden',
-            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-            'motion-reduce:[transition-duration:0ms]',
-            'data-[starting-style]:h-0 data-[ending-style]:h-0'
-          ].join(' ')}
+          className={collapsiblePanelClasses}
         >
           <div
             className={[
