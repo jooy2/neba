@@ -640,12 +640,8 @@ export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_
  * have to agree on the duration: a reader watching a tool call and the thinking
  * panel above it fold at two different speeds is watching two components.
  */
-export const collapsiblePanelClasses = [
-  'h-(--collapsible-panel-height) overflow-hidden',
-  '[transition:height_var(--neba-duration)_var(--neba-ease)]',
-  'motion-reduce:[transition-duration:0ms]',
-  'data-[starting-style]:h-0 data-[ending-style]:h-0'
-].join(' ');
+export const collapsiblePanelClasses =
+  'h-(--collapsible-panel-height) overflow-hidden [transition:height_var(--neba-duration)_var(--neba-ease)] motion-reduce:[transition-duration:0ms] data-[starting-style]:h-0 data-[ending-style]:h-0';
 
 /**
  * A block of text that arrived already formatted.
@@ -891,11 +887,8 @@ export const readOnlyFilterClasses = '[filter:saturate(0.55)]';
  * paragraph it tracks the sentence it interrupts, whatever that sentence is set
  * at.
  */
-export const citationMarkClasses = [
-  'inline-flex shrink-0 items-center justify-center rounded-[0.3em]',
-  'min-w-[1.5em] px-[0.35em] py-[0.05em]',
-  'bg-(--n-soft) text-[0.8em]/[1.6] font-semibold text-(--n-on-tint) tabular-nums'
-].join(' ');
+export const citationMarkClasses =
+  'inline-flex shrink-0 items-center justify-center rounded-[0.3em] min-w-[1.5em] px-[0.35em] py-[0.05em] bg-(--n-soft) text-[0.8em]/[1.6] font-semibold text-(--n-on-tint) tabular-nums';
 
 /**
  * The × that removes a chip.

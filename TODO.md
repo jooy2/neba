@@ -6,35 +6,32 @@ Work that has been researched but not started. Each section carries enough of wh
 
 Twelve libraries were surveyed in September 2026 for what they ship and this library does not: Vercel AI Elements (50 components), Ant Design X, assistant-ui, prompt-kit, beUI, shadcn.io/ai, Kibo UI, ElevenLabs UI, LiveKit Agents UI, CopilotKit, LlamaIndex chat-ui, and OpenAI ChatKit widgets. Links are under [Sources](#sources).
 
-What survives below is what more than one of them ships, what the existing components do not compose into, and what a presentational library can hold without taking on a runtime dependency. **Seen in** is how many of the twelve carry it. The names are proposals, not decisions.
+**Nine of the ten first-tier components have shipped** as the `agent` group: `ToolCall`, `Approval`, `Reasoning`, `AgentSteps`, `ContextWindow` (named for the window rather than `Context`, which beside `ContextMenu` and React's own would have been a word this library cannot afford to spend), `Sources`, `InlineCitation`, `StreamingText` and `PromptInput`. What is left of that tier is the two below.
 
-### First tier
+### First tier, what is left
 
 | Component | What it draws | Why the existing set does not cover it | Seen in |
 | --- | --- | --- | --- |
-| `ToolCall` | One tool invocation: name, arguments, result, elapsed time | Nothing here is close. The state moves `pending` to `running` to `success`/`error` on its own, the body collapses to a header, and the result arrives after the first render | 9 |
-| `Approval` | The agent asking permission: allow once, always allow, deny, with a risk level and editable arguments | `Confirm` and `Popconfirm` are opened by the reader, offer two answers, and vanish when closed. This is opened by the agent, offers three or more, and stays in the transcript as a record of what was decided | 8 |
 | `Terminal` | ANSI-coloured stdout and stderr, a prompt line, a running cursor, stuck to the bottom | `CodeBlock` highlights a grammar and takes a finished string. This parses escape sequences and appends a line at a time, and it needs no highlighter at all | 5 |
 | `Diff` | A file change: unified or split, added, removed and context lines, collapsed hunks, per-hunk accept | Absent. `tokenize` in `src/internal/highlight.ts` already returns per-line coloured runs, which is the half that would otherwise be expensive | 4 |
-| `Reasoning` | A collapsible thinking panel that opens while the stream runs, closes when it ends, and keeps "thought for N seconds" | On `Spoiler` and `Collapsible` the reader owns the open state. Here the stream owns it | 10 |
-| `AgentSteps` | A chain of steps that grows as it runs, each with a state and nested children such as a search query or a file read | `Timeline` and `HowToSteps` draw a list that is known up front. This one does not know how many items it has | 8 |
-| `Context` | A context-window gauge: a ring, the input, output, reasoning and cached token split, and a cost estimate | `Meter` draws the ring, but the token formatting (K/M/B) and the four-way split are the component | 5 |
-| `Sources` and `InlineCitation` | A source list, and a numbered footnote in the body with a hover preview | `HoverCard` gives the preview. The numbering and the body-to-list link are missing | 11 |
-| `StreamingText` | Text arriving from outside: a placeholder that does not shift the layout, a cursor, a per-word fade-in | `AnimateTyping` types a string it already has. This is the opposite direction | 9 |
-| `PromptInput` | Attach, model, send and stop in one input. Auto height, Enter and Shift+Enter, drop target | `TextField` plus `Toolbar` gets the shell, but the send-becomes-stop state and the auto height are rewritten every time | 12 |
 
 Notes for whoever picks these up:
 
-- `ToolCall` and `Approval` are the smallest unit of every agent UI in the survey. Start there.
-- `Terminal` and `Diff` are next because both reuse `tokenize`, and neither needs highlight.js.
-- `Diff` and `ToolCall` both want a collapsible JSON tree. Decide early whether that is a `JsonView` of its own (second tier) or private to each.
-- None of these belongs in a new group. `ToolCall`, `Approval`, `Reasoning`, `AgentSteps`, `StreamingText` and `Context` are `feedback`; `Terminal`, `Diff`, `Sources` and `InlineCitation` are `display`; `PromptInput` is `inputs`. See the group definitions in [CLAUDE.md](CLAUDE.md).
-- Adding a component is still the six edits listed under Documentation in [CLAUDE.md](CLAUDE.md), and its tests ship in the same commit.
+- Both reuse `tokenize` and neither needs highlight.js, which is why they were the pair to take together.
+- `Diff` wants a collapsible JSON tree for nothing, but `ToolCall` renders a string `args` as a `<pre>` and a node as it is — so the tree is still a second-tier `JsonView` question rather than something either of these has to answer.
+- Both belong in `display` rather than in `agent`: a diff of a file and a terminal's output are things a page shows, and neither is about what an agent is doing. `StreamingText` is the group's precedent for the other direction — see the group definitions in [CLAUDE.md](CLAUDE.md).
+- Adding a component is the six edits listed under Documentation in [CLAUDE.md](CLAUDE.md), and its tests ship in the same commit.
+
+### What the nine settled, for the two that are left
+
+- **`NebaRunStatus`** is in `src/types.ts`, and `src/internal/run.tsx` holds the mark, the colour family and the elapsed clock that go with it. A `Terminal` reporting an exit code should read that rather than inventing a fifth word.
+- **`preformattedClasses`** and **`collapsiblePanelClasses`** are in `internal/styles.ts`. A `Diff`'s hunks fold, and its lines are preformatted text.
+- **The `run` namespace** in `internal/i18n.ts` is already the four status words in nineteen languages.
 
 ### Second tier, where the scope has to be settled first
 
 - **Audio.** `Waveform`, `VoiceOrb`, `AudioPlayer`, `Transcript`. There is no audio component here at all, and ElevenLabs UI and LiveKit have taken the whole area. An orb is normally three.js; a CSS and SVG reading of it is the thing to work out before committing to the group.
-- **`JsonView`.** A collapsible JSON tree. Also the inside of `ToolCall`, so it may come first by necessity.
+- **`JsonView`.** A collapsible JSON tree. `ToolCall` and `Approval` both take a node where one would go, so this is now an addition rather than a prerequisite.
 - **`FileTree`.** Extension icons and an A/M/D change marker. Likely a preset on `TreeView` rather than a component.
 - **`Artifact`.** The side canvas. `Panes` and `WindowPane` already do half of it.
 - **`Branch` and `Checkpoint`.** Walking regenerated answers, and a rewind marker in the transcript. Both small.
@@ -48,7 +45,7 @@ Notes for whoever picks these up:
 - **A Markdown or Mermaid renderer.** Runtime dependencies would go from two to half a dozen. Ant Design X ships its renderer as a separate package, which is the right call.
 - **Workflow `Canvas`, `Node`, `Edge`.** That is react-flow's territory, and it changes what this library is.
 - **`Sandbox` and `JSX Preview`.** Executing code adds a security surface.
-- **`ModelSelector`, `MicSelector`, `VoiceSelector`, `Actions`, suggestion chips, a conversation list, a welcome screen.** All of them compose out of `Select`, `Toolbar`, `Chip` with `ScrollZone`, `List` and `Empty`.
+- **`ModelSelector`, `MicSelector`, `VoiceSelector`, `Actions`, suggestion chips, a conversation list, a welcome screen.** All of them compose out of `Select`, `Toolbar`, `Chip` with `ScrollZone`, `List` and `Empty` — and `PromptInput`'s `start` and `end` are where the first four of them now go.
 
 ## An A2UI catalog
 

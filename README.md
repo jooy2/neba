@@ -10,7 +10,7 @@ Live previews and full props for every component. This README is just the quick 
 
 ---
 
-**Neba UI is a React component library for building application interfaces.** About 130 components, from buttons and form fields through menus, dialogs, tables and charts. They are styled and accessible out of the box, and they agree with each other because they draw from one set of props.
+**Neba UI is a React component library for building application interfaces.** About 140 components, from buttons and form fields through menus, dialogs, tables and charts. They are styled and accessible out of the box, and they agree with each other because they draw from one set of props.
 
 You install one package, add one line to your CSS, and import components. There is nothing to configure, no theme object to assemble, and no per-component styling decisions to make before you can ship a screen.
 
@@ -19,7 +19,7 @@ You install one package, add one line to your CSS, and import components. There 
 - **Accessible by construction**: real roles, labels, focus management and keyboard support, not `div`s with click handlers.
 - **Dark mode with no work**: follows the system, and can be forced either way per subtree.
 - **A design language, not a theme file**: a translucent acrylic surface with a hairline edge, one deliberate motion signature, and shadows that are opt-in.
-- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable: every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3.5 kB, and a twelve-component app is ~70 kB; the whole library, all one hundred and seventy-five exports at once, is ~280 kB.
+- **ESM only**, TypeScript declarations included, and genuinely tree-shakeable: every component compiles to its own module, and importing one costs about what one costs. A `Button` is ~5 kB gzipped including its Base UI parts, a `Chip` is ~3.5 kB, and a twelve-component app is ~70 kB; the whole library, all one hundred and eighty-five exports at once, is ~286 kB.
 - **Two runtime dependencies**: Base UI, and `highlight.js`, which only [CodeBlock](https://neba.cdget.com/components/display/code-block) reaches and only through a dynamic import, so it never lands in a bundle that did not ask for it. React 18 or 19, Node.js 18 or later.
 
 ## Documentation
@@ -178,7 +178,7 @@ The reason a Neba screen looks composed rather than assembled is that the props 
 
 ### Components
 
-The components come in seven groups: inputs, surfaces, display, charts, feedback, layout and transitions. Each one has its own page (live previews, every prop, and the variations worth seeing) under [**All components**](https://neba.cdget.com/components/).
+The components come in eight groups: inputs, surfaces, display, charts, feedback, layout, transitions and agent. Each one has its own page (live previews, every prop, and the variations worth seeing) under [**All components**](https://neba.cdget.com/components/).
 
 ### Theming and dark mode
 

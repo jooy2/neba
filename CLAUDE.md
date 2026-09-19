@@ -296,17 +296,17 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | ----------------------------- | -------- | --------------------------- |
 | `Divider`                     | 3.1 kB   | 1.4 kB                      |
 | `Button`                      | 5.2 kB   | 2.5 kB                      |
-| `Chip`                        | 3.5 kB   | 3.4 kB                      |
-| `LineChart`                   | 12.7 kB  | 10.4 kB                     |
-| `CodeBlock`                   | 5.6 kB   | 5.2 kB                      |
-| `Image`                       | 8.9 kB   | 7.0 kB                      |
-| `Gallery`                     | 11.8 kB  | 10.0 kB                     |
-| 12 components — a typical app | 71.6 kB  | 13.2 kB                     |
-| 25 components — a large one   | 118.5 kB | 20.2 kB                     |
-| a whole page shell            | 30.0 kB  | 9.7 kB                      |
-| all 175 exports               | 279.8 kB | 141.8 kB                    |
+| `Chip`                        | 3.5 kB   | 3.5 kB                      |
+| `LineChart`                   | 12.7 kB  | 11.2 kB                     |
+| `CodeBlock`                   | 5.6 kB   | 5.3 kB                      |
+| `Image`                       | 8.9 kB   | 7.2 kB                      |
+| `Gallery`                     | 11.8 kB  | 10.1 kB                     |
+| 12 components — a typical app | 71.6 kB  | 13.5 kB                     |
+| 25 components — a large one   | 118.5 kB | 20.7 kB                     |
+| a whole page shell            | 30.0 kB  | 10.2 kB                     |
+| all 185 exports               | 286.4 kB | 154.1 kB                    |
 
-The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is.
+The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is the one to watch: its preview is a `HoverCard`, so a citation in a paragraph costs 35 kB of Base UI's floating machinery.
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`, and two thirds of it is the Base UI dialog a collapsing sidebar becomes below its breakpoint.
 
@@ -325,7 +325,7 @@ Five things hold the numbers above in place. Each of them, broken, is invisible 
 1. **`sideEffects: ["**/*.css"]`.** The single line that lets a bundler drop every component a page did not import. Widen it and every consumer ships the whole library.
 2. **Every relative specifier ends in `.js`.** `tsc` under `module: Preserve` emits specifiers verbatim, so an extensionless `export * from './types'` reaches `dist/` unchanged — and Node's ESM resolver rejects it, as does TypeScript under `moduleResolution: node16`, where it takes out every named export of the barrel at once. Vite resolves it fine, which is exactly why nothing in this repository noticed for eighty-eight components.
 3. **An `@__PURE__` annotation on every `forwardRef`, `createContext` and `memo` call.** A bundler cannot prove `React.forwardRef(…)` is side-effect free, so in a file that exports more than one component the unused ones survive. `scripts/annotate-pure.mjs` writes them into `dist/` between `tsc` and `terser` — never into `src/`, where sixteen characters in front of an already long line makes Prettier rewrap the signature and re-indent the whole function body, which was one annotation and a hundred-line diff in seventy-seven files. It counts what it marked against what `src/` contains and fails the build on a mismatch, because the failure mode of a pattern over emitted code is that it quietly stops matching. Terser then has to be told to write the annotations out again: `output.preserve_annotations` in `terser.config.json`. The two settings are useless apart, and removing either silently costs about a quarter of a multi-part component.
-4. **Fixed-cost modules stay divisible.** A table every component reaches through is a table every component pays for in full. `i18n.ts` is one export per namespace and English only; `icons.tsx` reaches its severity set through a function. The rule generalises: an object literal cannot be tree-shaken per key, so anything that would grow past a few hundred bytes belongs in separate exports or separate modules.
+4. **Fixed-cost modules stay divisible.** A table every component reaches through is a table every component pays for in full. `i18n.ts` is one export per namespace and English only; `icons.tsx` reaches its severity set through a function. The rule generalises: an object literal cannot be tree-shaken per key, so anything that would grow past a few hundred bytes belongs in separate exports or separate modules. **And a class string is written as a literal rather than as `[…].join(' ')`**, because a bundler cannot drop a `const` whose value is a call: two shared strings added to `internal/styles.ts` in the array form put 0.2 kB on a `Button` and 0.1 kB on a `Chip` before either read them, which `npm run size` caught as three scenarios over budget at once.
 5. **`internal/defaults.ts` stays one `useContext`.** Every component that takes `size`, `density`, `variant` or `locale` calls `useStyleDefaults` before its own destructuring, so whatever is in that module is a fixed cost on the smallest component in the library — it is 0.2 kB gzipped, which is 5% of a Chip. Anything added to it is added to all of them. The hook returns the props object untouched when there is no provider, which is what keeps a page that has none paying only the `useContext`.
 
 6. **Every component is its own entry point.** `neba/button`, through the `./*` pattern in `exports`. The bundle is the same either way — `import { Button } from 'neba'` already shakes correctly — but the barrel makes a bundler parse every module in the library to keep five, and the subpath makes it parse five. It is also the escape hatch for a build that ignores `sideEffects`.
