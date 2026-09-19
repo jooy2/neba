@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { droppedFiles } from '../../internal/drop.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { fileMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import {
@@ -204,33 +205,6 @@ export function formatFileSize(bytes: number): string {
   }
 
   return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[unit]}`;
-}
-
-/**
- * Whether what was dropped is a file at all.
- *
- * A folder dragged onto a dropzone arrives in `dataTransfer.files` as a `File`
- * with no type and a size of zero, and there is no flag on it that says so. The
- * only thing that does is `webkitGetAsEntry`, which is on the *item* rather
- * than on the file — so the two lists are walked in step, and a browser too old
- * to have it is left trusting what it was given.
- *
- * Silently adding a folder is worse than refusing it: it goes into the list
- * looking like a file, and the upload that follows sends nothing.
- */
-function droppedFiles(transfer: DataTransfer): File[] {
-  const items = [...transfer.items];
-  const files = [...transfer.files];
-
-  if (items.length !== files.length) {
-    return files;
-  }
-
-  return files.filter((_, index) => {
-    const entry = items[index]?.webkitGetAsEntry?.();
-
-    return entry ? entry.isFile : true;
-  });
 }
 
 /**

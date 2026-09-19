@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
+import { droppedFiles } from '../../internal/drop.js';
 import { matchesShortcut } from '../../internal/keys.js';
 import { promptMessages, useMessages, type PromptMessages } from '../../internal/i18n.js';
 import {
@@ -81,6 +82,10 @@ export interface PromptInputProps
   /**
    * Passing it makes the shell a drop target. It is called with the files, and
    * what happens to them is the application's.
+   *
+   * A folder dropped onto a page arrives looking like a zero-byte file, and
+   * those are filtered out before this is called — the same check a
+   * [FilePicker](../inputs/file-picker) makes.
    */
   onFiles?: (files: File[]) => void;
   /** The field's accessible name, drawn for a screen reader and nobody else. */
@@ -212,6 +217,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     const value = controlled ? valueProp : text;
 
     const [dropping, setDropping] = React.useState(false);
+    const dragDepth = React.useRef(0);
     const controlId = React.useId();
     const controlRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setControlRef = React.useCallback(
@@ -281,21 +287,50 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
 
         <div
           data-dropping={dropping || undefined}
-          onDragOver={
+          /*
+           * The depth count is what makes this stop flickering, and it is the
+           * same one a FilePicker keeps: `dragleave` bubbles, so a drag crossing
+           * from the shell onto the field inside it fires a leave the shell
+           * would otherwise believe.
+           */
+          onDragEnter={
             onFiles
               ? (event) => {
                   event.preventDefault();
+                  dragDepth.current += 1;
                   setDropping(true);
                 }
               : undefined
           }
-          onDragLeave={onFiles ? () => setDropping(false) : undefined}
+          onDragOver={
+            onFiles
+              ? (event) => {
+                  // Without this the browser opens the file instead of dropping
+                  // it, which is the default and is never what anybody wants.
+                  event.preventDefault();
+                  event.dataTransfer.dropEffect = 'copy';
+                }
+              : undefined
+          }
+          onDragLeave={
+            onFiles
+              ? () => {
+                  dragDepth.current = Math.max(0, dragDepth.current - 1);
+
+                  if (dragDepth.current === 0) {
+                    setDropping(false);
+                  }
+                }
+              : undefined
+          }
           onDrop={
             onFiles
               ? (event) => {
                   event.preventDefault();
+                  dragDepth.current = 0;
                   setDropping(false);
-                  const files = Array.from(event.dataTransfer.files);
+
+                  const files = droppedFiles(event.dataTransfer);
 
                   if (files.length > 0) {
                     onFiles(files);

@@ -142,6 +142,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `page-layout.ts` | The context the page shell reads |
 | `initials.ts` | The first letters of a name |
 | `drag.ts` | The scaffold around a pointer drag |
+| `drop.ts` | What a drop actually handed over |
 | `wheel.ts` | A wheel turned onto a horizontal strip |
 | `observe.ts` | One `ResizeObserver`, and one `IntersectionObserver` per threshold |
 | `cache.ts` | `memoise`, bounded |
@@ -200,6 +201,12 @@ Three rules there are load-bearing rather than stylistic. A **`null` is a gap an
 #### `internal/drag.ts`
 
 `internal/drag.ts` is the scaffold around a pointer drag, and it is here for what the six copies had already drifted into rather than for the repetition. Sidebar, Panes, WindowPane, DataTable and ScrollZone all drag something; the arithmetic differs in every one and stays where it is. What was written six times is the three listeners, the `data-dragging` mark, the document's text selection taken and given back, and a teardown an unmount can call — and both DataTable copies were missing the last two, so dragging a column boundary in Safari selected the text of every cell the pointer crossed, dragging a run of rows selected far more of them, and a table that unmounted mid-drag left the selection taken away for good. DataTable's two drags are the ones that pass `capture: false` and listen on the document instead: a captured pointer's `click` and `dblclick` go to the capturing element, so capturing on the press took the click away from a row's `onClick` and from the sort button inside a draggable header, and capturing to the row itself would not survive a virtual body unmounting it as it scrolls away — which is the whole point of the row drag. `release` and `onEnd` are deliberately two things: an unmount has to run the first and must not run the second, because a component that disappeared did not finish resizing. There is no `requestAnimationFrame` in it — a `pointermove` is already delivered once per frame, so coalescing again would only add latency. The one loop in the library that does run per frame, DataTable's auto-scroll at the edge of a row drag, stays with that component and is not an option here: it runs while the pointer is _not_ moving, which is the opposite case. ScrollZone is the one that does **not** use it, and that is deliberate too: it takes the pointer and the selection at its drag _threshold_ rather than at the press, because a press on a strip is far more often a click on a card inside it.
+
+#### `internal/drop.ts`
+
+`internal/drop.ts` is one function and it is here for `initials.ts`'s reason: two components take dropped files and both have to answer the same question about folders. A folder dragged onto a page arrives in `dataTransfer.files` as a `File` with no type and a size of zero, and nothing on the file says so — the only thing that does is `webkitGetAsEntry`, which lives on the _item_, so the two lists have to be walked in step. Accepting one silently is worse than refusing it: it goes into the list looking like a file and the upload that follows sends nothing. FilePicker had it; a PromptInput whose shell is a drop target needed it second.
+
+What stays with each component is the **depth count** behind the ready state, and that is a judgement rather than an oversight: `dragleave` bubbles, so a drag crossing from a shell onto the field inside it fires a leave the shell would otherwise believe, and the counter that fixes it is four lines sitting among handlers that also check `inert`, set `dropEffect` and filter against an `accept`. Both are written the same way, and both say so.
 
 #### `internal/wheel.ts`
 

@@ -223,6 +223,64 @@ describe('PromptInput', () => {
     });
   });
 
+  describe('files', () => {
+    /** A DataTransfer carrying one file, and an item that says it is one. */
+    function transferWith(file: File): DataTransfer {
+      const transfer = new DataTransfer();
+
+      transfer.items.add(file);
+
+      return transfer;
+    }
+
+    it('reports what was dropped on it', async () => {
+      const onFiles = vi.fn();
+      const screen = await render(<PromptInput label="Message" onFiles={onFiles} />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+      const file = new File(['hello'], 'note.txt', { type: 'text/plain' });
+
+      shell.dispatchEvent(
+        new DragEvent('drop', {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: transferWith(file)
+        })
+      );
+
+      expect(onFiles).toHaveBeenCalledTimes(1);
+      expect(onFiles.mock.calls[0][0][0].name).toBe('note.txt');
+    });
+
+    it('is not a drop target at all without a handler', async () => {
+      const screen = await render(<PromptInput label="Message" />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+
+      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+
+      await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+    });
+
+    // `dragleave` bubbles, so a drag crossing onto the field inside the shell
+    // fires one the shell would otherwise believe.
+    it('stays ready while the drag moves over what is inside it', async () => {
+      const screen = await render(<PromptInput label="Message" onFiles={() => {}} />);
+      const control = screen.getByRole('textbox').element();
+      const shell = control.parentElement as HTMLElement;
+
+      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      await expect.poll(() => shell.dataset.dropping).toBe('true');
+
+      control.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      control.dispatchEvent(new DragEvent('dragleave', { bubbles: true, cancelable: true }));
+
+      await expect.poll(() => shell.dataset.dropping).toBe('true');
+
+      shell.dispatchEvent(new DragEvent('dragleave', { bubbles: true, cancelable: true }));
+
+      await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+    });
+  });
+
   describe('its own words', () => {
     it('lets a caller write them out', async () => {
       const screen = await render(

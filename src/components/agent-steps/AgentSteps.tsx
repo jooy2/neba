@@ -38,7 +38,12 @@ interface StepContextValue {
 }
 
 const StepsContext = React.createContext<StepsContextValue | null>(null);
-const StepContext = React.createContext<StepContextValue>({ last: false });
+/*
+ * `last` by default, because the default is what a step gets when there is no
+ * chain around it — and a rail leaving a step that has nothing after it runs
+ * into the page.
+ */
+const StepContext = React.createContext<StepContextValue>({ last: true });
 
 export interface AgentStepsProps
   extends
