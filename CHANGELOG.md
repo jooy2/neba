@@ -2,9 +2,37 @@
 
 ## vNext (2026--)
 
+## 1.15.0 (2026-09-19)
+
 ### Breaking changes
 
 - **A `NumberField` answers the wheel by default, through a prop now called `wheel`.** `allowWheelScrub` was off, so the one gesture a spinner exists for did nothing until a caller went looking for the prop — and it was a second spelling of a question `ScrollZone` and `Tabs` already ask as `wheel`. It is `wheel`, and it is on. Both halves of what it asks still have to be true before anything happens: the field holds the focus _and_ the pointer is over the number, so a reader who has not put the caret in the field scrolls the page over it exactly as before. Rename `allowWheelScrub` to `wheel` where it was passed, and pass `wheel={false}` for a field inside something that has to keep scrolling under a pointer resting on it.
+
+### Where the bytes went
+
+| What you import               | 1.14.0   | 1.15.0   |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.2 kB   | 5.1 kB   |
+| `Chip`                        | 3.5 kB   | 3.4 kB   |
+| `LineChart`                   | 12.7 kB  | 12.6 kB  |
+| `CodeBlock`                   | 5.6 kB   | 5.5 kB   |
+| `Image`                       | 8.9 kB   | 8.8 kB   |
+| `Gallery`                     | 11.8 kB  | 11.7 kB  |
+| a whole page shell            | 30.0 kB  | 30.0 kB  |
+| 12 components — a typical app | 71.6 kB  | 71.6 kB  |
+| 12 components, with Korean    | 75.0 kB  | 75.6 kB  |
+| 25 components — a large one   | 118.5 kB | 118.7 kB |
+| all exports                   | 279.8 kB | 286.6 kB |
+
+Six rows went **down**, and all six by the same tenth of a kilobyte: three shared class strings in `internal/styles.ts` were `[…].join(' ')`, and a bundler cannot drop a `const` whose value is a call. Every component carried all three whether it read them or not. Written with `+` they fold at build time and drop, which is why a single-component bundle is smaller in a release that added nine components.
+
+All exports grew 6.8 kB, and no runtime dependency was added. That is the `agent` group: `PromptInput` at 5.2 kB of its own code down to `StreamingText` at 1.2 kB, plus `internal/run.tsx` and `internal/glow.ts`, less the fold above. `InlineCitation` is the one to know about — its preview is a `HoverCard`, so a citation in a paragraph costs about 35 kB with Base UI's floating machinery, which is why the number is the same whether a page draws one or forty.
+
+Registering a language costs 3.4 kB still; the extra 0.6 kB on that row is the six new message namespaces the agent components read, in Korean.
+
+`neba/styles.css` is 24.5 kB gzipped against 24.1 kB. It carries the two keyframes a `StreamingText` word and its caret arrive on, and the classes the nine components use.
+
+`neba/a2ui` and `neba/a2ui/catalog.json` are in none of these rows, and that is the point: neither is re-exported from `neba`, so a bundler walking the package never reaches them. The catalog is 58 kB of the tarball and 0 kB of any bundle.
 
 ### Added
 
