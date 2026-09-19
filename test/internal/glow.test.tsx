@@ -84,6 +84,20 @@ describe('the pointer light', () => {
       expect(screen.getByRole('radio', { name: 'Day' }).element()).toHaveClass('neba-glow');
     });
 
+    it('leaves a disabled menu row dark', async () => {
+      const screen = await render(
+        <Menu trigger={<Button>Actions</Button>}>
+          <MenuItem disabled>Rename</MenuItem>
+        </Menu>
+      );
+
+      await screen.getByRole('button', { name: 'Actions' }).click();
+
+      await expect
+        .element(screen.getByRole('menuitem', { name: 'Rename' }))
+        .not.toHaveClass('neba-glow');
+    });
+
     it('lights a menu row', async () => {
       const screen = await render(
         <Menu trigger={<Button>Actions</Button>}>

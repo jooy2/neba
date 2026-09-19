@@ -288,6 +288,7 @@ function rowClasses(
   size: NebaSize,
   density: NebaDensity,
   accented: boolean,
+  lit: boolean,
   className?: string
 ): string {
   return cx(
@@ -295,7 +296,11 @@ function rowClasses(
     // The spotlight, without the press flash: a row is gone the moment it is
     // chosen, and an afterglow on an element that has already unmounted is
     // nine hundred milliseconds of nothing. See `internal/glow.ts`.
-    glowClasses,
+    //
+    // A disabled row is left dark. `:hover` still applies to one — nothing
+    // takes its pointer events away — so the class alone would light it from
+    // the middle, which is where an unwritten `--n-mx` leaves the gradient.
+    lit ? glowClasses : '',
     accented ? 'text-(--n-on-tint)' : 'text-(--neba-fg)',
     rowPaddingClasses[density][size],
     rowRadiusClasses[size],
@@ -419,7 +424,7 @@ export function MenuItem({
         label={label}
         closeOnClick={closeOnClick}
         onClick={onClick}
-        className={rowClasses(size, density, Boolean(color), className)}
+        className={rowClasses(size, density, Boolean(color), !disabled, className)}
         style={rowStyle}
         onPointerMove={trackPointer(undefined, true)}
       >
@@ -434,7 +439,7 @@ export function MenuItem({
       label={label}
       closeOnClick={closeOnClick}
       onClick={onClick}
-      className={rowClasses(size, density, Boolean(color), className)}
+      className={rowClasses(size, density, Boolean(color), !disabled, className)}
       style={rowStyle}
       onPointerMove={trackPointer(undefined, !disabled)}
     >
@@ -470,7 +475,7 @@ export function MenuCheckboxItem({
       disabled={disabled}
       label={label}
       closeOnClick={closeOnClick}
-      className={rowClasses(size, density, Boolean(color), className)}
+      className={rowClasses(size, density, Boolean(color), !disabled, className)}
       style={{ ...slots, ...spotlightSlot, ...style }}
       onPointerMove={trackPointer(undefined, !disabled)}
     >
@@ -546,7 +551,7 @@ export function MenuRadioItem({
       disabled={disabled}
       label={label}
       closeOnClick={closeOnClick}
-      className={rowClasses(size, density, Boolean(color), className)}
+      className={rowClasses(size, density, Boolean(color), !disabled, className)}
       style={{ ...slots, ...spotlightSlot, ...style }}
       onPointerMove={trackPointer(undefined, !disabled)}
     >
@@ -632,7 +637,7 @@ export function MenuSubmenu({
     <BaseUIMenu.SubmenuRoot>
       <BaseUIMenu.SubmenuTrigger
         disabled={disabled}
-        className={rowClasses(size, density, false)}
+        className={rowClasses(size, density, false, !disabled)}
         style={spotlightSlot}
         onPointerMove={trackPointer(undefined, !disabled)}
       >
