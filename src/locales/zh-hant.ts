@@ -236,5 +236,10 @@ export const zhHant: NebaLocale = {
   sources: {
     title: '來源',
     citation: '來源 {index}'
+  },
+  prompt: {
+    send: '傳送',
+    stop: '停止',
+    drop: '將檔案拖到這裡以附加'
   }
 };

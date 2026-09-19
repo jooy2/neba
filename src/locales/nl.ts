@@ -233,5 +233,10 @@ export const nl: NebaLocale = {
   sources: {
     title: 'Bronnen',
     citation: 'Bron {index}'
+  },
+  prompt: {
+    send: 'Versturen',
+    stop: 'Stoppen',
+    drop: 'Sleep bestanden hierheen om ze toe te voegen'
   }
 };

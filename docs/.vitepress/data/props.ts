@@ -16109,5 +16109,149 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '커서의 색 계열', en: "The caret's colour family" }
     },
     renderProp('<p />')
+  ],
+
+  PromptInput: [
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: '입력란에 있는 값. onValueChange와 함께 쓰면 제어됩니다',
+        en: 'What is in the field. Pass it with onValueChange to drive it yourself'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string',
+      default: "''",
+      description: {
+        ko: '제어하지 않을 때의 시작 값',
+        en: 'What an uncontrolled field starts with'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string) => void',
+      description: {
+        ko: '키를 누를 때마다, 전체 값으로',
+        en: 'Called on every keystroke, with the whole value'
+      }
+    },
+    {
+      name: 'onSubmit',
+      type: '(value: string) => void',
+      description: {
+        ko: '전송될 때 그 값으로. 빈 입력란은 전송되지 않고, 입력란을 비우지도 않습니다',
+        en: 'Called with the value when the field is sent. An empty field never sends, and it does not clear the field'
+      }
+    },
+    {
+      name: 'submitting',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '답을 쓰는 중인지. 전송 버튼이 정지 버튼이 되고 계속 누를 수 있습니다',
+        en: 'Whether an answer is being written. The send button becomes a stop button and stays pressable'
+      }
+    },
+    {
+      name: 'onStop',
+      type: '() => void',
+      description: { ko: '정지 버튼을 눌렀을 때', en: 'Called when the stop button is pressed' }
+    },
+    {
+      name: 'submitKey',
+      type: "'Enter' | 'Mod+Enter'",
+      default: "'Enter'",
+      description: {
+        ko: '무엇으로 보낼지. 입력기가 조합 중일 때는 어느 쪽도 작동하지 않습니다',
+        en: 'Which key sends. Neither fires while an input method is composing'
+      }
+    },
+    {
+      name: 'onFiles',
+      type: '(files: File[]) => void',
+      description: {
+        ko: '주면 껍데기가 드롭 대상이 됩니다. 떨어진 파일을 어떻게 할지는 호출하는 쪽의 몫입니다',
+        en: 'Passing it makes the shell a drop target. What happens to the files is the application’s'
+      }
+    },
+    {
+      name: 'label',
+      type: 'ReactNode',
+      description: {
+        ko: '입력란의 접근 가능한 이름. 스크린 리더에만 그려집니다',
+        en: "The field's accessible name, drawn for a screen reader and nobody else"
+      }
+    },
+    {
+      name: 'minRows',
+      type: 'number',
+      default: '1',
+      description: { ko: '가장 짧을 때의 줄 수', en: 'How many rows the field is at its shortest' }
+    },
+    {
+      name: 'maxRows',
+      type: 'number',
+      default: '8',
+      description: {
+        ko: '가장 클 때의 줄 수. 그 뒤로는 스크롤합니다',
+        en: 'And at its tallest, after which it scrolls'
+      }
+    },
+    {
+      name: 'start',
+      type: 'ReactNode',
+      description: {
+        ko: '입력란 아래 툴바의 앞쪽. 첨부 버튼, 모델 Select',
+        en: 'Controls at the start of the toolbar under the text: attach, a model Select'
+      }
+    },
+    {
+      name: 'end',
+      type: 'ReactNode',
+      description: {
+        ko: '툴바의 뒤쪽, 전송 버튼 앞. 토큰 수, 모드 토글',
+        en: 'Controls at its end, before the send button: a token count, a mode toggle'
+      }
+    },
+    ...sharedProps({
+      variant: "'outline'",
+      size: "'md'",
+      variantDescription: {
+        ko: '껍데기의 무게. TextField의 껍데기와 같습니다',
+        en: "Weight of the shell, the same one a TextField's is drawn on"
+      }
+    }),
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: '두 버튼 라벨을 쓸 언어. BCP 47 태그',
+        en: 'Which language the two button labels are written in, as a BCP 47 tag'
+      }
+    },
+    {
+      name: 'labels',
+      type: 'Partial<PromptMessages>',
+      description: { ko: '그 단어들을 직접 씁니다', en: 'Those words, written out' }
+    },
+    {
+      name: 'classNames',
+      type: "NebaSlots<'shell' | 'control' | 'toolbar' | 'send'>",
+      shared: true,
+      description: {
+        ko: '루트 뒤의 부분들에 붙일 클래스. 루트는 form이고 className이 그것입니다',
+        en: 'Class names for the parts behind the root. The root is the form, and className is it'
+      }
+    },
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: {
+        ko: '입력란 위의 띠. 추가한 첨부, 무엇에 답하는지 알리는 줄',
+        en: 'A strip above the field: the attachments that have been added, a reply-to line'
+      }
+    }
   ]
 };

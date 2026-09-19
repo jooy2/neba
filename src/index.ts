@@ -98,6 +98,7 @@ export * from './components/portal/index.js';
 export * from './components/progress-box/index.js';
 export * from './components/progress-circular/index.js';
 export * from './components/progress-linear/index.js';
+export * from './components/prompt-input/index.js';
 export * from './components/provider/index.js';
 export * from './components/radio-group/index.js';
 export * from './components/reasoning/index.js';

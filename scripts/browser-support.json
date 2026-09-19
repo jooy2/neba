@@ -17,7 +17,7 @@
     },
     {
       "feature": "css.types.length.lh",
-      "reason": "Centres the box or icon beside a label on the label's first line. Without it the box sits at the top of that line."
+      "reason": "Centres the box or icon beside a label on the label's first line, reserves the height a StreamingText holds before its first word lands, and sets a PromptInput's minimum and maximum rows. Without it the box sits at the top of the line, the reserved height is the line-height the browser computed rather than one line of this text, and the prompt field falls back to its rows attribute."
     },
     {
       "feature": "css.at-rules.property",

@@ -237,5 +237,10 @@ export const id: NebaLocale = {
   sources: {
     title: 'Sumber',
     citation: 'Sumber {index}'
+  },
+  prompt: {
+    send: 'Kirim',
+    stop: 'Hentikan',
+    drop: 'Lepas berkas di sini untuk melampirkan'
   }
 };

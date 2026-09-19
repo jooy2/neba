@@ -233,5 +233,10 @@ export const ja: NebaLocale = {
   sources: {
     title: '出典',
     citation: '出典 {index}'
+  },
+  prompt: {
+    send: '送信',
+    stop: '停止',
+    drop: 'ここにファイルをドロップして添付'
   }
 };

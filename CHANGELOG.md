@@ -36,6 +36,10 @@
 
   The fade needs no bookkeeping at all: words are keyed by position, so one already on screen keeps its element and never animates again, and the last word grows a character at a time inside the element it already has. It is deliberately not a live region, and it has no `size` — what it draws is the caller's own text inside the caller's own block.
 
+- **`PromptInput`** — everything a prompt goes out through: the text, the attach and model controls, and one button that sends and then stops. A multiline `TextField` plus a `Toolbar` gets the shell; what it does not get is the three things that were being rewritten at every call site — a field that grows with what is typed and then stops growing, a send button that becomes a stop button _without moving_, and Enter meaning send while Shift+Enter means a new line.
+
+  It is one button and never two, because what a reader reaches for to stop an answer is exactly where they last pressed to start it. Neither key fires while an input method is composing: a Korean or Japanese reader pressing Enter to accept a candidate is finishing a word, and a field that read that as a send would make the language unusable. `onSubmit` deliberately does not clear the field — a message that failed to send should still be there.
+
 ### Changed
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.

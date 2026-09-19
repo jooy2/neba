@@ -237,5 +237,10 @@ export const ru: NebaLocale = {
   sources: {
     title: 'Источники',
     citation: 'Источник {index}'
+  },
+  prompt: {
+    send: 'Отправить',
+    stop: 'Остановить',
+    drop: 'Перетащите файлы сюда, чтобы прикрепить'
   }
 };

@@ -233,5 +233,10 @@ export const vi: NebaLocale = {
   sources: {
     title: 'Nguồn',
     citation: 'Nguồn {index}'
+  },
+  prompt: {
+    send: 'Gửi',
+    stop: 'Dừng',
+    drop: 'Thả tệp vào đây để đính kèm'
   }
 };

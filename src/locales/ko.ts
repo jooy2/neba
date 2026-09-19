@@ -233,5 +233,10 @@ export const ko: NebaLocale = {
   sources: {
     title: '출처',
     citation: '출처 {index}'
+  },
+  prompt: {
+    send: '보내기',
+    stop: '중지',
+    drop: '파일을 여기에 놓아 첨부하세요'
   }
 };

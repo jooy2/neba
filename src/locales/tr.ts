@@ -233,5 +233,10 @@ export const tr: NebaLocale = {
   sources: {
     title: 'Kaynaklar',
     citation: 'Kaynak {index}'
+  },
+  prompt: {
+    send: 'Gönder',
+    stop: 'Durdur',
+    drop: 'Eklemek için dosyaları buraya bırakın'
   }
 };

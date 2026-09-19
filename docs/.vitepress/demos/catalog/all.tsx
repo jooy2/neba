@@ -112,6 +112,7 @@ import {
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
+  PromptInput,
   Radio,
   RadioGroup,
   Rating,
@@ -2525,6 +2526,19 @@ const GROUPS: Group[] = [
               tokens={{ input: 94_200, output: 12_400 }}
               cost={0.42}
             />
+          </div>
+        )
+      },
+      {
+        name: 'PromptInput',
+        summary: {
+          ko: '프롬프트가 나가는 길 전부',
+          en: 'Everything a prompt goes out through'
+        },
+        path: '/components/agent/prompt-input',
+        preview: (
+          <div className="w-full max-w-64">
+            <PromptInput size="sm" label="Message" placeholder="Ask anything…" maxRows={3} />
           </div>
         )
       },

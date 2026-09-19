@@ -1101,6 +1101,25 @@ export const sourcesMessages: MessageTable<SourcesMessages> = {
   }
 };
 
+/** PromptInput. */
+export interface PromptMessages {
+  /** The button that sends what was typed. */
+  send: string;
+  /** And what that same button says while an answer is being written. */
+  stop: string;
+  /** Over the field while files are being dragged onto it. */
+  drop: string;
+}
+
+/** The `prompt` namespace, as PromptInput reads it. */
+export const promptMessages: MessageTable<PromptMessages> = {
+  '': {
+    send: 'Send',
+    stop: 'Stop',
+    drop: 'Drop files to attach'
+  }
+};
+
 /**
  * The tags that are a different spelling of an entry above.
  *
@@ -1321,6 +1340,8 @@ export interface NebaLocale {
   context?: Partial<ContextMessages>;
   /** Sources and InlineCitation. */
   sources?: Partial<SourcesMessages>;
+  /** PromptInput. */
+  prompt?: Partial<PromptMessages>;
 }
 
 /** Namespace name to the table that holds it, for the one function that needs all of them. */
@@ -1362,7 +1383,8 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
   approval: approvalMessages as MessageTable<never>,
   reasoning: reasoningMessages as MessageTable<never>,
   context: contextMessages as MessageTable<never>,
-  sources: sourcesMessages as MessageTable<never>
+  sources: sourcesMessages as MessageTable<never>,
+  prompt: promptMessages as MessageTable<never>
 };
 
 /**

@@ -233,5 +233,10 @@ export const it: NebaLocale = {
   sources: {
     title: 'Fonti',
     citation: 'Fonte {index}'
+  },
+  prompt: {
+    send: 'Invia',
+    stop: 'Interrompi',
+    drop: 'Trascina qui i file per allegarli'
   }
 };
