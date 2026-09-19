@@ -12,7 +12,7 @@ aside: false
 
 ## What to look at
 
-The screen has twenty-five blocks, and the table picks out nine of them.
+The screen has twenty-six blocks, and the table picks out ten of them.
 
 | Block | Components used | Worth noticing |
 | --- | --- | --- |
@@ -24,6 +24,7 @@ The screen has twenty-five blocks, and the table picks out nine of them.
 | Profile form | `Card` `TextField` `Divider` `Chip` `Checkbox` `Button` | Save turns on `loading`; a bad address puts an `error` on the field |
 | Sidebar | `Card` `RadioGroup` `Switch` `Slider` | A settings list puts its labels in a column and lines the switches up on the right |
 | Release | `Timeline` `Blockquote` `Highlight` `Shortcut` | The timeline is an `<ol>` because the order is the content; `Mod` in the shortcuts resolves per platform |
+| Assistant | `AgentSteps` `ToolCall` `Reasoning` `Approval` `StreamingText` `Sources` `PromptInput` `ContextWindow` | The one block that is a transcript rather than a page: the plan grew while it ran, the thinking folded itself away, and the permission that was asked is still there with the answer beside it |
 | Cards in a box | `Box` `Card` | `Box` only groups; `Card` takes over wherever structure is needed |
 
 ## Next

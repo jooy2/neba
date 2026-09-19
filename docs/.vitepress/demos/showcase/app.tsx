@@ -2,8 +2,11 @@ import { useState, type ReactNode } from 'react';
 import {
   Accordion,
   AccordionItem,
+  AgentStep,
+  AgentSteps,
   Alert,
   Anchor,
+  Approval,
   AnimateAppear,
   AnimateSplit,
   AnimateShake,
@@ -41,6 +44,7 @@ import {
   Combobox,
   CommandPalette,
   Container,
+  ContextWindow,
   ContextMenu,
   DataList,
   DataListItem,
@@ -74,6 +78,7 @@ import {
   IconButton,
   Gallery,
   Image,
+  InlineCitation,
   List,
   ListItem,
   Menu,
@@ -104,9 +109,11 @@ import {
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
+  PromptInput,
   Radio,
   RadioGroup,
   Rating,
+  Reasoning,
   ScatterChart,
   ScrollArea,
   ScrollZone,
@@ -118,9 +125,11 @@ import {
   Skeleton,
   Slider,
   Sparkline,
+  Sources,
   Spoiler,
   Stack,
   Statistic,
+  StreamingText,
   Switch,
   Tab,
   Table,
@@ -142,6 +151,7 @@ import {
   Toggle,
   ToggleGroup,
   Toolbar,
+  ToolCall,
   Tooltip,
   Tour,
   Typography,
@@ -2208,6 +2218,106 @@ function ShowcaseBody() {
               </FloatingBottomNavigation>
             </div>
           </div>
+        </section>
+
+        {/* The assistant, which is the one block on this screen where the
+            components are not a page but a transcript: a plan that grew while it
+            ran, a tool call under the step that made it, the thinking folded
+            away behind one line, the permission that was asked and answered, and
+            the answer arriving a word at a time over a field that sends it. */}
+        <section className="flex flex-col gap-3">
+          <Caption>
+            AgentSteps · ToolCall · Reasoning · Approval · Sources · InlineCitation · StreamingText
+            · ContextWindow · PromptInput
+          </Caption>
+          <Card size="sm" title="Assistant" subtitle="Deploy assistant · Opus">
+            <div className="flex flex-col gap-4">
+              <AgentSteps size="sm" density="compact">
+                <AgentStep title="Read the request" duration={120} />
+                <AgentStep title="Searched the runbook" meta="4 hits" duration={412}>
+                  <ToolCall
+                    size="sm"
+                    variant="text"
+                    name="search_runbook"
+                    status="success"
+                    duration={412}
+                    args={'{ "query": "rollback icn" }'}
+                    result="runbook/regions/icn.md, runbook/rollback.md"
+                  />
+                </AgentStep>
+                <AgentStep title="Checked the last deploy" duration={86} />
+              </AgentSteps>
+
+              <Reasoning size="sm" duration={3200}>
+                The Seoul region is the only one still on the previous build, and the runbook wants
+                the rollback run from the region rather than from the global control plane.
+              </Reasoning>
+
+              <Approval
+                size="sm"
+                risk="high"
+                title="Roll back the Seoul region?"
+                description="This moves production traffic back to build 4c1f92a."
+                details={'neba deploy rollback --region icn --to 4c1f92a'}
+                decision="once"
+                options={[
+                  { value: 'once', label: 'Allow once' },
+                  { value: 'always', label: 'Always allow' },
+                  { value: 'deny', label: 'Deny', color: 'danger' }
+                ]}
+              />
+
+              <StreamingText render={<p className="m-0 text-[0.8125rem]/[1.7]" />}>
+                {
+                  'Seoul is back on build 4c1f92a and serving traffic. The runbook asks for the\nregional control plane rather than the global one, which is what the command above\nused.'
+                }
+              </StreamingText>
+
+              <p className="m-0 text-[0.8125rem]/[1.7]">
+                The two pages that decided it were the region note
+                <InlineCitation
+                  index={1}
+                  title="runbook/regions/icn.md"
+                  site="runbook"
+                  description="Roll back from the region, never from the control plane."
+                />{' '}
+                and the rollback procedure
+                <InlineCitation
+                  index={2}
+                  title="runbook/rollback.md"
+                  site="runbook"
+                  description="Traffic is moved before the old build is removed."
+                />
+                .
+              </p>
+
+              <Sources
+                size="sm"
+                items={[
+                  { title: 'runbook/regions/icn.md', site: 'runbook' },
+                  { title: 'runbook/rollback.md', site: 'runbook' }
+                ]}
+              />
+
+              <Divider />
+
+              <PromptInput
+                size="sm"
+                label="Message the assistant"
+                placeholder="Ask about a region…"
+                maxRows={4}
+                end={
+                  <ContextWindow
+                    size="xs"
+                    max={200_000}
+                    used={42_800}
+                    breakdown={false}
+                    cost={0.12}
+                  />
+                }
+              />
+            </div>
+          </Card>
         </section>
 
         {/* A box grouping cards: the box groups, the cards structure. */}

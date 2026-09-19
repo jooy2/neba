@@ -12,7 +12,7 @@ aside: false
 
 ## 이 페이지에서 볼 것
 
-화면은 스물다섯 개 블록으로 되어 있고, 아래 표는 그중 아홉 개를 골라 설명합니다.
+화면은 스물여섯 개 블록으로 되어 있고, 아래 표는 그중 열 개를 골라 설명합니다.
 
 | 블록 | 사용된 컴포넌트 | 볼 만한 것 |
 | --- | --- | --- |
@@ -24,6 +24,7 @@ aside: false
 | 프로필 폼 | `Card` `TextField` `Divider` `Chip` `Checkbox` `Button` | 저장은 `loading`을 켜고, 잘못된 주소는 필드에 `error`를 답니다 |
 | 사이드바 | `Card` `RadioGroup` `Switch` `Slider` | 설정 목록은 라벨을 한 열로 세우고 스위치를 오른쪽에 정렬합니다 |
 | 릴리스 | `Timeline` `Blockquote` `Highlight` `Shortcut` | 순서가 내용이므로 타임라인은 `<ol>`이고, 단축키의 `Mod`는 플랫폼에 따라 해석됩니다 |
+| Assistant | `AgentSteps` `ToolCall` `Reasoning` `Approval` `StreamingText` `Sources` `PromptInput` `ContextWindow` | 이 화면에서 유일하게 페이지가 아니라 transcript인 블록입니다. 계획은 실행되면서 자랐고, 사고는 스스로 접혔고, 물어본 권한은 답과 함께 그대로 남아 있습니다 |
 | 박스 안의 카드 | `Box` `Card` | `Box`는 묶기만 하고, 구조가 필요한 자리는 `Card`가 맡습니다 |
 
 ## 다음으로
