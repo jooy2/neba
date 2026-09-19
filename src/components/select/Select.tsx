@@ -34,6 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
@@ -247,6 +248,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
     const disabled = useFieldsetDisabled(disabledProp);
+    // A read-only trigger is a label that happens to be field-shaped, and a
+    // disabled one has dropped the family the light would be drawn in.
+    const lit = !disabled && !readOnly;
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;
@@ -285,7 +289,11 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
         )}
-        style={{ ...surfaceSlots(family, elevation), ...style }}
+        style={{
+          ...surfaceSlots(family, elevation),
+          ...(lit ? spotlightSlot : undefined),
+          ...style
+        }}
         {...props}
       >
         {label ? (
@@ -314,6 +322,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         >
           <BaseUISelect.Trigger
             ref={ref}
+            // The spotlight, and only the spotlight — see `internal/glow.ts`.
+            onPointerMove={trackPointer(undefined, lit)}
             // A name written on the component is the control's name. On the root
             // it named a `<div>` nobody reads, and a Select with no visible label
             // — one in a table cell — had a trigger with no name at all.
@@ -332,7 +342,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
                 ? disabledClasses[variant]
                 : readOnly
                   ? `${fieldReadOnlyClasses[variant]} cursor-default`
-                  : fieldRestClasses[variant],
+                  : `${fieldRestClasses[variant]} ${glowClasses}`,
               classNames?.control
             )}
           >

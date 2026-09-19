@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Button as BaseUIButton } from '@base-ui/react/button';
 import { useRender } from '@base-ui/react/use-render';
+import { trackPointer } from '../../internal/glow.js';
 import { ButtonGroupContext } from '../../internal/button-group.js';
 import { SpinnerIcon } from '../../internal/icons.js';
 import {
@@ -260,26 +261,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           }
           onClick?.(event as React.MouseEvent<HTMLButtonElement>);
         },
-        onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
-          // Feeds the two light layers in `styles.css`. Written straight to the
-          // element rather than held in state: this fires at pointer rate, and a
-          // `setState` here would re-render the tree on every mouse move. Reading
-          // `offsetX/offsetY` costs nothing — no `getBoundingClientRect`, so no
-          // forced layout. Icons carry `pointer-events: none`, so the offsets are
-          // always relative to the button itself.
-          // Only where there are layers to feed. `neba-glow` is on the enabled
-          // button and nothing else, so writing the two slots on a disabled,
-          // loading or read-only one invalidates that element's style on every
-          // pointer event to move a gradient nobody is painting.
-          if (!disabled && !inert) {
-            const element = event.currentTarget;
-
-            element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-            element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
-          }
-
-          onPointerMove?.(event as React.PointerEvent<HTMLButtonElement>);
-        },
+        // Feeds the two light layers in `styles.css`, and only where there are
+        // layers to feed: `neba-glow` is on the enabled button and nothing
+        // else. See `internal/glow.ts` for what the two lines cost.
+        onPointerMove: trackPointer(
+          onPointerMove as React.PointerEventHandler<HTMLElement> | undefined,
+          !disabled && !inert
+        ),
         ...props,
         children: (
           <>

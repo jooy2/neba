@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { glowClasses, trackPointer } from '../../internal/glow.js';
 import { Radio as BaseUIRadio } from '@base-ui/react/radio';
 import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
 import { observeResize } from '../../internal/observe.js';
@@ -200,7 +201,8 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
           ? 'cursor-not-allowed text-(--neba-disabled-fg)'
           : cx(
               'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg)',
-              checkedTextClasses[variant]
+              checkedTextClasses[variant],
+              glowClasses
             ),
         // Inset rather than offset — an offset ring on a segment inside a trough
         // is drawn on top of its neighbours.
@@ -210,6 +212,10 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
         className ?? ''
       )}
       {...props}
+      // After the spread: the two light layers compose the caller's own handler
+      // rather than being written over by it. A segment is pressed, so it takes
+      // both of them, and the slots are the set's — they inherit.
+      onPointerMove={trackPointer(props.onPointerMove, !off)}
     >
       {hasContent(startIcon) ? (
         <span className="flex h-[1lh] shrink-0 items-center">{startIcon}</span>

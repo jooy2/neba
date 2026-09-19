@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
+import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { SpinnerIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
@@ -223,6 +224,9 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
     const disabled = useFieldsetDisabled(disabledProp);
+    // A read-only field is a label that happens to be field-shaped, and a
+    // disabled one has dropped the colour family the light would be drawn in.
+    const lit = !disabled && !readOnly;
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;
@@ -257,7 +261,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         ? disabledClasses[variant]
         : readOnly
           ? readOnlyClasses[variant]
-          : restClasses[variant],
+          : `${restClasses[variant]} ${glowClasses}`,
       disabled ? '' : 'cursor-text',
       classNames?.shell
     );
@@ -290,7 +294,11 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
         )}
-        style={{ ...surfaceSlots(family, elevation), ...style }}
+        style={{
+          ...surfaceSlots(family, elevation),
+          ...(lit ? spotlightSlot : undefined),
+          ...style
+        }}
       >
         {label ? (
           <Field.Label
@@ -307,6 +315,9 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
 
         <span
           className={shellClasses}
+          // The spotlight, and only the spotlight — `spotlightSlot` leaves the
+          // press flash unset on purpose. See `internal/glow.ts`.
+          onPointerMove={trackPointer(undefined, lit)}
           onPointerDown={(event) => {
             // Clicking the shell's own padding should put the caret in the field,
             // the way clicking anywhere inside a native input does. Only when the

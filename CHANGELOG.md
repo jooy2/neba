@@ -42,11 +42,21 @@
 
 ### Changed
 
+- **The pointer light is on every surface it belongs on, rather than on four of them.** A Button, a Toggle and a Pill had it; the field shells, the segments, the tabs, the menu rows and the file drop zone did not, so a form and a menu answered the pointer differently from the button beside them. `internal/glow.ts` is the two lines that tell the layers where the pointer is, and the design language now states where the light goes: on a surface the pointer can act on _as a whole_ — a control, or a field's shell — and never on a row of somebody else's content or on anything an 88px bloom is too big to describe, which is what keeps it off a ListItem, an Accordion header, a tick and a Slider.
+
+  A press takes both layers; something that is merely **entered** takes the spotlight alone — a field the caret goes into, a menu row that is gone before a nine-hundred-millisecond flash is a third of the way out, a tab whose panel is already being read.
+
+  It costs nothing a page will notice: `pointermove` is already coalesced to one per frame, the two properties are written straight to the element so React never re-renders, what changes is where a gradient is centred rather than anything that lays out, only the hovered element paints at all, `@media (hover: hover)` keeps it off a touch screen and `prefers-reduced-motion` drops both layers.
+
 - **Every shared class string in `internal/styles.ts` is folded at build time.** Three of them were `[…].join(' ')`, and a bundler cannot drop a `const` whose value is a call — so `transitionClasses`, `popupFadeClasses` and `chipRemoveClasses` were in the bundle of every component whether it read them or not. Written with `+` they fold and drop, which takes about 0.1 kB gzipped off a single-component bundle. Nothing about the classes themselves changed.
 
 - **The last four focus rings in the library fade in with the rest of them.** A `ColorPicker`'s hex field, a grouped `DataTable`'s fold button, a `Gallery` tile and an `Image` that opens a preview each wrote `[outline:none]` beside the ring they draw — two `outline` declarations of equal specificity, decided by the order Tailwind happened to generate them in, which is the mistake the design notes name. They take the house transition instead, which declares the resting ring the colour travels from and is what takes the browser's own outline off.
 
 ### Fixed
+
+- **A `Pill`'s spotlight follows the pointer.** It carried `neba-glow` and never wrote the two slots the layers read, so the bloom sat in the middle of the lozenge and stayed there.
+
+- **The pointer light is measured from the surface rather than from whatever is under the pointer.** `offsetX` is relative to the event's _target_, so it was the control's own offset only while every descendant was `pointer-events: none` — true of a Button's icons, and false the moment a caller wrapped the label in an element of their own, which put the bloom inside the label instead of on the button.
 
 - **A `PromptInput`'s drop target puts its ready state out when a drag is abandoned.** Escape cancels a drag, and a drop outside the window ends it somewhere the shell never hears about; neither fires a `dragleave` on it, so the shell stayed lit until some later drag happened to balance the count. `internal/drop.ts` is the whole drop zone now — the folder check, the depth count and the document listeners that clear it — and a `FilePicker` reads the same one. Nothing changes for a FilePicker, which already had all three.
 

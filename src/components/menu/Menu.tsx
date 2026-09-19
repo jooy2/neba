@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { glowClasses, spotlightSlot, trackPointer } from '../../internal/glow.js';
 import { Menu as BaseUIMenu } from '@base-ui/react/menu';
 import { useDirection } from '@base-ui/react/direction-provider';
 import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
@@ -291,6 +292,10 @@ function rowClasses(
 ): string {
   return cx(
     'relative flex w-full cursor-pointer items-center select-none',
+    // The spotlight, without the press flash: a row is gone the moment it is
+    // chosen, and an afterglow on an element that has already unmounted is
+    // nine hundred milliseconds of nothing. See `internal/glow.ts`.
+    glowClasses,
     accented ? 'text-(--n-on-tint)' : 'text-(--neba-fg)',
     rowPaddingClasses[density][size],
     rowRadiusClasses[size],
@@ -398,7 +403,7 @@ export function MenuItem({
   // and the slots are re-declared on the row so the tint, the hairline and the
   // text all turn over together rather than one of them staying blue.
   const slots = color ? surfaceSlots(color, 0) : undefined;
-  const rowStyle = slots || style ? { ...slots, ...style } : undefined;
+  const rowStyle = { ...slots, ...spotlightSlot, ...style };
 
   // A disabled destination is drawn as a disabled row rather than a link:
   // Base UI's link row has no `disabled`, and an `<a>` with an `href` still
@@ -416,6 +421,7 @@ export function MenuItem({
         onClick={onClick}
         className={rowClasses(size, density, Boolean(color), className)}
         style={rowStyle}
+        onPointerMove={trackPointer(undefined, true)}
       >
         {body}
       </BaseUIMenu.LinkItem>
@@ -430,6 +436,7 @@ export function MenuItem({
       onClick={onClick}
       className={rowClasses(size, density, Boolean(color), className)}
       style={rowStyle}
+      onPointerMove={trackPointer(undefined, !disabled)}
     >
       {body}
     </BaseUIMenu.Item>
@@ -464,7 +471,8 @@ export function MenuCheckboxItem({
       label={label}
       closeOnClick={closeOnClick}
       className={rowClasses(size, density, Boolean(color), className)}
-      style={slots || style ? { ...slots, ...style } : undefined}
+      style={{ ...slots, ...spotlightSlot, ...style }}
+      onPointerMove={trackPointer(undefined, !disabled)}
     >
       <span className={`${slotClasses} text-(--n-accent)`}>
         <BaseUIMenu.CheckboxItemIndicator className="flex items-center justify-center">
@@ -539,7 +547,8 @@ export function MenuRadioItem({
       label={label}
       closeOnClick={closeOnClick}
       className={rowClasses(size, density, Boolean(color), className)}
-      style={slots || style ? { ...slots, ...style } : undefined}
+      style={{ ...slots, ...spotlightSlot, ...style }}
+      onPointerMove={trackPointer(undefined, !disabled)}
     >
       <span className={`${slotClasses} text-(--n-accent)`}>
         <BaseUIMenu.RadioItemIndicator className="flex items-center justify-center">
@@ -621,7 +630,12 @@ export function MenuSubmenu({
 
   return (
     <BaseUIMenu.SubmenuRoot>
-      <BaseUIMenu.SubmenuTrigger disabled={disabled} className={rowClasses(size, density, false)}>
+      <BaseUIMenu.SubmenuTrigger
+        disabled={disabled}
+        className={rowClasses(size, density, false)}
+        style={spotlightSlot}
+        onPointerMove={trackPointer(undefined, !disabled)}
+      >
         {hasContent(startIcon) ? (
           <span className={`${slotClasses} text-(--neba-muted-fg)`}>{startIcon}</span>
         ) : null}

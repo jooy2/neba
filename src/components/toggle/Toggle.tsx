@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Toggle as BaseUIToggle } from '@base-ui/react/toggle';
 import { ButtonGroupContext } from '../../internal/button-group.js';
+import { trackPointer } from '../../internal/glow.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -251,19 +252,8 @@ export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           )
         }
         style={{ ...controlSlots(color, elevation, variant), ...style }}
-        onPointerMove={(event) => {
-          // Feeds the two light layers in `styles.css`, exactly as Button does —
-          // written straight to the element because this fires at pointer rate,
-          // and only while `neba-glow` is on it to read them.
-          if (!disabled) {
-            const element = event.currentTarget;
-
-            element.style.setProperty('--n-mx', `${event.nativeEvent.offsetX}px`);
-            element.style.setProperty('--n-my', `${event.nativeEvent.offsetY}px`);
-          }
-
-          onPointerMove?.(event);
-        }}
+        // The two light layers, exactly as Button feeds them.
+        onPointerMove={trackPointer(onPointerMove, !disabled)}
         {...props}
       >
         {startIcon}

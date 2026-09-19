@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { glowClasses, spotlightSlot, trackPointer } from '../../internal/glow.js';
 import { Tabs as BaseUITabs } from '@base-ui/react/tabs';
 import {
   controlHeightClasses,
@@ -276,7 +277,7 @@ const tabRestClasses: Record<NebaVariant, string> = {
  * own or the indicator would cover the label it is meant to be under.
  */
 export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
-  { value, startIcon, endIcon, disabled = false, className, children, ...props },
+  { value, startIcon, endIcon, disabled = false, className, style, children, ...props },
   ref
 ) {
   const { variant, size, density, fullWidth } = React.useContext(TabsContext);
@@ -286,6 +287,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
       ref={ref}
       value={value}
       disabled={disabled}
+      style={{ ...(disabled ? undefined : spotlightSlot), ...style }}
       className={cx(
         'relative z-10 inline-flex shrink-0 cursor-pointer items-center justify-center select-none',
         'whitespace-nowrap font-medium',
@@ -302,10 +304,16 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
         // `solid` trough is drawn on top of its neighbours.
         'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
         'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
+        disabled ? '' : glowClasses,
         fullWidth ? 'flex-1' : '',
         className ?? ''
       )}
       {...props}
+      /* After the spread, so the light composes a caller's own handler rather
+         than being written over by it. The spotlight only: a tab that has been
+         chosen is a tab whose panel is already being read, and an afterglow
+         still draining under it is a second thing happening. */
+      onPointerMove={trackPointer(props.onPointerMove, !disabled)}
     >
       {hasContent(startIcon) ? (
         <span className="flex h-[1lh] shrink-0 items-center">{startIcon}</span>

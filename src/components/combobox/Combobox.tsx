@@ -39,6 +39,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
@@ -384,6 +385,9 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
   const disabled = useFieldsetDisabled(disabledProp);
+  // A read-only field is a label that happens to be field-shaped, and a
+  // disabled one has dropped the family the light would be drawn in.
+  const lit = !disabled && !readOnly;
 
   const messages = useMessages(comboboxMessages, locale);
   const actions = useMessages(actionMessages, locale);
@@ -513,7 +517,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
       ? disabledClasses[variant]
       : readOnly
         ? fieldReadOnlyClasses[variant]
-        : fieldRestClasses[variant],
+        : `${fieldRestClasses[variant]} ${glowClasses}`,
     classNames?.shell
   ]
     .filter(Boolean)
@@ -571,7 +575,11 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         fullWidth ? 'flex w-full' : 'inline-flex',
         className ?? ''
       )}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
+      style={{
+        ...surfaceSlots(family, elevation),
+        ...(lit ? spotlightSlot : undefined),
+        ...style
+      }}
       {...props}
     >
       {label ? (
@@ -630,7 +638,11 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         readOnly={readOnly}
         required={required}
       >
-        <BaseUICombobox.InputGroup className={shellClasses}>
+        <BaseUICombobox.InputGroup
+          className={shellClasses}
+          // The spotlight, and only the spotlight — see `internal/glow.ts`.
+          onPointerMove={trackPointer(undefined, lit)}
+        >
           {startIcon ? (
             <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
               {startIcon}

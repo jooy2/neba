@@ -34,6 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
@@ -277,6 +278,9 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
     const disabled = useFieldsetDisabled(disabledProp);
+    // A read-only field is a label that happens to be field-shaped, and a
+    // disabled one has dropped the family the light would be drawn in.
+    const lit = !disabled && !readOnly;
 
     // `Intl` takes more shapes than a message tag does; only a plain string names
     // anything here, and anything else falls back to English.
@@ -327,7 +331,11 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
         )}
-        style={{ ...surfaceSlots(family, elevation), ...style }}
+        style={{
+          ...surfaceSlots(family, elevation),
+          ...(lit ? spotlightSlot : undefined),
+          ...style
+        }}
         {...props}
       >
         {label ? (
@@ -367,6 +375,8 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           required={required}
         >
           <BaseUINumberField.Group
+            // The spotlight, and only the spotlight — see `internal/glow.ts`.
+            onPointerMove={trackPointer(undefined, lit)}
             className={cx(
               shellBaseClasses,
               fieldHeightClasses[size],
@@ -380,7 +390,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
                 ? disabledClasses[variant]
                 : readOnly
                   ? fieldReadOnlyClasses[variant]
-                  : fieldRestClasses[variant],
+                  : `${fieldRestClasses[variant]} ${glowClasses}`,
               disabled ? '' : 'cursor-text',
               classNames?.shell
             )}

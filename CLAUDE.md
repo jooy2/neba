@@ -108,6 +108,7 @@ The governing idea: **a Neba surface is a sheet of cut acrylic, not a moulded pl
 - **Translucency is tuned with the blur radius, not just the alpha.** Too much blur smears the backdrop into flat colour and the surface reads opaque again.
 - **`density` changes padding only** — never height, never type scale. DataTable is the one exception: its default `rowHeight` steps down with `density`, because a table row is not a row of controls that has to keep a baseline.
 - **A field's height is a floor** (`fieldHeightClasses`, `min-h-*`) and everything else's is exact (`controlHeightClasses`, `h-*`). A field holds a caller's own text, which may be set larger than the step; a Button is a flex child of a row a caller arranges, where a minimum height is a control that stretches to its neighbour.
+- **The pointer light goes on a surface the pointer can act on as a whole** — a control, or a field's shell — and never on a row of somebody else's content or on anything an 88px bloom is too big to describe. A press takes both layers; something merely entered takes `spotlightSlot`, which is the spotlight without the release flash. See `internal/glow.ts`.
 - **Don't express state with `opacity`.** Each state gets its own axis (saturation, colour family, flatness).
 
 Implementation rules that are easy to get wrong:
@@ -143,6 +144,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `initials.ts` | The first letters of a name |
 | `drag.ts` | The scaffold around a pointer drag |
 | `drop.ts` | An area that takes dropped files |
+| `glow.ts` | Where the pointer is on a surface lit by it |
 | `wheel.ts` | A wheel turned onto a horizontal strip |
 | `observe.ts` | One `ResizeObserver`, and one `IntersectionObserver` per threshold |
 | `cache.ts` | `memoise`, bounded |
@@ -213,6 +215,18 @@ Three rules there are load-bearing rather than stylistic. A **`null` is a gap an
 **The drag that never comes back.** Escape cancels a drag, and a drop outside the window ends it somewhere the zone will never hear about; neither fires a `dragleave`, so the counter stays up and the box keeps its lit edge until some later drag happens to balance it. `dragend` fires on the source and `drop` on whatever accepted it, so both are listened for at the document, with capture. The PromptInput was written without this one, which is exactly the point.
 
 `useDropZone(accept)` returns `over` and the four handlers, and an `accept` of `undefined` is the zone switched off: no listeners, and `over` never turns true. That is what a disabled or read-only control passes.
+
+#### `internal/glow.ts`
+
+`internal/glow.ts` is the two lines that tell `.neba-glow` where the pointer is, because CSS has no way to ask. It is here now rather than in Button because the number of components that want the light is no longer two, and because the version that was in Button was quietly wrong.
+
+**The rect, rather than `offsetX`.** `offsetX` is measured from the _target_, which is the innermost element under the pointer — so it is the surface's own offset only while every descendant is `pointer-events: none`. That held for a Button's icons, stopped holding the moment a caller wrapped the label in a `<span>`, and never held at all for a field, whose `<input>` is exactly what the pointer is over. One `getBoundingClientRect` per frame, on the one element a pointer can be over, is the price of being right about all of them.
+
+Nothing else costs anything, which is the answer to "can this go everywhere": `pointermove` is already coalesced to one per frame, the two properties are written straight to the element so React never re-renders, what changes is where a gradient is centred rather than anything that lays out, only the hovered element paints at all, `@media (hover: hover)` keeps it off a touch screen entirely, and a reduced-motion preference drops both layers.
+
+The one thing to watch is **whose subtree it is**. A custom property written on an element invalidates the style of everything under it, so the slots go on the surface that paints the light and never on a container holding rows of other things: a Menu lights its own rows, one at a time, and not the popup around them.
+
+`spotlightSlot` is the second half of the rule. A press gets both layers; a surface that is merely _entered_ — a field, a menu row that is gone the moment it is chosen, a tab whose panel is already being read — leaves `--n-flash` unset and lets the afterglow fall back to `transparent`. Which components get which, and which get neither, is in [the design language](docs/ko/design/design-language.md).
 
 #### `internal/wheel.ts`
 

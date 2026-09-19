@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import { useDropZone } from '../../internal/drop.js';
+import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { matchesShortcut } from '../../internal/keys.js';
 import { promptMessages, useMessages, type PromptMessages } from '../../internal/i18n.js';
 import {
@@ -209,6 +210,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
     const disabled = useFieldsetDisabled(disabledProp);
+    const lit = !disabled && !readOnly;
     const messages = useMessages(promptMessages, locale);
     const words = { ...messages, ...labels };
 
@@ -281,7 +283,11 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
           send();
         }}
         className={cx('flex w-full flex-col', className ?? '')}
-        style={{ ...surfaceSlots(color, elevation), ...style }}
+        style={{
+          ...surfaceSlots(color, elevation),
+          ...(lit ? spotlightSlot : undefined),
+          ...style
+        }}
       >
         {hasContent(label) ? (
           <label htmlFor={controlId} className={srOnlyClasses}>
@@ -292,6 +298,8 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
         <div
           data-dropping={dropping || undefined}
           {...handlers}
+          // The spotlight, and only the spotlight — see `internal/glow.ts`.
+          onPointerMove={trackPointer(undefined, lit)}
           onPointerDown={(event) => {
             // Pressing the shell's own padding puts the caret in the field, the
             // way pressing anywhere inside a native input does. A press on the
@@ -315,7 +323,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
               ? disabledClasses[variant]
               : readOnly
                 ? fieldReadOnlyClasses[variant]
-                : fieldRestClasses[variant],
+                : `${fieldRestClasses[variant]} ${glowClasses}`,
             dropping ? '[border-color:var(--n-ring)] bg-(--n-soft)' : '',
             classNames?.shell ?? ''
           )}

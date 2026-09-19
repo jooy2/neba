@@ -265,11 +265,15 @@ The one thing that may travel besides opacity is the surface's own **size**, and
 
 ### The pointer spotlight
 
-`.neba-glow::before` is a soft bloom trailing the cursor. The component writes `--n-mx`/`--n-my` straight to the element's inline style on `pointermove`.
+`.neba-glow::before` is a soft bloom trailing the cursor. `internal/glow.ts` writes `--n-mx`/`--n-my` straight to the element's inline style on `pointermove`.
 
-**Do not hold this in React state.** The event fires at pointer rate, so a `setState` would re-render the tree on every mouse move. The coordinates are read from `offsetX`/`offsetY` rather than `getBoundingClientRect()`, so nothing forces a reflow. Icons carry `pointer-events: none`, so the offsets are always relative to the control.
+**Do not hold this in React state.** The event fires at pointer rate, so a `setState` would re-render the tree on every mouse move. What actually changes is where a gradient is centred, which is a repaint of one box and not a layout; `pointermove` is already coalesced to one per frame; and only the hovered element paints at all. Both layers respect `@media (hover: hover)`, so a touch screen never paints one, and `prefers-reduced-motion`, which drops them entirely.
 
-Both layers respect `@media (hover: hover)` and `prefers-reduced-motion`.
+**Where the light goes is a rule, not a preference.** It is on a surface the pointer can act on _as a whole_ — a control, and a field's shell. It is not on a row of somebody else's content: a ListItem, an Accordion header, a Card are a layout the pointer lands _in_ rather than an object it lands _on_, and washing a caller's own content is not what the light is for. And it is not on anything the gradient is too big to describe — a tick, a slider's thumb, an OTP slot — where an eighty-eight pixel bloom over an eighteen pixel box is a flat wash that says nothing about where the pointer is.
+
+**A press gets both layers; something that is merely entered gets the spotlight alone.** A Button, a Toggle, a Pill and a Segment are pressed and held, so they take the afterglow. A field is entered rather than pressed, a menu row is gone before a nine-hundred-millisecond flash is a third of the way out, and a tab that has been chosen has a panel already being read under it — all three take `spotlightSlot`, which leaves `--n-flash` unset and lets the afterglow fall back to `transparent`.
+
+**Slots go on the surface that paints the light, never on a container of rows.** A custom property written on an element invalidates the style of everything under it, so a Menu lights its own rows, one at a time, and not the popup around them.
 
 ### The focus ring arrives, and on a field it is flush
 

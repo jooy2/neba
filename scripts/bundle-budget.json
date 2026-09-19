@@ -88,13 +88,13 @@
         "Chip",
         "Typography"
       ],
-      "budget": 118.5
+      "budget": 118.7
     },
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 29.9
+      "budget": 30
     },
     {
       "id": "app-12-ko",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 75.5
+      "budget": 75.6
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 286.2
+      "budget": 286.6
     },
     {
       "id": "stylesheet",

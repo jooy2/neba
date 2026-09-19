@@ -25,6 +25,7 @@ import {
   transitionClasses
 } from './styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
+import { spotlightSlot, glowClasses, trackPointer } from './glow.js';
 import { useFieldsetDisabled } from './fieldset.js';
 
 /**
@@ -240,7 +241,11 @@ export function PickerShell({
         fullWidth ? 'flex w-full' : 'inline-flex',
         className
       )}
-      style={{ ...surfaceSlots(family, elevation), ...style }}
+      style={{
+        ...surfaceSlots(family, elevation),
+        ...(inert ? undefined : spotlightSlot),
+        ...style
+      }}
       {...props}
     >
       {label ? (
@@ -259,6 +264,8 @@ export function PickerShell({
 
       <Popover.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
         <span
+          // The spotlight, and only the spotlight — see `internal/glow.ts`.
+          onPointerMove={trackPointer(undefined, !inert)}
           className={cx(
             triggerShellClasses,
             fieldHeightClasses[size],
@@ -272,7 +279,7 @@ export function PickerShell({
               ? disabledClasses[variant]
               : readOnly
                 ? fieldReadOnlyClasses[variant]
-                : fieldRestClasses[variant]
+                : `${fieldRestClasses[variant]} ${glowClasses}`
           )}
         >
           <Popover.Trigger

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useDropZone } from '../../internal/drop.js';
+import { glowClasses, spotlightSlot, trackPointer } from '../../internal/glow.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { fileMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import {
@@ -464,7 +465,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
         : readOnly
           ? `${zoneRestClasses[variant]} ${readOnlyFilterClasses} cursor-default`
           : zoneRestClasses[variant],
-      !inert ? zoneHoverClasses[variant] : '',
+      !inert ? `${zoneHoverClasses[variant]} ${glowClasses}` : '',
       over && !inert ? zoneOverClasses : ''
     );
 
@@ -476,7 +477,11 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
           fullWidth ? 'flex w-full' : 'inline-flex',
           className ?? ''
         )}
-        style={{ ...surfaceSlots(family, elevation), ...style }}
+        style={{
+          ...surfaceSlots(family, elevation),
+          ...(inert ? undefined : spotlightSlot),
+          ...style
+        }}
         {...props}
       >
         {hasContent(label) ? (
@@ -498,6 +503,10 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
         <div className="flex w-full flex-col" {...handlers}>
           <button
             ref={zoneRef}
+            // The spotlight, and only the spotlight: pressing the zone opens a
+            // file dialog, and an afterglow draining behind it is light on a
+            // page nobody is looking at.
+            onPointerMove={trackPointer(undefined, !inert)}
             type="button"
             id={zoneId}
             disabled={disabled}

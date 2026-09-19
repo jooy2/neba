@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { trackPointer } from '../../internal/glow.js';
 import { observeResize } from '../../internal/observe.js';
 import {
   controlSlots,
@@ -348,7 +349,13 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
         className ?? ''
       )}
       style={{ ...controlSlots(color, elevation, variant), ...style }}
+      // The Pill carried `neba-glow` without ever writing the two slots it
+      // reads, so its spotlight sat in the middle of the lozenge and stayed
+      // there.
       {...props}
+      // After the spread: this composes the caller's own handler rather than
+      // being written over by it.
+      onPointerMove={trackPointer(props.onPointerMove, interactive)}
     >
       <div
         className={[
