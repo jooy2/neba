@@ -1500,6 +1500,174 @@ const GROUPS: Group[] = [
     ]
   },
   {
+    title: 'Agent',
+    note: {
+      ko: '에이전트가 무엇을 하고 있는지 보여 주는 것들',
+      en: 'The things that show what an agent is doing'
+    },
+    entries: [
+      {
+        name: 'AgentSteps',
+        summary: {
+          ko: '실행되면서 자라는 단계 사슬',
+          en: 'A chain of steps that grows as it runs'
+        },
+        path: '/components/agent/agent-steps',
+        preview: (
+          <div className="w-full max-w-64">
+            <AgentSteps locale="en-US" size="sm" density="compact" running>
+              <AgentStep title="Read the request" duration={120} />
+              <AgentStep title="Searched the docs" meta="4 hits" />
+            </AgentSteps>
+          </div>
+        )
+      },
+      {
+        name: 'Sources',
+        summary: {
+          ko: '답이 무엇을 근거로 만들어졌는지',
+          en: 'The list of things an answer was built out of'
+        },
+        path: '/components/agent/sources',
+        preview: (
+          <div className="w-full max-w-64">
+            <Sources
+              size="sm"
+              defaultOpen
+              items={[
+                { title: 'The design language', site: 'neba.cdget.com', href: '#gallery-source' },
+                { title: 'Breakpoints', site: 'neba.cdget.com', href: '#gallery-source' }
+              ]}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'InlineCitation',
+        summary: {
+          ko: '본문 속 번호 각주. hover하면 출처가 올라옵니다',
+          en: 'A numbered footnote in the body, with the source a hover away'
+        },
+        path: '/components/agent/inline-citation',
+        preview: (
+          <p className="m-0 w-full max-w-64 text-[0.8125rem]/[1.6]">
+            A control never moves under the pointer
+            <InlineCitation
+              index={1}
+              title="The design language"
+              site="neba.cdget.com"
+              description="A sheet of cut acrylic, not a moulded plastic key."
+            />
+            .
+          </p>
+        )
+      },
+      {
+        name: 'StreamingText',
+        summary: {
+          ko: '바깥에서 한 조각씩 도착하는 텍스트',
+          en: 'Text arriving from somewhere else, a piece at a time'
+        },
+        path: '/components/agent/streaming-text',
+        preview: (
+          <div className="w-full max-w-64 text-[0.8125rem]/[1.6]">
+            <StreamingText streaming lines={2}>
+              A sheet of cut acrylic, not a moulded
+            </StreamingText>
+          </div>
+        )
+      },
+      {
+        name: 'ToolCall',
+        summary: {
+          ko: '도구 호출 하나. 무엇을 불렀고 무엇이 돌아왔는지',
+          en: 'One tool invocation: what was called and what came back'
+        },
+        path: '/components/agent/tool-call',
+        preview: (
+          <div className="flex w-full max-w-64 flex-col gap-2">
+            <ToolCall
+              size="sm"
+              name="search_docs"
+              status="success"
+              duration={412}
+              result="4 hits"
+            />
+            <ToolCall size="sm" name="read_file" status="running" />
+          </div>
+        )
+      },
+      {
+        name: 'ContextWindow',
+        summary: {
+          ko: '컨텍스트 창을 얼마나 썼고 무엇으로 채웠는지',
+          en: 'How much of the context window has gone, and what went into it'
+        },
+        path: '/components/agent/context-window',
+        preview: (
+          <div className="w-full max-w-64">
+            <ContextWindow
+              locale="en-US"
+              size="sm"
+              max={200_000}
+              tokens={{ input: 94_200, output: 12_400 }}
+              cost={0.42}
+            />
+          </div>
+        )
+      },
+      {
+        name: 'PromptInput',
+        summary: {
+          ko: '프롬프트가 나가는 길 전부',
+          en: 'Everything a prompt goes out through'
+        },
+        path: '/components/agent/prompt-input',
+        preview: (
+          <div className="w-full max-w-64">
+            <PromptInput size="sm" label="Message" placeholder="Ask anything…" maxRows={3} />
+          </div>
+        )
+      },
+      {
+        name: 'Reasoning',
+        summary: {
+          ko: '스트림이 열고 닫는 사고 패널',
+          en: 'A thinking panel the stream opens and closes'
+        },
+        path: '/components/agent/reasoning',
+        preview: (
+          <div className="w-full max-w-64">
+            <Reasoning locale="en-US" size="sm" duration={4200} defaultOpen>
+              Two options, and the second one costs a media query per slot.
+            </Reasoning>
+          </div>
+        )
+      },
+      {
+        name: 'Approval',
+        summary: {
+          ko: '에이전트가 권한을 묻고, 답을 그대로 남깁니다',
+          en: 'The agent asking permission, and the record of the answer'
+        },
+        path: '/components/agent/approval',
+        preview: (
+          <div className="w-full max-w-64">
+            <Approval
+              size="sm"
+              risk="high"
+              title="Delete a branch?"
+              options={[
+                { value: 'allow', label: 'Allow' },
+                { value: 'deny', label: 'Deny', color: 'danger' }
+              ]}
+            />
+          </div>
+        )
+      }
+    ]
+  },
+  {
     title: 'Display',
     note: {
       ko: '데이터를 읽히는 형태로 내놓는 것들',
@@ -2408,174 +2576,6 @@ const GROUPS: Group[] = [
           <div className="flex flex-col items-center gap-4">
             <ProgressBox size="lg" />
             <ProgressBox size="lg" value={62} color="info" />
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: 'Agent',
-    note: {
-      ko: '에이전트가 무엇을 하고 있는지 보여 주는 것들',
-      en: 'The things that show what an agent is doing'
-    },
-    entries: [
-      {
-        name: 'AgentSteps',
-        summary: {
-          ko: '실행되면서 자라는 단계 사슬',
-          en: 'A chain of steps that grows as it runs'
-        },
-        path: '/components/agent/agent-steps',
-        preview: (
-          <div className="w-full max-w-64">
-            <AgentSteps locale="en-US" size="sm" density="compact" running>
-              <AgentStep title="Read the request" duration={120} />
-              <AgentStep title="Searched the docs" meta="4 hits" />
-            </AgentSteps>
-          </div>
-        )
-      },
-      {
-        name: 'Sources',
-        summary: {
-          ko: '답이 무엇을 근거로 만들어졌는지',
-          en: 'The list of things an answer was built out of'
-        },
-        path: '/components/agent/sources',
-        preview: (
-          <div className="w-full max-w-64">
-            <Sources
-              size="sm"
-              defaultOpen
-              items={[
-                { title: 'The design language', site: 'neba.cdget.com', href: '#gallery-source' },
-                { title: 'Breakpoints', site: 'neba.cdget.com', href: '#gallery-source' }
-              ]}
-            />
-          </div>
-        )
-      },
-      {
-        name: 'InlineCitation',
-        summary: {
-          ko: '본문 속 번호 각주. hover하면 출처가 올라옵니다',
-          en: 'A numbered footnote in the body, with the source a hover away'
-        },
-        path: '/components/agent/inline-citation',
-        preview: (
-          <p className="m-0 w-full max-w-64 text-[0.8125rem]/[1.6]">
-            A control never moves under the pointer
-            <InlineCitation
-              index={1}
-              title="The design language"
-              site="neba.cdget.com"
-              description="A sheet of cut acrylic, not a moulded plastic key."
-            />
-            .
-          </p>
-        )
-      },
-      {
-        name: 'StreamingText',
-        summary: {
-          ko: '바깥에서 한 조각씩 도착하는 텍스트',
-          en: 'Text arriving from somewhere else, a piece at a time'
-        },
-        path: '/components/agent/streaming-text',
-        preview: (
-          <div className="w-full max-w-64 text-[0.8125rem]/[1.6]">
-            <StreamingText streaming lines={2}>
-              A sheet of cut acrylic, not a moulded
-            </StreamingText>
-          </div>
-        )
-      },
-      {
-        name: 'ToolCall',
-        summary: {
-          ko: '도구 호출 하나. 무엇을 불렀고 무엇이 돌아왔는지',
-          en: 'One tool invocation: what was called and what came back'
-        },
-        path: '/components/agent/tool-call',
-        preview: (
-          <div className="flex w-full max-w-64 flex-col gap-2">
-            <ToolCall
-              size="sm"
-              name="search_docs"
-              status="success"
-              duration={412}
-              result="4 hits"
-            />
-            <ToolCall size="sm" name="read_file" status="running" />
-          </div>
-        )
-      },
-      {
-        name: 'ContextWindow',
-        summary: {
-          ko: '컨텍스트 창을 얼마나 썼고 무엇으로 채웠는지',
-          en: 'How much of the context window has gone, and what went into it'
-        },
-        path: '/components/agent/context-window',
-        preview: (
-          <div className="w-full max-w-64">
-            <ContextWindow
-              locale="en-US"
-              size="sm"
-              max={200_000}
-              tokens={{ input: 94_200, output: 12_400 }}
-              cost={0.42}
-            />
-          </div>
-        )
-      },
-      {
-        name: 'PromptInput',
-        summary: {
-          ko: '프롬프트가 나가는 길 전부',
-          en: 'Everything a prompt goes out through'
-        },
-        path: '/components/agent/prompt-input',
-        preview: (
-          <div className="w-full max-w-64">
-            <PromptInput size="sm" label="Message" placeholder="Ask anything…" maxRows={3} />
-          </div>
-        )
-      },
-      {
-        name: 'Reasoning',
-        summary: {
-          ko: '스트림이 열고 닫는 사고 패널',
-          en: 'A thinking panel the stream opens and closes'
-        },
-        path: '/components/agent/reasoning',
-        preview: (
-          <div className="w-full max-w-64">
-            <Reasoning locale="en-US" size="sm" duration={4200} defaultOpen>
-              Two options, and the second one costs a media query per slot.
-            </Reasoning>
-          </div>
-        )
-      },
-      {
-        name: 'Approval',
-        summary: {
-          ko: '에이전트가 권한을 묻고, 답을 그대로 남깁니다',
-          en: 'The agent asking permission, and the record of the answer'
-        },
-        path: '/components/agent/approval',
-        preview: (
-          <div className="w-full max-w-64">
-            <Approval
-              size="sm"
-              risk="high"
-              title="Delete a branch?"
-              options={[
-                { value: 'allow', label: 'Allow' },
-                { value: 'deny', label: 'Deny', color: 'danger' }
-              ]}
-            />
           </div>
         )
       }

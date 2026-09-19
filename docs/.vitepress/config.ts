@@ -619,10 +619,31 @@ function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string
     }
     groups.sort(byText);
 
-    const charts = groups.findIndex(startsWith('components/charts/'));
+    /*
+     * Two groups are placed rather than sorted, and for the same reason: each
+     * is a set a reader either came for or has no use for at all. Left to the
+     * alphabet, `agent` would open the list and `charts` would sit in the
+     * middle of it, and in both cases somebody looking for a Button scrolls
+     * past a group that is not about buttons to get to one that is.
+     *
+     * `agent` goes under `surfaces`, which is the last of the groups that say
+     * what a component *is*; `charts` goes last. The order below matters —
+     * moving `agent` first leaves `charts` where the second step expects it.
+     */
+    for (const [name, after] of [
+      ['components/agent/', 'components/surfaces/'],
+      ['components/charts/', null]
+    ] as const) {
+      const at = groups.findIndex(startsWith(name));
 
-    if (charts >= 0) {
-      groups.push(...groups.splice(charts, 1));
+      if (at < 0) {
+        continue;
+      }
+
+      const [group] = groups.splice(at, 1);
+      const before = after === null ? -1 : groups.findIndex(startsWith(after));
+
+      groups.splice(before < 0 ? groups.length : before + 1, 0, group);
     }
 
     const overview = components.link
