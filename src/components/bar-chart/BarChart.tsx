@@ -161,6 +161,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
     valuePx,
     categoryPx,
     zeroPx,
+    zeroPxOf,
     format
   } = context;
 
@@ -213,8 +214,11 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                   : (negative[category] ?? 0)
                 : 0;
 
-              const from = valuePx(base);
-              const to = valuePx(base + value.value);
+              // With the index, so a bar on the far edge's scale is measured
+              // against that one. `stacked` and a second axis never both apply,
+              // so `base` is zero wherever `index` changes the answer.
+              const from = base === 0 ? zeroPxOf(index) : valuePx(base, index);
+              const to = valuePx(base + value.value, index);
 
               if (stacked) {
                 if (value.value >= 0) {

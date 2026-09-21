@@ -278,6 +278,26 @@ export interface CartesianChartProps extends ChartBaseProps {
   /** The value axis. */
   yAxis?: NebaChartAxis;
   /**
+   * A second value axis, drawn on the far edge, for the series that carry
+   * `axis: 'secondary'`.
+   *
+   * For the series whose units are not the others' — revenue beside a
+   * conversion rate. Passing this is what turns the split on; without it every
+   * series is measured on `yAxis` whatever it says.
+   *
+   * **Not read on a stacked chart.** A stack is a total, and a total across
+   * two units is not a number, so `stacked` puts everything back on one scale.
+   *
+   * The axis' own `tickFormat` writes its series' numbers everywhere they
+   * appear — the ticks, the tooltip and the table — because the alternative is
+   * a percentage printed as currency in the one place both series meet.
+   *
+   * Worth reaching for rarely. Two scales on one plot let a caller make any
+   * two series look like they move together by choosing the ranges, and the
+   * reader cannot see that it was done.
+   */
+  secondaryAxis?: NebaChartAxis;
+  /**
    * Lines and bands drawn across the plot at values the data has none of — a
    * target, an SLA, a budget, the window a forecast covers.
    *
@@ -807,6 +827,8 @@ interface DataTableProps {
   series: readonly NebaChartSeries[];
   values: readonly ChartValue[][];
   format: (value: number) => string;
+  /** One per series, on a chart whose two axes write their numbers differently. */
+  formatFor?: (series: number) => (value: number) => string;
   locale?: string;
 }
 
@@ -838,6 +860,7 @@ const ChartDataTable = React.memo(function ChartDataTable({
   series,
   values,
   format,
+  formatFor,
   locale
 }: DataTableProps) {
   return (
@@ -869,7 +892,9 @@ const ChartDataTable = React.memo(function ChartDataTable({
 
               return (
                 <td key={one.name ?? seriesIndex}>
-                  {datum?.value === null || datum?.value === undefined ? '' : format(datum.value)}
+                  {datum?.value === null || datum?.value === undefined
+                    ? ''
+                    : (formatFor?.(seriesIndex) ?? format)(datum.value)}
                 </td>
               );
             })}
@@ -1136,15 +1161,33 @@ export interface CartesianLayout {
   /** And what colour each one is, by its original index. */
   colors: readonly string[];
   scale: ValueScale;
+  /**
+   * The scale on the far edge, when the chart was given a `secondaryAxis` and
+   * a series asked for it. `null` on every chart with one value scale.
+   *
+   * A mark builder does not read it: it says which series a number belongs to
+   * when it calls `valuePx` or `point`, and the frame picks the scale. This is
+   * here for the chrome that has to know both exist.
+   */
+  secondScale: ValueScale | null;
+  /** Whether a series' numbers are measured on that far edge. */
+  onSecond: (series: number) => boolean;
   band: BandScale;
   /** Bars run along the category axis rather than across it. */
   horizontal: boolean;
-  /** Where a value sits along the value axis, in pixels from the chart's edge. */
-  valuePx: (value: number) => number;
+  /**
+   * Where a value sits along the value axis, in pixels from the chart's edge.
+   *
+   * `series` is its place in the array as it was passed, and it is what tells
+   * the frame which of two scales to read it against. Leaving it out measures
+   * against the first one, which is the right answer on the charts that have
+   * only that.
+   */
+  valuePx: (value: number, series?: number) => number;
   /** Where a category's centre sits along the category axis. */
   categoryPx: (index: number) => number;
   /** The two combined, whichever way round the chart runs. */
-  point: (index: number, value: number) => { x: number; y: number };
+  point: (index: number, value: number, series?: number) => { x: number; y: number };
   /**
    * The scale the *category* axis runs on, when `xScale` made it a second value
    * axis. `null` on every chart whose categories are columns.
@@ -1156,8 +1199,10 @@ export interface CartesianLayout {
    * `categoryPx`'s offset-along-the-axis. Only meaningful with `xScale="value"`.
    */
   categoryValuePx: (value: number) => number;
-  /** Where the baseline is along the value axis. */
+  /** Where the baseline is along the value axis — the first one's. */
   zeroPx: number;
+  /** And a given series' own, which differs once there are two scales. */
+  zeroPxOf: (series?: number) => number;
   categories: readonly NebaChartCategory[];
   format: (value: number) => string;
   size: NebaSize;
@@ -1278,6 +1323,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     categories,
     xAxis,
     yAxis,
+    secondaryAxis,
     references,
     horizontal = false,
     stacked = false,
@@ -1364,13 +1410,35 @@ export function CartesianChart(rawProps: CartesianProps) {
     [count, categories, values]
   );
 
+  /* How a given series' numbers are written, everywhere they appear.
+
+     The far edge's `tickFormat` writes its series' values in the tooltip and
+     the table as well as on its own ticks, because the alternative is a
+     percentage printed with the other axis' pound sign in the one place the
+     two series meet. An axis that says nothing falls back to the chart's own
+     `format`, which is what every chart with one scale has always used. */
+
+  /* Which series are measured on the far edge.
+
+     A `secondaryAxis` is what turns the split on — a series that asks for it
+     on a chart that was given no second axis is measured on the first one, so
+     the prop is never half-applied. Off entirely while stacking, because a
+     stack is a total and a total across two units is not a number. */
+  const twoAxes = Boolean(secondaryAxis) && !stacked && !stackedFull;
+  const onSecond = React.useCallback(
+    (index: number) => twoAxes && series[index]?.axis === 'secondary',
+    [twoAxes, series]
+  );
+
   const shownValues = values.filter((_, index) => visibility.visible[index]);
+  const primaryValues = values.filter((_, index) => visibility.visible[index] && !onSecond(index));
+  const secondValues = values.filter((_, index) => visibility.visible[index] && onSecond(index));
   /* The scale takes the references in. A target drawn off the top of the plot
      is a target nobody can see, and moving every mark down a little to make
      room for it is the cheaper of the two costs. Only the ones read against
      the value axis: a rule that says *when* belongs to the other one. */
   const extent = React.useMemo(() => {
-    const measured = extentOf(shownValues, stacked);
+    const measured = extentOf(primaryValues, stacked);
     const marks = (references ?? []).filter((one) => (one.axis ?? 'value') === 'value');
 
     if (marks.length === 0) {
@@ -1385,7 +1453,13 @@ export function CartesianChart(rawProps: CartesianProps) {
       min: Math.min(measured?.min ?? Infinity, ...numbers),
       max: Math.max(measured?.max ?? -Infinity, ...numbers)
     };
-  }, [shownValues, stacked, references]);
+  }, [primaryValues, stacked, references]);
+  /* And the far edge's own, which never stacks — `twoAxes` is already off
+     wherever `stacked` is on. */
+  const secondExtent = React.useMemo(
+    () => (twoAxes ? extentOf(secondValues, false) : null),
+    [twoAxes, secondValues]
+  );
   // Worked out here, beside the extent, rather than where it is drawn: read
   // after the scales are memoised, the call would count as a possible change to
   // `shownValues` and cost the compiler every memo below.
@@ -1421,6 +1495,21 @@ export function CartesianChart(rawProps: CartesianProps) {
       tickCount: valueAxis?.tickCount,
       includeZero
     });
+
+  /* The far edge's scale, rounded the same way and off its own extent — which
+     is the whole point of the prop: a rate between 2% and 4% and a revenue in
+     the millions cannot share one. The ticks are asked to land at the same
+     *count* as the first axis', so the two grids are one grid rather than two
+     sets of lines crossing each other. */
+  const secondScale =
+    secondExtent === null
+      ? null
+      : valueScale(secondExtent, {
+          min: secondaryAxis?.min,
+          max: secondaryAxis?.max,
+          tickCount: secondaryAxis?.tickCount ?? scale.ticks.length,
+          includeZero
+        });
 
   /* And a second one of the same kind when the categories are numbers rather
      than columns. Zero is deliberately not forced in: what a position along an
@@ -1471,7 +1560,27 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
 
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
+
+  /* The far edge's ticks, written through its own `tickFormat` — which is the
+     whole reason it has one: a percentage printed with the other axis' pound
+     sign is the mistake a second axis exists to avoid. */
+  const secondTickTexts = (secondScale?.ticks ?? []).map((tick, index) =>
+    secondaryAxis?.tickFormat ? String(secondaryAxis.tickFormat(tick, index)) : formatValue(tick)
+  );
+  const widestSecondTick = secondTickTexts.reduce(
+    (most, text) => Math.max(most, textWidth(text, fontSize)),
+    0
+  );
   const axisLabelBand = fontSize + 6;
+
+  /* And the band it takes out of the box: on the right of a vertical chart,
+     along the top of one turned on its side. */
+  const secondBand =
+    secondScale && !secondaryAxis?.hidden
+      ? (secondaryAxis?.thickness ??
+        (horizontal ? fontSize + 12 : widestSecondTick + 10) +
+          (secondaryAxis?.label ? axisLabelBand : 0))
+      : 0;
 
   /* An axis name is written where its axis is: the one along the bottom under
      its ticks, and the one along the left above the plot, since a name turned on
@@ -1570,7 +1679,10 @@ export function CartesianChart(rawProps: CartesianProps) {
           turn.angle > 0
           ? turn.overhang(widestCategory) + 8
           : 8
-        : Math.max(8, categoryTexts.length ? turn.overhang(widestCategory) : 8)) + markInset;
+        : Math.max(8, categoryTexts.length ? turn.overhang(widestCategory) : 8)) +
+    markInset +
+    // And the far edge's own band, which is on the right of a vertical chart.
+    (horizontal ? 0 : secondBand);
   // A mark is drawn from its centre, so half of the widest one hangs over the
   // top of the plot. On a scatter that half is a whole bubble, which is what
   // `markInset` is reserving on the other three sides.
@@ -1583,7 +1695,9 @@ export function CartesianChart(rawProps: CartesianProps) {
     headroom +
     markInset +
     (namesLeftAxis ? axisLabelBand + 2 : 0) +
-    (exportable ? 20 : 0);
+    (exportable ? 20 : 0) +
+    // A chart turned on its side draws its second value axis along the top.
+    (horizontal ? secondBand : 0);
 
   const boxHeight = plotHeight;
   const plot: PlotBox = {
@@ -1611,19 +1725,25 @@ export function CartesianChart(rawProps: CartesianProps) {
     [inset, count, categoryLength, band]
   );
 
+  /* `series` is the one thing a mark builder has to hand over: with two scales
+     on the plot, where a number sits is no longer a property of the number. It
+     is optional because most charts have one scale and nothing to say. */
   const valuePx = React.useCallback(
-    (value: number) =>
-      horizontal
-        ? plot.left + scale.fraction(value) * plot.width
-        : plot.top + (1 - scale.fraction(value)) * plot.height,
-    [horizontal, plot.left, plot.top, plot.width, plot.height, scale]
+    (value: number, index?: number) =>
+      ((on: ValueScale) =>
+        horizontal
+          ? plot.left + on.fraction(value) * plot.width
+          : plot.top + (1 - on.fraction(value)) * plot.height)(
+        index !== undefined && onSecond(index) && secondScale ? secondScale : scale
+      ),
+    [horizontal, plot.left, plot.top, plot.width, plot.height, scale, secondScale, onSecond]
   );
 
   const point = React.useCallback(
-    (index: number, value: number) =>
+    (index: number, value: number, series?: number) =>
       horizontal
-        ? { x: valuePx(value), y: plot.top + categoryPx(index) }
-        : { x: plot.left + categoryPx(index), y: valuePx(value) },
+        ? { x: valuePx(value, series), y: plot.top + categoryPx(index) }
+        : { x: plot.left + categoryPx(index), y: valuePx(value, series) },
     [horizontal, valuePx, categoryPx, plot.left, plot.top]
   );
 
@@ -1635,7 +1755,28 @@ export function CartesianChart(rawProps: CartesianProps) {
     [horizontal, plot.left, plot.top, plot.width, plot.height, categoryScale]
   );
 
-  const zeroPx = valuePx(Math.min(Math.max(0, scale.min), scale.max));
+  /* Where a series' own baseline is. Clamped into its scale, because a scale
+     that does not contain zero has no zero to draw from and the bar would grow
+     out of the plot. One per scale, since the far edge's zero is not the first
+     one's — and `zeroPx` stays the first axis' number, which is what the one
+     baseline a chart draws is measured from. */
+  const zeroPxOf = React.useCallback(
+    (index?: number) => {
+      const on = index !== undefined && onSecond(index) && secondScale ? secondScale : scale;
+
+      return valuePx(Math.min(Math.max(0, on.min), on.max), index);
+    },
+    [valuePx, scale, secondScale, onSecond]
+  );
+  const zeroPx = zeroPxOf();
+
+  const formatFor = React.useCallback(
+    (index: number) =>
+      onSecond(index) && secondaryAxis?.tickFormat
+        ? (value: number) => String(secondaryAxis.tickFormat!(value, 0))
+        : formatValue,
+    [onSecond, secondaryAxis, formatValue]
+  );
 
   const layout: CartesianLayout = {
     plot,
@@ -1643,6 +1784,8 @@ export function CartesianChart(rawProps: CartesianProps) {
     visible: visibility.visible,
     colors,
     scale,
+    secondScale,
+    onSecond,
     band,
     horizontal,
     valuePx,
@@ -1651,6 +1794,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     categoryScale,
     categoryValuePx,
     zeroPx,
+    zeroPxOf,
     categories: labels,
     format: formatValue,
     size
@@ -1900,7 +2044,7 @@ export function CartesianChart(rawProps: CartesianProps) {
               name: one.name,
               color: value.color ?? colors[index],
               value: value.value,
-              formatted: formatValue(value.value),
+              formatted: formatFor(index)(value.value),
               label: value.label
             }
           ];
@@ -2004,7 +2148,9 @@ export function CartesianChart(rawProps: CartesianProps) {
                 ? series.map((_, index) => {
                     const value = values[index]?.[activeIndex]?.value;
 
-                    return value === null || value === undefined ? undefined : formatValue(value);
+                    return value === null || value === undefined
+                      ? undefined
+                      : formatFor(index)(value);
                   })
                 : undefined
             }
@@ -2023,6 +2169,7 @@ export function CartesianChart(rawProps: CartesianProps) {
                 series={series}
                 values={values}
                 format={formatValue}
+                formatFor={twoAxes ? formatFor : undefined}
                 locale={locale}
               />
             )}
@@ -2122,6 +2269,9 @@ export function CartesianChart(rawProps: CartesianProps) {
               categoryValuePx={categoryValuePx}
               valueAxis={valueAxis}
               categoryAxis={categoryAxis}
+              secondScale={secondScale}
+              secondTickTexts={secondTickTexts}
+              secondaryAxis={secondaryAxis}
               fontSize={fontSize}
               turn={turn}
               labelDepth={labelDepth}
@@ -2252,6 +2402,10 @@ interface AxesProps {
   categoryValuePx: (value: number) => number;
   valueAxis?: NebaChartAxis;
   categoryAxis?: NebaChartAxis;
+  /** The far edge's scale and its ticks, on a chart that has a second one. */
+  secondScale: ValueScale | null;
+  secondTickTexts: readonly string[];
+  secondaryAxis?: NebaChartAxis;
   fontSize: number;
   /** What the category labels measure once turned. An `angle` of 0 is flat. */
   turn: TurnedAxis;
@@ -2282,6 +2436,9 @@ function ChartAxes({
   categoryValuePx,
   valueAxis,
   categoryAxis,
+  secondScale,
+  secondTickTexts,
+  secondaryAxis,
   fontSize,
   turn,
   labelDepth,
@@ -2527,6 +2684,68 @@ function ChartAxes({
           })}
         </>
       )}
+
+      {/* The second value axis, on the far edge from the first: the right of a
+          vertical chart, the top of one turned on its side.
+
+          It casts no gridlines of its own, and that is the decision rather
+          than an omission — two grids on one plot is graph paper drawn twice,
+          and the reader has no way to tell which set of lines a mark should be
+          measured against. Its ticks are asked to land at the same count as
+          the first axis', so the rules already there serve both. */}
+      {secondScale && !secondaryAxis?.hidden
+        ? secondScale.ticks.map((tick, index) => {
+            const along = horizontal
+              ? plot.left + secondScale.fraction(tick) * plot.width
+              : plot.top + (1 - secondScale.fraction(tick)) * plot.height;
+
+            if (!showsTick(index, secondScale.ticks.length, valueStride, lastValue)) {
+              return null;
+            }
+
+            return horizontal ? (
+              <text
+                key={tick}
+                x={along}
+                y={plot.top - 8}
+                textAnchor={
+                  index === 0 ? 'start' : index === secondScale.ticks.length - 1 ? 'end' : 'middle'
+                }
+                fontSize={fontSize}
+                fill="var(--neba-muted-fg)"
+                className="tabular-nums"
+              >
+                {secondTickTexts[index]}
+              </text>
+            ) : (
+              <text
+                key={tick}
+                x={plot.left + plot.width + 8}
+                y={along}
+                textAnchor="start"
+                dominantBaseline="central"
+                fontSize={fontSize}
+                fill="var(--neba-muted-fg)"
+                className="tabular-nums"
+              >
+                {secondTickTexts[index]}
+              </text>
+            );
+          })
+        : null}
+
+      {secondScale && secondaryAxis?.label && !secondaryAxis.hidden ? (
+        <text
+          x={plot.left + plot.width}
+          y={fontSize + 2}
+          textAnchor="end"
+          fontSize={fontSize}
+          fill="var(--neba-muted-fg)"
+          fontWeight={500}
+        >
+          {secondaryAxis.label}
+        </text>
+      ) : null}
 
       {/* The axis names, in the bands the frame reserved for them: the left
           axis' along the top of the box, starting where the plot does, and the

@@ -67,6 +67,10 @@ interface NebaChartPoint {
 
 Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `variant` defaults to `text` and `padded` to `false`, so a chart dropped into a [Card](../surfaces/card) draws no sheet of its own; `variant="outline"` gives it one. See [prop conventions](../../design/prop-conventions) for the shared axes.
 
+### NebaChartSeries
+
+<PropsTable name="NebaChartSeries" />
+
 ### NebaChartAxis
 
 `xAxis` and `yAxis` both take this shape.
@@ -138,6 +142,24 @@ What the line does where a value is missing.
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### secondaryAxis
+
+A second value axis, drawn on the far edge — the right of a vertical chart, the top of one turned on its side. The series that carry `axis: 'secondary'` are measured against it; passing `secondaryAxis` is what turns the split on, so a series asking for it on a chart with one axis is measured on that one rather than half-applied.
+
+Its `tickFormat` writes its series' numbers **everywhere they appear** — the ticks, the tooltip and the table — because the alternative is a percentage printed with the other axis' currency in the one place both series meet.
+
+It casts no gridlines of its own: two grids on one plot is graph paper drawn twice and the reader has no way to tell which set a mark should be measured against, so its ticks are asked to land at the same count as the first axis' and the rules already there serve both.
+
+**Not read on a stacked chart.** A stack is a total, and a total across two units is not a number.
+
+Reach for it rarely. Two scales let a caller make any two series look like they move together by choosing the ranges, and the reader cannot see that it was done — which is why the second axis is drawn and labelled rather than merely implied.
+
+<Demo src="line-chart/two-axes">
+
+<<< @/.vitepress/demos/line-chart/two-axes.tsx
 
 </Demo>
 

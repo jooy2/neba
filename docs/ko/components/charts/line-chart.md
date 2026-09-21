@@ -67,6 +67,10 @@ interface NebaChartPoint {
 
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `variant`의 기본값은 `text`, `padded`는 `false`이므로 [Card](../surfaces/card) 안에 넣어도 표면이 겹치지 않습니다. 자체 표면이 필요하면 `variant="outline"`을 쓰세요. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
 
+### NebaChartSeries
+
+<PropsTable name="NebaChartSeries" />
+
 ### NebaChartAxis
 
 `xAxis`와 `yAxis`가 모두 이 형태를 받습니다.
@@ -138,6 +142,24 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### secondaryAxis
+
+먼 쪽 가장자리에 그리는 두 번째 값 축입니다. 세로 차트에서는 오른쪽, 옆으로 눕힌 차트에서는 위쪽입니다. `axis: 'secondary'`를 단 series가 이 축으로 측정됩니다. 분리를 켜는 것은 `secondaryAxis`를 주는 일이므로, 축이 하나인 차트에서 `axis`만 단 series는 반쯤 적용되는 대신 그냥 첫 축으로 측정됩니다.
+
+이 축의 `tickFormat`은 **숫자가 나타나는 모든 곳**에서 이 축 series의 값을 씁니다. 눈금, tooltip, 표 전부입니다. 그러지 않으면 두 series가 만나는 유일한 자리에서 백분율이 다른 축의 통화 기호를 달고 나옵니다.
+
+격자선은 따로 긋지 않습니다. plot 하나에 격자가 둘이면 모눈종이를 두 번 그린 것이고, 마크를 어느 쪽으로 재야 하는지 읽는 사람이 알 길이 없습니다. 그래서 눈금 개수를 첫 축과 같게 맞추고, 이미 그어진 선을 둘이 함께 씁니다.
+
+**stacked 차트에서는 읽지 않습니다.** 쌓아 올린 것은 합계이고, 단위가 둘인 합계는 숫자가 아닙니다.
+
+드물게 쓰세요. 눈금이 둘이면 범위를 어떻게 잡느냐에 따라 어떤 두 series든 같이 움직이는 것처럼 보이게 만들 수 있고, 읽는 사람은 그렇게 했다는 것을 알 수 없습니다. 두 번째 축을 암시하지 않고 굳이 그려서 이름까지 붙이는 이유가 그것입니다.
+
+<Demo src="line-chart/two-axes">
+
+<<< @/.vitepress/demos/line-chart/two-axes.tsx
 
 </Demo>
 

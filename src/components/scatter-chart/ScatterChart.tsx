@@ -177,7 +177,9 @@ export function ScatterChart(rawProps: ScatterChartProps) {
             series: index,
             index: at,
             x: layout.categoryValuePx(x),
-            y: layout.valuePx(value.value),
+            // With its series, so a series on the far edge's scale is placed
+            // against that one.
+            y: layout.valuePx(value.value, index),
             r: value.z === undefined ? dot : bubbleRadius(value.z, biggest, reserve, minBubble)
           });
         });

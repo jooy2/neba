@@ -755,6 +755,149 @@ describe('LineChart', () => {
     });
   });
 
+  describe('a second value axis', () => {
+    const REVENUE = [1000, 1200, 1400, 1600];
+    const RATE = [2, 3, 2.5, 4];
+
+    it('measures a secondary series against its own scale', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      // The far edge's ticks are written through its own tickFormat.
+      expect(written.some((text) => text?.endsWith('%'))).toBe(true);
+
+      // And the two lines fill the plot rather than one of them lying flat on
+      // the floor, which is what one shared scale would have done.
+      const [revenue, rate] = [...plot.element().querySelectorAll('path[stroke]')].map((node) => {
+        const ys = [
+          ...(node.getAttribute('d') ?? '').matchAll(/[ ,](\d+(?:\.\d+)?)(?=[ A-Z]|$)/g)
+        ].map((match) => Number(match[1]));
+
+        return Math.max(...ys) - Math.min(...ys);
+      });
+
+      expect(revenue).toBeGreaterThan(20);
+      expect(rate).toBeGreaterThan(20);
+    });
+
+    it('writes a secondary series through its axis in the tooltip and the table', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions by month"
+          categories={MONTHS}
+          format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Sessions by month' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const cells = [...table.element().querySelectorAll('td')].map((cell) => cell.textContent);
+
+      expect(cells).toContain('$1,000');
+      expect(cells).toContain('2%');
+    });
+
+    // The prop is what turns the split on, so a series asking for an axis the
+    // chart has not got is measured on the one it has rather than half-applied.
+    it('ignores the series flag when no second axis was given', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions by month"
+          categories={MONTHS}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions by month' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      // Two values between 2 and 4 drawn on a scale that runs to sixteen
+      // hundred are a flat line along the floor, which is the whole reason the
+      // second axis exists — and what has to still happen without it.
+      const spread = (node: Element) => {
+        const ys = [
+          ...(node.getAttribute('d') ?? '').matchAll(/[ ,](\d+(?:\.\d+)?)(?=[ A-Z]|$)/g)
+        ].map((match) => Number(match[1]));
+
+        return Math.max(...ys) - Math.min(...ys);
+      };
+
+      const paths = [...plot.element().querySelectorAll('path[stroke]')];
+
+      expect(spread(paths[1])).toBeLessThan(5);
+    });
+
+    // A stack is a total, and a total across two units is not a number.
+    it('puts everything back on one scale when the chart stacks', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          stacked
+          secondaryAxis={{ label: 'Rate' }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).not.toContain('Rate');
+    });
+
+    it('names the far edge where that edge is', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          secondaryAxis={{ label: 'Rate' }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate series', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).toContain('Rate');
+    });
+  });
+
   describe('exporting', () => {
     it('draws no button unless it is asked for', async () => {
       const screen = await render(

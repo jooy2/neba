@@ -515,6 +515,21 @@ export interface NebaChartSeries {
    * @default false
    */
   hidden?: boolean;
+  /**
+   * Which value axis this series is measured against.
+   *
+   * `secondary` is for the series whose units are not the others' — revenue
+   * beside a conversion rate, a count beside a duration. It is read only when
+   * the chart was given a `secondaryAxis`, and never on a stacked chart: a
+   * stack is a total, and a total across two units is not a number.
+   *
+   * Reach for it rarely. Two scales on one plot let a caller make any two
+   * series look like they move together by choosing the ranges, and a reader
+   * has no way to see that it was done — which is why the second axis is drawn
+   * on the far edge and labelled rather than merely implied.
+   * @default 'primary'
+   */
+  axis?: 'primary' | 'secondary';
 }
 
 /**

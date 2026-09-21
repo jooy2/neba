@@ -924,6 +924,14 @@ const cartesianDataProps: PropRow[] = [
     description: { ko: '값 축', en: 'The value axis' }
   },
   {
+    name: 'secondaryAxis',
+    type: 'NebaChartAxis',
+    description: {
+      ko: "먼 쪽 가장자리에 그리는 두 번째 값 축. axis: 'secondary'인 series가 이 축으로 측정됩니다. 이 prop을 주는 것이 분리를 켜는 스위치이고, stacked 차트에서는 읽지 않습니다. 이 축의 tickFormat은 눈금뿐 아니라 tooltip과 표에서도 이 축 series의 숫자를 씁니다",
+      en: "A second value axis on the far edge, for the series that carry axis: 'secondary'. Passing it is what turns the split on, and a stacked chart does not read it. Its tickFormat writes its series' numbers in the tooltip and the table as well as on its own ticks"
+    }
+  },
+  {
     name: 'references',
     type: 'NebaChartReference[]',
     description: {
@@ -1084,6 +1092,49 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '실선으로 긋습니다. 기본은 점선이고, 점선이어야 격자선이 아니라 기준선으로 읽힙니다',
         en: 'Draws it as a solid rule. Dashed otherwise, which is what says a line is a threshold rather than one more gridline'
+      }
+    }
+  ],
+
+  NebaChartSeries: [
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '범례·tooltip·표에서의 이름. series가 둘 이상이면 범례가 나오므로, 이름이 없는 series는 읽는 사람이 가려낼 수 없습니다',
+        en: 'Its name in the legend, the tooltip and the table. A chart with two or more series always shows a legend, so a series without a name is one the reader cannot identify'
+      }
+    },
+    {
+      name: 'data',
+      type: 'NebaChartDatum[]',
+      required: true,
+      description: { ko: 'category 순서대로의 값', en: 'The values, in category order' }
+    },
+    {
+      name: 'color',
+      type: 'NebaColor | string',
+      description: {
+        ko: '팔레트 슬롯을 덮어씁니다. series는 성공이나 위험이 아니라 개체이므로, 브랜드 색을 맞추거나 두 차트에서 같은 색을 유지할 때 쓰세요',
+        en: 'Overrides the palette slot. A series is an entity rather than a role, so reach for it to match a brand or to hold a colour steady across two charts'
+      }
+    },
+    {
+      name: 'hidden',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '숨긴 채로 시작합니다. 다시 켜는 것은 범례이므로 범례가 있어야 의미가 있습니다',
+        en: 'Starts hidden. Only meaningful with an interactive legend, which is what turns it back on'
+      }
+    },
+    {
+      name: 'axis',
+      type: "'primary' | 'secondary'",
+      default: "'primary'",
+      description: {
+        ko: '이 series를 어느 값 축으로 잴지. secondaryAxis를 준 차트에서만 읽고, stacked 차트에서는 읽지 않습니다. 두 눈금은 어떤 두 series든 같이 움직이는 것처럼 보이게 만들 수 있으니 드물게 쓰세요',
+        en: 'Which value axis this series is measured against. Read only on a chart given a secondaryAxis, and never on a stacked one. Reach for it rarely: two scales let a caller make any two series look like they move together'
       }
     }
   ],

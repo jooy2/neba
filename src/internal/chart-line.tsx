@@ -79,7 +79,7 @@ export function LineSeries({
   gradient,
   idPrefix
 }: LineSeriesProps) {
-  const { values, visible, colors, hovered, activeIndex, plot, point, zeroPx, size, format } =
+  const { values, visible, colors, hovered, activeIndex, plot, point, zeroPxOf, size, format } =
     context;
 
   const stroke = lineWidths[size];
@@ -175,7 +175,10 @@ export function LineSeries({
 
           const total = stacked ? baselines[index][category] + value.value : value.value;
 
-          return point(category, total);
+          // The series' index goes with the number: with a second value axis
+          // on the plot, where a value sits is no longer a property of the
+          // value alone. `stacked` and the second axis never both apply.
+          return point(category, total, index);
         });
 
         // `connectNulls` drops the gaps rather than bridging them in the path
@@ -184,12 +187,13 @@ export function LineSeries({
         // the difference.
         const line = connectNulls ? (tops.filter(Boolean) as { x: number; y: number }[]) : tops;
 
+        const base = zeroPxOf(index);
         const under: Vertex[] = one.map((value, category) =>
           value.value === null
             ? null
             : stacked
-              ? point(category, baselines[index][category])
-              : { x: point(category, value.value).x, y: zeroPx }
+              ? point(category, baselines[index][category], index)
+              : { x: point(category, value.value, index).x, y: base }
         );
 
         // A stacked band's fill *is* its mark, so it does not also get a line
