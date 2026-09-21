@@ -174,6 +174,31 @@ export function inkOn(explicit: string | undefined, index: number): string {
   return parsed ? readableInk(parsed.hsv) : 'var(--neba-surface)';
 }
 
+/**
+ * The ink a value label wears when it is written *beside* its own mark.
+ *
+ * Not the mark's colour as it stands. A slot in the ramp is solved to be a
+ * **line** — at least 3:1 against the surface, which a 2px stroke needs and a
+ * twelve-pixel number does not; every slot lands near 4:1 on white, and normal
+ * text has to clear 4.5. So the colour is taken one step toward the page's own
+ * ink, which is the same recipe `--neba-*-on-tint` uses for text in a family's
+ * colour: 85% is as far as the hue survives and as little as the contrast
+ * needs. Measured per slot, both themes, worst case 4.97:1 on white and 6.38:1
+ * on the dark sheet.
+ *
+ * The point of colouring it at all is the one thing an axis and a tooltip
+ * cannot do: on a plot with four lines on it, a number floating above a point
+ * belongs to whichever line it is nearest, and "nearest" is exactly what a
+ * reader cannot judge where two series cross. The hue says which.
+ *
+ * A caller's own `series.color` goes through the same mix, so a pale brand
+ * yellow is legible as a label without the caller having to pick a second
+ * colour for the text.
+ */
+export function labelInk(color: string): string {
+  return `color-mix(in oklab, ${color} 85%, var(--neba-fg))`;
+}
+
 const colorFamilies = new Set<string>([
   'primary',
   'secondary',

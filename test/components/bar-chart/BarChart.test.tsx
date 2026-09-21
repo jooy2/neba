@@ -189,6 +189,61 @@ describe('BarChart', () => {
       expect(texts).toContain('33');
       expect(texts).not.toContain('22');
     });
+
+    // On a grouped chart the label sits over the gap between two bands, so the
+    // hue is what says which of the two it belongs to.
+    it("writes a label in its own bar's colour rather than in the page ink", async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          valueLabels="all"
+          categories={TEAMS}
+          series={[
+            { name: 'Web', data: [11, 22, 33], color: 'oklch(60% 0.2 262)' },
+            { name: 'Mobile', data: [13, 24, 35], color: 'oklch(60% 0.2 30)' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const fillOf = (text: string) =>
+        [...plot.element().querySelectorAll('text')]
+          .find((node) => node.textContent === text)
+          ?.getAttribute('fill');
+
+      expect(fillOf('11')).toBe('color-mix(in oklab, oklch(60% 0.2 262) 85%, var(--neba-fg))');
+      expect(fillOf('13')).toBe('color-mix(in oklab, oklch(60% 0.2 30) 85%, var(--neba-fg))');
+    });
+
+    it("takes a single point's own colour over its series'", async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          valueLabels="all"
+          categories={TEAMS}
+          series={[
+            {
+              name: 'Web',
+              color: 'oklch(60% 0.2 262)',
+              data: [11, { y: 22, color: 'oklch(60% 0.2 30)' }, 33]
+            }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const marked = [...plot.element().querySelectorAll('text')].find(
+        (node) => node.textContent === '22'
+      );
+
+      expect(marked?.getAttribute('fill')).toContain('oklch(60% 0.2 30)');
+    });
   });
 
   describe('stacked', () => {

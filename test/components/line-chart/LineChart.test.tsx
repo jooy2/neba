@@ -758,6 +758,37 @@ describe('LineChart', () => {
       expect(plot.element().querySelectorAll('circle').length).toBe(0);
     });
 
+    // The hue is the only thing saying which of four lines a floating number
+    // belongs to, and the ramp is solved for a 2px stroke rather than for
+    // twelve-pixel type — so the label is the series' colour taken one step
+    // toward the page's ink rather than the colour itself.
+    it("writes a value label in its own series' colour", async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          valueLabels="last"
+          series={[
+            { name: 'Web', data: [10, 20, 30, 40], color: 'oklch(60% 0.2 262)' },
+            { name: 'Mobile', data: [5, 15, 25, 35], color: 'oklch(60% 0.2 30)' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const fills = [...plot.element().querySelectorAll('text')]
+        .map((node) => node.getAttribute('fill'))
+        .filter((fill): fill is string => Boolean(fill?.startsWith('color-mix')));
+
+      expect(fills).toHaveLength(2);
+      expect(fills[0]).toContain('oklch(60% 0.2 262)');
+      expect(fills[1]).toContain('oklch(60% 0.2 30)');
+      expect(fills[0]).toContain('var(--neba-fg)');
+    });
+
     it('labels only the last point with valueLabels="last"', async () => {
       const screen = await render(
         <LineChart

@@ -17,6 +17,7 @@ import * as React from 'react';
 import {
   areaPath,
   chartFontSizes,
+  labelInk,
   labelledPoints,
   linePath,
   lineWidths,
@@ -297,7 +298,11 @@ export function LineSeries({
                       }
                       fontSize={chartFontSizes[size]}
                       fontWeight={500}
-                      fill="var(--neba-fg)"
+                      // Its own series' colour, one step toward the page's ink.
+                      // Four lines on one plot is four numbers floating over
+                      // them, and which line each belongs to is exactly what a
+                      // reader cannot work out where two of them cross.
+                      fill={labelInk(one[category].color ?? color)}
                       className="tabular-nums"
                     >
                       {one[category].label ?? format(value)}

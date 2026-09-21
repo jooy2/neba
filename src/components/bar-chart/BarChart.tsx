@@ -13,6 +13,7 @@ import {
   barPath,
   barRadius,
   chartFontSizes,
+  labelInk,
   labelledPoints,
   markGap,
   type ChartValue
@@ -283,7 +284,11 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                       dominantBaseline={horizontal ? 'central' : undefined}
                       fontSize={labelSize}
                       fontWeight={500}
-                      fill="var(--neba-fg)"
+                      // Its own bar's colour, one step toward the page's ink —
+                      // see `labelInk`. On a grouped chart the label sits over
+                      // the gap between two bands, and the hue is what says
+                      // which of the two it belongs to.
+                      fill={labelInk(value.color ?? color)}
                       className="tabular-nums"
                     >
                       {value.label ?? format(value.value)}

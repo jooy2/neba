@@ -22,6 +22,7 @@ import {
   chartPalette,
   extentOf,
   formatTimeValue,
+  labelInk,
   labelledPoints,
   linePath,
   markPath,
@@ -375,6 +376,23 @@ describe('toValues and categoryCount', () => {
       [{ value: 1 }, { value: null }],
       [{ value: 2, x: undefined, z: undefined, color: undefined, label: undefined }]
     ]);
+  });
+});
+
+describe('labelInk', () => {
+  // The ramp is solved for a 2px stroke, which needs 3:1, and every slot lands
+  // near 4:1 on white — under what twelve-pixel type has to clear. One step
+  // toward the page's ink is what buys the rest, and it is the same recipe
+  // `--neba-*-on-tint` uses.
+  it('mixes the mark colour toward the page ink rather than using it raw', () => {
+    expect(labelInk('var(--neba-chart-1)')).toBe(
+      'color-mix(in oklab, var(--neba-chart-1) 85%, var(--neba-fg))'
+    );
+  });
+
+  it('takes a caller colour through the same mix', () => {
+    expect(labelInk('rebeccapurple')).toContain('rebeccapurple');
+    expect(labelInk('rebeccapurple')).toContain('var(--neba-fg)');
   });
 });
 

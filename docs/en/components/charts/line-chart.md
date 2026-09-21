@@ -133,6 +133,8 @@ Draws the line straight through a `null` instead of breaking at it. Leave it off
 
 `valueLabels` writes numbers onto the line: `last` names where each series ended up, `extremes` marks each series' own high and low, `all` labels every point. The default is `none`: a number beside every point is the most reliable way to make a chart unreadable.
 
+Each number wears its own series' colour, taken one step toward the page's ink so it clears the contrast a twelve-pixel label needs. On a plot with four lines on it, that hue is the only thing saying which line a floating number belongs to.
+
 `markers` puts dots on the points. `auto` draws them while there are fourteen or fewer; the point under the pointer always gets one regardless.
 
 `gradient` fades each line from a paler step of its own hue at the start to the full colour at the end.
