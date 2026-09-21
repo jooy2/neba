@@ -244,6 +244,27 @@ export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
   tooltip?: boolean | NebaChartTooltip;
   /** What to draw when there is nothing to draw. */
   empty?: React.ReactNode;
+  /**
+   * Adds a small button in the corner that writes the chart's data out as a
+   * CSV file — the same numbers the hidden table under the plot holds.
+   *
+   * A picture is the one form of a number nobody can paste anywhere, and the
+   * table a screen reader gets is not reachable with a pointer. This is the
+   * pointer's way to the same thing.
+   *
+   * The file is built by a module that is **fetched when the button is
+   * pressed** rather than imported with the chart, so a page that never turns
+   * this on downloads none of it.
+   * @default false
+   */
+  exportable?: boolean;
+  /** What the downloaded file is called. @default 'chart.csv' */
+  exportFileName?: string;
+  /**
+   * Takes the CSV instead of downloading it — to post it somewhere, to open it
+   * in a viewer of your own, or to put a sheet around it.
+   */
+  onExport?: (csv: string) => void;
 }
 
 /** The props a chart with two axes adds. */
@@ -860,6 +881,73 @@ const ChartDataTable = React.memo(function ChartDataTable({
 });
 
 /* ---------------------------------------------------------------------------
+ * Export
+ * ------------------------------------------------------------------------- */
+
+interface ExportProps {
+  /** The sheet, built when the button is pressed and not before. */
+  rows: () => readonly (readonly unknown[])[];
+  fileName: string;
+  onExport?: (csv: string) => void;
+  label: string;
+}
+
+/**
+ * The button that hands the chart's numbers over.
+ *
+ * A plain `<button>` rather than an IconButton, for the reason the legend's
+ * rows are plain buttons too: this is inside the frame every chart imports, so
+ * a component pulled in here is one every chart pays for whether it draws the
+ * button or not.
+ *
+ * The CSV writer is **loaded** rather than imported, which is `highlight.ts`'
+ * arrangement in miniature. Escaping a spreadsheet field correctly is a page
+ * of rules nobody should carry to read a chart, and a bundler emits it as a
+ * chunk of its own behind the `import()` — so a page that never turns this on
+ * downloads none of it, and one that does fetches it on the press.
+ */
+function ChartExport({ rows, fileName, onExport, label }: ExportProps) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={async () => {
+        const { toCsv, downloadText } = await import('./csv.js');
+        const csv = toCsv(rows());
+
+        if (onExport) {
+          onExport(csv);
+          return;
+        }
+
+        downloadText(csv, fileName, 'text/csv;charset=utf-8');
+      }}
+      className={cx(
+        'absolute end-0 top-0 z-10 inline-flex size-6 cursor-pointer items-center justify-center',
+        'rounded-(--neba-radius-xs) text-(--neba-muted-fg)',
+        'hover:bg-(--n-soft) hover:text-(--neba-fg)',
+        'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
+        transitionClasses
+      )}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-3.5"
+      >
+        <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      </svg>
+    </button>
+  );
+}
+
+/* ---------------------------------------------------------------------------
  * The surface every chart sits on
  * ------------------------------------------------------------------------- */
 
@@ -1214,6 +1302,9 @@ export function CartesianChart(rawProps: CartesianProps) {
     legend,
     tooltip,
     empty,
+    exportable = false,
+    exportFileName = 'chart.csv',
+    onExport,
     size = 'md',
     variant = 'text',
     padded = false,
@@ -1483,8 +1574,16 @@ export function CartesianChart(rawProps: CartesianProps) {
   // A mark is drawn from its centre, so half of the widest one hangs over the
   // top of the plot. On a scatter that half is a whole bubble, which is what
   // `markInset` is reserving on the other three sides.
+  /* `exportable` draws a 24px button in the top-right corner of the box, so
+     the plot starts below it — a button laid over the one series that peaked
+     at the right-hand end is a button that ate the answer. */
   const topPad =
-    markerRadii[size] + 4 + headroom + markInset + (namesLeftAxis ? axisLabelBand + 2 : 0);
+    markerRadii[size] +
+    4 +
+    headroom +
+    markInset +
+    (namesLeftAxis ? axisLabelBand + 2 : 0) +
+    (exportable ? 20 : 0);
 
   const boxHeight = plotHeight;
   const plot: PlotBox = {
@@ -1566,6 +1665,18 @@ export function CartesianChart(rawProps: CartesianProps) {
      table. A value-axis number goes through the chart's own `format`; a
      category-axis one is a point on that scale when the categories are numbers
      or dates, and an index into them when they are columns. */
+  /* The sheet, as a function so it is built on the press rather than on every
+     render. One header row and one row per category, which is the hidden table
+     read out sideways — the same numbers, so a reader who exports and a reader
+     who is read the table cannot end up with two different files. */
+  const exportRows = () => [
+    [categoryAxis?.label ?? '', ...series.map((one, index) => one.name ?? `${index + 1}`)],
+    ...labels.map((category, index) => [
+      category,
+      ...values.map((row) => row[index]?.value ?? null)
+    ])
+  ];
+
   const namedReferences = (references ?? []).filter((one) => Boolean(one.label));
   const referenceText = (one: NebaChartReference) => {
     const write = (value: number) =>
@@ -1933,6 +2044,15 @@ export function CartesianChart(rawProps: CartesianProps) {
         )
       }
     >
+      {exportable && !nothing ? (
+        <ChartExport
+          rows={exportRows}
+          fileName={exportFileName}
+          onExport={onExport}
+          label={chartWords.exportCsv}
+        />
+      ) : null}
+
       {/* Two children rather than one: the readout under the picture has to be
           a *sibling* of it and not a child — see `ChartStatus`. */}
       <div
@@ -2452,6 +2572,7 @@ function ChartAxes({
 
 export {
   ChartDataTable,
+  ChartExport,
   ChartLegendBar,
   ChartScaleLegend,
   ChartStatus,

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import {
+  ChartExport,
   ChartScaleLegend,
   ChartStatus,
   ChartSummary,
@@ -152,6 +153,9 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     legend,
     tooltip,
     empty,
+    exportable = false,
+    exportFileName = 'chart.csv',
+    onExport,
     size = 'md',
     variant = 'text',
     padded = false,
@@ -305,7 +309,10 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
      side, which is the arrangement the cartesian charts make for the same
      reason: a name read sideways is not read at a glance. */
   const namesRows = Boolean(yAxis?.label) && !rows;
-  const top = namesRows ? axisNameBand + 2 : 0;
+  /* And the room the export button takes, for the frame's reason: a grid fills
+     its box edge to edge, so a button in the corner would be laid over a cell
+     rather than over the air a cartesian plot keeps up there. */
+  const top = (namesRows ? axisNameBand + 2 : 0) + (exportable ? 20 : 0);
 
   const plot = {
     left: yAxis?.thickness ?? rowNames.band,
@@ -447,6 +454,13 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
 
   const steps = Array.from({ length: rampSteps }, (_, step) => rampFill(step, scale));
 
+  /* The sheet, which is the hidden table: a treemap's columns are every name
+     any group uses, a grid's are its categories in place. */
+  const exportRows = () => [
+    ['', ...table.heads],
+    ...table.rows.map((row, at) => [names[at], ...row.map((cell) => cell?.value ?? null)])
+  ];
+
   return (
     <ChartSurface
       {...box}
@@ -506,6 +520,15 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
         )
       }
     >
+      {exportable && !nothing ? (
+        <ChartExport
+          rows={exportRows}
+          fileName={exportFileName}
+          onExport={onExport}
+          label={chartWords.exportCsv}
+        />
+      ) : null}
+
       {/* Two children rather than one: the readout under the picture has to be
           a *sibling* of it and not a child — see `ChartStatus`. */}
       <div

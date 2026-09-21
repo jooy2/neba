@@ -120,7 +120,8 @@ export const hi: NebaLocale = {
     title: 'लेबल',
     start: 'शुरुआत',
     end: 'अंत',
-    summary: 'डेटा बिंदु: {count}. सीमा: {min} से {max} तक।'
+    summary: 'डेटा बिंदु: {count}. सीमा: {min} से {max} तक।',
+    exportCsv: 'CSV निर्यात करें'
   },
   panes: { handle: 'पैन का आकार बदलें' },
   scroll: {

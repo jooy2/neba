@@ -171,6 +171,20 @@ Each number wears its own series' colour, taken one step toward the page's ink s
 
 </Demo>
 
+### exportable
+
+Adds a small button in the corner that writes the chart's data out as a CSV file — the same numbers the hidden table under the plot holds. Every chart with a table takes it: a picture is the one form of a number nobody can paste anywhere, and the table a screen reader gets is not reachable with a pointer.
+
+`exportFileName` names the file. `onExport` takes the CSV string instead of downloading it, for posting it somewhere or putting a sheet around it.
+
+The module that writes the file is **fetched when the button is pressed** rather than imported with the chart, so a page that never turns this on downloads none of it. A `GaugeChart` does not take these three at all: one reading is not a sheet.
+
+<Demo src="line-chart/export">
+
+<<< @/.vitepress/demos/line-chart/export.tsx
+
+</Demo>
+
 ### legend
 
 The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. A hidden series stays hidden when new data puts the series in another order, as long as it keeps its `name`. `legend={false}` removes it, `interactive: false` makes it a key rather than a control.

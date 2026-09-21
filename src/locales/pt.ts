@@ -120,7 +120,8 @@ export const pt: NebaLocale = {
     title: 'Rótulo',
     start: 'Início',
     end: 'Fim',
-    summary: 'Pontos de dados: {count}. Intervalo: de {min} a {max}.'
+    summary: 'Pontos de dados: {count}. Intervalo: de {min} a {max}.',
+    exportCsv: 'Exportar CSV'
   },
   panes: { handle: 'Redimensionar painéis' },
   scroll: { label: 'Conteúdo rolável', previous: 'Rolar para trás', next: 'Rolar para a frente' },

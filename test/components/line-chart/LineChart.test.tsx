@@ -755,6 +755,71 @@ describe('LineChart', () => {
     });
   });
 
+  describe('exporting', () => {
+    it('draws no button unless it is asked for', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      await expect.element(screen.getByRole('img', { name: 'Sessions' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Export CSV' }).query()).toBeNull();
+    });
+
+    // The same numbers the hidden table holds, read out sideways: a reader who
+    // exports and a reader who is read the table must not end up with two
+    // different files.
+    it('hands over the categories and every series', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          exportable
+          onExport={onExport}
+          xAxis={{ label: 'Month' }}
+          series={[
+            { name: 'Web', data: [10, 20, 30, 40] },
+            { name: 'Mobile', data: [5, 15, 25, 35] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const csv = onExport.mock.calls[0][0] as string;
+      const lines = csv.replace('\uFEFF', '').split('\r\n');
+
+      expect(lines[0]).toBe('Month,Web,Mobile');
+      expect(lines[1]).toBe('Jan,10,5');
+      expect(lines[4]).toBe('Apr,40,35');
+    });
+
+    it('leaves a gap empty rather than writing it as a zero', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          exportable
+          onExport={onExport}
+          series={[{ name: 'Web', data: [10, null, 30, 40] }]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines[2]).toBe('Feb,');
+    });
+  });
+
   describe('references', () => {
     const plotOf = (screen: { getByRole: (role: string, options: { name: string }) => any }) =>
       screen.getByRole('img', { name: 'Sessions' });

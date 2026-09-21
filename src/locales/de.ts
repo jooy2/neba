@@ -120,7 +120,8 @@ export const de: NebaLocale = {
     title: 'Bezeichnung',
     start: 'Beginn',
     end: 'Ende',
-    summary: 'Datenpunkte: {count}. Bereich: {min} bis {max}.'
+    summary: 'Datenpunkte: {count}. Bereich: {min} bis {max}.',
+    exportCsv: 'CSV exportieren'
   },
   panes: { handle: 'Größe der Bereiche ändern' },
   scroll: { label: 'Scrollbarer Inhalt', previous: 'Zurückscrollen', next: 'Weiterscrollen' },

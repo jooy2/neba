@@ -23,7 +23,16 @@ import { cx, hasContent, metaTextClasses } from '../../internal/styles.js';
 import type { NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
-export interface GaugeChartProps extends Omit<ChartBaseProps, 'legend' | 'tooltip'> {
+/*
+ * The three export props go with the legend and the tooltip: a gauge is one
+ * reading rather than a table of them, so there is no sheet to write, and a
+ * button that produced a file of one number would be a promise the shape
+ * cannot keep.
+ */
+export interface GaugeChartProps extends Omit<
+  ChartBaseProps,
+  'legend' | 'tooltip' | 'exportable' | 'exportFileName' | 'onExport'
+> {
   /**
    * The reading. `null` draws the dial with nothing on it, which is the honest
    * picture of an instrument that has not been told anything.

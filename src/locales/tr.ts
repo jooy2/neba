@@ -120,7 +120,8 @@ export const tr: NebaLocale = {
     title: 'Etiket',
     start: 'Başlangıç',
     end: 'Bitiş',
-    summary: 'Veri noktası: {count}. Aralık: {min} ile {max} arası.'
+    summary: 'Veri noktası: {count}. Aralık: {min} ile {max} arası.',
+    exportCsv: 'CSV dışa aktar'
   },
   panes: { handle: 'Bölmeleri yeniden boyutlandır' },
   scroll: { label: 'Kaydırılabilir içerik', previous: 'Geri kaydır', next: 'İleri kaydır' },

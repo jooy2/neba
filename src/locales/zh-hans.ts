@@ -123,7 +123,8 @@ export const zhHans: NebaLocale = {
     title: '标签',
     start: '开始',
     end: '结束',
-    summary: '数据点：{count} 个。范围：{min} 至 {max}。'
+    summary: '数据点：{count} 个。范围：{min} 至 {max}。',
+    exportCsv: '导出 CSV'
   },
   panes: { handle: '调整窗格大小' },
   scroll: { label: '可滚动内容', previous: '向前滚动', next: '向后滚动' },

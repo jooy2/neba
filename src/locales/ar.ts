@@ -120,7 +120,8 @@ export const ar: NebaLocale = {
     title: 'التسمية',
     start: 'البداية',
     end: 'النهاية',
-    summary: 'نقاط البيانات: {count}. النطاق: من {min} إلى {max}.'
+    summary: 'نقاط البيانات: {count}. النطاق: من {min} إلى {max}.',
+    exportCsv: 'تصدير CSV'
   },
   panes: { handle: 'تغيير حجم الأجزاء' },
   scroll: { label: 'محتوى قابل للتمرير', previous: 'التمرير للخلف', next: 'التمرير للأمام' },

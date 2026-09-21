@@ -120,7 +120,8 @@ export const nl: NebaLocale = {
     title: 'Label',
     start: 'Begin',
     end: 'Einde',
-    summary: 'Datapunten: {count}. Bereik: {min} tot {max}.'
+    summary: 'Datapunten: {count}. Bereik: {min} tot {max}.',
+    exportCsv: 'CSV exporteren'
   },
   panes: { handle: 'Grootte van deelvensters wijzigen' },
   scroll: { label: 'Scrollbare inhoud', previous: 'Terugscrollen', next: 'Vooruitscrollen' },

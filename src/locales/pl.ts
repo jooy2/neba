@@ -120,7 +120,8 @@ export const pl: NebaLocale = {
     title: 'Etykieta',
     start: 'Początek',
     end: 'Koniec',
-    summary: 'Punkty danych: {count}. Zakres: od {min} do {max}.'
+    summary: 'Punkty danych: {count}. Zakres: od {min} do {max}.',
+    exportCsv: 'Eksportuj CSV'
   },
   panes: { handle: 'Zmień rozmiar paneli' },
   scroll: { label: 'Przewijalna zawartość', previous: 'Przewiń wstecz', next: 'Przewiń dalej' },

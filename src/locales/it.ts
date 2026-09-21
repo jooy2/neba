@@ -120,7 +120,8 @@ export const it: NebaLocale = {
     title: 'Etichetta',
     start: 'Inizio',
     end: 'Fine',
-    summary: 'Punti dati: {count}. Intervallo: da {min} a {max}.'
+    summary: 'Punti dati: {count}. Intervallo: da {min} a {max}.',
+    exportCsv: 'Esporta CSV'
   },
   panes: { handle: 'Ridimensiona i riquadri' },
   scroll: { label: 'Contenuto scorrevole', previous: 'Scorri indietro', next: 'Scorri avanti' },

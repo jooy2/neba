@@ -120,7 +120,8 @@ export const ko: NebaLocale = {
     title: '레이블',
     start: '시작',
     end: '끝',
-    summary: '데이터 {count}개. 범위: {min}~{max}.'
+    summary: '데이터 {count}개. 범위: {min}~{max}.',
+    exportCsv: 'CSV 내보내기'
   },
   panes: { handle: '패널 크기 조절' },
   scroll: { label: '스크롤 영역', previous: '뒤로 스크롤', next: '앞으로 스크롤' },

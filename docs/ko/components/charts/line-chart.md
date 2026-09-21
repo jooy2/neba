@@ -171,6 +171,20 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 
 </Demo>
 
+### exportable
+
+차트의 데이터를 CSV 파일로 쓰는 작은 버튼을 모서리에 답니다. plot 아래 숨은 표가 들고 있는 것과 같은 숫자입니다. 표가 있는 차트는 모두 받습니다. 그림은 아무 데도 붙여 넣을 수 없는 유일한 숫자의 형태이고, 화면 낭독기가 받는 표에는 포인터로 닿을 수 없습니다.
+
+`exportFileName`이 파일 이름을 정합니다. `onExport`를 주면 내려받는 대신 CSV 문자열을 넘기므로, 어딘가로 보내거나 시트를 씌울 수 있습니다.
+
+파일을 쓰는 모듈은 차트와 함께 import하지 않고 **버튼을 누를 때 받아 옵니다.** 이 기능을 켜지 않은 페이지는 그 코드를 하나도 내려받지 않습니다. `GaugeChart`는 이 셋을 아예 받지 않습니다. 값 하나는 시트가 아닙니다.
+
+<Demo src="line-chart/export">
+
+<<< @/.vitepress/demos/line-chart/export.tsx
+
+</Demo>
+
 ### legend
 
 범례는 series가 둘 이상이면 자동으로 나타나고, 하나면 나타나지 않습니다. `side`와 `align`이 위치를 정하고, 항목을 클릭하면 해당 series가 숨겨지며 남은 series는 원래 색을 그대로 유지합니다. 새 데이터가 series의 순서를 바꿔도 `name`이 같다면 숨긴 series는 계속 숨겨져 있습니다. `legend={false}`는 범례를 없애고, `interactive: false`는 클릭되지 않는 범례로 만듭니다.

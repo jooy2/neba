@@ -553,6 +553,8 @@ export interface ChartMessages {
    * read on every focus and the hidden table beside the plot holds the rest.
    */
   summary: string;
+  /** The button that writes the chart's data out as a file. */
+  exportCsv: string;
 }
 
 /** The `chart` namespace, as every chart reads it. */
@@ -563,7 +565,8 @@ export const chartMessages: MessageTable<ChartMessages> = {
     title: 'Label',
     start: 'Start',
     end: 'End',
-    summary: 'Data points: {count}. Range: {min} to {max}.'
+    summary: 'Data points: {count}. Range: {min} to {max}.',
+    exportCsv: 'Export CSV'
   }
 };
 

@@ -120,7 +120,8 @@ export const ru: NebaLocale = {
     title: 'Метка',
     start: 'Начало',
     end: 'Конец',
-    summary: 'Точек данных: {count}. Диапазон: от {min} до {max}.'
+    summary: 'Точек данных: {count}. Диапазон: от {min} до {max}.',
+    exportCsv: 'Экспорт CSV'
   },
   panes: { handle: 'Изменить размер панелей' },
   scroll: {

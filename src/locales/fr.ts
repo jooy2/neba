@@ -120,7 +120,8 @@ export const fr: NebaLocale = {
     title: 'Libellé',
     start: 'Début',
     end: 'Fin',
-    summary: 'Points de données : {count}. Plage : de {min} à {max}.'
+    summary: 'Points de données : {count}. Plage : de {min} à {max}.',
+    exportCsv: 'Exporter en CSV'
   },
   panes: { handle: 'Redimensionner les panneaux' },
   scroll: {

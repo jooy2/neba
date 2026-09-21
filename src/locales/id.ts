@@ -120,7 +120,8 @@ export const id: NebaLocale = {
     title: 'Label',
     start: 'Mulai',
     end: 'Selesai',
-    summary: 'Titik data: {count}. Rentang: {min} sampai {max}.'
+    summary: 'Titik data: {count}. Rentang: {min} sampai {max}.',
+    exportCsv: 'Ekspor CSV'
   },
   panes: { handle: 'Ubah ukuran panel' },
   scroll: {

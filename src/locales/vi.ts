@@ -120,7 +120,8 @@ export const vi: NebaLocale = {
     title: 'Nhãn',
     start: 'Bắt đầu',
     end: 'Kết thúc',
-    summary: 'Điểm dữ liệu: {count}. Phạm vi: từ {min} đến {max}.'
+    summary: 'Điểm dữ liệu: {count}. Phạm vi: từ {min} đến {max}.',
+    exportCsv: 'Xuất CSV'
   },
   panes: { handle: 'Đổi kích thước ngăn' },
   scroll: { label: 'Nội dung cuộn được', previous: 'Cuộn lùi lại', next: 'Cuộn tới' },

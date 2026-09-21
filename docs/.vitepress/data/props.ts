@@ -867,6 +867,29 @@ function chartBaseProps(options: { height: string; size?: string; legend?: false
         ko: '그릴 것이 없을 때 대신 그릴 내용',
         en: 'What to draw when there is nothing to draw'
       }
+    },
+    {
+      name: 'exportable',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '차트의 데이터를 CSV 파일로 내보내는 작은 버튼을 모서리에 답니다. 숨은 표와 같은 숫자입니다. CSV를 쓰는 모듈은 버튼을 누를 때 받아 오므로 켜지 않은 페이지는 아무것도 내려받지 않습니다',
+        en: "Adds a small button in the corner that writes the chart's data out as CSV — the same numbers the hidden table holds. The module that writes it is fetched on the press, so a page that never turns this on downloads none of it"
+      }
+    },
+    {
+      name: 'exportFileName',
+      type: 'string',
+      default: "'chart.csv'",
+      description: { ko: '내려받는 파일의 이름', en: 'What the downloaded file is called' }
+    },
+    {
+      name: 'onExport',
+      type: '(csv: string) => void',
+      description: {
+        ko: '주면 내려받는 대신 CSV 문자열을 넘깁니다',
+        en: 'Takes the CSV instead of downloading it'
+      }
     }
   ];
 }

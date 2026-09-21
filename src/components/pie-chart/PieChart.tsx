@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   ChartDataTable,
+  ChartExport,
   ChartLegendBar,
   ChartStatus,
   ChartSummary,
@@ -158,6 +159,9 @@ export function PieChart(rawProps: PieChartProps) {
     legend,
     tooltip,
     empty,
+    exportable = false,
+    exportFileName = 'chart.csv',
+    onExport,
     size = 'md',
     variant = 'text',
     padded = false,
@@ -294,6 +298,12 @@ export function PieChart(rawProps: PieChartProps) {
           }
         ];
 
+  /* The sheet: one row per slice, the same pairs the hidden table holds. */
+  const exportRows = () => [
+    ['', label ?? chartWords.label],
+    ...slices.map((slice, index) => [slice.name ?? '', values[index]?.value ?? null])
+  ];
+
   return (
     <ChartSurface
       {...box}
@@ -334,6 +344,15 @@ export function PieChart(rawProps: PieChartProps) {
         )
       }
     >
+      {exportable && !nothing ? (
+        <ChartExport
+          rows={exportRows}
+          fileName={exportFileName}
+          onExport={onExport}
+          label={chartWords.exportCsv}
+        />
+      ) : null}
+
       {/* Two children rather than one: the readout under the picture has to be
           a *sibling* of it and not a child — see `ChartStatus`. */}
       <div
