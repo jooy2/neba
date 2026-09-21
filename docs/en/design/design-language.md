@@ -273,6 +273,10 @@ The one thing that may travel besides opacity is the surface's own **size**, and
 
 **A press gets both layers; something that is merely entered gets the spotlight alone.** A Button, a Toggle, a Pill and a Segment are pressed and held, so they take the afterglow. A field is entered rather than pressed, a menu row is gone before a nine-hundred-millisecond flash is a third of the way out, and a tab that has been chosen has a panel already being read under it — all three take `spotlightSlot`, which leaves `--n-flash` unset and lets the afterglow fall back to `transparent`.
 
+**And a field takes half of what is left.** `fieldSpotlightSlot` is `spotlightSlot` at 50%, and the difference is what the surface is for. A control is the thing the pointer acts on, so the bloom under the cursor is the control answering. A field is on the way to somewhere else: what the reader looks at a moment later is their own text, twelve pixels tall, over the exact patch of surface the bloom is brightest on. Half is still enough to say the shell is live, which is all the light was asked to do there.
+
+**The spotlight goes out while a field is being typed at, and comes back when the pointer moves.** A pointer resting on a field is where the hand left it, which is over the text — the reader put the caret there by clicking on it — so the one moment the bloom is least wanted is the one moment it cannot get out of the way on its own. A keystroke marks the shell `data-typing` and the next `pointermove` takes the mark off; both are written straight to the element, for the reason above. Any key and not only the ones that produce text: walking the caret with the arrows is reading the field just as closely, and a rule that has to decide which keys count will get one of them wrong.
+
 **Slots go on the surface that paints the light, never on a container of rows.** A custom property written on an element invalidates the style of everything under it, so a Menu lights its own rows, one at a time, and not the popup around them.
 
 ### The focus ring arrives, and on a field it is flush

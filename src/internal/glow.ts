@@ -51,6 +51,78 @@ export const glowClasses = 'neba-glow';
 export const spotlightSlot = { '--n-glow': 'var(--n-soft)' } as React.CSSProperties;
 
 /**
+ * Half of that, for a surface the reader is about to **write on**.
+ *
+ * A control is a thing the pointer acts on, and the bloom under the cursor is
+ * the surface answering. A field is a thing the pointer is only passing over on
+ * its way to putting a caret down: what the reader looks at next is their own
+ * text, a few pixels tall, and a wash at the full strength sits behind it and
+ * competes with it. The light still has to say the shell is live, which is all
+ * half of it is asked to do.
+ *
+ * Half of `--n-soft` rather than a paler token of its own, so a field that
+ * turns `danger` the moment it is invalid takes the danger light at the same
+ * strength it took the resting one.
+ */
+export const fieldSpotlightSlot = {
+  '--n-glow': 'color-mix(in srgb, var(--n-soft) 50%, transparent)'
+} as React.CSSProperties;
+
+/**
+ * The mark that puts the light out while a field is being typed at.
+ *
+ * `.neba-glow[data-typing]::before` in `styles.css` holds the spotlight at
+ * zero, and it is an attribute rather than state because nothing else about
+ * the element changes: writing it is a repaint of one box, and a `setState`
+ * would be a render of the whole field on every keystroke.
+ */
+const typingMark = 'data-typing';
+
+/**
+ * The two handlers a **field's** shell takes, which is the pair that puts the
+ * spotlight out while the reader is typing and brings it back when the pointer
+ * moves.
+ *
+ * The bloom is drawn where the pointer is, and a pointer resting on a field is
+ * where the hand left it — over the text, most of the time, because that is
+ * where the reader clicked to get the caret. So the one moment the light is
+ * least wanted is the one moment it cannot get out of the way on its own.
+ *
+ * Any key and not only the ones that produce text: a reader walking the caret
+ * with the arrows or selecting with Shift is reading the field just as closely,
+ * and a rule that has to decide which keys count is a rule that will get one of
+ * them wrong.
+ *
+ * Both handlers go on the element carrying `.neba-glow` — the shell, which is
+ * where the key from the control inside it bubbles to. The mark is taken off
+ * here rather than inside `trackPointer` for the reason
+ * `internal/defaults.ts` is one `useContext`: `trackPointer` is on every lit
+ * control in the library, and a line only a field can ever need does not
+ * belong in the bundle of a page whose only control is a Button.
+ *
+ * `lit` off gives back nothing at all: a disabled or read-only shell has no
+ * light to put out.
+ */
+export function fieldLight<E extends HTMLElement>(
+  lit: boolean
+): {
+  onPointerMove?: React.PointerEventHandler<E>;
+  onKeyDown?: React.KeyboardEventHandler<E>;
+} {
+  if (!lit) {
+    return {};
+  }
+
+  return {
+    onPointerMove: trackPointer<E>(
+      (event) => event.currentTarget.removeAttribute(typingMark),
+      true
+    ),
+    onKeyDown: (event) => event.currentTarget.setAttribute(typingMark, '')
+  };
+}
+
+/**
  * Writes the pointer's place onto the element, in front of whatever handler the
  * caller passed.
  *

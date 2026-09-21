@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
-import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
+import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
 import { SpinnerIcon } from '../../internal/icons.js';
 import {
   controlTextLeadingClasses,
@@ -296,7 +296,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         )}
         style={{
           ...surfaceSlots(family, elevation),
-          ...(lit ? spotlightSlot : undefined),
+          ...(lit ? fieldSpotlightSlot : undefined),
           ...style
         }}
       >
@@ -315,9 +315,10 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
 
         <span
           className={shellClasses}
-          // The spotlight, and only the spotlight — `spotlightSlot` leaves the
-          // press flash unset on purpose. See `internal/glow.ts`.
-          onPointerMove={trackPointer(undefined, lit)}
+          // The spotlight, and only the spotlight — `fieldSpotlightSlot`
+          // leaves the press flash unset on purpose, and halves the bloom —
+          // and out again while the reader is typing. See `internal/glow.ts`.
+          {...fieldLight<HTMLSpanElement>(lit)}
           onPointerDown={(event) => {
             // Clicking the shell's own padding should put the caret in the field,
             // the way clicking anywhere inside a native input does. Only when the

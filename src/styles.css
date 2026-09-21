@@ -2255,6 +2255,21 @@
 }
 
 /*
+ * And out again while the reader is typing at it.
+ *
+ * `internal/glow.ts` writes the mark on a keystroke and takes it off on the
+ * next `pointermove`, which is the whole rule: a pointer resting on a field is
+ * where the hand left it — over the text — so the one moment the bloom is least
+ * wanted is the one moment it cannot move out of the way on its own.
+ *
+ * After the hover rule and not before it: the two selectors are the same
+ * specificity, so the one written second is the one that decides.
+ */
+.neba-glow[data-typing]::before {
+  opacity: 0;
+}
+
+/*
  * Release afterglow. The asymmetry is the whole trick: 0ms in, ~900ms out, so
  * the flash lands on the frame of the press and is still visibly draining a
  * beat after the finger lifts. No JavaScript, no ripple element, no timers.

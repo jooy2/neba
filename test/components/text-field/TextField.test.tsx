@@ -224,6 +224,69 @@ describe('TextField', () => {
     });
   });
 
+  describe('the pointer light', () => {
+    it('takes half the bloom a control takes', async () => {
+      // A field is on the way to somewhere else: what the reader looks at a
+      // moment later is their own text, over the patch the bloom is brightest
+      // on. Half is enough to say the shell is live.
+      const screen = await render(<TextField label="Email" />);
+      const root = screen.getByRole('textbox').element().closest('div') as HTMLElement;
+
+      expect(root.style.getPropertyValue('--n-glow')).toBe(
+        'color-mix(in srgb, var(--n-soft) 50%, transparent)'
+      );
+    });
+
+    it('leaves the press flash unset', async () => {
+      const screen = await render(<TextField label="Email" />);
+      const root = screen.getByRole('textbox').element().closest('div') as HTMLElement;
+
+      expect(root.style.getPropertyValue('--n-flash')).toBe('');
+    });
+
+    // A pointer resting on a field is where the hand left it — over the text —
+    // so the one moment the bloom is least wanted is the one moment it cannot
+    // get out of the way on its own.
+    it('goes out while the reader types and comes back when the pointer moves', async () => {
+      const screen = await render(<TextField label="Email" />);
+      const input = screen.getByRole('textbox');
+      const shell = () => input.element().parentElement as HTMLElement;
+
+      expect(shell()).toHaveClass('neba-glow');
+      expect(shell().hasAttribute('data-typing')).toBe(false);
+
+      await userEvent.click(input);
+      await userEvent.keyboard('a');
+
+      expect(shell().hasAttribute('data-typing')).toBe(true);
+
+      await userEvent.hover(input);
+
+      expect(shell().hasAttribute('data-typing')).toBe(false);
+    });
+
+    it('draws no light at all on a field that is not lit', async () => {
+      const screen = await render(<TextField label="Email" disabled />);
+      const input = screen.getByRole('textbox');
+      const shell = input.element().parentElement as HTMLElement;
+
+      expect(shell).not.toHaveClass('neba-glow');
+      expect(shell.hasAttribute('data-typing')).toBe(false);
+    });
+
+    it('marks nothing on a read-only field, which has no light to put out', async () => {
+      const screen = await render(<TextField label="Email" readOnly defaultValue="x" />);
+      const input = screen.getByRole('textbox');
+
+      await userEvent.click(input);
+      await userEvent.keyboard('{ArrowLeft}');
+
+      expect((input.element().parentElement as HTMLElement).hasAttribute('data-typing')).toBe(
+        false
+      );
+    });
+  });
+
   describe('style props', () => {
     it('maps color onto the token slots the styles read from', async () => {
       const screen = await render(<TextField color="success" />);

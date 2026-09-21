@@ -34,7 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
-import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
+import { fieldSpotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
@@ -291,7 +291,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         )}
         style={{
           ...surfaceSlots(family, elevation),
-          ...(lit ? spotlightSlot : undefined),
+          ...(lit ? fieldSpotlightSlot : undefined),
           ...style
         }}
         {...props}

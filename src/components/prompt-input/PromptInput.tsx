@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import { useDropZone } from '../../internal/drop.js';
-import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
+import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
 import { matchesShortcut } from '../../internal/keys.js';
 import { promptMessages, useMessages, type PromptMessages } from '../../internal/i18n.js';
 import {
@@ -285,7 +285,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
         className={cx('flex w-full flex-col', className ?? '')}
         style={{
           ...surfaceSlots(color, elevation),
-          ...(lit ? spotlightSlot : undefined),
+          ...(lit ? fieldSpotlightSlot : undefined),
           ...style
         }}
       >
@@ -298,8 +298,9 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
         <div
           data-dropping={dropping || undefined}
           {...handlers}
-          // The spotlight, and only the spotlight — see `internal/glow.ts`.
-          onPointerMove={trackPointer(undefined, lit)}
+          // The spotlight, and only the spotlight, and out again while the
+          // reader is typing — see `internal/glow.ts`.
+          {...fieldLight<HTMLDivElement>(lit)}
           onPointerDown={(event) => {
             // Pressing the shell's own padding puts the caret in the field, the
             // way pressing anywhere inside a native input does. A press on the

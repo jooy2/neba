@@ -127,15 +127,75 @@ describe('the pointer light', () => {
       expect(button.style.getPropertyValue('--n-flash')).not.toBe('');
     });
 
-    it('gives a field the spotlight and no flash', async () => {
+    it('gives a field half the spotlight and no flash', async () => {
       const screen = await render(<TextField label="Email" />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
       const root = shell.parentElement as HTMLElement;
 
       // The inline style rather than the computed one: no stylesheet is loaded
-      // here, so `var(--n-soft)` has nothing to resolve against.
-      expect(root.style.getPropertyValue('--n-glow')).toBe('var(--n-soft)');
+      // here, so `var(--n-soft)` has nothing to resolve against. Half of it,
+      // because what the reader looks at next is their own text over the patch
+      // the bloom is brightest on.
+      expect(root.style.getPropertyValue('--n-glow')).toBe(
+        'color-mix(in srgb, var(--n-soft) 50%, transparent)'
+      );
       expect(root.style.getPropertyValue('--n-flash')).toBe('');
+    });
+
+    it('gives a menu row the whole spotlight, which is not a field', async () => {
+      const screen = await render(
+        <Menu trigger={<Button>Actions</Button>}>
+          <MenuItem>Rename</MenuItem>
+        </Menu>
+      );
+
+      await screen.getByRole('button', { name: 'Actions' }).click();
+
+      const row = screen.getByRole('menuitem', { name: 'Rename' });
+
+      await expect.element(row).toBeInTheDocument();
+      expect((row.element() as HTMLElement).style.getPropertyValue('--n-glow')).toBe(
+        'var(--n-soft)'
+      );
+    });
+  });
+
+  /*
+   * The bloom is drawn where the pointer is, and a pointer resting on a field
+   * is over the text the reader is about to change — so the one moment it is
+   * least wanted is the one moment it cannot move out of the way on its own.
+   */
+  describe('typing', () => {
+    it('marks the field shell on a key and unmarks it on the next move', async () => {
+      const screen = await render(<TextField label="Email" />);
+      const input = screen.getByRole('textbox').element() as HTMLElement;
+      const shell = input.parentElement as HTMLElement;
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+
+      expect(shell.hasAttribute('data-typing')).toBe(true);
+
+      movePointer(shell, 10, 10);
+
+      expect(shell.hasAttribute('data-typing')).toBe(false);
+    });
+
+    it('marks it for a key that writes nothing, which is still reading it', async () => {
+      const screen = await render(<TextField label="Email" />);
+      const input = screen.getByRole('textbox').element() as HTMLElement;
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+
+      expect((input.parentElement as HTMLElement).hasAttribute('data-typing')).toBe(true);
+    });
+
+    it('marks nothing on a shell with no light on it', async () => {
+      const screen = await render(<TextField label="Email" disabled />);
+      const input = screen.getByRole('textbox').element() as HTMLElement;
+
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+
+      expect((input.parentElement as HTMLElement).hasAttribute('data-typing')).toBe(false);
     });
   });
 });

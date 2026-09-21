@@ -34,7 +34,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
-import { spotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
+import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /**
@@ -333,7 +333,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
         )}
         style={{
           ...surfaceSlots(family, elevation),
-          ...(lit ? spotlightSlot : undefined),
+          ...(lit ? fieldSpotlightSlot : undefined),
           ...style
         }}
         {...props}
@@ -375,8 +375,9 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           required={required}
         >
           <BaseUINumberField.Group
-            // The spotlight, and only the spotlight — see `internal/glow.ts`.
-            onPointerMove={trackPointer(undefined, lit)}
+            // The spotlight, and only the spotlight, and out again while the
+            // reader is typing — see `internal/glow.ts`.
+            {...fieldLight<HTMLDivElement>(lit)}
             className={cx(
               shellBaseClasses,
               fieldHeightClasses[size],

@@ -265,6 +265,33 @@ describe('neba/styles.css', () => {
       expect(ringing()).not.toHaveLength(0);
     });
 
+    // Both halves of the pointer light are one class and one other thing, so
+    // which of them wins is decided by the order they were written in and by
+    // nothing else. The suite runs headless, where `hover: hover` may not
+    // apply at all, so this is read off the sheet rather than off a style.
+    it('put the typing mark after the hover rule it has to beat', () => {
+      const flatten = (rules: CSSRuleList): CSSStyleRule[] =>
+        [...rules].flatMap((rule) =>
+          rule instanceof CSSStyleRule
+            ? [rule]
+            : rule instanceof CSSGroupingRule
+              ? flatten(rule.cssRules)
+              : []
+        );
+
+      const order = flatten(sheet.sheet!.cssRules);
+      const at = (selector: string) =>
+        order.findIndex((rule) => rule.selectorText.replace(/\s+/g, '') === selector);
+
+      const hovered = at('.neba-glow:hover::before');
+      const typing = at('.neba-glow[data-typing]::before');
+
+      expect(hovered).toBeGreaterThan(-1);
+      expect(typing).toBeGreaterThan(hovered);
+      expect(order[typing].style.opacity).toBe('0');
+      expect(order[hovered].style.opacity).toBe('1');
+    });
+
     it('outrank the reset where the two meet', async () => {
       // `reset.css` zeroes the padding of every `<ul>`; a List without dividers
       // then pads its own, so a hovered row does not run into the sheet's edge.

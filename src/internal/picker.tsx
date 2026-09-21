@@ -25,7 +25,7 @@ import {
   transitionClasses
 } from './styles.js';
 import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
-import { spotlightSlot, glowClasses, trackPointer } from './glow.js';
+import { fieldSpotlightSlot, glowClasses, trackPointer } from './glow.js';
 import { useFieldsetDisabled } from './fieldset.js';
 
 /**
@@ -243,7 +243,7 @@ export function PickerShell({
       )}
       style={{
         ...surfaceSlots(family, elevation),
-        ...(inert ? undefined : spotlightSlot),
+        ...(inert ? undefined : fieldSpotlightSlot),
         ...style
       }}
       {...props}
