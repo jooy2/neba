@@ -19,7 +19,7 @@
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 12.6
+      "budget": 13
     },
     {
       "id": "code-block",
@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 71.6
+      "budget": 71.7
     },
     {
       "id": "app-25",
@@ -88,7 +88,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 118.7
+      "budget": 118.8
     },
     {
       "id": "page-shell",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 75.6
+      "budget": 75.7
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 286.6
+      "budget": 287.2
     },
     {
       "id": "stylesheet",
