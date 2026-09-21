@@ -1454,6 +1454,22 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'A scale bar with its ends labelled, not a list of swatches: nothing here has a name and the order is the meaning'
       }
     },
+    {
+      name: 'xAxis',
+      type: 'NebaChartAxis',
+      description: {
+        ko: 'grid 아래쪽의 열 축. 둘 다 category 축이므로 min·max·tickCount·grid는 읽지 않습니다. label·tickFormat·tickAngle·hidden·thickness가 동작합니다. treemap은 읽지 않습니다',
+        en: 'The column axis along the bottom of a grid. Both axes here are category axes, so min, max, tickCount and grid are not read; label, tickFormat, tickAngle, hidden and thickness all work. A treemap reads neither'
+      }
+    },
+    {
+      name: 'yAxis',
+      type: 'NebaChartAxis',
+      description: {
+        ko: 'grid 옆쪽의 행 축. xAxis와 같되 tickAngle은 읽지 않습니다. 행에는 이미 제 줄이 하나씩 있습니다',
+        en: 'The row axis down the side of a grid. The same as xAxis less tickAngle: a row already has a line of its own'
+      }
+    },
     ...chartBaseProps({ height: 'size', legend: false })
   ],
 

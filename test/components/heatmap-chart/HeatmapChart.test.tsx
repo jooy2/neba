@@ -139,6 +139,119 @@ describe('HeatmapChart', () => {
     });
   });
 
+  describe('the two axes', () => {
+    // Both of them are category axes: the magnitude is on the ramp, which the
+    // scale legend describes rather than an axis.
+    it('names each axis where that axis is', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          categories={HOURS}
+          series={TRAFFIC}
+          xAxis={{ label: 'Hour' }}
+          yAxis={{ label: 'Day' }}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = texts(plot.element());
+
+      expect(written).toContain('Hour');
+      expect(written).toContain('Day');
+    });
+
+    it('drops a hidden axis and gives its band back to the cells', async () => {
+      const screen = await render(
+        <HeatmapChart label="Sessions" categories={HOURS} series={TRAFFIC} />
+      );
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.poll(() => cells(plot.element()).length).toBeGreaterThan(0);
+
+      const before = cells(plot.element())[0].getAttribute('x');
+
+      await screen.rerender(
+        <HeatmapChart
+          label="Sessions"
+          categories={HOURS}
+          series={TRAFFIC}
+          xAxis={{ hidden: true }}
+          yAxis={{ hidden: true }}
+        />
+      );
+
+      const written = texts(plot.element());
+
+      expect(written).not.toContain('Mon');
+      expect(written).not.toContain('12');
+      expect(Number(cells(plot.element())[0].getAttribute('x'))).toBeLessThan(Number(before));
+    });
+
+    it('writes each name through tickFormat', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          categories={HOURS}
+          series={TRAFFIC}
+          xAxis={{ tickFormat: (value) => `${value}h` }}
+          yAxis={{ tickFormat: (value) => String(value).toUpperCase() }}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = texts(plot.element());
+
+      expect(written).toContain('12h');
+      expect(written).toContain('MON');
+    });
+
+    it('turns the column names with tickAngle, and leaves the rows flat', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          categories={HOURS}
+          series={TRAFFIC}
+          xAxis={{ tickAngle: -45 }}
+          yAxis={{ tickAngle: -45 }}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const turned = [...plot.element().querySelectorAll('text')].filter((node) =>
+        node.getAttribute('transform')?.startsWith('rotate(-45')
+      );
+
+      expect(turned.map((node) => node.textContent)).toEqual(HOURS);
+    });
+
+    it('is read by a grid and not by a treemap', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          shape="treemap"
+          categories={HOURS}
+          series={TRAFFIC}
+          xAxis={{ label: 'Hour' }}
+          yAxis={{ label: 'Day' }}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.poll(() => cells(plot.element()).length).toBeGreaterThan(0);
+      expect(texts(plot.element())).not.toContain('Hour');
+    });
+  });
+
   describe('accessibility', () => {
     it('names itself when no label was given', async () => {
       const screen = await render(<HeatmapChart categories={HOURS} series={TRAFFIC} />);

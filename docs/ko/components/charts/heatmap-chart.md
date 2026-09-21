@@ -74,6 +74,20 @@ treemap에는 축이 없고 이름이 타일 안에 직접 적힙니다. 음수�
 
 </Demo>
 
+### xAxis · yAxis
+
+`grid`에는 **category** 축이 둘 있습니다. `xAxis`는 아래쪽의 열 이름을, `yAxis`는 옆쪽의 행 이름을 정합니다. 크기가 그려지는 곳은 색 ramp이고 그것을 설명하는 것은 축이 아니라 scale 범례이므로, `min`·`max`·`tickCount`·`grid`는 여기서 아무 뜻이 없고 읽지도 않습니다. ramp의 범위는 차트 자신의 `min`과 `max`가 정합니다.
+
+`label`은 축의 이름을, `tickFormat`은 이름 하나의 표기를 정합니다. `hidden`은 띠를 없애고 그 자리를 셀에 돌려주며, `thickness`는 대시보드에서 두 grid를 맞출 때 폭을 고정합니다. `xAxis.tickAngle`은 열 이름을 기울입니다. 긴 단계 이름이 늘어선 grid가 이름을 다 보여 줄 수 있는 이유가 그것입니다. `yAxis`는 이 값을 읽지 않습니다. 행에는 이미 제 줄이 하나씩 있습니다.
+
+`treemap`은 타일 위에 제 이름을 쓰므로 두 축 모두 읽지 않습니다.
+
+<Demo src="heatmap-chart/axes">
+
+<<< @/.vitepress/demos/heatmap-chart/axes.tsx
+
+</Demo>
+
 ### legend
 
 범례는 swatch 목록이 아니라 양 끝에 값이 붙은 스케일 막대입니다. `diverging`에서는 막대 가운데 아래에 midpoint를 씁니다. `legend={false}`로 끄고, `legend`의 `side`로 옮깁니다.

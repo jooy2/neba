@@ -1165,6 +1165,79 @@ export function textWidth(text: string, fontSize: number): number {
 }
 
 /**
+ * What an axis' labels measure, once they have been turned by `tickAngle`.
+ *
+ * Six numbers off one angle, and they are here rather than in the component
+ * that needed them first for `internal/`'s usual reason: a Cartesian chart's
+ * category axis and a HeatmapChart's column axis both turn their labels, and
+ * two copies of this trigonometry is two charts on one dashboard disagreeing
+ * about how deep a band of turned names runs.
+ *
+ * The one that carries the idea is **`room`**. Flat, a label needs its own
+ * width along the axis, so a long name means fewer labels. Turned, two
+ * neighbours only have to clear each other *across* the text — `fontSize /
+ * sin` — which no longer depends on how long the name is, and that is the
+ * whole reason turning them fits more of them in.
+ *
+ * `angle` is clamped to a quarter turn either way, past which a label is
+ * upside down.
+ */
+export interface TurnedAxis {
+  /** The clamped angle. `0` is flat, and every number below answers to it. */
+  angle: number;
+  /** How deep the band of labels runs, for a widest label of `widest` pixels. */
+  depth: (widest: number) => number;
+  /** How much of the axis one label takes, so two of them clear. */
+  room: (widest: number) => number;
+  /** The widest a label may render before the band runs past `depth` pixels. */
+  cut: (depth: number) => number;
+  /** How far below the axis a label is pinned. */
+  offset: number;
+  /** How far a label hangs past its own tick, along the axis. */
+  overhang: (widest: number) => number;
+  /** Which end of the label sits on the tick, which follows the turn. */
+  anchor: 'start' | 'middle' | 'end';
+}
+
+export function turnedAxis(angle: number | undefined, fontSize: number): TurnedAxis {
+  const turn = Math.max(-90, Math.min(90, angle ?? 0));
+  const radians = Math.abs(turn) * (Math.PI / 180);
+  const sin = Math.sin(radians);
+  const cos = Math.cos(radians);
+
+  if (turn === 0) {
+    return {
+      angle: 0,
+      depth: () => fontSize,
+      // Its own width and a little air.
+      room: (widest) => Math.max(widest, 1) + 12,
+      // Flat, the cut is the slot the caller measured, not one derived here.
+      cut: (depth) => depth,
+      offset: fontSize + 6,
+      // Centred on its tick, so half of it hangs off each side.
+      overhang: (widest) => widest / 2,
+      anchor: 'middle'
+    };
+  }
+
+  return {
+    angle: turn,
+    depth: (widest) => widest * sin + fontSize * cos,
+    // Guarded, because a label barely off the horizontal would otherwise ask
+    // for the whole axis and leave one name on it.
+    room: () => fontSize / Math.max(0.2, sin) + 4,
+    // `depth` read backwards: the width whose band is exactly that deep.
+    cut: (depth) => Math.max(0, (depth - fontSize * cos) / Math.max(0.05, sin)),
+    // `central` pins the anchor at the middle of the type rather than on its
+    // baseline, so half a line-height — measured along the turn — is what has
+    // to clear the axis above it.
+    offset: 8 + (fontSize / 2) * cos,
+    overhang: (widest) => widest * cos,
+    anchor: turn < 0 ? 'end' : 'start'
+  };
+}
+
+/**
  * A label cut to the room it has, with an ellipsis.
  *
  * The alternative when a category name is wider than its slot is to drop

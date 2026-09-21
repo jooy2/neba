@@ -29,6 +29,7 @@ import {
   textWidth,
   toValues,
   truncate,
+  turnedAxis,
   type ChartScaleKind,
   type ChartValue
 } from '../../internal/chart.js';
@@ -36,6 +37,7 @@ import { numberFormatter } from '../../internal/format.js';
 import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
 import { chartMessages, emptyMessages, useMessages } from '../../internal/i18n.js';
 import type {
+  NebaChartAxis,
   NebaChartCategory,
   NebaChartLegend,
   NebaChartSeries,
@@ -95,6 +97,25 @@ export interface HeatmapChartProps extends Omit<ChartBaseProps, 'legend'> {
   valueLabels?: 'none' | 'all';
   /** Where the scale legend sits. `false` leaves it off. */
   legend?: boolean | Pick<NebaChartLegend, 'side' | 'align'>;
+  /**
+   * The column axis — the names along the bottom of a `grid`.
+   *
+   * Both of a heatmap's axes are **category** axes: what the magnitude is drawn
+   * on is the colour ramp, which the scale legend describes rather than an
+   * axis. So `min`, `max`, `tickCount` and `grid` mean nothing here and are not
+   * read; the chart's own `min` and `max` are the ones that set the ramp.
+   * `hidden`, `label`, `tickFormat`, `tickAngle` and `thickness` all work.
+   *
+   * A `treemap` names its tiles on their own faces, so it has no axes and reads
+   * neither of these.
+   */
+  xAxis?: NebaChartAxis;
+  /**
+   * The row axis — the names down the side of a `grid`. The same five fields as
+   * `xAxis`, less `tickAngle`: a row already has a line of its own, and turning
+   * its name would take room it is not short of.
+   */
+  yAxis?: NebaChartAxis;
 }
 
 /**
@@ -122,6 +143,8 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     min,
     max,
     valueLabels = 'none',
+    xAxis,
+    yAxis,
     height,
     format,
     locale,
@@ -221,35 +244,74 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
      The row band is capped at a quarter of the width. A grid that hands a third
      of itself to a column of words has stopped being a grid, and a name that
      does not fit is cut — the tooltip and the table both still have it whole. */
+  const rowFormat = yAxis?.tickFormat;
+  const rows = shape === 'treemap' || yAxis?.hidden;
   const rowNames = React.useMemo(() => {
-    if (shape === 'treemap' || width <= 0) {
+    if (rows || width <= 0) {
       return { texts: [] as string[], band: 0 };
     }
 
     const room = Math.min(150, width * 0.25);
-    const texts = names.map((name) => truncate(name, room, fontSize));
+    const texts = names.map((name, index) =>
+      truncate(rowFormat ? String(rowFormat(name, index)) : name, room, fontSize)
+    );
 
     return {
       texts,
       band: texts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0) + 10
     };
-  }, [shape, names, width, fontSize]);
+  }, [rows, names, rowFormat, width, fontSize]);
 
-  const columnBand = shape === 'treemap' ? 0 : fontSize + 8;
+  /* How far the column names are turned, and every measurement that follows
+     from it. The same arithmetic a cartesian chart's category axis uses, which
+     is why it is in `chart.ts` rather than in either of them. */
+  const columnAngle = shape === 'treemap' ? 0 : xAxis?.tickAngle;
+  const turn = React.useMemo(() => turnedAxis(columnAngle, fontSize), [columnAngle, fontSize]);
 
   /* The column labels, and one stride for all of them. Measured per label, a
      short `Mar 9` kept a smaller stride than the `Mar 10` beside it, so the
      two were both drawn and ran into each other. The widest decides. */
-  const columnTexts = labels.map((category) => formatCategory(category, locale));
-  const widestColumn = columnTexts.reduce(
+  const columnFormat = xAxis?.tickFormat;
+  const columnTexts = React.useMemo(
+    () =>
+      labels.map((category, index) =>
+        columnFormat ? String(columnFormat(category, index)) : formatCategory(category, locale)
+      ),
+    [labels, columnFormat, locale]
+  );
+  /* Turned, a name may run as deep as the band will take — capped, because a
+     grid that hands two fifths of itself to a column of words has stopped
+     being a grid. Flat it is never cut at all: the stride drops the labels
+     that do not fit instead, which is the answer a heatmap has always given. */
+  const columnRoom = Math.min(140, plotHeight * 0.4);
+  const columnCut = React.useMemo(
+    () =>
+      turn.angle === 0
+        ? columnTexts
+        : columnTexts.map((text) => truncate(text, turn.cut(columnRoom), fontSize)),
+    [columnTexts, turn, columnRoom, fontSize]
+  );
+  const widestColumn = columnCut.reduce(
     (most, text) => Math.max(most, textWidth(text, fontSize)),
     0
   );
 
+  const axisNameBand = fontSize + 6;
+  const columnBand =
+    shape === 'treemap' || xAxis?.hidden
+      ? 0
+      : turn.depth(widestColumn) + 8 + (xAxis?.label ? axisNameBand : 0);
+  /* A row axis' name goes along the top of the box rather than turned on its
+     side, which is the arrangement the cartesian charts make for the same
+     reason: a name read sideways is not read at a glance. */
+  const namesRows = Boolean(yAxis?.label) && !rows;
+  const top = namesRows ? axisNameBand + 2 : 0;
+
   const plot = {
-    left: rowNames.band,
-    width: Math.max(0, width - rowNames.band),
-    height: Math.max(0, plotHeight - columnBand)
+    left: yAxis?.thickness ?? rowNames.band,
+    top,
+    width: Math.max(0, width - (yAxis?.thickness ?? rowNames.band)),
+    height: Math.max(0, plotHeight - (xAxis?.thickness ?? columnBand) - top)
   };
 
   /* Where each cell goes. A grid divides the box evenly and a treemap packs it,
@@ -282,7 +344,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
         index: flat[tile.index].index,
         cell: flat[tile.index].cell,
         x: plot.left + tile.x,
-        y: tile.y,
+        y: plot.top + tile.y,
         width: tile.width,
         height: tile.height
       }));
@@ -303,7 +365,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
           index,
           cell,
           x: plot.left + index * cellWidth,
-          y: at * rowHeight,
+          y: plot.top + at * rowHeight,
           width: cellWidth,
           height: rowHeight
         });
@@ -311,7 +373,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     );
 
     return list;
-  }, [shape, values, series.length, columns, plot.left, plot.width, plot.height]);
+  }, [shape, values, series.length, columns, plot.left, plot.top, plot.width, plot.height]);
 
   /** What a tile calls itself: its own column name, not its group's. */
   const cellName = React.useCallback(
@@ -601,12 +663,12 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
                 each in a band of its own — written over the cells they would be
                 unreadable, and a heatmap's cells are the one thing on the page
                 with no spare contrast to lend. */}
-            {shape === 'grid'
+            {shape === 'grid' && !yAxis?.hidden
               ? rowNames.texts.map((text, index) => (
                   <text
                     key={`row-${index}`}
                     x={plot.left - 8}
-                    y={((index + 0.5) * plot.height) / Math.max(1, series.length)}
+                    y={plot.top + ((index + 0.5) * plot.height) / Math.max(1, series.length)}
                     textAnchor="end"
                     dominantBaseline="central"
                     fontSize={fontSize}
@@ -617,24 +679,34 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
                 ))
               : null}
 
-            {shape === 'grid'
-              ? labels.map((category, index) => {
+            {shape === 'grid' && !xAxis?.hidden
+              ? columnCut.map((text, index) => {
                   const slot = plot.width / Math.max(1, columns);
-                  const text = columnTexts[index];
-                  // Every nth, chosen so the labels clear each other — the same
-                  // answer the cartesian axis gives, and never a rotated one.
-                  const stride = Math.max(1, Math.ceil((widestColumn + 8) / Math.max(1, slot)));
+                  /* Every nth, chosen so the labels clear each other. Turned,
+                     what one of them needs along the axis stops depending on
+                     how long the name is, which is what fits them all in. */
+                  const stride = Math.max(
+                    1,
+                    Math.ceil(turn.room(widestColumn) / Math.max(1, slot))
+                  );
 
                   if (index % stride !== 0) {
                     return null;
                   }
 
+                  const at = plot.left + (index + 0.5) * slot;
+                  const baseline = plot.top + plot.height + turn.offset - 6;
+
                   return (
                     <text
                       key={`col-${index}`}
-                      x={plot.left + (index + 0.5) * slot}
-                      y={plot.height + fontSize}
-                      textAnchor="middle"
+                      x={at}
+                      y={baseline}
+                      textAnchor={turn.anchor}
+                      transform={
+                        turn.angle === 0 ? undefined : `rotate(${turn.angle} ${at} ${baseline})`
+                      }
+                      dominantBaseline={turn.angle === 0 ? undefined : 'central'}
                       fontSize={fontSize}
                       fill="var(--neba-muted-fg)"
                     >
@@ -643,6 +715,34 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
                   );
                 })
               : null}
+
+            {/* The axis names, in the bands reserved for them: the row axis'
+                along the top of the box where the plot starts, and the column
+                axis' under its labels at the far end. */}
+            {namesRows ? (
+              <text
+                x={plot.left}
+                y={fontSize + 2}
+                textAnchor="start"
+                fontSize={fontSize}
+                fill="var(--neba-muted-fg)"
+                fontWeight={500}
+              >
+                {yAxis?.label}
+              </text>
+            ) : null}
+            {shape === 'grid' && xAxis?.label && !xAxis.hidden ? (
+              <text
+                x={plot.left + plot.width}
+                y={plot.top + plot.height + turn.depth(widestColumn) + fontSize + 8}
+                textAnchor="end"
+                fontSize={fontSize}
+                fill="var(--neba-muted-fg)"
+                fontWeight={500}
+              >
+                {xAxis.label}
+              </text>
+            ) : null}
           </svg>
         ) : null}
 

@@ -74,6 +74,20 @@ Reach for `diverging` only when there is a real zero to diverge about. Neither r
 
 </Demo>
 
+### xAxis · yAxis
+
+A `grid` has two **category** axes: `xAxis` names the columns along the bottom and `yAxis` names the rows down the side. What the magnitude is drawn on is the colour ramp, which the scale legend describes rather than an axis — so `min`, `max`, `tickCount` and `grid` mean nothing here and are not read. The chart's own `min` and `max` are the ones that set the ramp.
+
+`label` names the axis, `tickFormat` writes each name, `hidden` drops the band and gives it back to the cells, and `thickness` pins it so two grids on a dashboard line up. `xAxis.tickAngle` turns the column names, which is what lets a grid of long stage names keep all of them; `yAxis` does not read it, because a row already has a line of its own.
+
+A `treemap` names its tiles on their own faces and reads neither axis.
+
+<Demo src="heatmap-chart/axes">
+
+<<< @/.vitepress/demos/heatmap-chart/axes.tsx
+
+</Demo>
+
 ### legend
 
 The legend is a scale bar with its two ends labelled, not a list of swatches. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
