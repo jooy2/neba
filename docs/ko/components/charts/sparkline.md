@@ -37,6 +37,18 @@ import { Sparkline } from 'neba';
 
 </Demo>
 
+### nulls
+
+값이 없는 자리를 어떻게 할지 정합니다. `gap`은 끊고, `connect`는 잇고, `zero`는 0으로 읽습니다. [LineChart](./line-chart#nulls)와 같은 세 가지입니다.
+
+여기서 더 중요합니다. 큰 차트에는 구멍을 알아챌 tooltip과 축이 있지만 이 그림에는 둘 다 없어서, 빠진 3주를 조용히 메운 선은 보간된 것인지 아무도 알 수 없습니다. `zero`는 값 자체를 고쳐 쓰므로 그림이 스스로를 맞추는 범위에도 0이 들어가고, 화면 낭독기가 읽는 숫자도 `0`이 됩니다.
+
+<Demo src="sparkline/gaps">
+
+<<< @/.vitepress/demos/sparkline/gaps.tsx
+
+</Demo>
+
 ### min · max
 
 Sparkline은 자기 데이터의 범위로 스스로를 채웁니다. 20px 높이에서도 읽히는 이유가 그것이고, 동시에 함정도 그것입니다. `min`과 `max`를 같게 주지 않으면 나란히 놓인 두 Sparkline은 서로 다른 축 위에 그려집니다. 같게 주면 한 열의 Sparkline이 small multiples 차트가 됩니다.

@@ -37,6 +37,18 @@ Every native `<div>` attribute passes through. See [prop conventions](../../desi
 
 </Demo>
 
+### nulls
+
+What the strip does where a value is missing: `gap` breaks at it, `connect` bridges it, `zero` reads it as a nought. The same three answers a [LineChart](./line-chart#nulls) gives.
+
+It matters more here. A full chart has a tooltip and an axis to notice a hole with; a strip has neither, so one that quietly closes over three missing weeks is a trend nobody can tell was interpolated. `zero` rewrites the values, so the range the strip scales itself to takes the nought in and the numbers read out to a screen reader say `0` as well.
+
+<Demo src="sparkline/gaps">
+
+<<< @/.vitepress/demos/sparkline/gaps.tsx
+
+</Demo>
+
 ### min · max
 
 A sparkline fills itself with its own range, which is what makes it legible at twenty pixels tall, and it is also the trap. Two sparklines side by side are drawn on two different scales unless they are given the same `min` and `max`; pass those and a column of them becomes a small-multiples chart.

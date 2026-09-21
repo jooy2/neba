@@ -64,6 +64,33 @@ describe('Sparkline', () => {
       expect((d.match(/M/g) ?? []).length).toBe(2);
     });
 
+    it('bridges the gap with nulls="connect"', async () => {
+      const screen = await render(
+        <Sparkline data={[4, null, 6]} nulls="connect" label="Signups" />
+      );
+
+      const strip = screen.getByRole('img', { name: 'Signups' });
+
+      await expect.element(strip).toBeInTheDocument();
+      expect(
+        ((strip.element().querySelector('path')?.getAttribute('d') ?? '').match(/M/g) ?? []).length
+      ).toBe(1);
+    });
+
+    // A strip has no tooltip and no axis to notice a hole with, so `zero` has
+    // to reach the numbers a screen reader is read as well as the shape.
+    it('reads the gap as a nought everywhere with nulls="zero"', async () => {
+      const screen = await render(<Sparkline data={[4, null, 6]} nulls="zero" label="Signups" />);
+
+      const strip = screen.getByRole('img', { name: 'Signups' });
+
+      await expect.element(strip).toBeInTheDocument();
+      expect(
+        ((strip.element().querySelector('path')?.getAttribute('d') ?? '').match(/M/g) ?? []).length
+      ).toBe(1);
+      await expect.element(screen.getByText('4, 0, 6')).toBeInTheDocument();
+    });
+
     it('reflects changed data on re-render', async () => {
       const screen = await render(<Sparkline data={DATA} label="Signups" />);
 

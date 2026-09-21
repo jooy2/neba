@@ -16,7 +16,13 @@ import {
 } from '../../internal/chart.js';
 import { useMeasuredWidth } from '../../internal/chart-frame.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
-import type { NebaChartCurve, NebaChartDatum, NebaColor, NebaSize } from '../../types.js';
+import type {
+  NebaChartCurve,
+  NebaChartDatum,
+  NebaChartNulls,
+  NebaColor,
+  NebaSize
+} from '../../types.js';
 import { linePath } from '../../internal/chart.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -35,6 +41,19 @@ export interface SparklineProps extends Omit<
   shape?: 'line' | 'area' | 'bar';
   /** @default 'linear' */
   curve?: NebaChartCurve;
+  /**
+   * What the strip does where a value is missing: break at it, bridge it, or
+   * read it as a nought. The same three answers a
+   * [LineChart](./line-chart) gives, and they mean the same things.
+   *
+   * It matters more here than on a full chart, because there is no tooltip and
+   * no axis to notice the hole with: a strip that quietly closes over three
+   * missing weeks is a trend nobody can tell was interpolated. `zero` rewrites
+   * the values, so the range the strip scales itself to takes the nought in and
+   * the numbers read out to a screen reader say `0` as well.
+   * @default 'gap'
+   */
+  nulls?: NebaChartNulls;
   /**
    * How tall the strip is. Sized against the line of text it sits beside rather
    * than against the page — a sparkline is a word in a sentence, not a picture.
@@ -94,6 +113,7 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
       data,
       shape = 'line',
       curve = 'linear',
+      nulls = 'gap',
       size = 'md',
       color,
       endDot = false,
@@ -111,7 +131,17 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
     const measured = useMeasuredWidth(hostRef);
     const id = React.useId().replace(/:/g, '');
 
-    const values = React.useMemo(() => data.map(toValue), [data]);
+    /* `zero` is done here rather than to the points below, so everything that
+       reads a value afterwards agrees: the range the strip scales itself to,
+       the bars, and the list of numbers a screen reader is given instead of
+       the picture. */
+    const values = React.useMemo(() => {
+      const unpacked = data.map(toValue);
+
+      return nulls === 'zero'
+        ? unpacked.map((value) => (value.value === null ? { ...value, value: 0 } : value))
+        : unpacked;
+    }, [data, nulls]);
     const height = sparklineHeights[size];
     const stroke = lineWidths[size];
     const radius = markerRadii[size];
@@ -148,6 +178,12 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
     const points = values.map((value, index) =>
       value.value === null ? null : { x: index * step, y: y(value.value) }
     );
+    /* `connect` drops the gaps rather than bridging them in the path builder,
+       for the reason `internal/chart-line.tsx` gives: a bridged segment and a
+       real one have to be the same shape, and the only way to be sure of that
+       is for the builder never to know the difference. */
+    const drawn =
+      nulls === 'connect' ? (points.filter(Boolean) as { x: number; y: number }[]) : points;
 
     const lastIndex = (() => {
       for (let index = values.length - 1; index >= 0; index--) {
@@ -196,7 +232,7 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
                       />
                     </linearGradient>
                   </defs>
-                  <path d={areaPath(points, height, curve)} fill={`url(#${id}-fill)`} />
+                  <path d={areaPath(drawn, height, curve)} fill={`url(#${id}-fill)`} />
                 </>
               ) : null}
 
@@ -231,7 +267,7 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
                 )
               ) : (
                 <path
-                  d={linePath(points, curve)}
+                  d={linePath(drawn, curve)}
                   fill="none"
                   stroke={fill}
                   strokeWidth={stroke}

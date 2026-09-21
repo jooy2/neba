@@ -1651,6 +1651,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '점과 점 사이를 잇는 방식', en: 'How it gets from one point to the next' }
     },
     {
+      name: 'nulls',
+      type: CHART_NULLS,
+      default: "'gap'",
+      description: {
+        ko: '값이 없는 자리를 어떻게 할지. LineChart와 같은 세 가지입니다. tooltip도 축도 없어서 구멍을 알아챌 방법이 없는 만큼 여기서 더 중요합니다. zero는 값 자체를 고쳐 쓰므로 범위와 읽어 주는 숫자도 함께 0이 됩니다',
+        en: 'What the strip does where a value is missing. The same three a LineChart gives, and it matters more here: there is no tooltip and no axis to notice the hole with. zero rewrites the values, so the range and the numbers read out change with it'
+      }
+    },
+    {
       name: 'size',
       type: SIZE,
       default: "'md'",
