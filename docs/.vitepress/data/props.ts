@@ -1588,6 +1588,24 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'hole',
+      type: 'number',
+      default: { ko: 'shape가 정함', en: 'set by shape' },
+      description: {
+        ko: '가운데를 얼마나 비울지, 반지름에 대한 비율로 0부터 0.92까지. shape가 이미 정합니다(pie는 0, donut과 semi는 0.62). 고리가 너무 얇으면 progress track처럼, 너무 두꺼우면 구멍 뚫린 pie처럼 읽히므로 shape를 먼저 보세요. center가 앉을 자리를 만드는 것도 이 값입니다',
+        en: 'How much of the middle is cut out, as a fraction of the radius, from 0 to 0.92. shape already sets it — 0 for pie, 0.62 for donut and semi — so reach for shape first: a thin ring reads as a progress track and a thick one as a pie with a hole punched in it. It is also what gives center somewhere to sit'
+      }
+    },
+    {
+      name: 'gap',
+      type: 'number',
+      default: '2',
+      description: {
+        ko: '맞닿은 두 조각 사이로 보이는 표면의 폭(px). 각도가 아니라 길이인 이유는 화면에서의 상수여야 하기 때문입니다. 300px 차트에서 알맞던 각도는 60px 차트에서 조각 하나를 잘라냅니다. 0이면 붙습니다',
+        en: 'The surface showing between two touching slices, in pixels. A length and not an angle because the gap is a constant on screen: one that looked right on a 300px chart is a wedge out of a 60px one. 0 closes it'
+      }
+    },
+    {
       name: 'center',
       type: 'ReactNode',
       description: {

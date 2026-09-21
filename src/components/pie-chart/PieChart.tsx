@@ -42,8 +42,18 @@ import type {
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
-/** How much of the middle is cut out, per shape. */
+/** How much of the middle is cut out, per shape, when `hole` says nothing. */
 const holes = { pie: 0, donut: 0.62, semi: 0.62 } as const;
+
+/**
+ * As far as the hole may be opened.
+ *
+ * Not 1: a ring with no width left is nothing at all, and the arcs would be
+ * drawn inside out. Past this the chart has stopped being a picture of shares
+ * and become a border, so the cap is where it is on purpose rather than as a
+ * guard against a bad number.
+ */
+const widestHole = 0.92;
 
 export interface PieChartProps extends ChartBaseProps {
   /**
@@ -70,6 +80,35 @@ export interface PieChartProps extends ChartBaseProps {
    * @default 0
    */
   startAngle?: number;
+  /**
+   * How much of the middle is cut out, as a fraction of the radius, from `0`
+   * for a filled disc to `0.92` for a hairline ring.
+   *
+   * `shape` already sets it — `0` for a `pie`, `0.62` for a `donut` and a
+   * `semi` — and this is the dial behind that, for the ring that has to be
+   * thinner or thicker than the house one. A `pie` given a hole is a donut, so
+   * reach for `shape` first and for this only when the default ring is the
+   * wrong weight: a thin one reads as a progress track and a thick one as a
+   * pie with a hole punched in it.
+   *
+   * `center` needs a hole to sit in, so setting one is also how a `pie` gets a
+   * readout in the middle.
+   * @default 0 for `pie`, 0.62 for `donut` and `semi`
+   */
+  hole?: number;
+  /**
+   * The surface showing between two touching slices, in pixels.
+   *
+   * A constant on screen and not in the data, which is why it is a length: the
+   * gap is what separates two slices of the same hue family, and an angle that
+   * looked right on a 300px chart is a wedge out of a 60px one. `0` closes it,
+   * and the slices then meet at a hairline the eye has to find on its own.
+   *
+   * It is never taken off a slice too narrow to spare it, so a one-degree
+   * sliver stays a sliver rather than inverting.
+   * @default 2
+   */
+  gap?: number;
   /**
    * What goes in the hole. A `donut` or a `semi` with nothing in the middle is
    * a pie with a bite out of it; the total, or the one figure the chart is
@@ -108,6 +147,8 @@ export function PieChart(rawProps: PieChartProps) {
     categories,
     shape = 'pie',
     startAngle = 0,
+    hole,
+    gap = markGap,
     center,
     valueLabels = 'none',
     height,
@@ -200,14 +241,16 @@ export function PieChart(rawProps: PieChartProps) {
   const centreX = width / 2;
   const outer = Math.max(0, Math.min(width / 2, semi ? plotHeight : plotHeight / 2) - 2);
   const centreY = semi ? Math.min(plotHeight, plotHeight / 2 + outer / 2) : plotHeight / 2;
-  const inner = outer * holes[shape];
+  const inner = outer * Math.min(widestHole, Math.max(0, hole ?? holes[shape]));
 
   const nothing = total <= 0 || outer <= 0;
 
-  // The 2px between two slices, as the angle that subtends it at the rim. Wider
+  // The gap between two slices, as the angle that subtends it at the rim. Wider
   // for a small pie than for a large one, which is the point: the gap is a
-  // constant on screen, not a constant in the data.
-  const pad = outer > 0 ? Math.min(4, (markGap / outer) * (180 / Math.PI)) : 0;
+  // constant on screen, not a constant in the data. Capped all the same — past
+  // about fifteen degrees a gap asked for in pixels on a chart drawn at sixty
+  // of them is eating the data rather than parting it.
+  const pad = outer > 0 ? Math.min(15, (Math.max(0, gap) / outer) * (180 / Math.PI)) : 0;
   const sweep = semi ? 180 : 360;
   const from = semi ? -90 : startAngle;
 

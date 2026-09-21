@@ -239,6 +239,73 @@ describe('PieChart', () => {
     });
   });
 
+  describe('hole and gap', () => {
+    it('opens a hole in a pie, and widens the one a donut has', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" hole={0.4} categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      const first = () =>
+        screen.getByRole('img', { name: 'Accounts' }).element().querySelector('path');
+
+      await expect.element(screen.getByRole('img', { name: 'Accounts' })).toBeInTheDocument();
+
+      // A ring rather than a wedge: two arcs, the same shape a donut draws.
+      expect((first()?.getAttribute('d')?.match(/A/g) ?? []).length).toBe(2);
+
+      const narrow = first()?.getAttribute('d');
+
+      await screen.rerender(
+        <PieChart label="Accounts" hole={0.8} categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      expect(first()?.getAttribute('d')).not.toBe(narrow);
+    });
+
+    it('is clamped rather than inverted by a hole of 1', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" hole={1} categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        (plot.element().querySelector('path')?.getAttribute('d')?.match(/A/g) ?? []).length
+      ).toBe(2);
+    });
+
+    it('parts the slices further, and closes the gap at zero', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      const paths = () => [
+        ...screen.getByRole('img', { name: 'Accounts' }).element().querySelectorAll('path')
+      ];
+
+      await expect.element(screen.getByRole('img', { name: 'Accounts' })).toBeInTheDocument();
+
+      const standard = paths().map((path) => path.getAttribute('d'));
+
+      await screen.rerender(
+        <PieChart label="Accounts" gap={10} categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      const wide = paths().map((path) => path.getAttribute('d'));
+
+      await screen.rerender(
+        <PieChart label="Accounts" gap={0} categories={PLANS} data={[50, 30, 20]} />
+      );
+
+      const closed = paths().map((path) => path.getAttribute('d'));
+
+      expect(wide).not.toEqual(standard);
+      expect(closed).not.toEqual(standard);
+      expect(closed).toHaveLength(3);
+    });
+  });
+
   describe('legend', () => {
     it('hides a slice when its entry is clicked', async () => {
       const screen = await render(
