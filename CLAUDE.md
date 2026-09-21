@@ -325,16 +325,16 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | What a consumer imports       | Bundle   | Of which is Neba's own code |
 | ----------------------------- | -------- | --------------------------- |
 | `Divider`                     | 3.1 kB   | 1.4 kB                      |
-| `Button`                      | 5.2 kB   | 2.5 kB                      |
-| `Chip`                        | 3.5 kB   | 3.5 kB                      |
-| `LineChart`                   | 15.7 kB  | 14.2 kB                     |
-| `CodeBlock`                   | 5.6 kB   | 5.3 kB                      |
-| `Image`                       | 8.9 kB   | 7.2 kB                      |
-| `Gallery`                     | 11.8 kB  | 10.1 kB                     |
-| 12 components — a typical app | 71.6 kB  | 13.5 kB                     |
-| 25 components — a large one   | 118.5 kB | 20.7 kB                     |
+| `Button`                      | 5.1 kB   | 2.4 kB                      |
+| `Chip`                        | 3.4 kB   | 3.4 kB                      |
+| `LineChart`                   | 15.7 kB  | 14.1 kB                     |
+| `CodeBlock`                   | 5.5 kB   | 5.2 kB                      |
+| `Image`                       | 8.8 kB   | 7.0 kB                      |
+| `Gallery`                     | 11.7 kB  | 10.0 kB                     |
+| 12 components — a typical app | 71.7 kB  | 13.6 kB                     |
+| 25 components — a large one   | 118.8 kB | 21.0 kB                     |
 | a whole page shell            | 30.0 kB  | 10.2 kB                     |
-| all 185 exports               | 286.4 kB | 154.1 kB                    |
+| all 185 exports               | 290.4 kB | 158.5 kB                    |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is the one to watch: its preview is a `HoverCard`, so a citation in a paragraph costs 35 kB of Base UI's floating machinery.
 

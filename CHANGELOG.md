@@ -2,9 +2,37 @@
 
 ## vNext (2026--)
 
+## 1.16.0 (2026-09-21)
+
 ### Breaking changes
 
 - **A `ContextMenu` merges onto the element it is given rather than wrapping it.** The trigger put a `<div>` of Base UI's around `children`, and nothing could reach that box — `className` goes to the popup — so a scroll container handed to a menu became a scroll container inside a box with no height, and its content spilled instead of scrolling. `children` is one element now, which the trigger merges onto exactly as `Tooltip`'s does, and the menu costs the layout nothing. An area written as several elements, a fragment or bare text has to be wrapped in one element of the caller's own.
+
+### Where the bytes went
+
+| What you import               | 1.15.0   | 1.16.0   |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.1 kB   | 5.1 kB   |
+| `Chip`                        | 3.4 kB   | 3.4 kB   |
+| `LineChart`                   | 12.6 kB  | 15.7 kB  |
+| `CodeBlock`                   | 5.5 kB   | 5.5 kB   |
+| `Image`                       | 8.8 kB   | 8.8 kB   |
+| `Gallery`                     | 11.7 kB  | 11.7 kB  |
+| a whole page shell            | 30.0 kB  | 30.0 kB  |
+| 12 components — a typical app | 71.6 kB  | 71.7 kB  |
+| 12 components, with Korean    | 75.6 kB  | 75.7 kB  |
+| 25 components — a large one   | 118.7 kB | 118.8 kB |
+| all exports                   | 286.6 kB | 290.4 kB |
+
+One row moved, and it is the one the release is about. A `LineChart` grew 3.1 kB and so did every other cartesian chart: the reference lines, the export button, the second value axis and the turn arithmetic all live in `chart-frame.tsx`, which is in all five of their bundles.
+
+What is **not** in them is the brush. It is 1.5 kB behind a `React.lazy` of its own, which a chart with no window never fetches, and the CSV writer is another 0.5 kB fetched on the press. Both show in the unbudgeted async column `npm run size` prints beside every scenario, which is where they can be watched rather than quietly become the entry's problem.
+
+The two app rows moved a tenth each, and neither list holds a chart: that is `TextField` and `Select` carrying `fieldLight` beside `trackPointer`, and `Tabs` carrying its alignment map. The page shell has neither and did not move.
+
+Registering a language still costs 4.0 kB. The one word this release added is the export button's, in the `chart` namespace, and none of those twelve components reads it.
+
+`neba/styles.css` is 24.6 kB gzipped against 24.5 kB: the rule that puts a field's pointer light out while the reader is typing, and the utilities the brush strip and the export button are drawn with.
 
 ### Added
 
