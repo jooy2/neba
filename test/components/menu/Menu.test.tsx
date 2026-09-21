@@ -12,7 +12,8 @@ import {
   MenuRadioGroup,
   MenuRadioItem,
   MenuSeparator,
-  MenuSubmenu
+  MenuSubmenu,
+  Tooltip
 } from 'neba';
 
 describe('Menu', () => {
@@ -581,6 +582,33 @@ describe('ContextMenu', () => {
       <ContextMenu content={<MenuItem>Rename</MenuItem>}>
         <div>Right-click me</div>
       </ContextMenu>
+    );
+
+    await screen.getByText('Right-click me').click({ button: 'right' });
+
+    await expect.element(screen.getByRole('menuitem', { name: 'Rename' })).toBeInTheDocument();
+  });
+
+  // Both merge onto the same element, so one of the two has to be able to be
+  // merged onto in turn. A `Tooltip` describes its own popup with the props it
+  // is handed; this one passes them on, which is what makes it the inner.
+  it('passes what it is handed on to the area rather than to the popup', async () => {
+    const screen = await render(
+      <ContextMenu content={<MenuItem>Rename</MenuItem>} data-outer="yes">
+        <div data-testid="area">Right-click me</div>
+      </ContextMenu>
+    );
+
+    expect(screen.getByTestId('area').element().getAttribute('data-outer')).toBe('yes');
+  });
+
+  it('opens on a right-click through a `Tooltip` on the same element', async () => {
+    const screen = await render(
+      <Tooltip content="What this is">
+        <ContextMenu content={<MenuItem>Rename</MenuItem>}>
+          <div>Right-click me</div>
+        </ContextMenu>
+      </Tooltip>
     );
 
     await screen.getByText('Right-click me').click({ button: 'right' });

@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A `ContextMenu` can sit inside another trigger, which is what a `Tooltip` on the same element needs.** 1.16.0 stopped the trigger wrapping `children` and merged it onto them instead, which is right — and it meant a `ContextMenu` around a `Tooltip` no longer reached anything: the props were merged onto the `Tooltip`, which describes its own popup with what it is handed and passed none of it on. A tab with a card on hover and a menu on right-click lost the menu. The `ContextMenu` now passes what it is handed to the area rather than dropping it, so the two compose with the tooltip written **around** the menu. The other way about still does not work, and cannot while a tooltip's extra props are the popup's.
+
 ## 1.16.0 (2026-09-21)
 
 ### Breaking changes

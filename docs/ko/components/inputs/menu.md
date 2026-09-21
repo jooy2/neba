@@ -98,6 +98,8 @@ import { Button, Menu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 
 우클릭으로 열리는 메뉴입니다. `content`에 메뉴 행을, `children`에 대상 영역을 넘깁니다. 영역은 요소 하나여야 하며, 트리거가 그 요소를 감싸지 않고 합쳐지므로 레이아웃에 아무것도 더하지 않습니다.
 
+그 밖에 넘긴 값은 팝업이 아니라 영역으로 갑니다. 팝업은 `className`과 `style`이 맡습니다. 덕분에 `ContextMenu`는 다른 트리거 안에 들어갈 수 있습니다. 같은 요소에 [Tooltip](../feedback/tooltip)을 함께 걸려면 툴팁으로 메뉴를 감싸세요. 반대로 쓰면 동작하지 않습니다. 툴팁은 받은 props로 자기 팝업을 그리기 때문입니다.
+
 <Demo src="menu/context">
 
 <<< @/.vitepress/demos/menu/context.tsx

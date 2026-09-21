@@ -89,7 +89,13 @@ export interface MenuProps extends MenuSurfaceProps {
   children?: React.ReactNode;
 }
 
-export interface ContextMenuProps extends MenuSurfaceProps {
+export interface ContextMenuProps
+  extends
+    MenuSurfaceProps,
+    Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      'color' | 'content' | 'children' | 'className' | 'style'
+    > {
   /** The rows, exactly as they are written inside a `Menu`. */
   content: React.ReactNode;
   /**
@@ -98,6 +104,11 @@ export interface ContextMenuProps extends MenuSurfaceProps {
    *
    * Base UI's Trigger merges itself onto it rather than wrapping it, so the
    * menu adds no element to the layout and the area stays whatever it was.
+   *
+   * A `Tooltip` on the same area goes _outside_ this rather than inside it. A
+   * popup component describes its own popup with the props it is given, so it
+   * is not something another trigger can merge onto; this one passes on what it
+   * is handed, which is what lets it be the inner of the two.
    */
   children: React.ReactElement;
   open?: boolean;
@@ -796,7 +807,8 @@ export function ContextMenu(rawProps: ContextMenuProps) {
     loopFocus = true,
     disabled = false,
     className,
-    style
+    style,
+    ...props
   } = useStyleDefaults(rawProps, ['size', 'density']);
   const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
 
@@ -809,7 +821,12 @@ export function ContextMenu(rawProps: ContextMenuProps) {
         loopFocus={loopFocus}
         disabled={disabled}
       >
-        <BaseUIContextMenu.Trigger render={children} />
+        {/* Whatever this component was handed goes to the area rather than to
+            the popup, which `className` and `style` describe. That is what
+            makes a `ContextMenu` usable as the child of another trigger: a
+            `Tooltip` around one merges its own props onto this element, and
+            they carry on down to the same node the menu is listening on. */}
+        <BaseUIContextMenu.Trigger render={children} {...props} />
 
         <BaseUIContextMenu.Portal>
           <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">
