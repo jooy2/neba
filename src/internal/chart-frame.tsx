@@ -33,6 +33,7 @@ import {
   formatCategory,
   markerRadii,
   plotHeights,
+  resolveColor,
   seriesColor,
   showsTick,
   textWidth,
@@ -57,6 +58,7 @@ import type {
   NebaChartAxis,
   NebaChartCategory,
   NebaChartLegend,
+  NebaChartReference,
   NebaChartSeries,
   NebaChartTooltip,
   NebaSize
@@ -254,6 +256,15 @@ export interface CartesianChartProps extends ChartBaseProps {
   xAxis?: NebaChartAxis;
   /** The value axis. */
   yAxis?: NebaChartAxis;
+  /**
+   * Lines and bands drawn across the plot at values the data has none of — a
+   * target, an SLA, a budget, the window a forecast covers.
+   *
+   * The scale is widened to hold them, so a target above everything measured
+   * is still on the chart. They are drawn under the marks and over the grid,
+   * and each one that names itself is read out with the data.
+   */
+  references?: readonly NebaChartReference[];
 }
 
 /* ---------------------------------------------------------------------------
@@ -874,6 +885,117 @@ function ChartSurface({ legend, legendSide, children, table, className, ...box }
 }
 
 /* ---------------------------------------------------------------------------
+ * References
+ * ------------------------------------------------------------------------- */
+
+interface ReferencesProps {
+  references: readonly NebaChartReference[];
+  plot: PlotBox;
+  horizontal: boolean;
+  valuePx: (value: number) => number;
+  categoryPx: (index: number) => number;
+  categoryScale: ValueScale | null;
+  categoryValuePx: (value: number) => number;
+  fontSize: number;
+}
+
+/**
+ * The lines and bands a caller draws across the plot.
+ *
+ * The one thing on a chart that is neither a mark nor chrome, and it is drawn
+ * as exactly that: heavier than a gridline because it carries meaning, dashed
+ * and neutral because it is not the reader's data and must not take one of the
+ * eight series hues. A band is the same line twice with a wash between, so a
+ * tolerance and the two edges of it are one idea rather than three elements a
+ * caller has to line up.
+ *
+ * Under the marks and over the grid. A reference the data is hidden behind is
+ * a reference that has become the chart.
+ */
+function ChartReferences({
+  references,
+  plot,
+  horizontal,
+  valuePx,
+  categoryPx,
+  categoryScale,
+  categoryValuePx,
+  fontSize
+}: ReferencesProps) {
+  return (
+    <g>
+      {references.map((one, index) => {
+        const onValue = (one.axis ?? 'value') === 'value';
+        /* Where a number lands. On the value axis that is one call; on the
+           category axis it is the scale's when the categories are numbers or
+           dates, and the band's centre when they are columns — which is what
+           makes `value` an index there and says so in the type. */
+        const at = (number: number) =>
+          onValue
+            ? valuePx(number)
+            : categoryScale
+              ? categoryValuePx(number)
+              : (horizontal ? plot.top : plot.left) + categoryPx(number);
+
+        /* Which way the rule runs. A value on the value axis is drawn across
+           the *other* one, and `horizontal` swaps which of the two that is. */
+        const across = onValue ? !horizontal : horizontal;
+        const from = at(one.value);
+        const to = one.to === undefined ? null : at(one.to);
+        const near = to === null ? from : Math.min(from, to);
+        const far = to === null ? from : Math.max(from, to);
+        const ink = one.color ? resolveColor(one.color) : 'var(--neba-muted-fg)';
+        const dash = one.solid ? undefined : '4 4';
+
+        /* The label goes at the far end of the rule and just clear of it, so a
+           band's name does not sit inside the wash it belongs to. */
+        const label = one.label ? (
+          <text
+            x={across ? plot.left + plot.width - 4 : near + 4}
+            y={across ? near - 5 : plot.top + fontSize}
+            textAnchor={across ? 'end' : 'start'}
+            fontSize={fontSize}
+            fontWeight={500}
+            fill={ink}
+          >
+            {one.label}
+          </text>
+        ) : null;
+
+        return (
+          <g key={index}>
+            {to === null ? null : (
+              <rect
+                x={across ? plot.left : near}
+                y={across ? near : plot.top}
+                width={across ? plot.width : Math.max(0, far - near)}
+                height={across ? Math.max(0, far - near) : plot.height}
+                fill={`color-mix(in oklab, ${ink} 12%, transparent)`}
+              />
+            )}
+
+            {(to === null ? [from] : [near, far]).map((along, edge) => (
+              <line
+                key={edge}
+                x1={across ? plot.left : along}
+                x2={across ? plot.left + plot.width : along}
+                y1={across ? along : plot.top}
+                y2={across ? along : plot.top + plot.height}
+                stroke={ink}
+                strokeWidth={1}
+                strokeDasharray={dash}
+              />
+            ))}
+
+            {label}
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+/* ---------------------------------------------------------------------------
  * Cartesian charts
  * ------------------------------------------------------------------------- */
 
@@ -1068,6 +1190,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     categories,
     xAxis,
     yAxis,
+    references,
     horizontal = false,
     stacked = false,
     stackedFull = false,
@@ -1151,7 +1274,27 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
 
   const shownValues = values.filter((_, index) => visibility.visible[index]);
-  const extent = extentOf(shownValues, stacked);
+  /* The scale takes the references in. A target drawn off the top of the plot
+     is a target nobody can see, and moving every mark down a little to make
+     room for it is the cheaper of the two costs. Only the ones read against
+     the value axis: a rule that says *when* belongs to the other one. */
+  const extent = React.useMemo(() => {
+    const measured = extentOf(shownValues, stacked);
+    const marks = (references ?? []).filter((one) => (one.axis ?? 'value') === 'value');
+
+    if (marks.length === 0) {
+      return measured;
+    }
+
+    const numbers = marks.flatMap((one) =>
+      one.to === undefined ? [one.value] : [one.value, one.to]
+    );
+
+    return {
+      min: Math.min(measured?.min ?? Infinity, ...numbers),
+      max: Math.max(measured?.max ?? -Infinity, ...numbers)
+    };
+  }, [shownValues, stacked, references]);
   // Worked out here, beside the extent, rather than where it is drawn: read
   // after the scales are memoised, the call would count as a possible change to
   // `shownValues` and cost the compiler every memo below.
@@ -1418,6 +1561,20 @@ export function CartesianChart(rawProps: CartesianProps) {
      what `children` draws, and they are the same array both times — a chart
      that placed its dots twice would eventually place them in two places. */
   const markList = marks ? marks(layout) : noMarks;
+
+  /* What a reference is called and what it says, for the hidden list under the
+     table. A value-axis number goes through the chart's own `format`; a
+     category-axis one is a point on that scale when the categories are numbers
+     or dates, and an index into them when they are columns. */
+  const namedReferences = (references ?? []).filter((one) => Boolean(one.label));
+  const referenceText = (one: NebaChartReference) => {
+    const write = (value: number) =>
+      (one.axis ?? 'value') === 'value'
+        ? formatValue(value)
+        : formatCategory(categoryScale ? value : (labels[value] ?? value), locale);
+
+    return one.to === undefined ? write(one.value) : `${write(one.value)}–${write(one.to)}`;
+  };
 
   /* Hover. The nearest category to the pointer rather than the one it is
      literally over: a two-pixel line is not something a pointer can be asked to
@@ -1744,9 +1901,9 @@ export function CartesianChart(rawProps: CartesianProps) {
         ) : null
       }
       table={
-        nothing
-          ? null
-          : (table?.(tableId, formatValue) ?? (
+        nothing ? null : (
+          <>
+            {table?.(tableId, formatValue) ?? (
               <ChartDataTable
                 id={tableId}
                 caption={label}
@@ -1757,7 +1914,23 @@ export function CartesianChart(rawProps: CartesianProps) {
                 format={formatValue}
                 locale={locale}
               />
-            ))
+            )}
+
+            {/* The references, for the reader who gets the table instead of
+                the picture. A target drawn across the plot is context the
+                numbers alone do not carry, and a list of two lines is cheaper
+                to hear than a sentence that has to be built for it. */}
+            {namedReferences.length > 0 ? (
+              <ul className={srOnlyClasses}>
+                {namedReferences.map((one, index) => (
+                  <li key={index}>
+                    {one.label}: {referenceText(one)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
+        )
       }
     >
       {/* Two children rather than one: the readout under the picture has to be
@@ -1834,6 +2007,19 @@ export function CartesianChart(rawProps: CartesianProps) {
               labelDepth={labelDepth}
               zeroPx={zeroPx}
             />
+
+            {references && references.length > 0 ? (
+              <ChartReferences
+                references={references}
+                plot={plot}
+                horizontal={horizontal}
+                valuePx={valuePx}
+                categoryPx={categoryPx}
+                categoryScale={categoryScale}
+                categoryValuePx={categoryValuePx}
+                fontSize={fontSize}
+              />
+            ) : null}
 
             {/* No crosshair on a chart with marks, whatever mode was asked for:
                 a crosshair says "these numbers all belong to this column", and

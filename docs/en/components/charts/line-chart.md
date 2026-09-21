@@ -73,6 +73,12 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 <PropsTable name="NebaChartAxis" />
 
+### NebaChartReference
+
+Every entry of `references` takes this shape.
+
+<PropsTable name="NebaChartReference" />
+
 ### NebaChartLegend
 
 <PropsTable name="NebaChartLegend" />
@@ -132,6 +138,20 @@ What the line does where a value is missing.
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### references
+
+Lines and bands drawn across the plot at values the data has none of — a target, an SLA, a budget, the window a forecast covers. Every cartesian chart takes them.
+
+`value` places one. `to` turns it into a band. `axis: 'category'` reads the numbers against the other axis, for a rule that says _when_ rather than _how much_: on an axis of columns that number is the column's index, and on one of dates or numbers it is a point on that scale.
+
+The **scale widens to hold them**, so a target above everything measured is still on the chart. They are drawn under the marks and over the grid, dashed and neutral unless told otherwise — a reference in `danger` says the line is the bad thing, when usually the bad thing is the data crossing it. One that names itself is read out with the data.
+
+<Demo src="line-chart/references">
+
+<<< @/.vitepress/demos/line-chart/references.tsx
 
 </Demo>
 

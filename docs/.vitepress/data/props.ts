@@ -899,6 +899,14 @@ const cartesianDataProps: PropRow[] = [
     name: 'yAxis',
     type: 'NebaChartAxis',
     description: { ko: '값 축', en: 'The value axis' }
+  },
+  {
+    name: 'references',
+    type: 'NebaChartReference[]',
+    description: {
+      ko: '데이터에 없는 값 위에 긋는 선과 띠. 목표, SLA, 예산, 예측 구간 같은 것입니다. 축의 범위가 이 값까지 넓어지므로 측정값보다 높은 목표도 화면에 남습니다',
+      en: 'Lines and bands drawn across the plot at values the data has none of: a target, an SLA, a budget, the window a forecast covers. The scale widens to hold them, so a target above everything measured is still on the chart'
+    }
   }
 ];
 
@@ -1002,6 +1010,61 @@ const menuItemRows: PropRow[] = [
 const checkableOmitted = new Set(['onClick', 'href', 'target', 'rel', 'startIcon', 'closeOnClick']);
 
 export const propTables: Record<string, PropRow[]> = {
+  NebaChartReference: [
+    {
+      name: 'value',
+      type: 'number',
+      required: true,
+      description: {
+        ko: '선이 놓이는 값. 읽는 축의 단위 그대로입니다',
+        en: 'Where it sits, in the units of the axis it is read against'
+      }
+    },
+    {
+      name: 'to',
+      type: 'number',
+      description: {
+        ko: '주면 선이 아니라 value에서 여기까지의 띠가 됩니다. 안쪽이 계속 읽히도록 옅게 칠하고 양 끝에만 선을 긋습니다',
+        en: 'Turns the line into a band running from value to here. Drawn as a wash with an edge at each end, so what is inside it stays readable'
+      }
+    },
+    {
+      name: 'axis',
+      type: "'value' | 'category'",
+      default: "'value'",
+      description: {
+        ko: '숫자를 어느 축으로 읽을지. value는 마크를 재는 축, category는 마크가 놓이는 축입니다. 열로 된 축에서는 열의 index이고, 날짜나 숫자 축에서는 그 축 위의 한 점입니다',
+        en: 'Which axis the numbers are read against. value is the one the marks are measured on; category is the one they are placed along — an index on an axis of columns, a point on one of dates or numbers'
+      }
+    },
+    {
+      name: 'label',
+      type: 'string',
+      description: {
+        ko: '선의 이름. 먼 쪽 끝에 씁니다. SVG 텍스트라 문자열만 받습니다. 이름이 있는 reference는 표 아래 숨은 목록으로도 읽힙니다',
+        en: 'What it is called, written at the far end. SVG text, so a string. A reference that names itself is also read out with the data'
+      }
+    },
+    {
+      name: 'color',
+      type: 'NebaColor | string',
+      default: { ko: '흐린 글자색', en: 'the muted ink' },
+      description: {
+        ko: '선의 색. 기본값이 중립인 데는 이유가 있습니다. reference를 danger로 칠하면 그 선이 나쁜 것이라는 말이 되는데, 보통 나쁜 것은 그 선을 넘은 데이터입니다',
+        en: 'Its colour. Neutral by default for a reason: a reference in danger says the line is the bad thing, when usually the bad thing is the data crossing it'
+      }
+    },
+    {
+      name: 'solid',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '실선으로 긋습니다. 기본은 점선이고, 점선이어야 격자선이 아니라 기준선으로 읽힙니다',
+        en: 'Draws it as a solid rule. Dashed otherwise, which is what says a line is a threshold rather than one more gridline'
+      }
+    }
+  ],
+
   NebaChartAxis: [
     {
       name: 'hidden',

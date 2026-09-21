@@ -73,6 +73,12 @@ interface NebaChartPoint {
 
 <PropsTable name="NebaChartAxis" />
 
+### NebaChartReference
+
+`references`의 각 항목이 받는 형태입니다.
+
+<PropsTable name="NebaChartReference" />
+
 ### NebaChartLegend
 
 <PropsTable name="NebaChartLegend" />
@@ -132,6 +138,20 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### references
+
+데이터에 없는 값 위에 긋는 선과 띠입니다. 목표, SLA, 예산, 예측이 덮는 구간 같은 것들이고, 카테시안 차트 전부가 받습니다.
+
+`value`가 위치를 정합니다. `to`를 주면 선이 띠가 됩니다. `axis: 'category'`는 숫자를 반대쪽 축으로 읽어서, *얼마*가 아니라 *언제*를 말하는 선을 긋습니다. 열로 된 축에서는 그 숫자가 열의 index이고, 날짜나 숫자 축에서는 그 축 위의 한 점입니다.
+
+**축의 범위가 이 값까지 넓어집니다.** 측정값 전부보다 높은 목표도 화면에 남는다는 뜻입니다. 선은 마크 아래, 격자 위에 그려지고, 따로 말하지 않으면 중립색 점선입니다. reference를 `danger`로 칠하면 그 선이 나쁜 것이라는 말이 되는데 보통 나쁜 것은 그 선을 넘은 데이터입니다. 이름이 있는 reference는 데이터와 함께 읽힙니다.
+
+<Demo src="line-chart/references">
+
+<<< @/.vitepress/demos/line-chart/references.tsx
 
 </Demo>
 

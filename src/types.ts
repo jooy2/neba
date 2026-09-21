@@ -636,6 +636,60 @@ export interface NebaChartTooltip {
   render?: (context: NebaChartTooltipContext) => React.ReactNode;
 }
 
+/**
+ * A line, or a band, drawn across a plot at a value the data has none of.
+ *
+ * A target, an SLA, a budget, last year's average, the window a forecast
+ * covers. It is the one thing on a chart that is neither a mark nor chrome: it
+ * carries meaning, so it is drawn heavier than a gridline — and it is not the
+ * reader's data, so it is dashed and neutral rather than taking one of the
+ * eight series hues.
+ *
+ * The scale is widened to hold it. A target drawn off the top of the plot is a
+ * target nobody can see, and moving every mark down a little to make room is
+ * the cheaper of the two costs.
+ */
+export interface NebaChartReference {
+  /** Where it sits, in the units of the axis it is read against. */
+  value: number;
+  /**
+   * Turns the line into a band that runs from `value` to here — a tolerance, a
+   * quarter, the range a forecast covers. Drawn as a wash with an edge at each
+   * end, so what is inside it stays readable.
+   */
+  to?: number;
+  /**
+   * Which axis the numbers are read against.
+   *
+   * - `value` — the one the marks are measured on. A target, a budget, a limit.
+   * - `category` — the one they are placed along, for a rule that says *when*:
+   *   a release, a policy change. On an axis of columns the number is the
+   *   column's index; on one of dates or numbers it is a point on that scale.
+   * @default 'value'
+   */
+  axis?: 'value' | 'category';
+  /**
+   * What it is called, written at the far end of it. SVG text, so a string:
+   * an element has nowhere to go.
+   */
+  label?: string;
+  /**
+   * Its colour. A `NebaColor` family, or any CSS colour.
+   *
+   * Neutral by default, and that is the right answer more often than it looks:
+   * a reference in `danger` says the line is the bad thing, when usually the
+   * bad thing is the data crossing it.
+   * @default the muted ink
+   */
+  color?: NebaColor | (string & {});
+  /**
+   * Draws it as a solid rule. Dashed otherwise, which is what says a line is a
+   * threshold rather than one more gridline.
+   * @default false
+   */
+  solid?: boolean;
+}
+
 /** One axis of a cartesian chart. */
 export interface NebaChartAxis {
   /** Leaves the axis undrawn — its rule, its ticks and its labels. */

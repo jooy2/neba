@@ -755,6 +755,161 @@ describe('LineChart', () => {
     });
   });
 
+  describe('references', () => {
+    const plotOf = (screen: { getByRole: (role: string, options: { name: string }) => any }) =>
+      screen.getByRole('img', { name: 'Sessions' });
+
+    it('draws a dashed rule across the plot and names it', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 25, label: 'Target' }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = plotOf(screen);
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const dashed = [...plot.element().querySelectorAll('line')].filter((node) =>
+        node.getAttribute('stroke-dasharray')
+      );
+
+      expect(dashed).toHaveLength(1);
+      // Across the plot, which on a vertical chart means a horizontal rule.
+      expect(dashed[0].getAttribute('y1')).toBe(dashed[0].getAttribute('y2'));
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).toContain('Target');
+    });
+
+    it('draws a solid one when it is told to', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 25, solid: true }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = plotOf(screen);
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('line')].filter((node) =>
+          node.getAttribute('stroke-dasharray')
+        )
+      ).toHaveLength(0);
+    });
+
+    // A target above everything measured, drawn off the top of the plot, is a
+    // target nobody can see.
+    it('widens the scale to hold a reference past the data', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+      const plot = plotOf(screen);
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const before = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(before).not.toContain('500');
+
+      await screen.rerender(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 500 }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).toContain('500');
+    });
+
+    it('turns a `to` into a band with an edge at each end', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 15, to: 25 }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = plotOf(screen);
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('line')].filter((node) =>
+          node.getAttribute('stroke-dasharray')
+        )
+      ).toHaveLength(2);
+      expect(plot.element().querySelectorAll('rect').length).toBeGreaterThan(0);
+    });
+
+    it('runs the other way with axis="category"', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 2, axis: 'category' }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = plotOf(screen);
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const dashed = [...plot.element().querySelectorAll('line')].filter((node) =>
+        node.getAttribute('stroke-dasharray')
+      );
+
+      expect(dashed).toHaveLength(1);
+      expect(dashed[0].getAttribute('x1')).toBe(dashed[0].getAttribute('x2'));
+    });
+
+    // The picture is `aria-hidden`, so a reader who gets the table instead
+    // would otherwise never learn the target exists.
+    it('reads a named reference out with the data', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          format={{ style: 'percent', maximumFractionDigits: 0 }}
+          references={[{ value: 0.25, label: 'Target' }]}
+          series={[{ name: 'Web', data: [0.1, 0.2] }]}
+        />
+      );
+
+      await expect.element(screen.getByText('Target: 25%')).toBeInTheDocument();
+    });
+
+    it('names a category reference by its own category', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          references={[{ value: 2, axis: 'category', label: 'Launch' }]}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      await expect.element(screen.getByText('Launch: Mar')).toBeInTheDocument();
+    });
+  });
+
   describe('marks', () => {
     it('draws a dot per point with markers="all"', async () => {
       const screen = await render(
