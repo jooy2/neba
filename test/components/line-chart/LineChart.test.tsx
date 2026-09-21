@@ -235,6 +235,36 @@ describe('LineChart', () => {
         .toHaveAttribute('aria-pressed', 'true');
     });
 
+    // Grey would be a ninth colour on a chart that has eight, and a row that
+    // no longer says which series it is.
+    it('fades a hidden entry rather than greying it, swatch colour and all', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[
+            { name: 'Web', data: [1, 2], color: 'oklch(60% 0.2 262)' },
+            { name: 'Mobile', data: [3, 4] }
+          ]}
+        />
+      );
+
+      const entry = screen.getByRole('button', { name: 'Web' });
+
+      await expect.element(entry).toBeInTheDocument();
+
+      const swatchOf = () =>
+        entry.element().querySelector('span[aria-hidden="true"]') as HTMLElement;
+      const shownColor = getComputedStyle(swatchOf()).backgroundColor;
+
+      await entry.click();
+      await expect.element(entry).toHaveAttribute('aria-pressed', 'false');
+
+      expect(entry.element().className).toContain('opacity-40');
+      expect(entry.element().className).not.toContain('disabled-fg');
+      expect(getComputedStyle(swatchOf()).backgroundColor).toBe(shownColor);
+    });
+
     it('starts a series hidden when it says so', async () => {
       const screen = await render(
         <LineChart

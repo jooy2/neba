@@ -370,8 +370,14 @@ interface LegendProps {
  * light hue is illegible as text and because colour is what the swatch beside
  * it is for.
  *
- * A hidden series stays in the legend and goes grey rather than disappearing:
- * a list that shortens when you click it is a list you cannot click twice.
+ * A hidden series stays in the legend and fades rather than disappearing: a
+ * list that shortens when you click it is a list you cannot click twice. It
+ * fades whole — swatch and name together, at its own colour — rather than
+ * turning grey, because grey is a ninth colour on a chart that already has
+ * eight, and a row recoloured to say "off" is a row that no longer says which
+ * series it is. This is the second of the two places a chart is allowed to say
+ * something with opacity, and it is the same sentence the dimming makes one
+ * scale up: not the one you are looking at.
  *
  * `swatch` is for the chart whose marks carry a second identity channel. A
  * scatter past the third series tells its series apart by shape as well as by
@@ -442,7 +448,7 @@ function ChartLegendBar({
         const dimmed = visibility.hovered !== null && visibility.hovered !== index;
         const name = one.name ?? `${index + 1}`;
 
-        const ink = shown ? colors[index] : 'var(--neba-disabled-fg)';
+        const ink = colors[index];
 
         const content = (
           <>
@@ -491,8 +497,11 @@ function ChartLegendBar({
                   '[transition-timing-function:var(--neba-ease)]',
                   'hover:bg-(--n-soft)',
                   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-                  shown ? '' : 'text-(--neba-disabled-fg)',
-                  dimmed ? 'opacity-55' : ''
+                  // One branch and not two variants stacked: both states are
+                  // the same property, so written separately they would be
+                  // decided by the order Tailwind emitted them in. Hidden wins
+                  // over dimmed, which is the stronger statement of the two.
+                  shown ? (dimmed ? 'opacity-55' : '') : 'opacity-40'
                 )}
               >
                 {content}
@@ -501,7 +510,7 @@ function ChartLegendBar({
               <span
                 className={cx(
                   'flex min-w-0 items-center gap-1.5 px-1 py-0.5 text-(--neba-fg)',
-                  shown ? '' : 'text-(--neba-disabled-fg)'
+                  shown ? '' : 'opacity-40'
                 )}
               >
                 {content}

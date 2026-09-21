@@ -18,6 +18,8 @@
 
 - **A chart's value labels wear their own series' colour.** On a plot with four lines on it, a number floating above a point belongs to whichever line it is nearest, and "nearest" is exactly what a reader cannot judge where two of them cross — so the hue says which. Not the mark's colour as it stands: a ramp slot is solved to be a 2px line and lands near 4:1 on white, under what twelve-pixel type has to clear, so the label is that colour taken one step toward the page's own ink. Measured per slot in both themes, worst case 4.97:1 on white and 6.38:1 on the dark sheet.
 
+- **A hidden series fades in the legend instead of going grey.** Grey is a ninth colour on a chart that has eight, and a row recoloured to say "off" stops saying which series it is. It fades whole — swatch and name together, at its own colour — which is the same sentence the hover dimming makes one scale up: not the one you are looking at.
+
 ### Fixed
 
 - **A `Switch` is drawn inside its own field.** The track is taller than the line of text it labels from `md` up — 20, 24 and 28 pixels against a line of 18.2, 21 and 23.8 — and the box it sits in is that line, so the top and the bottom of the track were drawn outside the field. In anything that scrolls, that is a track with its corner clipped off; against whatever sits above the row, it is a track laid over it. The row makes room for the overflow instead, half above the line and half below, which leaves the track exactly where it was against the label and makes the field the height of what it draws. A `Switch` at those three steps is therefore 1.8, 3 and 4.2 pixels taller than it measured before. `xs` and `sm` do not move: the track already fits inside the line there.

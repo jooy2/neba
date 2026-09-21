@@ -311,6 +311,8 @@ Only `disabled` uses the native `disabled` attribute. `loading` and `readOnly` a
 
 > **Don't express state with opacity.** `opacity: 0.5` reads as "blurry" whatever the state is. Give each state its own axis: saturation, colour family, flatness.
 
+**A chart is the one exception, and it is not a state.** Nothing on a plot is a control, and the two things a chart says with opacity — a series dimmed because the reader is pointing at another one, a series faded because they turned it off — are the same sentence at two strengths: _not the one you are looking at_. The alternative is worse than blurry. A hidden legend row recoloured to grey has been given a ninth colour on a chart that has eight, and it stops saying which series it is; a dimmed line desaturated toward grey is a line that now looks like the grid.
+
 ---
 
 ## 7. Implementation rules
