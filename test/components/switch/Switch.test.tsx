@@ -133,6 +133,25 @@ describe('Switch', () => {
       expect(track).toHaveClass('w-13');
     });
 
+    /**
+     * The track is taller than the line of text beside it from `md` up, and the
+     * row makes room for it rather than letting it be drawn outside the field,
+     * where a scrolling ancestor clips its top.
+     */
+    it('makes room in the row for a track taller than its line of text', async () => {
+      const screen = await render(<Switch label="Alerts" size="xl" />);
+
+      expect(screen.getByRole('switch').element().closest('div')).toHaveClass(
+        'py-[calc((1.75rem-1lh)/2)]'
+      );
+
+      // At `sm` the track fits inside the line, and room made for it there would
+      // push it off the centre of the label rather than onto it
+      await screen.rerender(<Switch label="Alerts" size="sm" />);
+
+      expect(screen.getByRole('switch').element().closest('div')?.className).not.toContain('py-[');
+    });
+
     /** The same flattening a Checkbox's tick and a Radio's dot take. */
     it('wears no plate on the track, on or off', async () => {
       const screen = await render(<Switch label="Alerts" defaultChecked />);

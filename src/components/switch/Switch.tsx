@@ -87,6 +87,34 @@ const thumbTravelClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * The room the row makes for a track taller than the line of text beside it.
+ *
+ * A tick fits inside its label's line box and a track does not: from `md` up,
+ * `1lh` is 18.2, 21 and 23.8 pixels against a track of 20, 24 and 28. The
+ * wrapper is that line box, so the track was drawn outside it — outside the
+ * row, and outside the field — where anything that scrolls clips its top and
+ * whatever sits above the row has it laid over.
+ *
+ * Padding rather than a taller wrapper, because a taller wrapper moves the
+ * track: the wrapper starts at the top of the row, so growing it pushes the
+ * track's centre below the centre of the first line, by 2.1px at `xl`. Half the
+ * overflow above the line and half below leaves the track exactly where it was
+ * and puts the whole of it inside the row.
+ *
+ * Written against `1lh` rather than as the two pixels it currently comes to, so
+ * that the type scale and this stay in step by themselves. `xs` and `sm` are
+ * empty because the track is shorter than the line there, and a negative
+ * padding is not a thing.
+ */
+const trackRowPaddingClasses: Record<NebaSize, string> = {
+  xs: '',
+  sm: '',
+  md: 'py-[calc((1.25rem-1lh)/2)]',
+  lg: 'py-[calc((1.5rem-1lh)/2)]',
+  xl: 'py-[calc((1.75rem-1lh)/2)]'
+};
+
+/**
  * A pill, and the one place in the library that is right.
  *
  * Everywhere else the radius stops short of 50% because the flat run along the
@@ -263,7 +291,12 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
       style={{ ...slots, ...style }}
     >
       <div
-        className={`flex items-start gap-2.5 ${controlTextClasses[size]} ${tickRowLeadingClasses}`}
+        className={cx(
+          'flex items-start gap-2.5',
+          controlTextClasses[size],
+          tickRowLeadingClasses,
+          trackRowPaddingClasses[size]
+        )}
       >
         {labelPlacement === 'start' ? (
           <>

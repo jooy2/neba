@@ -6,6 +6,10 @@
 
 - **A `ContextMenu` merges onto the element it is given rather than wrapping it.** The trigger put a `<div>` of Base UI's around `children`, and nothing could reach that box — `className` goes to the popup — so a scroll container handed to a menu became a scroll container inside a box with no height, and its content spilled instead of scrolling. `children` is one element now, which the trigger merges onto exactly as `Tooltip`'s does, and the menu costs the layout nothing. An area written as several elements, a fragment or bare text has to be wrapped in one element of the caller's own.
 
+### Fixed
+
+- **A `Switch` is drawn inside its own field.** The track is taller than the line of text it labels from `md` up — 20, 24 and 28 pixels against a line of 18.2, 21 and 23.8 — and the box it sits in is that line, so the top and the bottom of the track were drawn outside the field. In anything that scrolls, that is a track with its corner clipped off; against whatever sits above the row, it is a track laid over it. The row makes room for the overflow instead, half above the line and half below, which leaves the track exactly where it was against the label and makes the field the height of what it draws. A `Switch` at those three steps is therefore 1.8, 3 and 4.2 pixels taller than it measured before. `xs` and `sm` do not move: the track already fits inside the line there.
+
 ## 1.15.0 (2026-09-19)
 
 ### Breaking changes
