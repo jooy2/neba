@@ -190,11 +190,13 @@ function spreadCollisions(attribute: string): string[] {
 /**
  * The modules that read the focus-ring slot and are only ever drawn inside one
  * that sets it: the calendar grid, which `Calendar` and every picker popup draw
- * on a surface of their own, and the two charts that draw through the chart
- * frame's `Box`.
+ * on a surface of their own, the two charts that draw through the chart frame's
+ * `Box`, and the brush strip, which the frame lazily draws inside that same
+ * `Box`.
  */
 const ringSetElsewhere = [
   '../../src/internal/calendar.tsx',
+  '../../src/internal/chart-brush.tsx',
   '../../src/components/heatmap-chart/HeatmapChart.tsx',
   '../../src/components/pie-chart/PieChart.tsx'
 ];
