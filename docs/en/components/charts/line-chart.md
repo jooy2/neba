@@ -105,6 +105,20 @@ A line chart crops its value axis to the data, because a line encodes a _positio
 
 </Demo>
 
+### tickAngle
+
+Turns the category labels, between `-90` and `90` degrees. Negative tilts them up to the right, positive tilts them down, and `-90` stands them on end.
+
+Flat, a long category name has one slot to fit in, so the axis cuts it to an ellipsis and then starts dropping every other one. Turned, each label only has to clear its neighbour across its own height, and the room a name needs stops depending on how long the name is. The band under the plot grows to hold them, up to a cap; past that they are still cut.
+
+Only the category axis reads it, and only where that axis runs along the bottom — a `horizontal` [BarChart](./bar-chart) already gives each name a row of its own.
+
+<Demo src="line-chart/ticks">
+
+<<< @/.vitepress/demos/line-chart/ticks.tsx
+
+</Demo>
+
 ### connectNulls
 
 Draws the line straight through a `null` instead of breaking at it. Leave it off unless the gap comes from how the data was collected, because a bridged gap is a value the chart made up.

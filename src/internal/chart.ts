@@ -1033,8 +1033,11 @@ export function formatTimeTicks(
  * How many ticks a category axis can show before the labels collide, and which
  * ones they are.
  *
- * Every nth label rather than rotating them: a rotated axis is unreadable at a
- * glance and it steals a band of the plot to be unreadable in. `n` is chosen so
+ * Every nth label by default rather than turning them: a turned axis is
+ * unreadable at a glance and it steals a band of the plot to be unreadable in.
+ * `xAxis.tickAngle` is how a caller says the names matter more than the shape
+ * does, and then the width passed in here is the one a *turned* label needs,
+ * which no longer depends on how long the name is. Either way `n` is chosen so
  * the labels clear each other at the measured width, and it always keeps the
  * first — a reader who cannot see where the axis starts cannot read any of it.
  */

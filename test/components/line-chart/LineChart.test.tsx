@@ -636,6 +636,93 @@ describe('LineChart', () => {
       // Only the baseline is left.
       expect(plot.element().querySelectorAll('line').length).toBe(1);
     });
+
+    it('turns the category labels by tickAngle', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          xAxis={{ tickAngle: -45 }}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const turned = [...plot.element().querySelectorAll('text')].filter((node) =>
+        node.getAttribute('transform')?.startsWith('rotate(-45')
+      );
+
+      expect(turned.map((node) => node.textContent)).toEqual(MONTHS);
+      // The anchor goes with the turn, or the label is drawn over the plot
+      // rather than under it.
+      expect(turned[0].getAttribute('text-anchor')).toBe('end');
+    });
+
+    // The whole point of turning them: what a label needs along the axis stops
+    // depending on how long the label is, so names that were cut to an
+    // ellipsis and thinned to every other one all fit.
+    it('keeps every long name, and keeps it whole, once they are turned', async () => {
+      const long = [
+        'Signed up',
+        'Email verified',
+        'Team invited',
+        'Repo connected',
+        'PR opened',
+        'PR merged'
+      ];
+      const data = [60, 50, 40, 30, 20, 10];
+
+      const screen = await render(
+        <LineChart label="Stages" categories={long} series={[{ name: 'Accounts', data }]} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Stages' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const flat = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(flat.filter((text) => text?.endsWith('…')).length).toBeGreaterThan(0);
+
+      await screen.rerender(
+        <LineChart
+          label="Stages"
+          categories={long}
+          xAxis={{ tickAngle: -45 }}
+          series={[{ name: 'Accounts', data }]}
+        />
+      );
+
+      const turned = [
+        ...screen.getByRole('img', { name: 'Stages' }).element().querySelectorAll('text')
+      ]
+        .filter((node) => node.getAttribute('transform'))
+        .map((node) => node.textContent);
+
+      expect(turned).toEqual(long);
+    });
+
+    it('leaves the labels flat by default', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('text')].filter((node) =>
+          node.getAttribute('transform')
+        )
+      ).toHaveLength(0);
+    });
   });
 
   describe('marks', () => {

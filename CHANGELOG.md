@@ -8,6 +8,8 @@
 
 ### Added
 
+- **`tickAngle` on `NebaChartAxis`, which turns the category labels.** Between `-90` and `90` degrees. Flat, a long category name has one slot to fit in, so the axis cuts it to an ellipsis and then drops every other one; turned, each label only has to clear its neighbour across its own height, and the room a name needs stops depending on how long the name is. Seven onboarding stages that showed two labels show all seven, whole. The band under the plot grows to hold them, capped at the smaller of 140 pixels and two fifths of the box — past that they are still cut, because a chart that is mostly axis is not a chart. Read on the category axis only, and only where that axis runs along the bottom.
+
 - **`align` on `Tabs`.** Where a tab's label sits once the tab is wider than the label is. A vertical bar is the case it exists for: every tab in a column is as wide as the longest one, and centred labels down a column read as a ragged edge on both sides. It moves the label and the icons and nothing else — the tab keeps its size, its padding and its indicator.
 
 ### Changed

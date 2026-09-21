@@ -645,6 +645,26 @@ export interface NebaChartAxis {
    */
   tickFormat?: (value: NebaChartCategory, index: number) => string | number;
   /**
+   * Turns the labels by this many degrees, between `-90` and `90`. Negative
+   * tilts them up to the right, which is the one most readers have met;
+   * positive tilts them down, and `-90` stands them on end.
+   *
+   * What it buys is **all** of the labels. Flat, a long category name has one
+   * slot to fit in, so the axis either cuts it to an ellipsis or drops every
+   * second one; turned, each label only has to clear its neighbour across its
+   * own height, and a dozen product names fit where three did. What it costs is
+   * a band of the plot and a label nobody can read at a glance, so it is worth
+   * it when the names are what the reader came for and not when the shape is.
+   *
+   * Only the **category** axis reads it, and only on a chart that draws that
+   * axis along the bottom: a horizontal chart already gives each label a row of
+   * its own, and a value tick is a rounded number that was never cut. The band
+   * under the plot grows to hold the turned labels, up to a cap — past that
+   * they are still cut, because a chart that is mostly axis is not a chart.
+   * @default 0
+   */
+  tickAngle?: number;
+  /**
    * How much room the axis keeps for its ticks and its label, in pixels.
    * Measured from the ticks themselves otherwise; set it when a long category
    * name needs more, or when two charts stacked on a dashboard have to line

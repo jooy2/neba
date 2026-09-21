@@ -1236,6 +1236,22 @@ export function CartesianChart(rawProps: CartesianProps) {
   const leftAxis = horizontal ? categoryAxis : valueAxis;
   const namesLeftAxis = Boolean(leftAxis?.label) && !leftAxis?.hidden;
 
+  /* How far the category labels are turned, and the two numbers every
+     measurement below reads off that.
+
+     Only the axis drawn along the *bottom*, and only when it is the category
+     one: a horizontal chart hands each label a row of its own on the left,
+     where turning it would take the room it already has, and a value tick is a
+     number that was rounded short before it was ever measured. Clamped to a
+     quarter turn either way, past which a label is upside down. */
+  const tilt =
+    horizontal || categoryAxis?.hidden
+      ? 0
+      : Math.max(-90, Math.min(90, categoryAxis?.tickAngle ?? 0));
+  const tilted = tilt !== 0;
+  const tiltSin = Math.sin(Math.abs(tilt) * (Math.PI / 180));
+  const tiltCos = Math.cos(Math.abs(tilt) * (Math.PI / 180));
+
   /* How much room one category label has, before anything is laid out.
      A horizontal chart gives each label a row of its own on the left, so the
      limit is a column width; a vertical one gives it a slot along the bottom,
@@ -1249,8 +1265,19 @@ export function CartesianChart(rawProps: CartesianProps) {
      `ChartAxes` takes over instead. A tick is a number that was already rounded
      to be short, so it is never cut: half of `12.4K` is not a smaller number,
      it is a wrong one. */
-  const cutsLabels = !categoryScale && (horizontal || slot - 6 >= fontSize * 2.4);
-  const cutTo = horizontal ? 150 : slot - 6;
+  /* And the depth a turned label is allowed to run to before it is eating the
+     plot rather than getting out of its neighbour's way. Whichever is smaller
+     of a fixed ceiling and a share of the box, so a 120px chart does not hand
+     two thirds of itself to the axis. */
+  const tiltRoom = Math.min(140, plotHeight * 0.4);
+  const cutsLabels = !categoryScale && (horizontal || tilted || slot - 6 >= fontSize * 2.4);
+  const cutTo = horizontal
+    ? 150
+    : tilted
+      ? // The depth a label of this length takes is `width·sin + fontSize·cos`,
+        // so the width that exactly fills the room is that read backwards.
+        Math.max(0, (tiltRoom - fontSize * tiltCos) / Math.max(0.05, tiltSin))
+      : slot - 6;
   const categoryTexts = React.useMemo(
     () =>
       cutsLabels
@@ -1272,13 +1299,17 @@ export function CartesianChart(rawProps: CartesianProps) {
      component with both axes off rather than a different one. */
   const leftBand = horizontal ? (categoryAxis?.hidden ? 0 : widestCategory + 10) : valueBand;
 
+  /* How deep the labels along the bottom run. One line of type flat, and the
+     turned rectangle's own height once they are tilted. */
+  const labelDepth = tilted ? widestCategory * tiltSin + fontSize * tiltCos : fontSize;
+
   const bottomBand = horizontal
     ? valueAxis?.hidden
       ? 0
       : fontSize + 12 + (valueAxis?.label ? axisLabelBand : 0)
     : categoryAxis?.hidden
       ? 0
-      : fontSize + 12 + (categoryAxis?.label ? axisLabelBand : 0);
+      : labelDepth + 12 + (categoryAxis?.label ? axisLabelBand : 0);
 
   // `thickness` belongs to whichever axis is actually on that edge, which swaps
   // with `horizontal` — read off the wrong one, a bar chart turned on its side
@@ -1293,7 +1324,16 @@ export function CartesianChart(rawProps: CartesianProps) {
   const rightPad =
     (horizontal || categoryScale
       ? 12
-      : Math.max(8, categoryTexts.length ? widestCategory / 2 : 8)) + markInset;
+      : tilted
+        ? // A turned label hangs off one side of its tick rather than both. Up
+          // to the right it runs back over the plot, where there is already a
+          // margin; down to the right it runs past the last tick, and that is
+          // the half that has to be reserved or the last name is cut in two by
+          // the edge of the drawing.
+          tilt > 0
+          ? widestCategory * tiltCos + 8
+          : 8
+        : Math.max(8, categoryTexts.length ? widestCategory / 2 : 8)) + markInset;
   // A mark is drawn from its centre, so half of the widest one hangs over the
   // top of the plot. On a scatter that half is a whole bubble, which is what
   // `markInset` is reserving on the other three sides.
@@ -1787,6 +1827,8 @@ export function CartesianChart(rawProps: CartesianProps) {
               valueAxis={valueAxis}
               categoryAxis={categoryAxis}
               fontSize={fontSize}
+              tilt={tilt}
+              labelDepth={labelDepth}
               zeroPx={zeroPx}
             />
 
@@ -1902,6 +1944,10 @@ interface AxesProps {
   valueAxis?: NebaChartAxis;
   categoryAxis?: NebaChartAxis;
   fontSize: number;
+  /** How far the category labels are turned, already clamped. `0` is flat. */
+  tilt: number;
+  /** How deep the labels along the bottom run, turned or not. */
+  labelDepth: number;
   zeroPx: number;
 }
 
@@ -1928,6 +1974,8 @@ function ChartAxes({
   valueAxis,
   categoryAxis,
   fontSize,
+  tilt,
+  labelDepth,
   zeroPx
 }: AxesProps) {
   const grid = valueAxis?.grid !== false && !valueAxis?.hidden;
@@ -1951,10 +1999,26 @@ function ChartAxes({
       ? categoryValuePx(categoryScale.ticks[index])
       : (horizontal ? plot.top : plot.left) + categoryPx(index);
 
+  /* What the labels are turned by, and the two numbers the placement reads off
+     it. Zero everywhere but a bottom category axis the caller tilted. */
+  const tilted = tilt !== 0;
+  const tiltSin = Math.sin(Math.abs(tilt) * (Math.PI / 180));
+  const tiltCos = Math.cos(Math.abs(tilt) * (Math.PI / 180));
+
+  /* How much of the axis one label takes.
+     Flat, that is its own width and a little air. Turned, it is what two
+     neighbouring labels need to clear each other *across* the text rather than
+     along it — `fontSize / sin`, which is the whole reason turning the labels
+     fits more of them: the room a name needs stops depending on how long the
+     name is. */
+  const categoryRoom = tilted
+    ? fontSize / Math.max(0.2, tiltSin) + 4
+    : Math.max(widestCategory, 1) + 12;
+
   const stride = tickStride(
     categoryTexts.length,
     horizontal ? plot.height : plot.width,
-    horizontal ? fontSize * 1.8 : Math.max(widestCategory, 1) + 12
+    horizontal ? fontSize * 1.8 : categoryRoom
   );
 
   /* The value axis needs a stride of its own once it is the *horizontal* one:
@@ -1980,8 +2044,19 @@ function ChartAxes({
     categoryTexts.length,
     stride,
     categoryStep,
-    horizontal ? fontSize * 1.8 : textWidth(categoryTexts[categoryTexts.length - 1] ?? '', fontSize)
+    horizontal
+      ? fontSize * 1.8
+      : tilted
+        ? categoryRoom
+        : textWidth(categoryTexts[categoryTexts.length - 1] ?? '', fontSize)
   );
+  /* Where a bottom category label is pinned. Flat, one line of type under the
+     axis. Turned, the top of the rotated box is what has to clear the axis, and
+     `central` puts the anchor half a line-height inside it — measured along the
+     turn, which is the `cos`. */
+  const categoryBaseline =
+    plot.top + plot.height + (tilted ? 8 + (fontSize / 2) * tiltCos : fontSize + 6);
+
   const lastValue = fitsLast(
     scale.ticks.length,
     valueStride,
@@ -2116,20 +2191,34 @@ function ChartAxes({
                 {labelled ? (
                   <text
                     x={along}
-                    y={plot.top + plot.height + fontSize + 6}
-                    // A value scale's two end ticks sit on the ends of the plot,
-                    // so half of each hangs outside it — the same inward anchor
-                    // the horizontal value axis makes, and the reason a scatter
-                    // needs no margin reserved on its right.
+                    y={categoryBaseline}
+                    /* Turned, the label hangs off one end of its tick rather
+                       than sitting either side of it: up to the right it ends
+                       at the tick, down to the right it starts there. Flat, a
+                       value scale's two end ticks sit on the ends of the plot,
+                       so half of each would hang outside — the same inward
+                       anchor the horizontal value axis makes, and the reason a
+                       scatter needs no margin reserved on its right. */
                     textAnchor={
-                      !categoryScale
-                        ? 'middle'
-                        : index === 0
-                          ? 'start'
-                          : index === categoryTexts.length - 1
-                            ? 'end'
-                            : 'middle'
+                      tilted
+                        ? tilt < 0
+                          ? 'end'
+                          : 'start'
+                        : !categoryScale
+                          ? 'middle'
+                          : index === 0
+                            ? 'start'
+                            : index === categoryTexts.length - 1
+                              ? 'end'
+                              : 'middle'
                     }
+                    /* About the anchor, which is the point the label is pinned
+                       to the axis by. `central` puts that point at the middle
+                       of the type rather than on its baseline, so the turn is
+                       about the text itself and a quarter turn stands a name
+                       on the tick rather than beside it. */
+                    transform={tilted ? `rotate(${tilt} ${along} ${categoryBaseline})` : undefined}
+                    dominantBaseline={tilted ? 'central' : undefined}
                     fontSize={fontSize}
                     fill="var(--neba-muted-fg)"
                     className={categoryScale ? 'tabular-nums' : undefined}
@@ -2165,7 +2254,10 @@ function ChartAxes({
       {bottomAxis?.label && !bottomAxis.hidden ? (
         <text
           x={plot.left + plot.width}
-          y={plot.top + plot.height + fontSize * 2 + 12}
+          // Under the labels rather than under one line of them: a turned axis
+          // is as deep as its longest name, and the name of the axis was
+          // written straight through it.
+          y={plot.top + plot.height + labelDepth + fontSize + 12}
           textAnchor="end"
           fontSize={fontSize}
           fill="var(--neba-muted-fg)"

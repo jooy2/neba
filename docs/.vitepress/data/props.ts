@@ -1056,6 +1056,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'tickAngle',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '라벨을 몇 도 기울일지. -90에서 90까지, 음수는 오른쪽 위로 눕고 -90은 세로로 섭니다. 기울인 라벨은 이웃과 제 높이만큼만 벌어지면 되므로, 눕히면 잘리거나 건너뛰던 이름이 다 들어갑니다. 대신 plot에서 띠를 하나 가져갑니다. category 축만, 그 축이 아래쪽에 그려질 때만 읽습니다',
+        en: 'Turns the labels by this many degrees, between -90 and 90; negative tilts them up to the right and -90 stands them on end. A turned label only has to clear its neighbour across its own height, so names that were cut to an ellipsis or dropped every other one all fit — at the cost of a band of the plot. Read on the category axis only, and only where that axis runs along the bottom'
+      }
+    },
+    {
       name: 'thickness',
       type: 'number',
       description: {
