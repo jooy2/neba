@@ -8178,6 +8178,16 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'align',
+      type: "'start' | 'center' | 'end'",
+      default: "'center'",
+      shared: true,
+      description: {
+        ko: '탭이 라벨보다 넓을 때 라벨이 놓이는 자리. 가로 바는 탭마다 제 내용만큼만 넓으므로 fullWidth와 함께 쓸 때 의미가 있고, 세로 바는 탭이 모두 가장 긴 것만큼 넓어지므로 이 값이 필요한 쪽입니다. 탭의 크기도 여백도 indicator도 그대로 두고 라벨과 아이콘만 옮깁니다',
+        en: "Where a tab's label sits once the tab is wider than the label. A horizontal bar sizes each tab to its own content, so this is worth setting there only with fullWidth; a vertical bar is the case it exists for, since every tab in a column is as wide as the longest. It moves the label and the icons and nothing else: the tab keeps its size, its padding and its indicator"
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {

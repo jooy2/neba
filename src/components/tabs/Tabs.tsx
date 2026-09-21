@@ -20,6 +20,7 @@ import {
 import { observeResize } from '../../internal/observe.js';
 import { bindAxisWheel } from '../../internal/wheel.js';
 import type {
+  NebaAlign,
   NebaDensity,
   NebaOrientation,
   NebaSize,
@@ -42,6 +43,7 @@ interface TabsContextValue {
   density: NebaDensity;
   orientation: NebaOrientation;
   fullWidth: boolean;
+  align: NebaAlign;
 }
 
 const TabsContext = React.createContext<TabsContextValue>({
@@ -49,7 +51,8 @@ const TabsContext = React.createContext<TabsContextValue>({
   size: 'md',
   density: 'default',
   orientation: 'horizontal',
-  fullWidth: false
+  fullWidth: false,
+  align: 'center'
 });
 
 /** A tab's value. The same restraint Select puts on its own — an identifier. */
@@ -146,6 +149,22 @@ export interface TabsProps
   wheel?: boolean;
   /** The tabs share the bar's full width, each taking an equal share of it. */
   fullWidth?: boolean;
+  /**
+   * Where a tab's label sits inside the tab, once the tab is wider than the
+   * label is.
+   *
+   * Which is the whole of when this is worth setting: a horizontal bar sizes
+   * each tab to its own content, so there is nothing to align until
+   * `fullWidth` gives them all an equal share. A **vertical** bar is the case
+   * it exists for — the tabs there are a column, every one of them as wide as
+   * the longest, and centred labels down a column read as a ragged edge on
+   * both sides. `start` is what a sidebar of tabs usually wants.
+   *
+   * It moves the label and the icons together, and nothing else: the tab keeps
+   * its own size, its padding and its indicator.
+   * @default 'center'
+   */
+  align?: NebaAlign;
   children?: React.ReactNode;
 }
 
@@ -263,6 +282,16 @@ const indicatorSurfaceClasses: Record<NebaVariant, string> = {
  * `md` Button are the same 32px, which is what lets a tab bar sit in a toolbar
  * next to one without the row losing its baseline.
  */
+/**
+ * Where the label sits once the tab is wider than it is. Logical, so it follows
+ * the reading direction rather than the screen.
+ */
+const tabAlignClasses: Record<NebaAlign, string> = {
+  start: 'justify-start',
+  center: 'justify-center',
+  end: 'justify-end'
+};
+
 const tabRestClasses: Record<NebaVariant, string> = {
   // `data-active`, not `data-selected` — Base UI spells a chosen tab's state
   // that way, and the wrong attribute is a class that silently never matches.
@@ -280,7 +309,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
   { value, startIcon, endIcon, disabled = false, className, style, children, ...props },
   ref
 ) {
-  const { variant, size, density, fullWidth } = React.useContext(TabsContext);
+  const { variant, size, density, fullWidth, align } = React.useContext(TabsContext);
 
   return (
     <BaseUITabs.Tab
@@ -289,8 +318,9 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
       disabled={disabled}
       style={{ ...(disabled ? undefined : spotlightSlot), ...style }}
       className={cx(
-        'relative z-10 inline-flex shrink-0 cursor-pointer items-center justify-center select-none',
+        'relative z-10 inline-flex shrink-0 cursor-pointer items-center select-none',
         'whitespace-nowrap font-medium',
+        tabAlignClasses[align],
         '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
         controlHeightClasses[size],
         controlTextClasses[size],
@@ -397,6 +427,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
     lines,
     wheel = true,
     fullWidth = false,
+    align = 'center',
     className,
     style,
     children,
@@ -407,8 +438,8 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const context = React.useMemo(
-    () => ({ variant, size, density, orientation, fullWidth }),
-    [variant, size, density, orientation, fullWidth]
+    () => ({ variant, size, density, orientation, fullWidth, align }),
+    [variant, size, density, orientation, fullWidth, align]
   );
 
   // Everything a caller writes between the tags is either a Tab or a Panel, and

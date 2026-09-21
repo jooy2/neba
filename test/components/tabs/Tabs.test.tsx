@@ -352,6 +352,39 @@ describe('Tabs', () => {
       expect(screen.getByRole('tab', { name: 'Overview' }).element()).toHaveClass('flex-1');
     });
 
+    it('centres a label by default and moves it with align', async () => {
+      const screen = await render(<Basic defaultValue="overview" />);
+      const tab = () => screen.getByRole('tab', { name: 'Overview' }).element();
+
+      expect(tab()).toHaveClass('justify-center');
+
+      await screen.rerender(<Basic defaultValue="overview" align="start" />);
+      expect(tab()).toHaveClass('justify-start');
+      expect(tab()).not.toHaveClass('justify-center');
+
+      await screen.rerender(<Basic defaultValue="overview" align="end" />);
+      expect(tab()).toHaveClass('justify-end');
+    });
+
+    // The label and nothing else: a tab that also shrank to its label would be
+    // a bar whose indicator moved every time the alignment changed.
+    it('leaves the tab its own width when the label moves', async () => {
+      const screen = await render(
+        <Basic defaultValue="overview" orientation="vertical" align="start" />
+      );
+      const tab = screen.getByRole('tab', { name: 'Overview' }).element();
+
+      await expect.element(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+
+      const width = tab.getBoundingClientRect().width;
+
+      await screen.rerender(<Basic defaultValue="overview" orientation="vertical" />);
+
+      expect(
+        screen.getByRole('tab', { name: 'Overview' }).element().getBoundingClientRect().width
+      ).toBe(width);
+    });
+
     it('maps its colour onto the token slots', async () => {
       const screen = await render(
         <Basic defaultValue="overview" color="success" className="probe" />

@@ -63,6 +63,18 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 </Demo>
 
+### align
+
+Where a tab's label sits once the tab is wider than the label is, which is the whole of when this is worth setting. A horizontal bar sizes each tab to its own content, so there is nothing to align until `fullWidth` gives them all an equal share. A vertical bar is the case it exists for: every tab in a column is as wide as the longest one, and centred labels down a column read as a ragged edge on both sides.
+
+It moves the label and the icons together and nothing else — the tab keeps its size, its padding and its indicator. `start` and `end` are logical, so they follow the reading direction.
+
+<Demo src="tabs/align">
+
+<<< @/.vitepress/demos/tabs/align.tsx
+
+</Demo>
+
 ### overflow and lines
 
 `overflow` says what a bar with more tabs than room does about it. `scroll` (the default) keeps the bar on one line and scrolls along it; the ends fade while there is more bar in that direction, and the scrollbar itself is hidden. `wrap` takes as many lines as the tabs need, and the rule under the chosen tab moves onto the line that tab is on.

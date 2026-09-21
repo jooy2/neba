@@ -6,6 +6,10 @@
 
 - **A `ContextMenu` merges onto the element it is given rather than wrapping it.** The trigger put a `<div>` of Base UI's around `children`, and nothing could reach that box — `className` goes to the popup — so a scroll container handed to a menu became a scroll container inside a box with no height, and its content spilled instead of scrolling. `children` is one element now, which the trigger merges onto exactly as `Tooltip`'s does, and the menu costs the layout nothing. An area written as several elements, a fragment or bare text has to be wrapped in one element of the caller's own.
 
+### Added
+
+- **`align` on `Tabs`.** Where a tab's label sits once the tab is wider than the label is. A vertical bar is the case it exists for: every tab in a column is as wide as the longest one, and centred labels down a column read as a ragged edge on both sides. It moves the label and the icons and nothing else — the tab keeps its size, its padding and its indicator.
+
 ### Changed
 
 - **A field's pointer light is half what a control's is, and goes out while the reader types.** A control is the thing the pointer acts on, so the bloom under the cursor is the control answering; a field is on the way to somewhere else, and what the reader looks at a moment later is their own text over the exact patch the bloom is brightest on. So a `TextField`, `NumberField`, `Combobox`, `Select`, `PromptInput` and the date and time pickers take `fieldSpotlightSlot`, which is the same light at 50%. And because a pointer resting on a field is where the hand left it — over the text, since that is where the reader clicked to get the caret — the one moment the bloom is least wanted is the one moment it cannot get out of the way on its own: a keystroke puts it out and the next pointer movement brings it back. Any key, not only the ones that produce text. Nothing about a Button, a Toggle, a Pill or a menu row changes, and neither does what a page carrying one of those weighs: the two handlers are their own export beside `trackPointer` rather than a line inside it.
