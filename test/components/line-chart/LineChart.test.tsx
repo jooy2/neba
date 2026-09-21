@@ -945,6 +945,76 @@ describe('LineChart', () => {
 
       expect((bridged?.match(/M/g) ?? []).length).toBe(1);
     });
+
+    it('bridges the same way through nulls="connect"', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          nulls="connect"
+          series={[{ name: 'Web', data: [10, null, 30, 40] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const path = plot
+        .element()
+        .querySelector('path[stroke]:not([stroke="none"])')
+        ?.getAttribute('d');
+
+      expect((path?.match(/M/g) ?? []).length).toBe(1);
+    });
+
+    // `zero` rewrites the data rather than the drawing, which is the whole
+    // reason it is worth having: a line pulled to the baseline over a table
+    // that still says nothing is a chart disagreeing with itself.
+    it('reads a gap as a nought everywhere with nulls="zero"', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions by month"
+          categories={MONTHS}
+          nulls="zero"
+          series={[{ name: 'Web', data: [10, null, 30, 40] }]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Sessions by month' });
+
+      await expect.element(table).toBeInTheDocument();
+
+      const cells = [...table.element().querySelectorAll('td')].map((cell) => cell.textContent);
+
+      expect(cells).toContain('0');
+
+      // And one unbroken path, because there is no gap left to break at.
+      const path = screen
+        .getByRole('img', { name: 'Sessions by month' })
+        .element()
+        .querySelector('path[stroke]:not([stroke="none"])')
+        ?.getAttribute('d');
+
+      expect((path?.match(/M/g) ?? []).length).toBe(1);
+    });
+
+    it('leaves the gap alone by default', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions by month"
+          categories={MONTHS}
+          series={[{ name: 'Web', data: [10, null, 30, 40] }]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Sessions by month' });
+
+      await expect.element(table).toBeInTheDocument();
+      expect(
+        [...table.element().querySelectorAll('td')].map((cell) => cell.textContent)
+      ).not.toContain('0');
+    });
   });
 
   describe('formatting', () => {

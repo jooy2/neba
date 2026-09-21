@@ -36,6 +36,7 @@ import {
   toValues,
   truncate,
   valueScale,
+  zeroGaps,
   toFullShares,
   timeScale
 } from '../../src/internal/chart.js';
@@ -376,6 +377,42 @@ describe('toValues and categoryCount', () => {
       [{ value: 1 }, { value: null }],
       [{ value: 2, x: undefined, z: undefined, color: undefined, label: undefined }]
     ]);
+  });
+});
+
+describe('zeroGaps', () => {
+  // The whole point of it is that it rewrites the *data*: everything the frame
+  // reads afterwards — the scale, the tooltip, the summary and the table —
+  // comes off this array, so the picture cannot say one thing and the table
+  // another.
+  it('turns every shape of gap into a nought', () => {
+    expect(zeroGaps([{ data: [1, null, { y: null }, { y: 3 }] }])[0].data).toEqual([
+      1,
+      0,
+      { y: 0 },
+      { y: 3 }
+    ]);
+  });
+
+  it('keeps everything else a point was carrying', () => {
+    const [series] = zeroGaps([{ name: 'Web', color: 'danger', data: [{ x: 'Jan', y: null }] }]);
+
+    expect(series.name).toBe('Web');
+    expect(series.color).toBe('danger');
+    expect(series.data[0]).toEqual({ x: 'Jan', y: 0 });
+  });
+
+  // A `NaN` that reached a chart is a division nobody checked, and `toValue`
+  // already reads one as a gap.
+  it('reads a number that is not finite as a gap too', () => {
+    expect(zeroGaps([{ data: [Number.NaN, { y: Number.POSITIVE_INFINITY }] }])[0].data).toEqual([
+      0,
+      { y: 0 }
+    ]);
+  });
+
+  it('leaves a series with nothing missing untouched in value', () => {
+    expect(zeroGaps([{ data: [1, 2, 3] }])[0].data).toEqual([1, 2, 3]);
   });
 });
 

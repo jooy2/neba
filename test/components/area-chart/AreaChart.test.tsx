@@ -73,6 +73,102 @@ describe('AreaChart', () => {
     });
   });
 
+  describe('nulls', () => {
+    const WITH_GAP = [1, null, 3];
+
+    it('breaks the band at a gap by default', async () => {
+      const screen = await render(
+        <AreaChart label="Storage" categories={MONTHS} series={[{ name: 'Hot', data: WITH_GAP }]} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Storage' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const fill = plot.element().querySelector('path[fill^="url("]')?.getAttribute('d');
+
+      expect((fill?.match(/M/g) ?? []).length).toBeGreaterThan(1);
+    });
+
+    it('closes the band across a gap with connect', async () => {
+      const screen = await render(
+        <AreaChart
+          label="Storage"
+          categories={MONTHS}
+          nulls="connect"
+          series={[{ name: 'Hot', data: WITH_GAP }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Storage' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const fill = plot.element().querySelector('path[fill^="url("]')?.getAttribute('d');
+
+      expect((fill?.match(/M/g) ?? []).length).toBe(1);
+    });
+
+    // A stacked band that breaks takes the bands above it with it, which is
+    // why `zero` is usually what a caller of one actually meant.
+    it('reads the gap as a nought everywhere with zero', async () => {
+      const screen = await render(
+        <AreaChart
+          label="Storage used"
+          categories={MONTHS}
+          nulls="zero"
+          series={[{ name: 'Hot', data: WITH_GAP }]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Storage used' });
+
+      await expect.element(table).toBeInTheDocument();
+      expect([...table.element().querySelectorAll('td')].map((cell) => cell.textContent)).toContain(
+        '0'
+      );
+    });
+
+    it('still answers to the old connectNulls spelling', async () => {
+      const screen = await render(
+        <AreaChart
+          label="Storage"
+          categories={MONTHS}
+          connectNulls
+          series={[{ name: 'Hot', data: WITH_GAP }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Storage' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        (plot.element().querySelector('path[fill^="url("]')?.getAttribute('d')?.match(/M/g) ?? [])
+          .length
+      ).toBe(1);
+    });
+
+    it('lets nulls win over connectNulls when both are passed', async () => {
+      const screen = await render(
+        <AreaChart
+          label="Storage"
+          categories={MONTHS}
+          connectNulls
+          nulls="gap"
+          series={[{ name: 'Hot', data: WITH_GAP }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Storage' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        (plot.element().querySelector('path[fill^="url("]')?.getAttribute('d')?.match(/M/g) ?? [])
+          .length
+      ).toBeGreaterThan(1);
+    });
+  });
+
   describe('stacked', () => {
     it('swaps the wash for a flat tint and separates the bands', async () => {
       const screen = await render(

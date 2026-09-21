@@ -563,6 +563,25 @@ export interface NebaTimelineSeries {
 export type NebaChartCurve = 'linear' | 'smooth' | 'step';
 
 /**
+ * What a line or a band does where a value is missing.
+ *
+ * - `gap` — breaks. The default, and the honest one: a `null` is a month that
+ *   has not closed or a sensor that was offline, and a chart that draws over
+ *   the hole has stated a number nobody measured.
+ * - `connect` — joins the two sides with a straight segment. For a gap that is
+ *   an artefact of how the data was collected rather than a fact about the
+ *   world — a reading that failed to arrive for something that never stopped.
+ * - `zero` — reads the gap as a nought, everywhere: the line goes to the
+ *   baseline, the axis takes the nought into its range, and the tooltip and the
+ *   table say `0` rather than nothing. That last part is the point of it being
+ *   here rather than a change to the drawing alone — a picture that touches
+ *   zero over a table that says "no reading" is two answers to one question.
+ *   Reach for it when a missing row genuinely means none happened, which is
+ *   what an event count usually means and what a rate never does.
+ */
+export type NebaChartNulls = 'gap' | 'connect' | 'zero';
+
+/**
  * Which values are written onto the marks themselves.
  *
  * The default is `none` everywhere, and that is not timidity — a number beside

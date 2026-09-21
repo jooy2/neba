@@ -8,6 +8,8 @@
 
 ### Added
 
+- **`nulls` on a `LineChart` and an `AreaChart`, with a third answer to a gap.** `connectNulls` had two: break at a `null`, or bridge it. The one it could not say is the one a caller with an event count wants, which is that a missing row means none happened — so `nulls` takes `'gap'`, `'connect'` or `'zero'`. `zero` rewrites the data rather than the drawing, so the axis takes the nought into its range and the tooltip and the table say `0` as well; a line pulled to the baseline over a table that still says nothing is a chart disagreeing with itself. `connectNulls` is now the old spelling of `'connect'`, still read when `nulls` is left out.
+
 - **`tickAngle` on `NebaChartAxis`, which turns the category labels.** Between `-90` and `90` degrees. Flat, a long category name has one slot to fit in, so the axis cuts it to an ellipsis and then drops every other one; turned, each label only has to clear its neighbour across its own height, and the room a name needs stops depending on how long the name is. Seven onboarding stages that showed two labels show all seven, whole. The band under the plot grows to hold them, capped at the smaller of 140 pixels and two fifths of the box — past that they are still cut, because a chart that is mostly axis is not a chart. Read on the category axis only, and only where that axis runs along the bottom.
 
 - **`align` on `Tabs`.** Where a tab's label sits once the tab is wider than the label is. A vertical bar is the case it exists for: every tab in a column is as wide as the longest one, and centred labels down a column read as a ragged edge on both sides. It moves the label and the icons and nothing else — the tab keeps its size, its padding and its indicator.

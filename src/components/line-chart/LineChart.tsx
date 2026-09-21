@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { CartesianChart, type CartesianChartProps } from '../../internal/chart-frame.js';
 import { LineSeries, type ChartMarkers } from '../../internal/chart-line.js';
-import type { NebaChartCurve, NebaChartValueLabels } from '../../types.js';
+import { zeroGaps } from '../../internal/chart.js';
+import type { NebaChartCurve, NebaChartNulls, NebaChartValueLabels } from '../../types.js';
 
 export interface LineChartProps extends CartesianChartProps {
   /**
@@ -36,10 +37,21 @@ export interface LineChartProps extends CartesianChartProps {
    */
   gradient?: boolean;
   /**
-   * Draws the line straight through a `null` instead of breaking at it.
+   * What the line does where a value is missing: break at it, bridge it, or
+   * read it as a nought.
    *
-   * Off, and it should stay off unless the gap is an artefact of how the data
-   * was collected. A bridged gap is a number the chart made up.
+   * `gap` is the default and the honest one. `connect` is for a gap that came
+   * from the collection rather than from the world, and `zero` is for a count
+   * where a missing row really does mean none — it rewrites the data, so the
+   * axis, the tooltip and the table all say nought too.
+   * @default 'gap'
+   */
+  nulls?: NebaChartNulls;
+  /**
+   * Draws the line straight through a `null` instead of breaking at it.
+   * @deprecated Pass `nulls="connect"`. `nulls` says the same thing and has a
+   * third answer this one cannot express; this is read only when `nulls` is
+   * left out.
    * @default false
    */
   connectNulls?: boolean;
@@ -79,16 +91,24 @@ export function LineChart({
   curve = 'linear',
   markers = 'auto',
   gradient = false,
+  nulls,
   connectNulls = false,
   valueLabels = 'none',
   stacked = false,
+  series,
   ...props
 }: LineChartProps) {
   const id = React.useId().replace(/:/g, '');
+  const gaps = nulls ?? (connectNulls ? 'connect' : 'gap');
+  // Memoised on the two things it reads, because the frame keys its own unpack
+  // on the identity of this array: a fresh one per render would re-measure and
+  // re-format every point while the pointer is merely crossing the plot.
+  const drawn = React.useMemo(() => (gaps === 'zero' ? zeroGaps(series) : series), [series, gaps]);
 
   return (
     <CartesianChart
       {...props}
+      series={drawn}
       stacked={stacked}
       // A line sits *on* its category tick, not in the middle of a band — the
       // first point belongs against the axis, not a half-step off it.
@@ -110,7 +130,7 @@ export function LineChart({
           stacked={stacked}
           markers={markers}
           valueLabels={valueLabels}
-          connectNulls={connectNulls}
+          connectNulls={gaps === 'connect'}
           gradient={gradient}
           idPrefix={id}
         />

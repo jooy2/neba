@@ -778,6 +778,7 @@ function animateProps(options: AnimateOptions): PropRow[] {
 const CHART_CURVE = "'linear' | 'smooth' | 'step'";
 const CHART_MARKERS = "'none' | 'auto' | 'all'";
 const CHART_LABELS = "'none' | 'last' | 'extremes' | 'all'";
+const CHART_NULLS = "'gap' | 'connect' | 'zero'";
 
 /**
  * What every chart takes. Written once and spread into five tables, for the
@@ -1171,12 +1172,21 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'nulls',
+      type: CHART_NULLS,
+      default: "'gap'",
+      description: {
+        ko: '값이 없는 자리를 어떻게 할지. gap은 끊고, connect는 앞뒤를 직선으로 잇고, zero는 0으로 읽습니다. zero는 데이터 자체를 고쳐 쓰므로 축과 tooltip과 표도 함께 0이라고 말합니다',
+        en: 'What the line does where a value is missing. gap breaks, connect joins the two sides with a straight segment, zero reads it as a nought — and zero rewrites the data, so the axis, the tooltip and the table say nought too'
+      }
+    },
+    {
       name: 'connectNulls',
       type: 'boolean',
       default: 'false',
       description: {
-        ko: 'null에서 끊지 않고 이어 그립니다. 결측이 수집 과정의 문제일 때만, 이어진 구간은 차트가 지어낸 숫자입니다',
-        en: 'Draws straight through a null instead of breaking at it. Only when the gap is an artefact of collection: a bridged gap is a number the chart made up'
+        ko: 'nulls="connect"와 같습니다. deprecated이고, nulls를 주지 않았을 때만 읽습니다',
+        en: 'The same thing as nulls="connect". Deprecated, and read only when nulls is left out'
       }
     },
     {
@@ -1236,12 +1246,21 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '밴드 위에 쓸 값', en: 'Which values are written on the band' }
     },
     {
+      name: 'nulls',
+      type: CHART_NULLS,
+      default: "'gap'",
+      description: {
+        ko: '값이 없는 자리를 어떻게 할지. 선보다 여기서 더 중요합니다. 채움은 없는 숫자를 면적에 칠하고, 끊어진 밴드는 위에 쌓인 밴드까지 데려갑니다',
+        en: 'What the band does where a value is missing, and it matters more here than on a line: a fill paints a made-up number over a whole region, and a band that breaks takes the bands stacked on it with it'
+      }
+    },
+    {
       name: 'connectNulls',
       type: 'boolean',
       default: 'false',
       description: {
-        ko: 'null을 가로질러 이어 그립니다. 선보다 여기서 더 위험합니다. 채움은 없는 숫자를 더 넓은 면적에 칠합니다',
-        en: 'Draws through a null instead of breaking at it. It matters more here than on a line: a fill paints a made-up number over a larger area'
+        ko: 'nulls="connect"와 같습니다. deprecated이고, nulls를 주지 않았을 때만 읽습니다',
+        en: 'The same thing as nulls="connect". Deprecated, and read only when nulls is left out'
       }
     },
     ...chartBaseProps({ height: 'size' })

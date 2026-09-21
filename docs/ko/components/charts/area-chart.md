@@ -55,14 +55,14 @@ series가 하나면 범례가 나오지 않습니다. 무엇을 그린 것인지
 
 </Demo>
 
-### curve · markers · connectNulls
+### curve · markers · nulls
 
 [LineChart](./line-chart#curve)와 같은 세 prop이며 뜻도 같습니다. 다만 `markers`의 기본값은 `auto`가 아니라 `none`입니다. 채워진 밴드에는 이미 보이는 가장자리가 있습니다.
 
-`connectNulls`는 선보다 area에서 더 중요합니다. 결측 구간을 가로질러 닫힌 채움은 없는 숫자를 훨씬 넓은 면적에 칠하는 일이기 때문입니다.
+`nulls`는 선보다 area에서 더 중요합니다. 결측을 가로질러 닫힌 채움은 없는 숫자를 구간이 아니라 면적에 칠하고, 끊어진 밴드는 그 위에 쌓인 밴드까지 데려갑니다. stacked 차트에서 쓰려던 값이 대개 `zero`인 이유가 이것입니다. `zero`는 데이터를 고쳐 쓰므로 축과 tooltip과 표도 함께 0이라고 말합니다.
 
 ```tsx
-<AreaChart curve="step" markers="all" connectNulls … />
+<AreaChart curve="step" markers="all" nulls="zero" … />
 ```
 
 ### 값 축

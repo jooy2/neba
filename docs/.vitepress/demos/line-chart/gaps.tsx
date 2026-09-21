@@ -7,8 +7,8 @@ const READINGS = [42, 47, null, null, 51, 58, 55, 62];
 export default function LineChartGaps() {
   return (
     <GridContainer spacing={3} padded={false}>
-      <Grid span={{ xs: 12, md: 6 }}>
-        <Card title="Broken at the gap" subtitle="The default" size="sm" className="h-full">
+      <Grid span={{ xs: 12, md: 4 }}>
+        <Card title='nulls="gap"' subtitle="The default" size="sm" className="h-full">
           <LineChart
             label="Readings with a two-week gap"
             size="sm"
@@ -19,9 +19,9 @@ export default function LineChartGaps() {
           />
         </Card>
       </Grid>
-      <Grid span={{ xs: 12, md: 6 }}>
+      <Grid span={{ xs: 12, md: 4 }}>
         <Card
-          title="connectNulls"
+          title='nulls="connect"'
           subtitle="Only when the gap is an artefact"
           size="sm"
           className="h-full"
@@ -33,7 +33,25 @@ export default function LineChartGaps() {
             categories={WEEKS}
             series={[{ name: 'Readings', data: READINGS }]}
             markers="all"
-            connectNulls
+            nulls="connect"
+          />
+        </Card>
+      </Grid>
+      <Grid span={{ xs: 12, md: 4 }}>
+        <Card
+          title='nulls="zero"'
+          subtitle="Only when nothing happened"
+          size="sm"
+          className="h-full"
+        >
+          <LineChart
+            label="Readings, read as zero"
+            size="sm"
+            height={160}
+            categories={WEEKS}
+            series={[{ name: 'Readings', data: READINGS }]}
+            markers="all"
+            nulls="zero"
           />
         </Card>
       </Grid>

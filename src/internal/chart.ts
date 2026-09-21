@@ -365,6 +365,38 @@ export function toValues(series: readonly NebaChartSeries[]): ChartValue[][] {
 }
 
 /**
+ * The same series with every gap read as a nought.
+ *
+ * Done to the **data** and not to the drawing, which is the whole reason it is
+ * a function over `NebaChartSeries` rather than three lines inside the mark
+ * builder. A line pulled down to the baseline while the tooltip at that
+ * category still says nothing, and the axis still ranges as though the month
+ * were not there, is a chart that disagrees with itself — and the table under
+ * it is the version a screen reader gets. Rewriting the series once, before the
+ * frame has unpacked it, is what keeps the picture, the scale, the tooltip, the
+ * summary and the table saying one thing.
+ *
+ * A non-finite number is a gap too, for the reason `toValue` says so: a `NaN`
+ * that reached a chart is a division nobody checked, not a reading.
+ */
+export function zeroGaps(series: readonly NebaChartSeries[]): NebaChartSeries[] {
+  return series.map((one) => ({
+    ...one,
+    data: one.data.map((datum) => {
+      if (datum === null || datum === undefined) {
+        return 0;
+      }
+
+      if (typeof datum === 'number') {
+        return Number.isFinite(datum) ? datum : 0;
+      }
+
+      return datum.y === null || !Number.isFinite(datum.y) ? { ...datum, y: 0 } : datum;
+    })
+  }));
+}
+
+/**
  * A category as a number, for a category axis that is really a value axis.
  *
  * A `Date` is its epoch milliseconds, which is what makes a scatter of

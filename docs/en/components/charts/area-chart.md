@@ -55,14 +55,14 @@ With a single series there is no legend: the card's title already says what is p
 
 </Demo>
 
-### curve · markers · connectNulls
+### curve · markers · nulls
 
 The same three props [LineChart](./line-chart#curve) has, meaning the same things. `markers` defaults to `none` here rather than `auto`: a filled band already has a visible edge.
 
-`connectNulls` matters more on an area than on a line: a fill that closes across a missing month paints a made-up number over a larger part of the chart.
+`nulls` matters more on an area than on a line. A fill that closes across a missing month paints a made-up number over a whole region rather than along a segment, and a band that breaks takes the bands stacked on it with it — which is why `zero` is often what a caller of a stacked chart actually meant. It rewrites the data, so the axis, the tooltip and the table say nought too.
 
 ```tsx
-<AreaChart curve="step" markers="all" connectNulls … />
+<AreaChart curve="step" markers="all" nulls="zero" … />
 ```
 
 ### Value axis

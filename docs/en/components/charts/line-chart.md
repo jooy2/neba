@@ -51,7 +51,7 @@ interface NebaChartPoint {
 }
 ```
 
-**`null` is a gap, not a zero.** A sensor that was offline and a month with no sales are different facts, and the chart draws them differently: the line breaks at a `null` and the point is not drawn. `connectNulls` bridges it, and should only be used when the gap is an artefact of how the data was collected.
+**`null` is a gap, not a zero.** A sensor that was offline and a month with no sales are different facts, and the chart draws them differently: the line breaks at a `null` and the point is not drawn. `nulls` is how a caller says otherwise.
 
 `categories` names the positions along the x axis. Points may carry their own `x` instead: whichever matches the shape the data already has.
 
@@ -119,9 +119,15 @@ Only the category axis reads it, and only where that axis runs along the bottom 
 
 </Demo>
 
-### connectNulls
+### nulls
 
-Draws the line straight through a `null` instead of breaking at it. Leave it off unless the gap comes from how the data was collected, because a bridged gap is a value the chart made up.
+What the line does where a value is missing.
+
+- `gap` — breaks at it. The default, and the only one that claims nothing.
+- `connect` — joins the two sides with a straight segment. For a gap that came from the collection rather than from the world; a bridged gap is a value the chart made up.
+- `zero` — reads the gap as a nought. It rewrites the data rather than the drawing, so the axis takes the nought into its range and the tooltip and the table say `0` too. Reach for it when a missing row genuinely means none happened, which is what an event count usually means and what a rate never does.
+
+`connectNulls` is the old spelling of `connect` and still works; it is read only when `nulls` is left out.
 
 <Demo src="line-chart/gaps">
 

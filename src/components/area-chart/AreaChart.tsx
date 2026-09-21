@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { CartesianChart, type CartesianChartProps } from '../../internal/chart-frame.js';
 import { LineSeries, type ChartMarkers } from '../../internal/chart-line.js';
-import type { NebaChartCurve, NebaChartValueLabels } from '../../types.js';
+import { zeroGaps } from '../../internal/chart.js';
+import type { NebaChartCurve, NebaChartNulls, NebaChartValueLabels } from '../../types.js';
 
 export interface AreaChartProps extends CartesianChartProps {
   /**
@@ -33,9 +34,20 @@ export interface AreaChartProps extends CartesianChartProps {
   /** @default 'none' */
   valueLabels?: NebaChartValueLabels;
   /**
-   * Draws the band straight through a `null` instead of breaking at it. Off,
-   * and on an area it matters more than on a line: a fill that closes across a
-   * missing month paints a made-up number over a larger part of the chart.
+   * What the band does where a value is missing, and it matters more here than
+   * on a line: a fill that closes over a missing month paints a made-up number
+   * across a whole region rather than along a segment.
+   *
+   * `gap` is the default. `zero` reads the hole as a nought everywhere — the
+   * axis, the tooltip and the table with it — which on a stacked chart is often
+   * what a caller actually meant, since a band that breaks takes the bands
+   * above it with it.
+   * @default 'gap'
+   */
+  nulls?: NebaChartNulls;
+  /**
+   * Draws the band straight through a `null` instead of breaking at it.
+   * @deprecated Pass `nulls="connect"`. Read only when `nulls` is left out.
    * @default false
    */
   connectNulls?: boolean;
@@ -60,6 +72,7 @@ export function AreaChart({
   stacked = false,
   markers = 'none',
   valueLabels = 'none',
+  nulls,
   connectNulls = false,
   series,
   yAxis,
@@ -68,11 +81,16 @@ export function AreaChart({
 }: AreaChartProps) {
   const id = React.useId().replace(/:/g, '');
   const full = stacked === 'full';
+  const gaps = nulls ?? (connectNulls ? 'connect' : 'gap');
+  // Memoised for the reason LineChart's is: the frame keys its unpack on this
+  // array's identity, and a fresh one per render would re-measure the plot
+  // while the pointer is only crossing it.
+  const drawn = React.useMemo(() => (gaps === 'zero' ? zeroGaps(series) : series), [series, gaps]);
 
   return (
     <CartesianChart
       {...props}
-      series={series}
+      series={drawn}
       // 100% stacking is done by the frame, which knows which series the legend
       // has hidden and so which ones the hundred is shared between.
       stackedFull={full}
@@ -93,7 +111,7 @@ export function AreaChart({
           stacked={stacked !== false}
           markers={markers}
           valueLabels={valueLabels}
-          connectNulls={connectNulls}
+          connectNulls={gaps === 'connect'}
           gradient={false}
           idPrefix={id}
         />
