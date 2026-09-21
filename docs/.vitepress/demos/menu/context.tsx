@@ -3,8 +3,9 @@ import { ContextMenu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 /**
  * The same rows, opened by a right-click or a long press instead of by a button.
  * It takes the rows as `content` and the area as `children` — Tooltip's shape
- * rather than Menu's, because the trigger here is a region rather than an
- * element you hand over.
+ * rather than Menu's, because the trigger here is a region of the page rather
+ * than a control. The trigger merges onto that one element instead of wrapping
+ * it, so the menu adds nothing to the layout.
  */
 export default function MenuContext() {
   return (

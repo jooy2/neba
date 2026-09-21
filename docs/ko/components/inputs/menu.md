@@ -96,7 +96,7 @@ import { Button, Menu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 
 ### ContextMenu
 
-우클릭으로 열리는 메뉴입니다. `content`에 메뉴 행을, `children`에 대상 영역을 넘깁니다.
+우클릭으로 열리는 메뉴입니다. `content`에 메뉴 행을, `children`에 대상 영역을 넘깁니다. 영역은 요소 하나여야 하며, 트리거가 그 요소를 감싸지 않고 합쳐지므로 레이아웃에 아무것도 더하지 않습니다.
 
 <Demo src="menu/context">
 

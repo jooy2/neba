@@ -7892,11 +7892,11 @@ export const propTables: Record<string, PropRow[]> = {
     },
     {
       name: 'children',
-      type: 'ReactNode',
+      type: 'ReactElement',
       required: true,
       description: {
-        ko: '오른쪽 클릭이나 길게 누르기에 반응할 영역',
-        en: 'The area that answers a right-click or a long press'
+        ko: '오른쪽 클릭이나 길게 누르기에 반응할 영역. 요소 하나이며, 감싸지 않고 그 요소에 합쳐집니다',
+        en: 'The area that answers a right-click or a long press. Exactly one element, which the trigger merges onto rather than wrapping'
       }
     },
     {

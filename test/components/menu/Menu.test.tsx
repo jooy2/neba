@@ -560,6 +560,22 @@ describe('ContextMenu', () => {
     expect(screen.getByRole('menu').query()).toBeNull();
   });
 
+  // The trigger merges onto the child rather than wrapping it, exactly as
+  // Tooltip's does: the menu costs the layout nothing, and a scroll container
+  // handed to it keeps the height it was given.
+  it('adds no element of its own around the area', async () => {
+    const screen = await render(
+      <section data-testid="outer">
+        <ContextMenu content={<MenuItem>Rename</MenuItem>}>
+          <div data-testid="area">Right-click me</div>
+        </ContextMenu>
+      </section>
+    );
+    const area = screen.getByTestId('area').element();
+
+    expect(area.parentElement?.tagName).toBe('SECTION');
+  });
+
   it('opens on a right-click', async () => {
     const screen = await render(
       <ContextMenu content={<MenuItem>Rename</MenuItem>}>

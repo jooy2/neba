@@ -93,10 +93,13 @@ export interface ContextMenuProps extends MenuSurfaceProps {
   /** The rows, exactly as they are written inside a `Menu`. */
   content: React.ReactNode;
   /**
-   * The area that answers a right-click or a long press. Rendered inside a
-   * `<div>` of Base UI's, which is what listens for the gesture.
+   * The area that answers a right-click or a long press. Exactly one element,
+   * which must accept a ref and spread props — every Neba component does.
+   *
+   * Base UI's Trigger merges itself onto it rather than wrapping it, so the
+   * menu adds no element to the layout and the area stays whatever it was.
    */
-  children: React.ReactNode;
+  children: React.ReactElement;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -767,10 +770,18 @@ export function Menu(rawProps: MenuProps) {
  * The same menu, opened by a right-click or a long press instead of by a button.
  *
  * It takes the rows as `content` and the area as `children`, which is Tooltip's
- * shape rather than Menu's — because here the trigger is not one element you
- * hand over, it is a region of the page, and the region is the thing being
- * wrapped. Base UI positions the popup at the pointer rather than against an
- * anchor, and the long press is what makes it reachable on a touch screen at all.
+ * shape rather than Menu's — because here the trigger is a region of the page
+ * rather than a control, and a region is almost always an element the caller
+ * already had: the table, the list, the box. So it is that element that answers
+ * the gesture. Base UI's Trigger merges onto it exactly as Tooltip's does, and
+ * the menu costs the layout nothing.
+ *
+ * That last part is not a nicety. The trigger is an element in the flow, so a
+ * box of Base UI's between a caller's scroll container and the thing inside it
+ * is a box with no height to scroll in, and the content spills instead.
+ *
+ * Base UI positions the popup at the pointer rather than against an anchor, and
+ * the long press is what makes it reachable on a touch screen at all.
  */
 export function ContextMenu(rawProps: ContextMenuProps) {
   const {
@@ -798,7 +809,7 @@ export function ContextMenu(rawProps: ContextMenuProps) {
         loopFocus={loopFocus}
         disabled={disabled}
       >
-        <BaseUIContextMenu.Trigger>{children}</BaseUIContextMenu.Trigger>
+        <BaseUIContextMenu.Trigger render={children} />
 
         <BaseUIContextMenu.Portal>
           <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">

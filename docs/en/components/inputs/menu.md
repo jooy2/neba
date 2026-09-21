@@ -96,7 +96,7 @@ A tick is for items that can be on together; a dot is for one-of-a-set. Neither 
 
 ### ContextMenu
 
-A menu opened by right-click. Pass the rows as `content` and the target area as `children`.
+A menu opened by right-click. Pass the rows as `content` and the target area as `children` — exactly one element, which the trigger merges onto rather than wrapping, so the menu adds nothing to the layout.
 
 <Demo src="menu/context">
 

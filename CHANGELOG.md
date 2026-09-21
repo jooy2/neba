@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **A `ContextMenu` merges onto the element it is given rather than wrapping it.** The trigger put a `<div>` of Base UI's around `children`, and nothing could reach that box — `className` goes to the popup — so a scroll container handed to a menu became a scroll container inside a box with no height, and its content spilled instead of scrolling. `children` is one element now, which the trigger merges onto exactly as `Tooltip`'s does, and the menu costs the layout nothing. An area written as several elements, a fragment or bare text has to be wrapped in one element of the caller's own.
+
 ## 1.15.0 (2026-09-19)
 
 ### Breaking changes
