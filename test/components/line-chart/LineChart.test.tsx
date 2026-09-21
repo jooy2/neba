@@ -755,6 +755,109 @@ describe('LineChart', () => {
     });
   });
 
+  describe('the window on a long series', () => {
+    const MANY = Array.from({ length: 40 }, (_, index) => `D${index}`);
+    const DATA = Array.from({ length: 40 }, (_, index) => index * 3);
+
+    const chart = (props: Partial<React.ComponentProps<typeof LineChart>> = {}) => (
+      <LineChart
+        label="Signups by day"
+        categories={MANY}
+        series={[{ name: 'Signups', data: DATA }]}
+        {...props}
+      />
+    );
+
+    it('draws no strip unless it is asked for', async () => {
+      const screen = await render(chart());
+
+      await expect.element(screen.getByRole('img', { name: 'Signups by day' })).toBeInTheDocument();
+      expect(screen.getByRole('slider').query()).toBeNull();
+    });
+
+    it('gives the window two handles that say where they are', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [10, 19] } }));
+      const handles = screen.getByRole('slider');
+
+      await expect.element(handles.first()).toHaveAttribute('aria-valuenow', '10');
+      await expect.element(handles.nth(1)).toHaveAttribute('aria-valuenow', '19');
+      await expect.element(handles.first()).toHaveAttribute('aria-valuemax', '39');
+      await expect.element(handles.first()).toHaveAttribute('aria-valuetext', 'D10');
+    });
+
+    it('draws only the window', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [10, 19] } }));
+      const plot = screen.getByRole('img', { name: 'Signups by day' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(written).toContain('D10');
+      expect(written).not.toContain('D0');
+      expect(written).not.toContain('D39');
+    });
+
+    it('moves a handle with the arrow keys and holds it short of the other', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [10, 11] } }));
+      const start = screen.getByRole('slider').first();
+
+      await expect.element(start).toHaveAttribute('aria-valuenow', '10');
+
+      start
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      // One category apart is the closest the two ends may come: a window of
+      // nothing is a plot of nothing.
+      await expect.element(start).toHaveAttribute('aria-valuenow', '10');
+
+      start
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+      await expect.element(start).toHaveAttribute('aria-valuenow', '9');
+
+      start.element().dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+      await expect.element(start).toHaveAttribute('aria-valuenow', '0');
+    });
+
+    it('reports the window it was moved to', async () => {
+      const onRangeChange = vi.fn();
+      const screen = await render(chart({ brush: { defaultRange: [10, 19], onRangeChange } }));
+      const end = screen.getByRole('slider').nth(1);
+
+      await expect.element(end).toBeInTheDocument();
+      end
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+      await expect.poll(() => onRangeChange.mock.calls.length).toBe(1);
+      expect(onRangeChange.mock.calls[0][0]).toEqual([10, 20]);
+    });
+
+    it('holds a controlled window where the caller put it', async () => {
+      const screen = await render(chart({ brush: { range: [5, 8] } }));
+      const start = screen.getByRole('slider').first();
+
+      await expect.element(start).toHaveAttribute('aria-valuenow', '5');
+
+      start
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+
+      await expect.element(start).toHaveAttribute('aria-valuenow', '5');
+    });
+
+    // A reader who scrolled the plot to March did not ask for a spreadsheet of
+    // March: the window narrows the picture and nothing else.
+    it('keeps every point in the table', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [10, 19] } }));
+      const table = screen.getByRole('table', { name: 'Signups by day' });
+
+      await expect.element(table).toBeInTheDocument();
+      expect(table.element().querySelectorAll('tbody tr')).toHaveLength(40);
+    });
+  });
+
   describe('a second value axis', () => {
     const REVENUE = [1000, 1200, 1400, 1600];
     const RATE = [2, 3, 2.5, 4];

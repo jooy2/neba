@@ -39,6 +39,7 @@ import {
   textWidth,
   tickStride,
   toFullShares,
+  linePath,
   toValues,
   truncate,
   turnedAxis,
@@ -51,11 +52,13 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
+import { beginPointerDrag } from './drag.js';
 import { observeResize } from './observe.js';
 import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
+  NebaChartBrush,
   NebaChartCategory,
   NebaChartLegend,
   NebaChartReference,
@@ -297,6 +300,20 @@ export interface CartesianChartProps extends ChartBaseProps {
    * reader cannot see that it was done.
    */
   secondaryAxis?: NebaChartAxis;
+  /**
+   * A strip under the plot with the whole series on it, and a window the
+   * reader drags to choose which part the chart draws.
+   *
+   * For the series a plot cannot hold. Two thousand points is a chart with no
+   * points on it — every column is a fraction of a pixel and the shape is a
+   * smear — and the answer is a window of them with all of them small
+   * underneath, so the reader can see where the window is and move it.
+   *
+   * The strip is drawn **inside** the chart's own height, like the axis
+   * labels. `true` takes the defaults; an object holds the range or says how
+   * tall the strip is.
+   */
+  brush?: boolean | NebaChartBrush;
   /**
    * Lines and bands drawn across the plot at values the data has none of — a
    * target, an SLA, a budget, the window a forecast covers.
@@ -906,6 +923,234 @@ const ChartDataTable = React.memo(function ChartDataTable({
 });
 
 /* ---------------------------------------------------------------------------
+ * The window on a long series
+ * ------------------------------------------------------------------------- */
+
+interface BrushProps {
+  /** The whole of the first drawn series, for the shape under the window. */
+  outline: readonly (number | null)[];
+  /** How many categories there are altogether. */
+  count: number;
+  range: readonly [number, number];
+  onRange: (range: [number, number]) => void;
+  color: string;
+  height: number;
+  words: { start: string; end: string };
+  /** What the two handles say they are on, read out with their positions. */
+  categories: readonly NebaChartCategory[];
+  locale?: string;
+}
+
+/** Which end of the window a gesture has hold of, or the whole of it. */
+type Grip = 'start' | 'end' | 'window';
+
+/**
+ * The strip under the plot, and the window on it.
+ *
+ * A chart of two thousand points has no points on it — every column is a
+ * fraction of a pixel and the shape is a smear — so the plot draws a window of
+ * them and this draws all of them, small, with the window marked on it. That
+ * pairing is the whole idea: a window with no overview beside it is a reader
+ * who cannot tell where in the year they are.
+ *
+ * It is HTML rather than part of the SVG, and that is what makes the two
+ * handles real `role="slider"` buttons: focusable, arrow-keyed, and announcing
+ * the category they sit on. A pair of `<rect>`s inside the picture would be
+ * reachable by pointer alone, which on the one control that decides what the
+ * chart shows is not a control at all.
+ */
+function ChartBrush({
+  outline,
+  count,
+  range,
+  onRange,
+  color,
+  height,
+  words,
+  categories,
+  locale
+}: BrushProps) {
+  const stripRef = React.useRef<HTMLDivElement>(null);
+  const release = React.useRef<(() => void) | null>(null);
+  const width = useMeasuredWidth(stripRef);
+
+  React.useEffect(() => () => release.current?.(), []);
+
+  const last = Math.max(0, count - 1);
+  const [from, to] = range;
+  /* As fractions of the strip, which is what both the window's box and the
+     drag arithmetic are in. A one-category series has no width to divide by. */
+  const at = (index: number) => (last === 0 ? 0 : index / last);
+
+  /** The shape of the whole series, drawn to fit the strip. */
+  const path = React.useMemo(() => {
+    const numbers = outline.filter((value): value is number => value !== null);
+
+    if (width <= 0 || numbers.length === 0) {
+      return '';
+    }
+
+    const low = Math.min(...numbers);
+    const high = Math.max(...numbers);
+    const span = high - low || 1;
+    const inset = 2;
+    const usable = Math.max(1, height - inset * 2);
+
+    return linePath(
+      outline.map((value, index) =>
+        value === null
+          ? null
+          : {
+              x: at(index) * width,
+              y: inset + (1 - (value - low) / span) * usable
+            }
+      ),
+      'linear'
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outline, width, height, last]);
+
+  /** The category a place along the strip falls on. */
+  const indexAt = (clientX: number) => {
+    const strip = stripRef.current;
+
+    if (!strip) {
+      return 0;
+    }
+
+    const box = strip.getBoundingClientRect();
+    const along = box.width === 0 ? 0 : (clientX - box.left) / box.width;
+
+    return Math.min(last, Math.max(0, Math.round(along * last)));
+  };
+
+  /**
+   * Moves whichever part of the window the gesture has hold of.
+   *
+   * The two ends are kept at least one category apart and never cross: a
+   * window of nothing is a plot of nothing, and a reader who dragged one
+   * handle past the other would have to work out which end they now hold.
+   */
+  const move = (grip: Grip, index: number, offset: number) => {
+    if (grip === 'start') {
+      onRange([Math.min(index, to - 1), to]);
+      return;
+    }
+
+    if (grip === 'end') {
+      onRange([from, Math.max(index, from + 1)]);
+      return;
+    }
+
+    const span = to - from;
+    const start = Math.min(Math.max(0, index - offset), last - span);
+
+    onRange([start, start + span]);
+  };
+
+  function grab(grip: Grip, event: React.PointerEvent<HTMLElement>) {
+    const index = indexAt(event.clientX);
+    // Where inside the window the hand took hold, so panning does not jump the
+    // window's start to the pointer on the first frame.
+    const offset = grip === 'window' ? index - from : 0;
+
+    event.preventDefault();
+    release.current?.();
+    release.current = beginPointerDrag({
+      target: event.currentTarget,
+      pointerId: event.pointerId,
+      onMove: (moved) => move(grip, indexAt(moved.clientX), offset),
+      onEnd: () => {
+        release.current = null;
+      }
+    });
+  }
+
+  function step(grip: Grip, event: React.KeyboardEvent) {
+    const by =
+      event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+        ? -1
+        : event.key === 'ArrowRight' || event.key === 'ArrowUp'
+          ? 1
+          : 0;
+
+    if (by !== 0) {
+      move(grip, (grip === 'end' ? to : from) + by, 0);
+    } else if (event.key === 'Home') {
+      move(grip, 0, 0);
+    } else if (event.key === 'End') {
+      move(grip, last, 0);
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+  }
+
+  const handle = (grip: 'start' | 'end') => {
+    const index = grip === 'start' ? from : to;
+
+    return (
+      <button
+        type="button"
+        role="slider"
+        aria-label={grip === 'start' ? words.start : words.end}
+        aria-valuemin={0}
+        aria-valuemax={last}
+        aria-valuenow={index}
+        aria-valuetext={formatCategory(categories[index] ?? index, locale)}
+        onPointerDown={(event) => grab(grip, event)}
+        onKeyDown={(event) => step(grip, event)}
+        className={cx(
+          'absolute inset-y-0 w-2 -translate-x-1/2 cursor-ew-resize rounded-full',
+          'bg-(--n-accent) [touch-action:none]',
+          'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
+        )}
+        style={{ left: `${at(index) * 100}%` }}
+      />
+    );
+  };
+
+  return (
+    <div ref={stripRef} className="absolute inset-x-0 bottom-0 select-none" style={{ height }}>
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${Math.max(1, width)} ${height}`}
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        className="absolute inset-0 block"
+      >
+        <rect
+          x={0}
+          y={0}
+          width={Math.max(1, width)}
+          height={height}
+          rx={3}
+          fill="var(--neba-chart-grid)"
+        />
+        {path ? <path d={path} fill="none" stroke={color} strokeWidth={1} opacity={0.6} /> : null}
+      </svg>
+
+      {/* The window itself. Everything outside it is left as the flat track,
+          which is what says the rest of the series is still there. */}
+      <div
+        onPointerDown={(event) => grab('window', event)}
+        className={cx(
+          'absolute inset-y-0 cursor-grab rounded-[3px] [touch-action:none]',
+          'bg-(--n-soft) [box-shadow:inset_0_0_0_1px_var(--n-accent)]',
+          'data-[dragging]:cursor-grabbing'
+        )}
+        style={{ left: `${at(from) * 100}%`, width: `${(at(to) - at(from)) * 100}%` }}
+      />
+
+      {handle('start')}
+      {handle('end')}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------------------
  * Export
  * ------------------------------------------------------------------------- */
 
@@ -1319,11 +1564,12 @@ interface CartesianProps extends CartesianChartProps {
  */
 export function CartesianChart(rawProps: CartesianProps) {
   const {
-    series,
-    categories,
+    series: fullSeries,
+    categories: fullCategories,
     xAxis,
     yAxis,
     secondaryAxis,
+    brush,
     references,
     horizontal = false,
     stacked = false,
@@ -1365,11 +1611,53 @@ export function CartesianChart(rawProps: CartesianProps) {
   const tableId = React.useId();
   const summaryId = React.useId();
 
-  const visibility = useVisibility(series);
+  /* Both read what a series *is* rather than what is in it, so they take the
+     whole array: narrowing the window must not renumber the colours or forget
+     which series the reader turned off. */
+  const visibility = useVisibility(fullSeries);
 
   React.useEffect(() => {
-    warnPaletteOverflow(series.length);
-  }, [series.length]);
+    warnPaletteOverflow(fullSeries.length);
+  }, [fullSeries.length]);
+
+  /* The window on a long series, and the series the plot actually draws.
+
+     Everything below reads `series`, so slicing it here is the whole of the
+     feature: the scale, the axes, the marks, the crosshair, the tooltip and
+     the summary all narrow with it and none of them has to know the window
+     exists. `fullSeries` is kept for the two things that must not narrow —
+     the strip, which is a picture of all of it, and the table and the file,
+     which are the data rather than the view. */
+  const fullCount = categoryCount(fullSeries);
+  const brushOptions: NebaChartBrush | null =
+    brush === true ? {} : brush === false || brush === undefined ? null : brush;
+  const [chosenRange, setChosenRange] = React.useState<readonly [number, number] | null>(null);
+  const brushRange: readonly [number, number] = brushOptions
+    ? (brushOptions.range ??
+      chosenRange ??
+      brushOptions.defaultRange ?? [0, Math.max(0, fullCount - 1)])
+    : [0, Math.max(0, fullCount - 1)];
+  /* Clamped here rather than trusted: a controlled range that outran the data
+     after a refresh would slice every series to nothing. */
+  const windowFrom = Math.min(Math.max(0, Math.round(brushRange[0])), Math.max(0, fullCount - 1));
+  const windowTo = Math.min(
+    Math.max(windowFrom, Math.round(brushRange[1])),
+    Math.max(0, fullCount - 1)
+  );
+  const windowed = brushOptions !== null && (windowFrom > 0 || windowTo < fullCount - 1);
+
+  const series = React.useMemo(
+    () =>
+      windowed
+        ? fullSeries.map((one) => ({ ...one, data: one.data.slice(windowFrom, windowTo + 1) }))
+        : fullSeries,
+    [fullSeries, windowed, windowFrom, windowTo]
+  );
+  const categories = React.useMemo(
+    () =>
+      windowed && fullCategories ? fullCategories.slice(windowFrom, windowTo + 1) : fullCategories,
+    [fullCategories, windowed, windowFrom, windowTo]
+  );
   const [columnIndex, setColumnIndex] = React.useState<number | null>(null);
   /** Which entry of `markList` the pointer is on — the other way to be active. */
   const [markIndex, setMarkIndex] = React.useState<number | null>(null);
@@ -1408,6 +1696,24 @@ export function CartesianChart(rawProps: CartesianProps) {
   const labels = React.useMemo(
     () => Array.from({ length: count }, (_, index) => categoryAt(index, categories, values)),
     [count, categories, values]
+  );
+
+  /* And all of it, for the two things a window must not narrow: the table and
+     the file are the *data*, and a reader who scrolled the plot to March did
+     not ask for a spreadsheet of March. Built only when there is a window;
+     without one these are the same arrays. */
+  const fullValues = React.useMemo(
+    () => (windowed ? toValues(fullSeries) : values),
+    [windowed, fullSeries, values]
+  );
+  const fullLabels = React.useMemo(
+    () =>
+      windowed
+        ? Array.from({ length: fullCount }, (_, index) =>
+            categoryAt(index, fullCategories, fullValues)
+          )
+        : labels,
+    [windowed, fullCount, fullCategories, fullValues, labels]
   );
 
   /* How a given series' numbers are written, everywhere they appear.
@@ -1649,13 +1955,18 @@ export function CartesianChart(rawProps: CartesianProps) {
      turned rectangle's own height once they are tilted. */
   const labelDepth = turn.depth(widestCategory);
 
-  const bottomBand = horizontal
-    ? valueAxis?.hidden
-      ? 0
-      : fontSize + 12 + (valueAxis?.label ? axisLabelBand : 0)
-    : categoryAxis?.hidden
-      ? 0
-      : labelDepth + 12 + (categoryAxis?.label ? axisLabelBand : 0);
+  /* The strip is drawn inside the chart's own height, like the axis labels:
+     a card sized to the chart is a card the chart fits in. */
+  const brushBand = brushOptions ? (brushOptions.height ?? 32) + 10 : 0;
+
+  const bottomBand =
+    (horizontal
+      ? valueAxis?.hidden
+        ? 0
+        : fontSize + 12 + (valueAxis?.label ? axisLabelBand : 0)
+      : categoryAxis?.hidden
+        ? 0
+        : labelDepth + 12 + (categoryAxis?.label ? axisLabelBand : 0)) + brushBand;
 
   // `thickness` belongs to whichever axis is actually on that edge, which swaps
   // with `horizontal` — read off the wrong one, a bar chart turned on its side
@@ -1815,9 +2126,9 @@ export function CartesianChart(rawProps: CartesianProps) {
      who is read the table cannot end up with two different files. */
   const exportRows = () => [
     [categoryAxis?.label ?? '', ...series.map((one, index) => one.name ?? `${index + 1}`)],
-    ...labels.map((category, index) => [
+    ...fullLabels.map((category, index) => [
       category,
-      ...values.map((row) => row[index]?.value ?? null)
+      ...fullValues.map((row) => row[index]?.value ?? null)
     ])
   ];
 
@@ -2165,9 +2476,9 @@ export function CartesianChart(rawProps: CartesianProps) {
                 id={tableId}
                 caption={label}
                 corner={categoryAxis?.label}
-                categories={labels}
+                categories={fullLabels}
                 series={series}
-                values={values}
+                values={fullValues}
                 format={formatValue}
                 formatFor={twoAxes ? formatFor : undefined}
                 locale={locale}
@@ -2326,7 +2637,6 @@ export function CartesianChart(rawProps: CartesianProps) {
             {children(context)}
           </svg>
         ) : null}
-
         {activeIndex !== null && items.length > 0 && tooltipMode !== 'none' ? (
           tooltipOptions.render ? (
             <div
@@ -2357,6 +2667,33 @@ export function CartesianChart(rawProps: CartesianProps) {
           )
         ) : null}
       </div>
+
+      {/* A sibling of the plot and never a child of it: `role="img"` makes
+          everything under it presentational, and the two handles are the one
+          control that decides what the chart shows. Laid over the band the
+          drawing already reserved at its foot, so the strip costs the box no
+          height of its own. */}
+      {brushOptions && !nothing ? (
+        <ChartBrush
+          /* The first series that is drawn, and all of it. A strip with
+           every series on it is a thumbnail of a smear, which is the
+           thing the window exists to get away from. */
+          outline={(fullValues[visibility.visible.indexOf(true)] ?? fullValues[0] ?? []).map(
+            (one) => one.value
+          )}
+          count={fullCount}
+          range={[windowFrom, windowTo]}
+          onRange={(next) => {
+            setChosenRange(next);
+            brushOptions.onRangeChange?.(next);
+          }}
+          color={colors[Math.max(0, visibility.visible.indexOf(true))] ?? colors[0]}
+          height={brushOptions.height ?? 32}
+          words={{ start: chartWords.start, end: chartWords.end }}
+          categories={fullLabels}
+          locale={locale}
+        />
+      ) : null}
 
       {/* Only where there is a crosshair to report. A chart with its tooltip
           turned off has nothing to announce, and a live region standing empty

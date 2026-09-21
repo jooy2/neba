@@ -924,6 +924,15 @@ const cartesianDataProps: PropRow[] = [
     description: { ko: '값 축', en: 'The value axis' }
   },
   {
+    name: 'brush',
+    type: 'boolean | NebaChartBrush',
+    default: 'false',
+    description: {
+      ko: 'plot 아래에 series 전체를 담은 띠를 놓고, 그 위의 창을 끌어 어느 구간을 그릴지 고르게 합니다. 점이 2천 개인 차트는 점이 하나도 보이지 않는 차트입니다. 띠는 차트의 height 안쪽에 그려집니다',
+      en: 'Puts a strip of the whole series under the plot with a window on it that the reader drags to choose which part is drawn. A chart of two thousand points is a chart with no points on it. The strip is drawn inside the chart’s own height'
+    }
+  },
+  {
     name: 'secondaryAxis',
     type: 'NebaChartAxis',
     description: {
@@ -1041,6 +1050,43 @@ const menuItemRows: PropRow[] = [
 const checkableOmitted = new Set(['onClick', 'href', 'target', 'rel', 'startIcon', 'closeOnClick']);
 
 export const propTables: Record<string, PropRow[]> = {
+  NebaChartBrush: [
+    {
+      name: 'defaultRange',
+      type: '[number, number]',
+      default: { ko: '전체', en: 'all of them' },
+      description: {
+        ko: '창이 처음 덮는 category의 index 범위. 양끝 포함입니다',
+        en: 'Which categories the window covers to begin with, as indices, inclusive at both ends'
+      }
+    },
+    {
+      name: 'range',
+      type: '[number, number]',
+      description: {
+        ko: '창을 호출하는 쪽에서 들고 있을 때의 값. 데이터가 줄어 범위를 벗어나면 잘라서 씁니다',
+        en: 'The window, for a chart whose range the caller holds. Clamped if the data shrinks out from under it'
+      }
+    },
+    {
+      name: 'onRangeChange',
+      type: '(range: [number, number]) => void',
+      description: {
+        ko: '읽는 사람이 창을 옮길 때마다 새 범위와 함께 불립니다',
+        en: 'Called with the new window whenever the reader moves it'
+      }
+    },
+    {
+      name: 'height',
+      type: 'number',
+      default: '32',
+      description: {
+        ko: '띠의 높이(px). 축 라벨과 마찬가지로 차트의 height 안쪽에 그려집니다',
+        en: "How tall the strip is. Drawn inside the chart's own height, like the axis labels"
+      }
+    }
+  ],
+
   NebaChartReference: [
     {
       name: 'value',

@@ -77,6 +77,10 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 <PropsTable name="NebaChartAxis" />
 
+### NebaChartBrush
+
+<PropsTable name="NebaChartBrush" />
+
 ### NebaChartReference
 
 Every entry of `references` takes this shape.
@@ -142,6 +146,22 @@ What the line does where a value is missing.
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### brush
+
+A strip under the plot with the whole series on it, and a window the reader drags to choose which part the chart draws.
+
+For the series a plot cannot hold. Two thousand points is a chart with no points on it — every column is a fraction of a pixel and the shape is a smear — and the answer is a window of them with all of them small underneath, so the reader can see where in the year the window is and move it.
+
+Drag the window to pan and either handle to resize; both handles are `role="slider"` buttons, so the arrow keys move them one category at a time and `Home` and `End` jump to the ends. `defaultRange` sets where the window starts, `range` and `onRangeChange` hand it to the caller, and `height` sizes the strip — which is drawn **inside** the chart's own height, like the axis labels.
+
+The window narrows the picture and nothing else: the hidden table and the exported file still hold every point, because a reader who scrolled the plot to March did not ask for a spreadsheet of March.
+
+<Demo src="line-chart/brush">
+
+<<< @/.vitepress/demos/line-chart/brush.tsx
 
 </Demo>
 

@@ -77,6 +77,10 @@ interface NebaChartPoint {
 
 <PropsTable name="NebaChartAxis" />
 
+### NebaChartBrush
+
+<PropsTable name="NebaChartBrush" />
+
 ### NebaChartReference
 
 `references`의 각 항목이 받는 형태입니다.
@@ -142,6 +146,22 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 <Demo src="line-chart/gaps">
 
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+</Demo>
+
+### brush
+
+plot 아래에 series 전체를 담은 띠를 놓고, 그 위의 창을 끌어 어느 구간을 그릴지 고르게 합니다.
+
+plot이 담을 수 없는 series를 위한 것입니다. 점 2천 개는 점이 하나도 보이지 않는 차트입니다. 열 하나가 1픽셀도 되지 않아 모양이 뭉개지기 때문입니다. 답은 그중 한 구간만 그리고 전체는 그 아래에 작게 두는 것입니다. 그래야 읽는 사람이 일 년 중 어디를 보고 있는지 알고 옮길 수 있습니다.
+
+창을 끌면 이동하고 양끝 손잡이를 끌면 크기가 바뀝니다. 두 손잡이는 `role="slider"` 버튼이라 방향키로 한 칸씩 움직이고 `Home`·`End`로 양 끝까지 갑니다. `defaultRange`가 시작 위치를, `range`와 `onRangeChange`가 호출하는 쪽이 들고 있는 창을, `height`가 띠의 높이를 정합니다. 띠는 축 라벨과 마찬가지로 차트의 height **안쪽에** 그려집니다.
+
+창이 좁히는 것은 그림뿐입니다. 숨은 표와 내보낸 파일에는 모든 점이 그대로 있습니다. plot을 3월로 옮긴 사람이 3월짜리 스프레드시트를 달라고 한 것은 아니기 때문입니다.
+
+<Demo src="line-chart/brush">
+
+<<< @/.vitepress/demos/line-chart/brush.tsx
 
 </Demo>
 

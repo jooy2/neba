@@ -705,6 +705,34 @@ export interface NebaChartReference {
   solid?: boolean;
 }
 
+/**
+ * The strip under a plot that says which part of a long series is drawn.
+ *
+ * A chart of two thousand points is a chart with no points on it: every column
+ * is a fraction of a pixel wide and the shape is a smear. The answer is not to
+ * draw fewer of them — that is the caller's data — but to draw a window of
+ * them, and to put the whole series under the plot small so the reader can see
+ * where the window is and move it.
+ *
+ * The window is in **category indices**, inclusive at both ends, because that
+ * is what a category axis is indexed by whether it holds dates, numbers or
+ * columns.
+ */
+export interface NebaChartBrush {
+  /** Which categories the window covers to begin with. Defaults to all of them. */
+  defaultRange?: readonly [number, number];
+  /** The window, for a chart whose range the caller holds. */
+  range?: readonly [number, number];
+  /** Called with the new window whenever the reader moves it. */
+  onRangeChange?: (range: [number, number]) => void;
+  /**
+   * How tall the strip is, in pixels. Drawn **inside** the chart's own height,
+   * like the axis labels, so a card sized to the chart is a card it fits in.
+   * @default 32
+   */
+  height?: number;
+}
+
 /** One axis of a cartesian chart. */
 export interface NebaChartAxis {
   /** Leaves the axis undrawn — its rule, its ticks and its labels. */
