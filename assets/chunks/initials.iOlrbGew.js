@@ -1,0 +1,1 @@
+import{g as r}from"./text.DYNpSn9M.js";function o(e){const t=e.normalize("NFC").trim().split(/\s+/).filter(Boolean);if(t.length===0)return"";const n=r(t[0])[0]??"",s=t.length>1?r(t[t.length-1])[0]??"":"";return(n+s).toUpperCase()}export{o as i};

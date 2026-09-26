@@ -1,0 +1,1 @@
+import{r as f}from"./index.BC-ZOPMe.js";const c=f.createContext(null);function d(l,i,s){const u=f.useContext(c);if(!u)return l;const e=l;let t=null;for(const o of i){const n=u[o];n!==void 0&&e[o]===void 0&&(s==null?void 0:s[o])===void 0&&(t=t??{...e},t[o]=n)}return t??e}export{c as D,d as u};
