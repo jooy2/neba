@@ -77,6 +77,16 @@ const [color, setColor] = useState('#1a58d1');
 
 </Demo>
 
+### labelPlacement
+
+`notch`는 [TextField](./text-field#labelplacement)처럼 trigger 위쪽 테두리를 끊어 낸 틈에 라벨을 올립니다. trigger 앞의 색 견본이 `float` 라벨이 내려앉을 자리를 차지하므로 `float`도 `notch`와 똑같이 그려집니다. `inline`에는 trigger가 없어 이 prop을 무시합니다.
+
+<Demo src="color-picker/label-placement">
+
+<<< @/.vitepress/demos/color-picker/label-placement.tsx
+
+</Demo>
+
 ### size
 
 `size`는 공통 사다리 위에서 트리거의 높이를 정하고, 패널의 너비도 함께 정합니다. 어느 단계에서든 옆의 필드들과 같은 줄에 놓입니다.

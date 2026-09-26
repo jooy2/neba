@@ -43,6 +43,18 @@ The same heights as [Button](./button), so a field and a button in one row share
 
 </Demo>
 
+### labelPlacement
+
+`top`, the default, puts the label above the field. `notch` puts it on the field's top edge, in a gap cut out of the border. `float` puts it inside the field where the placeholder would be, and moves it up into the notch when the field takes the focus or holds a value; the placeholder shows only once the label has moved. A `startIcon` keeps a `float` label in the notch, since the icon is where it would rest.
+
+A label in the notch stands half a line above the field rather than a full line, so leave room for it above the first field in a container that clips.
+
+<Demo src="text-field/label-placement">
+
+<<< @/.vitepress/demos/text-field/label-placement.tsx
+
+</Demo>
+
 ### multiline · rows · resize
 
 `multiline` renders a `<textarea>` and leaves every other axis alone. `rows={1}` is exactly as tall as the single-line field. `resize` defaults to the vertical axis only: horizontal resizing breaks a form's column alignment.
@@ -128,7 +140,7 @@ The slots are `label`, `shell`, `control`, `description` and `error`. `shell` is
 ## Accessibility
 
 - `label`, `description` and `error` are connected to the control with `id` and `aria-describedby`.
-- There is no floating-label variant.
+- With `notch` and `float` the label is still the field's `<label>`. A resting `float` label stands in for the placeholder, which is hidden until the field takes the focus.
 - The focus ring belongs to the shell rather than the `<input>` inside it, so it traces the border.
 - Clicking the shell's own padding puts the caret in the field.
 - On iOS and iPadOS the text is at least 16px, since Safari there zooms the page in on a smaller field when it is tapped. Every other browser draws the size the field's `size` sets. `NumberField`, `Combobox`, `OtpField`, `CommandPalette` and the other text inputs in the library do the same.

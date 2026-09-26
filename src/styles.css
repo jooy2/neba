@@ -1178,6 +1178,256 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * The notch
+ *
+ * A field whose label stands on its top edge: `labelPlacement` `notch` or
+ * `float`. The shell drops its own edge, and `internal/notch.tsx` draws one in
+ * three pieces on a grid: the start, as wide as the corner's radius; the gap,
+ * as wide as the label because the label sits in its column; and the end, which
+ * takes the rest. The gap has no top line, and that missing line is the notch.
+ *
+ * Every piece reads its colour out of `--n-notch-line` and its top light out of
+ * `--n-notch-top`, which the rules below set from the variant and from the state
+ * of the element the notch sits in: the shell, or for a Select the frame that
+ * holds the notch beside its trigger. The ring
+ * is each piece's `::before`, two pixels outside it, and like every ring in the
+ * library it is declared at no width and arrives in colour.
+ *
+ * It is CSS rather than Tailwind because the conditions are relations between
+ * three elements — the holder's hover and focus, the control's emptiness and
+ * the notch itself — and the Tailwind spelling of "a later sibling of an empty
+ * input whose parent has no focus" is not something anybody should have to read.
+ * ------------------------------------------------------------------------- */
+
+/* The shell, and the label's width under it at no height, in one cell. */
+.neba-notch-frame {
+  position: relative;
+  display: grid;
+}
+
+.neba-notch-frame > * {
+  grid-area: 1 / 1;
+}
+
+.neba-notch-sizer {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  white-space: nowrap;
+  padding-inline: calc(var(--n-notch-r) + var(--n-notch-gap));
+  font-size: var(--n-float-size);
+}
+
+.neba-notch-sizer[data-sample]::before {
+  content: attr(data-sample);
+}
+
+.neba-notch {
+  position: absolute;
+  inset: var(--n-notch-inset, 0);
+  display: grid;
+  grid-template-columns:
+    var(--n-notch-r)
+    fit-content(calc(100% - 2 * var(--n-notch-r)))
+    minmax(var(--n-notch-r), 1fr);
+  grid-template-rows: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+
+  /* The label on the edge, and the gap open under it. A resting label swaps
+     every one of these below. */
+  --n-label-top: calc(0.5px - var(--n-float-leading) / 2);
+  --n-label-x: 0px;
+  --n-label-size: var(--n-float-size);
+  --n-label-leading: var(--n-float-leading);
+  --n-gap-line: transparent;
+  --n-gap-top: transparent;
+}
+
+.neba-notch[data-variant='outline'] {
+  --n-notch-line: var(--n-line);
+  --n-notch-top: var(--neba-plate-top);
+}
+
+.neba-notch[data-variant='solid'] {
+  --n-notch-line: var(--neba-plate-edge);
+  --n-notch-top: var(--neba-plate-top);
+}
+
+@media (hover: hover) {
+  :hover > .neba-notch[data-variant='outline']:not([data-state]) {
+    --n-notch-line: var(--n-line-hover);
+  }
+}
+
+/* After the hover rule and at its specificity, so a pointer resting on a
+   focused field leaves the edge the colour of the ring it is flush against. */
+:focus-within > .neba-notch[data-variant='outline']:not([data-state]) {
+  --n-notch-line: var(--n-ring);
+}
+
+.neba-notch[data-state='disabled'] {
+  --n-notch-top: transparent;
+}
+
+.neba-notch[data-state='disabled'][data-variant='outline'] {
+  --n-notch-line: var(--neba-disabled-border);
+}
+
+.neba-notch[data-state='disabled'][data-variant='solid'] {
+  --n-notch-line: transparent;
+}
+
+.neba-notch-start,
+.neba-notch-gap,
+.neba-notch-end {
+  position: relative;
+  grid-row: 1;
+  border: 0 solid var(--n-notch-line, transparent);
+  border-block-width: 1px;
+  box-shadow: inset 0 1px 0 var(--n-notch-top, transparent);
+  transition:
+    border-color var(--neba-duration) var(--neba-ease),
+    box-shadow var(--neba-duration) var(--neba-ease);
+}
+
+.neba-notch-start {
+  grid-column: 1;
+  border-inline-start-width: 1px;
+  border-start-start-radius: inherit;
+  border-end-start-radius: inherit;
+}
+
+.neba-notch-gap {
+  grid-column: 2;
+  border-top-color: var(--n-gap-line);
+  box-shadow: inset 0 1px 0 var(--n-gap-top);
+}
+
+.neba-notch-end {
+  grid-column: 3;
+  border-inline-end-width: 1px;
+  border-start-end-radius: inherit;
+  border-end-end-radius: inherit;
+}
+
+/* The ring, drawn over the two pixels outside each piece. The radius is the
+   corner's plus the ring's own width, so its inner edge meets the hairline. */
+.neba-notch-start::before,
+.neba-notch-gap::before,
+.neba-notch-end::before {
+  content: '';
+  position: absolute;
+  inset-block: -3px;
+  border: 0 solid transparent;
+  transition: border-color var(--neba-duration) var(--neba-ease);
+}
+
+.neba-notch-start::before {
+  inset-inline: -3px 0;
+  border-start-start-radius: calc(var(--n-notch-r) + 2px);
+  border-end-start-radius: calc(var(--n-notch-r) + 2px);
+}
+
+.neba-notch-gap::before {
+  inset-inline: 0;
+}
+
+.neba-notch-end::before {
+  inset-inline: 0 -3px;
+  border-start-end-radius: calc(var(--n-notch-r) + 2px);
+  border-end-end-radius: calc(var(--n-notch-r) + 2px);
+}
+
+/* Only the bottom of the gap: a field with the focus in it has its label on
+   the edge, so the top of the gap is always open when the ring is drawn. */
+:has(:focus-visible) > .neba-notch > .neba-notch-start::before {
+  border-color: var(--n-ring);
+  border-block-width: 2px;
+  border-inline-start-width: 2px;
+}
+
+:has(:focus-visible) > .neba-notch > .neba-notch-gap::before {
+  border-color: var(--n-ring);
+  border-block-end-width: 2px;
+}
+
+:has(:focus-visible) > .neba-notch > .neba-notch-end::before {
+  border-color: var(--n-ring);
+  border-block-width: 2px;
+  border-inline-end-width: 2px;
+}
+
+/*
+ * The label, centred on the edge line. It moves on `top` and
+ * `inset-inline-start` and changes size on `font-size`, never on a transform:
+ * it is set again at every size on the way rather than scaled, so no frame of
+ * it is a resampled picture of the word.
+ *
+ * A press goes straight through it to what is underneath. A resting label
+ * covers most of the control, and a Select opens on the pointer going down on
+ * its trigger, which a `<label>` in front of it would swallow; the input
+ * under a field's label is where the caret belongs anyway.
+ */
+.neba-notch-label {
+  grid-area: 1 / 2;
+  align-self: start;
+  position: relative;
+  top: var(--n-label-top);
+  inset-inline-start: var(--n-label-x);
+  min-width: 0;
+  padding-inline: var(--n-notch-gap);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--n-label-size);
+  line-height: var(--n-label-leading);
+  transition-property: top, inset-inline-start, font-size, line-height, color;
+  transition-duration: var(--neba-duration);
+  transition-timing-function: var(--neba-ease);
+}
+
+/*
+ * A `float` label at rest: set in the control's own text, where the text would
+ * start, with the gap closed over it. Three ways to know the field is empty,
+ * one per kind of control — an input's `:placeholder-shown`, a trigger's
+ * `data-placeholder`, and `data-empty` from a component that has no control to
+ * ask — and the same rule for all three: nothing inside the holder has the
+ * focus and nothing is open. Autofill counts as a value before the reader has
+ * accepted it, because the text is already drawn where the label would be.
+ */
+:not(:focus-within) > .neba-float-control:placeholder-shown:not(:autofill) ~ .neba-notch-float,
+:not(:focus-within)
+  > .neba-float-control[data-placeholder]:not([data-popup-open])
+  ~ .neba-notch-float,
+:not(:focus-within) > .neba-notch-float[data-empty] {
+  --n-label-top: var(--n-rest-top);
+  --n-label-x: var(--n-rest-x);
+  --n-label-size: var(--n-rest-size);
+  --n-label-leading: var(--n-rest-leading);
+  --n-label-ink: var(--neba-muted-fg);
+  --n-gap-line: var(--n-notch-line, transparent);
+  --n-gap-top: var(--n-notch-top, transparent);
+}
+
+/* And the placeholder it is standing in for, which comes back with the focus.
+   Everything inside a trigger's placeholder as well as the placeholder itself:
+   a DateRangePicker's is two words and an arrow, each with an ink of its own.
+   Spelled out rather than as `:is([data-placeholder] *)`, which would also match
+   the chevron — a Select's trigger carries `data-placeholder` itself. */
+.neba-float-control::placeholder,
+.neba-float-control [data-placeholder],
+.neba-float-control [data-placeholder] * {
+  transition: color var(--neba-duration) var(--neba-ease);
+}
+
+.neba-float-control:not(:focus)::placeholder,
+.neba-float-control:not(:focus):not([data-popup-open]) [data-placeholder],
+.neba-float-control:not(:focus):not([data-popup-open]) [data-placeholder] * {
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
  * Forced colours
  *
  * A forced palette — Windows' contrast themes — replaces every colour with a
@@ -1198,6 +1448,13 @@
   .neba-switch.neba-switch:not(:focus-visible) {
     outline: 1px solid ButtonText;
     outline-offset: -1px;
+  }
+
+  /* A forced palette paints a transparent line too, so a notched shell's own
+     border and the closed top of the gap are both drawn through the label.
+     The page under a forced palette is opaque, and so is this. */
+  .neba-notch-label.neba-notch-label {
+    background-color: Canvas;
   }
 
   /* Behind `@supports` as well, which every browser that can be in a forced

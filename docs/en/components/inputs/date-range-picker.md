@@ -60,6 +60,16 @@ Puts common spans beside the popup as buttons. A preset's `value` may be a range
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). A resting `float` label stands in for both placeholders and moves up once either end is chosen or the popup opens. The calendar glyph keeps it in the notch unless you pass `startIcon={false}`.
+
+<Demo src="date-range-picker/label-placement">
+
+<<< @/.vitepress/demos/date-range-picker/label-placement.tsx
+
+</Demo>
+
 ### name
 
 `name` renders two hidden inputs of the same name, so both ends submit together.

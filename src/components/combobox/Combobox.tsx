@@ -7,6 +7,7 @@ import { Chip } from '../chip/Chip.js';
 import { actionMessages, comboboxMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons.js';
 import { keyHandler } from '../../internal/keys.js';
+import { FieldNotch, NotchFrame } from '../../internal/notch.js';
 import {
   chipRemoveClasses,
   controlTextLeadingClasses,
@@ -17,6 +18,9 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   fieldRingClasses,
+  fieldSheetClasses,
+  fieldSheetDisabledClasses,
+  fieldSheetReadOnlyClasses,
   gapClasses,
   hasContent,
   iconClasses,
@@ -24,6 +28,7 @@ import {
   paddingXClasses,
   popupFadeClasses,
   radiusClasses,
+  readOnlyFilterClasses,
   stackGapClasses,
   surfaceClasses,
   surfaceSlots,
@@ -33,6 +38,7 @@ import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaLabelPlacement,
   NebaShortcuts,
   NebaSize,
   NebaSlots,
@@ -168,8 +174,15 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
    * @default 0
    */
   elevation?: NebaElevation;
-  /** Label above the field, wired to it by Base UI's Field. */
+  /** The field's name, wired to the input by Base UI's Field. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the field, in a notch cut into its top
+   * edge, or inside it until the field is focused, holds text or has a chip in
+   * it. A `startIcon` keeps a `float` label in the notch.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below the field. */
   description?: React.ReactNode;
   /** Error message below. Its presence also turns the combobox invalid. */
@@ -246,7 +259,6 @@ const shellBaseClasses = [
   '[-webkit-tap-highlight-color:transparent]',
   transitionClasses,
   fieldFocusTransitionClasses,
-  fieldRingClasses,
   iconClasses
 ].join(' ');
 
@@ -359,6 +371,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     limit,
     placeholder,
     label,
+    labelPlacement = 'top',
     description,
     error,
     invalid,
@@ -502,6 +515,9 @@ export function Combobox<Multiple extends boolean | undefined = false>(
 
   const padX = paddingXClasses[density][size];
 
+  const notched = labelPlacement !== 'top' && hasContent(label);
+  const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
+
   const shellClasses = [
     shellBaseClasses,
     controlTextLeadingClasses[size],
@@ -511,13 +527,17 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     // The chevron brings its own hit area; stacking the field's padding on top
     // of it would leave the glyph floating in the middle of a gap.
     `${padX} pe-1.5`,
+    // The notch draws the ring when it draws the edge.
+    notched ? '' : fieldRingClasses,
     // An if/else rather than stacked variants: two Tailwind classes of equal
     // specificity resolve by their order in the generated stylesheet.
     disabled
-      ? disabledClasses[variant]
+      ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
       : readOnly
-        ? fieldReadOnlyClasses[variant]
-        : `${fieldRestClasses[variant]} ${glowClasses}`,
+        ? notched
+          ? `${fieldSheetReadOnlyClasses[variant]} ${readOnlyFilterClasses}`
+          : fieldReadOnlyClasses[variant]
+        : `${(notched ? fieldSheetClasses : fieldRestClasses)[variant]} ${glowClasses}`,
     classNames?.shell
   ]
     .filter(Boolean)
@@ -536,6 +556,8 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     'placeholder:text-(--neba-muted-fg)',
     'caret-(--n-accent) selection:bg-(--n-soft-press)',
     'disabled:cursor-not-allowed',
+    // The hook a resting label reads the field's emptiness through.
+    rests ? 'neba-float-control' : '',
     classNames?.control
   ]
     .filter(Boolean)
@@ -558,11 +580,106 @@ export function Combobox<Multiple extends boolean | undefined = false>(
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       onKeyDown={keyHandler(shortcuts)}
-      placeholder={placeholder}
+      // `:placeholder-shown` is how a resting label knows the field is empty,
+      // and it never matches an input that has no placeholder.
+      placeholder={rests ? placeholder || ' ' : placeholder}
       className={
         isMultiple ? `${inputClasses} min-w-16 ${afterChips ? 'ms-1.5' : ''}` : inputClasses
       }
     />
+  );
+
+  const inputGroup = (
+    <BaseUICombobox.InputGroup
+      className={shellClasses}
+      // The spotlight, and only the spotlight, and out again while the
+      // reader is typing — see `internal/glow.ts`.
+      {...fieldLight<HTMLDivElement>(lit)}
+    >
+      {startIcon ? (
+        <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+          {startIcon}
+        </span>
+      ) : null}
+
+      {isMultiple ? (
+        <BaseUICombobox.Chips className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+          <BaseUICombobox.Value>
+            {(chosen: Entry[]) => (
+              <React.Fragment>
+                {chosen.map((entry) => (
+                  <BaseUICombobox.Chip
+                    key={String(entry.value)}
+                    render={
+                      <Chip
+                        variant="outline"
+                        size={size}
+                        color={family}
+                        density="compact"
+                        disabled={disabled}
+                        className={classNames?.chip}
+                        endIcon={
+                          readOnly || disabled ? null : (
+                            <BaseUICombobox.ChipRemove
+                              aria-label={nameRemove(entry.label)}
+                              className={chipRemoveClasses}
+                            >
+                              <CloseIcon />
+                            </BaseUICombobox.ChipRemove>
+                          )
+                        }
+                      />
+                    }
+                  >
+                    {entry.label}
+                  </BaseUICombobox.Chip>
+                ))}
+                {renderInput(chosen.length > 0)}
+              </React.Fragment>
+            )}
+          </BaseUICombobox.Value>
+        </BaseUICombobox.Chips>
+      ) : (
+        renderInput(false)
+      )}
+
+      {clearable && !readOnly ? (
+        <BaseUICombobox.Clear aria-label={clearLabel ?? actions.clear} className={adornmentClasses}>
+          <CloseIcon />
+        </BaseUICombobox.Clear>
+      ) : null}
+
+      <BaseUICombobox.Trigger
+        aria-label={typeof label === 'string' ? undefined : (openLabel ?? messages.open)}
+        className={adornmentClasses}
+      >
+        <BaseUICombobox.Icon
+          className={[
+            // The chevron is the one thing here that may turn: it is a
+            // glyph, not a label, and nothing about it resamples.
+            'flex items-center',
+            '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+            'data-[popup-open]:rotate-180'
+          ].join(' ')}
+        >
+          <ChevronIcon />
+        </BaseUICombobox.Icon>
+      </BaseUICombobox.Trigger>
+
+      {notched ? (
+        <FieldNotch
+          label={label}
+          variant={variant}
+          disabled={disabled}
+          readOnly={readOnly}
+          rests={rests}
+          // The chips are not an input, so a multiple field says it is
+          // empty itself: nothing chosen and nothing typed.
+          empty={isMultiple ? selection.length === 0 && query === '' : undefined}
+          labelClassName={classNames?.label}
+        />
+      ) : null}
+    </BaseUICombobox.InputGroup>
   );
 
   return (
@@ -582,7 +699,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
       }}
       {...props}
     >
-      {label ? (
+      {label && !notched ? (
         <Field.Label
           className={cx(
             metaTextClasses[size],
@@ -638,85 +755,19 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         readOnly={readOnly}
         required={required}
       >
-        <BaseUICombobox.InputGroup
-          className={shellClasses}
-          // The spotlight, and only the spotlight, and out again while the
-          // reader is typing — see `internal/glow.ts`.
-          {...fieldLight<HTMLDivElement>(lit)}
-        >
-          {startIcon ? (
-            <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-              {startIcon}
-            </span>
-          ) : null}
-
-          {isMultiple ? (
-            <BaseUICombobox.Chips className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-              <BaseUICombobox.Value>
-                {(chosen: Entry[]) => (
-                  <React.Fragment>
-                    {chosen.map((entry) => (
-                      <BaseUICombobox.Chip
-                        key={String(entry.value)}
-                        render={
-                          <Chip
-                            variant="outline"
-                            size={size}
-                            color={family}
-                            density="compact"
-                            disabled={disabled}
-                            className={classNames?.chip}
-                            endIcon={
-                              readOnly || disabled ? null : (
-                                <BaseUICombobox.ChipRemove
-                                  aria-label={nameRemove(entry.label)}
-                                  className={chipRemoveClasses}
-                                >
-                                  <CloseIcon />
-                                </BaseUICombobox.ChipRemove>
-                              )
-                            }
-                          />
-                        }
-                      >
-                        {entry.label}
-                      </BaseUICombobox.Chip>
-                    ))}
-                    {renderInput(chosen.length > 0)}
-                  </React.Fragment>
-                )}
-              </BaseUICombobox.Value>
-            </BaseUICombobox.Chips>
-          ) : (
-            renderInput(false)
-          )}
-
-          {clearable && !readOnly ? (
-            <BaseUICombobox.Clear
-              aria-label={clearLabel ?? actions.clear}
-              className={adornmentClasses}
-            >
-              <CloseIcon />
-            </BaseUICombobox.Clear>
-          ) : null}
-
-          <BaseUICombobox.Trigger
-            aria-label={typeof label === 'string' ? undefined : (openLabel ?? messages.open)}
-            className={adornmentClasses}
+        {notched ? (
+          <NotchFrame
+            label={label}
+            size={size}
+            density={density}
+            variant={variant}
+            labelClassName={classNames?.label}
           >
-            <BaseUICombobox.Icon
-              className={[
-                // The chevron is the one thing here that may turn: it is a
-                // glyph, not a label, and nothing about it resamples.
-                'flex items-center',
-                '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                'data-[popup-open]:rotate-180'
-              ].join(' ')}
-            >
-              <ChevronIcon />
-            </BaseUICombobox.Icon>
-          </BaseUICombobox.Trigger>
-        </BaseUICombobox.InputGroup>
+            {inputGroup}
+          </NotchFrame>
+        ) : (
+          inputGroup
+        )}
 
         <BaseUICombobox.Portal>
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the

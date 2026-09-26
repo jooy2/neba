@@ -722,4 +722,62 @@ describe('DatePicker', () => {
       expect(screen.container.querySelector('[data-analytics="due"]')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} labelPlacement="notch" label="Ships on" />
+      );
+      const trigger = screen.getByRole('button', { name: 'Ships on', exact: false }).element();
+
+      expect(trigger.querySelector('label')).toBeNull();
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent(
+        'Ships on'
+      );
+    });
+
+    // The calendar glyph is where a floating label would rest.
+    it('keeps a floating label in the notch beside the calendar glyph', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} labelPlacement="float" label="Ships on" />
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Ships on', exact: false }).element()
+      ).not.toHaveClass('neba-float-control');
+    });
+
+    it('lets a floating label rest once the glyph is taken away', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} labelPlacement="float" label="Ships on" startIcon={false} />
+      );
+      const trigger = screen.getByRole('button', { name: 'Ships on', exact: false }).element();
+
+      expect(trigger).toHaveClass('neba-float-control');
+      expect(screen.container.querySelector('.neba-notch')).toHaveClass('neba-notch-float');
+    });
+
+    // What the stylesheet reads to know the picker is empty — the same
+    // attribute a Select's trigger carries.
+    it('marks the trigger empty until a day is chosen', async () => {
+      const screen = await render(
+        <DatePicker locale={LOCALE} labelPlacement="float" label="Ships on" startIcon={false} />
+      );
+      const trigger = () =>
+        screen.getByRole('button', { name: 'Ships on', exact: false }).element();
+
+      expect(trigger()).toHaveAttribute('data-placeholder');
+
+      await screen.rerender(
+        <DatePicker
+          locale={LOCALE}
+          labelPlacement="float"
+          label="Ships on"
+          startIcon={false}
+          value={JULY_27}
+        />
+      );
+      expect(trigger()).not.toHaveAttribute('data-placeholder');
+    });
+  });
 });

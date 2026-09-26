@@ -67,6 +67,16 @@ interface SelectOption {
 
 </Demo>
 
+### labelPlacement
+
+`notch`는 trigger 위쪽 테두리를 끊어 낸 틈에 라벨을 올립니다. `float`는 무언가를 고르거나 목록이 열리기 전까지 placeholder 자리에 라벨을 두었다가 노치로 올립니다. `startIcon`이 있으면 `float` 라벨도 노치에 머뭅니다. 모든 필드에 공통인 내용은 [TextField](./text-field#labelplacement)에 있습니다.
+
+<Demo src="select/label-placement">
+
+<<< @/.vitepress/demos/select/label-placement.tsx
+
+</Demo>
+
 ### group
 
 `group`은 같은 이름을 가진 이웃한 옵션들 위에 제목을 답니다. 지역별 시간대, 계열별 글꼴처럼 묶이는 목록에 씁니다. 제목은 하이라이트되지도, 선택되지도, typeahead로 닿지도 않습니다.

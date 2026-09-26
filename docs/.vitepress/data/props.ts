@@ -141,6 +141,24 @@ const fieldProps: PropRow[] = [
   }
 ];
 
+/**
+ * Where a field-shaped control draws its label. One wording for the fields
+ * that can rest a label where their text starts, and each of the rest says
+ * what takes that place.
+ */
+function labelPlacementRow(description?: Text): PropRow {
+  return {
+    name: 'labelPlacement',
+    type: "'top' | 'notch' | 'float'",
+    default: "'top'",
+    shared: true,
+    description: description ?? {
+      ko: '라벨 위치. 필드 위, 위쪽 테두리를 끊어 낸 노치, 또는 focus를 받거나 값이 생길 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the field, in a notch cut into its top edge, or in place of the placeholder until the field is focused or filled. A startIcon keeps float in the notch'
+    }
+  };
+}
+
 /** The two inert states, spelled the same way on every control. */
 const inertProps: PropRow[] = [
   {
@@ -468,6 +486,10 @@ function pickerProps(options: PickerOptions): PropRow[] {
       description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
     },
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 팝업이 열릴 때까지 placeholder 자리. 앞쪽 글리프가 있으면 float도 노치에 머물므로 startIcon={false}로 내려앉게 합니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the popup opens. The glyph at the start keeps float in the notch; startIcon={false} lets it rest'
+    }),
     ...inertProps
   ];
 }
@@ -2037,10 +2059,11 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'ReactNode',
       description: {
-        ko: '컨트롤 위 라벨. Base UI Field로 연결됩니다',
-        en: "Label above the control, wired to it by Base UI's Field"
+        ko: '컨트롤과 연결되는 라벨. Base UI Field가 묶어 줍니다',
+        en: "The label, wired to the control by Base UI's Field"
       }
     },
+    labelPlacementRow(),
     {
       name: 'description',
       type: 'ReactNode',
@@ -5312,6 +5335,10 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 목록이 열릴 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the list opens. A startIcon keeps float in the notch'
+    }),
     {
       name: 'startIcon',
       type: 'ReactNode',
@@ -5509,6 +5536,10 @@ export const propTables: Record<string, PropRow[]> = {
     },
     slotsProp('popup', 'tree', 'item', 'empty'),
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 목록이 열릴 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the list opens. A startIcon keeps float in the notch'
+    }),
     ...inertProps
   ],
 
@@ -8928,6 +8959,10 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 필드 위, 위쪽 테두리를 끊어 낸 노치, 또는 focus를 받거나 텍스트나 칩이 생길 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the field, in a notch cut into its top edge, or in place of the placeholder until the field is focused or holds text or a chip. A startIcon keeps float in the notch'
+    }),
     {
       name: 'startIcon',
       type: 'ReactNode',
@@ -9138,6 +9173,10 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 필드 위, 위쪽 테두리를 끊어 낸 노치, 또는 focus를 받거나 숫자가 생길 때까지 placeholder 자리. startIcon이나 split steppers가 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the field, in a notch cut into its top edge, or in place of the placeholder until the field is focused or holds a number. A startIcon or split steppers keep float in the notch'
+    }),
     {
       name: 'startIcon',
       type: 'ReactNode',
@@ -13330,6 +13369,10 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '컨테이너 너비만큼 확장', en: 'Stretches to the width of the container' }
     },
     ...fieldProps,
+    labelPlacementRow({
+      ko: '라벨 위치. 트리거 위, 또는 위쪽 테두리를 끊어 낸 노치. 앞쪽 색 견본 때문에 float도 노치에 머뭅니다. inline에서는 무시합니다',
+      en: 'Where the label is drawn: above the trigger, or in a notch cut into its top edge. The swatch at the start keeps float in the notch. Ignored with inline'
+    }),
     ...inertProps,
     ...sharedProps({
       variant: "'outline'",

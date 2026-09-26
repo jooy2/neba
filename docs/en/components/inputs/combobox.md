@@ -88,6 +88,16 @@ A single-select Combobox is exactly as tall as a [TextField](./text-field) of th
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). In a `multiple` combobox a `float` label rests only while nothing is chosen and nothing is typed.
+
+<Demo src="combobox/label-placement">
+
+<<< @/.vitepress/demos/combobox/label-placement.tsx
+
+</Demo>
+
 ### disabled · readOnly · error
 
 <Demo src="combobox/states">

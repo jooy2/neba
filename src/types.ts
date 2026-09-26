@@ -202,6 +202,25 @@ export type NebaVariant = 'solid' | 'outline' | 'text';
 export type NebaElevation = 0 | 1 | 2 | 3;
 
 /**
+ * Where a field-shaped component draws its label.
+ *
+ * - `top` — above the field, in a line of its own. The default.
+ * - `notch` — on the field's top edge, in a gap cut out of the border.
+ * - `float` — inside the field, where the placeholder would be, while the field
+ *   is empty and nothing in it has the focus; it rises into the notch the
+ *   moment either stops being true.
+ *
+ * `notch` and `float` take no height of their own. The label stands half a
+ * line above the field's top edge instead of a line above it, so a column of
+ * notched fields is shorter than the same column with their labels on top.
+ *
+ * A field that draws something at its start — a `startIcon`, the split
+ * steppers of a NumberField — keeps a `float` label in the notch, because the
+ * place it would rest is taken.
+ */
+export type NebaLabelPlacement = 'top' | 'notch' | 'float';
+
+/**
  * The seven effects the `transition` prop takes, which is the **entrance**
  * vocabulary: everything a component can be given to arrive on.
  *

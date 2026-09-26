@@ -49,6 +49,16 @@ import { TimePicker } from 'neba';
 
 </Demo>
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. trigger 앞의 시계 아이콘이 `float` 라벨이 내려앉을 자리를 차지하므로, `startIcon={false}`를 넘기지 않으면 라벨은 노치에 머뭅니다. popup이 열려 있는 동안에도 노치에 있습니다.
+
+<Demo src="time-picker/label-placement">
+
+<<< @/.vitepress/demos/time-picker/label-placement.tsx
+
+</Demo>
+
 ### showNowButton과 clearable
 
 `showNowButton`은 현재 시각으로 이동하는 버튼을, `clearable`은 값을 비우는 버튼을 붙입니다.

@@ -24,7 +24,13 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import type { ColorFormat, Hsv } from '../../internal/color.js';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaLabelPlacement,
+  NebaSize,
+  NebaStyleProps
+} from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** The names for the parts of the picker that have no text on them. */
@@ -80,8 +86,16 @@ export interface ColorPickerProps
    * @default true
    */
   editable?: boolean;
-  /** Label above the control. */
+  /** The control's name. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the trigger, or in a notch cut into its
+   * top edge. The swatch at the trigger's start is where a `float` label would
+   * rest, so `float` keeps it in the notch as well. Ignored with `inline`,
+   * which has no trigger to put a notch in.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below it. */
   description?: React.ReactNode;
   /** Error message below. Its presence also turns the control invalid. */
@@ -584,6 +598,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       inline = false,
       editable = true,
       label,
+      labelPlacement,
       description,
       error,
       invalid,
@@ -773,6 +788,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
           elevation={elevation}
           style={style}
           label={label}
+          labelPlacement={labelPlacement}
           description={description}
           error={error}
           invalid={invalid}

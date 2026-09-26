@@ -75,6 +75,16 @@ The steppers are sized in `em`, so they track the number. The field lines up wit
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). A `float` label rests in the field until it takes the focus or holds a number. A `startIcon` and `steppers="split"` both keep it in the notch, because they sit where it would rest.
+
+<Demo src="number-field/label-placement">
+
+<<< @/.vitepress/demos/number-field/label-placement.tsx
+
+</Demo>
+
 ### disabled · readOnly · error
 
 `readOnly` removes the steppers rather than leaving them disabled. The number stays selectable so it can be copied out.

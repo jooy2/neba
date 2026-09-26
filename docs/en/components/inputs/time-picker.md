@@ -49,6 +49,16 @@ Native `<div>` attributes pass through to the root. Only `color`, `defaultValue`
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). The clock glyph at the start of the trigger is where a `float` label would rest, so the label stays in the notch unless you pass `startIcon={false}`. It also stays there while the popup is open.
+
+<Demo src="time-picker/label-placement">
+
+<<< @/.vitepress/demos/time-picker/label-placement.tsx
+
+</Demo>
+
 ### showNowButton and clearable
 
 `showNowButton` adds a button that jumps to the current time; `clearable` adds one that empties the value.

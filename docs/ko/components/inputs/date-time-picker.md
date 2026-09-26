@@ -41,6 +41,16 @@ import { DateTimePicker } from 'neba';
 
 </Demo>
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. trigger 앞의 달력 아이콘이 `float` 라벨이 내려앉을 자리를 차지하므로, `startIcon={false}`를 넘기지 않으면 라벨은 노치에 머뭅니다. popup이 열려 있는 동안에도 노치에 있습니다.
+
+<Demo src="date-time-picker/label-placement">
+
+<<< @/.vitepress/demos/date-time-picker/label-placement.tsx
+
+</Demo>
+
 ### trigger 표시
 
 trigger는 달력 글리프만 표시하고 시계 글리프는 표시하지 않습니다. 값은 `Intl`로 날짜와 시각을 한 문자열로 합쳐 보여 줍니다.

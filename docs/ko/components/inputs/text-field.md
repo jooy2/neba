@@ -43,6 +43,18 @@ import { TextField } from 'neba';
 
 </Demo>
 
+### labelPlacement
+
+기본값인 `top`은 라벨을 필드 위에 둡니다. `notch`는 필드 위쪽 테두리를 끊어 낸 틈에 라벨을 올립니다. `float`는 라벨을 placeholder 자리에 두었다가, 필드가 focus를 받거나 값을 가지면 노치로 올립니다. placeholder는 라벨이 올라간 뒤에야 보입니다. `startIcon`이 있으면 아이콘이 라벨이 내려앉을 자리를 차지하므로 `float` 라벨도 노치에 머뭅니다.
+
+노치의 라벨은 필드 위로 한 줄이 아니라 반 줄만 올라옵니다. 넘치는 부분을 잘라 내는 컨테이너라면 맨 위 필드 위에 그만큼 여백을 두어야 합니다.
+
+<Demo src="text-field/label-placement">
+
+<<< @/.vitepress/demos/text-field/label-placement.tsx
+
+</Demo>
+
 ### multiline · rows · resize
 
 `multiline`은 `<textarea>`로 렌더링하고 나머지 축은 그대로 유지합니다. `rows={1}`은 한 줄 필드와 정확히 같은 높이입니다. `resize`의 기본값은 세로 방향만 허용합니다. 가로 리사이즈는 폼의 열 정렬을 깨뜨립니다.
@@ -128,7 +140,7 @@ slot은 `label`, `shell`, `control`, `description`, `error`입니다. `shell`은
 ## 접근성
 
 - `label` · `description` · `error`가 `id`와 `aria-describedby`로 컨트롤에 연결됩니다.
-- floating label은 제공하지 않습니다.
+- `notch`와 `float`에서도 라벨은 필드의 `<label>`입니다. 내려앉은 `float` 라벨은 placeholder를 대신하며, placeholder는 필드가 focus를 받을 때까지 보이지 않습니다.
 - focus ring은 `<input>`이 아니라 감싸는 shell에 그려지므로 테두리를 그대로 따라갑니다.
 - shell의 여백을 클릭해도 caret이 들어갑니다.
 - iOS와 iPadOS에서는 글자가 최소 16px입니다. 그곳의 Safari는 더 작은 필드를 누르면 페이지를 확대하기 때문입니다. 다른 브라우저는 `size`가 정한 크기로 그립니다. `NumberField`, `Combobox`, `OtpField`, `CommandPalette` 등 라이브러리의 다른 텍스트 입력도 같습니다.

@@ -6,6 +6,7 @@ import { Field } from '@base-ui/react/field';
 import { numberMessages, useMessages } from '../../internal/i18n.js';
 import { MinusIcon, PlusIcon } from '../../internal/icons.js';
 import { keyHandler } from '../../internal/keys.js';
+import { FieldNotch, NotchFrame } from '../../internal/notch.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -15,12 +16,16 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   fieldRingClasses,
+  fieldSheetClasses,
+  fieldSheetDisabledClasses,
+  fieldSheetReadOnlyClasses,
   gapClasses,
   hasContent,
   iconClasses,
   metaTextClasses,
   paddingXClasses,
   radiusClasses,
+  readOnlyFilterClasses,
   stackGapClasses,
   surfaceSlots,
   transitionClasses
@@ -29,6 +34,7 @@ import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaLabelPlacement,
   NebaShortcuts,
   NebaSlots,
   NebaStyleProps
@@ -136,11 +142,16 @@ export interface NumberFieldProps
   incrementLabel?: string;
   /** Accessible name of the decrement button. */
   decrementLabel?: string;
-  /**
-   * Label above the control, wired to it by Base UI's Field. There is no
-   * floating variant on purpose: floating labels need a `transform`.
-   */
+  /** The field's name, wired to the control by Base UI's Field. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the field, in a notch cut into its top
+   * edge, or inside it until the field is focused or filled. A `startIcon` or
+   * `split` steppers keep a `float` label in the notch, because they are where
+   * it would rest.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below the control. */
   description?: React.ReactNode;
   /** Error message below the control. Its presence also turns the field invalid. */
@@ -189,7 +200,6 @@ const shellBaseClasses = [
   '[-webkit-tap-highlight-color:transparent]',
   transitionClasses,
   fieldFocusTransitionClasses,
-  fieldRingClasses,
   iconClasses
 ].join(' ');
 
@@ -257,6 +267,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
       incrementLabel,
       decrementLabel,
       label,
+      labelPlacement = 'top',
       description,
       error,
       invalid,
@@ -320,6 +331,108 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
     );
 
     const showSteppers = steppers !== 'none' && !readOnly;
+    const notched = labelPlacement !== 'top' && hasContent(label);
+    const rests =
+      notched &&
+      labelPlacement === 'float' &&
+      !hasContent(startIcon) &&
+      !(showSteppers && steppers === 'split');
+
+    const shell = (
+      <BaseUINumberField.Group
+        // The spotlight, and only the spotlight, and out again while the
+        // reader is typing — see `internal/glow.ts`.
+        {...fieldLight<HTMLDivElement>(lit)}
+        className={cx(
+          shellBaseClasses,
+          fieldHeightClasses[size],
+          controlTextLeadingClasses[size],
+          radiusClasses[size],
+          gapClasses[size],
+          showSteppers ? insetClasses[steppers] : padX,
+          // The notch draws the ring when it draws the edge.
+          notched ? '' : fieldRingClasses,
+          // An if/else rather than stacked variants: two Tailwind classes of
+          // equal specificity resolve by their order in the generated sheet.
+          disabled
+            ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
+            : readOnly
+              ? notched
+                ? `${fieldSheetReadOnlyClasses[variant]} ${readOnlyFilterClasses}`
+                : fieldReadOnlyClasses[variant]
+              : `${(notched ? fieldSheetClasses : fieldRestClasses)[variant]} ${glowClasses}`,
+          disabled ? '' : 'cursor-text',
+          classNames?.shell
+        )}
+      >
+        {showSteppers && steppers === 'split' ? decrement : null}
+
+        {startIcon ? (
+          <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+            {startIcon}
+          </span>
+        ) : null}
+
+        <BaseUINumberField.Input
+          // The ref is the input's, as a TextField's is: it is what a form
+          // library focuses when this field fails validation.
+          ref={ref}
+          // A name written on the component is the input's. On the root it
+          // named a `<div>`, so a quantity field in a table cell had none.
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
+          onKeyDown={keyHandler(shortcuts)}
+          // `:placeholder-shown` is how a resting label knows the field is
+          // empty, and it never matches an input with no placeholder.
+          placeholder={rests ? placeholder || ' ' : placeholder}
+          className={[
+            'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
+            // Not `outline-none`: that utility zeroes `--tw-outline-style`,
+            // and the shell's focus ring is drawn from the same family.
+            '[outline:none]',
+            'tabular-nums',
+            // Split steppers put the number between the two buttons, so it
+            // belongs in the middle rather than against an edge.
+            steppers === 'split' && showSteppers ? 'text-center' : '',
+            'placeholder:text-(--neba-muted-fg)',
+            'caret-(--n-accent) selection:bg-(--n-soft-press)',
+            'disabled:cursor-not-allowed',
+            rests ? 'neba-float-control' : '',
+            classNames?.control
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        />
+
+        {endIcon ? (
+          <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+            {endIcon}
+          </span>
+        ) : null}
+
+        {showSteppers && steppers === 'end' ? (
+          <span
+            className="flex shrink-0 items-center gap-0.5"
+            style={{ '--n-hit-gap': '0.125rem' } as React.CSSProperties}
+          >
+            {decrement}
+            {increment}
+          </span>
+        ) : null}
+        {showSteppers && steppers === 'split' ? increment : null}
+
+        {notched ? (
+          <FieldNotch
+            label={label}
+            variant={variant}
+            disabled={disabled}
+            readOnly={readOnly}
+            rests={rests}
+            labelClassName={classNames?.label}
+          />
+        ) : null}
+      </BaseUINumberField.Group>
+    );
 
     return (
       <Field.Root
@@ -338,7 +451,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
         }}
         {...props}
       >
-        {label ? (
+        {label && !notched ? (
           <Field.Label
             className={cx(
               metaTextClasses[size],
@@ -374,81 +487,19 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           readOnly={readOnly}
           required={required}
         >
-          <BaseUINumberField.Group
-            // The spotlight, and only the spotlight, and out again while the
-            // reader is typing — see `internal/glow.ts`.
-            {...fieldLight<HTMLDivElement>(lit)}
-            className={cx(
-              shellBaseClasses,
-              fieldHeightClasses[size],
-              controlTextLeadingClasses[size],
-              radiusClasses[size],
-              gapClasses[size],
-              showSteppers ? insetClasses[steppers] : padX,
-              // An if/else rather than stacked variants: two Tailwind classes of
-              // equal specificity resolve by their order in the generated sheet.
-              disabled
-                ? disabledClasses[variant]
-                : readOnly
-                  ? fieldReadOnlyClasses[variant]
-                  : `${fieldRestClasses[variant]} ${glowClasses}`,
-              disabled ? '' : 'cursor-text',
-              classNames?.shell
-            )}
-          >
-            {showSteppers && steppers === 'split' ? decrement : null}
-
-            {startIcon ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-                {startIcon}
-              </span>
-            ) : null}
-
-            <BaseUINumberField.Input
-              // The ref is the input's, as a TextField's is: it is what a form
-              // library focuses when this field fails validation.
-              ref={ref}
-              // A name written on the component is the input's. On the root it
-              // named a `<div>`, so a quantity field in a table cell had none.
-              aria-label={ariaLabel}
-              aria-labelledby={ariaLabelledBy}
-              onKeyDown={keyHandler(shortcuts)}
-              placeholder={placeholder}
-              className={[
-                'neba-input min-w-0 flex-1 self-stretch bg-transparent [font:inherit] text-inherit',
-                // Not `outline-none`: that utility zeroes `--tw-outline-style`,
-                // and the shell's focus ring is drawn from the same family.
-                '[outline:none]',
-                'tabular-nums',
-                // Split steppers put the number between the two buttons, so it
-                // belongs in the middle rather than against an edge.
-                steppers === 'split' && showSteppers ? 'text-center' : '',
-                'placeholder:text-(--neba-muted-fg)',
-                'caret-(--n-accent) selection:bg-(--n-soft-press)',
-                'disabled:cursor-not-allowed',
-                classNames?.control
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            />
-
-            {endIcon ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-                {endIcon}
-              </span>
-            ) : null}
-
-            {showSteppers && steppers === 'end' ? (
-              <span
-                className="flex shrink-0 items-center gap-0.5"
-                style={{ '--n-hit-gap': '0.125rem' } as React.CSSProperties}
-              >
-                {decrement}
-                {increment}
-              </span>
-            ) : null}
-            {showSteppers && steppers === 'split' ? increment : null}
-          </BaseUINumberField.Group>
+          {notched ? (
+            <NotchFrame
+              label={label}
+              size={size}
+              density={density}
+              variant={variant}
+              labelClassName={classNames?.label}
+            >
+              {shell}
+            </NotchFrame>
+          ) : (
+            shell
+          )}
         </BaseUINumberField.Root>
 
         {description ? (

@@ -422,4 +422,32 @@ describe('NumberField', () => {
       expect(control.closest('.root-class')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the input from a notched label', async () => {
+      const screen = await render(<NumberField labelPlacement="notch" label="Seats" />);
+      const input = screen.getByRole('textbox', { name: 'Seats' }).element();
+
+      expect(input.parentElement?.querySelector('.neba-notch label')).toHaveTextContent('Seats');
+    });
+
+    it('lets a floating label rest in the field', async () => {
+      const screen = await render(<NumberField labelPlacement="float" label="Seats" />);
+      const input = screen.getByRole('textbox', { name: 'Seats' }).element();
+
+      expect(input).toHaveClass('neba-float-control');
+      expect(input).toHaveAttribute('placeholder', ' ');
+    });
+
+    // The minus button sits where the label would rest.
+    it('keeps a floating label in the notch beside split steppers', async () => {
+      const screen = await render(
+        <NumberField labelPlacement="float" label="Seats" steppers="split" />
+      );
+
+      expect(screen.getByRole('textbox', { name: 'Seats' }).element()).not.toHaveClass(
+        'neba-float-control'
+      );
+    });
+  });
 });

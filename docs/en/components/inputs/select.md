@@ -67,6 +67,16 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell,
 
 </Demo>
 
+### labelPlacement
+
+`notch` puts the label on the trigger's top edge, in a gap cut out of the border. `float` puts it inside the trigger in place of the placeholder until something is chosen or the list is open, then moves it up into the notch. A `startIcon` keeps a `float` label in the notch. [TextField](./text-field#labelplacement) has the details every field shares.
+
+<Demo src="select/label-placement">
+
+<<< @/.vitepress/demos/select/label-placement.tsx
+
+</Demo>
+
 ### group
 
 `group` puts a heading over an option and the ones next to it that name the same group: time zones under their region, fonts under their family. The heading cannot be highlighted, chosen or reached by typeahead.

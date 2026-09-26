@@ -253,6 +253,16 @@ The default is `lift`, which is depth, and `dim`, which is colour. Those are how
 
 `Image`'s `rotate` and `flip` are the other transforms a photograph takes, and they are not motion at all. The caller sets them once and nothing under the pointer changes them, and a quarter turn or a mirror moves every pixel onto another pixel rather than resampling it. They are written on the individual `rotate` and `scale` properties rather than on `transform`, so a zoom on the same photograph still applies on top.
 
+### A floating label is the one piece of text that travels
+
+`labelPlacement="float"` puts a field's label where the placeholder would be and moves it up onto the field's top edge when the field takes the focus or gets a value. That is text moving, which the rule above is against, and it is allowed for three reasons.
+
+- **Nothing is resampled.** The label travels on `top` and `inset-inline-start` and changes size on `font-size`, never on a `transform`. It is set again at every size on the way, so no frame of it is a scaled picture of the word.
+- **It answers the reader.** It moves when the focus lands or a value arrives, which is before anybody has started reading what the field holds, and never because a pointer passed over it.
+- **The motion says something.** The label was standing where the text will go, and moving out of the way is how the field says it is ready for that text.
+
+The gap the label lands in opens in colour: the top line under it fades out over the same duration. With reduced motion both change at once. It is opt-in, and `top`, the default, does not move at all.
+
 ### A floating surface arrives and leaves in opacity, and nothing else
 
 Every popup, panel, sheet, backdrop and toast in the library fades. None of them slides, scales or wipes, and the reason is the rule above read one level up: a popup is _mostly text_ (a menu row the pointer was already reaching for, a dialog somebody has started reading, a calendar cell under a finger that is already moving), so a surface that travels drags all of it across the screen for the length of the journey.

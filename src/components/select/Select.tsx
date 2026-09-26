@@ -14,6 +14,9 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   fieldRingClasses,
+  fieldSheetClasses,
+  fieldSheetDisabledClasses,
+  fieldSheetReadOnlyClasses,
   gapClasses,
   hasContent,
   iconClasses,
@@ -21,6 +24,7 @@ import {
   paddingXClasses,
   popupFadeClasses,
   radiusClasses,
+  readOnlyFilterClasses,
   stackGapClasses,
   surfaceClasses,
   surfaceSlots,
@@ -30,10 +34,12 @@ import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaLabelPlacement,
   NebaSlots,
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { FieldNotch, NotchFrame } from '../../internal/notch.js';
 import { fieldSpotlightSlot, glowClasses, trackPointer } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
@@ -122,8 +128,15 @@ export interface SelectProps
    * @default 0
    */
   elevation?: NebaElevation;
-  /** Label above the trigger, wired to it by Base UI's Field. */
+  /** The select's name, wired to the trigger by Base UI's Field. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the trigger, in a notch cut into its top
+   * edge, or inside it until something is chosen or the list is open. A
+   * `startIcon` keeps a `float` label in the notch.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below the trigger. */
   description?: React.ReactNode;
   /** Error message below. Its presence also turns the select invalid. */
@@ -157,7 +170,6 @@ const triggerBaseClasses = [
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
   fieldFocusTransitionClasses,
-  fieldRingClasses,
   iconClasses
 ].join(' ');
 
@@ -230,6 +242,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       onValueChange,
       placeholder,
       label,
+      labelPlacement = 'top',
       description,
       error,
       invalid,
@@ -268,15 +281,91 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 
     const groups = React.useMemo(() => groupOptions(items), [items]);
 
+    // The trigger is a `<button>`, and a `<label>` cannot go inside one, so a
+    // notched Select's frame holds the notch beside the trigger, and the frame
+    // is what the edge answers the hover and the focus of.
+    const notched = labelPlacement !== 'top' && hasContent(label);
+    const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
+
     // Holds the trigger open at the width of the longest thing it could say, so
     // choosing a shorter option does not shrink the field out from under the
     // pointer that chose it.
+    // A resting label stands where the value will be, so it is one of the
+    // things the trigger could say.
     const sizerSamples = React.useMemo(
       () => [
         ...items.map((item) => item.label ?? String(item.value)),
-        ...(hasContent(placeholder) ? [placeholder] : [])
+        ...(hasContent(placeholder) ? [placeholder] : []),
+        ...(rests ? [label] : [])
       ],
-      [items, placeholder]
+      [items, placeholder, rests, label]
+    );
+
+    const trigger = (
+      <BaseUISelect.Trigger
+        ref={ref}
+        // The spotlight, and only the spotlight — see `internal/glow.ts`.
+        onPointerMove={trackPointer(undefined, lit)}
+        // A name written on the component is the control's name. On the root
+        // it named a `<div>` nobody reads, and a Select with no visible label
+        // — one in a table cell — had a trigger with no name at all.
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        className={cx(
+          triggerBaseClasses,
+          fieldHeightClasses[size],
+          controlTextLeadingClasses[size],
+          radiusClasses[size],
+          gapClasses[size],
+          paddingXClasses[density][size],
+          // The notch draws the ring when it draws the edge.
+          notched ? '' : fieldRingClasses,
+          // An if/else rather than stacked variants: two Tailwind classes of
+          // equal specificity resolve by their order in the generated sheet.
+          disabled
+            ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
+            : readOnly
+              ? `${(notched ? fieldSheetReadOnlyClasses : fieldReadOnlyClasses)[variant]} cursor-default`
+              : `${(notched ? fieldSheetClasses : fieldRestClasses)[variant]} ${glowClasses}`,
+          // The hook a resting label reads the select's emptiness through.
+          rests ? 'neba-float-control' : '',
+          classNames?.control
+        )}
+      >
+        {startIcon ? (
+          <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
+            {startIcon}
+          </span>
+        ) : null}
+
+        {/* The value, and under it every label it could hold. `min-w-0` on the
+        column is what keeps the whole thing shrinkable when a narrow
+        container asks it to be. */}
+        <span className="flex min-w-0 flex-1 flex-col">
+          <BaseUISelect.Value
+            className={[
+              'w-full truncate text-start',
+              // The placeholder is muted the same way a TextField's is, so an
+              // empty select and an empty field read as equally empty.
+              'data-[placeholder]:text-(--neba-muted-fg)'
+            ].join(' ')}
+            placeholder={placeholder}
+          />
+          <WidthSizer samples={sizerSamples} />
+        </span>
+
+        <BaseUISelect.Icon
+          className={[
+            'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
+            // The chevron is the one thing here that may turn: it is a
+            // glyph, not a label, and nothing about it resamples.
+            '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+            'data-[popup-open]:rotate-180'
+          ].join(' ')}
+        >
+          <ChevronIcon />
+        </BaseUISelect.Icon>
+      </BaseUISelect.Trigger>
     );
 
     return (
@@ -296,7 +385,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         }}
         {...props}
       >
-        {label ? (
+        {label && !notched ? (
           <Field.Label
             className={cx(
               metaTextClasses[size],
@@ -320,66 +409,40 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           readOnly={readOnly}
           required={required}
         >
-          <BaseUISelect.Trigger
-            ref={ref}
-            // The spotlight, and only the spotlight — see `internal/glow.ts`.
-            onPointerMove={trackPointer(undefined, lit)}
-            // A name written on the component is the control's name. On the root
-            // it named a `<div>` nobody reads, and a Select with no visible label
-            // — one in a table cell — had a trigger with no name at all.
-            aria-label={ariaLabel}
-            aria-labelledby={ariaLabelledBy}
-            className={cx(
-              triggerBaseClasses,
-              fieldHeightClasses[size],
-              controlTextLeadingClasses[size],
-              radiusClasses[size],
-              gapClasses[size],
-              paddingXClasses[density][size],
-              // An if/else rather than stacked variants: two Tailwind classes of
-              // equal specificity resolve by their order in the generated sheet.
-              disabled
-                ? disabledClasses[variant]
-                : readOnly
-                  ? `${fieldReadOnlyClasses[variant]} cursor-default`
-                  : `${fieldRestClasses[variant]} ${glowClasses}`,
-              classNames?.control
-            )}
-          >
-            {startIcon ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">
-                {startIcon}
-              </span>
-            ) : null}
-
-            {/* The value, and under it every label it could hold. `min-w-0` on the
-              column is what keeps the whole thing shrinkable when a narrow
-              container asks it to be. */}
-            <span className="flex min-w-0 flex-1 flex-col">
-              <BaseUISelect.Value
-                className={[
-                  'w-full truncate text-start',
-                  // The placeholder is muted the same way a TextField's is, so an
-                  // empty select and an empty field read as equally empty.
-                  'data-[placeholder]:text-(--neba-muted-fg)'
-                ].join(' ')}
-                placeholder={placeholder}
-              />
-              <WidthSizer samples={sizerSamples} />
-            </span>
-
-            <BaseUISelect.Icon
-              className={[
-                'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-                // The chevron is the one thing here that may turn: it is a
-                // glyph, not a label, and nothing about it resamples.
-                '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                'data-[popup-open]:rotate-180'
-              ].join(' ')}
+          {notched ? (
+            <NotchFrame
+              label={label}
+              size={size}
+              density={density}
+              variant={variant}
+              labelClassName={classNames?.label}
+              className={cx(
+                // The notch is beside the trigger rather than in it, so the
+                // corners it inherits are the frame's; the label is pressed as
+                // the trigger is and shows the same cursor; and the
+                // desaturation is here so the edge drains with the sheet.
+                radiusClasses[size],
+                disabled
+                  ? 'cursor-not-allowed'
+                  : readOnly
+                    ? `cursor-default ${readOnlyFilterClasses}`
+                    : 'cursor-pointer'
+              )}
             >
-              <ChevronIcon />
-            </BaseUISelect.Icon>
-          </BaseUISelect.Trigger>
+              {trigger}
+              <FieldNotch
+                label={label}
+                variant={variant}
+                disabled={disabled}
+                readOnly={readOnly}
+                rests={rests}
+                beside
+                labelClassName={classNames?.label}
+              />
+            </NotchFrame>
+          ) : (
+            trigger
+          )}
 
           <BaseUISelect.Portal>
             {/* `neba-portal` is a hook, not a style: a portalled popup leaves the

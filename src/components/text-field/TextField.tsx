@@ -14,20 +14,27 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   fieldRingClasses,
+  fieldSheetClasses,
+  fieldSheetDisabledClasses,
+  fieldSheetReadOnlyClasses,
   gapClasses,
+  hasContent,
   iconClasses,
   metaTextClasses,
   paddingXClasses,
   radiusClasses,
+  readOnlyFilterClasses,
   stackGapClasses,
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
 import { keyHandler } from '../../internal/keys.js';
+import { FieldNotch, NotchFrame } from '../../internal/notch.js';
 import type {
   NebaColor,
   NebaElevation,
   NebaFieldSlot,
+  NebaLabelPlacement,
   NebaShortcuts,
   NebaSize,
   NebaSlots,
@@ -81,12 +88,20 @@ export interface TextFieldProps extends NebaStyleProps, NativeControlProps {
    * @default 'vertical'
    */
   resize?: TextFieldResize;
-  /**
-   * Label above the control, wired to it by Base UI's Field. There is no
-   * floating variant on purpose: floating labels need a `transform`, and
-   * controls in this library never transform.
-   */
+  /** The field's name, wired to the control by Base UI's Field. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the field, in a notch cut into its top
+   * edge, or inside it where the placeholder would be until the field is
+   * focused or filled, and in the notch from then on.
+   *
+   * A floating label travels on `top` and changes size on `font-size` rather
+   * than on a `transform`, so no frame of it is a scaled picture of the word.
+   * With a `startIcon` it stays in the notch, because the icon is where it
+   * would rest.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below the control. */
   description?: React.ReactNode;
   /** Error message below the control. Its presence also turns the field invalid. */
@@ -160,6 +175,19 @@ const multilineClasses: Record<NebaSize, string> = {
   xl: 'min-h-12 py-[10px]'
 };
 
+/**
+ * The vertical padding above as lengths, which is where a resting label sits
+ * in a textarea: on the first line rather than in the middle of five. Keep the
+ * two in step.
+ */
+const multilinePadValues: Record<NebaSize, string> = {
+  xs: '3px',
+  sm: '4px',
+  md: '5px',
+  lg: '8px',
+  xl: '10px'
+};
+
 const resizeClasses: Record<TextFieldResize, string> = {
   none: 'resize-none',
   vertical: 'resize-y',
@@ -180,9 +208,6 @@ const shellBaseClasses = [
   // the sheet taking the fill's 340ms to catch up with the other two.
   transitionClasses,
   fieldFocusTransitionClasses,
-  // The ring belongs to the shell, not to the control inside it, so it traces
-  // the acrylic edge rather than a rectangle floating inside it.
-  fieldRingClasses,
   iconClasses
 ].join(' ');
 
@@ -206,6 +231,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       rows = 3,
       resize = 'vertical',
       label,
+      labelPlacement = 'top',
       description,
       error,
       invalid,
@@ -219,6 +245,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       readOnly = false,
       disabled: disabledProp,
       type = 'text',
+      placeholder,
       className,
       style,
       ...props
@@ -234,6 +261,11 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
     // the caret and the message all turn over together and no state needs its own
     // set of tokens.
     const family: NebaColor = isInvalid ? 'danger' : color;
+
+    // A label on the edge takes the edge over from the shell; with no label
+    // there is nothing to cut a notch for, and the shell keeps its own.
+    const notched = labelPlacement !== 'top' && hasContent(label);
+    const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
 
     const controlRef = React.useRef<HTMLElement | null>(null);
     const setControlRef = React.useCallback(
@@ -255,13 +287,19 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
         ? `${multilineClasses[size]} items-start`
         : `${fieldHeightClasses[size]} items-center`,
       paddingXClasses[density][size],
+      // The ring belongs to the shell, not to the control inside it, so it
+      // traces the acrylic edge rather than a rectangle floating inside it — and
+      // to the notch instead, when the notch is what draws the edge.
+      notched ? '' : fieldRingClasses,
       // An if/else rather than stacked `data-*` variants: two Tailwind variants
       // of equal specificity resolve by their order in the generated stylesheet.
       disabled
-        ? disabledClasses[variant]
+        ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
         : readOnly
-          ? readOnlyClasses[variant]
-          : `${restClasses[variant]} ${glowClasses}`,
+          ? notched
+            ? `${fieldSheetReadOnlyClasses[variant]} ${readOnlyFilterClasses}`
+            : readOnlyClasses[variant]
+          : `${(notched ? fieldSheetClasses : restClasses)[variant]} ${glowClasses}`,
       disabled ? '' : 'cursor-text',
       classNames?.shell
     );
@@ -276,6 +314,8 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       'caret-(--n-accent) selection:bg-(--n-soft-press)',
       'disabled:cursor-not-allowed',
       multiline ? `block ${resizeClasses[resize]}` : 'self-stretch',
+      // The hook a resting label reads the field's emptiness through.
+      rests ? 'neba-float-control' : '',
       classNames?.control
     );
 
@@ -283,6 +323,65 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
     // box, which is the only way it stays put when the control grows to 5 rows.
     const adornmentClasses =
       'inline-flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg) transition-[color] duration-(--neba-duration) group-focus-within:text-(--n-accent)';
+
+    const shell = (
+      <span
+        className={shellClasses}
+        // The spotlight, and only the spotlight — `fieldSpotlightSlot`
+        // leaves the press flash unset on purpose, and halves the bloom —
+        // and out again while the reader is typing. See `internal/glow.ts`.
+        {...fieldLight<HTMLSpanElement>(lit)}
+        onPointerDown={(event) => {
+          // Clicking the shell's own padding should put the caret in the field,
+          // the way clicking anywhere inside a native input does. Only when the
+          // shell itself was hit — a click on the control or on an adornment is
+          // left alone so text selection still works.
+          if (event.target === event.currentTarget && !disabled) {
+            event.preventDefault();
+            controlRef.current?.focus();
+          }
+        }}
+      >
+        {startIcon ? <span className={adornmentClasses}>{startIcon}</span> : null}
+
+        <Input
+          ref={setControlRef}
+          className={controlClasses}
+          disabled={disabled}
+          readOnly={readOnly}
+          aria-busy={loading || undefined}
+          data-loading={loading || undefined}
+          // `:placeholder-shown` is how a resting label knows the field is
+          // empty, and it never matches an input that has no placeholder.
+          placeholder={rests ? placeholder || ' ' : placeholder}
+          {...(multiline ? { render: <textarea rows={rows} /> } : { type })}
+          {...props}
+          // After the spread on purpose: `onKeyDown` is destructured out
+          // above, so this is the caller's own handler with the shortcut map
+          // in front of it rather than something written over the top of it.
+          onKeyDown={keyHandler(shortcuts, onKeyDown)}
+        />
+
+        {loading ? (
+          <span className={adornmentClasses}>
+            <SpinnerIcon />
+          </span>
+        ) : endIcon ? (
+          <span className={adornmentClasses}>{endIcon}</span>
+        ) : null}
+
+        {notched ? (
+          <FieldNotch
+            label={label}
+            variant={variant}
+            disabled={disabled}
+            readOnly={readOnly}
+            rests={rests}
+            labelClassName={classNames?.label}
+          />
+        ) : null}
+      </span>
+    );
 
     return (
       <Field.Root
@@ -300,7 +399,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
           ...style
         }}
       >
-        {label ? (
+        {label && !notched ? (
           <Field.Label
             className={cx(
               metaTextClasses[size],
@@ -313,48 +412,20 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
           </Field.Label>
         ) : null}
 
-        <span
-          className={shellClasses}
-          // The spotlight, and only the spotlight — `fieldSpotlightSlot`
-          // leaves the press flash unset on purpose, and halves the bloom —
-          // and out again while the reader is typing. See `internal/glow.ts`.
-          {...fieldLight<HTMLSpanElement>(lit)}
-          onPointerDown={(event) => {
-            // Clicking the shell's own padding should put the caret in the field,
-            // the way clicking anywhere inside a native input does. Only when the
-            // shell itself was hit — a click on the control or on an adornment is
-            // left alone so text selection still works.
-            if (event.target === event.currentTarget && !disabled) {
-              event.preventDefault();
-              controlRef.current?.focus();
-            }
-          }}
-        >
-          {startIcon ? <span className={adornmentClasses}>{startIcon}</span> : null}
-
-          <Input
-            ref={setControlRef}
-            className={controlClasses}
-            disabled={disabled}
-            readOnly={readOnly}
-            aria-busy={loading || undefined}
-            data-loading={loading || undefined}
-            {...(multiline ? { render: <textarea rows={rows} /> } : { type })}
-            {...props}
-            // After the spread on purpose: `onKeyDown` is destructured out
-            // above, so this is the caller's own handler with the shortcut map
-            // in front of it rather than something written over the top of it.
-            onKeyDown={keyHandler(shortcuts, onKeyDown)}
-          />
-
-          {loading ? (
-            <span className={adornmentClasses}>
-              <SpinnerIcon />
-            </span>
-          ) : endIcon ? (
-            <span className={adornmentClasses}>{endIcon}</span>
-          ) : null}
-        </span>
+        {notched ? (
+          <NotchFrame
+            label={label}
+            size={size}
+            density={density}
+            variant={variant}
+            firstLine={multiline ? multilinePadValues[size] : undefined}
+            labelClassName={classNames?.label}
+          >
+            {shell}
+          </NotchFrame>
+        ) : (
+          shell
+        )}
 
         {description ? (
           <Field.Description

@@ -231,4 +231,17 @@ describe('DateTimePicker', () => {
       expect(screen.container.querySelector('[data-analytics="runs-at"]')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(
+        <DateTimePicker locale={LOCALE} labelPlacement="notch" label="Runs at" />
+      );
+      const trigger = screen.getByRole('button', { name: 'Runs at', exact: false }).element();
+
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent(
+        'Runs at'
+      );
+    });
+  });
 });

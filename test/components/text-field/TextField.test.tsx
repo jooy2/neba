@@ -648,6 +648,131 @@ describe('TextField', () => {
     });
   });
 
+  describe('label placement', () => {
+    it('keeps the label above the shell by default', async () => {
+      const screen = await render(<TextField label="Email" classNames={{ shell: 'the-shell' }} />);
+      const shell = screen.container.querySelector('.the-shell') as HTMLElement;
+
+      expect(shell.querySelector('label')).toBeNull();
+      expect(shell.querySelector('.neba-notch')).toBeNull();
+    });
+
+    it('puts a notched label on the shell, still naming the control', async () => {
+      const screen = await render(
+        <TextField labelPlacement="notch" label="Email" classNames={{ shell: 'the-shell' }} />
+      );
+      const input = screen.getByRole('textbox', { name: 'Email' }).element();
+      const shell = screen.container.querySelector('.the-shell') as HTMLElement;
+      const label = shell.querySelector('label');
+
+      expect(label).toHaveTextContent('Email');
+      expect(label?.getAttribute('for')).toBe(input.id);
+      expect(screen.container.querySelectorAll('label')).toHaveLength(1);
+    });
+
+    // The label needs a gap in the border and in the ring, and neither can be
+    // cut; the notch draws both instead, so the shell must stop drawing them.
+    it('hands the edge and the ring from the shell to the notch', async () => {
+      const screen = await render(
+        <TextField labelPlacement="notch" label="Email" classNames={{ shell: 'the-shell' }} />
+      );
+      const shell = screen.container.querySelector('.the-shell') as HTMLElement;
+
+      expect(shell).not.toHaveClass('has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]');
+      expect(shell).toHaveClass('[border-color:transparent]');
+      expect(shell.querySelector('.neba-notch')).toHaveAttribute('data-variant', 'outline');
+    });
+
+    it('keeps its own edge when there is no label to cut a notch for', async () => {
+      const screen = await render(
+        <TextField labelPlacement="notch" aria-label="Email" classNames={{ shell: 'the-shell' }} />
+      );
+      const shell = screen.container.querySelector('.the-shell') as HTMLElement;
+
+      expect(shell.querySelector('.neba-notch')).toBeNull();
+      expect(shell).toHaveClass('has-[:focus-visible]:[outline:2px_solid_var(--n-ring)]');
+    });
+
+    it('tells the notch whether the field is read-only or disabled', async () => {
+      const screen = await render(
+        <TextField labelPlacement="notch" label="Email" classNames={{ shell: 'the-shell' }} />
+      );
+      const notch = () => screen.container.querySelector('.neba-notch') as HTMLElement;
+
+      expect(notch()).not.toHaveAttribute('data-state');
+
+      await screen.rerender(
+        <TextField
+          labelPlacement="notch"
+          label="Email"
+          readOnly
+          classNames={{ shell: 'the-shell' }}
+        />
+      );
+      expect(notch()).toHaveAttribute('data-state', 'read-only');
+
+      await screen.rerender(
+        <TextField
+          labelPlacement="notch"
+          label="Email"
+          disabled
+          classNames={{ shell: 'the-shell' }}
+        />
+      );
+      expect(notch()).toHaveAttribute('data-state', 'disabled');
+    });
+
+    // `:placeholder-shown` is how the stylesheet knows the field is empty, and
+    // it never matches an input with no placeholder at all.
+    it('gives a floating field a placeholder to be empty by', async () => {
+      const screen = await render(<TextField labelPlacement="float" label="Email" />);
+      const input = screen.getByRole('textbox', { name: 'Email' }).element();
+
+      expect(input).toHaveAttribute('placeholder', ' ');
+      expect(input).toHaveClass('neba-float-control');
+      expect(screen.container.querySelector('.neba-notch')).toHaveClass('neba-notch-float');
+    });
+
+    it("keeps the caller's own placeholder when floating", async () => {
+      const screen = await render(
+        <TextField labelPlacement="float" label="Email" placeholder="you@example.com" />
+      );
+
+      expect(screen.getByRole('textbox', { name: 'Email' }).element()).toHaveAttribute(
+        'placeholder',
+        'you@example.com'
+      );
+    });
+
+    it('keeps a floating label in the notch when a start icon is where it would rest', async () => {
+      const screen = await render(
+        <TextField labelPlacement="float" label="Email" startIcon={<svg />} />
+      );
+      const input = screen.getByRole('textbox', { name: 'Email' }).element();
+
+      expect(input).not.toHaveClass('neba-float-control');
+      expect(input).not.toHaveAttribute('placeholder');
+      expect(screen.container.querySelector('.neba-notch')).not.toHaveClass('neba-notch-float');
+    });
+
+    it('reaches a notched label with `classNames.label`', async () => {
+      const screen = await render(
+        <TextField labelPlacement="float" label="Email" classNames={{ label: 'slot-label' }} />
+      );
+
+      expect(screen.getByText('Email').element()).toHaveClass('slot-label');
+    });
+
+    it('rests a multiline label on the first line rather than in the middle', async () => {
+      const screen = await render(
+        <TextField labelPlacement="float" label="Message" multiline rows={4} />
+      );
+      const frame = screen.container.querySelector('.neba-notch-frame') as HTMLElement;
+
+      expect(frame.style.getPropertyValue('--n-rest-top')).not.toContain('50%');
+    });
+  });
+
   describe('slots', () => {
     it('puts a class name on every part it was given one for', async () => {
       const screen = await render(

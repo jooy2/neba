@@ -47,6 +47,16 @@ import { DatePicker } from 'neba';
 
 </Demo>
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. trigger 앞의 달력 아이콘이 `float` 라벨이 내려앉을 자리를 차지하므로, `startIcon={false}`를 넘기지 않으면 라벨은 노치에 머뭅니다. popup이 열려 있는 동안에도 노치에 있습니다.
+
+<Demo src="date-picker/label-placement">
+
+<<< @/.vitepress/demos/date-picker/label-placement.tsx
+
+</Demo>
+
 ### 세 가지 뷰
 
 헤더의 월 이름은 12개월 그리드를, 연도는 12년 그리드를 엽니다. 연도 그리드에서는 stepper가 한 페이지씩 움직입니다. 연도를 고르면 월 뷰로 넘어가고, 두 버튼의 순서는 locale을 따르므로 한국어에서는 `2026년 7월`로 표시됩니다. 세 뷰의 너비와 높이가 같아서 뷰를 바꿔도 팝업 크기가 변하지 않습니다.

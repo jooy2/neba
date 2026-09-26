@@ -88,6 +88,16 @@ interface ComboboxOption {
 
 </Demo>
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `multiple`에서는 고른 항목도 입력한 글자도 없을 때만 `float` 라벨이 필드 안에 내려앉습니다.
+
+<Demo src="combobox/label-placement">
+
+<<< @/.vitepress/demos/combobox/label-placement.tsx
+
+</Demo>
+
 ### disabled · readOnly · error
 
 <Demo src="combobox/states">

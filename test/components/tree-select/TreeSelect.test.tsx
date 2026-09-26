@@ -292,4 +292,15 @@ describe('TreeSelect', () => {
 
     expect(screen.getByRole('tree').query()).toBeNull();
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(
+        <TreeSelect items={REGIONS} labelPlacement="notch" label="Region" />
+      );
+      const trigger = screen.getByRole('button', { name: 'Region', exact: false }).element();
+
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent('Region');
+    });
+  });
 });

@@ -13,20 +13,32 @@ import {
   fieldReadOnlyClasses,
   fieldRestClasses,
   fieldRingClasses,
+  fieldSheetClasses,
+  fieldSheetDisabledClasses,
+  fieldSheetReadOnlyClasses,
   gapClasses,
+  hasContent,
   iconClasses,
   metaTextClasses,
   paddingXClasses,
   popupFadeClasses,
   radiusClasses,
+  readOnlyFilterClasses,
   stackGapClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
 } from './styles.js';
-import type { NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../types.js';
+import type {
+  NebaColor,
+  NebaElevation,
+  NebaLabelPlacement,
+  NebaSize,
+  NebaStyleProps
+} from '../types.js';
 import { fieldSpotlightSlot, glowClasses, trackPointer } from './glow.js';
 import { useFieldsetDisabled } from './fieldset.js';
+import { FieldNotch, NotchFrame } from './notch.js';
 
 /**
  * The shell all four pickers wear: a field-shaped trigger with a popup hanging
@@ -84,7 +96,6 @@ const triggerShellClasses = [
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
   fieldFocusTransitionClasses,
-  fieldRingClasses,
   iconClasses
 ].join(' ');
 
@@ -120,8 +131,16 @@ export interface PickerShellProps
     NebaStyleProps,
     Omit<React.ComponentPropsWithoutRef<'div'>, 'color' | 'children' | 'defaultValue'> {
   elevation?: NebaElevation;
-  /** Label above the trigger. */
+  /** The control's name. */
   label?: React.ReactNode;
+  /**
+   * Where the label is drawn: above the trigger, in a notch cut into its top
+   * edge, or inside it until something is chosen or the popup is open. The
+   * glyph a picker draws at its start keeps a `float` label in the notch; pass
+   * `startIcon={false}` to give it somewhere to rest.
+   * @default 'top'
+   */
+  labelPlacement?: NebaLabelPlacement;
   /** Helper text below it. */
   description?: React.ReactNode;
   /** Error message below. Its presence also turns the control invalid. */
@@ -188,6 +207,7 @@ export function PickerShell({
   density = 'default',
   elevation = 0,
   label,
+  labelPlacement = 'top',
   description,
   error,
   invalid,
@@ -229,6 +249,98 @@ export function PickerShell({
   const describedBy =
     cx(description ? descriptionId : null, hasError ? errorId : null) || undefined;
 
+  const notched = labelPlacement !== 'top' && hasContent(label);
+  const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
+
+  const shell = (
+    <span
+      // The spotlight, and only the spotlight — see `internal/glow.ts`.
+      onPointerMove={trackPointer(undefined, !inert)}
+      className={cx(
+        triggerShellClasses,
+        fieldHeightClasses[size],
+        controlTextLeadingClasses[size],
+        radiusClasses[size],
+        gapClasses[size],
+        paddingXClasses[density][size],
+        // The notch draws the ring when it draws the edge.
+        notched ? '' : fieldRingClasses,
+        // An if/else rather than stacked variants: two Tailwind classes of
+        // equal specificity resolve by their order in the generated sheet.
+        disabled
+          ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
+          : readOnly
+            ? notched
+              ? `${fieldSheetReadOnlyClasses[variant]} ${readOnlyFilterClasses}`
+              : fieldReadOnlyClasses[variant]
+            : `${(notched ? fieldSheetClasses : fieldRestClasses)[variant]} ${glowClasses}`
+      )}
+    >
+      <Popover.Trigger
+        id={triggerId}
+        ref={triggerRef}
+        disabled={disabled}
+        aria-labelledby={label ? `${labelId} ${triggerId}` : undefined}
+        aria-describedby={describedBy}
+        aria-required={required || undefined}
+        aria-invalid={isInvalid || undefined}
+        // What a resting label reads the picker's emptiness through: the
+        // same attribute a Select's trigger carries, so one rule serves both.
+        data-placeholder={empty || undefined}
+        className={cx(
+          'flex min-w-0 flex-1 items-center bg-transparent text-start [font:inherit] text-inherit',
+          gapClasses[size],
+          '[outline:none]',
+          inert ? 'cursor-default' : 'cursor-pointer',
+          rests ? 'neba-float-control' : ''
+        )}
+      >
+        {startIcon ? (
+          <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg) transition-[color] duration-(--neba-duration) group-focus-within:text-(--n-accent)">
+            {startIcon}
+          </span>
+        ) : null}
+        {/* The value and, under it, every value it could be. */}
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span
+            data-placeholder={empty || undefined}
+            className={cx('w-full truncate', empty ? 'text-(--neba-muted-fg)' : 'text-(--neba-fg)')}
+          >
+            {display}
+          </span>
+          {/* A resting label stands where the value will be. */}
+          <WidthSizer samples={rests ? [...(samples ?? []), label] : (samples ?? [])} />
+        </span>
+      </Popover.Trigger>
+
+      {clearable && !empty && !inert ? (
+        <button
+          type="button"
+          aria-label={clearLabel}
+          className={cx(chipRemoveClasses, 'text-(--neba-muted-fg)')}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClear();
+          }}
+        >
+          <CloseIcon />
+        </button>
+      ) : null}
+
+      {notched ? (
+        <FieldNotch
+          label={label}
+          variant={variant}
+          disabled={disabled}
+          readOnly={readOnly}
+          rests={rests}
+          labelId={labelId}
+          htmlFor={triggerId}
+        />
+      ) : null}
+    </span>
+  );
+
   return (
     <Field.Root
       disabled={disabled}
@@ -248,7 +360,7 @@ export function PickerShell({
       }}
       {...props}
     >
-      {label ? (
+      {label && !notched ? (
         <Field.Label
           id={labelId}
           htmlFor={triggerId}
@@ -263,73 +375,13 @@ export function PickerShell({
       ) : null}
 
       <Popover.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
-        <span
-          // The spotlight, and only the spotlight — see `internal/glow.ts`.
-          onPointerMove={trackPointer(undefined, !inert)}
-          className={cx(
-            triggerShellClasses,
-            fieldHeightClasses[size],
-            controlTextLeadingClasses[size],
-            radiusClasses[size],
-            gapClasses[size],
-            paddingXClasses[density][size],
-            // An if/else rather than stacked variants: two Tailwind classes of
-            // equal specificity resolve by their order in the generated sheet.
-            disabled
-              ? disabledClasses[variant]
-              : readOnly
-                ? fieldReadOnlyClasses[variant]
-                : `${fieldRestClasses[variant]} ${glowClasses}`
-          )}
-        >
-          <Popover.Trigger
-            id={triggerId}
-            ref={triggerRef}
-            disabled={disabled}
-            aria-labelledby={label ? `${labelId} ${triggerId}` : undefined}
-            aria-describedby={describedBy}
-            aria-required={required || undefined}
-            aria-invalid={isInvalid || undefined}
-            className={cx(
-              'flex min-w-0 flex-1 items-center bg-transparent text-start [font:inherit] text-inherit',
-              gapClasses[size],
-              '[outline:none]',
-              inert ? 'cursor-default' : 'cursor-pointer'
-            )}
-          >
-            {startIcon ? (
-              <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg) transition-[color] duration-(--neba-duration) group-focus-within:text-(--n-accent)">
-                {startIcon}
-              </span>
-            ) : null}
-            {/* The value and, under it, every value it could be. */}
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span
-                className={cx(
-                  'w-full truncate',
-                  empty ? 'text-(--neba-muted-fg)' : 'text-(--neba-fg)'
-                )}
-              >
-                {display}
-              </span>
-              <WidthSizer samples={samples ?? []} />
-            </span>
-          </Popover.Trigger>
-
-          {clearable && !empty && !inert ? (
-            <button
-              type="button"
-              aria-label={clearLabel}
-              className={cx(chipRemoveClasses, 'text-(--neba-muted-fg)')}
-              onClick={(event) => {
-                event.stopPropagation();
-                onClear();
-              }}
-            >
-              <CloseIcon />
-            </button>
-          ) : null}
-        </span>
+        {notched ? (
+          <NotchFrame label={label} size={size} density={density} variant={variant}>
+            {shell}
+          </NotchFrame>
+        ) : (
+          shell
+        )}
 
         <Popover.Portal>
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the

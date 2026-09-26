@@ -62,6 +62,16 @@ trigger가 담긴 것을 쓰는 방식입니다.
 format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length}개 카테고리`)}
 ```
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 무언가를 고르거나 popup이 열리기 전까지 trigger 안에 있습니다.
+
+<Demo src="tree-select/label-placement">
+
+<<< @/.vitepress/demos/tree-select/label-placement.tsx
+
+</Demo>
+
 ### name
 
 폼 제출 시 값 하나당 hidden input 하나로 나갑니다. `multiple`이 `<select multiple>`처럼 반복 필드로 도착합니다.

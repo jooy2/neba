@@ -895,6 +895,50 @@ export const fieldReadOnlyClasses: Record<NebaVariant, string> = {
 export const readOnlyFilterClasses = '[filter:saturate(0.55)]';
 
 /**
+ * The field shells again with the edge taken off, for a field whose label
+ * stands on that edge — a `labelPlacement` of `notch` or `float`.
+ *
+ * The label needs a gap in the border, in the plate's top light and in the
+ * focus ring at once, and none of the three can be cut; `internal/notch.tsx`
+ * draws all of them instead, in pieces around the label. What the shell keeps
+ * is the sheet: the fill and its hover and focus steps, the blur and the grain,
+ * and the elevation, which is a shadow under the shell rather than a line along
+ * its edge.
+ *
+ * `outline` keeps its `border` and makes it transparent, so the box is the size
+ * it is with the label on top and nothing inside it moves between the two.
+ */
+export const fieldSheetClasses: Record<NebaVariant, string> = {
+  solid:
+    `${surfaceClasses} text-(--neba-fg) bg-(--n-panel-hover) [box-shadow:var(--n-elev)] ` +
+    'hover:bg-(--n-panel-press) focus-within:bg-(--n-panel-press)',
+  outline:
+    `${surfaceClasses} border [border-color:transparent] text-(--neba-fg) bg-(--n-panel) ` +
+    '[box-shadow:var(--n-elev)] hover:bg-(--n-panel-hover) focus-within:bg-(--n-panel-hover)',
+  text: fieldRestClasses.text
+};
+
+/**
+ * `fieldReadOnlyClasses` without the edge, and without the desaturation: that
+ * goes on whichever element holds the notch, with `readOnlyFilterClasses`, so
+ * the edge drains with the sheet. It is the shell on every field but a Select,
+ * whose notch sits beside its trigger rather than in it.
+ */
+export const fieldSheetReadOnlyClasses: Record<NebaVariant, string> = {
+  solid: `${surfaceClasses} text-(--neba-fg) bg-(--n-panel-hover)`,
+  outline: `${surfaceClasses} border [border-color:transparent] text-(--neba-fg) bg-(--n-panel)`,
+  text: 'text-(--neba-fg) bg-transparent'
+};
+
+/** `disabledClasses` without the edge. Only `outline` draws one to take off. */
+export const fieldSheetDisabledClasses: Record<NebaVariant, string> = {
+  solid: disabledClasses.solid,
+  outline:
+    'cursor-not-allowed border bg-transparent text-(--neba-disabled-fg) [border-color:transparent] shadow-none',
+  text: disabledClasses.text
+};
+
+/**
  * The numbered square a source is cited by.
  *
  * Two components draw it — the rows of a [Sources] list and the mark an

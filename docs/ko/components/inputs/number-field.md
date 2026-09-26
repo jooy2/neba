@@ -75,6 +75,16 @@ stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같�
 
 </Demo>
 
+### labelPlacement
+
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 필드가 focus를 받거나 숫자를 가질 때까지 필드 안에 있습니다. `startIcon`과 `steppers="split"`은 라벨이 내려앉을 자리를 차지하므로, 둘 중 하나가 있으면 라벨은 노치에 머뭅니다.
+
+<Demo src="number-field/label-placement">
+
+<<< @/.vitepress/demos/number-field/label-placement.tsx
+
+</Demo>
+
 ### disabled · readOnly · error
 
 `readOnly`는 stepper를 비활성 상태로 남기지 않고 아예 제거합니다. 숫자는 여전히 선택해서 복사할 수 있습니다.

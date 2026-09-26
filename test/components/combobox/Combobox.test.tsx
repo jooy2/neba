@@ -616,4 +616,36 @@ describe('Combobox', () => {
       expect(control.closest('.root-class')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the input from a notched label', async () => {
+      const screen = await render(
+        <Combobox items={FRAMEWORKS} labelPlacement="notch" label="Framework" />
+      );
+
+      await expect.element(screen.getByRole('combobox', { name: 'Framework' })).toBeInTheDocument();
+      expect(screen.container.querySelector('.neba-notch label')).toHaveTextContent('Framework');
+    });
+
+    // The chips are not an input, so the notch is told itself.
+    it('says a multiple field is empty only while nothing is chosen', async () => {
+      const screen = await render(
+        <Combobox multiple items={FRAMEWORKS} labelPlacement="float" label="Stack" />
+      );
+      const notch = () => screen.container.querySelector('.neba-notch') as HTMLElement;
+
+      expect(notch()).toHaveAttribute('data-empty');
+
+      await screen.rerender(
+        <Combobox
+          multiple
+          items={FRAMEWORKS}
+          labelPlacement="float"
+          label="Stack"
+          value={[FRAMEWORKS[0].value]}
+        />
+      );
+      expect(notch()).not.toHaveAttribute('data-empty');
+    });
+  });
 });

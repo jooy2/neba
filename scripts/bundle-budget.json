@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 71.7
+      "budget": 72.7
     },
     {
       "id": "app-25",
@@ -88,7 +88,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 118.8
+      "budget": 120.1
     },
     {
       "id": "page-shell",
@@ -114,19 +114,19 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 75.7
+      "budget": 76.7
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 290.4
+      "budget": 291.9
     },
     {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",
-      "budget": 24.6
+      "budget": 25.5
     }
   ]
 }

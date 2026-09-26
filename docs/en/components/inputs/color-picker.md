@@ -77,6 +77,16 @@ By default the panel lives in a popup hanging off a trigger, which is what a for
 
 </Demo>
 
+### labelPlacement
+
+`notch` puts the label on the trigger's top edge, in a gap cut out of the border, as it does on [TextField](./text-field#labelplacement). The swatch at the start of the trigger is where a `float` label would rest, so `float` draws the same as `notch`. `inline` has no trigger and ignores the prop.
+
+<Demo src="color-picker/label-placement">
+
+<<< @/.vitepress/demos/color-picker/label-placement.tsx
+
+</Demo>
+
 ### size
 
 `size` sets the trigger's height on the shared ladder and the panel's own width with it, so a picker lines up with the fields beside it at every step.

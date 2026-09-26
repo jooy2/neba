@@ -387,4 +387,17 @@ describe('TimePicker', () => {
       expect(screen.container.querySelector('[data-analytics="starts-at"]')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(
+        <TimePicker locale={LOCALE} labelPlacement="notch" label="Starts at" />
+      );
+      const trigger = screen.getByRole('button', { name: 'Starts at', exact: false }).element();
+
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent(
+        'Starts at'
+      );
+    });
+  });
 });

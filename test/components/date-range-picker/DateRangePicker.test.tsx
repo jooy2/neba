@@ -358,4 +358,15 @@ describe('DateRangePicker', () => {
       expect(screen.container.querySelector('[data-analytics="span"]')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(
+        <DateRangePicker locale={LOCALE} labelPlacement="notch" label="Stay" />
+      );
+      const trigger = screen.getByRole('button', { name: 'Stay', exact: false }).element();
+
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent('Stay');
+    });
+  });
 });

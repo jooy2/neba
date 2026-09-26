@@ -47,6 +47,16 @@ A day cell uses the control heights: 32px at `md`, the same as a [Button](./butt
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). The calendar glyph at the start of the trigger is where a `float` label would rest, so the label stays in the notch unless you pass `startIcon={false}`. It also stays there while the popup is open.
+
+<Demo src="date-picker/label-placement">
+
+<<< @/.vitepress/demos/date-picker/label-placement.tsx
+
+</Demo>
+
 ### Three views
 
 The month name in the header opens a grid of twelve months, and the year opens a grid of twelve years, where the steppers move a page at a time. Choosing a year hands over to the month view, and the two buttons are printed in the order the locale writes them. All three views are the same width and height, so switching between them never resizes the popup.

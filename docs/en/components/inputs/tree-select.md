@@ -62,6 +62,16 @@ How the trigger writes what is held.
 format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length} categories`)}
 ```
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). A `float` label rests in the trigger until something is chosen or the popup is open.
+
+<Demo src="tree-select/label-placement">
+
+<<< @/.vitepress/demos/tree-select/label-placement.tsx
+
+</Demo>
+
 ### name
 
 Submits with a form as one hidden input per value, so `multiple` arrives as a repeated field the way a `<select multiple>` does.

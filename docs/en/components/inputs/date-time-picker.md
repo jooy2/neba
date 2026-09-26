@@ -41,6 +41,16 @@ That is what a rule like "no earlier than now" needs.
 
 </Demo>
 
+### labelPlacement
+
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). The calendar glyph at the start of the trigger is where a `float` label would rest, so the label stays in the notch unless you pass `startIcon={false}`. It also stays there while the popup is open.
+
+<Demo src="date-time-picker/label-placement">
+
+<<< @/.vitepress/demos/date-time-picker/label-placement.tsx
+
+</Demo>
+
 ### What the trigger shows
 
 The trigger wears the calendar glyph and not the clock. The value is written as one string with `Intl`, combining the date and the time.

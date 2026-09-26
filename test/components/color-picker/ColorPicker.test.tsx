@@ -300,4 +300,26 @@ describe('ColorPicker', () => {
       expect(onValueChange).not.toHaveBeenCalled();
     });
   });
+
+  describe('label placement', () => {
+    it('puts a notched label on the trigger', async () => {
+      const screen = await render(<ColorPicker labelPlacement="notch" label="Brand" />);
+
+      expect(screen.container.querySelector('.neba-notch label')).toHaveTextContent('Brand');
+    });
+
+    // The swatch is where a floating label would rest.
+    it('keeps a floating label in the notch beside the swatch', async () => {
+      const screen = await render(<ColorPicker labelPlacement="float" label="Brand" />);
+
+      expect(screen.container.querySelector('.neba-notch')).not.toHaveClass('neba-notch-float');
+    });
+
+    it('has no trigger to notch when inline', async () => {
+      const screen = await render(<ColorPicker inline labelPlacement="notch" label="Brand" />);
+
+      expect(screen.container.querySelector('.neba-notch')).toBeNull();
+      await expect.element(screen.getByText('Brand')).toBeInTheDocument();
+    });
+  });
 });

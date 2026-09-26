@@ -442,4 +442,42 @@ describe('Select', () => {
       expect(trigger.closest('.root-class')).not.toBeNull();
     });
   });
+
+  describe('label placement', () => {
+    it('names the trigger from a notched label', async () => {
+      const screen = await render(<Select items={PLANS} labelPlacement="notch" label="Plan" />);
+
+      await expect.element(screen.getByRole('combobox', { name: 'Plan' })).toBeInTheDocument();
+    });
+
+    // The trigger is a `<button>`, and a `<label>` inside one is not allowed.
+    it('keeps the notched label outside the trigger', async () => {
+      const screen = await render(<Select items={PLANS} labelPlacement="notch" label="Plan" />);
+      const trigger = screen.getByRole('combobox', { name: 'Plan' }).element();
+
+      expect(trigger.querySelector('label')).toBeNull();
+      expect(trigger.parentElement?.querySelector('.neba-notch label')).toHaveTextContent('Plan');
+    });
+
+    it('lets a floating label rest while nothing is chosen, and makes room for it', async () => {
+      const screen = await render(
+        <Select items={PLANS} labelPlacement="float" label="Billing plan" placeholder="Pick" />
+      );
+      const trigger = screen.getByRole('combobox', { name: 'Billing plan' }).element();
+
+      expect(trigger).toHaveClass('neba-float-control');
+      expect(trigger.querySelector('[data-sample="Billing plan"]')).not.toBeNull();
+      expect(screen.container.querySelector('.neba-notch')).toHaveClass('neba-notch-float');
+    });
+
+    it('keeps a floating label in the notch beside a start icon', async () => {
+      const screen = await render(
+        <Select items={PLANS} labelPlacement="float" label="Plan" startIcon={<svg />} />
+      );
+
+      expect(screen.getByRole('combobox', { name: 'Plan' }).element()).not.toHaveClass(
+        'neba-float-control'
+      );
+    });
+  });
 });

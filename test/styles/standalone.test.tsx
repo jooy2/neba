@@ -19,8 +19,10 @@
  * is asserted is only that each layer arrived and that they compose — a
  * `border-radius` that is *not zero*, a background that is *not transparent*.
  */
+import type * as React from 'react';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import {
   Badge,
   Button,
@@ -36,6 +38,7 @@ import {
   Radio,
   RadioGroup,
   Rating,
+  Select,
   Switch,
   TextField,
   Typography
@@ -487,6 +490,152 @@ describe('neba/styles.css', () => {
       // Same failure mode as the `@source` check above: a browser ignores an
       // unresolved `theme()`, so the grid would simply stop being responsive.
       expect(standaloneCss).not.toContain('theme(--breakpoint');
+    });
+  });
+
+  /*
+   * A notched or floating label is positioned, and its gap cut, entirely by
+   * `styles.css`: the conditions are relations between the shell, the control
+   * and the notch, and no component test loads a stylesheet. So this is the
+   * only place that finds out whether they hold.
+   *
+   * Every assertion is a relation — the label against the shell's edge, its
+   * size against the control's — and none is a length from the design. The
+   * durations are zeroed so a state is read where it ends rather than halfway
+   * through the transition to it.
+   */
+  describe('the notch', () => {
+    const still = { '--neba-duration': '0ms' } as React.CSSProperties;
+    const parts = (root: ParentNode) => {
+      const notch = root.querySelector('.neba-notch') as HTMLElement;
+
+      return {
+        shell: notch.parentElement as HTMLElement,
+        label: notch.querySelector('.neba-notch-label') as HTMLElement,
+        start: notch.querySelector('.neba-notch-start') as HTMLElement,
+        gap: notch.querySelector('.neba-notch-gap') as HTMLElement
+      };
+    };
+    const transparent = 'rgba(0, 0, 0, 0)';
+
+    it('stands the label on the edge, in a gap in it', async () => {
+      const screen = await render(
+        <div style={still}>
+          <TextField labelPlacement="notch" label="Email" />
+        </div>
+      );
+      const { shell, label, start, gap } = parts(screen.container);
+      const edge = shell.getBoundingClientRect().top;
+      const box = label.getBoundingClientRect();
+
+      expect(box.top).toBeLessThan(edge);
+      expect(box.bottom).toBeGreaterThan(edge);
+      expect(getComputedStyle(shell).borderTopColor).toBe(transparent);
+      expect(getComputedStyle(start).borderTopColor).not.toBe(transparent);
+      expect(getComputedStyle(gap).borderTopColor).toBe(transparent);
+      expect(getComputedStyle(gap).borderBottomColor).not.toBe(transparent);
+    });
+
+    it('rests a floating label in the field, set as the text will be, until the focus lands', async () => {
+      const screen = await render(
+        <div style={still}>
+          <TextField labelPlacement="float" label="Email" placeholder="you@example.com" />
+        </div>
+      );
+      const input = screen.getByRole('textbox', { name: 'Email' }).element() as HTMLInputElement;
+      const { shell, label, gap } = parts(screen.container);
+      const size = (element: Element) => parseFloat(getComputedStyle(element).fontSize);
+
+      expect(label.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+        shell.getBoundingClientRect().top
+      );
+      expect(size(label)).toBe(size(input));
+      expect(getComputedStyle(gap).borderTopColor).not.toBe(transparent);
+      expect(getComputedStyle(input, '::placeholder').color).toBe(transparent);
+
+      await userEvent.click(input);
+
+      expect(label.getBoundingClientRect().top).toBeLessThan(shell.getBoundingClientRect().top);
+      expect(size(label)).toBeLessThan(size(input));
+      expect(getComputedStyle(gap).borderTopColor).toBe(transparent);
+      expect(getComputedStyle(input, '::placeholder').color).not.toBe(transparent);
+
+      // A value keeps it up once the focus has gone.
+      await userEvent.keyboard('ada');
+      input.blur();
+
+      expect(label.getBoundingClientRect().top).toBeLessThan(shell.getBoundingClientRect().top);
+    });
+
+    it('lets a press through a resting label to the control under it', async () => {
+      const screen = await render(
+        <div style={still}>
+          <TextField labelPlacement="float" label="Email" />
+        </div>
+      );
+      const box = parts(screen.container).label.getBoundingClientRect();
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+
+      expect(hit).toBe(screen.getByRole('textbox', { name: 'Email' }).element());
+    });
+
+    it('hides the placeholder a resting Select label stands in for, and not the chevron', async () => {
+      const screen = await render(
+        <div style={still}>
+          <Select
+            items={[{ value: 'a', label: 'Apple' }]}
+            labelPlacement="float"
+            label="Fruit"
+            placeholder="Pick one"
+          />
+        </div>
+      );
+      const trigger = screen.getByRole('combobox', { name: 'Fruit' }).element();
+      const placeholder = screen.getByText('Pick one').element();
+      const chevron = trigger.querySelector('svg') as SVGElement;
+
+      expect(getComputedStyle(placeholder).color).toBe(transparent);
+      expect(getComputedStyle(chevron).color).not.toBe(transparent);
+    });
+
+    // On the edge the label widens nothing, so a Select sized by its one-word
+    // options cut its own name short.
+    it('keeps a field as wide as the label on its edge', async () => {
+      const screen = await render(
+        <div style={still}>
+          <Select
+            items={[{ value: 'a', label: 'A' }]}
+            labelPlacement="notch"
+            label="A label much longer than any option"
+          />
+        </div>
+      );
+      const { label } = parts(screen.container);
+
+      expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth);
+    });
+
+    it('rings a field focused from the keyboard, around the gap', async () => {
+      const screen = await render(
+        <div style={still}>
+          <button type="button">Before</button>
+          <TextField labelPlacement="notch" label="Email" />
+        </div>
+      );
+      const { start, gap } = parts(screen.container);
+      const ring = (element: Element, side: 'Top' | 'Bottom') =>
+        getComputedStyle(element, '::before').getPropertyValue(
+          `border-${side.toLowerCase()}-width`
+        );
+
+      expect(ring(start, 'Top')).toBe('0px');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Before' }));
+      await userEvent.tab();
+
+      expect(ring(start, 'Top')).not.toBe('0px');
+      expect(ring(gap, 'Top')).toBe('0px');
+      expect(ring(gap, 'Bottom')).not.toBe('0px');
     });
   });
 
