@@ -27,8 +27,8 @@ export interface NebaProviderProps {
   /**
    * Prop values every component under it starts from.
    *
-   * `size`, `density`, `variant` and `locale` — the axes whose right value is a
-   * property of the product rather than of the control. A call site still wins:
+   * `size`, `density`, `variant`, `locale` and `labelPlacement` — the axes whose
+   * right value is a property of the product rather than of the control. A call site still wins:
    * the order is the caller, then this, then the component's own default.
    */
   defaults?: NebaDefaults;
@@ -243,10 +243,11 @@ export function NebaProvider({
   const density = defaults?.density ?? outerDefaults?.density;
   const variant = defaults?.variant ?? outerDefaults?.variant;
   const locale = defaults?.locale ?? outerDefaults?.locale;
+  const labelPlacement = defaults?.labelPlacement ?? outerDefaults?.labelPlacement;
   const given = (defaults !== undefined && defaults !== null) || outerDefaults !== null;
   const defaultsValue = React.useMemo<NebaDefaults | null>(
-    () => (given ? { size, density, variant, locale } : null),
-    [given, size, density, variant, locale]
+    () => (given ? { size, density, variant, locale, labelPlacement } : null),
+    [given, size, density, variant, locale, labelPlacement]
   );
 
   return (

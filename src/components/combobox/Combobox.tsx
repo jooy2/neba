@@ -396,7 +396,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     ...props
-  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
   const disabled = useFieldsetDisabled(disabledProp);
   // A read-only field is a label that happens to be field-shaped, and a
   // disabled one has dropped the family the light would be drawn in.

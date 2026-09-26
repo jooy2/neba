@@ -28,6 +28,10 @@ export default function ProviderDefaults() {
       <NebaProvider defaults={{ size: 'xs', density: 'compact' }}>
         <Form heading="size xs · density compact" />
       </NebaProvider>
+
+      <NebaProvider defaults={{ labelPlacement: 'notch' }}>
+        <Form heading="labelPlacement notch" />
+      </NebaProvider>
     </div>
   );
 }

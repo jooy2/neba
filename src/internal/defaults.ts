@@ -1,14 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import type { NebaDensity, NebaSize, NebaVariant } from '../types.js';
+import type { NebaDensity, NebaLabelPlacement, NebaSize, NebaVariant } from '../types.js';
 
 /**
  * The prop values an application can set once instead of at every call site.
  *
- * Four, and the list is closed on purpose. These are the axes whose right value
+ * Five, and the list is closed on purpose. These are the axes whose right value
  * is a property of the *product* rather than of the control — a dense
- * application is dense everywhere, and a Korean one is Korean everywhere.
+ * application is dense everywhere, a Korean one is Korean everywhere, and a
+ * form whose fields put their labels in two different places looks assembled
+ * rather than designed.
  *
  * `color` is deliberately not among them. A component's colour default is often
  * semantic — an Alert is `info`, a Popconfirm is `danger`, severity carries
@@ -23,9 +25,11 @@ export interface NebaDefaults {
   variant?: NebaVariant;
   /** BCP 47 tag for every component that says a word on its own behalf. */
   locale?: string;
+  /** Where every field-shaped component draws its label. */
+  labelPlacement?: NebaLabelPlacement;
 }
 
-/** Which of the four a given component actually accepts. */
+/** Which of the five a given component actually accepts. */
 export type DefaultableKey = keyof NebaDefaults;
 
 /**

@@ -259,7 +259,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'labelPlacement']);
     const disabled = useFieldsetDisabled(disabledProp);
     // A read-only trigger is a label that happens to be field-shaped, and a
     // disabled one has dropped the family the light would be drawn in.

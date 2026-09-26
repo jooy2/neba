@@ -249,7 +249,7 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'labelPlacement']);
     const disabled = useFieldsetDisabled(disabledProp);
     // A read-only field is a label that happens to be field-shaped, and a
     // disabled one has dropped the colour family the light would be drawn in.

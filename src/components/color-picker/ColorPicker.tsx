@@ -621,7 +621,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+    } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
     const messages = useMessages(colorMessages, locale);
     const labels: ColorPickerLabels = React.useMemo(

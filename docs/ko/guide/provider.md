@@ -19,7 +19,7 @@ import { NebaProvider } from 'neba';
 
 ## defaults
 
-`size`, `density`, `variant`, `locale`의 네 축입니다. 호출 지점마다 `size="sm"`을 반복해서 쓰지 않아도 됩니다.
+`size`, `density`, `variant`, `locale`, `labelPlacement`의 다섯 축입니다. 호출 지점마다 `size="sm"`을 반복해서 쓰지 않아도 됩니다.
 
 <Demo src="provider/defaults">
 
@@ -29,11 +29,11 @@ import { NebaProvider } from 'neba';
 
 호출 지점이 여전히 이깁니다. 순서는 **호출자 → provider → 컴포넌트 자신의 기본값**이므로, `size="xs"` provider 안의 `<Button size="xl">`은 `xl`이고, `size` prop이 없는 컴포넌트는 손대지 않습니다. `ButtonGroup`과 `ToggleGroup`은 호출자와 provider 사이에 옵니다. `size: 'sm'` provider 아래 `size="lg"` group 안의 Button은 `lg`입니다.
 
-### defaults가 받는 네 축
+### defaults가 받는 다섯 축
 
 |  |  |
 | --- | --- |
-| `size` `density` `variant` `locale` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어입니다. |
+| `size` `density` `variant` `locale` `labelPlacement` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어이며, 한 폼의 라벨은 모두 같은 자리에 있습니다. `labelPlacement`는 shell을 그리는 필드 전부에 닿습니다. TextField, NumberField, Select, Combobox와 모든 picker입니다. |
 | `color` | **기본값으로 줄 수 없습니다.** 컴포넌트의 색 기본값이 의미를 나타내는 경우가 많습니다. [Alert](../components/feedback/alert)는 `info`, [Popconfirm](../components/feedback/popconfirm)은 `danger`이며, 전역으로 한 번 덮으면 이 뜻이 모두 바뀝니다. |
 | `elevation` | **기본값으로 줄 수 없습니다.** [디자인 언어](../design/design-language)가 그림자를 표면마다 opt-in으로 정하고 있으며, 전역 그림자는 그 규칙과 어긋납니다. |
 

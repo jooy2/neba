@@ -19,7 +19,7 @@ It renders no element of its own. Three jobs are together here because all three
 
 ## defaults
 
-Four axes: `size`, `density`, `variant` and `locale`. Writing `size="sm"` at four hundred call sites is the problem this exists to end.
+Five axes: `size`, `density`, `variant`, `locale` and `labelPlacement`. Writing `size="sm"` at four hundred call sites is the problem this exists to end.
 
 <Demo src="provider/defaults">
 
@@ -29,11 +29,11 @@ Four axes: `size`, `density`, `variant` and `locale`. Writing `size="sm"` at fou
 
 A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched. A `ButtonGroup` or `ToggleGroup` sits between the caller and the provider: a Button in a `size="lg"` group under a `size: 'sm'` provider is `lg`.
 
-### The four axes
+### The five axes
 
 |  |  |
 | --- | --- |
-| `size` `density` `variant` `locale` | The right value is a property of the product. A dense application is dense everywhere; a Korean one is Korean everywhere. |
+| `size` `density` `variant` `locale` `labelPlacement` | The right value is a property of the product. A dense application is dense everywhere, a Korean one is Korean everywhere, and a form puts all its labels in one place. `labelPlacement` reaches every field that draws a shell: TextField, NumberField, Select, Combobox and the pickers. |
 | `color` | **Not defaultable.** A component's colour default is often semantic. An [Alert](../components/feedback/alert) is `info` and a [Popconfirm](../components/feedback/popconfirm) is `danger` because severity carries meaning, and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 

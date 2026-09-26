@@ -14,8 +14,10 @@ import {
   ButtonGroup,
   Chip,
   colorSchemeScript,
+  DatePicker,
   LineChart,
   NebaProvider,
+  Select,
   TextField,
   Toggle,
   ToggleGroup,
@@ -189,6 +191,44 @@ describe('defaults', () => {
     );
 
     await expect.element(screen.getByRole('textbox', { name: 'Note' })).toBeInTheDocument();
+  });
+
+  // Where a form's labels go is a decision about the whole product: fields that
+  // put them in two places look like two forms stacked on each other.
+  it('puts every field-shaped label where the product put them', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ labelPlacement: 'notch' }}>
+        <TextField label="Name" />
+        <Select items={[{ value: 'a', label: 'A' }]} label="Plan" />
+        <DatePicker label="Starts" />
+      </NebaProvider>
+    );
+
+    expect(screen.container.querySelectorAll('.neba-notch label')).toHaveLength(3);
+    await expect.element(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+    await expect.element(screen.getByRole('combobox', { name: 'Plan' })).toBeInTheDocument();
+  });
+
+  it('loses the label placement to the call site', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ labelPlacement: 'float' }}>
+        <TextField label="Name" labelPlacement="top" />
+      </NebaProvider>
+    );
+
+    expect(screen.container.querySelector('.neba-notch')).toBeNull();
+    await expect.element(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+  });
+
+  // A component with no `labelPlacement` must not have it spread onto a node.
+  it('leaves the label placement off a component that has none', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ labelPlacement: 'notch' }}>
+        <Chip>tag</Chip>
+      </NebaProvider>
+    );
+
+    expect(screen.container.querySelector('[labelPlacement], [labelplacement]')).toBeNull();
   });
 });
 
@@ -418,6 +458,18 @@ describe('nesting', () => {
     expect(heightOf(screen.getByRole('button', { name: 'Inner' }).element())).toBe(
       heightOf(screen.getByRole('button', { name: 'Outer' }).element())
     );
+  });
+
+  it('keeps the outer label placement inside a provider that sets something else', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ labelPlacement: 'notch' }}>
+        <NebaProvider defaults={{ size: 'sm' }}>
+          <TextField label="Name" />
+        </NebaProvider>
+      </NebaProvider>
+    );
+
+    expect(screen.container.querySelector('.neba-notch label')).toHaveTextContent('Name');
   });
 
   // The merge has to keep both halves: the outer size and the inner density.

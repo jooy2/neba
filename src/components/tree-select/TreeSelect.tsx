@@ -212,7 +212,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
       disabled = false,
       classNames,
       ...shell
-    } = useStyleDefaults(rawProps, ['size', 'locale']);
+    } = useStyleDefaults(rawProps, ['size', 'locale', 'labelPlacement']);
 
     const messages = useMessages(comboboxMessages, locale);
     // The word on a field somebody types a filter into is already written down
