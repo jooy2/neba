@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.16.2 (2026-09-26)
+
 ### Added
 
 - **`labelPlacement` on every field: the label above it, on its top edge, or in place of the placeholder.** `top` is the default and what every field drew before. `notch` stands the label in a gap cut out of the field's top edge, and `float` rests it where the placeholder would be until the field takes the focus or holds a value, then moves it up into that gap. TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, TreeSelect and ColorPicker all take it, typed as the shared `NebaLabelPlacement`. A floating label travels on `top` and resizes on `font-size` rather than on a `transform`, so it is set again at each size instead of scaled. A `startIcon` keeps a `float` label in the notch, because the icon is where it would rest. The gap is sized by the layout rather than measured, so it is right in the first frame of a server render, and a field is never narrower than the label on its edge. `NebaProvider` takes it in `defaults` as well, so a product sets it once.
