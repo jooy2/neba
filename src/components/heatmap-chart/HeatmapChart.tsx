@@ -455,10 +455,15 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const steps = Array.from({ length: rampSteps }, (_, step) => rampFill(step, scale));
 
   /* The sheet, which is the hidden table: a treemap's columns are every name
-     any group uses, a grid's are its categories in place. */
+     any group uses, a grid's are its categories in place. Read across the
+     heads, as the table is: a treemap's group is only as long as the last name
+     it uses, and a row that stopped there was a row a cell short. */
   const exportRows = () => [
     ['', ...table.heads],
-    ...table.rows.map((row, at) => [names[at], ...row.map((cell) => cell?.value ?? null)])
+    ...table.rows.map((row, at) => [
+      names[at],
+      ...table.heads.map((_, index) => row[index]?.value ?? null)
+    ])
   ];
 
   return (

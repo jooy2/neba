@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { HeatmapChart } from 'neba';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
@@ -767,6 +767,43 @@ describe('HeatmapChart', () => {
       await expect
         .poll(() => plot.element().querySelector('svg')?.getAttribute('viewBox')?.split(' ')[3])
         .toBe('160');
+    });
+  });
+
+  describe('export', () => {
+    // A treemap's columns are every name a group uses, in the order they are
+    // first met, and a group without one of them leaves its cell empty.
+    it('writes a treemap as its groups against every name they use', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <HeatmapChart
+          label="Spend"
+          shape="treemap"
+          exportable
+          onExport={onExport}
+          series={[
+            {
+              name: 'Cloud',
+              data: [
+                { x: 'Compute', y: 40 },
+                { x: 'Storage', y: 10 }
+              ]
+            },
+            { name: 'People', data: [{ x: 'Salaries', y: 70 }] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines.slice(0, 3)).toEqual([
+        ',Compute,Storage,Salaries',
+        'Cloud,40,10,',
+        'People,,,70'
+      ]);
     });
   });
 });

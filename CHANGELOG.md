@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **A treemap `HeatmapChart`'s CSV has a cell in every column of every row.** The file's columns are every name any group uses, and a group's row stopped at the last of those it used — so a group that did not use the names further right had a row shorter than the header, which a strict reader of the file takes as a broken line. The empty cells are written out now, as the chart's hidden table already had them.
+
 - **An A2UI surface keeps a field when the agent puts something in front of it.** A container's children were keyed by their place in the list, so a child the agent added before the others made React draw every child after it again from nothing — and a field among them lost the focus, and anything typed in it that had not reached the data model yet. Children are keyed by their id now, and a template's rows by their id and the path they are bound to.
 
 - **The A2UI catalog says what a component does when a prop is left out.** It told an agent that a `Chip` is `sm` unless it says otherwise, and it draws at `md`; and that a `Typography` is `primary` and aligned to the start, when with neither it takes the colour and the alignment of the text around it — which its own description of `color` says. A model reads a `default` as a fact about the renderer, so the `Chip`'s is `md` now and the `Typography`'s two are gone.
