@@ -58,10 +58,11 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
       label,
       showValue = false,
       format,
+      locale,
       className,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size']);
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -81,6 +82,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
         min={min}
         max={max}
         format={format}
+        locale={locale}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx('inline-flex flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(color), ...style }}

@@ -513,8 +513,33 @@ describe('the published package', () => {
           )
         );
 
+        // A component can take an axis without naming it: a picker hands its
+        // `variant` and `density` to the shell in a rest spread, so only the
+        // interface it extends says it has them — all three of the shared
+        // bundle's, or the ones a `Pick` or an `Omit` leaves.
+        const shared = new Set<string>();
+
+        for (const [, clause] of source.matchAll(/export interface \w+Props\s+extends([^{]*)\{/g)) {
+          for (const [, kind, keys] of clause.matchAll(
+            /\b(Pick|Omit)<\s*(?:NebaStyleProps|PickerShellProps)\s*,([^>]*)>/g
+          )) {
+            const named = [...keys.matchAll(/'(\w+)'/g)].map((key) => key[1]);
+
+            for (const axis of ['size', 'density', 'variant']) {
+              if (named.includes(axis) === (kind === 'Pick')) {
+                shared.add(axis);
+              }
+            }
+          }
+
+          if (/[\s,](?:NebaStyleProps|PickerShellProps)\s*(?:,|$)/.test(clause)) {
+            ['size', 'density', 'variant'].forEach((axis) => shared.add(axis));
+          }
+        }
+
         for (const axis of ['size', 'density', 'variant', 'locale']) {
-          const declared = new RegExp(`^\\s+${axis}(\\s*=\\s*[^,]+)?,\\s*$`, 'm').test(source);
+          const declared =
+            new RegExp(`^\\s+${axis}(\\s*=\\s*[^,]+)?,\\s*$`, 'm').test(source) || shared.has(axis);
 
           if (declared && !filled.has(axis) && !exceptions.has(`${file}:${axis}`)) {
             missing.push(`${file}:${axis}`);

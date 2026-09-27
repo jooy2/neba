@@ -17,10 +17,12 @@ import {
   DatePicker,
   LineChart,
   NebaProvider,
+  ProgressBox,
   Select,
   TextField,
   Toggle,
   ToggleGroup,
+  TreeSelect,
   useColorScheme
 } from 'neba';
 
@@ -169,6 +171,30 @@ describe('defaults', () => {
     );
 
     expect(screen.container.querySelector('[density]')).toBeNull();
+  });
+
+  // Both take the axes through a rest spread or a prop handed further down, so
+  // only a declaration that named them would have shown they were missed.
+  it('reaches a TreeSelect’s variant and density, and a ProgressBox’s locale', async () => {
+    const items = [{ value: 'docs', label: 'Docs' }];
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ variant: 'solid', density: 'compact', locale: 'ar-EG' }}>
+          <TreeSelect label="Provided" items={items} />
+          <ProgressBox label="Provided upload" value={40} showValue format={{}} />
+        </NebaProvider>
+        <TreeSelect label="Bare" items={items} />
+        <ProgressBox label="Bare upload" value={40} showValue format={{}} />
+      </>
+    );
+    // The variant is drawn on the shell around the trigger, and the density
+    // pads it.
+    const shellOf = (name: string) =>
+      screen.getByRole('button', { name, exact: false }).element().parentElement?.className;
+
+    expect(shellOf('Provided')).not.toBe(shellOf('Bare'));
+    await expect.element(screen.getByText('٤٠')).toBeInTheDocument();
+    await expect.element(screen.getByText('40', { exact: true })).toBeInTheDocument();
   });
 
   it('does not repaint a colour a component chose for meaning', async () => {

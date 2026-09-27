@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `TreeSelect` takes a provider's `variant` and `density`, and a `ProgressBox` its `locale`.** Both pages promise it, and neither did: the `TreeSelect` passed the two to its shell without asking the provider for them, and the `ProgressBox` never asked for a locale, so a formatted value was written in the runtime's language. The check that holds every component to the provider's axes now reads the shared props an interface extends as well as the ones a component names, which is how these two got past it.
+
 - **An inline `ColorPicker` behaves in a form as the popup one does.** A disabled inline picker still submitted its value, and a `required` one that was empty let the form go, because the popup's shell is what did both and an inline picker draws none. It does both itself now: its value is left out of the form while it is disabled, and an empty required picker holds the submit back and takes the focus to its square.
 
 - **A `FilePicker` and an inline `ColorPicker` inside a disabled `Fieldset` are disabled.** Base UI's `Fieldset` stops the fields it knows, and neither is one of them: a file dropped on the picker still reached `onFilesChange`, the inline picker's square and rails still answered the keys and the pointer, and both were drawn available. Both read the `Fieldset` now, as the other fields already did.
