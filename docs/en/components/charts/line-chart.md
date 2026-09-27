@@ -34,6 +34,7 @@ interface NebaChartSeries {
   data: readonly NebaChartDatum[]; // the values, in category order
   color?: NebaColor | string; // overrides the palette slot
   hidden?: boolean; // starts hidden; the legend turns it back on
+  axis?: 'primary' | 'secondary'; // the value axis it is measured against
 }
 ```
 

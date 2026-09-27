@@ -28,7 +28,7 @@ A bar's **length** is its value, which is why its axis includes zero by default.
 
 <PropsTable name="BarChart" />
 
-Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `xAxis`, `yAxis`, `legend` and `tooltip` take the same shapes they take on [LineChart](./line-chart#props). See [prop conventions](../../design/prop-conventions) for the shared axes.
+Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `xAxis`, `yAxis`, `legend` and `tooltip` take the same shapes they take on [LineChart](./line-chart#props), and [`brush`](./line-chart#brush), [`references`](./line-chart#references), [`secondaryAxis`](./line-chart#secondaryaxis) and [`exportable`](./line-chart#exportable) work as they do there. See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ## Examples
 

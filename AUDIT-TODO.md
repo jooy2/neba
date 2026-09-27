@@ -10,7 +10,7 @@ The working list for the second audit of every public component, started on 2026
 - Batch 3 is done (2026-09-27): items 58, 59, 60, 66 to 75, and 79 to 85. Item 67's first version cut a category band on a bar chart at the column centre, which a follow-up commit corrected. Item 69 turned up item 186, which is added to the list rather than fixed out of turn.
 - Batch 4 is done (2026-09-27): items 88 to 93, 98, 99, 101 to 108, 110 to 112 and 114. Item 98 was checked against React 18.3.1 installed locally the way the CI job installs it, and React 19.3.0 was put back afterwards.
 - Every commit so far is local and not pushed.
-- The next batch starts at item 115 and takes the untagged items in number order; no untagged item is marked **(high)** any more. Item 140 is only partly untagged: its first two fixes are in the next batch, and the rest waits for 76 and 77.
+- The next batch starts at item 115 and takes the untagged items in number order; no untagged item is marked **(high)** any more. Item 140 is only partly untagged: its first two fixes are done, and the rest waits for 76 and 77.
 
 ## How to run a batch
 
@@ -285,7 +285,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 ### Component pages
 
 - [x] **139** Chart pages carry rationale again: `line-chart.md:156, 160, 172, 174, 178, 192, 204, 218, 222`, `area-chart.md:62`, `pie-chart.md:64, 66`, `sparkline.md:44`, both locales. Fix: keep the behaviour, drop the reasons. Two sentences beside the listed ones had the same shape and went too: the reason after `valueLabels`' default of `none`, and after an AreaChart's `markers` default. The secondary-axis gridline sentence keeps its claim for item 76 to settle and loses only its reason.
-- [ ] **140** Chart pages, wrong or missing: the `NebaChartSeries` snippet lacks `axis`; the AreaChart and BarChart pages do not point to `brush` and `references` on the LineChart page; "Every cartesian chart takes them" and the secondary-axis gridline sentence need 76 and 77. Fix the first two now, the rest with those items.
+- [ ] **140** Chart pages, wrong or missing: the `NebaChartSeries` snippet lacks `axis`; the AreaChart and BarChart pages do not point to `brush` and `references` on the LineChart page; "Every cartesian chart takes them" and the secondary-axis gridline sentence need 76 and 77. Fix the first two now, the rest with those items. The first two are done: the snippet has `axis`, and the two pages point at `brush`, `references`, `secondaryAxis` and `exportable` from their pass-through line. The rest waits for 76 and 77.
 - [ ] **141** Agent pages carry rationale and internals: `tool-call.md:74`, `reasoning.md:52`, `sources.md:29, 39, 63`, `context-window.md:28, 56`, `approval.md:55`, `inline-citation.md:28, 50`, `agent-steps.md:71`, `prompt-input.md:62`, `streaming-text.md:46, 48`; and three headings are claims (`No option is emphasised`, `onSubmit does not clear the field`, `Line breaks survive`). Fix in both locales.
 - [ ] **142** Reasoning: `onOpenChange` is documented as called by the stream, which never calls it (a test asserts that). `Reasoning.tsx:59`, `props.ts:15791`. Fix: "when the header opens or closes the panel".
 - [ ] **143** Reasoning: "`text` is the default here and nowhere else" is false (nine components default to it). `reasoning.md:52` (both locales), `Reasoning.tsx:95-96`, `props.ts:15823`, `llms.txt:174`. Fix: drop the clause.

@@ -34,6 +34,7 @@ interface NebaChartSeries {
   data: readonly NebaChartDatum[]; // category 순서대로 놓인 값
   color?: NebaColor | string; // 팔레트 slot 대신 쓸 색
   hidden?: boolean; // 처음엔 숨김. 범례로 다시 켭니다
+  axis?: 'primary' | 'secondary'; // 이 series를 재는 값 축
 }
 ```
 
