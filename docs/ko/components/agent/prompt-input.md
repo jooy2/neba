@@ -83,7 +83,7 @@ import { PromptInput } from 'neba';
 
 ## 접근성
 
-- 루트는 진짜 `<form>`입니다. 그래서 휴대폰 키보드가 자체 전송 키를 내놓고, 버튼은 클릭 핸들러가 흉내 낸 것이 아니라 `type="submit"`입니다.
+- 루트는 진짜 `<form>`이고 버튼은 `type="submit"`입니다. `submitKey="Enter"`이면 필드에 `enterKeyHint="send"`를 달아, 휴대폰 키보드가 Enter 키를 전송 키로 표시합니다.
 - `label`은 입력란의 접근 가능한 이름이며 스크린 리더에만 그려집니다. 이것이나 `aria-label`을 주세요. placeholder는 최후의 수단이고, 뭐라도 입력하면 사라집니다.
 - 전송 버튼은 [IconButton](../inputs/icon-button)이라 `label`이 필수이고 상태에 따라 바뀝니다. "Send"가 "Stop"이 됩니다.
 - 포커스 링은 `<textarea>`가 아니라 껍데기의 것입니다. 안쪽에 떠 있는 사각형이 아니라 아크릴의 테두리를 따라갑니다.

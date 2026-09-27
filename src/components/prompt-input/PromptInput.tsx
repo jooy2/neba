@@ -372,6 +372,10 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
                 '--n-max-rows': `calc(${Math.max(maxRows, minRows, 1)} * 1lh)`
               } as React.CSSProperties
             }
+            // A phone labels its Enter key from this, and a textarea's Enter is
+            // a new line unless it is told otherwise. Before the spread, so a
+            // caller can still say something else.
+            enterKeyHint={submitKey === 'Enter' ? 'send' : undefined}
             {...props}
             onKeyDown={(event) => {
               /*

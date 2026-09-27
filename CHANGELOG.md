@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `PromptInput` that sends on Enter says so to a phone's keyboard.** The field sets `enterKeyHint="send"` when `submitKey` is `Enter`, so the key is labelled as the send it is rather than as a line break. A form gives an `<input>` that label on its own and never a `<textarea>`, which is what the component and its page had assumed. A caller's own `enterKeyHint` still wins.
+
 - **A `PromptInput` given an `id` keeps its accessible name.** The id reached the textarea, but the visually hidden label still pointed at the one the component had generated, so the field was announced with no name. The label follows the id the textarea ends up with.
 
 - **Answering an `Approval` hands the focus to the answer.** The buttons are replaced by the line that records what was chosen, so the one that was pressed left the document with the focus on it, and a keyboard reader started again from the top of the page without hearing what they had agreed to. The record line takes the focus when a press is what answered it, which also reads it out; a decision that arrives later, after the focus has gone somewhere else, leaves it there.

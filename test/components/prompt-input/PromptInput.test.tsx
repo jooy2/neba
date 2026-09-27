@@ -18,6 +18,17 @@ describe('PromptInput', () => {
       expect(screen.getByRole('button', { name: 'Stop' }).query()).toBeNull();
     });
 
+    // A phone labelled a key that sends as "return".
+    it('tells a phone that Enter sends, and only when it does', async () => {
+      const screen = await render(<PromptInput label="Message" />);
+
+      await expect.element(screen.getByRole('textbox')).toHaveAttribute('enterkeyhint', 'send');
+
+      await screen.rerender(<PromptInput label="Message" submitKey="Mod+Enter" />);
+
+      await expect.element(screen.getByRole('textbox')).not.toHaveAttribute('enterkeyhint');
+    });
+
     // The textarea took the caller's id and the label kept pointing at the
     // generated one, which named nothing.
     it('keeps its name when it is given an id', async () => {

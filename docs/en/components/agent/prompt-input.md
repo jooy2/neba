@@ -83,7 +83,7 @@ Passing it makes the shell a drop target. It is called with the dropped files an
 
 ## Accessibility
 
-- The root is a real `<form>`, so a phone's keyboard offers its own send key and the button is a `type="submit"` rather than a click handler pretending to be one.
+- The root is a real `<form>` and the button is a `type="submit"`. With `submitKey="Enter"` the field sets `enterKeyHint="send"`, so a phone's keyboard labels its Enter key as a send key.
 - `label` is the field's accessible name, drawn for a screen reader and nobody else. Give it one, or an `aria-label`: a placeholder is a last resort and goes away as soon as anything is typed.
 - The send button is an [IconButton](../inputs/icon-button), so its `label` is required and changes with the state — "Send" becomes "Stop".
 - The focus ring belongs to the shell rather than to the `<textarea>`, so it traces the acrylic edge instead of a rectangle floating inside it.
