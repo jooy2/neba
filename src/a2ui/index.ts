@@ -24,10 +24,12 @@
  * The catalog is written against **A2UI v1.0** and `@a2ui/react` 0.11's newest
  * renderer is **v0.9**, so this registers with `@a2ui/react/v0_9`. The eighteen
  * components only use constructs the two versions share, which is what makes
- * the bridge a rename rather than a translation, and the two differences that
- * exist are both harmless: v1.0 moved `accessibility` from the catalog entry to
- * the envelope, which `schema.ts` puts back, and v1.0's `Action` gained a
- * `userMessage` that the v0.9 schema strips rather than rejects.
+ * the bridge a rename rather than a translation, and neither of the two
+ * differences that exist makes the renderer refuse a message: v1.0 moved
+ * `accessibility` from the catalog entry to the envelope, which `schema.ts` puts
+ * back, and v1.0's `Action` gained a `userMessage` that the v0.9 renderer
+ * accepts and never passes on — the action a host receives is built from the
+ * event's `name` and `context` alone.
  *
  * There is no v1.0 React renderer to register with yet. When there is, what
  * changes is this file's import and nothing in `catalog.json`.

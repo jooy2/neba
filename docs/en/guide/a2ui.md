@@ -87,7 +87,7 @@ The names are Neba's own rather than the Basic Catalog's, which is what makes th
 
 Fourteen, with the specification's own names and call signatures: `required`, `length`, `regex`, `numeric`, `email`, `formatString`, `formatNumber`, `formatCurrency`, `formatDate`, `pluralize`, `openUrl`, `and`, `or` and `not`.
 
-Declaring one is a claim that your renderer implements it. Ten of the fourteen are one `Intl` call, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation.
+Declaring one is a claim that your renderer implements it. Five check a value, three are one `Intl` call each, `formatString` and `formatDate` build a string, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation.
 
 `formatNumber`, `formatCurrency` and `pluralize` write in the language the catalog was built with, `createNebaCatalog({ locale: 'ko' })`. Pass the `locale` your `NebaProvider` has; left out, the components follow the provider and those three follow the runtime. `formatDate` does not take one.
 
@@ -97,7 +97,7 @@ Declaring one is a claim that your renderer implements it. Ten of the fourteen a
 
 The catalog is written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`.
 
-**The adapter registers with `@a2ui/react/v0_9`**, because 0.11 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and the two differences that exist are both harmless: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back, and v1.0's `Action` gained a `userMessage` that the v0.9 schema strips rather than rejects.
+**The adapter registers with `@a2ui/react/v0_9`**, because 0.11 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and neither of the two differences that exist makes the renderer refuse a message: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back, and v1.0's `Action` gained a `userMessage` that the v0.9 renderer accepts and never passes on, so the action a host receives carries the event's `name` and `context` only.
 
 The `@a2ui/*` packages are on 0.11.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
 
