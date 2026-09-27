@@ -19,7 +19,7 @@ import { AnimateSplit } from 'neba';
 
 <PropsTable name="AnimateSplit" />
 
-나머지 `<div>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<span>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 쪼개지는 것은 텍스트뿐입니다. 문자열이나 `text`를 넘기세요. children 안의 element는 그 안의 단어만 기여하고 markup은 전달되지 않습니다. 링크의 절반을 애니메이션할 정직한 방법은 없기 때문입니다.
 

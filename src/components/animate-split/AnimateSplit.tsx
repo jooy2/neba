@@ -29,7 +29,7 @@ export interface AnimateSplitProps
     NebaAnimateProps,
     NebaStaggerProps,
     NebaTimelineProps,
-    Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
+    Omit<React.ComponentPropsWithoutRef<'span'>, 'children'> {
   /** The text, when it is easier to pass than to nest. Overrides `children`. */
   text?: string;
   /**
@@ -60,7 +60,10 @@ export interface AnimateSplitProps
    * boundaries. A word boundary is not a space in Japanese, Thai or Chinese.
    */
   locale?: string;
-  /** Renders something other than a `<div>`. Base UI's own escape hatch. */
+  /**
+   * Renders something other than a `<span>`. A `<span>` by default, so it can
+   * sit inside a sentence or a Statistic's value. Base UI's own escape hatch.
+   */
   render?: useRender.RenderProp;
   /** The text to split. Only text is split — an element contributes its words. */
   children?: React.ReactNode;
@@ -87,7 +90,7 @@ export interface AnimateSplitProps
  * character, the pieces of a word are held in a span that does not wrap, and
  * the space after it is left as text, which is where the line breaks.
  */
-export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
+export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
   function AnimateSplit(rawProps, ref) {
     const {
       text,
@@ -221,7 +224,7 @@ export const AnimateSplit = React.forwardRef<HTMLDivElement, AnimateSplitProps>(
       : animated;
 
     return useRender({
-      render,
+      render: render ?? <span />,
       ref: [ref, run.ref],
       props: {
         ...props,

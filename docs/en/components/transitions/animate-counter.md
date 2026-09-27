@@ -19,7 +19,7 @@ import { AnimateCounter, Statistic } from 'neba';
 
 <PropsTable name="AnimateCounter" />
 
-Every other `<div>` attribute passes through to the root. It has no `easing`, `repeat` or `alternate`: a number may only ever approach its value from one side, so the curve is a fixed ease-out and there is no version of a count that loops.
+Every other `<span>` attribute passes through to the root. It has no `easing`, `repeat` or `alternate`: a number may only ever approach its value from one side, so the curve is a fixed ease-out and there is no version of a count that loops.
 
 It pairs with [Statistic](../charts/statistic), whose `value` takes a node for exactly this. A dashboard that draws its numbers instantly and animates everything around them has the emphasis backwards.
 

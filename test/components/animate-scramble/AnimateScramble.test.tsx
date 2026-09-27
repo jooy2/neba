@@ -41,6 +41,17 @@ function shown(root: Element): string {
  * its own, so the DOM is waited for after the clock moves.
  */
 describe('AnimateScramble', () => {
+  // A `<div>` by default, which is not allowed inside a paragraph.
+  it('renders a span, so it can sit inside a sentence', async () => {
+    const screen = await render(
+      <p>
+        Now <AnimateScramble data-testid="word" text="shipping" trigger="manual" />
+      </p>
+    );
+
+    expect(screen.getByTestId('word').element().tagName).toBe('SPAN');
+  });
+
   // The docs said the box never changed size, and in a proportional font the
   // noise was wider or narrower than the text it settled into.
   it('lays its box out from the final text', async () => {

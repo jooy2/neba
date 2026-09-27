@@ -11,7 +11,7 @@ import { useStyleDefaults } from '../../internal/defaults.js';
 export interface AnimateScrambleProps
   extends
     Omit<NebaAnimateProps, 'easing' | 'alternate'>,
-    Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
+    Omit<React.ComponentPropsWithoutRef<'span'>, 'children'> {
   /** The text, when it is easier to pass than to nest. Overrides `children`. */
   text?: string;
   /**
@@ -34,7 +34,10 @@ export interface AnimateScrambleProps
    * Which language the text is in, for finding the character boundaries.
    */
   locale?: string;
-  /** Renders something other than a `<div>`. Base UI's own escape hatch. */
+  /**
+   * Renders something other than a `<span>`. A `<span>` by default, so it can
+   * sit inside a sentence or a Statistic's value. Base UI's own escape hatch.
+   */
   render?: useRender.RenderProp;
   /** The text to settle. Only text is settled. */
   children?: React.ReactNode;
@@ -86,7 +89,7 @@ function glyphAt(tick: number, index: number, size: number): number {
  * for a screen reader; the noise is a visible copy that is `aria-hidden`. A
  * reader who has asked for less motion is shown the text.
  */
-export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleProps>(
+export const AnimateScramble = React.forwardRef<HTMLElement, AnimateScrambleProps>(
   function AnimateScramble(rawProps, ref) {
     const {
       text,
@@ -229,7 +232,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
       .join('');
 
     return useRender({
-      render,
+      render: render ?? <span />,
       ref: [ref, run.ref],
       props: {
         ...props,

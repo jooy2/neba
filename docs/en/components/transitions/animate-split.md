@@ -19,7 +19,7 @@ import { AnimateSplit } from 'neba';
 
 <PropsTable name="AnimateSplit" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+Every other `<span>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
 Only text is split. Pass a string, or `text`; an element among the children contributes its words and nothing about its markup, because there is no honest way to animate half of a link.
 

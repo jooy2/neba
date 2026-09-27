@@ -19,7 +19,7 @@ import { AnimateScramble } from 'neba';
 
 <PropsTable name="AnimateScramble" />
 
-나머지 `<div>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<span>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 상자는 최종 텍스트로 크기가 정해지므로 노이즈가 가라앉는 동안에도 크기가 유지됩니다. 주변이 재배치되지 않고, 제목이 내려앉으면서 페이지를 밀어내지 않습니다. 비례 글꼴에서는 노이즈가 잠깐 텍스트보다 넓어져 상자 밖으로 넘칠 수 있지만, 주변을 밀어내지는 않습니다.
 

@@ -19,7 +19,7 @@ import { AnimateScramble } from 'neba';
 
 <PropsTable name="AnimateScramble" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+Every other `<span>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
 The box is laid out from the final text, so it holds its size while the noise settles. Nothing around it reflows, and a heading does not push the page down as it lands. In a proportional font the noise can be wider than the text for a moment, and spills past the box without moving anything.
 

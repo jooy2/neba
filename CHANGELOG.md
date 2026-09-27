@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **`AnimateCounter`, `AnimateScramble` and `AnimateSplit` render a `<span>` by default, as `AnimateTyping`, `AnimateHeadline` and `AnimateMarquee` do.** A `<div>` is not allowed inside the `<span>` a `Statistic`'s value is, which is the pairing the AnimateCounter page recommends, and inside a `<p>` it broke hydration. The root is inline now rather than a block; pass `render={<div />}`, or a `block` class, where the block was wanted. Their ref is typed `HTMLElement`.
+
 - **An `Alert`'s live region is its title and message rather than the whole alert.** `role="alert"` or `role="status"` was on the root, and a live region is read out whole, so every announcement ended with the action's and the dismiss button's names. The role, and a `role` you pass, go on the column that holds the title and the message now; the ref, `className` and every other attribute stay on the root. A test that found the alert with `getByRole('alert')` or `getByRole('status')` to read a class or a slot should find the root instead.
 
 - **A `HowToSteps` with no `title` writes its steps' titles at `headingLevel`.** They stayed a level below a title that was not drawn, so the default guide under a page's `<h2>` put its steps at `<h4>` and skipped a level in the outline. A guide with a `title` is unchanged.

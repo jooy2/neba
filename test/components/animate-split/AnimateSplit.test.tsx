@@ -9,6 +9,17 @@ function pieces(container: HTMLElement): HTMLElement[] {
 }
 
 describe('AnimateSplit', () => {
+  // A `<div>` by default, which is not allowed inside a paragraph.
+  it('renders a span, so it can sit inside a sentence', async () => {
+    const screen = await render(
+      <p>
+        <AnimateSplit data-testid="line">One two three</AnimateSplit>
+      </p>
+    );
+
+    expect(screen.getByTestId('line').element().tagName).toBe('SPAN');
+  });
+
   describe('splitting', () => {
     it('cuts the line into words by default', async () => {
       const screen = await render(<AnimateSplit>One two three</AnimateSplit>);

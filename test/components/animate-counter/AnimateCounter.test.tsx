@@ -47,6 +47,18 @@ function announced(root: Element): string {
  * is waited for after the clock moves.
  */
 describe('AnimateCounter', () => {
+  // A `<div>` by default, which is not allowed inside the `<span>` a
+  // Statistic's value is, nor inside a paragraph, where it broke hydration.
+  it('renders a span, so it can sit inside a sentence', async () => {
+    const screen = await render(
+      <p>
+        Served <AnimateCounter data-testid="count" value={12} trigger="manual" /> requests
+      </p>
+    );
+
+    expect(screen.getByTestId('count').element().tagName).toBe('SPAN');
+  });
+
   // It took `paused` with the props every Animate* shares and ignored it.
   it('takes no paused, which it had nothing to hold with', () => {
     // @ts-expect-error — a count is held with `trigger="manual"` and `play`

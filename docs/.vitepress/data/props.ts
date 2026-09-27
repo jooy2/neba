@@ -14534,7 +14534,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'How many times it runs. With effect="blink" it defaults to \'infinite\''
       }
     }),
-    renderProp('render={<h1 />}'),
+    renderProp('render={<h1 />}', 'span'),
     {
       name: 'children',
       type: 'ReactNode',
@@ -14629,7 +14629,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'With trigger="visible", how much of it has to be on screen'
       }
     },
-    renderProp('render={<strong />}')
+    renderProp('render={<strong />}', 'span')
   ],
 
   AnimateScramble: [
@@ -14681,7 +14681,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Only read with trigger="hover": \'infinite\' rewinds it when the pointer leaves, so the next hover scrambles again'
       }
     }),
-    renderProp('render={<h2 />}'),
+    renderProp('render={<h2 />}', 'span'),
     {
       name: 'children',
       type: 'ReactNode',

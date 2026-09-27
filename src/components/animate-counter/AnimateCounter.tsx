@@ -14,7 +14,7 @@ export interface AnimateCounterProps
   // `trigger="manual"` with `play` is for.
   extends
     Omit<NebaAnimateProps, 'easing' | 'repeat' | 'alternate' | 'paused'>,
-    Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
+    Omit<React.ComponentPropsWithoutRef<'span'>, 'children'> {
   /** Where it lands. */
   value: number;
   /**
@@ -40,7 +40,10 @@ export interface AnimateCounterProps
    * the reader's may disagree when the page hydrates.
    */
   locale?: string;
-  /** Renders something other than a `<div>`. Base UI's own escape hatch. */
+  /**
+   * Renders something other than a `<span>`. A `<span>` by default, so it can
+   * sit inside a sentence or a Statistic's value. Base UI's own escape hatch.
+   */
   render?: useRender.RenderProp;
 }
 
@@ -89,7 +92,7 @@ function decimalsOf(value: number): number {
  * intermediate ones, and a reader who has asked for less motion is shown the
  * answer too.
  */
-export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterProps>(
+export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>(
   function AnimateCounter(rawProps, ref) {
     const {
       value,
@@ -219,7 +222,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
     const counted = Math.round(shown * 10 ** places) / 10 ** places;
 
     return useRender({
-      render,
+      render: render ?? <span />,
       ref: [ref, run.ref],
       props: {
         ...props,
