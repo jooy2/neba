@@ -57,7 +57,7 @@ The headline defaults to the `locale`'s way of saying that there is nothing here
 
 ### variant
 
-`text` is the default, and it is the default here and nowhere else: an empty state is usually already inside a [Card](../surfaces/card), a [Table](../display/table) or a panel, and a second rectangle inside the first is one rectangle too many. `outline` and `solid` are for the case where nothing else marks the bounds of the region.
+`text` is the default: an empty state is usually already inside a [Card](../surfaces/card), a [Table](../display/table) or a panel, and a second rectangle inside the first is one rectangle too many. `outline` and `solid` are for the case where nothing else marks the bounds of the region.
 
 <Demo src="empty/variants" minHeight="200">
 

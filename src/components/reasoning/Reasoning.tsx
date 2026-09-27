@@ -97,11 +97,10 @@ export interface ReasoningProps
 }
 
 /**
- * The three weights. `text` is the default here and nowhere else in the
- * library, and the reason is what this component is for: thinking is an aside,
- * and a bordered box around every aside in a conversation is a conversation
- * made of boxes. A sheet is what you reach for when the panel is the only thing
- * on the screen.
+ * The three weights. `text` is the default, and the reason is what this
+ * component is for: thinking is an aside, and a bordered box around every aside
+ * in a conversation is a conversation made of boxes. A sheet is what you reach
+ * for when the panel is the only thing on the screen.
  */
 const variantClasses: Record<NebaVariant, string> = {
   solid: [

@@ -57,7 +57,7 @@ import { Button, Empty } from 'neba';
 
 ### variant
 
-기본값은 `text`이고, 기본이 `text`인 곳은 여기뿐입니다. 빈 상태는 대개 이미 [Card](../surfaces/card)나 [Table](../display/table), 혹은 패널 안에 놓이는데 사각형 안에 사각형을 하나 더 그리는 것은 하나가 더 많은 것이기 때문입니다. `outline`과 `solid`는 그 영역의 경계를 표시해 줄 것이 달리 없을 때를 위한 것입니다.
+기본값은 `text`입니다. 빈 상태는 대개 이미 [Card](../surfaces/card)나 [Table](../display/table), 혹은 패널 안에 놓이는데 사각형 안에 사각형을 하나 더 그리는 것은 하나가 더 많은 것이기 때문입니다. `outline`과 `solid`는 그 영역의 경계를 표시해 줄 것이 달리 없을 때를 위한 것입니다.
 
 <Demo src="empty/variants" minHeight="200">
 

@@ -110,7 +110,7 @@ const glyphScaleClasses: Record<NebaSize, string> = {
  * the sheet is never dyed, because `action` is somebody else's button and it
  * arrived with its own colours.
  *
- * `text` is the default here and nowhere else. An empty state is nearly always
+ * `text` is the default. An empty state is nearly always
  * already inside something — a Card's body, a Table below its header, a panel
  * — and a second rectangle drawn inside the first is one rectangle too many.
  * The other two are for the case where it is not: a region of a page that has

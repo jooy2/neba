@@ -11844,7 +11844,7 @@ export const propTables: Record<string, PropRow[]> = {
       color: "'secondary'",
       variantDescription: {
         ko: '표면의 무게. 빈 상태는 대개 Card의 본문이나 Table의 아래처럼 이미 표면이 있는 자리에 놓이므로 기본값이 text입니다',
-        en: 'Weight of the surface. text is the default here and nowhere else: an empty state is nearly always already inside something(a Card body, a Table) and a second rectangle drawn inside the first is one rectangle too many'
+        en: 'Weight of the surface. text is the default: an empty state is nearly always already inside something(a Card body, a Table) and a second rectangle drawn inside the first is one rectangle too many'
       },
       sizeDescription: {
         ko: '타입 스케일과 글리프 크기, 그리고 상태가 차지하는 세로 여백',
@@ -15819,8 +15819,8 @@ export const propTables: Record<string, PropRow[]> = {
       size: "'md'",
       color: "'secondary'",
       variantDescription: {
-        ko: '시트의 무게. 여기서만 기본값이 text입니다. 사고는 곁말이고, 곁말마다 상자를 두르면 대화가 상자가 됩니다',
-        en: 'Weight of the sheet. text by default here and nowhere else: thinking is an aside, and a box around every aside makes a conversation of boxes'
+        ko: '시트의 무게. 기본값인 text는 시트를 그리지 않습니다',
+        en: 'Weight of the sheet. The default, text, draws none'
       }
     }),
     {
