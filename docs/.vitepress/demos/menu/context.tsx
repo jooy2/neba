@@ -5,7 +5,8 @@ import { ContextMenu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
  * It takes the rows as `content` and the area as `children` — Tooltip's shape
  * rather than Menu's, because the trigger here is a region of the page rather
  * than a control. The trigger merges onto that one element instead of wrapping
- * it, so the menu adds nothing to the layout.
+ * it, so the menu adds nothing to the layout. The box takes the focus, so the
+ * context-menu key opens it too.
  */
 export default function MenuContext() {
   return (
@@ -25,7 +26,10 @@ export default function MenuContext() {
         </>
       }
     >
-      <div className="flex h-32 items-center justify-center rounded-(--neba-radius-md) border border-dashed border-(--n-line) text-[0.8125rem] text-(--neba-muted-fg) select-none">
+      <div
+        tabIndex={0}
+        className="flex h-32 items-center justify-center rounded-(--neba-radius-md) border border-dashed border-(--n-line) text-[0.8125rem] text-(--neba-muted-fg) select-none"
+      >
         Right-click anywhere in this box
       </div>
     </ContextMenu>

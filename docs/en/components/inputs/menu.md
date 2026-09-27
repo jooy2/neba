@@ -98,7 +98,9 @@ A tick is for items that can be on together; a dot is for one-of-a-set. Neither 
 
 A menu opened by right-click. Pass the rows as `content` and the target area as `children` — exactly one element, which the trigger merges onto rather than wrapping, so the menu adds nothing to the layout.
 
-Anything else you pass goes to that area rather than to the popup, which `className` and `style` describe. That is what lets a `ContextMenu` sit inside another trigger: to put a [Tooltip](../feedback/tooltip) on the same element, write the tooltip around the menu rather than the other way about, since a tooltip describes its own popup with the props it is handed.
+Anything else you pass goes to that area rather than to the popup, which `className` and `style` describe. That is what lets a `ContextMenu` sit inside another trigger: to put a [Tooltip](../feedback/tooltip) on the same element, write the tooltip around the menu rather than the other way about.
+
+From the keyboard it opens with the context-menu key or `Shift+F10` while the area holds the focus, so an area that cannot take the focus on its own needs `tabIndex={0}`.
 
 <Demo src="menu/context">
 

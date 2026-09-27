@@ -8182,6 +8182,7 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'content',
       type: 'ReactNode',
+      required: true,
       description: {
         ko: '행들. Menu 안에 쓰는 것과 똑같이 씁니다',
         en: 'The rows, written exactly as they are inside a Menu'
