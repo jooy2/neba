@@ -97,7 +97,9 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(ra
           ) : null}
         </div>
       ) : null}
-      {hasContent(headerAction) ? <div className="ml-auto shrink-0">{headerAction}</div> : null}
+      {/* `ms-auto`, the logical margin: on a right-to-left page the end of the
+          row is its left, and `ml-auto` pinned the action to the wrong side. */}
+      {hasContent(headerAction) ? <div className="ms-auto shrink-0">{headerAction}</div> : null}
     </>
   );
 

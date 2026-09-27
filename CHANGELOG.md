@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `Card`'s `headerAction` sits at the end of the header on a right-to-left page.** It was pushed along the row by a left margin, which on a right-to-left page pushes it to the start instead; next to a title the title's width hid that, and on a header with no title the action sat on the wrong side. It takes the logical margin now.
+
 - **A vertical `Tabs` bar with more tabs than room scrolls.** Only a horizontal bar was made a scroll container, and a vertical one with the default `overflow="scroll"` still faded its foot when its tabs ran past it — so the tabs down there were faded out and could not be scrolled to. A vertical bar scrolls down its length now.
 
 - **A `DataTable` cell being edited keeps what was typed when its row scrolls out of view.** A virtual body draws only the rows near the screen, and the row being edited went out of the document with the rest — its editor too, with no `blur` to commit what was in it — so scrolling away and back reopened the editor on the old value and the edit was gone. That row stays drawn, in its own place, until the edit is committed or thrown away.

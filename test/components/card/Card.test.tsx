@@ -54,6 +54,10 @@ describe('Card', () => {
 
       expect(header.textContent).toBe('InvoiceMenu');
       expect(header.lastElementChild?.textContent).toBe('Menu');
+      // Pushed to the end by a logical margin, so the end is the left on a
+      // right-to-left page.
+      expect(header.lastElementChild).toHaveClass('ms-auto');
+      expect(header.lastElementChild).not.toHaveClass('ml-auto');
     });
 
     it('renders a header made only of a headerAction', async () => {
