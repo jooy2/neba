@@ -349,10 +349,10 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | `CodeBlock`                   | 5.4 kB   | 5.2 kB                      |
 | `Image`                       | 8.8 kB   | 7.0 kB                      |
 | `Gallery`                     | 11.7 kB  | 10.0 kB                     |
-| 12 components — a typical app | 72.7 kB  | 14.6 kB                     |
-| 25 components — a large one   | 120.0 kB | 22.3 kB                     |
-| a whole page shell            | 29.8 kB  | 10.2 kB                     |
-| all 185 exports               | 293.0 kB | 160.0 kB                    |
+| 12 components — a typical app | 72.8 kB  | 14.6 kB                     |
+| 25 components — a large one   | 120.1 kB | 22.3 kB                     |
+| a whole page shell            | 29.9 kB  | 10.2 kB                     |
+| all 185 exports               | 293.6 kB | 160.0 kB                    |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is the one to watch: its preview is a `HoverCard`, so a citation in a paragraph costs 35 kB of Base UI's floating machinery.
 
