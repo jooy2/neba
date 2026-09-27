@@ -30,6 +30,16 @@ describe('HowToSteps', () => {
     // The sentence naming a step is the button's `aria-label`, not a hidden
     // line beside the title — which is what made the row announce itself as
     // "Use it Step 3: Use it".
+    // `list-none` is enough for Safari to stop calling the rail a list, and the
+    // row's position in it goes with it.
+    it('says the rail is a list whatever it is styled as', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} />);
+
+      await expect
+        .element(screen.getByRole('list', { name: 'Steps' }))
+        .toHaveAttribute('role', 'list');
+    });
+
     it('names a step row once', async () => {
       const screen = await render(<HowToSteps steps={STEPS} />);
 

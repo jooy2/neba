@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `HowToSteps` rail is a list to VoiceOver.** It is an `<ol>` drawn with `list-none`, which is enough for Safari to stop calling it a list, and a row's place in it went with it. It says `role="list"` now, as a `List`, a `Pagination` and a `Breadcrumb` already do.
+
 - **A `HowToSteps` row draws its whole focus ring.** The rail is a scroll box whenever it is horizontal or given a `maxHeight`, and a scroll box clips on both axes, so the ring drawn just outside each row lost its top and bottom on a horizontal rail and its sides on a bounded one. It is drawn inside the row's edge now.
 
 - **A pressable `Pill` draws its whole focus ring.** The button inside inherited no radius from the row around it, so its ring was square, and it sat two pixels outside a button the lozenge clips — so the start of the ring, the end without an `endIcon`, and every corner were cut off. The ring is drawn inside the button's edge now, at the lozenge's own radius, as an `Accordion` header's is.

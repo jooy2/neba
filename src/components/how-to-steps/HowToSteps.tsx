@@ -451,6 +451,9 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
     const rail = (
       <ol
         ref={railRef}
+        // Said again because `list-none` is enough for Safari to stop calling it
+        // a list, and the position each row relies on goes with it.
+        role="list"
         aria-label={messages.steps}
         className={cx(
           'm-0 flex list-none p-0',
