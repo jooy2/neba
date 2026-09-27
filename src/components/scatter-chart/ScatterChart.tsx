@@ -190,6 +190,8 @@ export function ScatterChart(rawProps: ScatterChartProps) {
     [categories, dot, reserve]
   );
 
+  const words = useMessages(chartMessages, props.locale);
+
   return (
     <CartesianChart
       {...props}
@@ -210,6 +212,9 @@ export function ScatterChart(rawProps: ScatterChartProps) {
           <path d={markPath(shapeOf(index), 5, 5, 4)} fill={color} />
         </svg>
       )}
+      exportRows={() =>
+        scatterRows(series, categories, xAxis?.label, props.yAxis?.label, words.size)
+      }
       table={(id, format) => (
         <ScatterTable
           id={id}
@@ -295,6 +300,47 @@ interface TableProps {
   locale?: string;
   /** The frame's own formatter, already stable across a render. */
   format: (value: number) => string;
+}
+
+/**
+ * The scatter, as the rows of a file: a row per point, the way the table has
+ * them. The numbers are the caller's own and the headings are the axes' when
+ * those are words — a label that is a node has no text a spreadsheet can hold.
+ */
+function scatterRows(
+  series: readonly NebaChartSeries[],
+  categories: readonly NebaChartCategory[] | undefined,
+  xLabel: React.ReactNode,
+  yLabel: React.ReactNode,
+  sizeWord: string
+): unknown[][] {
+  const sized = series.some((one) =>
+    one.data.some((datum) => typeof datum === 'object' && datum !== null && datum.z !== undefined)
+  );
+  const head = [
+    '',
+    typeof xLabel === 'string' ? xLabel : 'x',
+    typeof yLabel === 'string' ? yLabel : 'y',
+    ...(sized ? [sizeWord] : [])
+  ];
+
+  return [
+    head,
+    ...series.flatMap((one, index) =>
+      one.data.map((datum, at) => {
+        const point = typeof datum === 'object' && datum !== null ? datum : null;
+        const y = point ? point.y : typeof datum === 'number' ? datum : null;
+        const x = point?.x ?? categories?.[at] ?? at;
+
+        return [
+          one.name ?? `${index + 1}`,
+          x,
+          y !== null && Number.isFinite(y) ? y : null,
+          ...(sized ? [point?.z ?? null] : [])
+        ];
+      })
+    )
+  ];
 }
 
 /**

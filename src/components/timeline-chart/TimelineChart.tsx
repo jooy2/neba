@@ -193,6 +193,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
   );
 
   const thickness = barSize ?? barMaxThickness[size];
+  const words = useMessages(chartMessages, locale);
 
   const marks = React.useCallback(
     (layout: CartesianLayout): ChartMark[] => {
@@ -292,6 +293,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       marks={marks}
       markTooltip={markTooltip}
       summary={summary}
+      exportRows={() => timelineRows(names, series, spans, xAxis?.label, words)}
       table={(id) => (
         <TimelineTable
           id={id}
@@ -464,6 +466,42 @@ function spanUnit(
   unit: Parameters<typeof formatTimeValue>[1]
 ): Parameters<typeof formatTimeValue>[1] {
   return unit === 'month' || unit === 'quarter' || unit === 'year' ? 'day' : unit;
+}
+
+/**
+ * The chart, as the rows of a file: a row per span, as the table has them. The
+ * two ends are dates rather than the table's words, so a spreadsheet can sort
+ * and subtract them.
+ */
+/** A label as a cell, when it is text a spreadsheet can hold. */
+const plainText = (label: React.ReactNode) =>
+  typeof label === 'string' || typeof label === 'number' ? label : null;
+
+function timelineRows(
+  names: readonly string[],
+  series: readonly NebaTimelineSeries[],
+  spans: readonly (readonly ({ from: number; to: number } | null)[])[],
+  corner: React.ReactNode,
+  words: { title: string; start: string; end: string }
+): unknown[][] {
+  const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
+
+  return [
+    [
+      typeof corner === 'string' ? corner : '',
+      ...(titled ? [words.title] : []),
+      words.start,
+      words.end
+    ],
+    ...spans.flatMap((row, index) =>
+      row.map((one, at) => [
+        names[index],
+        ...(titled ? [plainText(series[index].data[at]?.label)] : []),
+        one ? new Date(one.from) : null,
+        one ? new Date(one.to) : null
+      ])
+    )
+  ];
 }
 
 /**

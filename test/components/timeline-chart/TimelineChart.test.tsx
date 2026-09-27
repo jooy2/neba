@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { TimelineChart } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 import { render } from 'vitest-browser-react';
@@ -421,6 +421,30 @@ describe('TimelineChart', () => {
 
       await expect.element(screen.getByRole('columnheader', { name: 'End' })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', { name: 'Label' }).query()).toBeNull();
+    });
+  });
+
+  // The file was the frame's grid, which for a timeline is each row's name
+  // beside the number one.
+  describe('export', () => {
+    it('writes a row per span, with its two ends as dates', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <TimelineChart label="Plan" exportable onExport={onExport} series={PLAN} />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+      const iso = (value: string) => new Date(value).toISOString();
+
+      expect(lines.slice(0, 4)).toEqual([
+        ',Label,Start,End',
+        `Design,Wireframes,${iso('2026-03-02T00:00:00')},${iso('2026-03-16T00:00:00')}`,
+        `Design,Visual,${iso('2026-03-16T00:00:00')},${iso('2026-04-06T00:00:00')}`,
+        `Build,API,${iso('2026-04-06T00:00:00')},${iso('2026-05-18T00:00:00')}`
+      ]);
     });
   });
 

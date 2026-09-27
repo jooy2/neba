@@ -1277,6 +1277,15 @@ interface CartesianProps extends CartesianChartProps {
    */
   table?: (id: string, format: (value: number) => string) => React.ReactNode;
   /**
+   * The rows the export button writes, for the same charts `table` is for.
+   *
+   * Left out, the file is the frame's grid of categories against series, which
+   * is a scatter's points filed against the wrong x and a timeline's rows as
+   * the number one. A chart with a table of its own hands its rows over here
+   * too, so the file and the table cannot disagree.
+   */
+  exportRows?: () => readonly (readonly unknown[])[];
+  /**
    * What the plot's one-sentence description counts, for a chart whose drawn
    * values are not its series' values — a timeline's spans. Left out, it is
    * every visible non-`null` value and their extremes, through `format`.
@@ -1366,6 +1375,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     marks,
     markRadius = 24,
     table,
+    exportRows: ownExportRows,
     summary,
     swatch,
     scale: givenScale,
@@ -2301,7 +2311,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     >
       {exportable && !nothingAtAll ? (
         <ChartExport
-          rows={exportRows}
+          rows={ownExportRows ?? exportRows}
           fileName={exportFileName}
           onExport={onExport}
           label={chartWords.exportCsv}

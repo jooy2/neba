@@ -1,5 +1,5 @@
 import { Profiler } from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { ScatterChart } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -286,6 +286,39 @@ describe('ScatterChart', () => {
       );
 
       expect(vertical.length).toBe(0);
+    });
+  });
+
+  // The file was the frame's grid, which filed series B's y against series
+  // A's x and dropped `z`.
+  describe('export', () => {
+    it('writes a row per point, with its own x and its size', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <ScatterChart
+          label="Cities"
+          exportable
+          onExport={onExport}
+          xAxis={{ label: 'Area' }}
+          yAxis={{ label: 'People' }}
+          series={[
+            { name: 'North', data: BUBBLES.slice(0, 2) },
+            { name: 'South', data: [{ x: 99, y: 7 }] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines.slice(0, 4)).toEqual([
+        ',Area,People,Size',
+        'North,10,10,4',
+        'North,20,40,16',
+        'South,99,7,'
+      ]);
     });
   });
 
