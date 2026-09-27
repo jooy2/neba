@@ -292,19 +292,19 @@ const backdropClasses = [
  * out again as lengths. A sheet's background is painted under its borders, so
  * the acrylic still reaches the edge of the screen and only the contents move.
  * The edge a panel faces the page with keeps its hairline: it is never one of
- * these.
+ * these. The three it runs to all are, and the sides matter as much as the
+ * ends: a phone on its side has its notch on the left or the right.
  */
+const insetTop = 'env(safe-area-inset-top) solid transparent';
+const insetBottom = 'env(safe-area-inset-bottom) solid transparent';
+const insetLeft = 'env(safe-area-inset-left) solid transparent';
+const insetRight = 'env(safe-area-inset-right) solid transparent';
+
 const safeAreaEdges: Record<NebaSide, React.CSSProperties> = {
-  top: { borderTop: 'env(safe-area-inset-top) solid transparent' },
-  bottom: { borderBottom: 'env(safe-area-inset-bottom) solid transparent' },
-  left: {
-    borderTop: 'env(safe-area-inset-top) solid transparent',
-    borderBottom: 'env(safe-area-inset-bottom) solid transparent'
-  },
-  right: {
-    borderTop: 'env(safe-area-inset-top) solid transparent',
-    borderBottom: 'env(safe-area-inset-bottom) solid transparent'
-  }
+  top: { borderTop: insetTop, borderLeft: insetLeft, borderRight: insetRight },
+  bottom: { borderBottom: insetBottom, borderLeft: insetLeft, borderRight: insetRight },
+  left: { borderTop: insetTop, borderBottom: insetBottom, borderLeft: insetLeft },
+  right: { borderTop: insetTop, borderBottom: insetBottom, borderRight: insetRight }
 };
 
 /** The internal hairline: the same `--n-line` as the sheet's own edge. */

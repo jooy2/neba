@@ -222,7 +222,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 ### Menus and overlays
 
 - [x] **98** ContextMenu: it is a plain function component, so under React 18 the ref a surrounding Tooltip attaches is dropped, which is the nesting the page recommends. `src/components/menu/Menu.tsx:797`. Fix: `forwardRef` onto the trigger, and extend the test to open the tooltip so the React 18 job exercises it. Confirmed with React 18.3.1 installed locally as the CI job installs it: the tooltip never appeared on the old source and does on the new. React 19.3.0 was put back afterwards.
-- [ ] **99** Drawer: `safeArea` pads only the top and bottom insets, so in landscape a side panel's content runs under the notch. `src/components/drawer/Drawer.tsx:296-307`. Fix: the left and right insets on the panels that touch them, and extend the inset test.
+- [x] **99** Drawer: `safeArea` pads only the top and bottom insets, so in landscape a side panel's content runs under the notch. `src/components/drawer/Drawer.tsx:296-307`. Fix: the left and right insets on the panels that touch them, and extend the inset test. A top or a bottom sheet runs to the left and right edges too, so it takes those insets as well.
 - [ ] **100** [decision] `useShortcut` and CommandPalette fire on every auto-repeat of a held key and on a key the focused control already handled, so a field's own `Mod+K` also opens the palette. `src/hooks/useShortcut.ts:75-86`, `CommandPalette.tsx:257-264`. (a) Skip `defaultPrevented` always and `repeat` by default, with a `repeat` option, and do nothing when the palette is already open; (b) skip `defaultPrevented` only; (c) document it.
 
 ### Display and data

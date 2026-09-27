@@ -32,6 +32,30 @@ describe('Drawer', () => {
       expect(sheet.element().getAttribute('style')).toContain('env(safe-area-inset-bottom)');
     });
 
+    // On a phone turned on its side the notch is on the left or the right, and
+    // a panel kept clear only of the top and the bottom ran its content under
+    // it. The edge it faces the page with is the one it leaves alone.
+    it('holds each panel clear of the insets of every edge it runs to', async () => {
+      const cases = [
+        ['left', ['top', 'bottom', 'left'], 'right'],
+        ['right', ['top', 'bottom', 'right'], 'left'],
+        ['top', ['top', 'left', 'right'], 'bottom'],
+        ['bottom', ['bottom', 'left', 'right'], 'top']
+      ] as const;
+
+      for (const [side, touched, facing] of cases) {
+        const screen = await render(<Drawer defaultOpen side={side} title={side} />);
+        const style = screen.getByRole('dialog', { name: side }).element().getAttribute('style');
+
+        for (const edge of touched) {
+          expect(style, `${side} panel, ${edge}`).toContain(`env(safe-area-inset-${edge})`);
+        }
+
+        expect(style, `${side} panel, ${facing}`).not.toContain(`env(safe-area-inset-${facing})`);
+        await screen.unmount();
+      }
+    });
+
     it('renders the title as a real heading', async () => {
       const screen = await render(<Drawer defaultOpen title="Navigation" />);
 
