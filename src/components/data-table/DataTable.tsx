@@ -810,7 +810,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   const [uncontrolledSearch, setUncontrolledSearch] = React.useState(defaultSearch ?? '');
   const query = (searchProp ?? uncontrolledSearch).trim();
-  const searching = query !== '' && !stages.has('filter');
 
   const searchedColumns = React.useMemo(
     () => columns.filter((column) => column.searchable !== false),
@@ -827,24 +826,25 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * not on the query, so it is done when *those* change and a keystroke is left
    * with an `includes` over a string that already exists.
    *
-   * `null` until something is actually being searched for. A table nobody has
-   * typed at should not pay to be searchable.
+   * Built the first time something is searched for, and kept until the rows
+   * or the columns change — not dropped when the field is cleared, which made
+   * the next search pay the whole fold again. A table nobody has typed at
+   * never builds them at all.
    */
-  const haystacks = React.useMemo(
-    () =>
-      !searching || searchedColumns.length === 0
-        ? null
-        : entries.map((entry) =>
-            searchHaystack(
-              searchedColumns.map((column) =>
-                column.value
-                  ? column.value(entry.row)
-                  : (entry.row as Record<string, unknown>)[column.key]
-              )
-            )
-          ),
-    [entries, searchedColumns, searching]
-  );
+  const haystacks = React.useMemo(() => {
+    let built: string[] | null = null;
+
+    return () =>
+      (built ??= entries.map((entry) =>
+        searchHaystack(
+          searchedColumns.map((column) =>
+            column.value
+              ? column.value(entry.row)
+              : (entry.row as Record<string, unknown>)[column.key]
+          )
+        )
+      ));
+  }, [entries, searchedColumns]);
 
   const filtered = React.useMemo(() => {
     if (stages.has('filter')) {
@@ -855,13 +855,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
     // Indexed by `origin`, which is the row's place in `items` and therefore
     // its place in `entries` — so this holds however the rows are later sliced.
-    const result =
-      needle !== '' && haystacks
-        ? entries.filter((entry) => haystacks[entry.origin].includes(needle))
-        : entries;
+    let result = entries;
+
+    if (needle !== '' && searchedColumns.length > 0) {
+      const stacks = haystacks();
+
+      result = entries.filter((entry) => stacks[entry.origin].includes(needle));
+    }
 
     return filter ? result.filter((entry) => filter(entry.row, entry.origin)) : result;
-  }, [entries, query, filter, stages, haystacks]);
+  }, [entries, query, filter, stages, searchedColumns, haystacks]);
 
   /*
    * The collator is built once per locale rather than per comparison: building

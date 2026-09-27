@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **A `DataTable` searched, cleared and searched again folds its rows once.** The folded text every search is matched against was dropped whenever the field was emptied, so the first character of the next search normalised every searchable cell of every row again — the cost the fold exists to pay once. It is kept until the rows or the columns change.
+
 - **Moving a chart's brush no longer rewrites its hidden table.** The table holds every point whatever the window shows, but its props were rebuilt from the windowed series on each frame of a drag, so every cell of a long table was written again for nothing. They are built from the whole series now and stay the same while the window moves.
 
 - **A `ScatterChart` and a `TimelineChart` export what their tables hold.** Both wrote the file every other chart writes, a grid of categories against series, which fits neither: a scatter's second series was written beside the first one's x values and its sizes were left out, and a timeline wrote each row's name beside the number one. A scatter's file is a row per point with its x, its y and its size, and a timeline's is a row per span with its label and its two ends as dates.

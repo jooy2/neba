@@ -381,6 +381,37 @@ describe('DataTable', () => {
       expect(cellText(screen.container, 0)).toEqual(['Cy']);
     });
 
+    // Clearing the field dropped the folded rows, so the next search paid for
+    // every row and column again.
+    it('folds the rows once, however often the field is cleared', async () => {
+      let read = 0;
+      const headers: DataTableColumn<Person>[] = [
+        {
+          ...HEADERS[1],
+          value: (row) => {
+            read += 1;
+
+            return row.city;
+          }
+        }
+      ];
+      const screen = await render(
+        <DataTable headers={headers} items={ITEMS} getRowKey={key} searchable />
+      );
+      const field = screen.getByRole('searchbox');
+
+      await field.fill('Oslo');
+      expect(cellText(screen.container, 0)).toEqual(['Oslo']);
+
+      const folded = read;
+
+      await field.fill('');
+      await field.fill('Lisbon');
+
+      expect(cellText(screen.container, 0)).toEqual(['Lisbon']);
+      expect(read).toBe(folded);
+    });
+
     it('applies the caller’s own filter after the search', async () => {
       const screen = await render(
         <DataTable
