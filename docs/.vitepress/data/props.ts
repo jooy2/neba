@@ -6342,8 +6342,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'locale',
       type: 'string',
       description: {
-        ko: '이 컴포넌트가 스스로 쓰는 문자열의 BCP 47 태그. 기본 정렬이 문자열을 비교할 때 쓰는 locale이기도 합니다',
-        en: 'BCP 47 tag deciding the strings it draws on its own behalf, and the locale the default sort compares strings in'
+        ko: '이 컴포넌트가 스스로 쓰는 문구의 BCP 47 태그. 빈 표에 쓰는 한 줄이 그것입니다',
+        en: 'BCP 47 tag deciding the words it draws on its own behalf: the line an empty table shows'
       }
     },
     slotsProp('table', 'caption', 'head', 'headCell', 'body', 'row', 'cell', 'empty')
@@ -6787,10 +6787,9 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'locale',
       type: 'string',
-      default: "'en'",
       description: {
-        ko: '표가 스스로 말하는 문구의 언어. 기본 정렬이 문자열을 비교할 때 쓰는 locale이기도 합니다',
-        en: "The language the table's own words are in, and what the default sort compares strings with"
+        ko: '표가 스스로 말하는 문구의 언어이자, 기본 정렬이 문자열을 비교하고 render 없는 열의 날짜와 푸터의 개수를 쓰는 locale. 주지 않으면 문구는 영어, 나머지는 런타임의 locale을 따릅니다',
+        en: "The language the table's own words are in, and the locale the default sort compares strings in, a date in a column without render is written in, and the footer's counts are written in. Left out, the words are English and the rest follow the runtime"
       }
     }
   ],

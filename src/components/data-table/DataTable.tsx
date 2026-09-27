@@ -470,10 +470,12 @@ export interface DataTableProps<Row>
    * The language the table's own words are in — the search field's placeholder,
    * the ticks' labels, the footer's count.
    *
-   * It is also what the default sort compares strings with. Pass it whenever
-   * the markup is rendered on a server: without it the comparison follows the
-   * runtime's own locale, and a server that disagrees with the browser about
-   * that produces two different row orders for the same table.
+   * It is also what the default sort compares strings with, what a date in a
+   * column without `render` is written in, and what the footer's counts are
+   * written in. Pass it whenever the markup is rendered on a server: without it
+   * all three follow the runtime's own locale, and a server that disagrees with
+   * the browser about that produces two different row orders for the same
+   * table.
    */
   locale?: string;
 }
