@@ -431,8 +431,10 @@ export function PieChart(rawProps: PieChartProps) {
 
               // The pad is taken off both ends and never off a slice narrower
               // than two of it, or a one-degree sliver inverts and draws the
-              // whole circle instead of nothing.
-              const room = arc.end - arc.start > pad * 2 ? pad / 2 : 0;
+              // whole circle instead of nothing. Nor off a slice that is alone:
+              // there is nothing to part it from, and the gap would be a notch
+              // cut into a full ring.
+              const room = arcs.length > 1 && arc.end - arc.start > pad * 2 ? pad / 2 : 0;
 
               return (
                 <path

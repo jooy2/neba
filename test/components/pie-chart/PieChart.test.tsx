@@ -275,6 +275,24 @@ describe('PieChart', () => {
       ).toBe(2);
     });
 
+    // A slice with nothing beside it was still parted from itself, which cut a
+    // notch into the ring where it starts.
+    it('draws a slice that is alone as a whole ring', async () => {
+      const screen = await render(
+        <PieChart label="Accounts" categories={PLANS} data={[50, null, 0]} />
+      );
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const d = plot.element().querySelector('path')?.getAttribute('d') ?? '';
+
+      // A whole circle is two half-arcs; a wedge runs in from the centre on
+      // a straight line.
+      expect(d.match(/A/g)).toHaveLength(2);
+      expect(d).not.toContain('L');
+    });
+
     it('parts the slices further, and closes the gap at zero', async () => {
       const screen = await render(
         <PieChart label="Accounts" categories={PLANS} data={[50, 30, 20]} />

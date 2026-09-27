@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `PieChart` with one slice left draws a whole ring.** The `gap` that parts two slices was taken off the ends of every slice, including one with nothing beside it — so a pie whose other slices were zero, missing or hidden from the legend had a notch cut into it where it started. A slice that is alone is drawn whole.
+
 - **A flat series is drawn when `gradient` is on.** The fade along a line was measured against the line's own bounding box, and a series that holds one value all the way along has a box with no height, which SVG answers by ignoring the gradient — so the stroke was painted with nothing and the line vanished. The fade is measured across the plot now, which is the same thing for every line that spans it.
 
 - **A chart's value axis no longer opens an empty step past its data.** The axis rounds its ends out to the step its ticks are on, and dividing by a decimal step is rarely exact: `2.4 / 0.2` is 11.999…, which rounded down to a step below the data, and `0.28 / 0.02` is 14.000…2, which rounded up to one above it. A chart whose lowest value was 2.4 drew an axis from 2.2. The ends are rounded with the same guard the ticks already had.
