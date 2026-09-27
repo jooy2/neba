@@ -61,7 +61,7 @@ Return the address of a page and the numbers in the row become real `<a href>`. 
 
 Pass `onPageChange` alongside it and the navigation is cancelled for the handler to answer: the shape a client-side router wants, keeping the page it already has. With no handler, the link does what a link does. A press carrying a modifier key is always left to the browser.
 
-The page being read and an arrow at the end of the row stay `<button>`. An `<a>` cannot be `disabled`, so one left as a link is one a keyboard still lands on and a crawler still follows.
+The page being read and an arrow at the end of the row stay links, with no `href` and with `aria-disabled`. A crawler does not follow them, and a press on one leaves the focus where it was.
 
 <Demo src="pagination/links">
 

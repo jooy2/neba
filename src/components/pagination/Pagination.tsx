@@ -53,8 +53,9 @@ export interface PaginationProps
    *
    * `onPageChange` still fires and the press is still cancelled first, so a
    * client-side router keeps the page it already has. A link with nowhere to go
-   * — the current page, a stepper at the end of the row — stays a `<button>`,
-   * because `disabled` is not something an `<a>` can be.
+   * — the current page, a stepper at the end of the row — is an `<a>` with no
+   * `href` and `aria-disabled`, so a crawler never follows it and a press on it
+   * leaves the focus where it was.
    */
   getPageHref?: (page: number) => string;
   /**
