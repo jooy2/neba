@@ -1,22 +1,3 @@
-/**
- * The one rule the library makes about a link it did not write.
- *
- * A `target` other than the current tab hands the new page a `window.opener`
- * pointing back at this one, and a `Referer` header naming it. Modern browsers
- * imply `noopener` for `target="_blank"`; none of them implies `noreferrer`,
- * and neither is implied for a named target. So the two tokens are added
- * wherever a component lets a caller choose where a link opens — TextLink, a
- * Menu row, a NavigationMenu link, a ChatBubble's link, an AppLogo, a
- * BottomNavigation destination — and they are added the same way in all of
- * them, because a library where only some are safe is a library whose users
- * cannot tell which.
- *
- * It is a *merge* and not an override, and that is the whole reason this is a
- * function rather than a string. The common reason to write a `rel` by hand is
- * `nofollow` or `sponsored`, which is an SEO decision and has nothing to do
- * with the two tokens above — spelled as a plain default it would silently take
- * the protection off the link that still opens in a new tab.
- */
 /** The schemes a link may use. Everything else is dropped, `javascript:` above all. */
 const allowedSchemes = new Set(['http', 'https', 'mailto', 'tel']);
 
@@ -53,6 +34,25 @@ export function safeHref(href: string | undefined): string | undefined {
   return scheme === null || allowedSchemes.has(scheme[1].toLowerCase()) ? href : undefined;
 }
 
+/**
+ * The `rel` a link gets when it opens somewhere other than this tab.
+ *
+ * A `target` other than the current tab hands the new page a `window.opener`
+ * pointing back at this one, and a `Referer` header naming it. Modern browsers
+ * imply `noopener` for `target="_blank"`; none of them implies `noreferrer`,
+ * and neither is implied for a named target. So the two tokens are added
+ * wherever a component lets a caller choose where a link opens — TextLink, a
+ * Menu row, a NavigationMenu link, a ChatBubble's link, an AppLogo, a
+ * BottomNavigation destination, a Breadcrumb item, a Sources row and an
+ * InlineCitation — and they are added the same way in all of them, because a
+ * library where only some are safe is a library whose users cannot tell which.
+ *
+ * It is a *merge* and not an override, and that is the whole reason this is a
+ * function rather than a string. The common reason to write a `rel` by hand is
+ * `nofollow` or `sponsored`, which is an SEO decision and has nothing to do
+ * with the two tokens above — spelled as a plain default it would silently take
+ * the protection off the link that still opens in a new tab.
+ */
 export function safeRel(target: string | undefined, rel: string | undefined): string | undefined {
   // `_self` is this tab, and `_parent`/`_top` are frames of the same document.
   // None of the three opens a browsing context that could reach back.

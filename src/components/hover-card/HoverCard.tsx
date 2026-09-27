@@ -39,7 +39,7 @@ export interface HoverCardProps
    * about without leaving the sentence they are in.
    */
   trigger: React.ReactElement;
-  /** The heading, rendered as the element that names the card. */
+  /** A heading line at the top of the card. It is drawn, not announced as a name. */
   title?: React.ReactNode;
   /** A line under the title. */
   description?: React.ReactNode;

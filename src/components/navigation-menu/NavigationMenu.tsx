@@ -78,7 +78,7 @@ export interface NavigationMenuItemProps {
    * Where the link opens. Ignored without `href`.
    *
    * Anything other than this tab also gets `rel="noopener noreferrer"`, merged
-   * with whatever `rel` was asked for, exactly as on [TextLink].
+   * with whatever `rel` was asked for, exactly as on [TextLink](../display/text-link).
    */
   target?: string;
   /** The link's `rel`. The two tokens a new tab needs are added to it. */

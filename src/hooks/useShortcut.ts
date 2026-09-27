@@ -39,7 +39,7 @@ function isTyping(target: EventTarget | null): boolean {
 
 /**
  * A key combination bound on the window, spelled the way
- * [Shortcut](../components/shortcut) draws it — `'Mod+K'`, `'Mod+Shift+P'`,
+ * [Shortcut](../components/display/shortcut) draws it — `'Mod+K'`, `'Mod+Shift+P'`,
  * `'?'`.
  *
  * This is what `CommandPalette` binds its own opener with, offered because an

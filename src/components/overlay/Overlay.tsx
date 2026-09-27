@@ -118,7 +118,7 @@ const insetClasses: Record<NebaSize, string> = {
 /**
  * A sheet over the whole page that stops it being used.
  *
- * The difference from [Dialog](../surfaces/dialog) is what is *not* here: no
+ * The difference from [Dialog](./dialog) is what is *not* here: no
  * surface, no border, no title, no actions. An overlay is the scrim on its own,
  * with whatever the caller puts on top of it — most often a spinner and a line
  * saying what is being waited for.
