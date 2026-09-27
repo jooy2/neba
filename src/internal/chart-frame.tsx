@@ -1550,14 +1550,19 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
 
   const shownValues = values.filter((_, index) => visibility.visible[index]);
-  const primaryValues = values.filter((_, index) => visibility.visible[index] && !onSecond(index));
-  const secondValues = values.filter((_, index) => visibility.visible[index] && onSecond(index));
   /* The scale takes the references in. A target drawn off the top of the plot
      is a target nobody can see, and moving every mark down a little to make
      room for it is the cheaper of the two costs. Only the ones read against
-     the value axis: a rule that says *when* belongs to the other one. */
+     the value axis: a rule that says *when* belongs to the other one.
+
+     The series are filtered inside rather than handed in: a filtered array is
+     a new one on every render, and a memo keyed on it was one in name only —
+     every step of the crosshair measured the whole data again. */
   const extent = React.useMemo(() => {
-    const measured = extentOf(primaryValues, stacked);
+    const measured = extentOf(
+      values.filter((_, index) => visibility.visible[index] && !onSecond(index)),
+      stacked
+    );
     const marks = (references ?? []).filter((one) => (one.axis ?? 'value') === 'value');
 
     if (marks.length === 0) {
@@ -1572,12 +1577,21 @@ export function CartesianChart(rawProps: CartesianProps) {
       min: Math.min(measured?.min ?? Infinity, ...numbers),
       max: Math.max(measured?.max ?? -Infinity, ...numbers)
     };
-  }, [primaryValues, stacked, references]);
+    // `shownKey` stands for `visibility.visible`, which is a new array each time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values, shownKey, onSecond, stacked, references]);
   /* And the far edge's own, which never stacks — `twoAxes` is already off
      wherever `stacked` is on. */
   const secondExtent = React.useMemo(
-    () => (twoAxes ? extentOf(secondValues, false) : null),
-    [twoAxes, secondValues]
+    () =>
+      twoAxes
+        ? extentOf(
+            values.filter((_, index) => visibility.visible[index] && onSecond(index)),
+            false
+          )
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [twoAxes, values, shownKey, onSecond]
   );
   // Worked out here, beside the extent, rather than where it is drawn: read
   // after the scales are memoised, the call would count as a possible change to
