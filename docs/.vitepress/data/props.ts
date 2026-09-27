@@ -16171,8 +16171,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'icon',
       type: 'ReactNode',
       description: {
-        ko: '번호 앞 정사각형에 들어갈 파비콘이나 썸네일',
-        en: 'A favicon or a thumbnail, in the square before the number'
+        ko: '번호와 제목 사이 정사각형에 들어갈 파비콘이나 썸네일',
+        en: 'A favicon or a thumbnail, in the square between the number and the title'
       }
     },
     {

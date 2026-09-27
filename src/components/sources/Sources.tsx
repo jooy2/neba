@@ -47,7 +47,7 @@ export interface SourceItem {
   description?: React.ReactNode;
   /** Where it came from, set beside the title. A domain, a publication. */
   site?: React.ReactNode;
-  /** A favicon or a thumbnail, in the square before the number. */
+  /** A favicon or a thumbnail, in the square between the number and the title. */
   icon?: React.ReactNode;
   /**
    * The number this source is cited by, overriding its place in the list. For a
