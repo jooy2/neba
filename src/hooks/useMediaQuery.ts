@@ -29,8 +29,9 @@ export function useMediaQuery(query: string): boolean {
  *
  * `useBreakpoint('md')` is `md:` in a class name, in JavaScript — the widths are
  * one table, so a component that branches here and a utility that branches in
- * CSS change at the same pixel. `xs` is `0rem` and therefore always true, which
- * is the value with no media query around it.
+ * CSS change at the same pixel. `xs` is `0rem` and therefore always true once
+ * the page has hydrated, which is the value with no media query around it; on a
+ * server it is `false`, like every query.
  */
 export function useBreakpoint(breakpoint: NebaBreakpoint): boolean {
   return useSharedMediaQuery(widthAtLeast(breakpoint));

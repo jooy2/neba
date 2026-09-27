@@ -7,8 +7,8 @@ export interface ShortcutOptions {
   /** Stop listening without unmounting — a modal is open, a field has focus. @default true */
   enabled?: boolean;
   /**
-   * Ignore the key while the reader is typing into an input, a textarea or
-   * anything `contenteditable`.
+   * Ignore the key while the reader is typing into an input, a textarea, a
+   * select or anything `contenteditable`.
    *
    * On by default, and it is the reason a bare `/` or `?` can be bound at all:
    * a page-wide single-letter shortcut that fires inside a search box is a

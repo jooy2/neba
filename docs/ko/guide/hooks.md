@@ -33,7 +33,7 @@ const wide = useMediaQuery('(width >= 60rem)');
 const desktop = useBreakpoint('lg');
 ```
 
-`useBreakpoint('lg')`는 class name의 `lg:`와 같은 질문을 JavaScript에서 합니다. 너비 표가 하나이므로 이 hook으로 갈라지는 컴포넌트와 CSS에서 갈라지는 utility가 같은 픽셀에서 바뀝니다. `xs`는 `0rem`이라 항상 참입니다.
+`useBreakpoint('lg')`는 class name의 `lg:`와 같은 질문을 JavaScript에서 합니다. 너비 표가 하나이므로 이 hook으로 갈라지는 컴포넌트와 CSS에서 갈라지는 utility가 같은 픽셀에서 바뀝니다. `xs`는 `0rem`이라 하이드레이션이 끝난 뒤에는 항상 참입니다. 서버에서는 다른 query와 마찬가지로 `false`입니다.
 
 query 문자열 하나당 살아 있는 `MediaQueryList`가 페이지 전체에 하나뿐입니다. 몇 개의 컴포넌트가 묻든 그렇습니다. 두 hook 모두 서버에서는 `false`를 답합니다. 서버에는 창이 없어 답할 근거가 없기 때문입니다. **깜빡이면 안 되는 레이아웃은 CSS에 적으세요.** 이 hook은 CSS가 내릴 수 없는 결정, 즉 애초에 어떤 컴포넌트를 렌더할지를 정할 때 씁니다. 같은 질문의 CSS 쪽 절반은 [Show](../components/layout/show)입니다.
 
@@ -64,7 +64,7 @@ const [ref, { width, height }] = useElementSize<HTMLDivElement>();
 <div ref={ref} />;
 ```
 
-구독자마다 하나가 아니라 페이지당 하나의 `ResizeObserver`를 공유합니다. 통보를 기다리지 않고 element가 붙는 즉시 한 번 측정하므로 첫 렌더부터 크기가 잡혀 있습니다. `ResizeObserver`는 첫 entry를 한 task 뒤에 알려 주고, 그때까지 `0 × 0`으로 그리는 컴포넌트는 레이아웃을 두 번 하게 됩니다.
+구독자마다 하나가 아니라 페이지당 하나의 `ResizeObserver`를 공유합니다. 통보를 기다리지 않고 element가 붙는 즉시 한 번 측정하므로 처음 그려지는 화면부터 크기가 잡혀 있습니다. `ResizeObserver`는 첫 entry를 한 task 뒤에 알려 주고, 그때까지 `0 × 0`으로 그리는 컴포넌트는 레이아웃을 두 번 하게 됩니다.
 
 크기는 `offsetWidth`와 `offsetHeight`가 주는 element의 레이아웃 박스이고 정수 픽셀입니다. 그래서 element나 그 바깥의 `transform`, `scale`은 이 값을 바꾸지 않습니다.
 
@@ -81,17 +81,17 @@ const [ref, seen] = useOnScreen<HTMLDivElement>({ threshold: 0.2 });
 ## useShortcut
 
 ```tsx
-useShortcut('Mod+K', () => setOpen(true));
+useShortcut('Mod+K', () => setOpen(true), { ignoreWhileTyping: false });
 useShortcut('?', () => setHelpOpen(true));
 ```
 
 window에 거는 키 조합이며, 표기는 [Shortcut](../components/display/shortcut)이 그리는 것과 같습니다. 화면의 키캡과 실제로 발동하는 키를 한 문자열로 씁니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 합니다.
 
-| 옵션                | 기본값 | 하는 일                                                      |
-| ------------------- | ------ | ------------------------------------------------------------ |
-| `enabled`           | `true` | unmount 없이 듣기를 멈춤                                     |
-| `ignoreWhileTyping` | `true` | focus가 input · textarea · `contenteditable`에 있으면 건너뜀 |
-| `preventDefault`    | `true` | 일치하면 `preventDefault` 호출                               |
+| 옵션 | 기본값 | 하는 일 |
+| --- | --- | --- |
+| `enabled` | `true` | unmount 없이 듣기를 멈춤 |
+| `ignoreWhileTyping` | `true` | focus가 input · textarea · select · `contenteditable`에 있으면 건너뜀 |
+| `preventDefault` | `true` | 일치하면 `preventDefault` 호출 |
 
 `ignoreWhileTyping` 덕분에 맨 `/`나 `?`를 바인딩할 수 있습니다. 검색창 안에서 발동하는 한 글자 shortcut은 입력 중인 글자를 가로채기 때문입니다. modifier가 붙은 조합은 보통 어디서나 동작해야 하므로 이 옵션을 끄세요.
 

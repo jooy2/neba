@@ -33,7 +33,7 @@ const wide = useMediaQuery('(width >= 60rem)');
 const desktop = useBreakpoint('lg');
 ```
 
-`useBreakpoint('lg')` is `lg:` in a class name, asked in JavaScript. The widths are one table, so a component that branches here and a utility that branches in CSS change at the same pixel. `xs` is `0rem`, so it is always true.
+`useBreakpoint('lg')` is `lg:` in a class name, asked in JavaScript. The widths are one table, so a component that branches here and a utility that branches in CSS change at the same pixel. `xs` is `0rem`, so it is always true once the page has hydrated; on a server it is `false`, like every query.
 
 There is one live `MediaQueryList` per query string for the whole page, however many components ask. Both hooks answer `false` on a server, where there is no window: **a layout that must not flash belongs in CSS**, and these are for the decisions CSS cannot make. Which component to render at all. [Show](../components/layout/show) is the CSS half of the same question.
 
@@ -64,7 +64,7 @@ const [ref, { width, height }] = useElementSize<HTMLDivElement>();
 <div ref={ref} />;
 ```
 
-One shared `ResizeObserver` for the page rather than one per subscriber. It measures once as soon as the element is there rather than waiting to be told, so the first render already has a size: a `ResizeObserver` reports its first entry a task later, and a component that renders at `0 × 0` until then lays out twice.
+One shared `ResizeObserver` for the page rather than one per subscriber. It measures once as soon as the element is there rather than waiting to be told, so the first paint already has a size: a `ResizeObserver` reports its first entry a task later, and a component that renders at `0 × 0` until then lays out twice.
 
 The size is the element's layout box in whole pixels, as `offsetWidth` and `offsetHeight` give it, so a `transform` or `scale` on the element or on anything around it does not change it.
 
@@ -81,7 +81,7 @@ Where the browser has no `IntersectionObserver` it answers `true`, not `false`. 
 ## useShortcut
 
 ```tsx
-useShortcut('Mod+K', () => setOpen(true));
+useShortcut('Mod+K', () => setOpen(true), { ignoreWhileTyping: false });
 useShortcut('?', () => setHelpOpen(true));
 ```
 
@@ -90,7 +90,7 @@ A key combination bound on the window, spelled the way [Shortcut](../components/
 | Option | Default | What it does |
 | --- | --- | --- |
 | `enabled` | `true` | Stop listening without unmounting |
-| `ignoreWhileTyping` | `true` | Skip while the focus is in an input, a textarea or a `contenteditable` |
+| `ignoreWhileTyping` | `true` | Skip while the focus is in an input, a textarea, a select or a `contenteditable` |
 | `preventDefault` | `true` | Call `preventDefault` on a match |
 
 `ignoreWhileTyping` is what makes a bare `/` or `?` bindable at all: a single-letter shortcut that fires inside a search box eats what somebody was writing. Turn it off for a combination with a modifier, which is usually meant to work everywhere.
