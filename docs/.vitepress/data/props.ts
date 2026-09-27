@@ -9733,8 +9733,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Weight of the surface, said the way a *control* says it: the surface takes the tint, as on Button and Chip'
       },
       colorDescription: {
-        ko: '의미론적 색 역할. 여기서만 기본이 secondary입니다. 이 모양이 흉내 내는 물건이 거의 중립인 검정이기 때문입니다',
-        en: 'Semantic colour role. `secondary` here rather than `primary`, because the object this shape is borrowed from is very nearly neutral black'
+        ko: '의미론적 색 역할. 기본값은 primary가 아니라 secondary입니다',
+        en: 'Semantic colour role. `secondary` rather than `primary` by default'
       },
       elevationDescription: {
         ko: '그림자 깊이. 페이지 위에 떠 있는 표면이라 기본값이 2입니다',
