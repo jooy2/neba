@@ -559,6 +559,9 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
                   ? `${hasContent(item.title) ? titleId : descriptionId} ${positionId}`
                   : undefined
               }
+              // Only when a press opens the viewer; `onItemSelect` alone is the
+              // caller's to describe.
+              aria-haspopup={preview ? 'dialog' : undefined}
               aria-describedby={
                 shown && hasContent(item.title) && hasContent(item.description)
                   ? descriptionId

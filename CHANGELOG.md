@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **An `Image` or a `Gallery` tile that opens a preview says so.** The button is named after the picture, which is right, and so it was read as "A ridge of hills, button" with nothing to say a press opens a larger view. It carries `aria-haspopup="dialog"` now; a `Gallery` tile that only calls `onItemSelect` does not.
+
 - **Copying a `CodeBlock` a second time is announced a second time.** A press inside the two seconds the button says "Copied" wrote the same word into the live region again, and a live region only speaks when its text changes, so a reader who pressed again to make sure heard nothing. The region is emptied and written again a moment later; the button's own label does not blink.
 
 - **A `CodeBlock` that scrolls is named even when its `title` is a node.** Only a string title named the focusable region, so `title={<code>app.ts</code>}` on a block tall enough to scroll left a tab stop with no name. The region is named by the title the toolbar draws, and by the language or "Code" when no toolbar draws it.

@@ -1342,6 +1342,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // empty `alt` has none to lend, and a button with no name is announced
         // as nothing at all, so it says what it does instead.
         aria-label={alt || messages.preview}
+        // The name is the picture's, so this is what says a press opens it.
+        aria-haspopup="dialog"
         className={cx(
           'block cursor-zoom-in',
           // No `[outline:none]` beside the ring: the house transition declares

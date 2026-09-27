@@ -371,6 +371,20 @@ describe('Gallery', () => {
 
       expect(onItemSelect).toHaveBeenCalledWith(items[2], 2);
     });
+
+    it('says a tile opens a dialog only when it opens the viewer', async () => {
+      const screen = await render(<Gallery items={items} preview />);
+
+      await expect
+        .element(screen.getByRole('button', { name: /A bowl/ }))
+        .toHaveAttribute('aria-haspopup', 'dialog');
+
+      await screen.rerender(<Gallery items={items} onItemSelect={() => {}} />);
+
+      await expect
+        .element(screen.getByRole('button', { name: /A bowl/ }))
+        .not.toHaveAttribute('aria-haspopup');
+    });
   });
 
   describe('the viewer', () => {

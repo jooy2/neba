@@ -68,6 +68,15 @@ describe('Image', () => {
     await expect.element(screen.getByRole('dialog', { name: 'Enlarge image' })).toBeInTheDocument();
   });
 
+  // Named after the picture, the button said nothing about opening anything.
+  it('says that its preview button opens a dialog', async () => {
+    const screen = await render(<Image src={OK} alt="A ridge" preview />);
+
+    await expect
+      .element(screen.getByRole('button', { name: 'A ridge' }))
+      .toHaveAttribute('aria-haspopup', 'dialog');
+  });
+
   it('still shows the picture when a caller listens for the load', async () => {
     // A file served over the network rather than a data URI: a data URI has
     // already decoded by the time the component looks, and that path never
