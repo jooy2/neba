@@ -77,6 +77,6 @@ What decides whether 124,000 tokens read as `124K`, `12.4万` or `12.4만`, and 
 
 ## Accessibility
 
-- Base UI's Meter owns the semantics: `role="meter"` with the value and range attributes, so the reading is announced as a reading rather than as a picture.
+- Base UI's Meter owns the semantics: `role="meter"` with the value and range attributes, so the reading is announced as a reading rather than as a picture. The meter is the ring, the label and the count; the split, the cost and `children` sit outside it, so the split is read as a list and a link under it is a link.
 - `aria-valuetext` is the same sentence the gauge draws, rather than a percentage of a range nobody described.
 - The swatches beside the split are `aria-hidden`; every row is named in words.

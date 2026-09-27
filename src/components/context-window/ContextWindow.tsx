@@ -155,7 +155,10 @@ const swatchClasses: Record<NebaSize, string> = {
  * other; and the money underneath is a third unit again.
  *
  * Base UI's Meter owns the semantics — `role="meter"`, the value and the range
- * — so the reading is announced as a reading rather than as a picture.
+ * — so the reading is announced as a reading rather than as a picture. The
+ * meter is the ring, the label and the count and nothing else: a meter's
+ * children are presentational, so a split inside it stopped being a list, and a
+ * link a caller put under it stopped being a link.
  *
  * The four parts take the first four chart palette slots rather than four
  * colour families, and that is deliberate: input and output are *entities*,
@@ -221,65 +224,73 @@ export const ContextWindow = React.forwardRef<HTMLDivElement, ContextWindowProps
     const circumference = 2 * Math.PI * radius;
 
     return (
-      <BaseUIMeter.Root
+      <div
         ref={ref}
-        value={total}
-        min={0}
-        max={max}
-        // The reading announced is the reading drawn: the same compact sentence
-        // rather than Base UI's own percentage of a range nobody described.
-        getAriaValueText={() => usage}
         className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(family), ...style }}
         {...props}
       >
         <div className={cx('flex items-center', gapClasses[size])}>
-          <svg
-            className={cx('shrink-0', classNames?.ring ?? '')}
-            width={diameter}
-            height={diameter}
-            viewBox={`0 0 ${diameter} ${diameter}`}
-            fill="none"
-            aria-hidden="true"
+          <BaseUIMeter.Root
+            value={total}
+            min={0}
+            max={max}
+            // The reading announced is the reading drawn: the same compact
+            // sentence rather than Base UI's own percentage of a range nobody
+            // described.
+            getAriaValueText={() => usage}
+            className={cx('flex min-w-0 flex-1 items-center', gapClasses[size])}
           >
-            <circle
-              cx={centre}
-              cy={centre}
-              r={radius}
-              stroke="var(--n-soft)"
-              strokeWidth={stroke}
-            />
-            <circle
-              cx={centre}
-              cy={centre}
-              r={radius}
-              stroke="var(--n-fill)"
-              strokeWidth={stroke}
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference * (1 - (fraction ?? 0))}
-              // A geometry attribute rather than a CSS transform: this is where
-              // the arc starts, not something the ring does when it changes.
-              transform={`rotate(-90 ${centre} ${centre})`}
-              className="[transition:stroke-dashoffset_var(--neba-duration-fill)_var(--neba-ease),stroke_var(--neba-duration)_var(--neba-ease)]"
-            />
-          </svg>
+            <svg
+              className={cx('shrink-0', classNames?.ring ?? '')}
+              width={diameter}
+              height={diameter}
+              viewBox={`0 0 ${diameter} ${diameter}`}
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                cx={centre}
+                cy={centre}
+                r={radius}
+                stroke="var(--n-soft)"
+                strokeWidth={stroke}
+              />
+              <circle
+                cx={centre}
+                cy={centre}
+                r={radius}
+                stroke="var(--n-fill)"
+                strokeWidth={stroke}
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference * (1 - (fraction ?? 0))}
+                // A geometry attribute rather than a CSS transform: this is where
+                // the arc starts, not something the ring does when it changes.
+                transform={`rotate(-90 ${centre} ${centre})`}
+                className="[transition:stroke-dashoffset_var(--neba-duration-fill)_var(--neba-ease),stroke_var(--neba-duration)_var(--neba-ease)]"
+              />
+            </svg>
 
-          <div className={cx('flex min-w-0 flex-1 flex-col', classNames?.label ?? '')}>
-            <BaseUIMeter.Label
-              className={cx('min-w-0 truncate font-medium text-(--neba-fg)', metaTextClasses[size])}
-            >
-              {hasContent(label) ? label : words.label}
-            </BaseUIMeter.Label>
-            <BaseUIMeter.Value
-              className={cx(
-                'min-w-0 truncate tabular-nums text-(--neba-fg)',
-                sheetTitleClasses[size]
-              )}
-            >
-              {() => usage}
-            </BaseUIMeter.Value>
-          </div>
+            <div className={cx('flex min-w-0 flex-1 flex-col', classNames?.label ?? '')}>
+              <BaseUIMeter.Label
+                className={cx(
+                  'min-w-0 truncate font-medium text-(--neba-fg)',
+                  metaTextClasses[size]
+                )}
+              >
+                {hasContent(label) ? label : words.label}
+              </BaseUIMeter.Label>
+              <BaseUIMeter.Value
+                className={cx(
+                  'min-w-0 truncate tabular-nums text-(--neba-fg)',
+                  sheetTitleClasses[size]
+                )}
+              >
+                {() => usage}
+              </BaseUIMeter.Value>
+            </div>
+          </BaseUIMeter.Root>
 
           {typeof cost === 'number' ? (
             <div className="flex shrink-0 flex-col items-end">
@@ -318,7 +329,7 @@ export const ContextWindow = React.forwardRef<HTMLDivElement, ContextWindowProps
         ) : null}
 
         {children}
-      </BaseUIMeter.Root>
+      </div>
     );
   }
 );

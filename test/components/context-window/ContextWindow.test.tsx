@@ -40,9 +40,28 @@ describe('ContextWindow', () => {
     });
 
     it('keeps caller-supplied class names alongside its own', async () => {
-      const screen = await render(<ContextWindow max={1000} used={100} className="my-own-class" />);
+      const screen = await render(
+        <ContextWindow data-testid="window" max={1000} used={100} className="my-own-class" />
+      );
 
-      expect(screen.getByRole('meter').element()).toHaveClass('my-own-class');
+      expect(screen.getByTestId('window').element()).toHaveClass('my-own-class');
+    });
+
+    // The whole gauge was the meter, whose children are presentational, so the
+    // split stopped being a list and a link under it stopped being a link.
+    it('keeps the split and the children outside the meter', async () => {
+      const screen = await render(
+        <ContextWindow max={100_000} tokens={{ input: 40_000, output: 10_000 }} cost={0.42}>
+          <a href="#thread">Clear the thread</a>
+        </ContextWindow>
+      );
+      const meter = screen.getByRole('meter').element();
+
+      await expect.element(screen.getByRole('list')).toBeInTheDocument();
+      expect(meter.contains(screen.getByRole('list').element())).toBe(false);
+      expect(meter.contains(screen.getByRole('link').element())).toBe(false);
+      expect(meter.contains(screen.getByText('$0.42').element())).toBe(false);
+      expect(meter.contains(screen.getByText('50K of 100K').element())).toBe(true);
     });
 
     it('follows a value that changes on re-render', async () => {
@@ -132,18 +151,18 @@ describe('ContextWindow', () => {
 
     it('keeps its own colour below every threshold', async () => {
       const screen = await render(
-        <ContextWindow max={100_000} used={40_000} thresholds={thresholds} />
+        <ContextWindow data-testid="window" max={100_000} used={40_000} thresholds={thresholds} />
       );
-      const element = screen.getByRole('meter').element() as HTMLElement;
+      const element = screen.getByTestId('window').element() as HTMLElement;
 
       expect(element.style.getPropertyValue('--n-fill')).toBe('var(--neba-primary-fill)');
     });
 
     it('takes the family of the last one it has reached', async () => {
       const screen = await render(
-        <ContextWindow max={100_000} used={95_000} thresholds={thresholds} />
+        <ContextWindow data-testid="window" max={100_000} used={95_000} thresholds={thresholds} />
       );
-      const element = screen.getByRole('meter').element() as HTMLElement;
+      const element = screen.getByTestId('window').element() as HTMLElement;
 
       expect(element.style.getPropertyValue('--n-fill')).toBe('var(--neba-danger-fill)');
     });
