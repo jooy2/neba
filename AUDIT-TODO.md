@@ -5,7 +5,8 @@ The working list for the second audit of every public component, started on 2026
 ## State
 
 - The list holds 185 items: 136 without a tag, 49 tagged.
-- No batch has run yet.
+- Batch 1 is done (2026-09-27): items 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 63, 64, 65, 78 and 120. Its commits are local and not pushed.
+- The next batch starts at item 17 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
 
 ## How to run a batch
 
@@ -13,7 +14,7 @@ The maintainer starts a batch with a short request such as "다음 20개 진행�
 
 1. Read this file, `CLAUDE.md` and `git status`. A file that is modified or untracked before you begin is the maintainer's own work: never commit it and never stage a hunk of it.
 1. If the request answers pending decisions, apply those first, one commit per unit, and tick them here. A decision the request does not answer stays pending.
-1. Take the next 20 open items without a tag: the ones marked **(high)** first, then in number order. Skip items tagged [major] or [decision], and the tagged part of an item that is only partly tagged. A tag-free item that turns out to change public behaviour or to need a real choice is skipped too and becomes a question. Deleting code, files or exports that an item does not name also needs a question first.
+1. Take the next 20 open items without a tag: the ones marked **(high)** first, then in number order. The tagged items wait until every untagged one is done, as the maintainer asked on 2026-09-27; they are listed under [Pending decisions](#pending-decisions) so they can be answered earlier. Skip items tagged [major] or [decision], and the tagged part of an item that is only partly tagged. A tag-free item that turns out to change public behaviour or to need a real choice is skipped too and becomes a question. Deleting code, files or exports that an item does not name also needs a question first.
 1. Line numbers are from the audit and may have moved. Check each item against the current code before changing it; claims marked (unverified) have to be confirmed first. An item that is already fixed or turns out to be wrong is ticked with a note.
 1. For each item:
    - Follow `CLAUDE.md`: no `transform` on controls, `'use client'`, `.js` specifiers, state branched in JS, `--n-*` slots, tests in the same commit.
@@ -40,7 +41,62 @@ When a decision is answered, write the choice on the item (`Decided: (a) …`), 
 
 ## Pending decisions
 
-None asked yet. The tagged items are asked at the end of the first batch.
+Every tagged item, with the option recommended first. They are asked once the untagged items are done; an answer given earlier is applied at the start of the next batch.
+
+### A. Approvals
+
+- **A1 (33)** ContextWindow: a plain `<div>` root, with `role="meter"` around the ring, the label and the value only, so the breakdown, the cost and `children` keep their semantics. The ref and `className` stay on the root.
+- **A2 (41)** HowToSteps: without a `title`, step headings take `headingLevel` itself rather than skipping a level.
+- **A3 (42)** Alert: the live role moves onto the message column, so an announcement no longer ends with the action's and the dismiss button's names.
+- **A4 (119)** AnimateCounter, AnimateScramble, AnimateSplit render a `<span>` by default, as Typing, Headline and Marquee do.
+
+### D. Choices
+
+- **D1 (4)** Avatar picture: (a) `keepMounted`, so it is in the server HTML and `loading` works; (b) document that it loads after hydration.
+- **D2 (32)** Agent status announcements: (a) correct the wording and document the app's live region; (b) an opt-in `announce` prop; (c) always announce end states.
+- **D3 (34)** InlineCitation with no link: (a) a `<span>` with a hidden name, focusable only when it previews; (b) fix the name and say the preview is pointer-only.
+- **D4 (35)** Transfer: (a) a polite status after a move, with a new message; (b) describe each list by its count.
+- **D5 (36, major)** Rating empty stars: (a) 3:1 on an interactive Rating, the ghost kept for `readOnly`; (b) 3:1 everywhere.
+- **D6 (37)** Forced colours: (a) `Highlight` on the chosen mark, as the Switch has; (b) a `Highlight` outline.
+- **D7 (38)** Chip delete name: (a) "Remove {label}" for string children; (b) `aria-labelledby`; (c) leave it.
+- **D8 (39)** Confirm queue: (a) a `key` per question; (b) move the focus and announce in an effect.
+- **D9 (40)** New-tab links outside TextLink: (a) the hidden "(opens in a new tab)"; (b) document it.
+- **D10 (43)** DataTable row ticks: (a) out of the tab order and named per row; (b) named per row only.
+- **D11 (44)** DataTable resize and reorder: (a) keyboard for both, and the full text of cut cells; (b) the full text and a corrected page; (c) the page only.
+- **D12 (45)** DataTable counts: (a) the footer counts as `role="status"`, a hidden one without a footer; (b) always a hidden one.
+- **D13 (46)** DataTable Home, End and the page keys: (a) move the active row; (b) start the next arrow from the first visible row; (c) leave it.
+- **D14 (47)** DataTable multi-sort: (a) `aria-sort` on the first key, "sort N" on the rest; (b) leave it.
+- **D15 (48)** TreeView type-ahead: (a) add it; (b) leave it.
+- **D16 (49)** ScrollArea: (a) a `label` prop that makes the viewport a named region; (b) route `aria-label` to the viewport.
+- **D17 (50)** PageLayout `<main>`: (a) `tabIndex={-1}`; (b) document it.
+- **D18 (51)** Chart summary with two axes: (a) summarise each axis, with a new message; (b) the primary axis only.
+- **D19 (52)** A2UI `accessibility`: (a) map it onto the roots that can lack a name; (b) document that it is ignored.
+- **D20 (61)** A2UI bundle: (a) a prose-free catalog for the adapter and a budget scenario; (b) correct the guide only.
+- **D21 (62)** CodeBlock `css` and `gql` templates: (a) fetch those grammars when the tags appear; (b) always; (c) a comment.
+- **D22 (76)** Secondary axis ticks: (a) align them with the primary gridlines; (b) drop the claim.
+- **D23 (77, major)** ScatterChart and TimelineChart props they cannot honour: (a) take them out of the types; (b) implement each.
+- **D24 (86)** ToolCall error heading: (a) the existing "Failed"; (b) a new message.
+- **D25 (87)** StreamingText in CJK and Thai: (a) segment those scripts; (b) document the limit.
+- **D26 (94, major, high)** Pickers inside `Form`: (a) register each with Base UI's Field; (b) Form collects what Base UI did not; (c) document the limit.
+- **D27 (95)** Resting `float` labels over end adornments: (a) an end slot per component; (b) sizers only; (c) keep `float` in the notch there.
+- **D28 (96)** Calendar on a server: (a) a stable first tab stop and the docs; (b) the docs only.
+- **D29 (97)** Toggle `outline` hover: (a) keep the pressed fill and move the edge and ink; (b) a new step.
+- **D30 (100)** `useShortcut` repeats and handled keys: (a) skip both, with a `repeat` option; (b) skip handled keys only; (c) document it.
+- **D31 (109)** DataTable booleans: (a) `String(value)`; (b) localised words; (c) document `render`.
+- **D32 (113)** Pill light and press: (a) onto the inner button; (b) off while `details` is open; (c) leave it.
+- **D33 (124, high)** A2UI function arguments: (a) the specification's shapes; (b) Neba's own implementations.
+- **D34 (125)** A2UI checks without `message`: (a) accept them and ask the model for one; (b) ask the model only.
+- **D35 (126)** A2UI Statistic value: (a) parse a numeric string; (b) a number type; (c) `anyOf`.
+- **D36 (127)** A2UI unbound inputs: (a) a local draft plus the wording; (b) require a bound value.
+- **D37 (128)** A2UI `openUrl`: (a) require user activation; (b) leave it to web_core.
+- **D38 (129)** A2UI `catalogId`: (a) a versioned URL; (b) tell hosts to hand over their installed copy.
+- **D39 (130)** `engines.node`: (a) `>=18.20.0` for the package, `devEngines` for the repository; (b) `>=22.12.0`.
+- **D40 (148, major)** Switch `labelPlacement`: (a) rename it `labelSide` with a deprecated alias; (b) document the exception.
+- **D41 (155)** Image `width` and `height` together: (a) document that they are a proportion; (b) cap the box at `width`.
+- **D42 (168)** RTL without `direction`: (a) document it; (b) read the document's direction after hydration.
+- **D43 (175)** Placement vocabulary: (a) a section in prop conventions; (b) qualify README only.
+- **D44 (179)** `CLAUDE.md` internal modules intro: (a) say which modules it covers; (b) a row for each.
+- **D45 (181)** `CLAUDE.md` repetition: (a) say each thing once; (b) leave it.
 
 ## 1. Performance
 
