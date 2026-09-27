@@ -1,6 +1,7 @@
 import { Profiler } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Tour } from 'neba';
 
 /*
@@ -277,6 +278,33 @@ describe('Tour', () => {
       const screen = await render(<Page steps={STEPS} defaultOpen defaultStep={2} />);
 
       expect(screen.getByRole('button', { name: 'Skip' }).query()).toBeNull();
+    });
+
+    it('ends on Escape', async () => {
+      const onOpenChange = vi.fn();
+      const screen = await render(<Page steps={STEPS} defaultOpen onOpenChange={onOpenChange} />);
+
+      await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
+      await userEvent.keyboard('{Escape}');
+
+      await expect.element(screen.getByText('This writes the change.')).not.toBeInTheDocument();
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+
+    // A tour that has to be walked to its end is only left through its own
+    // buttons.
+    it('keeps going on Escape when it is not dismissible', async () => {
+      const onOpenChange = vi.fn();
+      const screen = await render(
+        <Page steps={STEPS} defaultOpen dismissible={false} onOpenChange={onOpenChange} />
+      );
+
+      await expect.element(screen.getByText('This writes the change.')).toBeInTheDocument();
+      await userEvent.keyboard('{Escape}');
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(screen.getByText('This writes the change.').query()).not.toBeNull();
+      expect(onOpenChange).not.toHaveBeenCalled();
     });
 
     it('drops the Skip button when it is turned off', async () => {
