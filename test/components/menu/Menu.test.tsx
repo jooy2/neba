@@ -602,14 +602,19 @@ describe('ContextMenu', () => {
     expect(screen.getByTestId('area').element().getAttribute('data-outer')).toBe('yes');
   });
 
-  it('opens on a right-click through a `Tooltip` on the same element', async () => {
+  // The tooltip half is what the React 18 job is for: React 18 drops a ref
+  // handed to a function component, and the tooltip's is the one it hands.
+  it('opens its tooltip and, on a right-click, its menu through one element', async () => {
     const screen = await render(
-      <Tooltip content="What this is">
+      <Tooltip delay={0} content="What this is">
         <ContextMenu content={<MenuItem>Rename</MenuItem>}>
           <div>Right-click me</div>
         </ContextMenu>
       </Tooltip>
     );
+
+    await screen.getByText('Right-click me').hover();
+    await expect.element(screen.getByText('What this is')).toBeVisible();
 
     await screen.getByText('Right-click me').click({ button: 'right' });
 

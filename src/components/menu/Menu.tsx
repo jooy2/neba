@@ -793,57 +793,63 @@ export function Menu(rawProps: MenuProps) {
  *
  * Base UI positions the popup at the pointer rather than against an anchor, and
  * the long press is what makes it reachable on a touch screen at all.
+ *
+ * The ref goes to the area, with everything else it is handed. A `forwardRef`
+ * and not a plain function for React 18's sake, which drops a ref given to a
+ * function component: a `Tooltip` around this one attaches its own, and lost it.
  */
-export function ContextMenu(rawProps: ContextMenuProps) {
-  const {
-    size = 'md',
-    color = 'primary',
-    density = 'default',
-    content,
-    children,
-    open,
-    defaultOpen,
-    onOpenChange,
-    loopFocus = true,
-    disabled = false,
-    className,
-    style,
-    ...props
-  } = useStyleDefaults(rawProps, ['size', 'density']);
-  const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
+  function ContextMenu(rawProps, ref) {
+    const {
+      size = 'md',
+      color = 'primary',
+      density = 'default',
+      content,
+      children,
+      open,
+      defaultOpen,
+      onOpenChange,
+      loopFocus = true,
+      disabled = false,
+      className,
+      style,
+      ...props
+    } = useStyleDefaults(rawProps, ['size', 'density']);
+    const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
 
-  return (
-    <MenuContext.Provider value={context}>
-      <BaseUIContextMenu.Root
-        open={open}
-        defaultOpen={defaultOpen}
-        onOpenChange={(next) => onOpenChange?.(next)}
-        loopFocus={loopFocus}
-        disabled={disabled}
-      >
-        {/* Whatever this component was handed goes to the area rather than to
+    return (
+      <MenuContext.Provider value={context}>
+        <BaseUIContextMenu.Root
+          open={open}
+          defaultOpen={defaultOpen}
+          onOpenChange={(next) => onOpenChange?.(next)}
+          loopFocus={loopFocus}
+          disabled={disabled}
+        >
+          {/* Whatever this component was handed goes to the area rather than to
             the popup, which `className` and `style` describe. That is what
             makes a `ContextMenu` usable as the child of another trigger: a
             `Tooltip` around one merges its own props onto this element, and
             they carry on down to the same node the menu is listening on. */}
-        <BaseUIContextMenu.Trigger render={children} {...props} />
+          <BaseUIContextMenu.Trigger ref={ref} render={children} {...props} />
 
-        <BaseUIContextMenu.Portal>
-          <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">
-            <BaseUIContextMenu.Popup
-              className={cx(
-                popupClasses,
-                radiusClasses[size],
-                controlTextLeadingClasses[size],
-                className ?? ''
-              )}
-              style={{ ...surfaceSlots(color, 3), ...style }}
-            >
-              {content}
-            </BaseUIContextMenu.Popup>
-          </BaseUIContextMenu.Positioner>
-        </BaseUIContextMenu.Portal>
-      </BaseUIContextMenu.Root>
-    </MenuContext.Provider>
-  );
-}
+          <BaseUIContextMenu.Portal>
+            <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">
+              <BaseUIContextMenu.Popup
+                className={cx(
+                  popupClasses,
+                  radiusClasses[size],
+                  controlTextLeadingClasses[size],
+                  className ?? ''
+                )}
+                style={{ ...surfaceSlots(color, 3), ...style }}
+              >
+                {content}
+              </BaseUIContextMenu.Popup>
+            </BaseUIContextMenu.Positioner>
+          </BaseUIContextMenu.Portal>
+        </BaseUIContextMenu.Root>
+      </MenuContext.Provider>
+    );
+  }
+);
