@@ -41,7 +41,7 @@ import { InlineCitation } from 'neba';
 
 ### href
 
-진짜 링크이며, [Sources](./sources)의 줄과 같은 스킴 검사를 거칩니다. `http`, `https`, `mailto`, `tel` 밖의 주소는 URL을 그대로 쓰는 대신 표시를 평범한 텍스트로 남깁니다. 탭을 벗어나는 `target`에는 `rel="noopener noreferrer"`가 붙습니다.
+진짜 링크이며, [Sources](./sources)의 줄과 같은 스킴 검사를 거칩니다. `http`, `https`, `mailto`, `tel` 밖의 주소는 URL을 그대로 쓰는 대신 표시를 평범한 텍스트로 남깁니다. `href`가 없으면 표시는 `<span>`이고, 열 미리보기가 있을 때만 키보드 focus를 받습니다. 탭을 벗어나는 `target`에는 `rel="noopener noreferrer"`가 붙습니다.
 
 ### color · size
 
@@ -57,5 +57,5 @@ import { InlineCitation } from 'neba';
 
 ## 접근성
 
-- 표시에는 "Source 2"처럼 단어로 된 접근 가능한 이름이 붙습니다. 숫자 하나만으로는 스크린 리더에 아무 뜻도 전달되지 않기 때문입니다.
+- 표시에는 "Source 2"처럼 단어로 된 접근 가능한 이름이 붙습니다. 숫자 하나만으로는 스크린 리더에 아무 뜻도 전달되지 않기 때문입니다. 링크는 이 이름을 `aria-label`로 받고, 링크가 없는 표시는 화면에 보이지 않는 텍스트로 씁니다.
 - 미리보기는 Base UI의 hover card이므로 포인터뿐 아니라 키보드 포커스에서도 열립니다.

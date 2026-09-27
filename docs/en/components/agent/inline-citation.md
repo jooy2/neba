@@ -41,7 +41,7 @@ On, and drawn by [HoverCard](../surfaces/hover-card), so it opens on focus as we
 
 ### href
 
-A real link, with the same scheme check a [Sources](./sources) row makes: anything outside `http`, `https`, `mailto` and `tel` leaves the mark as plain text rather than writing the URL out. A `target` that leaves the tab gains `rel="noopener noreferrer"`.
+A real link, with the same scheme check a [Sources](./sources) row makes: anything outside `http`, `https`, `mailto` and `tel` leaves the mark as plain text rather than writing the URL out. Without an `href` the mark is a `<span>`, which takes the keyboard focus only when it has a preview to open. A `target` that leaves the tab gains `rel="noopener noreferrer"`.
 
 ### color · size
 
@@ -57,5 +57,5 @@ The mark is not a superscript: it sits on the line at `0.8em`, raised slightly.
 
 ## Accessibility
 
-- The mark carries an accessible name in words — "Source 2" — because a digit on its own tells a screen reader nothing about what it is for.
+- The mark carries an accessible name in words — "Source 2" — because a digit on its own tells a screen reader nothing about what it is for. A link takes it as `aria-label`; a mark without a link writes it as visually hidden text.
 - The preview is Base UI's hover card, so it opens on keyboard focus and not only under a pointer.

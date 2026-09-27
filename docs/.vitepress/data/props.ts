@@ -16336,8 +16336,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'href',
       type: 'string',
       description: {
-        ko: '가리키는 주소. http, https, mailto, tel 밖의 스킴이면 표시는 평범한 텍스트로 남습니다',
-        en: 'Where the citation points. A scheme outside http, https, mailto and tel leaves the mark as plain text'
+        ko: '가리키는 주소. http, https, mailto, tel 밖의 스킴이면 표시는 평범한 텍스트로 남습니다. 주소가 없으면 표시는 span이고, 미리보기가 있을 때만 focus를 받습니다',
+        en: 'Where the citation points. A scheme outside http, https, mailto and tel leaves the mark as plain text. Without one the mark is a span, which takes the focus only when it has a preview'
       }
     },
     {

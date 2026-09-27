@@ -16,6 +16,7 @@ import {
   focusRingClasses,
   hasContent,
   metaTextClasses,
+  srOnlyClasses,
   transitionClasses
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
@@ -39,7 +40,9 @@ export interface InlineCitationProps extends Omit<
   site?: React.ReactNode;
   /**
    * Where the citation points. A scheme outside `http`, `https`, `mailto` and
-   * `tel` leaves the mark as plain text rather than writing the URL out.
+   * `tel` leaves the mark as plain text rather than writing the URL out. Without
+   * one the mark is a `<span>`, which takes the keyboard focus only when it has
+   * a preview to open.
    */
   href?: string;
   /** Where the link opens. `rel` gains `noopener noreferrer` whenever it leaves the tab. */
@@ -74,7 +77,7 @@ export interface InlineCitationProps extends Omit<
  * is no parent that could number it — and a component that numbered itself by
  * render order would renumber the whole answer whenever a sentence moved.
  */
-export const InlineCitation = React.forwardRef<HTMLAnchorElement, InlineCitationProps>(
+export const InlineCitation = React.forwardRef<HTMLElement, InlineCitationProps>(
   function InlineCitation(rawProps, ref) {
     const {
       index,
@@ -98,42 +101,62 @@ export const InlineCitation = React.forwardRef<HTMLAnchorElement, InlineCitation
     const words = { ...messages, ...labels };
     const name = fillMessage(words.citation, { index: String(index) });
     const address = safeHref(href);
+    const previews = preview && hasContent(title);
 
-    const mark = (
+    // Not a superscript. A `<sup>` shrinks the number a second time on top of
+    // the `0.8em` the mark already is, and at that size a digit in a tinted box
+    // is a smudge rather than a number a reader can act on.
+    const shared = {
+      className: cx(
+        citationMarkClasses,
+        'align-[0.15em] no-underline',
+        address ? 'cursor-pointer' : 'cursor-default',
+        'hover:bg-(--n-soft-hover)',
+        focusRingClasses,
+        transitionClasses,
+        className ?? ''
+      ),
+      style: {
+        '--n-soft': `var(--neba-${color}-soft)`,
+        '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
+        '--n-on-tint': `var(--neba-${color}-on-tint)`,
+        '--n-ring': `var(--neba-${color}-ring)`,
+        ...style
+      } as React.CSSProperties
+    };
+
+    /*
+     * With no address there is no link, and an `<a>` without an `href` is not
+     * one: it takes no focus, and an `aria-label` on an element with no role is
+     * one a screen reader may not read. So the mark is a `<span>` that says its
+     * name in text, and takes the focus only when there is a preview for the
+     * focus to open.
+     */
+    const mark = address ? (
       <a
-        ref={ref}
-        // Not a superscript. A `<sup>` shrinks the number a second time on top
-        // of the `0.8em` the mark already is, and at that size a digit in a
-        // tinted box is a smudge rather than a number a reader can act on.
+        ref={ref as React.Ref<HTMLAnchorElement>}
         href={address}
-        target={address ? target : undefined}
+        target={target}
         rel={safeRel(target, rel)}
         aria-label={name}
-        className={cx(
-          citationMarkClasses,
-          'align-[0.15em] no-underline',
-          address ? 'cursor-pointer' : 'cursor-default',
-          'hover:bg-(--n-soft-hover)',
-          focusRingClasses,
-          transitionClasses,
-          className ?? ''
-        )}
-        style={
-          {
-            '--n-soft': `var(--neba-${color}-soft)`,
-            '--n-soft-hover': `var(--neba-${color}-soft-hover)`,
-            '--n-on-tint': `var(--neba-${color}-on-tint)`,
-            '--n-ring': `var(--neba-${color}-ring)`,
-            ...style
-          } as React.CSSProperties
-        }
+        {...shared}
         {...props}
       >
         {index}
       </a>
+    ) : (
+      <span
+        ref={ref as React.Ref<HTMLSpanElement>}
+        tabIndex={previews ? 0 : undefined}
+        {...shared}
+        {...(props as React.HTMLAttributes<HTMLSpanElement>)}
+      >
+        <span className={srOnlyClasses}>{name}</span>
+        <span aria-hidden="true">{index}</span>
+      </span>
     );
 
-    if (!preview || !hasContent(title)) {
+    if (!previews) {
       return mark;
     }
 

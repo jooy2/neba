@@ -11,9 +11,32 @@ describe('InlineCitation', () => {
     });
 
     it('is named in words, since the mark itself only says a number', async () => {
-      const screen = await render(<InlineCitation index={3} />);
+      const screen = await render(<InlineCitation index={3} href="https://example.com/a" />);
 
-      await expect.element(screen.getByLabelText('Source 3')).toBeInTheDocument();
+      await expect.element(screen.getByRole('link', { name: 'Source 3' })).toBeInTheDocument();
+    });
+
+    // An `<a>` with no `href` is not a link: it takes no focus, and its
+    // `aria-label` is one a screen reader may not read.
+    it('says its name in text when there is no link', async () => {
+      const screen = await render(<InlineCitation index={3} data-testid="mark" />);
+      const mark = screen.getByTestId('mark').element();
+
+      expect(mark.tagName).toBe('SPAN');
+      expect(mark.textContent).toContain('Source 3');
+      expect(mark.querySelector('[aria-hidden="true"]')?.textContent).toBe('3');
+    });
+
+    it('takes the focus without a link only when it has a preview to open', async () => {
+      const screen = await render(<InlineCitation index={3} data-testid="mark" />);
+
+      expect(screen.getByTestId('mark').element()).not.toHaveAttribute('tabindex');
+
+      await screen.rerender(
+        <InlineCitation index={3} title="Design language" data-testid="mark" />
+      );
+
+      expect(screen.getByTestId('mark').element()).toHaveAttribute('tabindex', '0');
     });
 
     it('links where it was pointed', async () => {
@@ -27,7 +50,8 @@ describe('InlineCitation', () => {
     it('refuses an address whose scheme is not one of the four', async () => {
       const screen = await render(<InlineCitation index={1} href="javascript:alert(1)" />);
 
-      await expect.element(screen.getByLabelText('Source 1')).not.toHaveAttribute('href');
+      await expect.element(screen.getByText('Source 1')).toBeInTheDocument();
+      expect(screen.container.querySelector('a')).toBeNull();
     });
 
     it('protects a link that leaves the tab', async () => {
@@ -41,9 +65,11 @@ describe('InlineCitation', () => {
     });
 
     it('keeps caller-supplied class names alongside its own', async () => {
-      const screen = await render(<InlineCitation index={1} className="my-own-class" />);
+      const screen = await render(
+        <InlineCitation index={1} className="my-own-class" data-testid="mark" />
+      );
 
-      expect(screen.getByLabelText('Source 1').element()).toHaveClass('my-own-class');
+      expect(screen.getByTestId('mark').element()).toHaveClass('my-own-class');
     });
   });
 
@@ -64,6 +90,16 @@ describe('InlineCitation', () => {
       await expect.element(screen.getByText('Design language')).toBeInTheDocument();
     });
 
+    it('opens its preview from the keyboard when there is no link', async () => {
+      const screen = await render(
+        <InlineCitation index={2} title="Design language" data-testid="mark" />
+      );
+
+      (screen.getByTestId('mark').element() as HTMLElement).focus();
+
+      await expect.element(screen.getByText('Design language')).toBeInTheDocument();
+    });
+
     it('is a bare mark when there is nothing to preview', async () => {
       const screen = await render(<InlineCitation index={2} href="https://example.com/a" />);
 
@@ -74,10 +110,10 @@ describe('InlineCitation', () => {
 
     it('is a bare mark when the preview is turned off', async () => {
       const screen = await render(
-        <InlineCitation index={2} title="Design language" preview={false} />
+        <InlineCitation index={2} title="Design language" preview={false} data-testid="mark" />
       );
 
-      await screen.getByLabelText('Source 2').hover();
+      await screen.getByTestId('mark').hover();
 
       expect(screen.getByText('Design language').query()).toBeNull();
     });
