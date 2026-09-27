@@ -121,6 +121,6 @@ Anything else you pass goes to that area rather than to the popup, which `classN
 ## Accessibility
 
 - The `menu` / `menuitem` roles, roving focus with the arrow keys, Home and End, typeahead, Escape, closing on an outside click and restoring focus to the trigger are all handled.
-- Give a destructive row `color="danger"`; the text, the soft background and the focus ring turn over together.
+- Give a destructive row `color="danger"`; the text and the soft background under a highlighted row turn over together.
 - When the label is not a string, give `label` the text typeahead should match against.
 - A `disabled` row stays listed and findable by typeahead. A row that disappears reads as "there is no such thing" rather than "it is not available here".

@@ -121,6 +121,6 @@ import { Button, Menu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 ## 접근성
 
 - `menu` / `menuitem` role, 방향키 roving focus, Home/End, typeahead, Escape, 바깥 클릭으로 닫기, 닫을 때 trigger로 focus 복귀가 모두 처리됩니다.
-- 삭제처럼 파괴적인 행에는 `color="danger"`를 주세요. 글자색과 옅은 배경, focus ring이 함께 바뀝니다.
+- 삭제처럼 파괴적인 행에는 `color="danger"`를 주세요. 글자색과 강조된 행 아래의 옅은 배경이 함께 바뀝니다.
 - 라벨이 문자열이 아니면 `label`에 typeahead가 매칭할 문자열을 주세요.
 - `disabled` 행은 목록에 남고 typeahead에도 걸립니다. 행이 사라지면 "여기서는 쓸 수 없음"이 아니라 "그런 항목이 없음"으로 읽힙니다.
