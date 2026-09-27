@@ -1516,6 +1516,15 @@ export function CartesianChart(rawProps: CartesianProps) {
     [windowed, fullCount, fullCategories, ownFullValues]
   );
   const fullLabels = ownFullLabels ?? labels;
+  /* The strip's picture, mapped here rather than where it is handed over, so
+     the strip's own memo of the path holds across a drag instead of tracing
+     every point again. */
+  const outlineIndex = Math.max(0, visibility.visible.indexOf(true));
+  const hasBrush = brushOptions !== null;
+  const brushOutline = React.useMemo(
+    () => (hasBrush ? (fullValues[outlineIndex] ?? []).map((one) => one.value) : []),
+    [hasBrush, fullValues, outlineIndex]
+  );
 
   /* How a given series' numbers are written, everywhere they appear.
 
@@ -2500,9 +2509,7 @@ export function CartesianChart(rawProps: CartesianProps) {
             /* The first series that is drawn, and all of it. A strip with
            every series on it is a thumbnail of a smear, which is the
            thing the window exists to get away from. */
-            outline={(fullValues[visibility.visible.indexOf(true)] ?? fullValues[0] ?? []).map(
-              (one) => one.value
-            )}
+            outline={brushOutline}
             count={fullCount}
             range={[windowFrom, windowTo]}
             onRange={(next) => {
