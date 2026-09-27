@@ -23,7 +23,7 @@ import { AnimateHeadline } from 'neba';
 
 <PropsTable name="AnimateHeadline" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<span>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 

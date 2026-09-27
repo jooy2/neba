@@ -23,7 +23,7 @@ import { AnimateMarquee } from 'neba';
 
 <PropsTable name="AnimateMarquee" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+Every other `<span>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 

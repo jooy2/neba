@@ -19,7 +19,7 @@ import { AnimateTyping } from 'neba';
 
 <PropsTable name="AnimateTyping" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+Every other `<span>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
 Only text is typed. Pass a string, or strings; an element among the children contributes its text and nothing about its markup, because there is no honest way to reveal half of a link. `text` is the same thing as a prop, and wins when both are given.
 

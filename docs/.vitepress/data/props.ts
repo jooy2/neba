@@ -72,14 +72,19 @@ const layoutPaddingProps: PropRow[] = [
   }
 ];
 
-/** The escape hatch every layout component offers, spelled the same way. */
-function renderProp(example: string): PropRow {
+/**
+ * The escape hatch every layout component offers, spelled the same way. The
+ * element is the one the component draws when it is not given one.
+ */
+function renderProp(example: string, element = 'div'): PropRow {
+  const article = /^[aeiou]/.test(element) ? 'an' : 'a';
+
   return {
     name: 'render',
     type: 'useRender.RenderProp',
     description: {
-      ko: `div 대신 다른 요소로 렌더링합니다 (${example}). Base UI의 render prop 그대로`,
-      en: `Renders something other than a div (${example}). Base UI's own escape hatch`
+      ko: `${element} 대신 다른 요소로 렌더링합니다 (${example}). Base UI의 render prop 그대로`,
+      en: `Renders something other than ${article} ${element} (${example}). Base UI's own escape hatch`
     }
   };
 }
@@ -2483,7 +2488,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The name the landmark is announced by. Worth writing when a page has more than one header in it'
       }
     },
-    renderProp('render={<div />}')
+    renderProp('render={<div />}', 'header')
   ],
 
   Footer: [
@@ -2559,7 +2564,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The name the landmark is announced by. Worth writing when a page has more than one footer in it'
       }
     },
-    renderProp('render={<div />}')
+    renderProp('render={<div />}', 'footer')
   ],
 
   Sidebar: [
@@ -2888,7 +2893,14 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Anything else the img needs: loading, decoding, crossOrigin'
       }
     },
-    renderProp('render={<h1 />}')
+    {
+      name: 'render',
+      type: 'useRender.RenderProp',
+      description: {
+        ko: 'span 대신, href가 있으면 그것이 만드는 a 대신 다른 요소로 렌더링합니다 (render={<h1 />}). Base UI의 render prop 그대로',
+        en: "Renders something other than a span, or the a an href makes (render={<h1 />}). Base UI's own escape hatch"
+      }
+    }
   ],
 
   Container: [
@@ -10249,7 +10261,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'The two words for a finished and a waiting step. Override the locale words'
       }
     },
-    renderProp('render={<ul />}'),
+    renderProp('render={<ul />}', 'ol'),
     {
       name: 'children',
       type: 'ReactNode',
@@ -15905,7 +15917,7 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'Partial<RunMessages>',
       description: { ko: '그 네 단어를 직접 씁니다', en: 'Those four words, written out' }
     },
-    renderProp('<ul />'),
+    renderProp('render={<ul />}', 'ol'),
     {
       name: 'children',
       type: 'ReactNode',

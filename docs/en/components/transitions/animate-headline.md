@@ -23,7 +23,7 @@ import { AnimateHeadline } from 'neba';
 
 <PropsTable name="AnimateHeadline" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+Every other `<span>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
 
 ## Examples
 

@@ -19,7 +19,7 @@ import { AnimateTyping } from 'neba';
 
 <PropsTable name="AnimateTyping" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+나머지 `<span>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 타이핑되는 것은 텍스트뿐입니다. 문자열 하나 또는 여럿을 넘기세요. 자식 중 요소가 있으면 그 안의 글자만 쓰이고 마크업은 반영되지 않습니다. 링크의 절반을 정직하게 드러낼 방법이 없기 때문입니다. `text`는 같은 것을 prop으로 받는 것이고, 둘 다 주면 이쪽이 이깁니다.
 
