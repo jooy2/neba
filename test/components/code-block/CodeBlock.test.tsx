@@ -471,6 +471,31 @@ describe('CodeBlock', () => {
     return String(window.getSelection()).replace(/\r\n/g, '\n').replace(/\n$/, '');
   }
 
+  // A title that was a node named nothing, so an overflowing block was a
+  // focusable region with no name.
+  describe('the name of a block that scrolls', () => {
+    it('is the title when the title is a node', async () => {
+      const screen = await render(
+        <CodeBlock code={'const a = 1;\nconst b = 2;'} maxHeight={8} title={<b>app.ts</b>} />
+      );
+
+      await expect.element(screen.getByRole('region', { name: 'app.ts' })).toBeInTheDocument();
+    });
+
+    it('falls back to the word for code when no toolbar draws the title', async () => {
+      const screen = await render(
+        <CodeBlock
+          code={'const a = 1;\nconst b = 2;'}
+          maxHeight={8}
+          toolbar={false}
+          title={<b>app.ts</b>}
+        />
+      );
+
+      await expect.element(screen.getByRole('region', { name: 'Code' })).toBeInTheDocument();
+    });
+  });
+
   describe('selecting', () => {
     /*
       A reader who tabbed to a code block and pressed the shortcut every editor

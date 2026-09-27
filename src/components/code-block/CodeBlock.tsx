@@ -599,7 +599,16 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
       'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
     );
 
-    const label = hasContent(title) ? undefined : (name ?? messages.code);
+    /*
+     * What a scrolling block is called. A title that is a string names it; one
+     * that is a node names it through the toolbar that draws it, and where no
+     * toolbar draws it the language or the word "Code" does — a focusable
+     * region with no name at all is the one outcome that is never right.
+     */
+    const titleId = React.useId();
+    const titleIsNode = hasContent(title) && typeof title !== 'string';
+    const namedByTitle = titleIsNode && toolbar;
+    const regionName = typeof title === 'string' && title !== '' ? title : (name ?? messages.code);
 
     const body = (
       <div
@@ -608,7 +617,8 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
         // pointer to drag with, and a focusable region has to have a name. One
         // that does not scroll is neither.
         role={overflows ? 'region' : undefined}
-        aria-label={overflows ? (typeof title === 'string' ? title : label) : undefined}
+        aria-label={overflows && !namedByTitle ? regionName : undefined}
+        aria-labelledby={overflows && namedByTitle ? titleId : undefined}
         tabIndex={overflows ? 0 : undefined}
         onKeyDown={selectEverything}
         className={cx(
@@ -696,7 +706,10 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
             )}
           >
             {hasContent(title) ? (
-              <span className={cx('min-w-0 truncate font-mono', metaTextClasses[size])}>
+              <span
+                id={titleId}
+                className={cx('min-w-0 truncate font-mono', metaTextClasses[size])}
+              >
                 {title}
               </span>
             ) : null}

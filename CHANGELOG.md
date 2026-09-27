@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `CodeBlock` that scrolls is named even when its `title` is a node.** Only a string title named the focusable region, so `title={<code>app.ts</code>}` on a block tall enough to scroll left a tab stop with no name. The region is named by the title the toolbar draws, and by the language or "Code" when no toolbar draws it.
+
 - **Moving through a `Gallery` viewer says what the picture shows.** The live region under the picture announced only "Image 3 of 12", and the focus stays on the arrow, so the new picture's title was never read. The announcement starts with the title, or the `alt` when there is none, and is read as one sentence. What is drawn does not change.
 
 - **A `ScrollZone` whose content fits is not a tab stop.** The strip took the focus whether or not there was anywhere to scroll it, so a page of chip rows that all fitted was a tab stop per row that did nothing. It is focusable while it overflows, which is when the arrow keys have something to move, and keeps its role and its name either way.
