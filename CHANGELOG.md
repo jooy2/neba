@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `PromptInput` fits its height to its text when its width changes.** The field was measured only when its value changed, so the same words wrapped onto more lines in a narrower window and were cut off, and a field that first rendered hidden — in a closed panel or an inactive tab — measured a box of no width and kept a height of nothing once shown. It measures again whenever its width changes, and when `minRows` or `maxRows` does.
+
 - **A `PromptInput`'s `onKeyDown` can keep a key from sending.** The field sent first and called the caller's handler after, so a mention list or a slash-command menu open over the field could not take Enter to choose an entry — the message went with the half-typed name in it. The caller's `onKeyDown` runs first now, and a `preventDefault` there means the key does not send.
 
 - **A `disabled` or `readOnly` `PromptInput` takes no dropped files.** Its shell stayed a drop target whatever state the field was in, so a file dragged onto a field that took no typing still lit the edge and reached `onFiles`. It is off while the field takes no input, as a `FilePicker`'s zone already was.

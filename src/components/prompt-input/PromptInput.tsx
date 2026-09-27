@@ -5,6 +5,7 @@ import { IconButton } from '../icon-button/IconButton.js';
 import { useDropZone } from '../../internal/drop.js';
 import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
 import { matchesShortcut } from '../../internal/keys.js';
+import { observeResize } from '../../internal/observe.js';
 import { promptMessages, useMessages, type PromptMessages } from '../../internal/i18n.js';
 import {
   controlTextLeadingClasses,
@@ -257,7 +258,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
      * text and the browser painting it, so the box is never drawn at the wrong
      * height for a frame.
      */
-    React.useLayoutEffect(() => {
+    const fit = React.useCallback(() => {
       const node = controlRef.current;
 
       if (!node) {
@@ -266,7 +267,43 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
 
       node.style.height = 'auto';
       node.style.height = `${node.scrollHeight}px`;
-    }, [value]);
+    }, []);
+
+    React.useLayoutEffect(fit, [fit, value, minRows, maxRows]);
+
+    /*
+     * And again when the field's width changes, which the text alone does not
+     * say: the same words wrap onto more lines in a narrower box, and a field
+     * that mounted hidden measured a box of no width at all.
+     *
+     * Only the width, since the height is what `fit` writes. And a frame later
+     * rather than inside the observer's callback: resizing the element being
+     * observed from there is a loop the browser reports as an error.
+     */
+    React.useEffect(() => {
+      const node = controlRef.current;
+
+      if (!node) {
+        return undefined;
+      }
+
+      let width = node.clientWidth;
+      let frame = 0;
+      const stop = observeResize(node, () => {
+        if (node.clientWidth === width) {
+          return;
+        }
+
+        width = node.clientWidth;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(fit);
+      });
+
+      return () => {
+        stop();
+        cancelAnimationFrame(frame);
+      };
+    }, [fit]);
 
     const send = () => {
       const outgoing = value.trim();

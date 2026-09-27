@@ -94,6 +94,45 @@ describe('PromptInput', () => {
     });
   });
 
+  describe('its height', () => {
+    const heightOf = (control: HTMLTextAreaElement) => parseFloat(control.style.height) || 0;
+
+    // Measured once, while hidden, it came out as no height at all and stayed
+    // that way once it was shown.
+    it('measures itself again when it is shown', async () => {
+      const screen = await render(
+        <div style={{ display: 'none', width: 320 }}>
+          <PromptInput label="Message" defaultValue={'one\ntwo\nthree\nfour\nfive'} />
+        </div>
+      );
+      const control = screen.container.querySelector('textarea')!;
+      const host = control.closest('form')!.parentElement!;
+
+      host.style.display = 'block';
+
+      // Five lines, whatever a line comes to without the stylesheet.
+      await expect.poll(() => heightOf(control)).toBeGreaterThan(40);
+    });
+
+    // No test loads the stylesheet that stretches the field across its row,
+    // so the field's own width is what is narrowed here.
+    it('grows when a narrower box wraps its text onto more lines', async () => {
+      const screen = await render(
+        <PromptInput label="Message" defaultValue={'a few words that wrap '.repeat(4)} />
+      );
+      const control = screen.getByRole('textbox').element() as HTMLTextAreaElement;
+
+      control.style.width = '480px';
+      await expect.poll(() => heightOf(control)).toBeGreaterThan(0);
+
+      const wide = heightOf(control);
+
+      control.style.width = '160px';
+
+      await expect.poll(() => heightOf(control)).toBeGreaterThan(wide);
+    });
+  });
+
   describe('sending', () => {
     it('sends what is in the field when the button is pressed', async () => {
       const onSubmit = vi.fn();
