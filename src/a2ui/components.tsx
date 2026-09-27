@@ -68,17 +68,29 @@ function Children({ list, buildChild }: { list: unknown; buildChild: BuildChild 
     return null;
   }
 
+  // Keyed by what each child is rather than where it is: keyed by position, a
+  // child put in front of the others remounted every one after it, and a field
+  // among them lost its focus and whatever was being typed. A template's rows
+  // share an id and differ by the path they are bound to. An id the agent
+  // listed twice takes its count, so the key stays unique.
+  const seen = new Map<string, number>();
+
   return (
     <>
-      {(list as ChildRef[]).map((child, index) =>
-        typeof child === 'string' ? (
-          <React.Fragment key={`${child}-${index}`}>{buildChild(child)}</React.Fragment>
-        ) : (
-          <React.Fragment key={`${child.id}-${index}`}>
-            {buildChild(child.id, child.basePath)}
+      {(list as ChildRef[]).map((child) => {
+        const id = typeof child === 'string' ? child : child.id;
+        const basePath = typeof child === 'string' ? undefined : child.basePath;
+        const identity = basePath === undefined ? id : `${id}@${basePath}`;
+        const count = seen.get(identity) ?? 0;
+
+        seen.set(identity, count + 1);
+
+        return (
+          <React.Fragment key={count === 0 ? identity : `${identity}#${count}`}>
+            {buildChild(id, basePath)}
           </React.Fragment>
-        )
-      )}
+        );
+      })}
     </>
   );
 }

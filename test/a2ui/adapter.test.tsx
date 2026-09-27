@@ -317,6 +317,50 @@ describe('the A2UI adapter', () => {
     });
   });
 
+  describe('keeps what is on screen', () => {
+    // A child put in front of the others is a new node, and nothing else is.
+    it('keeps a field being typed in when a sibling is put before it', async () => {
+      const { processor, surface } = surfaceOf(
+        [
+          { id: 'root', component: 'Flex', direction: 'vertical', children: ['note', 'region'] },
+          { id: 'note', component: 'Typography', text: 'Where should it deploy?' },
+          { id: 'region', component: 'TextField', label: 'Region', value: { path: '/region' } }
+        ],
+        { region: '' }
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+      const field = screen.getByRole('textbox', { name: 'Region' });
+
+      await field.click();
+      const element = field.element();
+
+      expect(document.activeElement).toBe(element);
+
+      processor.processMessages([
+        {
+          version: 'v0.9',
+          updateComponents: {
+            surfaceId: SURFACE,
+            components: [
+              {
+                id: 'root',
+                component: 'Flex',
+                direction: 'vertical',
+                children: ['heading', 'note', 'region']
+              },
+              { id: 'heading', component: 'Typography', level: 'h3', text: 'Deploy' }
+            ]
+          }
+        }
+      ] as Message[]);
+
+      await expect.element(screen.getByRole('heading', { name: 'Deploy' })).toBeInTheDocument();
+      expect(element.isConnected).toBe(true);
+      expect(document.activeElement).toBe(element);
+    });
+  });
+
   describe('writes back', () => {
     it('puts what was typed into the data model', async () => {
       const { surface } = surfaceOf(
