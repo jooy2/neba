@@ -183,7 +183,7 @@ More files in `internal/` exist for the same "written once" reason. `progress.ts
 
 Two of the four families are deliberately **not** the caller's: `success` is `success` and `error` is `danger` whatever `color` says, because a page where a red row means the product's accent colour has spent the one signal it had. `running` takes the component's family and `pending` is `secondary`, which is the family that says nothing about how something went.
 
-The clock is here for a reason of its own. A component that counts while something runs re-renders on every tick, so the tick rate is a decision about a whole transcript rather than about one row — twenty running calls at ten frames a second is two hundred renders a second for a number nobody reads that closely. It ticks once a second, returns `null` for the first one rather than claiming a precision it does not have, and stops dead the moment a real `duration` arrives.
+The clock is here for a reason of its own. A component that counts while something runs re-renders on every tick, so the tick rate is a decision about a whole transcript rather than about one row — twenty running calls at ten frames a second is two hundred renders a second for a number nobody reads that closely. It ticks once a second, returns `null` for the first one rather than claiming a precision it does not have, measures once more when the run ends so that the total is exact where the count was in whole seconds, and stops dead the moment a real `duration` arrives.
 
 #### `internal/animate.tsx` and `internal/text.ts`
 

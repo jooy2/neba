@@ -39,7 +39,7 @@ import { Reasoning } from 'neba';
 
 ### duration
 
-밀리초 단위이고, 헤더는 "Thought for 4.2s"로 읽힙니다. 주지 않으면 `streaming`이 true가 된 시점부터 스스로 세고, 멈춘 뒤에는 마지막 값을 그대로 둡니다. 1초마다 세므로 1초가 안 되는 구간은 숫자를 얻지 못하고, 헤더는 대신 "Finished thinking"이라고 씁니다.
+밀리초 단위이고, 헤더는 "Thought for 4.2s"로 읽힙니다. 주지 않으면 `streaming`이 true가 된 시점부터 스스로 셉니다. 세는 동안은 1초마다 갱신하고, 스트림이 멈출 때 한 번 더 재므로 헤더에는 실제로 걸린 시간이 적힙니다. 1초가 안 되는 구간은 "Thought for 900ms"처럼 씁니다. 스트림이 한 번도 돌지 않은 패널은 "Finished thinking"이라고 씁니다.
 
 ### autoOpen
 

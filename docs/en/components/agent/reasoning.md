@@ -39,7 +39,7 @@ A Reasoning that _mounts_ while `streaming` is already true starts open: there i
 
 ### duration
 
-Milliseconds, and the header reads "Thought for 4.2s". Leave it out and the panel counts its own from the moment `streaming` went true, keeping the last figure once it stops — the count ticks once a second, so a stretch shorter than that never gets a number and the header says "Finished thinking" instead.
+Milliseconds, and the header reads "Thought for 4.2s". Leave it out and the panel counts its own from the moment `streaming` went true. The count ticks once a second, and is measured once more when the stream stops, so the header gives the time it took — "Thought for 900ms" for a stretch under a second. A panel that never streamed says "Finished thinking".
 
 ### autoOpen
 

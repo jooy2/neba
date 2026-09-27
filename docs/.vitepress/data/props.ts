@@ -15762,8 +15762,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'duration',
       type: 'number',
       description: {
-        ko: '사고에 걸린 시간(ms). 주지 않으면 streaming이 켜진 시점부터 스스로 세고, 멈춘 뒤 마지막 값을 유지합니다',
-        en: 'How long the thinking took, in milliseconds. Left out, the panel counts its own and keeps the last figure once it stops'
+        ko: '사고에 걸린 시간(ms). 주지 않으면 streaming이 켜진 시점부터 스스로 세고, 멈출 때 한 번 더 재서 그 값을 유지합니다',
+        en: 'How long the thinking took, in milliseconds. Left out, the panel counts its own and measures it once more when the stream stops'
       }
     },
     {

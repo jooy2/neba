@@ -103,6 +103,13 @@ export function formatDuration(ms: number, locale?: string): string {
 }
 
 /**
+ * A layout effect in the browser, so the total below replaces the last tick
+ * before the frame is painted rather than one frame after it; a plain effect on
+ * a server, where a layout effect does nothing but warn.
+ */
+const useClockEffect = typeof document === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
+/**
  * How long a run has been going, in milliseconds, or `null`.
  *
  * A `duration` the caller knows wins outright; without one the clock counts,
@@ -115,11 +122,13 @@ export function formatDuration(ms: number, locale?: string): string {
  * does not have, and a tool that answers in 300ms would have spent its whole
  * life saying zero.
  *
- * The last figure is **kept** once the run ends, which is what turns a live
- * count into a total — a thinking panel that says "Thought for 4s" is reading
- * the same number it was ticking a moment ago. It is cleared when a new run
- * starts, so a retried call counts its own attempt rather than carrying the
- * first one's number forward.
+ * Once the run ends the figure is **measured once more** and kept, which is
+ * what turns a live count into a total. Measured rather than left at the last
+ * tick: a run of 4.9 seconds would otherwise say 4, and one under a second
+ * would say nothing at all, where a `duration` of the same length says "4.9s"
+ * or "900ms".
+ * It is cleared when a new run starts, so a retried call counts its own attempt
+ * rather than carrying the first one's number forward.
  */
 export function useElapsed(running: boolean, duration: number | undefined): number | null {
   const measure = running && duration === undefined;
@@ -140,7 +149,16 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
     }
   }
 
-  React.useEffect(() => {
+  /*
+   * The total, taken when the clock stops and handed over by the effect below.
+   * A ref rather than a state write in the cleanup, because the cleanup also
+   * runs on an unmount — and on the one Strict Mode stages right after the
+   * first mount, which would put a total of nothing on a run that has only
+   * just started.
+   */
+  const total = React.useRef<number | null>(null);
+
+  useClockEffect(() => {
     if (!measure) {
       return undefined;
     }
@@ -148,7 +166,20 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
     const started = Date.now();
     const id = setInterval(() => setElapsed(Date.now() - started), 1000);
 
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      total.current = Date.now() - started;
+    };
+  }, [measure]);
+
+  // Runs after the cleanup above, on the commit where the run ended.
+  useClockEffect(() => {
+    if (measure || total.current === null) {
+      return;
+    }
+
+    setElapsed(total.current);
+    total.current = null;
   }, [measure]);
 
   return duration ?? elapsed;

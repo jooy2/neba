@@ -45,6 +45,35 @@ describe('Reasoning', () => {
     });
   });
 
+  describe('its clock', () => {
+    /** Streams for `millis` on a fake clock, then stops. */
+    async function thinkFor(millis: number) {
+      vi.useFakeTimers();
+
+      try {
+        const screen = await render(<Reasoning streaming>Weighing two options.</Reasoning>);
+
+        await vi.advanceTimersByTimeAsync(millis);
+        await screen.rerender(<Reasoning>Weighing two options.</Reasoning>);
+
+        return screen.getByRole('button').element().textContent;
+      } finally {
+        vi.useRealTimers();
+      }
+    }
+
+    // The clock ticks once a second, and the total was whichever tick came
+    // last: 4.9 seconds read "4s".
+    it('reports the time it took rather than the last whole second', async () => {
+      expect(await thinkFor(4900)).toBe('Thought for 4.9s');
+    });
+
+    // And a run shorter than the first tick said nothing at all.
+    it('reports a run under a second', async () => {
+      expect(await thinkFor(900)).toBe('Thought for 900ms');
+    });
+  });
+
   describe('the panel', () => {
     it('is closed before any stream has run', async () => {
       const screen = await render(<Reasoning>Weighing two options.</Reasoning>);

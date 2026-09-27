@@ -45,9 +45,9 @@ export interface ReasoningProps
   /**
    * How long the thinking took, in milliseconds.
    *
-   * Left out, the panel counts its own from the moment `streaming` went true
-   * and keeps the last figure once it stops — which is where "Thought for 4s"
-   * comes from. A stretch shorter than a second never gets a number, and the
+   * Left out, the panel counts its own from the moment `streaming` went true,
+   * and measures it once more when the stream stops — which is where "Thought
+   * for 4.9s" comes from. A panel that never streamed has no figure, and the
    * header says so in words instead.
    */
   duration?: number;
