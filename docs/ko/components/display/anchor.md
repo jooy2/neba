@@ -42,6 +42,8 @@ import { Anchor } from 'neba';
 
 scrollport 상단에서 얼마나 내려온 지점을 "제목에 도달했다"고 볼지 정합니다. sticky header의 높이를 넣으세요. 그러지 않으면 바에 가려진 제목이 표시되는 일이 없습니다.
 
+문서 전체가 스크롤되는 페이지에서 행을 누르면 브라우저가 직접 제목으로 이동하고, 이때는 `offset`을 읽지 않습니다. 제목이 바 아래에 오게 하려면 페이지에 같은 높이의 `scroll-padding-top`을 주세요.
+
 ### container
 
 문서가 아닌 다른 것이 스크롤될 때 그 요소입니다. 예를 들어 `scroll="content"`인 [PageLayout](../layout/page-layout)이 페이지를 담는 요소입니다.

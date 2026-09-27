@@ -302,7 +302,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **153** Tooltip: say that a tooltip on a `disabled` trigger cannot open from the keyboard, and point at `focusableWhenDisabled`. `tooltip.md:52`, both locales.
 - [x] **154** Toast: `## Toast or Alert` is a section outside the page skeleton. `toast.md:91`, both locales. Fix: fold its one fact into an Accessibility bullet.
 - [ ] **155** [decision] Image: `width` and `height` given together set only a proportion; the box spans its container, unlike an `<img>`, while the page says they are taken "as an `<img>` takes them". `image.md:45`, `Image.tsx:1235-1240`. (a) Say so on the page and in the JSDoc; (b) cap the box at `width` with `max-width`.
-- [ ] **156** Anchor: `offset` does not move where a pressed row lands on a page that scrolls the document; that page needs `scroll-padding-top`. `anchor.md:41-43`, both locales.
+- [x] **156** Anchor: `offset` does not move where a pressed row lands on a page that scrolls the document; that page needs `scroll-padding-top`. `anchor.md:41-43`, both locales. The JSDoc and the props row say it too.
 - [ ] **157** Breadcrumb: the `render` section says `href` is written once above an example that writes it twice, and the `structuredData` JSDoc still says a page can only have one. `breadcrumb.md:74-77`, `Breadcrumb.tsx:86`.
 - [ ] **158** Table: the `classNames` example `headCell: 'text-(--neba-fg)'` does nothing, because header ink is inline. `table.md:91, 97`, `Table.tsx:61-66`. Fix: `[--n-cell-ink:…]`, and say ink goes through that slot.
 - [ ] **159** `locale` rows: Table's mentions a sort it does not have, and DataTable's gives `'en'` as the default while sorting, numbers and dates follow the runtime. `props.ts:6334, 6778`.

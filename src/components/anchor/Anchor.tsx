@@ -47,7 +47,9 @@ export interface AnchorProps extends Omit<
   /**
    * How far below the top of the scrollport a heading counts as reached, in
    * pixels. Set it to the height of a sticky header, or the heading under the
-   * bar is never the one marked.
+   * bar is never the one marked. A pressed row on a page that scrolls the
+   * document is the browser's own jump, which does not read this: give that
+   * page a `scroll-padding-top` of the same height.
    * @default 0
    */
   offset?: number;

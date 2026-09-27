@@ -42,6 +42,8 @@ Nothing is marked while the reader is still above the first heading.
 
 How far below the top of the scrollport a heading counts as reached. Set it to the height of a sticky header, or the heading under the bar is never the one marked.
 
+On a page that scrolls the document, a pressed row is the browser's own jump to the heading, which does not read `offset`. Give the page a `scroll-padding-top` of the same height so the heading lands below the bar too.
+
 ### container
 
 What scrolls, when it is not the document: the element a [PageLayout](../layout/page-layout) with `scroll="content"` puts the page inside, for instance.

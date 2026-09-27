@@ -4339,8 +4339,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'number',
       default: '0',
       description: {
-        ko: 'scrollport 상단에서 얼마나 내려온 지점을 제목에 도달한 것으로 볼지 (px). sticky header의 높이를 넣으세요',
-        en: 'How far below the top of the scrollport a heading counts as reached, in pixels. Set it to the height of a sticky header'
+        ko: 'scrollport 상단에서 얼마나 내려온 지점을 제목에 도달한 것으로 볼지 (px). sticky header의 높이를 넣으세요. 문서가 스크롤되는 페이지는 같은 높이의 scroll-padding-top도 필요합니다',
+        en: 'How far below the top of the scrollport a heading counts as reached, in pixels. Set it to the height of a sticky header. A page that scrolls the document needs a scroll-padding-top of the same height too'
       }
     },
     {
