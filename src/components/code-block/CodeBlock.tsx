@@ -535,9 +535,11 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     /**
      * Select-all inside the block, rather than select-all of the page.
      *
-     * The code is a focusable region, so a reader who tabbed to it and pressed
-     * the shortcut every editor has meant *this* code — and the browser's own
-     * answer, selecting the article around it too, is never what they were after.
+     * A block that scrolls is a focusable region, so a reader who tabbed to it
+     * and pressed the shortcut every editor has meant *this* code — and the
+     * browser's own answer, selecting the article around it too, is never what
+     * they were after. A block short enough not to scroll takes no focus, and
+     * the key there is the page's.
      * It is unconditional rather than a prop because the alternative it would
      * turn back on is not a feature.
      *

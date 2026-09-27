@@ -22,8 +22,8 @@ export interface VisuallyHiddenProps extends React.ComponentPropsWithoutRef<'spa
  * Content that is in the accessibility tree and not on the screen.
  *
  * The library has needed this everywhere from the beginning and kept it to
- * itself: the word "Remove" behind a Chip's ×, the count behind a Badge's dot,
- * the page number under a Pagination chevron, the table a chart draws for a
+ * itself: the status word beside a ToolCall's mark, the count behind a
+ * Badge's dot, the page a Pagination announces, the table a chart draws for a
  * screen reader instead of a picture. This is the same 1px clipped box, offered
  * so an application's own markup can say the same things.
  *

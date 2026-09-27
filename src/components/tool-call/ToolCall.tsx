@@ -155,7 +155,7 @@ const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
 /** The name, one step above the two headings inside the panel. */
 const nameClasses: Record<NebaSize, string> = sheetTitleClasses;
 
-/** Which block a status shows, and which of the two headings goes over it. */
+/** Which block a status shows: the error on a failed call that has one, and the result otherwise. */
 function bodyOf(
   status: NebaRunStatus,
   result: React.ReactNode,

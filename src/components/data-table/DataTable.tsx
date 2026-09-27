@@ -556,8 +556,6 @@ const resizeHandleClasses = [
 const PRESSABLE_IN_CELL =
   'button, a, input, select, textarea, label, [role="button"], [role="checkbox"], [role="switch"], [role="radio"]';
 
-/** The magnifier on the search field. Local: nothing else in the library draws one. */
-/** The `<tr>` drawn for a key, or `null` when the window has not drawn it. */
 /**
  * What a cell with no `render` writes.
  *
@@ -576,6 +574,7 @@ function plainCell(value: unknown, locale: string | undefined): React.ReactNode 
   return value as React.ReactNode;
 }
 
+/** The `<tr>` drawn for a key, or `null` when the window has not drawn it. */
 function rowElement(body: HTMLTableSectionElement, key: string): HTMLTableRowElement | null {
   for (let index = 0; index < body.rows.length; index += 1) {
     if (body.rows[index].dataset.nebaRow === key) {
@@ -586,6 +585,7 @@ function rowElement(body: HTMLTableSectionElement, key: string): HTMLTableRowEle
   return null;
 }
 
+/** The magnifier on the search field. Local: nothing else in the library draws one. */
 function SearchIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -1235,16 +1235,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   );
 
   /**
-   * A drag freezes every column, not just the one being pulled.
-   *
-   * Until the first drag most columns have no width of their own and share
-   * what is left — which means widening one would narrow all the others by the
-   * same amount, and the reader would watch four columns move to resize one. So
-   * the first `pointerdown` reads what the browser has actually laid out and
-   * writes all of it down; from then on every column is explicit and a drag
-   * moves exactly one boundary.
-   */
-  /**
    * Drags one header along the row to move its column.
    *
    * The drop target is worked out from the header cells that are already on
@@ -1320,6 +1310,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     });
   };
 
+  /**
+   * A drag freezes every column, not just the one being pulled.
+   *
+   * Until the first drag most columns have no width of their own and share
+   * what is left — which means widening one would narrow all the others by the
+   * same amount, and the reader would watch four columns move to resize one. So
+   * the first `pointerdown` reads what the browser has actually laid out and
+   * writes all of it down; from then on every column is explicit and a drag
+   * moves exactly one boundary.
+   */
   const startResize = (key: string, event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.stopPropagation();

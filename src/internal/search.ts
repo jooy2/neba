@@ -1,9 +1,9 @@
 /**
  * What "this matches what I typed" means, once.
  *
- * Three components let a reader type at a list of their own — DataTable,
- * CommandPalette and Transfer — and each had a `matches` of its own. They
- * disagreed: a DataTable found `José` for `jose` and the other two did not,
+ * Four components let a reader type at a list of their own — DataTable,
+ * CommandPalette, Transfer and TreeSelect — and each had a `matches` of its
+ * own. They disagreed: a DataTable found `José` for `jose` and the others did not,
  * which is not a preference anybody chose. A reader who learns what the search
  * box in one part of a product does has learned the wrong thing about the rest
  * of it.

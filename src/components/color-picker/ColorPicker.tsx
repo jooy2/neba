@@ -668,7 +668,7 @@ const fallbackHsv: Hsv = { h: 217, s: 87, v: 82 };
  * every shade of black is the same colour and the rail would snap to red.
  *
  * There is no colour library under this. The conversions are in
- * `internal/color.ts`, which is a hundred lines of arithmetic — the whole
+ * `internal/color.ts`, which is under four hundred lines of arithmetic — the whole
  * reason no colour library comes with it.
  */
 export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(

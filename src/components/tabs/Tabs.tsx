@@ -278,11 +278,6 @@ const indicatorSurfaceClasses: Record<NebaVariant, string> = {
 };
 
 /**
- * A tab is a control, so it takes the control height ladder — a `md` tab and a
- * `md` Button are the same 32px, which is what lets a tab bar sit in a toolbar
- * next to one without the row losing its baseline.
- */
-/**
  * Where the label sits once the tab is wider than it is. Logical, so it follows
  * the reading direction rather than the screen.
  */
@@ -322,6 +317,9 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
         'whitespace-nowrap font-medium',
         tabAlignClasses[align],
         '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
+        // A tab is a control, so it takes the control height ladder: a `md`
+        // tab and a `md` Button are the same 32px, which is what lets a tab bar
+        // sit in a toolbar next to one without the row losing its baseline.
         controlHeightClasses[size],
         controlTextClasses[size],
         gapClasses[size],
