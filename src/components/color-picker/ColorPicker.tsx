@@ -33,6 +33,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** The names for the parts of the picker that have no text on them. */
 export interface ColorPickerLabels {
@@ -688,7 +689,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       error,
       invalid,
       required = false,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       fullWidth = false,
       clearable = false,
@@ -708,6 +709,10 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
+    // A disabled Fieldset around the picker disables it too. The popup's shell
+    // reads it for itself; the panel, which an inline picker draws on its own,
+    // has only this to go on.
+    const disabled = useFieldsetDisabled(disabledProp);
     const messages = useMessages(colorMessages, locale);
     const labels: ColorPickerLabels = React.useMemo(
       () => ({ ...messages, ...labelOverrides }),

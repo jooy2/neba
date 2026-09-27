@@ -30,6 +30,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** Why a file was turned away. One reason per file, in the order they are checked. */
 export type FileRejectionReason = 'type' | 'size' | 'count';
@@ -281,7 +282,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       showList = true,
       removeLabel: removeLabelProp,
       fullWidth = true,
-      disabled = false,
+      disabled: disabledProp,
       readOnly = false,
       required = false,
       name,
@@ -292,6 +293,9 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
+    // A disabled Fieldset around the picker disables it too: Base UI's own
+    // Fieldset stops the fields it knows, and a drop zone is not one of them.
+    const disabled = useFieldsetDisabled(disabledProp);
     const messages = useMessages(fileMessages, locale);
     const removeLabel =
       removeLabelProp ?? ((fileName: string) => fillMessage(messages.remove, { name: fileName }));

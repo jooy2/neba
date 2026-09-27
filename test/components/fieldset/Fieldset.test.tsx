@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Checkbox, Fieldset, Select, Switch, TextField } from 'neba';
+import { Checkbox, ColorPicker, Fieldset, FilePicker, Select, Switch, TextField } from 'neba';
 
 describe('Fieldset', () => {
   describe('rendering', () => {
@@ -116,6 +116,38 @@ describe('Fieldset', () => {
           .element(screen.getByText(text, { exact: true }).first())
           .toHaveClass('text-(--neba-disabled-fg)');
       }
+    });
+
+    // Neither is a control Base UI's Fieldset knows about, so the drop zone and
+    // the colour square went on taking input, and looked as if they would.
+    it('takes no dropped file and no colour inside it', async () => {
+      const onFilesChange = vi.fn();
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <Fieldset legend="Brand" disabled>
+          <FilePicker onFilesChange={onFilesChange} />
+          <ColorPicker inline label="Accent" onValueChange={onValueChange} />
+        </Fieldset>
+      );
+      const zone = screen.getByRole('button', { name: /Drop files here/ }).element();
+      const transfer = new DataTransfer();
+
+      transfer.items.add(new File(['x'], 'logo.svg', { type: 'image/svg+xml' }));
+      zone.dispatchEvent(
+        new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: transfer })
+      );
+      screen
+        .getByRole('slider')
+        .first()
+        .element()
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(onFilesChange).not.toHaveBeenCalled();
+      expect(onValueChange).not.toHaveBeenCalled();
+      await expect
+        .element(screen.getByText('Accent', { exact: true }))
+        .toHaveClass('text-(--neba-disabled-fg)');
     });
 
     it('leaves them alone when it is not', async () => {

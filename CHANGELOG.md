@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `FilePicker` and an inline `ColorPicker` inside a disabled `Fieldset` are disabled.** Base UI's `Fieldset` stops the fields it knows, and neither is one of them: a file dropped on the picker still reached `onFilesChange`, the inline picker's square and rails still answered the keys and the pointer, and both were drawn available. Both read the `Fieldset` now, as the other fields already did.
+
 - **A `Reasoning`, a `ToolCall` or an `AgentStep` that timed itself reports the time it took.** The clock ticks once a second, and when a run ended without a `duration` the total was whichever tick had come last — 4.9 seconds of thinking read "Thought for 4s", and anything under a second had no figure at all and read "Finished thinking". The clock is read once more when the run ends, so the total says what a `duration` of the same length says: "4.9s", or "900ms".
 
 - **An `AgentSteps` chain's running marker counts the step under way, not the whole chain.** The marker `running` draws stands for whichever step is happening now, and it stayed mounted as finished steps were appended in front of it — so its clock went on counting from the first step, and the fourth step of a chain that had been going a minute said it had been running a minute. It starts again with each step appended before it.

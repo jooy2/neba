@@ -208,7 +208,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 
 ### Inputs and fields
 
-- [ ] **88** FilePicker and an inline ColorPicker keep taking input inside a disabled `Fieldset`: the drop handlers fire `onFilesChange`, the `role="slider"` divs answer keys and pointer, and both look enabled. `FilePicker.tsx:312, 376`, `ColorPicker.tsx:695`. Fix: read `useFieldsetDisabled(disabled)` in both.
+- [x] **88** FilePicker and an inline ColorPicker keep taking input inside a disabled `Fieldset`: the drop handlers fire `onFilesChange`, the `role="slider"` divs answer keys and pointer, and both look enabled. `FilePicker.tsx:312, 376`, `ColorPicker.tsx:695`. Fix: read `useFieldsetDisabled(disabled)` in both.
 - [ ] **89** Inline ColorPicker: a disabled one still submits its value, and `required` never holds a submit back; only the popup mode does both, as the page promises. `src/components/color-picker/ColorPicker.tsx:725-778`. Fix: `disabled` on the hidden input and the off-screen `required` input PickerShell uses.
 - [ ] **90** Provider axes: TreeSelect ignores a provider's `variant` and `density` (`TreeSelect.tsx:215`), and ProgressBox ignores its `locale` (`ProgressBox.tsx:52-66`), both of which their pages promise. `test/package/resolution.test.ts:503-524` misses both because it only sees destructured axes. Fix: add the axes to `useStyleDefaults`, and widen the scan to props that extend `NebaStyleProps` or `PickerShellProps`.
 - [ ] **91** SegmentedButton: segments in a `readOnly` set still light up and flash under the pointer. `src/components/segmented-button/SegmentedButton.tsx:200-218`. Fix: carry `readOnly` in the context and drop the glow, the hover ink and the pointer cursor.
