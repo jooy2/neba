@@ -79,7 +79,7 @@ An empty field never sends — not by the button, which is disabled, and not by 
 
 ### onFiles
 
-Passing it makes the shell a drop target. It is called with the dropped files and what happens to them is the application's; the shell says it is ready for them while a drag is over it.
+Passing it makes the shell a drop target. It is called with the dropped files and what happens to them is the application's; the shell says it is ready for them while a drag is over it. A `disabled` or `readOnly` field takes no drop.
 
 ## Accessibility
 

@@ -322,6 +322,23 @@ describe('PromptInput', () => {
         dataTransfer: transferWith(new File(['hello'], 'note.txt', { type: 'text/plain' }))
       });
 
+    it('takes no drop while it takes no input', async () => {
+      const onFiles = vi.fn();
+      const screen = await render(<PromptInput label="Message" disabled onFiles={onFiles} />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+
+      shell.dispatchEvent(fileDrag('dragenter'));
+      shell.dispatchEvent(fileDrag('drop'));
+
+      expect(onFiles).not.toHaveBeenCalled();
+      await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+
+      await screen.rerender(<PromptInput label="Message" readOnly onFiles={onFiles} />);
+      shell.dispatchEvent(fileDrag('drop'));
+
+      expect(onFiles).not.toHaveBeenCalled();
+    });
+
     it('is not a drop target at all without a handler', async () => {
       const screen = await render(<PromptInput label="Message" />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;

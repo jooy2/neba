@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `disabled` or `readOnly` `PromptInput` takes no dropped files.** Its shell stayed a drop target whatever state the field was in, so a file dragged onto a field that took no typing still lit the edge and reached `onFiles`. It is off while the field takes no input, as a `FilePicker`'s zone already was.
+
 - **A `PromptInput` that takes files leaves dragged text to its field.** Its shell answered every drag as a drag of files, so text selected somewhere and dragged into the message lit the drop edge, was never inserted, and called `onFiles` with an empty list. The shell of a `PromptInput` and a `FilePicker` answers only a drag that carries files now, and a drop of nothing but folders is not reported at all.
 
 - **The chevron on an `Accordion`, a `Collapsible`, a `ToolCall`, a `Reasoning` and a `Sources` header turns when it opens.** Each read the open state off itself, and Base UI writes it on the trigger and on nothing inside it — so the chevron pointed down whether the panel was open or shut, and only the header's colour said which. It reads the trigger's state now, and turns over as the panel opens.

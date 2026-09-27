@@ -16482,8 +16482,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onFiles',
       type: '(files: File[]) => void',
       description: {
-        ko: '주면 껍데기가 드롭 대상이 됩니다. 떨어진 파일을 어떻게 할지는 호출하는 쪽의 몫입니다',
-        en: 'Passing it makes the shell a drop target. What happens to the files is the application’s'
+        ko: '주면 껍데기가 드롭 대상이 됩니다. disabled나 readOnly일 때는 받지 않습니다. 떨어진 파일을 어떻게 할지는 호출하는 쪽의 몫입니다',
+        en: 'Passing it makes the shell a drop target, except while it is disabled or readOnly. What happens to the files is the application’s'
       }
     },
     {

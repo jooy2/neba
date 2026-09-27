@@ -81,8 +81,9 @@ export interface PromptInputProps
    */
   submitKey?: PromptSubmitKey;
   /**
-   * Passing it makes the shell a drop target. It is called with the files, and
-   * what happens to them is the application's.
+   * Passing it makes the shell a drop target, except while the field is
+   * `disabled` or `readOnly`. It is called with the files, and what happens to
+   * them is the application's.
    *
    * A folder dropped onto a page arrives looking like a zero-byte file, and
    * those are filtered out before this is called — the same check a
@@ -222,9 +223,10 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     /*
      * The depth count behind the ready state, and the document listeners that
      * put it out when a drag is abandoned rather than dropped, are
-     * `internal/drop.ts`' — a FilePicker's zone is the same box.
+     * `internal/drop.ts`' — a FilePicker's zone is the same box. Off while
+     * the field takes no input, as a FilePicker's is.
      */
-    const { over: dropping, handlers } = useDropZone(onFiles);
+    const { over: dropping, handlers } = useDropZone(lit ? onFiles : undefined);
     // The caller's, when there is one: the label below points at whatever id
     // the textarea ends up with.
     const generatedId = React.useId();
