@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "npm run clean && npm run format:fix && tsc --project tsconfig.prod.json && node scripts/annotate-pure.mjs && npm run minify && node scripts/build-styles.mjs && node scripts/build-catalog.mjs",
-    "lint": "eslint . --report-unused-disable-directives",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --report-unused-disable-directives --fix",
     "minify": "node scripts/minify.mjs",
     "size": "node scripts/measure-bundle.mjs",

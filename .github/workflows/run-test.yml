@@ -8,12 +8,19 @@ on:
     paths:
       - src/**
       - test/**
+      # The lint job type-checks and formats the docs too.
+      - docs/**
       - package.json
       - package-lock.json
       - tsconfig.json
       - tsconfig.prod.json
       - terser.config.json
       - vitest.config.ts
+      - eslint.config.ts
+      - postcss.config.mjs
+      - .prettierrc
+      - .prettierignore
+      - .editorconfig
       - scripts/**
       - .github/workflows/run-test.yml
   workflow_dispatch:
