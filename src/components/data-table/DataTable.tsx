@@ -359,7 +359,11 @@ export interface DataTableProps<Row>
    * @default false
    */
   checkboxes?: boolean;
-  /** Fires on every press of a row, before the selection changes. */
+  /**
+   * Fires on every press of a row, after the press has changed the selection. A
+   * press on the row's own tick or inside an open cell editor is not a press on
+   * the row.
+   */
   onRowClick?: (row: Row, index: number, event: React.MouseEvent<HTMLTableRowElement>) => void;
   /** Fires on a double-click, and on Enter. Opening the row is what this is. */
   onRowActivate?: (row: Row, index: number) => void;
