@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A resizable `Sidebar` says its width again after it has been a drawer.** The separator's `aria-valuenow`, `aria-valuemin` and `aria-valuemax` were written once, so a sidebar that collapsed into a drawer and widened back into a column — or first mounted as a drawer — came back with a separator that said none of the three.
+
 - **A `Tour` jumps to each step's target under a reduced-motion preference.** It scrolled the page to the target with `behavior: 'smooth'` whatever the reader had asked for, which is the page gliding under them. It jumps instead when the preference is set, as a `ScrollZone` already does.
 
 - **Opening a `ColorPicker` or a `TreeSelect` takes the focus into its popup.** The shell they share leaves the focus alone on opening, because a date picker's calendar moves it into the grid itself — but these two move it nowhere, so a reader who opened one from the keyboard was left on the trigger, and a searchable `TreeSelect` did not take what they typed next. The focus now lands on the first thing in the popup that takes it: the colour square, the search field or the tree.

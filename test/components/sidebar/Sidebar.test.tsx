@@ -149,6 +149,27 @@ describe('Sidebar', () => {
       await expect.element(handle).toHaveAttribute('aria-valuenow', '236');
     });
 
+    // A column that came back from being a drawer was a new handle with none
+    // of the three attributes, and the effect that writes them did not run.
+    it('says its width again when it comes back from being a drawer', async () => {
+      await widen(NARROW);
+      const screen = await render(
+        <Sidebar resizable collapseBelow="md" width={220} minWidth={180} maxWidth={400}>
+          Navigation
+        </Sidebar>
+      );
+
+      await expect.poll(() => screen.getByRole('separator').query()).toBeNull();
+
+      await widen(WIDE);
+
+      const handle = screen.getByRole('separator');
+
+      await expect.element(handle).toHaveAttribute('aria-valuenow');
+      expect(handle.element()).toHaveAttribute('aria-valuemin', '180');
+      expect(handle.element()).toHaveAttribute('aria-valuemax', '400');
+    });
+
     it('refuses to be dragged past its bounds', async () => {
       const screen = await render(
         <Sidebar resizable width={170} minWidth={168} style={{ width: 170 }} />

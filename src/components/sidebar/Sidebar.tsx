@@ -369,8 +369,10 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
     describeWidth(node, node.getBoundingClientRect().width);
     // The bounds and the width as given; a drag describes itself as it goes.
+    // `collapsed` too: a column that comes back from being a drawer is a new
+    // handle, and one first mounted as a drawer had no handle to describe.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resizable, minWidth, maxWidth, width]);
+  }, [resizable, minWidth, maxWidth, width, collapsed]);
 
   const applyWidth = (pixels: number) => {
     const node = rootRef.current;
