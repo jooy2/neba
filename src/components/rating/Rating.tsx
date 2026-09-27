@@ -328,10 +328,15 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
 
   const styles = {
     ...controlSlots(color, 0, 'solid'),
-    // An empty star is not a disabled one and not a hairline: it is the ghost of
-    // the star beside it, so it takes the muted ink at enough strength to read
-    // as a shape and not enough to compete with the ones that are filled.
-    '--n-empty': 'color-mix(in oklab, var(--neba-muted-fg) 40%, transparent)',
+    // An empty star is not a disabled one and not a hairline. On a Rating a
+    // reader sets, it is the state of a control, and WCAG 1.4.11 asks 3:1 of
+    // that against the page: at the muted ink's 80% it clears it in both
+    // themes, where 40% came to 1.7:1 on white. A `readOnly` Rating is a
+    // picture of a value named in words, and keeps the ghost of the star
+    // beside it, strong enough to read as a shape and no more.
+    '--n-empty': readOnly
+      ? 'color-mix(in oklab, var(--neba-muted-fg) 40%, transparent)'
+      : 'color-mix(in oklab, var(--neba-muted-fg) 80%, transparent)',
     ...style
   } as React.CSSProperties;
 

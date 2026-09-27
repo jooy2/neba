@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **A `Rating` a reader sets draws its empty stars at 3:1 against the page.** They were the muted ink at 40%, about 1.7:1 on white, which is under what WCAG 1.4.11 asks of a control's state. They are at 80% now, which clears 3:1 in both themes, so an interactive Rating's empty stars are visibly darker. A `readOnly` Rating keeps the fainter ghost.
+
 - **`AnimateCounter`, `AnimateScramble` and `AnimateSplit` render a `<span>` by default, as `AnimateTyping`, `AnimateHeadline` and `AnimateMarquee` do.** A `<div>` is not allowed inside the `<span>` a `Statistic`'s value is, which is the pairing the AnimateCounter page recommends, and inside a `<p>` it broke hydration. The root is inline now rather than a block; pass `render={<div />}`, or a `block` class, where the block was wanted. Their ref is typed `HTMLElement`.
 
 - **An `Alert`'s live region is its title and message rather than the whole alert.** `role="alert"` or `role="status"` was on the root, and a live region is read out whole, so every announcement ended with the action's and the dismiss button's names. The role, and a `role` you pass, go on the column that holds the title and the message now; the ref, `className` and every other attribute stay on the root. A test that found the alert with `getByRole('alert')` or `getByRole('status')` to read a class or a slot should find the root instead.

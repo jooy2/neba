@@ -101,4 +101,5 @@ import { Rating } from 'neba';
 - 고를 수 있는 Rating은 진짜 `<input type="radio">`로 만들어진 `role="radiogroup"`입니다. 줄 전체가 tab 정지점 하나이고, 그 안에서 방향키가 움직이며, 고른 것에 `aria-checked`가 붙고, 폼 전송에 값이 실립니다.
 - 별 하나하나가 "5점 만점에 3점"처럼 읽힙니다.
 - `readOnly`는 input을 모두 없애고 `role="img"` 하나만 남깁니다.
+- 독자가 값을 고르는 Rating에서 빈 별은 두 테마 모두에서 페이지와 3:1 이상의 대비를 가집니다. `readOnly` Rating은 빈 별을 옆 별의 흐릿한 자국처럼 더 옅게 그립니다.
 - 페이지의 언어로 읽히도록 `locale`을 지정하거나, `label`과 `valueLabel`에 직접 쓰세요.

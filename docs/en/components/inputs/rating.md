@@ -101,4 +101,5 @@ Give it a `name` and the radios are submitted under it. `required` stops the for
 - A choosable Rating is a `role="radiogroup"` built out of real `<input type="radio">`s: one tab stop for the row, arrow keys within it, `aria-checked` on the one that is taken, and a value in a form submission.
 - Each star is read out as "3 out of 5".
 - `readOnly` removes every input and leaves a single `role="img"`.
+- On a Rating a reader sets, an empty star clears 3:1 against the page in both themes. A `readOnly` Rating draws its empty stars fainter, as the ghost of the ones beside them.
 - Set `locale` so the names are read in the page's language, or write them yourself with `label` and `valueLabel`.
