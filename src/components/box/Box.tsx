@@ -93,13 +93,10 @@ export const boxPaddingYValues: Record<NebaDensity, Record<NebaSize, string>> = 
   compact: { xs: '0.375rem', sm: '0.5rem', md: '0.625rem', lg: '0.75rem', xl: '1rem' }
 };
 
-const baseClasses = [
-  'block',
-  // The same property list and durations as the controls, so a box whose color
-  // or elevation changes settles at the house pace. There is no `:active`
-  // override because a box is not pressed — it holds things that are.
-  transitionClasses
-].join(' ');
+// The same property list and durations as the controls, so a box whose color
+// or elevation changes settles at the house pace. There is no `:active`
+// override because a box is not pressed — it holds things that are.
+const baseClasses = `block ${transitionClasses}`;
 
 /**
  * The variants say the same three things they say on Button — filled, hairline,
@@ -117,17 +114,15 @@ const baseClasses = [
  * it carries a hairline; the color family stays in the edge.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    `${surfaceClasses} ` +
+    'text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    `${surfaceClasses} ` +
+    'border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // Grouping only — no surface to catch the light on, and so nothing to cast a
   // shadow either. `elevation` is deliberately ignored rather than drawing a
   // shadow around an invisible rectangle.

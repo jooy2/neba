@@ -840,34 +840,31 @@ export const disabledClasses: Record<NebaVariant, string> = {
  * shows up in the edge, the ring and the caret instead.
  */
 export const fieldRestClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
-    'hover:bg-(--n-panel-press)',
-    'focus-within:bg-(--n-panel-press)'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
-    'focus-within:bg-(--n-panel-hover) focus-within:[border-color:var(--n-ring)]',
+  solid:
+    `${surfaceClasses} ` +
+    'text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)] ' +
+    'hover:bg-(--n-panel-press) ' +
+    'focus-within:bg-(--n-panel-press)',
+  outline:
+    `${surfaceClasses} ` +
+    'border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)] ' +
+    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)] ' +
+    'focus-within:bg-(--n-panel-hover) focus-within:[border-color:var(--n-ring)] ' +
     // Both at once, spelled out: `hover:` and `focus-within:` are one class
     // each, so which of them a pointer resting on a focused field gets is
     // decided by the order Tailwind generated them in. The hairline was
     // coming out a shade under the ring it is flush against.
-    'focus-within:hover:[border-color:var(--n-ring)]'
-  ].join(' '),
+    'focus-within:hover:[border-color:var(--n-ring)]',
   // No surface until it is wanted — the field in a table cell that only looks
   // like a field once you go near it.
-  text: [
-    'text-(--neba-fg) bg-transparent',
-    'hover:bg-(--n-soft)',
-    'focus-within:bg-(--n-soft-hover)',
+  text:
+    'text-(--neba-fg) bg-transparent ' +
+    'hover:bg-(--n-soft) ' +
+    'focus-within:bg-(--n-soft-hover) ' +
     'focus-within:hover:bg-(--n-soft-hover)'
-  ].join(' ')
 };
 
 /**
@@ -876,16 +873,14 @@ export const fieldRestClasses: Record<NebaVariant, string> = {
  * because a read-only field is still something you copy out of.
  */
 export const fieldReadOnlyClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--neba-plate-solid)] [filter:saturate(0.55)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]'
-  ].join(' '),
+  solid:
+    `${surfaceClasses} ` +
+    'text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--neba-plate-solid)] [filter:saturate(0.55)]',
+  outline:
+    `${surfaceClasses} ` +
+    'border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)] [filter:saturate(0.55)]',
   text: 'text-(--neba-fg) bg-transparent [filter:saturate(0.55)]'
 };
 
