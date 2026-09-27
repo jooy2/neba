@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `ScrollZone` press let go outside the strip is over.** A mouse press on the strip that was released somewhere else before it had moved far enough to be a drag left the strip listening for it, so the next time the pointer passed over the strip — with no button held — the strip followed it as if it were being dragged. The first move with no button held ends the press now.
+
 - **An `AnimateCounter`, an `AnimateTyping` and an `AnimateScramble` play again when told to.** A `play` number that goes up, or a second hover on one with a finite `repeat`, is meant to start the effect over, as it does on every other `Animate*` — but these three run in JavaScript, and their loops were keyed on having started, which they still had. The count stayed where it had landed and the text stayed typed. All three start over now.
 
 - **A labelled `Skeleton` of several lines draws without a warning.** Its label went into the same array as its bars with no key of its own, so every page with one logged React's warning about keys in development. The label and the bars are drawn as siblings now; the markup does not change.

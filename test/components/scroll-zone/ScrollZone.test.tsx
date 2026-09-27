@@ -557,6 +557,7 @@ describe('ScrollZone', () => {
       box.dispatchEvent(
         new PointerEvent('pointermove', {
           bubbles: true,
+          buttons: 1,
           pointerId: 1,
           pointerType: 'mouse',
           clientX: 300,
@@ -569,6 +570,56 @@ describe('ScrollZone', () => {
       box.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
 
       expect(box.style.scrollSnapType).toBe('');
+    });
+
+    // The press is let go outside the strip before it has moved far enough to
+    // be a drag, so its pointerup never reaches the strip.
+    it('lets a press go that was released outside the strip', async () => {
+      const screen = await render(
+        <ScrollZone snap data-testid="zone">
+          {cards}
+        </ScrollZone>
+      );
+      const box = scroller(screen);
+      box.setPointerCapture = () => {};
+
+      box.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          button: 0,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: 400,
+          clientY: 20
+        })
+      );
+      document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      // A later hover over the strip, with no button held.
+      box.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          buttons: 0,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: 300,
+          clientY: 20
+        })
+      );
+      box.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          buttons: 0,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: 200,
+          clientY: 20
+        })
+      );
+
+      expect(box.dataset.dragging).toBeUndefined();
+      expect(box.style.scrollSnapType).toBe('');
+      expect(document.body.style.getPropertyValue('-webkit-user-select')).toBe('');
     });
   });
 });

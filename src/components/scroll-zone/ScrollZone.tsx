@@ -472,6 +472,15 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       const selection = document.body.style.getPropertyValue('-webkit-user-select');
 
       const move = (moveEvent: PointerEvent) => {
+        // A press let go outside the strip before the threshold sends its
+        // pointerup somewhere else, so the first move to come back with no
+        // button held is the end of it. Left in place, these listeners would
+        // turn the next hover over the strip into a drag.
+        if (moveEvent.buttons === 0) {
+          release();
+          return;
+        }
+
         const dx = moveEvent.clientX - fromX;
         const dy = moveEvent.clientY - fromY;
 
