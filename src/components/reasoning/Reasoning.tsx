@@ -58,7 +58,10 @@ export interface ReasoningProps
    * @default false
    */
   defaultOpen?: boolean;
-  /** Called when the header, or the stream, opens or closes the panel. */
+  /**
+   * Called when the header opens or closes the panel. The stream opening and
+   * closing it under `autoOpen` does not call it.
+   */
   onOpenChange?: (open: boolean) => void;
   /**
    * Opens the panel while the stream runs and closes it when the stream ends.

@@ -129,6 +129,29 @@ describe('Reasoning', () => {
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 
+    // The stream moves an uncontrolled panel on its own, and that is not a
+    // change the caller has to be told about.
+    it('does not report a panel the stream opened and closed', async () => {
+      const onOpenChange = vi.fn();
+      const screen = await render(
+        <Reasoning onOpenChange={onOpenChange}>Weighing two options.</Reasoning>
+      );
+
+      await screen.rerender(
+        <Reasoning onOpenChange={onOpenChange} streaming>
+          Weighing two options.
+        </Reasoning>
+      );
+      await expect.element(screen.getByText('Weighing two options.')).toBeInTheDocument();
+
+      await screen.rerender(
+        <Reasoning onOpenChange={onOpenChange}>Weighing two options.</Reasoning>
+      );
+      await expect.element(screen.getByText('Weighing two options.')).not.toBeInTheDocument();
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
     it('answers a press whichever way the stream left it', async () => {
       const onOpenChange = vi.fn();
       const screen = await render(

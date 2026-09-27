@@ -15787,8 +15787,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onOpenChange',
       type: '(open: boolean) => void',
       description: {
-        ko: '헤더가, 또는 스트림이 패널을 열거나 닫았을 때',
-        en: 'Called when the header, or the stream, opens or closes the panel'
+        ko: '헤더가 패널을 열거나 닫았을 때. autoOpen으로 스트림이 열고 닫을 때는 불리지 않습니다',
+        en: 'Called when the header opens or closes the panel. The stream opening and closing it under autoOpen does not call it'
       }
     },
     {
