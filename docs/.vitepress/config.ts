@@ -64,8 +64,6 @@ function vendorEntries(): string[] {
 const localeBase = (lang: string) => (lang === defaultLocale ? '/' : `/${lang}/`);
 
 const commonSidebarConfig: VitePressSidebarOptions = {
-  debugPrint: true,
-  manualSortFileNameByPriority: ['introduction.md'],
   collapsed: false,
   capitalizeFirst: true,
   useTitleFromFileHeading: true,
@@ -127,11 +125,10 @@ const navFor = (lang: string, labels: [string, string, string]) => [
 
 const vitePressI18nConfig: VitePressI18nOptions = {
   locales: supportLocales,
-  debugPrint: true,
   rootLocale: defaultLocale,
   searchProvider: 'local',
   description: {
-    ko: '버튼, 입력란, 메뉴, 대화상자, 테이블 등 다양한 요소를 아우르는 포괄적인 React UI 컴포넌트 라이브러리입니다. 접근성이 뛰어나고 테마 적용이 가능하며, 하나의 프로프 어휘와 반투명한 아크릴 디자인 언어를 공유합니다. ESM 전용이며, 타입 정의가 포함되어 있고 다크 모드가 기본으로 지원됩니다.',
+    ko: '버튼, 입력란, 메뉴, 대화상자, 테이블 등 다양한 요소를 아우르는 포괄적인 React UI 컴포넌트 라이브러리입니다. 접근성이 뛰어나고 테마 적용이 가능하며, 하나의 prop 어휘와 반투명한 아크릴 디자인 언어를 공유합니다. ESM 전용이며, 타입 정의가 포함되어 있고 다크 모드가 기본으로 지원됩니다.',
     en: 'A comprehensive React UI component library — buttons, fields, menus, dialogs, tables and much more — accessible and themeable, sharing one prop vocabulary and a translucent acrylic design language. ESM only, types included, dark mode built in.'
   },
   themeConfig: {
@@ -147,8 +144,8 @@ const vitePressI18nConfig: VitePressI18nOptions = {
  * per page rather than per site:
  *
  * - **Every page ships the same description.** VitePress falls back to the
- *   site's own whenever a page declares none, so two hundred pages carry one
- *   sentence between them and not one of them says what it is about. There is
+ *   site's own whenever a page declares none, so every page carries the same
+ *   sentence and not one of them says what it is about. There is
  *   already a better sentence on nearly every page — the lede under the title,
  *   which is written to be exactly this — so it is read out of the source.
  * - **Nothing says the two locales are the same page.** Without `hreflang` a
@@ -467,10 +464,9 @@ const vitePressConfig: UserConfig = {
       warmup: {
         // The library is behind a dynamic import too, so the dev server would
         // not transform a single file of it until the first preview asks — and
-        // then it asks for all hundred and ten at once, through the barrel.
-        // The demos are left out on purpose: there are two hundred of them and
-        // a session touches a handful, whereas `src/` is what every one of them
-        // pulls in.
+        // then it asks for all of it at once, through the barrel. The demos are
+        // left out on purpose: a session touches a handful of them, whereas
+        // `src/` is what every one of them pulls in.
         clientFiles: [glob('src/**/*.{ts,tsx}')]
       }
     }
@@ -582,7 +578,7 @@ function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
  *   subgroup that is *not* flattened, since its pages are whole screens rather
  *   than components and there are only four of them.
  * - **The component groups stay.** They are what say that a Combobox is an
- *   input and a Card is a surface, and fifty component pages in one list say
+ *   input and a Card is a surface, and every component page in one list says
  *   nothing at all. What is flattened is only what is *inside* a group: the
  *   generator would otherwise nest a page one level deeper than the group it is
  *   in whenever a folder gains a subfolder.
@@ -593,9 +589,9 @@ function byText(a: GeneratedSidebarItem, b: GeneratedSidebarItem): number {
  * frontmatter. The inputs group alone holds thirty-five components, and nobody
  * remembers where Slider sits in a curated order.
  *
- * The groups themselves are sorted by name too, with `charts/` pinned last: it
- * is the one group a reader either came for or has no use for at all, and
- * alphabetical order would otherwise stand it in front of everything else.
+ * The groups themselves are sorted by name too, except `agent/` and `charts/`,
+ * which are placed: `agent/` under `surfaces/` and `charts/` last. The comment
+ * where that happens says why.
  */
 function arrangeSidebar<T extends GeneratedSidebarItem>(items: T[], lang: string): T[] {
   const labels = groupLabels[lang] ?? groupLabels[defaultLocale];

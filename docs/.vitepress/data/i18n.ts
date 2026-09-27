@@ -3,8 +3,8 @@
  *
  * Page content is localised by living in `docs/ko` or `docs/en`. This file is
  * only for the chrome that is drawn in Vue or React rather than in Markdown —
- * the "show code" toggle, the props table's column headings, the component
- * index's group names.
+ * the "show code" toggle, a preview's theme switch and the props table's
+ * column headings.
  */
 
 export type Locale = 'ko' | 'en';
