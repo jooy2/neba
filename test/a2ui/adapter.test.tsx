@@ -11,6 +11,8 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import type { z } from 'zod';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { BASIC_FUNCTIONS, MessageProcessor } from '@a2ui/web_core/v0_9';
 import { A2uiSurface } from '@a2ui/react/v0_9';
@@ -127,6 +129,84 @@ describe('the A2UI adapter', () => {
           }
         }
       }
+    });
+  });
+
+  describe('keeps its defaults', () => {
+    /*
+     * A `default` in the catalog is a claim about what the renderer does when
+     * the prop is left out, and the model reads it as one. So each is drawn
+     * twice, once written out and once not, and the two have to be the same
+     * markup. The fixtures hold only what each component requires.
+     */
+    const fixtures: Record<string, Record<string, unknown>> = {
+      Flex: { children: [] },
+      Card: {},
+      Divider: {},
+      Typography: { text: 'Words' },
+      Image: { src: '/sample.png', alt: 'Sample' },
+      Chip: { text: 'Tag' },
+      Avatar: { name: 'Ada Lovelace' },
+      Statistic: { label: 'Visits', value: '42' },
+      DataList: { items: [{ label: 'Region', value: 'Seoul' }] },
+      Alert: { title: 'Heads up' },
+      Button: { text: 'Go', action: { event: { name: 'go' } } },
+      TextField: { label: 'Name' },
+      NumberField: { label: 'Count' },
+      Checkbox: { label: 'Agree' },
+      Switch: { label: 'On' },
+      RadioGroup: { label: 'Env', options: [{ label: 'Staging', value: 'staging' }] },
+      Select: { label: 'Env', options: [{ label: 'Staging', value: 'staging' }] },
+      Slider: { label: 'Volume' }
+    };
+
+    /**
+     * The surface's first render, into a box of its own, with the ids React
+     * makes up taken out: they count up across renders, so the same tree drawn
+     * twice would never compare equal otherwise.
+     */
+    function markup(node: Record<string, unknown>) {
+      const { surface } = surfaceOf([{ id: 'root', ...node }]);
+      const host = document.createElement('div');
+      const root = createRoot(host);
+
+      flushSync(() => root.render(<A2uiSurface surface={surface} />));
+
+      const html = host.innerHTML.replace(/_r_[0-9a-z]+_|«[^»]*»|:r[0-9a-z]+:/g, 'ID');
+      root.unmount();
+
+      return html;
+    }
+
+    /*
+     * Written out, these two add a class that says what the browser already
+     * does with nothing: `flex-start` and `stretch` are what a flex container's
+     * `normal` means on each axis.
+     */
+    const sameInEffect = new Set(['Flex.justifyContent', 'Flex.alignItems']);
+
+    it('draws what leaving a prop out draws, for every default in the catalog', () => {
+      expect(Object.keys(fixtures).sort()).toEqual(Object.keys(catalog.components).sort());
+
+      const differ: string[] = [];
+
+      for (const [name, definition] of Object.entries(catalog.components)) {
+        const parts = (definition as CatalogSchema).allOf ?? [definition as CatalogSchema];
+        const base = { component: name, ...fixtures[name] };
+        const bare = markup(base);
+
+        for (const part of parts) {
+          for (const [prop, property] of Object.entries(part.properties ?? {})) {
+            if (property.default === undefined || sameInEffect.has(`${name}.${prop}`)) continue;
+
+            if (markup({ ...base, [prop]: property.default }) !== bare) {
+              differ.push(`${name}.${prop} = ${JSON.stringify(property.default)}`);
+            }
+          }
+        }
+      }
+
+      expect(differ).toEqual([]);
     });
   });
 

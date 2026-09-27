@@ -233,7 +233,7 @@ export const A2uiChip = implement('Chip', ({ props }) => {
   const p = props as Bound as {
     text?: string;
     variant?: 'outline';
-    size?: 'sm';
+    size?: 'md';
     color?: 'primary';
     count?: number;
     selected?: boolean;

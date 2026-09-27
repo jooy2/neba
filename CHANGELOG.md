@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **The A2UI catalog says what a component does when a prop is left out.** It told an agent that a `Chip` is `sm` unless it says otherwise, and it draws at `md`; and that a `Typography` is `primary` and aligned to the start, when with neither it takes the colour and the alignment of the text around it — which its own description of `color` says. A model reads a `default` as a fact about the renderer, so the `Chip`'s is `md` now and the `Typography`'s two are gone.
+
 - **`useElementSize`, a `Panes` and a resizable `Sidebar` measure the room they have inside a scaled ancestor.** All three read the box as drawn, and inside a `Mockup`'s screen or a zoom entrance that is a fraction of the room the element is laid out in. A chart sized with `useElementSize` drew at that fraction and stayed there, since a transform resizes nothing and no observer said otherwise; a `Panes` split a `defaultSize` length against it and put the pane at the wrong share; and a `Sidebar`'s handle announced the drawn width and jumped to it on the first drag. Each reads its layout box now, and a drag divides the pointer's travel by the scale, as a `WindowPane` already did. `useElementSize` reports whole pixels as a result.
 
 - **A `Stack` given a `transition` arrives inside an `Animate*` that is waiting for its trigger.** Each item took whether its animation was running from the wrapper around it, so a pile inside an `AnimateFade` with `trigger="hover"` sat on its first frame — invisible, for a fade — until the pointer happened to pass over it. Its items run their entrance on mount, as a `Card`'s `transition` already did.

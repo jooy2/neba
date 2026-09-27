@@ -161,13 +161,11 @@
         "align": {
           "type": "string",
           "enum": ["start", "center", "end", "justify"],
-          "default": "start",
-          "description": "Where the text sits in the width it has."
+          "description": "Where the text sits in the width it has. Left out, it follows the text around it."
         },
         "color": {
           "type": "string",
           "enum": ["primary", "secondary", "success", "warning", "danger", "info"],
-          "default": "primary",
           "description": "A semantic family, and it is deliberately not set by default: text in a paragraph is the paragraph's colour. Set it only when the colour *means* something — a figure that is over budget."
         },
         "lines": {
@@ -231,7 +229,7 @@
         "size": {
           "type": "string",
           "enum": ["xs", "sm", "md", "lg", "xl"],
-          "default": "sm",
+          "default": "md",
           "description": "How big it is. One ladder for the whole library: an `md` Button, field and Chip are the same height and line up in a row."
         },
         "color": {
