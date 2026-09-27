@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `TreeView` branch that is shutting is out of a screen reader's reach.** Its rows stay in the document until the collapse finishes, which is what lets them fold away at a height, and nothing stopped a screen reader walking into them in the meantime — or for good, when the branch was shut while the tree was not displayed and no transition ever ended. The branch is `inert` from the moment it starts to shut.
+
 - **A `HowToSteps` rail is a list to VoiceOver.** It is an `<ol>` drawn with `list-none`, which is enough for Safari to stop calling it a list, and a row's place in it went with it. It says `role="list"` now, as a `List`, a `Pagination` and a `Breadcrumb` already do.
 
 - **A `HowToSteps` row draws its whole focus ring.** The rail is a scroll box whenever it is horizontal or given a `maxHeight`, and a scroll box clips on both axes, so the ring drawn just outside each row lost its top and bottom on a horizontal rail and its sides on a bounded one. It is drawn inside the row's edge now.

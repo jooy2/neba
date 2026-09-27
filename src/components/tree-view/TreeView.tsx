@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { inertValue } from '../../internal/inert.js';
 import { safeHref } from '../../internal/link.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
@@ -938,6 +939,10 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
           // order the arrow keys walk. `pointer-events` goes with it: a row on
           // its way out must not answer the click that closed it.
           data-closing={isExpanded ? undefined : ''}
+          // And out of reach of assistive technology for the same while: the
+          // rows are still in the document, and nothing else would stop a
+          // screen reader walking into a branch the reader has just shut.
+          inert={inertValue(!isExpanded)}
           className={cx(
             'grid [transition:grid-template-rows_var(--neba-duration)_var(--neba-ease)]',
             branchOpen ? '[grid-template-rows:1fr]' : '[grid-template-rows:0fr] pointer-events-none'

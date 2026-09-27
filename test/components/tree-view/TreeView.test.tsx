@@ -137,6 +137,31 @@ describe('TreeView', () => {
       expect(screen.getByRole('treeitem', { name: /index\.ts/ }).query()).toBeNull();
     });
 
+    // While it shuts, the branch is still in the document, and nothing kept a
+    // screen reader from walking into it — for good, if it shut while the
+    // tree was not displayed and no transition ever ended.
+    it('takes a shutting branch out of reach while it goes', async () => {
+      const slow = document.createElement('style');
+
+      // Only here: no component test loads the stylesheet, so a collapse takes
+      // no time and the branch is gone before it can be looked at.
+      slow.textContent = 'div:has(> [role="group"]) { transition: grid-template-rows 10s; }';
+      document.head.append(slow);
+
+      try {
+        const screen = await render(<Sample defaultExpanded={['src']} />);
+
+        await screen.getByText('src').click();
+
+        const track = screen.container.querySelector('[data-closing]');
+
+        expect(track).not.toBeNull();
+        expect(track).toHaveAttribute('inert');
+      } finally {
+        slow.remove();
+      }
+    });
+
     /**
      * A branch used to be there on one frame and gone on the next, which on a
      * tree deep enough to need one is the whole page jumping. It opens at a
