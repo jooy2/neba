@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A chart's value axis no longer opens an empty step past its data.** The axis rounds its ends out to the step its ticks are on, and dividing by a decimal step is rarely exact: `2.4 / 0.2` is 11.999…, which rounded down to a step below the data, and `0.28 / 0.02` is 14.000…2, which rounded up to one above it. A chart whose lowest value was 2.4 drew an axis from 2.2. The ends are rounded with the same guard the ticks already had.
+
 - **A chart's CSV leaves an element `xAxis.label` out of its header.** The label heads the first column of the file, and one written as an element went in as the element's JSON — `{"type":"em","key":null,…}` in the top-left cell. Only a string names the column now, as a `ScatterChart`, a `TimelineChart` and a `DataTable` already had it; anything else leaves the cell empty.
 
 - **A chart brush draws a series of any length.** The strip found the lowest and highest values of the series it outlines by spreading them into `Math.min` and `Math.max`, which passes every value as an argument, and past somewhere between a hundred and two hundred thousand of them the browser throws — so the chart failed to render on exactly the long series a brush is for. It walks the series instead.

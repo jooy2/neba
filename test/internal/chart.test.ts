@@ -230,6 +230,20 @@ describe('valueScale', () => {
     expect(scale.ticks[scale.ticks.length - 1]).toBe(scale.max);
   });
 
+  // `2.4 / 0.2` is 11.999…, and `0.28 / 0.02` is 14.000…2: floored and ceiled
+  // as they stand, each added an empty step past the data.
+  it('rounds the ends to the step the data already sits on', () => {
+    const low = valueScale({ min: 2.4, max: 3.4 }, { includeZero: false });
+
+    expect(low.min).toBe(2.4);
+    expect(low.ticks[0]).toBe(2.4);
+
+    const high = valueScale({ min: 0.2, max: 0.28 }, { includeZero: false });
+
+    expect(high.max).toBe(0.28);
+    expect(high.ticks[high.ticks.length - 1]).toBe(0.28);
+  });
+
   it('opens a band around a flat series rather than dividing by zero', () => {
     // Every value the same. Without this the extent is zero and every point
     // lands on one line — or on `NaN`. Keeping zero in range hides the case, so

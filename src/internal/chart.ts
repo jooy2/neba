@@ -723,8 +723,14 @@ export function valueScale(
     ? dividingStep(high - low, tickCount)
     : niceStep((high - low) / Math.max(1, tickCount));
 
-  const start = options.min !== undefined ? low : Math.floor(low / step) * step;
-  const end = options.max !== undefined ? high : Math.ceil(high / step) * step;
+  // The same guard on the ends. `2.4 / 0.2` is 11.999999999999998, which
+  // floors to a step below the data and opens an empty one under it; `0.28 /
+  // 0.02` ceils a step past it the same way. Rounded like the ticks, so the
+  // first tick and `min` are the same number.
+  const start =
+    options.min !== undefined ? low : Number((Math.floor(low / step + 1e-9) * step).toFixed(12));
+  const end =
+    options.max !== undefined ? high : Number((Math.ceil(high / step - 1e-9) * step).toFixed(12));
   const span = end - start || 1;
 
   const ticks: number[] = [];
