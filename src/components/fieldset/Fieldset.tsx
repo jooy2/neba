@@ -12,7 +12,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
-import { FieldsetDisabledContext } from '../../internal/fieldset.js';
+import { FieldsetDisabledContext, useFieldsetDisabled } from '../../internal/fieldset.js';
 
 export interface FieldsetProps extends Omit<React.ComponentPropsWithoutRef<'fieldset'>, 'color'> {
   /**
@@ -50,13 +50,17 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
     const {
       legend,
       description,
-      disabled = false,
+      disabled: disabledProp,
       size = 'md',
       className,
       children,
       'aria-describedby': describedBy,
       ...props
     } = useStyleDefaults(rawProps, ['size']);
+    // A group inside a disabled group is disabled too — the browser already
+    // says so for a nested `<fieldset>`, and the fields inside it have to hear
+    // the same thing, or they are drawn available and do nothing.
+    const disabled = useFieldsetDisabled(disabledProp);
     const descriptionId = React.useId();
     const hasLegend = hasContent(legend);
     const hasDescription = hasContent(description);

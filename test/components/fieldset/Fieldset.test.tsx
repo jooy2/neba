@@ -150,6 +150,22 @@ describe('Fieldset', () => {
         .toHaveClass('text-(--neba-disabled-fg)');
     });
 
+    // The inner group provided its own `false`, so its fields were disabled by
+    // the browser and drawn as if they were not.
+    it('reaches the fields of a group nested inside it', async () => {
+      const screen = await render(
+        <Fieldset legend="Order" disabled>
+          <Fieldset legend="Shipping">
+            <TextField label="Street" />
+          </Fieldset>
+        </Fieldset>
+      );
+
+      await expect
+        .element(screen.getByText('Street', { exact: true }))
+        .toHaveClass('text-(--neba-disabled-fg)');
+    });
+
     it('leaves them alone when it is not', async () => {
       const screen = await render(
         <Fieldset legend="Address">
