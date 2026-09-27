@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **Ticking a `DataTable` row, or clicking inside a cell being edited, is not a press on the row.** The tick's click and the editor's went on to the row, so ticking a row also called `onRowClick`, and a double-click to select a word in the editor called `onRowActivate` and opened whatever the row opens. And a finger that went down on a row and then scrolled left the row marked as touched, so the next tap on that row's tick chose it alone and dropped the rest of the selection.
+
 - **A `Gallery` caption is valid inside the tile it is drawn in.** The caption was a `<div>`, and on a tile that can be pressed it is inside a `<button>` — or inside the `<span>` the picture is framed in, when it is laid over it — neither of which may hold one, which a server-rendered page reports as a hydration error. It is a `<span>` now; what is drawn does not change.
 
 - **A `caption` or `overline` clamped to two lines or more stays clamped when it is aligned or given a gutter.** Either prop makes those two levels a block, and the stylesheet puts `block` after the clamp, so it took the clamp's own `display` away and the text ran on past its last line. A clamp of two lines or more is a box already and is left without the `block`.

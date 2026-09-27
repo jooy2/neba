@@ -1167,6 +1167,66 @@ describe('DataTable', () => {
         .toBe(2);
     });
 
+    // The tick's click bubbled on to the row, so ticking a row also opened
+    // whatever the row opens.
+    it('does not count a press on a row’s tick as a press on the row', async () => {
+      const onRowClick = vi.fn();
+      const onRowActivate = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          checkboxes
+          onRowClick={onRowClick}
+          onRowActivate={onRowActivate}
+        />
+      );
+      // Dispatched rather than clicked: with no stylesheet the tick has no box
+      // for a real pointer to land on.
+      const tick = screen.getByRole('checkbox', { name: 'Select row' }).first().element();
+
+      tick.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+      (tick as HTMLElement).click();
+      tick.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+
+      await expect
+        .poll(() => screen.container.querySelectorAll('tr[aria-selected="true"]').length)
+        .toBe(1);
+      expect(onRowClick).not.toHaveBeenCalled();
+      expect(onRowActivate).not.toHaveBeenCalled();
+    });
+
+    // A finger that went down on a row and then scrolled left the row marked
+    // as touched, and the next tap on that row's tick chose the row alone.
+    it('adds to the selection with a tick after a touch that became a scroll', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          checkboxes
+          defaultSelected={['a']}
+        />
+      );
+      const lisbon = screen.getByText('Lisbon').element().closest('tr') as HTMLElement;
+
+      lisbon.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'touch' })
+      );
+      // No click: the finger went on to scroll. Then a press on its tick.
+      const tick = screen.getByRole('checkbox', { name: 'Select row' }).nth(1).element();
+
+      tick.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+      (tick as HTMLElement).click();
+
+      await expect
+        .poll(() => screen.container.querySelectorAll('tr[aria-selected="true"]').length)
+        .toBe(2);
+    });
+
     it('honours a controlled selection', async () => {
       const screen = await render(
         <DataTable
@@ -1584,6 +1644,35 @@ describe('editing', () => {
     expect(onCellEdit).toHaveBeenCalledTimes(1);
     expect(onCellEdit.mock.calls[0][0]).toEqual(ITEMS[0]);
     expect(onCellEdit.mock.calls[0][2]).toBe('Adele');
+  });
+
+  // A click inside the editor was also a click on the row, and a second one to
+  // select a word was a double-click that took the reader to the row.
+  it('keeps the presses inside an open editor off the row', async () => {
+    const onRowClick = vi.fn();
+    const onRowActivate = vi.fn();
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable
+        headers={columns}
+        items={ITEMS}
+        getRowKey={key}
+        onCellEdit={() => {}}
+        onRowClick={onRowClick}
+        onRowActivate={onRowActivate}
+      />
+    );
+
+    await screen.getByText('Ada').dblClick();
+    onRowClick.mockClear();
+
+    const editor = screen.getByRole('textbox', { name: 'Name' });
+
+    await editor.click();
+    await editor.dblClick();
+
+    expect(onRowClick).not.toHaveBeenCalled();
+    expect(onRowActivate).not.toHaveBeenCalled();
   });
 
   it('throws the edit away on Escape', async () => {

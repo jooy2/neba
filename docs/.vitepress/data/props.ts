@@ -6648,8 +6648,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'onRowClick',
       type: '(row, index, event) => void',
       description: {
-        ko: '행을 누를 때마다 호출됩니다. 선택은 그보다 먼저 pointerdown에서 바뀝니다',
-        en: 'Fires on every press of a row, after the selection has changed on pointerdown'
+        ko: '행을 누를 때마다 호출됩니다. 선택은 그보다 먼저 pointerdown에서 바뀝니다. 행의 체크박스나 열린 셀 편집기 안을 누른 것은 행을 누른 것으로 치지 않습니다',
+        en: 'Fires on every press of a row, after the selection has changed on pointerdown. A press on the row’s own tick or inside an open cell editor is not a press on the row'
       }
     },
     {

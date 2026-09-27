@@ -557,6 +557,15 @@ const PRESSABLE_IN_CELL =
   'button, a, input, select, textarea, label, [role="button"], [role="checkbox"], [role="switch"], [role="radio"]';
 
 /**
+ * What the table draws in a row that answers a press for itself: the row's
+ * tick, and a cell's open editor. A click or a double-click there is theirs,
+ * and not a press on the row that `onRowClick` or `onRowActivate` hears. The
+ * tick and not its cell: the rest of the cell is the row, as its pointer
+ * press already is.
+ */
+const OWN_CONTROLS = '[data-neba-tick] [role="checkbox"], [data-neba-editor]';
+
+/**
  * What a cell with no `render` writes.
  *
  * A `Date` is written as a date in the table's language. Handed to React as it
@@ -1787,6 +1796,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     entry: RowEntry<Row>,
     event: React.PointerEvent<HTMLTableRowElement>
   ) {
+    // Whatever a finger last went down on, it is not this press: one that went
+    // on to scroll never had a `click` to clear it, and a later tap on that
+    // row's tick would otherwise choose the row alone.
+    touchedKey.current = null;
+
     if (!selects) {
       // A pointer press still says where the arrows go on from, in a table the
       // keyboard can act on, and it chooses nothing.
@@ -2091,6 +2105,10 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
         onPointerDown={(event) => handleRowPointerDown(entry, event)}
         onClick={(event) => {
+          if ((event.target as HTMLElement).closest(OWN_CONTROLS)) {
+            return;
+          }
+
           if (touchedKey.current === entry.key) {
             touchedKey.current = null;
             tableRef.current?.focus({ preventScroll: true });
@@ -2099,7 +2117,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           }
           onRowClick?.(entry.row, displayOffset + index, event);
         }}
-        onDoubleClick={() => onRowActivate?.(entry.row, displayOffset + index)}
+        onDoubleClick={(event) => {
+          if (!(event.target as HTMLElement).closest(OWN_CONTROLS)) {
+            onRowActivate?.(entry.row, displayOffset + index);
+          }
+        }}
       >
         {showTicks ? tickCell(entry) : null}
 
@@ -2453,6 +2475,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   const tickCell = (entry: RowEntry<Row>) => (
     <td
+      data-neba-tick=""
       role={selects ? 'gridcell' : undefined}
       style={{ ...cellStyle, padding: 0, overflow: 'visible', ...tickPinStyle(false) }}
     >
