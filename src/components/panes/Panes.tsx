@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { beginPointerDrag } from '../../internal/drag.js';
+import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
@@ -237,8 +237,9 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     if (!root) return;
 
     const measure = () => {
-      const rect = root.getBoundingClientRect();
-      const extent = (horizontal ? rect.width : rect.height) - gutter;
+      // The layout box rather than the drawn one: a length is resolved in layout
+      // pixels, and inside a scaled ancestor the two are not the same size.
+      const extent = (horizontal ? root.offsetWidth : root.offsetHeight) - gutter;
       if (extent <= 0) return;
 
       setFractions((previous) =>
@@ -266,8 +267,7 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     const current = fractionsRef.current;
     if (!resizable || !root || !current || current[index + 1] === undefined) return null;
 
-    const rect = root.getBoundingClientRect();
-    const extent = (horizontal ? rect.width : rect.height) - gutter;
+    const extent = (horizontal ? root.offsetWidth : root.offsetHeight) - gutter;
     if (extent <= 0) return null;
 
     const before = constraintsRef.current[index];
@@ -328,6 +328,8 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     // Positive is always "toward the end", so a drag under RTL moves the
     // boundary the way the pointer went rather than the way the axis is numbered.
     const towardsEnd = horizontal && getComputedStyle(held.root).direction === 'rtl' ? -1 : 1;
+    // The pointer moves in screen pixels and the split is measured in its own.
+    const scale = drawnScale(held.root)[horizontal ? 'x' : 'y'];
 
     let latest = held.current;
 
@@ -337,7 +339,7 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
       onMove: (moveEvent) => {
         const position = horizontal ? moveEvent.clientX : moveEvent.clientY;
 
-        latest = held.resize((position - origin) * towardsEnd);
+        latest = held.resize(((position - origin) / scale) * towardsEnd);
       },
       onEnd: () => {
         teardownRef.current = null;

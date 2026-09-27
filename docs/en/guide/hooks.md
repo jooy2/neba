@@ -66,6 +66,8 @@ const [ref, { width, height }] = useElementSize<HTMLDivElement>();
 
 One shared `ResizeObserver` for the page rather than one per subscriber. It measures once as soon as the element is there rather than waiting to be told, so the first render already has a size: a `ResizeObserver` reports its first entry a task later, and a component that renders at `0 × 0` until then lays out twice.
 
+The size is the element's layout box in whole pixels, as `offsetWidth` and `offsetHeight` give it, so a `transform` or `scale` on the element or on anything around it does not change it.
+
 ## useOnScreen
 
 ```tsx

@@ -95,6 +95,21 @@ describe('Panes', () => {
       await expect.poll(() => shares(screen)).toEqual([30]);
     });
 
+    // A length is resolved in layout pixels, so it is divided by the room the
+    // split has in layout pixels too, not by the room it is drawn in.
+    it('gives a pane its length inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+          <Sample>
+            <Pane defaultSize="120px">One</Pane>
+            <Pane>Two</Pane>
+          </Sample>
+        </div>
+      );
+
+      await expect.poll(() => shares(screen)).toEqual([30]);
+    });
+
     it('writes the share out as a basis that pays for the handles', async () => {
       const screen = await render(
         <Sample>
@@ -406,6 +421,35 @@ describe('Panes', () => {
       screen.unmount();
 
       expect(selectable()).toBe(before);
+    });
+  });
+
+  describe('dragging', () => {
+    // At half size, a hand that moves 20 pixels across the screen has moved the
+    // boundary 40 of the split's own, which is ten percent of 400.
+    it('follows the pointer inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+          <Sample>
+            <Pane>One</Pane>
+            <Pane>Two</Pane>
+          </Sample>
+        </div>
+      );
+      await expect.poll(() => shares(screen)).toEqual([50]);
+
+      const handle = screen.getByRole('separator').element() as HTMLElement;
+      handle.setPointerCapture = () => {};
+
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 1, clientX: 102 })
+      );
+      handle.dispatchEvent(
+        new PointerEvent('pointermove', { bubbles: true, buttons: 1, pointerId: 1, clientX: 122 })
+      );
+      handle.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      await expect.poll(() => shares(screen)).toEqual([60]);
     });
   });
 

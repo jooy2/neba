@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
-import { beginPointerDrag } from '../../internal/drag.js';
+import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { actionMessages, useMessages, windowMessages } from '../../internal/i18n.js';
 import { cx, hasContent, iconClasses, surfaceClasses } from '../../internal/styles.js';
 import {
@@ -498,11 +498,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
       // Inside a scaled ancestor — a Mockup at 0.3 — the two differ, and a drag
       // taken one to one moved the window a third as far as the hand did.
       const root = rootRef.current;
-      const bounds = root?.getBoundingClientRect();
-      const scaleX =
-        root && bounds && root.offsetWidth > 0 ? bounds.width / root.offsetWidth || 1 : 1;
-      const scaleY =
-        root && bounds && root.offsetHeight > 0 ? bounds.height / root.offsetHeight || 1 : 1;
+      const scale = root ? drawnScale(root) : { x: 1, y: 1 };
 
       // The window eases into a new size when a button put it there and follows
       // the pointer exactly when a hand is doing it. A transition on `width` while
@@ -521,7 +517,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
         target,
         pointerId: event.pointerId,
         onMove: (moveEvent) =>
-          onMove((moveEvent.clientX - fromX) / scaleX, (moveEvent.clientY - fromY) / scaleY),
+          onMove((moveEvent.clientX - fromX) / scale.x, (moveEvent.clientY - fromY) / scale.y),
         onEnd: finish
       });
 

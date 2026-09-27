@@ -3,10 +3,31 @@
 import * as React from 'react';
 import { attachedRef, observeResize } from '../internal/observe.js';
 
-/** A box, in CSS pixels. `0` × `0` before the first measurement and on a server. */
+/**
+ * A box, in CSS pixels: the element's own layout box, in whole pixels, before any
+ * transform on it or above it. `0` × `0` before the first measurement and on a
+ * server.
+ */
 export interface ElementSize {
   width: number;
   height: number;
+}
+
+/**
+ * The element's own box, before any transform on it or above it.
+ *
+ * `getBoundingClientRect()` is the box as drawn, so inside a scaled ancestor —
+ * a Mockup's screen, a zoom entrance part way through — it reported a fraction
+ * of the room the element really has, and a transform does not resize anything,
+ * so no observer said so afterwards either. The offset box is the layout one.
+ * An element without one, an SVG element for instance, is read as drawn.
+ */
+function layoutBox(element: Element): ElementSize {
+  if (element instanceof HTMLElement) {
+    return { width: element.offsetWidth, height: element.offsetHeight };
+  }
+
+  return element.getBoundingClientRect();
 }
 
 /**
@@ -38,7 +59,7 @@ export function useElementSize<E extends Element = HTMLElement>(): [
     }
 
     const measure = () => {
-      const box = element.getBoundingClientRect();
+      const box = layoutBox(element);
       // Only on a real change: a `ResizeObserver` fires for a resize that
       // rounds to the same box, and setting state there is a render loop with
       // a layout in it.

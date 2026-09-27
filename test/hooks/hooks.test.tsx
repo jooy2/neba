@@ -218,6 +218,27 @@ describe('useElementSize', () => {
     await expect.element(screen.getByText('200')).toBeInTheDocument();
   });
 
+  // A transform does not change how much room an element has, so the size is
+  // the layout box and not the one drawn inside a scaled ancestor.
+  it('measures the layout box inside a scaled ancestor', async () => {
+    function Measured() {
+      const [ref, size] = useElementSize<HTMLDivElement>();
+
+      return (
+        <div>
+          <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+            <div ref={ref} style={{ width: 200, height: 40 }} />
+          </div>
+          <p>{`${size.width} by ${size.height}`}</p>
+        </div>
+      );
+    }
+
+    const screen = await render(<Measured />);
+
+    await expect.element(screen.getByText('200 by 40')).toBeInTheDocument();
+  });
+
   it('measures on mount rather than waiting to be told', async () => {
     // A `ResizeObserver` reports its first entry a task later, and a component
     // that renders `0 × 0` until then is a component that lays out twice.

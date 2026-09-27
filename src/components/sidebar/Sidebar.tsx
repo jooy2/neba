@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { Drawer } from '../drawer/Drawer.js';
-import { beginPointerDrag } from '../../internal/drag.js';
+import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {
   drawerSide,
@@ -371,7 +371,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     const node = rootRef.current;
     if (!resizable || !node) return;
 
-    describeWidth(node, node.getBoundingClientRect().width);
+    describeWidth(node, node.offsetWidth);
     // The bounds and the width as given; a drag describes itself as it goes.
     // `collapsed` too: a column that comes back from being a drawer is a new
     // handle, and one first mounted as a drawer had no handle to describe.
@@ -399,7 +399,10 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
     const handle = event.currentTarget;
     const origin = event.clientX;
-    const start = node.getBoundingClientRect().width;
+    // Its layout width, which is what `--n-sidebar-w` sets, and the scale it is
+    // drawn at, which is what a pointer delta has to be divided by.
+    const start = node.offsetWidth;
+    const scale = drawnScale(node).x;
     // Positive is always "wider", so a drag under RTL — where the start edge is
     // on the right — moves the edge the way the pointer went rather than the
     // way the axis is numbered.
@@ -412,7 +415,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
       target: handle,
       pointerId: event.pointerId,
       onMove: (moveEvent) => {
-        latest = applyWidth(start + (moveEvent.clientX - origin) * outwards);
+        latest = applyWidth(start + ((moveEvent.clientX - origin) / scale) * outwards);
         onResize?.(latest);
       },
       onEnd: () => {
@@ -426,7 +429,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     const node = rootRef.current;
     if (!node) return;
 
-    const next = applyWidth(node.getBoundingClientRect().width + pixels);
+    const next = applyWidth(node.offsetWidth + pixels);
     onResize?.(next);
     // A key press is a whole gesture on its own — there is no "let go" to wait
     // for, so the settled callback fires with it.

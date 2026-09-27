@@ -149,6 +149,34 @@ describe('Sidebar', () => {
       await expect.element(handle).toHaveAttribute('aria-valuenow', '236');
     });
 
+    // Its width is what `--n-sidebar-w` sets, which is a layout width; inside a
+    // scaled ancestor the column is drawn at half of it and still has all of it.
+    it('says its layout width, and follows the pointer, inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+          <Sidebar resizable width={220} minWidth={180} maxWidth={400} style={{ width: 220 }} />
+        </div>
+      );
+      const element = screen.getByRole('complementary').element() as HTMLElement;
+      const handle = screen.getByRole('separator');
+
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '220');
+
+      const target = handle.element() as HTMLElement;
+      target.setPointerCapture = () => {};
+
+      target.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 1, clientX: 110 })
+      );
+      target.dispatchEvent(
+        new PointerEvent('pointermove', { bubbles: true, buttons: 1, pointerId: 1, clientX: 120 })
+      );
+      target.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+      // Ten pixels on the screen at half size is twenty of the column's own.
+      expect(element.style.getPropertyValue('--n-sidebar-w')).toBe('240px');
+    });
+
     // A column that came back from being a drawer was a new handle with none
     // of the three attributes, and the effect that writes them did not run.
     it('says its width again when it comes back from being a drawer', async () => {

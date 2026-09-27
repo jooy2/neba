@@ -47,6 +47,26 @@ function takeSelection(): () => void {
   };
 }
 
+/**
+ * How many screen pixels one of an element's own layout pixels is drawn as, on
+ * each axis.
+ *
+ * A pointer moves in screen pixels and an element is laid out in its own.
+ * Inside a scaled ancestor — a Mockup's screen, a zoom entrance part way
+ * through — the two differ, and a drag taken one to one moves an edge by the
+ * wrong amount: at a scale of 0.3, a third as far as the hand did. A pointer
+ * delta divided by this is a distance in the element's own pixels. An element
+ * with no box is taken as unscaled rather than divided by.
+ */
+export function drawnScale(element: HTMLElement): { x: number; y: number } {
+  const bounds = element.getBoundingClientRect();
+
+  return {
+    x: element.offsetWidth > 0 ? bounds.width / element.offsetWidth || 1 : 1,
+    y: element.offsetHeight > 0 ? bounds.height / element.offsetHeight || 1 : 1
+  };
+}
+
 export interface PointerDragOptions {
   /**
    * The element the three listeners go on, and the one the pointer is captured

@@ -66,6 +66,8 @@ const [ref, { width, height }] = useElementSize<HTMLDivElement>();
 
 구독자마다 하나가 아니라 페이지당 하나의 `ResizeObserver`를 공유합니다. 통보를 기다리지 않고 element가 붙는 즉시 한 번 측정하므로 첫 렌더부터 크기가 잡혀 있습니다. `ResizeObserver`는 첫 entry를 한 task 뒤에 알려 주고, 그때까지 `0 × 0`으로 그리는 컴포넌트는 레이아웃을 두 번 하게 됩니다.
 
+크기는 `offsetWidth`와 `offsetHeight`가 주는 element의 레이아웃 박스이고 정수 픽셀입니다. 그래서 element나 그 바깥의 `transform`, `scale`은 이 값을 바꾸지 않습니다.
+
 ## useOnScreen
 
 ```tsx
