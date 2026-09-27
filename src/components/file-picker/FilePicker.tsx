@@ -113,6 +113,10 @@ export interface FilePickerProps
   required?: boolean;
   /** Identifies the field when a form is submitted. */
   name?: string;
+  /**
+   * The id of the zone's button rather than of the root, so a `<label>` written
+   * elsewhere can point at the control. Generated when left out.
+   */
   id?: string;
 }
 

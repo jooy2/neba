@@ -88,6 +88,22 @@ describe('FilePicker', () => {
         .toBeInTheDocument();
     });
 
+    // A `<label>` written elsewhere points at the control, not at the box
+    // around it.
+    it('puts its id on the zone button rather than the root', async () => {
+      const screen = await render(
+        <>
+          <label htmlFor="resume">Resume</label>
+          <FilePicker id="resume" data-testid="picker" />
+        </>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Resume', exact: false }))
+        .toHaveAttribute('id', 'resume');
+      expect(screen.getByTestId('picker').element()).not.toHaveAttribute('id');
+    });
+
     it('carries accept and multiple onto the real input', async () => {
       const screen = await render(<FilePicker accept="image/*" multiple />);
       const input = screen.container.querySelector('input[type="file"]') as HTMLInputElement;

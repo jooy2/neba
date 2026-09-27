@@ -27,7 +27,7 @@ import { FilePicker } from 'neba';
 
 <PropsTable name="FilePicker" />
 
-`<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `title`만 위 표와 이름이 겹쳐 제외됩니다.
+`<div>`의 native 속성은 root로 전달됩니다. `color` · `defaultValue` · `title`은 위 표와 이름이 겹쳐 제외되고, `children`도 picker가 직접 그리므로 제외됩니다. `id`는 root가 아니라 영역 버튼에 붙습니다.
 
 ## 예시
 

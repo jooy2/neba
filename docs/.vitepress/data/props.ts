@@ -8696,6 +8696,14 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '폼 제출 시의 필드 이름',
         en: 'Identifies the field when a form is submitted'
       }
+    },
+    {
+      name: 'id',
+      type: 'string',
+      description: {
+        ko: 'root가 아니라 영역 버튼의 id. 다른 곳의 <label>이 이 컨트롤을 가리킬 수 있습니다. 주지 않으면 생성합니다',
+        en: 'The id of the zone button rather than of the root, so a <label> elsewhere can point at the control. Generated when left out'
+      }
     }
   ],
 
