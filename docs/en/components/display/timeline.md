@@ -27,7 +27,7 @@ import { Timeline, TimelineItem } from 'neba';
 
 <PropsTable name="Timeline" />
 
-`active` is an **index**, not a value. Items before it are `complete`, that item is `current`, and the rest are `upcoming`. Omit it and every item is `upcoming`; pass a number past the item count and all of them are `complete`.
+`active` is an **index**, not a value. Items before it are `complete`, that item is `current`, and the rest are `upcoming`. Omit it and every item is `upcoming`; pass the item count and all of them are `complete`.
 
 ### TimelineItem
 
@@ -39,7 +39,7 @@ import { Timeline, TimelineItem } from 'neba';
 
 `bullet` takes any node. Numbers suit a procedure a user is walked through; icons suit events that already happened. Omit it and a disc is drawn.
 
-The three states each use a different shape (a filled disc (`complete`), a filled disc with a halo (`current`), an empty ring (`upcoming`)), so the state carries even for a reader who cannot tell the colours apart.
+The three states each use a different shape: a filled disc for `complete`, a filled disc with a halo for `current`, and an empty ring for `upcoming`. The state carries even for a reader who cannot tell the colours apart.
 
 <Demo src="timeline/bullets">
 

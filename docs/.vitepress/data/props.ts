@@ -10227,8 +10227,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'active',
       type: 'number',
       description: {
-        ko: '지금 진행 중인 항목의 인덱스. 그 앞은 전부 complete, 뒤는 전부 upcoming이 됩니다. 생략하면 전부 upcoming이고, 항목 수를 넘기면 전부 complete입니다',
-        en: 'The index of the item being worked on now: everything before it is complete, everything after it is still to come. An index rather than a value, because a timeline has no selection. Omit it and every item is upcoming; pass the item count to mark the whole sequence done'
+        ko: '지금 진행 중인 항목의 인덱스. 그 앞은 전부 complete, 뒤는 전부 upcoming이 됩니다. 생략하면 전부 upcoming이고, 항목 수를 주면 전부 complete입니다',
+        en: 'The index of the item being worked on now: everything before it is complete, everything after it is still to come. Omit it and every item is upcoming; pass the item count to mark the whole sequence done'
       }
     },
     ...scaleProps("'md'"),

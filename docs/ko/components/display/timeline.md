@@ -27,7 +27,7 @@ import { Timeline, TimelineItem } from 'neba';
 
 <PropsTable name="Timeline" />
 
-`active`는 값이 아니라 **인덱스**입니다. 이 인덱스보다 앞선 항목은 `complete`, 해당 항목은 `current`, 뒤는 `upcoming`이 됩니다. 생략하면 전부 `upcoming`, 항목 수보다 큰 값을 주면 전부 `complete`입니다.
+`active`는 값이 아니라 **인덱스**입니다. 이 인덱스보다 앞선 항목은 `complete`, 해당 항목은 `current`, 뒤는 `upcoming`이 됩니다. 생략하면 전부 `upcoming`, 항목 수를 주면 전부 `complete`입니다.
 
 ### TimelineItem
 
