@@ -206,6 +206,30 @@ describe('ColorPicker', () => {
       expect(alpha.element()).toHaveAttribute('aria-valuenow', '0');
     });
 
+    // The square read as two bare numbers, the hue as a bare 217 and the
+    // opacity as a bare 55, none of which says what it measures.
+    it('reads each slider out as what it measures', async () => {
+      const screen = await render(<ColorPicker inline alpha defaultValue="#ff000080" />);
+
+      await expect
+        .element(screen.getByRole('slider', { name: 'Saturation and brightness' }))
+        .toHaveAttribute('aria-valuetext', 'Saturation 100%, brightness 100%');
+      await expect
+        .element(screen.getByRole('slider', { name: 'Hue' }))
+        .toHaveAttribute('aria-valuetext', '0 degrees');
+      await expect
+        .element(screen.getByRole('slider', { name: 'Opacity' }))
+        .toHaveAttribute('aria-valuetext', '50%');
+    });
+
+    it('reads the square in the language it was given', async () => {
+      const screen = await render(<ColorPicker inline locale="ko" defaultValue="#ff0000" />);
+
+      await expect
+        .element(screen.getByRole('slider', { name: '채도와 명도' }))
+        .toHaveAttribute('aria-valuetext', '채도 100%, 명도 100%');
+    });
+
     it('moves the square with the keyboard', async () => {
       const screen = await render(<ColorPicker inline defaultValue="#ff0000" />);
       const area = screen.getByRole('slider', { name: 'Saturation and brightness' });
@@ -216,7 +240,7 @@ describe('ColorPicker', () => {
       await userEvent.keyboard('{Home}');
       expect(area.element()).toHaveAttribute('aria-valuenow', '0');
       await userEvent.keyboard('{End}{PageDown}');
-      expect(area.element()).toHaveAttribute('aria-valuetext', '100%, 90%');
+      expect(area.element()).toHaveAttribute('aria-valuetext', 'Saturation 100%, brightness 90%');
     });
 
     it('writes the value back in the notation it was asked for', async () => {

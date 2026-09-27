@@ -52,6 +52,7 @@ export const vi: NebaLocale = {
   },
   color: {
     area: 'Độ bão hòa và độ sáng',
+    areaValue: 'Độ bão hòa {saturation}, độ sáng {brightness}',
     hue: 'Sắc độ',
     alpha: 'Độ mờ đục',
     value: 'Giá trị màu',

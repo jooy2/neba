@@ -52,6 +52,7 @@ export const th: NebaLocale = {
   },
   color: {
     area: 'ความอิ่มตัวและความสว่าง',
+    areaValue: 'ความอิ่มตัว {saturation}, ความสว่าง {brightness}',
     hue: 'เฉดสี',
     alpha: 'ความทึบ',
     value: 'ค่าสี',

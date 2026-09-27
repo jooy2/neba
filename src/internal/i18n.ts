@@ -255,6 +255,12 @@ export const tableMessages: MessageTable<TableMessages> = {
 export interface ColorMessages {
   /** The saturation/brightness square. */
   area: string;
+  /**
+   * What the square's position is read as. `{saturation}` and `{brightness}`
+   * are replaced with the two percentages, already formatted for the locale —
+   * two bare numbers say nothing about which is which.
+   */
+  areaValue: string;
   /** The rail beside it. */
   hue: string;
   /** The rail below that, when `alpha` is on. */
@@ -273,6 +279,7 @@ export interface ColorMessages {
 export const colorMessages: MessageTable<ColorMessages> = {
   '': {
     area: 'Saturation and brightness',
+    areaValue: 'Saturation {saturation}, brightness {brightness}',
     hue: 'Hue',
     alpha: 'Opacity',
     value: 'Colour value',

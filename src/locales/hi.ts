@@ -52,6 +52,7 @@ export const hi: NebaLocale = {
   },
   color: {
     area: 'संतृप्ति और चमक',
+    areaValue: 'संतृप्ति {saturation}, चमक {brightness}',
     hue: 'रंग',
     alpha: 'अपारदर्शिता',
     value: 'रंग मान',

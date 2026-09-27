@@ -52,6 +52,7 @@ export const it: NebaLocale = {
   },
   color: {
     area: 'Saturazione e luminosità',
+    areaValue: 'Saturazione {saturation}, luminosità {brightness}',
     hue: 'Tonalità',
     alpha: 'Opacità',
     value: 'Valore del colore',

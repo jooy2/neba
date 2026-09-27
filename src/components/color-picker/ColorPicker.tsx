@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { PickerShell } from '../../internal/picker.js';
 import { CheckIcon } from '../../internal/icons.js';
-import { colorMessages, useMessages } from '../../internal/i18n.js';
+import { colorMessages, fillMessage, useMessages } from '../../internal/i18n.js';
+import { numberFormatter } from '../../internal/format.js';
 import {
   checkerBackground,
   clamp,
@@ -37,6 +38,8 @@ import { useStyleDefaults } from '../../internal/defaults.js';
 export interface ColorPickerLabels {
   /** The saturation/brightness square. */
   area: string;
+  /** What its position is read as, with `{saturation}` and `{brightness}` in it. */
+  areaValue: string;
   /** The hue rail beside it. */
   hue: string;
   /** The opacity rail, when `alpha` is on. */
@@ -235,6 +238,8 @@ interface PanelProps {
   /** Disabled rather than only read-only, which also takes the text field out of the tab order. */
   disabled: boolean;
   labels: ColorPickerLabels;
+  /** What the three sliders' values are formatted in. */
+  locale: string | undefined;
 }
 
 /** Where a pointer landed inside an element, as a 0–1 fraction of each axis. */
@@ -337,9 +342,20 @@ function ColorPanel({
   size,
   inert,
   disabled,
-  labels
+  labels,
+  locale
 }: PanelProps) {
   const thumb = thumbSizes[size];
+  /* What a screen reader hears for each slider. The platform writes a
+     percentage and an angle in the reader's language already, so only the
+     square, which has to say which of its two numbers is which, needs words. */
+  const percent = numberFormatter(locale, { style: 'percent', maximumFractionDigits: 0 });
+  const degrees = numberFormatter(locale, {
+    style: 'unit',
+    unit: 'degree',
+    unitDisplay: 'long',
+    maximumFractionDigits: 0
+  });
   const offset = -thumb / 2;
   const pure = cssColor({ h: hsv.h, s: 100, v: 100 });
   const solid = cssColor(hsv);
@@ -365,6 +381,7 @@ function ColorPanel({
 
   const railProps = (
     label: string,
+    text: string,
     now: number,
     max: number,
     unit: number,
@@ -377,6 +394,7 @@ function ColorPanel({
     'aria-valuemin': 0,
     'aria-valuemax': max,
     'aria-valuenow': Math.round(now),
+    'aria-valuetext': text,
     'aria-orientation': 'horizontal' as const,
     'aria-disabled': inert || undefined,
     onKeyDown: (event: React.KeyboardEvent) => {
@@ -405,7 +423,10 @@ function ColorPanel({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(hsv.s)}
-        aria-valuetext={`${Math.round(hsv.s)}%, ${Math.round(hsv.v)}%`}
+        aria-valuetext={fillMessage(labels.areaValue, {
+          saturation: percent.format(hsv.s / 100),
+          brightness: percent.format(hsv.v / 100)
+        })}
         aria-disabled={inert || undefined}
         onKeyDown={(event) => {
           const next = areaKey(event, hsv.s, hsv.v);
@@ -454,7 +475,7 @@ function ColorPanel({
         {...track((event) =>
           onChange({ hsv: { ...hsv, h: fractionsOf(event).x * 360 }, alpha: alphaValue })
         )}
-        {...railProps(labels.hue, hsv.h, 360, 2, true, (h) =>
+        {...railProps(labels.hue, degrees.format(hsv.h), hsv.h, 360, 2, true, (h) =>
           onChange({ hsv: { ...hsv, h }, alpha: alphaValue })
         )}
         className={cx(
@@ -483,8 +504,14 @@ function ColorPanel({
       {withAlpha ? (
         <div
           {...track((event) => onChange({ hsv, alpha: fractionsOf(event).x }))}
-          {...railProps(labels.alpha, alphaValue * 100, 100, 1, false, (percent) =>
-            onChange({ hsv, alpha: percent / 100 })
+          {...railProps(
+            labels.alpha,
+            percent.format(alphaValue),
+            alphaValue * 100,
+            100,
+            1,
+            false,
+            (share) => onChange({ hsv, alpha: share / 100 })
           )}
           className={cx(
             wellClasses,
@@ -777,6 +804,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
         inert={inert}
         disabled={Boolean(disabled)}
         labels={labels}
+        locale={locale}
       />
     );
 

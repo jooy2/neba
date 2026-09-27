@@ -52,6 +52,7 @@ export const id: NebaLocale = {
   },
   color: {
     area: 'Saturasi dan kecerahan',
+    areaValue: 'Saturasi {saturation}, kecerahan {brightness}',
     hue: 'Rona',
     alpha: 'Opasitas',
     value: 'Nilai warna',

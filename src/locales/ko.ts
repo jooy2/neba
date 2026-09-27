@@ -52,6 +52,7 @@ export const ko: NebaLocale = {
   },
   color: {
     area: '채도와 명도',
+    areaValue: '채도 {saturation}, 명도 {brightness}',
     hue: '색상',
     alpha: '불투명도',
     value: '색상 값',

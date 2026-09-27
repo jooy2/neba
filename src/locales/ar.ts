@@ -52,6 +52,7 @@ export const ar: NebaLocale = {
   },
   color: {
     area: 'التشبع والسطوع',
+    areaValue: 'التشبع {saturation}، السطوع {brightness}',
     hue: 'درجة اللون',
     alpha: 'العتامة',
     value: 'قيمة اللون',

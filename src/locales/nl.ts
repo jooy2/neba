@@ -52,6 +52,7 @@ export const nl: NebaLocale = {
   },
   color: {
     area: 'Verzadiging en helderheid',
+    areaValue: 'Verzadiging {saturation}, helderheid {brightness}',
     hue: 'Kleurtoon',
     alpha: 'Dekking',
     value: 'Kleurwaarde',

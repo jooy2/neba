@@ -52,6 +52,7 @@ export const ja: NebaLocale = {
   },
   color: {
     area: '彩度と明度',
+    areaValue: '彩度 {saturation}、明度 {brightness}',
     hue: '色相',
     alpha: '不透明度',
     value: 'カラー値',

@@ -55,6 +55,7 @@ export const zhHans: NebaLocale = {
   },
   color: {
     area: '饱和度和明度',
+    areaValue: '饱和度 {saturation}，明度 {brightness}',
     hue: '色相',
     alpha: '不透明度',
     value: '颜色值',

@@ -52,6 +52,7 @@ export const ru: NebaLocale = {
   },
   color: {
     area: 'Насыщенность и яркость',
+    areaValue: 'Насыщенность {saturation}, яркость {brightness}',
     hue: 'Оттенок',
     alpha: 'Непрозрачность',
     value: 'Значение цвета',

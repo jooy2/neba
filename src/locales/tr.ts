@@ -52,6 +52,7 @@ export const tr: NebaLocale = {
   },
   color: {
     area: 'Doygunluk ve parlaklık',
+    areaValue: 'Doygunluk {saturation}, parlaklık {brightness}',
     hue: 'Renk tonu',
     alpha: 'Opaklık',
     value: 'Renk değeri',
