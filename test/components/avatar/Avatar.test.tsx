@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Avatar } from 'neba';
 
@@ -165,19 +166,42 @@ describe('Avatar', () => {
     });
 
     /**
-     * The picture mounts only once the file has decoded, so the swap from
-     * initials to a face happened in a single frame. It is faded up on its own
-     * clock rather than through the `neba-anim` classes, whose `--n-anim-*`
-     * slots are declared on this Avatar's root — a `delay` on the Avatar's own
-     * `transition` would otherwise hold the face back long after the circle.
+     * The swap from initials to a face in a single frame is a flicker per
+     * avatar. The picture is faded up on its own clock rather than through the
+     * `neba-anim` classes, whose `--n-anim-*` slots are declared on this
+     * Avatar's root — a `delay` on the Avatar's own `transition` would
+     * otherwise hold the face back long after the circle.
      */
     it('fades the picture up over whatever stood in for it', async () => {
       const screen = await render(<Avatar src={PIXEL} name="Jane Doe" data-testid="avatar" />);
       const image = screen.getByTestId('avatar').element().querySelector('img') as HTMLElement;
 
-      expect(image.className).toContain('animation:neba-anim-fade');
-      expect(image.className).not.toContain('neba-anim-duration');
+      expect(image.className).toContain('transition:opacity');
+      expect(image).toHaveClass('data-[loading]:opacity-0');
       expect(image).not.toHaveClass('neba-anim');
+    });
+
+    // The picture was fetched by a detached probe after hydration, so it was
+    // not in the server HTML and a `loading="lazy"` in `imageProps` did nothing.
+    it('is in the server HTML, with the attributes imageProps gave it', () => {
+      const html = renderToString(
+        <Avatar src={PIXEL} name="Jane Doe" imageProps={{ loading: 'lazy' }} />
+      );
+
+      expect(html).toContain('<img');
+      expect(html).toContain('loading="lazy"');
+    });
+
+    // Laid over the initials, it is held clear and out of the accessibility
+    // tree until it has loaded, so a failed picture leaves the initials alone.
+    it('keeps a picture that failed out of sight and out of the name', async () => {
+      const screen = await render(
+        <Avatar src="/does-not-exist.png" name="Jane Doe" data-testid="avatar" />
+      );
+      const image = screen.getByTestId('avatar').element().querySelector('img') as HTMLElement;
+
+      await expect.element(image).toHaveAttribute('data-error');
+      expect(image).toHaveAttribute('aria-hidden', 'true');
     });
 
     it('passes the rest of the img attributes through', async () => {

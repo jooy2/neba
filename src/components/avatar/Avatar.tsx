@@ -313,23 +313,28 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
             // arrive as forty small pauses; off it, they arrive.
             decoding="async"
             onLoadingStatusChange={onLoadingStatusChange}
+            // In the markup from the first render rather than mounted once a
+            // detached probe has fetched the file after hydration: that way the
+            // picture is in the server HTML, and a `loading="lazy"` in
+            // `imageProps` is on an element the browser actually loads. Base UI
+            // marks it `data-loading` or `data-error`, and hides it from a
+            // screen reader, until it has decoded.
+            keepMounted
             {...imageProps}
-            // Faded up over whatever stood in for it. Base UI mounts this only
-            // once the file has decoded, so the swap from initials to a face
-            // happened in a single frame — on a list of forty avatars that is
-            // forty separate flickers as the network answers.
+            // Laid over the stand-in and held clear until the file has decoded,
+            // then faded up. The swap from initials to a face in a single frame
+            // is forty separate flickers on a list of forty avatars.
             //
-            // The `animation` shorthand rather than the `neba-anim` classes the
-            // `transition` prop uses: those read `--n-anim-*` slots, and the
-            // slots are declared on this Avatar's own root, so an entrance the
-            // caller asked for would set the picture's timing too — a `delay` on
-            // the Avatar would hold the face back long after the circle arrived.
-            // `both` keeps it on the first frame until it starts.
+            // An `opacity` transition on its own clock rather than the
+            // `neba-anim` classes the `transition` prop uses: those read
+            // `--n-anim-*` slots declared on this Avatar's own root, so a
+            // `delay` on the Avatar would hold the face back long after the
+            // circle arrived.
             //
             // After the spread and merged with the caller's, which replaced it
             // and let the picture spill out of the circle.
             className={cx(
-              'size-full object-cover [animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]',
+              'absolute inset-0 size-full object-cover [transition:opacity_var(--neba-duration-fill)_var(--neba-ease)] data-[error]:opacity-0 data-[loading]:opacity-0',
               imageProps?.className
             )}
           />

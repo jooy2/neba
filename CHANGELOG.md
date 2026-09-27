@@ -22,6 +22,8 @@
 
 ### Changed
 
+- **An `Avatar`'s picture is in the markup from the first render.** Base UI fetched it with a detached probe after hydration and mounted the `<img>` only once it had loaded, so the picture was not in the server HTML and a `loading="lazy"` in `imageProps` did nothing. The `<img>` is there from the start now, laid over the stand-in and kept out of sight and out of the accessibility tree while it carries `data-loading` or `data-error`, and it fades up once it has loaded.
+
 - **A `DataList`'s label column stops at half the list's width.** Left without a `labelWidth`, it was as wide as the widest label and could not shrink, so a long or translated label made the list wider than a phone's screen and squeezed the values. It is still as wide as the widest label, so the values start at the same place, up to half the list; past that a label wraps. A `labelWidth` is taken as it is.
 
 ### Fixed

@@ -59,7 +59,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 
 ### D. Choices
 
-- **D1 (4)** Avatar picture: (a) `keepMounted`, so it is in the server HTML and `loading` works; (b) document that it loads after hydration.
+- **D1 (4)** Done (a). Avatar picture: (a) `keepMounted`, so it is in the server HTML and `loading` works; (b) document that it loads after hydration.
 - **D2 (32)** Agent status announcements: (a) correct the wording and document the app's live region; (b) an opt-in `announce` prop; (c) always announce end states.
 - **D3 (34)** InlineCitation with no link: (a) a `<span>` with a hidden name, focusable only when it previews; (b) fix the name and say the preview is pointer-only.
 - **D4 (35)** Transfer: (a) a polite status after a move, with a new message; (b) describe each list by its count.
@@ -110,7 +110,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **1** CartesianChart `secondaryAxis`: `formatFor` changes identity on every render (the prop is always an inline object, and `onSecond` depends on the windowed `series`), so the memoised hidden table re-renders every row on each crosshair step and brush frame. `src/internal/chart-frame.tsx:1867`. Fix: read `tickFormat` through a latest-value ref, as `formatValue` does, and key `onSecond` on the series' `axis` flags. The crosshair claim was wrong: the table's props are stable across the frame's own renders. The brush path was real, through `series`, `fullValues` and `fullLabels`, and that is what was fixed.
 - [x] **2** ChartBrush: the outline is a fresh `.map()` on every chart render, so the brush's `useMemo` never hits and `linePath` runs over the whole series each time. `src/internal/chart-frame.tsx:2465`, `src/internal/chart-brush.tsx:85-110`. Fix: memoise the outline on `fullValues` and the first visible index.
 - [x] **3** DataTable: the search haystacks are dropped whenever the query is emptied, so the next search after a clear pays the whole `normalize` fold again. `src/components/data-table/DataTable.tsx:833-847`. Fix: build them on the first search and keep them until `entries` or `searchedColumns` change.
-- [ ] **4** [decision] Avatar: the picture is fetched by Base UI's detached `new Image()` probe after hydration, so `imageProps.loading="lazy"` does nothing and the file is not in the server HTML. `src/components/avatar/Avatar.tsx:313`. (a) `keepMounted`, the `<img>` absolutely positioned and hidden while it carries `data-loading` or `data-error`, which changes the markup; (b) drop `loading` from the JSDoc and the props row and document that the picture is requested after hydration.
+- [x] **4** [decision] Avatar: the picture is fetched by Base UI's detached `new Image()` probe after hydration, so `imageProps.loading="lazy"` does nothing and the file is not in the server HTML. `src/components/avatar/Avatar.tsx:313`. (a) `keepMounted`, the `<img>` absolutely positioned and hidden while it carries `data-loading` or `data-error`, which changes the markup; (b) drop `loading` from the JSDoc and the props row and document that the picture is requested after hydration. Decided: (a) `keepMounted`, with the picture laid over the stand-in and faded up on `opacity` once it has loaded.
 
 ## 2. SEO and accessibility
 
