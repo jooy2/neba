@@ -2,7 +2,7 @@
 
 ## Reporting Security Issues
 
-To report a security vulnerability, open a draft security advisory on GitHub: https://github.com/jooy2/neba/security/advisories/new
+To report a security vulnerability, report it privately on GitHub: open the repository's **Security** tab and choose **Report a vulnerability**, or go to https://github.com/jooy2/neba/security/advisories/new. Only you and the maintainers can see the report.
 
 You can also send the details through https://cdget.com/contact. Do not report a vulnerability in a public issue.
 
