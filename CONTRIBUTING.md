@@ -27,9 +27,9 @@ Here's the process for contributing to the project:
 
 1. Clone the project (or rebase to the latest commit in the main branch)
 2. Install the dependencies with `npm install`, and the browser the tests run in with `npx playwright install chromium`
-3. Set up ESLint and Prettier in your editor. CI runs `npm run lint`, `npx prettier --check .` and `npm run typecheck`, so run them before you push
+3. Set up ESLint and Prettier in your editor. CI runs `npm run lint`, `npx prettier --check .` and `npm run typecheck`, and after `npm run build` it runs `npm run size` and `npm run compat`, so run them before you push
 4. Write the code that needs to be fixed
-5. Update the documentation under `docs/` in every locale. The English and Korean pages mirror each other, with the same headings, demos and examples, and a changed prop is updated in `docs/.vitepress/data/props.ts` in both languages
+5. Update the documentation under `docs/` in every locale. The English and Korean pages mirror each other, with the same headings, demos and examples, and a changed prop is updated in `docs/.vitepress/data/props.ts` in both languages. A new component also needs its demos under `docs/.vitepress/demos/`, a card in `demos/catalog/all.tsx`, a place on the sample screen in `demos/showcase/app.tsx` and a line in `docs/public/llms.txt`
 6. Add or change the tests under `test/` in the same commit as the code they cover, and run `npm test` to confirm the whole suite passes
 
 ### Write a commit message
