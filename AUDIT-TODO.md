@@ -10,8 +10,9 @@ The working list for the second audit of every public component, started on 2026
 - Batch 3 is done (2026-09-27): items 58, 59, 60, 66 to 75, and 79 to 85. Item 67's first version cut a category band on a bar chart at the column centre, which a follow-up commit corrected. Item 69 turned up item 186, which is added to the list rather than fixed out of turn.
 - Batch 4 is done (2026-09-27): items 88 to 93, 98, 99, 101 to 108, 110 to 112 and 114. Item 98 was checked against React 18.3.1 installed locally the way the CI job installs it, and React 19.3.0 was put back afterwards.
 - Batch 5 is done (2026-09-27): items 115 to 118, 121 to 123, 131 to 135, 137 to 139 and 141 to 143, and items 136 and 140 in part. Item 118 turned up item 187. Item 131 found a treemap's CSV rows a cell short and item 132 found that Escape never closed a CommandPalette; both are fixed in commits of their own.
+- Batch 6 is done (2026-09-27): items 144 to 147, 149 to 154 and 156 to 165. Item 149 was already answered by the pages. Every item in it was documentation; the one test added pins what item 147 now documents, that a FilePicker's `id` lands on its zone button.
 - Every commit so far is local and not pushed.
-- The next batch starts at item 144 and takes the untagged items in number order; no untagged item is marked **(high)** any more. Two items are only partly open: 136's function case waits for 124 and its Statistic case for 126, and the rest of 140 waits for 76 and 77.
+- The next batch starts at item 166 and takes the untagged items in number order. Eighteen are left, so it is the last batch before the tagged items, and none of them is marked **(high)**. Two items are only partly open: 136's function case waits for 124 and its Statistic case for 126, and the rest of 140 waits for 76 and 77.
 
 ## How to run a batch
 
