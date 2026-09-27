@@ -5,8 +5,10 @@ The working list for the second audit of every public component, started on 2026
 ## State
 
 - The list holds 185 items: 136 without a tag, 49 tagged.
-- Batch 1 is done (2026-09-27): items 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 63, 64, 65, 78 and 120. Its commits are local and not pushed.
-- The next batch starts at item 17 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
+- Batch 1 is done (2026-09-27): items 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 63, 64, 65, 78 and 120.
+- Batch 2 is done (2026-09-27): items 17 to 31 and 53 to 57. Item 53 turned up a bug outside the list, fixed in a commit of its own: `markTransitionClasses` was never in the stylesheet, so every chart mark snapped.
+- Every commit so far is local and not pushed.
+- The next batch starts at item 58 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
 
 ## How to run a batch
 
