@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { PageLayout, Sidebar, SidebarTrigger } from 'neba';
+import { NebaProvider, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
 registerMessages('ko', ko);
@@ -389,6 +389,34 @@ describe('Sidebar', () => {
 
       await expect
         .element(screen.getByRole('button', { name: '사이드바 열기' }))
+        .toBeInTheDocument();
+    });
+
+    // The layout is nearer than the provider around it, so its language is the
+    // one its slots speak.
+    it('takes the layout language over a provider', async () => {
+      await widen(NARROW);
+      const screen = await render(
+        <NebaProvider defaults={{ locale: 'en' }} storageKey={false}>
+          <PageLayout
+            collapseBelow="md"
+            locale="ko"
+            header={<SidebarTrigger />}
+            sidebar={<Sidebar>Sections</Sidebar>}
+          >
+            Page
+          </PageLayout>
+        </NebaProvider>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: '사이드바 열기' }))
+        .toBeInTheDocument();
+
+      await widen(WIDE);
+
+      await expect
+        .element(screen.getByRole('complementary', { name: '사이드바' }))
         .toBeInTheDocument();
     });
   });

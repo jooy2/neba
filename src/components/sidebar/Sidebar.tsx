@@ -212,6 +212,9 @@ const KEYBOARD_STEP = 16;
  * engine reads as navigation chrome rather than as the article.
  */
 export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Sidebar(rawProps, ref) {
+  // Read before the provider's defaults: the layout's own `locale` is nearer
+  // than a provider's, so it is the one a sidebar inside it takes.
+  const layout = React.useContext(PageLayoutContext);
   const {
     side: sideProp,
     width: widthProp,
@@ -239,9 +242,10 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     style,
     children,
     ...props
-  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
+  } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale'], {
+    locale: layout.locale
+  });
 
-  const layout = React.useContext(PageLayoutContext);
   const slotSide = React.useContext(SidebarSideContext);
   const side = sideProp ?? slotSide ?? 'start';
   const locale = localeProp ?? layout.locale;

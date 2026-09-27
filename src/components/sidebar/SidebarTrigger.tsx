@@ -62,6 +62,8 @@ function MenuIcon() {
  */
 export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTriggerProps>(
   function SidebarTrigger(rawProps, ref) {
+    // Read before the provider's defaults, as Sidebar does.
+    const layout = React.useContext(PageLayoutContext);
     const {
       side = 'start',
       collapseBelow: collapseBelowProp,
@@ -72,9 +74,8 @@ export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTrigger
       className,
       onClick,
       ...props
-    } = useStyleDefaults(rawProps, ['variant', 'locale']);
+    } = useStyleDefaults(rawProps, ['variant', 'locale'], { locale: layout.locale });
 
-    const layout = React.useContext(PageLayoutContext);
     const locale = localeProp ?? layout.locale;
     const messages = useMessages(layoutMessages, locale);
 
