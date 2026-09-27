@@ -93,9 +93,9 @@ function firstError(props: { validationErrors?: readonly string[] }): string | u
  *
  * The cast is where the typing stops and has to: the schema is built at
  * runtime, so TypeScript cannot infer the props from it. What each view reads
- * is checked against the catalog by `test/package/a2ui.test.ts`, which is the
- * check that matters — a prop that type-checks against a hand-written mirror of
- * the catalog is a prop that type-checks against the wrong thing.
+ * is checked only by drawing it, in `test/a2ui/adapter.test.tsx` — a prop that
+ * type-checks against a hand-written mirror of the catalog is a prop that
+ * type-checks against the wrong thing.
  */
 function implement(
   name: keyof typeof catalog.components,

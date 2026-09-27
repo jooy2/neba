@@ -11,9 +11,10 @@
  * It handles the subset `catalog.json` actually uses and nothing more. That is
  * deliberate: a general JSON-Schema-to-Zod converter is a dependency, and a
  * partial one that quietly returns `z.any()` for a construct it has not met is
- * how a prop stops being validated without anybody noticing. Anything
- * unrecognised throws, and `test/package/a2ui.test.ts` converts every component
- * in the catalog so the throw happens here rather than in someone's renderer.
+ * how a prop stops being validated without anybody noticing. A keyword it does
+ * not know throws, and so does a `type` or a `$ref` it has not met;
+ * `test/a2ui/adapter.test.tsx` converts every component in the catalog so the
+ * throw happens there rather than in someone's renderer.
  *
  * The `$ref`s are the load-bearing part. `componentId()` and `childList()` are
  * not decoration over `z.string()`: the node layer reads a marker off those
@@ -43,6 +44,43 @@ export interface CatalogSchema {
 const COMMON = 'https://a2ui.org/specification/v1_0/common_types.json#/$defs/';
 
 /**
+ * The keywords a property may carry. `description` is read by the agent and
+ * not by the renderer, so it is known and left alone; everything else here is
+ * turned into Zod below. `const` is not among them: the one `const` in the
+ * catalog is on `component`, which `shape` skips before it gets here.
+ */
+const KEYWORDS = new Set([
+  '$ref',
+  'type',
+  'enum',
+  'default',
+  'description',
+  'properties',
+  'required',
+  'items',
+  'minimum',
+  'additionalProperties'
+]);
+
+/** The keywords a component's own object may carry, `allOf` aside. */
+const OBJECT_KEYWORDS = new Set([
+  'type',
+  'description',
+  'properties',
+  'required',
+  'additionalProperties'
+]);
+
+/** Throws on a keyword `convert` would otherwise pass over in silence. */
+function checkKeywords(schema: CatalogSchema, at: string, allowed: ReadonlySet<string>): void {
+  for (const keyword of Object.keys(schema)) {
+    if (!allowed.has(keyword)) {
+      throw new Error(`a2ui: ${at} uses \`${keyword}\`, which this adapter does not know`);
+    }
+  }
+}
+
+/**
  * The common types the catalog refers to, and what each one is in Zod.
  *
  * `Checkable` is not here because it is never a property: it arrives through an
@@ -60,6 +98,8 @@ const commonTypes: Record<string, () => z.ZodTypeAny> = {
 
 /** One property, or one whole component's own object. */
 function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
+  checkKeywords(schema, at, KEYWORDS);
+
   if (schema.$ref) {
     const name = schema.$ref.startsWith(COMMON) ? schema.$ref.slice(COMMON.length) : '';
     const build = commonTypes[name];
@@ -87,12 +127,19 @@ function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
       : z.union(literals as unknown as [z.ZodLiteral<number>, z.ZodLiteral<number>]);
   }
 
+  if (schema.minimum !== undefined && schema.type !== 'number' && schema.type !== 'integer') {
+    throw new Error(`a2ui: ${at} has a minimum but is not a number`);
+  }
+
   switch (schema.type) {
     case 'string':
       return z.string();
     case 'number':
-    case 'integer':
-      return z.number();
+    case 'integer': {
+      const number = schema.type === 'integer' ? z.number().int() : z.number();
+
+      return schema.minimum === undefined ? number : number.min(schema.minimum);
+    }
     case 'boolean':
       return z.boolean();
     case 'array':
@@ -110,6 +157,13 @@ function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
 
 /** An object's properties, with the required ones required and the rest not. */
 function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
+  // `false` is what the catalog says and what Zod does anyway: an object it
+  // parses keeps only the keys it declares. A key an agent adds is dropped
+  // rather than refused, because a refusal drops the whole message with it.
+  if (schema.additionalProperties === true) {
+    throw new Error(`a2ui: ${at} allows any property, which this adapter cannot check`);
+  }
+
   const required = new Set(schema.required ?? []);
   const entries: z.ZodRawShape = {};
 
@@ -127,8 +181,10 @@ function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
         ? required.has(name)
           ? value
           : value.optional()
-        : // `.optional()` after `.default()` and not the other way round: the
-          // wire may leave the prop out, and the default is what it means then.
+        : // Zod never applies this default — `.optional()` answers a missing
+          // prop before the default is reached, and the view leaves it to the
+          // component's own. It is here for the inline catalog `web_core`
+          // writes out of these schemas, which then says what the JSON says.
           value.default(property.default as never).optional();
   }
 
@@ -161,6 +217,7 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
       );
     }
 
+    checkKeywords(part, name, OBJECT_KEYWORDS);
     built = built.merge(shape(part, name));
   }
 

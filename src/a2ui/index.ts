@@ -51,7 +51,7 @@ export { componentSchema, type CatalogSchema } from './schema.js';
  * second chance to disagree with the agent about what `formatCurrency` does,
  * on the one thing both sides have to read the same way.
  *
- * `test/package/a2ui.test.ts` checks that every name the catalog declares is
+ * `test/a2ui/adapter.test.tsx` checks that every name the catalog declares is
  * one `web_core` has, so a function added to the JSON and to nothing else fails
  * here rather than at the first surface that calls it.
  */
@@ -75,10 +75,9 @@ function functions(): FunctionImplementation[] {
 /**
  * The catalog, ready to hand to a `MessageProcessor`.
  *
- * A function rather than a constant, because building it evaluates eighteen Zod
- * schemas and a project that never renders a surface should not pay for that on
- * import. Call it once and keep what it gives you: a `Catalog` is immutable and
- * the `MessageProcessor` holds on to it.
+ * The components' Zod schemas are built when this module is evaluated, since
+ * `nebaComponents` is exported as they are. Call this once and keep what it
+ * gives you: a `Catalog` is immutable and the `MessageProcessor` holds on to it.
  *
  * ```tsx
  * import { MessageProcessor } from '@a2ui/web_core/v0_9';

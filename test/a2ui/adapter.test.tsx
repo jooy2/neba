@@ -83,6 +83,31 @@ describe('the A2UI adapter', () => {
       }
     });
 
+    // A keyword the converter passed over would be a prop the agent is told is
+    // bounded and the renderer takes unbounded.
+    it('throws on a keyword it does not know', () => {
+      const unknown = (definition: unknown) => () =>
+        componentSchema('Made', definition as CatalogSchema);
+
+      expect(
+        unknown({ type: 'object', properties: { name: { type: 'string', maxLength: 3 } } })
+      ).toThrow(/maxLength/);
+      expect(unknown({ type: 'object', properties: {}, patternProperties: {} })).toThrow(
+        /patternProperties/
+      );
+    });
+
+    it('holds a number to the type and the minimum the catalog gives it', () => {
+      const schema = componentSchema(
+        'Typography',
+        catalog.components.Typography as CatalogSchema
+      ) as z.AnyZodObject;
+
+      expect(schema.shape.lines.safeParse(2).success).toBe(true);
+      expect(schema.shape.lines.safeParse(0).success).toBe(false);
+      expect(schema.shape.lines.safeParse(1.5).success).toBe(false);
+    });
+
     // Every value the agent is told it may write has to be one the renderer
     // takes. `z.enum` refuses numbers, so an `elevation` of `0` to `3` was a
     // prop no agent could set without the whole message being dropped.

@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **An A2UI `Typography`'s `lines` is held to what the catalog says.** The catalog tells an agent `lines` is a whole number of at least one, and the renderer took any number at all — a `0` or a `1.5` was drawn rather than refused. The Zod the adapter derives from the catalog now carries `minimum` and `integer`, and a keyword it does not know throws when the schemas are built rather than being passed over.
+
 - **A controlled `CommandPalette` binds its key once.** Its opener was a window listener of its own that was taken off and put back whenever `onOpenChange` changed, and an `onOpenChange` written inline changes on every render of the page around it. It is bound through `useShortcut` now, which is what that hook's documentation already said, and which keeps the handler in a ref.
 
 - **A chart's marks fade and grow under the crosshair, as they were meant to.** The one `transition` every mark shares was written as three strings joined at run time, and Tailwind only generates a class it can read whole in the source — so the class was never in the stylesheet, and every mark snapped: the series a legend dims, the datum under the crosshair, the pixel it grows by. A `PieChart` and a `HeatmapChart`, which had moved before the marks were given one shorthand, snapped along with the rest. It is one literal now.
