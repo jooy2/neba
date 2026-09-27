@@ -141,6 +141,9 @@ export function GalleryViewer({
                 elevation={1}
                 label={messages.previous}
                 disabled={atStart}
+                // A press that reaches the first picture runs the button out, and
+                // a `disabled` button hands the focus to the page.
+                focusableWhenDisabled
                 className="pointer-events-auto"
                 // Drawn pointing down and turned, which is the one allowance the
                 // no-transform rule makes — and turned the other way under RTL,
@@ -157,6 +160,7 @@ export function GalleryViewer({
                 elevation={1}
                 label={messages.next}
                 disabled={atEnd}
+                focusableWhenDisabled
                 className="pointer-events-auto"
                 icon={
                   <span className="flex items-center -rotate-90 rtl:rotate-90">

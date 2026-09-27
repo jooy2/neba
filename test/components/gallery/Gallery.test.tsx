@@ -8,6 +8,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Gallery, type NebaGalleryItem } from 'neba';
 
 const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
@@ -424,8 +425,28 @@ describe('Gallery', () => {
 
       await screen.getByRole('button', { name: /A ridge/ }).click();
 
-      await expect.element(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Previous image' }))
+        .toHaveAttribute('aria-disabled', 'true');
       await expect.element(screen.getByRole('button', { name: 'Next image' })).toBeEnabled();
+    });
+
+    // Pressing Next onto the last picture disabled the button under the focus,
+    // which a dialog hands back to nothing.
+    it('keeps the focus on a button the press ran out', async () => {
+      const screen = await render(<Gallery items={items} preview />);
+
+      await screen.getByRole('button', { name: /A bowl/ }).click();
+      await expect.element(screen.getByText('Image 3 of 4')).toBeInTheDocument();
+
+      const next = screen.getByRole('button', { name: 'Next image' });
+
+      (next.element() as HTMLElement).focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByText('Image 4 of 4')).toBeInTheDocument();
+      await expect.element(next).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(next).toHaveFocus();
     });
 
     /*
