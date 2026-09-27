@@ -136,7 +136,7 @@ describe('IconButton', () => {
       const element = screen.getByRole('button').element();
 
       expect(element).toHaveAttribute('aria-busy', 'true');
-      expect(element.querySelector('.animate-spin')).not.toBeNull();
+      expect(element.querySelector('.neba-ring-spin')).not.toBeNull();
     });
   });
 });
