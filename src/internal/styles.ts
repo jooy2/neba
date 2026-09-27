@@ -557,6 +557,14 @@ export const popupFadeClasses =
 export const focusRingClasses = `${ringRestClasses} outline-offset-2 focus-visible:[outline:2px_solid_var(--n-ring)]`;
 
 /**
+ * The same ring drawn inside the edge, for a control inside a box that clips:
+ * an Accordion's header in a sheet, a Pill's button in its lozenge, a
+ * HowToSteps row in a rail that scrolls. Two pixels outside would be cut off
+ * by the very box the control is in.
+ */
+export const insetRingClasses = `${ringRestClasses} outline-offset-[-2px] focus-visible:[outline:2px_solid_var(--n-ring)]`;
+
+/**
  * The same ring, drawn by whichever descendant actually takes focus.
  *
  * `:has()` is what keeps it to keyboard focus, and it is newer than the rest of

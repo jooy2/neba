@@ -13,9 +13,9 @@ import {
   gapClasses,
   hasContent,
   iconClasses,
+  insetRingClasses,
   metaTextClasses,
   radiusClasses,
-  ringRestClasses,
   sheetBodyClasses,
   sheetHeaderGapClasses,
   sheetTitleClasses,
@@ -190,9 +190,6 @@ const itemRadiusClasses: Record<NebaSize, string> = {
   lg: radiusClasses.sm,
   xl: radiusClasses.md
 };
-
-/** The focus ring drawn inside the edge, for a header the sheet clips. */
-const insetRingClasses = `${ringRestClasses} outline-offset-[-2px] focus-visible:[outline:2px_solid_var(--n-ring)]`;
 
 /**
  * A stack of sections, one of which is open.

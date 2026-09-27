@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A pressable `Pill` draws its whole focus ring.** The button inside inherited no radius from the row around it, so its ring was square, and it sat two pixels outside a button the lozenge clips — so the start of the ring, the end without an `endIcon`, and every corner were cut off. The ring is drawn inside the button's edge now, at the lozenge's own radius, as an `Accordion` header's is.
+
 - **An `Image` or a `Gallery` tile that opens a preview says so.** The button is named after the picture, which is right, and so it was read as "A ridge of hills, button" with nothing to say a press opens a larger view. It carries `aria-haspopup="dialog"` now; a `Gallery` tile that only calls `onItemSelect` does not.
 
 - **Copying a `CodeBlock` a second time is announced a second time.** A press inside the two seconds the button says "Copied" wrote the same word into the live region again, and a live region only speaks when its text changes, so a reader who pressed again to make sure heard nothing. The region is emptied and written again a moment later; the button's own label does not blink.

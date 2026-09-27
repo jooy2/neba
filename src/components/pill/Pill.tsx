@@ -7,11 +7,11 @@ import {
   controlSlots,
   controlTextClasses,
   cx,
-  focusRingClasses,
   gapClasses,
   hasContent,
   iconClasses,
   iconSizeClasses,
+  insetRingClasses,
   metaTextClasses,
   paddingXClasses,
   pressTransitionClasses,
@@ -384,12 +384,13 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
             type="button"
             className={[
               'flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch',
-              // `inherit`, so the focus ring traces the lozenge's own corners
-              // rather than drawing a second, squarer rectangle inside them.
-              'rounded-[inherit]',
+              // The lozenge's own radius and a ring drawn inside the edge: the
+              // shell clips, and a ring two pixels outside the button was cut
+              // off at the start of the row and at every corner.
+              pillRadiusClasses[size],
               gapClasses[size],
               padX,
-              focusRingClasses
+              insetRingClasses
             ].join(' ')}
             // With details to reveal, pressing the pill is what reveals them — so
             // the button says whether they are showing and which panel they are.

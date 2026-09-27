@@ -7,6 +7,8 @@
  * canvas, which is the same sRGB blend the browser paints with.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { render } from 'vitest-browser-react';
+import { Pill } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 const FAMILIES = ['primary', 'secondary', 'success', 'warning', 'danger', 'info'] as const;
@@ -78,4 +80,19 @@ describe('focus ring', () => {
       }
     });
   }
+});
+
+// A Pill clips what is inside it, and the ring two pixels outside its button
+// was cut off at the start of the row and at every corner of a square button.
+describe('a ring inside a box that clips', () => {
+  it("is drawn inside a Pill button, at the lozenge's own radius", async () => {
+    const screen = await render(<Pill onClick={() => {}}>Deploy</Pill>);
+    const button = screen.getByRole('button', { name: 'Deploy' }).element();
+    const shell = button.closest('.overflow-hidden') as HTMLElement;
+
+    expect(getComputedStyle(button).outlineOffset).toBe('-2px');
+    expect(getComputedStyle(button).borderTopLeftRadius).toBe(
+      getComputedStyle(shell).borderTopLeftRadius
+    );
+  });
 });
