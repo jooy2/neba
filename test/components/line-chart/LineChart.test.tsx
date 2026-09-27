@@ -860,6 +860,42 @@ describe('LineChart', () => {
       expect(onRangeChange.mock.calls[0][0]).toEqual([10, 20]);
     });
 
+    it('reports nothing when a key has nowhere to take a handle', async () => {
+      const onRangeChange = vi.fn();
+      const screen = await render(chart({ brush: { defaultRange: [0, 39], onRangeChange } }));
+      const [start, end] = [screen.getByRole('slider').first(), screen.getByRole('slider').nth(1)];
+      const press = (handle: typeof start, key: string) =>
+        handle.element().dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+      await expect.element(end).toHaveAttribute('aria-valuenow', '39');
+
+      press(start, 'Home');
+      press(start, 'ArrowLeft');
+      press(end, 'End');
+      press(end, 'ArrowRight');
+      // One that does move, so there is a call to wait for.
+      press(end, 'ArrowLeft');
+
+      await expect.poll(() => onRangeChange.mock.calls.length).toBe(1);
+      expect(onRangeChange.mock.calls[0][0]).toEqual([0, 38]);
+    });
+
+    it('never reports a window past either end of the series', async () => {
+      const onRangeChange = vi.fn();
+      const screen = await render(chart({ brush: { range: [39, 39], onRangeChange } }));
+      const [start, end] = [screen.getByRole('slider').first(), screen.getByRole('slider').nth(1)];
+      const press = (handle: typeof start, key: string) =>
+        handle.element().dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+      await expect.element(end).toHaveAttribute('aria-valuenow', '39');
+
+      press(end, 'ArrowRight');
+      press(start, 'ArrowLeft');
+
+      await expect.poll(() => onRangeChange.mock.calls.length).toBe(1);
+      expect(onRangeChange.mock.calls[0][0]).toEqual([38, 39]);
+    });
+
     it('holds a controlled window where the caller put it', async () => {
       const screen = await render(chart({ brush: { range: [5, 8] } }));
       const start = screen.getByRole('slider').first();

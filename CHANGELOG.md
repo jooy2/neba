@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A chart brush reports a window only when it moved, and never one past the series.** `onRangeChange` was called for every key and every pointer move, including a `Home` on a handle already at the start and a drag that stayed inside one category, with the window it already had. And a window one category wide at either end of the series reported a handle at `-1` or one past the last category. Both ends are held inside the series now, and a gesture that changes nothing reports nothing.
+
 - **An A2UI `Typography`'s `lines` is held to what the catalog says.** The catalog tells an agent `lines` is a whole number of at least one, and the renderer took any number at all — a `0` or a `1.5` was drawn rather than refused. The Zod the adapter derives from the catalog now carries `minimum` and `integer`, and a keyword it does not know throws when the schemas are built rather than being passed over.
 
 - **A controlled `CommandPalette` binds its key once.** Its opener was a window listener of its own that was taken off and put back whenever `onOpenChange` changed, and an `onOpenChange` written inline changes on every render of the page around it. It is bound through `useShortcut` now, which is what that hook's documentation already said, and which keeps the handler in a ref.

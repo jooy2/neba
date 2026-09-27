@@ -80,6 +80,14 @@ export function ChartBrush({
 
   const last = Math.max(0, count - 1);
   const [from, to] = range;
+  /* The window as last reported, and not as last rendered: a drag's moves are
+     read by the closure it started in, and two of them can land before the
+     window they asked for is drawn. */
+  const reported = React.useRef<readonly [number, number]>([from, to]);
+
+  React.useEffect(() => {
+    reported.current = [from, to];
+  });
   /* As fractions of the strip, which is what both the window's box and the
      drag arithmetic are in. A one-category series has no width to divide by. */
   const at = (index: number) => (last === 0 ? 0 : index / last);
@@ -134,20 +142,33 @@ export function ChartBrush({
    * handle past the other would have to work out which end they now hold.
    */
   const move = (grip: Grip, index: number, offset: number) => {
+    let next: readonly [number, number];
+
     if (grip === 'start') {
-      onRange([Math.min(index, to - 1), to]);
+      next = [Math.min(index, to - 1), to];
+    } else if (grip === 'end') {
+      next = [from, Math.max(index, from + 1)];
+    } else {
+      const span = to - from;
+      const start = Math.min(Math.max(0, index - offset), last - span);
+
+      next = [start, start + span];
+    }
+
+    /* Held inside the series, which a window one category wide at either end
+       would otherwise leave by one. And a gesture that moved nothing — a key
+       at the end of its travel, a drag inside one category — is not a change
+       to report. */
+    const start = Math.min(last, Math.max(0, next[0]));
+    const end = Math.min(last, Math.max(start, next[1]));
+    const [was, wasEnd] = reported.current;
+
+    if (start === was && end === wasEnd) {
       return;
     }
 
-    if (grip === 'end') {
-      onRange([from, Math.max(index, from + 1)]);
-      return;
-    }
-
-    const span = to - from;
-    const start = Math.min(Math.max(0, index - offset), last - span);
-
-    onRange([start, start + span]);
+    reported.current = [start, end];
+    onRange([start, end]);
   };
 
   function grab(grip: Grip, event: React.PointerEvent<HTMLElement>) {
