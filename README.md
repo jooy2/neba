@@ -60,7 +60,7 @@ Add one line to your app's CSS entry point:
 @import 'neba/styles.css';
 ```
 
-`neba/styles.css` is finished CSS: the design tokens, the compiled rules for every utility class the components use, and a small reset whose every rule is specificity 0 so your own styles always win. [Tailwind CSS](https://tailwindcss.com) v4 builds this package; it does not have to be installed in yours.
+`neba/styles.css` is finished CSS: the design tokens, the compiled rules for every utility class the components use, and a small reset whose rules on elements are all specificity 0, so your own styles win. [Tailwind CSS](https://tailwindcss.com) v4 builds this package; it does not have to be installed in yours.
 
 That is the whole setup. No provider is required at the root, no theme object, no config file.
 

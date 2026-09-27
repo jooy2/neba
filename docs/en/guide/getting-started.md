@@ -35,7 +35,7 @@ import 'neba/styles.css';
 
 `neba/styles.css` includes the global reset the components are written against: Tailwind's Preflight cut down to what they actually need. It leaves the font size of your paragraphs and the look of your links alone, but it does change headings and a few margins, which the list below names.
 
-Every rule in it is wrapped in `:where()`, so it has **specificity 0**. A single type selector of your own (`p { margin: 1rem }`) beats it, whatever the import order. The reset is a floor under the components, not a claim on your page.
+Every rule in it that selects an element is wrapped in `:where()`, so it has **specificity 0**. A single type selector of your own (`p { margin: 1rem }`) beats it, whatever the import order. A pseudo-element cannot go inside `:where()`, so the few rules on one, such as `::placeholder`, weigh what a type selector does, and a rule of your own on the same pseudo-element wins by coming after the import. The reset is a floor under the components, not a claim on your page.
 
 It is global, though, so on a page that already has markup of its own, anything that relied on the browser's defaults for these changes when the stylesheet is added:
 
