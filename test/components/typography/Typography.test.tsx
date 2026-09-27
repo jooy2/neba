@@ -177,6 +177,20 @@ describe('Typography', () => {
       expect(note()).toHaveClass('block');
     });
 
+    // A clamp of two lines or more is its own box, and a `block` beside it
+    // took its `display` away whenever the stylesheet put `block` second.
+    it('leaves a multi-line clamp its own display', async () => {
+      const screen = await render(
+        <Typography level="caption" align="center" lines={2}>
+          Note
+        </Typography>
+      );
+      const note = screen.getByText('Note').element();
+
+      expect(note).toHaveClass('line-clamp-(--n-lines)');
+      expect(note).not.toHaveClass('block');
+    });
+
     it('adds no margin unless asked', async () => {
       const screen = await render(<Typography level="h2">Heading</Typography>);
 
