@@ -33,7 +33,7 @@ import { NebaProvider } from 'neba';
 
 |  |  |
 | --- | --- |
-| `size` `density` `variant` `locale` `labelPlacement` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어이며, 한 폼의 라벨은 모두 같은 자리에 있습니다. `labelPlacement`는 shell을 그리는 필드 전부에 닿습니다. TextField, NumberField, Select, Combobox와 모든 picker입니다. |
+| `size` `density` `variant` `locale` `labelPlacement` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어이며, 한 폼의 라벨은 모두 같은 자리에 있습니다. `labelPlacement`는 shell을 그리는 필드 열 개에 닿습니다. TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, ColorPicker, TreeSelect입니다. |
 | `color` | **기본값으로 줄 수 없습니다.** 컴포넌트의 색 기본값이 의미를 나타내는 경우가 많습니다. [Alert](../components/feedback/alert)는 `info`, [Popconfirm](../components/feedback/popconfirm)은 `danger`이며, 전역으로 한 번 덮으면 이 뜻이 모두 바뀝니다. |
 | `elevation` | **기본값으로 줄 수 없습니다.** [디자인 언어](../design/design-language)가 그림자를 표면마다 opt-in으로 정하고 있으며, 전역 그림자는 그 규칙과 어긋납니다. |
 
@@ -102,3 +102,5 @@ provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나,
 ```
 
 `<html>`의 색 스킴은 가장 바깥 provider의 것이고, 중첩 provider는 이를 쓰지 않습니다. 자기 subtree만 다시 칠하려는 중첩 provider는 `colorSchemeElement`로 대상 element를 지정하면 됩니다. 위 미리보기가 그렇게 동작하며, 그래서 이 prop은 element가 아니라 함수를 받습니다. 중첩 provider가 `direction`을 지정하면 그 값은 여전히 `<html>`에 쓰입니다.
+
+중첩 provider는 따로 지정하지 않으면 바깥 provider와 같은 `storageKey`에 스킴을 기억합니다. 그래서 안쪽에서 고른 스킴이 다음 방문 때 페이지 전체의 스킴이 됩니다. 위 미리보기처럼 `storageKey={false}`를 주거나 따로 키를 주세요.

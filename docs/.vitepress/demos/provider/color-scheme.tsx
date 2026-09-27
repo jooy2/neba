@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Button, Card, NebaProvider, Segment, SegmentedButton, useColorScheme } from 'neba';
 
 function Switch() {
@@ -21,8 +21,6 @@ function Switch() {
 
 export default function ProviderColorScheme() {
   const box = useRef<HTMLDivElement>(null);
-  // Rendered once so the ref is filled before the provider's effect asks for it.
-  const [, ready] = useState(0);
 
   return (
     <div ref={box} className="rounded-(--neba-radius-md) bg-(--neba-surface) p-4">
@@ -31,9 +29,7 @@ export default function ProviderColorScheme() {
       <NebaProvider colorSchemeElement={() => box.current} storageKey={false}>
         <div className="flex flex-col gap-3">
           <Switch />
-          <Button variant="outline" onClick={() => ready(0)}>
-            A control, for scale
-          </Button>
+          <Button variant="outline">A control, for scale</Button>
         </div>
       </NebaProvider>
     </div>

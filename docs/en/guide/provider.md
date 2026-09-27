@@ -33,7 +33,7 @@ A call site still wins. The order is **the caller, then the provider, then the c
 
 |  |  |
 | --- | --- |
-| `size` `density` `variant` `locale` `labelPlacement` | The right value is a property of the product. A dense application is dense everywhere, a Korean one is Korean everywhere, and a form puts all its labels in one place. `labelPlacement` reaches every field that draws a shell: TextField, NumberField, Select, Combobox and the pickers. |
+| `size` `density` `variant` `locale` `labelPlacement` | The right value is a property of the product. A dense application is dense everywhere, a Korean one is Korean everywhere, and a form puts all its labels in one place. `labelPlacement` reaches the ten fields that draw a shell: TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, ColorPicker and TreeSelect. |
 | `color` | **Not defaultable.** A component's colour default is often semantic. An [Alert](../components/feedback/alert) is `info` and a [Popconfirm](../components/feedback/popconfirm) is `danger` because severity carries meaning, and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 
@@ -102,3 +102,5 @@ Providers nest. A settings panel that previews a scheme, or a compact toolbar in
 ```
 
 The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own. The preview above does exactly that, and it is why the prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.
+
+A nested provider remembers its scheme under the same `storageKey` as the outer one unless it is given its own, so a scheme chosen inside it becomes the page's on the next visit. Give it `storageKey={false}`, as the preview above does, or a key of its own.
