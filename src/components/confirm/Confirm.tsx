@@ -59,6 +59,8 @@ export interface ConfirmProviderProps {
 
 /** One pending question: what to ask, and the promise waiting on the answer. */
 interface Pending {
+  /** Which question this is, so each one is a sheet of its own. */
+  id: number;
   options: ConfirmOptions;
   settle: (answer: boolean) => void;
 }
@@ -93,6 +95,16 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   // reading the queue directly would empty the heading and the description out
   // from under the fade. So the sheet keeps the last thing it was asked.
   const [shown, setShown] = React.useState<ConfirmOptions | undefined>(undefined);
+  /*
+   * And which question that was, as the sheet's `key`. A queued question that
+   * took over the open sheet was not an open at all: `initialFocus` never ran
+   * again, so a `danger` question after a plain one came up with the focus on
+   * the destructive button, and nothing announced the new title. A key per
+   * question makes each one a real open. It stays on the last question once the
+   * queue is empty, so the closing sheet is the same one and fades out.
+   */
+  const [shownId, setShownId] = React.useState(0);
+  const nextId = React.useRef(0);
 
   const current = queue[0];
 
@@ -102,6 +114,7 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   // nothing is painted twice.
   if (current && current.options !== shown) {
     setShown(current.options);
+    setShownId(current.id);
   }
 
   const confirm = React.useCallback<ConfirmFunction>(
@@ -112,9 +125,13 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
             document.activeElement instanceof HTMLElement ? document.activeElement : null;
         }
 
+        nextId.current += 1;
+        const id = nextId.current;
+
         setQueue((waiting) => [
           ...waiting,
           {
+            id,
             options: typeof options === 'string' ? { title: options } : options,
             settle: resolve
           }
@@ -145,6 +162,7 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
       {children}
 
       <Dialog
+        key={shownId}
         open={current !== undefined}
         onOpenChange={(next) => {
           // Escape and the backdrop are the cancelling button by another route,
@@ -170,7 +188,12 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
         initialFocus={cautious ? cancelRef : confirmRef}
         finalFocus={() => {
           const target = opener.current;
-          opener.current = null;
+          // Forgotten only after the last question. A sheet the next question
+          // replaced asks too, from its own last render, where the queue still
+          // held what it was answering.
+          if (queue.length === 0) {
+            opener.current = null;
+          }
           return target?.isConnected ? target : true;
         }}
         actions={

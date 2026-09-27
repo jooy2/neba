@@ -198,6 +198,51 @@ describe('ConfirmProvider', () => {
     await vi.waitFor(() => expect(answers).toEqual(['first:true', 'second:false']));
   });
 
+  // The second question took over the open sheet, so it never opened: the
+  // focus stayed where the first question put it, on the button that destroys.
+  it('opens a queued destructive question on the button that destroys nothing', async () => {
+    function Two() {
+      const confirm = useConfirm();
+
+      return (
+        <Button
+          onClick={() => {
+            void confirm('Publish?');
+            void confirm({ title: 'Delete the draft?', color: 'danger' });
+          }}
+        >
+          Ask
+        </Button>
+      );
+    }
+
+    const screen = await render(
+      <ConfirmProvider>
+        <Two />
+      </ConfirmProvider>
+    );
+
+    await screen.getByRole('button', { name: 'Ask' }).click();
+    await expect.element(screen.getByText('Publish?')).toBeInTheDocument();
+    await vi.waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Confirm' }).element())
+    );
+
+    press(screen.getByRole('button', { name: 'Confirm' }).element() as HTMLElement);
+
+    await expect.element(screen.getByText('Delete the draft?')).toBeInTheDocument();
+    await vi.waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Cancel' }).element())
+    );
+
+    press(screen.getByRole('button', { name: 'Cancel' }).element() as HTMLElement);
+
+    // And home again once the last question is answered.
+    await vi.waitFor(() =>
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Ask' }).element())
+    );
+  });
+
   it('takes its defaults from the provider, and lets a call override them', async () => {
     function Asks({ onAnswer }: { onAnswer: (a: boolean) => void }) {
       const confirm = useConfirm();
