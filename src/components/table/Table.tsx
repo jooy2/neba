@@ -62,8 +62,10 @@ export interface TableColumn<Row> {
  * cell's padding, alignment and background are written as **inline styles**,
  * because `.vp-doc td` and `.prose td` outrank any one-class utility. A class
  * handed to `headCell`, `cell` or `empty` can add anything the component does
- * not already set inline — a colour, a font, a border — but to change one of
- * those three it has to be an important one (`p-4!`).
+ * not already set inline — a font, a border — but to change one of those three
+ * it has to be an important one (`p-4!`). A header cell's ink and the empty
+ * line's are inline as well and read `--n-cell-ink`, so a class sets that slot:
+ * `[--n-cell-ink:var(--neba-fg)]`.
  */
 export type TableSlot =
   'table' | 'caption' | 'head' | 'headCell' | 'body' | 'row' | 'cell' | 'empty';

@@ -88,13 +88,17 @@ Pins the header row while the body scrolls. The sheet the table draws is what sc
 <Table
   headers={headers}
   items={items}
-  classNames={{ table: 'tabular-nums', headCell: 'text-(--neba-fg)', row: 'align-top' }}
+  classNames={{
+    table: 'tabular-nums',
+    headCell: '[--n-cell-ink:var(--neba-fg)]',
+    row: 'align-top'
+  }}
 />
 ```
 
 The slots are `table`, `caption`, `head`, `headCell`, `body`, `row`, `cell` and `empty`.
 
-One thing to know before reaching for `cell`: a cell's padding, alignment and background are written as inline styles rather than as utilities, because a host stylesheet's `td` rule outranks any one-class utility. A class you hand to `headCell`, `cell` or `empty` can add anything the component does not already set inline (a colour, a font, a border), but changing one of those three needs an important utility (`p-4!`). See [prop conventions](../../design/prop-conventions).
+One thing to know before reaching for `cell`: a cell's padding, alignment and background are written as inline styles rather than as utilities, because a host stylesheet's `td` rule outranks any one-class utility. A class you hand to `headCell`, `cell` or `empty` can add anything the component does not already set inline (a font, a border), but changing one of those three needs an important utility (`p-4!`). The ink of a header cell and of the empty line is inline too, and reads the `--n-cell-ink` slot, so a class sets that slot rather than a `text-*` colour, as in the example above. See [prop conventions](../../design/prop-conventions).
 
 ## Accessibility
 

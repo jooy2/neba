@@ -88,13 +88,17 @@ interface TableColumn<Row> {
 <Table
   headers={headers}
   items={items}
-  classNames={{ table: 'tabular-nums', headCell: 'text-(--neba-fg)', row: 'align-top' }}
+  classNames={{
+    table: 'tabular-nums',
+    headCell: '[--n-cell-ink:var(--neba-fg)]',
+    row: 'align-top'
+  }}
 />
 ```
 
 slot은 `table`, `caption`, `head`, `headCell`, `body`, `row`, `cell`, `empty`입니다.
 
-`cell`을 쓰기 전에 알아 둘 것이 하나 있습니다. cell의 padding과 정렬, 배경은 utility가 아니라 inline style로 쓰여 있습니다. host stylesheet의 `td` 규칙이 한 개짜리 utility를 이기기 때문입니다. `headCell`·`cell`·`empty`에 넘긴 class는 컴포넌트가 inline으로 정하지 않은 것(색, 폰트, 테두리)은 무엇이든 더할 수 있지만, 저 셋을 바꾸려면 important utility(`p-4!`)여야 합니다. [prop 규약](../../design/prop-conventions)을 보세요.
+`cell`을 쓰기 전에 알아 둘 것이 하나 있습니다. cell의 padding과 정렬, 배경은 utility가 아니라 inline style로 쓰여 있습니다. host stylesheet의 `td` 규칙이 한 개짜리 utility를 이기기 때문입니다. `headCell`·`cell`·`empty`에 넘긴 class는 컴포넌트가 inline으로 정하지 않은 것(폰트, 테두리)은 무엇이든 더할 수 있지만, 저 셋을 바꾸려면 important utility(`p-4!`)여야 합니다. header cell과 빈 줄의 글자색도 inline이며 `--n-cell-ink` slot을 읽으므로, 위 예시처럼 `text-*` 색 대신 그 slot을 정하세요. [prop 규약](../../design/prop-conventions)을 보세요.
 
 ## 접근성
 
