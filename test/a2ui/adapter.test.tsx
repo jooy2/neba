@@ -132,6 +132,41 @@ describe('the A2UI adapter', () => {
     });
   });
 
+  describe('speaks the language it is given', () => {
+    // The components follow a `NebaProvider`; the formatting functions follow
+    // whatever the catalog was built with, and the two have to agree.
+    it('formats numbers and plurals in the locale the catalog was built for', async () => {
+      const processor = new MessageProcessor([createNebaCatalog({ locale: 'de' })]);
+
+      processor.processMessages([
+        { version: 'v0.9', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
+        {
+          version: 'v0.9',
+          updateComponents: {
+            surfaceId: SURFACE,
+            components: [
+              {
+                id: 'root',
+                component: 'Typography',
+                text: { call: 'formatNumber', args: { value: 1234.5 }, returnType: 'string' }
+              }
+            ]
+          }
+        }
+      ] as Message[]);
+
+      const surface = processor.model.surfacesMap.get(SURFACE);
+
+      if (!surface) {
+        throw new Error('the processor refused the surface');
+      }
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
+    });
+  });
+
   describe('keeps its defaults', () => {
     /*
      * A `default` in the catalog is a claim about what the renderer does when

@@ -89,6 +89,8 @@ Fourteen, with the specification's own names and call signatures: `required`, `l
 
 Declaring one is a claim that your renderer implements it. Ten of the fourteen are one `Intl` call, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation.
 
+`formatNumber`, `formatCurrency` and `pluralize` write in the language the catalog was built with, `createNebaCatalog({ locale: 'ko' })`. Pass the `locale` your `NebaProvider` has; left out, the components follow the provider and those three follow the runtime. `formatDate` does not take one.
+
 `formatString` is the one to know about: A2UI has no operators, so it is the only way to put a value into a sentence.
 
 ## Versions

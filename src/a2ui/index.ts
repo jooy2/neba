@@ -33,8 +33,11 @@
  * changes is this file's import and nothing in `catalog.json`.
  */
 
-import { Catalog, type FunctionImplementation } from '@a2ui/web_core/v0_9';
-import { BASIC_FUNCTIONS } from '@a2ui/web_core/v0_9';
+import {
+  Catalog,
+  createBasicCatalogFunctions,
+  type FunctionImplementation
+} from '@a2ui/web_core/v0_9';
 import catalog from './catalog.json' with { type: 'json' };
 import { nebaComponents } from './components.js';
 
@@ -55,14 +58,13 @@ export { componentSchema, type CatalogSchema } from './schema.js';
  * one `web_core` has, so a function added to the JSON and to nothing else fails
  * here rather than at the first surface that calls it.
  */
-function functions(): FunctionImplementation[] {
+function functions(locale: string | undefined): FunctionImplementation[] {
+  const basic = createBasicCatalogFunctions({ locale });
   const declared = new Set(Object.keys(catalog.functions));
-  const available = BASIC_FUNCTIONS.filter((one) => declared.has(one.name));
+  const available = basic.filter((one) => declared.has(one.name));
 
   if (available.length !== declared.size) {
-    const missing = [...declared].filter(
-      (name) => !BASIC_FUNCTIONS.some((one) => one.name === name)
-    );
+    const missing = [...declared].filter((name) => !basic.some((one) => one.name === name));
 
     throw new Error(
       `neba/a2ui: the catalog declares ${missing.join(', ')}, which @a2ui/web_core does not implement`
@@ -70,6 +72,17 @@ function functions(): FunctionImplementation[] {
   }
 
   return available;
+}
+
+/** What `createNebaCatalog` takes. */
+export interface NebaCatalogOptions {
+  /**
+   * The language `formatNumber`, `formatCurrency` and `pluralize` write in.
+   * Pass the one the components are in — a `NebaProvider`'s `locale` — or the
+   * three follow the runtime's language while the components follow the
+   * provider. Left out, they follow the runtime.
+   */
+  locale?: string;
 }
 
 /**
@@ -84,7 +97,7 @@ function functions(): FunctionImplementation[] {
  * import { A2uiSurface } from '@a2ui/react/v0_9';
  * import { createNebaCatalog } from 'neba/a2ui';
  *
- * const catalog = createNebaCatalog();
+ * const catalog = createNebaCatalog({ locale: 'ko' });
  * const processor = new MessageProcessor([catalog]);
  * ```
  *
@@ -92,11 +105,10 @@ function functions(): FunctionImplementation[] {
  * is served from — so the id a surface names and the schema an agent was given
  * are the same string without anybody having to keep them in step.
  */
-export function createNebaCatalog(): Catalog<
-  (typeof nebaComponents)[number],
-  FunctionImplementation
-> {
-  return new Catalog(catalog.catalogId, nebaComponents, functions());
+export function createNebaCatalog(
+  options: NebaCatalogOptions = {}
+): Catalog<(typeof nebaComponents)[number], FunctionImplementation> {
+  return new Catalog(catalog.catalogId, nebaComponents, functions(options.locale));
 }
 
 /** The catalog's own id, for a `createSurface` message written by hand. */

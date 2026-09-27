@@ -8,6 +8,10 @@
 
 - **A `Transfer`'s move buttons keep the focus when the press runs them out.** Moving every ticked row made the button `disabled`, and the focus fell to the document, so a keyboard reader moving rows one at a time started again from the top after each. Both stay in place with `aria-disabled`, as a `Pagination` stepper does; a disabled `Transfer` still disables them outright. A test that asserted `toBeDisabled()` on either should assert `aria-disabled="true"`.
 
+### Added
+
+- **`createNebaCatalog` takes a `locale`.** The A2UI functions that write numbers — `formatNumber`, `formatCurrency` and `pluralize` — followed the runtime's language whatever the components around them were set to, so a Korean surface could say "1,234.5" in a Korean sentence and pick the English plural. `createNebaCatalog({ locale })` builds them in the language given, which is the one a `NebaProvider` should be given too.
+
 ### Changed
 
 - **A `DataList`'s label column stops at half the list's width.** Left without a `labelWidth`, it was as wide as the widest label and could not shrink, so a long or translated label made the list wider than a phone's screen and squeezed the values. It is still as wide as the widest label, so the values start at the same place, up to half the list; past that a label wraps. A `labelWidth` is taken as it is.
