@@ -9,7 +9,18 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Alert, Carousel, Dialog, Drawer, NumberField, Panes, Pane, Popover, Tour } from 'neba';
+import {
+  Alert,
+  Carousel,
+  Dialog,
+  Drawer,
+  FilePicker,
+  NumberField,
+  Panes,
+  Pane,
+  Popover,
+  Tour
+} from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -46,6 +57,20 @@ describe('the target under a small control', () => {
   it('reaches the × that dismisses an alert', async () => {
     const screen = await render(<Alert title="Saved" onClose={() => {}} />);
     const box = target(screen.getByRole('button').element());
+
+    expect(box.width).toBeGreaterThanOrEqual(24);
+    expect(box.height).toBeGreaterThanOrEqual(24);
+  });
+
+  it('reaches the × that takes a file off the list', async () => {
+    const screen = await render(
+      <FilePicker defaultValue={[new File(['x'], 'notes.txt', { type: 'text/plain' })]} />
+    );
+    const remove = screen.getByRole('button', { name: /notes\.txt/ });
+
+    await expect.element(remove).toBeInTheDocument();
+
+    const box = target(remove.element());
 
     expect(box.width).toBeGreaterThanOrEqual(24);
     expect(box.height).toBeGreaterThanOrEqual(24);

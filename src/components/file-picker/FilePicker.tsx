@@ -11,6 +11,7 @@ import {
   disabledClasses,
   gapClasses,
   hasContent,
+  hitAreaClasses,
   iconClasses,
   metaTextClasses,
   radiusClasses,
@@ -588,7 +589,10 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
                     type="button"
                     aria-label={removeLabel(file.name)}
                     className={[
-                      'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full',
+                      'relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full',
+                      // Drawn at the size of the name beside it, pressed at the
+                      // size of a finger.
+                      hitAreaClasses,
                       'size-[1.3em] text-(--neba-muted-fg) opacity-70',
                       '[transition:opacity_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
                       '[&_svg]:size-[0.9em]',

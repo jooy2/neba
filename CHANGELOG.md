@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **The × that takes a file off a `FilePicker`'s list is pressed at the size of a finger.** It is drawn at 1.3em of the file's name, about 17 pixels, with no larger target around it. It carries the same invisible 24-pixel target as a `Chip`'s × now, and nothing drawn moves.
+
 - **The × in the corner of a `Dialog`, a `Popover`, a `Drawer` and a `Tour` step is pressed at the size of a finger.** It is drawn at 1.6em of the sheet's text, about 20 pixels at the default size, and unlike the × on an `Alert`, a `Toast` or a `Chip` it had no larger target around it, which WCAG 2.5.8 asks to be 24 pixels. Nothing drawn moves.
 
 - **The working ring slows down under a reduced-motion preference.** A `Button` that is `loading`, a `TextField` that is checking and a running `ToolCall`, `AgentStep` or `Reasoning` turned their ring on Tailwind's `animate-spin`, which the preference did not reach, so a transcript with several running rows kept several rings at full speed. The ring turns at an indeterminate `ProgressCircular`'s rate now, 0.9 seconds a turn, and slows to 2.4 seconds with it.
