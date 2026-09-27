@@ -11,8 +11,9 @@ The working list for the second audit of every public component, started on 2026
 - Batch 4 is done (2026-09-27): items 88 to 93, 98, 99, 101 to 108, 110 to 112 and 114. Item 98 was checked against React 18.3.1 installed locally the way the CI job installs it, and React 19.3.0 was put back afterwards.
 - Batch 5 is done (2026-09-27): items 115 to 118, 121 to 123, 131 to 135, 137 to 139 and 141 to 143, and items 136 and 140 in part. Item 118 turned up item 187. Item 131 found a treemap's CSV rows a cell short and item 132 found that Escape never closed a CommandPalette; both are fixed in commits of their own.
 - Batch 6 is done (2026-09-27): items 144 to 147, 149 to 154 and 156 to 165. Item 149 was already answered by the pages. Every item in it was documentation; the one test added pins what item 147 now documents, that a FilePicker's `id` lands on its zone button.
+- Batch 7 is done (2026-09-27): items 166, 167, 169 to 174, 176 to 178, 180 and 182 to 187, the eighteen untagged items that were left. Item 182 found Firefox's `:-moz-ui-invalid` rule outside `:where()` in the reset, fixed in a commit of its own. Item 185 found through the API that private vulnerability reporting is off, so the route `SECURITY.md` names does not work until the maintainer turns it on.
 - Every commit so far is local and not pushed.
-- The next batch starts at item 166 and takes the untagged items in number order. Eighteen are left, so it is the last batch before the tagged items, and none of them is marked **(high)**. Two items are only partly open: 136's function case waits for 124 and its Statistic case for 126, and the rest of 140 waits for 76 and 77.
+- Every untagged item is done. What is left is the 49 tagged items under [Pending decisions](#pending-decisions), and the parts of two items that wait on them: 136's function case waits for 124 and its Statistic case for 126, and the rest of 140 waits for 76 and 77. The next batch starts with the answers.
 
 ## How to run a batch
 
