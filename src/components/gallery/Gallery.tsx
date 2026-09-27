@@ -461,8 +461,10 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
         />
       );
 
+      // A `<span>`: it is drawn inside the tile's `<button>` whenever the tile
+      // can be pressed, and a button takes phrasing content only.
       const legend = !shown ? null : (
-        <div
+        <span
           className={cx(
             'min-w-0',
             over
@@ -505,7 +507,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
               {item.description}
             </span>
           ) : null}
-        </div>
+        </span>
       );
 
       // The frame the picture is clipped to, and the only thing a `zoom` is

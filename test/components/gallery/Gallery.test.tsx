@@ -306,6 +306,20 @@ describe('Gallery', () => {
         .element(screen.getByRole('button', { name: 'A field — Image 4 of 4' }))
         .toBeInTheDocument();
     });
+
+    // Drawn below the picture or over it, the caption is inside the tile's
+    // button, which takes phrasing content only — and a `<div>` there is a
+    // hydration error waiting on the first page that server-renders it.
+    it('draws its caption with phrasing content only, inside the button', async () => {
+      for (const caption of ['below', 'overlay'] as const) {
+        const screen = await render(<Gallery items={items} caption={caption} preview />);
+        const ridge = screen.getByRole('button', { name: 'Ridge Image 1 of 4' });
+
+        await expect.element(ridge).toBeInTheDocument();
+        expect(ridge.element().querySelectorAll('div'), caption).toHaveLength(0);
+        await screen.unmount();
+      }
+    });
   });
 
   describe('hover', () => {

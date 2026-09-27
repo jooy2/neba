@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `Gallery` caption is valid inside the tile it is drawn in.** The caption was a `<div>`, and on a tile that can be pressed it is inside a `<button>` — or inside the `<span>` the picture is framed in, when it is laid over it — neither of which may hold one, which a server-rendered page reports as a hydration error. It is a `<span>` now; what is drawn does not change.
+
 - **A `caption` or `overline` clamped to two lines or more stays clamped when it is aligned or given a gutter.** Either prop makes those two levels a block, and the stylesheet puts `block` after the clamp, so it took the clamp's own `display` away and the text ran on past its last line. A clamp of two lines or more is a box already and is left without the `block`.
 
 - **An `Image` given only a `srcSet` shows up when it loaded before hydration.** A picture that finishes before React is listening is asked afterwards whether it did, and only a picture with a `src` was asked — so a server-rendered image given a `srcSet` alone, which a fast connection or a cache finishes early, stayed at nothing behind its placeholder. A changed `srcSet` also starts the picture over now, as a changed `src` already did.
