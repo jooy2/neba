@@ -18,6 +18,16 @@ describe('PromptInput', () => {
       expect(screen.getByRole('button', { name: 'Stop' }).query()).toBeNull();
     });
 
+    // The textarea took the caller's id and the label kept pointing at the
+    // generated one, which named nothing.
+    it('keeps its name when it is given an id', async () => {
+      const screen = await render(<PromptInput label="Message" id="composer" />);
+
+      await expect
+        .element(screen.getByRole('textbox', { name: 'Message' }))
+        .toHaveAttribute('id', 'composer');
+    });
+
     it('keeps caller-supplied class names alongside its own', async () => {
       const screen = await render(<PromptInput label="Message" className="my-own-class" />);
 

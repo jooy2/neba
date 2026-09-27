@@ -200,6 +200,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
       locale,
       labels,
       classNames,
+      id,
       disabled: disabledProp,
       readOnly = false,
       onKeyDown,
@@ -224,7 +225,10 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
      * `internal/drop.ts`' — a FilePicker's zone is the same box.
      */
     const { over: dropping, handlers } = useDropZone(onFiles);
-    const controlId = React.useId();
+    // The caller's, when there is one: the label below points at whatever id
+    // the textarea ends up with.
+    const generatedId = React.useId();
+    const controlId = id ?? generatedId;
     const controlRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setControlRef = React.useCallback(
       (node: HTMLTextAreaElement | null) => {
