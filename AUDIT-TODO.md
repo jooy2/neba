@@ -271,7 +271,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 
 ## 5. Tests
 
-- [ ] **131** Chart export: file-content tests for PieChart and HeatmapChart; the other cases ship with 64 and 65.
+- [x] **131** Chart export: file-content tests for PieChart and HeatmapChart; the other cases ship with 64 and 65. Writing the treemap case found that a group's row stopped at the last name it used, a cell short of the header; that is fixed in a commit of its own, with the test.
 - [ ] **132** CommandPalette: Escape in the field closes the palette and the next open starts empty. Tour: Escape ends it, and `dismissible={false}` keeps it.
 - [ ] **133** Notch CSS: `test/styles/standalone.test.tsx` covers only the `:placeholder-shown` path. Add a picker whose `float` label rests inside the shell and rises when the popup opens, and a multiple Combobox whose label rises after a chip is chosen.
 - [ ] **134** Carousel: autoplay under reduced motion (no start, no rotation control) and while `document.hidden` (no advance).

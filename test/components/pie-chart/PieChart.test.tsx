@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { PieChart } from 'neba';
@@ -402,6 +402,30 @@ describe('PieChart', () => {
       await expect
         .poll(() => plot.element().querySelector('svg')?.getAttribute('viewBox')?.split(' ')[3])
         .toBe('160');
+    });
+  });
+
+  describe('export', () => {
+    // The file is the caller's numbers: a negative slice that is not drawn is
+    // still in it, and a missing one is an empty cell rather than a zero.
+    it('writes a row per slice, with the value it was given', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <PieChart
+          label="Balance"
+          exportable
+          onExport={onExport}
+          categories={PLANS}
+          data={[50, -20, null]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines.slice(0, 4)).toEqual([',Balance', 'Free,50', 'Pro,-20', 'Team,']);
     });
   });
 });

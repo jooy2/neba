@@ -771,6 +771,29 @@ describe('HeatmapChart', () => {
   });
 
   describe('export', () => {
+    it('writes the grid, a row per series and a column per category', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          exportable
+          onExport={onExport}
+          categories={HOURS}
+          series={[
+            { name: 'Mon', data: [1, 20, null, 8] },
+            { name: 'Tue', data: [2, 24, 48, 9] }
+          ]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines.slice(0, 3)).toEqual([',00,06,12,18', 'Mon,1,20,,8', 'Tue,2,24,48,9']);
+    });
+
     // A treemap's columns are every name a group uses, in the order they are
     // first met, and a group without one of them leaves its cell empty.
     it('writes a treemap as its groups against every name they use', async () => {
