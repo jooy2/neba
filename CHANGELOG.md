@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **Opening a `ColorPicker` or a `TreeSelect` takes the focus into its popup.** The shell they share leaves the focus alone on opening, because a date picker's calendar moves it into the grid itself — but these two move it nowhere, so a reader who opened one from the keyboard was left on the trigger, and a searchable `TreeSelect` did not take what they typed next. The focus now lands on the first thing in the popup that takes it: the colour square, the search field or the tree.
+
 - **A `ColorPicker`'s sliders are read out as what they measure.** The square was read as two bare percentages with nothing to say which was saturation, the hue rail as a bare number of degrees and the opacity rail as a number with no percent sign. The square now reads "Saturation 100%, brightness 90%" from a new `areaValue` label, in every registered language, and the two rails are written by the platform in the reader's own — "217 degrees" and "55%" in English.
 
 - **A `ColorPicker`'s square and rails answer the keys a slider answers.** The hue and opacity rails took only the left and right arrows, and none of the three took `Home`, `End`, `Page Up` or `Page Down` — so a screen reader that adjusts a slider with the up and down arrows moved nothing. A rail now takes either arrow pair, pages by ten and goes to its ends; on the square `Page Up` and `Page Down` change brightness and `Home` and `End` take saturation to either end.

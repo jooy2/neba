@@ -188,6 +188,13 @@ interface InternalShellProps extends PickerShellProps {
    * on. Only TreeSelect offers it to a caller so far.
    */
   popupClassName?: string;
+  /**
+   * Whether opening moves the focus to the first thing in the popup that takes
+   * it. Off for the date pickers, whose calendar focuses its own day; on for a
+   * popup that does nothing of the kind, or the focus would stay on the trigger
+   * and a reader who opened it from the keyboard would be typing at nothing.
+   */
+  initialFocus?: boolean;
   children: React.ReactNode;
   triggerRef?: React.Ref<HTMLButtonElement>;
 }
@@ -230,6 +237,7 @@ export function PickerShell({
   hiddenValues,
   sideOffset = 6,
   popupClassName,
+  initialFocus = false,
   children,
   triggerRef,
   ...props
@@ -392,10 +400,10 @@ export function PickerShell({
             align="start"
           >
             <Popover.Popup
-              // Base UI is told to leave the focus alone so the calendar can
-              // take it into the grid itself. Its own move would land on the
-              // popup element and run *after* the grid's, undoing it.
-              initialFocus={false}
+              // Off unless the caller asks: a date picker's calendar takes the
+              // focus into its grid itself, and Base UI's own move would land
+              // on the popup element and run *after* the grid's, undoing it.
+              initialFocus={initialFocus}
               className={cx(
                 pickerPopupClasses,
                 radiusClasses[size],

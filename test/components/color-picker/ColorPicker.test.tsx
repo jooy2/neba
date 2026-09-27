@@ -297,6 +297,18 @@ describe('ColorPicker', () => {
   });
 
   describe('the popup form', () => {
+    it('takes the focus into the panel when it opens', async () => {
+      const screen = await render(<ColorPicker label="Accent" defaultValue="#ff0000" />);
+      const trigger = screen.getByRole('button', { name: 'Accent', exact: false });
+
+      (trigger.element() as HTMLElement).focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect
+        .element(screen.getByRole('slider', { name: 'Saturation and brightness' }))
+        .toHaveFocus();
+    });
+
     it('opens the panel when the trigger is pressed', async () => {
       const screen = await render(<ColorPicker defaultValue="#ff0000" />);
 

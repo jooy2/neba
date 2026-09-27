@@ -923,6 +923,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
             onOpenChange?.(next);
           }}
           clearLabel={labels.clear}
+          initialFocus
           hiddenValues={name ? [{ name, value: empty ? '' : written }] : undefined}
         >
           <div className={controlTextClasses[size]}>{panel}</div>

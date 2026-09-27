@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { TreeSelect, type TreeSelectItem } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
@@ -150,6 +151,18 @@ describe('TreeSelect', () => {
     await screen.getByText('Germany').click();
 
     expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  // The popup opened with the focus left on the trigger, so a searchable
+  // TreeSelect opened from the keyboard did not take what was typed next.
+  it('takes the focus into the popup when it opens', async () => {
+    const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
+    const trigger = screen.getByRole('button', { name: 'Region', exact: false });
+
+    (trigger.element() as HTMLElement).focus();
+    await userEvent.keyboard('{Enter}');
+
+    await expect.element(screen.getByRole('textbox')).toHaveFocus();
   });
 
   describe('searching', () => {

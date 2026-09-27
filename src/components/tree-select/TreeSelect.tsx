@@ -338,6 +338,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
         onOpenChange={setOpen}
         clearLabel={clearLabel ?? actions.clear}
         popupClassName={classNames?.popup}
+        initialFocus
         hiddenValues={name ? held.map((entry) => ({ name, value: String(entry) })) : undefined}
       >
         <div className="flex max-h-80 w-64 flex-col gap-2 overflow-hidden">
