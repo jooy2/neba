@@ -3,12 +3,12 @@ layout: home
 
 title: Neba
 titleTemplate: The React component library
-description: About 130 React components that already agree with each other. Accessible, dark-mode ready and typed, from one install and one line of CSS.
+description: About 140 React components that already agree with each other. Accessible, dark-mode ready and typed, from one install and one line of CSS.
 
 hero:
   name: Neba
   text: Every piece a React screen needs
-  tagline: About 130 components that already look and behave alike. One install, one line of CSS, and no theme to assemble.
+  tagline: About 140 components that already look and behave alike. One install, one line of CSS, and no theme to assemble.
   actions:
     - theme: brand
       text: Get started
@@ -24,7 +24,7 @@ hero:
     alt: Neba
 
 features:
-  - title: About 130 components
+  - title: About 140 components
     details: Buttons and fields through Dialog, Table, DatePicker, Toast and the charts. Enough to finish a screen.
     link: /components/
     linkText: Browse

@@ -3,12 +3,12 @@ layout: home
 
 title: Neba
 titleTemplate: React 컴포넌트 라이브러리
-description: 서로 어울리는 React 컴포넌트 130여 개. 접근성과 다크 모드, 타입까지 설치 한 번과 CSS 한 줄로 갖춥니다.
+description: 서로 어울리는 React 컴포넌트 140여 개. 접근성과 다크 모드, 타입까지 설치 한 번과 CSS 한 줄로 갖춥니다.
 
 hero:
   name: Neba
   text: React 화면에 필요한 것이 전부 들어 있습니다
-  tagline: 생김새와 동작이 이미 맞춰진 컴포넌트 130여 개. 설치 한 번, CSS 한 줄이면 되고 테마를 따로 짤 필요가 없습니다.
+  tagline: 생김새와 동작이 이미 맞춰진 컴포넌트 140여 개. 설치 한 번, CSS 한 줄이면 되고 테마를 따로 짤 필요가 없습니다.
   actions:
     - theme: brand
       text: 시작하기
@@ -24,7 +24,7 @@ hero:
     alt: Neba
 
 features:
-  - title: 컴포넌트 130여 개
+  - title: 컴포넌트 140여 개
     details: 버튼과 입력부터 Dialog, Table, DatePicker, Toast와 차트까지. 화면 하나를 끝까지 만들 수 있습니다.
     link: /ko/components/
     linkText: 훑어보기
