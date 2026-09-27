@@ -75,7 +75,8 @@ export interface HowToStepsProps extends Omit<
   title?: React.ReactNode;
   /**
    * Which heading level `title` is written at, and the step's title one below
-   * it.
+   * it. Without a `title` the step's title takes this level itself, so a guide
+   * with no heading of its own does not skip one in the page's outline.
    *
    * A heading level is a claim about the *page*, not about the component: a
    * guide under an `<h1>` is an `<h2>` and the same guide inside a section is an
@@ -314,6 +315,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
 
     const messages = useMessages(stepsMessages, locale);
     const headingId = React.useId();
+    const titled = hasContent(title);
 
     const [ownStep, setOwnStep] = React.useState(defaultStep);
     const [ownCompleted, setOwnCompleted] = React.useState(defaultCompleted);
@@ -590,7 +592,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   </span>
                 ) : null}
                 <StepHeading
-                  level={headingLevel + 1}
+                  level={titled ? headingLevel + 1 : headingLevel}
                   className={cx(
                     'neba-heading min-w-0 flex-1',
                     '[&.neba-heading]:m-0 [&.neba-heading]:font-medium [&.neba-heading]:text-inherit',
@@ -661,8 +663,8 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
         ref={ref}
         // A generic `<div>` cannot be named, so without a role the heading it
         // points at was ignored. A group is what a set of steps is.
-        role={hasContent(title) ? 'group' : undefined}
-        aria-labelledby={hasContent(title) ? headingId : undefined}
+        role={titled ? 'group' : undefined}
+        aria-labelledby={titled ? headingId : undefined}
         className={cx(
           'flex min-w-0 flex-col',
           radiusClasses[size],
@@ -688,7 +690,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
         }
         {...props}
       >
-        {hasContent(title) ? (
+        {titled ? (
           <StepHeading
             level={headingLevel}
             id={headingId}

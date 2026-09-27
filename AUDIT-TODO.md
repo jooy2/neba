@@ -53,7 +53,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 ### A. Approvals
 
 - **A1 (33)** Done. ContextWindow: a plain `<div>` root, with `role="meter"` around the ring, the label and the value only, so the breakdown, the cost and `children` keep their semantics. The ref and `className` stay on the root.
-- **A2 (41)** HowToSteps: without a `title`, step headings take `headingLevel` itself rather than skipping a level.
+- **A2 (41)** Done. HowToSteps: without a `title`, step headings take `headingLevel` itself rather than skipping a level.
 - **A3 (42)** Alert: the live role moves onto the message column, so an announcement no longer ends with the action's and the dismiss button's names.
 - **A4 (119)** AnimateCounter, AnimateScramble, AnimateSplit render a `<span>` by default, as Typing, Headline and Marquee do.
 
@@ -150,7 +150,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [ ] **38** [decision] Chip: every delete button is named "Remove". `src/components/chip/Chip.tsx:297`. (a) A "Remove {label}" message for string children, in 18 locales, `deleteLabel` still winning; (b) `aria-labelledby` over a hidden "Remove" and the label; (c) leave it.
 - [ ] **39** [decision] Confirm: a queued question takes over the open sheet, so `initialFocus` never runs again (a `danger` question after a plain one opens with the focus on the destructive button) and the new title is not announced. `src/components/confirm/Confirm.tsx:147-170`. (a) A `key` per question, so each is a real open; (b) move the focus in an effect and announce the title through a live region.
 - [ ] **40** [decision] ChatBubble, Menu row, NavigationMenu link, AppLogo, BottomNavigation: a link opened in a new tab does not say so; only TextLink reads `link.newTab`. `src/components/chat-bubble/ChatBubble.tsx:477-483`. (a) The visually hidden `link.newTab` text in each; (b) document it.
-- [ ] **41** [major] HowToSteps: without a `title`, step headings are still `headingLevel + 1`, so the default guide puts `<h4>` steps under the page's `<h2>`. `src/components/how-to-steps/HowToSteps.tsx:587`. Fix: step headings take `headingLevel` itself when there is no title, and both pages say so.
+- [x] **41** [major] HowToSteps: without a `title`, step headings are still `headingLevel + 1`, so the default guide puts `<h4>` steps under the page's `<h2>`. `src/components/how-to-steps/HowToSteps.tsx:587`. Fix: step headings take `headingLevel` itself when there is no title, and both pages say so. Approved by the maintainer (A2).
 - [ ] **42** [major] Alert: the live region wraps the action and the dismiss button, so each announcement ends with "Retry, Dismiss". `src/components/alert/Alert.tsx:182`. Fix: put the role on the message column, and route a caller's `role` there.
 - [ ] **43** [decision] DataTable: every row tick is a tab stop and every one is named "Select row". `src/components/data-table/DataTable.tsx:2451-2471`. (a) `tabIndex={-1}` on the row ticks, since Space already chooses the active row, and each named after its row; (b) keep them tabbable but name them per row.
 - [ ] **44** [decision] DataTable: column resize and reorder are pointer-only and truncated cells have no way to their full text, while the page says nothing is out of reach without a pointer. `DataTable.tsx:539-541, 2002-2008, 2191, 2247-2254`. (a) A focusable `role="separator"` with arrow keys, and Alt+arrow on the sort button to move a column; (b) expose the full text and correct the page; (c) correct the page only.

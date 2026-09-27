@@ -109,7 +109,7 @@ The three weights say what they say everywhere. `color` never dyes the sheet and
 
 ### headingLevel
 
-`title` is drawn as an `<h3>` and a step's title one level below it, at `<h4>`. Set `headingLevel` to move that starting point to fit the page, such as `2` for a guide directly under an `<h1>` or `4` for one inside a section.
+`title` is drawn as an `<h3>` and a step's title one level below it, at `<h4>`. Set `headingLevel` to move that starting point to fit the page, such as `2` for a guide directly under an `<h1>` or `4` for one inside a section. Without a `title`, a step's title takes `headingLevel` itself.
 
 ```tsx
 <HowToSteps steps={steps} title="Getting started" headingLevel={2} />

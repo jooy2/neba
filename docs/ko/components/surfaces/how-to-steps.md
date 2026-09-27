@@ -109,7 +109,7 @@ import { HowToSteps } from 'neba';
 
 ### headingLevel
 
-`title`은 기본적으로 `<h3>`으로, 각 단계의 제목은 그보다 한 단계 아래인 `<h4>`로 그려집니다. 페이지에 맞춰 그 시작점을 옮기려면 `headingLevel`을 쓰세요. `<h1>` 바로 아래의 안내서라면 `2`, 섹션 안의 안내서라면 `4`입니다.
+`title`은 기본적으로 `<h3>`으로, 각 단계의 제목은 그보다 한 단계 아래인 `<h4>`로 그려집니다. 페이지에 맞춰 그 시작점을 옮기려면 `headingLevel`을 쓰세요. `<h1>` 바로 아래의 안내서라면 `2`, 섹션 안의 안내서라면 `4`입니다. `title`이 없으면 단계의 제목이 `headingLevel` 자체를 씁니다.
 
 ```tsx
 <HowToSteps steps={steps} title="시작하기" headingLevel={2} />

@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **A `HowToSteps` with no `title` writes its steps' titles at `headingLevel`.** They stayed a level below a title that was not drawn, so the default guide under a page's `<h2>` put its steps at `<h4>` and skipped a level in the outline. A guide with a `title` is unchanged.
+
 - **A `ContextWindow`'s root is a plain `<div>`, and `role="meter"` is on the ring, the label and the count.** The whole gauge was the meter, and a meter's children are presentational, so the split was not read as a list and a link passed as `children` was not a link. The ref, `className`, `style` and every other attribute still go to the root. A test that found the gauge with `getByRole('meter')` to read a class or an `--n-*` slot should find the root instead.
 
 - **A `Gallery` viewer's Previous and Next keep the focus at the ends.** Pressing Next onto the last picture, or Previous onto the first, made the button `disabled`, and the focus went with it. Both stay in place with `aria-disabled`, as a `Carousel`'s arrows do; a test that asserted `toBeDisabled()` on them should assert `aria-disabled="true"`.

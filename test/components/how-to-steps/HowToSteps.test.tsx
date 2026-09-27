@@ -95,6 +95,16 @@ describe('HowToSteps', () => {
         .toBeInTheDocument();
     });
 
+    // A step stayed a level below a title that was not there, so a guide with
+    // no heading of its own put its steps at h4 under the page's h2.
+    it('puts a step at the level itself when there is no title', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} headingLevel={3} />);
+
+      await expect
+        .element(screen.getByRole('heading', { name: STEPS[0].title as string, level: 3 }))
+        .toBeInTheDocument();
+    });
+
     // A guide whose data has not arrived is nothing, not an empty bordered box
     // with two dead buttons in it.
     it('draws nothing at all with no steps', async () => {
