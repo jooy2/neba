@@ -275,12 +275,18 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
 
     return (
       <form
-        // A real form, so a phone's keyboard offers its own send key and the
-        // button below can be a `type="submit"` rather than a click handler
-        // pretending to be one.
+        // A real form, so the button below can be a `type="submit"` rather than
+        // a click handler pretending to be one. It stays a submit button while
+        // it stops, too: a `type` that changed inside its own click would be
+        // read after the change, and stopping an answer would send the field.
         onSubmit={(event) => {
           event.preventDefault();
-          send();
+
+          if (submitting) {
+            onStop?.();
+          } else {
+            send();
+          }
         }}
         className={cx('flex w-full flex-col', className ?? '')}
         style={{
@@ -397,13 +403,14 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
                 // One button, never two. What a reader reaches for to stop an
                 // answer is exactly where they last pressed to start it, and a
                 // second button appearing beside the first would move it.
-                type={submitting ? 'button' : 'submit'}
+                type="submit"
+                // Stopping is never held back by a `required` field left empty.
+                formNoValidate={submitting || undefined}
                 size={size}
                 color={color}
                 icon={submitting ? <StopIcon /> : <SendIcon />}
                 label={submitting ? words.stop : words.send}
                 disabled={submitting ? false : !canSend}
-                onClick={submitting ? onStop : undefined}
                 className={classNames?.send}
               />
             </div>

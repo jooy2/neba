@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **Pressing a `PromptInput`'s stop button stops the answer and sends nothing.** The button turned from `type="button"` into `type="submit"` inside its own click, as `onStop` set `submitting` back to `false`, and the browser read the new type when it came to activate it — so the form was submitted and whatever the reader had typed while the answer was being written went out as a new message, restarting the answer they had just stopped. The button is a submit button in both states now, and the form decides between stopping and sending. It also stops with a `required` field left empty, which a submit button would otherwise be held back by.
+
 ## 1.16.2 (2026-09-26)
 
 ### Added

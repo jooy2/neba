@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { PromptInput } from 'neba';
@@ -220,6 +221,47 @@ describe('PromptInput', () => {
         );
 
       expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('does not send what is in the field when stop ends the answer', async () => {
+      const onSubmit = vi.fn();
+      const onStop = vi.fn();
+
+      function Chat() {
+        const [submitting, setSubmitting] = React.useState(true);
+
+        return (
+          <PromptInput
+            label="Message"
+            defaultValue="a follow-up"
+            submitting={submitting}
+            onSubmit={onSubmit}
+            onStop={() => {
+              onStop();
+              setSubmitting(false);
+            }}
+          />
+        );
+      }
+
+      const screen = await render(<Chat />);
+
+      await screen.getByRole('button', { name: 'Stop' }).click();
+
+      await expect.element(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument();
+      expect(onStop).toHaveBeenCalledTimes(1);
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('stops even when the field is required and empty', async () => {
+      const onStop = vi.fn();
+      const screen = await render(
+        <PromptInput label="Message" required submitting onStop={onStop} />
+      );
+
+      await screen.getByRole('button', { name: 'Stop' }).click();
+
+      expect(onStop).toHaveBeenCalledTimes(1);
     });
   });
 
