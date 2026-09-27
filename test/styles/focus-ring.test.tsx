@@ -8,7 +8,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Pill } from 'neba';
+import { HowToSteps, Pill } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 const FAMILIES = ['primary', 'secondary', 'success', 'warning', 'danger', 'info'] as const;
@@ -94,5 +94,22 @@ describe('a ring inside a box that clips', () => {
     expect(getComputedStyle(button).borderTopLeftRadius).toBe(
       getComputedStyle(shell).borderTopLeftRadius
     );
+  });
+
+  // The rail scrolls, and a scroll box clips on both axes: a horizontal rail
+  // lost the top and bottom of every row's ring.
+  it('is drawn inside a HowToSteps row', async () => {
+    const screen = await render(
+      <HowToSteps
+        orientation="horizontal"
+        steps={[
+          { title: 'Install', content: 'One' },
+          { title: 'Use it', content: 'Two' }
+        ]}
+      />
+    );
+    const row = screen.getByRole('button', { name: /Install/ }).element();
+
+    expect(getComputedStyle(row).outlineOffset).toBe('-2px');
   });
 });

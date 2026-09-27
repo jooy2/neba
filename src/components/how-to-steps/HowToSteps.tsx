@@ -11,6 +11,7 @@ import {
   hasContent,
   headingTitleClasses,
   iconClasses,
+  insetRingClasses,
   metaTextClasses,
   radiusClasses,
   sheetBodyClasses,
@@ -523,7 +524,9 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   radiusClasses.sm,
                   'hover:bg-(--n-soft)',
                   transitionClasses,
-                  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
+                  // Inside the edge: the rail scrolls, and a scroll box clips a
+                  // ring drawn outside the row on both axes.
+                  insetRingClasses
                 )}
               >
                 {mark(index)}
