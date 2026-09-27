@@ -8,8 +8,9 @@ The working list for the second audit of every public component, started on 2026
 - Batch 1 is done (2026-09-27): items 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 63, 64, 65, 78 and 120.
 - Batch 2 is done (2026-09-27): items 17 to 31 and 53 to 57. Item 53 turned up a bug outside the list, fixed in a commit of its own: `markTransitionClasses` was never in the stylesheet, so every chart mark snapped.
 - Batch 3 is done (2026-09-27): items 58, 59, 60, 66 to 75, and 79 to 85. Item 67's first version cut a category band on a bar chart at the column centre, which a follow-up commit corrected. Item 69 turned up item 186, which is added to the list rather than fixed out of turn.
+- Batch 4 is done (2026-09-27): items 88 to 93, 98, 99, 101 to 108, 110 to 112 and 114. Item 98 was checked against React 18.3.1 installed locally the way the CI job installs it, and React 19.3.0 was put back afterwards.
 - Every commit so far is local and not pushed.
-- The next batch starts at item 88 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
+- The next batch starts at item 115 and takes the untagged items in number order; no untagged item is marked **(high)** any more. Item 140 is only partly untagged: its first two fixes are in the next batch, and the rest waits for 76 and 77.
 
 ## How to run a batch
 
