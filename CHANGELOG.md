@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **Answering an `Approval` hands the focus to the answer.** The buttons are replaced by the line that records what was chosen, so the one that was pressed left the document with the focus on it, and a keyboard reader started again from the top of the page without hearing what they had agreed to. The record line takes the focus when a press is what answered it, which also reads it out; a decision that arrives later, after the focus has gone somewhere else, leaves it there.
+
 - **A `DataTable` searched, cleared and searched again folds its rows once.** The folded text every search is matched against was dropped whenever the field was emptied, so the first character of the next search normalised every searchable cell of every row again — the cost the fold exists to pay once. It is kept until the rows or the columns change.
 
 - **Moving a chart's brush no longer rewrites its hidden table.** The table holds every point whatever the window shows, but its props were rebuilt from the windowed series on each frame of a drag, so every cell of a long table was written again for nothing. They are built from the whole series now and stay the same while the window moves.

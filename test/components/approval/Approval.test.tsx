@@ -1,5 +1,7 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Approval, NebaProvider } from 'neba';
 
 const OPTIONS = [
@@ -110,6 +112,42 @@ describe('Approval', () => {
       await expect.element(screen.getByText('Answered')).toBeInTheDocument();
       await expect.element(screen.getByText('Allow once')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Deny' }).query()).toBeNull();
+    });
+
+    // The pressed button left the document with the focus on it, and a
+    // keyboard reader started again from the top of the page.
+    it('hands the focus to the answer when a press replaces the buttons', async () => {
+      const screen = await render(<Approval options={OPTIONS} />);
+      const once = screen.getByRole('button', { name: 'Allow once' });
+
+      (once.element() as HTMLElement).focus();
+      await userEvent.keyboard('{Enter}');
+
+      const record = screen.getByText('Answered').element().parentElement;
+
+      await expect.poll(() => document.activeElement).toBe(record);
+    });
+
+    it('leaves the focus where it went while a controlled answer was on its way', async () => {
+      function Later() {
+        const [decision, setDecision] = React.useState<string | null>(null);
+
+        return (
+          <>
+            <Approval options={OPTIONS} decision={decision} />
+            <button type="button" onClick={() => setDecision('deny')}>
+              Answer
+            </button>
+          </>
+        );
+      }
+
+      const screen = await render(<Later />);
+
+      await screen.getByRole('button', { name: 'Answer' }).click();
+
+      await expect.element(screen.getByText('Answered')).toBeInTheDocument();
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Answer' }).element());
     });
 
     it('shows a decision it was handed rather than one it took', async () => {

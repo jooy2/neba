@@ -7,6 +7,7 @@ import { CheckIcon, severityIcon } from '../../internal/icons.js';
 import { approvalMessages, useMessages, type ApprovalMessages } from '../../internal/i18n.js';
 import {
   cx,
+  focusRingClasses,
   hasContent,
   iconClasses,
   metaTextClasses,
@@ -222,6 +223,30 @@ export const Approval = React.forwardRef<HTMLDivElement, ApprovalProps>(
     const heading = hasContent(title) ? title : words.request;
     const titleId = React.useId();
     const answer = decision === null ? undefined : options.find((o) => o.value === decision);
+    const answered = answer !== undefined;
+
+    /*
+     * The answer replaces the buttons, so the one that was pressed leaves the
+     * document with the focus on it. The record line takes it instead, which
+     * also reads out what was answered — but only when the press is what put it
+     * there and the focus has not gone on somewhere else since.
+     */
+    const pressedRef = React.useRef(false);
+    const recordRef = React.useRef<HTMLDivElement>(null);
+
+    React.useLayoutEffect(() => {
+      if (!answered || !pressedRef.current) {
+        return;
+      }
+
+      pressedRef.current = false;
+
+      const now = document.activeElement;
+
+      if (now === null || now === document.body) {
+        recordRef.current?.focus();
+      }
+    }, [answered]);
 
     return (
       <div
@@ -295,7 +320,14 @@ export const Approval = React.forwardRef<HTMLDivElement, ApprovalProps>(
 
         <div className={cx('flex min-w-0 flex-col gap-1.5', classNames?.actions ?? '')}>
           {answer ? (
-            <div className="flex items-center gap-2 text-(--neba-muted-fg)">
+            <div
+              ref={recordRef}
+              tabIndex={-1}
+              className={cx(
+                'flex items-center gap-2 rounded-(--neba-radius-xs) text-(--neba-muted-fg)',
+                focusRingClasses
+              )}
+            >
               <span className="flex h-[1lh] shrink-0 items-center text-(--n-accent)">
                 <CheckIcon />
               </span>
@@ -317,6 +349,8 @@ export const Approval = React.forwardRef<HTMLDivElement, ApprovalProps>(
                     startIcon={option.icon}
                     disabled={disabled || option.disabled}
                     onClick={() => {
+                      pressedRef.current = true;
+
                       if (!controlled) {
                         setTaken(option.value);
                       }
