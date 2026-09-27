@@ -245,6 +245,31 @@ describe('CodeBlock', () => {
       expect(onCopy).toHaveBeenCalledWith(SOURCE);
     });
 
+    // The live region only speaks when its text changes, and a second copy
+    // inside the two seconds wrote the same word again.
+    it('says so again when it is pressed again', async () => {
+      stubClipboard(() => Promise.resolve());
+
+      const screen = await render(<CodeBlock code={SOURCE} />);
+      const live = screen.container.querySelector('[aria-live="polite"]') as HTMLElement;
+      const said: string[] = [];
+      const watcher = new MutationObserver(() => said.push(live.textContent ?? ''));
+
+      watcher.observe(live, { childList: true, characterData: true, subtree: true });
+
+      try {
+        await screen.getByRole('button', { name: 'Copy' }).click();
+        await expect.poll(() => live.textContent).toBe('Copied');
+
+        await screen.getByRole('button', { name: 'Copied' }).click();
+        await expect.poll(() => said.filter((text) => text === 'Copied').length).toBe(2);
+
+        expect(said.lastIndexOf('')).toBeGreaterThan(said.indexOf('Copied'));
+      } finally {
+        watcher.disconnect();
+      }
+    });
+
     // A page served over plain HTTP has no clipboard at all, and the fallback
     // can fail too. Saying nothing would leave the reader pressing again.
     it('says so when the clipboard refuses', async () => {

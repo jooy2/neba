@@ -252,6 +252,13 @@ const barPaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
 const COPIED_FOR = 2000;
 
 /**
+ * How long the live region stays empty before it says so again. Long enough
+ * for a screen reader to notice the text went away, which a single frame is
+ * not for all of them.
+ */
+const SPEAK_AFTER = 100;
+
+/**
  * `4`, `'4-9'`, `'1,4-9,12'` or any array of those, as the set of numbers they
  * name.
  *
@@ -485,14 +492,36 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     const gutter = `${String(startLine + Math.max(lines.length - 1, 0)).length}ch`;
 
     const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-    React.useEffect(() => () => clearTimeout(timer.current), []);
+    const speakTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+    /*
+     * What the live region says, kept apart from `copied`, which is what the
+     * button says. A second copy inside the two seconds leaves `copied` where it
+     * was, and a live region only speaks when its text changes — so the region
+     * is emptied and written again a moment later, and the button's own label
+     * is left alone rather than blinking back to "Copy" for a frame.
+     */
+    const [spoken, setSpoken] = React.useState<boolean | null>(null);
+
+    React.useEffect(
+      () => () => {
+        clearTimeout(timer.current);
+        clearTimeout(speakTimer.current);
+      },
+      []
+    );
 
     const copy = async () => {
       const done = await writeToClipboard(source);
 
       clearTimeout(timer.current);
+      clearTimeout(speakTimer.current);
       setCopied(done);
-      timer.current = setTimeout(() => setCopied(null), COPIED_FOR);
+      setSpoken(null);
+      speakTimer.current = setTimeout(() => setSpoken(done), SPEAK_AFTER);
+      timer.current = setTimeout(() => {
+        setCopied(null);
+        setSpoken(null);
+      }, COPIED_FOR);
 
       if (done) onCopy?.(source);
     };
@@ -759,7 +788,7 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
         and it is only ever one word long.
       */}
         <span aria-live="polite" className={srOnlyClasses}>
-          {copied === null ? '' : copied ? copiedName : messages.copyFailed}
+          {spoken === null ? '' : spoken ? copiedName : messages.copyFailed}
         </span>
       </div>
     );

@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **Copying a `CodeBlock` a second time is announced a second time.** A press inside the two seconds the button says "Copied" wrote the same word into the live region again, and a live region only speaks when its text changes, so a reader who pressed again to make sure heard nothing. The region is emptied and written again a moment later; the button's own label does not blink.
+
 - **A `CodeBlock` that scrolls is named even when its `title` is a node.** Only a string title named the focusable region, so `title={<code>app.ts</code>}` on a block tall enough to scroll left a tab stop with no name. The region is named by the title the toolbar draws, and by the language or "Code" when no toolbar draws it.
 
 - **Moving through a `Gallery` viewer says what the picture shows.** The live region under the picture announced only "Image 3 of 12", and the focus stays on the arrow, so the new picture's title was never read. The announcement starts with the title, or the `alt` when there is none, and is read as one sentence. What is drawn does not change.
