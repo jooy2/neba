@@ -1765,6 +1765,48 @@ describe('editing', () => {
     expect(onRowActivate).not.toHaveBeenCalled();
   });
 
+  // In a virtual body the row went out of the document when it scrolled out of
+  // the window, and the editor with it — taking what had been typed.
+  it('keeps an open editor and what is in it while its row is scrolled away', async () => {
+    const onCellEdit = vi.fn();
+    const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];
+    const screen = await render(
+      <DataTable
+        headers={columns}
+        items={manyItems(500)}
+        getRowKey={key}
+        height={200}
+        onCellEdit={onCellEdit}
+      />
+    );
+    const table = screen.getByRole('grid').element() as HTMLElement;
+    const viewport = table.parentElement as HTMLElement;
+    const scrollTo = async (top: number) => {
+      viewport.scrollTop = top;
+      viewport.dispatchEvent(new Event('scroll'));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    };
+
+    // What `overflow-auto` would say, had the test a stylesheet.
+    viewport.style.overflow = 'auto';
+
+    await screen.getByText('Person 1', { exact: true }).dblClick();
+    await screen.getByRole('textbox', { name: 'Name' }).fill('Changed');
+
+    await scrollTo(viewport.scrollHeight);
+    await expect.poll(() => screen.getByText('Person 499', { exact: true }).query()).not.toBeNull();
+    expect(screen.container.querySelector<HTMLInputElement>('[data-neba-editor]')?.value).toBe(
+      'Changed'
+    );
+
+    await scrollTo(0);
+    await expect.poll(() => screen.getByText('Person 3', { exact: true }).query()).not.toBeNull();
+    expect(screen.container.querySelector<HTMLInputElement>('[data-neba-editor]')?.value).toBe(
+      'Changed'
+    );
+    expect(onCellEdit).not.toHaveBeenCalled();
+  });
+
   it('throws the edit away on Escape', async () => {
     const onCellEdit = vi.fn();
     const columns: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', editable: true }];

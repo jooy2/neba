@@ -2566,6 +2566,42 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       </tr>
     ) : null;
 
+  /*
+   * The rows of a body that is not grouped, the spacers with them, and the row
+   * being edited wherever it has scrolled to.
+   *
+   * That row stays in the document when it leaves the window. Unmounted, its
+   * editor went with what had been typed in it — the browser sends no `blur`
+   * for an element that is taken out, so nothing was committed — and the
+   * editor opened again, empty of the edit, when the row came back. It is
+   * drawn in its own place inside the spacer, split around it, so every row
+   * still sits where it would. One array, so that when the window reaches it
+   * again it moves into the run rather than being mounted a second time.
+   */
+  const flatRows = (): React.ReactNode[] => {
+    const held = editing ? paged.findIndex((entry) => entry.key === editing.key) : -1;
+    const above = held !== -1 && held < window_.start;
+    const below = held !== -1 && held >= window_.end;
+
+    return [
+      ...(above
+        ? [
+            spacer('before', held * rowHeight),
+            bodyRow(paged[held], held),
+            spacer('before-rest', window_.before - (held + 1) * rowHeight)
+          ]
+        : [spacer('before', window_.before)]),
+      ...rendered.map((entry, offset) => bodyRow(entry, window_.start + offset)),
+      ...(below
+        ? [
+            spacer('after-rest', (held - window_.end) * rowHeight),
+            bodyRow(paged[held], held),
+            spacer('after', window_.after - (held - window_.end + 1) * rowHeight)
+          ]
+        : [spacer('after', window_.after)])
+    ];
+  };
+
   return (
     <Box
       variant={variant}
@@ -2800,8 +2836,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               </tr>
             ) : (
               <>
-                {spacer('before', window_.before)}
-
                 {groups
                   ? groups.order.map((label) => {
                       const all = groups.byLabel.get(label) ?? [];
@@ -2822,9 +2856,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                         </React.Fragment>
                       );
                     })
-                  : rendered.map((entry, offset) => bodyRow(entry, window_.start + offset))}
-
-                {spacer('after', window_.after)}
+                  : flatRows()}
               </>
             )}
           </tbody>
