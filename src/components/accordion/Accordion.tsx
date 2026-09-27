@@ -21,7 +21,9 @@ import {
   sheetTitleClasses,
   surfaceClasses,
   surfaceSlots,
-  transitionClasses
+  transitionClasses,
+  disclosureChevronClasses,
+  disclosureTriggerClasses
 } from '../../internal/styles.js';
 import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -328,6 +330,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
             <BaseUIAccordion.Trigger
               className={cx(
                 'flex min-w-0 flex-1 items-center text-start',
+                disclosureTriggerClasses,
                 off ? '' : 'cursor-pointer',
                 padX,
                 padY,
@@ -373,13 +376,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
                 one allowance the no-transform rule makes. It is also the only
                 thing on the header that reports the open state by moving, which
                 is why the header itself only changes colour. */}
-              <span
-                className={[
-                  'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-                  '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                  'data-[panel-open]:rotate-180'
-                ].join(' ')}
-              >
+              <span className={`${disclosureChevronClasses} text-(--neba-muted-fg)`}>
                 <ChevronIcon />
               </span>
             </BaseUIAccordion.Trigger>

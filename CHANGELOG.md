@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **The chevron on an `Accordion`, a `Collapsible`, a `ToolCall`, a `Reasoning` and a `Sources` header turns when it opens.** Each read the open state off itself, and Base UI writes it on the trigger and on nothing inside it — so the chevron pointed down whether the panel was open or shut, and only the header's colour said which. It reads the trigger's state now, and turns over as the panel opens.
+
 - **A `PieChart` with one slice left draws a whole ring.** The `gap` that parts two slices was taken off the ends of every slice, including one with nothing beside it — so a pie whose other slices were zero, missing or hidden from the legend had a notch cut into it where it started. A slice that is alone is drawn whole.
 
 - **A flat series is drawn when `gradient` is on.** The fade along a line was measured against the line's own bounding box, and a series that holds one value all the way along has a box with no height, which SVG answers by ignoring the gradient — so the stroke was painted with nothing and the line vanished. The fade is measured across the plot now, which is the same thing for every line that spans it.

@@ -18,7 +18,9 @@ import {
   surfaceSlots,
   transitionClasses,
   clampClasses,
-  clampSlot
+  clampSlot,
+  disclosureChevronClasses,
+  disclosureTriggerClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -212,6 +214,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
             <BaseUICollapsible.Trigger
               className={[
                 'flex min-w-0 flex-1 items-center text-start',
+                disclosureTriggerClasses,
                 padX,
                 padY,
                 gapClasses[size],
@@ -261,13 +264,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
                 thing on the header that reports the state by moving, which is
                 why the header itself only changes colour. */}
               {indicator ? (
-                <span
-                  className={[
-                    'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-                    '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-                    'data-[panel-open]:rotate-180'
-                  ].join(' ')}
-                >
+                <span className={`${disclosureChevronClasses} text-(--neba-muted-fg)`}>
                   <ChevronIcon />
                 </span>
               ) : null}

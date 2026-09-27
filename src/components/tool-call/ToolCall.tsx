@@ -26,7 +26,9 @@ import {
   srOnlyClasses,
   surfaceClasses,
   surfaceSlots,
-  transitionClasses
+  transitionClasses,
+  disclosureChevronClasses,
+  disclosureTriggerClasses
 } from '../../internal/styles.js';
 import type {
   NebaElevation,
@@ -322,6 +324,7 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
         <BaseUICollapsible.Trigger
           className={cx(
             'flex w-full cursor-pointer items-center text-start',
+            disclosureTriggerClasses,
             padX,
             padY,
             gapClasses[size],
@@ -336,13 +339,7 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
         >
           {headerRow}
 
-          <span
-            className={[
-              'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
-              '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-              'data-[panel-open]:rotate-180'
-            ].join(' ')}
-          >
+          <span className={`${disclosureChevronClasses} text-(--neba-muted-fg)`}>
             <ChevronIcon />
           </span>
         </BaseUICollapsible.Trigger>

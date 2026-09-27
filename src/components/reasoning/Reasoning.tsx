@@ -22,7 +22,9 @@ import {
   sheetTitleClasses,
   surfaceClasses,
   surfaceSlots,
-  transitionClasses
+  transitionClasses,
+  disclosureChevronClasses,
+  disclosureTriggerClasses
 } from '../../internal/styles.js';
 import type { NebaElevation, NebaSlots, NebaStyleProps, NebaVariant } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -215,6 +217,7 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
         <BaseUICollapsible.Trigger
           className={cx(
             'flex w-full cursor-pointer items-center text-start text-(--neba-muted-fg)',
+            disclosureTriggerClasses,
             boxPaddingXClasses[density][size],
             boxPaddingYClasses[density][size],
             gapClasses[size],
@@ -231,13 +234,7 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
 
           <span className="min-w-0 flex-1 truncate font-medium">{heading}</span>
 
-          <span
-            className={[
-              'flex h-[1lh] shrink-0 items-center',
-              '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
-              'data-[panel-open]:rotate-180'
-            ].join(' ')}
-          >
+          <span className={disclosureChevronClasses}>
             <ChevronIcon />
           </span>
         </BaseUICollapsible.Trigger>

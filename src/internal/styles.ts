@@ -672,6 +672,26 @@ export const collapsiblePanelClasses = `h-(--collapsible-panel-height) overflow-
 export const accordionPanelClasses = `h-(--accordion-panel-height) overflow-hidden ${panelTravelClasses}`;
 
 /**
+ * The trigger of one of those panels, named so the chevron inside it can read
+ * its state. Base UI writes `data-panel-open` on the trigger and on nothing
+ * under it, so a `data-[panel-open]:` variant on the chevron itself never
+ * matched, and the chevron of every one of the five never turned.
+ */
+export const disclosureTriggerClasses = 'group/disclosure';
+
+/**
+ * The chevron at the end of that trigger, turned when the panel is open.
+ *
+ * Turned, not moved: a chevron is a glyph, so rotating it is the one allowance
+ * the no-transform rule makes. Its ink is the caller's, since a trigger whose
+ * text is already muted draws it in that.
+ */
+export const disclosureChevronClasses =
+  'flex h-[1lh] shrink-0 items-center ' +
+  '[transition:rotate_var(--neba-duration)_var(--neba-ease)] ' +
+  'group-data-[panel-open]/disclosure:rotate-180';
+
+/**
  * A block of text that arrived already formatted.
  *
  * What a tool was called with, what it answered, and the arguments an
