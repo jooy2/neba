@@ -1497,20 +1497,25 @@ export function CartesianChart(rawProps: CartesianProps) {
      never the shares a chart stacked to `full` draws — a share is worked out
      against the series that are *shown*, so a file written from them would
      change with the legend. Built only when one of the two applies; otherwise
-     these are the same arrays. */
-  const fullValues = React.useMemo(
-    () => (windowed || stackedFull ? toValues(fullSeries) : values),
-    [windowed, stackedFull, fullSeries, values]
+     these are the same arrays. And keyed on nothing the window changes, so a
+     drag across the strip hands the table the same props on every frame and
+     its memo holds. */
+  const ownFull = windowed || stackedFull;
+  const ownFullValues = React.useMemo(
+    () => (ownFull ? toValues(fullSeries) : null),
+    [ownFull, fullSeries]
   );
-  const fullLabels = React.useMemo(
+  const fullValues = ownFullValues ?? values;
+  const ownFullLabels = React.useMemo(
     () =>
-      windowed
+      windowed && ownFullValues
         ? Array.from({ length: fullCount }, (_, index) =>
-            categoryAt(index, fullCategories, fullValues)
+            categoryAt(index, fullCategories, ownFullValues)
           )
-        : labels,
-    [windowed, fullCount, fullCategories, fullValues, labels]
+        : null,
+    [windowed, fullCount, fullCategories, ownFullValues]
   );
+  const fullLabels = ownFullLabels ?? labels;
 
   /* How a given series' numbers are written, everywhere they appear.
 
@@ -1527,9 +1532,13 @@ export function CartesianChart(rawProps: CartesianProps) {
      the prop is never half-applied. Off entirely while stacking, because a
      stack is a total and a total across two units is not a number. */
   const twoAxes = Boolean(secondaryAxis) && !stacked && !stackedFull;
+  /* Keyed on which series ask for the far edge rather than on the series: the
+     window hands over a new array on every frame of a drag, and the hidden
+     table, which formats its numbers with this, would be rebuilt with it. */
+  const farEdge = fullSeries.map((one) => (one.axis === 'secondary' ? '1' : '0')).join('');
   const onSecond = React.useCallback(
-    (index: number) => twoAxes && series[index]?.axis === 'secondary',
-    [twoAxes, series]
+    (index: number) => twoAxes && farEdge[index] === '1',
+    [twoAxes, farEdge]
   );
 
   const shownValues = values.filter((_, index) => visibility.visible[index]);
@@ -1877,12 +1886,15 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
   const zeroPx = zeroPxOf();
 
+  /* Keyed on the function rather than on the options object around it, which
+     is a literal in the JSX and a new one whenever the parent renders. */
+  const secondaryTickFormat = secondaryAxis?.tickFormat;
   const formatFor = React.useCallback(
     (index: number) =>
-      onSecond(index) && secondaryAxis?.tickFormat
-        ? (value: number) => String(secondaryAxis.tickFormat!(value, 0))
+      onSecond(index) && secondaryTickFormat
+        ? (value: number) => String(secondaryTickFormat(value, 0))
         : formatValue,
-    [onSecond, secondaryAxis, formatValue]
+    [onSecond, secondaryTickFormat, formatValue]
   );
 
   const layout: CartesianLayout = {
@@ -2284,7 +2296,7 @@ export function CartesianChart(rawProps: CartesianProps) {
                 caption={label}
                 corner={categoryAxis?.label}
                 categories={fullLabels}
-                series={series}
+                series={fullSeries}
                 values={fullValues}
                 format={formatValue}
                 formatFor={twoAxes ? formatFor : undefined}

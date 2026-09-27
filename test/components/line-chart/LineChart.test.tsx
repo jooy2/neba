@@ -883,6 +883,48 @@ describe('LineChart', () => {
         .toBe(true);
     });
 
+    // The table holds every point whatever the window is, and was written again
+    // on every frame of a drag across the strip.
+    it('leaves the table alone while the window moves', async () => {
+      const written: number[] = [];
+      const percent = (value: unknown) => {
+        written.push(Number(value));
+
+        return `${String(value)}%`;
+      };
+      const rates = DATA.map((_, index) => (index === 39 ? 2.97 : 2));
+      const screen = await render(
+        chart({
+          series: [
+            { name: 'Signups', data: DATA },
+            { name: 'Rate', data: rates, axis: 'secondary' }
+          ],
+          secondaryAxis: { tickFormat: percent },
+          brush: { defaultRange: [10, 19] }
+        })
+      );
+      const start = screen.getByRole('slider').first();
+      const lastCell = () => written.filter((value) => value === 2.97).length;
+
+      await expect
+        .element(screen.getByRole('table', { name: 'Signups by day' }))
+        .toBeInTheDocument();
+      await expect.element(start).toHaveAttribute('aria-valuenow', '10');
+
+      const before = lastCell();
+
+      expect(before).toBeGreaterThan(0);
+
+      for (const now of ['9', '8', '7']) {
+        start
+          .element()
+          .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+        await expect.element(start).toHaveAttribute('aria-valuenow', now);
+      }
+
+      expect(lastCell()).toBe(before);
+    });
+
     // A reader who scrolled the plot to March did not ask for a spreadsheet of
     // March: the window narrows the picture and nothing else.
     it('keeps every point in the table', async () => {

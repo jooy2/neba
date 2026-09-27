@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **Moving a chart's brush no longer rewrites its hidden table.** The table holds every point whatever the window shows, but its props were rebuilt from the windowed series on each frame of a drag, so every cell of a long table was written again for nothing. They are built from the whole series now and stay the same while the window moves.
+
 - **A `ScatterChart` and a `TimelineChart` export what their tables hold.** Both wrote the file every other chart writes, a grid of categories against series, which fits neither: a scatter's second series was written beside the first one's x values and its sizes were left out, and a timeline wrote each row's name beside the number one. A scatter's file is a row per point with its x, its y and its size, and a timeline's is a row per span with its label and its two ends as dates.
 
 - **A chart stacked to `full` exports the caller's numbers.** The CSV was written from the shares the bars are drawn at rather than from the data, and a share is worked out against the series that are shown — so the file changed with the legend, and a hidden series was written as its share of the others (20 shown and 60 hidden came out as 300). A window on the chart switched the file back to the raw numbers. The file and the brush's outline are written from the caller's numbers now, which is what the hidden table already said.
