@@ -8,6 +8,32 @@ import { ko, registerMessages } from 'neba/locales';
    languages they name are registered here the way a consumer would. */
 registerMessages('ko', ko);
 
+/*
+ * The reduced-motion answer, switchable per test. The media module keeps one
+ * `MediaQueryList` per query for the life of the page, so the list is wrapped
+ * once, before anything asks, and `matches` is read from here.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 /** Three slides with something findable in each. */
 const slides = [<p key="a">Alpha</p>, <p key="b">Bravo</p>, <p key="c">Charlie</p>];
 
@@ -369,6 +395,62 @@ describe('Carousel', () => {
       await new Promise((resolve) => setTimeout(resolve, 260));
 
       expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    // A reader who asked for less motion never sees it move, so there is no
+    // rotation to stop and no control that claims to.
+    it('neither starts nor offers a control under a reduced-motion preference', async () => {
+      reduceMotion = true;
+
+      try {
+        const onValueChange = vi.fn();
+        const screen = await render(
+          <>
+            <button type="button">Away</button>
+            <Carousel autoPlay interval={60} onValueChange={onValueChange}>
+              {slides}
+            </Carousel>
+          </>
+        );
+
+        await screen.getByRole('button', { name: 'Away' }).click();
+        await new Promise((resolve) => setTimeout(resolve, 250));
+
+        expect(onValueChange).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'Pause slide show' }).query()).toBeNull();
+      } finally {
+        reduceMotion = false;
+      }
+    });
+
+    // A tab in the background is not being read, and coming back to it three
+    // slides on from where it was left is a slide show nobody watched.
+    it('holds its place while the page is hidden', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <>
+          <button type="button">Away</button>
+          <Carousel autoPlay interval={60} onValueChange={onValueChange}>
+            {slides}
+          </Carousel>
+        </>
+      );
+
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+
+      try {
+        await screen.getByRole('button', { name: 'Away' }).click();
+        await new Promise((resolve) => setTimeout(resolve, 250));
+
+        expect(onValueChange).not.toHaveBeenCalled();
+      } finally {
+        // The own property shadowed the one on the prototype; taking it off
+        // puts the real answer back.
+        delete (document as { hidden?: boolean }).hidden;
+      }
+
+      // And it was only the page being hidden that held it.
+      await vi.waitFor(() => expect(onValueChange).toHaveBeenCalled());
     });
 
     // A keyboard reader inside the strip is reading it, and a mouse passing over
