@@ -22,6 +22,15 @@ import catalog from '../../src/a2ui/catalog.json';
 
 const SURFACE = 'test-surface';
 
+/** The views, as text: what each one reads is only visible in its source. */
+const views = Object.values(
+  import.meta.glob('../../src/a2ui/components.tsx', {
+    query: '?raw',
+    import: 'default',
+    eager: true
+  })
+)[0] as string;
+
 type Message = Parameters<MessageProcessor<never>['processMessages']>[0] extends (infer M)[]
   ? M
   : never;
@@ -108,6 +117,35 @@ describe('the A2UI adapter', () => {
       expect(schema.shape.lines.safeParse(2).success).toBe(true);
       expect(schema.shape.lines.safeParse(0).success).toBe(false);
       expect(schema.shape.lines.safeParse(1.5).success).toBe(false);
+    });
+
+    /*
+     * The schema takes a prop whether or not the view does anything with it,
+     * so a prop the catalog offers and the view never reads is one the agent
+     * sets and nothing changes. Read off the source, since the props arrive
+     * as one untyped object.
+     */
+    it('reads every prop the catalog declares', () => {
+      const unread: string[] = [];
+
+      for (const [name, definition] of Object.entries(catalog.components)) {
+        const start = views.indexOf(`implement('${name}'`);
+        const next = views.indexOf("implement('", start + 1);
+        const body = views.slice(start, next === -1 ? undefined : next);
+        const parts = (definition as CatalogSchema).allOf ?? [definition as CatalogSchema];
+
+        expect(start, name).toBeGreaterThan(-1);
+
+        for (const part of parts) {
+          for (const prop of Object.keys(part.properties ?? {})) {
+            if (prop !== 'component' && !new RegExp(`\\b(?:p|props)\\.${prop}\\b`).test(body)) {
+              unread.push(`${name}.${prop}`);
+            }
+          }
+        }
+      }
+
+      expect(unread).toEqual([]);
     });
 
     // Every value the agent is told it may write has to be one the renderer
