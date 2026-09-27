@@ -108,9 +108,10 @@ export interface HeaderProps extends Omit<
   /** The gutter down each side of the row. @default true */
   padded?: boolean;
   /**
-   * The name the bar is announced by. Worth writing when a page has more than
-   * one `<header>` in it — an article's own header and the site's — because
-   * "banner" twice tells a reader which is which not at all.
+   * The name the `banner` landmark is announced by. Only a header that is a
+   * landmark has one to take: inside an `<article>`, `<aside>`, `<main>`,
+   * `<nav>` or `<section>` a `<header>` is not a landmark, and a label there
+   * names nothing.
    */
   label?: string;
   /**

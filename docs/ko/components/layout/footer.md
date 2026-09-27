@@ -55,6 +55,6 @@ import { Footer } from 'neba';
 
 ## 접근성
 
-- `<footer>`를 렌더링하며, `<article>`이나 `<section>` 안이 아니라면 `contentinfo` 랜드마크입니다.
-- 한 페이지에 `<footer>`가 둘 이상이면 `label`을 주세요.
+- `<footer>`를 렌더링하며, `<article>`, `<aside>`, `<main>`, `<nav>`, `<section>` 안이 아니라면 `contentinfo` 랜드마크입니다.
+- `label`은 랜드마크 목록에서 `contentinfo`의 이름이 됩니다. 위 요소들 안의 footer는 랜드마크가 아니므로 `label`을 주어도 이름이 붙을 곳이 없습니다.
 - 링크 열이 잔글씨가 아니라 탐색이라면 직접 `<nav>`로 묶으세요.

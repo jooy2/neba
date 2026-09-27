@@ -313,7 +313,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **163** Timeline and DataTable wording: Timeline says "a number past the item count" where the count itself is enough, the English `active` row carries rationale the Korean does not, `timeline.md:42` nests parentheses, and the Korean DataTable page says both "tab stop" and "tab 정지점". `timeline.md:30, 42`, `props.ts:10211`, `ko/…/data-table.md:222-223`. The Korean DataTable page already says `tab stop` only; nothing to change there.
 - [x] **164** Tabs: the `### align` section and its row carry rationale and run to five sentences. `tabs.md:68-70`, both locales, `props.ts:8466-8476`.
 - [x] **165** Pill: the Korean `color` row says `secondary` is the default "only here"; Skeleton and Empty default to it too. `props.ts:9716`. The English row lost its reason with the Korean one's false "only here".
-- [ ] **166** Header and Footer: `label` is recommended for "an article's own header", which is no landmark; the Footer page lists two of the five containers that stop it being `contentinfo`. `Header.tsx:110-114`, `Footer.tsx:82-85`, `props.ts:2483, 2559`, `footer.md:58-59`.
+- [x] **166** Header and Footer: `label` is recommended for "an article's own header", which is no landmark; the Footer page lists two of the five containers that stop it being `contentinfo`. `Header.tsx:110-114`, `Footer.tsx:82-85`, `props.ts:2483, 2559`, `footer.md:58-59`. The JSDoc, the rows and the Footer page now say that only a landmark takes the name, as the Header page already did.
 - [ ] **167** AnimateCounter: say that a server-rendered page must pass `locale`, as item 126 of the first audit did for charts.
 
 ### Guides and repository documents

@@ -2484,8 +2484,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '랜드마크의 이름. 한 페이지에 header가 둘 이상일 때 써 둘 만합니다',
-        en: 'The name the landmark is announced by. Worth writing when a page has more than one header in it'
+        ko: '`banner` 랜드마크의 이름. `<article>`, `<aside>`, `<main>`, `<nav>`, `<section>` 안의 header는 랜드마크가 아니므로 이름이 붙지 않습니다',
+        en: 'The name the `banner` landmark is announced by. Inside an `<article>`, `<aside>`, `<main>`, `<nav>` or `<section>` a header is not a landmark, and the label names nothing'
       }
     },
     renderProp('render={<div />}', 'header')
@@ -2560,8 +2560,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'label',
       type: 'string',
       description: {
-        ko: '랜드마크의 이름. 한 페이지에 footer가 둘 이상일 때',
-        en: 'The name the landmark is announced by. Worth writing when a page has more than one footer in it'
+        ko: '`contentinfo` 랜드마크의 이름. `<article>`, `<aside>`, `<main>`, `<nav>`, `<section>` 안의 footer는 랜드마크가 아니므로 이름이 붙지 않습니다',
+        en: 'The name the `contentinfo` landmark is announced by. Inside an `<article>`, `<aside>`, `<main>`, `<nav>` or `<section>` a footer is not a landmark, and the label names nothing'
       }
     },
     renderProp('render={<div />}', 'footer')

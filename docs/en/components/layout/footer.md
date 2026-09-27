@@ -55,6 +55,6 @@ Holds the content to a measure and centres it while the sheet still spans the wi
 
 ## Accessibility
 
-- It renders `<footer>`, which is the `contentinfo` landmark when it is not inside an `<article>` or a `<section>`.
-- Give it a `label` when a page has more than one `<footer>` in it.
+- It renders `<footer>`, which is the `contentinfo` landmark unless it is inside an `<article>`, `<aside>`, `<main>`, `<nav>` or `<section>`.
+- `label` names the `contentinfo` landmark in a landmark list. Inside one of those elements the footer is not a landmark, so a `label` there has nothing to name.
 - Group the link columns in a `<nav>` of your own when they are navigation rather than fine print.

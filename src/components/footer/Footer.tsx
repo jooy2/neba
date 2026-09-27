@@ -80,8 +80,10 @@ export interface FooterProps extends Omit<
   /** The gutter and the air above and below. @default true */
   padded?: boolean;
   /**
-   * The name the bar is announced by. Worth writing when a page has more than
-   * one `<footer>` in it — an article's own and the site's.
+   * The name the `contentinfo` landmark is announced by. Only a footer that is
+   * a landmark has one to take: inside an `<article>`, `<aside>`, `<main>`,
+   * `<nav>` or `<section>` a `<footer>` is not a landmark, and a label there
+   * names nothing.
    */
   label?: string;
   /**
