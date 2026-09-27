@@ -61,9 +61,9 @@ Every native `<div>` attribute passes through, along with every [Box](../surface
 
 ### hole · gap
 
-`shape` already sets how much of the middle is cut out — `0` for a `pie`, `0.62` for a `donut` and a `semi` — and `hole` is the dial behind it, from `0` to `0.92` of the radius. Reach for it when the default ring is the wrong weight: a thin one reads as a progress track and a thick one as a pie with a hole punched in it. Setting one on a `pie` is also how that shape gets a `center`.
+`shape` already sets how much of the middle is cut out — `0` for a `pie`, `0.62` for a `donut` and a `semi` — and `hole` is the dial behind it, from `0` to `0.92` of the radius. Setting one on a `pie` is also how that shape gets a `center`.
 
-`gap` is the surface showing between two touching slices, in pixels. A length rather than an angle, because the gap is a constant on screen: one that looked right on a 300px chart is a wedge out of a 60px one. `0` closes it, and it is never taken off a slice too narrow to spare it.
+`gap` is the surface showing between two touching slices, in pixels, so it is the same width on a small chart as on a large one. `0` closes it, and it is never taken off a slice too narrow to spare it.
 
 <Demo src="pie-chart/ring">
 

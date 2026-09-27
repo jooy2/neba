@@ -153,11 +153,11 @@ What the line does where a value is missing.
 
 A strip under the plot with the whole series on it, and a window the reader drags to choose which part the chart draws.
 
-For the series a plot cannot hold. Two thousand points is a chart with no points on it — every column is a fraction of a pixel and the shape is a smear — and the answer is a window of them with all of them small underneath, so the reader can see where in the year the window is and move it.
+It is for a series too long to read at the width of the plot, such as a year of hourly readings.
 
 Drag the window to pan and either handle to resize; both handles are `role="slider"` buttons, so the arrow keys move them one category at a time, `Page Up` and `Page Down` a tenth of the series, and `Home` and `End` jump to the ends. The strip is a group named after the chart. `defaultRange` sets where the window starts, `range` and `onRangeChange` hand it to the caller, and `height` sizes the strip — which is drawn **inside** the chart's own height, like the axis labels.
 
-The window narrows the picture and nothing else: the hidden table and the exported file still hold every point, because a reader who scrolled the plot to March did not ask for a spreadsheet of March.
+The window narrows the picture and nothing else: the hidden table and the exported file still hold every point.
 
 <Demo src="line-chart/brush">
 
@@ -169,13 +169,11 @@ The window narrows the picture and nothing else: the hidden table and the export
 
 A second value axis, drawn on the far edge — the right of a vertical chart, the top of one turned on its side. The series that carry `axis: 'secondary'` are measured against it; passing `secondaryAxis` is what turns the split on, so a series asking for it on a chart with one axis is measured on that one rather than half-applied.
 
-Its `tickFormat` writes its series' numbers **everywhere they appear** — the ticks, the tooltip and the table — because the alternative is a percentage printed with the other axis' currency in the one place both series meet.
+Its `tickFormat` writes its series' numbers **everywhere they appear**: the ticks, the tooltip and the table.
 
-It casts no gridlines of its own: two grids on one plot is graph paper drawn twice and the reader has no way to tell which set a mark should be measured against, so its ticks are asked to land at the same count as the first axis' and the rules already there serve both.
+It draws no gridlines of its own. Its ticks are asked to land at the same count as the first axis', so the rules already there serve both.
 
 **Not read on a stacked chart.** A stack is a total, and a total across two units is not a number.
-
-Reach for it rarely. Two scales let a caller make any two series look like they move together by choosing the ranges, and the reader cannot see that it was done — which is why the second axis is drawn and labelled rather than merely implied.
 
 <Demo src="line-chart/two-axes">
 
@@ -189,7 +187,7 @@ Lines and bands drawn across the plot at values the data has none of — a targe
 
 `value` places one. `to` turns it into a band. `axis: 'category'` reads the numbers against the other axis, for a rule that says _when_ rather than _how much_: on an axis of columns that number is the column's index, and on one of dates or numbers it is a point on that scale. The index counts from the first category of the whole series, so it stays on its column when a `brush` narrows the plot. A rule outside what the plot draws is left out, and a band is cut at the plot's edge.
 
-The **scale widens to hold them**, so a target above everything measured is still on the chart. They are drawn under the marks and over the grid, dashed and neutral unless told otherwise — a reference in `danger` says the line is the bad thing, when usually the bad thing is the data crossing it. One that names itself is read out with the data.
+The **scale widens to hold them**, so a target above everything measured is still on the chart. They are drawn under the marks and over the grid, dashed and neutral unless told otherwise. One that names itself is read out with the data.
 
 <Demo src="line-chart/references">
 
@@ -199,9 +197,9 @@ The **scale widens to hold them**, so a target above everything measured is stil
 
 ### valueLabels · gradient · markers
 
-`valueLabels` writes numbers onto the line: `last` names where each series ended up, `extremes` marks each series' own high and low, `all` labels every point. The default is `none`: a number beside every point is the most reliable way to make a chart unreadable.
+`valueLabels` writes numbers onto the line: `last` names where each series ended up, `extremes` marks each series' own high and low, `all` labels every point. The default is `none`.
 
-Each number wears its own series' colour, taken one step toward the page's ink so it clears the contrast a twelve-pixel label needs. On a plot with four lines on it, that hue is the only thing saying which line a floating number belongs to.
+Each number wears its own series' colour, taken one step toward the page's ink so a small label keeps its contrast.
 
 `markers` puts dots on the points. `auto` draws them while there are fourteen or fewer; the point under the pointer always gets one regardless.
 
@@ -215,11 +213,11 @@ Each number wears its own series' colour, taken one step toward the page's ink s
 
 ### exportable
 
-Adds a small button in the corner that writes the chart's data out as a CSV file — the same numbers the hidden table under the plot holds. Every chart with a table takes it: a picture is the one form of a number nobody can paste anywhere, and the table a screen reader gets is not reachable with a pointer.
+Adds a small button in the corner that writes the chart's data out as a CSV file — the same numbers the hidden table under the plot holds. Every chart with a hidden table takes it.
 
 `exportFileName` names the file. `onExport` takes the CSV string instead of downloading it, for posting it somewhere or putting a sheet around it.
 
-The module that writes the file is **fetched when the button is pressed** rather than imported with the chart, so a page that never turns this on downloads none of it. A `GaugeChart` does not take these three at all: one reading is not a sheet.
+The module that writes the file is **fetched when the button is pressed**, so a page that never turns this on downloads none of it. A `GaugeChart` does not take these three.
 
 <Demo src="line-chart/export">
 
