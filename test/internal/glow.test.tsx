@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, Menu, MenuItem, Segment, SegmentedButton, TextField } from 'neba';
+import { Button, Menu, MenuItem, Pill, Segment, SegmentedButton, Tab, Tabs, TextField } from 'neba';
 
 /** A pointer event carrying a place, since the components read one off it. */
 function movePointer(element: Element, clientX: number, clientY: number) {
@@ -82,6 +82,65 @@ describe('the pointer light', () => {
       );
 
       expect(screen.getByRole('radio', { name: 'Day' }).element()).toHaveClass('neba-glow');
+    });
+
+    it('lights a tab, and follows the pointer across it', async () => {
+      const screen = await render(
+        <Tabs defaultValue="overview">
+          <Tab value="overview">Overview</Tab>
+        </Tabs>
+      );
+      const tab = screen.getByRole('tab', { name: 'Overview' }).element() as HTMLElement;
+      const box = tab.getBoundingClientRect();
+
+      expect(tab).toHaveClass('neba-glow');
+
+      movePointer(tab, box.left + 9, box.top + 4);
+
+      expect(tab.style.getPropertyValue('--n-mx')).toBe('9px');
+      expect(tab.style.getPropertyValue('--n-my')).toBe('4px');
+    });
+
+    it('leaves a disabled tab dark', async () => {
+      const screen = await render(
+        <Tabs defaultValue="overview">
+          <Tab value="overview">Overview</Tab>
+          <Tab value="usage" disabled>
+            Usage
+          </Tab>
+        </Tabs>
+      );
+      const tab = screen.getByRole('tab', { name: 'Usage' }).element() as HTMLElement;
+
+      expect(tab).not.toHaveClass('neba-glow');
+
+      movePointer(tab, 10, 10);
+
+      expect(tab.style.getPropertyValue('--n-mx')).toBe('');
+    });
+
+    // A Pill that does nothing when pressed is a label, and a label is not lit.
+    it('lights a Pill that can be pressed, and only that one', async () => {
+      const screen = await render(
+        <>
+          <Pill data-testid="static">Recording</Pill>
+          <Pill data-testid="pressable" onClick={() => {}}>
+            Live
+          </Pill>
+        </>
+      );
+      const still = screen.getByTestId('static').element() as HTMLElement;
+      const pressable = screen.getByTestId('pressable').element() as HTMLElement;
+      const box = pressable.getBoundingClientRect();
+
+      movePointer(still, 10, 10);
+      movePointer(pressable, box.left + 6, box.top + 3);
+
+      expect(still).not.toHaveClass('neba-glow');
+      expect(still.style.getPropertyValue('--n-mx')).toBe('');
+      expect(pressable).toHaveClass('neba-glow');
+      expect(pressable.style.getPropertyValue('--n-mx')).toBe('6px');
+      expect(pressable.style.getPropertyValue('--n-my')).toBe('3px');
     });
 
     it('leaves a disabled menu row dark', async () => {
