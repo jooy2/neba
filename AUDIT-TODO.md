@@ -4,11 +4,12 @@ The working list for the second audit of every public component, started on 2026
 
 ## State
 
-- The list holds 185 items: 136 without a tag, 49 tagged.
+- The list holds 186 items: 137 without a tag, 49 tagged.
 - Batch 1 is done (2026-09-27): items 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 63, 64, 65, 78 and 120.
 - Batch 2 is done (2026-09-27): items 17 to 31 and 53 to 57. Item 53 turned up a bug outside the list, fixed in a commit of its own: `markTransitionClasses` was never in the stylesheet, so every chart mark snapped.
+- Batch 3 is done (2026-09-27): items 58, 59, 60, 66 to 75, and 79 to 85. Item 67's first version cut a category band on a bar chart at the column centre, which a follow-up commit corrected. Item 69 turned up item 186, which is added to the list rather than fixed out of turn.
 - Every commit so far is local and not pushed.
-- The next batch starts at item 58 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
+- The next batch starts at item 88 and takes the untagged items in number order; no untagged item is marked **(high)** any more.
 
 ## How to run a batch
 
@@ -190,6 +191,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **75** PieChart: a single visible slice has a notch of `gap` at its start angle. `src/components/pie-chart/PieChart.tsx:435`. Fix: no gap when there is one arc.
 - [ ] **76** [decision] CartesianChart `secondaryAxis`: its ticks do not land on the primary gridlines, which the page promises (the docs demo gives 5 against 7), and its labels use the primary stride. `src/internal/chart-frame.tsx:1593, 2825`. (a) Build the secondary scale with the primary's interval count; (b) drop the claim and draw its ticks independently.
 - [ ] **77** [major][decision] ScatterChart and TimelineChart type-check props they cannot honour: `brush` on both (a timeline draws spans past the plot, a scatter windows points by index), `secondaryAxis` on a scatter (its table writes y in the primary format), and a timeline's axis never widens for `references`. `ScatterChart.tsx:47`, `TimelineChart.tsx:31, 200-232, 286`. (a) Omit those props from the two types and say so on the pages; (b) implement each.
+- [ ] **186** CartesianChart with `tooltip={{ mode: 'item' }}` and `stacked`: the nearest series is measured from each series' own value rather than from where its segment is drawn, so two segments of 10 on one column are the same distance from the pointer and the first always wins, whichever segment the pointer is over. `src/internal/chart-frame.tsx` (the `column.reduce` under `items`). Fix: measure against the stacked top, with the same sign split `extentOf` and the marks use, and a test on a stacked BarChart. Found while doing item 69.
 
 ### Agent group
 
