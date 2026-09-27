@@ -195,11 +195,10 @@ function chartHeight(
  * the bar, the scatter and the timeline snapped, and a dashboard holding two of
  * each showed both answers at once.
  */
-export const markTransitionClasses = [
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease),',
-  'r_var(--neba-duration)_var(--neba-ease),',
-  'scale_var(--neba-duration)_var(--neba-ease)]'
-].join('');
+// One literal, however long: Tailwind only generates a class it can read whole
+// in the source, and this one written in three pieces was never generated.
+export const markTransitionClasses =
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease),r_var(--neba-duration)_var(--neba-ease),scale_var(--neba-duration)_var(--neba-ease)]';
 
 export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
   /**
