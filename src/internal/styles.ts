@@ -945,7 +945,9 @@ export const fieldSheetClasses: Record<NebaVariant, string> = {
  * `fieldReadOnlyClasses` without the edge, and without the desaturation: that
  * goes on whichever element holds the notch, with `readOnlyFilterClasses`, so
  * the edge drains with the sheet. It is the shell on every field but a Select,
- * whose notch sits beside its trigger rather than in it.
+ * whose notch sits beside its trigger rather than in it — so the trigger and
+ * the notch take it each, and never the frame around both, which a filter would
+ * make the root of the trigger's backdrop blur.
  */
 export const fieldSheetReadOnlyClasses: Record<NebaVariant, string> = {
   solid: `${surfaceClasses} text-(--neba-fg) bg-(--n-panel-hover)`,

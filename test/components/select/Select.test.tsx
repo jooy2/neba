@@ -470,6 +470,23 @@ describe('Select', () => {
       expect(screen.container.querySelector('.neba-notch')).toHaveClass('neba-notch-float');
     });
 
+    // A filter on an element makes it the root of every backdrop filter under
+    // it, so a filter on the frame left the trigger's frosted blur nothing but
+    // the frame to blur.
+    it('desaturates a read-only trigger and its edge rather than the frame around them', async () => {
+      const screen = await render(
+        <Select items={PLANS} labelPlacement="notch" label="Plan" defaultValue="pro" readOnly />
+      );
+      const trigger = screen.getByRole('combobox').element();
+
+      await expect.element(screen.getByRole('combobox')).toBeInTheDocument();
+      expect(trigger.className).toContain('[filter:saturate(0.55)]');
+      expect(trigger.parentElement?.className).not.toContain('filter');
+      expect(trigger.parentElement?.querySelector('.neba-notch')?.className).toContain(
+        '[filter:saturate(0.55)]'
+      );
+    });
+
     it('keeps a floating label in the notch beside a start icon', async () => {
       const screen = await render(
         <Select items={PLANS} labelPlacement="float" label="Plan" startIcon={<svg />} />

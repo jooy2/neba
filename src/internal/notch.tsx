@@ -1,6 +1,6 @@
 import type * as React from 'react';
 import { Field } from '@base-ui/react/field';
-import { cx, metaTextValues, paddingXValues } from './styles.js';
+import { cx, metaTextValues, paddingXValues, readOnlyFilterClasses } from './styles.js';
 import type { NebaDensity, NebaSize, NebaVariant } from '../types.js';
 
 /**
@@ -216,7 +216,13 @@ export function FieldNotch({
 }: FieldNotchProps) {
   return (
     <span
-      className={cx('neba-notch', rests && 'neba-notch-float')}
+      className={cx(
+        'neba-notch',
+        rests && 'neba-notch-float',
+        // Beside its control rather than inside it, the edge has no shell to
+        // drain with, so it takes the read-only desaturation for itself.
+        beside && readOnly && !disabled && readOnlyFilterClasses
+      )}
       data-variant={variant}
       data-state={disabled ? 'disabled' : readOnly ? 'read-only' : undefined}
       data-empty={empty || undefined}

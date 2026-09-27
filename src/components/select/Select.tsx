@@ -325,7 +325,13 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           disabled
             ? (notched ? fieldSheetDisabledClasses : disabledClasses)[variant]
             : readOnly
-              ? `${(notched ? fieldSheetReadOnlyClasses : fieldReadOnlyClasses)[variant]} cursor-default`
+              ? // Notched, the sheet has no filter of its own; the trigger takes
+                // the desaturation here rather than the frame around it, which
+                // would make the frame the root of the trigger's backdrop blur
+                // and leave the blur nothing to blur.
+                notched
+                ? `${fieldSheetReadOnlyClasses[variant]} ${readOnlyFilterClasses} cursor-default`
+                : `${fieldReadOnlyClasses[variant]} cursor-default`
               : `${(notched ? fieldSheetClasses : fieldRestClasses)[variant]} ${glowClasses}`,
           // The hook a resting label reads the select's emptiness through.
           rests ? 'neba-float-control' : '',
@@ -418,15 +424,11 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               labelClassName={classNames?.label}
               className={cx(
                 // The notch is beside the trigger rather than in it, so the
-                // corners it inherits are the frame's; the label is pressed as
-                // the trigger is and shows the same cursor; and the
-                // desaturation is here so the edge drains with the sheet.
+                // corners it inherits are the frame's, and the label is pressed
+                // as the trigger is and shows the same cursor. The
+                // desaturation is not here: see the trigger, and the notch.
                 radiusClasses[size],
-                disabled
-                  ? 'cursor-not-allowed'
-                  : readOnly
-                    ? `cursor-default ${readOnlyFilterClasses}`
-                    : 'cursor-pointer'
+                disabled ? 'cursor-not-allowed' : readOnly ? 'cursor-default' : 'cursor-pointer'
               )}
             >
               {trigger}

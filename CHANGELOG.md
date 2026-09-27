@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A read-only `Select` with its label on the edge keeps its frosted blur.** The desaturation that says "read-only" was a filter on the box around the trigger and its edge, and a filter makes an element the root of every backdrop blur under it — so the trigger blurred only that box, which has nothing in it, and read as opaque. The trigger and the edge are desaturated each instead.
+
 - **A `Fieldset` inside a disabled `Fieldset` disables its fields too.** The inner group told its fields they were enabled, whatever the group around it said, so a field inside it was disabled by the browser and still drawn available.
 
 - **A read-only `SegmentedButton` does not light up under the pointer.** Its segments could not be changed and still drew the pointer light, the press flash and a darker ink on hover, which is how the library says a press will do something. A read-only set keeps its chosen segment and draws none of the three.
