@@ -27,7 +27,7 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 
 ### format and locale
 
-`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback: the same prop [Statistic](../charts/statistic) and the progress indicators take. While it counts, the number keeps the decimal places of `value` or `from`, whichever has more, so a count to a whole number shows only whole numbers, and every figure is set at the same width.
+`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback: the same prop [Statistic](../charts/statistic) and the progress indicators take. While it counts, the number keeps the decimal places of `value` or `from`, whichever has more, so a count to a whole number shows only whole numbers, and every figure is set at the same width. A counter with no `locale` writes its number in the language of wherever it renders, so on a server-rendered page pass `locale`, or the server's `1,234.5` and the reader's `1.234,5` may disagree when the page hydrates.
 
 <Demo src="animate-counter/formats" minHeight="240">
 

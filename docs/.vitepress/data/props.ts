@@ -14586,7 +14586,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'locale',
       type: 'string',
-      description: { ko: '숫자를 쓸 언어', en: 'Which language it is written in' }
+      description: {
+        ko: '숫자를 쓸 언어. 생략하면 렌더링되는 곳의 언어를 따르므로, 서버에서 렌더링하는 페이지라면 넘기세요',
+        en: 'Which language it is written in. Without it, the language of wherever it renders, so a server-rendered page passes it'
+      }
     },
     {
       name: 'trigger',

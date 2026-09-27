@@ -27,7 +27,7 @@ import { AnimateCounter, Statistic } from 'neba';
 
 ### format과 locale
 
-`Intl.NumberFormat` 옵션입니다. 통화, 백분율, `1.2M` 같은 compact 표기가 `format` 콜백이 아니라 prop입니다. [Statistic](../charts/statistic)과 진행 표시기들이 받는 것과 같은 prop입니다. 세는 동안에는 `value`와 `from` 중 소수 자릿수가 많은 쪽에 맞춰 반올림하므로, 정수까지 세는 동안에는 정수만 보입니다. 숫자는 모두 같은 폭으로 그려집니다.
+`Intl.NumberFormat` 옵션입니다. 통화, 백분율, `1.2M` 같은 compact 표기가 `format` 콜백이 아니라 prop입니다. [Statistic](../charts/statistic)과 진행 표시기들이 받는 것과 같은 prop입니다. 세는 동안에는 `value`와 `from` 중 소수 자릿수가 많은 쪽에 맞춰 반올림하므로, 정수까지 세는 동안에는 정수만 보입니다. 숫자는 모두 같은 폭으로 그려집니다. `locale`이 없는 카운터는 렌더링되는 곳의 언어로 숫자를 쓰므로, 서버에서 렌더링하는 페이지라면 `locale`을 넘기세요. 그러지 않으면 서버의 `1,234.5`와 독자의 `1.234,5`가 하이드레이션할 때 어긋날 수 있습니다.
 
 <Demo src="animate-counter/formats" minHeight="240">
 

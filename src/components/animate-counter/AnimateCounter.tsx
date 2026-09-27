@@ -34,7 +34,11 @@ export interface AnimateCounterProps
    * whichever has more.
    */
   format?: Intl.NumberFormatOptions;
-  /** Which language it is written in. Defaults to the reader's own. */
+  /**
+   * Which language it is written in. Defaults to the language of wherever it
+   * renders, so a server-rendered page passes it, or the server's number and
+   * the reader's may disagree when the page hydrates.
+   */
   locale?: string;
   /** Renders something other than a `<div>`. Base UI's own escape hatch. */
   render?: useRender.RenderProp;
