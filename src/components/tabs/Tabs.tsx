@@ -566,8 +566,9 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
             // it, unless it was told to wrap. The scrollbar is hidden either
             // way: a horizontal rail under a tab bar is fifteen pixels of
             // furniture on Windows and invisible on macOS, so the fade below is
-            // the cue on both.
-            wraps ? 'flex-wrap' : horizontal ? 'overflow-x-auto' : '',
+            // the cue on both. A vertical bar scrolls down, or the fade would
+            // hide the tabs past its foot with nothing to bring them back.
+            wraps ? 'flex-wrap' : horizontal ? 'overflow-x-auto' : 'overflow-y-auto',
             wraps && lines !== undefined
               ? horizontal
                 ? 'overflow-y-auto'

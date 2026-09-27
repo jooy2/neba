@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A vertical `Tabs` bar with more tabs than room scrolls.** Only a horizontal bar was made a scroll container, and a vertical one with the default `overflow="scroll"` still faded its foot when its tabs ran past it — so the tabs down there were faded out and could not be scrolled to. A vertical bar scrolls down its length now.
+
 - **A `DataTable` cell being edited keeps what was typed when its row scrolls out of view.** A virtual body draws only the rows near the screen, and the row being edited went out of the document with the rest — its editor too, with no `blur` to commit what was in it — so scrolling away and back reopened the editor on the old value and the edit was gone. That row stays drawn, in its own place, until the edit is committed or thrown away.
 
 - **A `DataTable` column being carried is marked on the edge it will land on.** The mark was always on the left of the heading under the pointer, and a column carried forward lands after that heading, not before it — so the mark was on the wrong side of every forward move, and on a right-to-left page it was mirrored from both. It is on the heading's start edge for a column carried back and its end edge for one carried forward, in either direction of text.

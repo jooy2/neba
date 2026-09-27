@@ -239,7 +239,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 
 ### Surfaces
 
-- [ ] **110** Tabs: a vertical bar with the default `overflow="scroll"` never becomes a scroll container, but it still fades its end, so tabs past the bottom are masked and unreachable (unverified). `src/components/tabs/Tabs.tsx:572`. Fix: `overflow-y-auto` on a vertical bar that does not wrap.
+- [x] **110** Tabs: a vertical bar with the default `overflow="scroll"` never becomes a scroll container, but it still fades its end, so tabs past the bottom are masked and unreachable (unverified). `src/components/tabs/Tabs.tsx:572`. Fix: `overflow-y-auto` on a vertical bar that does not wrap. Tested at class level. That the foot was masked follows from the overflow attributes being written off `scrollHeight`, which does not need a scroll container to exceed `clientHeight`.
 - [ ] **111** Card: `headerAction` uses the physical `ml-auto`. `src/components/card/Card.tsx:100`. Fix: `ms-auto`.
 - [ ] **112** Skeleton: a stacked, labelled skeleton passes an unkeyed `<span>` in a children array. `src/components/skeleton/Skeleton.tsx:232-247`. Fix: `<>{spoken}{bars}</>`.
 - [ ] **113** [decision] Pill: the light and the pressed fill are on the whole shell, so pressing a control in `endIcon` or inside the open `details` presses the Pill, and the light washes the details content. `src/components/pill/Pill.tsx:347, 358`. (a) Move them onto the inner button (with 26); (b) turn them off while `details` is open; (c) leave it.

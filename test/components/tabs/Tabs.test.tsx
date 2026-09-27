@@ -272,6 +272,16 @@ describe('Tabs', () => {
       expect(list).not.toHaveClass('flex-wrap');
     });
 
+    // A vertical bar was never a scroll container, and the fade still took the
+    // tabs past its foot away, with nothing to scroll them back.
+    it('scrolls a vertical bar down its length', async () => {
+      const screen = await render(<Basic defaultValue="overview" orientation="vertical" />);
+      const list = screen.getByRole('tablist').element();
+
+      expect(list).toHaveClass('overflow-y-auto');
+      expect(list).toHaveClass('neba-scroll-fade');
+    });
+
     it('wraps when it is told to, and stops scrolling sideways', async () => {
       const screen = await render(<Basic defaultValue="overview" overflow="wrap" />);
       const list = screen.getByRole('tablist').element();
