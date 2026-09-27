@@ -2490,10 +2490,15 @@ export function CartesianChart(rawProps: CartesianProps) {
                 categoryPx={categoryPx}
                 categoryScale={categoryScale}
                 categoryValuePx={categoryValuePx}
+                /* A line's first and last points sit on the plot's edges; a
+                   bar's sit half a band in from them, so a band of columns
+                   reaches half an index further either way. */
                 categoryBounds={
                   categoryScale
                     ? [categoryScale.min, categoryScale.max]
-                    : [windowFrom, windowFrom + count - 1]
+                    : inset
+                      ? [windowFrom, windowFrom + count - 1]
+                      : [windowFrom - 0.5, windowFrom + count - 0.5]
                 }
                 categoryOffset={windowFrom}
                 fontSize={fontSize}

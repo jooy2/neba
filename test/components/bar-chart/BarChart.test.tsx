@@ -271,6 +271,30 @@ describe('BarChart', () => {
     });
   });
 
+  describe('references', () => {
+    // A bar's column is a band, and the plot reaches half an index past the
+    // first and last centres. A band shading a whole column was cut at the
+    // centre as though the chart were a line.
+    it('reaches a whole column with a band on the category axis', async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          categories={TEAMS}
+          references={[{ value: -0.5, to: 0.5, axis: 'category' }]}
+          series={[{ name: 'Deploys', data: [10, 20, 30] }]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(
+        [...plot.element().querySelectorAll('line')].filter((node) =>
+          node.getAttribute('stroke-dasharray')
+        )
+      ).toHaveLength(2);
+    });
+  });
+
   describe('stacked', () => {
     it('keeps the caller’s own numbers in the table when stacking to full', async () => {
       const screen = await render(
