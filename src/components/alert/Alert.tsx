@@ -121,8 +121,12 @@ const detailClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
  *
  * `alert` interrupts whatever a screen reader is in the middle of saying;
  * `status` waits for a pause. "This failed" is worth interrupting for and
- * "saved" is not, so the severity decides — and a caller who knows better still
- * wins, because their props spread after this.
+ * "saved" is not, so the severity decides — and a caller's own `role` still
+ * wins.
+ *
+ * It goes on the message column rather than on the whole alert. A live region
+ * is read out whole, so on the root every announcement ended with the names of
+ * the action and the dismiss button: "It broke. Retry, Dismiss".
  */
 const rolesFor: Record<NebaColor, 'alert' | 'status'> = {
   primary: 'status',
@@ -164,6 +168,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
     locale,
     closeLabel,
     transition,
+    role,
     className,
     style,
     children,
@@ -179,7 +184,6 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
   return (
     <div
       ref={ref}
-      role={rolesFor[color]}
       className={cx(
         'flex w-full items-start',
         boxPaddingClasses[density][size],
@@ -202,7 +206,10 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         <span className={`flex h-[1lh] shrink-0 items-center ${accent}`}>{glyph}</span>
       ) : null}
 
-      <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
+      <div
+        role={role ?? rolesFor[color]}
+        className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}
+      >
         {titled ? (
           <div className={`neba-title font-semibold ${sheetTitleClasses[size]} ${accent}`}>
             {title}

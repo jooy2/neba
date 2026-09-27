@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **An `Alert`'s live region is its title and message rather than the whole alert.** `role="alert"` or `role="status"` was on the root, and a live region is read out whole, so every announcement ended with the action's and the dismiss button's names. The role, and a `role` you pass, go on the column that holds the title and the message now; the ref, `className` and every other attribute stay on the root. A test that found the alert with `getByRole('alert')` or `getByRole('status')` to read a class or a slot should find the root instead.
+
 - **A `HowToSteps` with no `title` writes its steps' titles at `headingLevel`.** They stayed a level below a title that was not drawn, so the default guide under a page's `<h2>` put its steps at `<h4>` and skipped a level in the outline. A guide with a `title` is unchanged.
 
 - **A `ContextWindow`'s root is a plain `<div>`, and `role="meter"` is on the ring, the label and the count.** The whole gauge was the meter, and a meter's children are presentational, so the split was not read as a list and a link passed as `children` was not a link. The ref, `className`, `style` and every other attribute still go to the root. A test that found the gauge with `getByRole('meter')` to read a class or an `--n-*` slot should find the root instead.

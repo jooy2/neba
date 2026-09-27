@@ -74,8 +74,8 @@ An `<svg>` anywhere in an alert is sized to `1.2em` of the text around it, so an
 
 ## Accessibility
 
-- The severity picks the live region: `warning` and `danger` get `role="alert"`, which interrupts what a screen reader is saying, and the rest get `role="status"`, which waits for a pause.
+- The severity picks the live region: `warning` and `danger` get `role="alert"`, which interrupts what a screen reader is saying, and the rest get `role="status"`, which waits for a pause. The role is on the title and the message, so the action and the dismiss button are not read out with them.
 - A screen reader announces a live region when what is inside it changes, and an Alert that mounts already holding its message is not announced by every one. For a message that has to be heard, keep the Alert mounted and change what it says, or write the message into a live region that is already on the page.
-- Passing `role` yourself overrides the default.
+- Passing `role` yourself overrides the default, and it goes on the same element.
 - With several alerts on screen, use `closeLabel` to name what is being dismissed.
 - `locale` decides the dismiss button's accessible name; `closeLabel` writes it out instead.

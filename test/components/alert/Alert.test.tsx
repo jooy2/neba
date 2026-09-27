@@ -33,23 +33,31 @@ describe('Alert', () => {
     });
 
     it('keeps caller-supplied class names alongside its own', async () => {
-      const screen = await render(<Alert className="my-own-class">Saved</Alert>);
+      const screen = await render(
+        <Alert data-testid="alert" className="my-own-class">
+          Saved
+        </Alert>
+      );
 
-      expect(screen.getByRole('status').element()).toHaveClass('my-own-class');
+      expect(screen.getByTestId('alert').element()).toHaveClass('my-own-class');
     });
   });
 
   describe('icon', () => {
     it('draws a glyph by default', async () => {
-      const screen = await render(<Alert>Saved</Alert>);
+      const screen = await render(<Alert data-testid="alert">Saved</Alert>);
 
-      expect(screen.getByRole('status').element().querySelector('svg')).not.toBeNull();
+      expect(screen.getByTestId('alert').element().querySelector('svg')).not.toBeNull();
     });
 
     it('drops the glyph when asked', async () => {
-      const screen = await render(<Alert icon={false}>Saved</Alert>);
+      const screen = await render(
+        <Alert data-testid="alert" icon={false}>
+          Saved
+        </Alert>
+      );
 
-      expect(screen.getByRole('status').element().querySelector('svg')).toBeNull();
+      expect(screen.getByTestId('alert').element().querySelector('svg')).toBeNull();
     });
 
     it('takes a glyph of its own', async () => {
@@ -61,13 +69,19 @@ describe('Alert', () => {
     // The severity has to be in the shape as well as in the colour: an alert
     // that says "this went wrong" only in red says it only to some readers.
     it('draws a different glyph per severity', async () => {
-      const screen = await render(<Alert color="success">Saved</Alert>);
-      const success = screen.getByRole('status').element().querySelector('svg')?.innerHTML;
+      const screen = await render(
+        <Alert data-testid="alert" color="success">
+          Saved
+        </Alert>
+      );
+      const success = screen.getByTestId('alert').element().querySelector('svg')?.innerHTML;
 
-      // The role changes with the severity — that is the next test's subject —
-      // so the danger alert has to be found as the alert it now is.
-      await screen.rerender(<Alert color="danger">Saved</Alert>);
-      const danger = screen.getByRole('alert').element().querySelector('svg')?.innerHTML;
+      await screen.rerender(
+        <Alert data-testid="alert" color="danger">
+          Saved
+        </Alert>
+      );
+      const danger = screen.getByTestId('alert').element().querySelector('svg')?.innerHTML;
 
       expect(success).toBeTruthy();
       expect(success).not.toEqual(danger);
@@ -100,6 +114,31 @@ describe('Alert', () => {
 
       await expect.element(screen.getByRole('status')).toBeInTheDocument();
       expect(screen.getByRole('alert').query()).toBeNull();
+    });
+
+    // The whole alert was the live region, so every announcement ended with
+    // the names of the buttons in it.
+    it('leaves the action and the dismiss button out of what is announced', async () => {
+      const screen = await render(
+        <Alert
+          color="danger"
+          title="Deploy failed"
+          action={<Button>Retry</Button>}
+          onClose={() => {}}
+        >
+          The build exited with 1.
+        </Alert>
+      );
+      const region = screen.getByRole('alert');
+
+      await expect.element(region).toMatchTextContent('Deploy failed');
+      expect(region.element().textContent).toContain('The build exited with 1.');
+      expect(
+        region.element().contains(screen.getByRole('button', { name: 'Retry' }).element())
+      ).toBe(false);
+      expect(
+        region.element().contains(screen.getByRole('button', { name: 'Dismiss' }).element())
+      ).toBe(false);
     });
   });
 
@@ -152,35 +191,44 @@ describe('Alert', () => {
   describe('style props', () => {
     it('maps colour and elevation onto the token slots', async () => {
       const screen = await render(
-        <Alert color="warning" elevation={2}>
+        <Alert data-testid="alert" color="warning" elevation={2}>
           Careful
         </Alert>
       );
-      const element = screen.getByRole('alert').element() as HTMLElement;
+      const element = screen.getByTestId('alert').element() as HTMLElement;
 
       expect(element.style.getPropertyValue('--n-fill')).toBe('var(--neba-warning-fill)');
       expect(element.style.getPropertyValue('--n-elev')).toBe('var(--neba-shadow-2)');
     });
 
     it('is an outline alert by default', async () => {
-      const screen = await render(<Alert>Saved</Alert>);
+      const screen = await render(<Alert data-testid="alert">Saved</Alert>);
 
-      expect(screen.getByRole('status').element()).toHaveClass('border');
+      expect(screen.getByTestId('alert').element()).toHaveClass('border');
     });
 
     it('changes padding with density', async () => {
-      const screen = await render(<Alert density="compact">Saved</Alert>);
+      const screen = await render(
+        <Alert data-testid="alert" density="compact">
+          Saved
+        </Alert>
+      );
 
-      expect(screen.getByRole('status').element()).toHaveClass('p-2.5');
+      expect(screen.getByTestId('alert').element()).toHaveClass('p-2.5');
     });
 
     it('never applies a transform', async () => {
       const screen = await render(
-        <Alert title="Deploy failed" onClose={() => {}} action={<Button>Retry</Button>}>
+        <Alert
+          data-testid="alert"
+          title="Deploy failed"
+          onClose={() => {}}
+          action={<Button>Retry</Button>}
+        >
           The build exited with 1.
         </Alert>
       );
-      const html = screen.getByRole('status').element().outerHTML;
+      const html = screen.getByTestId('alert').element().outerHTML;
 
       expect(html).not.toContain('scale');
       expect(html).not.toContain('translate');
