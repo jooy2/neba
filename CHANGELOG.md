@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A chart reference on the category axis stays on its own column under a brush.** Its `value` is an index into the whole series, and the plot placed it as an index into the window — so with the window on days 10 to 19, a rule at day 10 was drawn off the end of the plot, and the hidden list read it out under the wrong category's name. It is placed and named against the whole series now. A category reference outside what the plot draws, windowed or not, is left out rather than drawn past the axis, and a band is cut at the plot's edge.
+
 - **A chart brush reports a window only when it moved, and never one past the series.** `onRangeChange` was called for every key and every pointer move, including a `Home` on a handle already at the start and a drag that stayed inside one category, with the window it already had. And a window one category wide at either end of the series reported a handle at `-1` or one past the last category. Both ends are held inside the series now, and a gesture that changes nothing reports nothing.
 
 - **An A2UI `Typography`'s `lines` is held to what the catalog says.** The catalog tells an agent `lines` is a whole number of at least one, and the renderer took any number at all — a `0` or a `1.5` was drawn rather than refused. The Zod the adapter derives from the catalog now carries `minimum` and `integer`, and a keyword it does not know throws when the schemas are built rather than being passed over.

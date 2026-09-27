@@ -187,7 +187,7 @@ Reach for it rarely. Two scales let a caller make any two series look like they 
 
 Lines and bands drawn across the plot at values the data has none of — a target, an SLA, a budget, the window a forecast covers. Every cartesian chart takes them.
 
-`value` places one. `to` turns it into a band. `axis: 'category'` reads the numbers against the other axis, for a rule that says _when_ rather than _how much_: on an axis of columns that number is the column's index, and on one of dates or numbers it is a point on that scale.
+`value` places one. `to` turns it into a band. `axis: 'category'` reads the numbers against the other axis, for a rule that says _when_ rather than _how much_: on an axis of columns that number is the column's index, and on one of dates or numbers it is a point on that scale. The index counts from the first category of the whole series, so it stays on its column when a `brush` narrows the plot. A rule outside what the plot draws is left out, and a band is cut at the plot's edge.
 
 The **scale widens to hold them**, so a target above everything measured is still on the chart. They are drawn under the marks and over the grid, dashed and neutral unless told otherwise — a reference in `danger` says the line is the bad thing, when usually the bad thing is the data crossing it. One that names itself is read out with the data.
 

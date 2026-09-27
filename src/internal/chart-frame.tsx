@@ -1036,6 +1036,13 @@ interface ReferencesProps {
   categoryPx: (index: number) => number;
   categoryScale: ValueScale | null;
   categoryValuePx: (value: number) => number;
+  /**
+   * The stretch of the category axis the plot draws, in the caller's terms: an
+   * index into the whole series, or a point on its scale.
+   */
+  categoryBounds: readonly [number, number];
+  /** The first column drawn, when a brush has narrowed the plot to a window. */
+  categoryOffset: number;
   fontSize: number;
 }
 
@@ -1060,28 +1067,53 @@ function ChartReferences({
   categoryPx,
   categoryScale,
   categoryValuePx,
+  categoryBounds,
+  categoryOffset,
   fontSize
 }: ReferencesProps) {
+  const [first, last] = categoryBounds;
+
   return (
     <g>
       {references.map((one, index) => {
         const onValue = (one.axis ?? 'value') === 'value';
+        /* The value axis is widened to take every reference in, so only the
+           category axis can leave one outside the plot — past the last column,
+           or outside the window a brush drew. What lies wholly outside is left
+           out, and a band that runs past an edge is cut there, with no edge
+           line where it was cut. */
+        const inside = (number: number) => onValue || (number >= first && number <= last);
+        const clamp = (number: number) =>
+          onValue ? number : Math.min(last, Math.max(first, number));
+
+        if (!onValue && Math.max(one.value, one.to ?? one.value) < first) {
+          return null;
+        }
+
+        if (!onValue && Math.min(one.value, one.to ?? one.value) > last) {
+          return null;
+        }
+
         /* Where a number lands. On the value axis that is one call; on the
            category axis it is the scale's when the categories are numbers or
            dates, and the band's centre when they are columns — which is what
-           makes `value` an index there and says so in the type. */
+           makes `value` an index there and says so in the type. An index into
+           the whole series, so a window moves it by where the window starts. */
         const at = (number: number) =>
           onValue
             ? valuePx(number)
             : categoryScale
               ? categoryValuePx(number)
-              : (horizontal ? plot.top : plot.left) + categoryPx(number);
+              : (horizontal ? plot.top : plot.left) + categoryPx(number - categoryOffset);
 
         /* Which way the rule runs. A value on the value axis is drawn across
            the *other* one, and `horizontal` swaps which of the two that is. */
         const across = onValue ? !horizontal : horizontal;
-        const from = at(one.value);
-        const to = one.to === undefined ? null : at(one.to);
+        const from = at(clamp(one.value));
+        const to = one.to === undefined ? null : at(clamp(one.to));
+        const edges = (one.to === undefined ? [one.value] : [one.value, one.to])
+          .filter(inside)
+          .map(at);
         const near = to === null ? from : Math.min(from, to);
         const far = to === null ? from : Math.max(from, to);
         const ink = one.color ? resolveColor(one.color) : 'var(--neba-muted-fg)';
@@ -1114,7 +1146,7 @@ function ChartReferences({
               />
             )}
 
-            {(to === null ? [from] : [near, far]).map((along, edge) => (
+            {edges.map((along, edge) => (
               <line
                 key={edge}
                 x1={across ? plot.left : along}
@@ -1967,7 +1999,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     const write = (value: number) =>
       (one.axis ?? 'value') === 'value'
         ? formatValue(value)
-        : formatCategory(categoryScale ? value : (labels[value] ?? value), locale);
+        : formatCategory(categoryScale ? value : (fullLabels[value] ?? value), locale);
 
     return one.to === undefined ? write(one.value) : `${write(one.value)}–${write(one.to)}`;
   };
@@ -2441,6 +2473,12 @@ export function CartesianChart(rawProps: CartesianProps) {
                 categoryPx={categoryPx}
                 categoryScale={categoryScale}
                 categoryValuePx={categoryValuePx}
+                categoryBounds={
+                  categoryScale
+                    ? [categoryScale.min, categoryScale.max]
+                    : [windowFrom, windowFrom + count - 1]
+                }
+                categoryOffset={windowFrom}
                 fontSize={fontSize}
               />
             ) : null}

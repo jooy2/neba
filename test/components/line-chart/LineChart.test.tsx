@@ -896,6 +896,58 @@ describe('LineChart', () => {
       expect(onRangeChange.mock.calls[0][0]).toEqual([38, 39]);
     });
 
+    // A category reference is an index into the whole series, and the plot was
+    // placing it as an index into the window.
+    it('draws a category reference at its own column inside the window', async () => {
+      const screen = await render(
+        chart({
+          brush: { defaultRange: [10, 19] },
+          references: [{ value: 10, axis: 'category', label: 'Launch' }]
+        })
+      );
+      const plot = screen.getByRole('img', { name: 'Signups by day' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const rule = [...plot.element().querySelectorAll('line')].filter((node) =>
+        node.getAttribute('stroke-dasharray')
+      );
+      const tick = [...plot.element().querySelectorAll('text')].find(
+        (node) => node.textContent === 'D10'
+      );
+
+      expect(rule).toHaveLength(1);
+      expect(Number(rule[0].getAttribute('x1'))).toBeCloseTo(Number(tick?.getAttribute('x')), 1);
+      await expect.element(screen.getByText('Launch: D10')).toBeInTheDocument();
+    });
+
+    it('leaves out a category reference outside the window, and cuts a band at its edge', async () => {
+      const screen = await render(
+        chart({
+          brush: { defaultRange: [10, 19] },
+          references: [
+            { value: 30, axis: 'category', label: 'Launch' },
+            { value: 5, to: 12, axis: 'category' }
+          ]
+        })
+      );
+      const plot = screen.getByRole('img', { name: 'Signups by day' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const rules = [...plot.element().querySelectorAll('line')].filter((node) =>
+        node.getAttribute('stroke-dasharray')
+      );
+
+      // The band's far edge only: its near one is off the start of the window.
+      expect(rules).toHaveLength(1);
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).not.toContain('Launch');
+      // Still read out with the data, which is all of it, and by its own name.
+      await expect.element(screen.getByText('Launch: D30')).toBeInTheDocument();
+    });
+
     it('holds a controlled window where the caller put it', async () => {
       const screen = await render(chart({ brush: { range: [5, 8] } }));
       const start = screen.getByRole('slider').first();
