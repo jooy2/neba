@@ -1137,6 +1137,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       const run = keysBetween(order, anchor, key);
 
       if (run.length === 0) {
+        // The anchor is not displayed — on another page, or hidden by a
+        // search — so there is no run to take. The row still answers, as a
+        // plain press or a Ctrl press would, and becomes the anchor.
+        if (order.includes(key)) {
+          anchorRef.current = key;
+          commitSelection(additive ? [...new Set([...latest.current.selectedKeys, key])] : [key]);
+        }
+
         return;
       }
 

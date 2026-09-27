@@ -710,6 +710,30 @@ describe('DataTable', () => {
       );
     });
 
+    // The anchor was on a row a search had hidden, so there was no run to
+    // take and the press did nothing at all.
+    it('chooses the pressed row when Shift is held and the anchor is hidden', async () => {
+      const onSelectedChange = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          searchable
+          onSelectedChange={onSelectedChange}
+        />
+      );
+
+      await screen.getByText('Seoul').click();
+      await screen.getByRole('searchbox').fill('Lisbon');
+      await userEvent.keyboard('{Shift>}');
+      await screen.getByText('Lisbon').click();
+      await userEvent.keyboard('{/Shift}');
+
+      expect(onSelectedChange).toHaveBeenLastCalledWith(['b'], [ITEMS[1]]);
+    });
+
     it('keeps a single-select table to one row however it is clicked', async () => {
       const onSelectedChange = vi.fn();
       const screen = await render(
