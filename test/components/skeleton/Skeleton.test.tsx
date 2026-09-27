@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Skeleton } from 'neba';
 
@@ -31,6 +31,19 @@ describe('Skeleton', () => {
 
       expect(status.textContent).toBe('Loading the report');
       expect(status.children).toHaveLength(4);
+    });
+
+    // The label went into the same array as the bars with no key of its own.
+    it('draws a labelled stack without a warning about keys', async () => {
+      const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      try {
+        await render(<Skeleton label="Loading the second report" lines={3} />);
+
+        expect(errors.mock.calls.flat().join(' ')).not.toMatch(/unique "key"/);
+      } finally {
+        errors.mockRestore();
+      }
     });
 
     it('renders something else through render', async () => {

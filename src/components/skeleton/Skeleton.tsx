@@ -229,22 +229,26 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
         ...announce,
         ...(stacked
           ? {
-              children: [
-                spoken,
-                ...Array.from({ length: lines }, (_, index) => (
-                  <div
-                    key={index}
-                    className={cx(
-                      fillClasses,
-                      sweep,
-                      barRadiusClasses[size],
-                      lineHeightClasses[size],
-                      // The last line of a paragraph does not reach the margin.
-                      index === lines - 1 ? 'w-3/5' : 'w-full'
-                    )}
-                  />
-                ))
-              ]
+              // Two children rather than one array: the label is not one of
+              // the bars, and in an array it is a child with no key.
+              children: (
+                <>
+                  {spoken}
+                  {Array.from({ length: lines }, (_, index) => (
+                    <div
+                      key={index}
+                      className={cx(
+                        fillClasses,
+                        sweep,
+                        barRadiusClasses[size],
+                        lineHeightClasses[size],
+                        // The last line of a paragraph does not reach the margin.
+                        index === lines - 1 ? 'w-3/5' : 'w-full'
+                      )}
+                    />
+                  ))}
+                </>
+              )
             }
           : { children: spoken }),
         ...props
