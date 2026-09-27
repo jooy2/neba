@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `Stack` given a `transition` arrives inside an `Animate*` that is waiting for its trigger.** Each item took whether its animation was running from the wrapper around it, so a pile inside an `AnimateFade` with `trigger="hover"` sat on its first frame — invisible, for a fade — until the pointer happened to pass over it. Its items run their entrance on mount, as a `Card`'s `transition` already did.
+
 - **A `Sidebar` and a `SidebarTrigger` speak the language of the `PageLayout` they are in.** Both take the layout's `locale` when they are given none, but a `NebaProvider` with a `locale` of its own filled theirs in first — so a layout set to Korean inside a provider set to English had an English trigger and an English sidebar name. The layout is nearer, and it wins now; a `locale` on the slot itself still wins over both.
 
 - **A `ScrollZone` press let go outside the strip is over.** A mouse press on the strip that was released somewhere else before it had moved far enough to be a drag left the strip listening for it, so the next time the pointer passed over the strip — with no button held — the strip followed it as if it were being dragged. The first move with no button held ends the press now.

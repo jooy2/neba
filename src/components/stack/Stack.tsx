@@ -215,13 +215,20 @@ export const Stack = React.forwardRef<HTMLSpanElement, StackProps>(function Stac
       {drawn.map((child, index) => {
         const order = reverse ? drawn.length - 1 - index : index;
         const slots = parts
-          ? animationSlots({
-              ...parts.slots,
-              delay: parts.slots.delay + order * stagger,
-              // Clamped, so a `durationStep` steeper than the pile is deep stops
-              // at instant rather than turning the back of it into `-200ms`.
-              duration: Math.max(0, parts.slots.duration + order * durationStep)
-            })
+          ? {
+              ...animationSlots({
+                ...parts.slots,
+                delay: parts.slots.delay + order * stagger,
+                // Clamped, so a `durationStep` steeper than the pile is deep
+                // stops at instant rather than turning the back of it into
+                // `-200ms`.
+                duration: Math.max(0, parts.slots.duration + order * durationStep)
+              }),
+              // Running, written out, as `transitionProps()` does: an entrance
+              // runs on mount, and left to inherit, a pile inside an Animate*
+              // that had not been triggered sat on its first frame.
+              '--n-anim-state': 'running'
+            }
           : undefined;
 
         return (

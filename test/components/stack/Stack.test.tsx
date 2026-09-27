@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
-import { Avatar, Stack } from 'neba';
+import { AnimateFade, Avatar, Stack } from 'neba';
 
 /** The wrappers a Stack draws, one per item. */
 function items(container: HTMLElement): HTMLElement[] {
@@ -216,6 +216,20 @@ describe('Stack', () => {
       expect(
         items(screen.container).map((item) => item.style.getPropertyValue('--n-anim-duration'))
       ).toEqual(['200ms', '50ms', '0ms']);
+    });
+
+    // An item left to inherit the state would take a hover-triggered wrapper's
+    // `paused` and wait on its first frame, invisible, until the hover came.
+    it('runs its entrance inside an Animate* that has not been triggered', async () => {
+      const screen = await render(
+        <AnimateFade trigger="hover">
+          <Faces transition="fade" />
+        </AnimateFade>
+      );
+
+      expect(
+        items(screen.container).map((item) => item.style.getPropertyValue('--n-anim-state'))
+      ).toEqual(['running', 'running', 'running']);
     });
 
     it('writes no animation class when it was given no transition', async () => {
