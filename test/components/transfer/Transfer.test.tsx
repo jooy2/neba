@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Transfer } from 'neba';
 
 const ITEMS = [
@@ -164,7 +165,33 @@ describe('Transfer', () => {
     it('leaves the buttons unavailable while nothing is ticked', async () => {
       const screen = await render(<Transfer items={ITEMS} />);
 
+      await expect
+        .element(screen.getByRole('button', { name: 'Move to selected' }))
+        .toHaveAttribute('aria-disabled', 'true');
+    });
+
+    // Moving every ticked row runs the button out, and a `disabled` button
+    // hands the focus to the document.
+    it('keeps the focus on a button the press ran out', async () => {
+      const screen = await render(<Transfer items={ITEMS} />);
+      const send = screen.getByRole('button', { name: 'Move to selected' });
+
+      await screen.getByText('Status').click();
+      (send.element() as HTMLElement).focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByText('0/1')).toBeInTheDocument();
+      await expect.element(send).toHaveAttribute('aria-disabled', 'true');
+      await expect.element(send).toHaveFocus();
+    });
+
+    it('takes both buttons out of reach when the whole transfer is disabled', async () => {
+      const screen = await render(<Transfer items={ITEMS} disabled />);
+
       await expect.element(screen.getByRole('button', { name: 'Move to selected' })).toBeDisabled();
+      await expect
+        .element(screen.getByRole('button', { name: 'Move to available' }))
+        .toBeDisabled();
     });
 
     it('never moves a disabled row', async () => {

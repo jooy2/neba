@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **A `Transfer`'s move buttons keep the focus when the press runs them out.** Moving every ticked row made the button `disabled`, and the focus fell to the document, so a keyboard reader moving rows one at a time started again from the top after each. Both stay in place with `aria-disabled`, as a `Pagination` stepper does; a disabled `Transfer` still disables them outright. A test that asserted `toBeDisabled()` on either should assert `aria-disabled="true"`.
+
 ### Fixed
 
 - **An A2UI `Card` or `Button` takes an `elevation`.** The catalog declares it as `0` to `3`, and the adapter built its schema with `z.enum`, which takes strings and refused every one of them — the default `0` included. The processor then threw for the whole `updateComponents` message, so a surface with one card at any elevation drew nothing, and the data model sent after it was lost too. An enum of numbers is a union of literals now.

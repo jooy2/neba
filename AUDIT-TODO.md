@@ -51,7 +51,7 @@ None asked yet. The tagged items are asked at the end of the first batch.
 
 ## 2. SEO and accessibility
 
-- [ ] **5** (high) Transfer: the two arrow buttons turn natively `disabled` after a keyboard move empties their side, and the focus drops to `<body>`. `src/components/transfer/Transfer.tsx:429-450`. Fix: `focusableWhenDisabled` on both, as Pagination has, and a keyboard focus test.
+- [x] **5** (high) Transfer: the two arrow buttons turn natively `disabled` after a keyboard move empties their side, and the focus drops to `<body>`. `src/components/transfer/Transfer.tsx:429-450`. Fix: `focusableWhenDisabled` on both, as Pagination has, and a keyboard focus test. Done as item 22 of the first audit decided, so it is listed under Breaking changes.
 - [ ] **6** (high) DataTable: a grid that navigates without selecting (`onRowActivate`, editable cells) never sets `aria-activedescendant`, so the arrow keys move a ring a screen reader never hears about. `src/components/data-table/DataTable.tsx:1191-1192`. Fix: gate `activeRendered` on `navigable` rather than `selects`, test both modes, and update the second Accessibility bullet in both locales.
 - [ ] **7** GalleryViewer: pressing Next onto the last picture, or Previous onto the first, disables the focused button and loses the focus. `src/components/gallery/GalleryViewer.tsx:139-167`. Fix: `focusableWhenDisabled` on both, and a test.
 - [ ] **8** Approval: pressing an answer unmounts the focused button, so the focus falls to `<body>` and the record line that replaces the buttons is not read. `src/components/approval/Approval.tsx:297-324`. Fix: give the record line `tabIndex={-1}` and focus it when the focus was inside the actions row, and a test.

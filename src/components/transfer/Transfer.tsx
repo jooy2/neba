@@ -432,6 +432,9 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
             variant={variant === 'text' ? 'text' : 'outline'}
             label={messages.toTarget}
             disabled={disabled || !canSend}
+            // A press that moves every ticked row runs the button out, and a
+            // `disabled` button hands the focus to the document.
+            focusableWhenDisabled={!disabled}
             onClick={() => move(sourceRows, true)}
             // Turned under RTL, where the chosen list is laid out on the left.
             icon={<span className="flex rtl:rotate-180">{<ArrowRightIcon />}</span>}
@@ -442,6 +445,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
             variant={variant === 'text' ? 'text' : 'outline'}
             label={messages.toSource}
             disabled={disabled || !canReturn}
+            focusableWhenDisabled={!disabled}
             onClick={() => move(targetRows, false)}
             // The same glyph turned, which is the one allowance the no-transform
             // rule makes. A rotation is physical, so under RTL, where the lists
