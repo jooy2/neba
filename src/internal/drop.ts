@@ -6,9 +6,9 @@
  * Two components take dropped files — a
  * [FilePicker](../components/inputs/file-picker), and a
  * [PromptInput](../components/agent/prompt-input) whose shell is a drop target
- * — and both have to get the same two things right. Neither is hard; both are
- * the kind of thing that is written correctly once and approximately the second
- * time.
+ * — and both have to get the same things right. None of them is hard; all of
+ * them are the kind of thing that is written correctly once and approximately
+ * the second time.
  */
 
 import * as React from 'react';
@@ -43,6 +43,17 @@ export function droppedFiles(transfer: DataTransfer): File[] {
   });
 }
 
+/**
+ * Whether a drag is carrying files.
+ *
+ * `types` is all a page may read of a drag until it is dropped, and a file is
+ * the type `Files`. Anything else — text selected somewhere and dragged, a link
+ * — is left to the browser, which for a field means inserting it.
+ */
+function carriesFiles(event: React.DragEvent): boolean {
+  return [...(event.dataTransfer?.types ?? [])].includes('Files');
+}
+
 /** What a drop zone hands back: whether a drag is over it, and the listeners. */
 export interface DropZone {
   /** A drag is over the zone right now. Always `false` while it is off. */
@@ -62,12 +73,16 @@ export interface DropZone {
 /**
  * An area that takes dropped files.
  *
- * `accept` is called with the files, folders already filtered out. Pass
- * `undefined` and the zone is off: no listeners at all, and `over` never turns
- * true — which is what a disabled or read-only control wants, and what a
- * component with nothing to do with files wants.
+ * `accept` is called with the files, folders already filtered out, and never
+ * with none. Pass `undefined` and the zone is off: no listeners at all, and
+ * `over` never turns true — which is what a disabled or read-only control
+ * wants, and what a component with nothing to do with files wants.
  *
- * Two details are the whole reason this is shared rather than written twice.
+ * Three details are the whole reason this is shared rather than written twice.
+ *
+ * **Only a drag with files in it.** Every other drag is let through untouched:
+ * text dragged into a PromptInput is the field's to insert, and a zone that
+ * took it would light up, swallow the text and report no files.
  *
  * **The depth count.** `dragenter` and `dragleave` fire for every child the
  * pointer crosses, so a boolean flickers the entire time a file is over a box
@@ -112,17 +127,29 @@ export function useDropZone(accept: ((files: File[]) => void) | undefined): Drop
     over,
     handlers: {
       onDragEnter: (event) => {
+        if (!carriesFiles(event)) {
+          return;
+        }
+
         event.preventDefault();
         depth.current += 1;
         setOver(true);
       },
       onDragOver: (event) => {
+        if (!carriesFiles(event)) {
+          return;
+        }
+
         // Without this the browser opens the file instead of dropping it, which
         // is the default and is never what anybody wants.
         event.preventDefault();
         event.dataTransfer.dropEffect = 'copy';
       },
-      onDragLeave: () => {
+      onDragLeave: (event) => {
+        if (!carriesFiles(event)) {
+          return;
+        }
+
         depth.current = Math.max(0, depth.current - 1);
 
         if (depth.current === 0) {
@@ -130,10 +157,21 @@ export function useDropZone(accept: ((files: File[]) => void) | undefined): Drop
         }
       },
       onDrop: (event) => {
+        if (!carriesFiles(event)) {
+          return;
+        }
+
         event.preventDefault();
         depth.current = 0;
         setOver(false);
-        accept(droppedFiles(event.dataTransfer));
+
+        // A drop of nothing but folders leaves nothing to hand over, and a call
+        // with an empty list reads to a caller as a drop that cleared the list.
+        const files = droppedFiles(event.dataTransfer);
+
+        if (files.length > 0) {
+          accept(files);
+        }
       }
     }
   };

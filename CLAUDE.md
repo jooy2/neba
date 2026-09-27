@@ -211,9 +211,11 @@ Three rules there are load-bearing rather than stylistic. A **`null` is a gap an
 
 #### `internal/drop.ts`
 
-`internal/drop.ts` is an area that takes dropped files, and it is here for `initials.ts`'s reason: two components have one — a FilePicker, and a PromptInput whose shell is a drop target — and both have to get the same three things right. None of them is hard; all three are the kind of thing that is written correctly once and approximately the second time.
+`internal/drop.ts` is an area that takes dropped files, and it is here for `initials.ts`'s reason: two components have one — a FilePicker, and a PromptInput whose shell is a drop target — and both have to get the same four things right. None of them is hard; all four are the kind of thing that is written correctly once and approximately the second time.
 
-**Which of them is a file.** A folder dragged onto a page arrives in `dataTransfer.files` as a `File` with no type and a size of zero, and nothing on the file says so — the only thing that does is `webkitGetAsEntry`, which lives on the _item_, so the two lists have to be walked in step. Accepting one silently is worse than refusing it: it goes into the list looking like a file and the upload that follows sends nothing.
+**Whether the drag carries files at all.** `dataTransfer.types` is all a page may read of a drag before the drop, and a file is the type `Files`. Every other drag — text selected somewhere and dragged, a link — is left untouched, because a PromptInput's shell holds a field, and text dragged into a field is the field's to insert. A zone that answered every drag lit up for the text, cancelled the insertion and reported a drop of no files.
+
+**Which of them is a file.** A folder dragged onto a page arrives in `dataTransfer.files` as a `File` with no type and a size of zero, and nothing on the file says so — the only thing that does is `webkitGetAsEntry`, which lives on the _item_, so the two lists have to be walked in step. Accepting one silently is worse than refusing it: it goes into the list looking like a file and the upload that follows sends nothing. A drop with nothing left once the folders are out is not reported at all, since a call with an empty list reads as a drop that cleared the list.
 
 **The depth count.** `dragenter` and `dragleave` fire for every child the pointer crosses, so a boolean flickers the entire time a file is over a box with anything in it — which is every box worth dropping on.
 

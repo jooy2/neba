@@ -314,11 +314,19 @@ describe('PromptInput', () => {
       expect(onFiles.mock.calls[0][0][0].name).toBe('note.txt');
     });
 
+    /** A drag of one file, as each event of it is dispatched. */
+    const fileDrag = (type: string) =>
+      new DragEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer: transferWith(new File(['hello'], 'note.txt', { type: 'text/plain' }))
+      });
+
     it('is not a drop target at all without a handler', async () => {
       const screen = await render(<PromptInput label="Message" />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
 
-      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      shell.dispatchEvent(fileDrag('dragenter'));
 
       await expect.poll(() => shell.dataset.dropping).toBeUndefined();
     });
@@ -330,17 +338,74 @@ describe('PromptInput', () => {
       const control = screen.getByRole('textbox').element();
       const shell = control.parentElement as HTMLElement;
 
-      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      shell.dispatchEvent(fileDrag('dragenter'));
       await expect.poll(() => shell.dataset.dropping).toBe('true');
 
-      control.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
-      control.dispatchEvent(new DragEvent('dragleave', { bubbles: true, cancelable: true }));
+      control.dispatchEvent(fileDrag('dragenter'));
+      control.dispatchEvent(fileDrag('dragleave'));
 
       await expect.poll(() => shell.dataset.dropping).toBe('true');
 
-      shell.dispatchEvent(new DragEvent('dragleave', { bubbles: true, cancelable: true }));
+      shell.dispatchEvent(fileDrag('dragleave'));
 
       await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+    });
+
+    // Text selected elsewhere and dragged in is the field's to insert. The
+    // zone lit up for it, cancelled the insertion and reported no files.
+    it('leaves a drag of text to the field', async () => {
+      const onFiles = vi.fn();
+      const screen = await render(<PromptInput label="Message" onFiles={onFiles} />);
+      const control = screen.getByRole('textbox').element();
+      const shell = control.parentElement as HTMLElement;
+      const text = new DataTransfer();
+
+      text.setData('text/plain', 'a quoted line');
+
+      const enter = new DragEvent('dragenter', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer: text
+      });
+      const drop = new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: text });
+
+      control.dispatchEvent(enter);
+      control.dispatchEvent(drop);
+
+      expect(enter.defaultPrevented).toBe(false);
+      expect(drop.defaultPrevented).toBe(false);
+      expect(onFiles).not.toHaveBeenCalled();
+      await expect.poll(() => shell.dataset.dropping).toBeUndefined();
+    });
+
+    // A folder is filtered out of a drop, and a drop of nothing else was
+    // still reported, as no files at all.
+    it('reports nothing when only a folder was dropped', async () => {
+      const onFiles = vi.fn();
+      const screen = await render(<PromptInput label="Message" onFiles={onFiles} />);
+      const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
+      const real = Object.getOwnPropertyDescriptor(DataTransferItem.prototype, 'webkitGetAsEntry');
+
+      // A synthetic transfer has no filesystem behind it, so the entry is
+      // stubbed on the prototype. See the FilePicker's folder test.
+      Object.defineProperty(DataTransferItem.prototype, 'webkitGetAsEntry', {
+        configurable: true,
+        value: () => ({ isFile: false, isDirectory: true })
+      });
+
+      try {
+        shell.dispatchEvent(
+          new DragEvent('drop', {
+            bubbles: true,
+            cancelable: true,
+            dataTransfer: transferWith(new File([], 'photos', { type: '' }))
+          })
+        );
+      } finally {
+        if (real) Object.defineProperty(DataTransferItem.prototype, 'webkitGetAsEntry', real);
+      }
+
+      expect(onFiles).not.toHaveBeenCalled();
     });
 
     // Escape cancels a drag, and a drop outside the window ends it somewhere
@@ -349,7 +414,7 @@ describe('PromptInput', () => {
       const screen = await render(<PromptInput label="Message" onFiles={() => {}} />);
       const shell = screen.getByRole('textbox').element().parentElement as HTMLElement;
 
-      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+      shell.dispatchEvent(fileDrag('dragenter'));
       await expect.poll(() => shell.dataset.dropping).toBe('true');
 
       document.dispatchEvent(new DragEvent('dragend', { bubbles: true }));
