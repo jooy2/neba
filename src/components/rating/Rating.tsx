@@ -105,6 +105,15 @@ export interface RatingProps extends Omit<
  */
 const starClasses = 'flex items-center justify-center';
 
+/** `gapClasses` as lengths, for the target that reaches into the gap between two stars. */
+const starGapValues: Record<NebaSize, string> = {
+  xs: '0.25rem',
+  sm: '0.375rem',
+  md: '0.375rem',
+  lg: '0.5rem',
+  xl: '0.625rem'
+};
+
 /**
  * A score out of five, as a row of stars.
  *
@@ -264,13 +273,19 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
                 <label
                   key={score}
                   className={[
-                    'absolute inset-y-0',
+                    // Pressed at a finger's height, and across into the gap
+                    // between two stars. A half star's two targets meet in the
+                    // middle, so those only grow up and down.
+                    'neba-hit-row absolute inset-y-0',
                     disabled ? 'cursor-not-allowed' : 'cursor-pointer'
                   ].join(' ')}
-                  style={{
-                    insetInlineStart: `${(part * 100) / stepsPerStar}%`,
-                    width: `${100 / stepsPerStar}%`
-                  }}
+                  style={
+                    {
+                      insetInlineStart: `${(part * 100) / stepsPerStar}%`,
+                      width: `${100 / stepsPerStar}%`,
+                      '--n-hit-gap': stepsPerStar === 1 ? starGapValues[size] : undefined
+                    } as React.CSSProperties
+                  }
                   onPointerEnter={() => {
                     if (!disabled) {
                       setHovered(score);

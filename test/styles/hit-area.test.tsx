@@ -19,6 +19,7 @@ import {
   Panes,
   Pane,
   Popover,
+  Rating,
   Tour
 } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
@@ -74,6 +75,20 @@ describe('the target under a small control', () => {
 
     expect(box.width).toBeGreaterThanOrEqual(24);
     expect(box.height).toBeGreaterThanOrEqual(24);
+  });
+
+  // A star is 20 pixels at `md` with nothing around it, and the gap between
+  // two stars pressed nothing at all.
+  it('grows a star to a finger’s height and across the gap, but not onto the next', async () => {
+    const screen = await render(<Rating label="Score" />);
+
+    await expect.element(screen.getByRole('radiogroup')).toBeInTheDocument();
+
+    const [first, second] = [...screen.container.querySelectorAll('label')].map(target);
+
+    expect(first.height).toBeGreaterThanOrEqual(24);
+    expect(first.width).toBeGreaterThanOrEqual(24);
+    expect(first.right).toBeLessThanOrEqual(second.left + 0.5);
   });
 
   // Drawn at 1.6em of a sheet's body text, which is about 20 pixels, and the

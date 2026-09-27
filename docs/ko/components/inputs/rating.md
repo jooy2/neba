@@ -27,7 +27,7 @@ import { Rating } from 'neba';
 
 ### count, precision
 
-`count`는 별의 개수이자 만점이고, `precision`은 고를 수 있는 최소 단위입니다. `0.5`면 별 하나가 두 개의 hit area로 나뉘어 반 개씩 고를 수 있습니다.
+`count`는 별의 개수이자 만점이고, `precision`은 고를 수 있는 최소 단위입니다. `0.5`면 별 하나가 두 개의 hit area로 나뉘어 반 개씩 고를 수 있습니다. 반쪽은 손가락에 필요한 24픽셀보다 좁으므로, 터치 화면에서 누르는 Rating이라면 별을 통째로 고르게 두세요.
 
 `precision`은 **고르는** 범위만 정합니다. `value`가 `4.3`이면 어떤 `precision`에서도 별 네 개와 3분의 1로 그려집니다.
 

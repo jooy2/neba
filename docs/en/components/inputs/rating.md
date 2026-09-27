@@ -27,7 +27,7 @@ The shared axes (`size` `color`) are defined in [prop conventions](../../design/
 
 ### count, precision
 
-`count` is how many stars there are and therefore the highest score. `precision` is the smallest step that can be chosen, and at `0.5` each star is split into two hit areas so half stars can be picked.
+`count` is how many stars there are and therefore the highest score. `precision` is the smallest step that can be chosen, and at `0.5` each star is split into two hit areas so half stars can be picked. Each half is narrower than the 24 pixels a finger needs, so keep whole stars where the Rating is pressed on a touch screen.
 
 `precision` bounds what can be **chosen** and nothing else. A `value` of `4.3` is drawn as four stars and a third at every precision.
 
