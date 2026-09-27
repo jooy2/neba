@@ -1602,6 +1602,45 @@ describe('column order', () => {
     await expect.poll(() => name.style.backgroundImage).toBe('');
   });
 
+  // The mark was always on a heading's left edge, and a column carried forward
+  // lands after its target, on the right.
+  it('marks the edge a carried column will land on', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} reorderable />
+    );
+    const cell = (name: string) =>
+      screen.getByRole('columnheader', { name }).element() as HTMLElement;
+    const centreOf = (node: HTMLElement) => {
+      const rect = node.getBoundingClientRect();
+
+      return rect.left + rect.width / 2;
+    };
+    const carry = (from: HTMLElement, over: HTMLElement) => {
+      from.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          pointerId: 1,
+          button: 0,
+          clientX: centreOf(from)
+        })
+      );
+      over.dispatchEvent(
+        new PointerEvent('pointermove', { bubbles: true, pointerId: 1, clientX: centreOf(over) })
+      );
+    };
+    const drop = () =>
+      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+
+    carry(cell('Name'), cell('Score'));
+    await expect.poll(() => cell('Score').className).toContain('shadow-[inset_-2px_0_0');
+    drop();
+    await expect.poll(() => cell('Score').className).not.toContain('shadow-[inset');
+
+    carry(cell('Score'), cell('Name'));
+    await expect.poll(() => cell('Name').className).toContain('shadow-[inset_2px_0_0');
+    drop();
+  });
+
   it('leaves a column the order does not name where it was', async () => {
     // An order that has to list everything is an order a new column vanishes
     // out of.

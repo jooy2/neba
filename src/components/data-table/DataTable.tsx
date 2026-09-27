@@ -557,6 +557,16 @@ const PRESSABLE_IN_CELL =
   'button, a, input, select, textarea, label, [role="button"], [role="checkbox"], [role="switch"], [role="radio"]';
 
 /**
+ * The rule a carried column will land against, on a heading's start or end
+ * edge. A box shadow has no logical form, so the right-to-left half is said
+ * out loud.
+ */
+const dropMarkerClasses = {
+  start: 'shadow-[inset_2px_0_0_var(--n-accent)] rtl:shadow-[inset_-2px_0_0_var(--n-accent)]',
+  end: 'shadow-[inset_-2px_0_0_var(--n-accent)] rtl:shadow-[inset_2px_0_0_var(--n-accent)]'
+} as const;
+
+/**
  * What the table draws in a row that answers a press for itself: the row's
  * tick, and a cell's open editor. A click or a double-click there is theirs,
  * and not a press on the row that `onRowClick` or `onRowActivate` hears. The
@@ -2184,6 +2194,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     );
   };
 
+  /**
+   * Which side of the heading under it a carried column will land on. Carried
+   * forward it goes after its target, and back it goes before — the splice at
+   * the end of the drag does exactly that — so the mark is on that edge.
+   */
+  const dropEdge = (target: string): 'start' | 'end' => {
+    const keys = columns.map((column) => column.key);
+
+    return movingKey !== null && keys.indexOf(movingKey) < keys.indexOf(target) ? 'end' : 'start';
+  };
+
   /* -- Render -------------------------------------------------------------- */
 
   const heading = (column: DataTableColumn<Row>, index: number, rowSpan?: number) => {
@@ -2213,7 +2234,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           'relative font-semibold select-none',
           stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : '',
           canMove ? (movingKey === column.key ? 'cursor-grabbing' : 'cursor-grab') : '',
-          dropKey === column.key ? 'shadow-[inset_2px_0_0_var(--n-accent)]' : ''
+          dropKey === column.key ? dropMarkerClasses[dropEdge(column.key)] : ''
         )}
         style={{
           ...headCellStyle,
