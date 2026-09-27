@@ -146,6 +146,9 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
      * stopped: counting from zero again sent a paused heading back to noise.
      */
     const progress = React.useRef(0);
+    // The run that count belongs to. A new one is a replay, scrambled again from
+    // the first letter rather than resumed.
+    const progressRun = React.useRef(run.run);
 
     // A text of another length starts again from its first letter, as it did
     // before the count was kept.
@@ -159,6 +162,11 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
         progress.current = 0;
 
         return;
+      }
+
+      if (progressRun.current !== run.run) {
+        progressRun.current = run.run;
+        progress.current = 0;
       }
 
       if (paused) {
@@ -204,7 +212,7 @@ export const AnimateScramble = React.forwardRef<HTMLDivElement, AnimateScrambleP
         clearTimeout(settle);
         clearInterval(noise);
       };
-    }, [run.started, paused, reduced, total, settleDelay, tick, delay]);
+    }, [run.started, run.run, paused, reduced, total, settleDelay, tick, delay]);
 
     const pool = characters.length > 0 ? characters : DEFAULT_POOL;
     const shown = graphemes

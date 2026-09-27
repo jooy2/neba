@@ -83,6 +83,34 @@ describe('AnimateScramble', () => {
     await expect.poll(() => shown(screen.getByTestId('s').element())).toBe('NEBA');
   });
 
+  // `play` going up is a caller pressing go again, and the text stayed settled:
+  // the loop was keyed on having started, which it still had.
+  it('scrambles the text again when play goes up', async () => {
+    const step = 60_000;
+    const scramble = (play: number) => (
+      <AnimateScramble
+        text="ABCD"
+        characters="#"
+        trigger="manual"
+        play={play}
+        duration={step * 4}
+        tick={step * 100}
+        data-testid="s"
+      />
+    );
+    const screen = await render(scramble(1));
+    const root = screen.getByTestId('s').element();
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('ABCD');
+
+    await screen.rerender(scramble(2));
+    await expect.poll(() => shown(root)).toBe('####');
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('ABCD');
+  });
+
   /*
    * A minute a letter, and noise that never redraws, because `expect.poll`
    * moves a fake clock on by its own interval each time it retries: with a step

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AnimateCounter, Button, Grid, GridContainer, Statistic } from 'neba';
 
 export default function AnimateCounterFormats() {
-  const [run, setRun] = useState(0);
+  const [run, setRun] = useState(1);
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -10,12 +10,14 @@ export default function AnimateCounterFormats() {
         Count again
       </Button>
 
-      <GridContainer key={run} spacing={3}>
+      <GridContainer spacing={3}>
         <Grid span={{ xs: 12, sm: 4 }}>
           <Statistic
             label="Revenue"
             value={
               <AnimateCounter
+                trigger="manual"
+                play={run}
                 value={48250}
                 locale="en-US"
                 format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
@@ -28,6 +30,8 @@ export default function AnimateCounterFormats() {
             label="Conversion"
             value={
               <AnimateCounter
+                trigger="manual"
+                play={run}
                 value={0.184}
                 format={{ style: 'percent', maximumFractionDigits: 1 }}
               />
@@ -37,7 +41,7 @@ export default function AnimateCounterFormats() {
         <Grid span={{ xs: 12, sm: 4 }}>
           <Statistic
             label="Tickets closed"
-            value={<AnimateCounter value={1943} duration={2000} />}
+            value={<AnimateCounter trigger="manual" play={run} value={1943} duration={2000} />}
           />
         </Grid>
       </GridContainer>

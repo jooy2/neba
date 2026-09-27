@@ -189,6 +189,33 @@ describe('AnimateTyping', () => {
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello');
     });
 
+    // `play` going up is a caller pressing go again, and the text stayed typed:
+    // the loop was keyed on having started, which it still had.
+    it('types the text again when play goes up', async () => {
+      const typing = (play: number) => (
+        <AnimateTyping
+          trigger="manual"
+          play={play}
+          duration={60_000 * 5}
+          caret={false}
+          data-testid="typing"
+        >
+          Hello
+        </AnimateTyping>
+      );
+      const screen = await render(typing(1));
+      const root = screen.getByTestId('typing').element();
+
+      await vi.runAllTimersAsync();
+      await expect.poll(() => typed(root)).toBe('Hello');
+
+      await screen.rerender(typing(2));
+      await expect.poll(() => typed(root)).toBe('');
+
+      await vi.runAllTimersAsync();
+      await expect.poll(() => typed(root)).toBe('Hello');
+    });
+
     /*
      * A pause tears the loop down, and the loop it resumed with started on its
      * first pass, so every pause gave a repeat one pass more than it asked for.

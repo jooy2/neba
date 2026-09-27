@@ -460,6 +460,14 @@ export interface AnimationRun {
   /** Whether the animation has been let go at all, for `data-state`. */
   started: boolean;
   /**
+   * How many times it has been let go. `started` stays `true` from one run to
+   * the next — a `play` that counts up, a second hover on a finite effect — so
+   * a loop written in JavaScript starts over when this changes rather than
+   * when `started` does. The CSS effects need none of it: the rewind below is
+   * keyed on the same number.
+   */
+  run: number;
+  /**
    * Spread onto the element after the caller's props when `trigger` is
    * `hover`, with the caller's handlers already inside; empty otherwise.
    */
@@ -654,6 +662,7 @@ export function useAnimationRun({
     }, []),
     state: started && !paused && !(infinite && offscreen) ? 'running' : 'paused',
     started,
+    run,
     handlers,
     offscreen: infinite && offscreen
   };

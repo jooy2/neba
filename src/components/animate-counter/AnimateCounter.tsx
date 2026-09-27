@@ -138,6 +138,9 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
      */
     const onScreen = React.useRef(from);
     const hasCounted = React.useRef(false);
+    // The run the last count belonged to. A new one is a replay, and counts
+    // from `from` again rather than on from wherever the last one stopped.
+    const countedRun = React.useRef(run.run);
 
     React.useEffect(() => {
       // Waiting shows the first frame, which is `from`. That is the same rule
@@ -159,6 +162,11 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
         setShown(value);
 
         return;
+      }
+
+      if (countedRun.current !== run.run) {
+        countedRun.current = run.run;
+        hasCounted.current = false;
       }
 
       const origin = hasCounted.current ? onScreen.current : from;
@@ -198,7 +206,7 @@ export const AnimateCounter = React.forwardRef<HTMLDivElement, AnimateCounterPro
       frame = requestAnimationFrame(step);
 
       return () => cancelAnimationFrame(frame);
-    }, [run.started, reduced, value, from, duration, delay]);
+    }, [run.started, run.run, reduced, value, from, duration, delay]);
 
     // Held to the decimal places of whichever end has more while it counts. The
     // default format writes up to three, which put `29,851.407` on the screen on

@@ -128,6 +128,9 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
      * effect in a loop with its own output.
      */
     const progress = React.useRef({ count: 0, pass: 1, deleting: false });
+    // The run that progress belongs to. A new one is a replay, typed again from
+    // the start rather than resumed.
+    const progressRun = React.useRef(run.run);
 
     /**
      * `duration` is honoured as the time for the whole string, because a caller
@@ -163,6 +166,11 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
         setShown(0);
 
         return;
+      }
+
+      if (progressRun.current !== run.run) {
+        progressRun.current = run.run;
+        progress.current = { count: 0, pass: 1, deleting: false };
       }
 
       if (paused || run.offscreen) {
@@ -252,6 +260,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
       };
     }, [
       run.started,
+      run.run,
       run.offscreen,
       paused,
       reduced,

@@ -193,6 +193,33 @@ describe('AnimateCounter', () => {
     expect(shown(screen.getByTestId('c').element())).toBe('7');
   });
 
+  // `play` going up is a caller pressing go again, and the count stayed where
+  // it had landed: its loop was keyed on having started, which it still had.
+  it('counts again from the start when play goes up', async () => {
+    const counter = (play: number) => (
+      <AnimateCounter
+        value={50}
+        from={0}
+        trigger="manual"
+        play={play}
+        duration={4000}
+        data-testid="c"
+      />
+    );
+    const screen = await render(counter(1));
+    const root = screen.getByTestId('c').element();
+
+    await vi.advanceTimersByTimeAsync(5000);
+    await expect.poll(() => shown(root)).toBe('50');
+
+    await screen.rerender(counter(2));
+    // Read at once: the count sets its first frame before it asks for the next.
+    expect(shown(root)).toBe('0');
+
+    await vi.advanceTimersByTimeAsync(5000);
+    await expect.poll(() => shown(root)).toBe('50');
+  });
+
   it('waits for play when the trigger is manual', async () => {
     const screen = await render(
       <AnimateCounter value={50} from={0} trigger="manual" duration={4000} data-testid="c" />
