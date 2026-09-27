@@ -2219,6 +2219,17 @@ export function CartesianChart(rawProps: CartesianProps) {
   // line. Drawing the empty state is the honest answer — the alternative is an
   // axis of zeroes with every mark stacked on it.
   const nothing = count === 0 || extent === null || (xScale === 'value' && spread === null);
+  /* A window can land on a stretch with nothing in it — a sensor that was
+     offline for a week — and the plot then draws its empty state. The strip,
+     the table and the file are about all of the data rather than the window,
+     so they stay: the strip above all, since it is the only way back out. */
+  const emptyWindow =
+    windowed &&
+    nothing &&
+    fullValues.some(
+      (row, index) => visibility.visible[index] && row.some((one) => one.value !== null)
+    );
+  const nothingAtAll = nothing && !emptyWindow;
 
   return (
     <ChartSurface
@@ -2252,7 +2263,7 @@ export function CartesianChart(rawProps: CartesianProps) {
         ) : null
       }
       table={
-        nothing ? null : (
+        nothingAtAll ? null : (
           <>
             {table?.(tableId, formatValue) ?? (
               <ChartDataTable
@@ -2285,7 +2296,7 @@ export function CartesianChart(rawProps: CartesianProps) {
         )
       }
     >
-      {exportable && !nothing ? (
+      {exportable && !nothingAtAll ? (
         <ChartExport
           rows={exportRows}
           fileName={exportFileName}
@@ -2336,6 +2347,8 @@ export function CartesianChart(rawProps: CartesianProps) {
               'flex h-full items-center justify-center text-(--neba-muted-fg)',
               metaTextClasses[size]
             )}
+            // Clear of the strip, which is still drawn over the foot of the box.
+            style={emptyWindow ? { paddingBottom: brushBand } : undefined}
           >
             {empty ?? messages.title}
           </div>
@@ -2456,7 +2469,7 @@ export function CartesianChart(rawProps: CartesianProps) {
           control that decides what the chart shows. Laid over the band the
           drawing already reserved at its foot, so the strip costs the box no
           height of its own. */}
-      {brushOptions && !nothing ? (
+      {brushOptions && !nothingAtAll ? (
         <React.Suspense fallback={null}>
           <ChartBrush
             /* The first series that is drawn, and all of it. A strip with

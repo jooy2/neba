@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **A chart's brush stays when its window lands on a stretch with no data.** The plot drew its empty state, and the strip, the hidden table and the export button were drawn only when the plot had something in it — so a window dragged, or started with `defaultRange`, onto the week a sensor was offline took away the one control that could move it back. They follow the whole series now, and only the plot says it is empty.
+
 - **A `DataTable` that opens rows or edits cells without choosing them tells a screen reader which row is active.** Such a table is a `grid` with an active row the arrow keys move, but `aria-activedescendant` was only written when there was a `selectionMode`, so the ring moved and nothing was announced. It now points at the active row in every table the keyboard can move through.
 
 - **An A2UI `Card` or `Button` takes an `elevation`.** The catalog declares it as `0` to `3`, and the adapter built its schema with `z.enum`, which takes strings and refused every one of them — the default `0` included. The processor then threw for the whole `updateComponents` message, so a surface with one card at any elevation drew nothing, and the data model sent after it was lost too. An enum of numbers is a union of literals now.

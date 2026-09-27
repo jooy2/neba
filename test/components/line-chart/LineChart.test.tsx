@@ -847,6 +847,42 @@ describe('LineChart', () => {
       await expect.element(start).toHaveAttribute('aria-valuenow', '5');
     });
 
+    // A window on a stretch with no data drew the empty state and took the
+    // strip away with it, so there was nothing left to move the window with.
+    it('keeps the strip, the table and the button over a window with nothing in it', async () => {
+      const gap = DATA.map((value, index) => (index >= 10 && index < 20 ? null : value));
+      const screen = await render(
+        chart({
+          series: [{ name: 'Signups', data: gap }],
+          brush: { defaultRange: [12, 15] },
+          exportable: true
+        })
+      );
+      const start = screen.getByRole('slider').first();
+
+      await expect.element(start).toHaveAttribute('aria-valuenow', '12');
+      await expect.element(screen.getByRole('button', { name: 'Export CSV' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('table', { name: 'Signups by day' }).element().querySelectorAll('tbody tr')
+      ).toHaveLength(40);
+
+      start.element().dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+
+      await expect.element(start).toHaveAttribute('aria-valuenow', '0');
+      await expect
+        .poll(() =>
+          [
+            ...screen
+              .getByRole('img', { name: 'Signups by day' })
+              .element()
+              .querySelectorAll('text')
+          ]
+            .map((node) => node.textContent)
+            .includes('D0')
+        )
+        .toBe(true);
+    });
+
     // A reader who scrolled the plot to March did not ask for a spreadsheet of
     // March: the window narrows the picture and nothing else.
     it('keeps every point in the table', async () => {
