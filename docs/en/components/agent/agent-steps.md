@@ -79,5 +79,6 @@ Milliseconds, written at the end of the title line. Leave it out and a `running`
 ## Accessibility
 
 - An `<ol>` with `role="list"` spelled out, so Safari keeps the list semantics after Tailwind's reset takes the markers off.
-- Every step's status is read out in words; the marks are `aria-hidden`.
+- Every step's status is written in words, which a screen reader reads when it reaches the step; the marks are `aria-hidden`.
+- A step changing status is not announced on its own. To have it heard as it happens, write it into a live region the app keeps on the page, such as a `role="status"` element.
 - The `running` step carries `aria-current="step"`.

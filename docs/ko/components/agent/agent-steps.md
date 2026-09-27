@@ -79,5 +79,6 @@ import { AgentStep, AgentSteps } from 'neba';
 ## 접근성
 
 - `role="list"`를 명시한 `<ol>`입니다. Tailwind의 reset이 마커를 없앤 뒤에도 Safari가 목록 의미를 유지합니다.
-- 모든 단계의 상태가 단어로 읽힙니다. 표시는 `aria-hidden`입니다.
+- 모든 단계의 상태는 단어로 쓰여 있어서 스크린 리더가 그 단계에 닿으면 읽습니다. 표시는 `aria-hidden`입니다.
+- 단계의 상태가 바뀌어도 저절로 알려지지는 않습니다. 바뀌는 순간을 들려주려면 앱이 페이지에 두는 live region, 예컨대 `role="status"` 요소에 그 내용을 쓰세요.
 - `running`인 단계에는 `aria-current="step"`이 붙습니다.

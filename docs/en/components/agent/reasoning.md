@@ -62,3 +62,4 @@ The panel follows the _edges_ of `streaming` rather than its value either way, s
 - The header is a real button, wired to the panel with `aria-expanded` and `aria-controls` by Base UI.
 - The root carries `aria-busy` while the stream runs.
 - The panel is deliberately **not** a live region. Thinking is long and is revised as it arrives, and a screen reader reading every revision aloud would bury the answer it is on the way to.
+- The thinking ending is not announced either. To have it heard, write it into a live region the app keeps on the page, such as a `role="status"` element.

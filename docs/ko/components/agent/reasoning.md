@@ -62,3 +62,4 @@ import { Reasoning } from 'neba';
 - 헤더는 진짜 버튼이고, Base UI가 `aria-expanded`와 `aria-controls`로 패널과 연결합니다.
 - 스트림이 도는 동안 루트에 `aria-busy`가 붙습니다.
 - 패널은 일부러 live region이 **아닙니다**. 사고는 길고 도착하면서 계속 고쳐지므로, 스크린 리더가 그 수정을 전부 읽으면 정작 다다르려던 답이 묻힙니다.
+- 사고가 끝나는 것도 알려지지 않습니다. 이를 들려주려면 앱이 페이지에 두는 live region, 예컨대 `role="status"` 요소에 그 내용을 쓰세요.

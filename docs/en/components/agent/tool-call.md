@@ -82,5 +82,6 @@ The sheet takes no tint from `color`, so the arguments and the result are drawn 
 ## Accessibility
 
 - The header is a real button, wired to the panel with `aria-expanded` and `aria-controls` by Base UI.
-- The status is announced in words. The mark is `aria-hidden`, because a shape is not read.
+- The status is written in words, which a screen reader reads when it reaches the row. The mark is `aria-hidden`, because a shape is not read.
+- A change of status is not announced on its own. To have a failed call heard as it happens, write it into a live region the app keeps on the page, such as a `role="status"` element.
 - The root carries `data-status`, for styling and for a test that needs to assert the state.

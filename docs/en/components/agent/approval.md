@@ -83,3 +83,4 @@ A string is drawn as preformatted text with its own line breaks kept, which is w
 - The card is a `role="group"` named by its heading, so a screen reader's list of elements says which permission is being asked about.
 - Each answer is a real [Button](../inputs/button) and reachable in the tab order.
 - The risk level is a word, not only a colour.
+- An Approval appearing is not announced on its own. To have the question heard, write it into a live region the app keeps on the page, or move the focus to the card.
