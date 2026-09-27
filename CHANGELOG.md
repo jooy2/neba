@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A chart's CSV leaves an element `xAxis.label` out of its header.** The label heads the first column of the file, and one written as an element went in as the element's JSON — `{"type":"em","key":null,…}` in the top-left cell. Only a string names the column now, as a `ScatterChart`, a `TimelineChart` and a `DataTable` already had it; anything else leaves the cell empty.
+
 - **A chart brush draws a series of any length.** The strip found the lowest and highest values of the series it outlines by spreading them into `Math.min` and `Math.max`, which passes every value as an argument, and past somewhere between a hundred and two hundred thousand of them the browser throws — so the chart failed to render on exactly the long series a brush is for. It walks the series instead.
 
 - **A brushed chart keeps its strip clear of an axis given a `thickness`.** The strip is laid over a band the chart reserves at its foot, and a bottom axis' `thickness` replaced that whole band rather than the axis' own share of it, so the strip was drawn over the axis labels. `thickness` is the axis' room and nothing else, as its description says, and the strip's band is added under it.

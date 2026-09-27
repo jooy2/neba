@@ -1997,7 +1997,12 @@ export function CartesianChart(rawProps: CartesianProps) {
      read out sideways — the same numbers, so a reader who exports and a reader
      who is read the table cannot end up with two different files. */
   const exportRows = () => [
-    [categoryAxis?.label ?? '', ...series.map((one, index) => one.name ?? `${index + 1}`)],
+    [
+      // An axis name may be an element, which a spreadsheet cell cannot hold,
+      // so only a string one heads the column.
+      typeof categoryAxis?.label === 'string' ? categoryAxis.label : '',
+      ...series.map((one, index) => one.name ?? `${index + 1}`)
+    ],
     ...fullLabels.map((category, index) => [
       category,
       ...fullValues.map((row) => row[index]?.value ?? null)

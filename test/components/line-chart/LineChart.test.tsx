@@ -1344,6 +1344,28 @@ describe('LineChart', () => {
       expect(lines[4]).toBe('Apr,40,35');
     });
 
+    // An element went into the file as its JSON, or threw on the way there.
+    it('heads the column with an axis name only when it is text', async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          exportable
+          onExport={onExport}
+          xAxis={{ label: <em>Month</em> }}
+          series={[{ name: 'Web', data: [10, 20, 30, 40] }]}
+        />
+      );
+
+      await screen.getByRole('button', { name: 'Export CSV' }).click();
+      await expect.poll(() => onExport.mock.calls.length).toBe(1);
+
+      const lines = (onExport.mock.calls[0][0] as string).replace('\uFEFF', '').split('\r\n');
+
+      expect(lines[0]).toBe(',Web');
+    });
+
     it('leaves a gap empty rather than writing it as a zero', async () => {
       const onExport = vi.fn();
       const screen = await render(
