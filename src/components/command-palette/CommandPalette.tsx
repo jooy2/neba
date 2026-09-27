@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Autocomplete } from '@base-ui/react/autocomplete';
 import { Dialog as BaseUIDialog } from '@base-ui/react/dialog';
 import { Shortcut } from '../shortcut/Shortcut.js';
-import { matchesShortcut } from '../../internal/keys.js';
+import { useShortcut } from '../../hooks/useShortcut.js';
 import { commandMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
 import {
@@ -251,24 +251,13 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
     [open, onOpenChange]
   );
 
-  React.useEffect(() => {
-    if (shortcut === false) return undefined;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!matchesShortcut(event, shortcut)) return;
-
-      // The browser's own Mod+K is a search bar in some of them, and the page
-      // asked for this key.
-      event.preventDefault();
-      setOpen(true);
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-
-    return () => window.removeEventListener('keydown', onKeyDown);
-    // `setOpen` is memoised on the pair that decides what it does, so this
-    // rebinds when the palette opens and closes and at no other time.
-  }, [shortcut, setOpen]);
+  // Bound through the same hook an application binds its own keys with, which
+  // holds the handler in a ref: a controlled caller passing an inline
+  // `onOpenChange` no longer rebinds the window listener on every render. It
+  // fires while typing too, since a modified key is meant to work everywhere,
+  // and it calls `preventDefault` — the browser's own Mod+K is a search bar in
+  // some of them, and the page asked for this key.
+  useShortcut(shortcut, () => setOpen(true), { ignoreWhileTyping: false });
 
   // Folded once per list rather than once per comparison — `searchText`
   // normalizes, and doing that inside the filter puts a `normalize` on every

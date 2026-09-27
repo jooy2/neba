@@ -206,6 +206,35 @@ describe('CommandPalette', () => {
   });
 
   describe('the shortcut', () => {
+    // An inline `onOpenChange` was a new `setOpen`, and so a new window
+    // listener, on every render of the component around the palette.
+    it('binds its key once however often the page around it renders', async () => {
+      const added = vi.spyOn(window, 'addEventListener');
+
+      function Page({ tick }: { tick: number }) {
+        return (
+          <>
+            <span>{tick}</span>
+            <CommandPalette items={ITEMS} open={false} onOpenChange={() => {}} />
+          </>
+        );
+      }
+
+      try {
+        const screen = await render(<Page tick={0} />);
+        const keydowns = () => added.mock.calls.filter(([type]) => type === 'keydown').length;
+        const bound = keydowns();
+
+        for (const tick of [1, 2, 3]) {
+          await screen.rerender(<Page tick={tick} />);
+        }
+
+        expect(keydowns()).toBe(bound);
+      } finally {
+        added.mockRestore();
+      }
+    });
+
     it('opens on the keystroke it was given', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+P" />);
 

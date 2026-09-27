@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A controlled `CommandPalette` binds its key once.** Its opener was a window listener of its own that was taken off and put back whenever `onOpenChange` changed, and an `onOpenChange` written inline changes on every render of the page around it. It is bound through `useShortcut` now, which is what that hook's documentation already said, and which keeps the handler in a ref.
+
 - **A chart's marks fade and grow under the crosshair, as they were meant to.** The one `transition` every mark shares was written as three strings joined at run time, and Tailwind only generates a class it can read whole in the source — so the class was never in the stylesheet, and every mark snapped: the series a legend dims, the datum under the crosshair, the pixel it grows by. A `PieChart` and a `HeatmapChart`, which had moved before the marks were given one shorthand, snapped along with the rest. It is one literal now.
 
 - **A chosen today is still marked as today.** A day cell dropped `aria-current="date"` and its dot as soon as it was chosen, so a screen reader stopped saying which day was today exactly when it was the one picked. It keeps both now and is drawn as chosen, with the dot turned white on the fill, as the page and the month grid already had it.
