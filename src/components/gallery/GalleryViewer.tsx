@@ -6,7 +6,7 @@ import { IconButton } from '../icon-button/IconButton.js';
 import { Image } from '../image/Image.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import { fillMessage } from '../../internal/i18n.js';
-import { cx, metaTextClasses } from '../../internal/styles.js';
+import { cx, hasContent, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
 import { isSideways, shownRatioOf } from './Gallery.js';
 import type { GalleryMessages } from '../../internal/i18n.js';
 import type { NebaImageProtection, NebaImageWatermark } from '../image/Image.js';
@@ -58,6 +58,8 @@ export function GalleryViewer({
    * the dialog allows and no taller than the unturned picture may be; without
    * one it spans the dialog and `contain` keeps the whole picture inside.
    */
+  /** What the picture is called: the dialog's own title, said again as it changes. */
+  const name = current?.title ?? current?.alt;
   const sideways = current !== undefined && isSideways(current);
   const turnedRatio = sideways && current.ratio !== undefined ? shownRatioOf(current, 1) : null;
 
@@ -177,13 +179,18 @@ export function GalleryViewer({
           <p
             className={cx('m-0 text-center text-(--neba-muted-fg)', metaTextClasses.md)}
             // Announced when it changes, so an arrow key says where it landed
-            // to a reader who cannot see the picture it landed on.
+            // to a reader who cannot see the picture it landed on — and what
+            // the picture is, which the focus left on the arrow never reads.
             aria-live="polite"
+            aria-atomic="true"
           >
-            {fillMessage(messages.item, {
-              index: String((index ?? 0) + 1),
-              total: String(items.length)
-            })}
+            {hasContent(name) ? <span className={srOnlyClasses}>{name}, </span> : null}
+            <span>
+              {fillMessage(messages.item, {
+                index: String((index ?? 0) + 1),
+                total: String(items.length)
+              })}
+            </span>
           </p>
         ) : null}
       </div>
