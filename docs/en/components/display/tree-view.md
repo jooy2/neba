@@ -60,9 +60,9 @@ The sheet is never filled with colour. Use `text` inside a [Card](../surfaces/ca
 
 ### Selecting rows
 
-Pressing a row chooses it, and opens it if it has children. `multiple` lets more than one row be chosen at a time; without it, choosing a row replaces whatever was chosen before.
+Pressing a row chooses it and opens its branch, or shuts the branch if it is already open. `multiple` lets more than one row be chosen at a time; without it, choosing a row replaces whatever was chosen before.
 
-The disclosure arrow is a target of its own: it opens the branch without choosing the row. A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch.
+The disclosure arrow is a target of its own: it opens and shuts the branch without choosing the row. A row with `selectable={false}` is never chosen, and pressing it only opens and shuts its branch.
 
 <Demo src="tree-view/selection">
 
@@ -97,7 +97,7 @@ A shut branch is not in the DOM, so a tree that fetches its children the first t
 ## Accessibility
 
 - The tree is a `tree`, every row is a `treeitem`, and a branch's children are a `group`.
-- The whole tree is one tab stop. Once inside, ArrowUp and ArrowDown walk the visible rows, ArrowRight opens a shut branch and steps into an open one, ArrowLeft shuts a branch and climbs out of a leaf, Home and End jump to the ends, and Enter chooses the focused row. The arrows never change the selection.
+- The whole tree is one tab stop. Once inside, ArrowUp and ArrowDown walk the visible rows, ArrowRight opens a shut branch and steps into an open one, ArrowLeft shuts a branch and climbs out of a leaf, Home and End jump to the ends. Enter and Space press the focused row, which chooses it and opens or shuts its branch, and Enter on a row that is a link follows the link as well. The arrows never change the selection.
 - ArrowLeft and ArrowRight swap under RTL, so the forward arrow always means "further in".
 - Pass `label` so the tree has a name; without one, a screen reader announces an unnamed tree.
 - `multiple` sets `aria-multiselectable` on the tree.
