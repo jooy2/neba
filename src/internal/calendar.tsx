@@ -936,7 +936,7 @@ function DayGrid({
                           ? 'end'
                           : 'middle'
                 }
-                current={now !== null && isSameDay(date, now) && !isChosen}
+                current={now !== null && isSameDay(date, now)}
                 muted={outside}
                 disabled={isDisabled(date)}
                 focused={isSameDay(date, focusedDate)}

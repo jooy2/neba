@@ -108,6 +108,17 @@ describe('Calendar', () => {
       .toBe(1);
   });
 
+  // A chosen today lost the attribute and the dot, while the page and the
+  // cell's own comment both say it keeps them.
+  it('still marks today when today is the chosen day', async () => {
+    const today = new Date();
+    const screen = await render(<Calendar locale={LOCALE} value={today} />);
+
+    await expect
+      .poll(() => screen.container.querySelector('[aria-current="date"]'))
+      .toHaveAttribute('aria-selected', 'true');
+  });
+
   describe('header', () => {
     it('names the month and year buttons by what they show', async () => {
       const screen = await render(<Calendar locale={LOCALE} defaultMonth={JULY} />);
