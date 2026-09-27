@@ -6,7 +6,7 @@ Work that has been researched but not started. Each section carries enough of wh
 
 Twelve libraries were surveyed in September 2026 for what they ship and this library does not: Vercel AI Elements (50 components), Ant Design X, assistant-ui, prompt-kit, beUI, shadcn.io/ai, Kibo UI, ElevenLabs UI, LiveKit Agents UI, CopilotKit, LlamaIndex chat-ui, and OpenAI ChatKit widgets. Links are under [Sources](#sources).
 
-**Nine of the ten first-tier components have shipped** as the `agent` group: `ToolCall`, `Approval`, `Reasoning`, `AgentSteps`, `ContextWindow` (named for the window rather than `Context`, which beside `ContextMenu` and React's own would have been a word this library cannot afford to spend), `Sources`, `InlineCitation`, `StreamingText` and `PromptInput`. What is left of that tier is the two below.
+**Nine of the eleven first-tier components have shipped** as the `agent` group: `ToolCall`, `Approval`, `Reasoning`, `AgentSteps`, `ContextWindow` (named for the window rather than `Context`, which beside `ContextMenu` and React's own would have been a word this library cannot afford to spend), `Sources`, `InlineCitation`, `StreamingText` and `PromptInput`. What is left of that tier is the two below.
 
 ### First tier, what is left
 
