@@ -41,7 +41,11 @@ jobs:
           node-version: '26'
           cache: npm
           cache-dependency-path: '**/package-lock.json'
-      - run: npm ci
+      # Without the scripts: `npm ci` runs `prepare`, which is the build, and
+      # the build starts with `prettier --write` — so the formatting check below
+      # read a tree that had just been formatted and could never fail. Nothing
+      # in this job reads `dist/`.
+      - run: npm ci --ignore-scripts
       - name: Lint
         run: npm run lint
       - name: Check formatting

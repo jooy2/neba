@@ -277,7 +277,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **134** Carousel: autoplay under reduced motion (no start, no rotation control) and while `document.hidden` (no advance).
 - [x] **135** Pointer light: a Tab writes `--n-mx` on `pointermove`, a disabled Tab has no `neba-glow`, and only an interactive Pill writes the slots. `test/internal/glow.test.tsx`.
 - [ ] **136** A2UI: one table-driven test that every enum value of every catalog prop parses, that every catalog prop is read in `components.tsx`, that every function's required arguments pass the registered implementation, and that a Statistic with `previousValue` draws its delta (with 126). The first two are done: the enum case was already there, and the prop case reads each view's source. The function case waits for 124, since four functions fail it today (see there), and the Statistic case for 126.
-- [ ] **137** CI: "Check formatting" can never fail, because `npm ci` runs `prepare`, which builds and runs `prettier --write` first. `.github/workflows/run-test.yml:44-48`. Fix: `npm ci --ignore-scripts` in the lint job.
+- [x] **137** CI: "Check formatting" can never fail, because `npm ci` runs `prepare`, which builds and runs `prettier --write` first. `.github/workflows/run-test.yml:44-48`. Fix: `npm ci --ignore-scripts` in the lint job. Lint and all three type-checks were run locally with `dist/` moved away first, and pass.
 - [ ] **138** CI: `npm run lint` does not fail on warnings, and the push filter leaves out `eslint.config.ts`, `postcss.config.mjs`, `.prettierrc`, `.editorconfig` and `docs/**`. `package.json:23`, `run-test.yml:6-18`. Fix: `--max-warnings 0`, and add the paths.
 
 ## 6. Docs
