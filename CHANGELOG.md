@@ -26,6 +26,8 @@
 
 ### Changed
 
+- **A `DataTable` row's tick is named after its row and is out of the tab order.** Every tick was a tab stop named "Select row", so a table of a hundred rows was a hundred stops a keyboard crossed for a choice <kbd>Space</kbd> already makes on the active row, and a hundred controls a screen reader could not tell apart. Each is `tabIndex={-1}` now and is named "Select row" followed by its row's first cell. A test that found the ticks by the exact name "Select row" should match the start of the name.
+
 - **A `Chip`'s delete button is named after its label.** Every one was named "Remove", so a row of chips was a row of buttons a screen reader could not tell apart. A chip whose label is a string names it "Remove Draft", in the `locale`'s words (`action.removeLabel`, in every registered language); one whose label is a node keeps "Remove", and `deleteLabel` still wins over both.
 
 - **An `Avatar`'s picture is in the markup from the first render.** Base UI fetched it with a detached probe after hydration and mounted the `<img>` only once it had loaded, so the picture was not in the server HTML and a `loading="lazy"` in `imageProps` did nothing. The `<img>` is there from the start now, laid over the stand-in and kept out of sight and out of the accessibility tree while it carries `data-loading` or `data-error`, and it fades up once it has loaded.

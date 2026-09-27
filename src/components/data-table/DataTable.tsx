@@ -2168,13 +2168,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       >
         {showTicks ? tickCell(entry) : null}
 
-        {columns.map((column) => {
+        {columns.map((column, columnIndex) => {
           const editable = canEdit(column, entry.row);
           const open = editing?.key === entry.key && editing.column === column.key;
 
           return (
             <td
               key={column.key}
+              id={showTicks && columnIndex === 0 ? firstCellId(entry) : undefined}
               role={navigable ? 'gridcell' : undefined}
               style={{
                 ...cellStyle,
@@ -2527,6 +2528,19 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     <span className="flex items-center justify-center">{control}</span>
   );
 
+  /*
+   * A row's tick is out of the tab order and named after its row. Every tick a
+   * tab stop was a table of a hundred rows a keyboard had to cross a hundred
+   * times, for a choice Space already makes on the active row; and every one
+   * named "Select row" was a hundred controls a screen reader could not tell
+   * apart. The name is the words and then the row's first cell, by reference,
+   * so a cell drawn by `render` names the row as well as a plain one does. The
+   * ids are built from where the row sat in `items` rather than from its key,
+   * which may hold a space, and a space splits a list of ids.
+   */
+  const tickNameId = `${reactId}-tick`;
+  const firstCellId = (entry: RowEntry<Row>) => `${reactId}-first-${entry.origin}`;
+
   const tickCell = (entry: RowEntry<Row>) => (
     <td
       data-neba-tick=""
@@ -2538,7 +2552,9 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           size={size}
           color={color}
           checked={selectedKeys.has(entry.key)}
-          aria-label={messages.selectRow}
+          tabIndex={-1}
+          aria-labelledby={columns.length > 0 ? `${tickNameId} ${firstCellId(entry)}` : undefined}
+          aria-label={columns.length > 0 ? undefined : messages.selectRow}
           onCheckedChange={() => {
             if (multiple) {
               toggleKey(entry.key);
@@ -2945,6 +2961,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       {!showFooter && virtualized ? (
         <span className={srOnlyClasses} aria-live="polite">
           {rangeText}
+        </span>
+      ) : null}
+
+      {/* The first half of every row tick's name. Hidden and still read: a
+          name taken by reference is read whatever the reference looks like. */}
+      {showTicks ? (
+        <span id={tickNameId} hidden>
+          {messages.selectRow}
         </span>
       ) : null}
     </Box>

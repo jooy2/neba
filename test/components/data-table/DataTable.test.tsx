@@ -1171,7 +1171,10 @@ describe('DataTable', () => {
       const all = screen.getByRole('checkbox', { name: 'Select all rows' }).element();
 
       await pressTick(
-        screen.getByRole('checkbox', { name: 'Select row' }).first().element() as HTMLElement
+        screen
+          .getByRole('checkbox', { name: /^Select row/ })
+          .first()
+          .element() as HTMLElement
       );
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(1);
 
@@ -1184,6 +1187,28 @@ describe('DataTable', () => {
 
       await pressTick(all as HTMLElement);
       expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(0);
+    });
+
+    // Every tick was a tab stop named "Select row": a hundred rows were a
+    // hundred stops a keyboard crossed for a choice Space already makes, and a
+    // hundred controls a screen reader could not tell apart.
+    it('names each row tick after its row and keeps it out of the tab order', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          checkboxes
+        />
+      );
+      const ada = screen.getByRole('checkbox', { name: 'Select row Ada' });
+
+      await expect.element(ada).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('checkbox', { name: 'Select row Bo' }))
+        .toBeInTheDocument();
+      expect(ada.element()).toHaveAttribute('tabindex', '-1');
     });
 
     it('adds to the selection when a tick is pressed with a pointer', async () => {
@@ -1208,7 +1233,7 @@ describe('DataTable', () => {
         (element as HTMLElement).click();
         await new Promise((resolve) => setTimeout(resolve, 50));
       };
-      const ticks = screen.getByRole('checkbox', { name: 'Select row' });
+      const ticks = screen.getByRole('checkbox', { name: /^Select row/ });
 
       await pointerTick(ticks.nth(0).element());
       await pointerTick(ticks.nth(2).element());
@@ -1236,7 +1261,10 @@ describe('DataTable', () => {
       );
       // Dispatched rather than clicked: with no stylesheet the tick has no box
       // for a real pointer to land on.
-      const tick = screen.getByRole('checkbox', { name: 'Select row' }).first().element();
+      const tick = screen
+        .getByRole('checkbox', { name: /^Select row/ })
+        .first()
+        .element();
 
       tick.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
       (tick as HTMLElement).click();
@@ -1268,7 +1296,10 @@ describe('DataTable', () => {
         new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'touch' })
       );
       // No click: the finger went on to scroll. Then a press on its tick.
-      const tick = screen.getByRole('checkbox', { name: 'Select row' }).nth(1).element();
+      const tick = screen
+        .getByRole('checkbox', { name: /^Select row/ })
+        .nth(1)
+        .element();
 
       tick.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
       (tick as HTMLElement).click();

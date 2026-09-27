@@ -221,6 +221,7 @@ The file leads with a byte-order mark, so Excel reads its non-ASCII text correct
 ## Accessibility
 
 - With a `selectionMode` the table is a `grid` with one tab stop, and `aria-activedescendant` points at the active row. Rows carry `aria-selected`.
+- With `checkboxes`, a row's tick is out of the tab order, since <kbd>Space</kbd> already chooses the active row, and it is named after the row: "Select row" and then the row's first cell.
 - Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row that `aria-activedescendant` points at, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
