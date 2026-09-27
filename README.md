@@ -140,7 +140,7 @@ import { NebaProvider } from 'neba';
 </NebaProvider>;
 ```
 
-Optional, and every component works without it. It fills in `size`, `density`, `variant` and `locale` where a call site left them out (the call site always wins) owns the colour scheme (`useColorScheme()`, plus a `colorSchemeScript()` for the first-paint flash), and sets the writing direction. `color` and `elevation` are deliberately not defaultable; [the guide](https://neba.cdget.com/guide/provider) says why.
+Optional, and every component works without it. It fills in `size`, `density`, `variant`, `locale` and `labelPlacement` where a call site left them out (the call site always wins), owns the colour scheme (`useColorScheme()`, plus a `colorSchemeScript()` for the first-paint flash), and sets the writing direction. `color` and `elevation` are deliberately not defaultable; [the guide](https://neba.cdget.com/guide/provider) says why.
 
 ### Hooks
 
