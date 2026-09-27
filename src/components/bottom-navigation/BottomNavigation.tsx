@@ -302,7 +302,9 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
     const named = bar.labels === 'all' || (bar.labels === 'selected' && selected);
 
     const classNames = cx(
-      'flex min-w-0 flex-col items-center justify-center py-1.5',
+      // `neba-nav-item` is the hook the forced-colours block paints the
+      // current destination through.
+      'neba-nav-item flex min-w-0 flex-col items-center justify-center py-1.5',
       // A bar pinned to an edge divides its whole width between its
       // destinations; a lozenge hovering over the page is only as wide as what
       // is in it, so the same item is sized by its own content there and cut as

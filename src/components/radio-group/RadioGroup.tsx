@@ -171,7 +171,9 @@ const disabledDotClasses = [
  * running, and these two are on the element itself.
  */
 const indicatorClasses = [
-  'rounded-full bg-current',
+  // `neba-radio-dot` is the hook the forced-colours block paints the dot
+  // through; a forced palette would otherwise repaint it the ring's colour.
+  'neba-radio-dot rounded-full bg-current',
   '[transition:width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)]',
   'data-[starting-style]:size-0 data-[ending-style]:size-0'
 ].join(' ');

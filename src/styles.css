@@ -1485,6 +1485,22 @@
     .neba-switch.neba-switch[data-checked] .neba-switch-thumb {
       background-color: HighlightText;
     }
+
+    /* The chosen option of a set, which said so only in a fill. A radio's dot
+       is mounted only while its option is chosen. */
+    .neba-radio-dot.neba-radio-dot {
+      forced-color-adjust: none;
+      background-color: Highlight;
+    }
+
+    .neba-segment.neba-segment[data-checked]:not([data-disabled]),
+    .neba-toggle.neba-toggle[data-pressed]:not([data-disabled]),
+    .neba-calendar-cell.neba-calendar-cell[aria-selected='true']:not([aria-disabled]),
+    .neba-nav-item.neba-nav-item[aria-current='page'] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+      color: HighlightText;
+    }
   }
 }
 

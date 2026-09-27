@@ -165,7 +165,8 @@ const cellRadiusEndClasses: Record<NebaSize, string> = {
  * cell in a gapless grid is a ring drawn on the neighbours.
  */
 const cellBaseClasses = [
-  'relative flex select-none items-center justify-center tabular-nums',
+  // The hook the forced-colours block paints a chosen cell through.
+  'neba-calendar-cell relative flex select-none items-center justify-center tabular-nums',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
   pressTransitionClasses,

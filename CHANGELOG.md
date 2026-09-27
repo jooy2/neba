@@ -32,6 +32,8 @@
 
 ### Fixed
 
+- **The chosen option of a set is marked in a forced palette.** A `Radio`'s dot, the chosen `Segment`, a pressed `Toggle`, a chosen day or time in the pickers and the current `BottomNavigationItem` said so only through a fill, which a forced palette such as Windows High Contrast repaints the colour of everything around it. Each is painted in the system `Highlight` there now, as a checked `Switch` already was.
+
 - **An `InlineCitation` with no link is named and reachable.** Without a usable `href` the mark was an `<a>` with no `href`, which takes no focus and whose `aria-label` a screen reader may not read, so its preview was out of the keyboard's reach. It is a `<span>` now that writes its name as visually hidden text and takes the focus when it has a preview to open. Its ref is typed `HTMLElement`.
 
 - **A `ScrollZone` drag, a `DataTable` column resize and a `Mockup` measure in layout pixels inside a scaled ancestor.** A `ScrollZone` wrote the pointer's travel to its scroll position as it came, so inside a `Mockup`'s screen or a zoom entrance the cards ran ahead of the hand. A `DataTable` wrote down every column's drawn width on the first press of a resize handle, which shrank them all to the ancestor's scale, and then added the pointer's travel as it came. A `Mockup` took its scale from its box as drawn, so one inside another scaled ancestor was scaled twice. Each reads the layout box now, and a drag divides the pointer's travel by the scale, as a `Sidebar` does.

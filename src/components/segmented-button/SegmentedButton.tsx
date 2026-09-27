@@ -186,7 +186,10 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
       className={cx(
         // `z-10` and a stacking context of its own: the tile is painted behind
         // the segments, and without this it would cover the label it is under.
-        'relative z-10 inline-flex shrink-0 items-center justify-center select-none',
+        // `neba-segment` is the hook the forced-colours block paints the chosen
+        // one through: the tile under it is a fill, which a forced palette
+        // repaints the colour of the trough.
+        'neba-segment relative z-10 inline-flex shrink-0 items-center justify-center select-none',
         'whitespace-nowrap font-medium',
         '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
         controlHeightClasses[size],

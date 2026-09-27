@@ -8,7 +8,20 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, ProgressLinear, Slider, Switch } from 'neba';
+import {
+  BottomNavigation,
+  BottomNavigationItem,
+  Button,
+  Calendar,
+  ProgressLinear,
+  Radio,
+  RadioGroup,
+  Segment,
+  SegmentedButton,
+  Slider,
+  Switch,
+  Toggle
+} from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -74,5 +87,54 @@ describe('forced colours', () => {
         part!.outerHTML.slice(0, 80)
       ).toBe(true);
     }
+  });
+
+  // Each said which option was chosen only through a fill, which a forced
+  // palette repaints the colour of everything around it.
+  it('marks the chosen option of a set in the system highlight', async () => {
+    const rules = forcedRules();
+    const screen = await render(
+      <>
+        <RadioGroup aria-label="Plan" defaultValue="pro">
+          <Radio value="free" label="Free" />
+          <Radio value="pro" label="Pro" />
+        </RadioGroup>
+        <SegmentedButton aria-label="View" defaultValue="grid">
+          <Segment value="list">List</Segment>
+          <Segment value="grid">Grid</Segment>
+        </SegmentedButton>
+        <Toggle defaultPressed>Bold</Toggle>
+        <Calendar defaultValue={new Date(2026, 8, 14)} defaultMonth={new Date(2026, 8, 1)} />
+        <BottomNavigation label="Main" defaultValue="home">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </BottomNavigation>
+      </>
+    );
+    const highlighted = (element: Element) =>
+      rules.some(
+        (rule) =>
+          element.matches(rule.selectorText) &&
+          rule.style.getPropertyValue('background-color') === 'highlight'
+      );
+
+    await expect.element(screen.getByRole('radio', { name: 'Pro' })).toBeInTheDocument();
+
+    const parts = [
+      screen.container.querySelector('.neba-radio-dot'),
+      screen.getByRole('radio', { name: 'Grid' }).element(),
+      screen.getByRole('button', { name: 'Bold' }).element(),
+      screen.container.querySelector('[role="gridcell"][aria-selected="true"]'),
+      screen.getByRole('button', { name: 'Home' }).element()
+    ];
+
+    for (const part of parts) {
+      expect(part, 'a chosen part').not.toBeNull();
+      expect(highlighted(part!), part!.outerHTML.slice(0, 80)).toBe(true);
+    }
+
+    // And only the chosen one.
+    expect(highlighted(screen.getByRole('radio', { name: 'List' }).element())).toBe(false);
+    expect(highlighted(screen.getByRole('button', { name: 'Search' }).element())).toBe(false);
   });
 });

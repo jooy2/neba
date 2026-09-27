@@ -83,7 +83,9 @@ const iconOnlyClasses: Record<NebaSize, string> = {
 const baseClasses = [
   // No cursor here: a disabled toggle takes `cursor-not-allowed`, and beside a
   // `cursor-pointer` the two would be decided by stylesheet order.
-  'relative inline-flex shrink-0 select-none items-center justify-center',
+  // `neba-toggle` is the hook the forced-colours block paints a pressed one
+  // through.
+  'neba-toggle relative inline-flex shrink-0 select-none items-center justify-center',
   'whitespace-nowrap align-middle font-medium leading-none',
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
   transitionClasses,
