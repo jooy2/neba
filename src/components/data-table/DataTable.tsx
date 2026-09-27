@@ -22,7 +22,7 @@ import {
   virtualWindow,
   type SortEntry
 } from '../../internal/data-table.js';
-import { beginPointerDrag } from '../../internal/drag.js';
+import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { dateFormatter } from '../../internal/format.js';
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
@@ -1352,6 +1352,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * the first `pointerdown` reads what the browser has actually laid out and
    * writes all of it down; from then on every column is explicit and a drag
    * moves exactly one boundary.
+   *
+   * What is written down is each cell's layout width, and the pointer's travel
+   * is divided by the scale the table is drawn at: inside a scaled ancestor —
+   * a Mockup's screen, a zoom entrance — the drawn widths are a fraction of the
+   * ones a column is set to, so the first press shrank every column to that
+   * fraction and the boundary then fell behind the pointer.
    */
   const startResize = (key: string, event: React.PointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
@@ -1364,10 +1370,12 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       const cell = headRefs.current.get(column.key);
 
       if (cell && frozen[column.key] === undefined) {
-        frozen[column.key] = Math.round(cell.getBoundingClientRect().width);
+        frozen[column.key] = cell.offsetWidth;
       }
     }
 
+    const pulled = headRefs.current.get(key);
+    const scale = pulled ? drawnScale(pulled).x : 1;
     const rtl = getComputedStyle(handle).direction === 'rtl';
     const startX = event.clientX;
     const startWidth = frozen[key] ?? defaultColumnWidth;
@@ -1377,7 +1385,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       target: handle,
       pointerId: event.pointerId,
       onMove: (moveEvent) => {
-        const delta = (moveEvent.clientX - startX) * (rtl ? -1 : 1);
+        const delta = ((moveEvent.clientX - startX) / scale) * (rtl ? -1 : 1);
 
         setWidths({ ...frozen, [key]: Math.max(floor, Math.round(startWidth + delta)) });
       },

@@ -257,16 +257,21 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
    * It reads both axes because `height` on its own is a legitimate way to size a
    * mockup, and because a caller who pins both would otherwise get a device
    * overflowing whichever one it was not scaled against.
+   *
+   * The box is read as laid out rather than as drawn. The device is scaled
+   * inside the box's own coordinates, so inside a scaled ancestor — a zoom
+   * entrance, another Mockup — the drawn size would scale it a second time.
    */
   useMeasureEffect(() => {
     const box = boxRef.current;
     if (!box) return;
 
     const measure = () => {
-      const rect = box.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
+      const width = box.offsetWidth;
+      const height = box.offsetHeight;
+      if (width <= 0 || height <= 0) return;
 
-      const next = Math.min(rect.width / frame.width, rect.height / frame.height);
+      const next = Math.min(width / frame.width, height / frame.height);
 
       setScale((previous) =>
         previous !== null && Math.abs(previous - next) < 0.0001 ? previous : next

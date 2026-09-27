@@ -572,6 +572,43 @@ describe('ScrollZone', () => {
       expect(box.style.scrollSnapType).toBe('');
     });
 
+    // The pointer's travel was written to the strip as it came, so inside a
+    // scaled ancestor the cards ran ahead of the hand.
+    it('keeps the content under the pointer inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+          <ScrollZone data-testid="zone">{cards}</ScrollZone>
+        </div>
+      );
+      const box = scroller(screen);
+      box.setPointerCapture = () => {};
+      // What the stylesheet gives the strip, which no component test loads.
+      box.style.overflowX = 'auto';
+
+      await expect.poll(() => box.scrollWidth > box.clientWidth + 100).toBe(true);
+
+      const press = (type: string, clientX: number) =>
+        box.dispatchEvent(
+          new PointerEvent(type, {
+            bubbles: true,
+            button: 0,
+            buttons: type === 'pointerup' ? 0 : 1,
+            pointerId: 1,
+            pointerType: 'mouse',
+            clientX,
+            clientY: 10
+          })
+        );
+
+      press('pointerdown', 200);
+      press('pointermove', 150);
+
+      // Fifty pixels on the screen at half size is a hundred of the strip's own.
+      expect(box.scrollLeft).toBe(100);
+
+      press('pointerup', 150);
+    });
+
     // The press is let go outside the strip before it has moved far enough to
     // be a drag, so its pointerup never reaches the strip.
     it('lets a press go that was released outside the strip', async () => {

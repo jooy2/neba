@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
+import { drawnScale } from '../../internal/drag.js';
 import { spacingValue } from '../../internal/grid.js';
 import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
@@ -463,6 +464,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       const fromY = event.clientY;
       const fromLeft = el.scrollLeft;
       const fromTop = el.scrollTop;
+      // A pointer moves in screen pixels and the strip scrolls in its own, so
+      // inside a scaled ancestor — a Mockup's screen, a zoom entrance — the
+      // content would run ahead of the hand or lag behind it. The threshold
+      // stays in screen pixels: it is about how far the hand went.
+      const scale = drawnScale(el);
       let dragging = false;
 
       // Taken off the document for the length of the drag rather than fixed with
@@ -497,8 +503,8 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
           if (snap) el.style.scrollSnapType = 'none';
         }
 
-        if (horizontal) el.scrollLeft = fromLeft - dx;
-        else el.scrollTop = fromTop - dy;
+        if (horizontal) el.scrollLeft = fromLeft - dx / scale.x;
+        else el.scrollTop = fromTop - dy / scale.y;
       };
 
       const release = () => {

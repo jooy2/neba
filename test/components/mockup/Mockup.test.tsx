@@ -40,6 +40,28 @@ describe('Mockup', () => {
       expect(html).not.toContain('visibility:hidden');
     });
 
+    // The box was measured as drawn, so a scaled ancestor scaled the device a
+    // second time: at half size it came out a quarter of the box.
+    it('fills its box inside a scaled ancestor', async () => {
+      const device = (
+        <Mockup data-testid="mockup" device="mobile" style={{ width: 300, height: 600 }} />
+      );
+      const transform = (root: Element) =>
+        root.querySelector<HTMLElement>('[style*="scale("]')?.style.transform;
+
+      const plain = await render(device);
+      const expected = transform(plain.getByTestId('mockup').element());
+
+      await plain.unmount();
+
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>{device}</div>
+      );
+
+      expect(expected).toMatch(/scale\(0\./);
+      await expect.poll(() => transform(screen.getByTestId('mockup').element())).toBe(expected);
+    });
+
     it('holds the device inside its own box, whatever size it is still drawn at', async () => {
       const screen = await render(<Mockup data-testid="mockup" device="desktop" />);
 

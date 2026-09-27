@@ -1347,6 +1347,41 @@ describe('DataTable', () => {
       expect(cols[1].style.width).not.toBe('');
     });
 
+    // The widths written down on the first press were the drawn ones, and the
+    // pointer's travel was added to them as it came, so inside a scaled
+    // ancestor every column shrank on the press and the boundary lagged.
+    it('keeps the widths and follows the pointer inside a scaled ancestor', async () => {
+      const screen = await render(
+        <div style={{ scale: '0.5', transformOrigin: 'top left' }}>
+          <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} resizable />
+        </div>
+      );
+      const handle = screen.container.querySelector<HTMLElement>('.cursor-col-resize')!;
+      const from = handle.getBoundingClientRect();
+      const city = screen.getByRole('columnheader', { name: 'City' }).element() as HTMLElement;
+      const cityWidth = city.offsetWidth;
+
+      handle.setPointerCapture = () => {};
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          bubbles: true,
+          clientX: from.x,
+          pointerId: 1,
+          button: 0
+        })
+      );
+      handle.dispatchEvent(
+        new PointerEvent('pointermove', { bubbles: true, clientX: from.x + 30 })
+      );
+      handle.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+      const cols = [...screen.container.querySelectorAll<HTMLElement>('col')];
+
+      // Thirty pixels on the screen at half size is sixty of the column's own.
+      await expect.poll(() => cols[0].style.width).toBe('220px');
+      expect(cols[1].style.width).toBe(`${cityWidth}px`);
+    });
+
     // The three other components that drag something have always done this;
     // the column resize was the copy that did not, so dragging a boundary in
     // Safari selected the text of every cell the pointer crossed.
