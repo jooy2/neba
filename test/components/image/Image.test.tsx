@@ -7,6 +7,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { Image } from 'neba';
 
@@ -1085,6 +1086,30 @@ describe('Image', () => {
     const screen = await render(<Image src={OK} alt="A ridge" data-analytics="hero" />);
 
     expect(screen.container.querySelector('img[data-analytics="hero"]')).not.toBeNull();
+  });
+
+  // A picture that loaded before hydration is asked after the fact, and the
+  // question was only put to one with a `src`: given only a `srcSet`, it stayed
+  // behind its placeholder for good.
+  it('shows a picture given only a srcSet that loaded before hydration', async () => {
+    const element = <Image srcSet={`${OK} 1x`} alt="A ridge" />;
+    const host = document.createElement('div');
+
+    host.innerHTML = renderToString(element);
+    document.body.append(host);
+
+    const served = host.querySelector('img') as HTMLImageElement;
+
+    await vi.waitFor(() => expect(served.complete && served.naturalWidth > 0).toBe(true));
+
+    const root = hydrateRoot(host, element);
+
+    try {
+      await vi.waitFor(() => expect(host.querySelector('img')).toHaveClass('opacity-100'));
+    } finally {
+      root.unmount();
+      host.remove();
+    }
   });
 
   // A Markdown renderer puts an Image inside a `<p>`, where the `<div>` its

@@ -907,7 +907,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const pictureRef = React.useRef<HTMLImageElement | null>(null);
   /*
    * The newest handler, kept for the effect below rather than closed over —
-   * that effect runs when `src` changes and nothing else, and a handler listed
+   * that effect runs when the source changes and nothing else, and a handler listed
    * beside it would restart the picture every time a caller wrote one inline.
    *
    * Written in an effect and not during the render, which is the rule
@@ -935,7 +935,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   );
 
   /*
-   * A `src` that changes is a different picture, so it starts over. Without
+   * A source that changes is a different picture, so it starts over. Without
    * this a second file inherits the first one's "loaded" and never shows a
    * placeholder — and a second file that fails inherits a success.
    *
@@ -946,13 +946,16 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
    * picture then sits at `opacity: 0` behind its own placeholder for good,
    * which is what every data-URI example in these docs was doing. `complete`
    * is the question after the fact and `naturalWidth` is which of the two
-   * answers it got; an `<img>` with no `src` is `complete` too, and is the one
-   * case that really is still waiting.
+   * answers it got; an `<img>` with no source at all is `complete` too, and is
+   * the one case that really is still waiting. A `srcSet` is a source: a
+   * picture given only that is as complete as one given a `src`.
    */
+  const srcSet = props.srcSet;
+
   React.useEffect(() => {
     const node = pictureRef.current;
     const settled: Phase | null =
-      src && node?.complete ? (node.naturalWidth > 0 ? 'loaded' : 'failed') : null;
+      (src || srcSet) && node?.complete ? (node.naturalWidth > 0 ? 'loaded' : 'failed') : null;
 
     setPhase(settled ?? 'loading');
     setNatural(
@@ -962,7 +965,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     // Said as soon as a new file is asked for, so a caller hears `loading` as
     // well as how it ended.
     reportRef.current?.(settled ?? 'loading');
-  }, [src]);
+  }, [src, srcSet]);
 
   const settle = (next: Phase, node: HTMLImageElement) => {
     setPhase(next);

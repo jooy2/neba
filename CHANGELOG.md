@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **An `Image` given only a `srcSet` shows up when it loaded before hydration.** A picture that finishes before React is listening is asked afterwards whether it did, and only a picture with a `src` was asked — so a server-rendered image given a `srcSet` alone, which a fast connection or a cache finishes early, stayed at nothing behind its placeholder. A changed `srcSet` also starts the picture over now, as a changed `src` already did.
+
 - **A `Drawer` keeps clear of a notch at the side of the screen.** `safeArea` held a panel's contents clear of the top and bottom insets only, so on a phone turned on its side — notch on the left or the right — a side panel's contents ran under it, and so did the ends of a top or bottom sheet. Each panel takes the insets of all three edges it runs to now, as its props row already said.
 
 - **A `Tooltip` around a `ContextMenu` opens on React 18.** The page puts the tooltip outside the menu, and the tooltip hands its trigger a ref — which React 18 drops on the way into a function component, so the tooltip had nothing to open against and never appeared. `ContextMenu` forwards its ref to the area it is given, as every other component already did.
