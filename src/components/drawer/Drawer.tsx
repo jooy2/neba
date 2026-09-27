@@ -12,6 +12,7 @@ import {
   metaTextClasses,
   popupFadeClasses,
   sheetBodyClasses,
+  sheetCloseClasses,
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   surfaceClasses,
@@ -309,16 +310,6 @@ const safeAreaEdges: Record<NebaSide, React.CSSProperties> = {
 /** The internal hairline: the same `--n-line` as the sheet's own edge. */
 const dividerClasses = 'border-t [border-color:var(--n-line)]';
 
-/** The × in the corner, shared by both modes. */
-const closeButtonClasses = [
-  'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
-  'rounded-full text-(--neba-muted-fg)',
-  '[&_svg]:size-[1.1em] [&_svg]:shrink-0',
-  '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
-  'hover:bg-(--n-soft) hover:text-(--neba-fg)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-].join(' ');
-
 /**
  * Closes the drawer it is inside.
  *
@@ -452,7 +443,7 @@ export function Drawer(rawProps: DrawerProps) {
             overlay ? (
               <BaseUIDialog.Close
                 aria-label={closeLabel ?? messages.close}
-                className={closeButtonClasses}
+                className={sheetCloseClasses}
               >
                 <CloseIcon />
               </BaseUIDialog.Close>
@@ -460,7 +451,7 @@ export function Drawer(rawProps: DrawerProps) {
               <button
                 type="button"
                 aria-label={closeLabel ?? messages.close}
-                className={closeButtonClasses}
+                className={sheetCloseClasses}
                 onClick={() => {
                   if (open === undefined) setInlineOpen(false);
                   onOpenChange?.(false);

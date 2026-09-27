@@ -14,6 +14,7 @@ import {
   popupFadeClasses,
   radiusClasses,
   sheetBodyClasses,
+  sheetCloseClasses,
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
@@ -474,15 +475,7 @@ export function Tour(rawProps: TourProps) {
                     type="button"
                     aria-label={closeLabel ?? actions.close}
                     onClick={() => setOpen(false)}
-                    className={cx(
-                      'flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center',
-                      'rounded-full text-(--neba-muted-fg)',
-                      '[&_svg]:size-[1.1em] [&_svg]:shrink-0',
-                      '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
-                      'hover:bg-(--n-soft) hover:text-(--neba-fg)',
-                      'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-                      classNames?.close
-                    )}
+                    className={cx(sheetCloseClasses, classNames?.close)}
                   >
                     <CloseIcon />
                   </button>

@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **The × in the corner of a `Dialog`, a `Popover`, a `Drawer` and a `Tour` step is pressed at the size of a finger.** It is drawn at 1.6em of the sheet's text, about 20 pixels at the default size, and unlike the × on an `Alert`, a `Toast` or a `Chip` it had no larger target around it, which WCAG 2.5.8 asks to be 24 pixels. Nothing drawn moves.
+
 - **The working ring slows down under a reduced-motion preference.** A `Button` that is `loading`, a `TextField` that is checking and a running `ToolCall`, `AgentStep` or `Reasoning` turned their ring on Tailwind's `animate-spin`, which the preference did not reach, so a transcript with several running rows kept several rings at full speed. The ring turns at an indeterminate `ProgressCircular`'s rate now, 0.9 seconds a turn, and slows to 2.4 seconds with it.
 
 - **A `PromptInput` that sends on Enter says so to a phone's keyboard.** The field sets `enterKeyHint="send"` when `submitKey` is `Enter`, so the key is labelled as the send it is rather than as a line break. A form gives an `<input>` that label on its own and never a `<textarea>`, which is what the component and its page had assumed. A caller's own `enterKeyHint` still wins.

@@ -978,6 +978,21 @@ export const chipRemoveClasses =
   'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1 ' +
   'disabled:cursor-not-allowed';
 
+/**
+ * The × in the corner of a sheet: a Dialog's, a Popover's, a Drawer's and a
+ * Tour step's. Four components drew it from four copies of this string.
+ *
+ * It is 1.6em across, which at the sheets' own body size is about 20 pixels, so
+ * it carries the invisible target the other small controls do.
+ */
+export const sheetCloseClasses =
+  'relative flex size-[1.6em] shrink-0 cursor-pointer items-center justify-center ' +
+  `rounded-full text-(--neba-muted-fg) ${hitAreaClasses} ` +
+  '[&_svg]:size-[1.1em] [&_svg]:shrink-0 ' +
+  '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)] ' +
+  'hover:bg-(--n-soft) hover:text-(--neba-fg) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
+
 /** `false`, `null`, `undefined` and `''` all mean "this slot is not filled". */
 export function hasContent(node: React.ReactNode): boolean {
   return node !== undefined && node !== null && node !== false && node !== '';

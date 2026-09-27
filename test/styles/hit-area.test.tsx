@@ -9,7 +9,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Alert, Carousel, NumberField, Panes, Pane } from 'neba';
+import { Alert, Carousel, Dialog, Drawer, NumberField, Panes, Pane, Popover, Tour } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -49,6 +49,31 @@ describe('the target under a small control', () => {
 
     expect(box.width).toBeGreaterThanOrEqual(24);
     expect(box.height).toBeGreaterThanOrEqual(24);
+  });
+
+  // Drawn at 1.6em of a sheet's body text, which is about 20 pixels, and the
+  // four sheets that draw it had no target around it.
+  it('reaches the × in the corner of a sheet', async () => {
+    const closes = [
+      <Dialog key="dialog" defaultOpen title="Delete" />,
+      <Popover key="popover" defaultOpen showClose title="Share" />,
+      <Drawer key="drawer" defaultOpen title="Filters" />,
+      <Tour key="tour" defaultOpen steps={[{ title: 'Done', content: 'That is all.' }]} />
+    ];
+
+    for (const sheet of closes) {
+      const screen = await render(sheet);
+      const close = screen.getByRole('button', { name: 'Close' });
+
+      await expect.element(close).toBeInTheDocument();
+
+      const box = target(close.element());
+
+      expect(box.width, sheet.key ?? '').toBeGreaterThanOrEqual(24);
+      expect(box.height, sheet.key ?? '').toBeGreaterThanOrEqual(24);
+
+      await screen.unmount();
+    }
   });
 
   it('grows a small stepper to a finger’s height and no further than its neighbour', async () => {
