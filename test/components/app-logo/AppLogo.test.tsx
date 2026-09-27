@@ -217,6 +217,9 @@ describe('AppLogo', () => {
       const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
 
       expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
+      await expect
+        .element(screen.getByRole('link', { name: 'Neba (opens in a new tab)' }))
+        .toBeInTheDocument();
     });
 
     it('keeps a rel the caller wrote alongside it', async () => {

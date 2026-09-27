@@ -42,7 +42,11 @@ describe('BottomNavigation', () => {
           </BottomNavigationItem>
         </BottomNavigation>
       );
-      const rel = screen.getByRole('link', { name: 'Docs' }).element().getAttribute('rel') ?? '';
+      const rel =
+        screen
+          .getByRole('link', { name: 'Docs (opens in a new tab)' })
+          .element()
+          .getAttribute('rel') ?? '';
 
       expect(rel.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
     });

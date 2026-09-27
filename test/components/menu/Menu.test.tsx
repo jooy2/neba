@@ -142,7 +142,10 @@ describe('Menu', () => {
         </Menu>
       );
 
-      const rel = screen.getByRole('menuitem', { name: 'Docs' }).element().getAttribute('rel');
+      const rel = screen
+        .getByRole('menuitem', { name: 'Docs (opens in a new tab)' })
+        .element()
+        .getAttribute('rel');
 
       expect(rel?.split(' ').sort()).toEqual(['noopener', 'noreferrer']);
     });
@@ -156,7 +159,10 @@ describe('Menu', () => {
         </Menu>
       );
 
-      const rel = screen.getByRole('menuitem', { name: 'Docs' }).element().getAttribute('rel');
+      const rel = screen
+        .getByRole('menuitem', { name: 'Docs (opens in a new tab)' })
+        .element()
+        .getAttribute('rel');
 
       expect(rel?.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
     });

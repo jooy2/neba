@@ -46,7 +46,7 @@ describe('NavigationMenu', () => {
         </NavigationMenu>
       );
 
-      const link = screen.getByRole('link', { name: 'Docs' });
+      const link = screen.getByRole('link', { name: 'Docs (opens in a new tab)' });
 
       await expect.element(link).toBeInTheDocument();
       expect(link.element().getAttribute('rel')?.split(' ').sort()).toEqual([
@@ -74,6 +74,7 @@ describe('NavigationMenu', () => {
       const link = screen.getByRole('link', { name: /Status/ });
 
       await expect.element(link).toBeInTheDocument();
+      expect(link.element().textContent).toMatch(/\(opens in a new tab\)$/);
       expect(link.element().getAttribute('rel')?.split(' ').sort()).toEqual([
         'nofollow',
         'noopener',

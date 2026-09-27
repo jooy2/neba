@@ -4,6 +4,7 @@ import * as React from 'react';
 import { chatMessages, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ClockIcon, DangerIcon, LinkIcon } from '../../internal/icons.js';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import {
   controlSlots,
   cx,
@@ -418,7 +419,7 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                     <div className="min-w-0 break-words whitespace-pre-line">{children}</div>
                   ) : null}
 
-                  {preview ? <LinkPreview preview={preview} /> : null}
+                  {preview ? <LinkPreview preview={preview} locale={locale} /> : null}
                 </div>
               ) : null}
             </div>
@@ -472,7 +473,7 @@ function TypingDots({ label }: { label: string }) {
 }
 
 /** The unfurled link: an image, who published it, a title and two lines of summary. */
-function LinkPreview({ preview }: { preview: ChatBubbleLinkPreview }) {
+function LinkPreview({ preview, locale }: { preview: ChatBubbleLinkPreview; locale?: string }) {
   const { url, title, description, image, site, newTab = false } = preview;
   const target = newTab ? '_blank' : undefined;
 
@@ -507,6 +508,7 @@ function LinkPreview({ preview }: { preview: ChatBubbleLinkPreview }) {
         {hasContent(description) ? (
           <span className="line-clamp-2 text-[0.9em] opacity-80">{description}</span>
         ) : null}
+        <NewTabNote target={target} locale={locale} />
       </div>
     </a>
   );

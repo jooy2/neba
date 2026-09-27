@@ -35,6 +35,17 @@ export function safeHref(href: string | undefined): string | undefined {
 }
 
 /**
+ * Whether a `target` opens a browsing context other than this tab.
+ *
+ * `_self` is this tab, and `_parent` and `_top` are frames of the same
+ * document; none of the three opens anything that could reach back, and none
+ * changes the window under the reader. An empty `target` is `_self`.
+ */
+export function opensElsewhere(target: string | undefined): boolean {
+  return Boolean(target) && target !== '_self' && target !== '_parent' && target !== '_top';
+}
+
+/**
  * The `rel` a link gets when it opens somewhere other than this tab.
  *
  * A `target` other than the current tab hands the new page a `window.opener`
@@ -54,9 +65,7 @@ export function safeHref(href: string | undefined): string | undefined {
  * the protection off the link that still opens in a new tab.
  */
 export function safeRel(target: string | undefined, rel: string | undefined): string | undefined {
-  // `_self` is this tab, and `_parent`/`_top` are frames of the same document.
-  // None of the three opens a browsing context that could reach back.
-  if (!target || target === '_self' || target === '_parent' || target === '_top') {
+  if (!opensElsewhere(target)) {
     return rel;
   }
 

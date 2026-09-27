@@ -220,6 +220,9 @@ describe('ChatBubble', () => {
       );
 
       expect(screen.getByRole('link').element()).toHaveAttribute('target', '_blank');
+      // And says so: a window changing under the reader is invisible until it
+      // has happened.
+      expect(screen.getByRole('link').element().textContent).toMatch(/\(opens in a new tab\)$/);
     });
 
     // A preview is built from a message somebody else sent, and React 18 writes

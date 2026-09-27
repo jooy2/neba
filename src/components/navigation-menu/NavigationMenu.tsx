@@ -4,6 +4,7 @@ import * as React from 'react';
 import { NavigationMenu as BaseUINavigationMenu } from '@base-ui/react/navigation-menu';
 import { ChevronIcon } from '../../internal/icons.js';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import {
   controlHeightClasses,
   controlTextClasses,
@@ -209,6 +210,7 @@ export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, Navigation
             <span className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{description}</span>
           ) : null}
           {children}
+          <NewTabNote target={target} />
         </span>
       </BaseUINavigationMenu.Link>
     );
@@ -266,6 +268,7 @@ export function NavigationMenuItem({
         >
           {hasContent(startIcon) ? startIcon : null}
           {label}
+          <NewTabNote target={target} />
         </BaseUINavigationMenu.Link>
       ) : (
         <>

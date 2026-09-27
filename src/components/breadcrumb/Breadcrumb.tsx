@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import { breadcrumbMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon, ChevronIcon, EllipsisIcon } from '../../internal/icons.js';
 import {
@@ -31,6 +32,8 @@ export type BreadcrumbSeparator = 'chevron' | 'arrow' | 'slash' | 'dot';
 /** What a BreadcrumbItem inherits from the Breadcrumb around it. */
 interface BreadcrumbContextValue {
   size: NebaSize;
+  /** The trail's language, for the words a step that opens a new tab ends with. */
+  locale?: string;
   /** Whether this is the step the trail ends on. */
   last: boolean;
 }
@@ -449,7 +452,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
 
               {step ? (
                 <BreadcrumbContext.Provider
-                  value={{ size, last: !claimed && index === shown.length - 1 }}
+                  value={{ size, locale, last: !claimed && index === shown.length - 1 }}
                 >
                   {step}
                 </BreadcrumbContext.Provider>
@@ -507,7 +510,7 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
     },
     ref
   ) {
-    const { size, last } = React.useContext(BreadcrumbContext);
+    const { size, locale, last } = React.useContext(BreadcrumbContext);
     const href = safeHref(hrefProp);
     const isCurrent = current ?? last;
     const interactive = Boolean(href || onClick || render) && !isCurrent && !disabled;
@@ -555,7 +558,12 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
         rel: safeRel(target, undefined),
         className: stepClassNames,
         onClick,
-        children: body
+        children: (
+          <>
+            {body}
+            <NewTabNote target={target} locale={locale} />
+          </>
+        )
       }
     });
 

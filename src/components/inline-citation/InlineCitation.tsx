@@ -5,11 +5,12 @@ import { HoverCard } from '../hover-card/HoverCard.js';
 import { TextLink } from '../text-link/TextLink.js';
 import {
   fillMessage,
+  linkMessages,
   sourcesMessages,
   useMessages,
   type SourcesMessages
 } from '../../internal/i18n.js';
-import { safeHref, safeRel } from '../../internal/link.js';
+import { opensElsewhere, safeHref, safeRel } from '../../internal/link.js';
 import {
   citationMarkClasses,
   cx,
@@ -98,6 +99,7 @@ export const InlineCitation = React.forwardRef<HTMLElement, InlineCitationProps>
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const messages = useMessages(sourcesMessages, locale);
+    const linkWords = useMessages(linkMessages, locale);
     const words = { ...messages, ...labels };
     const name = fillMessage(words.citation, { index: String(index) });
     const address = safeHref(href);
@@ -138,7 +140,9 @@ export const InlineCitation = React.forwardRef<HTMLElement, InlineCitationProps>
         href={address}
         target={target}
         rel={safeRel(target, rel)}
-        aria-label={name}
+        // The name is the whole of what is read, so the words that say the link
+        // opens a new tab go into it rather than beside it.
+        aria-label={opensElsewhere(target) ? `${name} ${linkWords.newTab}` : name}
         {...shared}
         {...props}
       >
@@ -167,7 +171,13 @@ export const InlineCitation = React.forwardRef<HTMLElement, InlineCitationProps>
         trigger={mark}
         title={
           address ? (
-            <TextLink href={address} underline="hover" target={target} rel={safeRel(target, rel)}>
+            <TextLink
+              href={address}
+              underline="hover"
+              target={target}
+              rel={safeRel(target, rel)}
+              locale={locale}
+            >
               {title}
             </TextLink>
           ) : (

@@ -74,7 +74,7 @@ describe('Breadcrumb', () => {
           <BreadcrumbItem>Billing</BreadcrumbItem>
         </Breadcrumb>
       );
-      const link = screen.getByRole('link', { name: 'Docs' });
+      const link = screen.getByRole('link', { name: 'Docs (opens in a new tab)' });
 
       await expect.element(link).toHaveAttribute('target', '_blank');
       await expect.element(link).toHaveAttribute('rel', 'noopener noreferrer');

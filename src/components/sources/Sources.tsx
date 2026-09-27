@@ -240,6 +240,7 @@ export const Sources = React.forwardRef<HTMLDivElement, SourcesProps>(
                     underline="hover"
                     target={item.target}
                     rel={safeRel(item.target, item.rel)}
+                    locale={locale}
                     className="min-w-0"
                   >
                     {label}

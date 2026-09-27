@@ -8,6 +8,7 @@ import { ContextMenu as BaseUIContextMenu } from '@base-ui/react/context-menu';
 import { MenuContext } from '../../internal/menu.js';
 import { CheckIcon, ChevronIcon, DotIcon } from '../../internal/icons.js';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -443,6 +444,7 @@ export function MenuItem({
         onPointerMove={trackPointer(undefined, true)}
       >
         {body}
+        <NewTabNote target={target} />
       </BaseUIMenu.LinkItem>
     );
   }

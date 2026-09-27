@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { linkMessages, useMessages } from '../../internal/i18n.js';
 import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
-import { safeHref, safeRel } from '../../internal/link.js';
+import { opensElsewhere, safeHref, safeRel } from '../../internal/link.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -137,9 +137,6 @@ const baseClasses = [
   'focus-visible:rounded-[0.25rem]'
 ].join(' ');
 
-/** The targets that stay in this browsing context, which `safeRel` leaves alone too. */
-const SAME_CONTEXT_TARGETS = new Set(['_self', '_parent', '_top']);
-
 /**
  * A link, in a sentence or on its own.
  *
@@ -217,7 +214,7 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
     // And it is announced the same way. The arrow stays with `newTab`, because
     // a glyph that appeared on links already written would change how they
     // look; the sentence changes only what is heard.
-    const leaves = target !== undefined && !SAME_CONTEXT_TARGETS.has(target);
+    const leaves = opensElsewhere(target);
 
     return useRender({
       render: render ?? <a />,

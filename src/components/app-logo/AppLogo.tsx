@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { initialsOf } from '../../internal/initials.js';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -403,6 +404,7 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
           ) : null}
 
           {needsClippedName ? <span className={srOnlyClasses}>{label}</span> : null}
+          {href ? <NewTabNote target={target} /> : null}
         </>
       ),
       ...props

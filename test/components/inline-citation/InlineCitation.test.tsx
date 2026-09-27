@@ -60,7 +60,7 @@ describe('InlineCitation', () => {
       );
 
       await expect
-        .element(screen.getByLabelText('Source 1'))
+        .element(screen.getByLabelText('Source 1 (opens in a new tab)'))
         .toHaveAttribute('rel', 'noopener noreferrer');
     });
 

@@ -34,6 +34,8 @@
 
 ### Fixed
 
+- **Every link that opens a new tab says so.** Only `TextLink` read out "(opens in a new tab)". A `ChatBubble`'s link preview, a `MenuItem`, a `NavigationMenu` link, an `AppLogo`, a `BottomNavigationItem`, a `BreadcrumbItem`, a `Sources` row and an `InlineCitation` given a `target` that leaves the tab now end their accessible name with the same visually hidden words, in the component's `locale` or the provider's. A test that found one of those links by its exact name should add the words.
+
 - **A queued `useConfirm` question opens as a question of its own.** The second of two questions took over the open sheet rather than opening it, so its `initialFocus` never ran — a `danger` question after a plain one came up with the focus on the destructive button — and its title was not announced. Each question is a sheet of its own now, and the focus goes back to what asked once the last one is answered.
 
 - **The chosen option of a set is marked in a forced palette.** A `Radio`'s dot, the chosen `Segment`, a pressed `Toggle`, a chosen day or time in the pickers and the current `BottomNavigationItem` said so only through a fill, which a forced palette such as Windows High Contrast repaints the colour of everything around it. Each is painted in the system `Highlight` there now, as a checked `Switch` already was.

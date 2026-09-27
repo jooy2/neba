@@ -8,6 +8,7 @@ import type {
   BottomNavigationValue
 } from '../../internal/bottom-navigation.js';
 import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import {
   cx,
   hasContent,
@@ -446,6 +447,7 @@ export const BottomNavigationItem = React.forwardRef<HTMLElement, BottomNavigati
           {...(props as React.ComponentPropsWithoutRef<'a'>)}
         >
           {body}
+          <NewTabNote target={target} />
         </a>
       );
     }

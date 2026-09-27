@@ -93,6 +93,9 @@ describe('Sources', () => {
       await expect
         .element(screen.getByRole('link', { name: 'Away', exact: false }))
         .toHaveAttribute('rel', 'noopener noreferrer');
+      expect(
+        screen.getByRole('link', { name: 'Away', exact: false }).element().textContent
+      ).toMatch(/\(opens in a new tab\)$/);
     });
   });
 
