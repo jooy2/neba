@@ -65,9 +65,9 @@ There is no `<TabList>` wrapper. Write `Tab`s and `TabPanel`s side by side and t
 
 ### align
 
-Where a tab's label sits once the tab is wider than the label is, which is the whole of when this is worth setting. A horizontal bar sizes each tab to its own content, so there is nothing to align until `fullWidth` gives them all an equal share. A vertical bar is the case it exists for: every tab in a column is as wide as the longest one, and centred labels down a column read as a ragged edge on both sides.
+Where a tab's label sits when the tab is wider than the label: in a vertical bar, where every tab is as wide as the longest, or in a horizontal one with `fullWidth`.
 
-It moves the label and the icons together and nothing else — the tab keeps its size, its padding and its indicator. `start` and `end` are logical, so they follow the reading direction.
+It moves the label and the icons and nothing else. `start` and `end` are logical, so they follow the reading direction.
 
 <Demo src="tabs/align">
 
