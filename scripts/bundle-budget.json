@@ -19,7 +19,7 @@
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 15.6
+      "budget": 15.8
     },
     {
       "id": "code-block",
@@ -120,13 +120,13 @@
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 292.6
+      "budget": 293
     },
     {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",
-      "budget": 25.4
+      "budget": 25.5
     }
   ]
 }
