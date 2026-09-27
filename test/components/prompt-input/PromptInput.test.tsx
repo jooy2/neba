@@ -183,6 +183,33 @@ describe('PromptInput', () => {
       expect(onSubmit).toHaveBeenCalledWith('hello');
     });
 
+    // A mention list open over the field takes Enter to choose a name, and the
+    // caller's handler ran only after the field had already sent.
+    it('lets the caller’s onKeyDown keep a key from sending', async () => {
+      const onSubmit = vi.fn();
+      const screen = await render(
+        <PromptInput
+          label="Message"
+          defaultValue="hello @ada"
+          onSubmit={onSubmit}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+            }
+          }}
+        />
+      );
+
+      screen
+        .getByRole('textbox')
+        .element()
+        .dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+        );
+
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
     it('never sends an empty field', async () => {
       const onSubmit = vi.fn();
       const screen = await render(<PromptInput label="Message" onSubmit={onSubmit} />);

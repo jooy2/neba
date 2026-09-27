@@ -76,7 +76,8 @@ export interface PromptInputProps
    *
    * Neither fires while an input method is composing — a Korean or Japanese
    * reader pressing Enter to accept a candidate is finishing a word, not
-   * sending a message.
+   * sending a message. Nor after an `onKeyDown` of the caller's has called
+   * `preventDefault`, which runs first.
    * @default 'Enter'
    */
   submitKey?: PromptSubmitKey;
@@ -380,6 +381,14 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
             enterKeyHint={submitKey === 'Enter' ? 'send' : undefined}
             {...props}
             onKeyDown={(event) => {
+              // The caller's first, so a mention list or a slash-command menu
+              // open over the field can take Enter for itself.
+              onKeyDown?.(event);
+
+              if (event.defaultPrevented) {
+                return;
+              }
+
               /*
                * An input method is mid-word. A Korean or Japanese reader
                * pressing Enter to accept a candidate is finishing what they are
@@ -390,8 +399,6 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
                 event.preventDefault();
                 send();
               }
-
-              onKeyDown?.(event);
             }}
           />
 

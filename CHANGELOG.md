@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `PromptInput`'s `onKeyDown` can keep a key from sending.** The field sent first and called the caller's handler after, so a mention list or a slash-command menu open over the field could not take Enter to choose an entry — the message went with the half-typed name in it. The caller's `onKeyDown` runs first now, and a `preventDefault` there means the key does not send.
+
 - **A `disabled` or `readOnly` `PromptInput` takes no dropped files.** Its shell stayed a drop target whatever state the field was in, so a file dragged onto a field that took no typing still lit the edge and reached `onFiles`. It is off while the field takes no input, as a `FilePicker`'s zone already was.
 
 - **A `PromptInput` that takes files leaves dragged text to its field.** Its shell answered every drag as a drag of files, so text selected somewhere and dragged into the message lit the drop edge, was never inserted, and called `onFiles` with an empty list. The shell of a `PromptInput` and a `FilePicker` answers only a drag that carries files now, and a drop of nothing but folders is not reported at all.

@@ -16474,8 +16474,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: "'Enter' | 'Mod+Enter'",
       default: "'Enter'",
       description: {
-        ko: '무엇으로 보낼지. 입력기가 조합 중일 때는 어느 쪽도 작동하지 않습니다',
-        en: 'Which key sends. Neither fires while an input method is composing'
+        ko: '무엇으로 보낼지. 입력기가 조합 중일 때와, 먼저 실행되는 onKeyDown이 preventDefault를 불렀을 때는 어느 쪽도 작동하지 않습니다',
+        en: 'Which key sends. Neither fires while an input method is composing, or after an onKeyDown of yours, which runs first, called preventDefault'
       }
     },
     {

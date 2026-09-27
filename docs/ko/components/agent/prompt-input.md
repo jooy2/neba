@@ -49,6 +49,8 @@ import { PromptInput } from 'neba';
 
 **입력기가 조합 중일 때는 어느 쪽도 작동하지 않습니다.** 한국어나 일본어 사용자가 후보를 확정하려고 Enter를 누르는 것은 단어를 끝내는 일이지 메시지를 보내는 일이 아닙니다. 그것을 전송으로 읽는 입력란은 그 언어를 쓸 수 없게 만듭니다.
 
+**호출하는 쪽의 `onKeyDown`이 먼저 실행됩니다.** 거기서 `preventDefault`를 부르면 그 키로는 보내지 않습니다. 입력란 위에 열린 멘션 목록이나 슬래시 명령 메뉴가 이렇게 Enter를 가져갑니다.
+
 <Demo src="prompt-input/submit-key">
 
 <<< @/.vitepress/demos/prompt-input/submit-key.tsx

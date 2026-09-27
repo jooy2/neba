@@ -49,6 +49,8 @@ Nothing sends while an answer is being written, including the key.
 
 **Neither fires while an input method is composing.** A Korean or Japanese reader pressing Enter to accept a candidate is finishing a word, not sending a message, and a field that read it as a send would make the language unusable.
 
+**Your `onKeyDown` runs first.** Call `preventDefault` in it to keep the key from sending — a mention list or a slash-command menu open over the field takes Enter that way.
+
 <Demo src="prompt-input/submit-key">
 
 <<< @/.vitepress/demos/prompt-input/submit-key.tsx
