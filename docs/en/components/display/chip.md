@@ -64,5 +64,5 @@ Chip's `size` sits one step below the control heights: an `md` Chip is 26px, the
 ## Accessibility
 
 - The shell is always a `<span>`. `onClick` adds a `<button>` around the content; `onDelete` adds a second `<button>` beside it. Neither is nested inside the other, so both are reachable by keyboard.
-- With more than one chip on screen, give the delete button a `deleteLabel` naming what is being removed: the default label leaves them indistinguishable.
+- The delete button is named after the chip's label when the label is a string, "Remove Draft", so a row of chips is a row of buttons a screen reader can tell apart. When the label is a node, give it a `deleteLabel` naming what is being removed.
 - `locale` decides the delete button's accessible name; `deleteLabel` writes it out instead.

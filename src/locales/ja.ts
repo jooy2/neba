@@ -18,7 +18,8 @@ export const ja: NebaLocale = {
     close: '閉じる',
     dismiss: '閉じる',
     clear: 'クリア',
-    remove: '削除'
+    remove: '削除',
+    removeLabel: '{label} を削除'
   },
   confirm: {
     confirm: '確認',

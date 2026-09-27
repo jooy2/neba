@@ -18,7 +18,8 @@ export const ko: NebaLocale = {
     close: '닫기',
     dismiss: '알림 닫기',
     clear: '지우기',
-    remove: '삭제'
+    remove: '삭제',
+    removeLabel: '{label} 삭제'
   },
   confirm: {
     confirm: '확인',

@@ -21,7 +21,8 @@ export const zhHant: NebaLocale = {
     close: '關閉',
     dismiss: '關閉',
     clear: '清除',
-    remove: '移除'
+    remove: '移除',
+    removeLabel: '移除 {label}'
   },
   confirm: {
     confirm: '確認',

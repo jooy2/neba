@@ -18,7 +18,8 @@ export const id: NebaLocale = {
     close: 'Tutup',
     dismiss: 'Abaikan',
     clear: 'Bersihkan',
-    remove: 'Hapus'
+    remove: 'Hapus',
+    removeLabel: 'Hapus {label}'
   },
   confirm: {
     confirm: 'Konfirmasi',

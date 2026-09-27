@@ -18,7 +18,8 @@ export const es: NebaLocale = {
     close: 'Cerrar',
     dismiss: 'Descartar',
     clear: 'Borrar',
-    remove: 'Quitar'
+    remove: 'Quitar',
+    removeLabel: 'Quitar {label}'
   },
   confirm: {
     confirm: 'Confirmar',

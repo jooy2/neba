@@ -18,7 +18,8 @@ export const th: NebaLocale = {
     close: 'ปิด',
     dismiss: 'ปิดการแจ้งเตือน',
     clear: 'ล้าง',
-    remove: 'นำออก'
+    remove: 'นำออก',
+    removeLabel: 'นำ {label} ออก'
   },
   confirm: {
     confirm: 'ยืนยัน',

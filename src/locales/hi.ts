@@ -18,7 +18,8 @@ export const hi: NebaLocale = {
     close: 'बंद करें',
     dismiss: 'खारिज करें',
     clear: 'साफ़ करें',
-    remove: 'हटाएँ'
+    remove: 'हटाएँ',
+    removeLabel: '{label} हटाएँ'
   },
   confirm: {
     confirm: 'पुष्टि करें',

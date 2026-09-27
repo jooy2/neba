@@ -131,7 +131,9 @@ describe('neba/locales', () => {
         </Chip>
       );
 
-      await expect.element(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Remove Draft' }))
+        .toBeInTheDocument();
     });
   });
 

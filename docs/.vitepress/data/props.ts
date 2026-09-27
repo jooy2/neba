@@ -6220,7 +6220,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'deleteLabel',
       type: 'string',
-      description: { ko: '삭제 버튼의 접근성 이름', en: 'Accessible name of the delete button' }
+      description: {
+        ko: '삭제 버튼의 접근성 이름. 기본값은 라벨이 문자열이면 locale의 "Remove {label}", 아니면 "Remove"입니다',
+        en: 'Accessible name of the delete button. Defaults to the locale\'s "Remove {label}" when the label is a string, and to its "Remove" otherwise'
+      }
     },
     {
       name: 'selected',

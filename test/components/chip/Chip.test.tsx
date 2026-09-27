@@ -75,18 +75,20 @@ describe('Chip', () => {
     it('shows the delete button only when onDelete is given', async () => {
       const screen = await render(<Chip>Draft</Chip>);
 
-      expect(screen.getByRole('button', { name: 'Remove' }).query()).toBeNull();
+      expect(screen.getByRole('button', { name: 'Remove Draft' }).query()).toBeNull();
 
       await screen.rerender(<Chip onDelete={() => {}}>Draft</Chip>);
 
-      await expect.element(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Remove Draft' }))
+        .toBeInTheDocument();
     });
 
     it('calls onDelete when pressed', async () => {
       const onDelete = vi.fn();
       const screen = await render(<Chip onDelete={onDelete}>Draft</Chip>);
 
-      await screen.getByRole('button', { name: 'Remove' }).click();
+      await screen.getByRole('button', { name: 'Remove Draft' }).click();
 
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
@@ -100,7 +102,7 @@ describe('Chip', () => {
         </Chip>
       );
 
-      await screen.getByRole('button', { name: 'Remove' }).click();
+      await screen.getByRole('button', { name: 'Remove Draft' }).click();
 
       expect(onDelete).toHaveBeenCalledTimes(1);
       expect(onClick).not.toHaveBeenCalled();
@@ -114,6 +116,34 @@ describe('Chip', () => {
       );
 
       await expect.element(screen.getByRole('button', { name: 'Remove tag' })).toBeInTheDocument();
+    });
+
+    // Every delete button was named "Remove", so a row of chips was a row of
+    // buttons a screen reader could not tell apart.
+    it('names the delete button after a label that is a string', async () => {
+      const screen = await render(
+        <>
+          <Chip onDelete={() => {}}>Draft</Chip>
+          <Chip onDelete={() => {}}>Urgent</Chip>
+        </>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Remove Draft' }))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('button', { name: 'Remove Urgent' }))
+        .toBeInTheDocument();
+    });
+
+    it('falls back to the bare word for a label that is not a string', async () => {
+      const screen = await render(
+        <Chip onDelete={() => {}}>
+          <strong>Draft</strong>
+        </Chip>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
     });
   });
 
@@ -289,7 +319,7 @@ describe('Chip', () => {
         </Chip>
       );
 
-      await expect.element(screen.getByRole('button', { name: '삭제' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: '디자인 삭제' })).toBeInTheDocument();
     });
 
     it('takes a word of its own over the locale', async () => {

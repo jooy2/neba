@@ -21,7 +21,8 @@ export const zhHans: NebaLocale = {
     close: '关闭',
     dismiss: '关闭',
     clear: '清除',
-    remove: '移除'
+    remove: '移除',
+    removeLabel: '移除 {label}'
   },
   confirm: {
     confirm: '确认',

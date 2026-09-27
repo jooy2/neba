@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { actionMessages, useMessages } from '../../internal/i18n.js';
+import { actionMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
@@ -58,7 +58,10 @@ export interface ChipProps
    * case where the page already knows its own language.
    */
   locale?: string;
-  /** Accessible name of the delete button. Defaults to the `locale`'s word. */
+  /**
+   * Accessible name of the delete button. Defaults to the `locale`'s "Remove
+   * {label}" when the chip's label is a string, and to its "Remove" otherwise.
+   */
   deleteLabel?: string;
   /**
    * Marks the chip as chosen — a filter that is on. `selected` deepens the
@@ -294,7 +297,12 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
       {onDelete ? (
         <button
           type="button"
-          aria-label={deleteLabel ?? messages.remove}
+          aria-label={
+            deleteLabel ??
+            (typeof children === 'string' && children.trim()
+              ? fillMessage(messages.removeLabel, { label: children.trim() })
+              : messages.remove)
+          }
           disabled={disabled}
           className={chipRemoveClasses}
           onClick={onDelete}

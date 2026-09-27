@@ -70,6 +70,12 @@ export interface ActionMessages {
   clear: string;
   /** The × on a Chip. */
   remove: string;
+  /**
+   * The same ×, on a Chip whose label is a string: a row of chips each named
+   * "Remove" gives a screen reader no way to tell them apart. `{label}` is
+   * replaced with the label.
+   */
+  removeLabel: string;
 }
 
 /** The `action` namespace, as Alert, Chip, Combobox, Dialog, Drawer, Popover and Toast read it. */
@@ -78,7 +84,8 @@ export const actionMessages: MessageTable<ActionMessages> = {
     close: 'Close',
     dismiss: 'Dismiss',
     clear: 'Clear',
-    remove: 'Remove'
+    remove: 'Remove',
+    removeLabel: 'Remove {label}'
   }
 };
 

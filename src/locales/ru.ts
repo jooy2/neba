@@ -18,7 +18,8 @@ export const ru: NebaLocale = {
     close: 'Закрыть',
     dismiss: 'Скрыть',
     clear: 'Очистить',
-    remove: 'Удалить'
+    remove: 'Удалить',
+    removeLabel: 'Удалить {label}'
   },
   confirm: {
     confirm: 'Подтвердить',

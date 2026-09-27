@@ -18,7 +18,8 @@ export const tr: NebaLocale = {
     close: 'Kapat',
     dismiss: 'Yoksay',
     clear: 'Temizle',
-    remove: 'Kaldır'
+    remove: 'Kaldır',
+    removeLabel: '{label} kaldır'
   },
   confirm: {
     confirm: 'Onayla',

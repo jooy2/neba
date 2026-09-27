@@ -18,7 +18,8 @@ export const vi: NebaLocale = {
     close: 'Đóng',
     dismiss: 'Bỏ qua',
     clear: 'Xóa',
-    remove: 'Gỡ bỏ'
+    remove: 'Gỡ bỏ',
+    removeLabel: 'Gỡ bỏ {label}'
   },
   confirm: {
     confirm: 'Xác nhận',
