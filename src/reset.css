@@ -235,6 +235,6 @@
 
 /* Firefox draws a red box-shadow on an invalid field, over the one the field
    draws for the same state. */
-:-moz-ui-invalid {
+:where(:-moz-ui-invalid) {
   box-shadow: none;
 }

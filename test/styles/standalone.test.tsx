@@ -45,6 +45,7 @@ import {
   TextField,
   Typography
 } from 'neba';
+import resetSource from '../../src/reset.css?raw';
 import standaloneCss from '../../src/standalone.css?inline';
 import pkg from '../../package.json';
 
@@ -59,6 +60,34 @@ beforeAll(() => {
 afterAll(() => {
   sheet.remove();
 });
+
+/** Every selector in a stylesheet of plain rules, split at its top-level commas. */
+function selectorsOf(css: string): string[] {
+  const selectors: string[] = [];
+
+  for (const rule of css.replace(/\/\*[\s\S]*?\*\//g, '').split('}')) {
+    const list = rule.split('{')[0].trim();
+    let depth = 0;
+    let start = 0;
+
+    if (!list) {
+      continue;
+    }
+    for (let index = 0; index < list.length; index += 1) {
+      if (list[index] === '(') {
+        depth += 1;
+      } else if (list[index] === ')') {
+        depth -= 1;
+      } else if (list[index] === ',' && depth === 0) {
+        selectors.push(list.slice(start, index).trim());
+        start = index + 1;
+      }
+    }
+    selectors.push(list.slice(start).trim());
+  }
+
+  return selectors;
+}
 
 /** Resolved value of a custom property, from wherever it inherits. */
 function token(element: Element, name: string): string {
@@ -151,6 +180,18 @@ describe('neba/styles.css', () => {
 
       expect(styles.marginBlockStart).toBe('0px');
       expect(styles.marginBlockEnd).toBe('0px');
+    });
+
+    it('wraps every rule on an element in :where()', () => {
+      // Read from the source rather than the CSSOM: a browser drops a rule
+      // whose selector it does not know, so Firefox's `:-moz-ui-invalid` was
+      // invisible to every other engine and weighed a class in Firefox. A
+      // pseudo-element cannot go inside `:where()`, and `*` weighs nothing.
+      const weighed = selectorsOf(resetSource).filter(
+        (selector) => !/^(:where\(|::)/.test(selector) && selector !== '*'
+      );
+
+      expect(weighed).toEqual([]);
     });
 
     it('loses to a single type selector from the page', async () => {

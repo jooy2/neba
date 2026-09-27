@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **Every rule on an element in `neba/styles.css`'s reset weighs nothing.** The reset promises that a single type selector of your own beats it, and the rule that takes Firefox's red glow off an invalid field counted as a class, so an `input { box-shadow: … }` of your own disappeared from an invalid field in Firefox. It is wrapped in `:where()` like the others.
+
 - **Escape closes a `CommandPalette`.** Its list of commands is held open while the palette is, so the list is what heard the key, and it kept Escape from the dialog around it without closing anything — the palette stayed up with or without anything typed, and only a click outside or a command took it down. Escape closes it now, and the next open starts with an empty field, as the other ways out already did.
 
 - **A treemap `HeatmapChart`'s CSV has a cell in every column of every row.** The file's columns are every name any group uses, and a group's row stopped at the last of those it used — so a group that did not use the names further right had a row shorter than the header, which a strict reader of the file takes as a broken line. The empty cells are written out now, as the chart's hidden table already had them.
