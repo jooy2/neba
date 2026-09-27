@@ -28,7 +28,9 @@ import {
   Button,
   Checkbox,
   Chip,
+  Combobox,
   Container,
+  DatePicker,
   Flex,
   Grid,
   GridContainer,
@@ -565,6 +567,65 @@ describe('neba/styles.css', () => {
       input.blur();
 
       expect(label.getBoundingClientRect().top).toBeLessThan(shell.getBoundingClientRect().top);
+    });
+
+    // A picker's notch is inside the shell, beside a trigger rather than an
+    // input, and the popup is the other thing that lifts the label: what is
+    // chosen there is about to be written where the label rests. A label only
+    // rests in a picker with no glyph at the start, which is where it would go.
+    it('lifts a resting picker label when the popup opens', async () => {
+      const screen = await render(
+        <div style={still}>
+          <DatePicker labelPlacement="float" label="Ships on" startIcon={false} open={false} />
+        </div>
+      );
+      const { shell, label } = parts(screen.container);
+
+      expect(label.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+        shell.getBoundingClientRect().top
+      );
+
+      await screen.rerender(
+        <div style={still}>
+          <DatePicker labelPlacement="float" label="Ships on" startIcon={false} open />
+        </div>
+      );
+
+      await expect
+        .poll(() => label.getBoundingClientRect().top)
+        .toBeLessThan(shell.getBoundingClientRect().top);
+    });
+
+    // A multiple Combobox's input is empty again once a chip is chosen, so
+    // `:placeholder-shown` cannot say the field holds something; the component
+    // says it through `data-empty` instead.
+    it('keeps a multiple Combobox label up once a chip is chosen', async () => {
+      const screen = await render(
+        <div style={still}>
+          <button type="button">Elsewhere</button>
+          <Combobox
+            multiple
+            labelPlacement="float"
+            label="Framework"
+            items={[
+              { value: 'react', label: 'React' },
+              { value: 'vue', label: 'Vue' }
+            ]}
+          />
+        </div>
+      );
+      const { shell, label } = parts(screen.container);
+      const resting = () => label.getBoundingClientRect().top >= shell.getBoundingClientRect().top;
+
+      expect(resting()).toBe(true);
+
+      await screen.getByRole('combobox', { name: 'Framework' }).click();
+      await screen.getByRole('option', { name: 'Vue' }).click();
+      await userEvent.keyboard('{Escape}');
+      await userEvent.click(screen.getByRole('button', { name: 'Elsewhere' }));
+
+      await expect.element(screen.getByText('Vue')).toBeInTheDocument();
+      expect(resting()).toBe(false);
     });
 
     it('lets a press through a resting label to the control under it', async () => {
