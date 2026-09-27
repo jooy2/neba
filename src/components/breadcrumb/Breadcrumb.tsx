@@ -83,9 +83,9 @@ export interface BreadcrumbProps extends Omit<React.ComponentPropsWithoutRef<'na
    * Emits the trail a second time as a `BreadcrumbList`, in a
    * `<script type="application/ld+json">` beside the markup.
    *
-   * Off by default, because a page can only have one of these and a great many
-   * apps already emit theirs from an SEO layer of their own — two would be a
-   * page describing itself twice. Turn it on where this component *is* the
+   * Off by default, because a great many apps already emit theirs from an SEO
+   * layer of their own, and two lists of the same trail would be a page
+   * describing itself twice. Turn it on where this component *is* the
    * trail: correct markup alone is not what puts a path under a search result,
    * and the structured data is.
    *
