@@ -660,7 +660,7 @@ export function useAnimationRun({
 }
 
 /* ---------------------------------------------------------------------------
- * The six, assembled
+ * The effect components, assembled
  * ------------------------------------------------------------------------- */
 
 export interface AnimateElementParams extends AnimationSlotOptions, AnimationRunOptions {

@@ -18,8 +18,8 @@ export interface OnScreenOptions {
 /**
  * Whether an element is on screen.
  *
- * The same shared `IntersectionObserver` the eleven `Animate*` wrappers watch
- * for their own element with — one per threshold for the whole page, because a
+ * The same shared `IntersectionObserver` the `Animate*` wrappers watch for
+ * their own element with — one per threshold for the whole page, because a
  * page of them was one registration each.
  *
  * It answers `true` where there is no `IntersectionObserver` rather than

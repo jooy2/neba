@@ -1179,15 +1179,15 @@ function candidates(locale: string): string[] {
 /**
  * Resolved namespaces, per table and per tag.
  *
- * Keyed by the table itself so the fourteen namespaces cannot collide, and weak
- * so a table a bundler dropped does not keep a cache alive. The merge is the
+ * Keyed by the table itself so the namespaces cannot collide, and weak so a
+ * table a bundler dropped does not keep a cache alive. The merge is the
  * same work for every ChatBubble in a thread, and a thread is where this gets
  * called a hundred times.
  *
  * The inner map is keyed by the tag, which is a `locale` prop and therefore a
  * caller's to choose, so it goes through `memoise` and cannot grow without
- * bound. The outer one needs nothing: there are fourteen tables and they are
- * declared in this file.
+ * bound. The outer one needs nothing: every table it can hold is declared in
+ * this file.
  */
 const resolved = new WeakMap<MessageTable<object>, Map<string, object>>();
 
@@ -1410,10 +1410,10 @@ const byNamespace: Record<keyof NebaLocale, MessageTable<never>> = {
  * registerMessages('ko', ko);
  * ```
  *
- * Shipping the other seventeen unconditionally would put them in the bundle of
+ * Shipping the others unconditionally would put them in the bundle of
  * every product that speaks one language, because a bundler cannot drop a key
  * out of an object literal — which is the same reason the namespaces above are
- * fourteen exports rather than one table. Registering is what makes the cost
+ * separate exports rather than one table. Registering is what makes the cost
  * follow the need.
  *
  * The tag is matched the way a `locale` prop is: by script, then by region,

@@ -2,10 +2,9 @@
  * The two browser observers the library uses, as one each rather than one per
  * component.
  *
- * Eleven components measure themselves and every one of them was building a
- * `ResizeObserver` of its own; eleven `Animate*` wrappers watch for their own
- * element scrolling into view and every one was building an
- * `IntersectionObserver`. Neither is free — each is a separate registration the
+ * Every component that measures itself was building a `ResizeObserver` of its
+ * own, and every `Animate*` wrapper that waits for its element to scroll into
+ * view was building an `IntersectionObserver`. Neither is free — each is a separate registration the
  * browser has to walk on every layout, and each delivers its own callback task
  * — and a dashboard of eight charts inside a PageLayout with a Panes and a
  * ScrollZone in it is a page with a dozen of them for no reason at all.

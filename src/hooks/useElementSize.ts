@@ -12,7 +12,7 @@ export interface ElementSize {
 /**
  * One element's size, kept up to date.
  *
- * The same shared `ResizeObserver` eleven components in the library measure
+ * The same shared `ResizeObserver` the library's own components measure
  * themselves with — one observer for the whole page rather than one per
  * subscriber, because a dashboard of eight charts inside a PageLayout with a
  * Panes in it was a dozen registrations the browser walked on every layout.

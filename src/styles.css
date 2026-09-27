@@ -2714,10 +2714,10 @@
  *
  * The whole set is built on one idea. An effect is a single `@keyframes` that
  * runs from a state written entirely in `--n-anim-*` custom properties to the
- * element's natural one — so `src/internal/animate.ts` never generates CSS, it
+ * element's natural one — so `src/internal/animate.tsx` never generates CSS, it
  * only fills slots, and running an effect backwards is `animation-direction:
  * reverse` rather than a second keyframe. That is what makes `mode="out"` cost
- * nothing on all six.
+ * nothing on any of them.
  *
  * `fill-mode` is `both` throughout, which is what lets an animation that has
  * not been triggered yet simply sit paused on its own first frame. Without it,
@@ -2761,7 +2761,7 @@
 }
 
 /*
- * The same eleven effects, driven by where the element is rather than by when.
+ * The same effects, driven by where the element is rather than by when.
  *
  * Two declarations and nothing else, which is the whole reason this is a prop
  * and not a component: every keyframe already runs from a start state to the
