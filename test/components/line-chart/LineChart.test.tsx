@@ -1543,6 +1543,53 @@ describe('LineChart', () => {
   });
 
   describe('marks', () => {
+    // A gradient measured against the line's own box has nothing to measure on
+    // a flat line, whose box has no height, and the browser then paints its
+    // stroke with nothing. Read off the pixels, since the markup is the same
+    // either way.
+    it('draws a flat series with a gradient', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          gradient
+          height={200}
+          yAxis={{ min: 0, max: 20, grid: false }}
+          series={[{ name: 'Web', color: 'rgb(255, 0, 0)', data: [11, 11, 11, 11] }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const svg = plot.element().querySelector('svg')!;
+      const line = [...svg.querySelectorAll('path')].find((node) =>
+        node.getAttribute('stroke')?.startsWith('url(')
+      )!;
+      const box = line.getBBox();
+      const source = new XMLSerializer().serializeToString(svg);
+      const image = new Image();
+
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+      await image.decode();
+
+      const canvas = document.createElement('canvas');
+
+      canvas.width = svg.width.baseVal.value;
+      canvas.height = svg.height.baseVal.value;
+      canvas.getContext('2d')!.drawImage(image, 0, 0);
+
+      // Three quarters of the way along, where the gradient is near its full
+      // colour.
+      const [red, green, , alpha] = canvas
+        .getContext('2d')!
+        .getImageData(Math.round(box.x + box.width * 0.75), Math.round(box.y), 1, 1).data;
+
+      expect(alpha).toBeGreaterThan(0);
+      expect(red).toBeGreaterThan(green);
+    });
+
     it('draws a dot per point with markers="all"', async () => {
       const screen = await render(
         <LineChart

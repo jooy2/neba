@@ -123,15 +123,19 @@ export function LineSeries({
   return (
     <g>
       <defs>
+        {/* Across the plot rather than across the line's own box. A flat
+            series has a box with no height, and a gradient measured against
+            one is ignored — which leaves the stroke painted with nothing. */}
         {gradient
           ? colors.map((color, index) => (
               <linearGradient
                 key={`stroke-${index}`}
                 id={`${idPrefix}-stroke-${index}`}
-                x1="0"
-                y1="0"
-                x2="1"
-                y2="0"
+                gradientUnits="userSpaceOnUse"
+                x1={plot.left}
+                y1={0}
+                x2={plot.left + plot.width}
+                y2={0}
               >
                 <stop offset="0%" stopColor={`color-mix(in oklab, ${color} 45%, transparent)`} />
                 <stop offset="100%" stopColor={color} />
