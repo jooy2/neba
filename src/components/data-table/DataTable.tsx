@@ -1515,7 +1515,18 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     }
 
     const index = activeKey === null ? -1 : latest.current.pagedKeys.indexOf(activeKey);
-    const perScreen = Math.max(1, Math.floor((viewportHeight || rowHeight * 10) / rowHeight) - 1);
+    /*
+     * The box measured on the press rather than kept: only a virtual body
+     * measures itself as it goes, and a bounded table that is not virtual went
+     * on paging by ten rows whatever its height. Less the header a sticky one
+     * lays over the top of the rows.
+     */
+    const viewport = viewportRef.current;
+    const covered = stickyHeader
+      ? (tableRef.current?.tHead?.getBoundingClientRect().height ?? 0)
+      : 0;
+    const room = viewport ? viewport.clientHeight - covered : 0;
+    const perScreen = Math.max(1, Math.floor((room > 0 ? room : rowHeight * 10) / rowHeight) - 1);
 
     switch (event.key) {
       case 'ArrowDown':

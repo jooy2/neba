@@ -885,6 +885,33 @@ describe('DataTable', () => {
         .toHaveAttribute('data-neba-row', '2');
     });
 
+    // Only a virtual body measured itself, so a bounded table that was not
+    // virtual paged by nine rows whatever its height.
+    it('pages by what a tall table that is not virtual holds', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(200)}
+          getRowKey={key}
+          selectionMode="multiple"
+          virtual={false}
+          height={800}
+        />
+      );
+      const table = screen.getByRole('grid').element() as HTMLElement;
+      const viewport = table.parentElement as HTMLElement;
+      const row = screen.container.querySelector('tbody tr[data-neba-row]') as HTMLElement;
+
+      // What `overflow-auto` would say, had the test a stylesheet.
+      viewport.style.overflow = 'auto';
+      table.focus();
+      await userEvent.keyboard('{PageDown}');
+
+      // Far more than nine rows' worth on an 800px table, whatever a row comes
+      // to without the stylesheet.
+      expect(viewport.scrollTop).toBeGreaterThan(row.getBoundingClientRect().height * 12);
+    });
+
     // And the arrows still do, which is the line the four are on the other side
     // of.
     it('still moves and chooses with the arrows', async () => {
