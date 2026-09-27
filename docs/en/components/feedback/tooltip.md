@@ -54,4 +54,5 @@ Wrapping tooltips in a `TooltipProvider` makes them share the delay: once one ha
 - The popup carries `role="tooltip"`, and the trigger gets `aria-describedby` pointing at it only while it is open.
 - A tooltip is a **description**, never a name. Give an icon-only button its own `aria-label`.
 - It opens on keyboard focus but not on focus that arrived from a click, and closes on Escape.
+- A `disabled` button takes no focus, so a tooltip on one cannot be opened from the keyboard. Give the [Button](../inputs/button) `focusableWhenDisabled` to keep it in the tab order.
 - On a touch screen it cannot be reached by pointer, and anything clickable inside it cannot be clicked. Use a popover if you need either.

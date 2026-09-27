@@ -54,4 +54,5 @@ trigger는 별도의 box를 만들지 않고 `children`에 병합되므로 레�
 - 팝업에 `role="tooltip"`이 붙고, 열려 있는 동안에만 trigger에 `aria-describedby`가 연결됩니다.
 - Tooltip은 **설명**이지 이름이 아닙니다. 아이콘만 있는 버튼에는 `aria-label`을 따로 주세요.
 - 키보드 focus에서는 열리지만 클릭으로 옮겨온 focus에서는 열리지 않습니다. Esc로 닫힙니다.
+- `disabled` 버튼은 focus를 받지 않으므로, 그 위의 Tooltip은 키보드로 열 수 없습니다. [Button](../inputs/button)에 `focusableWhenDisabled`를 주면 tab 순서에 남습니다.
 - 터치 화면에서는 포인터로 닿을 수 없고, 안에 넣은 컨트롤은 누를 수 없습니다. 둘 중 하나가 필요하면 popover를 쓰세요.
