@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { AgentStep, AgentSteps } from 'neba';
 
@@ -115,6 +115,36 @@ describe('AgentSteps', () => {
       );
 
       await expect.element(screen.getByText('Deciding what to do next')).toBeInTheDocument();
+    });
+
+    // The marker stands for whichever step is under way. Kept mounted as steps
+    // were appended in front of it, it went on counting from the first.
+    it('starts the marker’s clock again for each step it stands for', async () => {
+      vi.useFakeTimers();
+
+      try {
+        const screen = await render(
+          <AgentSteps running>
+            <AgentStep title="Read the request" />
+          </AgentSteps>
+        );
+        const marker = () => screen.getByRole('listitem').last().element();
+
+        await vi.advanceTimersByTimeAsync(5000);
+        await vi.waitFor(() => expect(marker().textContent).toContain('5s'));
+
+        await screen.rerender(
+          <AgentSteps running>
+            <AgentStep title="Read the request" />
+            <AgentStep title="Search the docs" status="success" duration={5000} />
+          </AgentSteps>
+        );
+
+        await vi.advanceTimersByTimeAsync(2000);
+        await vi.waitFor(() => expect(marker().textContent).toContain('2s'));
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('draws nothing extra when the chain has finished', async () => {

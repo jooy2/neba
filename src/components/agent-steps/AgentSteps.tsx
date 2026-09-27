@@ -346,8 +346,11 @@ export const AgentSteps = React.forwardRef<HTMLOListElement, AgentStepsProps>(
                 {item}
               </StepContext.Provider>
             ))}
+            {/* Keyed by how many steps came before it: the marker stands for
+                whichever step is under way, so a step appended in front of it
+                is a new one starting, with a clock of its own. */}
             {tail ? (
-              <StepContext.Provider value={{ last: true }}>
+              <StepContext.Provider key={items.length} value={{ last: true }}>
                 {/* `true` gets no title on purpose: the status is already read out, and
                     a visible "Running" beside it would be the same word twice for
                     a screen reader and a label saying nothing for everyone else. */}

@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **An `AgentSteps` chain's running marker counts the step under way, not the whole chain.** The marker `running` draws stands for whichever step is happening now, and it stayed mounted as finished steps were appended in front of it — so its clock went on counting from the first step, and the fourth step of a chain that had been going a minute said it had been running a minute. It starts again with each step appended before it.
+
 - **A `PromptInput` fits its height to its text when its width changes.** The field was measured only when its value changed, so the same words wrapped onto more lines in a narrower window and were cut off, and a field that first rendered hidden — in a closed panel or an inactive tab — measured a box of no width and kept a height of nothing once shown. It measures again whenever its width changes, and when `minRows` or `maxRows` does.
 
 - **A `PromptInput`'s `onKeyDown` can keep a key from sending.** The field sent first and called the caller's handler after, so a mention list or a slash-command menu open over the field could not take Enter to choose an entry — the message went with the half-typed name in it. The caller's `onKeyDown` runs first now, and a `preventDefault` there means the key does not send.
