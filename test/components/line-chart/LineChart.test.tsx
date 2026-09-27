@@ -896,6 +896,26 @@ describe('LineChart', () => {
       expect(onRangeChange.mock.calls[0][0]).toEqual([38, 39]);
     });
 
+    // `thickness` replaced the whole band along the bottom, strip included, so
+    // the strip was drawn over the axis' own labels.
+    it('keeps the strip clear of the axis when the axis is given a thickness', async () => {
+      const screen = await render(
+        chart({ height: 240, xAxis: { thickness: 30 }, brush: { defaultRange: [10, 19] } })
+      );
+      const plot = screen.getByRole('img', { name: 'Signups by day' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const tick = [...plot.element().querySelectorAll('text')].find(
+        (node) => node.textContent === 'D10'
+      )!;
+
+      // The strip is laid over the foot of the 240px box, 32px of it by
+      // default. Read in the drawing's own units, since no test loads the CSS
+      // that places the strip.
+      expect(Number(tick.getAttribute('y'))).toBeLessThanOrEqual(240 - 32);
+    });
+
     // A category reference is an index into the whole series, and the plot was
     // placing it as an index into the window.
     it('draws a category reference at its own column inside the window', async () => {

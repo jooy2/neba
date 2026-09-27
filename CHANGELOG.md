@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A brushed chart keeps its strip clear of an axis given a `thickness`.** The strip is laid over a band the chart reserves at its foot, and a bottom axis' `thickness` replaced that whole band rather than the axis' own share of it, so the strip was drawn over the axis labels. `thickness` is the axis' room and nothing else, as its description says, and the strip's band is added under it.
+
 - **A series on a `secondaryAxis` is labelled and pointed at on its own scale.** Its value labels were written in the first axis's `format`, so a rate beside a revenue read `$4`; `tooltip={{ mode: 'item' }}` measured the pointer against every series on the first axis's scale, so a rate near the top of the plot lost to a revenue near the floor; and a horizontal chart placed its tooltip, and chose which side it hangs on, on that scale too. All three read the series' own axis now, and a value label goes through `secondaryAxis.tickFormat` as the table and the tooltip already did.
 
 - **A `secondaryAxis` label is drawn above the plot rather than over it.** It is written along the top of the chart, at the far end of the line a `yAxis` label starts, and that line was only made room for when the `yAxis` had a label too — so on its own the name sat over the top of the plot and the highest points under it. The top is taken for either name now. On a vertical chart the right-hand band no longer widens for a name that was never drawn in it, so the plot gains that width back.

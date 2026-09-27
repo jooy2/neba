@@ -1827,20 +1827,20 @@ export function CartesianChart(rawProps: CartesianProps) {
      a card sized to the chart is a card the chart fits in. */
   const brushBand = brushOptions ? (brushOptions.height ?? 32) + 10 : 0;
 
-  const bottomBand =
-    (horizontal
-      ? valueAxis?.hidden
-        ? 0
-        : fontSize + 12 + (valueAxis?.label ? axisLabelBand : 0)
-      : categoryAxis?.hidden
-        ? 0
-        : labelDepth + 12 + (categoryAxis?.label ? axisLabelBand : 0)) + brushBand;
+  const bottomBand = horizontal
+    ? valueAxis?.hidden
+      ? 0
+      : fontSize + 12 + (valueAxis?.label ? axisLabelBand : 0)
+    : categoryAxis?.hidden
+      ? 0
+      : labelDepth + 12 + (categoryAxis?.label ? axisLabelBand : 0);
 
   // `thickness` belongs to whichever axis is actually on that edge, which swaps
   // with `horizontal` — read off the wrong one, a bar chart turned on its side
-  // would take its left margin from the axis along the bottom.
+  // would take its left margin from the axis along the bottom. It is the
+  // axis' own band and nothing more: the strip under it is added either way.
   const left = (horizontal ? categoryAxis : valueAxis)?.thickness ?? leftBand;
-  const bottom = (horizontal ? valueAxis : categoryAxis)?.thickness ?? bottomBand;
+  const bottom = ((horizontal ? valueAxis : categoryAxis)?.thickness ?? bottomBand) + brushBand;
 
   // The last category's label is centred on the last tick, so half of it hangs
   // past the plot. Reserving that half is what stops a chart clipping the one
