@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `Tour` jumps to each step's target under a reduced-motion preference.** It scrolled the page to the target with `behavior: 'smooth'` whatever the reader had asked for, which is the page gliding under them. It jumps instead when the preference is set, as a `ScrollZone` already does.
+
 - **Opening a `ColorPicker` or a `TreeSelect` takes the focus into its popup.** The shell they share leaves the focus alone on opening, because a date picker's calendar moves it into the grid itself — but these two move it nowhere, so a reader who opened one from the keyboard was left on the trigger, and a searchable `TreeSelect` did not take what they typed next. The focus now lands on the first thing in the popup that takes it: the colour square, the search field or the tree.
 
 - **A `ColorPicker`'s sliders are read out as what they measure.** The square was read as two bare percentages with nothing to say which was saturation, the hue rail as a bare number of degrees and the opacity rail as a number with no percent sign. The square now reads "Saturation 100%, brightness 90%" from a new `areaValue` label, in every registered language, and the two rails are written by the platform in the reader's own — "217 degrees" and "55%" in English.

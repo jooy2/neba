@@ -3,6 +3,32 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Tour } from 'neba';
 
+/*
+ * The reduced-motion answer, switchable per test. The media module keeps one
+ * `MediaQueryList` per query for the life of the page, so the list is wrapped
+ * once, before anything asks, and `matches` is read from here.
+ */
+let reduceMotion = false;
+const matchMedia = window.matchMedia.bind(window);
+
+window.matchMedia = (query: string) => {
+  const list = matchMedia(query);
+
+  if (!query.includes('prefers-reduced-motion')) {
+    return list;
+  }
+
+  return new Proxy(list, {
+    get(target, key) {
+      if (key === 'matches') {
+        return reduceMotion;
+      }
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    }
+  });
+};
+
 const STEPS = [
   { target: '#tour-save', title: 'Save', content: 'This writes the change.' },
   { target: '#tour-deploy', title: 'Deploy', content: 'And this ships it.' },
@@ -24,6 +50,32 @@ function Page(props: React.ComponentProps<typeof Tour>) {
 }
 
 describe('Tour', () => {
+  describe('scrolling to a step', () => {
+    it('glides to the target, or jumps under a reduced-motion preference', async () => {
+      const scroll = vi.spyOn(HTMLElement.prototype, 'scrollIntoView').mockImplementation(() => {});
+
+      try {
+        for (const [reduced, behavior] of [
+          [false, 'smooth'],
+          [true, 'auto']
+        ] as const) {
+          reduceMotion = reduced;
+          scroll.mockClear();
+
+          const screen = await render(<Page steps={STEPS} defaultOpen />);
+
+          await expect.poll(() => scroll.mock.calls.length).toBeGreaterThan(0);
+          expect(scroll.mock.calls[0][0]).toMatchObject({ behavior });
+
+          await screen.unmount();
+        }
+      } finally {
+        reduceMotion = false;
+        scroll.mockRestore();
+      }
+    });
+  });
+
   describe('rendering', () => {
     it('draws nothing until it is running', async () => {
       const screen = await render(<Page steps={STEPS} />);

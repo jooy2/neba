@@ -6,6 +6,7 @@ import { Button } from '../button/Button.js';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, fillMessage, stepsMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
+import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import {
   cx,
@@ -319,7 +320,13 @@ export function Tour(rawProps: TourProps) {
     if (!(target instanceof HTMLElement)) return undefined;
 
     if (scrollIntoView) {
-      target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      target.scrollIntoView({
+        block: 'center',
+        inline: 'nearest',
+        // A page gliding under the reader is motion; a reduced-motion
+        // preference gets the jump instead.
+        behavior: queryMatches(reducedMotionQuery) ? 'auto' : 'smooth'
+      });
     }
 
     const pad = current?.padding ?? 6;
