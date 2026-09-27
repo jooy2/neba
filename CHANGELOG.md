@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A `secondaryAxis` label is drawn above the plot rather than over it.** It is written along the top of the chart, at the far end of the line a `yAxis` label starts, and that line was only made room for when the `yAxis` had a label too — so on its own the name sat over the top of the plot and the highest points under it. The top is taken for either name now. On a vertical chart the right-hand band no longer widens for a name that was never drawn in it, so the plot gains that width back.
+
 - **A chart reference on the category axis stays on its own column under a brush.** Its `value` is an index into the whole series, and the plot placed it as an index into the window — so with the window on days 10 to 19, a rule at day 10 was drawn off the end of the plot, and the hidden list read it out under the wrong category's name. It is placed and named against the whole series now. A category reference outside what the plot draws, windowed or not, is left out rather than drawn past the axis, and a band is cut at the plot's edge.
 
 - **A chart brush reports a window only when it moved, and never one past the series.** `onRangeChange` was called for every key and every pointer move, including a `Home` on a handle already at the start and a drag that stayed inside one category, with the window it already had. And a window one category wide at either end of the series reported a handle at `-1` or one past the last category. Both ends are held inside the series now, and a gesture that changes nothing reports nothing.

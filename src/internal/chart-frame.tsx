@@ -1738,13 +1738,12 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
   const axisLabelBand = fontSize + 6;
 
-  /* And the band it takes out of the box: on the right of a vertical chart,
-     along the top of one turned on its side. */
+  /* And the band its ticks take out of the box: on the right of a vertical
+     chart, along the top of one turned on its side. Its name is not in it —
+     that goes in the band along the top, below. */
   const secondBand =
     secondScale && !secondaryAxis?.hidden
-      ? (secondaryAxis?.thickness ??
-        (horizontal ? fontSize + 12 : widestSecondTick + 10) +
-          (secondaryAxis?.label ? axisLabelBand : 0))
+      ? (secondaryAxis?.thickness ?? (horizontal ? fontSize + 12 : widestSecondTick + 10))
       : 0;
 
   /* An axis name is written where its axis is: the one along the bottom under
@@ -1754,6 +1753,9 @@ export function CartesianChart(rawProps: CartesianProps) {
      and on a horizontal chart it was not drawn at all. */
   const leftAxis = horizontal ? categoryAxis : valueAxis;
   const namesLeftAxis = Boolean(leftAxis?.label) && !leftAxis?.hidden;
+  /* The far edge's name is written at the top of the box too, at the other
+     end of the same line, so the band along the top is taken for either. */
+  const namesSecondAxis = Boolean(secondScale && secondaryAxis?.label && !secondaryAxis.hidden);
 
   /* How far the category labels are turned, and every measurement that follows
      from it — see `turnedAxis`, which a HeatmapChart's column axis shares.
@@ -1864,7 +1866,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     4 +
     headroom +
     markInset +
-    (namesLeftAxis ? axisLabelBand + 2 : 0) +
+    (namesLeftAxis || namesSecondAxis ? axisLabelBand + 2 : 0) +
     (exportable ? 20 : 0) +
     // A chart turned on its side draws its second value axis along the top.
     (horizontal ? secondBand : 0);

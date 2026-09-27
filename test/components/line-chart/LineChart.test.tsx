@@ -1191,6 +1191,39 @@ describe('LineChart', () => {
         [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
       ).toContain('Rate');
     });
+
+    // The name is written along the top, and the top only had room for it when
+    // the first axis had a name of its own to make room for.
+    it('keeps the far edge’s name above the plot when the first axis has none', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          secondaryAxis={{ label: 'Rate', tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate series', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')];
+      const name = texts.find((node) => node.textContent === 'Rate')!;
+      const size = Number(name.getAttribute('font-size'));
+      // The far edge's ticks are centred on their value, so the highest one is
+      // centred on the top of the plot.
+      const top = Math.min(
+        ...texts
+          .filter((node) => node.textContent?.endsWith('%'))
+          .map((node) => Number(node.getAttribute('y')))
+      );
+
+      expect(Number(name.getAttribute('y'))).toBeLessThanOrEqual(top - size / 2);
+    });
   });
 
   describe('exporting', () => {
