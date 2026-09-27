@@ -344,6 +344,12 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
               filter={null}
               value={query}
               onValueChange={(next) => setQuery(next)}
+              // The list is held open, so it is the one that hears Escape, and
+              // it keeps the key from the dialog around it — which then never
+              // closed. What the list would have done is what the palette does.
+              onOpenChange={(next, details) => {
+                if (!next && details.reason === 'escape-key') setOpen(false);
+              }}
               itemToStringValue={(item: CommandItem) => item.label}
             >
               <div

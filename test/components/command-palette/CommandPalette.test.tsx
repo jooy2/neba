@@ -131,6 +131,23 @@ describe('CommandPalette', () => {
       await expect.element(screen.getByText('Deploy production')).toBeInTheDocument();
     });
 
+    // Escape from the field is the third way out, and the one a reader uses
+    // most: it closes the palette whatever is typed, and takes the query too.
+    it('closes on Escape from the field, and starts empty again', async () => {
+      const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+P" defaultOpen />);
+
+      await screen.getByRole('combobox').fill('overview');
+      await expect.element(screen.getByText('Deploy production')).not.toBeInTheDocument();
+
+      await userEvent.keyboard('{Escape}');
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+
+      await userEvent.keyboard('{Alt>}p{/Alt}');
+
+      await expect.element(screen.getByRole('combobox')).toHaveValue('');
+      await expect.element(screen.getByText('Deploy production')).toBeInTheDocument();
+    });
+
     it('starts empty again after a controlled open was turned off', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut={false} open />);
 
