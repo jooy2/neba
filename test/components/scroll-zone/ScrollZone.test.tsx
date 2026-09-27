@@ -26,12 +26,12 @@ const cards = Array.from({ length: 6 }, (_, index) => (
   </div>
 ));
 
-/** The scrolling box: the focusable one, wherever the buttons have put it. */
+/** The scrolling box: the named group, wherever the buttons have put it. */
 function scroller(screen: Awaited<ReturnType<typeof render>>) {
   return screen
     .getByTestId('zone')
     .element()
-    .querySelector<HTMLElement>(':scope > [tabindex="0"]') as HTMLElement;
+    .querySelector<HTMLElement>(':scope > [role="group"]') as HTMLElement;
 }
 
 /** And the grid inside it. */
@@ -99,7 +99,18 @@ describe('ScrollZone', () => {
     it('leaves the strip reachable from the keyboard', async () => {
       const screen = await render(<ScrollZone data-testid="zone">{cards}</ScrollZone>);
 
-      expect(scroller(screen)).toHaveAttribute('tabindex', '0');
+      await expect.poll(() => scroller(screen).getAttribute('tabindex')).toBe('0');
+    });
+
+    // A row of chips that fits was a tab stop that did nothing.
+    it('keeps a strip that fits out of the tab order', async () => {
+      const screen = await render(
+        <ScrollZone data-testid="zone">
+          <div style={{ width: 20 }}>One</div>
+        </ScrollZone>
+      );
+
+      await expect.element(screen.getByRole('group')).toHaveAttribute('tabindex', '-1');
     });
 
     // The strip has to be a tab stop or a reader with no pointer cannot move

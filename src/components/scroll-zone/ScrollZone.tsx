@@ -653,10 +653,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
           // is not using a pointer. That is the browser's own key handling on a
           // scroll container, which means it is already right under RTL — a
           // handler of ours mapping ArrowRight to "forward" would not have been.
-          tabIndex={0}
-          // Always a group with a name, never a bare focusable `<div>`. The strip
-          // has to be a tab stop or a reader with no pointer cannot move it, and a
-          // tab stop that announces nothing is worse than one that says only what
+          // Only while there is somewhere to go: a row of chips that fits is a
+          // tab stop that does nothing, one for every row on the page.
+          tabIndex={reach.back || reach.forward ? 0 : -1}
+          // Always a group with a name, never a bare focusable `<div>`. A tab
+          // stop that announces nothing is worse than one that says only what
           // kind of thing it is. `label` says what is *in* it; the fallback says
           // what it is.
           role="group"

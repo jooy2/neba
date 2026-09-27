@@ -107,7 +107,7 @@ While the pointer is over a strip that overflows, the wheel moves only the strip
 
 ## Accessibility
 
-- The strip is focusable and scrolls with the arrow keys, which is the browser's own key handling on a scroll container, so it is already right under RTL.
+- While it overflows, the strip is focusable and scrolls with the arrow keys, which is the browser's own key handling on a scroll container, so it is already right under RTL. A strip whose content fits is not a tab stop.
 - `label` names the region and is what a screen reader reads before its contents. Without one it is named with the locale's generic word, so it is never unnamed, but only `label` says what is in it.
 - The scroll buttons are real buttons with real names, and `previousLabel` / `nextLabel` (or `locale`) decide what those names are.
 - In `hold` mode the buttons answer Enter and Space the same way they answer a press, scrolling while the key is down.

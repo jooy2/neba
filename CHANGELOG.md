@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `ScrollZone` whose content fits is not a tab stop.** The strip took the focus whether or not there was anywhere to scroll it, so a page of chip rows that all fitted was a tab stop per row that did nothing. It is focusable while it overflows, which is when the arrow keys have something to move, and keeps its role and its name either way.
+
 - **A resizable `Sidebar` says its width again after it has been a drawer.** The separator's `aria-valuenow`, `aria-valuemin` and `aria-valuemax` were written once, so a sidebar that collapsed into a drawer and widened back into a column — or first mounted as a drawer — came back with a separator that said none of the three.
 
 - **A `Tour` jumps to each step's target under a reduced-motion preference.** It scrolled the page to the target with `behavior: 'smooth'` whatever the reader had asked for, which is the page gliding under them. It jumps instead when the preference is set, as a `ScrollZone` already does.
