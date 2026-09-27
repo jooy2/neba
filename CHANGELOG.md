@@ -18,6 +18,8 @@
 
 ### Added
 
+- **A `Transfer` says what a move did.** A polite status reads out how many rows moved and to which list, "2 moved to Selected", in the `locale`'s words. It is `transfer.moved`, in every registered language.
+
 - **`createNebaCatalog` takes a `locale`.** The A2UI functions that write numbers — `formatNumber`, `formatCurrency` and `pluralize` — followed the runtime's language whatever the components around them were set to, so a Korean surface could say "1,234.5" in a Korean sentence and pick the English plural. `createNebaCatalog({ locale })` builds them in the language given, which is the one a `NebaProvider` should be given too.
 
 ### Changed

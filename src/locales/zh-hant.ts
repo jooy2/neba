@@ -141,7 +141,8 @@ export const zhHant: NebaLocale = {
     toSource: '移回可選',
     search: '搜尋',
     selectAll: '全選',
-    empty: '這裡沒有內容'
+    empty: '這裡沒有內容',
+    moved: '已將 {count} 項移至{list}'
   },
   command: {
     label: '命令面板',

@@ -69,3 +69,4 @@ The headings, the buttons and the filter come from `locale`. `sourceLabel` and `
 - Every row is a real checkbox with its label wired to it, so the whole thing is reachable with Tab and Space.
 - The tick above each list is `Select all` for that list, and reports a mixed state while only some rows are ticked.
 - Both buttons are named ("Move to selected" and "Move to available"), and go unavailable while there is nothing for them to move.
+- After a move a polite status says how many rows moved and to which list ("2 moved to Selected"), in the `locale`'s words.

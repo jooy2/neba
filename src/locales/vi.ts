@@ -138,7 +138,8 @@ export const vi: NebaLocale = {
     toSource: 'Trả về có sẵn',
     search: 'Tìm kiếm',
     selectAll: 'Chọn tất cả',
-    empty: 'Không có gì ở đây'
+    empty: 'Không có gì ở đây',
+    moved: 'Đã chuyển sang {list}: {count}'
   },
   command: {
     label: 'Bảng lệnh',

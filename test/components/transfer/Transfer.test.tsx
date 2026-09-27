@@ -86,6 +86,30 @@ describe('Transfer', () => {
       await expect.element(screen.getByText('0/3')).toBeInTheDocument();
     });
 
+    // A move changed two counts and two lists and said nothing about it.
+    it('tells a screen reader what moved, and says it again for the same move', async () => {
+      const screen = await render(<Transfer items={ITEMS} targetLabel="Shown" />);
+      const status = screen.getByRole('status');
+
+      await screen.getByText('Status').click();
+      await screen.getByText('Commit').click();
+      await screen.getByRole('button', { name: 'Move to selected' }).click();
+
+      await expect.element(status).toHaveTextContent('2 moved to Shown');
+
+      await screen.getByText('Status').click();
+      await screen.getByRole('button', { name: 'Move to available' }).click();
+
+      await expect.element(status).toHaveTextContent('1 moved to Available');
+
+      await screen.getByText('Commit').click();
+      await screen.getByRole('button', { name: 'Move to available' }).click();
+
+      // The same sentence again, so the region is emptied before it is written.
+      await expect.element(status).toHaveTextContent('');
+      await expect.element(status).toHaveTextContent('1 moved to Available');
+    });
+
     // An id `items` did not list vanished on the way right and stayed on the way
     // left, so the same value lost an entry depending on which button was pressed.
     it('keeps a value it has no row for, whichever way rows move', async () => {

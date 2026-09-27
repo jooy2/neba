@@ -138,7 +138,8 @@ export const pl: NebaLocale = {
     toSource: 'Przenieś do dostępnych',
     search: 'Szukaj',
     selectAll: 'Zaznacz wszystko',
-    empty: 'Nic tu nie ma'
+    empty: 'Nic tu nie ma',
+    moved: 'Przeniesiono do listy {list}: {count}'
   },
   command: {
     label: 'Paleta poleceń',

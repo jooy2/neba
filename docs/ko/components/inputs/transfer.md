@@ -69,3 +69,4 @@ import { Transfer } from 'neba';
 - 모든 행이 라벨과 연결된 진짜 checkbox이므로 Tab과 Space만으로 전부 조작할 수 있습니다.
 - 각 목록 위의 체크는 그 목록의 `Select all`이며, 일부만 체크된 동안에는 mixed 상태를 알립니다.
 - 두 버튼 모두 "Move to selected", "Move to available"이라는 이름을 가지며, 옮길 것이 없으면 사용 불가가 됩니다.
+- 옮기고 나면 polite status가 몇 개가 어느 목록으로 옮겨졌는지 `locale`의 말로 알립니다("2 moved to Selected").

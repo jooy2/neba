@@ -138,7 +138,8 @@ export const ar: NebaLocale = {
     toSource: 'الإرجاع إلى المتاح',
     search: 'بحث',
     selectAll: 'تحديد الكل',
-    empty: 'لا شيء هنا'
+    empty: 'لا شيء هنا',
+    moved: 'نُقل إلى {list}: {count}'
   },
   command: {
     label: 'لوحة الأوامر',

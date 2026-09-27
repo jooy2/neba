@@ -142,7 +142,8 @@ export const ru: NebaLocale = {
     toSource: 'Вернуть в доступные',
     search: 'Поиск',
     selectAll: 'Выбрать все',
-    empty: 'Здесь пусто'
+    empty: 'Здесь пусто',
+    moved: 'Перемещено в список «{list}»: {count}'
   },
   command: {
     label: 'Палитра команд',

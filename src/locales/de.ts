@@ -138,7 +138,8 @@ export const de: NebaLocale = {
     toSource: 'Zurück zu Verfügbar',
     search: 'Suchen',
     selectAll: 'Alle auswählen',
-    empty: 'Nichts vorhanden'
+    empty: 'Nichts vorhanden',
+    moved: 'Nach {list} verschoben: {count}'
   },
   command: {
     label: 'Befehlspalette',

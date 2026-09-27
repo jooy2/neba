@@ -138,7 +138,8 @@ export const ko: NebaLocale = {
     toSource: '선택 가능으로 되돌리기',
     search: '검색',
     selectAll: '모두 선택',
-    empty: '항목이 없습니다'
+    empty: '항목이 없습니다',
+    moved: '{list}(으)로 {count}개를 옮겼습니다'
   },
   command: {
     label: '명령 팔레트',

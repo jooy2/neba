@@ -142,7 +142,8 @@ export const hi: NebaLocale = {
     toSource: 'उपलब्ध में वापस भेजें',
     search: 'खोजें',
     selectAll: 'सभी चुनें',
-    empty: 'यहाँ कुछ नहीं है'
+    empty: 'यहाँ कुछ नहीं है',
+    moved: '{list} में ले जाए गए: {count}'
   },
   command: {
     label: 'कमांड पैलेट',

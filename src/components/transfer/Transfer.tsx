@@ -5,7 +5,7 @@ import { Checkbox } from '../checkbox/Checkbox.js';
 import { IconButton } from '../icon-button/IconButton.js';
 import { ScrollArea } from '../scroll-area/ScrollArea.js';
 import { TextField } from '../text-field/TextField.js';
-import { transferMessages, useMessages } from '../../internal/i18n.js';
+import { fillMessage, transferMessages, useMessages } from '../../internal/i18n.js';
 import { ArrowRightIcon } from '../../internal/icons.js';
 import { searchText } from '../../internal/search.js';
 import {
@@ -15,6 +15,7 @@ import {
   metaTextClasses,
   paddingXClasses,
   radiusClasses,
+  srOnlyClasses,
   surfaceSlots,
   toLength
 } from '../../internal/styles.js';
@@ -266,6 +267,13 @@ function narrow(
 }
 
 /**
+ * How long the live region stays empty before it speaks again. Long enough for
+ * a screen reader to notice the text went away, which a single frame is not for
+ * all of them.
+ */
+const SPEAK_AFTER = 100;
+
+/**
  * Two lists and the arrows between them: everything that could be chosen on one
  * side, everything that has been on the other.
  *
@@ -311,6 +319,16 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
     const [arrived, setArrived] = React.useState<ReadonlySet<string>>(() => new Set());
     const [sourceSearch, setSourceSearch] = React.useState('');
     const [targetSearch, setTargetSearch] = React.useState('');
+    /*
+     * What a screen reader is told after a move. A live region speaks only when
+     * its text changes, so two moves of the same count to the same list would
+     * say the second one to nobody: it is emptied and written again a moment
+     * later, as CodeBlock's copy does.
+     */
+    const [spoken, setSpoken] = React.useState('');
+    const speakTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+    React.useEffect(() => () => clearTimeout(speakTimer.current), []);
 
     const chosen = React.useMemo(() => new Set(selected), [selected]);
     const source = React.useMemo(
@@ -380,6 +398,21 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
       setTicked((current) => new Set([...current].filter((item) => !ids.has(item))));
       setArrived(ids);
       commit(next);
+
+      const landed = toTarget ? targetLabel : sourceLabel;
+      const text = fillMessage(messages.moved, {
+        count: String(moved.length),
+        list:
+          typeof landed === 'string' && landed.trim()
+            ? landed
+            : toTarget
+              ? messages.target
+              : messages.source
+      });
+
+      clearTimeout(speakTimer.current);
+      setSpoken('');
+      speakTimer.current = setTimeout(() => setSpoken(text), SPEAK_AFTER);
     };
 
     const haystacks = React.useMemo(() => haystacksOf(items), [items]);
@@ -471,6 +504,10 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
           selectAllLabel={messages.selectAll}
           style={panelStyle}
         />
+
+        <span role="status" className={srOnlyClasses}>
+          {spoken}
+        </span>
       </div>
     );
   }

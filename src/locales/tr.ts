@@ -138,7 +138,8 @@ export const tr: NebaLocale = {
     toSource: 'Kullanılabilire geri al',
     search: 'Ara',
     selectAll: 'Tümünü seç',
-    empty: 'Burada bir şey yok'
+    empty: 'Burada bir şey yok',
+    moved: '{list} listesine taşınan: {count}'
   },
   command: {
     label: 'Komut paleti',

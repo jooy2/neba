@@ -677,6 +677,11 @@ export interface TransferMessages {
   selectAll: string;
   /** The line where the rows would be, when a list has none. */
   empty: string;
+  /**
+   * What a screen reader is told after a move. `{count}` is replaced with how
+   * many rows moved and `{list}` with the heading of the list they went to.
+   */
+  moved: string;
 }
 
 /** The `transfer` namespace, as Transfer read it. */
@@ -688,7 +693,8 @@ export const transferMessages: MessageTable<TransferMessages> = {
     toSource: 'Move to available',
     search: 'Search',
     selectAll: 'Select all',
-    empty: 'Nothing here'
+    empty: 'Nothing here',
+    moved: '{count} moved to {list}'
   }
 };
 

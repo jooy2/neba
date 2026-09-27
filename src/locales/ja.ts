@@ -138,7 +138,8 @@ export const ja: NebaLocale = {
     toSource: '未選択に戻す',
     search: '検索',
     selectAll: 'すべて選択',
-    empty: '項目がありません'
+    empty: '項目がありません',
+    moved: '{list}に{count}件移動しました'
   },
   command: {
     label: 'コマンドパレット',

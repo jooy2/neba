@@ -142,7 +142,8 @@ export const es: NebaLocale = {
     toSource: 'Devolver a disponibles',
     search: 'Buscar',
     selectAll: 'Seleccionar todo',
-    empty: 'No hay nada'
+    empty: 'No hay nada',
+    moved: 'Movidos a {list}: {count}'
   },
   command: {
     label: 'Paleta de comandos',

@@ -138,7 +138,8 @@ export const th: NebaLocale = {
     toSource: 'ย้ายกลับไปที่มีอยู่',
     search: 'ค้นหา',
     selectAll: 'เลือกทั้งหมด',
-    empty: 'ไม่มีรายการ'
+    empty: 'ไม่มีรายการ',
+    moved: 'ย้ายไปที่{list}แล้ว {count} รายการ'
   },
   command: {
     label: 'แผงคำสั่ง',

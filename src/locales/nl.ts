@@ -138,7 +138,8 @@ export const nl: NebaLocale = {
     toSource: 'Terug naar beschikbaar',
     search: 'Zoeken',
     selectAll: 'Alles selecteren',
-    empty: 'Niets aanwezig'
+    empty: 'Niets aanwezig',
+    moved: 'Verplaatst naar {list}: {count}'
   },
   command: {
     label: 'Opdrachtenpalet',

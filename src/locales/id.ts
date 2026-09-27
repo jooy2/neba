@@ -142,7 +142,8 @@ export const id: NebaLocale = {
     toSource: 'Kembalikan ke tersedia',
     search: 'Cari',
     selectAll: 'Pilih semua',
-    empty: 'Tidak ada apa pun'
+    empty: 'Tidak ada apa pun',
+    moved: 'Dipindahkan ke {list}: {count}'
   },
   command: {
     label: 'Palet perintah',
