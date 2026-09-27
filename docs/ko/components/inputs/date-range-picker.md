@@ -62,7 +62,7 @@ interface DateRange {
 
 ### labelPlacement
 
-`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. 내려앉은 `float` 라벨은 두 placeholder를 함께 대신하다가, 한쪽 끝이라도 고르거나 popup이 열리면 노치로 올라갑니다. 달력 아이콘이 있으면 노치에 머물므로, 내려앉게 하려면 `startIcon={false}`를 넘깁니다.
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. 내려앉은 `float` 라벨은 두 placeholder를 함께 대신하다가, 한쪽 끝이라도 고르거나 trigger에 포커스가 가거나 popup이 열리면 노치로 올라갑니다. 달력 아이콘이 있으면 노치에 머물므로, 내려앉게 하려면 `startIcon={false}`를 넘깁니다.
 
 <Demo src="date-range-picker/label-placement">
 

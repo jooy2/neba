@@ -64,7 +64,7 @@ format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length} c
 
 ### labelPlacement
 
-`notch` and `float` work as they do on [TextField](./text-field#labelplacement). A `float` label rests in the trigger until something is chosen or the popup is open.
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). A `float` label rests in the trigger while nothing is chosen, the trigger does not hold the focus and the popup is closed.
 
 <Demo src="tree-select/label-placement">
 

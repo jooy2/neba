@@ -132,7 +132,8 @@ export interface SelectProps
   label?: React.ReactNode;
   /**
    * Where the label is drawn: above the trigger, in a notch cut into its top
-   * edge, or inside it until something is chosen or the list is open. A
+   * edge, or inside it while nothing is chosen, the trigger does not hold the
+   * focus and the list is closed. A
    * `startIcon` keeps a `float` label in the notch.
    * @default 'top'
    */

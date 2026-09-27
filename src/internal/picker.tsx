@@ -135,7 +135,8 @@ export interface PickerShellProps
   label?: React.ReactNode;
   /**
    * Where the label is drawn: above the trigger, in a notch cut into its top
-   * edge, or inside it until something is chosen or the popup is open. The
+   * edge, or inside it while nothing is chosen, the trigger does not hold the
+   * focus and the popup is closed. The
    * glyph a picker draws at its start keeps a `float` label in the notch; pass
    * `startIcon={false}` to give it somewhere to rest.
    * @default 'top'

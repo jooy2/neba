@@ -492,8 +492,8 @@ function pickerProps(options: PickerOptions): PropRow[] {
     },
     ...fieldProps,
     labelPlacementRow({
-      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 팝업이 열릴 때까지 placeholder 자리. 앞쪽 글리프가 있으면 float도 노치에 머물므로 startIcon={false}로 내려앉게 합니다',
-      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the popup opens. The glyph at the start keeps float in the notch; startIcon={false} lets it rest'
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 아무것도 고르지 않았고 트리거에 포커스가 없고 팝업이 닫혀 있는 동안 placeholder 자리. 앞쪽 글리프가 있으면 float도 노치에 머물므로 startIcon={false}로 내려앉게 합니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder while nothing is chosen, the trigger does not hold the focus and the popup is closed. The glyph at the start keeps float in the notch; startIcon={false} lets it rest'
     }),
     ...inertProps
   ];
@@ -5348,8 +5348,8 @@ export const propTables: Record<string, PropRow[]> = {
     },
     ...fieldProps,
     labelPlacementRow({
-      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 목록이 열릴 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
-      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the list opens. A startIcon keeps float in the notch'
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 아무것도 고르지 않았고 트리거에 포커스가 없고 목록이 닫혀 있는 동안 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder while nothing is chosen, the trigger does not hold the focus and the list is closed. A startIcon keeps float in the notch'
     }),
     {
       name: 'startIcon',
@@ -5549,8 +5549,8 @@ export const propTables: Record<string, PropRow[]> = {
     slotsProp('popup', 'tree', 'item', 'empty'),
     ...fieldProps,
     labelPlacementRow({
-      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 무언가를 고르거나 목록이 열릴 때까지 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
-      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder until something is chosen or the list opens. A startIcon keeps float in the notch'
+      ko: '라벨 위치. 트리거 위, 위쪽 테두리를 끊어 낸 노치, 또는 아무것도 고르지 않았고 트리거에 포커스가 없고 목록이 닫혀 있는 동안 placeholder 자리. startIcon이 있으면 float도 노치에 머뭅니다',
+      en: 'Where the label is drawn: above the trigger, in a notch cut into its top edge, or in place of the placeholder while nothing is chosen, the trigger does not hold the focus and the list is closed. A startIcon keeps float in the notch'
     }),
     ...inertProps
   ],

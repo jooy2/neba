@@ -64,7 +64,7 @@ format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length}�
 
 ### labelPlacement
 
-`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 무언가를 고르거나 popup이 열리기 전까지 trigger 안에 있습니다.
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 아무것도 고르지 않았고 trigger에 포커스가 없으며 popup이 닫혀 있는 동안 trigger 안에 있습니다.
 
 <Demo src="tree-select/label-placement">
 

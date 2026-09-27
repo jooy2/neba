@@ -69,7 +69,7 @@ The same three weights a [TextField](./text-field) has, drawn on the same shell,
 
 ### labelPlacement
 
-`notch` puts the label on the trigger's top edge, in a gap cut out of the border. `float` puts it inside the trigger in place of the placeholder until something is chosen or the list is open, then moves it up into the notch. A `startIcon` keeps a `float` label in the notch. [TextField](./text-field#labelplacement) has the details every field shares.
+`notch` puts the label on the trigger's top edge, in a gap cut out of the border. `float` puts it inside the trigger in place of the placeholder, and moves it up into the notch once something is chosen, the trigger takes the focus or the list opens. A `startIcon` keeps a `float` label in the notch. [TextField](./text-field#labelplacement) has the details every field shares.
 
 <Demo src="select/label-placement">
 

@@ -69,7 +69,7 @@ interface SelectOption {
 
 ### labelPlacement
 
-`notch`는 trigger 위쪽 테두리를 끊어 낸 틈에 라벨을 올립니다. `float`는 무언가를 고르거나 목록이 열리기 전까지 placeholder 자리에 라벨을 두었다가 노치로 올립니다. `startIcon`이 있으면 `float` 라벨도 노치에 머뭅니다. 모든 필드에 공통인 내용은 [TextField](./text-field#labelplacement)에 있습니다.
+`notch`는 trigger 위쪽 테두리를 끊어 낸 틈에 라벨을 올립니다. `float`는 placeholder 자리에 라벨을 두었다가, 무언가를 고르거나 trigger에 포커스가 가거나 목록이 열리면 노치로 올립니다. `startIcon`이 있으면 `float` 라벨도 노치에 머뭅니다. 모든 필드에 공통인 내용은 [TextField](./text-field#labelplacement)에 있습니다.
 
 <Demo src="select/label-placement">
 
