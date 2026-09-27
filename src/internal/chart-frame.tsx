@@ -2245,17 +2245,46 @@ export function CartesianChart(rawProps: CartesianProps) {
   /* A chart whose marks are not cells of a grid answers for its own panel. */
   const supplied = activeMark && markTooltip ? markTooltip(activeMark) : null;
 
+  /* Where each item in the column is drawn along the value axis, as the span
+     from the end nearer zero to the far one. Unstacked, that is the value
+     itself; stacked, a segment starts where the one below it ends, with the
+     same sign split `extentOf` and the marks use — two segments of 10 are
+     drawn from 0 to 10 and from 10 to 20, not both at 10. Each on its own
+     series' scale: with two value axes, a number's place on the plot is not a
+     property of the number. */
+  const drawnSpans = new Map<number, [number, number]>();
+  let above = 0;
+  let below = 0;
+
+  for (const item of column) {
+    const value = item.value ?? 0;
+    const from = !stacked ? value : value < 0 ? below : above;
+    const to = !stacked ? value : from + value;
+
+    if (stacked && value < 0) {
+      below = to;
+    } else if (stacked) {
+      above = to;
+    }
+    drawnSpans.set(item.seriesIndex, [
+      valuePx(from, item.seriesIndex),
+      valuePx(to, item.seriesIndex)
+    ]);
+  }
+
+  /** How far the pointer is from an item's mark: nothing inside a segment. */
+  const distanceTo = (item: ChartTooltipItem, at: number) => {
+    const [from, to] = drawnSpans.get(item.seriesIndex) ?? [at, at];
+
+    return Math.max(0, Math.min(from, to) - at, at - Math.max(from, to));
+  };
+
   const items = supplied
     ? supplied.items
     : tooltipMode === 'item' && column.length > 1 && pointer !== null
       ? [
-          // Each on its own series' scale: with two value axes, a number's
-          // place on the plot is not a property of the number.
           column.reduce((nearest, item) =>
-            Math.abs(valuePx(item.value ?? 0, item.seriesIndex) - pointer) <
-            Math.abs(valuePx(nearest.value ?? 0, nearest.seriesIndex) - pointer)
-              ? item
-              : nearest
+            distanceTo(item, pointer) < distanceTo(nearest, pointer) ? item : nearest
           )
         ]
       : column;
@@ -2280,7 +2309,8 @@ export function CartesianChart(rawProps: CartesianProps) {
   const anchorX = activeMark
     ? activeMark.x
     : horizontal
-      ? valuePx(items[0]?.value ?? 0, items[0]?.seriesIndex)
+      ? (drawnSpans.get(items[0]?.seriesIndex ?? -1)?.[1] ??
+        valuePx(items[0]?.value ?? 0, items[0]?.seriesIndex))
       : plot.left + categoryPx(activeIndex ?? 0);
   const anchorY = activeMark
     ? activeMark.y

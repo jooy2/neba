@@ -446,6 +446,57 @@ describe('BarChart', () => {
       expect(turned).toContain('Seoul');
       expect(turned).not.toContain('Seoul%');
     });
+
+    // Each series was measured at its own value, so two segments of 10 were
+    // both "at 10" and the first always won, whichever one the pointer was on.
+    it('narrows mode="item" to the segment under the pointer', async () => {
+      const chart = (orientation: 'vertical' | 'horizontal') => (
+        <BarChart
+          label="Deploys"
+          stacked
+          orientation={orientation}
+          height={200}
+          tooltip={{ mode: 'item' }}
+          categories={['Platform']}
+          series={[
+            { name: 'Manual', data: [10] },
+            { name: 'Scheduled', data: [10] }
+          ]}
+        />
+      );
+      const screen = await render(chart('vertical'));
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      /** Hovers the middle of the nth segment and reads which series is named. */
+      const nameAt = async (segment: number) => {
+        const bars = [...plot.element().querySelectorAll('path[fill]:not([fill="none"])')];
+        const box = bars[segment].getBoundingClientRect();
+        const origin = plot.element().getBoundingClientRect();
+
+        await plot.hover({
+          position: {
+            x: box.left - origin.left + box.width / 2,
+            y: box.top - origin.top + box.height / 2
+          }
+        });
+
+        const status = screen.getByRole('status');
+
+        await expect.element(status).toBeInTheDocument();
+
+        return status.element().textContent ?? '';
+      };
+
+      expect(await nameAt(1)).toContain('Scheduled');
+      expect(await nameAt(0)).toContain('Manual');
+
+      await screen.rerender(chart('horizontal'));
+
+      expect(await nameAt(1)).toContain('Scheduled');
+      expect(await nameAt(0)).toContain('Manual');
+    });
   });
 
   describe('the highlight', () => {

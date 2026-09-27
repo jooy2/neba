@@ -18,6 +18,8 @@
 
 ### Fixed
 
+- **A stacked chart's `item` tooltip names the segment under the pointer.** Each series was measured from its own value rather than from where its segment is drawn, so two segments of 10 on one `BarChart` column were both "at 10" and the lower one was named wherever the pointer was. A segment is measured from the end of the one below it now, on an `AreaChart` as well, and a chart on its side hangs the panel at the end of the segment it names.
+
 - **Every rule on an element in `neba/styles.css`'s reset weighs nothing.** The reset promises that a single type selector of your own beats it, and the rule that takes Firefox's red glow off an invalid field counted as a class, so an `input { box-shadow: … }` of your own disappeared from an invalid field in Firefox. It is wrapped in `:where()` like the others.
 
 - **Escape closes a `CommandPalette`.** Its list of commands is held open while the palette is, so the list is what heard the key, and it kept Escape from the dialog around it without closing anything — the palette stayed up with or without anything typed, and only a click outside or a command took it down. Escape closes it now, and the next open starts with an empty field, as the other ways out already did.
