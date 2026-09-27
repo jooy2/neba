@@ -40,5 +40,5 @@ const ITEMS: Region[] = [
 const rowKey = (row: Region) => row.code;
 
 export default function DataTableColumns() {
-  return <DataTable headers={HEADERS} items={ITEMS} getRowKey={rowKey} resizable />;
+  return <DataTable label="Regions" headers={HEADERS} items={ITEMS} getRowKey={rowKey} resizable />;
 }

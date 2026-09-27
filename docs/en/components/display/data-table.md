@@ -20,6 +20,7 @@ const headers: DataTableColumn<Build>[] = [
 const rowKey = (row: Build) => row.id;
 
 <DataTable
+  label="Builds"
   headers={headers}
   items={builds}
   getRowKey={rowKey}

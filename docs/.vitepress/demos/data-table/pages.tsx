@@ -39,6 +39,7 @@ const rowKey = (row: Entry) => row.id;
 export default function DataTablePages() {
   return (
     <DataTable
+      label="Ledger"
       headers={HEADERS}
       items={ITEMS}
       getRowKey={rowKey}

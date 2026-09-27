@@ -39,6 +39,7 @@ export default function DataTableVirtual() {
       </SegmentedButton>
 
       <DataTable
+        label="Sensor readings"
         headers={HEADERS}
         items={virtual ? ITEMS : ITEMS.slice(0, 2000)}
         getRowKey={rowKey}

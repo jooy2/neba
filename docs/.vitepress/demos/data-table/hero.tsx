@@ -55,6 +55,7 @@ export default function DataTableHero() {
   return (
     <div className="flex w-full flex-col gap-2">
       <DataTable
+        label="Builds"
         headers={HEADERS}
         items={ITEMS}
         getRowKey={rowKey}

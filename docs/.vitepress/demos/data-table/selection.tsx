@@ -36,6 +36,7 @@ export default function DataTableSelection() {
   return (
     <div className="flex w-full flex-col gap-3">
       <DataTable
+        label="Assets"
         headers={HEADERS}
         items={ITEMS}
         getRowKey={rowKey}

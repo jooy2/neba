@@ -40,6 +40,7 @@ export default function DataTableSorting() {
   return (
     <div className="flex w-full flex-col gap-2">
       <DataTable
+        label="Tickets"
         headers={HEADERS}
         items={ITEMS}
         getRowKey={rowKey}

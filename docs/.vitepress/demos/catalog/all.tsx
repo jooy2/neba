@@ -1813,6 +1813,7 @@ const GROUPS: Group[] = [
         preview: (
           <div className="w-full max-w-56">
             <DataTable
+              label="Sensors"
               size="xs"
               height={92}
               striped

@@ -63,6 +63,7 @@ export default function DataTableManual() {
 
   return (
     <DataTable
+      label="Audit log"
       headers={HEADERS}
       items={rows}
       getRowKey={rowKey}

@@ -55,6 +55,7 @@ export default function DataTableSearch() {
 
   return (
     <DataTable
+      label="Packages"
       headers={HEADERS}
       items={ITEMS}
       getRowKey={rowKey}

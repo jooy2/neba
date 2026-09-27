@@ -55,6 +55,7 @@ export default function DataTableDensity() {
       </div>
 
       <DataTable
+        label="Jobs"
         headers={HEADERS}
         items={ITEMS}
         getRowKey={rowKey}
