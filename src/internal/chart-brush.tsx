@@ -94,14 +94,23 @@ export function ChartBrush({
 
   /** The shape of the whole series, drawn to fit the strip. */
   const path = React.useMemo(() => {
-    const numbers = outline.filter((value): value is number => value !== null);
+    /* A loop rather than `Math.min(...numbers)`: a spread passes every value
+       as an argument, and past a hundred thousand or so that is a RangeError —
+       on exactly the long series a window is for. */
+    let low = Infinity;
+    let high = -Infinity;
 
-    if (width <= 0 || numbers.length === 0) {
+    for (const value of outline) {
+      if (value !== null) {
+        low = Math.min(low, value);
+        high = Math.max(high, value);
+      }
+    }
+
+    if (width <= 0 || low > high) {
       return '';
     }
 
-    const low = Math.min(...numbers);
-    const high = Math.max(...numbers);
     const span = high - low || 1;
     const inset = 2;
     const usable = Math.max(1, height - inset * 2);

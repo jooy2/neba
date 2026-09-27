@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A chart brush draws a series of any length.** The strip found the lowest and highest values of the series it outlines by spreading them into `Math.min` and `Math.max`, which passes every value as an argument, and past somewhere between a hundred and two hundred thousand of them the browser throws — so the chart failed to render on exactly the long series a brush is for. It walks the series instead.
+
 - **A brushed chart keeps its strip clear of an axis given a `thickness`.** The strip is laid over a band the chart reserves at its foot, and a bottom axis' `thickness` replaced that whole band rather than the axis' own share of it, so the strip was drawn over the axis labels. `thickness` is the axis' room and nothing else, as its description says, and the strip's band is added under it.
 
 - **A series on a `secondaryAxis` is labelled and pointed at on its own scale.** Its value labels were written in the first axis's `format`, so a rate beside a revenue read `$4`; `tooltip={{ mode: 'item' }}` measured the pointer against every series on the first axis's scale, so a rate near the top of the plot lost to a revenue near the floor; and a horizontal chart placed its tooltip, and chose which side it hangs on, on that scale too. All three read the series' own axis now, and a value label goes through `secondaryAxis.tickFormat` as the table and the tooltip already did.
