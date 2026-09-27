@@ -10,6 +10,7 @@
  * The messages below are the ones an agent sends, in the shape it sends them.
  */
 import { describe, expect, it, vi } from 'vitest';
+import type { z } from 'zod';
 import { render } from 'vitest-browser-react';
 import { BASIC_FUNCTIONS, MessageProcessor } from '@a2ui/web_core/v0_9';
 import { A2uiSurface } from '@a2ui/react/v0_9';
@@ -81,6 +82,27 @@ describe('the A2UI adapter', () => {
         expect(() => componentSchema(name, definition as CatalogSchema), name).not.toThrow();
       }
     });
+
+    // Every value the agent is told it may write has to be one the renderer
+    // takes. `z.enum` refuses numbers, so an `elevation` of `0` to `3` was a
+    // prop no agent could set without the whole message being dropped.
+    it('accepts every value of every enum in the catalog', () => {
+      for (const [name, definition] of Object.entries(catalog.components)) {
+        const schema = componentSchema(name, definition as CatalogSchema) as z.AnyZodObject;
+        const parts = (definition as CatalogSchema).allOf ?? [definition as CatalogSchema];
+
+        for (const part of parts) {
+          for (const [prop, property] of Object.entries(part.properties ?? {})) {
+            for (const value of property.enum ?? []) {
+              expect(
+                schema.shape[prop].safeParse(value).success,
+                `${name}.${prop} = ${value}`
+              ).toBe(true);
+            }
+          }
+        }
+      }
+    });
   });
 
   describe('draws what the agent wrote', () => {
@@ -131,6 +153,24 @@ describe('the A2UI adapter', () => {
 
       await expect.element(screen.getByText('Region')).toBeInTheDocument();
       await expect.element(screen.getByText('Seoul')).toBeInTheDocument();
+    });
+
+    it('draws a card at the elevation the agent asked for', async () => {
+      const { surface } = surfaceOf([
+        { id: 'root', component: 'Card', title: 'Lifted', elevation: 2, child: 'body' },
+        {
+          id: 'body',
+          component: 'Button',
+          text: 'Open',
+          action: { event: { name: 'open' } },
+          elevation: 1
+        }
+      ]);
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await expect.element(screen.getByText('Lifted')).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: 'Open' })).toBeInTheDocument();
     });
 
     it('draws a list of facts', async () => {

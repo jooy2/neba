@@ -195,7 +195,7 @@ None asked yet. The tagged items are asked at the end of the first batch.
 
 ### A2UI and packaging
 
-- [ ] **120** (high) A2UI Card and Button: every `elevation`, including the default `0`, fails validation, because a numeric enum becomes `z.enum`, and the processor then drops the whole message and the data model update after it. `src/a2ui/schema.ts:74-76`. Fix: a union of literals for a numeric enum, and a test.
+- [x] **120** (high) A2UI Card and Button: every `elevation`, including the default `0`, fails validation, because a numeric enum becomes `z.enum`, and the processor then drops the whole message and the data model update after it. `src/a2ui/schema.ts:74-76`. Fix: a union of literals for a numeric enum, and a test.
 - [ ] **121** A2UI catalog defaults: Chip `size` says `sm` but renders `md`; Typography `color` says `primary` while its own description says no colour is set by default. `src/a2ui/catalog.json:169, 234`. Fix: `md` for Chip, no default for Typography.
 - [ ] **122** A2UI `Children`: static children are keyed by index, so inserting one remounts every later sibling and a field being typed in loses focus (unverified). `src/a2ui/components.tsx:75`. Fix: key a child by its id, and a template child by id and path.
 - [ ] **123** A2UI: `createNebaCatalog()` takes no locale, so the number, currency and plural functions follow the runtime while the components follow `NebaProvider`. `src/a2ui/index.ts:36-37, 96-101`. Fix: `createNebaCatalog({ locale })`, forwarded to web_core's factory.

@@ -28,7 +28,7 @@ import { childList, CommonSchemas, componentId } from '@a2ui/web_core/v0_9';
 export interface CatalogSchema {
   $ref?: string;
   type?: string;
-  enum?: readonly string[];
+  enum?: readonly (string | number)[];
   const?: string;
   default?: unknown;
   description?: string;
@@ -72,7 +72,19 @@ function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
   }
 
   if (schema.enum) {
-    return z.enum(schema.enum as [string, ...string[]]);
+    const values = schema.enum;
+
+    // `z.enum` takes strings and refuses everything else, so an enum of numbers
+    // — `elevation` is `0` to `3` — is a union of literals instead.
+    if (values.every((value) => typeof value === 'string')) {
+      return z.enum(values as [string, ...string[]]);
+    }
+
+    const literals = values.map((value) => z.literal(value));
+
+    return literals.length === 1
+      ? literals[0]
+      : z.union(literals as unknown as [z.ZodLiteral<number>, z.ZodLiteral<number>]);
   }
 
   switch (schema.type) {
