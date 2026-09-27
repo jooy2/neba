@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **A `DataTable` that opens rows or edits cells without choosing them tells a screen reader which row is active.** Such a table is a `grid` with an active row the arrow keys move, but `aria-activedescendant` was only written when there was a `selectionMode`, so the ring moved and nothing was announced. It now points at the active row in every table the keyboard can move through.
+
 - **An A2UI `Card` or `Button` takes an `elevation`.** The catalog declares it as `0` to `3`, and the adapter built its schema with `z.enum`, which takes strings and refused every one of them — the default `0` included. The processor then threw for the whole `updateComponents` message, so a surface with one card at any elevation drew nothing, and the data model sent after it was lost too. An enum of numbers is a union of literals now.
 
 - **Pressing a `PromptInput`'s stop button stops the answer and sends nothing.** The button turned from `type="button"` into `type="submit"` inside its own click, as `onStop` set `submitting` back to `false`, and the browser read the new type when it came to activate it — so the form was submitted and whatever the reader had typed while the answer was being written went out as a new message, restarting the answer they had just stopped. The button is a submit button in both states now, and the form decides between stopping and sending. It also stops with a `required` field left empty, which a submit button would otherwise be held back by.

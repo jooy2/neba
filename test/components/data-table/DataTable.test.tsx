@@ -995,6 +995,27 @@ describe('DataTable', () => {
       expect(screen.container.querySelector('tr[aria-selected]')).toBeNull();
     });
 
+    // The ring moved and a screen reader heard nothing: the attribute was only
+    // written for a table that chooses rows.
+    it('points aria-activedescendant at the active row, whether or not it chooses', async () => {
+      for (const props of [{ selectionMode: 'single' as const }, { onRowActivate: vi.fn() }]) {
+        const screen = await render(
+          <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} {...props} />
+        );
+        const grid = screen.getByRole('grid');
+
+        (grid.element() as HTMLElement).focus();
+        await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+
+        const id = grid.element().getAttribute('aria-activedescendant');
+
+        expect(id).not.toBeNull();
+        expect(document.getElementById(id ?? '')?.textContent).toContain('Bo');
+
+        await screen.unmount();
+      }
+    });
+
     it('stays a plain table with nothing a keyboard could do in it', async () => {
       const screen = await render(<DataTable headers={HEADERS} items={ITEMS} getRowKey={key} />);
 

@@ -1189,7 +1189,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   const rendered = paged.slice(window_.start, window_.end);
   const activeRendered =
-    selects && activeKey !== null && rendered.some((entry) => entry.key === activeKey);
+    navigable && activeKey !== null && rendered.some((entry) => entry.key === activeKey);
 
   /* -- Column widths ------------------------------------------------------- */
 

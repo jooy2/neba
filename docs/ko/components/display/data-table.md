@@ -220,7 +220,7 @@ const rowKey = (row: Build) => row.id;
 ## 접근성
 
 - `selectionMode`가 있으면 표는 tab stop이 하나인 `grid`가 되고 `aria-activedescendant`로 현재 행을 가리킵니다. 각 행은 `aria-selected`를 답니다.
-- `selectionMode`가 없어도 행이 무언가를 열거나(`onRowActivate`) 편집할 셀이 있으면 tab 정지점을 가진 `grid`입니다. 방향키로 활성 행을 옮기고 <kbd>Enter</kbd>로 열고 <kbd>F2</kbd>로 편집하며, 아무것도 고르지 않습니다. 그 어느 것도 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
+- `selectionMode`가 없어도 행이 무언가를 열거나(`onRowActivate`) 편집할 셀이 있으면 tab stop을 가진 `grid`입니다. 방향키로 활성 행을 옮기면 `aria-activedescendant`가 그 행을 가리키고, <kbd>Enter</kbd>로 열고 <kbd>F2</kbd>로 편집하며, 아무것도 고르지 않습니다. 그 어느 것도 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
 - 정렬 가능한 머리글은 진짜 `<button>`이고, 그것을 감싼 `<th>`가 `aria-sort`를 답니다.
 - 표에 `caption`이나 `label`을 주세요. 둘 다 없으면 screen reader는 이름 없는 grid라고 읽습니다.
 - 크기 조정 핸들은 포인터 전용이며 보조 기술에서는 숨겨집니다. 핸들 없이 닿지 못하는 내용은 표 안에 없습니다.

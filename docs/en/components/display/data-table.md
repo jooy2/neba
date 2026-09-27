@@ -220,7 +220,7 @@ The file leads with a byte-order mark, so Excel reads its non-ASCII text correct
 ## Accessibility
 
 - With a `selectionMode` the table is a `grid` with one tab stop, and `aria-activedescendant` points at the active row. Rows carry `aria-selected`.
-- Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
+- Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row that `aria-activedescendant` points at, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
 - The resize handles are pointer-only and hidden from assistive technology. Nothing in the table is out of reach without them.
