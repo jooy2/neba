@@ -8,6 +8,10 @@
 
 - **A `Transfer`'s move buttons keep the focus when the press runs them out.** Moving every ticked row made the button `disabled`, and the focus fell to the document, so a keyboard reader moving rows one at a time started again from the top after each. Both stay in place with `aria-disabled`, as a `Pagination` stepper does; a disabled `Transfer` still disables them outright. A test that asserted `toBeDisabled()` on either should assert `aria-disabled="true"`.
 
+### Changed
+
+- **A `DataList`'s label column stops at half the list's width.** Left without a `labelWidth`, it was as wide as the widest label and could not shrink, so a long or translated label made the list wider than a phone's screen and squeezed the values. It is still as wide as the widest label, so the values start at the same place, up to half the list; past that a label wraps. A `labelWidth` is taken as it is.
+
 ### Fixed
 
 - **A `TreeView` branch that is shutting is out of a screen reader's reach.** Its rows stay in the document until the collapse finishes, which is what lets them fold away at a height, and nothing stopped a screen reader walking into them in the meantime — or for good, when the branch was shut while the tree was not displayed and no transition ever ended. The branch is `inert` from the moment it starts to shut.

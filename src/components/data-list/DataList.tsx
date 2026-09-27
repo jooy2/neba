@@ -42,8 +42,9 @@ export interface DataListProps extends Omit<React.ComponentPropsWithoutRef<'dl'>
   orientation?: NebaOrientation;
   /**
    * How wide the label column is when `horizontal`. A number of pixels or any
-   * CSS length. Left out, it is as wide as the widest label — which is what
-   * keeps every value in the list starting at the same place.
+   * CSS length. Left out, it is as wide as the widest label, up to half the
+   * list — which keeps every value in the list starting at the same place, and
+   * wraps a long label rather than pushing the values off a narrow screen.
    */
   labelWidth?: number | string;
   /** Draws a hairline between the rows. @default false */
@@ -242,9 +243,11 @@ export const DataList = React.forwardRef<HTMLDListElement, DataListProps>(
             .join(' ')}
           style={
             {
-              // `max-content` is what makes every value in the list start at the
-              // same place without the caller having to measure the longest label.
-              '--n-label': width ?? 'max-content',
+              // As wide as the widest label, which is what makes every value in
+              // the list start at the same place without the caller measuring
+              // anything — up to half the list, past which a label wraps rather
+              // than pushing the values off the edge of a phone.
+              '--n-label': width ?? 'fit-content(50%)',
               ...style
             } as React.CSSProperties
           }

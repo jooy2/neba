@@ -42,7 +42,7 @@ Every native `<dl>` attribute passes through, apart from `color`. It draws no su
 
 ### labelWidth
 
-Left out, the label column is as wide as the widest label, which is what makes every value start at the same place. Set it to hold two lists side by side to the same measure.
+Left out, the label column is as wide as the widest label, which is what makes every value start at the same place, up to half the list's width, past which a label wraps. Set it to hold two lists side by side to the same measure.
 
 <Demo src="data-list/label-width">
 

@@ -98,11 +98,11 @@ describe('DataList', () => {
   });
 
   describe('appearance', () => {
-    it('sizes the label column to the widest label', async () => {
+    it('sizes the label column to the widest label, up to half the list', async () => {
       const screen = await render(<Details />);
       const element = screen.getByTestId('details').element() as HTMLElement;
 
-      expect(element.style.getPropertyValue('--n-label')).toBe('max-content');
+      expect(element.style.getPropertyValue('--n-label')).toBe('fit-content(50%)');
     });
 
     it('takes a label width of its own', async () => {

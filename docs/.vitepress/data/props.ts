@@ -4239,8 +4239,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'labelWidth',
       type: 'number | string',
       description: {
-        ko: 'horizontal일 때 라벨 열의 너비. 숫자는 px입니다. 지정하지 않으면 가장 긴 라벨만큼입니다',
-        en: 'How wide the label column is when horizontal. Numbers are pixels; left out it is as wide as the widest label'
+        ko: 'horizontal일 때 라벨 열의 너비. 숫자는 px입니다. 지정하지 않으면 가장 긴 라벨만큼이되 목록 너비의 절반까지입니다',
+        en: 'How wide the label column is when horizontal. Numbers are pixels; left out it is as wide as the widest label, up to half the list'
       }
     },
     {
