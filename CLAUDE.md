@@ -317,7 +317,7 @@ An `<a>` is the other one, and TextLink answers it the other way. Inline styles 
 
 ### The stylesheet ships
 
-`tsc` emits JavaScript and nothing else, so every `.css` under `src/` reaches `dist/` through `scripts/build-styles.mjs`, which runs last in `npm run build`. It writes **two** files, and their names cross over:
+`tsc` emits JavaScript and nothing else, so every `.css` under `src/` reaches `dist/` through `scripts/build-styles.mjs`, which runs after `minify` in `npm run build`. It writes **two** files, and their names cross over:
 
 | Source | Output | Exported as | For |
 | --- | --- | --- | --- |
@@ -542,10 +542,12 @@ All scripts run from the repository root, even the ones whose config lives in a 
 npm test              # the suite, sharded across browser sessions (headless Chromium)
 npm run test:watch    # Vitest in watch mode
 npm run typecheck     # tsc --noEmit over all three TS projects
-npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (copies the changelog first)
+npm run docs:dev      # VitePress docs site — the develop-and-eyeball loop (copies the changelog and the catalog first)
 npm run docs:build    # the static site into docs-dist/ (raises the heap; see Toolchain notes)
+npm run docs:serve    # docs:build, then serve docs-dist/ locally
 npm run docs:changelog # copy the root CHANGELOG.md into each locale (git-ignored)
-npm run build         # format:fix + tsc (tsconfig.prod.json) + terser minify + build-styles → dist/
+npm run docs:catalog  # copy the A2UI catalog into docs/public/a2ui/ (git-ignored)
+npm run build         # clean + format:fix + tsc (tsconfig.prod.json) + annotate-pure + terser minify + build-styles + build-catalog → dist/
 npm run size          # bundle the budget scenarios against dist/ and fail if one is over
 npm run size:update   # record what they weigh now as the new budgets
 npm run compat        # check dist/styles.css and src/ against the minimum browser versions
@@ -618,12 +620,12 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - Node `>=18` per `engines`, but CI runs 26 — Vite 8 and Vitest 5 need Node 20.19+/22.12+, so the declared floor is stale.
 - Both `package-lock.json` and `pnpm-lock.yaml` are checked in; `pnpm-workspace.yaml` exists for pnpm users. Match whichever lockfile the working tree already reflects rather than switching package managers.
 - **`allowScripts` in `package.json` says `esbuild: false` and `fsevents: false`, and that is a decision rather than a leftover.** npm 12 blocks a dependency's install scripts unless the field names it, and it ends every install with a list of the ones it skipped. Neither of these two needs its script: esbuild reaches its platform binary through `optionalDependencies` and `install.js` is the fallback for when that did not happen, and fsevents has no install script of its own at all — the entry is node-gyp's implicit `install`, and the `fsevents.node` it would build already ships in the tarball. Both were checked by running them with the scripts blocked, which is also how every command in this repository has run since npm 12. A `false` entry records that, stops the warning, and survives `npm install-scripts approve --all`. Older npm ignores the field, so nothing changes for a contributor on npm 11. If a platform ever does need one, `npm install-scripts approve esbuild` is the whole of the change.
-- `npm run build` runs `format:fix` first, so a build will rewrite files. Expect formatting changes in the diff.
+- `npm run build` runs `format:fix` before it compiles anything, so a build will rewrite files. Expect formatting changes in the diff.
 - `terser.config.json` sets `compress.directives: false`, and it exists for `'use client'`. `directives` removes "redundant or non-standard" directives, and in a module — where `use strict` is implied — terser reads `use client` as both, so it strips it from every file that carries it without a word. The published package then says nothing at all to Next.js, and nothing in this repository would notice. It is `output.preserve_annotations`' twin: two settings, each keeping one thing terser would otherwise eat on the way out.
 - `terser.config.json` sets `output.preserve_annotations`, and it exists for `scripts/annotate-pure.mjs`. Terser understands an `@__PURE__` comment and, by default, consumes it without emitting it again — which would hand the consumer's bundler minified files with the annotations gone. Neither `output.comments` nor `--comments` brings them back; this option is the one that does.
 - `npm run minify` is `scripts/minify.mjs`, which calls terser's API rather than a CLI, and it exists for `keep_fnames`. A component is `forwardRef(function Button(…))`, and that inner name is what React DevTools and React's warnings show; terser drops it because nothing inside the function calls it. The option that keeps it is only worth having as a regular expression, `/^[A-Z]/`, and JSON cannot hold one, so the script adds it to everything it reads from `terser.config.json`. It costs 0.2 kB gzipped across `dist/`, and a consumer's bundle, which its own build minifies again, moves by a few dozen bytes either way.
 - `npm run build` starts by **emptying `dist/`**, and that is not tidiness: `tsc` only ever writes, so a component that is deleted from `src/` stays in `dist/` and ships. It surfaced as `annotate-pure` counting more annotations in `dist/` than `src/` contains, which is the cheap symptom; the expensive one is a removed export still resolving out of the published package.
-- The four steps after it are `tsc`, then `annotate-pure`, then `minify`, then `build-styles`, and their order is load-bearing: the annotations have to be written after the JavaScript exists and before terser reads it.
+- After `clean` and `format:fix` come `tsc`, `annotate-pure`, `minify`, `build-styles` and `build-catalog`, and the order of the first three is load-bearing: the annotations have to be written after the JavaScript exists and before terser reads it.
 - **`docs:build` raises Node's heap on purpose.** Two locales of a hundred and forty-four pages each, with nearly six hundred React demos behind them, are more than the 4.3 GB default, and the failure is a V8 `Abort trap: 6` in the middle of Rollup rather than anything that names a page — so it reads as a broken document. `--max-old-space-size=8192` is passed by invoking VitePress's own bin through `node`, because `NODE_OPTIONS` on the wrapper does not reach the child. `docs:dev` needs none of it; only the production bundle holds the whole site at once.
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
