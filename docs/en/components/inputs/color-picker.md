@@ -113,7 +113,7 @@ Hex in all four lengths (`#abc`, `#abcd`, `#aabbcc`, `#aabbccdd`), `rgb()`/`rgba
 
 ## Accessibility
 
-- The square and each rail are `role="slider"` with an accessible name, a value and arrow-key support. Arrows move by one step; hold shift for ten.
+- The square and each rail are `role="slider"` with an accessible name and a value. On a rail, any arrow moves one step (ten with shift), `Page Up` and `Page Down` move ten, and `Home` and `End` go to the ends. On the square the left and right arrows change saturation and the up and down arrows brightness, `Page Up` and `Page Down` change brightness by ten, and `Home` and `End` take saturation to either end.
 - The square reports both axes through `aria-valuetext`, since one `aria-valuenow` cannot describe a point in two dimensions.
 - Every swatch is a real button named with its own colour, and the chosen one carries `aria-pressed`. Its tick is drawn in black or white depending on which can be read on that colour.
 - Set `locale` so the names of the square, the rails and the field are read out in the page's own language, or write them yourself with `labels`.

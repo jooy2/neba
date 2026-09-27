@@ -248,26 +248,81 @@ function fractionsOf(event: React.PointerEvent<HTMLElement>): { x: number; y: nu
 }
 
 /**
- * Arrow keys, in the two step sizes every slider in the library uses.
+ * The square's keys: the arrows in the two step sizes every slider in the
+ * library uses, `Page Up` and `Page Down` for a big step in brightness, and
+ * `Home` and `End` for the two ends of saturation.
  *
  * Returns `null` for a key it does not answer to, so the caller can leave the
  * event alone — a picker that swallowed Tab would trap the focus in a gradient.
  */
-function arrowStep(event: React.KeyboardEvent): { x: number; y: number } | null {
+function areaKey(
+  event: React.KeyboardEvent,
+  s: number,
+  v: number
+): { s: number; v: number } | null {
   const step = event.shiftKey ? 10 : 1;
 
   switch (event.key) {
     case 'ArrowLeft':
-      return { x: -step, y: 0 };
+      return { s: s - step, v };
     case 'ArrowRight':
-      return { x: step, y: 0 };
+      return { s: s + step, v };
     case 'ArrowUp':
-      return { x: 0, y: step };
+      return { s, v: v + step };
     case 'ArrowDown':
-      return { x: 0, y: -step };
+      return { s, v: v - step };
+    case 'PageUp':
+      return { s, v: v + 10 };
+    case 'PageDown':
+      return { s, v: v - 10 };
+    case 'Home':
+      return { s: 0, v };
+    case 'End':
+      return { s: 100, v };
     default:
       return null;
   }
+}
+
+/**
+ * A rail's keys, which are a slider's: either arrow pair a step at a time (ten
+ * with Shift), `Page Up` and `Page Down` ten steps, `Home` and `End` the ends.
+ * `unit` is how far one step goes, and a hue wraps round rather than stopping.
+ */
+function railKey(
+  event: React.KeyboardEvent,
+  now: number,
+  max: number,
+  unit: number,
+  wrap: boolean
+): number | null {
+  const step = (event.shiftKey ? 10 : 1) * unit;
+  let next: number;
+
+  switch (event.key) {
+    case 'ArrowRight':
+    case 'ArrowUp':
+      next = now + step;
+      break;
+    case 'ArrowLeft':
+    case 'ArrowDown':
+      next = now - step;
+      break;
+    case 'PageUp':
+      next = now + 10 * unit;
+      break;
+    case 'PageDown':
+      next = now - 10 * unit;
+      break;
+    case 'Home':
+      return 0;
+    case 'End':
+      return max;
+    default:
+      return null;
+  }
+
+  return wrap ? ((next % max) + max) % max : clamp(next, 0, max);
 }
 
 function ColorPanel({
@@ -308,7 +363,14 @@ function ColorPanel({
     }
   });
 
-  const railProps = (label: string, now: number, max: number, onStep: (delta: number) => void) => ({
+  const railProps = (
+    label: string,
+    now: number,
+    max: number,
+    unit: number,
+    wrap: boolean,
+    commit: (next: number) => void
+  ) => ({
     role: 'slider' as const,
     tabIndex: inert ? -1 : 0,
     'aria-label': label,
@@ -318,14 +380,14 @@ function ColorPanel({
     'aria-orientation': 'horizontal' as const,
     'aria-disabled': inert || undefined,
     onKeyDown: (event: React.KeyboardEvent) => {
-      const step = arrowStep(event);
+      const next = railKey(event, now, max, unit, wrap);
 
-      if (inert || !step || step.x === 0) {
+      if (inert || next === null) {
         return;
       }
 
       event.preventDefault();
-      onStep(step.x);
+      commit(next);
     }
   });
 
@@ -346,19 +408,15 @@ function ColorPanel({
         aria-valuetext={`${Math.round(hsv.s)}%, ${Math.round(hsv.v)}%`}
         aria-disabled={inert || undefined}
         onKeyDown={(event) => {
-          const step = arrowStep(event);
+          const next = areaKey(event, hsv.s, hsv.v);
 
-          if (inert || !step) {
+          if (inert || !next) {
             return;
           }
 
           event.preventDefault();
           onChange({
-            hsv: {
-              h: hsv.h,
-              s: clamp(hsv.s + step.x, 0, 100),
-              v: clamp(hsv.v + step.y, 0, 100)
-            },
+            hsv: { h: hsv.h, s: clamp(next.s, 0, 100), v: clamp(next.v, 0, 100) },
             alpha: alphaValue
           });
         }}
@@ -396,8 +454,8 @@ function ColorPanel({
         {...track((event) =>
           onChange({ hsv: { ...hsv, h: fractionsOf(event).x * 360 }, alpha: alphaValue })
         )}
-        {...railProps(labels.hue, hsv.h, 360, (delta) =>
-          onChange({ hsv: { ...hsv, h: (hsv.h + delta * 2 + 360) % 360 }, alpha: alphaValue })
+        {...railProps(labels.hue, hsv.h, 360, 2, true, (h) =>
+          onChange({ hsv: { ...hsv, h }, alpha: alphaValue })
         )}
         className={cx(
           wellClasses,
@@ -425,8 +483,8 @@ function ColorPanel({
       {withAlpha ? (
         <div
           {...track((event) => onChange({ hsv, alpha: fractionsOf(event).x }))}
-          {...railProps(labels.alpha, alphaValue * 100, 100, (delta) =>
-            onChange({ hsv, alpha: clamp(alphaValue + delta / 100, 0, 1) })
+          {...railProps(labels.alpha, alphaValue * 100, 100, 1, false, (percent) =>
+            onChange({ hsv, alpha: percent / 100 })
           )}
           className={cx(
             wellClasses,

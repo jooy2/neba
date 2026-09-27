@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A `ColorPicker`'s square and rails answer the keys a slider answers.** The hue and opacity rails took only the left and right arrows, and none of the three took `Home`, `End`, `Page Up` or `Page Down` — so a screen reader that adjusts a slider with the up and down arrows moved nothing. A rail now takes either arrow pair, pages by ten and goes to its ends; on the square `Page Up` and `Page Down` change brightness and `Home` and `End` take saturation to either end.
+
 - **A chart's brush is easier to reach and to tell apart.** Its two handles are drawn 8 pixels wide and are now pressed across 24. `Page Up` and `Page Down` move a handle a tenth of the series, where the arrow keys alone took hundreds of presses to cross a year of days, and a key never takes a handle past either end of the series. The strip is a group named after the chart, so two brushed charts on one page are no longer four sliders called Start and End.
 
 - **A `Rating`'s stars are pressed at a finger's height, and across the gap between them.** Each star took presses only on its own glyph, 20 pixels at `md`, and the gap between two stars took none. The target now grows to 24 pixels tall and across half the gap on each side, so it never reaches the next star. With `precision={0.5}` the two halves of a star meet in the middle and only grow up and down, which the page now says.

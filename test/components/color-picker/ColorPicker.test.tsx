@@ -180,6 +180,45 @@ describe('ColorPicker', () => {
       expect(rail.element()).toHaveAttribute('aria-valuenow', '20');
     });
 
+    // The rails answered the left and right arrows and nothing else, which is
+    // not what a screen reader driving a slider sends.
+    it('moves a rail with every key a slider answers', async () => {
+      const screen = await render(<ColorPicker inline alpha defaultValue="#ff0000" />);
+      const hue = screen.getByRole('slider', { name: 'Hue' });
+      const alpha = screen.getByRole('slider', { name: 'Opacity' });
+
+      (hue.element() as HTMLElement).focus();
+      await userEvent.keyboard('{ArrowUp}');
+      expect(hue.element()).toHaveAttribute('aria-valuenow', '2');
+      await userEvent.keyboard('{PageUp}');
+      expect(hue.element()).toHaveAttribute('aria-valuenow', '22');
+      await userEvent.keyboard('{ArrowDown}');
+      expect(hue.element()).toHaveAttribute('aria-valuenow', '20');
+      await userEvent.keyboard('{End}');
+      expect(hue.element()).toHaveAttribute('aria-valuenow', '360');
+      await userEvent.keyboard('{Home}');
+      expect(hue.element()).toHaveAttribute('aria-valuenow', '0');
+
+      (alpha.element() as HTMLElement).focus();
+      await userEvent.keyboard('{PageDown}');
+      expect(alpha.element()).toHaveAttribute('aria-valuenow', '90');
+      await userEvent.keyboard('{Home}');
+      expect(alpha.element()).toHaveAttribute('aria-valuenow', '0');
+    });
+
+    it('moves the square with the keyboard', async () => {
+      const screen = await render(<ColorPicker inline defaultValue="#ff0000" />);
+      const area = screen.getByRole('slider', { name: 'Saturation and brightness' });
+
+      (area.element() as HTMLElement).focus();
+      await userEvent.keyboard('{ArrowLeft}');
+      expect(area.element()).toHaveAttribute('aria-valuenow', '99');
+      await userEvent.keyboard('{Home}');
+      expect(area.element()).toHaveAttribute('aria-valuenow', '0');
+      await userEvent.keyboard('{End}{PageDown}');
+      expect(area.element()).toHaveAttribute('aria-valuetext', '100%, 90%');
+    });
+
     it('writes the value back in the notation it was asked for', async () => {
       const onValueChange = vi.fn();
       const screen = await render(
