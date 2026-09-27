@@ -68,7 +68,7 @@ Milliseconds, written at the end of the title line. Leave it out and a `running`
 
 ### size · density
 
-`size` moves the marker, the type scale and the gaps together. `density` changes only how far apart two steps sit, and the ladder is tighter than a [Timeline](../display/timeline)'s on purpose: a timeline is a record being browsed, and this is a list being watched, where air between the rows reads as the thing having stopped.
+`size` moves the marker, the type scale and the gaps together. `density` changes only how far apart two steps sit, on a tighter ladder than a [Timeline](../display/timeline)'s.
 
 <Demo src="agent-steps/size">
 

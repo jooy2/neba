@@ -25,7 +25,7 @@ import { ContextWindow } from 'neba';
 
 Native `<div>` attributes pass through to the root. Only `color` is excluded, since the table above spells it differently.
 
-A [Meter](../feedback/meter) draws the same reading as a bar and would do most of this. What it cannot do is the part that makes this a component: token counts are five and six digits long and have to be written compactly in the reader's own language, the four-way split only means anything with the parts next to each other, and the money underneath is a third unit again.
+A [Meter](../feedback/meter) draws the same reading as a single bar, without the split and the cost.
 
 ### ContextTokens
 
@@ -53,7 +53,7 @@ Where the ring changes colour, in tokens rather than as a share — so a window 
 
 ### The colours of the split
 
-The four parts take the first four chart palette slots rather than four colour families, because input and output are _entities_: nothing about either means success or danger. The slots are handed out in the fixed order above, which is what keeps the adjacent pairs the ones that were checked for colour-vision separation.
+The four parts take the first four chart palette slots, in the order above, rather than colour families.
 
 ### breakdown
 

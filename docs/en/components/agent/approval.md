@@ -50,11 +50,11 @@ Leave `risk` out and the chip is not drawn; `color` then stands on its own, and 
 
 </Demo>
 
-### No option is emphasised
+### Option buttons
 
-Every button is `outline` in the card's family, and an option's own `variant` is how one is singled out. A permission request whose loudest button is "Allow" is a request answered by the shape of the buttons rather than by the reader, and the point of asking is that the answer should be the reader's.
+Every button is `outline` in the card's family. Set an option's own `variant` to single one out.
 
-An option's `description` is listed under the row rather than inside its button, so the buttons stay a row of short words and a reader who wants to know what "Always allow" covers can find out without pressing it.
+An option's `description` is listed under the row of buttons rather than inside its button.
 
 ### decision · onDecide
 

@@ -50,11 +50,11 @@ import { Approval } from 'neba';
 
 </Demo>
 
-### 어떤 답도 강조하지 않습니다
+### option 버튼
 
-모든 버튼은 카드의 색 계열을 쓰는 `outline`이고, 하나를 두드러지게 하려면 그 option의 `variant`를 씁니다. 가장 눈에 띄는 버튼이 "허용"인 권한 요청은 독자가 아니라 버튼 배치가 답한 요청입니다. 묻는 이유는 답이 독자의 것이어야 하기 때문입니다.
+모든 버튼은 카드의 색 계열을 쓰는 `outline`입니다. 하나를 두드러지게 하려면 그 option의 `variant`를 쓰세요.
 
-option의 `description`은 버튼 안이 아니라 줄 아래에 나열됩니다. 버튼은 짧은 단어의 줄로 남고, "항상 허용"이 무엇까지 포함하는지는 눌러 보지 않고도 알 수 있습니다.
+option의 `description`은 버튼 안이 아니라 버튼 줄 아래에 나열됩니다.
 
 ### decision · onDecide
 

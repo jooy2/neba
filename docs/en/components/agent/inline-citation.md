@@ -25,9 +25,9 @@ Native `<a>` attributes pass through to the mark. `color`, `title` and `children
 
 ### index
 
-The caller's number, not one counted here. A citation sits inside a paragraph and the list it points at is somewhere else on the page, so there is no parent that could number it — and a component that numbered itself by render order would renumber the whole answer whenever a sentence moved.
+The number the mark shows. The mark does not count itself, so pass the number of the source in the list it points at.
 
-It is also the only thing the mark itself says, which is why the accessible name is the sentence "Source 2" rather than the digit.
+Its accessible name is the sentence "Source 2" rather than the digit.
 
 ### preview
 
@@ -47,7 +47,7 @@ A real link, with the same scheme check a [Sources](./sources) row makes: anythi
 
 The mark is sized in `em` and takes its tint from `color`, so it tracks whatever sentence it interrupts at whatever scale that sentence is set. `size` is the preview's type scale and not the mark's.
 
-It is deliberately not a `<sup>`. A superscript would shrink the number a second time on top of the `0.8em` the mark already is, and a digit in a tinted box at that size is a smudge rather than something a reader can act on.
+The mark is not a superscript: it sits on the line at `0.8em`, raised slightly.
 
 <Demo src="inline-citation/color">
 

@@ -43,9 +43,9 @@ The reservation is a floor and stays a floor once the text is there. A height th
 
 ### fade
 
-Each word fades in on its own, in `opacity` and nothing else. It is not a flourish: a transition on the block as a whole would replay the _entire_ answer every time a token landed.
+Each word fades in on its own, in `opacity` and nothing else.
 
-It needs no bookkeeping. Words are keyed by position, so a word already on screen keeps its element and never animates a second time, and the last word grows a character at a time inside the element it already has. What it costs is one element per word, which is the case for turning it off on a very long answer.
+A word already on screen never fades a second time. Each word is an element of its own, so turn `fade` off for a very long answer.
 
 Only a **string** is cut into words. Anything else is rendered untouched, with the caret and the reserved height still around it.
 
@@ -59,9 +59,9 @@ The block at the end, drawn while `streaming`. `false` drops it and a node repla
 
 </Demo>
 
-### Line breaks survive
+### Line breaks
 
-The block is `white-space: pre-wrap`, so the answer's own line breaks are the ones that render. Collapsing them turns a list into a paragraph.
+The block is `white-space: pre-wrap`, so the line breaks in the text are drawn as they are.
 
 ## Accessibility
 

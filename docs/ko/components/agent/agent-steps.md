@@ -68,7 +68,7 @@ import { AgentStep, AgentSteps } from 'neba';
 
 ### size · density
 
-`size`는 표시와 타입 스케일, 간격을 함께 움직입니다. `density`는 두 단계 사이의 간격만 바꾸며, 그 사다리는 [Timeline](../display/timeline)의 것보다 일부러 촘촘합니다. Timeline은 훑어보는 기록이고 이쪽은 지켜보는 목록인데, 움직이는 것 사이의 여백은 멈춘 것처럼 읽힙니다.
+`size`는 표시와 타입 스케일, 간격을 함께 움직입니다. `density`는 두 단계 사이의 간격만 바꾸며, 그 사다리는 [Timeline](../display/timeline)의 것보다 촘촘합니다.
 
 <Demo src="agent-steps/size">
 

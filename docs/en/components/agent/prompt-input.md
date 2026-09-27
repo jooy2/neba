@@ -59,9 +59,7 @@ Nothing sends while an answer is being written, including the key.
 
 ### minRows · maxRows
 
-The field is `minRows` tall at its shortest and grows with the text to `maxRows`, after which it scrolls. A prompt field that grows without a ceiling pushes the conversation it belongs to off the screen.
-
-The height is measured rather than declared, because the one-line CSS version of this — `field-sizing: content` — is years past the browsers the library still supports.
+The field is `minRows` tall at its shortest and grows with the text to `maxRows`, after which it scrolls.
 
 <Demo src="prompt-input/rows">
 
@@ -69,9 +67,9 @@ The height is measured rather than declared, because the one-line CSS version of
 
 </Demo>
 
-### onSubmit does not clear the field
+### onSubmit
 
-What happens to what was typed is the application's. A message that failed to send should still be there, so clearing the field is a line in the caller's own handler.
+The field keeps its text after `onSubmit`. Clear it in the handler once the message has gone, so a message that failed to send is still there.
 
 An empty field never sends — not by the button, which is disabled, and not by the key.
 

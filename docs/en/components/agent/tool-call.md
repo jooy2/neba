@@ -71,7 +71,7 @@ A ToolCall with no `args`, no `result`, no `error` and no children is not a disc
 
 ### variant
 
-The sheet is never dyed, the way a container's is not: what a tool call holds is somebody else's JSON, and every syntax colour in it was chosen against a plain background. `text` draws no sheet at all, which is what a column of twenty of these wants.
+The sheet takes no tint from `color`, so the arguments and the result are drawn on a plain surface. `text` draws no sheet at all, for a long column of calls.
 
 <Demo src="tool-call/variant">
 

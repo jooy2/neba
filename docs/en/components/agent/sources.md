@@ -26,7 +26,7 @@ import { Sources } from 'neba';
 
 Native `<div>` attributes pass through to the root. `color`, `title` and `onChange` are excluded, since the table above spells them differently.
 
-A [List](../display/list) would draw the rows. What it cannot do is the part that makes this a component: the rows are _numbered_, and the numbers are what an [InlineCitation](./inline-citation) in the body points at.
+The rows are _numbered_, and the numbers are what an [InlineCitation](./inline-citation) in the body points at.
 
 ### SourceItem
 
@@ -36,7 +36,7 @@ A [List](../display/list) would draw the rows. What it cannot do is the part tha
 
 ### collapsible
 
-On. A list of sources is the longest thing in an answer and the least often read, and what a reader usually wants from it is to know how many there were — which is why the count sits on the header whether it is open or not.
+On. The list folds under its header, and the header shows how many sources there are whether it is open or not.
 
 Off, the heading is a plain line and the list is open. There is no disclosure at all in that state, so nothing is pressable.
 
@@ -60,7 +60,7 @@ Any `href` whose scheme is not `http`, `https`, `mailto` or `tel` leaves the row
 
 ### variant
 
-`text` is the default, unlike most of the library: a list under an answer is a heading and some links, and a sheet around it is one more box in a column that already has several.
+`text` is the default, and the list draws no sheet.
 
 <Demo src="sources/variant">
 

@@ -26,7 +26,7 @@ import { Sources } from 'neba';
 
 `<div>`의 기본 속성은 루트로 전달됩니다. 위 표에서 다르게 정의한 `color`, `title`, `onChange`만 제외됩니다.
 
-줄 자체는 [List](../display/list)로도 그릴 수 있습니다. 못 하는 부분이 이것을 컴포넌트로 만듭니다. 줄에는 *번호*가 붙고, 그 번호가 본문의 [InlineCitation](./inline-citation)이 가리키는 대상입니다.
+줄에는 *번호*가 붙고, 그 번호가 본문의 [InlineCitation](./inline-citation)이 가리키는 대상입니다.
 
 ### SourceItem
 
@@ -36,7 +36,7 @@ import { Sources } from 'neba';
 
 ### collapsible
 
-켜져 있습니다. 출처 목록은 답에서 가장 길고 가장 덜 읽히는 부분이며, 독자가 대개 원하는 것은 몇 개였는지입니다. 그래서 개수는 열려 있든 닫혀 있든 제목 줄에 있습니다.
+켜져 있습니다. 목록은 제목 줄 아래로 접히고, 제목 줄은 열려 있든 닫혀 있든 출처의 개수를 보여 줍니다.
 
 끄면 제목은 그냥 한 줄이 되고 목록은 열려 있습니다. 그 상태에는 disclosure가 아예 없으므로 누를 것도 없습니다.
 
@@ -60,7 +60,7 @@ import { Sources } from 'neba';
 
 ### variant
 
-기본값이 `text`이며, 라이브러리의 대부분과 다릅니다. 답 아래의 목록은 제목 하나와 링크 몇 줄이고, 그 둘레의 시트는 이미 상자가 여럿인 열에 상자를 하나 더 얹는 일입니다.
+기본값은 `text`이며 목록은 시트를 그리지 않습니다.
 
 <Demo src="sources/variant">
 

@@ -49,7 +49,7 @@ The panel follows the _edges_ of `streaming` rather than its value either way, s
 
 ### variant
 
-`text` is the default here and nowhere else in the library. Thinking is an aside, and a bordered box around every aside in a conversation is a conversation made of boxes. Reach for a sheet when the panel is the only thing on the screen.
+`text` is the default, and the panel draws no sheet. Pass a variant with a sheet when the panel is the only thing on the screen.
 
 <Demo src="reasoning/variant">
 
