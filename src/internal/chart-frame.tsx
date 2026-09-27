@@ -1483,11 +1483,14 @@ export function CartesianChart(rawProps: CartesianProps) {
 
   /* And all of it, for the two things a window must not narrow: the table and
      the file are the *data*, and a reader who scrolled the plot to March did
-     not ask for a spreadsheet of March. Built only when there is a window;
-     without one these are the same arrays. */
+     not ask for a spreadsheet of March. They are the caller's own numbers too,
+     never the shares a chart stacked to `full` draws — a share is worked out
+     against the series that are *shown*, so a file written from them would
+     change with the legend. Built only when one of the two applies; otherwise
+     these are the same arrays. */
   const fullValues = React.useMemo(
-    () => (windowed ? toValues(fullSeries) : values),
-    [windowed, fullSeries, values]
+    () => (windowed || stackedFull ? toValues(fullSeries) : values),
+    [windowed, stackedFull, fullSeries, values]
   );
   const fullLabels = React.useMemo(
     () =>

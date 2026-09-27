@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { BarChart, NebaProvider } from 'neba';
 
@@ -327,6 +327,37 @@ describe('BarChart', () => {
       await expect
         .poll(() => (bar()?.getBoundingClientRect().height ?? 0) / quarter)
         .toBeGreaterThan(3.5);
+    });
+
+    // The file held the shares the bars are drawn at, worked out against the
+    // series that were shown, so hiding one rewrote the numbers of the rest.
+    it("exports the caller's numbers when stacking to full, whatever is hidden", async () => {
+      const onExport = vi.fn();
+      const screen = await render(
+        <BarChart
+          label="Mix"
+          stacked="full"
+          exportable
+          onExport={onExport}
+          categories={['Jan']}
+          series={[
+            { name: 'New', data: [20] },
+            { name: 'Renewed', data: [60] }
+          ]}
+        />
+      );
+      const exported = async (calls: number) => {
+        await screen.getByRole('button', { name: 'Export CSV' }).click();
+        await expect.poll(() => onExport.mock.calls.length).toBe(calls);
+
+        return (onExport.mock.calls[calls - 1][0] as string).replace('\uFEFF', '').split('\r\n')[1];
+      };
+
+      expect(await exported(1)).toBe('Jan,20,60');
+
+      await screen.getByRole('button', { name: 'Renewed' }).click();
+
+      expect(await exported(2)).toBe('Jan,20,60');
     });
 
     it('puts the percentage on the value axis in either orientation', async () => {

@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- **A chart stacked to `full` exports the caller's numbers.** The CSV was written from the shares the bars are drawn at rather than from the data, and a share is worked out against the series that are shown — so the file changed with the legend, and a hidden series was written as its share of the others (20 shown and 60 hidden came out as 300). A window on the chart switched the file back to the raw numbers. The file and the brush's outline are written from the caller's numbers now, which is what the hidden table already said.
+
 - **A chart's brush stays when its window lands on a stretch with no data.** The plot drew its empty state, and the strip, the hidden table and the export button were drawn only when the plot had something in it — so a window dragged, or started with `defaultRange`, onto the week a sensor was offline took away the one control that could move it back. They follow the whole series now, and only the plot says it is empty.
 
 - **A `DataTable` that opens rows or edits cells without choosing them tells a screen reader which row is active.** Such a table is a `grid` with an active row the arrow keys move, but `aria-activedescendant` was only written when there was a `selectionMode`, so the ring moved and nothing was announced. It now points at the active row in every table the keyboard can move through.
