@@ -42,6 +42,7 @@ interface SegmentedButtonContextValue {
   density: NebaDensity;
   fullWidth: boolean;
   disabled: boolean;
+  readOnly: boolean;
 }
 
 const SegmentedButtonContext = React.createContext<SegmentedButtonContextValue>({
@@ -49,7 +50,8 @@ const SegmentedButtonContext = React.createContext<SegmentedButtonContextValue>(
   size: 'md',
   density: 'default',
   fullWidth: false,
-  disabled: false
+  disabled: false,
+  readOnly: false
 });
 
 export interface SegmentedButtonProps
@@ -167,6 +169,9 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
   const set = React.useContext(SegmentedButtonContext);
   const { variant, size, density, fullWidth } = set;
   const off = disabled || set.disabled;
+  // A read-only set still says which segment is taken, and nothing under the
+  // pointer says a press would change it.
+  const still = set.readOnly && !off;
 
   return (
     <BaseUIRadio.Root
@@ -199,15 +204,16 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
         // the checked ink won over the disabled one.
         off
           ? 'cursor-not-allowed text-(--neba-disabled-fg)'
-          : cx(
-              'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg)',
-              checkedTextClasses[variant],
-              glowClasses
-            ),
+          : still
+            ? cx('cursor-default text-(--neba-muted-fg)', checkedTextClasses[variant])
+            : cx(
+                'cursor-pointer text-(--neba-muted-fg) hover:text-(--neba-fg)',
+                checkedTextClasses[variant],
+                glowClasses
+              ),
         // Inset rather than offset — an offset ring on a segment inside a trough
         // is drawn on top of its neighbours.
         'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-        'data-[readonly]:cursor-default',
         fullWidth ? 'flex-1' : '',
         className ?? ''
       )}
@@ -215,7 +221,7 @@ export const Segment = React.forwardRef<HTMLElement, SegmentProps>(function Segm
       // After the spread: the two light layers compose the caller's own handler
       // rather than being written over by it. A segment is pressed, so it takes
       // both of them, and the slots are the set's — they inherit.
-      onPointerMove={trackPointer(props.onPointerMove, !off)}
+      onPointerMove={trackPointer(props.onPointerMove, !off && !still)}
     >
       {hasContent(startIcon) ? (
         <span className="flex h-[1lh] shrink-0 items-center">{startIcon}</span>
@@ -350,8 +356,8 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     }, [measure]);
 
     const context = React.useMemo(
-      () => ({ variant, size, density, fullWidth, disabled }),
-      [variant, size, density, fullWidth, disabled]
+      () => ({ variant, size, density, fullWidth, disabled, readOnly }),
+      [variant, size, density, fullWidth, disabled, readOnly]
     );
 
     return (

@@ -160,6 +160,18 @@ describe('SegmentedButton', () => {
         .toHaveAttribute('aria-checked', 'true');
     });
 
+    // It could not be changed, and still lit up under the pointer and darkened
+    // its ink on hover as though a press would change it.
+    it('draws no light and no hover under the pointer when read-only', async () => {
+      const screen = await render(<Basic defaultValue="day" readOnly />);
+      const week = screen.getByRole('radio', { name: 'Week' });
+
+      await expect.element(week).toBeInTheDocument();
+      expect(week.element().className).not.toContain('neba-glow');
+      expect(week.element().className).not.toContain('hover:');
+      expect(week.element().className).toContain('cursor-default');
+    });
+
     it('leaves one disabled segment out without disabling the set', async () => {
       const onValueChange = vi.fn();
       const screen = await render(
