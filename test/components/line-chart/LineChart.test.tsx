@@ -1114,6 +1114,60 @@ describe('LineChart', () => {
       expect(cells).toContain('2%');
     });
 
+    it('writes a secondary series’ value labels through its axis', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          valueLabels="all"
+          format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: [2, 3.7, 2.5, 4], axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(written).toContain('3.7%');
+      expect(written).toContain('$1,200');
+    });
+
+    // Measured on the first axis, a rate of 4 sits on the floor of a scale
+    // that runs to a thousand, and the pointer at the top of the plot was
+    // handed the revenue instead.
+    it('finds the nearest series on its own scale with mode="item"', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          height={200}
+          tooltip={{ mode: 'item' }}
+          secondaryAxis={{}}
+          series={[
+            { name: 'Revenue', data: [10, 10, 10, 1000] },
+            { name: 'Rate', data: [4, 4, 4, 4], axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await plot.hover({ position: { x: 120, y: 12 } });
+
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toMatchTextContent('Rate');
+      expect(status.element().textContent).not.toContain('Revenue');
+    });
+
     // The prop is what turns the split on, so a series asking for an axis the
     // chart has not got is measured on the one it has rather than half-applied.
     it('ignores the series flag when no second axis was given', async () => {

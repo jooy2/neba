@@ -1264,6 +1264,13 @@ export interface CartesianLayout {
   zeroPxOf: (series?: number) => number;
   categories: readonly NebaChartCategory[];
   format: (value: number) => string;
+  /**
+   * How a given series' numbers are written: through `secondaryAxis.tickFormat`
+   * when the series is measured on the far edge, and `format` otherwise. A
+   * value label reads this rather than `format`, or a rate on the far edge is
+   * printed in the first axis' currency.
+   */
+  formatFor: (series: number) => (value: number) => string;
   size: NebaSize;
 }
 
@@ -1972,6 +1979,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     zeroPxOf,
     categories: labels,
     format: formatValue,
+    formatFor,
     size
   };
 
@@ -2236,9 +2244,11 @@ export function CartesianChart(rawProps: CartesianProps) {
     ? supplied.items
     : tooltipMode === 'item' && column.length > 1 && pointer !== null
       ? [
+          // Each on its own series' scale: with two value axes, a number's
+          // place on the plot is not a property of the number.
           column.reduce((nearest, item) =>
-            Math.abs(valuePx(item.value ?? 0) - pointer) <
-            Math.abs(valuePx(nearest.value ?? 0) - pointer)
+            Math.abs(valuePx(item.value ?? 0, item.seriesIndex) - pointer) <
+            Math.abs(valuePx(nearest.value ?? 0, nearest.seriesIndex) - pointer)
               ? item
               : nearest
           )
@@ -2265,7 +2275,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   const anchorX = activeMark
     ? activeMark.x
     : horizontal
-      ? valuePx(items[0]?.value ?? 0)
+      ? valuePx(items[0]?.value ?? 0, items[0]?.seriesIndex)
       : plot.left + categoryPx(activeIndex ?? 0);
   const anchorY = activeMark
     ? activeMark.y
@@ -2275,7 +2285,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   const anchorFlip = activeMark
     ? (activeMark.x - plot.left) / Math.max(1, plot.width) > 0.6
     : (horizontal
-        ? scale.fraction(items[0]?.value ?? 0)
+        ? (anchorX - plot.left) / Math.max(1, plot.width)
         : categoryPx(activeIndex ?? 0) / Math.max(1, categoryLength)) > 0.6;
 
   const legendOptions: NebaChartLegend =

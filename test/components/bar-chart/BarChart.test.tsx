@@ -244,6 +244,31 @@ describe('BarChart', () => {
 
       expect(marked?.getAttribute('fill')).toContain('oklch(60% 0.2 30)');
     });
+
+    it('writes a bar on the far edge through that axis', async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          valueLabels="all"
+          categories={TEAMS}
+          format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Cost', data: [1000, 1200, 1400] },
+            { name: 'Failure rate', data: [2, 3.7, 2.5], axis: 'secondary' }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const written = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(written).toContain('3.7%');
+      expect(written).toContain('$1,200');
+    });
   });
 
   describe('stacked', () => {

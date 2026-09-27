@@ -79,7 +79,7 @@ export function LineSeries({
   gradient,
   idPrefix
 }: LineSeriesProps) {
-  const { values, visible, colors, hovered, activeIndex, plot, point, zeroPxOf, size, format } =
+  const { values, visible, colors, hovered, activeIndex, plot, point, zeroPxOf, size, formatFor } =
     context;
 
   const stroke = lineWidths[size];
@@ -309,7 +309,7 @@ export function LineSeries({
                       fill={labelInk(one[category].color ?? color)}
                       className="tabular-nums"
                     >
-                      {one[category].label ?? format(value)}
+                      {one[category].label ?? formatFor(index)(value)}
                     </text>
                   );
                 })}

@@ -162,7 +162,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
     categoryPx,
     zeroPx,
     zeroPxOf,
-    format
+    formatFor
   } = context;
 
   const drawn = values
@@ -295,7 +295,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                       fill={labelInk(value.color ?? color)}
                       className="tabular-nums"
                     >
-                      {value.label ?? format(value.value)}
+                      {value.label ?? formatFor(index)(value.value)}
                     </text>
                   )}
                 </g>

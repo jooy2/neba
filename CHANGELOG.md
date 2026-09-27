@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **A series on a `secondaryAxis` is labelled and pointed at on its own scale.** Its value labels were written in the first axis's `format`, so a rate beside a revenue read `$4`; `tooltip={{ mode: 'item' }}` measured the pointer against every series on the first axis's scale, so a rate near the top of the plot lost to a revenue near the floor; and a horizontal chart placed its tooltip, and chose which side it hangs on, on that scale too. All three read the series' own axis now, and a value label goes through `secondaryAxis.tickFormat` as the table and the tooltip already did.
+
 - **A `secondaryAxis` label is drawn above the plot rather than over it.** It is written along the top of the chart, at the far end of the line a `yAxis` label starts, and that line was only made room for when the `yAxis` had a label too — so on its own the name sat over the top of the plot and the highest points under it. The top is taken for either name now. On a vertical chart the right-hand band no longer widens for a name that was never drawn in it, so the plot gains that width back.
 
 - **A chart reference on the category axis stays on its own column under a brush.** Its `value` is an index into the whole series, and the plot placed it as an index into the window — so with the window on days 10 to 19, a rule at day 10 was drawn off the end of the plot, and the hidden list read it out under the wrong category's name. It is placed and named against the whole series now. A category reference outside what the plot draws, windowed or not, is left out rather than drawn past the axis, and a band is cut at the plot's edge.
