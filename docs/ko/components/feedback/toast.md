@@ -88,13 +88,10 @@ ToastProvider는 자기 요소를 그리지 않습니다. app을 감싸고 porta
 
 slot은 `viewport`, `toast`, `title`, `description`, `action`, `close`입니다. `viewport`는 toast가 쌓이는 띠이고 `toast`는 그중 하나로, 스택의 모든 toast에 적용됩니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
-## Toast와 Alert 중 무엇을 쓸지
-
-[Alert](./alert)는 해당 페이지에 속하며 그 자리에 남습니다. Toast는 방금 일어난 일을 알리고 사라집니다. 1분 뒤에도 여전히 유효한 메시지라면 Alert를 쓰세요.
-
 ## 접근성
 
 - live region으로 전달되므로 갑자기 나타난 메시지도 screen reader에 읽힙니다.
+- Toast는 스스로 사라지므로 독자가 놓칠 수 있습니다. 1분 뒤에도 여전히 유효한 메시지는 페이지에 남는 [Alert](./alert)로 쓰세요.
 - `priority: 'high'`는 screen reader가 읽던 내용을 끊고, 기본값은 끊기지 않고 기다립니다.
 - 타이머는 hover 중이거나 창이 비활성일 때 멈춥니다. F6으로 스택에 focus를 옮길 수 있습니다.
 - 닫기 버튼은 스택이 hover되거나 focus를 받기 전까지 접근성 트리에서 빠져 있어, Toast가 "메시지 + 버튼"이 아니라 하나의 메시지로 읽힙니다.

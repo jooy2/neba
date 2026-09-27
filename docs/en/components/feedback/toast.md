@@ -88,13 +88,10 @@ A ToastProvider renders no element of its own (it wraps the app and puts a porta
 
 The slots are `viewport`, `toast`, `title`, `description`, `action` and `close`. `viewport` is the strip the toasts are stacked in; `toast` is one of them, and every toast in the stack gets it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
 
-## Toast or Alert
-
-An [Alert](./alert) belongs to its page and stays there. A toast reports something that just happened and leaves. If the message is still true a minute from now, use an Alert.
-
 ## Accessibility
 
 - Toasts are announced through a live region, so a message that appeared out of nowhere still reaches a screen reader.
+- A toast leaves on its own, so a reader can miss it. A message that is still true a minute from now belongs in an [Alert](./alert), which stays on the page.
 - `priority: 'high'` interrupts what a screen reader is saying; the default waits for a pause.
 - Timers pause on hover and while the window is blurred. F6 moves focus into the stack.
 - The close button stays out of the accessibility tree until the stack is hovered or focused, so a toast is announced as one message rather than as a message and a button.

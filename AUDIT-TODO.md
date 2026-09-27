@@ -300,7 +300,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **151** Menu: a `danger` row is said to turn "the focus ring" red, but rows draw no ring. `menu.md:124`, both locales.
 - [x] **152** Menu, ContextMenu section: it never says how a keyboard opens a context menu (the area must be focusable for the context-menu key), it ends on a "since…" clause, and the `content` row is not marked required. `menu.md:97-101`, `props.ts:8171`. The demo's box takes the focus now, so it can be opened the way the page says.
 - [x] **153** Tooltip: say that a tooltip on a `disabled` trigger cannot open from the keyboard, and point at `focusableWhenDisabled`. `tooltip.md:52`, both locales.
-- [ ] **154** Toast: `## Toast or Alert` is a section outside the page skeleton. `toast.md:91`, both locales. Fix: fold its one fact into an Accessibility bullet.
+- [x] **154** Toast: `## Toast or Alert` is a section outside the page skeleton. `toast.md:91`, both locales. Fix: fold its one fact into an Accessibility bullet.
 - [ ] **155** [decision] Image: `width` and `height` given together set only a proportion; the box spans its container, unlike an `<img>`, while the page says they are taken "as an `<img>` takes them". `image.md:45`, `Image.tsx:1235-1240`. (a) Say so on the page and in the JSDoc; (b) cap the box at `width` with `max-width`.
 - [ ] **156** Anchor: `offset` does not move where a pressed row lands on a page that scrolls the document; that page needs `scroll-padding-top`. `anchor.md:41-43`, both locales.
 - [ ] **157** Breadcrumb: the `render` section says `href` is written once above an example that writes it twice, and the `structuredData` JSDoc still says a page can only have one. `breadcrumb.md:74-77`, `Breadcrumb.tsx:86`.
