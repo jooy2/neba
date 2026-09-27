@@ -335,6 +335,39 @@ describe('ColorPicker', () => {
     });
   });
 
+  describe('an inline picker in a form', () => {
+    // The popup's shell took a disabled picker out of the form and held an
+    // empty required one back; an inline picker draws no shell, and did
+    // neither.
+    it('is left out of the form when it is disabled', async () => {
+      const screen = await render(
+        <form data-testid="form">
+          <ColorPicker inline disabled name="brand" defaultValue="#ff0000" />
+        </form>
+      );
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      expect(new FormData(form).has('brand')).toBe(false);
+    });
+
+    it('holds an empty required picker back from a submit', async () => {
+      const picker = (value: string) => (
+        <form data-testid="form">
+          <ColorPicker inline required name="brand" value={value} onValueChange={() => {}} />
+        </form>
+      );
+      const screen = await render(picker(''));
+      const form = screen.getByTestId('form').element() as HTMLFormElement;
+
+      expect(form.checkValidity()).toBe(false);
+
+      await screen.rerender(picker('#ff0000'));
+
+      expect(form.checkValidity()).toBe(true);
+      expect([...new FormData(form).keys()]).toEqual(['brand']);
+    });
+  });
+
   describe('inert states', () => {
     it('takes the panel out of the tab order when disabled', async () => {
       const screen = await render(<ColorPicker inline disabled />);

@@ -813,7 +813,33 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
       />
     );
 
-    const hidden = name ? <input type="hidden" name={name} value={empty ? '' : written} /> : null;
+    /*
+     * What an inline picker submits, and what holds a form back while it is
+     * empty. The popup's shell draws both of these for itself; an inline
+     * picker draws no shell, so it draws them here — disabled with the picker,
+     * and the second left out of a picker nobody can fill in, as the shell
+     * leaves it out.
+     */
+    const hidden = name ? (
+      <input type="hidden" name={name} value={empty ? '' : written} disabled={disabled} />
+    ) : null;
+    const requiredProxy =
+      required && !inert ? (
+        <input
+          aria-hidden="true"
+          tabIndex={-1}
+          required
+          value={empty ? '' : 'chosen'}
+          onChange={() => {}}
+          // To the square, which is the first thing that sets a colour.
+          onInvalid={(event) =>
+            event.currentTarget.parentElement
+              ?.querySelector<HTMLElement>('[role="slider"]')
+              ?.focus()
+          }
+          className="pointer-events-none absolute start-0 bottom-0 size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
+        />
+      ) : null;
 
     if (inline) {
       const family: NebaColor = (invalid ?? Boolean(error)) ? 'danger' : color;
@@ -830,7 +856,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
           role="group"
           aria-labelledby={label ? labelId : undefined}
           aria-describedby={described || undefined}
-          className={cx('flex flex-col', stackGapClasses[size], className)}
+          className={cx('relative flex flex-col', stackGapClasses[size], className)}
           style={{ ...surfaceSlots(family, elevation), ...style }}
           {...props}
         >
@@ -865,6 +891,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
           ) : null}
 
           {hidden}
+          {requiredProxy}
         </div>
       );
     }

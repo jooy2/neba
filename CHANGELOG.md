@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- **An inline `ColorPicker` behaves in a form as the popup one does.** A disabled inline picker still submitted its value, and a `required` one that was empty let the form go, because the popup's shell is what did both and an inline picker draws none. It does both itself now: its value is left out of the form while it is disabled, and an empty required picker holds the submit back and takes the focus to its square.
+
 - **A `FilePicker` and an inline `ColorPicker` inside a disabled `Fieldset` are disabled.** Base UI's `Fieldset` stops the fields it knows, and neither is one of them: a file dropped on the picker still reached `onFilesChange`, the inline picker's square and rails still answered the keys and the pointer, and both were drawn available. Both read the `Fieldset` now, as the other fields already did.
 
 - **A `Reasoning`, a `ToolCall` or an `AgentStep` that timed itself reports the time it took.** The clock ticks once a second, and when a run ended without a `duration` the total was whichever tick had come last — 4.9 seconds of thinking read "Thought for 4s", and anything under a second had no figure at all and read "Finished thinking". The clock is read once more when the run ends, so the total says what a `duration` of the same length says: "4.9s", or "900ms".
