@@ -155,7 +155,7 @@ A strip under the plot with the whole series on it, and a window the reader drag
 
 For the series a plot cannot hold. Two thousand points is a chart with no points on it — every column is a fraction of a pixel and the shape is a smear — and the answer is a window of them with all of them small underneath, so the reader can see where in the year the window is and move it.
 
-Drag the window to pan and either handle to resize; both handles are `role="slider"` buttons, so the arrow keys move them one category at a time and `Home` and `End` jump to the ends. `defaultRange` sets where the window starts, `range` and `onRangeChange` hand it to the caller, and `height` sizes the strip — which is drawn **inside** the chart's own height, like the axis labels.
+Drag the window to pan and either handle to resize; both handles are `role="slider"` buttons, so the arrow keys move them one category at a time, `Page Up` and `Page Down` a tenth of the series, and `Home` and `End` jump to the ends. The strip is a group named after the chart. `defaultRange` sets where the window starts, `range` and `onRangeChange` hand it to the caller, and `height` sizes the strip — which is drawn **inside** the chart's own height, like the axis labels.
 
 The window narrows the picture and nothing else: the hidden table and the exported file still hold every point, because a reader who scrolled the plot to March did not ask for a spreadsheet of March.
 

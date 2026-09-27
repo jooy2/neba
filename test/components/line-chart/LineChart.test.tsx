@@ -820,6 +820,32 @@ describe('LineChart', () => {
       await expect.element(start).toHaveAttribute('aria-valuenow', '0');
     });
 
+    it('moves a handle a tenth of the series with Page Up and Page Down', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [2, 19] } }));
+      const [start, end] = [screen.getByRole('slider').first(), screen.getByRole('slider').nth(1)];
+      const press = (handle: typeof start, key: string) =>
+        handle.element().dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+      await expect.element(end).toHaveAttribute('aria-valuenow', '19');
+
+      press(end, 'PageUp');
+      await expect.element(end).toHaveAttribute('aria-valuenow', '23');
+
+      // Held at the first category rather than handed a window that starts
+      // before the series does.
+      press(start, 'PageDown');
+      await expect.element(start).toHaveAttribute('aria-valuenow', '0');
+    });
+
+    // Two brushed charts on one page were four sliders called Start and End.
+    it('names the strip after the chart', async () => {
+      const screen = await render(chart({ brush: { defaultRange: [10, 19] } }));
+      const strip = screen.getByRole('group', { name: 'Signups by day' });
+
+      await expect.element(strip).toBeInTheDocument();
+      expect(strip.element().querySelectorAll('[role="slider"]')).toHaveLength(2);
+    });
+
     it('reports the window it was moved to', async () => {
       const onRangeChange = vi.fn();
       const screen = await render(chart({ brush: { defaultRange: [10, 19], onRangeChange } }));

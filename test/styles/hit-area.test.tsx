@@ -15,6 +15,7 @@ import {
   Dialog,
   Drawer,
   FilePicker,
+  LineChart,
   NumberField,
   Panes,
   Pane,
@@ -89,6 +90,22 @@ describe('the target under a small control', () => {
     expect(first.height).toBeGreaterThanOrEqual(24);
     expect(first.width).toBeGreaterThanOrEqual(24);
     expect(first.right).toBeLessThanOrEqual(second.left + 0.5);
+  });
+
+  it('grabs a window handle on a chart across 24px', async () => {
+    const screen = await render(
+      <LineChart
+        label="Visits"
+        categories={Array.from({ length: 30 }, (_, index) => `D${index}`)}
+        series={[{ name: 'Visits', data: Array.from({ length: 30 }, (_, index) => index) }]}
+        brush={{ defaultRange: [5, 20] }}
+      />
+    );
+    const handle = screen.getByRole('slider').first();
+
+    await expect.element(handle).toBeInTheDocument();
+
+    expect(target(handle.element()).width).toBeGreaterThanOrEqual(24);
   });
 
   // Drawn at 1.6em of a sheet's body text, which is about 20 pixels, and the

@@ -2519,6 +2519,7 @@ export function CartesianChart(rawProps: CartesianProps) {
             color={colors[Math.max(0, visibility.visible.indexOf(true))] ?? colors[0]}
             height={brushOptions.height ?? 32}
             words={{ start: chartWords.start, end: chartWords.end }}
+            label={label ?? chartWords.label}
             categories={fullLabels}
             locale={locale}
             width={width}

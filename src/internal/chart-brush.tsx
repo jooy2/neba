@@ -20,7 +20,7 @@
 import * as React from 'react';
 import { formatCategory, linePath } from './chart.js';
 import { beginPointerDrag } from './drag.js';
-import { cx } from './styles.js';
+import { cx, hitAreaClasses } from './styles.js';
 import type { NebaChartCategory } from '../types.js';
 
 export interface BrushProps {
@@ -33,6 +33,8 @@ export interface BrushProps {
   color: string;
   height: number;
   words: { start: string; end: string };
+  /** The chart's own name, which the strip is a group under. */
+  label: string;
   /** What the two handles say they are on, read out with their positions. */
   categories: readonly NebaChartCategory[];
   locale?: string;
@@ -66,6 +68,7 @@ export function ChartBrush({
   color,
   height,
   words,
+  label,
   categories,
   locale,
   width
@@ -166,15 +169,22 @@ export function ChartBrush({
   }
 
   function step(grip: Grip, event: React.KeyboardEvent) {
+    // A page is a tenth of the series: an arrow key at a time, a window on a
+    // year of days is a few hundred presses from one end to the other.
+    const page = Math.max(1, Math.round(count / 10));
     const by =
       event.key === 'ArrowLeft' || event.key === 'ArrowDown'
         ? -1
         : event.key === 'ArrowRight' || event.key === 'ArrowUp'
           ? 1
-          : 0;
+          : event.key === 'PageDown'
+            ? -page
+            : event.key === 'PageUp'
+              ? page
+              : 0;
 
     if (by !== 0) {
-      move(grip, (grip === 'end' ? to : from) + by, 0);
+      move(grip, Math.min(last, Math.max(0, (grip === 'end' ? to : from) + by)), 0);
     } else if (event.key === 'Home') {
       move(grip, 0, 0);
     } else if (event.key === 'End') {
@@ -202,6 +212,8 @@ export function ChartBrush({
         onKeyDown={(event) => step(grip, event)}
         className={cx(
           'absolute inset-y-0 w-2 -translate-x-1/2 cursor-ew-resize rounded-full',
+          // Drawn 8 pixels wide, pressed across a finger's width.
+          hitAreaClasses,
           'bg-(--n-accent) [touch-action:none]',
           'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
         )}
@@ -211,7 +223,15 @@ export function ChartBrush({
   };
 
   return (
-    <div ref={stripRef} className="absolute inset-x-0 bottom-0 select-none" style={{ height }}>
+    <div
+      ref={stripRef}
+      // Named after the chart, so two brushed charts on a page are not four
+      // sliders called Start and End.
+      role="group"
+      aria-label={label}
+      className="absolute inset-x-0 bottom-0 select-none"
+      style={{ height }}
+    >
       <svg
         width="100%"
         height={height}

@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **A chart's brush is easier to reach and to tell apart.** Its two handles are drawn 8 pixels wide and are now pressed across 24. `Page Up` and `Page Down` move a handle a tenth of the series, where the arrow keys alone took hundreds of presses to cross a year of days, and a key never takes a handle past either end of the series. The strip is a group named after the chart, so two brushed charts on one page are no longer four sliders called Start and End.
+
 - **A `Rating`'s stars are pressed at a finger's height, and across the gap between them.** Each star took presses only on its own glyph, 20 pixels at `md`, and the gap between two stars took none. The target now grows to 24 pixels tall and across half the gap on each side, so it never reaches the next star. With `precision={0.5}` the two halves of a star meet in the middle and only grow up and down, which the page now says.
 
 - **The × that takes a file off a `FilePicker`'s list is pressed at the size of a finger.** It is drawn at 1.3em of the file's name, about 17 pixels, with no larger target around it. It carries the same invisible 24-pixel target as a `Chip`'s × now, and nothing drawn moves.
