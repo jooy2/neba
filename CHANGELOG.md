@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- **The working ring slows down under a reduced-motion preference.** A `Button` that is `loading`, a `TextField` that is checking and a running `ToolCall`, `AgentStep` or `Reasoning` turned their ring on Tailwind's `animate-spin`, which the preference did not reach, so a transcript with several running rows kept several rings at full speed. The ring turns at an indeterminate `ProgressCircular`'s rate now, 0.9 seconds a turn, and slows to 2.4 seconds with it.
+
 - **A `PromptInput` that sends on Enter says so to a phone's keyboard.** The field sets `enterKeyHint="send"` when `submitKey` is `Enter`, so the key is labelled as the send it is rather than as a line break. A form gives an `<input>` that label on its own and never a `<textarea>`, which is what the component and its page had assumed. A caller's own `enterKeyHint` still wins.
 
 - **A `PromptInput` given an `id` keeps its accessible name.** The id reached the textarea, but the visually hidden label still pointed at the one the component had generated, so the field was announced with no name. The label follows the id the textarea ends up with.

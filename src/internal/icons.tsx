@@ -423,10 +423,13 @@ export function StarOutlineIcon() {
  * The arc is a quarter of the circle behind it, and both are stroked at 2 rather
  * than the 1.5 every other glyph here uses: a ring that turns is read as a
  * shape rather than as a line, and at 1.5 it reads as a smudge.
+ *
+ * It turns on `.neba-ring-spin`, the rate an indeterminate ProgressCircular
+ * turns at, which a reduced-motion preference slows rather than stops.
  */
 export function SpinnerIcon() {
   return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="animate-spin">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="neba-ring-spin">
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
       <path
         d="M14.5 8A6.5 6.5 0 0 0 8 1.5"

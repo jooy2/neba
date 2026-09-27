@@ -8,6 +8,8 @@
  * override has to name each of those roots itself.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { render } from 'vitest-browser-react';
+import { Button } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -80,6 +82,25 @@ describe('prefers-reduced-motion', () => {
     expect(running?.style.animationName).toBe('');
     expect(
       rules.some((rule) => held.matches(rule.selectorText) && rule.style.animationName === 'none')
+    ).toBe(true);
+  });
+
+  // The working ring in a Button, a TextField and a running agent row turned on
+  // Tailwind's `animate-spin`, which nothing here slowed.
+  it('slows the working ring rather than leaving it at full speed', async () => {
+    const rules = [...(sheet.sheet?.cssRules ?? [])]
+      .filter(
+        (rule): rule is CSSMediaRule =>
+          rule instanceof CSSMediaRule && rule.conditionText.includes('prefers-reduced-motion')
+      )
+      .flatMap((media) => [...media.cssRules])
+      .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule);
+    const screen = await render(<Button loading>Save</Button>);
+    const ring = screen.container.querySelector('svg');
+
+    expect(ring).not.toBeNull();
+    expect(
+      rules.some((rule) => ring!.matches(rule.selectorText) && rule.style.animationDuration !== '')
     ).toBe(true);
   });
 
