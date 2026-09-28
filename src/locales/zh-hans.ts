@@ -53,7 +53,9 @@ export const zhHans: NebaLocale = {
     empty: '暂无数据',
     exportCsv: '导出 CSV',
     noGroup: '未分组',
-    resizeColumn: '调整{column}的宽度'
+    resizeColumn: '调整{column}的宽度',
+    sortAscending: '第 {order} 排序，升序',
+    sortDescending: '第 {order} 排序，降序'
   },
   color: {
     area: '饱和度和明度',

@@ -238,6 +238,14 @@ export interface TableMessages {
    * the column's label.
    */
   resizeColumn: string;
+  /**
+   * What a heading past the first in a multiple sort says about its place in
+   * the order, since only the first key can carry `aria-sort`. `{order}` is
+   * replaced with the place, already formatted.
+   */
+  sortAscending: string;
+  /** The same, for a key sorted the other way. */
+  sortDescending: string;
 }
 
 /** The `table` namespace, as Table and DataTable read it. */
@@ -252,7 +260,9 @@ export const tableMessages: MessageTable<TableMessages> = {
     empty: 'No data',
     exportCsv: 'Export CSV',
     noGroup: 'No group',
-    resizeColumn: 'Resize {column}'
+    resizeColumn: 'Resize {column}',
+    sortAscending: 'sort {order}, ascending',
+    sortDescending: 'sort {order}, descending'
   }
 };
 

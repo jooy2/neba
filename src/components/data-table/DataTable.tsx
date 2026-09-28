@@ -2346,10 +2346,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const order = entry ? sort.findIndex((item) => item.key === column.key) + 1 : 0;
     const align = column.headerAlign ?? column.align ?? 'start';
     const hasHandle = canResize && index < columns.length - 1;
-    // A heading is named from what is in it, and the separator in it has a
-    // name of its own, so a heading with one is named by its label alone —
-    // or every cell under it would be read out with "Resize" in its header.
-    const labelId = hasHandle ? `${reactId}-head-${index}` : undefined;
+    // A heading is named from what is in it, and the separator and the sort
+    // order in it have words of their own, so a heading with either is named
+    // by its label alone — or every cell under it would be read out with
+    // "Resize" or "sort 2" in its header.
+    const labelId = hasHandle || order > 1 ? `${reactId}-head-${index}` : undefined;
 
     return (
       <th
@@ -2364,7 +2365,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         }}
         scope="col"
         rowSpan={rowSpan}
-        aria-sort={entry ? (entry.direction === 'asc' ? 'ascending' : 'descending') : undefined}
+        // On the first key only. A grid with several sorted headings says
+        // nothing about which one decides, and ARIA asks for one; the others
+        // say their place in the order inside their button instead.
+        aria-sort={
+          entry && order === 1
+            ? entry.direction === 'asc'
+              ? 'ascending'
+              : 'descending'
+            : undefined
+        }
         data-column={column.key}
         data-dragging={movingKey === column.key || undefined}
         className={cx(
@@ -2447,9 +2457,20 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             </span>
 
             {order > 1 ? (
-              <span aria-hidden="true" className="text-[0.85em] tabular-nums">
-                {order}
-              </span>
+              <>
+                <span aria-hidden="true" className="text-[0.85em] tabular-nums">
+                  {order}
+                </span>
+                {/* The space is what keeps the label and this from being
+                    read as one word; the number between them is hidden. */}
+                <span className={srOnlyClasses}>
+                  {' '}
+                  {fillMessage(
+                    entry?.direction === 'desc' ? messages.sortDescending : messages.sortAscending,
+                    { order: number.format(order) }
+                  )}
+                </span>
+              </>
             ) : null}
           </button>
         ) : (

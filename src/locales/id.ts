@@ -50,7 +50,9 @@ export const id: NebaLocale = {
     empty: 'Tidak ada data',
     exportCsv: 'Ekspor CSV',
     noGroup: 'Tanpa grup',
-    resizeColumn: 'Ubah lebar {column}'
+    resizeColumn: 'Ubah lebar {column}',
+    sortAscending: 'urutan {order}, naik',
+    sortDescending: 'urutan {order}, turun'
   },
   color: {
     area: 'Saturasi dan kecerahan',

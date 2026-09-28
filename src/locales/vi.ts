@@ -50,7 +50,9 @@ export const vi: NebaLocale = {
     empty: 'Không có dữ liệu',
     exportCsv: 'Xuất CSV',
     noGroup: 'Không có nhóm',
-    resizeColumn: 'Đổi độ rộng {column}'
+    resizeColumn: 'Đổi độ rộng {column}',
+    sortAscending: 'sắp xếp thứ {order}, tăng dần',
+    sortDescending: 'sắp xếp thứ {order}, giảm dần'
   },
   color: {
     area: 'Độ bão hòa và độ sáng',

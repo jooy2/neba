@@ -50,7 +50,9 @@ export const fr: NebaLocale = {
     empty: 'Aucune donnée',
     exportCsv: 'Exporter en CSV',
     noGroup: 'Sans groupe',
-    resizeColumn: 'Redimensionner {column}'
+    resizeColumn: 'Redimensionner {column}',
+    sortAscending: 'tri {order}, croissant',
+    sortDescending: 'tri {order}, décroissant'
   },
   color: {
     area: 'Saturation et luminosité',

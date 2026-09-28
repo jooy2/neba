@@ -217,6 +217,34 @@ describe('DataTable', () => {
         .toHaveAttribute('aria-sort', 'ascending');
     });
 
+    // Every sorted heading carried `aria-sort`, and the number that says which
+    // key decides first was hidden from a screen reader.
+    it('puts aria-sort on the first key and says where the others come', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          sortable
+          sortMode="multiple"
+          sort={[
+            { key: 'city', direction: 'asc' },
+            { key: 'score', direction: 'desc' }
+          ]}
+        />
+      );
+
+      await expect
+        .element(screen.getByRole('columnheader', { name: 'City' }))
+        .toHaveAttribute('aria-sort', 'ascending');
+      await expect
+        .element(screen.getByRole('columnheader', { name: 'Score' }))
+        .not.toHaveAttribute('aria-sort');
+      await expect
+        .element(screen.getByRole('button', { name: /^Score sort 2, descending$/ }))
+        .toBeInTheDocument();
+    });
+
     it('sorts numbers as numbers', async () => {
       const screen = await render(
         <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} sortable />

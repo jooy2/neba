@@ -50,7 +50,9 @@ export const ko: NebaLocale = {
     empty: '데이터 없음',
     exportCsv: 'CSV 내보내기',
     noGroup: '그룹 없음',
-    resizeColumn: '{column} 너비 조절'
+    resizeColumn: '{column} 너비 조절',
+    sortAscending: '정렬 {order}순위, 오름차순',
+    sortDescending: '정렬 {order}순위, 내림차순'
   },
   color: {
     area: '채도와 명도',

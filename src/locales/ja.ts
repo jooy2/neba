@@ -50,7 +50,9 @@ export const ja: NebaLocale = {
     empty: 'データがありません',
     exportCsv: 'CSVをエクスポート',
     noGroup: 'グループなし',
-    resizeColumn: '{column}の幅を変更'
+    resizeColumn: '{column}の幅を変更',
+    sortAscending: '並べ替え{order}番目、昇順',
+    sortDescending: '並べ替え{order}番目、降順'
   },
   color: {
     area: '彩度と明度',

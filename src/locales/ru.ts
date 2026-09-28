@@ -50,7 +50,9 @@ export const ru: NebaLocale = {
     empty: 'Нет данных',
     exportCsv: 'Экспорт CSV',
     noGroup: 'Без группы',
-    resizeColumn: 'Изменить ширину: {column}'
+    resizeColumn: 'Изменить ширину: {column}',
+    sortAscending: 'сортировка {order}, по возрастанию',
+    sortDescending: 'сортировка {order}, по убыванию'
   },
   color: {
     area: 'Насыщенность и яркость',

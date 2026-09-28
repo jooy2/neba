@@ -50,7 +50,9 @@ export const hi: NebaLocale = {
     empty: 'कोई डेटा नहीं',
     exportCsv: 'CSV निर्यात करें',
     noGroup: 'कोई समूह नहीं',
-    resizeColumn: '{column} की चौड़ाई बदलें'
+    resizeColumn: '{column} की चौड़ाई बदलें',
+    sortAscending: 'क्रम {order}, आरोही',
+    sortDescending: 'क्रम {order}, अवरोही'
   },
   color: {
     area: 'संतृप्ति और चमक',

@@ -53,7 +53,9 @@ export const zhHant: NebaLocale = {
     empty: '沒有資料',
     exportCsv: '匯出 CSV',
     noGroup: '未分組',
-    resizeColumn: '調整{column}的寬度'
+    resizeColumn: '調整{column}的寬度',
+    sortAscending: '第 {order} 排序，升冪',
+    sortDescending: '第 {order} 排序，降冪'
   },
   color: {
     area: '飽和度與明度',
