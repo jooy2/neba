@@ -73,7 +73,7 @@ import { Avatar } from 'neba';
 
 `children`은 이니셜 대신 그릴 fallback입니다. 아이콘, 로고, 이모지 하나가 여기에 들어갑니다. 안에 있는 `<svg>`는 상자의 55% 크기로 맞춰집니다. `children`도 `initials`도 `name`도 없으면 실루엣을 그립니다.
 
-셋 중 무엇이 보이는지는 그림의 로딩 상태가 정합니다. `delay`를 주면 fallback을 잠시 미룰 수 있어서 캐시된 그림 앞에서 이니셜이 번쩍이지 않고, 상태 자체는 `onLoadingStatusChange`로 읽습니다. `<img>`는 서버 HTML을 포함해 첫 렌더부터 마크업에 있으므로, `imageProps={{ loading: 'lazy' }}`는 다른 이미지에서처럼 로딩을 미룹니다. 로드가 끝나기 전에는 화면에서도, 접근성 트리에서도 가려집니다.
+셋 중 무엇이 보이는지는 그림의 로딩 상태가 정합니다. `delay`를 주면 fallback을 잠시 미룰 수 있어서 캐시된 그림 앞에서 이니셜이 번쩍이지 않고, 상태 자체는 `onLoadingStatusChange`로 읽습니다. `<img>`는 서버 HTML을 포함해 첫 렌더부터 마크업에 있으므로, `imageProps`에 준 `loading: 'lazy'`는 다른 이미지에서처럼 로딩을 미룹니다. 로드가 끝나기 전에는 화면에서도, 접근성 트리에서도 가려집니다.
 
 <Demo src="avatar/fallback">
 

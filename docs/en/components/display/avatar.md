@@ -73,7 +73,7 @@ The rule is the first character of the first word plus the first character of th
 
 `children` is the fallback, drawn instead of the initials: an icon, a logo, a single emoji. An `<svg>` inside it is sized to 55% of the box. With no `children`, no `initials` and no `name`, the avatar draws a silhouette.
 
-Which of the three is showing is decided by the picture's loading state. Set `delay` to hold the fallback back for a moment so the initials do not flash up in front of a cached image, and read the state itself with `onLoadingStatusChange`. The `<img>` is in the markup from the first render, server HTML included, so `imageProps={{ loading: 'lazy' }}` defers it as it would any image; until it has loaded it is kept out of sight and out of the accessibility tree.
+Which of the three is showing is decided by the picture's loading state. Set `delay` to hold the fallback back for a moment so the initials do not flash up in front of a cached image, and read the state itself with `onLoadingStatusChange`. The `<img>` is in the markup from the first render, server HTML included, so a `loading: 'lazy'` in `imageProps` defers it as it would any image; until it has loaded it is kept out of sight and out of the accessibility tree.
 
 <Demo src="avatar/fallback">
 
