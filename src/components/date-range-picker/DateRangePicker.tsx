@@ -84,8 +84,9 @@ export interface DateRangePickerProps extends PickerShellProps {
   closeOnSelect?: boolean;
   labels?: Partial<PickerLabels>;
   /**
-   * Identifies the field when a form is submitted. Two hidden inputs of the same
-   * name, so the two ends arrive as `FormData.getAll(name)`.
+   * Identifies the field when a form is submitted. Two inputs of the same name,
+   * so the two ends arrive as `FormData.getAll(name)` — and, inside a `Form`,
+   * as a two-item array under `name` in what `onSubmit` is handed.
    */
   name?: string;
 }
@@ -333,6 +334,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
               ]
             : undefined
         }
+        repeats
       >
         <div className="flex flex-col gap-1.5">
           <div className={cx('flex items-stretch', gapClasses[size])}>

@@ -179,8 +179,18 @@ interface InternalShellProps extends PickerShellProps {
    * defaults it does not use over a label it does.
    */
   clearLabel: string;
-  /** `<input type="hidden">` rows, so the control submits with a form. */
+  /**
+   * What the control submits, one row per value. The first row is the field a
+   * `Form` registers — see the note at the end of the shell — and the rest are
+   * `<input type="hidden">`, so `FormData.getAll(name)` has every one.
+   */
   hiddenValues?: Array<{ name: string; value: string }>;
+  /**
+   * The name carries a list — a range's two ends, a multiple TreeSelect's
+   * choices — so a `Form` hands `onSubmit` every value under it, as an array,
+   * rather than the one a registered field holds.
+   */
+  repeats?: boolean;
   /** How far off the trigger the popup sits. */
   sideOffset?: number;
   /**
@@ -236,6 +246,7 @@ export function PickerShell({
   onOpenChange,
   clearLabel,
   hiddenValues,
+  repeats = false,
   sideOffset = 6,
   popupClassName,
   initialFocus = false,
@@ -257,6 +268,8 @@ export function PickerShell({
 
   const describedBy =
     cx(description ? descriptionId : null, hasError ? errorId : null) || undefined;
+
+  const [first, ...rest] = hiddenValues ?? [];
 
   const notched = labelPlacement !== 'top' && hasContent(label);
   const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
@@ -433,9 +446,49 @@ export function PickerShell({
         <Field.Error id={errorId} match className={cx(metaTextClasses[size], 'text-(--n-accent)')}>
           {error}
         </Field.Error>
+      ) : (
+        // What the field's own validation says, and an error a `Form` was handed
+        // under the picker's `name`: a required picker left empty, or a server's
+        // answer about it. Base UI draws it only while the field is invalid.
+        <Field.Error className={cx(metaTextClasses[size], 'text-(--n-accent)')} />
+      )}
+
+      {/*
+        The field a `Form` knows about.
+
+        Base UI's Form collects values, runs validation and hands out its
+        `errors` through the fields registered with it, and a trigger that is a
+        button registers nothing — so a picker inside a Form was missing from
+        `onSubmit`, did not hold the submit when it was required and empty, and
+        never showed `errors[name]`. This is a real input for it to register: it
+        carries the first value under the picker's `name`, submits it natively as
+        the hidden input it replaces did, and is `required` when the picker is.
+        It is empty exactly when that value is. Without a `name` it is drawn only
+        to hold a required submit back.
+
+        Not `type="hidden"`, which a form never validates, and not
+        `display: none`, which cannot take the focus: a submit that finds it
+        invalid focuses it, and it hands the focus straight on to the trigger. A
+        read-only picker is left out of validation, as a read-only input is,
+        because a reader cannot fill it in.
+      */}
+      {first || (required && !inert) ? (
+        <Field.Control
+          aria-hidden="true"
+          tabIndex={-1}
+          name={first?.name}
+          value={first ? first.value : empty ? '' : 'chosen'}
+          required={required && !inert}
+          readOnly={readOnly}
+          data-neba-repeats={repeats && first ? '' : undefined}
+          // By id rather than through a second ref on the trigger: the caller's
+          // `triggerRef` is theirs, and the id is already the shell's.
+          onFocus={() => document.getElementById(triggerId)?.focus()}
+          className="pointer-events-none absolute start-0 bottom-0 size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
+        />
       ) : null}
 
-      {hiddenValues?.map((entry, index) => (
+      {rest.map((entry, index) => (
         // Disabled with the picker, which is what keeps a disabled field out of
         // the form: a hidden input went out with it whatever the picker said.
         <input
@@ -446,28 +499,6 @@ export function PickerShell({
           disabled={disabled}
         />
       ))}
-
-      {/*
-        The value's inputs are `type="hidden"`, which a form never validates, so
-        `required` only ever reached the trigger's ARIA and an empty picker let
-        the form submit. This input exists to be validated: it has no name, so it
-        submits nothing, and it is empty exactly when the picker is. A read-only
-        picker is left out, as a read-only input is, because a reader cannot
-        fill it in.
-      */}
-      {required && !inert ? (
-        <input
-          aria-hidden="true"
-          tabIndex={-1}
-          required
-          value={empty ? '' : 'chosen'}
-          onChange={() => {}}
-          // By id rather than through a second ref on the trigger: the caller's
-          // `triggerRef` is theirs, and the id is already the shell's.
-          onInvalid={() => document.getElementById(triggerId)?.focus()}
-          className="pointer-events-none absolute start-0 bottom-0 size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
-        />
-      ) : null}
     </Field.Root>
   );
 }

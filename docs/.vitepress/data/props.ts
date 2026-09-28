@@ -5991,8 +5991,8 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Closes the popup once both ends are chosen'
       },
       submitted: {
-        ko: '폼 제출 시의 필드 이름. 같은 이름의 hidden input 두 개가 나가므로 FormData.getAll로 받습니다',
-        en: 'Identifies the field when a form is submitted. Two hidden inputs of the same name, so the ends arrive as FormData.getAll(name)'
+        ko: '폼 제출 시의 필드 이름. 같은 이름의 input 두 개가 나가므로 FormData.getAll로 받고, Form의 onSubmit에서는 두 항목짜리 배열입니다',
+        en: "Identifies the field when a form is submitted. Two inputs of the same name, so the ends arrive as FormData.getAll(name), and as a two-item array in a Form's onSubmit"
       }
     })
   ],

@@ -72,7 +72,7 @@ Puts common spans beside the popup as buttons. A preset's `value` may be a range
 
 ### name
 
-`name` renders two hidden inputs of the same name, so both ends submit together.
+`name` renders two inputs of the same name, so both ends submit together and arrive as `FormData.getAll(name)`. Inside a [Form](./form), `onSubmit` gets them as a two-item array under `name`, a `required` range holds the submit while it is empty, and an error the Form is handed under `name` shows under the field.
 
 ```ts
 const form = new FormData(event.currentTarget);

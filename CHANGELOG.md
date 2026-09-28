@@ -52,6 +52,8 @@
 
 ### Fixed
 
+- **The pickers are fields of a `Form`.** A `DatePicker`, `TimePicker`, `DateTimePicker`, `DateRangePicker`, `ColorPicker` or `TreeSelect` inside a `Form` registered nothing with it, so its value was missing from `onSubmit`, a `required` one let the form submit empty, and an error handed to the Form under its `name` never showed. Each registers its value now: `onSubmit` gets the string it submits, or an array from a `DateRangePicker` and a `TreeSelect` with `multiple`; an empty required picker holds the submit and takes the focus; and the Form's error, or the field's own validation message, shows under it. A native submit sends the same fields as before, though the first input under the `name` is a visually hidden text input rather than `type="hidden"`, so a test that found it by `input[type="hidden"]` should find it by its `name`.
+
 - **A `StreamingText` fades in Japanese, Chinese and Thai word by word.** It cut its text at whitespace, so a paragraph in a script written without spaces was one token: it faded in once, and everything after arrived with nothing moving. A run in one of those scripts is cut again with `Intl.Segmenter` now, and only that run, so a page in a spaced language builds no segmenter.
 
 - **A failed `ToolCall`'s `error` is headed "Failed".** It sat under the heading "Result", which said the call had come back with something. The heading is the word a failed status is already read as, in the `locale`'s words; a failed call with no `error` still shows its `result` under "Result".

@@ -30,7 +30,7 @@ The children are laid out as a column with the gap `size` names. Put a [Grid](..
 
 ### onSubmit
 
-Called only when every field is valid, with the form's values keyed by each field's `name`. When `onSubmit` is given, the native submit event is prevented, so nothing navigates. Leave it out to let the submit go ahead: a function `action` then runs on React 19, and a URL in `action` on any version, after the same validation.
+Called only when every field is valid, with the form's values keyed by each field's `name`. The pickers are fields like any other: a DatePicker, TimePicker, DateTimePicker or ColorPicker hands over the string it submits, and a DateRangePicker, or a TreeSelect with `multiple`, an array. When `onSubmit` is given, the native submit event is prevented, so nothing navigates. Leave it out to let the submit go ahead: a function `action` then runs on React 19, and a URL in `action` on any version, after the same validation.
 
 ### validationMode
 

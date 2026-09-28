@@ -74,7 +74,7 @@ format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length}�
 
 ### name
 
-폼 제출 시 값 하나당 hidden input 하나로 나갑니다. `multiple`이 `<select multiple>`처럼 반복 필드로 도착합니다.
+폼 제출 시 값 하나당 input 하나로 나갑니다. `multiple`이 `<select multiple>`처럼 반복 필드로 도착합니다. [Form](./form) 안에서는 `onSubmit`이 `name` 아래의 값을 받고, `multiple`이면 배열로 받습니다. `required`인 TreeSelect는 아무것도 고르지 않았으면 제출을 막고, Form에 `name`으로 넘긴 오류가 필드 아래에 나옵니다.
 
 ## 접근성
 

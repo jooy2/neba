@@ -74,7 +74,7 @@ format={(chosen) => (chosen.length === 1 ? chosen[0].label : `${chosen.length} c
 
 ### name
 
-Submits with a form as one hidden input per value, so `multiple` arrives as a repeated field the way a `<select multiple>` does.
+Submits with a form as one input per value, so `multiple` arrives as a repeated field the way a `<select multiple>` does. Inside a [Form](./form), `onSubmit` gets the value under `name`, as an array when `multiple`; a `required` TreeSelect holds the submit while nothing is chosen, and an error the Form is handed under `name` shows under the field.
 
 ## Accessibility
 

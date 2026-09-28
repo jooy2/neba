@@ -66,6 +66,39 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
  * array here — a project that wants those keeps them and hands the result to
  * `errors`, which is the seam this is built around.
  */
+/**
+ * The values a field carries a list under, as the list.
+ *
+ * Base UI keys `values` by the fields registered with it, one value each, and a
+ * DateRangePicker's two ends or a multiple TreeSelect's choices are one name
+ * with several inputs under it. The picker marks the input it registers, and
+ * the name it carries is read back from the form as `FormData.getAll` reads it,
+ * so what `onSubmit` is handed agrees with what a native submit sends.
+ */
+function withRepeated(
+  values: Record<string, unknown>,
+  form: EventTarget | null
+): Record<string, unknown> {
+  if (!(form instanceof HTMLFormElement)) {
+    return values;
+  }
+
+  const marked = form.querySelectorAll<HTMLInputElement>('input[data-neba-repeats][name]:not(:disabled)');
+
+  if (marked.length === 0) {
+    return values;
+  }
+
+  const data = new FormData(form);
+  const next = { ...values };
+
+  for (const input of marked) {
+    next[input.name] = data.getAll(input.name);
+  }
+
+  return next;
+}
+
 export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(rawProps, ref) {
   const {
     validationMode = 'onSubmit',
@@ -85,7 +118,11 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(r
       // native submit whenever this is set, and React then skips a function
       // `action` for a prevented submit — so passing it unconditionally made
       // `<Form action={…}>` a form that did nothing at all.
-      onFormSubmit={onSubmit ? (values) => onSubmit(values) : undefined}
+      onFormSubmit={
+        onSubmit
+          ? (values, details) => onSubmit(withRepeated(values, details.event.target))
+          : undefined
+      }
       className={cx('flex flex-col', sheetSectionGapClasses[size], className ?? '')}
       {...props}
     >

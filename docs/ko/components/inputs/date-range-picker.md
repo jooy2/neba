@@ -72,7 +72,7 @@ interface DateRange {
 
 ### name
 
-`name`을 주면 같은 이름의 hidden input 두 개가 그려지므로 두 끝이 함께 제출됩니다.
+`name`을 주면 같은 이름의 input 두 개가 그려지므로 두 끝이 함께 제출되고 `FormData.getAll(name)`으로 받습니다. [Form](./form) 안에서는 `onSubmit`이 `name` 아래에 두 항목짜리 배열로 받고, `required`인 범위가 비어 있으면 제출을 막으며, Form에 `name`으로 넘긴 오류가 필드 아래에 나옵니다.
 
 ```ts
 const form = new FormData(event.currentTarget);

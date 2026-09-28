@@ -1,7 +1,16 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, Form, TextField } from 'neba';
+import {
+  Button,
+  ColorPicker,
+  DatePicker,
+  DateRangePicker,
+  Form,
+  TextField,
+  TreeSelect,
+  type TreeSelectItem
+} from 'neba';
 
 describe('Form', () => {
   describe('rendering', () => {
@@ -100,6 +109,108 @@ describe('Form', () => {
       await screen.getByRole('button', { name: 'Sign up' }).click();
 
       expect(onSubmit).not.toHaveBeenCalled();
+    });
+  });
+
+  // A picker's trigger is a button, which registers nothing with Base UI's
+  // Form: its value was missing from `onSubmit`, a required one let the form
+  // submit empty, and an error under its `name` never showed.
+  describe('pickers', () => {
+    const REGIONS: TreeSelectItem[] = [
+      { value: 'kr', label: 'Korea' },
+      { value: 'jp', label: 'Japan' },
+      { value: 'fr', label: 'France' }
+    ];
+
+    it('hands a picker\u2019s value to onSubmit under its name', async () => {
+      const onSubmit = vi.fn();
+      const screen = await render(
+        <Form aria-label="Trip" onSubmit={onSubmit}>
+          <DatePicker label="Departure" name="departure" defaultValue={new Date(2026, 8, 28)} />
+          <ColorPicker label="Tag" name="tag" defaultValue="#336699" />
+          <TreeSelect label="Region" name="region" items={REGIONS} defaultValue="jp" />
+          <Button type="submit">Save</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+      expect(onSubmit.mock.calls[0][0]).toMatchObject({
+        departure: '2026-09-28',
+        tag: '#336699',
+        region: 'jp'
+      });
+    });
+
+    it('hands a range\u2019s two ends and a multiple choice over as arrays', async () => {
+      const onSubmit = vi.fn();
+      const screen = await render(
+        <Form aria-label="Trip" onSubmit={onSubmit}>
+          <DateRangePicker
+            label="Stay"
+            name="stay"
+            defaultValue={{ start: new Date(2026, 8, 1), end: new Date(2026, 8, 5) }}
+          />
+          <TreeSelect
+            label="Regions"
+            name="regions"
+            items={REGIONS}
+            multiple
+            defaultValue={['kr', 'fr']}
+          />
+          <Button type="submit">Save</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+
+      expect(onSubmit.mock.calls[0][0]).toMatchObject({
+        stay: ['2026-09-01', '2026-09-05'],
+        regions: ['kr', 'fr']
+      });
+    });
+
+    it('holds the submit while a required picker is empty, and focuses it', async () => {
+      const onSubmit = vi.fn();
+      const screen = await render(
+        <Form aria-label="Trip" onSubmit={onSubmit}>
+          <DatePicker label="Departure" name="departure" required />
+          <Button type="submit">Save</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+
+      expect(onSubmit).not.toHaveBeenCalled();
+      await expect.element(screen.getByRole('button', { name: /^Departure/ })).toHaveFocus();
+    });
+
+    it('shows an error from outside on the picker it names', async () => {
+      const screen = await render(
+        <Form aria-label="Trip" errors={{ departure: 'No flights that day.' }}>
+          <DatePicker label="Departure" name="departure" />
+        </Form>
+      );
+
+      await expect.element(screen.getByText('No flights that day.')).toBeInTheDocument();
+    });
+
+    it('still submits the same fields natively', async () => {
+      const screen = await render(
+        <form aria-label="Trip">
+          <DateRangePicker
+            label="Stay"
+            name="stay"
+            defaultValue={{ start: new Date(2026, 8, 1), end: new Date(2026, 8, 5) }}
+          />
+          <DatePicker label="Departure" name="departure" defaultValue={new Date(2026, 8, 28)} />
+        </form>
+      );
+      const data = new FormData(screen.getByRole('form').element() as HTMLFormElement);
+
+      expect(data.getAll('stay')).toEqual(['2026-09-01', '2026-09-05']);
+      expect(data.getAll('departure')).toEqual(['2026-09-28']);
     });
   });
 
