@@ -678,7 +678,109 @@ export function valueScale(
     includeZero?: boolean;
   } = {}
 ): ValueScale {
-  const { tickCount = 5, includeZero = true } = options;
+  const { tickCount = 5 } = options;
+  const { low, high } = valueRange(extent, options);
+
+  // Both ends pinned means the *step* is what has to give; otherwise it is the
+  // ends that round outward to a step chosen from the data.
+  const pinned = options.min !== undefined && options.max !== undefined;
+  const step = pinned
+    ? dividingStep(high - low, tickCount)
+    : niceStep((high - low) / Math.max(1, tickCount));
+
+  // The same guard on the ends. `2.4 / 0.2` is 11.999999999999998, which
+  // floors to a step below the data and opens an empty one under it; `0.28 /
+  // 0.02` ceils a step past it the same way. Rounded like the ticks, so the
+  // first tick and `min` are the same number.
+  const start =
+    options.min !== undefined ? low : Number((Math.floor(low / step + 1e-9) * step).toFixed(12));
+  const end =
+    options.max !== undefined ? high : Number((Math.ceil(high / step - 1e-9) * step).toFixed(12));
+  const span = end - start || 1;
+
+  const ticks: number[] = [];
+
+  // The epsilon is a floating-point guard, not a fudge: `0.1 * 3` lands at
+  // 0.30000000000000004, which without it drops the last tick off every scale
+  // whose step is not a power of two.
+  for (let tick = start; tick <= end + step * 1e-9; tick += step) {
+    // And the rounding is the other half of it — a tick printed as
+    // `0.30000000000000004` is worse than a missing one.
+    ticks.push(Number(tick.toFixed(12)));
+  }
+
+  return {
+    min: start,
+    max: end,
+    ticks,
+    fraction: (value) => (value - start) / span
+  };
+}
+
+/**
+ * A second value axis' scale, cut into exactly as many intervals as the first
+ * axis has, so that each of its ticks sits on one of the first axis' gridlines.
+ *
+ * Asking `valueScale` for the same tick count is not enough: the count is a
+ * wish that clean numbers overrule, so a revenue axis of seven intervals beside
+ * a rate axis of five drew two sets of lines crossing each other, and the far
+ * edge's labels, thinned at the first axis' stride, stood beside nothing. Here
+ * the count is the fixed thing and the step gives: the smallest 1-2-5 step
+ * whose run of intervals, started on a multiple of itself, still covers the
+ * data. Both ends pinned leaves nothing to round, and the step is the range
+ * divided by the count, whatever number that is.
+ */
+export function alignedScale(
+  extent: { min: number; max: number } | null,
+  intervals: number,
+  options: { min?: number; max?: number; includeZero?: boolean } = {}
+): ValueScale {
+  const count = Math.max(1, Math.round(intervals));
+  const { low, high } = valueRange(extent, options);
+  let step = niceStep((high - low) / count);
+  let start: number;
+
+  if (options.min !== undefined && options.max !== undefined) {
+    step = (high - low) / count;
+    start = low;
+  } else if (options.max !== undefined) {
+    start = high - count * step;
+  } else if (options.min !== undefined) {
+    start = low;
+  } else {
+    start = Math.floor(low / step + 1e-9) * step;
+
+    // A run started below the data may stop short of its top; the next step up
+    // covers more, and one of them always covers it all.
+    while (start + count * step < high - step * 1e-9) {
+      step = niceStep(step * 1.000001);
+      start = Math.floor(low / step + 1e-9) * step;
+    }
+  }
+
+  const ticks = Array.from({ length: count + 1 }, (_, index) =>
+    Number((start + index * step).toFixed(12))
+  );
+  const first = ticks[0];
+  const span = ticks[count] - first || 1;
+
+  return {
+    min: first,
+    max: ticks[count],
+    ticks,
+    fraction: (value) => (value - first) / span
+  };
+}
+
+/**
+ * Where a value axis runs before it is rounded: the data or the pinned ends,
+ * with zero taken in and a flat series opened into a band.
+ */
+function valueRange(
+  extent: { min: number; max: number } | null,
+  options: { min?: number; max?: number; includeZero?: boolean }
+): { low: number; high: number } {
+  const { includeZero = true } = options;
 
   let low = options.min ?? (extent ? extent.min : 0);
   let high = options.max ?? (extent ? extent.max : 1);
@@ -716,40 +818,7 @@ export function valueScale(
     high += pad;
   }
 
-  // Both ends pinned means the *step* is what has to give; otherwise it is the
-  // ends that round outward to a step chosen from the data.
-  const pinned = options.min !== undefined && options.max !== undefined;
-  const step = pinned
-    ? dividingStep(high - low, tickCount)
-    : niceStep((high - low) / Math.max(1, tickCount));
-
-  // The same guard on the ends. `2.4 / 0.2` is 11.999999999999998, which
-  // floors to a step below the data and opens an empty one under it; `0.28 /
-  // 0.02` ceils a step past it the same way. Rounded like the ticks, so the
-  // first tick and `min` are the same number.
-  const start =
-    options.min !== undefined ? low : Number((Math.floor(low / step + 1e-9) * step).toFixed(12));
-  const end =
-    options.max !== undefined ? high : Number((Math.ceil(high / step - 1e-9) * step).toFixed(12));
-  const span = end - start || 1;
-
-  const ticks: number[] = [];
-
-  // The epsilon is a floating-point guard, not a fudge: `0.1 * 3` lands at
-  // 0.30000000000000004, which without it drops the last tick off every scale
-  // whose step is not a power of two.
-  for (let tick = start; tick <= end + step * 1e-9; tick += step) {
-    // And the rounding is the other half of it — a tick printed as
-    // `0.30000000000000004` is worse than a missing one.
-    ticks.push(Number(tick.toFixed(12)));
-  }
-
-  return {
-    min: start,
-    max: end,
-    ticks,
-    fraction: (value) => (value - start) / span
-  };
+  return { low, high };
 }
 
 /* ---------------------------------------------------------------------------

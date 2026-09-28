@@ -22,6 +22,7 @@ import { useStyleDefaults } from './defaults.js';
 import * as React from 'react';
 import { Box, type BoxProps } from '../components/box/Box.js';
 import {
+  alignedScale,
   bandScale,
   categoryAt,
   categoryCount,
@@ -1700,20 +1701,27 @@ export function CartesianChart(rawProps: CartesianProps) {
       includeZero
     });
 
-  /* The far edge's scale, rounded the same way and off its own extent — which
-     is the whole point of the prop: a rate between 2% and 4% and a revenue in
-     the millions cannot share one. The ticks are asked to land at the same
-     *count* as the first axis', so the two grids are one grid rather than two
-     sets of lines crossing each other. */
+  /* The far edge's scale, off its own extent — which is the whole point of the
+     prop: a rate between 2% and 4% and a revenue in the millions cannot share
+     one. It is cut into as many intervals as the first axis has, so each of
+     its ticks sits on one of the first axis' gridlines and the two grids are
+     one grid rather than two sets of lines crossing each other. A `tickCount`
+     of its own is a caller asking for its own grid, and gets `valueScale`'s. */
   const secondScale =
     secondExtent === null
       ? null
-      : valueScale(secondExtent, {
-          min: secondaryAxis?.min,
-          max: secondaryAxis?.max,
-          tickCount: secondaryAxis?.tickCount ?? scale.ticks.length,
-          includeZero
-        });
+      : secondaryAxis?.tickCount === undefined
+        ? alignedScale(secondExtent, scale.ticks.length - 1, {
+            min: secondaryAxis?.min,
+            max: secondaryAxis?.max,
+            includeZero
+          })
+        : valueScale(secondExtent, {
+            min: secondaryAxis?.min,
+            max: secondaryAxis?.max,
+            tickCount: secondaryAxis.tickCount,
+            includeZero
+          });
 
   /* And a second one of the same kind when the categories are numbers rather
      than columns. Zero is deliberately not forced in: what a position along an
@@ -3003,8 +3011,8 @@ function ChartAxes({
           It casts no gridlines of its own, and that is the decision rather
           than an omission — two grids on one plot is graph paper drawn twice,
           and the reader has no way to tell which set of lines a mark should be
-          measured against. Its ticks are asked to land at the same count as
-          the first axis', so the rules already there serve both. */}
+          measured against. Its scale is cut into as many intervals as the
+          first axis', so each of its ticks sits on a rule already there. */}
       {secondScale && !secondaryAxis?.hidden
         ? secondScale.ticks.map((tick, index) => {
             const along = horizontal

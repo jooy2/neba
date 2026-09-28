@@ -15,6 +15,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  alignedScale,
   arcPath,
   bandScale,
   bubbleRadius,
@@ -219,6 +220,40 @@ describe('markPath', () => {
 
     expect(side ** 2).toBeCloseTo(area, 0);
     expect(2 * half ** 2).toBeCloseTo(area, 0);
+  });
+});
+
+describe('alignedScale', () => {
+  const evenly = (ticks: number[]) => {
+    const step = ticks[1] - ticks[0];
+
+    return ticks.every((tick, index) => Math.abs(tick - ticks[0] - index * step) < 1e-9);
+  };
+
+  it('cuts the range into exactly the intervals it is given, and covers the data', () => {
+    for (const intervals of [4, 5, 7]) {
+      const scale = alignedScale({ min: 2, max: 4 }, intervals);
+
+      expect(scale.ticks).toHaveLength(intervals + 1);
+      expect(evenly(scale.ticks)).toBe(true);
+      expect(scale.min).toBeLessThanOrEqual(0);
+      expect(scale.max).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it('steps in clean numbers, and starts on a multiple of the step', () => {
+    const scale = alignedScale({ min: 3, max: 41 }, 5, { includeZero: false });
+    const step = scale.ticks[1] - scale.ticks[0];
+
+    expect([1, 2, 5, 10, 20, 50]).toContain(step);
+    expect(scale.min % step).toBe(0);
+    expect(scale.max).toBeGreaterThanOrEqual(41);
+  });
+
+  it('keeps an end the caller pinned, and divides a range pinned at both', () => {
+    expect(alignedScale({ min: 2, max: 4 }, 5, { min: 1 }).ticks[0]).toBe(1);
+    expect(alignedScale({ min: 2, max: 4 }, 5, { max: 10 }).ticks[5]).toBe(10);
+    expect(alignedScale({ min: 2, max: 4 }, 3, { min: 0, max: 9 }).ticks).toEqual([0, 3, 6, 9]);
   });
 });
 

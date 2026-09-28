@@ -1096,6 +1096,37 @@ describe('LineChart', () => {
         );
     });
 
+    // Asked only for the same tick count, the far edge rounded to a count of
+    // its own, and its labels stood between the first axis' gridlines.
+    it('puts every tick of the far edge on one of the first axis\u2019 gridlines', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          height={300}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')];
+      const heights = (keep: (text: string) => boolean) =>
+        texts
+          .filter((node) => keep(node.textContent ?? ''))
+          .map((node) => Math.round(Number(node.getAttribute('y'))));
+      const far = heights((text) => text.endsWith('%'));
+      const near = heights((text) => /^[\d,.]+[kK]?$/.test(text));
+
+      expect(far.length).toBeGreaterThan(1);
+      expect(far).toEqual(near);
+    });
+
     it('measures a secondary series against its own scale', async () => {
       const screen = await render(
         <LineChart

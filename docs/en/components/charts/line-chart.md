@@ -172,7 +172,7 @@ A second value axis, drawn on the far edge — the right of a vertical chart, th
 
 Its `tickFormat` writes its series' numbers **everywhere they appear**: the ticks, the tooltip and the table.
 
-It draws no gridlines of its own. Its ticks are asked to land at the same count as the first axis', so the rules already there serve both.
+It draws no gridlines of its own. Its range is cut into as many intervals as the first axis has, in clean steps, so each of its ticks sits on a rule already there and both axes are read against one grid. A `tickCount` of its own opts out of that: the axis then rounds to its own ticks, which fall between the rules.
 
 **Not read on a stacked chart.** A stack is a total, and a total across two units is not a number.
 

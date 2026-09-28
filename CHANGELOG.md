@@ -50,6 +50,8 @@
 
 ### Fixed
 
+- **A `secondaryAxis`'s ticks sit on the first axis' gridlines.** It was only asked for the same number of ticks, which rounding to clean numbers overruled, so a revenue axis of four intervals beside a rate axis of five drew labels between the rules, and the far edge's labels, thinned at the first axis' stride, stood beside nothing. Its range is now cut into exactly as many intervals as the first axis has, in 1-2-5 steps. A `tickCount` given to the second axis still rounds it on its own.
+
 - **A `CodeBlock` colours a script's `` css` `` and `` gql` `` templates.** highlight.js hands them to the CSS and GraphQL grammars, which nothing fetched for a JavaScript or TypeScript block, so they stayed plain unless a block in one of those languages had happened to load first on the same page. A script with one of the two tags fetches that grammar with its own now; one without either fetches nothing more.
 
 - **A chart with a `secondaryAxis` describes each axis in its own units.** The sentence a plot is described by took one range across every series and wrote it in the first axis' format, so revenue beside a rate read "$2 to $246,000". The first axis' series are summarised as before, and the second axis' follow in a sentence of their own, written through its `tickFormat` (`chart.summarySecondary`, in every registered language).
