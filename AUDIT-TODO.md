@@ -83,7 +83,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - **D22 (76)** Done (a). Secondary axis ticks: (a) align them with the primary gridlines; (b) drop the claim.
 - **D23 (77, major)** Done (a), with the timeline's `references` implemented rather than removed. ScatterChart and TimelineChart props they cannot honour: (a) take them out of the types; (b) implement each.
 - **D24 (86)** Done (a). ToolCall error heading: (a) the existing "Failed"; (b) a new message.
-- **D25 (87)** StreamingText in CJK and Thai: (a) segment those scripts; (b) document the limit.
+- **D25 (87)** Done (a). StreamingText in CJK and Thai: (a) segment those scripts; (b) document the limit.
 - **D26 (94, major, high)** Pickers inside `Form`: (a) register each with Base UI's Field; (b) Form collects what Base UI did not; (c) document the limit.
 - **D27 (95)** Resting `float` labels over end adornments: (a) an end slot per component; (b) sizers only; (c) keep `float` in the notch there.
 - **D28 (96)** Calendar on a server: (a) a stable first tab stop and the docs; (b) the docs only.
@@ -208,7 +208,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **84** AgentSteps: the running tail keeps its first clock when a step is appended, so it shows the time since the chain started. `src/components/agent-steps/AgentSteps.tsx:349-356`. Fix: `key={items.length}` on the tail.
 - [x] **85** `useElapsed`: a measured total is the last whole-second tick, so 4.9 s reads "Thought for 4s" and 0.9 s shows nothing, while a given `duration` of 4900 reads "4.9s". The clock has no test. `src/internal/run.tsx:124-155`. Fix: write `Date.now() - started` once when the run ends (not on unmount), and a fake-timer test through Reasoning. The total is handed from the clock's cleanup through a ref rather than written there, since the cleanup also runs on the unmount Strict Mode stages after the first mount. Both halves run on the layout phase in a browser, so the exact total replaces the last tick before it is painted. A run under a second reads "900ms", which is what a `duration` of 900 says too.
 - [x] **86** [decision] ToolCall: a failed call's `error` is shown under the heading "Result". `src/components/tool-call/ToolCall.tsx:369-376`. (a) Use the `run` namespace's "Failed", already in every locale; (b) a new `toolMessages.error` heading in 18 locales. Decided: (a). Only the block that holds an `error` takes "Failed"; a failed call with no `error` shows its `result`, and keeps "Result" over it.
-- [ ] **87** [decision] StreamingText: in Japanese, Chinese and Thai a whole paragraph is one token, so nothing fades after the first. `src/components/streaming-text/StreamingText.tsx:60-62`. (a) Cut only runs in those scripts with a memoised `Intl.Segmenter`, as `internal/text.ts` does; (b) state the limit on the page.
+- [x] **87** [decision] StreamingText: in Japanese, Chinese and Thai a whole paragraph is one token, so nothing fades after the first. `src/components/streaming-text/StreamingText.tsx:60-62`. (a) Cut only runs in those scripts with a memoised `Intl.Segmenter`, as `internal/text.ts` does; (b) state the limit on the page. Decided: (a). The script test is a `\p{Script=…}` class covering Han, Hiragana, Katakana, Thai, Lao, Khmer and Myanmar, and the segmenter is `format.ts`' memoised one; Firefox before 125 has none, keeps the run whole, and the page says so.
 
 ### Inputs and fields
 

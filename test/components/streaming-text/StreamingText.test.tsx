@@ -61,6 +61,25 @@ describe('StreamingText', () => {
       expect(document.querySelectorAll('.neba-stream-word')).toHaveLength(5);
     });
 
+    // Split on whitespace, a paragraph of Japanese or Thai was one token, so it
+    // faded in once and every word after the first arrived without a fade.
+    it('cuts a script written without spaces into words too', async () => {
+      const text = '今日はとても良い天気です';
+      await render(<StreamingText>{text}</StreamingText>);
+      const words = () => [...document.querySelectorAll('.neba-stream-word')];
+
+      // Chromium and WebKit segment it; a runtime with no Segmenter keeps it
+      // whole, which is what every runtime did before.
+      if ('Segmenter' in Intl) {
+        expect(words().length).toBeGreaterThan(1);
+      }
+      expect(
+        words()
+          .map((word) => word.textContent)
+          .join('')
+      ).toBe(text);
+    });
+
     it('leaves the text in one piece when the fade is off', async () => {
       await render(<StreamingText fade={false}>A sheet of cut acrylic</StreamingText>);
 

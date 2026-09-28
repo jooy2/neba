@@ -47,7 +47,7 @@ Each word fades in on its own, in `opacity` and nothing else.
 
 A word already on screen never fades a second time. Each word is an element of its own, so turn `fade` off for a very long answer.
 
-Only a **string** is cut into words. Anything else is rendered untouched, with the caret and the reserved height still around it.
+Only a **string** is cut into words. Anything else is rendered untouched, with the caret and the reserved height still around it. Words are cut at whitespace, and a run in a script written without spaces, such as Japanese, Chinese or Thai, is cut again with `Intl.Segmenter`. A browser without it (Firefox before 125) fades such a run in as one piece.
 
 ### cursor
 

@@ -52,6 +52,8 @@
 
 ### Fixed
 
+- **A `StreamingText` fades in Japanese, Chinese and Thai word by word.** It cut its text at whitespace, so a paragraph in a script written without spaces was one token: it faded in once, and everything after arrived with nothing moving. A run in one of those scripts is cut again with `Intl.Segmenter` now, and only that run, so a page in a spaced language builds no segmenter.
+
 - **A failed `ToolCall`'s `error` is headed "Failed".** It sat under the heading "Result", which said the call had come back with something. The heading is the word a failed status is already read as, in the `locale`'s words; a failed call with no `error` still shows its `result` under "Result".
 
 - **A `TimelineChart`'s time axis widens to hold a reference past its spans.** The axis was solved from the spans alone, so a deadline after the last one was drawn off the plot, where nobody could see it. It takes the references in, as every other chart's value axis does.

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
+import { segmenter } from '../../internal/format.js';
 import { cx, hasContent } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 
@@ -51,14 +52,36 @@ export interface StreamingTextProps extends Omit<React.ComponentPropsWithoutRef<
 }
 
 /**
+ * Scripts written without a space between words. Japanese, Chinese and Thai
+ * split on whitespace come out as one token per paragraph, so an answer in
+ * them faded in once and then arrived with nothing moving at all.
+ */
+const unspaced =
+  /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
+
+/**
  * The tokens a string is drawn as: words, and the whitespace between them.
  *
  * The separators are kept, which is what makes the pieces add back up to the
  * original — an answer's line breaks are part of what it says, and the block is
  * `whitespace-pre-wrap` so they survive.
+ *
+ * A run in a script with no spaces is cut again by `Intl.Segmenter`, and only
+ * that run: everything else stays the split it always was, so an English
+ * answer costs no segmenter at all. A runtime without one keeps the run whole,
+ * which is what every runtime did before.
  */
 function tokenize(text: string): string[] {
-  return text.split(/(\s+)/).filter((piece) => piece !== '');
+  const pieces = text.split(/(\s+)/).filter((piece) => piece !== '');
+  const cut = unspaced.test(text) ? segmenter(undefined, 'word') : null;
+
+  if (!cut) {
+    return pieces;
+  }
+
+  return pieces.flatMap((piece) =>
+    unspaced.test(piece) ? [...cut.segment(piece)].map((one) => one.segment) : [piece]
+  );
 }
 
 /**
