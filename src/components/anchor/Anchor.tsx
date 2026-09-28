@@ -248,7 +248,11 @@ function scrollToHeading(
     scroller.getBoundingClientRect().top -
     offset;
 
-  scroller.scrollTo({ top });
+  // Rounded here rather than by the browser: a heading under a line box sits
+  // a fraction of a pixel off the grid, and WebKit floors a fractional
+  // `scrollTop` where Chromium rounds it, which left the heading a pixel under
+  // the offset in Safari.
+  scroller.scrollTo({ top: Math.round(top) });
 
   // What `preventDefault` took away besides the scroll: a fragment jump also
   // moves the point the next Tab starts from, so without this a keyboard reader
