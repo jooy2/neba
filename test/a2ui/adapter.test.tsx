@@ -460,6 +460,28 @@ describe('the A2UI adapter', () => {
       await expect.element(screen.getByRole('button', { name: 'Open' })).toBeInTheDocument();
     });
 
+    // The catalog types `value` as a string and a Statistic draws a delta only
+    // from a number, so `previousValue` drew nothing unless the value happened
+    // to be bound to a number in the data model.
+    it('draws a Statistic\u2019s delta from a value written as digits', async () => {
+      const { surface } = surfaceOf([
+        {
+          id: 'root',
+          component: 'Flex',
+          children: ['visits', 'revenue']
+        },
+        { id: 'visits', component: 'Statistic', label: 'Visits', value: '120', previousValue: 100 },
+        { id: 'revenue', component: 'Statistic', label: 'Revenue', value: '4.2M', previousValue: 4 }
+      ]);
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await expect.element(screen.getByText('+20%')).toBeInTheDocument();
+      // Written out rather than as digits, so it is drawn as it came.
+      await expect.element(screen.getByText('4.2M')).toBeInTheDocument();
+      expect(screen.getByText(/%$/).elements()).toHaveLength(1);
+    });
+
     it('draws a list of facts', async () => {
       const { surface } = surfaceOf([
         {

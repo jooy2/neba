@@ -299,7 +299,7 @@
         },
         "value": {
           "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-          "description": "The figure itself."
+          "description": "The figure itself. Write it as plain digits, such as `1234.5`, when `previousValue` is given: that is the number the delta is worked out from, and it is then written in the reader's own language. Anything else is drawn as written, with no delta."
         },
         "unit": {
           "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",

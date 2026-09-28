@@ -339,10 +339,22 @@ export const A2uiStatistic = implement('Statistic', ({ props }) => {
     align?: 'start';
   };
 
+  /*
+   * The catalog types `value` as a string, since most figures are written out
+   * — "4.2M", "12 of 20" — and a Statistic draws its delta only from a number.
+   * With a `previousValue` to compare against, a value written as plain digits
+   * is that number; anything else is drawn as it came, with no delta.
+   */
+  const written = p.value ?? '';
+  const figure =
+    p.previousValue !== undefined && /^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(written.trim())
+      ? Number(written)
+      : written;
+
   return (
     <Statistic
       label={p.label}
-      value={p.value ?? ''}
+      value={figure}
       unit={p.unit}
       caption={p.caption}
       previousValue={p.previousValue}

@@ -58,6 +58,8 @@
 
 ### Fixed
 
+- **An A2UI `Statistic` draws the delta its `previousValue` asks for.** The catalog types `value` as a string, since most figures are written out, and a `Statistic` works out a delta only from a number — so `previousValue`, `delta` and `betterWhen` drew nothing unless the value was bound to a number in the data model. A value written as plain digits is taken as that number when there is a `previousValue`, and the catalog tells the model to write it that way; anything else is drawn as written.
+
 - **The A2UI adapter accepts a check without a `message`.** v1.0 lets a check leave it out, and the v0.9 schema the adapter registers with required it, so a check written exactly as the catalog allows was refused along with every component in the same batch. It is accepted now and the field shows "Validation failed"; the catalog's instructions ask the model to give every check a message all the same.
 
 - **The A2UI catalog declares the arguments its functions take.** `formatDate` was described with a `dateStyle` and a `timeStyle`, `pluralize` with a `count`, and `formatNumber` with two fraction-digit arguments, none of which the protocol's implementations read — so a model writing exactly what the catalog said got an ISO string, blank text and an unrounded number back. They are the specification's now: `formatDate` takes a TR35 `format`, `pluralize` takes `value` and every plural category, and `formatNumber` and `formatCurrency` take `decimals` and `grouping`. `length` and `numeric` ask for at least one bound, and `and` and `or` for at least two values, which is what the implementations accept.
