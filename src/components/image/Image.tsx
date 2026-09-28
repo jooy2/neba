@@ -268,7 +268,10 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * layout's: `ratio` says "hold this shape whatever arrives", these two say
    * "this is what will arrive". Give both and an `'auto'` ratio becomes their
    * proportion, so the box is reserved without anybody working out that 1200 by
-   * 800 is 3/2.
+   * 800 is 3/2. Together they are only that proportion, and not a size: the box
+   * spans the width its container gives it, as a responsive `<img>` does, and a
+   * picture meant to stay 320 pixels wide needs the width on the Image's own
+   * `className` or `style`.
    *
    * One on its own is not a proportion, so it is read as the length it looks
    * like. `height={200}` is a box 200 pixels tall across whatever width it is

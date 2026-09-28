@@ -42,7 +42,7 @@ The proportion to hold while the file is still arriving, and the main reason to 
 
 ### width and height
 
-The file's own pixel dimensions, as an `<img>` takes them. They reach the picture either way, and giving both turns an `'auto'` ratio into their proportion, so the box is reserved without anybody working out that 1200 by 800 is 3/2.
+The file's own pixel dimensions. They reach the picture either way, and giving both turns an `'auto'` ratio into their proportion, so the box is reserved without anybody working out that 1200 by 800 is 3/2. Together they set only that proportion, not a size: the box spans the width its container gives it, the way an `<img>` with `width: 100%` does. To keep it 320 pixels wide, give the Image that width in its `className` or `style`.
 
 ```tsx
 <Image src={src} alt="…" width={1200} height={800} />
