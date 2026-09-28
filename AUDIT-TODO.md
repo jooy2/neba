@@ -12,8 +12,9 @@ The working list for the second audit of every public component, started on 2026
 - Batch 5 is done (2026-09-27): items 115 to 118, 121 to 123, 131 to 135, 137 to 139 and 141 to 143, and items 136 and 140 in part. Item 118 turned up item 187. Item 131 found a treemap's CSV rows a cell short and item 132 found that Escape never closed a CommandPalette; both are fixed in commits of their own.
 - Batch 6 is done (2026-09-27): items 144 to 147, 149 to 154 and 156 to 165. Item 149 was already answered by the pages. Every item in it was documentation; the one test added pins what item 147 now documents, that a FilePicker's `id` lands on its zone button.
 - Batch 7 is done (2026-09-27): items 166, 167, 169 to 174, 176 to 178, 180 and 182 to 187, the eighteen untagged items that were left. Item 182 found Firefox's `:-moz-ui-invalid` rule outside `:where()` in the reset, fixed in a commit of its own. Item 185 found through the API that private vulnerability reporting is off, so the route `SECURITY.md` names does not work until the maintainer turns it on.
-- Every commit so far is local and not pushed.
-- Every untagged item is done. What is left is the 49 tagged items under [Pending decisions](#pending-decisions), and the parts of two items that wait on them: 136's function case waits for 124 and its Statistic case for 126, and the rest of 140 waits for 76 and 77. The next batch starts with the answers.
+- Batch 8 is done (2026-09-27 to 09-28): every tagged item, on the maintainer's "모두 권장대로" — A1 to A4 and D1 to D10 on 09-27, D11 to D45 on 09-28 — and the parts of 136 and 140 that waited on them. Every decision took its recommended option. Two went past it and say so on the item: D23 (77) implements a timeline's `references` rather than removing them, and D37 (128) leaves the upstream report to the maintainer. D26 (94) keeps one `name` on a DateRangePicker and has `Form` read the repeated name back, rather than asking for two names.
+- The commits through `1b947a5e` are pushed; everything after it is local, and the maintainer decides when to push.
+- Every item is ticked. The file says to delete it and its line in `.npmignore` in one commit once that is so; that is left for the maintainer to confirm.
 
 ## How to run a batch
 
