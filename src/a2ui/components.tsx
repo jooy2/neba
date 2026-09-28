@@ -125,6 +125,34 @@ function useAccessibility(props: { accessibility?: { label?: string; description
 
 type Accessible = { accessibility?: { label?: string; description?: string } };
 
+/**
+ * A field's value, held here as well as wherever the agent put it.
+ *
+ * The views are controlled, and the binder hands a setter that writes to the
+ * data model only when the value is bound to a path. A value that was a literal
+ * or was left out came with a setter that did nothing, so the field could not
+ * be typed in, ticked or moved at all. The draft is what the field shows and
+ * what a reader changes; it follows the resolved value whenever that changes,
+ * which is every change when it is bound, and the setter still writes through.
+ */
+function useDraft<T>(resolved: T, write?: (value: T) => void): [T, (value: T) => void] {
+  const [draft, setDraft] = React.useState(resolved);
+  const [seen, setSeen] = React.useState(resolved);
+
+  if (!Object.is(resolved, seen)) {
+    setSeen(resolved);
+    setDraft(resolved);
+  }
+
+  return [
+    draft,
+    (value) => {
+      setDraft(value);
+      write?.(value);
+    }
+  ];
+}
+
 /** The first failed check, which is what a field draws under itself. */
 function firstError(props: { validationErrors?: readonly string[] }): string | undefined {
   return props.validationErrors?.[0];
@@ -452,11 +480,13 @@ export const A2uiTextField = implement('TextField', ({ props }) => {
     validationErrors?: readonly string[];
   };
 
+  const [value, setValue] = useDraft(p.value ?? '', p.setValue);
+
   return (
     <TextField
       label={p.label}
-      value={p.value ?? ''}
-      onChange={(event) => p.setValue?.(event.target.value)}
+      value={value}
+      onChange={(event) => setValue(event.target.value)}
       placeholder={p.placeholder}
       description={p.description}
       error={firstError(p)}
@@ -493,11 +523,13 @@ export const A2uiNumberField = implement('NumberField', ({ props }) => {
     validationErrors?: readonly string[];
   };
 
+  const [value, setValue] = useDraft<number | null>(p.value ?? null, p.setValue);
+
   return (
     <NumberField
       label={p.label}
-      value={p.value ?? null}
-      onValueChange={(value) => p.setValue?.(value)}
+      value={value}
+      onValueChange={setValue}
       description={p.description}
       error={firstError(p)}
       min={p.min}
@@ -527,11 +559,13 @@ export const A2uiCheckbox = implement('Checkbox', ({ props }) => {
     validationErrors?: readonly string[];
   };
 
+  const [checked, setChecked] = useDraft(p.checked ?? false, p.setChecked);
+
   return (
     <Checkbox
       label={p.label}
-      checked={p.checked ?? false}
-      onCheckedChange={(checked) => p.setChecked?.(checked)}
+      checked={checked}
+      onCheckedChange={setChecked}
       description={p.description}
       error={firstError(p)}
       size={p.size}
@@ -553,11 +587,13 @@ export const A2uiSwitch = implement('Switch', ({ props }) => {
     disabled?: boolean;
   };
 
+  const [checked, setChecked] = useDraft(p.checked ?? false, p.setChecked);
+
   return (
     <Switch
       label={p.label}
-      checked={p.checked ?? false}
-      onCheckedChange={(checked) => p.setChecked?.(checked)}
+      checked={checked}
+      onCheckedChange={setChecked}
       description={p.description}
       size={p.size}
       color={p.color}
@@ -586,11 +622,15 @@ export const A2uiRadioGroup = implement('RadioGroup', ({ props }) => {
     validationErrors?: readonly string[];
   };
 
+  const [value, setValue] = useDraft<string | null>(p.value ?? null, (next) =>
+    p.setValue?.(next ?? '')
+  );
+
   return (
     <RadioGroup
       label={p.label}
-      value={p.value ?? null}
-      onValueChange={(value) => p.setValue?.(String(value))}
+      value={value}
+      onValueChange={(next) => setValue(String(next))}
       description={p.description}
       error={firstError(p)}
       orientation={p.orientation}
@@ -630,11 +670,15 @@ export const A2uiSelect = implement('Select', ({ props }) => {
     validationErrors?: readonly string[];
   };
 
+  const [value, setValue] = useDraft<string | null>(p.value ?? null, (next) =>
+    p.setValue?.(next ?? '')
+  );
+
   return (
     <Select
       label={p.label}
-      value={p.value ?? null}
-      onValueChange={(value) => p.setValue?.(String(value ?? ''))}
+      value={value}
+      onValueChange={(next) => setValue(next === null ? null : String(next))}
       placeholder={p.placeholder}
       items={(p.options ?? []).map((option) => ({
         value: option.value,
@@ -669,11 +713,13 @@ export const A2uiSlider = implement('Slider', ({ props }) => {
     disabled?: boolean;
   };
 
+  const [value, setValue] = useDraft(p.value ?? p.min ?? 0, p.setValue);
+
   return (
     <Slider
       label={p.label}
-      value={p.value ?? p.min ?? 0}
-      onValueChange={(value) => p.setValue?.(Array.isArray(value) ? value[0] : value)}
+      value={value}
+      onValueChange={(next) => setValue(Array.isArray(next) ? next[0] : next)}
       min={p.min}
       max={p.max}
       step={p.step}

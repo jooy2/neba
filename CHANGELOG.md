@@ -58,6 +58,8 @@
 
 ### Fixed
 
+- **An A2UI field that is not bound to the data model can still be changed.** The views are controlled, and the setter the renderer hands them writes only to a path, so a `TextField`, `NumberField`, `Checkbox`, `Switch`, `RadioGroup`, `Select` or `Slider` whose value was a literal or left out could not be typed in, ticked or moved at all. Each holds what the reader enters itself now, follows the resolved value when it changes, and still writes through when it is bound; the catalog tells the model to bind a field's value to a path, since that is where what the reader enters is sent back from.
+
 - **An A2UI `Statistic` draws the delta its `previousValue` asks for.** The catalog types `value` as a string, since most figures are written out, and a `Statistic` works out a delta only from a number — so `previousValue`, `delta` and `betterWhen` drew nothing unless the value was bound to a number in the data model. A value written as plain digits is taken as that number when there is a `previousValue`, and the catalog tells the model to write it that way; anything else is drawn as written.
 
 - **The A2UI adapter accepts a check without a `message`.** v1.0 lets a check leave it out, and the v0.9 schema the adapter registers with required it, so a check written exactly as the catalog allows was refused along with every component in the same batch. It is accepted now and the field shows "Validation failed"; the catalog's instructions ask the model to give every check a message all the same.

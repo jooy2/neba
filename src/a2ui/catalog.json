@@ -523,7 +523,7 @@
             },
             "value": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-              "description": "What is in it."
+              "description": "What is in it. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
             },
             "placeholder": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -612,7 +612,7 @@
             },
             "value": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber",
-              "description": "The number."
+              "description": "The number. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
             },
             "description": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -694,7 +694,7 @@
             },
             "checked": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean",
-              "description": "Whether it is ticked."
+              "description": "Whether it is ticked. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
             },
             "description": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -740,7 +740,7 @@
         },
         "checked": {
           "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean",
-          "description": "Whether it is on."
+          "description": "Whether it is on. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
         },
         "description": {
           "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -785,7 +785,7 @@
             },
             "value": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-              "description": "Which option is taken, by its `value`."
+              "description": "Which option is taken, by its `value`. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
             },
             "options": {
               "type": "array",
@@ -871,7 +871,7 @@
             },
             "value": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-              "description": "Which option is taken, by its `value`."
+              "description": "Which option is taken, by its `value`. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
             },
             "placeholder": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -966,7 +966,7 @@
         },
         "value": {
           "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber",
-          "description": "Where it is."
+          "description": "Where it is. Bind it to a path in the data model, which is where what the reader enters is written; a literal is only where it starts, and nothing the reader does to it reaches the data model."
         },
         "min": {
           "type": "number",

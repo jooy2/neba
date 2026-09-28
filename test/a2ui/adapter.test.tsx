@@ -584,6 +584,26 @@ describe('the A2UI adapter', () => {
       await expect.poll(() => surface.dataModel.get('/region')).toBe('Tokyo');
     });
 
+    // The views are controlled and the setter does nothing without a path, so
+    // a field written as a literal, or with no value at all, could not change.
+    it('lets a reader change a field that is not bound to the data model', async () => {
+      const { surface } = surfaceOf([
+        { id: 'root', component: 'Flex', children: ['city', 'terms'] },
+        { id: 'city', component: 'TextField', label: 'City', value: 'Seoul' },
+        { id: 'terms', component: 'Checkbox', label: 'I agree' }
+      ]);
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+      const field = screen.getByRole('textbox', { name: 'City' });
+      const tick = screen.getByRole('checkbox', { name: 'I agree' });
+
+      await field.fill('Tokyo');
+      await screen.getByText('I agree').click();
+
+      await expect.element(field).toHaveValue('Tokyo');
+      await expect.element(tick).toBeChecked();
+    });
+
     it('reports an action to the handler the host gave it', async () => {
       const onAction = vi.fn();
       const { surface } = surfaceOf(
