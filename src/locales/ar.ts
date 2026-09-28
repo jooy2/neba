@@ -126,6 +126,7 @@ export const ar: NebaLocale = {
     start: 'البداية',
     end: 'النهاية',
     summary: 'نقاط البيانات: {count}. النطاق: من {min} إلى {max}.',
+    summarySecondary: 'على المحور الثانوي، نقاط البيانات: {count}. النطاق: من {min} إلى {max}.',
     exportCsv: 'تصدير CSV'
   },
   panes: { handle: 'تغيير حجم الأجزاء' },

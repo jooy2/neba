@@ -126,6 +126,7 @@ export const vi: NebaLocale = {
     start: 'Bắt đầu',
     end: 'Kết thúc',
     summary: 'Điểm dữ liệu: {count}. Phạm vi: từ {min} đến {max}.',
+    summarySecondary: 'Trên trục phụ, điểm dữ liệu: {count}. Phạm vi: từ {min} đến {max}.',
     exportCsv: 'Xuất CSV'
   },
   panes: { handle: 'Đổi kích thước ngăn' },

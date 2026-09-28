@@ -764,6 +764,7 @@ function ChartSummary({
   count,
   min,
   max,
+  second,
   locale
 }: {
   id: string;
@@ -771,11 +772,25 @@ function ChartSummary({
   count: number;
   min: string;
   max: string;
+  /**
+   * The series on a second value axis, said in a sentence of their own and
+   * in that axis' format, since one range across two units is not a range.
+   */
+  second?: { template: string; count: number; min: string; max: string } | null;
   locale?: string;
 }) {
+  const number = numberFormatter(locale, {});
+
   return (
     <span id={id} hidden>
-      {fillMessage(template, { count: numberFormatter(locale, {}).format(count), min, max })}
+      {fillMessage(template, { count: number.format(count), min, max })}
+      {second && second.count > 0
+        ? ` ${fillMessage(second.template, {
+            count: number.format(second.count),
+            min: second.min,
+            max: second.max
+          })}`
+        : null}
     </span>
   );
 }
@@ -1635,7 +1650,24 @@ export function CartesianChart(rawProps: CartesianProps) {
   // Worked out here, beside the extent, rather than where it is drawn: read
   // after the scales are memoised, the call would count as a possible change to
   // `shownValues` and cost the compiler every memo below.
-  const described = summary ?? summarise(shownValues, formatValue);
+  // With a second axis each is summarised in its own units, and a
+  // `summary` a chart hands in is taken to have said everything already.
+  const secondFormat = secondaryAxis?.tickFormat;
+  const described =
+    summary ??
+    summarise(
+      twoAxes
+        ? values.filter((_, index) => visibility.visible[index] && !onSecond(index))
+        : shownValues,
+      formatValue
+    );
+  const describedSecond =
+    summary === undefined && twoAxes
+      ? summarise(
+          values.filter((_, index) => visibility.visible[index] && onSecond(index)),
+          secondFormat ? (value) => String(secondFormat(value, 0)) : formatValue
+        )
+      : null;
 
   const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
   const plotHeight = chartHeight(height, size, measuredHeight);
@@ -2634,7 +2666,15 @@ export function CartesianChart(rawProps: CartesianProps) {
           turned off has nothing to announce, and a live region standing empty
           in the tree forever is a promise it never keeps. */}
       {nothing ? null : (
-        <ChartSummary id={summaryId} template={chartWords.summary} locale={locale} {...described} />
+        <ChartSummary
+          id={summaryId}
+          template={chartWords.summary}
+          locale={locale}
+          {...described}
+          second={
+            describedSecond ? { template: chartWords.summarySecondary, ...describedSecond } : null
+          }
+        />
       )}
 
       {tooltipMode === 'none' ? null : (

@@ -1074,6 +1074,28 @@ describe('LineChart', () => {
     const REVENUE = [1000, 1200, 1400, 1600];
     const RATE = [2, 3, 2.5, 4];
 
+    // One range across both axes, in the first one's format, read "1000 to
+    // 1,600" with a rate of 2 at the bottom of it.
+    it('describes each axis in its own sentence and its own format', async () => {
+      const screen = await render(
+        <LineChart
+          label="Sessions"
+          categories={MONTHS}
+          secondaryAxis={{ tickFormat: (value) => `${value}%` }}
+          series={[
+            { name: 'Revenue', data: REVENUE },
+            { name: 'Rate', data: RATE, axis: 'secondary' }
+          ]}
+        />
+      );
+
+      await expect
+        .element(screen.getByRole('img', { name: 'Sessions' }))
+        .toHaveAccessibleDescription(
+          'Data points: 4. Range: 1,000 to 1,600. On the second axis, data points: 4. Range: 2% to 4%.'
+        );
+    });
+
     it('measures a secondary series against its own scale', async () => {
       const screen = await render(
         <LineChart

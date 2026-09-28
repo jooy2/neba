@@ -126,6 +126,7 @@ export const th: NebaLocale = {
     start: 'เริ่มต้น',
     end: 'สิ้นสุด',
     summary: 'จุดข้อมูล: {count} ช่วง: {min} ถึง {max}',
+    summarySecondary: 'แกนรอง จุดข้อมูล: {count} ช่วง: {min} ถึง {max}',
     exportCsv: 'ส่งออก CSV'
   },
   panes: { handle: 'ปรับขนาดแผง' },

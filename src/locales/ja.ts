@@ -126,6 +126,7 @@ export const ja: NebaLocale = {
     start: '開始',
     end: '終了',
     summary: 'データ点: {count}。範囲: {min}〜{max}。',
+    summarySecondary: '第2軸のデータ点: {count}。範囲: {min}〜{max}。',
     exportCsv: 'CSVをエクスポート'
   },
   panes: { handle: 'ペインのサイズを変更' },

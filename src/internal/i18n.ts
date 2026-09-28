@@ -583,6 +583,12 @@ export interface ChartMessages {
    * read on every focus and the hidden table beside the plot holds the rest.
    */
   summary: string;
+  /**
+   * The same sentence for the series on a second value axis, which follows the
+   * first. Said apart because the two axes are in different units: one range
+   * across both, written in the first axis' format, reads "$2 to $246,000".
+   */
+  summarySecondary: string;
   /** The button that writes the chart's data out as a file. */
   exportCsv: string;
 }
@@ -596,6 +602,7 @@ export const chartMessages: MessageTable<ChartMessages> = {
     start: 'Start',
     end: 'End',
     summary: 'Data points: {count}. Range: {min} to {max}.',
+    summarySecondary: 'On the second axis, data points: {count}. Range: {min} to {max}.',
     exportCsv: 'Export CSV'
   }
 };

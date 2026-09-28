@@ -126,6 +126,7 @@ export const ru: NebaLocale = {
     start: 'Начало',
     end: 'Конец',
     summary: 'Точек данных: {count}. Диапазон: от {min} до {max}.',
+    summarySecondary: 'На второй оси точек данных: {count}. Диапазон: от {min} до {max}.',
     exportCsv: 'Экспорт CSV'
   },
   panes: { handle: 'Изменить размер панелей' },

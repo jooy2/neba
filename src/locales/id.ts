@@ -126,6 +126,7 @@ export const id: NebaLocale = {
     start: 'Mulai',
     end: 'Selesai',
     summary: 'Titik data: {count}. Rentang: {min} sampai {max}.',
+    summarySecondary: 'Pada sumbu kedua, titik data: {count}. Rentang: {min} sampai {max}.',
     exportCsv: 'Ekspor CSV'
   },
   panes: { handle: 'Ubah ukuran panel' },

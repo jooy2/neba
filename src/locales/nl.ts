@@ -126,6 +126,7 @@ export const nl: NebaLocale = {
     start: 'Begin',
     end: 'Einde',
     summary: 'Datapunten: {count}. Bereik: {min} tot {max}.',
+    summarySecondary: 'Op de tweede as datapunten: {count}. Bereik: {min} tot {max}.',
     exportCsv: 'CSV exporteren'
   },
   panes: { handle: 'Grootte van deelvensters wijzigen' },

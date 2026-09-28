@@ -126,6 +126,7 @@ export const pl: NebaLocale = {
     start: 'Początek',
     end: 'Koniec',
     summary: 'Punkty danych: {count}. Zakres: od {min} do {max}.',
+    summarySecondary: 'Na osi pomocniczej punkty danych: {count}. Zakres: od {min} do {max}.',
     exportCsv: 'Eksportuj CSV'
   },
   panes: { handle: 'Zmień rozmiar paneli' },

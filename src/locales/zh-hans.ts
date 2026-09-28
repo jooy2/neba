@@ -129,6 +129,7 @@ export const zhHans: NebaLocale = {
     start: '开始',
     end: '结束',
     summary: '数据点：{count} 个。范围：{min} 至 {max}。',
+    summarySecondary: '次坐标轴数据点：{count} 个。范围：{min} 至 {max}。',
     exportCsv: '导出 CSV'
   },
   panes: { handle: '调整窗格大小' },

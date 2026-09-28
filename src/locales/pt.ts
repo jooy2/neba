@@ -126,6 +126,7 @@ export const pt: NebaLocale = {
     start: 'Início',
     end: 'Fim',
     summary: 'Pontos de dados: {count}. Intervalo: de {min} a {max}.',
+    summarySecondary: 'No eixo secundário, pontos de dados: {count}. Intervalo: de {min} a {max}.',
     exportCsv: 'Exportar CSV'
   },
   panes: { handle: 'Redimensionar painéis' },

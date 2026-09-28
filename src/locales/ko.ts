@@ -126,6 +126,7 @@ export const ko: NebaLocale = {
     start: '시작',
     end: '끝',
     summary: '데이터 {count}개. 범위: {min}~{max}.',
+    summarySecondary: '보조 축 데이터 {count}개. 범위: {min}~{max}.',
     exportCsv: 'CSV 내보내기'
   },
   panes: { handle: '패널 크기 조절' },

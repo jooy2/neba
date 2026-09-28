@@ -126,6 +126,8 @@ export const fr: NebaLocale = {
     start: 'Début',
     end: 'Fin',
     summary: 'Points de données : {count}. Plage : de {min} à {max}.',
+    summarySecondary:
+      'Sur l’axe secondaire, points de données : {count}. Plage : de {min} à {max}.',
     exportCsv: 'Exporter en CSV'
   },
   panes: { handle: 'Redimensionner les panneaux' },

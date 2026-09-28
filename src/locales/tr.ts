@@ -126,6 +126,7 @@ export const tr: NebaLocale = {
     start: 'Başlangıç',
     end: 'Bitiş',
     summary: 'Veri noktası: {count}. Aralık: {min} ile {max} arası.',
+    summarySecondary: 'İkincil eksende veri noktası: {count}. Aralık: {min} ile {max} arası.',
     exportCsv: 'CSV dışa aktar'
   },
   panes: { handle: 'Bölmeleri yeniden boyutlandır' },
