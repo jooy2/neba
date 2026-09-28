@@ -43,7 +43,7 @@ Spans on one row share it. Two that overlap are given a lane each rather than be
 
 <PropsTable name="TimelineChart" />
 
-Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. There is no `legend`: a Gantt's rows are its axis, already named down the side. See [prop conventions](../../design/prop-conventions) for the shared axes.
+Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. There is no `legend`: a Gantt's rows are its axis, already named down the side. [`references`](./line-chart#references) and [`exportable`](./line-chart#exportable) work as they do on LineChart, and a reference past the spans widens the time axis to hold it; its `value` is a timestamp in milliseconds. There is no `brush`, which would cut by row while the spans on it run past the plot, and no `secondaryAxis`. See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ## Examples
 

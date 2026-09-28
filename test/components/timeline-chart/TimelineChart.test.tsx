@@ -48,6 +48,38 @@ describe('TimelineChart', () => {
         .toHaveAccessibleDescription(/^Data points: 3\. Range: Mar.* to May.*\.$/);
     });
 
+    // The axis was solved from the spans alone, so a deadline past the last one
+    // was drawn off the plot, where nobody could see it.
+    it('widens the time axis to hold a reference past the spans', async () => {
+      const deadline = at('2026-08-03T00:00:00').getTime();
+      const screen = await render(
+        <TimelineChart
+          label="Plan"
+          series={PLAN}
+          references={[{ value: deadline, label: 'Deadline' }]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Plan' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const texts = [...plot.element().querySelectorAll('text')].map((node) => node.textContent);
+
+      expect(texts).toContain('Deadline');
+      // The spans end in May; an axis that stops there has no July on it.
+      expect(texts).toContain('Jul');
+    });
+
+    it('takes no brush, which it could only cut by row', async () => {
+      const screen = await render(
+        // @ts-expect-error a timeline's spans run past a window cut by row
+        <TimelineChart label="Plan" series={PLAN} brush />
+      );
+
+      await expect.element(screen.getByRole('img', { name: 'Plan' })).toBeInTheDocument();
+      expect(screen.getByRole('slider').query()).toBeNull();
+    });
+
     it('draws one bar per span', async () => {
       const screen = await render(<TimelineChart label="Plan" series={PLAN} />);
 

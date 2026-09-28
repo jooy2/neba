@@ -154,7 +154,7 @@ What the line does where a value is missing.
 
 A strip under the plot with the whole series on it, and a window the reader drags to choose which part the chart draws.
 
-It is for a series too long to read at the width of the plot, such as a year of hourly readings.
+It is for a series too long to read at the width of the plot, such as a year of hourly readings. LineChart, AreaChart and BarChart take it; a ScatterChart and a TimelineChart do not, since a window cut by index is not a range of a cloud's x or of a timeline's rows.
 
 Drag the window to pan and either handle to resize; both handles are `role="slider"` buttons, so the arrow keys move them one category at a time, `Page Up` and `Page Down` a tenth of the series, and `Home` and `End` jump to the ends. The strip is a group named after the chart. `defaultRange` sets where the window starts, `range` and `onRangeChange` hand it to the caller, and `height` sizes the strip — which is drawn **inside** the chart's own height, like the axis labels.
 

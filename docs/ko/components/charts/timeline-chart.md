@@ -43,7 +43,7 @@ import { TimelineChart } from 'neba';
 
 <PropsTable name="TimelineChart" />
 
-`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`는 없습니다. Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`는 없습니다. Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. [`references`](./line-chart#references)와 [`exportable`](./line-chart#exportable)은 LineChart와 같이 동작하며, span 바깥의 reference가 있으면 시간 축이 그것까지 넓어집니다. `value`는 밀리초 단위의 timestamp입니다. `brush`는 없습니다. 행 단위로 자르는데 그 행의 span은 plot 밖까지 그려지기 때문입니다. `secondaryAxis`도 없습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
 
 ## 예시
 

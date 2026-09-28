@@ -28,9 +28,14 @@ import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
+/**
+ * `brush` is left out because a timeline cannot honour it: the window is cut
+ * by row, and every span on a row outside it would still be drawn past the
+ * plot. `secondaryAxis` goes with it — there is one axis of time.
+ */
 export interface TimelineChartProps extends Omit<
   CartesianChartProps,
-  'series' | 'categories' | 'legend'
+  'series' | 'categories' | 'legend' | 'brush' | 'secondaryAxis'
 > {
   /**
    * One row per series, and the spans on it. A row's name is what the axis
@@ -84,6 +89,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
     xAxis,
     yAxis,
     locale,
+    references,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
 
@@ -111,8 +117,23 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       }
     }
 
+    /* A reference is a moment on the time axis — a deadline, today — and one
+       outside the spans was drawn off the plot, where nobody could see it.
+       The axis takes it in, as every other chart's value axis does. */
+    for (const one of references ?? []) {
+      if ((one.axis ?? 'value') !== 'value') {
+        continue;
+      }
+
+      for (const at of one.to === undefined ? [one.value] : [one.value, one.to]) {
+        seen = true;
+        low = Math.min(low, at);
+        high = Math.max(high, at);
+      }
+    }
+
     return seen ? { min: low, max: high } : null;
-  }, [spans]);
+  }, [spans, references]);
 
   const scale = React.useMemo(
     () =>
@@ -285,6 +306,11 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       // still the value one, exactly as on every other chart.
       horizontal
       scale={scale}
+      references={references}
+      // Out of the type, and kept out of the frame for a caller who passes
+      // them anyway from JavaScript.
+      brush={undefined}
+      secondaryAxis={undefined}
       xAxis={xAxis}
       yAxis={{ tickFormat: (_value, index) => tickTexts[index] ?? '', ...yAxis }}
       // A Gantt's rows are its axis; a legend would restate them one per line.

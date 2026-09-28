@@ -154,7 +154,7 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 
 plot 아래에 series 전체를 담은 띠를 놓고, 그 위의 창을 끌어 어느 구간을 그릴지 고르게 합니다.
 
-plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시간별 측정값 같은 것입니다.
+plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시간별 측정값 같은 것입니다. LineChart, AreaChart, BarChart가 받고, ScatterChart와 TimelineChart는 받지 않습니다. index로 자른 창은 점 구름의 x 범위도, 타임라인의 행 범위도 아니기 때문입니다.
 
 창을 끌면 이동하고 양끝 손잡이를 끌면 크기가 바뀝니다. 두 손잡이는 `role="slider"` 버튼이라 방향키로 한 칸씩, `Page Up`·`Page Down`으로 series의 10분의 1씩 움직이고 `Home`·`End`로 양 끝까지 갑니다. 띠는 차트 이름을 단 group입니다. `defaultRange`가 시작 위치를, `range`와 `onRangeChange`가 호출하는 쪽이 들고 있는 창을, `height`가 띠의 높이를 정합니다. 띠는 축 라벨과 마찬가지로 차트의 height **안쪽에** 그려집니다.
 

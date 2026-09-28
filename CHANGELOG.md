@@ -4,6 +4,8 @@
 
 ### Breaking changes
 
+- **`ScatterChart` and `TimelineChart` take no `brush` or `secondaryAxis`.** Both type-checked and neither could be honoured: a brush windows a series by index, which on a cloud of points is an arbitrary cut rather than a range of x, and on a timeline is a cut by row while the spans on it run past the plot; a scatter's second axis wrote its numbers in the first axis' format everywhere but its ticks. They are out of both types, and ignored when passed from JavaScript. Remove them from a `ScatterChart` or a `TimelineChart` that sets them.
+
 - **A `Rating` a reader sets draws its empty stars at 3:1 against the page.** They were the muted ink at 40%, about 1.7:1 on white, which is under what WCAG 1.4.11 asks of a control's state. They are at 80% now, which clears 3:1 in both themes, so an interactive Rating's empty stars are visibly darker. A `readOnly` Rating keeps the fainter ghost.
 
 - **`AnimateCounter`, `AnimateScramble` and `AnimateSplit` render a `<span>` by default, as `AnimateTyping`, `AnimateHeadline` and `AnimateMarquee` do.** A `<div>` is not allowed inside the `<span>` a `Statistic`'s value is, which is the pairing the AnimateCounter page recommends, and inside a `<p>` it broke hydration. The root is inline now rather than a block; pass `render={<div />}`, or a `block` class, where the block was wanted. Their ref is typed `HTMLElement`.
@@ -49,6 +51,8 @@
 - **A `DataList`'s label column stops at half the list's width.** Left without a `labelWidth`, it was as wide as the widest label and could not shrink, so a long or translated label made the list wider than a phone's screen and squeezed the values. It is still as wide as the widest label, so the values start at the same place, up to half the list; past that a label wraps. A `labelWidth` is taken as it is.
 
 ### Fixed
+
+- **A `TimelineChart`'s time axis widens to hold a reference past its spans.** The axis was solved from the spans alone, so a deadline after the last one was drawn off the plot, where nobody could see it. It takes the references in, as every other chart's value axis does.
 
 - **A `secondaryAxis`'s ticks sit on the first axis' gridlines.** It was only asked for the same number of ticks, which rounding to clean numbers overruled, so a revenue axis of four intervals beside a rate axis of five drew labels between the rules, and the far edge's labels, thinned at the first axis' stride, stood beside nothing. Its range is now cut into exactly as many intervals as the first axis has, in 1-2-5 steps. A `tickCount` given to the second axis still rounds it on its own.
 

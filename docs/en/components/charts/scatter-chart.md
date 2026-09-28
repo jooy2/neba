@@ -47,7 +47,7 @@ The `series` shape is the one every chart shares (see [LineChart](./line-chart#t
 
 <PropsTable name="ScatterChart" />
 
-Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `xAxis`, `yAxis`, `legend` and `tooltip` take the same shapes they take on [LineChart](./line-chart#props). See [prop conventions](../../design/prop-conventions) for the shared axes.
+Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `xAxis`, `yAxis`, `legend` and `tooltip` take the same shapes they take on [LineChart](./line-chart#props), and [`references`](./line-chart#references) and [`exportable`](./line-chart#exportable) work as they do there. There is no `brush`, which would cut the cloud by index rather than by x, and no `secondaryAxis`. See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 ## Examples
 

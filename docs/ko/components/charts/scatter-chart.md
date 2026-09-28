@@ -47,7 +47,7 @@ import { ScatterChart } from 'neba';
 
 <PropsTable name="ScatterChart" />
 
-`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `xAxis`·`yAxis`·`legend`·`tooltip`은 [LineChart](./line-chart#props)와 같은 형태를 받습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+`<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `xAxis`·`yAxis`·`legend`·`tooltip`은 [LineChart](./line-chart#props)와 같은 형태를 받고, [`references`](./line-chart#references)와 [`exportable`](./line-chart#exportable)도 그곳과 같이 동작합니다. `brush`는 없습니다. 점 구름을 x가 아니라 index로 자르게 되기 때문입니다. `secondaryAxis`도 없습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
 
 ## 예시
 

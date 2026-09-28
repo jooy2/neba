@@ -65,6 +65,28 @@ describe('ScatterChart', () => {
         .toBeInTheDocument();
     });
 
+    // A brush windows a series by index, which on a cloud is an arbitrary cut,
+    // and a second axis had nothing here to write its numbers in its format.
+    it('takes neither a brush nor a second value axis', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Spend"
+          series={[{ name: 'Q1', data: CLOUD, axis: 'secondary' }]}
+          // @ts-expect-error a scatter cannot window a cloud by index
+          brush
+          secondaryAxis={{ label: 'Rate' }}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+      expect(screen.getByRole('slider').query()).toBeNull();
+      expect(markCount(plot.element())).toBe(4);
+      expect(
+        [...plot.element().querySelectorAll('text')].map((node) => node.textContent)
+      ).not.toContain('Rate');
+    });
+
     it('draws one mark per point', async () => {
       const screen = await render(
         <ScatterChart label="Spend" series={[{ name: 'Q1', data: CLOUD }]} />

@@ -44,7 +44,13 @@ const separableSeries = 3;
 /** Nothing smaller than this, or a small-but-real value disappears. */
 const minBubble = 2;
 
-export interface ScatterChartProps extends CartesianChartProps {
+/**
+ * `brush` and `secondaryAxis` are left out because a scatter cannot honour
+ * either: a brush windows a series by index, which on a cloud of points is an
+ * arbitrary cut rather than a range of x, and a second value axis has no
+ * table, tooltip or summary here that would write its numbers in its format.
+ */
+export interface ScatterChartProps extends Omit<CartesianChartProps, 'brush' | 'secondaryAxis'> {
   /**
    * What each mark is drawn as.
    *
@@ -200,6 +206,10 @@ export function ScatterChart(rawProps: ScatterChartProps) {
       size={size}
       xScale="value"
       xAxis={xAxis}
+      // Out of the type, and kept out of the frame for a caller who passes
+      // them anyway from JavaScript.
+      brush={undefined}
+      secondaryAxis={undefined}
       marks={marks}
       markInset={reserve}
       // Neither axis is forced to zero. What a position encodes is a *place*,
