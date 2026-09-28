@@ -51,6 +51,19 @@ The `Omit<…, 'color'>` is there because the native `color` attribute collides 
 
 A handful of layout props take a per-breakpoint map on top of their own value: a `span` of `{ xs: 12, md: 6 }`. Which ones, and why the five axes above are deliberately not among them, is [breakpoints](./breakpoints).
 
+## Placement
+
+Four props say where something goes, and each has one meaning across the library.
+
+| Prop | Values | What it says |
+| --- | --- | --- |
+| `side` | `top` `right` `bottom` `left` | The edge of an anchor or of the viewport something is placed against: a Tooltip, a Popover, a Menu, a Drawer. Physical, so it does not flip under RTL |
+| `align` | `start` `center` `end` | Where something sits along the edge it is placed on, or in the width it has. Logical, so it flips under RTL |
+| `orientation` | `horizontal` `vertical` | Which way a set of things runs: a Tabs bar, a Divider, a RadioGroup |
+| `labelPlacement` | `top` `notch` `float` | Where a field's label is drawn: above the field, on its top edge, or inside it until it has a value. The one placement a `NebaProvider` fills in, for all ten fields at once |
+
+Two components place something on a side of a _region_ rather than of an anchor, and there the side is logical: a Sidebar and a SidebarTrigger take `side` as `start` or `end`, as a ChatBubble does for the side of the conversation it is on. A page's start edge is its right edge under RTL, and a sidebar that stayed on the left there would be on the wrong side of the page. A Switch's label is on the `labelSide` of its track, `start` or `end`, for the same reason; its `labelPlacement` is the deprecated old name.
+
 ## Motion
 
 Two vocabularies, and which one you want depends on whether the motion needs a trigger.

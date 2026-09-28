@@ -51,6 +51,19 @@ export interface ButtonProps
 
 레이아웃 prop 몇 개는 값 하나 대신 `span`에 주는 `{ xs: 12, md: 6 }` 같은 breakpoint별 map도 받습니다. 어떤 prop이 그렇고 위의 다섯 축이 왜 거기에 들지 않는지는 [breakpoints](./breakpoints)에 있습니다.
 
+## 배치
+
+어디에 놓을지를 말하는 prop은 넷이고, 라이브러리 전체에서 각각 하나의 뜻만 가집니다.
+
+| Prop | 값 | 뜻 |
+| --- | --- | --- |
+| `side` | `top` `right` `bottom` `left` | 무언가를 붙이는 기준 요소나 viewport의 가장자리입니다. Tooltip, Popover, Menu, Drawer가 씁니다. 물리적인 값이라 RTL에서 뒤집히지 않습니다 |
+| `align` | `start` `center` `end` | 붙인 가장자리를 따라, 또는 주어진 너비 안에서 어디에 놓이는지입니다. 논리적인 값이라 RTL에서 뒤집힙니다 |
+| `orientation` | `horizontal` `vertical` | 여러 개가 어느 방향으로 늘어서는지입니다. Tabs 바, Divider, RadioGroup이 씁니다 |
+| `labelPlacement` | `top` `notch` `float` | 필드의 라벨을 어디에 그리는지입니다. 필드 위, 위쪽 테두리, 또는 값이 생기기 전까지 필드 안입니다. `NebaProvider`가 필드 열 개 전체에 한꺼번에 채우는 유일한 배치 값입니다 |
+
+기준 요소가 아니라 *영역*의 한쪽에 놓는 컴포넌트 둘은 논리적인 값을 씁니다. Sidebar와 SidebarTrigger는 `side`를 `start`나 `end`로 받고, ChatBubble도 대화의 어느 쪽인지를 그렇게 받습니다. RTL에서는 페이지의 시작 가장자리가 오른쪽이므로, 거기서도 왼쪽에 남는 사이드바는 페이지의 반대편에 있게 됩니다. 같은 이유로 Switch의 라벨은 트랙의 `labelSide`, 곧 `start`나 `end`에 놓입니다. Switch의 `labelPlacement`는 사용 중단된 옛 이름입니다.
+
 ## 모션
 
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.

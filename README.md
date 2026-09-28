@@ -169,7 +169,7 @@ The reason a Neba screen looks composed rather than assembled is that the props 
 | `density` | `default` `compact` | Padding only: never the height, never the type scale, so a compact control still lines up with a default one. |
 | `elevation` | `0` `1` `2` `3` | How far a surface floats off the page. `0` is the default and means no shadow at all. |
 
-`align` is logical (`start`/`end` rather than `left`/`right`), so it flips under RTL. `side` names a physical edge (`top`, `right`, `bottom` or `left`) and does not flip. The full rules are in [**Prop conventions**](https://neba.cdget.com/design/prop-conventions).
+`align` is logical (`start`/`end` rather than `left`/`right`), so it flips under RTL. `side` names a physical edge of an anchor (`top`, `right`, `bottom` or `left`) and does not flip, except on the Sidebar and the ChatBubble, which sit on a side of the page or the conversation and take `start` or `end`. The full rules, `orientation` and `labelPlacement` included, are under Placement in [**Prop conventions**](https://neba.cdget.com/design/prop-conventions).
 
 ```tsx
 <Button size="sm" color="danger" variant="outline">Delete</Button>
