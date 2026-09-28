@@ -7,7 +7,7 @@ import { Chip } from '../chip/Chip.js';
 import { actionMessages, comboboxMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CheckIcon, ChevronIcon, CloseIcon, PlusIcon } from '../../internal/icons.js';
 import { keyHandler } from '../../internal/keys.js';
-import { FieldNotch, NotchFrame } from '../../internal/notch.js';
+import { FieldNotch, NotchFrame, restEndOf } from '../../internal/notch.js';
 import {
   chipRemoveClasses,
   controlTextLeadingClasses,
@@ -761,6 +761,9 @@ export function Combobox<Multiple extends boolean | undefined = false>(
             size={size}
             density={density}
             variant={variant}
+            rests={rests}
+            // The chevron, and the × before it when the field can be cleared.
+            restEnd={restEndOf(size, clearable && !readOnly ? [1.2, 1.2] : [1.2])}
             labelClassName={classNames?.label}
           >
             {inputGroup}

@@ -1222,13 +1222,21 @@
   content: attr(data-sample);
 }
 
+/* The same label at the size it rests at, where it starts where the text
+   would and stops short of what is drawn at the end. */
+.neba-notch-sizer.neba-notch-sizer-rest {
+  font-size: var(--n-rest-size);
+  padding-inline: calc(var(--n-notch-r) + var(--n-notch-gap) + var(--n-rest-x))
+    calc(var(--n-notch-r) + var(--n-notch-gap) + var(--n-rest-end, 0px));
+}
+
 .neba-notch {
   position: absolute;
   inset: var(--n-notch-inset, 0);
   display: grid;
   grid-template-columns:
     var(--n-notch-r)
-    fit-content(calc(100% - 2 * var(--n-notch-r)))
+    fit-content(calc(100% - 2 * var(--n-notch-r) - var(--n-label-less, 0px)))
     minmax(var(--n-notch-r), 1fr);
   grid-template-rows: 100%;
   border-radius: inherit;
@@ -1406,6 +1414,9 @@
   --n-label-size: var(--n-rest-size);
   --n-label-leading: var(--n-rest-leading);
   --n-label-ink: var(--neba-muted-fg);
+  /* The label is moved along by where the text starts, and must stop where
+     the end adornments begin, so its column gives up both. */
+  --n-label-less: calc(var(--n-rest-x) + var(--n-rest-end, 0px));
   --n-gap-line: var(--n-notch-line, transparent);
   --n-gap-top: var(--n-notch-top, transparent);
 }

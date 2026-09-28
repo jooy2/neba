@@ -29,7 +29,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import { keyHandler } from '../../internal/keys.js';
-import { FieldNotch, NotchFrame } from '../../internal/notch.js';
+import { FieldNotch, NotchFrame, restEndOf } from '../../internal/notch.js';
 import type {
   NebaColor,
   NebaElevation,
@@ -419,6 +419,8 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
             density={density}
             variant={variant}
             firstLine={multiline ? multilinePadValues[size] : undefined}
+            rests={rests}
+            restEnd={restEndOf(size, loading || endIcon ? [1.2] : [])}
             labelClassName={classNames?.label}
           >
             {shell}

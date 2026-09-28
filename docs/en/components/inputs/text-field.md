@@ -45,7 +45,7 @@ The same heights as [Button](./button), so a field and a button in one row share
 
 ### labelPlacement
 
-`top`, the default, puts the label above the field. `notch` puts it on the field's top edge, in a gap cut out of the border. `float` puts it inside the field where the placeholder would be, and moves it up into the notch when the field takes the focus or holds a value; the placeholder shows only once the label has moved. A `startIcon` keeps a `float` label in the notch, since the icon is where it would rest.
+`top`, the default, puts the label above the field. `notch` puts it on the field's top edge, in a gap cut out of the border. `float` puts it inside the field where the placeholder would be, and moves it up into the notch when the field takes the focus or holds a value; the placeholder shows only once the label has moved. A `startIcon` keeps a `float` label in the notch, since the icon is where it would rest. A resting label stops short of an `endIcon`, and a field that is only as wide as its label is widened to hold it at the size it rests at.
 
 A label in the notch stands half a line above the field rather than a full line, so leave room for it above the first field in a container that clips.
 

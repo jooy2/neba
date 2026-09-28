@@ -68,10 +68,44 @@ const restTextValues: Record<NebaSize, { size: string; leading: string }> = {
   xl: { size: '1.0625rem', leading: '1.625rem' }
 };
 
+/** A shell's `gapClasses`, as lengths: the space before each thing at its end. */
+const shellGapValues: Record<NebaSize, string> = {
+  xs: '0.25rem',
+  sm: '0.375rem',
+  md: '0.375rem',
+  lg: '0.5rem',
+  xl: '0.625rem'
+};
+
+/**
+ * The room a field's end adornments take from a resting `float` label, for
+ * `restEnd`: each one's width in `em` of the control's text, and the shell's
+ * gap in front of it.
+ *
+ * In `em` because that is what the adornments are sized in — an icon is
+ * `1.2em`, a stepper `1.7em` — and the notch that reads the length is set in
+ * the control's text, so the two agree at every size without a table per
+ * component. Nothing at the end is no length at all.
+ */
+export function restEndOf(size: NebaSize, widths: readonly number[]): string | undefined {
+  if (widths.length === 0) {
+    return undefined;
+  }
+
+  const ems = widths.reduce((total, width) => total + width, 0);
+
+  return `calc(${ems}em + ${widths.length} * ${shellGapValues[size]})`;
+}
+
 interface NotchGeometry {
   size: NebaSize;
   density: NebaDensity;
   variant: NebaVariant;
+  /**
+   * What is drawn at the end of the shell, from `restEndOf`. A resting label
+   * stops short of it rather than running under a chevron or the steppers.
+   */
+  restEnd?: string;
   /**
    * How far the first line of text sits below the shell's inner edge, for a
    * shell whose text starts at the top rather than in the middle — a textarea.
@@ -86,7 +120,13 @@ interface NotchGeometry {
  * size and per density, and a class for each would be a ladder of arbitrary
  * values in the bundle of every page that draws a field.
  */
-function notchSlots({ size, density, variant, firstLine }: NotchGeometry): React.CSSProperties {
+function notchSlots({
+  size,
+  density,
+  variant,
+  firstLine,
+  restEnd
+}: NotchGeometry): React.CSSProperties {
   // An `outline` shell has a real, transparent 1px border, and the notch is
   // measured from its outer edge. The other two have none.
   const border = variant === 'outline' ? '1px' : '0px';
@@ -106,7 +146,8 @@ function notchSlots({ size, density, variant, firstLine }: NotchGeometry): React
         ? `calc(50% - ${rest.leading} / 2)`
         : `calc(${border} + ${firstLine})`,
     // Where the text starts, measured from where the label already is.
-    '--n-rest-x': `calc(${border} + ${paddingXValues[density][size]} - ${radius} - ${gap})`
+    '--n-rest-x': `calc(${border} + ${paddingXValues[density][size]} - ${radius} - ${gap})`,
+    ...(restEnd === undefined ? undefined : { '--n-rest-end': restEnd })
   } as React.CSSProperties;
 }
 
@@ -116,6 +157,12 @@ export interface NotchFrameProps extends NotchGeometry {
   labelClassName?: string;
   /** For a frame the notch sits in, which then answers the hover and focus. */
   className?: string;
+  /**
+   * The label can rest inside the field, where it is set larger than on the
+   * edge. The frame then lays it out at that size too, so a field as wide as
+   * its label does not cut the label short the moment it comes down.
+   */
+  rests?: boolean;
   children: React.ReactNode;
 }
 
@@ -141,23 +188,28 @@ export function NotchFrame({
   label,
   labelClassName,
   className,
+  rests = false,
   children,
   ...geometry
 }: NotchFrameProps) {
+  const sizer = (kind: string) =>
+    typeof label === 'string' ? (
+      <span
+        aria-hidden="true"
+        data-sample={label}
+        className={cx('neba-notch-sizer font-medium', kind, labelClassName)}
+      />
+    ) : (
+      <span aria-hidden="true" className={cx('neba-notch-sizer font-medium', kind, labelClassName)}>
+        {label}
+      </span>
+    );
+
   return (
     <span className={cx('neba-notch-frame', className)} style={notchSlots(geometry)}>
       {children}
-      {typeof label === 'string' ? (
-        <span
-          aria-hidden="true"
-          data-sample={label}
-          className={cx('neba-notch-sizer font-medium', labelClassName)}
-        />
-      ) : (
-        <span aria-hidden="true" className={cx('neba-notch-sizer font-medium', labelClassName)}>
-          {label}
-        </span>
-      )}
+      {sizer('')}
+      {rests ? sizer('neba-notch-sizer-rest') : null}
     </span>
   );
 }

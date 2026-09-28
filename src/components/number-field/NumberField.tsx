@@ -6,7 +6,7 @@ import { Field } from '@base-ui/react/field';
 import { numberMessages, useMessages } from '../../internal/i18n.js';
 import { MinusIcon, PlusIcon } from '../../internal/icons.js';
 import { keyHandler } from '../../internal/keys.js';
-import { FieldNotch, NotchFrame } from '../../internal/notch.js';
+import { FieldNotch, NotchFrame, restEndOf } from '../../internal/notch.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -493,6 +493,13 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
               size={size}
               density={density}
               variant={variant}
+              rests={rests}
+              // An end icon, and the pair of steppers after it: two 1.7em
+              // buttons with an eighth of a rem between them.
+              restEnd={restEndOf(size, [
+                ...(endIcon ? [1.2] : []),
+                ...(showSteppers && steppers === 'end' ? [3.55] : [])
+              ])}
               labelClassName={classNames?.label}
             >
               {shell}

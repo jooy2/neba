@@ -52,6 +52,8 @@
 
 ### Fixed
 
+- **A resting `float` label stops short of what a field draws at its end.** A `TextField`, `NumberField` or `Combobox` whose label rests inside it let the label run under the end icon, the steppers or the chevron, and a field only as wide as its label cut the label to "…" as it came down, since it had been sized by the label at the smaller size it has on the edge. The label now stops where the end adornments begin, and the field is laid out to hold it at both sizes.
+
 - **The pickers are fields of a `Form`.** A `DatePicker`, `TimePicker`, `DateTimePicker`, `DateRangePicker`, `ColorPicker` or `TreeSelect` inside a `Form` registered nothing with it, so its value was missing from `onSubmit`, a `required` one let the form submit empty, and an error handed to the Form under its `name` never showed. Each registers its value now: `onSubmit` gets the string it submits, or an array from a `DateRangePicker` and a `TreeSelect` with `multiple`; an empty required picker holds the submit and takes the focus; and the Form's error, or the field's own validation message, shows under it. A native submit sends the same fields as before, though the first input under the `name` is a visually hidden text input rather than `type="hidden"`, so a test that found it by `input[type="hidden"]` should find it by its `name`.
 
 - **A `StreamingText` fades in Japanese, Chinese and Thai word by word.** It cut its text at whitespace, so a paragraph in a script written without spaces was one token: it faded in once, and everything after arrived with nothing moving. A run in one of those scripts is cut again with `Intl.Segmenter` now, and only that run, so a page in a spaced language builds no segmenter.
