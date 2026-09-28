@@ -85,7 +85,7 @@ Inline it in `<head>`, above everything. It reads the same key and writes the sa
 
 Sets `dir` on `<html>` and wraps the tree in Base UI's own `DirectionProvider`, so its primitives flip their keyboard handling and their positioning with the page.
 
-It is **left alone when it is not given**, so a document that already sets `dir` itself (most localised applications do, in the server-rendered HTML) is not fought over.
+It is **left alone when it is not given**, so a document that already sets `dir` itself (most localised applications do, in the server-rendered HTML) is not fought over. That leaves only the markup right, though: Base UI never reads the document's `dir`, so without `direction` every primitive handles its arrow keys and places its popups left to right. **A right-to-left page passes `direction="rtl"` as well as setting `dir`**; giving the same value twice changes nothing on `<html>`.
 
 The components are built on logical properties (`margin-inline-start` and the rest) rather than physical ones, so the layout follows on its own. What needs `dir` is the handful of places a glyph has to turn: the calendar's steppers, a Breadcrumb's separators, a Carousel's arrows, a TreeView's disclosure.
 

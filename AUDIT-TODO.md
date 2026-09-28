@@ -100,7 +100,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - **D39 (130)** Done (a). `engines.node`: (a) `>=18.20.0` for the package, `devEngines` for the repository; (b) `>=22.12.0`.
 - **D40 (148, major)** Done (a). Switch `labelPlacement`: (a) rename it `labelSide` with a deprecated alias; (b) document the exception.
 - **D41 (155)** Done (a). Image `width` and `height` together: (a) document that they are a proportion; (b) cap the box at `width`.
-- **D42 (168)** RTL without `direction`: (a) document it; (b) read the document's direction after hydration.
+- **D42 (168)** Done (a). RTL without `direction`: (a) document it; (b) read the document's direction after hydration.
 - **D43 (175)** Placement vocabulary: (a) a section in prop conventions; (b) qualify README only.
 - **D44 (179)** `CLAUDE.md` internal modules intro: (a) say which modules it covers; (b) a row for each.
 - **D45 (181)** `CLAUDE.md` repetition: (a) say each thing once; (b) leave it.
@@ -319,7 +319,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 
 ### Guides and repository documents
 
-- [ ] **168** [decision] Provider guide: an RTL page is said to need only `dir` on `<html>`, but Base UI never reads the document's direction, so without `direction` every primitive handles keys and positioning left to right. `provider.md:86-90`. (a) Say that an RTL document must also pass `direction`; (b) read `document.documentElement.dir` after hydration when there is no `direction` and no outer provider.
+- [x] **168** [decision] Provider guide: an RTL page is said to need only `dir` on `<html>`, but Base UI never reads the document's direction, so without `direction` every primitive handles keys and positioning left to right. `provider.md:86-90`. (a) Say that an RTL document must also pass `direction`; (b) read `document.documentElement.dir` after hydration when there is no `direction` and no outer provider. Decided: (a). Both guides say that Base UI never reads the document's `dir`, and that an RTL page passes `direction="rtl"` as well as setting `dir`.
 - [x] **169** Provider guide: a nested provider needs `storageKey={false}` or its own key; `labelPlacement` reaches ten fields, not eight; the color-scheme demo's `ready` state does nothing. `provider.md:36, 92-104`, `demos/provider/color-scheme.tsx:24-36`. The page named no number: "the pickers" read as the four date and time pickers, so it lists all ten now. The ref is attached before any effect runs, so the demo lost the state rather than gaining a render.
 - [x] **170** Hooks guide: the `useShortcut` example binds `Mod+K` with `ignoreWhileTyping` left on, the option table omits `select`, "`xs` … is always true" holds only once hydrated, and "the first render already has a size" should say the first paint. `hooks.md:36, 67, 82-92`, `useMediaQuery.ts`. `useShortcut`'s JSDoc left out the select as well, and says it now.
 - [x] **171** A2UI guide: "Ten of the fourteen are one `Intl` call" is wrong (three are); `userMessage` is not stripped but never forwarded. `a2ui.md:90, 98`, both locales. The sentences on bundles, edits written back and call signatures follow 61, 124 and 127. Checked against `web_core` 0.11: `formatNumber`, `formatCurrency` and `pluralize` are the three `Intl` calls, and `dispatchAction` builds the action from the event's name and context. The same sentence was in `CLAUDE.md` and in the adapter's docblock, and is corrected there too.
