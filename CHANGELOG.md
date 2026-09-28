@@ -36,6 +36,8 @@
 
 ### Changed
 
+- **The A2UI catalog names the minor version it belongs to.** Its `catalogId` was the bare `https://neba.cdget.com/a2ui/catalog.json`, served from the docs, which deploy from `main` — so the file behind it could describe components the adapter a host had installed did not have yet. A published catalog's `catalogId` is `…/a2ui/<major>.<minor>/catalog.json` now, served at that address, and the adapter registers the same id; the bare URL is always the latest. A host that hard-coded the old id in a `createSurface` should use `nebaCatalogId`.
+
 - **A pressable `Pill` lights and presses its button rather than its whole shell.** The pointer light, the hover fill and the press were on the shell, so pressing a control in `endIcon` or inside the open `details` pressed the whole Pill, and the light washed across the details. They are on the pressable middle now; an `outline` Pill's edge no longer changes under the pointer, since the edge belongs to the shell.
 
 - **`useShortcut` runs once for a held key, and leaves a key a control already answered.** Every auto-repeat of a held combination ran the handler again, and a key a focused field had handled with `preventDefault` ran it as well, so a field's own `Mod+K` also opened a `CommandPalette` bound to the same key. Repeats are skipped unless `repeat: true` is passed, and still have their default prevented; a key another handler prevented is left to it. A `CommandPalette` that is already open no longer asks to open again.
