@@ -132,7 +132,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 
 ### Internal modules
 
-`src/internal/` is the library talking to itself, and every module in it exists because two or more components would otherwise answer the same question twice. Each has a heading below with the reason it is there and the rules that are load-bearing.
+`src/internal/` is the library talking to itself, and every module in it exists because two or more components would otherwise answer the same question twice. The modules below are the ones with rules that are load-bearing, each under a heading with the reason it is there. The rest — `date.ts`, `format.ts`, `csv.ts`, `grid.ts`, `children.ts` and the like — are tables and small helpers whose comments say what they need to, and they have no heading here on purpose: a heading per module would be a second place to keep in step with the code, for modules that break nothing when they are read wrongly. `styles.ts` and `defaults.ts` do have rules that matter, and they are where those rules bite: under [Shared prop vocabulary](#shared-prop-vocabulary) and [Packaging](#packaging-bundle-size-and-tree-shaking).
 
 | Module | What it holds |
 | --- | --- |
