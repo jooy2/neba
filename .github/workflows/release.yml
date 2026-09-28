@@ -1,0 +1,95 @@
+name: release
+
+# A GitHub release for every version tag, and nothing else: the tag is pushed by
+# hand once the "chore: cut X" commit is on `main`, and npm is published by hand
+# as well. What this adds is everything between the two — the checks that the
+# tag names the version that was cut, the package built the way `npm publish`
+# builds it, and the release written from that version's changelog section with
+# the tarball attached.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+# Two pushes of the same tag are the same release; the second waits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: GitHub release
+    # A build, two checks and an upload. Well above what that takes, because a
+    # job that hangs here holds a runner for nothing.
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+
+      # The tag is typed by hand and the version is in two files; a `v1.17.1`
+      # pushed onto the 1.17.0 commit would otherwise publish a release whose
+      # tarball says something else.
+      - name: Check the tag names the version in package.json
+        id: version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::The tag is ${GITHUB_REF_NAME} and package.json says ${version}. Tag the commit that cut v${version}."
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      # First, so a tag on a commit whose changelog still says `vNext` fails in
+      # seconds rather than after the build.
+      - name: Write the release notes from CHANGELOG.md
+        run: node scripts/release-notes.mjs "${{ steps.version.outputs.version }}" > "$RUNNER_TEMP/notes.md"
+
+      # Without the scripts: `prepare` is the build, and `npm pack` runs it
+      # below, so running it here as well would build twice.
+      - run: npm ci --ignore-scripts
+
+      # `npm pack` runs `prepare` and packs what `.npmignore` lets through, which
+      # is exactly what `npm publish` will upload — the tarball on the release
+      # is the package, not a second build of it.
+      - name: Build and pack
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+
+      # The same two checks `run-test.yml` runs on `main`, on the build that is
+      # being attached. The tests are not run again: the tag goes on a commit
+      # whose `main` run has already passed them.
+      - name: Check the bundle budgets
+        run: npm run size
+      - name: Check the minimum browser versions
+        run: npm run compat
+
+      # Created, or brought up to date when the tag is pushed again after a
+      # release already exists, so a re-run never fails on its own earlier
+      # success. A version with a pre-release part is marked as one.
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tarball=$(ls "$RUNNER_TEMP"/*.tgz)
+          notes="$RUNNER_TEMP/notes.md"
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --title "$VERSION" --notes-file "$notes"
+            gh release upload "$GITHUB_REF_NAME" "$tarball" --clobber
+          else
+            prerelease=""
+            case "$VERSION" in *-*) prerelease="--prerelease" ;; esac
+            gh release create "$GITHUB_REF_NAME" "$tarball" --verify-tag \
+              --title "$VERSION" --notes-file "$notes" $prerelease
+          fi

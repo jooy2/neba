@@ -549,7 +549,21 @@ npm run compat        # check dist/styles.css and src/ against the minimum brows
 npm run lint          # ESLint
 npm run lint:fix      # ESLint with --fix
 npm run format:fix    # Prettier write
+node scripts/release-notes.mjs 1.17.0   # the GitHub release body for a version, cut out of CHANGELOG.md
+node scripts/build-catalog.mjs --release # the A2UI catalog snapshot a minor release commits
 ```
+
+## Releasing
+
+A release is three steps, and only the last is automatic. **npm is published by hand**, and no tag is created or pushed by anyone but the maintainer — an agent asked to prepare a release stops at the push of the cut commit.
+
+1. **Cut the version**, as one `chore: cut X.Y.Z` commit on `main`: `version` in `package.json` and in both places at the top of `package-lock.json` (the root entry repeats it); the `## vNext (YYYY--)` section of `CHANGELOG.md` renamed to `## X.Y.Z (YYYY-MM-DD)`, with a new, empty `## vNext (YYYY--)` above it; and, for a minor or a major, `node scripts/build-catalog.mjs --release`, whose `docs/a2ui/X.Y.json` is committed with it (see [The A2UI catalog](#the-a2ui-catalog)). Push, and let `run-test.yml` pass on that commit.
+2. **Tag it**: `git tag vX.Y.Z` on that commit and `git push origin vX.Y.Z`.
+3. **[.github/workflows/release.yml](.github/workflows/release.yml)** runs on the tag. It refuses a tag that is not `v` plus the `package.json` version, writes the release body with `scripts/release-notes.mjs` — which refuses a section still called `vNext` or without a date — builds and packs the package with `npm pack`, runs `npm run size` and `npm run compat` on that build, and creates the GitHub release with the tarball attached. A version with a pre-release part (`1.18.0-beta.1`) is marked as a pre-release. Pushing the same tag again updates the release rather than failing.
+
+**The body is the version's whole changelog section**, followed by links to the docs site's changelog and to `CHANGELOG.md` at the tag. GitHub cuts a release body off at 125,000 characters, so a section longer than that is replaced by its opening summary — the prose before its first `### ` — and the links; the script says so rather than letting a list end mid-entry. Read the body before tagging with `node scripts/release-notes.mjs X.Y.Z`.
+
+**The tarball is the only asset**, because it is exactly what `npm publish` uploads: `prepare` is the build and `.npmignore` decides the contents. `neba/styles.css` and the A2UI catalog are not attached on their own; a CDN serves any file of the published package, and the catalog is served by the docs at the URL its own `catalogId` names. The tests are not run again on the tag, since it goes on a commit whose `main` run has passed them.
 
 ## Testing
 
@@ -627,6 +641,7 @@ CI does not use the list form: it puts the browser in the job matrix instead, so
 - ESLint's flat config targets `**/*.{js,mjs,cjs,ts,tsx}`. The rule overrides had excluded `.tsx`, which left `n/no-missing-import` on for component files and made extensionless relative imports fail; `tsx` was added to the `files` glob to fix it.
 - `.npmignore` is an allow-nothing-by-accident list: anything new at the repo root that should not ship (configs, tooling) has to be added there. Verify with `npm pack --dry-run`.
 - Docs are VitePress with `vitepress-i18n` + `vitepress-sidebar`. Two locales, and which one is the root is a single constant: `defaultLocale` in `docs/.vitepress/config.ts`, currently `en`. The root locale is served from `/` (rewritten from `docs/en/`) and every other locale keeps its folder as its URL prefix, so `ko` is served from `/ko/`. Changing that constant swings the locale config, the sidebar's base path and the `rewrites` together.
+- A pushed version tag (`v*`) runs [.github/workflows/release.yml](.github/workflows/release.yml) and nothing else; [Releasing](#releasing) describes it. Everything below is `run-test.yml`.
 - CI is [.github/workflows/run-test.yml](.github/workflows/run-test.yml), on PRs to `main`, pushes to `main` touching source/test/config paths, and `workflow_dispatch`. Five jobs:
   - `lint` — lint, prettier check, typecheck. Ubuntu + Node 26 only; these are platform-independent, so running them once is enough.
   - `bundle` — build, then `npm run size`. Ubuntu only.
