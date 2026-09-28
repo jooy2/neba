@@ -33,6 +33,7 @@ import {
   controlTextLeadingClasses,
   cx,
   hasContent,
+  insetRingClasses,
   metaTextClasses,
   paddingXValues,
   srOnlyClasses,
@@ -542,21 +543,47 @@ const sortButtonClasses = [
  * outside its own cell so the target straddles the boundary the way the cursor
  * says it does.
  *
- * It is pointer-only and `aria-hidden`, on purpose: a column's width is a
- * preference and not information, and nothing in the table is out of reach
- * without it.
+ * It is also a focusable `separator` the arrow keys move, as a Sidebar's edge
+ * is: a column cut short is text a reader can only get back by widening it, and
+ * a boundary only a pointer can move keeps that text from the keyboard.
  */
-const resizeHandleClasses = [
-  'absolute inset-y-0 z-10 w-2 cursor-col-resize select-none',
-  'end-0 translate-x-1/2 rtl:-translate-x-1/2',
-  'after:absolute after:inset-y-1 after:start-1/2 after:w-px',
-  'after:[background:transparent]',
-  'after:[transition:background_var(--neba-duration)_var(--neba-ease)]',
+const resizeHandleClasses =
+  'absolute inset-y-0 z-10 w-2 cursor-col-resize select-none ' +
+  'end-0 translate-x-1/2 rtl:-translate-x-1/2 ' +
+  'after:absolute after:inset-y-1 after:start-1/2 after:w-px ' +
+  'after:[background:transparent] ' +
+  'after:[transition:background_var(--neba-duration)_var(--neba-ease)] ' +
   // Held as well as hovered: pointer capture means the pointer may be well away
   // from the handle while the drag is running, and a rule that went out under
-  // the hand reads as the drag having been let go.
-  'hover:after:[background:var(--n-accent)] data-[dragging]:after:[background:var(--n-accent)]'
-].join(' ');
+  // the hand reads as the drag having been let go. Focused too, so the line the
+  // arrow keys move is drawn while they move it.
+  'hover:after:[background:var(--n-accent)] data-[dragging]:after:[background:var(--n-accent)] ' +
+  'focus-visible:after:[background:var(--n-accent)] ' +
+  '[outline:0_solid_transparent] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0';
+
+/** How far one arrow key press moves a column's boundary. The Sidebar's step. */
+const KEYBOARD_STEP = 16;
+
+/** What moves a column along the row from its heading. */
+const MOVE_SHORTCUTS = 'Alt+ArrowLeft Alt+ArrowRight';
+
+/**
+ * Puts a plain cell's whole text in its `title` when the cell cuts it short.
+ *
+ * Measured as the pointer arrives rather than on render, because whether a
+ * cell overflows depends on a width nothing in the render knows, and written
+ * straight to the element so that hovering a row re-renders nothing. A screen
+ * reader already reads the whole text; this is for the eye.
+ */
+function titleCutCell(event: React.PointerEvent<HTMLTableCellElement>) {
+  const cell = event.currentTarget;
+
+  if (cell.scrollWidth > cell.clientWidth) {
+    cell.title = cell.textContent ?? '';
+  } else {
+    cell.removeAttribute('title');
+  }
+}
 
 /** What a press inside a cell belongs to, rather than to the row around it. */
 const PRESSABLE_IN_CELL =
@@ -1359,11 +1386,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * ones a column is set to, so the first press shrank every column to that
    * fraction and the boundary then fell behind the pointer.
    */
-  const startResize = (key: string, event: React.PointerEvent<HTMLSpanElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const handle = event.currentTarget;
+  const frozenWidths = () => {
     const frozen: Record<string, number> = { ...widths };
 
     for (const column of columns) {
@@ -1374,12 +1397,24 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       }
     }
 
+    return frozen;
+  };
+
+  const widthFloor = (key: string) =>
+    columns.find((column) => column.key === key)?.minWidth ?? minColumnWidth;
+
+  const startResize = (key: string, event: React.PointerEvent<HTMLSpanElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const handle = event.currentTarget;
+    const frozen = frozenWidths();
     const pulled = headRefs.current.get(key);
     const scale = pulled ? drawnScale(pulled).x : 1;
     const rtl = getComputedStyle(handle).direction === 'rtl';
     const startX = event.clientX;
     const startWidth = frozen[key] ?? defaultColumnWidth;
-    const floor = columns.find((column) => column.key === key)?.minWidth ?? minColumnWidth;
+    const floor = widthFloor(key);
 
     resizeRef.current = beginPointerDrag({
       target: handle,
@@ -1394,6 +1429,74 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       }
     });
   };
+
+  /**
+   * The arrow keys on a boundary, a step at a time. The first press freezes
+   * every column, as the first drag does, so that it moves one boundary.
+   */
+  const nudgeWidth = (key: string, event: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+
+    const rtl = getComputedStyle(event.currentTarget).direction === 'rtl';
+    const wider = (event.key === 'ArrowRight') !== rtl;
+    const frozen = frozenWidths();
+    const from = frozen[key] ?? defaultColumnWidth;
+
+    setWidths({
+      ...frozen,
+      [key]: Math.max(widthFloor(key), from + (wider ? KEYBOARD_STEP : -KEYBOARD_STEP))
+    });
+  };
+
+  // React moves a heading's cell to reorder the row, and a focused element that
+  // is moved loses the focus. The heading a keyboard just moved takes it back.
+  const refocusKey = React.useRef<string | null>(null);
+
+  /**
+   * Alt and an arrow on a heading moves its column one place, as dragging it
+   * over its neighbour does. A pinned neighbour stays where pinning put it, so
+   * the move stops there.
+   */
+  const moveColumnByKey = (key: string, event: React.KeyboardEvent<HTMLElement>) => {
+    if (!event.altKey || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) {
+      return;
+    }
+    event.preventDefault();
+
+    const rtl = getComputedStyle(event.currentTarget).direction === 'rtl';
+    const step = (event.key === 'ArrowRight') !== rtl ? 1 : -1;
+    const keys = columns.map((column) => column.key);
+    const from = keys.indexOf(key);
+    const neighbour = columns[from + step];
+
+    if (!neighbour || neighbour.pinned) {
+      return;
+    }
+
+    keys.splice(from + step, 0, ...keys.splice(from, 1));
+    refocusKey.current = key;
+    setColumnOrder(keys);
+  };
+
+  React.useLayoutEffect(() => {
+    const key = refocusKey.current;
+
+    if (key === null) {
+      return;
+    }
+    refocusKey.current = null;
+
+    const cell = headRefs.current.get(key);
+    const target = cell?.querySelector<HTMLElement>('button') ?? cell;
+
+    if (target && target !== document.activeElement) {
+      target.focus();
+    }
+  });
 
   /** A double-click gives the column back whatever width it had before. */
   const resetWidth = (key: string) => {
@@ -2183,6 +2286,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 textAlign: column.align ?? 'start',
                 cursor: editable && !open ? 'cell' : undefined
               }}
+              onPointerEnter={column.render || open ? undefined : titleCutCell}
               onDoubleClick={
                 editable
                   ? (event) => {
@@ -2229,10 +2333,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const entry = sortFor(column.key);
     const order = entry ? sort.findIndex((item) => item.key === column.key) + 1 : 0;
     const align = column.headerAlign ?? column.align ?? 'start';
+    const hasHandle = canResize && index < columns.length - 1;
+    // A heading is named from what is in it, and the separator in it has a
+    // name of its own, so a heading with one is named by its label alone —
+    // or every cell under it would be read out with "Resize" in its header.
+    const labelId = hasHandle ? `${reactId}-head-${index}` : undefined;
 
     return (
       <th
         key={column.key}
+        aria-labelledby={labelId}
         ref={(node) => {
           if (node) {
             headRefs.current.set(column.key, node);
@@ -2249,6 +2359,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           'relative font-semibold select-none',
           stickyHeader ? 'sticky z-20 [backdrop-filter:var(--neba-blur)]' : '',
           canMove ? (movingKey === column.key ? 'cursor-grabbing' : 'cursor-grab') : '',
+          // Inset: the table's scroll box would cut an outset ring off.
+          canMove && !canSort ? insetRingClasses : '',
           dropKey === column.key ? dropMarkerClasses[dropEdge(column.key)] : ''
         )}
         style={{
@@ -2268,11 +2380,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           // unsorted one is the mark of the sort gone.
           color: entry ? 'var(--n-cell-ink, var(--n-accent))' : headCellStyle.color
         }}
+        // A heading with no sort button has nothing else to hold the focus, so
+        // one that moves takes it itself; the keys bubble here from the button.
+        tabIndex={canMove && !canSort ? 0 : undefined}
+        aria-keyshortcuts={canMove && !canSort ? MOVE_SHORTCUTS : undefined}
         onPointerDown={canMove ? (event) => startReorder(column.key, event) : undefined}
+        onKeyDown={canMove ? (event) => moveColumnByKey(column.key, event) : undefined}
       >
         {canSort ? (
           <button
             type="button"
+            aria-keyshortcuts={canMove ? MOVE_SHORTCUTS : undefined}
             className={cx(
               sortButtonClasses,
               align === 'end'
@@ -2283,7 +2401,9 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             )}
             onClick={(event) => applySort(column.key, event.shiftKey)}
           >
-            <span className="min-w-0 truncate">{column.label ?? column.key}</span>
+            <span id={labelId} className="min-w-0 truncate">
+              {column.label ?? column.key}
+            </span>
 
             {/*
               Turned, not moved — the one allowance the no-transform rule makes.
@@ -2321,15 +2441,34 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
             ) : null}
           </button>
         ) : (
-          <span className="block truncate">{column.label ?? column.key}</span>
+          <span id={labelId} className="block truncate">
+            {column.label ?? column.key}
+          </span>
         )}
 
-        {canResize && index < columns.length - 1 ? (
+        {hasHandle ? (
           <span
-            aria-hidden="true"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label={fillMessage(messages.resizeColumn, {
+              column: typeof column.label === 'string' ? column.label : column.key
+            })}
+            aria-valuenow={widths[column.key] ?? column.width}
+            aria-valuemin={widthFloor(column.key)}
+            tabIndex={0}
             className={resizeHandleClasses}
+            onFocus={(event) => {
+              // A column nobody has sized has no width until the browser lays
+              // it out, and a separator the keyboard moves has to say one.
+              const cell = headRefs.current.get(column.key);
+
+              if (cell && !event.currentTarget.hasAttribute('aria-valuenow')) {
+                event.currentTarget.setAttribute('aria-valuenow', String(cell.offsetWidth));
+              }
+            }}
             onPointerDown={(event) => startResize(column.key, event)}
             onDoubleClick={() => resetWidth(column.key)}
+            onKeyDown={(event) => nudgeWidth(column.key, event)}
           />
         ) : null}
       </th>

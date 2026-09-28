@@ -49,7 +49,8 @@ export const ar: NebaLocale = {
     selected: 'تم تحديد {count}',
     empty: 'لا توجد بيانات',
     exportCsv: 'تصدير CSV',
-    noGroup: 'بلا مجموعة'
+    noGroup: 'بلا مجموعة',
+    resizeColumn: 'تغيير عرض {column}'
   },
   color: {
     area: 'التشبع والسطوع',

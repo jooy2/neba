@@ -101,7 +101,7 @@ With `sortMode="multiple"`, a Shift-click adds a column to the sort rather than 
 
 ### Column widths and groups
 
-`width` is pixels, and columns that do not state one share whatever is left. `resizable` puts a handle on each boundary; the first drag freezes every column at the width the browser had given it, so pulling one moves one. A double-click on a handle gives that column its original width back.
+`width` is pixels, and columns that do not state one share whatever is left. `resizable` puts a handle on each boundary; the first drag freezes every column at the width the browser had given it, so pulling one moves one. A double-click on a handle gives that column its original width back. Each handle is also a focusable separator, named after its column, and <kbd>←</kbd> <kbd>→</kbd> move it 16px at a time.
 
 Adjacent columns carrying the same `group` string are merged under one heading in a second header row. A column with no `group` spans both rows.
 
@@ -145,7 +145,7 @@ Give a pinned column a `width`. Without one, the offsets the sticky cells sit at
 
 `columnOrder` is a list of keys. **A key it does not mention keeps its place**, so an order that names two columns moves those two and leaves the rest alone, and a column added to `headers` later appears without the stored order having to be migrated.
 
-`reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable.
+`reorderable` lets a header be dragged along the row. It is off by default, and the drag arms at a threshold rather than at the press, so a click meant to sort does not move the column. Pinned headers are not draggable. From the keyboard, <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd> on a heading moves its column one place; a heading with no sort button takes the focus itself for that.
 
 ### Editing a cell
 
@@ -225,5 +225,7 @@ The file leads with a byte-order mark, so Excel reads its non-ASCII text correct
 - Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row that `aria-activedescendant` points at, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
-- The resize handles are pointer-only and hidden from assistive technology. Nothing in the table is out of reach without them.
+- A resize handle is a `separator` in the tab order, named "Resize" and the column's label, with its width in `aria-valuenow`. The heading around it is still named by its label alone.
+- A heading that moves carries `aria-keyshortcuts` for <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd>.
+- A cell cuts its text rather than wrapping. A screen reader reads it whole; under the pointer a cut cell without `render` shows its whole text as a tooltip, and a keyboard reader widens the column through its handle.
 - Pass `locale` when the markup is rendered on a server: it is what the default sort compares strings with, and a server that disagrees with the browser about the runtime locale produces two different row orders for the same table.

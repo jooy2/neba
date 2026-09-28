@@ -49,7 +49,8 @@ export const tr: NebaLocale = {
     selected: '{count} seçildi',
     empty: 'Veri yok',
     exportCsv: 'CSV dışa aktar',
-    noGroup: 'Grupsuz'
+    noGroup: 'Grupsuz',
+    resizeColumn: '{column} genişliğini ayarla'
   },
   color: {
     area: 'Doygunluk ve parlaklık',

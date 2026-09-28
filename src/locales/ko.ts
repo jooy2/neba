@@ -49,7 +49,8 @@ export const ko: NebaLocale = {
     selected: '{count}개 선택됨',
     empty: '데이터 없음',
     exportCsv: 'CSV 내보내기',
-    noGroup: '그룹 없음'
+    noGroup: '그룹 없음',
+    resizeColumn: '{column} 너비 조절'
   },
   color: {
     area: '채도와 명도',

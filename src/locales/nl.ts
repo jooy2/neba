@@ -49,7 +49,8 @@ export const nl: NebaLocale = {
     selected: '{count} geselecteerd',
     empty: 'Geen gegevens',
     exportCsv: 'CSV exporteren',
-    noGroup: 'Geen groep'
+    noGroup: 'Geen groep',
+    resizeColumn: 'Breedte van {column} aanpassen'
   },
   color: {
     area: 'Verzadiging en helderheid',

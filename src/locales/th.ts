@@ -49,7 +49,8 @@ export const th: NebaLocale = {
     selected: 'เลือกแล้ว {count} รายการ',
     empty: 'ไม่มีข้อมูล',
     exportCsv: 'ส่งออก CSV',
-    noGroup: 'ไม่มีกลุ่ม'
+    noGroup: 'ไม่มีกลุ่ม',
+    resizeColumn: 'ปรับความกว้างของ {column}'
   },
   color: {
     area: 'ความอิ่มตัวและความสว่าง',

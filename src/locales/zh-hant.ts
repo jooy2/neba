@@ -52,7 +52,8 @@ export const zhHant: NebaLocale = {
     selected: '已選擇 {count} 列',
     empty: '沒有資料',
     exportCsv: '匯出 CSV',
-    noGroup: '未分組'
+    noGroup: '未分組',
+    resizeColumn: '調整{column}的寬度'
   },
   color: {
     area: '飽和度與明度',

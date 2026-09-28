@@ -49,7 +49,8 @@ export const fr: NebaLocale = {
     selected: '{count} sélectionnées',
     empty: 'Aucune donnée',
     exportCsv: 'Exporter en CSV',
-    noGroup: 'Sans groupe'
+    noGroup: 'Sans groupe',
+    resizeColumn: 'Redimensionner {column}'
   },
   color: {
     area: 'Saturation et luminosité',

@@ -6376,8 +6376,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '헤더를 끌어 열을 옮길 수 있게 합니다. 기본값이 꺼짐인 이유는 헤더가 컨트롤이기 때문, 정렬하려던 손짓에 열이 움직이는 표는 안 움직이는 표보다 나쁩니다',
-        en: 'Lets a header be dragged to move its column. Off by default because a header is a control: a table whose columns move when a reader meant to sort is worse than one whose columns do not move'
+        ko: '헤더를 끌거나 Alt와 화살표 키로 열을 옮길 수 있게 합니다. 기본값이 꺼짐인 이유는 헤더가 컨트롤이기 때문, 정렬하려던 손짓에 열이 움직이는 표는 안 움직이는 표보다 나쁩니다',
+        en: 'Lets a header be dragged, or moved with Alt and an arrow key, to move its column. Off by default because a header is a control: a table whose columns move when a reader meant to sort is worse than one whose columns do not move'
       }
     },
     {
@@ -6611,8 +6611,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '머리행 경계를 끌어 열 너비를 바꿉니다. 핸들을 더블클릭하면 원래 너비로',
-        en: 'Lets the headers be dragged wider. A double-click on the handle restores the original width'
+        ko: '머리행 경계를 끌거나 focus한 뒤 화살표 키로 열 너비를 바꿉니다. 핸들을 더블클릭하면 원래 너비로',
+        en: 'Lets the headers be dragged wider, or moved with the arrow keys once the handle has the focus. A double-click on the handle restores the original width'
       }
     },
     {

@@ -233,6 +233,11 @@ export interface TableMessages {
    * than `empty`'s, which said there was nothing there over rows that were.
    */
   noGroup: string;
+  /**
+   * The boundary a keyboard resizes a column by. `{column}` is replaced with
+   * the column's label.
+   */
+  resizeColumn: string;
 }
 
 /** The `table` namespace, as Table and DataTable read it. */
@@ -246,7 +251,8 @@ export const tableMessages: MessageTable<TableMessages> = {
     selected: '{count} selected',
     empty: 'No data',
     exportCsv: 'Export CSV',
-    noGroup: 'No group'
+    noGroup: 'No group',
+    resizeColumn: 'Resize {column}'
   }
 };
 

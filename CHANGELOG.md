@@ -20,6 +20,8 @@
 
 ### Added
 
+- **A `DataTable`'s columns resize and move from the keyboard.** A resize handle was pointer-only and hidden, so a column cut short was text a keyboard reader could not get back. Each handle is now a focusable `separator` named "Resize" and the column's label (`table.resizeColumn`, in every registered language), and <kbd>←</kbd> <kbd>→</kbd> move it 16px at a time. On a `reorderable` table, <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd> on a heading moves its column one place, and a heading with no sort button takes the focus for it. Under the pointer, a cut cell without `render` shows its whole text as a tooltip.
+
 - **A `Transfer` says what a move did.** A polite status reads out how many rows moved and to which list, "2 moved to Selected", in the `locale`'s words. It is `transfer.moved`, in every registered language.
 
 - **`createNebaCatalog` takes a `locale`.** The A2UI functions that write numbers — `formatNumber`, `formatCurrency` and `pluralize` — followed the runtime's language whatever the components around them were set to, so a Korean surface could say "1,234.5" in a Korean sentence and pick the English plural. `createNebaCatalog({ locale })` builds them in the language given, which is the one a `NebaProvider` should be given too.

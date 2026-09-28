@@ -1461,6 +1461,72 @@ describe('DataTable', () => {
 
       expect(cols[1].style.width).toBe('90px');
     });
+
+    // The handles were pointer-only and hidden, and a column cut short is text a
+    // keyboard reader can only get back by widening it.
+    it('widens a column from the keyboard, a step at a time', async () => {
+      const onColumnWidthsChange = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          resizable
+          onColumnWidthsChange={onColumnWidthsChange}
+        />
+      );
+      const handle = screen.getByRole('separator', { name: 'Resize Name' });
+
+      await expect.element(handle).toHaveAttribute('tabindex', '0');
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '160');
+
+      (handle.element() as HTMLElement).focus();
+      await userEvent.keyboard('{ArrowRight}');
+
+      expect(onColumnWidthsChange).toHaveBeenLastCalledWith(expect.objectContaining({ name: 176 }));
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '176');
+
+      await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
+
+      await expect.element(handle).toHaveAttribute('aria-valuenow', '144');
+    });
+
+    it('keeps a heading named by its label alone', async () => {
+      const screen = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} resizable sortable />
+      );
+
+      await expect.element(screen.getByRole('columnheader', { name: 'City' })).toBeInTheDocument();
+      await expect.element(screen.getByRole('button', { name: 'City' })).toBeInTheDocument();
+    });
+  });
+
+  // A cell cuts its text rather than wrapping, and the pointer had no way to
+  // the rest of it short of widening the column.
+  it('puts the whole text of a cut cell in its title under the pointer', async () => {
+    const long = [
+      { id: 'a', name: 'A name far too long for the column it is in', city: 'Oslo', score: 1 }
+    ];
+    const screen = await render(
+      <DataTable
+        headers={[
+          { key: 'name', label: 'Name', width: 80 },
+          { key: 'city', label: 'City', width: 160 }
+        ]}
+        items={long}
+        getRowKey={key}
+      />
+    );
+    const [cut, whole] = [...bodyRows(screen.container)[0].children] as HTMLElement[];
+
+    // What `w-full` does with the stylesheet on, which no component test loads.
+    screen.container.querySelector('table')!.style.width = '240px';
+
+    await userEvent.hover(cut);
+    await userEvent.hover(whole);
+
+    expect(cut).toHaveAttribute('title', long[0].name);
+    expect(whole).not.toHaveAttribute('title');
   });
 });
 
@@ -1576,6 +1642,47 @@ describe('column order', () => {
     );
 
     expect(headings.slice(0, 3)).toEqual(['Score', 'Name', 'City']);
+  });
+
+  it('moves a column with Alt and an arrow on its heading, and keeps the focus there', async () => {
+    const onColumnOrderChange = vi.fn();
+    const screen = await render(
+      <DataTable
+        headers={HEADERS}
+        items={ITEMS}
+        getRowKey={key}
+        sortable
+        reorderable
+        onColumnOrderChange={onColumnOrderChange}
+      />
+    );
+    const name = screen.getByRole('button', { name: 'Name' });
+
+    await expect.element(name).toHaveAttribute('aria-keyshortcuts', 'Alt+ArrowLeft Alt+ArrowRight');
+
+    (name.element() as HTMLElement).focus();
+    await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}');
+
+    expect(onColumnOrderChange).toHaveBeenLastCalledWith(['city', 'name', 'score']);
+    await expect
+      .poll(() => screen.container.querySelectorAll('thead th')[1].textContent)
+      .toContain('Name');
+    await expect.element(name).toHaveFocus();
+
+    await userEvent.keyboard('{Alt>}{ArrowLeft}{ArrowLeft}{/Alt}');
+
+    expect(onColumnOrderChange).toHaveBeenLastCalledWith(['name', 'city', 'score']);
+    expect(onColumnOrderChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('lets a heading with no sort button take the focus when it moves', async () => {
+    const screen = await render(
+      <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} reorderable />
+    );
+
+    await expect
+      .element(screen.getByRole('columnheader', { name: 'City' }))
+      .toHaveAttribute('tabindex', '0');
   });
 
   // A header that can be dragged captured the pointer on the press, and the
