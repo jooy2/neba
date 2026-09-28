@@ -36,6 +36,8 @@
 
 ### Changed
 
+- **An `outline` `Toggle` that is on keeps its plate under the pointer.** Hover and press swapped the dyed plate for a paler wash, so a toggle that was on faded towards off as the pointer arrived. The plate stays now, and hover moves the edge to the accent and the label to the full ink.
+
 - **`neba/a2ui` carries a copy of its catalog without the prose.** The adapter imported the whole catalog, and about three quarters of it gzipped is descriptions written for a model, which the renderer never reads. It reads a copy with them taken out now, which takes about 6.5 kB off every page that draws an A2UI surface. `neba/a2ui/catalog.json` is unchanged and is still the file to hand an agent.
 
 - **A `DataTable` sorted by several keys puts `aria-sort` on the first key only.** Every sorted heading carried it, which says nothing about which key decides, and the number beside each arrow was hidden from a screen reader. The later keys' buttons end with their place and direction now, "sort 2, descending", in the `locale`'s words (`table.sortAscending` and `table.sortDescending`, in every registered language), and each heading is still named by its label alone.

@@ -161,13 +161,18 @@ const onClasses: Record<NebaVariant, string> = {
     'hover:bg-(--n-fill-hover)',
     'active:bg-(--n-fill-active)'
   ].join(' '),
+  // The dyed plate stays put under the pointer and the press. Hover used to
+  // swap it for the `--n-soft-*` wash, which is the accent over nothing and
+  // paler than the plate, so an on toggle faded towards off as the pointer
+  // arrived. What answers the pointer is the edge and the ink, both of which
+  // move towards more rather than less.
   outline: [
     surfaceClasses,
     'border text-(--n-on-tint) bg-(--n-panel-press)',
     '[border-color:var(--n-line-hover)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:bg-(--n-soft-hover)',
-    'active:bg-(--n-soft-press)'
+    'hover:[border-color:var(--n-accent)] hover:text-(--neba-fg)',
+    'active:[border-color:var(--n-accent)]'
   ].join(' '),
   // A step up the wash from where it was, because the step below it is what an
   // *off* `text` toggle does on hover — the two were the same value, so hovering
