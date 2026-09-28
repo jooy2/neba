@@ -1649,8 +1649,11 @@ describe('DataTable', () => {
     // What `w-full` does with the stylesheet on, which no component test loads.
     screen.container.querySelector('table')!.style.width = '240px';
 
-    await userEvent.hover(cut);
-    await userEvent.hover(whole);
+    // Dispatched rather than moved to: a pointer the test before left in the
+    // same place sends no new `pointerover`, and React's `onPointerEnter` is
+    // built from one.
+    cut.dispatchEvent(new PointerEvent('pointerover', { bubbles: true }));
+    whole.dispatchEvent(new PointerEvent('pointerover', { bubbles: true }));
 
     expect(cut).toHaveAttribute('title', long[0].name);
     expect(whole).not.toHaveAttribute('title');

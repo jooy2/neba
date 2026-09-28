@@ -374,6 +374,11 @@ describe('neba/styles.css', () => {
         );
 
         const ring = screen.getByRole('radio', { name: 'Team' }).element();
+        // The dot travels on its size, so a rerender at another size is
+        // measured once that has landed rather than part of the way there.
+        await Promise.all(
+          (ring.firstElementChild as HTMLElement).getAnimations().map((one) => one.finished)
+        );
         const box = ring.getBoundingClientRect();
         const dot = (ring.firstElementChild as HTMLElement).getBoundingClientRect();
 
