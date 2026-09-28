@@ -307,6 +307,55 @@ describe('the A2UI adapter', () => {
         .toBeInTheDocument();
     });
 
+    // Every schema accepted `accessibility` and no view read it, so an agent
+    // that named a group of controls named nothing.
+    it('names the roots that have no name of their own, and describes them', async () => {
+      const { surface } = surfaceOf(
+        [
+          {
+            id: 'root',
+            component: 'Flex',
+            children: ['card', 'photo'],
+            accessibility: { label: 'Order', description: { path: '/note' } }
+          },
+          {
+            id: 'card',
+            component: 'Card',
+            child: 'go',
+            accessibility: { label: 'Shipping' }
+          },
+          {
+            id: 'go',
+            component: 'Button',
+            text: 'Pay',
+            action: { event: { name: 'pay' } },
+            accessibility: { label: 'Ignored' }
+          },
+          {
+            id: 'photo',
+            component: 'Image',
+            src: '/samples/photos/a.jpg',
+            alt: 'A parcel on a doorstep',
+            accessibility: { label: 'Ignored', description: 'Left by the courier at 9:40' }
+          }
+        ],
+        { note: 'Three items, arriving Friday' }
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await expect
+        .element(screen.getByRole('group', { name: 'Order' }))
+        .toHaveAccessibleDescription('Three items, arriving Friday');
+      await expect.element(screen.getByRole('group', { name: 'Shipping' })).toBeInTheDocument();
+      // A button with text on it keeps the text as its name.
+      await expect.element(screen.getByRole('button', { name: 'Pay' })).toBeInTheDocument();
+      // Its `alt` is required, so it already has a name, and keeps it.
+      await expect
+        .element(screen.getByRole('img', { name: 'A parcel on a doorstep' }))
+        .toHaveAccessibleDescription('Left by the courier at 9:40');
+    });
+
     it('resolves a value the agent bound to the data model', async () => {
       const { surface } = surfaceOf(
         [{ id: 'root', component: 'Typography', text: { path: '/headline' } }],

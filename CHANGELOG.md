@@ -20,6 +20,8 @@
 
 ### Added
 
+- **The A2UI adapter reads a component's `accessibility`.** Every component accepted it and none used it, so an agent that named a group of controls named nothing. On a `Flex` and a `Card`, `label` makes the root a `group` by that name, and on a `Button` with no `text` it names the button; `description` describes a `Flex`, a `Card`, a `Button` and an `Image`. The components that already name themselves from a prop they draw ignore it.
+
 - **A `ScrollArea` takes a `label`, and its viewport always has a name.** The viewport is a tab stop whenever it overflows, and it had no name, so the focus landed on something that said nothing; an `aria-label` passed to the component named the root instead. With `label` the viewport is a `region` by that name, and without one it is a `group` named "Scrollable content" in the `locale`'s words, as a `ScrollZone`'s strip is.
 
 - **A `TreeView` moves to a row by its first letter.** Typing a character moves the focus to the next visible row whose label starts with it, wrapping at the end, so pressing it again steps through the rows it starts. Accents and case are ignored, as a `DataTable` search ignores them.

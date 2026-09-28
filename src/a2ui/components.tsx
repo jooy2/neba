@@ -95,6 +95,36 @@ function Children({ list, buildChild }: { list: unknown; buildChild: BuildChild 
   );
 }
 
+/**
+ * What an agent wrote in a component's `accessibility`, for the roots that can
+ * go without a name — a Flex, a Card, and a Button with no text — and for an
+ * Image's description.
+ *
+ * Every component's schema accepts it, since the renderer expects that of a
+ * v0.9 component, and the rest already name themselves from a prop they draw
+ * — a field's `label`, a Chip's text, an Image's required `alt` — so a second
+ * name there would only contradict the one on screen. `label` becomes the
+ * name where there is none; `description` becomes a hidden element the root
+ * is described by.
+ */
+function useAccessibility(props: { accessibility?: { label?: string; description?: string } }) {
+  const id = React.useId();
+  const label = props.accessibility?.label || undefined;
+  const description = props.accessibility?.description || undefined;
+
+  return {
+    label,
+    describedBy: description ? id : undefined,
+    note: description ? (
+      <span id={id} hidden>
+        {description}
+      </span>
+    ) : null
+  };
+}
+
+type Accessible = { accessibility?: { label?: string; description?: string } };
+
 /** The first failed check, which is what a field draws under itself. */
 function firstError(props: { validationErrors?: readonly string[] }): string | undefined {
   return props.validationErrors?.[0];
@@ -133,18 +163,26 @@ export const A2uiFlex = implement('Flex', ({ props, buildChild }) => {
     justifyContent?: 'start' | 'center' | 'end';
     alignItems?: 'start' | 'center' | 'end' | 'stretch' | 'baseline';
     wrap?: boolean;
-  };
+  } & Accessible;
+  const a11y = useAccessibility(p);
 
   return (
-    <Flex
-      direction={p.direction}
-      spacing={p.spacing}
-      justifyContent={p.justifyContent}
-      alignItems={p.alignItems}
-      wrap={p.wrap}
-    >
-      <Children list={p.children} buildChild={buildChild} />
-    </Flex>
+    <>
+      <Flex
+        // A named row of things is a group; an unnamed one is only layout.
+        role={a11y.label ? 'group' : undefined}
+        aria-label={a11y.label}
+        aria-describedby={a11y.describedBy}
+        direction={p.direction}
+        spacing={p.spacing}
+        justifyContent={p.justifyContent}
+        alignItems={p.alignItems}
+        wrap={p.wrap}
+      >
+        <Children list={p.children} buildChild={buildChild} />
+      </Flex>
+      {a11y.note}
+    </>
   );
 });
 
@@ -158,20 +196,27 @@ export const A2uiCard = implement('Card', ({ props, buildChild }) => {
     color?: 'primary';
     density?: 'default' | 'compact';
     elevation?: 0 | 1 | 2 | 3;
-  };
+  } & Accessible;
+  const a11y = useAccessibility(p);
 
   return (
-    <Card
-      title={p.title}
-      subtitle={p.subtitle}
-      variant={p.variant}
-      size={p.size}
-      color={p.color}
-      density={p.density}
-      elevation={p.elevation}
-    >
-      {p.child ? buildChild(p.child) : null}
-    </Card>
+    <>
+      <Card
+        role={a11y.label ? 'group' : undefined}
+        aria-label={a11y.label}
+        aria-describedby={a11y.describedBy}
+        title={p.title}
+        subtitle={p.subtitle}
+        variant={p.variant}
+        size={p.size}
+        color={p.color}
+        density={p.density}
+        elevation={p.elevation}
+      >
+        {p.child ? buildChild(p.child) : null}
+      </Card>
+      {a11y.note}
+    </>
   );
 });
 
@@ -234,10 +279,21 @@ export const A2uiImage = implement('Image', ({ props }) => {
     ratio?: number;
     fit?: 'cover';
     rounded?: 'md';
-  };
+  } & Accessible;
+  const a11y = useAccessibility(p);
 
   return (
-    <Image src={p.src ?? ''} alt={p.alt ?? ''} ratio={p.ratio} fit={p.fit} rounded={p.rounded} />
+    <>
+      <Image
+        src={p.src ?? ''}
+        alt={p.alt ?? ''}
+        aria-describedby={a11y.describedBy}
+        ratio={p.ratio}
+        fit={p.fit}
+        rounded={p.rounded}
+      />
+      {a11y.note}
+    </>
   );
 });
 
@@ -335,24 +391,32 @@ export const A2uiButton = implement('Button', ({ props }) => {
     disabled?: boolean;
     fullWidth?: boolean;
     isValid?: boolean;
-  };
+  } & Accessible;
+  const a11y = useAccessibility(p);
 
   return (
-    <Button
-      onClick={p.action}
-      variant={p.variant}
-      size={p.size}
-      color={p.color}
-      density={p.density}
-      elevation={p.elevation}
-      loading={p.loading}
-      // A button whose form has a failed check is a button that cannot be
-      // pressed, which is what the specification's own renderer does with it.
-      disabled={p.disabled || p.isValid === false}
-      fullWidth={p.fullWidth}
-    >
-      {p.text}
-    </Button>
+    <>
+      <Button
+        // Only where the button says nothing: a name that differs from the
+        // text on it is a name a voice user cannot say.
+        aria-label={p.text ? undefined : a11y.label}
+        aria-describedby={a11y.describedBy}
+        onClick={p.action}
+        variant={p.variant}
+        size={p.size}
+        color={p.color}
+        density={p.density}
+        elevation={p.elevation}
+        loading={p.loading}
+        // A button whose form has a failed check is a button that cannot be
+        // pressed, which is what the specification's own renderer does with it.
+        disabled={p.disabled || p.isValid === false}
+        fullWidth={p.fullWidth}
+      >
+        {p.text}
+      </Button>
+      {a11y.note}
+    </>
   );
 });
 

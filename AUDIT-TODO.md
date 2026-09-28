@@ -77,7 +77,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - **D16 (49)** Done (a). ScrollArea: (a) a `label` prop that makes the viewport a named region; (b) route `aria-label` to the viewport.
 - **D17 (50)** Done (a). PageLayout `<main>`: (a) `tabIndex={-1}`; (b) document it.
 - **D18 (51)** Done (a). Chart summary with two axes: (a) summarise each axis, with a new message; (b) the primary axis only.
-- **D19 (52)** A2UI `accessibility`: (a) map it onto the roots that can lack a name; (b) document that it is ignored.
+- **D19 (52)** Done (a). A2UI `accessibility`: (a) map it onto the roots that can lack a name; (b) document that it is ignored.
 - **D20 (61)** A2UI bundle: (a) a prose-free catalog for the adapter and a budget scenario; (b) correct the guide only.
 - **D21 (62)** CodeBlock `css` and `gql` templates: (a) fetch those grammars when the tags appear; (b) always; (c) a comment.
 - **D22 (76)** Secondary axis ticks: (a) align them with the primary gridlines; (b) drop the claim.
@@ -161,7 +161,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **49** [decision] ScrollArea: the scrolling viewport is a tab stop with no name, and a caller's `aria-label` lands on the root. `src/components/scroll-area/ScrollArea.tsx:126-128`. (a) A `label` prop that makes the viewport a named `region`, with a locale fallback as ScrollZone has; (b) route `aria-label` and `aria-labelledby` to the viewport. Decided: (a). A viewport without a `label` is a `group` rather than a `region`, as ScrollZone's strip is, so the fallback name does not put a landmark called "Scrollable content" on every page that scrolls a box.
 - [x] **50** [decision] PageLayout: the `<main>` the skip link targets cannot take focus, and with `scroll="content"` it is the only scroller (unverified that the keyboard then cannot scroll it). `src/components/page-layout/PageLayout.tsx:432-440`. (a) `tabIndex={-1}` on the `<main>`; (b) document it. Decided: (a). It takes `insetRingClasses`, since an outset ring would sit outside the page's own edge; a caller's `tabIndex` in `mainProps` still wins.
 - [x] **51** [decision] CartesianChart with `secondaryAxis`: the one-sentence summary mixes both axes' values and writes them in the primary format ("$2 to $246,000"). `src/internal/chart-frame.tsx:1555`. (a) Summarise the two axes separately, with a new message in 18 locales; (b) summarise the primary series only. Decided: (a). The second sentence follows the first in the same hidden description, and is left out when no series is on the far edge or a chart hands in a `summary` of its own.
-- [ ] **52** [decision] A2UI: every component's schema accepts `accessibility`, and no view reads it. `src/a2ui/schema.ts:136-138`. (a) Map `label` and `description` onto the roots that can lack a name (Flex as a group, Card, Image, Button) and list them in the guide; (b) say in the guide that it is accepted and ignored.
+- [x] **52** [decision] A2UI: every component's schema accepts `accessibility`, and no view reads it. `src/a2ui/schema.ts:136-138`. (a) Map `label` and `description` onto the roots that can lack a name (Flex as a group, Card, Image, Button) and list them in the guide; (b) say in the guide that it is accepted and ignored. Decided: (a). An Image takes only the description, since the catalog requires its `alt` and an empty one says the picture is decorative; a Button takes the label only when it has no `text`, so the name never differs from what is written on it.
 
 ## 3. Optimization
 

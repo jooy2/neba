@@ -58,6 +58,8 @@ That is the whole of it. The adapter registers the eighteen components and the f
 
 The renderer does the work: a prop the agent wrote as a literal, as a path into the data model or as a function call arrives at the component already resolved; a field's edits are written back to the data model; an action arrives as a function with its context gathered; a `checks` rule is evaluated as the data changes. What this package adds is the rename — `Alert`'s `child` is its children, `Select`'s `options` are its `items` — and putting a failed check's message where the field draws its own error.
 
+A component's `accessibility` is read where a root can go without a name. On a `Flex` and a `Card`, `label` makes the root a `group` by that name; on a `Button` it names the button only when it has no `text`, since a name that differs from the text on it is one a voice user cannot say. `description` describes a `Flex`, a `Card`, a `Button` and an `Image`. Every other component already names itself from a prop it draws — a field's `label`, a `Chip`'s text, an `Image`'s required `alt` — and ignores it.
+
 The Zod schemas the renderer binds against are **derived from `catalog.json` at load time** rather than written a second time. That is the point: a hand-written mirror is a mirror that drifts, and the copy that drifts is the one the agent was never told about — a model writing exactly what the JSON allows, and a renderer rejecting it.
 
 ## The eighteen
