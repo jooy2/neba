@@ -83,7 +83,9 @@ function withRepeated(
     return values;
   }
 
-  const marked = form.querySelectorAll<HTMLInputElement>('input[data-neba-repeats][name]:not(:disabled)');
+  const marked = form.querySelectorAll<HTMLInputElement>(
+    'input[data-neba-repeats][name]:not(:disabled)'
+  );
 
   if (marked.length === 0) {
     return values;
