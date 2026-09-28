@@ -83,6 +83,66 @@ describe('the A2UI adapter', () => {
     });
 
     /*
+     * The catalog is what the agent writes calls from, and `web_core`'s schema
+     * is what then parses them. `formatDate` declared a `dateStyle` it drops,
+     * `pluralize` a `count` it never reads and `formatNumber` two fraction
+     * digits it does not know, so all three came back wrong; `length`, `and`
+     * and `or` were declared looser than the implementation, which refuses the
+     * call outright. Both directions are checked: every argument declared is
+     * one the implementation knows, and the least the catalog allows parses.
+     */
+    describe('agrees with the implementations about arguments', () => {
+      type ArgSchema = {
+        properties: Record<string, { $ref?: string; type?: string; minItems?: number }>;
+        required?: string[];
+        anyOf?: { required: string[] }[];
+      };
+      const functions = createNebaCatalog().functions;
+      const known = (schema: z.ZodTypeAny): string[] => {
+        const def = schema._def as { shape?: () => Record<string, unknown>; schema?: z.ZodTypeAny };
+
+        return def.shape ? Object.keys(def.shape()) : def.schema ? known(def.schema) : [];
+      };
+      const sample = (
+        name: string,
+        key: string,
+        prop: ArgSchema['properties'][string]
+      ): unknown => {
+        if (key === 'url') return 'https://example.com';
+        if (key === 'currency') return 'USD';
+        if (key === 'pattern') return '.*';
+        if (name === 'formatDate' && key === 'format') return 'yyyy';
+        // A field's text, which `numeric` checks is a number.
+        if (name === 'numeric' && key === 'value') return '3';
+        if (prop.type === 'array') return Array.from({ length: prop.minItems ?? 1 }, () => true);
+        if (prop.$ref?.endsWith('DynamicNumber') || prop.type === 'number') return 3;
+        if (prop.$ref?.endsWith('DynamicBoolean') || prop.type === 'boolean') return true;
+        return 'x';
+      };
+
+      for (const [name, definition] of Object.entries(catalog.functions)) {
+        const args = (definition as { properties: { args: ArgSchema } }).properties.args;
+
+        it(`${name}: declares only arguments the implementation takes`, () => {
+          const implementation = functions.get(name)!;
+
+          expect(known(implementation.schema).sort()).toEqual(
+            expect.arrayContaining(Object.keys(args.properties).sort())
+          );
+        });
+
+        it(`${name}: the fewest arguments the catalog allows are enough`, () => {
+          const needed = [...(args.required ?? []), ...(args.anyOf?.[0]?.required ?? [])];
+          const call = Object.fromEntries(
+            needed.map((key) => [key, sample(name, key, args.properties[key])])
+          );
+
+          expect(functions.get(name)!.schema.safeParse(call).success).toBe(true);
+        });
+      }
+    });
+
+    /*
      * The converter throws on anything it has not met rather than returning
      * `z.any()`, so this is where a construct added to the catalog stops the
      * build — instead of quietly leaving a prop unvalidated in a consumer's

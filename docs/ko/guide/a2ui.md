@@ -91,7 +91,7 @@ processor.processMessages(whateverTheAgentSent);
 
 함수를 선언한다는 것은 렌더러가 그것을 구현한다는 주장입니다. 다섯은 값을 검사하고, 셋은 각각 `Intl` 호출 하나이며, `formatString`과 `formatDate`는 문자열을 만들고, 셋은 불 연산입니다. 페이지에 무언가를 하는 것은 `openUrl` 하나뿐입니다. 그래서 그것만 `rendererOnly`이고 사용자 활성화를 요구한다고 선언되어 있습니다.
 
-`formatNumber`, `formatCurrency`, `pluralize`는 카탈로그를 만들 때 준 언어로 씁니다. `createNebaCatalog({ locale: 'ko' })`처럼 `NebaProvider`에 준 `locale`을 그대로 넘기세요. 넘기지 않으면 컴포넌트는 provider를 따르고 이 셋은 런타임 언어를 따릅니다. `formatDate`는 언어를 받지 않습니다.
+`formatNumber`, `formatCurrency`, `pluralize`는 카탈로그를 만들 때 준 언어로 씁니다. `createNebaCatalog({ locale: 'ko' })`처럼 `NebaProvider`에 준 `locale`을 그대로 넘기세요. 넘기지 않으면 컴포넌트는 provider를 따르고 이 셋은 런타임 언어를 따릅니다. `formatDate`는 언어를 받지 않습니다. `MMM d, yyyy` 같은 TR35 패턴으로 쓰며, 그 안의 달과 요일 이름은 영어입니다. 카탈로그가 모델에게 이 점을 알려 줍니다.
 
 알아 둘 것은 `formatString`입니다. A2UI에는 연산자가 없어서, 값을 문장에 넣는 유일한 방법입니다.
 

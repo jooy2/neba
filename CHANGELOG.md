@@ -58,6 +58,8 @@
 
 ### Fixed
 
+- **The A2UI catalog declares the arguments its functions take.** `formatDate` was described with a `dateStyle` and a `timeStyle`, `pluralize` with a `count`, and `formatNumber` with two fraction-digit arguments, none of which the protocol's implementations read — so a model writing exactly what the catalog said got an ISO string, blank text and an unrounded number back. They are the specification's now: `formatDate` takes a TR35 `format`, `pluralize` takes `value` and every plural category, and `formatNumber` and `formatCurrency` take `decimals` and `grouping`. `length` and `numeric` ask for at least one bound, and `and` and `or` for at least two values, which is what the implementations accept.
+
 - **A `DataTable` writes a boolean in a column with no `render`.** React draws nothing for `true` or `false`, so the cell was empty while the sort, the search and the CSV all saw the value. It is written as `true` or `false` now; give the column `render` for words a reader would use.
 
 - **A server-rendered `Calendar` hydrates without a mismatch in its tab stop.** The tab stop started on today during render, and a server in another time zone has another today, so the cell the server made reachable and the one the browser hydrated could disagree. A calendar rendered on a server starts it on the 1st and moves it to today once hydration is over; one mounted in the browser starts on today as before. Pass `locale` and `defaultMonth` to one rendered on a server, as the page now says.

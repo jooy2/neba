@@ -1032,7 +1032,7 @@
     },
     "length": {
       "type": "object",
-      "description": "True when the value is between `min` and `max` characters long. Either bound may be left out.",
+      "description": "True when the value is at least `min` and at most `max` characters long. Give at least one of the two.",
       "properties": {
         "call": {
           "const": "length"
@@ -1051,7 +1051,15 @@
             }
           },
           "required": ["value"],
-          "unevaluatedProperties": false
+          "unevaluatedProperties": false,
+          "anyOf": [
+            {
+              "required": ["min"]
+            },
+            {
+              "required": ["max"]
+            }
+          ]
         }
       },
       "required": ["call", "args"],
@@ -1083,7 +1091,7 @@
     },
     "numeric": {
       "type": "object",
-      "description": "True when the value is a number, and between `min` and `max` if either is given.",
+      "description": "True when the value is a number at least `min` and at most `max`. Give at least one of the two.",
       "properties": {
         "call": {
           "const": "numeric"
@@ -1102,7 +1110,15 @@
             }
           },
           "required": ["value"],
-          "unevaluatedProperties": false
+          "unevaluatedProperties": false,
+          "anyOf": [
+            {
+              "required": ["min"]
+            },
+            {
+              "required": ["max"]
+            }
+          ]
         }
       },
       "required": ["call", "args"],
@@ -1152,7 +1168,7 @@
     },
     "formatNumber": {
       "type": "object",
-      "description": "Writes a number in the reader's own language, with the digit grouping that language uses.",
+      "description": "Writes a number in the language the renderer was built for, with the digit grouping that language uses.",
       "properties": {
         "call": {
           "const": "formatNumber"
@@ -1163,11 +1179,14 @@
             "value": {
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber"
             },
-            "minimumFractionDigits": {
-              "type": "number"
+            "decimals": {
+              "type": "number",
+              "description": "How many digits follow the decimal point. Left out, the number keeps the digits it has."
             },
-            "maximumFractionDigits": {
-              "type": "number"
+            "grouping": {
+              "type": "boolean",
+              "description": "Whether to write the thousands separators.",
+              "default": true
             }
           },
           "required": ["value"],
@@ -1193,6 +1212,15 @@
             "currency": {
               "type": "string",
               "description": "An ISO 4217 code, such as `USD` or `KRW`."
+            },
+            "decimals": {
+              "type": "number",
+              "description": "How many digits follow the decimal point. Left out, the currency's own number of them."
+            },
+            "grouping": {
+              "type": "boolean",
+              "description": "Whether to write the thousands separators.",
+              "default": true
             }
           },
           "required": ["value", "currency"],
@@ -1204,7 +1232,7 @@
     },
     "formatDate": {
       "type": "object",
-      "description": "Writes a date in the reader's own language. Never assemble one out of numbers: the order of the parts is exactly what differs between languages.",
+      "description": "Writes a date or a time through a pattern. The names of months and weekdays are English whatever the reader's language, so for a reader in another language write a pattern of numbers in the order that language uses.",
       "properties": {
         "call": {
           "const": "formatDate"
@@ -1216,16 +1244,12 @@
               "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
               "description": "An ISO 8601 date or date-time."
             },
-            "dateStyle": {
+            "format": {
               "type": "string",
-              "enum": ["full", "long", "medium", "short"]
-            },
-            "timeStyle": {
-              "type": "string",
-              "enum": ["full", "long", "medium", "short"]
+              "description": "A Unicode TR35 pattern, such as `MMM d, yyyy` or `HH:mm`; or `ISO` for the ISO 8601 string."
             }
           },
-          "required": ["value"],
+          "required": ["value", "format"],
           "unevaluatedProperties": false
         }
       },
@@ -1234,7 +1258,7 @@
     },
     "pluralize": {
       "type": "object",
-      "description": "Picks the wording that goes with a count. English has two forms and other languages have up to six, which is why this is a function rather than a ternary.",
+      "description": "Picks the wording that goes with a count, by the plural category of the language the renderer was built for. English needs `one` and `other`; other languages use up to six categories, and `other` is the one that is always required.",
       "properties": {
         "call": {
           "const": "pluralize"
@@ -1242,17 +1266,30 @@
         "args": {
           "type": "object",
           "properties": {
-            "count": {
-              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber"
+            "value": {
+              "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicNumber",
+              "description": "The count."
+            },
+            "zero": {
+              "type": "string"
             },
             "one": {
+              "type": "string"
+            },
+            "two": {
+              "type": "string"
+            },
+            "few": {
+              "type": "string"
+            },
+            "many": {
               "type": "string"
             },
             "other": {
               "type": "string"
             }
           },
-          "required": ["count", "one", "other"],
+          "required": ["value", "other"],
           "unevaluatedProperties": false
         }
       },
@@ -1284,7 +1321,7 @@
     },
     "and": {
       "type": "object",
-      "description": "True when every one of them is.",
+      "description": "True when every one of two or more values is.",
       "properties": {
         "call": {
           "const": "and"
@@ -1296,7 +1333,8 @@
               "type": "array",
               "items": {
                 "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean"
-              }
+              },
+              "minItems": 2
             }
           },
           "required": ["values"],
@@ -1308,7 +1346,7 @@
     },
     "or": {
       "type": "object",
-      "description": "True when any one of them is.",
+      "description": "True when any one of two or more values is.",
       "properties": {
         "call": {
           "const": "or"
@@ -1320,7 +1358,8 @@
               "type": "array",
               "items": {
                 "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicBoolean"
-              }
+              },
+              "minItems": 2
             }
           },
           "required": ["values"],
