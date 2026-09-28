@@ -53,7 +53,7 @@ import { ToolCall } from 'neba';
 
 문자열은 `<pre>`에 들어가고, 줄바꿈이 그대로 유지되며 필요하면 스크롤이 생깁니다. 들여쓴 JSON도, 스택 트레이스도, diff도 줄이 어디서 끊기느냐가 곧 의미이기 때문입니다. 그 밖의 값은 노드로 보고 손대지 않고 그리므로 [CodeBlock](../display/code-block)이나 [DataList](../display/data-list)를 그대로 넣을 수 있습니다.
 
-`status`가 `error`이면 `error`가 `result` 자리를 대신합니다. `error`가 없으면 실패한 호출도 `result`를 보여 주는데, 도구가 돌려준 오류 자체인 경우가 많기 때문입니다.
+`status`가 `error`이면 `error`가 `result` 자리를 대신하고, 제목도 "결과"가 아니라 "실패"가 됩니다. `error`가 없으면 실패한 호출도 `result`를 보여 주는데, 도구가 돌려준 오류 자체인 경우가 많기 때문입니다.
 
 <Demo src="tool-call/body">
 

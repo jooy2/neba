@@ -53,7 +53,7 @@ Leave it out and a `running` call counts its own time from the moment it started
 
 A string goes into a `<pre>`, with its own line breaks kept and a scrollbar if it needs one: indented JSON, a stack trace and a diff all mean something by where their lines break. Anything else is a node and is rendered untouched, so a [CodeBlock](../display/code-block) or a [DataList](../display/data-list) can go in instead.
 
-`error` replaces `result` while `status` is `error`. Without one, a failed call shows its `result`, which is often the error the tool itself returned.
+`error` replaces `result` while `status` is `error`, under the heading "Failed" rather than "Result". Without one, a failed call shows its `result` under "Result", which is often the error the tool itself returned.
 
 <Demo src="tool-call/body">
 

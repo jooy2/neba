@@ -75,6 +75,27 @@ describe('ToolCall', () => {
       expect(screen.getByText('4 hits').query()).toBeNull();
     });
 
+    // It sat under the heading "Result", which said the call had come back
+    // with something.
+    it('heads an error with the word a failed status is read as', async () => {
+      const screen = await render(
+        <ToolCall name="search_docs" status="error" error="Rate limit exceeded" defaultOpen />
+      );
+      const block = screen.getByText('Rate limit exceeded').element().parentElement!;
+
+      expect(block.firstElementChild).toHaveTextContent('Failed');
+      expect(screen.getByText('Result').query()).toBeNull();
+    });
+
+    it('keeps "Result" over a failed call that has no error of its own', async () => {
+      const screen = await render(
+        <ToolCall name="search_docs" status="error" result="HTTP 500" defaultOpen />
+      );
+      const block = screen.getByText('HTTP 500').element().parentElement!;
+
+      expect(block.firstElementChild).toHaveTextContent('Result');
+    });
+
     // A reader should not have to go looking for the reason something did not
     // work, which is the one case the component decides for itself.
     it('opens itself when a running call fails', async () => {

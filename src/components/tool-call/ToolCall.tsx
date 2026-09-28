@@ -366,7 +366,9 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
             {hasContent(body) ? (
               <Block
                 size={size}
-                label={words.result}
+                // An `error` is not a result, and a heading that called it one
+                // said the call had come back with something.
+                label={status === 'error' && hasContent(error) ? run.error : words.result}
                 className={classNames?.result}
                 value={body}
                 accent={status === 'error'}

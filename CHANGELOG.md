@@ -52,6 +52,8 @@
 
 ### Fixed
 
+- **A failed `ToolCall`'s `error` is headed "Failed".** It sat under the heading "Result", which said the call had come back with something. The heading is the word a failed status is already read as, in the `locale`'s words; a failed call with no `error` still shows its `result` under "Result".
+
 - **A `TimelineChart`'s time axis widens to hold a reference past its spans.** The axis was solved from the spans alone, so a deadline after the last one was drawn off the plot, where nobody could see it. It takes the references in, as every other chart's value axis does.
 
 - **A `secondaryAxis`'s ticks sit on the first axis' gridlines.** It was only asked for the same number of ticks, which rounding to clean numbers overruled, so a revenue axis of four intervals beside a rate axis of five drew labels between the rules, and the far edge's labels, thinned at the first axis' stride, stood beside nothing. Its range is now cut into exactly as many intervals as the first axis has, in 1-2-5 steps. A `tickCount` given to the second axis still rounds it on its own.
