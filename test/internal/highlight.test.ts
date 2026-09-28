@@ -144,6 +144,17 @@ describe('highlight', () => {
     expect(JSON.stringify(lines)).toContain('selector-tag');
   });
 
+  // A `gql` template in a script was plain unless a GraphQL block had loaded
+  // first, because nothing fetched the grammar the script hands it to.
+  it('fetches the grammar a tagged template in a script needs', async () => {
+    const lines = await highlight('const q = gql`query Viewer { user { id } }`;', 'typescript');
+    const query = lines?.flat().find((run) => run.text.trim() === 'query');
+
+    // Coloured as GraphQL's keyword, where a grammar that never arrived leaves
+    // the whole template one uncoloured run.
+    expect(query?.token).toBe('hljs-keyword');
+  });
+
   it('does not take a name off the prototype of the loader table for a grammar', async () => {
     await expect(highlight('let x = 1', 'constructor')).resolves.toBeNull();
     await expect(highlight('let x = 1', 'hasOwnProperty')).resolves.toBeNull();

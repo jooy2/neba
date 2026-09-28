@@ -168,6 +168,22 @@ const embedded: Record<string, readonly string[]> = {
   xml: ['javascript', 'css']
 };
 
+/**
+ * The grammars a JavaScript or TypeScript source hands a tagged template to,
+ * by the tag that opens one — fetched only when the source has that tag.
+ *
+ * highlight.js colours a `` css` `` template as CSS and a `` gql` `` one as
+ * GraphQL, and writes either as plain text when that grammar is not loaded.
+ * They are not in `embedded` because almost no script has one, and fetching
+ * two grammars for every JavaScript block to colour the few that do is the
+ * wrong way round. The tags are the grammar's own, which match with nothing
+ * between the name and the backtick.
+ */
+const tagged: readonly (readonly [tag: string, language: string])[] = [
+  ['css`', 'css'],
+  ['gql`', 'graphql']
+];
+
 /** Languages the consumer brought, waiting for the core to arrive. */
 const extra = new Map<string, LanguageDefinition>();
 
@@ -272,6 +288,26 @@ async function prepare(name: string): Promise<string | null> {
   return name;
 }
 
+/** One language handed to the core, shared by every block that asks for it. */
+function prepared(language: string): Promise<string | null> {
+  let pending = resolved.get(language);
+
+  if (!pending) {
+    // Dropped again if it fails. A chunk that did not arrive is a network
+    // event, not a fact about the language — cached, it would leave every
+    // block in that language plain for the rest of the page's life, including
+    // the ones that mount after the connection came back.
+    pending = prepare(language).catch((error: unknown) => {
+      resolved.delete(language);
+
+      throw error;
+    });
+    resolved.set(language, pending);
+  }
+
+  return pending;
+}
+
 /**
  * Colours `code`, or returns `null` when the language is unknown or the chunk
  * has not arrived yet.
@@ -289,23 +325,16 @@ export async function highlight(code: string, language: string): Promise<CodeLin
     return null;
   }
 
-  let pending = resolved.get(language);
-
-  if (!pending) {
-    // Dropped again if it fails. A chunk that did not arrive is a network
-    // event, not a fact about the language — cached, it would leave every
-    // block in that language plain for the rest of the page's life, including
-    // the ones that mount after the connection came back.
-    pending = prepare(language).catch((error: unknown) => {
-      resolved.delete(language);
-
-      throw error;
-    });
-    resolved.set(language, pending);
-  }
-
-  const name = await pending;
+  const name = await prepared(language);
   if (!name || !core) return null;
+
+  if (name === 'javascript' || name === 'typescript') {
+    await Promise.all(
+      tagged
+        .filter(([tag]) => code.includes(tag))
+        .map(([, inner]) => prepared(inner).catch(() => null))
+    );
+  }
 
   const hljs = await core;
 

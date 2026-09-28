@@ -50,6 +50,8 @@
 
 ### Fixed
 
+- **A `CodeBlock` colours a script's `` css` `` and `` gql` `` templates.** highlight.js hands them to the CSS and GraphQL grammars, which nothing fetched for a JavaScript or TypeScript block, so they stayed plain unless a block in one of those languages had happened to load first on the same page. A script with one of the two tags fetches that grammar with its own now; one without either fetches nothing more.
+
 - **A chart with a `secondaryAxis` describes each axis in its own units.** The sentence a plot is described by took one range across every series and wrote it in the first axis' format, so revenue beside a rate read "$2 to $246,000". The first axis' series are summarised as before, and the second axis' follow in a sentence of their own, written through its `tickFormat` (`chart.summarySecondary`, in every registered language).
 
 - **A `PageLayout`'s skip link moves the focus into the page.** The `<main>` it jumps to could not take the focus, so following the link scrolled to the content and left the focus behind, and the next Tab went back into the header. With `scroll="content"` the `<main>` is also the one thing that scrolls, which the keyboard could not reach. It is `tabIndex={-1}` now, with an inset ring that a click does not light; a `tabIndex` in `mainProps` still wins.
