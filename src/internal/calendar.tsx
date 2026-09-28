@@ -606,13 +606,40 @@ export function Calendar({
   // The one cell that carries the tab stop. It starts on the chosen day, or on
   // today when today is on screen, or on the 1st — never nowhere, because a grid
   // whose tab stop is nowhere cannot be reached by a keyboard at all.
+  //
+  // Today only past hydration. A server in another time zone has another
+  // today, so a calendar it rendered started the stop on a different cell from
+  // the one the browser hydrated, and React reported the two disagreeing. The
+  // hydrating render starts on the 1st, as the server did, and the effect
+  // below moves the stop to today once the clock can be read.
+  const hydrated = useHydrated();
   const [focusedDate, setFocusedDate] = React.useState<Date>(() => {
     const preferred = chosen.find((date) => isSameMonth(date, month));
     if (preferred) {
       return startOfDay(preferred);
     }
-    return isSameMonth(today(), month) ? today() : startOfMonth(month);
+    return hydrated && isSameMonth(today(), month) ? today() : startOfMonth(month);
   });
+  const waitingForToday = React.useRef(!hydrated);
+
+  React.useEffect(() => {
+    if (!hydrated || !waitingForToday.current) {
+      return;
+    }
+    waitingForToday.current = false;
+
+    // Left alone if the reader has already moved it, or something is chosen.
+    setFocusedDate((current) =>
+      isSameDay(current, startOfMonth(month)) &&
+      isSameMonth(today(), month) &&
+      !chosen.some((date) => isSameMonth(date, month))
+        ? today()
+        : current
+    );
+    // Once, on the render hydration ends; the month and the choice are read as
+    // they are then.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   // Set only by the interactions that *move* the focus — an arrow key, a view
   // change — so the effect below never yanks focus out from under a pointer user

@@ -70,7 +70,8 @@ Read at `granularity`, exactly as on [DatePicker](./date-picker). A blocked cell
 ## Accessibility
 
 - The grid is a `role="grid"` of `role="gridcell"` buttons, each named with the full date rather than the bare number.
-- The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells.
+- The grid has a single tab stop, so `Tab` leaves it rather than walking forty-two cells. It starts on the held day, or on today; a server-rendered calendar starts it on the 1st and moves it to today once the page has hydrated, since the server's today can be another day.
+- Rendered on a server, pass `locale` and `defaultMonth` (or `month`). Without them the server writes the month and the day names from its own clock and language, and near a month boundary or in another language the browser hydrates a different calendar.
 - The arrow keys move by a day or a week and step the month at the edges. Under RTL, `←` is the next day.
 - `Home` and `End` move to the start or the end of the week. `PageUp` and `PageDown` move by a month, or by a year with `Shift`.
 - A held day carries `aria-selected`; today carries `aria-current="date"` and a dot under the number. In `multiple` and `range` mode the grid carries `aria-multiselectable`.

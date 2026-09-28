@@ -4,6 +4,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Calendar } from 'neba';
@@ -106,6 +107,33 @@ describe('Calendar', () => {
     await expect
       .poll(() => screen.container.querySelectorAll('[aria-current="date"]').length)
       .toBe(1);
+  });
+
+  // The tab stop started on today during render, and a server in another
+  // time zone has another today: the cell the server made reachable and the
+  // one the browser hydrated disagreed.
+  it('starts the tab stop on the 1st on a server and moves it to today once hydrated', async () => {
+    const now = new Date();
+    const element = <Calendar locale={LOCALE} defaultMonth={now} />;
+    const host = document.createElement('div');
+
+    host.innerHTML = renderToString(element);
+    document.body.append(host);
+
+    expect(host.querySelector('[role="gridcell"][tabindex="0"]')?.textContent).toBe('1');
+
+    const recoverable = vi.fn();
+    const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+    try {
+      await vi.waitFor(() =>
+        expect(host.querySelector('[aria-current="date"]')).toHaveAttribute('tabindex', '0')
+      );
+      expect(recoverable).not.toHaveBeenCalled();
+    } finally {
+      root.unmount();
+      host.remove();
+    }
   });
 
   // A chosen today lost the attribute and the dot, while the page and the
