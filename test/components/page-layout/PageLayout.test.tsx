@@ -151,6 +151,23 @@ describe('PageLayout', () => {
         .toBeInTheDocument();
     });
 
+    // A `<main>` cannot take the focus, so following the link scrolled to it
+    // and left the focus where it was: the next Tab went back into the header.
+    it('hands the focus to the main it jumps to', async () => {
+      const screen = await render(
+        <PageLayout header={<Header>Site</Header>}>
+          <button type="button">In the page</button>
+        </PageLayout>
+      );
+      const main = screen.getByRole('main');
+
+      await expect.element(main).toHaveAttribute('tabindex', '-1');
+
+      await screen.getByRole('link').click();
+
+      await expect.element(main).toHaveFocus();
+    });
+
     it('can be turned off', async () => {
       const screen = await render(<PageLayout skipLink={false}>Page</PageLayout>);
 

@@ -46,6 +46,8 @@
 
 ### Fixed
 
+- **A `PageLayout`'s skip link moves the focus into the page.** The `<main>` it jumps to could not take the focus, so following the link scrolled to the content and left the focus behind, and the next Tab went back into the header. With `scroll="content"` the `<main>` is also the one thing that scrolls, which the keyboard could not reach. It is `tabIndex={-1}` now, with an inset ring that a click does not light; a `tabIndex` in `mainProps` still wins.
+
 - **A `DataTable` says how many rows a search left and how many are chosen.** Only a virtual table with no footer had a live count, so a search that left three rows of two hundred said nothing, and the footer's counts were text that changed with nothing reading it. The footer's range and selection count are one `status` now, and a table with no footer keeps a visually hidden one.
 
 - **Every link that opens a new tab says so.** Only `TextLink` read out "(opens in a new tab)". A `ChatBubble`'s link preview, a `MenuItem`, a `NavigationMenu` link, an `AppLogo`, a `BottomNavigationItem`, a `BreadcrumbItem`, a `Sources` row and an `InlineCitation` given a `target` that leaves the tab now end their accessible name with the same visually hidden words, in the component's `locale` or the provider's. A test that found one of those links by its exact name should add the words.

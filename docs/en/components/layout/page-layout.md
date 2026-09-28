@@ -99,5 +99,6 @@ const [open, setOpen] = useState(false);
 
 - The children are wrapped in a `<main>`, and the header, the footer and the sidebars carry `<header>`, `<footer>` and `<aside>`: the `banner`, `contentinfo` and `complementary` landmarks.
 - A "Skip to content" link is the first thing in the document, drawn only while it holds the focus. Turn it off with `skipLink={false}` only if the page already has one.
+- The `<main>` is `tabIndex={-1}`, so following the skip link moves the focus there and the next Tab starts inside the page. With `scroll="content"` it is also what the arrow keys scroll once it holds the focus. A `tabIndex` in `mainProps` wins.
 - `locale` sets the language of the skip link and of every Sidebar and SidebarTrigger inside the layout. Unsupported tags fall back to English; `skipLabel` writes the word out instead.
 - A page with two sidebars must give each one a `label`.

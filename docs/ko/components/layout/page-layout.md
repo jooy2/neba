@@ -99,5 +99,6 @@ const [open, setOpen] = useState(false);
 
 - children은 `<main>`으로 감싸이고, header와 footer, 사이드바는 각각 `<header>`, `<footer>`, `<aside>`로 그려져 `banner`, `contentinfo`, `complementary` 랜드마크가 됩니다.
 - "본문으로 건너뛰기" 링크가 문서 맨 앞에 놓이며 focus를 받을 때만 그려집니다. 페이지에 이미 같은 링크가 있을 때만 `skipLink={false}`로 끄세요.
+- `<main>`은 `tabIndex={-1}`이라서 건너뛰기 링크를 따라가면 focus가 그리로 옮겨지고, 다음 Tab은 페이지 안에서 시작합니다. `scroll="content"`에서는 focus를 받은 `<main>`을 방향키로 스크롤할 수 있습니다. `mainProps`에 준 `tabIndex`가 우선합니다.
 - `locale`은 skip link와 레이아웃 안 모든 Sidebar·SidebarTrigger의 언어를 정합니다. 지원하지 않는 tag는 영어로 돌아가며, `skipLabel`로 문구를 직접 쓸 수도 있습니다.
 - 사이드바가 둘인 페이지는 각각에 `label`을 반드시 주어야 합니다.

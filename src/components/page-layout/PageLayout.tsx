@@ -13,7 +13,7 @@ import {
   PageLayoutSlotContext
 } from '../../internal/page-layout.js';
 import { observeResize } from '../../internal/observe.js';
-import { controlSlots, cx, hasContent, toLength } from '../../internal/styles.js';
+import { controlSlots, cx, hasContent, insetRingClasses, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { ScreenContext } from '../../internal/screen.js';
@@ -430,10 +430,18 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
 
               {landmark ? (
                 <main
+                  // What the skip link jumps to has to be able to take the
+                  // focus, or the next Tab starts from wherever the reader was.
+                  // And with `scroll="content"` this is the one thing that
+                  // scrolls, which the keyboard reaches only by focusing it.
+                  tabIndex={-1}
                   {...mainProps}
                   id={mainId}
                   className={cx(
                     'min-w-0 flex-1',
+                    // Inset, since the ring would otherwise sit outside the
+                    // page's own edge. A click does not light it.
+                    insetRingClasses,
                     fills ? 'min-h-0 overflow-y-auto' : '',
                     mainProps?.className
                   )}
