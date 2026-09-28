@@ -123,6 +123,13 @@ describe('PromptInput', () => {
       const control = screen.getByRole('textbox').element() as HTMLTextAreaElement;
 
       control.style.width = '480px';
+      // The field refits a frame after its width changes, and until then it
+      // still has the height of the width it mounted at — which in Firefox and
+      // on Windows is close to 160px, so reading it early measured the narrow
+      // box twice.
+      await new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 50)))
+      );
       await expect.poll(() => heightOf(control)).toBeGreaterThan(0);
 
       const wide = heightOf(control);

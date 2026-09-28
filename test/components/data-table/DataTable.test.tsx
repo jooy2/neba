@@ -2092,6 +2092,11 @@ describe('editing', () => {
 
     await screen.getByText('Person 1', { exact: true }).dblClick();
     await screen.getByRole('textbox', { name: 'Name' }).fill('Changed');
+    // Firefox scrolls a newly focused field into view a frame late, and a
+    // scroll made before that lands is undone by it.
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 50)))
+    );
 
     await scrollTo(viewport.scrollHeight);
     await expect.poll(() => screen.getByText('Person 499', { exact: true }).query()).not.toBeNull();

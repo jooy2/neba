@@ -143,11 +143,15 @@ describe('Approval', () => {
       }
 
       const screen = await render(<Later />);
+      const answer = screen.getByRole('button', { name: 'Answer' }).element() as HTMLElement;
 
-      await screen.getByRole('button', { name: 'Answer' }).click();
+      // Pressed from the keyboard: WebKit gives a clicked button no focus, so a
+      // click would leave nothing on it to keep.
+      answer.focus();
+      await userEvent.keyboard('{Enter}');
 
       await expect.element(screen.getByText('Answered')).toBeInTheDocument();
-      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Answer' }).element());
+      expect(document.activeElement).toBe(answer);
     });
 
     it('shows a decision it was handed rather than one it took', async () => {
