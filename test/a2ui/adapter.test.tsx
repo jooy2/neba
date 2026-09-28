@@ -632,6 +632,10 @@ describe('the A2UI adapter', () => {
   // surface could open a page the moment it was drawn.
   describe('opens an address only when the reader acts', () => {
     it('does not open one from a binding', async () => {
+      // A press earlier in the run leaves the page activated for a few seconds,
+      // which is exactly the window this has to be outside of.
+      await expect.poll(() => navigator.userActivation.isActive, { timeout: 8000 }).toBe(false);
+
       const open = vi.spyOn(window, 'open').mockReturnValue(null);
 
       try {

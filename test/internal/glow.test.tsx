@@ -120,7 +120,9 @@ describe('the pointer light', () => {
     });
 
     // A Pill that does nothing when pressed is a label, and a label is not lit.
-    it('lights a Pill that can be pressed, and only that one', async () => {
+    // One that can be pressed is lit on its button, which is what a press
+    // presses, and not on the shell around its end icon and its details.
+    it('lights a Pill that can be pressed, and only its button', async () => {
       const screen = await render(
         <>
           <Pill data-testid="static">Recording</Pill>
@@ -130,17 +132,19 @@ describe('the pointer light', () => {
         </>
       );
       const still = screen.getByTestId('static').element() as HTMLElement;
-      const pressable = screen.getByTestId('pressable').element() as HTMLElement;
-      const box = pressable.getBoundingClientRect();
+      const shell = screen.getByTestId('pressable').element() as HTMLElement;
+      const button = screen.getByRole('button', { name: 'Live' }).element() as HTMLElement;
+      const box = button.getBoundingClientRect();
 
       movePointer(still, 10, 10);
-      movePointer(pressable, box.left + 6, box.top + 3);
+      movePointer(button, box.left + 6, box.top + 3);
 
       expect(still).not.toHaveClass('neba-glow');
       expect(still.style.getPropertyValue('--n-mx')).toBe('');
-      expect(pressable).toHaveClass('neba-glow');
-      expect(pressable.style.getPropertyValue('--n-mx')).toBe('6px');
-      expect(pressable.style.getPropertyValue('--n-my')).toBe('3px');
+      expect(shell).not.toHaveClass('neba-glow');
+      expect(button).toHaveClass('neba-glow');
+      expect(button.style.getPropertyValue('--n-mx')).toBe('6px');
+      expect(button.style.getPropertyValue('--n-my')).toBe('3px');
     });
 
     it('leaves a disabled menu row dark', async () => {
