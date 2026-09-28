@@ -55,15 +55,15 @@ const update = process.argv.includes('--update');
  * is an import rollup is entitled to delete, and a scenario that measured an
  * empty file would pass every budget it has.
  */
-function entrySource({ imports, locales }) {
+function entrySource({ imports, locales, from = 'neba' }) {
   const lines = [];
   const sinks = [];
 
   if (imports === null) {
-    lines.push("import * as everything from 'neba';");
+    lines.push(`import * as everything from '${from}';`);
     sinks.push('Object.keys(everything).length');
   } else {
-    lines.push(`import { ${imports.join(', ')} } from 'neba';`);
+    lines.push(`import { ${imports.join(', ')} } from '${from}';`);
     sinks.push(`[${imports.join(', ')}]`);
   }
 
@@ -158,9 +158,10 @@ async function measure(scenario, work) {
     define: { 'process.env.NODE_ENV': '"production"' },
     resolve: {
       alias: {
-        // The longer specifier is listed first: Vite matches these in order,
+        // The longer specifiers are listed first: Vite matches these in order,
         // and `neba` alone would swallow `neba/locales`.
         'neba/locales': join(dist, 'locales/index.js'),
+        'neba/a2ui': join(dist, 'a2ui/index.js'),
         neba: join(dist, 'index.js')
       }
     },
@@ -170,7 +171,13 @@ async function measure(scenario, work) {
       minify: 'terser',
       lib: { entry, formats: ['es'], fileName: 'bundle' },
       rollupOptions: {
-        external: ['react', 'react-dom', 'react/jsx-runtime', 'react-dom/client']
+        // A scenario may name more, for an entry whose peers a consumer
+        // installs beside it: `neba/a2ui` is weighed without the renderer and
+        // Zod, which are the host's whether or not it draws with Neba. A name
+        // covers its subpaths.
+        external: (id) =>
+          ['react', 'react-dom', 'react/jsx-runtime', 'react-dom/client'].includes(id) ||
+          (scenario.external ?? []).some((name) => id === name || id.startsWith(`${name}/`))
       }
     }
   });

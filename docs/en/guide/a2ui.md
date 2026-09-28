@@ -29,7 +29,7 @@ A catalog is how the two sides agree on the vocabulary. It is a single JSON Sche
 
 ## Two halves, and you can take one
 
-**`neba/a2ui/catalog.json` costs nothing.** It is JSON, so it never enters a bundle, and whether you render it with this library's adapter or with a renderer of your own is your decision. Take it alone and the mapping is yours.
+**`neba/a2ui/catalog.json` costs nothing.** It is a file you hand an agent, not a module you import, and whether you render what comes back with this library's adapter or with a renderer of your own is your decision. Take it alone and the mapping is yours.
 
 **`neba/a2ui` is the adapter**, and it needs three packages this library does not install for you:
 
@@ -37,7 +37,7 @@ A catalog is how the two sides agree on the vocabulary. It is a single JSON Sche
 npm install @a2ui/react @a2ui/web_core zod
 ```
 
-They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in.
+They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in. The adapter itself is about 92 kB gzipped with those three external: its own code is about 28 kB, and the rest is the Base UI behind the eighteen components. It reads a copy of the catalog with the descriptions taken out, since the renderer never reads the prose a model is given, so the file an agent reads does not travel into the page.
 
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';

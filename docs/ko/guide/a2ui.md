@@ -29,7 +29,7 @@ https://neba.cdget.com/a2ui/catalog.json
 
 ## 반쪽만 가져가도 됩니다
 
-**`neba/a2ui/catalog.json`은 비용이 없습니다.** JSON이라 번들에 들어가지 않으며, 이것을 이 라이브러리의 어댑터로 그릴지 직접 만든 렌더러로 그릴지는 여러분의 결정입니다. 카탈로그만 가져가면 연결은 여러분 몫입니다.
+**`neba/a2ui/catalog.json`은 비용이 없습니다.** import하는 모듈이 아니라 에이전트에게 건네는 파일이며, 돌아온 결과를 이 라이브러리의 어댑터로 그릴지 직접 만든 렌더러로 그릴지는 여러분의 결정입니다. 카탈로그만 가져가면 연결은 여러분 몫입니다.
 
 **`neba/a2ui`가 어댑터**이고, 이 라이브러리가 대신 설치해 주지 않는 패키지 셋이 필요합니다.
 
@@ -37,7 +37,7 @@ https://neba.cdget.com/a2ui/catalog.json
 npm install @a2ui/react @a2ui/web_core zod
 ```
 
-셋 다 **optional peer dependency**입니다. `neba/a2ui`가 `neba`에서 다시 export되지 않기 때문에 안전합니다. 번들러가 패키지를 훑을 때 여기까지 오지 않으므로, `Button`만 쓰고 A2UI를 들어 본 적 없는 프로젝트는 새로 해석할 것이 하나도 없습니다. 아래 import를 쓸 때만 딸려 옵니다.
+셋 다 **optional peer dependency**입니다. `neba/a2ui`가 `neba`에서 다시 export되지 않기 때문에 안전합니다. 번들러가 패키지를 훑을 때 여기까지 오지 않으므로, `Button`만 쓰고 A2UI를 들어 본 적 없는 프로젝트는 새로 해석할 것이 하나도 없습니다. 아래 import를 쓸 때만 딸려 옵니다. 이 셋을 external로 두면 어댑터는 gzip으로 약 92 kB입니다. 어댑터 자체의 코드는 약 28 kB이고, 나머지는 열여덟 개 컴포넌트 뒤의 Base UI입니다. 어댑터는 설명을 뺀 카탈로그 사본을 읽습니다. 렌더러는 모델에게 주는 설명을 읽지 않으므로, 에이전트가 읽는 파일이 페이지까지 따라오지 않습니다.
 
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';

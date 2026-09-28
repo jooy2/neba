@@ -123,6 +123,14 @@
       "budget": 293.6
     },
     {
+      "id": "a2ui",
+      "label": "neba/a2ui — the adapter, without its peers",
+      "from": "neba/a2ui",
+      "imports": ["createNebaCatalog"],
+      "external": ["@a2ui/react", "@a2ui/web_core", "zod"],
+      "budget": 92.1
+    },
+    {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",

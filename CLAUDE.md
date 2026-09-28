@@ -356,6 +356,7 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | 25 components — a large one   | 120.1 kB | 22.3 kB                     |
 | a whole page shell            | 29.9 kB  | 10.2 kB                     |
 | all 185 exports               | 293.6 kB | 160.0 kB                    |
+| `neba/a2ui`, peers external   | 92.1 kB  | 28.2 kB                     |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is the one to watch: its preview is a `HoverCard`, so a citation in a paragraph costs 35 kB of Base UI's floating machinery.
 
@@ -386,7 +387,7 @@ Things measured and **rejected**, so they do not get re-litigated: minifier opti
 
 ## The A2UI catalog
 
-`src/a2ui/catalog.json` is the one file in `src/` that no component imports and no bundler ever sees. It is an [A2UI](https://a2ui.org) catalog: the JSON Schema an agent is handed so it can describe a surface out of this library's components, and the schema a host's renderer validates that surface against. `scripts/build-catalog.mjs` copies it to `dist/a2ui/catalog.json` — exported as `neba/a2ui/catalog.json` — and, with `--docs`, to `docs/public/a2ui/catalog.json`, which is the URL its own `catalogId` names. The docs copy is generated and git-ignored, for `copy-changelog.mjs`' reason.
+`src/a2ui/catalog.json` is the one file in `src/` that no component imports. It is an [A2UI](https://a2ui.org) catalog: the JSON Schema an agent is handed so it can describe a surface out of this library's components, and the schema a host's renderer validates that surface against. `scripts/build-catalog.mjs` copies it to `dist/a2ui/catalog.json` — exported as `neba/a2ui/catalog.json` — and, with `--docs`, to `docs/public/a2ui/catalog.json`, which is the URL its own `catalogId` names. The docs copy is generated and git-ignored, for `copy-changelog.mjs`' reason. The build also writes `dist/a2ui/adapter-catalog.json`, the catalog with every string `description`, `instructions` and `title` taken out, and points the adapter's two imports in `dist/a2ui/` at it: the prose is written for a model, the renderer never reads it, and it was about three quarters of the adapter's gzipped catalog. The script counts the rewritten imports against `src/a2ui/` and fails on a mismatch, for `annotate-pure.mjs`' reason.
 
 It is written against **v1.0**, and the shape is `catalog_definition.json`'s: `additionalProperties: false` over exactly ten keys, `catalogId` the only required one, `components` and `functions` as maps rather than arrays, and a `$defs` that must hold `anyComponent` and `anyFunction` or neither. v0.9 had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither and adds `instructions`.
 
