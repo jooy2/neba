@@ -373,6 +373,35 @@ describe('TreeView', () => {
       await expect.poll(() => document.activeElement?.getAttribute('data-neba-value')).toBe('src');
     });
 
+    it('moves to the next row whose label starts with a typed character', async () => {
+      const screen = await render(
+        <TreeView label="Fruit">
+          <TreeItem value="apple" label="Apple" />
+          <TreeItem value="banana" label="Banana" />
+          <TreeItem value="cherry" label="Cherry" />
+          <TreeItem value="blueberry" label="Blueberry" />
+        </TreeView>
+      );
+      const focused = () => document.activeElement?.getAttribute('data-neba-value');
+
+      await screen.getByRole('treeitem', { name: 'Apple' }).element().focus();
+      await treeHasFocus(screen);
+
+      await userEvent.keyboard('b');
+      await expect.poll(focused).toBe('banana');
+
+      await userEvent.keyboard('B');
+      await expect.poll(focused).toBe('blueberry');
+
+      // Round past the end to the first match again.
+      await userEvent.keyboard('b');
+      await expect.poll(focused).toBe('banana');
+
+      // A character no label starts with leaves the focus where it is.
+      await userEvent.keyboard('z');
+      await expect.poll(focused).toBe('banana');
+    });
+
     it('opens a shut branch with the forward arrow and steps into an open one', async () => {
       const screen = await render(<Sample />);
 

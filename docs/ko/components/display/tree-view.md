@@ -97,7 +97,7 @@ sheet는 색으로 채워지지 않습니다. 이미 표면이 있는 [Card](../
 ## 접근성
 
 - 트리는 `tree`, 각 행은 `treeitem`, 가지의 자식들은 `group`입니다.
-- 트리 전체가 하나의 tab stop입니다. 안에 들어오면 ArrowUp·ArrowDown이 보이는 행들을 오르내리고, ArrowRight는 닫힌 가지를 열고 열린 가지에서는 그 안으로 들어가며, ArrowLeft는 가지를 닫고 잎에서는 부모로 올라갑니다. Home·End는 양 끝으로 갑니다. Enter와 Space는 focus된 행을 누른 것과 같아서 행을 선택하고 가지를 열거나 닫으며, 링크인 행에서는 Enter가 링크도 따라갑니다. 방향키는 선택을 바꾸지 않습니다.
+- 트리 전체가 하나의 tab stop입니다. 안에 들어오면 ArrowUp·ArrowDown이 보이는 행들을 오르내리고, ArrowRight는 닫힌 가지를 열고 열린 가지에서는 그 안으로 들어가며, ArrowLeft는 가지를 닫고 잎에서는 부모로 올라갑니다. Home·End는 양 끝으로 가고, 글자를 치면 레이블이 그 글자로 시작하는 다음 행으로 갑니다. Enter와 Space는 focus된 행을 누른 것과 같아서 행을 선택하고 가지를 열거나 닫으며, 링크인 행에서는 Enter가 링크도 따라갑니다. 방향키는 선택을 바꾸지 않습니다.
 - RTL에서는 ArrowLeft와 ArrowRight가 바뀌므로, 전진 방향의 화살표는 언제나 "더 안쪽"을 뜻합니다.
 - `label`을 넘겨 트리에 이름을 주세요. 없으면 screen reader가 이름 없는 트리로 읽습니다.
 - `multiple`은 트리에 `aria-multiselectable`을 붙입니다.

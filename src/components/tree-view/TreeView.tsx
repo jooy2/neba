@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { inertValue } from '../../internal/inert.js';
 import { safeHref } from '../../internal/link.js';
+import { searchText } from '../../internal/search.js';
 import { ChevronIcon } from '../../internal/icons.js';
 import {
   controlTextClasses,
@@ -629,6 +630,27 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
           break;
         }
         default:
+          // A character moves to the next row whose label starts with it,
+          // wrapping at the end, so pressing it again steps through them. Any
+          // modifier but Shift is somebody else's shortcut.
+          if (
+            [...event.key].length === 1 &&
+            event.key !== ' ' &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !event.altKey
+          ) {
+            const needle = searchText(event.key);
+            const after = [...rows.slice(index + 1), ...rows.slice(0, index)];
+
+            move(
+              after.find((row) =>
+                searchText(row.querySelector('[data-neba-label]')?.textContent ?? '').startsWith(
+                  needle
+                )
+              )
+            );
+          }
           break;
       }
     }
@@ -881,7 +903,9 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
         </span>
       ) : null}
 
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+      <span data-neba-label="" className="min-w-0 flex-1 truncate">
+        {label}
+      </span>
 
       {hasContent(endIcon) ? (
         <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">{endIcon}</span>
