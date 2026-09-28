@@ -615,5 +615,27 @@ describe('the A2UI adapter', () => {
 
       await expect.element(screen.getByText('That is not an address')).toBeInTheDocument();
     });
+
+    // v1.0 lets a check leave its message out and v0.9's schema refused it,
+    // and the refusal took every component in the batch with it.
+    it('draws a field whose check has no message', async () => {
+      const { surface } = surfaceOf(
+        [
+          {
+            id: 'root',
+            component: 'TextField',
+            label: 'Email',
+            value: { path: '/email' },
+            checks: [{ condition: { call: 'email', args: { value: { path: '/email' } } } }]
+          }
+        ],
+        { email: 'not-an-address' }
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await expect.element(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
+      await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+    });
   });
 });

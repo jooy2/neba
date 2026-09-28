@@ -192,12 +192,38 @@ function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
 }
 
 /**
+ * `Checkable`, with v1.0's rule rather than v0.9's.
+ *
+ * v1.0 lets a check leave its `message` out, and v0.9's rule requires one — so
+ * a check an agent wrote exactly as the catalog allows was refused, and the
+ * refusal took the whole batch of components with it. The binder already
+ * answers a missing message with "Validation failed", which is why the only
+ * change is to stop refusing it; the catalog asks the model for a message all
+ * the same, since that text tells a reader nothing.
+ */
+const checkable = (() => {
+  const base = CommonSchemas.Checkable as z.ZodObject<z.ZodRawShape>;
+  const rule = (CommonSchemas.CheckRule as z.ZodObject<z.ZodRawShape>).extend({
+    message: z.string().optional()
+  });
+  const checks = base.shape.checks as z.ZodTypeAny;
+
+  return base.extend({
+    checks: z
+      .array(rule)
+      .optional()
+      .describe(checks.description ?? '')
+  });
+})();
+
+/**
  * One component's entry, as the schema a `ComponentApi` carries.
  *
  * `accessibility` is added rather than read, because v1.0 moved it out of the
  * catalog and into the envelope while the renderer this adapter registers with
- * still expects a component to declare it. It is the one place the two versions
- * are bridged rather than mapped.
+ * still expects a component to declare it. That and a check's optional
+ * `message`, above, are the two places the versions are bridged rather than
+ * mapped.
  */
 export function componentSchema(name: string, definition: CatalogSchema): z.ZodTypeAny {
   const parts = definition.allOf ?? [definition];
@@ -207,7 +233,7 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
 
   for (const part of parts) {
     if (part.$ref === `${COMMON}Checkable`) {
-      built = built.merge(CommonSchemas.Checkable as z.ZodObject<z.ZodRawShape>);
+      built = built.merge(checkable);
       continue;
     }
 

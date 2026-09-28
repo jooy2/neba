@@ -58,6 +58,8 @@
 
 ### Fixed
 
+- **The A2UI adapter accepts a check without a `message`.** v1.0 lets a check leave it out, and the v0.9 schema the adapter registers with required it, so a check written exactly as the catalog allows was refused along with every component in the same batch. It is accepted now and the field shows "Validation failed"; the catalog's instructions ask the model to give every check a message all the same.
+
 - **The A2UI catalog declares the arguments its functions take.** `formatDate` was described with a `dateStyle` and a `timeStyle`, `pluralize` with a `count`, and `formatNumber` with two fraction-digit arguments, none of which the protocol's implementations read — so a model writing exactly what the catalog said got an ISO string, blank text and an unrounded number back. They are the specification's now: `formatDate` takes a TR35 `format`, `pluralize` takes `value` and every plural category, and `formatNumber` and `formatCurrency` take `decimals` and `grouping`. `length` and `numeric` ask for at least one bound, and `and` and `or` for at least two values, which is what the implementations accept.
 
 - **A `DataTable` writes a boolean in a column with no `render`.** React draws nothing for `true` or `false`, so the cell was empty while the sort, the search and the CSV all saw the value. It is written as `true` or `false` now; give the column `render` for words a reader would use.
