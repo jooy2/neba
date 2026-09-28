@@ -92,6 +92,9 @@ window에 거는 키 조합이며, 표기는 [Shortcut](../components/display/sh
 | `enabled` | `true` | unmount 없이 듣기를 멈춤 |
 | `ignoreWhileTyping` | `true` | focus가 input · textarea · select · `contenteditable`에 있으면 건너뜀 |
 | `preventDefault` | `true` | 일치하면 `preventDefault` 호출 |
+| `repeat` | `false` | 누르고 있는 키가 반복될 때마다 다시 실행. 반복된 키의 기본 동작은 어느 쪽이든 막힘 |
+
+위로 올라오는 동안 다른 곳에서 이미 `preventDefault`로 처리한 키는 그쪽에 맡깁니다. 필드 자체의 `Mod+K`나 메뉴의 type-ahead 같은 것입니다. 그래서 페이지 전체 shortcut이 control의 키 위에서 함께 발동하지 않습니다. 같은 조합에 건 `useShortcut` 두 개는 둘 다 그대로 실행됩니다.
 
 `ignoreWhileTyping` 덕분에 맨 `/`나 `?`를 바인딩할 수 있습니다. 검색창 안에서 발동하는 한 글자 shortcut은 입력 중인 글자를 가로채기 때문입니다. modifier가 붙은 조합은 보통 어디서나 동작해야 하므로 이 옵션을 끄세요.
 

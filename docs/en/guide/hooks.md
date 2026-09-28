@@ -92,6 +92,9 @@ A key combination bound on the window, spelled the way [Shortcut](../components/
 | `enabled` | `true` | Stop listening without unmounting |
 | `ignoreWhileTyping` | `true` | Skip while the focus is in an input, a textarea, a select or a `contenteditable` |
 | `preventDefault` | `true` | Call `preventDefault` on a match |
+| `repeat` | `false` | Run again for every repeat of a held key. The repeats have their default prevented either way |
+
+A key that something on its way up already answered with `preventDefault` — a field's own `Mod+K`, a menu's type-ahead — is left to it, so a page-wide shortcut never fires on top of a control's. Two `useShortcut` calls on the same combination both still run.
 
 `ignoreWhileTyping` is what makes a bare `/` or `?` bindable at all: a single-letter shortcut that fires inside a search box eats what somebody was writing. Turn it off for a combination with a modifier, which is usually meant to work everywhere.
 

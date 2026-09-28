@@ -297,6 +297,19 @@ describe('CommandPalette', () => {
       });
     }
 
+    // A controlled palette heard another open request for every press of the
+    // key while it was already up.
+    it('asks to open only while it is shut', async () => {
+      const onOpenChange = vi.fn();
+      await render(
+        <CommandPalette items={ITEMS} shortcut="Alt+P" open onOpenChange={onOpenChange} />
+      );
+
+      await userEvent.keyboard('{Alt>}p{/Alt}');
+
+      expect(onOpenChange).not.toHaveBeenCalledWith(true);
+    });
+
     it('binds a key named the short way', async () => {
       const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+Esc" />);
 

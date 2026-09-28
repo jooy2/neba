@@ -22,7 +22,22 @@ export interface ShortcutOptions {
    * opinion about, like `Mod+K` or `Mod+S`. @default true
    */
   preventDefault?: boolean;
+  /**
+   * Call the handler again for every repeat of a held key. Off by default: a
+   * shortcut held down a moment too long opened a panel and then opened it
+   * again twenty times a second. The repeats still have their default
+   * prevented, or holding `Mod+S` would save once and then open the browser's
+   * own dialog. @default false
+   */
+  repeat?: boolean;
 }
+
+/**
+ * The keys a shortcut of this hook prevented, so a second binding of the same
+ * combination still runs: it is somebody *else's* `preventDefault` that says
+ * the key was answered.
+ */
+const answered = new WeakSet<Event>();
 
 /** The elements a reader types into, where a bare-letter shortcut must not fire. */
 function isTyping(target: EventTarget | null): boolean {
@@ -55,7 +70,12 @@ export function useShortcut(
   handler: (event: KeyboardEvent) => void,
   options: ShortcutOptions = {}
 ): void {
-  const { enabled = true, ignoreWhileTyping = true, preventDefault = true } = options;
+  const {
+    enabled = true,
+    ignoreWhileTyping = true,
+    preventDefault = true,
+    repeat = false
+  } = options;
 
   // The newest handler, kept in a ref so the listener below is bound once per
   // combination rather than re-bound on every render that closes over new
@@ -73,6 +93,11 @@ export function useShortcut(
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
+      // Something on the way up already answered the key — a field with a
+      // `Mod+K` of its own, a menu's type-ahead — and the key is theirs.
+      if (event.defaultPrevented && !answered.has(event)) {
+        return;
+      }
       if (ignoreWhileTyping && isTyping(event.target)) {
         return;
       }
@@ -81,6 +106,10 @@ export function useShortcut(
       }
       if (preventDefault) {
         event.preventDefault();
+        answered.add(event);
+      }
+      if (event.repeat && !repeat) {
+        return;
       }
       latest.current(event);
     };
@@ -88,5 +117,5 @@ export function useShortcut(
     window.addEventListener('keydown', onKeyDown);
 
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [shortcut, enabled, ignoreWhileTyping, preventDefault]);
+  }, [shortcut, enabled, ignoreWhileTyping, preventDefault, repeat]);
 }

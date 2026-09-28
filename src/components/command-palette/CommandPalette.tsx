@@ -256,8 +256,16 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
   // `onOpenChange` no longer rebinds the window listener on every render. It
   // fires while typing too, since a modified key is meant to work everywhere,
   // and it calls `preventDefault` — the browser's own Mod+K is a search bar in
-  // some of them, and the page asked for this key.
-  useShortcut(shortcut, () => setOpen(true), { ignoreWhileTyping: false });
+  // some of them, and the page asked for this key. A key a field inside the
+  // page already answered is left to it, and pressing it again while the
+  // palette is up does nothing rather than reporting another open.
+  useShortcut(
+    shortcut,
+    () => {
+      if (!showing) setOpen(true);
+    },
+    { ignoreWhileTyping: false }
+  );
 
   // Folded once per list rather than once per comparison — `searchText`
   // normalizes, and doing that inside the filter puts a `normalize` on every

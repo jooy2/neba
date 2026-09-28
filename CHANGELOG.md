@@ -36,6 +36,8 @@
 
 ### Changed
 
+- **`useShortcut` runs once for a held key, and leaves a key a control already answered.** Every auto-repeat of a held combination ran the handler again, and a key a focused field had handled with `preventDefault` ran it as well, so a field's own `Mod+K` also opened a `CommandPalette` bound to the same key. Repeats are skipped unless `repeat: true` is passed, and still have their default prevented; a key another handler prevented is left to it. A `CommandPalette` that is already open no longer asks to open again.
+
 - **An `outline` `Toggle` that is on keeps its plate under the pointer.** Hover and press swapped the dyed plate for a paler wash, so a toggle that was on faded towards off as the pointer arrived. The plate stays now, and hover moves the edge to the accent and the label to the full ink.
 
 - **`neba/a2ui` carries a copy of its catalog without the prose.** The adapter imported the whole catalog, and about three quarters of it gzipped is descriptions written for a model, which the renderer never reads. It reads a copy with them taken out now, which takes about 6.5 kB off every page that draws an A2UI surface. `neba/a2ui/catalog.json` is unchanged and is still the file to hand an agent.

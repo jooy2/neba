@@ -388,6 +388,57 @@ describe('useShortcut', () => {
     expect(run).toHaveBeenCalledTimes(1);
   });
 
+  // A held key auto-repeats, and every repeat ran the handler again.
+  it('runs once for a held key, and on every repeat when asked to', async () => {
+    const once = vi.fn();
+    const every = vi.fn();
+
+    function Bound() {
+      useShortcut('?', once);
+      useShortcut('?', every, { repeat: true });
+      return <p>bound</p>;
+    }
+
+    await render(<Bound />);
+
+    const press = (repeat: boolean) =>
+      window.dispatchEvent(
+        new KeyboardEvent('keydown', { key: '?', shiftKey: true, repeat, cancelable: true })
+      );
+
+    press(false);
+    press(true);
+    press(true);
+
+    expect(once).toHaveBeenCalledTimes(1);
+    expect(every).toHaveBeenCalledTimes(3);
+  });
+
+  // A field's own `Mod+K` also opened a palette bound to the same key.
+  it('leaves a key alone that something on the way up already answered', async () => {
+    const run = vi.fn();
+
+    function Bound() {
+      useShortcut('Mod+K', run, { ignoreWhileTyping: false });
+      return (
+        <input
+          aria-label="Link"
+          onKeyDown={(event) => {
+            if (event.key === 'k') event.preventDefault();
+          }}
+        />
+      );
+    }
+
+    const screen = await render(<Bound />);
+    const mac = readOS() === 'mac';
+
+    await screen.getByRole('textbox', { name: 'Link' }).click();
+    await userEvent.keyboard(mac ? '{Meta>}k{/Meta}' : '{Control>}k{/Control}');
+
+    expect(run).not.toHaveBeenCalled();
+  });
+
   it('stays quiet while the reader is typing', async () => {
     const run = vi.fn();
 
