@@ -26,16 +26,21 @@
  * The one thing that reliably separates a run that finishes from one that does
  * not is **how many files the browser has been asked to hold in one session**,
  * which is the only lever here that is ours. So the suite is run in shards, and
- * each shard is its own browser. Nothing is skipped, nothing is retried, and a
+ * each shard is its own browser. Nothing is skipped, no test is retried, and a
  * failing test still fails its shard — which is the whole difference between
  * this and the `retry` the flake keeps inviting.
+ *
+ * The one thing run again is a shard whose browser never arrived: Vitest gave
+ * up connecting to the session before a single test ran. That is a runner that
+ * could not start Firefox in time — seen on Windows — and not a result, and it
+ * is tried once more. A shard that ran anything keeps whatever it reported.
  *
  * Vitest's own tracker has the underlying report open against browser mode. If
  * it is fixed upstream, this file goes away and `test` goes back to being
  * `vitest run`.
  */
 import { readdirSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -68,6 +73,39 @@ const passthrough = process.argv.slice(2);
 const shards =
   passthrough.length > 0 ? 1 : Math.max(1, Math.ceil(testFileCount() / filesPerSession));
 
+/*
+ * Colour is kept as it was when the output went straight to the terminal: the
+ * output is piped now, so that it can be read for the one failure below, and a
+ * pipe is not a TTY.
+ */
+const env =
+  process.stdout.isTTY && process.env.FORCE_COLOR === undefined
+    ? { ...process.env, FORCE_COLOR: '1' }
+    : process.env;
+
+/** One run of Vitest, passed through as it arrives, and the end of what it said. */
+function run(args) {
+  return new Promise((resolveRun) => {
+    const child = spawn(process.execPath, args, { cwd: root, env });
+    let said = '';
+    const keep = (chunk, stream) => {
+      stream.write(chunk);
+      said = (said + chunk.toString()).slice(-65536);
+    };
+
+    child.stdout.on('data', (chunk) => keep(chunk, process.stdout));
+    child.stderr.on('data', (chunk) => keep(chunk, process.stderr));
+    child.on('close', (status) => resolveRun({ status, said }));
+  });
+}
+
+/** The browser never connected, and so nothing ran. */
+function neverStarted(said) {
+  const plain = said.replace(/\x1b\[[0-9;]*m/g, '');
+
+  return /Failed to connect to the browser session/.test(plain) && /Tests\s+no tests/.test(plain);
+}
+
 const failed = [];
 
 for (let shard = 1; shard <= shards; shard += 1) {
@@ -78,7 +116,12 @@ for (let shard = 1; shard <= shards; shard += 1) {
   const args = [vitest, 'run', ...passthrough];
   if (shards > 1) args.push(`--shard=${shard}/${shards}`);
 
-  const { status } = spawnSync(process.execPath, args, { cwd: root, stdio: 'inherit' });
+  let { status, said } = await run(args);
+
+  if (status !== 0 && neverStarted(said)) {
+    process.stdout.write(`\n[1m▸ the browser never connected; shard ${shard} again[0m\n`);
+    ({ status } = await run(args));
+  }
 
   if (status !== 0) failed.push(shard);
 }
