@@ -193,7 +193,18 @@ describe('ToolCall', () => {
         </NebaProvider>
       );
 
-      await expect.element(screen.getByText('4,2 Sek.')).toBeInTheDocument();
+      // Written by the browser's own `Intl` rather than spelled out: WebKit's
+      // data writes a narrow German second "4,2s" and Chromium's "4,2 Sek.",
+      // and either way the comma is what says the provider's locale arrived.
+      const german = new Intl.NumberFormat('de-DE', {
+        style: 'unit',
+        unit: 'second',
+        unitDisplay: 'narrow',
+        maximumFractionDigits: 1
+      }).format(4.2);
+
+      expect(german).toContain('4,2');
+      await expect.element(screen.getByText(german)).toBeInTheDocument();
     });
   });
 });
