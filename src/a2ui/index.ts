@@ -74,7 +74,35 @@ function functions(locale: string | undefined): FunctionImplementation[] {
     );
   }
 
-  return available;
+  return available.map((one) => (one.name === 'openUrl' ? onlyWhenActivated(one) : one));
+}
+
+/**
+ * `openUrl`, run only while the reader is acting on the page.
+ *
+ * The catalog declares it `rendererOnly` and `requiresUserActivation`, and
+ * nothing enforced either: `web_core` runs it wherever an agent writes the
+ * call, and a call written into any string is evaluated when the component
+ * binds and again on every change to the data it reads. So a surface could
+ * open a page the moment it was drawn. Here it acts only under a transient
+ * user activation — a press that is still being handled — which is what a
+ * button's action is and a binding is not. A browser without
+ * `navigator.userActivation` (Firefox before 120) keeps the old behaviour,
+ * where its popup blocker is what stands in the way.
+ */
+function onlyWhenActivated(implementation: FunctionImplementation): FunctionImplementation {
+  return {
+    ...implementation,
+    execute: (args, context, abortSignal) => {
+      if (typeof navigator !== 'undefined' && 'userActivation' in navigator) {
+        if (!navigator.userActivation.isActive) {
+          return undefined;
+        }
+      }
+
+      return implementation.execute(args, context, abortSignal);
+    }
+  };
 }
 
 /** What `createNebaCatalog` takes. */

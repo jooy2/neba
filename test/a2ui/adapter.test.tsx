@@ -627,6 +627,61 @@ describe('the A2UI adapter', () => {
     });
   });
 
+  // `openUrl` is declared as needing a user activation and nothing enforced
+  // it: a call written into any string ran when the component bound, and a
+  // surface could open a page the moment it was drawn.
+  describe('opens an address only when the reader acts', () => {
+    it('does not open one from a binding', async () => {
+      const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+      try {
+        const { surface } = surfaceOf([
+          {
+            id: 'root',
+            component: 'Typography',
+            text: { call: 'openUrl', args: { url: 'https://example.com/' }, returnType: 'void' }
+          }
+        ]);
+
+        await render(<A2uiSurface surface={surface} />);
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(open).not.toHaveBeenCalled();
+      } finally {
+        open.mockRestore();
+      }
+    });
+
+    it('opens one from a button the reader presses', async () => {
+      const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+      try {
+        const { surface } = surfaceOf([
+          {
+            id: 'root',
+            component: 'Button',
+            text: 'Read more',
+            action: {
+              functionCall: {
+                call: 'openUrl',
+                args: { url: 'https://example.com/' },
+                returnType: 'void'
+              }
+            }
+          }
+        ]);
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await screen.getByRole('button', { name: 'Read more' }).click();
+
+        await expect.poll(() => open.mock.calls.length).toBe(1);
+      } finally {
+        open.mockRestore();
+      }
+    });
+  });
+
   describe('runs the checks the agent wrote', () => {
     /*
      * `checks` is in the schema through the catalog's `Checkable`, and the

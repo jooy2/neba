@@ -89,7 +89,7 @@ The names are Neba's own rather than the Basic Catalog's, which is what makes th
 
 Fourteen, with the specification's own names and call signatures: `required`, `length`, `regex`, `numeric`, `email`, `formatString`, `formatNumber`, `formatCurrency`, `formatDate`, `pluralize`, `openUrl`, `and`, `or` and `not`.
 
-Declaring one is a claim that your renderer implements it. Five check a value, three are one `Intl` call each, `formatString` and `formatDate` build a string, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation.
+Declaring one is a claim that your renderer implements it. Five check a value, three are one `Intl` call each, `formatString` and `formatDate` build a string, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation. The adapter holds it to the second: it opens an address only while a press is being handled, so a call an agent wrote into a label does nothing when the label is drawn. A browser without `navigator.userActivation` (Firefox before 120) leaves that to its popup blocker.
 
 `formatNumber`, `formatCurrency` and `pluralize` write in the language the catalog was built with, `createNebaCatalog({ locale: 'ko' })`. Pass the `locale` your `NebaProvider` has; left out, the components follow the provider and those three follow the runtime. `formatDate` does not take one: it writes a TR35 pattern such as `MMM d, yyyy`, and the names of months and weekdays in it are English, which the catalog tells the model.
 

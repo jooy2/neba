@@ -58,6 +58,8 @@
 
 ### Fixed
 
+- **An A2UI surface opens an address only when the reader presses something.** The catalog declares `openUrl` as needing a user activation, and nothing enforced it: the protocol's implementation ran the call wherever an agent wrote it, and a call written into a label ran when the label was drawn and again on every change to the data it read. The adapter runs it only while a press is being handled now. A browser without `navigator.userActivation` (Firefox before 120) leaves it to its popup blocker, as before.
+
 - **An A2UI field that is not bound to the data model can still be changed.** The views are controlled, and the setter the renderer hands them writes only to a path, so a `TextField`, `NumberField`, `Checkbox`, `Switch`, `RadioGroup`, `Select` or `Slider` whose value was a literal or left out could not be typed in, ticked or moved at all. Each holds what the reader enters itself now, follows the resolved value when it changes, and still writes through when it is bound; the catalog tells the model to bind a field's value to a path, since that is where what the reader enters is sent back from.
 
 - **An A2UI `Statistic` draws the delta its `previousValue` asks for.** The catalog types `value` as a string, since most figures are written out, and a `Statistic` works out a delta only from a number — so `previousValue`, `delta` and `betterWhen` drew nothing unless the value was bound to a number in the data model. A value written as plain digits is taken as that number when there is a `previousValue`, and the catalog tells the model to write it that way; anything else is drawn as written.
