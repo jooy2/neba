@@ -2,6 +2,14 @@
 
 ## vNext (2026--)
 
+The release the second audit of every public component produced. It went through all of them again, 187 findings in all, and looked hardest at what had landed since the first audit: the agent components, `labelPlacement` and the notch, the chart brush, the second value axis, references and CSV export, and the A2UI catalog and its adapter.
+
+Most of what it found is accessibility, and most of that is the keyboard and the screen reader. Controls lost the focus when a press disabled them; a `DataTable`'s column widths, column order, counts and multiple sort were out of the keyboard's or the screen reader's reach; links that open a new tab did not say so; live regions read their buttons out or said nothing at all; and small targets were pressed below a finger's size. The pickers are fields of a `Form` now, a resting `float` label stops short of what a field draws at its end, a two-axis chart reads each axis in its own units and puts its far ticks on the gridlines, and a server-rendered `Calendar` hydrates cleanly.
+
+The A2UI half is mostly the catalog telling the truth. The functions declare the arguments the protocol's implementations take, a check may leave out its message, a field that is not bound can still be changed, `openUrl` waits for a press, a component's `accessibility` is read, the published catalog names the minor version it belongs to, and the adapter carries a copy of the catalog without the prose, which is about 6.5 kB less on every page that draws a surface.
+
+Eight changes are breaking and come first. A `Switch`'s `labelPlacement` is deprecated in favour of `labelSide`, and `engines.node` is `>=18.20.0`. Each change below says what it was and what it does now.
+
 ### Breaking changes
 
 - **`ScatterChart` and `TimelineChart` take no `brush` or `secondaryAxis`.** Both type-checked and neither could be honoured: a brush windows a series by index, which on a cloud of points is an arbitrary cut rather than a range of x, and on a timeline is a cut by row while the spans on it run past the plot; a scatter's second axis wrote its numbers in the first axis' format everywhere but its ticks. They are out of both types, and ignored when passed from JavaScript. Remove them from a `ScatterChart` or a `TimelineChart` that sets them.
