@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.17.0 (2026-09-28)
+
 The release the second audit of every public component produced. It went through all of them again, 187 findings in all, and looked hardest at what had landed since the first audit: the agent components, `labelPlacement` and the notch, the chart brush, the second value axis, references and CSV export, and the A2UI catalog and its adapter.
 
 Most of what it found is accessibility, and most of that is the keyboard and the screen reader. Controls lost the focus when a press disabled them; a `DataTable`'s column widths, column order, counts and multiple sort were out of the keyboard's or the screen reader's reach; links that open a new tab did not say so; live regions read their buttons out or said nothing at all; and small targets were pressed below a finger's size. The pickers are fields of a `Form` now, a resting `float` label stops short of what a field draws at its end, a two-axis chart reads each axis in its own units and puts its far ticks on the gridlines, and a server-rendered `Calendar` hydrates cleanly.

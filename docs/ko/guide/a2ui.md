@@ -25,7 +25,7 @@ https://neba.cdget.com/a2ui/catalog.json
 
 [A2UI](https://a2ui.org)는 에이전트가 인터페이스를 JSON으로 서술하고 **호스트**가 자기 디자인 시스템으로 그것을 그리는 프로토콜입니다. 에이전트는 마크업도 CSS도 쓰지 않습니다. ID가 붙은 컴포넌트의 평평한 맵을 쓰고, 렌더러가 그 하나하나를 자기 디자인 시스템의 이름으로 바꿉니다.
 
-카탈로그는 양쪽이 어휘를 맞추는 방법입니다. `catalogId`와 `components`, 렌더러가 실행할 `functions`, 그리고 독자가 아니라 모델을 위해 쓰인 `instructions`가 들어 있는 JSON Schema 파일 하나입니다. 레지스트리는 없습니다. `catalogId`는 URL처럼 생겼을 뿐인 식별자이고, 스펙은 그것이 어디를 가리킬 필요가 없다고 말합니다. 이 파일은 그래도 가리키며, 자기가 속한 minor 버전을 이름에 담습니다. `neba` 1.16의 카탈로그는 `https://neba.cdget.com/a2ui/1.16/catalog.json`이고 그 주소에서 제공되며, `/a2ui/catalog.json`은 언제나 최신입니다. 에이전트에게는 설치한 어댑터와 맞는 사본을 건네세요. `neba/a2ui/catalog.json`이나 그 minor의 URL입니다. 다른 minor의 id를 지정한 화면은, 쓰인 적 없는 스키마로 그려지는 대신 어댑터가 거부합니다.
+카탈로그는 양쪽이 어휘를 맞추는 방법입니다. `catalogId`와 `components`, 렌더러가 실행할 `functions`, 그리고 독자가 아니라 모델을 위해 쓰인 `instructions`가 들어 있는 JSON Schema 파일 하나입니다. 레지스트리는 없습니다. `catalogId`는 URL처럼 생겼을 뿐인 식별자이고, 스펙은 그것이 어디를 가리킬 필요가 없다고 말합니다. 이 파일은 그래도 가리키며, 자기가 속한 minor 버전을 이름에 담습니다. `neba` 1.17의 카탈로그는 `https://neba.cdget.com/a2ui/1.17/catalog.json`이고 그 주소에서 제공되며, `/a2ui/catalog.json`은 언제나 최신입니다. 에이전트에게는 설치한 어댑터와 맞는 사본을 건네세요. `neba/a2ui/catalog.json`이나 그 minor의 URL입니다. 다른 minor의 id를 지정한 화면은, 쓰인 적 없는 스키마로 그려지는 대신 어댑터가 거부합니다.
 
 ## 반쪽만 가져가도 됩니다
 
