@@ -70,7 +70,7 @@ Every row is `rowHeight` tall, and cells truncate rather than wrap. Raise `rowHe
 | Click and drag | takes the run under the pointer, scrolling at the edges |
 | Tap | chooses that row once the finger lifts, so a finger that scrolls the table chooses nothing |
 | <kbd>↑</kbd> <kbd>↓</kbd> | move and choose |
-| <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | scroll only: what is chosen stays chosen |
+| <kbd>Home</kbd> <kbd>End</kbd> <kbd>PageUp</kbd> <kbd>PageDown</kbd> | in a bounded table, scroll and move without choosing: what is chosen stays chosen; with <kbd>Shift</kbd>, extend the run |
 | <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + arrows | move without choosing |
 | <kbd>Shift</kbd> + arrows | extend the run |
 | <kbd>Space</kbd> | choose the row the focus is on; with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>, toggle it |

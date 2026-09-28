@@ -924,6 +924,66 @@ describe('DataTable', () => {
         .toHaveAttribute('data-neba-row', '2');
     });
 
+    // The four scrolled and left the active row behind, so the next arrow
+    // jumped back to where the reader had been.
+    it('takes the active row along with Home, End and the Page keys', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(500)}
+          getRowKey={key}
+          selectionMode="multiple"
+          height={200}
+        />
+      );
+
+      // What `overflow-auto` would say, had the test a stylesheet: without it
+      // the virtual body never draws the rows at the far end.
+      (screen.getByRole('grid').element().parentElement as HTMLElement).style.overflow = 'auto';
+
+      await screen.getByText('Person 2', { exact: true }).click();
+      await userEvent.keyboard('{End}');
+      await userEvent.keyboard('{ArrowUp}');
+
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', '498');
+
+      await userEvent.keyboard('{Home}');
+      await userEvent.keyboard('{ArrowDown}');
+
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', '1');
+
+      await userEvent.keyboard('{PageDown}');
+      await userEvent.keyboard('{ArrowDown}');
+
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .not.toHaveAttribute('data-neba-row', '2');
+      expect(screen.container.querySelectorAll('tr[aria-selected="true"]')).toHaveLength(1);
+    });
+
+    it('extends the run with Shift and End', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(20)}
+          getRowKey={key}
+          selectionMode="multiple"
+          height={200}
+        />
+      );
+
+      await screen.getByText('Person 15', { exact: true }).click();
+      await userEvent.keyboard('{Shift>}{End}{/Shift}');
+
+      await expect
+        .poll(() => screen.container.querySelectorAll('tr[aria-selected="true"]').length)
+        .toBeGreaterThan(1);
+    });
+
     // Only a virtual body measured itself, so a bounded table that was not
     // virtual paged by nine rows whatever its height.
     it('pages by what a tall table that is not virtual holds', async () => {

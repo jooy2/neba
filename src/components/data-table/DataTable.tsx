@@ -1574,7 +1574,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     [bounded, stickyHeader, rowHeight]
   );
 
-  const moveActive = (index: number, event: React.KeyboardEvent) => {
+  const moveActive = (index: number, event: React.KeyboardEvent, choose = true) => {
     const rows = latest.current.paged;
     const target = Math.min(Math.max(index, 0), rows.length - 1);
     const entry = rows[target];
@@ -1593,26 +1593,32 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
     if (event.shiftKey && latest.current.multiple) {
       selectRange(entry.key, false);
-    } else if (!event.ctrlKey && !event.metaKey) {
+    } else if (choose && !event.ctrlKey && !event.metaKey) {
       selectOnly(entry.key);
     }
   };
 
   /**
-   * Home, End and the two Page keys move the viewport and nothing else.
+   * Home, End and the two Page keys move the viewport, and the active row with
+   * it, and choose nothing.
    *
    * They are the one group that reads as *"take me somewhere"* rather than
    * *"choose the next one"*: a reader who has ticked a row and then wants to see
    * what is at the bottom of a thousand of them is asking about the scrollbar,
-   * and answering with `moveActive` would throw the tick away on the way there.
-   * The arrows keep choosing, because choosing the next one is what an arrow on
-   * a list means.
+   * and choosing on the way would throw the tick away. The active row goes
+   * along, as it does under Ctrl and an arrow, because an active row left
+   * behind made the next arrow jump back to where the reader had been. Shift
+   * still extends the run, as it does with the arrows.
    *
    * A table that is not `bounded` scrolls with the page, and the browser already
    * does the right thing with all four — so they are left alone rather than
    * taken and turned into nothing.
    */
-  const scrollViewport = (to: 'start' | 'end' | number, event: React.KeyboardEvent) => {
+  const scrollViewport = (
+    to: 'start' | 'end' | number,
+    index: number,
+    event: React.KeyboardEvent
+  ) => {
     const node = viewportRef.current;
 
     if (!node || !bounded) {
@@ -1625,6 +1631,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const next = to === 'start' ? 0 : to === 'end' ? furthest : node.scrollTop + to;
 
     node.scrollTop = Math.min(Math.max(next, 0), furthest);
+    moveActive(index, event, false);
   };
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLTableElement>) {
@@ -1663,19 +1670,19 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         moveActive(index === -1 ? 0 : index - 1, event);
         break;
       case 'Home':
-        scrollViewport('start', event);
+        scrollViewport('start', 0, event);
         break;
       case 'End':
-        scrollViewport('end', event);
+        scrollViewport('end', rows.length - 1, event);
         break;
       // A whole screen less one row, which is `perScreen` — the row that was at
       // the bottom is at the top, so there is something in common between the
       // screen that left and the one that arrived.
       case 'PageDown':
-        scrollViewport(perScreen * rowHeight, event);
+        scrollViewport(perScreen * rowHeight, Math.max(index, 0) + perScreen, event);
         break;
       case 'PageUp':
-        scrollViewport(-perScreen * rowHeight, event);
+        scrollViewport(-perScreen * rowHeight, Math.max(index, 0) - perScreen, event);
         break;
       case ' ':
         // Space is the one key that chooses without moving, and the reason the

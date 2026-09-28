@@ -28,6 +28,8 @@
 
 ### Changed
 
+- **<kbd>Home</kbd>, <kbd>End</kbd> and the Page keys move a bounded `DataTable`'s active row.** They scrolled and left the active row behind, so the next arrow jumped back to where the reader had been. The active row goes along now without choosing anything, as it does under <kbd>Ctrl</kbd> and an arrow, and with <kbd>Shift</kbd> the four extend the run.
+
 - **A `DataTable` row's tick is named after its row and is out of the tab order.** Every tick was a tab stop named "Select row", so a table of a hundred rows was a hundred stops a keyboard crossed for a choice <kbd>Space</kbd> already makes on the active row, and a hundred controls a screen reader could not tell apart. Each is `tabIndex={-1}` now and is named "Select row" followed by its row's first cell. A test that found the ticks by the exact name "Select row" should match the start of the name.
 
 - **A `Chip`'s delete button is named after its label.** Every one was named "Remove", so a row of chips was a row of buttons a screen reader could not tell apart. A chip whose label is a string names it "Remove Draft", in the `locale`'s words (`action.removeLabel`, in every registered language); one whose label is a node keeps "Remove", and `deleteLabel` still wins over both.
