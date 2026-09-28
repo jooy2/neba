@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { ScrollArea } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+registerMessages('ko', ko);
 
 /** Nothing loads Tailwind into the test run, so the bounds are set inline. */
 function Tall() {
@@ -42,6 +45,38 @@ describe('ScrollArea', () => {
       const viewport = screen.getByTestId('area').element().firstElementChild;
 
       expect(viewport).toHaveClass('outline-offset-[-2px]');
+    });
+
+    // Base UI makes the viewport a tab stop that says nothing, and a caller's
+    // `aria-label` lands on the root, which is not what takes the focus.
+    it('names the viewport that takes the focus', async () => {
+      const screen = await render(
+        <ScrollArea height={80}>
+          <Tall />
+        </ScrollArea>
+      );
+
+      await expect
+        .element(screen.getByRole('group', { name: 'Scrollable content' }))
+        .toHaveAttribute('tabindex', '0');
+    });
+
+    it('makes a labelled viewport a region, and names the fallback in the locale', async () => {
+      const screen = await render(
+        <>
+          <ScrollArea height={80} label="Terms of service">
+            <Tall />
+          </ScrollArea>
+          <ScrollArea height={80} locale="ko">
+            <Tall />
+          </ScrollArea>
+        </>
+      );
+
+      await expect
+        .element(screen.getByRole('region', { name: 'Terms of service' }))
+        .toHaveAttribute('tabindex', '0');
+      await expect.element(screen.getByRole('group', { name: '스크롤 영역' })).toBeInTheDocument();
     });
 
     it('takes a height and a ceiling as inline lengths', async () => {

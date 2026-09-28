@@ -63,5 +63,6 @@ Fades the content out at each edge that has more beyond it, and only at those ed
 
 ## Accessibility
 
-- The viewport is focusable and scrolls with the arrow keys, Page Up/Down, Home and End.
+- The viewport is focusable whenever it overflows, and scrolls with the arrow keys, Page Up/Down, Home and End.
+- Give it a `label` that says what is in it. The viewport is then a `region` by that name; without one it is a `group` named "Scrollable content" in the `locale`'s words. An `aria-label` on the component names the root, which is not what takes the focus.
 - The scrollbar appears while the pointer is over the area or while it is scrolling. The content is reachable without it in every case.

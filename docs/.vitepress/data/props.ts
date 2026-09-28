@@ -3671,6 +3671,23 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'label',
+      type: 'string',
+      default: "locale's word",
+      description: {
+        ko: '스크롤되는 내용의 이름, "Terms of service", "Activity". 주면 viewport가 이 이름의 region이 되고, 주지 않으면 locale의 일반 명사로 이름 붙은 group이 됩니다',
+        en: 'What the scrolling content is: "Terms of service", "Activity". With it the viewport is a region by that name; without it, a group named by the locale\'s generic word'
+      }
+    },
+    {
+      name: 'locale',
+      type: 'string',
+      description: {
+        ko: 'label이 없을 때 쓰는 이름의 언어(BCP 47). 지원하지 않는 태그는 영어로 돌아갑니다',
+        en: 'Which language the fallback name is in: a BCP 47 tag. Unsupported tags fall back to English'
+      }
+    },
+    {
       name: 'size',
       type: SIZE,
       default: "'md'",

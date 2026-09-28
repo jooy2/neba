@@ -20,6 +20,8 @@
 
 ### Added
 
+- **A `ScrollArea` takes a `label`, and its viewport always has a name.** The viewport is a tab stop whenever it overflows, and it had no name, so the focus landed on something that said nothing; an `aria-label` passed to the component named the root instead. With `label` the viewport is a `region` by that name, and without one it is a `group` named "Scrollable content" in the `locale`'s words, as a `ScrollZone`'s strip is.
+
 - **A `TreeView` moves to a row by its first letter.** Typing a character moves the focus to the next visible row whose label starts with it, wrapping at the end, so pressing it again steps through the rows it starts. Accents and case are ignored, as a `DataTable` search ignores them.
 
 - **A `DataTable`'s columns resize and move from the keyboard.** A resize handle was pointer-only and hidden, so a column cut short was text a keyboard reader could not get back. Each handle is now a focusable `separator` named "Resize" and the column's label (`table.resizeColumn`, in every registered language), and <kbd>←</kbd> <kbd>→</kbd> move it 16px at a time. On a `reorderable` table, <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd> on a heading moves its column one place, and a heading with no sort button takes the focus for it. Under the pointer, a cut cell without `render` shows its whole text as a tooltip.

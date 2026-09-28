@@ -63,5 +63,6 @@ import { ScrollArea } from 'neba';
 
 ## 접근성
 
-- viewport에 focus가 가며 방향키, Page Up/Down, Home, End로 스크롤됩니다.
+- viewport는 내용이 넘칠 때마다 focus를 받으며 방향키, Page Up/Down, Home, End로 스크롤됩니다.
+- 무엇이 들어 있는지 `label`로 알려 주세요. 그러면 viewport가 그 이름의 `region`이 되고, 없으면 `locale`의 말로 "스크롤 영역"이라는 이름이 붙은 `group`이 됩니다. 컴포넌트에 준 `aria-label`은 focus를 받지 않는 root의 이름이 됩니다.
 - 스크롤바는 포인터가 영역 위에 있거나 스크롤 중일 때 나타납니다. 어느 경우에도 내용은 스크롤바 없이 도달할 수 있습니다.

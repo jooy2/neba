@@ -601,7 +601,7 @@ export const chartMessages: MessageTable<ChartMessages> = {
 };
 
 /**
- * ScrollZone.
+ * ScrollZone, and ScrollArea's `label` fallback.
  *
  * Both buttons are an arrow with nothing else on them, and which way the
  * strip runs is a prop — so the words are logical rather than physical. A
@@ -623,7 +623,7 @@ export interface ScrollMessages {
   next: string;
 }
 
-/** The `scroll` namespace, as ScrollZone read it. */
+/** The `scroll` namespace, as ScrollZone and ScrollArea read it. */
 export const scrollMessages: MessageTable<ScrollMessages> = {
   '': {
     label: 'Scrollable content',

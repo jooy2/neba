@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { ScrollArea as BaseUIScrollArea } from '@base-ui/react/scroll-area';
+import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { cx, toLength } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -37,6 +38,18 @@ export interface ScrollAreaProps extends Omit<React.ComponentPropsWithoutRef<'di
    * @default false
    */
   fade?: boolean;
+  /**
+   * What the scrolling content is — "Terms of service", "Activity". The
+   * viewport is a tab stop whenever it overflows, and with a `label` it is a
+   * `region` named by it; without one it is a group named "Scrollable
+   * content", so the focus never lands on something that says nothing.
+   */
+  label?: string;
+  /**
+   * Which language the fallback name is in — a BCP 47 tag such as `ko`,
+   * `pt-BR` or `zh-Hant`. Unsupported tags fall back to English.
+   */
+  locale?: string;
   children?: React.ReactNode;
 }
 
@@ -94,11 +107,15 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
       size = 'md',
       color = 'primary',
       fade = false,
+      label,
+      locale,
       className,
       style,
       children,
       ...props
-    } = useStyleDefaults(rawProps, ['size']);
+    } = useStyleDefaults(rawProps, ['size', 'locale']);
+
+    const messages = useMessages(scrollMessages, locale);
 
     const vertical = orientation === 'vertical' || orientation === 'both';
     const horizontal = orientation === 'horizontal' || orientation === 'both';
@@ -137,6 +154,12 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
           // and the root cut it off with nothing to scroll. Inheriting it follows
           // `maxHeight`, a class or a style alike.
           style={{ height: '100%', width: '100%', maxHeight: 'inherit' }}
+          // Base UI makes the viewport a tab stop whenever it overflows, and
+          // gives it no name. A region when the caller said what is in it; a
+          // group otherwise, since a landmark called "Scrollable content" is
+          // one more stop in a landmark list that tells a reader nothing.
+          role={label ? 'region' : 'group'}
+          aria-label={label ?? messages.label}
           className={cx(
             'overscroll-contain',
             // The ring is declared at zero width, so it is also what takes the
