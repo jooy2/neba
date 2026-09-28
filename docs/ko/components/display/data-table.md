@@ -42,7 +42,7 @@ const rowKey = (row: Build) => row.id;
 
 <PropsTable name="DataTableColumn" />
 
-`render`는 읽는 사람이 보는 것을 정하고, `value`는 정렬과 검색이 보는 것을 정합니다. `render`가 없으면 `Date`는 표의 `locale`로 쓴 날짜로, 나머지는 그대로 쓰입니다. Chip을 그리는 열에는 `render`가 필요하고, 그 열이 정렬 가능해지는 순간 `value`도 함께 필요합니다.
+`render`는 읽는 사람이 보는 것을 정하고, `value`는 정렬과 검색이 보는 것을 정합니다. `render`가 없으면 `Date`는 표의 `locale`로 쓴 날짜로, boolean은 `true`나 `false`로, 나머지는 그대로 쓰입니다. boolean 열에 "예" 같은 말이나 Chip을 보이려면 `render`를 주세요. Chip을 그리는 열에는 `render`가 필요하고, 그 열이 정렬 가능해지는 순간 `value`도 함께 필요합니다.
 
 ## 예시
 

@@ -614,9 +614,16 @@ const OWN_CONTROLS = '[data-neba-tick] [role="checkbox"], [data-neba-editor]';
  * A `Date` is written as a date in the table's language. Handed to React as it
  * came, it was an object where a child was expected, and the whole table failed
  * to render, although the sort and the CSV export both knew what a date was.
- * Anything else is written as it came, as before.
+ * A boolean is written as `true` or `false`, which is what the search matches
+ * and the CSV holds; React draws nothing for one, so the cell was empty while
+ * the rest of the table could see the value. Anything else is written as it
+ * came, as before.
  */
 function plainCell(value: unknown, locale: string | undefined): React.ReactNode {
+  if (typeof value === 'boolean') {
+    return String(value);
+  }
+
   if (value instanceof Date) {
     return Number.isNaN(value.getTime())
       ? ''

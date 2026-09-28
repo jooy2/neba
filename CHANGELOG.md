@@ -56,6 +56,8 @@
 
 ### Fixed
 
+- **A `DataTable` writes a boolean in a column with no `render`.** React draws nothing for `true` or `false`, so the cell was empty while the sort, the search and the CSV all saw the value. It is written as `true` or `false` now; give the column `render` for words a reader would use.
+
 - **A server-rendered `Calendar` hydrates without a mismatch in its tab stop.** The tab stop started on today during render, and a server in another time zone has another today, so the cell the server made reachable and the one the browser hydrated could disagree. A calendar rendered on a server starts it on the 1st and moves it to today once hydration is over; one mounted in the browser starts on today as before. Pass `locale` and `defaultMonth` to one rendered on a server, as the page now says.
 
 - **A resting `float` label stops short of what a field draws at its end.** A `TextField`, `NumberField` or `Combobox` whose label rests inside it let the label run under the end icon, the steppers or the chevron, and a field only as wide as its label cut the label to "…" as it came down, since it had been sized by the label at the smaller size it has on the edge. The label now stops where the end adornments begin, and the field is laid out to hold it at both sizes.

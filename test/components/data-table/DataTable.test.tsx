@@ -2423,6 +2423,29 @@ describe('a Date in a column with no render', () => {
   });
 });
 
+describe('a boolean in a column with no render', () => {
+  // React draws nothing for `true` or `false`, so the cell was empty while the
+  // sort, the search and the CSV all saw the value.
+  it('is written as the word the search and the CSV see', async () => {
+    interface Flag {
+      id: string;
+      active: boolean;
+    }
+    const screen = await render(
+      <DataTable<Flag>
+        headers={[{ key: 'active', label: 'Active' }]}
+        items={[
+          { id: 'a', active: true },
+          { id: 'b', active: false }
+        ]}
+        getRowKey={(row) => row.id}
+      />
+    );
+
+    expect(cellText(screen.container, 0)).toEqual(['true', 'false']);
+  });
+});
+
 describe('ungrouped rows', () => {
   // Rows `groupBy` put in no group were headed by the empty-state text,
   // "Nothing here", above rows that were plainly there.

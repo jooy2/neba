@@ -89,7 +89,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - **D28 (96)** Done (a). Calendar on a server: (a) a stable first tab stop and the docs; (b) the docs only.
 - **D29 (97)** Done (a). Toggle `outline` hover: (a) keep the pressed fill and move the edge and ink; (b) a new step.
 - **D30 (100)** Done (a). `useShortcut` repeats and handled keys: (a) skip both, with a `repeat` option; (b) skip handled keys only; (c) document it.
-- **D31 (109)** DataTable booleans: (a) `String(value)`; (b) localised words; (c) document `render`.
+- **D31 (109)** Done (a). DataTable booleans: (a) `String(value)`; (b) localised words; (c) document `render`.
 - **D32 (113)** Pill light and press: (a) onto the inner button; (b) off while `details` is open; (c) leave it.
 - **D33 (124, high)** A2UI function arguments, now including `length`, `and` and `or`: (a) the specification's shapes; (b) Neba's own implementations.
 - **D34 (125)** A2UI checks without `message`: (a) accept them and ask the model for one; (b) ask the model only.
@@ -239,7 +239,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **106** DataTable: PageUp and PageDown move 9 rows in a bounded table that is not virtual, whatever its height. `DataTable.tsx:1155-1165, 1498`. Fix: read the viewport's `clientHeight` less the head. A virtual body takes the header off too now, since it lays over the rows there as well.
 - [x] **107** DataTable: the column-reorder marker is always on the physical left edge, but a forward drag lands after the target, and RTL is the mirror of that. `DataTable.tsx:1308-1314, 2172`. Fix: choose the start or end edge from the direction, written logically. A box shadow has no logical form, so the right-to-left half is an `rtl:` class beside each.
 - [x] **108** DataTable: in a virtual body an open cell editor is unmounted when its row scrolls out, which loses the edit where no blur fires and reopens it on the way back (unverified). `DataTable.tsx:1186-1190, 2404-2417`. Fix: always render the row being edited. Confirmed in Chromium: no `blur` and no `onCellEdit`, and the editor came back holding the old value. The row is drawn inside the spacer, split around it, and in the same array as the window's rows, so it moves into the run rather than mounting again when the window reaches it.
-- [ ] **109** [decision] DataTable: a boolean in a column without `render` draws an empty cell, while sorting, search and CSV all see it. `DataTable.tsx:569-577`. (a) Write `String(value)`; (b) localised yes and no; (c) document that booleans need `render`.
+- [x] **109** [decision] DataTable: a boolean in a column without `render` draws an empty cell, while sorting, search and CSV all see it. `DataTable.tsx:569-577`. (a) Write `String(value)`; (b) localised yes and no; (c) document that booleans need `render`. Decided: (a). `plainCell` writes `String(value)`, the same word the search folds and the CSV holds, and both pages say to reach for `render` for anything a reader would say instead.
 
 ### Surfaces
 
