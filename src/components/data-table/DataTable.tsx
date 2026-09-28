@@ -2196,6 +2196,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     total: number.format(total)
   });
 
+  const selectedText =
+    selects && selectedKeys.size > 0
+      ? fillMessage(messages.selected, { count: number.format(selectedKeys.size) })
+      : '';
+
   const goToPage = (next: number) => {
     if (pageProp === undefined) {
       setUncontrolledPage(next);
@@ -3037,15 +3042,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           className={cx('flex flex-wrap items-center gap-3', metaTextClasses[size])}
           style={{ padding: `0.375rem ${padX}`, borderTop: '1px solid var(--n-line)' }}
         >
-          <span className="text-(--neba-muted-fg) tabular-nums">{rangeText}</span>
+          {/* One status around both counts, drawn whether or not anything is
+              chosen: a live region that arrives with its text is one a
+              screen reader never reads, and these two are what say that a
+              search found fewer rows or that a press chose some. */}
+          <span role="status" className="flex flex-wrap items-center gap-3">
+            <span className="text-(--neba-muted-fg) tabular-nums">{rangeText}</span>
 
-          {selects && selectedKeys.size > 0 ? (
-            <span className="text-(--n-accent) tabular-nums">
-              {fillMessage(messages.selected, {
-                count: number.format(selectedKeys.size)
-              })}
-            </span>
-          ) : null}
+            {selectedText ? (
+              <span className="text-(--n-accent) tabular-nums">{selectedText}</span>
+            ) : null}
+          </span>
 
           <div className="ms-auto flex items-center gap-2">
             {paging === 'pages' && pageSizeOptions.length > 0 ? (
@@ -3093,15 +3100,16 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         </div>
       ) : null}
 
-      {/* How many rows there are, when the body cannot be counted by reading it
-          and there is no footer saying so. A table that renders every one of
-          its rows has already answered this, and repeating it into a live
-          region would interrupt the reader to say nothing. */}
-      {!showFooter && virtualized ? (
-        <span className={srOnlyClasses} aria-live="polite">
+      {/* The same two counts with no footer to draw them. A live region
+          speaks only when its text changes, so this says nothing until a
+          search or a selection changes a number — and then it is the only
+          thing that does, whether or not every row is in the document. */}
+      {showFooter ? null : (
+        <span role="status" className={srOnlyClasses}>
           {rangeText}
+          {selectedText ? ` ${selectedText}` : null}
         </span>
-      ) : null}
+      )}
 
       {/* The first half of every row tick's name. Hidden and still read: a
           name taken by reference is read whatever the reference looks like. */}

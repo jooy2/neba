@@ -225,6 +225,7 @@ const rowKey = (row: Build) => row.id;
 - `selectionMode`가 없어도 행이 무언가를 열거나(`onRowActivate`) 편집할 셀이 있으면 tab stop을 가진 `grid`입니다. 방향키로 활성 행을 옮기면 `aria-activedescendant`가 그 행을 가리키고, <kbd>Enter</kbd>로 열고 <kbd>F2</kbd>로 편집하며, 아무것도 고르지 않습니다. 그 어느 것도 없으면 평범한 `table`이며, 정렬 가능한 머리글 말고는 focus를 받는 것이 없습니다.
 - 정렬 가능한 머리글은 진짜 `<button>`이고, 그것을 감싼 `<th>`가 `aria-sort`를 답니다.
 - 표에 `caption`이나 `label`을 주세요. 둘 다 없으면 screen reader는 이름 없는 grid라고 읽습니다.
+- 행 범위와 선택한 행 수는 `status`입니다. footer가 있으면 footer에, 없으면 화면에 보이지 않게 둡니다. 검색하거나 페이지를 넘기거나 행을 고르면 스크린 리더가 바뀐 숫자를 읽습니다.
 - 크기 조정 핸들은 tab 순서에 들어가는 `separator`이고, 이름은 "너비 조절"과 열 이름이며, 너비를 `aria-valuenow`로 알립니다. 핸들을 품은 헤더의 이름은 여전히 열 이름뿐입니다.
 - 옮길 수 있는 헤더에는 <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd>를 알리는 `aria-keyshortcuts`가 붙습니다.
 - 셀은 줄을 바꾸지 않고 글자를 자릅니다. 스크린 리더는 전체를 읽고, `render`가 없는 셀이 잘렸다면 포인터를 올렸을 때 전체 텍스트가 툴팁으로 나옵니다. 키보드 사용자는 핸들로 열을 넓히면 됩니다.

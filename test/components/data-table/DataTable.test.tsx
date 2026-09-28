@@ -412,6 +412,45 @@ describe('DataTable', () => {
       expect(read).toBe(folded);
     });
 
+    // Only a virtual table with no footer said how many rows a search left,
+    // and a footer's count was text that changed with nothing reading it.
+    it('says how many rows a search leaves, with a footer or without one', async () => {
+      const bare = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} searchable />
+      );
+
+      await bare.getByRole('searchbox').fill('Oslo');
+      await expect.element(bare.getByRole('status')).toHaveTextContent('1–1 of 1');
+      await bare.unmount();
+
+      const footed = await render(
+        <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} searchable footer />
+      );
+
+      await footed.getByRole('searchbox').fill('o');
+      await expect.element(footed.getByRole('status')).toHaveTextContent('1–3 of 3');
+      await expect.element(footed.getByRole('status')).toBeVisible();
+    });
+
+    it('says how many rows are chosen in the same status', async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+          footer
+        />
+      );
+      const status = screen.getByRole('status');
+
+      await expect.element(status).toHaveTextContent('1–3 of 3');
+
+      await screen.getByText('Bo').click();
+
+      await expect.element(status).toMatchTextContent('1 selected');
+    });
+
     it('applies the caller’s own filter after the search', async () => {
       const screen = await render(
         <DataTable

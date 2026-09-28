@@ -38,6 +38,8 @@
 
 ### Fixed
 
+- **A `DataTable` says how many rows a search left and how many are chosen.** Only a virtual table with no footer had a live count, so a search that left three rows of two hundred said nothing, and the footer's counts were text that changed with nothing reading it. The footer's range and selection count are one `status` now, and a table with no footer keeps a visually hidden one.
+
 - **Every link that opens a new tab says so.** Only `TextLink` read out "(opens in a new tab)". A `ChatBubble`'s link preview, a `MenuItem`, a `NavigationMenu` link, an `AppLogo`, a `BottomNavigationItem`, a `BreadcrumbItem`, a `Sources` row and an `InlineCitation` given a `target` that leaves the tab now end their accessible name with the same visually hidden words, in the component's `locale` or the provider's. A test that found one of those links by its exact name should add the words.
 
 - **A queued `useConfirm` question opens as a question of its own.** The second of two questions took over the open sheet rather than opening it, so its `initialFocus` never ran — a `danger` question after a plain one came up with the focus on the destructive button — and its title was not announced. Each question is a sheet of its own now, and the focus goes back to what asked once the last one is answered.

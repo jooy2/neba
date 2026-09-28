@@ -224,6 +224,7 @@ The file leads with a byte-order mark, so Excel reads its non-ASCII text correct
 - With `checkboxes`, a row's tick is out of the tab order, since <kbd>Space</kbd> already chooses the active row, and it is named after the row: "Select row" and then the row's first cell.
 - Without one it is still a `grid` with a tab stop when a row opens something (`onRowActivate`) or a cell edits, so the arrows move an active row that `aria-activedescendant` points at, <kbd>Enter</kbd> opens it and <kbd>F2</kbd> edits it, and nothing is chosen. With none of those it is a plain `table`, and nothing in it takes focus except the sortable headings.
 - A sortable heading is a real `<button>`; the `<th>` around it carries `aria-sort`.
+- The range and the count of chosen rows are a `status`: in the footer when there is one, and visually hidden when there is not. A screen reader hears the new numbers after a search, a page change or a selection.
 - Give the table a `caption` or a `label`. Without either, a screen reader announces an unnamed grid.
 - A resize handle is a `separator` in the tab order, named "Resize" and the column's label, with its width in `aria-valuenow`. The heading around it is still named by its label alone.
 - A heading that moves carries `aria-keyshortcuts` for <kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd>.
