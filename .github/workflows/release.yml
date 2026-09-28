@@ -6,10 +6,20 @@ name: release
 # tag names the version that was cut, the package built the way `npm publish`
 # builds it, and the release written from that version's changelog section with
 # the tarball attached.
+#
+# Run from the Actions tab instead, it writes the releases a tag push could not:
+# a tag runs the workflow file of its own commit, and the commits of 1.16.2 and
+# every version before it have none. See `scripts/release-backfill.mjs`.
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The tag to write a release for, such as v1.16.2 — or "all", for every tag that has none'
+        required: true
+        default: all
 
 permissions:
   contents: write
@@ -21,6 +31,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     name: GitHub release
     # A build, two checks and an upload. Well above what that takes, because a
@@ -93,3 +104,31 @@ jobs:
             gh release create "$GITHUB_REF_NAME" "$tarball" --verify-tag \
               --title "$VERSION" --notes-file "$notes" $prerelease
           fi
+
+  # The releases for tags pushed before this file existed. The body comes from
+  # today's changelog, whose released sections never change, and the tarball
+  # is the one npm is serving for that version rather than a rebuild of it.
+  # Every release it creates is marked as not the latest.
+  backfill:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    name: GitHub releases for older tags
+    # Twenty-odd downloads and uploads of well under a megabyte each.
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+
+      # The input goes through the environment rather than into the script, so
+      # whatever is typed into the form is an argument and never shell.
+      - name: Write the releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: node scripts/release-backfill.mjs "$TAG"

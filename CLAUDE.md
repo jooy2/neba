@@ -551,6 +551,7 @@ npm run lint:fix      # ESLint with --fix
 npm run format:fix    # Prettier write
 node scripts/release-notes.mjs 1.17.0   # the GitHub release body for a version, cut out of CHANGELOG.md
 node scripts/build-catalog.mjs --release # the A2UI catalog snapshot a minor release commits
+node scripts/release-backfill.mjs all --dry-run # what the backfill would write for the older tags
 ```
 
 ## Releasing
@@ -561,9 +562,11 @@ A release is three steps, and only the last is automatic. **npm is published by 
 2. **Tag it**: `git tag vX.Y.Z` on that commit and `git push origin vX.Y.Z`.
 3. **[.github/workflows/release.yml](.github/workflows/release.yml)** runs on the tag. It refuses a tag that is not `v` plus the `package.json` version, writes the release body with `scripts/release-notes.mjs` — which refuses a section still called `vNext` or without a date — builds and packs the package with `npm pack`, runs `npm run size` and `npm run compat` on that build, and creates the GitHub release with the tarball attached. A version with a pre-release part (`1.18.0-beta.1`) is marked as a pre-release. Pushing the same tag again updates the release rather than failing.
 
-**The body is the version's whole changelog section**, followed by links to the docs site's changelog and to `CHANGELOG.md` at the tag. GitHub cuts a release body off at 125,000 characters, so a section longer than that is replaced by its opening summary — the prose before its first `### ` — and the links; the script says so rather than letting a list end mid-entry. Read the body before tagging with `node scripts/release-notes.mjs X.Y.Z`.
+**The body is the version's whole changelog section**, followed by links to the docs site's changelog and to `CHANGELOG.md` at the tag. GitHub cuts a release body off at 125,000 characters, so a section longer than that is written as far as it fits, from the top and in whole pieces — the opening summary, then each heading with its entries one at a time — and ends on a line pointing at the rest; nothing stops mid-entry. The size is counted in UTF-8 bytes, the stricter reading. 1.14.0 is the one section so far that needs it. Read the body before tagging with `node scripts/release-notes.mjs X.Y.Z`.
 
 **The tarball is the only asset**, because it is exactly what `npm publish` uploads: `prepare` is the build and `.npmignore` decides the contents. `neba/styles.css` and the A2UI catalog are not attached on their own; a CDN serves any file of the published package, and the catalog is served by the docs at the URL its own `catalogId` names. The tests are not run again on the tag, since it goes on a commit whose `main` run has passed them.
+
+**Every version from 1.0.0 is tagged**, at the commit npm recorded as its `gitHead`. Two are the exceptions: 1.13.0 was published from a working tree whose version bump was not yet committed, so its tag is on the bump commit right after its `gitHead`; and 1.14.0 is not on npm at all, so its tag is on its bump commit. 0.0.1 predates this repository's history and has no tag. Those tags were pushed before `release.yml` existed, and a tag runs the workflow file of its own commit, so they produced no release. **Running `release.yml` from the Actions tab** (`workflow_dispatch`) writes them with `scripts/release-backfill.mjs`: the body from today's `CHANGELOG.md`, whose released sections never change, and the tarball npm is serving for that version rather than a rebuild of it — a version npm does not have is released without one, and says so. `all` skips any tag that already has a release and marks the ones it creates as not the latest; a single tag is created or brought up to date.
 
 ## Testing
 
