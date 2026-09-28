@@ -126,11 +126,20 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   text: `${surfaceClasses} text-(--n-on-tint) bg-(--n-soft)`
 };
 
+/**
+ * What the pressable middle does under the pointer and the press, laid over
+ * the shell's own plate.
+ *
+ * On the button and not on the shell: on the shell, pressing a control in
+ * `endIcon` or inside the open `details` pressed the whole Pill, and the light
+ * washed across the details as if they were part of the button. A `text`
+ * pill's button adds the wash its shell already has, which is the step up the
+ * shell used to take for itself.
+ */
 const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   solid: 'hover:bg-(--n-fill-hover) active:bg-(--n-fill-active)',
-  outline:
-    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)] active:bg-(--n-panel-press)',
-  text: 'hover:bg-(--n-soft-hover) active:bg-(--n-soft-press)'
+  outline: 'hover:bg-(--n-panel-hover) active:bg-(--n-panel-press)',
+  text: 'hover:bg-(--n-soft) active:bg-(--n-soft-hover)'
 };
 
 /**
@@ -334,18 +343,11 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
         transitionClasses,
         pressTransitionClasses,
         iconClasses,
-        interactive ? `neba-glow ${hoverClasses[variant]}` : '',
         (safeArea ? safePositionClasses : positionClasses)[position][side],
         className ?? ''
       )}
       style={{ ...controlSlots(color, elevation, variant), ...style }}
-      // The Pill carried `neba-glow` without ever writing the two slots it
-      // reads, so its spotlight sat in the middle of the lozenge and stayed
-      // there.
       {...props}
-      // After the spread: this composes the caller's own handler rather than
-      // being written over by it.
-      onPointerMove={trackPointer(props.onPointerMove, interactive)}
     >
       <div
         className={[
@@ -373,15 +375,23 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
           <button
             type="button"
             className={[
-              'flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch',
+              'relative flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch',
               // The lozenge's own radius and a ring drawn inside the edge: the
               // shell clips, and a ring two pixels outside the button was cut
               // off at the start of the row and at every corner.
               pillRadiusClasses[size],
               gapClasses[size],
               padX,
-              insetRingClasses
+              insetRingClasses,
+              // The light and the press, on the one part a press presses.
+              'neba-glow',
+              hoverClasses[variant],
+              transitionClasses,
+              pressTransitionClasses
             ].join(' ')}
+            // It writes the two slots `neba-glow` reads, or the spotlight sat in
+            // the middle of the button and stayed there.
+            onPointerMove={trackPointer(undefined, true)}
             // With details to reveal, pressing the pill is what reveals them — so
             // the button says whether they are showing and which panel they are.
             aria-expanded={hasDetails ? expanded : undefined}

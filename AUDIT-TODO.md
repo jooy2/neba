@@ -90,7 +90,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - **D29 (97)** Done (a). Toggle `outline` hover: (a) keep the pressed fill and move the edge and ink; (b) a new step.
 - **D30 (100)** Done (a). `useShortcut` repeats and handled keys: (a) skip both, with a `repeat` option; (b) skip handled keys only; (c) document it.
 - **D31 (109)** Done (a). DataTable booleans: (a) `String(value)`; (b) localised words; (c) document `render`.
-- **D32 (113)** Pill light and press: (a) onto the inner button; (b) off while `details` is open; (c) leave it.
+- **D32 (113)** Done (a). Pill light and press: (a) onto the inner button; (b) off while `details` is open; (c) leave it.
 - **D33 (124, high)** A2UI function arguments, now including `length`, `and` and `or`: (a) the specification's shapes; (b) Neba's own implementations.
 - **D34 (125)** A2UI checks without `message`: (a) accept them and ask the model for one; (b) ask the model only.
 - **D35 (126)** A2UI Statistic value: (a) parse a numeric string; (b) a number type; (c) `anyOf`.
@@ -246,7 +246,7 @@ Every tagged item, with the option recommended first. They are asked once the un
 - [x] **110** Tabs: a vertical bar with the default `overflow="scroll"` never becomes a scroll container, but it still fades its end, so tabs past the bottom are masked and unreachable (unverified). `src/components/tabs/Tabs.tsx:572`. Fix: `overflow-y-auto` on a vertical bar that does not wrap. Tested at class level. That the foot was masked follows from the overflow attributes being written off `scrollHeight`, which does not need a scroll container to exceed `clientHeight`.
 - [x] **111** Card: `headerAction` uses the physical `ml-auto`. `src/components/card/Card.tsx:100`. Fix: `ms-auto`.
 - [x] **112** Skeleton: a stacked, labelled skeleton passes an unkeyed `<span>` in a children array. `src/components/skeleton/Skeleton.tsx:232-247`. Fix: `<>{spoken}{bars}</>`.
-- [ ] **113** [decision] Pill: the light and the pressed fill are on the whole shell, so pressing a control in `endIcon` or inside the open `details` presses the Pill, and the light washes the details content. `src/components/pill/Pill.tsx:347, 358`. (a) Move them onto the inner button (with 26); (b) turn them off while `details` is open; (c) leave it.
+- [x] **113** [decision] Pill: the light and the pressed fill are on the whole shell, so pressing a control in `endIcon` or inside the open `details` presses the Pill, and the light washes the details content. `src/components/pill/Pill.tsx:347, 358`. (a) Move them onto the inner button (with 26); (b) turn them off while `details` is open; (c) leave it. Decided: (a). The button takes `neba-glow`, `trackPointer`, the house transition and the hover and press fills; a `text` pill's button adds the wash its shell already has. The `outline` shell's hover border went with them, since the only way to keep it would be `:has()`, which is past the browser floor.
 
 ### Layout and transitions
 

@@ -202,6 +202,34 @@ describe('Pill', () => {
     });
   });
 
+  // On the shell, pressing a control in `endIcon` or inside the open details
+  // pressed the whole Pill, and the light washed across the details.
+  it('lights and presses its button rather than the whole shell', async () => {
+    const screen = await render(
+      <Pill data-testid="pill" onClick={() => {}} endIcon={<button type="button">Stop</button>}>
+        Recording
+      </Pill>
+    );
+    const shell = screen.getByTestId('pill').element() as HTMLElement;
+    const button = screen.getByRole('button', { name: 'Recording' }).element() as HTMLElement;
+
+    expect(shell).not.toHaveClass('neba-glow');
+    expect(shell.className).not.toMatch(/hover:bg-|active:bg-/);
+    expect(button).toHaveClass('neba-glow');
+
+    const box = button.getBoundingClientRect();
+
+    button.dispatchEvent(
+      new PointerEvent('pointermove', {
+        bubbles: true,
+        clientX: box.left + 5,
+        clientY: box.top + 5
+      })
+    );
+
+    expect(button.style.getPropertyValue('--n-mx')).not.toBe('');
+  });
+
   describe('style props', () => {
     it('takes the tinted control slots, not a container’s undyed ones', async () => {
       const screen = await render(

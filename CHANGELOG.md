@@ -36,6 +36,8 @@
 
 ### Changed
 
+- **A pressable `Pill` lights and presses its button rather than its whole shell.** The pointer light, the hover fill and the press were on the shell, so pressing a control in `endIcon` or inside the open `details` pressed the whole Pill, and the light washed across the details. They are on the pressable middle now; an `outline` Pill's edge no longer changes under the pointer, since the edge belongs to the shell.
+
 - **`useShortcut` runs once for a held key, and leaves a key a control already answered.** Every auto-repeat of a held combination ran the handler again, and a key a focused field had handled with `preventDefault` ran it as well, so a field's own `Mod+K` also opened a `CommandPalette` bound to the same key. Repeats are skipped unless `repeat: true` is passed, and still have their default prevented; a key another handler prevented is left to it. A `CommandPalette` that is already open no longer asks to open again.
 
 - **An `outline` `Toggle` that is on keeps its plate under the pointer.** Hover and press swapped the dyed plate for a paler wash, so a toggle that was on faded towards off as the pointer arrived. The plate stays now, and hover moves the edge to the accent and the label to the full ink.
