@@ -793,20 +793,20 @@ function DashboardBody() {
                   <div className="flex flex-col gap-3">
                     <Switch
                       size="sm"
-                      labelPlacement="start"
+                      labelSide="start"
                       label="Auto-fulfil paid orders"
                       checked={autoFulfil}
                       onCheckedChange={setAutoFulfil}
                     />
                     <Switch
                       size="sm"
-                      labelPlacement="start"
+                      labelSide="start"
                       label="Email the customer on dispatch"
                       defaultChecked
                     />
                     <Switch
                       size="sm"
-                      labelPlacement="start"
+                      labelSide="start"
                       label="Hold orders flagged as risky"
                       defaultChecked
                     />

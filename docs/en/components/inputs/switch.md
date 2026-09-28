@@ -35,9 +35,11 @@ If there is a Save button underneath and the value is submitted with a form, use
 
 </Demo>
 
-### labelPlacement
+### labelSide
 
 `end` (the default) puts the label after the control, so it reads as a caption. `start` suits a settings list, where the labels form a left column and the switches line up on the right.
+
+It was called `labelPlacement`, which is the name every field uses for where its label is drawn — above it, on its edge, inside it — and which a [NebaProvider](../../guide/provider) fills in for all of them. `labelPlacement` still works here when `labelSide` is left out, and goes in the next minor release.
 
 <Demo src="switch/placement">
 

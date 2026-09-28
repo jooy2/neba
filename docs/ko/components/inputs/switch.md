@@ -35,9 +35,11 @@ import { Switch } from 'neba';
 
 </Demo>
 
-### labelPlacement
+### labelSide
 
 `end`(기본)는 컨트롤 뒤에 라벨을 두어 설명처럼 읽히게 합니다. `start`는 라벨이 왼쪽 열을 이루고 스위치가 오른쪽에 정렬되는 설정 목록에 적합합니다.
+
+예전 이름은 `labelPlacement`였습니다. 이 이름은 모든 필드에서 라벨을 필드의 위, 테두리, 안 가운데 어디에 그릴지를 뜻하고, [NebaProvider](../../guide/provider)가 필드 전체에 채워 넣는 값입니다. `labelSide`가 없으면 여기서도 `labelPlacement`를 그대로 읽으며, 다음 minor 릴리스에서 빠집니다.
 
 <Demo src="switch/placement">
 

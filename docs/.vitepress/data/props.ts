@@ -5203,12 +5203,20 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '켜고 꺼질 때', en: 'Called when the switch is turned on or off' }
     },
     {
-      name: 'labelPlacement',
+      name: 'labelSide',
       type: "'start' | 'end'",
       default: "'end'",
       description: {
         ko: '라벨이 놓이는 쪽. start는 설정 목록처럼 스위치가 오른쪽에 정렬되어야 할 때',
         en: 'Which side the label sits on. `start` is for a settings list, where the switches line up on the right'
+      }
+    },
+    {
+      name: 'labelPlacement',
+      type: "'start' | 'end'",
+      description: {
+        ko: '사용 중단 예정. labelSide를 쓰세요. labelSide가 없을 때만 읽으며 다음 minor 릴리스에서 빠집니다',
+        en: 'Deprecated: use labelSide. Read only when labelSide is left out, and removed in the next minor release'
       }
     },
     {

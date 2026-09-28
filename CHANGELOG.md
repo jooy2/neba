@@ -36,6 +36,8 @@
 
 ### Changed
 
+- **A `Switch` takes `labelSide` for the side its label sits on, and `labelPlacement` is deprecated there.** On every field `labelPlacement` says where the label is drawn — above the field, on its edge, inside it — and a `NebaProvider` fills it in for all of them; on a `Switch` the same name meant which side, `start` or `end`. `labelSide` takes those two values now. `labelPlacement` is still read when `labelSide` is left out, and is removed in the next minor release; `SwitchLabelPlacement` is an alias of the new `SwitchLabelSide` for as long.
+
 - **`engines.node` is `>=18.20.0`.** The package said `>=18.0.0`, and `neba/a2ui` imports its catalog with an import attribute that Node has only from 18.20 and 20.10. Nothing else in the package needs more.
 
 - **The A2UI catalog names the minor version it belongs to.** Its `catalogId` was the bare `https://neba.cdget.com/a2ui/catalog.json`, served from the docs, which deploy from `main` — so the file behind it could describe components the adapter a host had installed did not have yet. A published catalog's `catalogId` is `…/a2ui/<major>.<minor>/catalog.json` now, served at that address, and the adapter registers the same id; the bare URL is always the latest. A host that hard-coded the old id in a `createSurface` should use `nebaCatalogId`.

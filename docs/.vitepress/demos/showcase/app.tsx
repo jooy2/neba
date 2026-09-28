@@ -1387,8 +1387,8 @@ function ShowcaseBody() {
 
               <Card size="sm" title="Notifications">
                 <div className="flex flex-col gap-3">
-                  <Switch size="sm" labelPlacement="start" label="Email alerts" defaultChecked />
-                  <Switch size="sm" labelPlacement="start" label="Deploy failures" defaultChecked />
+                  <Switch size="sm" labelSide="start" label="Email alerts" defaultChecked />
+                  <Switch size="sm" labelSide="start" label="Deploy failures" defaultChecked />
                   <Slider size="sm" label="Quiet hours" defaultValue={[22, 7]} max={24} showValue />
                 </div>
               </Card>

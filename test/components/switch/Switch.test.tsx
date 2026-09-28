@@ -44,7 +44,7 @@ describe('Switch', () => {
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy();
 
-      await screen.rerender(<Switch label="Alerts" labelPlacement="start" />);
+      await screen.rerender(<Switch label="Alerts" labelSide="start" />);
 
       expect(
         screen
@@ -53,6 +53,24 @@ describe('Switch', () => {
           .compareDocumentPosition(screen.getByText('Alerts').element()) &
           Node.DOCUMENT_POSITION_PRECEDING
       ).toBeTruthy();
+    });
+
+    // `labelPlacement` means where a field's label is drawn everywhere else,
+    // so the side is `labelSide`; the old name is read for one more minor.
+    it('still takes the side under its old name, and prefers the new one', async () => {
+      const before = (node: Element, label: Element) =>
+        Boolean(node.compareDocumentPosition(label) & Node.DOCUMENT_POSITION_PRECEDING);
+      const screen = await render(<Switch label="Alerts" labelPlacement="start" />);
+
+      expect(
+        before(screen.getByRole('switch').element(), screen.getByText('Alerts').element())
+      ).toBe(true);
+
+      await screen.rerender(<Switch label="Alerts" labelPlacement="start" labelSide="end" />);
+
+      expect(
+        before(screen.getByRole('switch').element(), screen.getByText('Alerts').element())
+      ).toBe(false);
     });
   });
 

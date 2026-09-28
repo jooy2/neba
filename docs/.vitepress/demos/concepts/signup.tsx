@@ -516,7 +516,7 @@ export default function SignupConcept() {
                     />
 
                     <Switch
-                      labelPlacement="start"
+                      labelSide="start"
                       label="Send me the monthly product note"
                       description="One email a month. Unsubscribe from any of them."
                       checked={newsletter}

@@ -16,7 +16,11 @@ import { useStyleDefaults } from '../../internal/defaults.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** Which side of the track the label sits on. */
-export type SwitchLabelPlacement = 'start' | 'end';
+/** Which side of the track the label sits on. */
+export type SwitchLabelSide = 'start' | 'end';
+
+/** @deprecated Use `SwitchLabelSide`. */
+export type SwitchLabelPlacement = SwitchLabelSide;
 
 type BaseSwitchProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUISwitch.Root>,
@@ -50,7 +54,15 @@ export interface SwitchProps extends BaseSwitchProps {
    * switch lines up on the right.
    * @default 'end'
    */
-  labelPlacement?: SwitchLabelPlacement;
+  labelSide?: SwitchLabelSide;
+  /**
+   * @deprecated Use `labelSide`. On every field `labelPlacement` says where the
+   * label is drawn relative to the field — above it, on its edge, inside it —
+   * and a `NebaProvider` fills it in for all of them; here it said which side,
+   * so one name meant two things. Read only when `labelSide` is left out, and
+   * removed in the next minor release.
+   */
+  labelPlacement?: SwitchLabelSide;
   /** Class names for the field wrapper, not for the track. */
   className?: string;
   /**
@@ -200,7 +212,8 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     description,
     error,
     invalid,
-    labelPlacement = 'end',
+    labelSide: labelSideProp,
+    labelPlacement,
     disabled: disabledProp,
     readOnly = false,
     className,
@@ -209,6 +222,7 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     ...props
   } = useStyleDefaults(rawProps, ['size']);
   const disabled = useFieldsetDisabled(disabledProp);
+  const labelSide = labelSideProp ?? labelPlacement ?? 'end';
 
   const hasError = error !== undefined && error !== null && error !== false && error !== '';
   const isInvalid = invalid ?? hasError;
@@ -259,7 +273,7 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
           'flex min-w-0 flex-col gap-0.5',
           // With the label on the left it has to take the slack, or the switch
           // sits against the text instead of against the edge of the row.
-          labelPlacement === 'start' ? 'flex-1' : ''
+          labelSide === 'start' ? 'flex-1' : ''
         )}
       >
         {label ? (
@@ -298,7 +312,7 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
           trackRowPaddingClasses[size]
         )}
       >
-        {labelPlacement === 'start' ? (
+        {labelSide === 'start' ? (
           <>
             {text}
             {track}
