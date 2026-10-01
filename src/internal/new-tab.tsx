@@ -14,7 +14,9 @@ import { srOnlyClasses } from './styles.js';
  * invisible until it has already happened, and TextLink was the only link in
  * the library that said so. Every other component that lets a `target` reach an
  * `<a>` puts this last inside it. The space is a real text node, so the name
- * comes out as the label and then the sentence rather than as one word.
+ * comes out as the label and then the sentence rather than as one word — and
+ * it is inside the hidden span, as TextLink's is, because outside it the space
+ * is laid out at the end of any link that is not a flex container.
  *
  * The language is the component's own `locale` where it has one, and the
  * provider's where it has not — a Menu row or a NavigationMenu link takes no
@@ -28,10 +30,5 @@ export function NewTabNote({ target, locale }: { target: string | undefined; loc
     return null;
   }
 
-  return (
-    <>
-      {' '}
-      <span className={srOnlyClasses}>{messages.newTab}</span>
-    </>
-  );
+  return <span className={srOnlyClasses}> {messages.newTab}</span>;
 }
