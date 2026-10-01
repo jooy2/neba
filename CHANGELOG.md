@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.17.1 (2026-10-01)
+
 ### Fixed
 
 - **A `TextLink` that opens a new tab leaves no space after itself.** The space between the label and the "(opens in a new tab)" note for a screen reader was a text node of the link's own, so it was drawn after the glyph and the next word of the sentence stood a space away: "Terms ↗ ." in English, and a Korean particle pushed off its word. The space is inside the hidden note now, and the link's accessible name is unchanged. The same held with `icon={false}` and with a `target="_blank"` written by hand.
