@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A `TextLink` that opens a new tab leaves no space after itself.** The space between the label and the "(opens in a new tab)" note for a screen reader was a text node of the link's own, so it was drawn after the glyph and the next word of the sentence stood a space away: "Terms ↗ ." in English, and a Korean particle pushed off its word. The space is inside the hidden note now, and the link's accessible name is unchanged. The same held with `icon={false}` and with a `target="_blank"` written by hand.
+
 ## 1.17.0 (2026-09-28)
 
 The release the second audit of every public component produced. It went through all of them again, 187 findings in all, and looked hardest at what had landed since the first audit: the agent components, `labelPlacement` and the notch, the chart brush, the second value axis, references and CSV export, and the A2UI catalog and its adapter.

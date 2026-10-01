@@ -231,13 +231,10 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
             {/* Drawn for nobody and read to everybody: the arrow says "new tab"
               only to a reader who can see it. The space is a real text node, so
               the accessible name comes out as two words rather than as the
-              label with a bracket stuck to the end of it. */}
-            {leaves ? (
-              <>
-                {' '}
-                <span className={srOnlyClasses}>{messages.newTab}</span>
-              </>
-            ) : null}
+              label with a bracket stuck to the end of it — and it is inside the
+              hidden span, because outside it the space is laid out at the end
+              of the link and pushes the next word in the sentence away. */}
+            {leaves ? <span className={srOnlyClasses}> {messages.newTab}</span> : null}
           </>
         ),
         ...rest,

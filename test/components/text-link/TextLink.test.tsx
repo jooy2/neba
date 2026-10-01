@@ -208,6 +208,48 @@ describe('TextLink', () => {
 
       await expect.element(screen.getByText('(在新分頁中開啟)')).toBeInTheDocument();
     });
+
+    /*
+     * The space between the label and the note has to be inside the hidden
+     * span. Left as a text node of the link's own, it is laid out after the
+     * glyph and the next word of the sentence lands a space away from the link.
+     */
+    it.each([
+      ['newTab', { newTab: true }],
+      ['newTab without the glyph', { newTab: true, icon: false }],
+      ['a target written by hand', { target: '_blank' }]
+    ])('leaves no space of its own after the label for %s', async (_, extra) => {
+      const screen = await render(
+        <TextLink href="https://example.com" data-testid="link" {...extra}>
+          Example
+        </TextLink>
+      );
+      const loose = Array.from(screen.getByTestId('link').element().childNodes).filter(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === ''
+      );
+
+      expect(loose).toHaveLength(0);
+    });
+
+    it('keeps the label and the note two words apart', async () => {
+      const screen = await render(
+        <>
+          <TextLink href="https://example.com" newTab>
+            Example
+          </TextLink>
+          <TextLink href="https://example.com" newTab locale="ko">
+            예시
+          </TextLink>
+        </>
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Example (opens in a new tab)' }))
+        .toBeInTheDocument();
+      await expect
+        .element(screen.getByRole('link', { name: '예시 (새 창에서 열림)' }))
+        .toBeInTheDocument();
+    });
   });
 
   describe('icon', () => {
