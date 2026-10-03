@@ -239,6 +239,33 @@ const markStackClasses = 'absolute flex text-(--neba-muted-fg)';
 const tickClasses = 'shrink-0 rounded-full bg-(--neba-border)';
 
 /**
+ * Which end of the range a mark sits on, if either.
+ *
+ * Centred, the label on a mark at `min` or `max` hangs half its width past the
+ * end of the track, and in a narrow column that is past the edge of whatever
+ * holds the slider. So a mark at an end lines its label up inward from the
+ * tick instead, and every mark between keeps it centred.
+ */
+function markEnd(mark: SliderMark, min: number, max: number): 'min' | 'max' | 'between' {
+  if (mark.value <= min) {
+    return 'min';
+  }
+
+  return mark.value >= max ? 'max' : 'between';
+}
+
+/**
+ * The alignment for each, horizontal then vertical. A vertical slider runs
+ * from `min` at the bottom, so its two ends swap; the horizontal pair is
+ * logical and turns round under RTL on its own.
+ */
+const markAlignClasses = {
+  min: ['items-start', 'items-end'],
+  max: ['items-end', 'items-start'],
+  between: ['items-center', 'items-center']
+} as const;
+
+/**
  * A value chosen along a range.
  *
  * Pass an array to `value` or `defaultValue` and it becomes a range slider with
@@ -369,7 +396,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
             key={`${mark.value}:${index}`}
             className={cx(
               markStackClasses,
-              vertical ? 'start-0 h-0 items-center gap-1.5' : 'top-0 w-0 flex-col items-center',
+              vertical ? 'start-0 h-0 gap-1.5' : 'top-0 w-0 flex-col',
+              markAlignClasses[markEnd(mark, min, max)][vertical ? 1 : 0],
               classNames?.mark
             )}
             style={markPosition(mark, min, max, vertical)}

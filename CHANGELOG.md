@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Changed
+
+- **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
+
 ## 1.17.1 (2026-10-01)
 
 ### Fixed

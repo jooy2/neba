@@ -41,7 +41,7 @@ Pass an array of numbers as the `value` and you get that many thumbs: a range sl
 
 ### marks
 
-`marks` names points along the track: `1 / 100 / 250 / 500` under a count, or the two ends of a style axis. Pass an array of `{ value, label? }`, and a mark with no label is a tick on its own.
+`marks` names points along the track: `1 / 100 / 250 / 500` under a count, or the two ends of a style axis. Pass an array of `{ value, label? }`, and a mark with no label is a tick on its own. A label is centred on its tick, except at `min` and `max`, where it lines up inward from the tick so that it stays within the length of the track.
 
 `marks` without a value is a tick at every `step`, which is worth pairing with a step you chose — the default `step={1}` over the default range draws a hundred and one of them, and a range of more than a hundred steps draws none at all.
 

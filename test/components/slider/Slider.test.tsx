@@ -265,6 +265,41 @@ describe('Slider', () => {
       expect(screen.container.querySelectorAll('.a-mark')).toHaveLength(0);
     });
 
+    // Centred, the label at either end hung half its width past the track.
+    it('lines a label at either end up inward and centres the rest', async () => {
+      const screen = await render(
+        <Slider
+          aria-label="Count"
+          min={1}
+          max={500}
+          marks={LEVELS}
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+      const marks = [...screen.container.querySelectorAll<HTMLElement>('.a-mark')];
+
+      expect(marks[0]).toHaveClass('items-start');
+      expect(marks[1]).toHaveClass('items-center');
+      expect(marks[2]).toHaveClass('items-end');
+
+      // A vertical slider runs from `min` at the bottom, so the two ends swap.
+      await screen.rerender(
+        <Slider
+          aria-label="Count"
+          orientation="vertical"
+          min={1}
+          max={500}
+          marks={LEVELS}
+          classNames={{ mark: 'a-mark' }}
+        />
+      );
+
+      const column = [...screen.container.querySelectorAll<HTMLElement>('.a-mark')];
+
+      expect(column[0]).toHaveClass('items-end');
+      expect(column[2]).toHaveClass('items-start');
+    });
+
     it('keeps the marks out of the accessibility tree', async () => {
       // The thumb announces the value and the range; the same numbers read
       // again as loose text ahead of it are noise.

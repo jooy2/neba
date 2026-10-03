@@ -6,7 +6,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { DataList, DataListItem } from 'neba';
+import { DataList, DataListItem, Slider } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -41,5 +41,31 @@ describe('a narrow box', () => {
 
     expect(list.scrollWidth).toBeLessThanOrEqual(300);
     expect(value.getBoundingClientRect().width).toBeGreaterThan(40);
+  });
+
+  // Centred on their ticks, the labels at `min` and `max` hung half their width
+  // past the track, and in a narrow column past the edge of the column too.
+  it('keeps the labels at either end of a Slider inside its box', async () => {
+    const screen = await render(
+      <div data-testid="column" style={{ width: 200 }}>
+        <Slider
+          aria-label="Temperature"
+          marks={[
+            { value: 0, label: 'Precise' },
+            { value: 50, label: 'Balanced' },
+            { value: 100, label: 'Creative' }
+          ]}
+        />
+      </div>
+    );
+
+    await expect.element(screen.getByText('Creative')).toBeInTheDocument();
+
+    const column = screen.getByTestId('column').element().getBoundingClientRect();
+    const first = screen.getByText('Precise').element().getBoundingClientRect();
+    const last = screen.getByText('Creative').element().getBoundingClientRect();
+
+    expect(first.left).toBeGreaterThanOrEqual(column.left);
+    expect(last.right).toBeLessThanOrEqual(column.right);
   });
 });
