@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 73
+      "budget": 74.2
     },
     {
       "id": "app-25",
@@ -88,7 +88,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 120.4
+      "budget": 121.7
     },
     {
       "id": "page-shell",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 77.2
+      "budget": 78.4
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 296.1
+      "budget": 297.7
     },
     {
       "id": "a2ui",
@@ -128,13 +128,13 @@
       "from": "neba/a2ui",
       "imports": ["createNebaCatalog"],
       "external": ["@a2ui/react", "@a2ui/web_core", "zod"],
-      "budget": 92.6
+      "budget": 93.9
     },
     {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",
-      "budget": 25.7
+      "budget": 26
     }
   ]
 }
