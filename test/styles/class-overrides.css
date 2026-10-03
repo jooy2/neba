@@ -1,0 +1,18 @@
+/*
+ * `neba/styles.css`, plus the utilities `class-overrides.test.tsx` writes the
+ * way a caller would.
+ *
+ * The standalone build scans only `src/`, so a class no component spells out is
+ * never generated, and a test that passed one would be measuring nothing. These
+ * are compiled in the same pass as the library's own, which is also how a
+ * consumer who runs Tailwind gets them: the comparison under test is between a
+ * caller's utility and a component's, and both land in one layer either way.
+ *
+ * The `@source` naming `src/` is not redundant. Vite inlines the `@import`
+ * before Tailwind sees the file, so the `@source '.'` inside `styles.css` ends
+ * up resolved against this folder rather than its own.
+ */
+@import '../../src/standalone.css';
+
+@source '../../src';
+@source inline('mb-8 mb-8! text-[2.5rem] leading-none font-black tracking-tight text-red-600 md:text-5xl no-underline font-semibold decoration-2 underline-offset-4 decoration-red-600 text-xl mb-2');

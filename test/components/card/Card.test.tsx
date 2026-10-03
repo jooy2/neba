@@ -85,6 +85,18 @@ describe('Card', () => {
       expect(root.hasAttribute('title')).toBe(false);
     });
 
+    // A heading with no class is guarded against a host's `.prose h2`; one with
+    // a class is the caller's and only loses the browser's own defaults.
+    // Measured in `test/styles/class-overrides.test.tsx`.
+    it('resets a heading passed as the title at two strengths', async () => {
+      const screen = await render(<Card title={<h2>Invoice</h2>} />);
+      const wrapper = screen.getByRole('heading', { name: 'Invoice' }).element().parentElement;
+
+      expect(wrapper).toHaveClass('neba-title');
+      expect(wrapper).toHaveClass('[&.neba-title_:where(h1,h2,h3,h4,h5,h6):not([class])]:m-0');
+      expect(wrapper).toHaveClass('[:where(&)_:where(h1,h2,h3,h4,h5,h6)]:m-0');
+    });
+
     it('lays the footer out as a row', async () => {
       const screen = await render(
         <Card footer={<span>Action</span>} data-testid="card">

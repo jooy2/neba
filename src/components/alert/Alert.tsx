@@ -16,6 +16,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  sheetTitleHeadingClasses,
   surfaceClasses,
   transitionClasses
 } from '../../internal/styles.js';
@@ -211,7 +212,9 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
         className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}
       >
         {titled ? (
-          <div className={`neba-title font-semibold ${sheetTitleClasses[size]} ${accent}`}>
+          <div
+            className={`${sheetTitleHeadingClasses} font-semibold ${sheetTitleClasses[size]} ${accent}`}
+          >
             {title}
           </div>
         ) : null}

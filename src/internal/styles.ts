@@ -369,6 +369,37 @@ export const sheetTitleClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * What a sheet puts on the element around its `title`.
+ *
+ * A plain string needs nothing. A sheet that belongs in the document outline is
+ * given a real heading, `title={<h2>…</h2>}`, and that heading arrives with the
+ * browser's 1.5em bold and its margins, which would ignore the scale
+ * `sheetTitleClasses` just set — so it inherits the wrapper's font and loses
+ * its margins.
+ *
+ * At two strengths, as Typography's scale is. The **guard** reaches a heading
+ * with no `class` at all, at three classes' worth, because `.prose h2` and
+ * `.vp-doc h2` are a class plus a tag: without it a `<Card title={<h2>…</h2>}>`
+ * inside rendered Markdown came out at 24px where the card asked for 15px. A
+ * heading that carries a class gets only the **floor**, at zero specificity,
+ * which still takes the browser's defaults away and loses to every class on it,
+ * so `title={<h2 className="text-xl">…</h2>}` is 20px. The heading is the
+ * caller's element, so its classes cannot be read per property the way
+ * `internal/overrides.ts` reads a component's own `className`; having one at
+ * all is where the line is drawn.
+ *
+ * These are utilities rather than a rule in `styles.css`, which in a consumer's
+ * own Tailwind build is unlayered and would beat every class on the heading.
+ * `neba-title` closes the guard's selector, and is a hook as well.
+ */
+export const sheetTitleHeadingClasses =
+  'neba-title ' +
+  '[&.neba-title_:where(h1,h2,h3,h4,h5,h6):not([class])]:[font:inherit] ' +
+  '[&.neba-title_:where(h1,h2,h3,h4,h5,h6):not([class])]:m-0 ' +
+  '[:where(&)_:where(h1,h2,h3,h4,h5,h6)]:[font:inherit] ' +
+  '[:where(&)_:where(h1,h2,h3,h4,h5,h6)]:m-0';
+
+/**
  * The same ladder, for a title that is a real heading element.
  *
  * Most titles in the library are a `<div>` or a `<span>`, which nothing styles
@@ -383,8 +414,9 @@ export const sheetTitleClasses: Record<NebaSize, string> = {
  *
  * So those three write their type through `[&.neba-heading]`, which compiles to
  * two classes, and carry `neba-heading` to close the selector. It is the same
- * arrangement `neba-link` and `neba-typography` make, and the same trade: an
- * override through `className` needs Tailwind's `!`.
+ * guard `neba-link` and `neba-typography` write, without the floor they drop
+ * to for a property a caller sets (`internal/overrides.ts`): none of the three
+ * headings takes a caller's `className`, so the host is all it holds off.
  *
  * This is a second spelling of one ladder, which is normally the thing to avoid.
  * It is checked rather than trusted — `test/package/resolution.test.ts` asserts

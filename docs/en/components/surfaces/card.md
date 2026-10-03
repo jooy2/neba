@@ -57,7 +57,7 @@ Sets the sheet's radius and padding together with the type scale of the header a
 
 ### Holding controls
 
-A Card holds a form as readily as text, with its actions in `footer`. Pass a real heading as `title` to put the card in the document outline: `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's.
+A Card holds a form as readily as text, with its actions in `footer`. Pass a real heading as `title` to put the card in the document outline: `title={<h2>…</h2>}`. It inherits the Card's type scale rather than the browser's, even inside an article whose stylesheet styles `h2`. Classes on the heading win over that scale, `title={<h2 className="text-xl">…</h2>}`; a heading with a class is left to them, so inside such an article the article's rule applies to whatever they do not set.
 
 <Demo src="card/form">
 

@@ -159,6 +159,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `color.ts` | The colour arithmetic ColorPicker needs |
 | `i18n.ts` | The words the library says on its own behalf |
 | `notch.tsx` | A field's label on its top edge, and the edge drawn around it |
+| `overrides.ts` | Which properties a caller's `className` sets |
 
 #### `internal/button-group.ts` and `internal/menu.ts`
 
@@ -292,6 +293,14 @@ Everything that decides what the pieces look like is in `styles.css` under "The 
 
 The label lets presses through (`pointer-events: none`): a resting label covers most of the control, and a Select opens on the pointer going down on its trigger, which a label in front of it would take.
 
+#### `internal/overrides.ts`
+
+`internal/overrides.ts` is how Typography and TextLink let a caller's utility through without letting the host's rule in. Both write their defaults through a doubled class, `[&.neba-typography]` and `[&.neba-link]`, because `.prose h2` and `.vp-doc a` are a class plus a tag. A caller's utility is one class as well, so the same guard silently beat `className="mb-8"`, and no specificity sits above the host and below the caller. So each default comes in two strengths: the **guard**, and a **floor** written through `[:where(&)]` at zero specificity. `overriddenBy(className)` says which properties the caller's classes set, and those take the floor, which any utility beats under any variant while still holding the default below a `md:` or a `hover:`.
+
+Three rules in it are load-bearing. It reads Tailwind's names and nothing else, so a class from the caller's own stylesheet still needs two classes or `!important`. A name it cannot place counts as everything it might set, because `text-brand` is a colour in one theme and a size in another: a false hit costs one element its guard against the host, and a miss is the silent loss the module exists to end. And an important class does not count, so a call site already written with `!` renders exactly as it did. The floor has to be a utility rather than a rule in `styles.css`: in a consumer's Tailwind build `styles.css` is unlayered and the utilities are in a layer, so a zero-specificity rule there would still beat every utility.
+
+`sheetTitleHeadingClasses` in `internal/styles.ts` is the same trade for the one element the component does not own: a heading a caller hands a Card, an Alert, an Empty or a Toast as its `title`. Its classes cannot be read per property, so the line is drawn per element — a heading with no `class` gets the guard against `.prose h2`, and one with a class gets only the floor, which takes the browser's 1.5em bold and margins away and loses to everything on it.
+
 #### `internal/i18n.ts`
 
 `internal/i18n.ts` is the words the library says on its own behalf. Almost nothing in Neba writes text a reader sees — a Button says what it was handed — so this is only for the strings a component has to invent because there is nowhere else for them to come from: the sentence behind a link that opens a new tab, the label on the button that uncovers a Spoiler, the word under a chat message that says it was read. They are collected because they are a set: a product in Korean does not want eight components each defaulting to English and each needing an override prop of its own. Nothing `Intl` already knows goes in here — month names, weekday names and AM/PM come from the platform, which is why the date pickers read this file for their twenty steppers, footers and column headers and **not** for a single date. A component that reads it takes a `locale` **and** an override prop for the string itself, so an unsupported language is never a dead end.
@@ -314,7 +323,7 @@ Adding a namespace is therefore a new `export const` beside the others **and** a
 
 The row's own background stays a utility, because it has a hover state and inline styles have no `:hover`. It reads a `--n-row` slot that classes then set: a custom property is invisible to a host stylesheet, so a variant wins there without a fight. `paddingXValues` in `internal/styles.ts` is `paddingXClasses` as raw lengths for exactly this; keep the two in step.
 
-An `<a>` is the other one, and TextLink answers it the other way. Inline styles are no use there — half of what a link draws only exists on `:hover` — so the selector is doubled instead: `.neba-link.neba-link` in `styles.css` carries the invariants (the line's thickness, its offset, its colour, the weight), and the two things a prop changes, the colour and whether the line is drawn, are written in the component through `[&.neba-link]`. Two classes clears `.prose a` and `.vp-doc a` and still loses to anything a caller writes with two classes of their own. The class is also a hook a host stylesheet can exempt, the way the docs' `scope.css` does — the same arrangement as `neba-portal`.
+An `<a>` is the other one, and TextLink answers it the other way. Inline styles are no use there — half of what a link draws only exists on `:hover` — so the selector is doubled instead: everything the component says about the link — its colour, whether the line is drawn, the line's thickness, offset and colour, and the weight — is written through `[&.neba-link]`. Two classes clears `.prose a` and `.vp-doc a`, and for whatever a caller's `className` sets, the component steps down to a zero-specificity floor instead — see [internal/overrides.ts](#internaloverridests). None of it is in `styles.css`, which is unlayered in a consumer's own Tailwind build and would beat their utilities whatever the specificity. The class is also a hook a host stylesheet can exempt, the way the docs' `scope.css` does — the same arrangement as `neba-portal`.
 
 ### The stylesheet ships
 

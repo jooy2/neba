@@ -25,6 +25,8 @@ Every other `<a>` attribute passes through. `rel` is the one exception: it is me
 
 `color` and `size` are the two shared axes with no default: a link inside a paragraph is the colour and the size of that paragraph. The rest of the vocabulary is in [prop conventions](../../design/prop-conventions).
 
+A Tailwind utility in `className` wins over the link's own colour, its weight and its line: whether the line is drawn, its thickness, its offset and its colour. That holds with or without a variant. A class from your own stylesheet needs two classes or `!important`.
+
 The root carries the class `neba-link`. It is the hook a stylesheet that styles `a` by name (`.prose a`, and most CSS frameworks) can exempt: `.prose a:not(.neba-link) { … }`.
 
 ## Examples

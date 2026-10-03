@@ -68,16 +68,18 @@ import { Typography } from 'neba';
 
 `gutter`는 기본적으로 꺼져 있어 위아래 여백이 없습니다. 이어지는 산문에는 켜고, 간격을 이미 관리하는 flex 컨테이너 안에서는 끈 채로 두세요.
 
-### 크기를 덮어쓸 때
+### className으로 덮어쓰기
 
-각 level의 행간은 길이가 아니라 **비율**입니다. `className`으로 크기를 바꿔도 행간이 그 크기에 맞춰 따라옵니다.
+`className`에 넣은 Tailwind utility는 variant가 붙든 안 붙든 level의 크기, 행간, 자간, weight, 여백, 글자색보다 우선합니다.
 
 ```tsx
-<Typography level="h2" className="text-[2.75rem]!">
+<Typography level="h2" className="mb-8 text-[2.75rem] font-black">
   42
 </Typography>
 ```
 
-`!`는 필수이고, weight와 글자색, gutter를 덮어쓸 때도 마찬가지입니다. 이 scale은 host 스타일시트를 이기려고 class 두 겹으로 씁니다. `.prose h2`와 VitePress의 `.vp-doc h2`가 태그 이름으로 `font-size`, `line-height`, `letter-spacing`, `font-weight`를 지정하는데 class 하나로는 그 특정도에 닿지 않고, 그대로 두면 Markdown 본문 안의 Neba heading이 자기 scale 대신 본문 typography를 뒤집어씁니다. 그 규칙보다 위이면서 맨 utility보다 아래인 특정도는 존재하지 않으므로 `!`가 들어갈 자리입니다. 비율 자체를 바꾸고 싶다면 옆에 `leading-*`을 붙이세요.
+각 level의 행간은 길이가 아니라 **비율**이라서, 이렇게 바꾼 크기에도 행간이 비율대로 따라옵니다. 비율 자체를 바꾸려면 옆에 `leading-*`을 붙이세요.
 
-`align`과 `lines`는 일부러 맨 utility로 두었습니다. `text-align`이나 line clamp를 태그 이름으로 지정하는 host는 없어서 `className`이 `!` 없이 닿습니다.
+variant가 붙은 class는 level을 대신하지 않고 그 위에 얹힙니다. `md:text-5xl`은 `md`부터 크기를 바꾸고, 그보다 좁은 화면에서는 level의 크기가 그대로 쓰입니다.
+
+level은 scale을 class 두 겹의 특정도로 씁니다. `.prose h2`와 VitePress의 `.vp-doc h2`가 태그 이름으로 `font-size`, `line-height`, `letter-spacing`, `font-weight`와 여백을 지정하는데, class 하나로는 그 특정도를 넘지 못하기 때문입니다. `className`이 지정한 속성은 level이 특정도 0으로 물러나므로, 그런 본문 안에서는 그 속성 하나만 내 class와 본문 규칙이 겨루게 됩니다. Tailwind의 utility 이름만 읽으므로, 직접 만든 스타일시트의 class로 level을 이기려면 여전히 class 두 개나 `!important`가 필요합니다. `mb-8!`처럼 `!`를 붙인 utility는 지금까지와 똑같이 동작합니다.

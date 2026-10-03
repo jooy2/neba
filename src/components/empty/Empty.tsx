@@ -14,6 +14,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  sheetTitleHeadingClasses,
   surfaceClasses,
   surfaceSlots,
   transitionClasses
@@ -251,7 +252,9 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(function Empty
         // whose second line starts somewhere the eye has to hunt for.
         <div className={`flex max-w-prose flex-col items-center ${sheetHeaderGapClasses[size]}`}>
           {titled ? (
-            <div className={`neba-title font-semibold ${sheetTitleClasses[size]}`}>{heading}</div>
+            <div className={`${sheetTitleHeadingClasses} font-semibold ${sheetTitleClasses[size]}`}>
+              {heading}
+            </div>
           ) : null}
           {hasContent(children) ? (
             // The detail is supporting text under a headline, so it takes

@@ -1026,32 +1026,6 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Sheet titles
- *
- * A `title` is styled by the element the component renders around it — Card,
- * Alert and Dialog all do this — so a plain string needs nothing. But a sheet
- * that belongs in the document outline has to be given a real heading,
- * `title={<h2>…</h2>}`, and that heading arrives with the browser's own 1.5em
- * bold and its margins, which would ignore the type scale just set.
- *
- * This is in CSS rather than in Tailwind because the selector is the point:
- * `[&_:where(h1,h2,h3,h4,h5,h6)]:[font:inherit]` is expressible and nobody
- * would want to read it twice.
- *
- * The class is written twice for `neba-link`'s reason. One class plus a
- * `:where()` is one class, and `.prose h2` and `.vp-doc h2` are one class plus a
- * tag — so the browser's own bold was being replaced by the *article's*, and a
- * `<Card title={<h2>…</h2>}>` inside rendered Markdown came out at 24px where
- * the card asked for 15px. Two classes clears both and still loses to anything
- * a caller writes with two of their own.
- * ------------------------------------------------------------------------- */
-
-.neba-title.neba-title :where(h1, h2, h3, h4, h5, h6) {
-  font: inherit;
-  margin: 0;
-}
-
-/* ---------------------------------------------------------------------------
  * ScrollArea's edge fade
  *
  * The content is faded out at each edge that has more behind it, and only at
@@ -1123,40 +1097,6 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Links
- *
- * `<a>` is, with `<td>`, one of the two tags a host stylesheet still styles by
- * name — Tailwind Typography's `.prose a`, VitePress's own `.vp-doc a`, every
- * CSS framework ever written — and always as a class plus a type, which is a
- * specificity a one-class utility cannot reach. Table answered this by moving
- * its cell padding inline. A link cannot: half of what it draws only exists on
- * `:hover`, and inline styles have no `:hover`.
- *
- * So the selector is doubled instead. `.neba-link.neba-link` is two classes and
- * matches nothing extra, which puts these declarations above a host's `a` rule
- * and still below anything a caller writes with two classes of their own. Only
- * the invariants are here — the parts of a TextLink that no prop changes. The
- * colour and whether the line is drawn at all stay in the component, written
- * through the same doubled class.
- *
- * The thickness has a `max()` floor because a hairline that lands between two
- * device pixels is antialiased into a grey smudge: 0.055em is a real line from
- * about 18px up, and 1px below that.
- * ------------------------------------------------------------------------- */
-
-.neba-link.neba-link {
-  font-weight: inherit;
-  text-decoration-thickness: max(1px, 0.055em);
-  text-underline-offset: 0.2em;
-  text-underline-position: from-font;
-  text-decoration-color: var(--n-underline);
-}
-
-.neba-link.neba-link:hover {
-  text-decoration-color: var(--n-underline-hover);
-}
-
-/* ---------------------------------------------------------------------------
  * Text a finger types into, on iOS
  *
  * Safari on iOS zooms the page in whenever a field under 16px takes the focus,
@@ -1168,7 +1108,8 @@
  * `-webkit-touch-callout` is the property only WebKit on iOS and iPadOS has,
  * which keeps every other browser, and desktop Safari, at the size the design
  * set. `1em` is the size the field inherits from its shell, so a field already
- * over 16px keeps its own; the doubled class is `.neba-link`'s reason.
+ * over 16px keeps its own. The class is doubled because a host's `input` rule
+ * is a class plus a tag, which one class would not clear.
  * ------------------------------------------------------------------------- */
 
 @supports (-webkit-touch-callout: none) {

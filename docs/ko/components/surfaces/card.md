@@ -57,7 +57,7 @@ sheet의 반경과 여백, 그리고 헤더와 본문의 타입 스케일을 함
 
 ### 컨트롤 담기
 
-Card는 글만큼 폼도 잘 담으며, 폼의 액션은 `footer`에 둡니다. `title`에 `title={<h2>…</h2>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 브라우저 기본 크기 대신 Card의 타입 스케일을 물려받습니다.
+Card는 글만큼 폼도 잘 담으며, 폼의 액션은 `footer`에 둡니다. `title`에 `title={<h2>…</h2>}`처럼 실제 heading을 넘기면 문서 개요에 들어갑니다. 넘긴 heading은 `h2`를 스타일링하는 본문 안에서도 브라우저 기본 크기 대신 Card의 타입 스케일을 물려받습니다. heading에 class를 붙이면 그 class가 스케일보다 우선합니다(`title={<h2 className="text-xl">…</h2>}`). 다만 class가 붙은 heading은 그 class에 맡기므로, 그런 본문 안에서는 class가 정하지 않은 속성에 본문 규칙이 적용됩니다.
 
 <Demo src="card/form">
 

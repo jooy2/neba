@@ -34,15 +34,16 @@ describe('Typography', () => {
 
     it('gives each level its own type scale', async () => {
       const screen = await render(<Typography level="h1">Title</Typography>);
-      const element = screen.getByText('Title').element();
+      const title = () => screen.getByText('Title').element() as HTMLElement;
 
-      expect(element).toHaveClass('[&.neba-typography]:text-[1.875rem]/[1.2]');
+      expect(title().style.getPropertyValue('--n-type-size')).toBe('1.875rem');
+      expect(title().style.getPropertyValue('--n-type-leading')).toBe('1.2');
+      expect(title()).toHaveClass('[&.neba-typography]:text-(length:--n-type-size)');
 
       await screen.rerender(<Typography level="h3">Title</Typography>);
 
-      expect(screen.getByText('Title').element()).toHaveClass(
-        '[&.neba-typography]:text-[1.25rem]/[1.3]'
-      );
+      expect(title().style.getPropertyValue('--n-type-size')).toBe('1.25rem');
+      expect(title().style.getPropertyValue('--n-type-leading')).toBe('1.3');
     });
 
     it('changes the element as well as the scale on re-render', async () => {
@@ -66,7 +67,7 @@ describe('Typography', () => {
       const element = screen.getByText('Looks like a heading').element();
 
       expect(element.tagName).toBe('P');
-      expect(element).toHaveClass('[&.neba-typography]:text-[1.25rem]/[1.3]');
+      expect((element as HTMLElement).style.getPropertyValue('--n-type-size')).toBe('1.25rem');
     });
   });
 
@@ -77,7 +78,8 @@ describe('Typography', () => {
       const screen = await render(<Typography>Body</Typography>);
       const element = screen.getByText('Body').element() as HTMLElement;
 
-      expect(element.className).not.toContain('text-(');
+      // `text-(length:…)` is the size; an ink would be `text-(--…)`.
+      expect(element.className).not.toContain('text-(--');
       expect(element.style.getPropertyValue('--n-accent')).toBe('');
     });
 
@@ -103,20 +105,23 @@ describe('Typography', () => {
           Quiet heading
         </Typography>
       );
-      const classes = [...screen.getByText('Quiet heading').element().classList];
+      const element = screen.getByText('Quiet heading').element() as HTMLElement;
 
-      expect(classes.filter((name) => name.includes('font-'))).toEqual([
-        '[&.neba-typography]:font-normal'
+      expect([...element.classList].filter((name) => name.includes('font-'))).toEqual([
+        '[&.neba-typography]:font-(weight:--n-type-weight)'
       ]);
+      expect(element.style.getPropertyValue('--n-type-weight')).toBe(
+        'var(--font-weight-normal, 400)'
+      );
     });
 
     it('takes the level weight when no override is given', async () => {
       const screen = await render(<Typography level="h2">Heading</Typography>);
-      const classes = [...screen.getByText('Heading').element().classList];
+      const element = screen.getByText('Heading').element() as HTMLElement;
 
-      expect(classes.filter((name) => name.includes('font-'))).toEqual([
-        '[&.neba-typography]:font-semibold'
-      ]);
+      expect(element.style.getPropertyValue('--n-type-weight')).toBe(
+        'var(--font-weight-semibold, 600)'
+      );
     });
 
     it('truncates to one line and clamps to more', async () => {
@@ -194,10 +199,13 @@ describe('Typography', () => {
     it('adds no margin unless asked', async () => {
       const screen = await render(<Typography level="h2">Heading</Typography>);
 
+      const heading = () => screen.getByText('Heading').element() as HTMLElement;
+
       // Stated rather than left out: inside `.prose` an unstated margin is the
       // article's, not none.
-      expect(screen.getByText('Heading').element()).toHaveClass('[&.neba-typography]:my-0');
-      expect(screen.getByText('Heading').element().className).not.toContain('mb-3.5');
+      expect(heading()).toHaveClass('[&.neba-typography]:mt-0');
+      expect(heading()).toHaveClass('[&.neba-typography]:mb-(--n-type-gutter)');
+      expect(heading().style.getPropertyValue('--n-type-gutter')).toBe('0');
 
       await screen.rerender(
         <Typography level="h2" gutter>
@@ -205,8 +213,10 @@ describe('Typography', () => {
         </Typography>
       );
 
-      expect(screen.getByText('Heading').element()).toHaveClass('[&.neba-typography]:mb-3.5');
-      expect(screen.getByText('Heading').element().className).not.toContain('my-0');
+      expect(heading().style.getPropertyValue('--n-type-gutter')).toBe(
+        'calc(var(--spacing, 0.25rem) * 3.5)'
+      );
+      expect(heading().className).not.toContain('mt-0');
     });
 
     it('keeps caller-supplied class names alongside its own', async () => {
@@ -255,6 +265,97 @@ describe('Typography', () => {
 
       expect(classes).toContain('text-center');
       expect(classes).toContain('line-clamp-(--n-lines)');
+    });
+  });
+
+  /* The guard outranks a caller's one-class utility as surely as it outranks
+     the host, so a property the caller's `className` sets is stated through
+     `[:where(&)]` instead. The computed values are in
+     `test/styles/class-overrides.test.tsx`; these are the classes that decide
+     them. */
+  describe('className', () => {
+    const guarded = (element: Element) =>
+      [...element.classList].filter((name) => name.startsWith('[&.neba-typography]:'));
+    const floored = (element: Element) =>
+      [...element.classList].filter((name) => name.startsWith('[:where(&)]:'));
+
+    it('moves a property the caller sets from the guard to the floor', async () => {
+      const screen = await render(<Typography className="mb-8">Body</Typography>);
+      const element = screen.getByText('Body').element();
+
+      expect(element).toHaveClass('[:where(&)]:mb-(--n-type-gutter)');
+      expect(element).not.toHaveClass('[&.neba-typography]:mb-(--n-type-gutter)');
+      // The top margin is a property of its own, and keeps its guard.
+      expect(element).toHaveClass('[&.neba-typography]:mt-0');
+      expect(element).toHaveClass('mb-8');
+    });
+
+    it('moves every property a run of classes sets, and only those', async () => {
+      const screen = await render(
+        <Typography level="h1" className="text-[2.5rem] leading-none font-black tracking-tight">
+          42
+        </Typography>
+      );
+      const element = screen.getByText('42').element();
+
+      expect(floored(element)).toEqual([
+        '[:where(&)]:text-(length:--n-type-size)',
+        '[:where(&)]:leading-(--n-type-leading)',
+        '[:where(&)]:tracking-(--n-type-tracking)',
+        '[:where(&)]:font-(weight:--n-type-weight)'
+      ]);
+      expect(guarded(element)).toEqual([
+        '[&.neba-typography]:mb-(--n-type-gutter)',
+        '[&.neba-typography]:mt-0'
+      ]);
+    });
+
+    // The floor is still there under a class that applies only at a
+    // breakpoint, so below it the level keeps its own size.
+    it('counts a class behind a variant', async () => {
+      const screen = await render(
+        <Typography level="h1" className="md:text-5xl">
+          Title
+        </Typography>
+      );
+      const element = screen.getByText('Title').element() as HTMLElement;
+
+      expect(element).toHaveClass('[:where(&)]:text-(length:--n-type-size)');
+      expect(element.style.getPropertyValue('--n-type-size')).toBe('1.875rem');
+    });
+
+    it('moves the muted ink and the accent ink alike', async () => {
+      const screen = await render(
+        <Typography level="caption" className="text-red-600">
+          Note
+        </Typography>
+      );
+
+      expect(screen.getByText('Note').element()).toHaveClass('[:where(&)]:text-(--neba-muted-fg)');
+
+      await screen.rerender(
+        <Typography color="primary" className="text-red-600">
+          Note
+        </Typography>
+      );
+
+      expect(screen.getByText('Note').element()).toHaveClass('[:where(&)]:text-(--n-accent)');
+    });
+
+    // `mb-8!` already wins, so a call site written with `!` keeps every guard
+    // exactly as it was.
+    it('leaves the guard under an important class', async () => {
+      const screen = await render(<Typography className="mb-8!">Body</Typography>);
+      const element = screen.getByText('Body').element();
+
+      expect(floored(element)).toEqual([]);
+      expect(element).toHaveClass('[&.neba-typography]:mb-(--n-type-gutter)');
+    });
+
+    it('keeps every guard for a class it does not recognise', async () => {
+      const screen = await render(<Typography className="hero-title flex">Body</Typography>);
+
+      expect(floored(screen.getByText('Body').element())).toEqual([]);
     });
   });
 

@@ -6,6 +6,16 @@ import { linkMessages, useMessages } from '../../internal/i18n.js';
 import { ExternalLinkIcon, LinkIcon } from '../../internal/icons.js';
 import { opensElsewhere, safeHref, safeRel } from '../../internal/link.js';
 import {
+  COLOR,
+  FONT_WEIGHT,
+  overriddenBy,
+  TEXT_DECORATION_COLOR,
+  TEXT_DECORATION_LINE,
+  TEXT_DECORATION_THICKNESS,
+  TEXT_UNDERLINE_OFFSET,
+  TEXT_UNDERLINE_POSITION
+} from '../../internal/overrides.js';
+import {
   controlTextLeadingClasses,
   cx,
   focusRingClasses,
@@ -78,35 +88,89 @@ export interface TextLinkProps extends Omit<React.ComponentPropsWithoutRef<'a'>,
    * needs it written once, on the TextLink.
    */
   render?: useRender.RenderProp;
+  /**
+   * A Tailwind utility here wins over the link's own colour, weight and line —
+   * whether it is drawn, its thickness, its offset and its colour — with or
+   * without a variant. Only Tailwind's names are read: a class from your own
+   * stylesheet needs two classes or `!important`.
+   */
+  className?: string;
   /** The label. */
   children?: React.ReactNode;
 }
 
 /**
  * Whether the line is drawn, and — with the colour below — the only two things
- * about a TextLink that a prop changes. Everything else about the line is in
- * `styles.css`, under `.neba-link`.
+ * about a TextLink that a prop changes. `lineClasses` below is the rest.
  *
- * Every utility here is written through `[&.neba-link]`, which doubles the
- * component's own class into the selector and takes it to two classes. That is
- * not decoration: `<a>` is, with `<td>`, one of the two tags a host stylesheet
- * still styles by name — `.prose a`, `.vp-doc a`, every CSS framework — and all
- * of those are a class plus a type, which outranks a plain utility. A TextLink
- * that lost its colour and its line inside a `.prose` block would have lost the
- * only two things it is.
+ * Each is written twice. The **guard** goes through `[&.neba-link]`, which
+ * doubles the component's own class into the selector and takes it to two
+ * classes. That is not decoration: `<a>` is, with `<td>`, one of the two tags a
+ * host stylesheet still styles by name — `.prose a`, `.vp-doc a`, every CSS
+ * framework — and all of those are a class plus a type, which outranks a plain
+ * utility. A TextLink that lost its colour and its line inside a `.prose` block
+ * would have lost the only two things it is.
+ *
+ * The guard outranks a caller's own utility just as surely, so a property the
+ * caller's `className` sets takes the **floor** instead, `[:where(&)]`, which
+ * any utility beats. `internal/overrides.ts` decides what counts, and why.
  *
  * Hover deliberately leaves the *text* colour alone. A link inside running
  * prose that changes colour under the pointer drags the reader's eye off the
  * line they were reading — the same rule the library applies to a control's
  * label, on the one component that lives inside a sentence.
  */
-const underlineClasses: Record<TextLinkUnderline, string> = {
-  always: '[&.neba-link]:underline',
-  hover: '[&.neba-link]:no-underline [&.neba-link]:hover:underline',
+const underlineClasses: Record<TextLinkUnderline, readonly [guard: string, floor: string]> = {
+  always: ['[&.neba-link]:underline', '[:where(&)]:underline'],
+  hover: [
+    '[&.neba-link]:no-underline [&.neba-link]:hover:underline',
+    '[:where(&)]:no-underline hover:[:where(&)]:underline'
+  ],
   // Nothing to hover, on purpose. A link with no line and no colour is a link
   // whose surroundings are saying what it is.
-  none: '[&.neba-link]:no-underline'
+  none: ['[&.neba-link]:no-underline', '[:where(&)]:no-underline']
 };
+
+/**
+ * The parts of a TextLink that no prop changes, as guard and floor pairs for
+ * the reason `underlineClasses` gives.
+ *
+ * The weight is the link's sentence's own, which `.prose a` and `.vp-doc a`
+ * both replace. The thickness has a `max()` floor because a hairline that
+ * lands between two device pixels is antialiased into a grey smudge: 0.055em
+ * is a real line from about 18px up, and 1px below that. The line rests at the
+ * `--n-underline` slot and goes to `--n-underline-hover` under the pointer.
+ *
+ * These were a rule in `styles.css`, and that sheet is the one place the floor
+ * cannot live: in a consumer's own Tailwind build it is unlayered while the
+ * utilities sit in a layer, so a rule there beat a caller's `font-medium`
+ * whatever its specificity.
+ */
+const lineClasses: ReadonlyArray<readonly [number, string, string]> = [
+  [FONT_WEIGHT, '[&.neba-link]:[font-weight:inherit]', '[:where(&)]:[font-weight:inherit]'],
+  [
+    TEXT_DECORATION_THICKNESS,
+    '[&.neba-link]:[text-decoration-thickness:max(1px,0.055em)]',
+    '[:where(&)]:[text-decoration-thickness:max(1px,0.055em)]'
+  ],
+  [
+    TEXT_UNDERLINE_OFFSET,
+    '[&.neba-link]:underline-offset-[0.2em]',
+    '[:where(&)]:underline-offset-[0.2em]'
+  ],
+  [
+    TEXT_UNDERLINE_POSITION,
+    '[&.neba-link]:[text-underline-position:from-font]',
+    '[:where(&)]:[text-underline-position:from-font]'
+  ],
+  // Not `hover:`, which only applies where a pointer can hover: the line took
+  // its hover colour on a tap as well, and still does.
+  [
+    TEXT_DECORATION_COLOR,
+    '[&.neba-link]:decoration-(--n-underline) [&.neba-link:hover]:decoration-(--n-underline-hover)',
+    '[:where(&)]:decoration-(--n-underline) [:where(&:hover)]:decoration-(--n-underline-hover)'
+  ]
+];
 
 /**
  * Only two properties move, so this is written out rather than taken from
@@ -121,11 +185,9 @@ const transition = [
 ].join(' ');
 
 const baseClasses = [
-  // Both a style hook and the specificity. `styles.css` doubles this class to
-  // write the parts of the line that never vary — its thickness, its offset,
-  // its colour — above whatever the host page says about an `<a>`, and every
-  // utility that *does* vary is written through it for the same reason. It is
-  // also what a consumer's own stylesheet can exempt, the way the docs do.
+  // Both a style hook and the specificity: every guard below is written through
+  // this class, which puts it above whatever the host page says about an `<a>`.
+  // It is also what a consumer's own stylesheet can exempt, the way the docs do.
   'neba-link',
   'cursor-pointer',
   // The glyph rides on the label at just under its cap height, rather than at
@@ -174,11 +236,20 @@ export const TextLink = React.forwardRef<HTMLAnchorElement, TextLinkProps>(
     const mark = icon ?? newTab;
     const glyph = mark === true ? newTab ? <ExternalLinkIcon /> : <LinkIcon /> : mark;
 
+    const overridden = React.useMemo(() => overriddenBy(className), [className]);
+
     const classNames = cx(
       baseClasses,
       size ? controlTextLeadingClasses[size] : '',
-      underlineClasses[underline],
-      color ? '[&.neba-link]:text-(--n-accent)' : '[&.neba-link]:text-inherit',
+      underlineClasses[underline][overridden & TEXT_DECORATION_LINE ? 1 : 0],
+      ...lineClasses.map(([property, guard, floor]) => (overridden & property ? floor : guard)),
+      color
+        ? overridden & COLOR
+          ? '[:where(&)]:text-(--n-accent)'
+          : '[&.neba-link]:text-(--n-accent)'
+        : overridden & COLOR
+          ? '[:where(&)]:text-inherit'
+          : '[&.neba-link]:text-inherit',
       className ?? ''
     );
 

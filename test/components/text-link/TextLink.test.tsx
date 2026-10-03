@@ -353,6 +353,64 @@ describe('TextLink', () => {
       expect(screen.getByRole('link').element()).toHaveClass('[&.neba-link]:no-underline');
     });
 
+    // The guard outranks a caller's one-class utility as surely as it does the
+    // host, so what the caller's `className` sets is stated at zero specificity
+    // instead. Measured in `test/styles/class-overrides.test.tsx`.
+    it('moves the colour and the line a caller sets off the guard', async () => {
+      const screen = await render(
+        <TextLink href="/docs" className="text-red-600 no-underline">
+          Docs
+        </TextLink>
+      );
+      const element = screen.getByRole('link').element();
+
+      expect(element).toHaveClass('[:where(&)]:text-inherit');
+      expect(element).toHaveClass('[:where(&)]:underline');
+      expect(element).not.toHaveClass('[&.neba-link]:text-inherit');
+      expect(element).not.toHaveClass('[&.neba-link]:underline');
+
+      await screen.rerender(
+        <TextLink href="/docs" color="primary" underline="hover" className="hover:text-red-600">
+          Docs
+        </TextLink>
+      );
+
+      expect(element).toHaveClass('[:where(&)]:text-(--n-accent)');
+      // The line was not touched, so it keeps its guard.
+      expect(element).toHaveClass('[&.neba-link]:hover:underline');
+    });
+
+    it('moves the weight and the shape of the line a caller sets off the guard', async () => {
+      const screen = await render(<TextLink href="/docs">Docs</TextLink>);
+      const link = () => screen.getByRole('link').element();
+
+      expect(link()).toHaveClass('[&.neba-link]:[font-weight:inherit]');
+      expect(link()).toHaveClass('[&.neba-link]:underline-offset-[0.2em]');
+      expect(link()).toHaveClass('[&.neba-link]:decoration-(--n-underline)');
+
+      await screen.rerender(
+        <TextLink href="/docs" className="font-medium decoration-2 underline-offset-4">
+          Docs
+        </TextLink>
+      );
+
+      expect(link()).toHaveClass('[:where(&)]:[font-weight:inherit]');
+      expect(link()).toHaveClass('[:where(&)]:[text-decoration-thickness:max(1px,0.055em)]');
+      expect(link()).toHaveClass('[:where(&)]:underline-offset-[0.2em]');
+      // The colour of the line was not touched, so it keeps its guard.
+      expect(link()).toHaveClass('[&.neba-link]:decoration-(--n-underline)');
+    });
+
+    it('keeps the guard under an important class', async () => {
+      const screen = await render(
+        <TextLink href="/docs" className="text-red-600!">
+          Docs
+        </TextLink>
+      );
+
+      expect(screen.getByRole('link').element()).toHaveClass('[&.neba-link]:text-inherit');
+    });
+
     it('carries the hook a host stylesheet can exempt', async () => {
       const screen = await render(<TextLink href="/docs">Docs</TextLink>);
 

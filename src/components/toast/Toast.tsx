@@ -19,6 +19,7 @@ import {
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
+  sheetTitleHeadingClasses,
   surfaceClasses
 } from '../../internal/styles.js';
 import type {
@@ -367,7 +368,8 @@ function ToastItem({
       <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
         <BaseUIToast.Title
           className={cx(
-            'neba-title font-semibold',
+            sheetTitleHeadingClasses,
+            'font-semibold',
             sheetTitleClasses[size],
             accent,
             classNames?.title

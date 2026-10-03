@@ -9,7 +9,8 @@ import {
   sheetBodyClasses,
   sheetHeaderGapClasses,
   sheetSectionGapClasses,
-  sheetTitleClasses
+  sheetTitleClasses,
+  sheetTitleHeadingClasses
 } from '../../internal/styles.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -90,7 +91,9 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(ra
       {hasContent(title) || hasContent(subtitle) ? (
         <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
           {hasContent(title) ? (
-            <div className={`neba-title font-semibold ${sheetTitleClasses[size]}`}>{title}</div>
+            <div className={`${sheetTitleHeadingClasses} font-semibold ${sheetTitleClasses[size]}`}>
+              {title}
+            </div>
           ) : null}
           {hasContent(subtitle) ? (
             <div className={`text-(--neba-muted-fg) ${metaTextClasses[size]}`}>{subtitle}</div>

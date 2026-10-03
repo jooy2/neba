@@ -25,6 +25,8 @@ import { TextLink } from 'neba';
 
 공통 축 가운데 `color`와 `size`에는 기본값이 없습니다. 문단 안의 링크는 그 문단의 색이자 그 문단의 크기이기 때문입니다. 나머지 어휘는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
+`className`에 넣은 Tailwind utility는 링크의 글자색, weight, 밑줄보다 우선합니다. 밑줄은 표시 여부, 두께, 간격, 색 모두 해당하고, variant가 붙어도 마찬가지입니다. 직접 만든 스타일시트의 class라면 class 두 개나 `!important`가 필요합니다.
+
 루트에는 `neba-link` 클래스가 붙습니다. `a`를 태그 이름으로 스타일링하는 스타일시트(`.prose a`를 비롯한 대부분의 CSS 프레임워크)가 예외로 빼낼 수 있는 후크입니다. `.prose a:not(.neba-link) { … }`처럼 씁니다.
 
 ## 예시

@@ -6,6 +6,14 @@
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
 
+### Fixed
+
+- **A Tailwind utility in a `Typography`'s `className` wins over the level's own scale.** The size, leading, tracking, weight, margins and colour were written at two-class strength so that a host's `.prose h2` could not reach them, and that also beat the caller: `className="mb-8"` rendered with no margin and `text-[2.5rem] font-black` at 13px and 400, with no warning. For each property a class sets, with or without a variant, the level now steps down to zero specificity, so the class wins and `md:text-5xl` still has the level's size below `md`. With no class, a Typography inside `.prose` or `.vp-doc` keeps its scale as before, and a `!` class such as `mb-8!` renders as it did. A class that was being ignored now applies, so check a call site that carried one. A class from your own stylesheet is not read and still needs two classes or `!important`.
+
+- **A Tailwind utility in a `TextLink`'s `className` wins over the link's colour, its weight and its line**, for the same reason and in the same way. That covers whether the line is drawn and its thickness, offset and colour. The weight and the shape of the line were a rule in the stylesheet, which a project running Tailwind itself loads outside any layer, so `font-medium` or `underline-offset-4` lost to it whatever their specificity.
+
+- **Classes on a heading passed as a `title` win over the sheet's scale.** `<Card title={<h2 className="text-xl">…</h2>}>` rendered at the Card's 15px, because the reset that takes the browser's 1.5em bold and margins off the heading was written at two-class strength. A heading with a class now gets that reset at zero specificity, and one without keeps it at full strength, so it still holds against `.prose h2`. The same goes for `Alert`, `Empty` and `Toast`.
+
 ## 1.17.1 (2026-10-01)
 
 ### Fixed

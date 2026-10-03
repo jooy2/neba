@@ -68,16 +68,18 @@ Use `render` when the element `level` implies is not the element you need: a sub
 
 `gutter` is off by default, so there are no vertical margins. Turn it on for a run of prose; leave it off inside a flex container that already owns its spacing.
 
-### Overriding the size
+### Overriding with className
 
-Each level's leading is a **ratio**, not a length, so a size set through `className` keeps a line box in proportion to it:
+A Tailwind utility in `className` wins over the level's own size, leading, tracking, weight, margins and colour, with or without a variant:
 
 ```tsx
-<Typography level="h2" className="text-[2.75rem]!">
+<Typography level="h2" className="mb-8 text-[2.75rem] font-black">
   42
 </Typography>
 ```
 
-The `!` is required, and it is the way to override the weight, the ink and the gutter too. The scale is written at two-class strength so that it clears a host stylesheet — `.prose h2` and VitePress's `.vp-doc h2` both set `font-size`, `line-height`, `letter-spacing` and `font-weight` on the tag, at a specificity a single utility cannot reach, and without this a Neba heading inside rendered Markdown took the article's type instead of its own. There is no specificity above that rule and below a plain utility, so `!` is the way in. Add a `leading-*` beside it when the proportion is what you want to change.
+Each level's leading is a **ratio**, not a length, so a size set this way keeps a line box in proportion to it. Add a `leading-*` beside it when the proportion is what you want to change.
 
-`align` and `lines` are deliberately left as plain utilities: nothing styles `text-align` or a line clamp by tag name, so `className` reaches them without `!`.
+A class behind a variant sits on top of the level rather than replacing it: `md:text-5xl` changes the size from `md` up, and below that the level's own size still applies.
+
+The level writes its scale at two-class strength, because `.prose h2` and VitePress's `.vp-doc h2` set `font-size`, `line-height`, `letter-spacing`, `font-weight` and the margins on the tag, at a specificity a single utility cannot reach. For each property your `className` sets, the level steps down to zero specificity instead, so inside such an article that one property is between your class and the article's rule. Only Tailwind's utility names are read: a class from your own stylesheet still needs two classes or `!important` to beat the level. A `!` utility, such as `mb-8!`, works as it always did.
