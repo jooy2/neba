@@ -270,7 +270,7 @@ const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', t
 
 ## Accessibility
 
-- Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table. The plot is described by one sentence with the number of values and their range rather than by the table, so a focus does not read every number out. With a `secondaryAxis`, the series on it get a second sentence in that axis' format.
+- Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot is described by one sentence with the number of values and their range rather than by the table, so a focus does not read every number out. With a `secondaryAxis`, the series on it get a second sentence in that axis' format.
 - The plot is focusable. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it, so the tooltip is reachable without a pointer.
 - On a touch screen a tap shows the tooltip of the nearest point and keeps it up; a tap anywhere outside the plot puts it down. The same holds on every chart with a tooltip.
 - The legend is a list of `aria-pressed` buttons, so which series are drawn is stated rather than implied by colour.

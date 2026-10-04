@@ -3,7 +3,9 @@
 import * as React from 'react';
 import {
   CartesianChart,
+  chartTableClasses,
   markTransitionClasses,
+  useDeferredRows,
   type CartesianChartProps,
   type CartesianContext,
   type CartesianLayout,
@@ -24,7 +26,6 @@ import {
   type TimeScale
 } from '../../internal/chart.js';
 import { chartMessages, useMessages } from '../../internal/i18n.js';
-import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { useIntlLocale } from '../../internal/media.js';
@@ -554,9 +555,19 @@ const TimelineTable = React.memo(function TimelineTable({
   const words = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);
   const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
+  /* Where each row's spans start, and how many there are in all. A table row
+     per span, so past `deferredTablePoints` the body fills in after the first
+     paint — see `useDeferredRows`. */
+  const starts: number[] = [];
+  const count = spans.reduce((total, row) => {
+    starts.push(total);
+
+    return total + row.length;
+  }, 0);
+  const shown = useDeferredRows({ rows: count, points: count, columns: titled ? 4 : 3 });
 
   return (
-    <table id={id} className={srOnlyClasses}>
+    <table id={id} className={chartTableClasses} aria-busy={shown < count ? true : undefined}>
       {label ? <caption>{label}</caption> : null}
       <thead>
         <tr>
@@ -568,7 +579,7 @@ const TimelineTable = React.memo(function TimelineTable({
       </thead>
       <tbody>
         {spans.flatMap((row, index) =>
-          row.map((one, at) => (
+          row.slice(0, Math.max(0, shown - starts[index])).map((one, at) => (
             <tr key={`${index}-${at}`}>
               <th scope="row">{names[index]}</th>
               {titled ? <td>{series[index].data[at]?.label ?? ''}</td> : null}

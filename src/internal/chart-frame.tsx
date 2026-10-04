@@ -854,6 +854,106 @@ function ChartStatus({
  * The table under every chart
  * ------------------------------------------------------------------------- */
 
+/**
+ * How many data points a chart may hold before its hidden table fills in after
+ * the first paint rather than with it.
+ *
+ * The table is a row per point, so it is most of what a large chart puts in the
+ * document: on a dashboard of four three-series line charts of a thousand points
+ * each, a scatter of five thousand, a heatmap and a bar chart, forty thousand of
+ * its fifty-one thousand elements were table cells, they were all built in one
+ * long task before the first frame, and they were two thirds of a megabyte of
+ * server HTML that nobody had asked for yet. Past this many points, the caption
+ * and the header row are written at once and the body follows in idle slices.
+ * At or under it nothing changes, and every row is in the server's HTML.
+ */
+export const deferredTablePoints = 500;
+
+/**
+ * How many cells of a deferred table go in per idle slice — a few hundred rows
+ * of a line chart's, and fewer of a wide heatmap's, since a slice is bounded by
+ * what it builds rather than by how many lines it happens to be.
+ */
+const deferredTableCells = 1000;
+
+/**
+ * The classes every hidden chart table carries. A fixed layout takes the
+ * columns from the header row rather than from every cell, so a row added later
+ * lays out nothing above it; `contain` keeps that work inside the table.
+ */
+// One literal, so Tailwind can read it whole.
+export const chartTableClasses = `${srOnlyClasses} table-fixed [contain:content]`;
+
+/**
+ * Runs `task` when the browser next has nothing else to do, and returns what
+ * cancels it. A timer where there is no idle callback, which is Safari.
+ *
+ * The timeout makes the slice run within half a second whatever else the page
+ * is doing, so a page that is never idle still gets its table.
+ */
+function whenIdle(task: () => void): () => void {
+  if (typeof requestIdleCallback === 'function' && typeof cancelIdleCallback === 'function') {
+    const handle = requestIdleCallback(task, { timeout: 500 });
+
+    return () => cancelIdleCallback(handle);
+  }
+
+  const handle = setTimeout(task, 16);
+
+  return () => clearTimeout(handle);
+}
+
+/**
+ * How many of a hidden table's rows to render now.
+ *
+ * Every one of them on a chart at or under `deferredTablePoints`, on the server
+ * and in the browser alike. Past it, none on the server or in the render that
+ * hydrates what the server sent, which is what keeps the two in agreement, and
+ * then a slice more each time the browser is idle until all of them are there.
+ *
+ * What it counts is how many rows are in the document, never which: a row reads
+ * the chart's current data whenever it renders, so data that changes while the
+ * table is filling in cannot leave a stale row behind. Rows already written stay
+ * written when the data changes — a table that emptied on each refresh would
+ * take a screen reader's place in it away — and only rows that are new to it
+ * are deferred. A change in the row count, or the table unmounting, cancels the
+ * slice that was waiting.
+ */
+function useDeferredRows({
+  rows,
+  points,
+  columns
+}: {
+  /** How many rows the body has. */
+  rows: number;
+  /** How many data points the chart holds, which decides whether it waits. */
+  points: number;
+  /** How many cells each row has, which sizes a slice. */
+  columns: number;
+}): number {
+  const defer = points > deferredTablePoints;
+  const [shown, setShown] = React.useState(() => (defer ? 0 : rows));
+  const settled = defer ? Math.min(shown, rows) : rows;
+
+  // Kept level with what is drawn, so a table that crosses the threshold later
+  // goes on from the rows it already has rather than starting again from none.
+  if (settled !== shown) {
+    setShown(settled);
+  }
+
+  const slice = Math.max(1, Math.floor(deferredTableCells / Math.max(1, columns)));
+
+  React.useEffect(() => {
+    if (shown >= rows) {
+      return;
+    }
+
+    return whenIdle(() => setShown(Math.min(rows, shown + slice)));
+  }, [shown, rows, slice]);
+
+  return settled;
+}
+
 interface DataTableProps {
   id: string;
   caption?: string;
@@ -886,6 +986,9 @@ interface DataTableProps {
  * reconciled again for each pixel the pointer travels across the picture, on a
  * table nobody is looking at. Every prop it takes is either a primitive or
  * something already memoised above.
+ *
+ * Past `deferredTablePoints` its body fills in after the first paint — see
+ * `useDeferredRows`.
  */
 const ChartDataTable = React.memo(function ChartDataTable({
   id,
@@ -898,8 +1001,18 @@ const ChartDataTable = React.memo(function ChartDataTable({
   formatFor,
   locale
 }: DataTableProps) {
+  const shown = useDeferredRows({
+    rows: categories.length,
+    points: values.reduce((total, row) => total + row.length, 0),
+    columns: series.length + 1
+  });
+
   return (
-    <table id={id} className={srOnlyClasses}>
+    <table
+      id={id}
+      className={chartTableClasses}
+      aria-busy={shown < categories.length ? true : undefined}
+    >
       {caption ? <caption>{caption}</caption> : null}
       <thead>
         <tr>
@@ -912,7 +1025,7 @@ const ChartDataTable = React.memo(function ChartDataTable({
         </tr>
       </thead>
       <tbody>
-        {categories.map((category, index) => (
+        {categories.slice(0, shown).map((category, index) => (
           <tr key={index}>
             <th scope="row">{formatCategory(category, locale)}</th>
             {series.map((one, seriesIndex) => {
@@ -3126,6 +3239,7 @@ export {
   ChartTooltipPanel,
   summarise,
   chartHeight,
+  useDeferredRows,
   useMeasuredHeight,
   useMeasuredWidth,
   useReleaseOutside,

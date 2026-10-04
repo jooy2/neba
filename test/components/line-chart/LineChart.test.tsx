@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { LineChart } from 'neba';
 
@@ -2041,6 +2042,141 @@ describe('LineChart', () => {
         );
       } finally {
         warn.mockRestore();
+      }
+    });
+  });
+
+  /**
+   * The table is a row per category, so on a long series it is most of what
+   * the chart puts in the document. Past five hundred points the header is
+   * written at once and the body follows once the browser is idle.
+   */
+  describe('the table on a long series', () => {
+    const run = (length: number, offset = 0) =>
+      Array.from({ length }, (_, index) => index + offset);
+
+    const bodyRows = (html: string) =>
+      new DOMParser().parseFromString(html, 'text/html').querySelectorAll('tbody tr');
+
+    // The threshold counts points across every series, not rows.
+    it('writes every row into the server HTML at five hundred points', () => {
+      const html = renderToString(
+        <LineChart
+          label="Load"
+          series={[
+            { name: 'A', data: run(250) },
+            { name: 'B', data: run(250) }
+          ]}
+        />
+      );
+
+      expect(bodyRows(html)).toHaveLength(250);
+      expect(html).not.toContain('aria-busy');
+    });
+
+    it('writes the caption and the header but not the rows past five hundred', () => {
+      const html = renderToString(
+        <LineChart
+          label="Load"
+          series={[
+            { name: 'A', data: run(251) },
+            { name: 'B', data: run(251) }
+          ]}
+        />
+      );
+      const table = new DOMParser().parseFromString(html, 'text/html').querySelector('table');
+
+      expect(table?.querySelector('caption')?.textContent).toBe('Load');
+      expect([...(table?.querySelectorAll('thead th') ?? [])].map((th) => th.textContent)).toEqual([
+        '',
+        'A',
+        'B'
+      ]);
+      expect(bodyRows(html)).toHaveLength(0);
+      expect(table?.getAttribute('aria-busy')).toBe('true');
+    });
+
+    it('fills every row in once the chart is drawn', async () => {
+      const screen = await render(
+        <LineChart
+          label="Load"
+          series={[
+            { name: 'A', data: run(1200) },
+            { name: 'B', data: run(1200, 1) }
+          ]}
+        />
+      );
+
+      const table = screen.getByRole('table', { name: 'Load' });
+
+      await expect.element(table).toBeInTheDocument();
+      await expect
+        .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+        .toBe(1200);
+      await expect.element(table).not.toHaveAttribute('aria-busy');
+
+      const last = table.element().querySelector('tbody tr:last-child');
+
+      expect([...(last?.querySelectorAll('td') ?? [])].map((cell) => cell.textContent)).toEqual([
+        '1,199',
+        '1,200'
+      ]);
+    });
+
+    it('fills the rows in with the data it was last given', async () => {
+      const screen = await render(
+        <LineChart label="Load" series={[{ name: 'A', data: run(2000) }]} />
+      );
+
+      await screen.rerender(
+        <LineChart label="Load" series={[{ name: 'A', data: run(2000, 5) }]} />
+      );
+
+      const table = screen.getByRole('table', { name: 'Load' });
+
+      await expect
+        .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+        .toBe(2000);
+
+      const cells = [...table.element().querySelectorAll('tbody td')].map(
+        (cell) => cell.textContent
+      );
+
+      expect(cells[0]).toBe('5');
+      expect(cells[1999]).toBe('2,004');
+    });
+
+    it('stops filling the table in when the chart goes away', async () => {
+      const cancel =
+        typeof window.cancelIdleCallback === 'function'
+          ? vi.spyOn(window, 'cancelIdleCallback')
+          : vi.spyOn(window, 'clearTimeout');
+      const error = vi.spyOn(console, 'error');
+
+      try {
+        const screen = await render(
+          <LineChart
+            label="Load"
+            series={[
+              { name: 'A', data: run(3000) },
+              { name: 'B', data: run(3000) },
+              { name: 'C', data: run(3000) }
+            ]}
+          />
+        );
+
+        await expect.element(screen.getByRole('table', { name: 'Load' })).toBeInTheDocument();
+
+        screen.unmount();
+
+        expect(cancel).toHaveBeenCalled();
+
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
+        expect(error).not.toHaveBeenCalled();
+      } finally {
+        cancel.mockRestore();
+        error.mockRestore();
       }
     });
   });

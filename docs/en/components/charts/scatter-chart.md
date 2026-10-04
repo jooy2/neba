@@ -103,6 +103,6 @@ A series takes its palette slot from its place in the `series` array, so filteri
 
 ## Accessibility
 
-- The data is also rendered as a **visually hidden table**, captioned with `label`, with one row per point and its columns named from the axis labels.
+- The data is also rendered as a **visually hidden table**, captioned with `label`, with one row per point and its columns named from the axis labels. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML.
 - The plot is focusable; `←` / `→` walk the marks in the order the data was given, `Home` / `End` jump to the ends, `Escape` clears the tooltip.
 - Past three series, identity is carried by shape as well as by colour: which is what makes the chart readable under colour vision deficiency, in greyscale and in print.

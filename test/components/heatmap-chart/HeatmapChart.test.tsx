@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { HeatmapChart } from 'neba';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 
@@ -632,6 +633,47 @@ describe('HeatmapChart', () => {
         ['Platform', '300', ''],
         ['Product', '', '120']
       ]);
+    });
+
+    // Seven rows of a hundred columns is seven hundred cells, which is past
+    // the point where the body is written after the first paint.
+    it('writes its rows after the first paint past five hundred cells', async () => {
+      const wide = Array.from({ length: 7 }, (_, row) => ({
+        name: `Row ${row + 1}`,
+        data: Array.from({ length: 100 }, (_, column) => row * 100 + column)
+      }));
+      const html = new DOMParser().parseFromString(
+        renderToString(<HeatmapChart label="Load" series={wide} />),
+        'text/html'
+      );
+
+      expect(html.querySelectorAll('thead th')).toHaveLength(101);
+      expect(html.querySelectorAll('tbody tr')).toHaveLength(0);
+
+      const screen = await render(<HeatmapChart label="Load" series={wide} />);
+      const table = screen.getByRole('table', { name: 'Load' });
+
+      await expect
+        .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+        .toBe(7);
+      await expect.element(table).not.toHaveAttribute('aria-busy');
+      await expect.element(screen.getByRole('rowheader', { name: 'Row 7' })).toBeInTheDocument();
+    });
+
+    it('writes every row into the server HTML at five hundred cells', () => {
+      const html = renderToString(
+        <HeatmapChart
+          label="Load"
+          series={Array.from({ length: 5 }, (_, row) => ({
+            name: `Row ${row + 1}`,
+            data: Array.from({ length: 100 }, (_, column) => column)
+          }))}
+        />
+      );
+
+      expect(
+        new DOMParser().parseFromString(html, 'text/html').querySelectorAll('tbody tr')
+      ).toHaveLength(5);
     });
   });
 

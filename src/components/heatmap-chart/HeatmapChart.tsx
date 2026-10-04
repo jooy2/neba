@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import {
+  chartTableClasses,
   ChartExport,
   ChartScaleLegend,
   ChartStatus,
@@ -11,6 +12,7 @@ import {
   markTransitionClasses,
   summarise,
   type ChartTooltipItem,
+  useDeferredRows,
   useMeasuredWidth,
   useReleaseOutside,
   chartHeight,
@@ -35,7 +37,7 @@ import {
   type ChartValue
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
-import { cx, metaTextClasses, srOnlyClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses } from '../../internal/styles.js';
 import { chartMessages, emptyMessages, useMessages } from '../../internal/i18n.js';
 import type {
   NebaChartAxis,
@@ -177,10 +179,16 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
 
   const summaryId = React.useId();
 
+  /* Keyed on what the options say rather than on their identity, for the
+     frame's reason: `format` is usually a literal in the JSX, and a formatter
+     rebuilt with each render of the parent would draw the hidden table again
+     with it. */
+  const formatKey = format ? JSON.stringify(format) : '';
   const formatValue = React.useCallback(
     (value: number) =>
       format ? numberFormatter(intlLocale, format).format(value) : compactNumber(value, intlLocale),
-    [format, intlLocale]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [formatKey, intlLocale]
   );
 
   const values = React.useMemo(() => toValues(series), [series]);
@@ -399,10 +407,13 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
      any group uses, in the order they first appear, and each value goes under
      its own name rather than under whatever the first group had at its index. */
   const table = React.useMemo(() => {
+    const points = values.reduce((total, row) => total + row.length, 0);
+
     if (shape !== 'treemap') {
       return {
         heads: labels.map((category) => formatCategory(category, intlLocale)),
-        rows: values.map((row) => labels.map((_, index) => row[index]))
+        rows: values.map((row) => labels.map((_, index) => row[index])),
+        points
       };
     }
 
@@ -431,7 +442,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
       return out;
     });
 
-    return { heads, rows };
+    return { heads, rows, points };
   }, [shape, labels, values, categories, intlLocale]);
 
   const hovered =
@@ -491,39 +502,15 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
       }
       table={
         nothing ? null : (
-          <table id={tableId} className={srOnlyClasses}>
-            {label ? <caption>{label}</caption> : null}
-            <thead>
-              <tr>
-                <th scope="col" />
-                {table.heads.map((head, index) => (
-                  <th key={index} scope="col">
-                    {head}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {table.rows.map((row, at) => (
-                <tr key={at}>
-                  <th scope="row">{names[at]}</th>
-                  {table.heads.map((_, index) => {
-                    const cell = row[index];
-
-                    return (
-                      <td key={index}>
-                        {cell?.label !== undefined
-                          ? cell.label
-                          : cell?.value === null || cell?.value === undefined
-                            ? ''
-                            : formatValue(cell.value)}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <HeatmapTable
+            id={tableId}
+            caption={label}
+            heads={table.heads}
+            rows={table.rows}
+            names={names}
+            points={table.points}
+            format={formatValue}
+          />
         )
       }
     >
@@ -822,6 +809,75 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     </ChartSurface>
   );
 }
+
+interface TableProps {
+  id: string;
+  caption?: string;
+  /** The column names, already written. */
+  heads: readonly string[];
+  /** A row per series, with each cell under its own column. */
+  rows: readonly (readonly (ChartValue | undefined)[])[];
+  names: readonly string[];
+  /** How many cells the chart holds, which decides whether the body waits. */
+  points: number;
+  format: (value: number) => string;
+}
+
+/**
+ * The heatmap, as a table: a row per series and a column per name.
+ *
+ * Memoised for `ChartDataTable`'s reason. It is built in the same render that
+ * holds the hovered cell, so without this every cell of it was reconciled again
+ * each time the pointer crossed into a new one. Past `deferredTablePoints` its
+ * body fills in after the first paint — see `useDeferredRows`.
+ */
+const HeatmapTable = React.memo(function HeatmapTable({
+  id,
+  caption,
+  heads,
+  rows,
+  names,
+  points,
+  format
+}: TableProps) {
+  const shown = useDeferredRows({ rows: rows.length, points, columns: heads.length + 1 });
+
+  return (
+    <table id={id} className={chartTableClasses} aria-busy={shown < rows.length ? true : undefined}>
+      {caption ? <caption>{caption}</caption> : null}
+      <thead>
+        <tr>
+          <th scope="col" />
+          {heads.map((head, index) => (
+            <th key={index} scope="col">
+              {head}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.slice(0, shown).map((row, at) => (
+          <tr key={at}>
+            <th scope="row">{names[at]}</th>
+            {heads.map((_, index) => {
+              const cell = row[index];
+
+              return (
+                <td key={index}>
+                  {cell?.label !== undefined
+                    ? cell.label
+                    : cell?.value === null || cell?.value === undefined
+                      ? ''
+                      : format(cell.value)}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+});
 
 /** One cell or tile, placed. */
 interface Cell {

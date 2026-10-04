@@ -78,6 +78,6 @@ A point's own `color` overrides its series' for one bar, which is how a single v
 
 ## Accessibility
 
-- The data is also rendered as a **visually hidden table**, captioned with `label`.
+- The data is also rendered as a **visually hidden table**, captioned with `label`. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML.
 - The plot is focusable; `←` / `→` (or `↑` / `↓` when horizontal) step the crosshair, `Home` / `End` jump to the ends, `Escape` clears it.
 - Touching bars are separated by a 2px gap of the surface colour rather than by a stroke, so nothing on the chart is ink that is not data.

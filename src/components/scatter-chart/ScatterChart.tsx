@@ -3,7 +3,9 @@
 import * as React from 'react';
 import {
   CartesianChart,
+  chartTableClasses,
   markTransitionClasses,
+  useDeferredRows,
   type CartesianChartProps,
   type CartesianContext,
   type CartesianLayout,
@@ -22,7 +24,6 @@ import {
 } from '../../internal/chart.js';
 import { numberFormatter } from '../../internal/format.js';
 import { chartMessages, useMessages } from '../../internal/i18n.js';
-import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { useIntlLocale } from '../../internal/media.js';
@@ -382,9 +383,19 @@ const ScatterTable = React.memo(function ScatterTable({
   const sized = series.some((one) =>
     one.data.some((datum) => typeof datum === 'object' && datum !== null && datum.z !== undefined)
   );
+  /* Where each series' rows start, and how many there are in all. A row per
+     point, so past `deferredTablePoints` the body fills in after the first
+     paint — see `useDeferredRows`. */
+  const starts: number[] = [];
+  const points = series.reduce((total, one) => {
+    starts.push(total);
+
+    return total + one.data.length;
+  }, 0);
+  const shown = useDeferredRows({ rows: points, points, columns: sized ? 4 : 3 });
 
   return (
-    <table id={id} className={cx(srOnlyClasses)}>
+    <table id={id} className={chartTableClasses} aria-busy={shown < points ? true : undefined}>
       {label ? <caption>{label}</caption> : null}
       <thead>
         <tr>
@@ -396,7 +407,9 @@ const ScatterTable = React.memo(function ScatterTable({
       </thead>
       <tbody>
         {series.flatMap((one, index) =>
-          one.data.map((datum, at) => {
+          // Only the rows written so far: the points before this series, and
+          // as many of its own as are left under `shown`.
+          one.data.slice(0, Math.max(0, shown - starts[index])).map((datum, at) => {
             const point = typeof datum === 'object' && datum !== null ? datum : null;
             const y = point ? point.y : typeof datum === 'number' ? datum : null;
             const x = point?.x ?? categories?.[at] ?? at;

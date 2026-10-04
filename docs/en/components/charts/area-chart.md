@@ -71,6 +71,6 @@ Unlike a line chart, an area chart keeps zero on its value axis. The fill's thic
 
 ## Accessibility
 
-- The data is also rendered as a **visually hidden table**, captioned with `label`.
+- The data is also rendered as a **visually hidden table**, captioned with `label`. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML.
 - The plot is focusable; `←` / `→` step the crosshair, `Home` / `End` jump to the ends, `Escape` clears it.
 - With `stacked="full"`, the tooltip and the table report the value the caller passed, not the percentage: the chart shows the share, and the number is still reachable.

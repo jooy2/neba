@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { TimelineChart } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 
@@ -357,6 +358,38 @@ describe('TimelineChart', () => {
       expect(table.element().querySelectorAll('tbody tr').length).toBe(3);
       await expect.element(screen.getByRole('columnheader', { name: 'Start' })).toBeInTheDocument();
       await expect.element(screen.getByRole('cell', { name: 'Wireframes' })).toBeInTheDocument();
+    });
+
+    // A row per span, so a plan of hundreds of tasks is written after the
+    // first paint rather than into the server's HTML.
+    it('writes its rows after the first paint past five hundred spans', async () => {
+      const day = 24 * 60 * 60 * 1000;
+      const start = at('2026-01-05T00:00:00').getTime();
+      const plan = Array.from({ length: 3 }, (_, row) => ({
+        name: `Team ${row + 1}`,
+        data: Array.from({ length: 200 }, (_, index) => ({
+          start: new Date(start + index * day),
+          end: new Date(start + (index + 1) * day)
+        }))
+      }));
+      const html = new DOMParser().parseFromString(
+        renderToString(<TimelineChart label="Plan" locale="en-GB" series={plan} />),
+        'text/html'
+      );
+
+      expect(html.querySelectorAll('thead th')).toHaveLength(3);
+      expect(html.querySelectorAll('tbody tr')).toHaveLength(0);
+
+      const screen = await render(<TimelineChart label="Plan" locale="en-GB" series={plan} />);
+      const table = screen.getByRole('table', { name: 'Plan' });
+
+      await expect
+        .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+        .toBe(600);
+
+      const names = [...table.element().querySelectorAll('tbody th')].map((th) => th.textContent);
+
+      expect(names.slice(199, 201)).toEqual(['Team 1', 'Team 2']);
     });
 
     // Written at the axis unit, a fortnight on a year-long axis was

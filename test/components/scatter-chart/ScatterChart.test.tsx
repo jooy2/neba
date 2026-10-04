@@ -1,5 +1,6 @@
 import { Profiler } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { ScatterChart } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -682,6 +683,56 @@ describe('ScatterChart', () => {
       );
 
       await expect.element(screen.getByRole('cell', { name: '24K' })).toBeInTheDocument();
+    });
+
+    // A row per point, so a cloud of thousands is most of what the chart puts
+    // in the document. Past five hundred the header is written at once and the
+    // rows follow once the browser is idle.
+    it('writes its rows after the first paint past five hundred points', async () => {
+      const cloud = (offset: number) =>
+        Array.from({ length: 300 }, (_, index) => ({ x: index + offset, y: index % 50 }));
+      const chart = (
+        <ScatterChart
+          label="Spend"
+          series={[
+            { name: 'A', data: cloud(0) },
+            { name: 'B', data: cloud(1000) }
+          ]}
+        />
+      );
+      const html = new DOMParser().parseFromString(renderToString(chart), 'text/html');
+
+      expect(html.querySelectorAll('thead th')).toHaveLength(3);
+      expect(html.querySelectorAll('tbody tr')).toHaveLength(0);
+
+      const screen = await render(chart);
+      const table = screen.getByRole('table', { name: 'Spend' });
+
+      await expect
+        .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+        .toBe(600);
+
+      const names = [...table.element().querySelectorAll('tbody th')].map((th) => th.textContent);
+
+      expect(names.slice(298, 302)).toEqual(['A', 'A', 'B', 'B']);
+    });
+
+    it('writes every row into the server HTML at five hundred points', () => {
+      const html = renderToString(
+        <ScatterChart
+          label="Spend"
+          series={[
+            {
+              name: 'A',
+              data: Array.from({ length: 500 }, (_, index) => ({ x: index, y: index }))
+            }
+          ]}
+        />
+      );
+
+      expect(
+        new DOMParser().parseFromString(html, 'text/html').querySelectorAll('tbody tr')
+      ).toHaveLength(500);
     });
   });
 

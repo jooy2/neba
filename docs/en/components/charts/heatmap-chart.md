@@ -94,6 +94,6 @@ The legend is a scale bar with its two ends labelled, not a list of swatches. On
 
 ## Accessibility
 
-- The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category. A treemap's columns are every tile name its groups use, and each value sits under its own name. The plot itself is described by one sentence with the number of values and their range, so a focus does not read the table out.
+- The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category. A treemap's columns are every tile name its groups use, and each value sits under its own name. Past 500 cells, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot itself is described by one sentence with the number of values and their range, so a focus does not read the table out.
 - The plot is focusable. On a grid `←` / `→` walk the cells row by row and `↑` / `↓` keep the column and change the row; on a treemap every arrow walks the tiles from the largest to the smallest. `Escape` clears the tooltip. On a touch screen a tap keeps a cell's tooltip up until a tap lands outside the plot.
 - The scale legend gives the two ends of the range as numbers, so the ramp never has to be read by eye alone.

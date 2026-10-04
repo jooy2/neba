@@ -28,6 +28,8 @@
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
 
+- **A chart with more than 500 data points adds its hidden table's rows just after it first draws**, in small idle batches, rather than in the server's HTML and the first render. Four 1,000-point line charts and a 5,000-point scatter came to 40,000 table cells and 680 kB of server HTML; a LineChart of three 1,000-point series now mounts in about a fifth of the time, and its server HTML is 4.3 kB rather than 68.6 kB. The caption and the header row are there at once, and the table is `aria-busy` until it is whole. With JavaScript the table ends up exactly as it was, and a chart of 500 points or fewer is unchanged.
+
 - **A `DataTable` sorts once instead of on every keystroke in its search.** The sort runs over every row and the search filters what it returns, which is the same rows in the same order; a caller's `filter` is now called in sorted order. Only the rows that changed are drawn again when the active row moves, the body scrolls past a row, a selection the table keeps itself changes or a column is resized, and a render of the table by the caller still draws every row. A dragged selection stops auto-scrolling once it reaches the end instead of running every frame until the button is released.
 
 - **`StreamingText` redraws only the last 64 words when a token lands**, rather than the whole answer: 14 ms per token became 2.2 ms on a 2,000-word answer.
