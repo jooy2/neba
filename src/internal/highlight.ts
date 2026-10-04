@@ -309,6 +309,25 @@ function prepared(language: string): Promise<string | null> {
 }
 
 /**
+ * Starts fetching a language's grammar without colouring anything with it.
+ *
+ * For a block that is not on screen yet. The download is what takes time and
+ * it holds nothing up, so it starts as early as it always did; the colouring
+ * is what holds the main thread, and that waits until the block is wanted.
+ * Quiet on failure, which `highlight` meets again and answers for itself.
+ */
+export function preloadLanguage(language: string): void {
+  if (extra.has(language) || Object.hasOwn(loaders, language)) {
+    prepared(language).catch(() => {});
+  }
+}
+
+/** Resolves in a task of its own, after whatever else was waiting to run. */
+function nextTask(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/**
  * Colours `code`, or returns `null` when the language is unknown or the chunk
  * has not arrived yet.
  *
@@ -337,6 +356,12 @@ export async function highlight(code: string, language: string): Promise<CodeLin
   }
 
   const hljs = await core;
+
+  // Every block waiting on one grammar resumes in the same microtask
+  // checkpoint, so without this a page of them was coloured in one long task
+  // that nothing could interrupt. A task each lets the browser answer the
+  // reader in between.
+  await nextTask();
 
   return tokenize(hljs.highlight(code, { language: name, ignoreIllegals: true }).value);
 }

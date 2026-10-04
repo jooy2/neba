@@ -3,11 +3,12 @@
 import * as React from 'react';
 import { CheckIcon, CodeIcon, CopyIcon } from '../../internal/icons.js';
 import { codeMessages, useMessages } from '../../internal/i18n.js';
-import { observeResize } from '../../internal/observe.js';
+import { observeResize, observeVisibility } from '../../internal/observe.js';
 import {
   canonicalLanguage,
   highlight as highlightCode,
-  plainLines
+  plainLines,
+  preloadLanguage
 } from '../../internal/highlight.js';
 import type { CodeLine } from '../../internal/highlight.js';
 import {
@@ -103,7 +104,8 @@ export interface CodeBlockProps extends Omit<
    * import, so a block that does not highlight costs no more than the text in
    * it. On, the block draws plain on the first frame and colours itself when
    * the grammar lands — a few milliseconds, and never a blank space where the
-   * code should be.
+   * code should be. A block off screen fetches its grammar just the same, and
+   * is coloured once it is within a screen's height of the view.
    * @default true
    */
   highlight?: boolean;
@@ -446,9 +448,20 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     } | null>(null);
 
     const wanted = highlight && !raw && name !== null;
+    // Whether the block has been on screen. Colouring is the expensive half of
+    // highlighting — a long file is tens of milliseconds of the main thread —
+    // and a page of thirty blocks paid it for all thirty at load, most of them
+    // nowhere near the reader. Set once and never cleared, so a block already
+    // coloured keeps its colour wherever it is scrolled to.
+    const [seen, setSeen] = React.useState(false);
 
     /**
-     * The colouring, once the grammar has arrived.
+     * The colouring, once the grammar has arrived and the block is near the screen.
+     *
+     * Until then only the grammar is fetched, so a block scrolled to later
+     * still finds it there. The coloured lines go in as a transition: one
+     * block's swap is every line it has, and a reader typing or scrolling
+     * meanwhile is the more urgent of the two.
      *
      * `cancelled` rather than an AbortController because there is nothing to
      * abort: the import is already in flight and shared with every other block in
@@ -462,11 +475,19 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
         return;
       }
 
+      if (!seen) {
+        preloadLanguage(name);
+
+        return;
+      }
+
       let cancelled = false;
 
       highlightCode(source, name).then(
         (lines) => {
-          if (!cancelled) setColoured(lines ? { source, name, lines } : null);
+          if (!cancelled) {
+            React.startTransition(() => setColoured(lines ? { source, name, lines } : null));
+          }
         },
         () => {
           if (!cancelled) setColoured(null);
@@ -476,7 +497,7 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
       return () => {
         cancelled = true;
       };
-    }, [source, name, wanted]);
+    }, [source, name, wanted, seen]);
 
     const lines = React.useMemo(
       () =>
@@ -557,6 +578,36 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
      * scroll. Measured after the first paint, so a server render has neither.
      */
     const [overflows, setOverflows] = React.useState(false);
+
+    // Watched only while there is colouring to do and it has not started. A
+    // runtime with no observer cannot say, so the block is coloured at once,
+    // as it always was.
+    React.useEffect(() => {
+      const box = scrollRef.current;
+
+      if (!wanted || seen || !box) {
+        return;
+      }
+
+      // A screen's height ahead, so the colours are in place by the time the
+      // block scrolls into view rather than arriving a frame after it.
+      const stop = observeVisibility(
+        box,
+        0,
+        (visible) => {
+          if (visible) setSeen(true);
+        },
+        '100% 0px'
+      );
+
+      if (!stop) {
+        setSeen(true);
+
+        return;
+      }
+
+      return stop;
+    }, [wanted, seen]);
 
     React.useEffect(() => {
       const box = scrollRef.current;

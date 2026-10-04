@@ -94,10 +94,11 @@ export function observeResize(element: Element, onResize: ResizeCallback): () =>
 type VisibilityCallback = (visible: boolean) => void;
 
 /**
- * One observer per threshold, because the threshold is the one thing an
+ * One observer per threshold and margin, because those are the two things an
  * `IntersectionObserver` cannot vary per target. In practice that is one
  * observer for the whole page: `threshold` defaults to the same number on every
- * `Animate*`, and a page that mixes two of them gets two.
+ * `Animate*`, and a page that mixes two of them gets two. The margin is only
+ * ever the default or the one CodeBlock asks for.
  *
  * A group lives exactly as long as something is watching through it. That is
  * not tidiness: `threshold` is a public prop on all seventeen `Animate*`
@@ -111,14 +112,15 @@ interface VisibilityGroup {
   watchers: Map<Element, Set<VisibilityCallback>>;
 }
 
-const visibilityGroups = new Map<number, VisibilityGroup>();
+const visibilityGroups = new Map<string, VisibilityGroup>();
 
-function visibilityShared(threshold: number): VisibilityGroup | null {
+function visibilityShared(threshold: number, rootMargin: string): VisibilityGroup | null {
   if (typeof IntersectionObserver === 'undefined') {
     return null;
   }
 
-  let group = visibilityGroups.get(threshold);
+  const key = `${threshold} ${rootMargin}`;
+  let group = visibilityGroups.get(key);
 
   if (!group) {
     const watchers = new Map<Element, Set<VisibilityCallback>>();
@@ -140,11 +142,11 @@ function visibilityShared(threshold: number): VisibilityGroup | null {
             }
           }
         },
-        { threshold }
+        { threshold, rootMargin }
       )
     };
 
-    visibilityGroups.set(threshold, group);
+    visibilityGroups.set(key, group);
   }
 
   return group;
@@ -152,6 +154,9 @@ function visibilityShared(threshold: number): VisibilityGroup | null {
 
 /**
  * Watches whether one element is on screen. Returns the function that stops.
+ *
+ * `rootMargin` grows the screen it is measured against, for work that should
+ * start before the element arrives rather than as it does.
  *
  * `null` where there is no `IntersectionObserver`, rather than a no-op: a
  * caller cannot know the answer without one, and the right fallback is to show
@@ -161,7 +166,8 @@ function visibilityShared(threshold: number): VisibilityGroup | null {
 export function observeVisibility(
   element: Element,
   threshold: number,
-  onVisible: VisibilityCallback
+  onVisible: VisibilityCallback,
+  rootMargin = '0px'
 ): (() => void) | null {
   // `threshold` is a public prop on seventeen components and `useOnScreen`, and
   // `IntersectionObserver` throws a `RangeError` for anything outside 0–1 — from
@@ -169,7 +175,7 @@ export function observeVisibility(
   // `NaN` is the default, since it is what a computed threshold that went wrong
   // looks like.
   const bounded = Number.isNaN(threshold) ? 0 : Math.min(1, Math.max(0, threshold));
-  const group = visibilityShared(bounded);
+  const group = visibilityShared(bounded, rootMargin);
 
   if (!group) {
     return null;
@@ -203,7 +209,7 @@ export function observeVisibility(
       // under its element and has returned above.
       if (group.watchers.size === 0) {
         group.observer.disconnect();
-        visibilityGroups.delete(bounded);
+        visibilityGroups.delete(`${bounded} ${rootMargin}`);
       }
     }
   };

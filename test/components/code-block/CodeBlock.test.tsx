@@ -129,6 +129,37 @@ describe('CodeBlock', () => {
       await expect.element(screen.getByTestId('block')).toMatchTextContent('const answer = 42;');
     });
 
+    // Colouring is the expensive half, so a block nobody has scrolled to waits.
+    // The block on screen is coloured first, which is also what proves the
+    // grammar had arrived while the one below stayed plain.
+    it('leaves a block far off screen plain until it is scrolled near', async () => {
+      const screen = await render(
+        <div>
+          <CodeBlock code={SOURCE} language="ts" data-testid="near" />
+          <div style={{ height: 4000 }} />
+          <CodeBlock code={SOURCE} language="ts" data-testid="far" />
+        </div>
+      );
+      const keywords = (id: string) =>
+        screen.getByTestId(id).element().querySelectorAll('.hljs-keyword').length;
+
+      try {
+        await expect.poll(() => keywords('near')).toBeGreaterThan(0);
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
+        expect(keywords('far')).toBe(0);
+
+        screen.getByTestId('far').element().scrollIntoView();
+
+        await expect.poll(() => keywords('far')).toBeGreaterThan(0);
+        expect(screen.getByTestId('far').element().innerHTML).toBe(
+          screen.getByTestId('near').element().innerHTML
+        );
+      } finally {
+        window.scrollTo(0, 0);
+      }
+    });
+
     // A block comment, a template literal and a heredoc all cross lines, so the
     // block is highlighted as a whole and split afterwards.
     it('keeps a token that spans two lines on both of them', async () => {

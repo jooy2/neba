@@ -133,7 +133,7 @@ A shell symbol in front of every line that has something on it: `$`, `#`, `C:\>`
 
 ### highlight
 
-`highlight={false}` draws the code with no colouring at all and fetches no grammar. With it on, the block draws plain on the first frame and colours itself when the grammar lands.
+`highlight={false}` draws the code with no colouring at all and fetches no grammar. With it on, the block draws plain on the first frame and colours itself when the grammar lands. A block that is off screen fetches its grammar straight away but is not coloured until it is within a screen's height of the view; copying and selecting work the same either way.
 
 ## Accessibility
 

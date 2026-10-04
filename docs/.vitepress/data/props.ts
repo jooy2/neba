@@ -15183,8 +15183,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '코드에 색을 입힙니다. 꺼두면 아무것도 내려받지 않습니다. 문법 엔진이 dynamic import 뒤에 있습니다. 켜져 있으면 첫 프레임은 색 없이 그려지고 문법이 도착하면 스스로 칠합니다',
-        en: 'Colours the code. Off, nothing is fetched at all: the grammar engine is behind a dynamic import. On, the block draws plain on the first frame and colours itself when the grammar lands'
+        ko: '코드에 색을 입힙니다. 꺼두면 아무것도 내려받지 않습니다. 문법 엔진이 dynamic import 뒤에 있습니다. 켜져 있으면 첫 프레임은 색 없이 그려지고, 블록이 화면 한 높이 안으로 다가오고 문법이 도착하면 스스로 칠합니다',
+        en: 'Colours the code. Off, nothing is fetched at all: the grammar engine is behind a dynamic import. On, the block draws plain on the first frame and colours itself once it is within one screen height of the view and the grammar has landed'
       }
     },
     {
