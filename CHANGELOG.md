@@ -70,6 +70,8 @@
 
 - **`Slider` reads `locale` from a `NebaProvider`.** It never asked for it, so a `showValue` under `defaults={{ locale }}` was formatted in the runtime's language.
 
+- **A `DataTable` names its footer's page buttons in its own `locale`.** The footer's `Pagination` was not handed it, so `<DataTable locale="ko">` with no provider around it still said "Page 2".
+
 ### Documentation
 
 - **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in. The provider page says the same about `direction` and `dir`.

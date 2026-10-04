@@ -3,6 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { DataTable, type DataTableColumn } from 'neba';
+import { ko, registerMessages } from 'neba/locales';
+
+/* Only the footer test below names a language; the rest read the English
+   default, which registering Korean does not change. */
+registerMessages('ko', ko);
 
 interface Person {
   id: string;
@@ -587,6 +592,23 @@ describe('DataTable', () => {
   });
 
   describe('paging', () => {
+    // The footer's Pagination read no `locale`, so a table given one directly,
+    // with no provider around it, named its page buttons in English.
+    it("names the footer's page buttons in the table's own locale", async () => {
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(10)}
+          getRowKey={key}
+          paging="pages"
+          defaultPageSize={4}
+          locale="ko"
+        />
+      );
+
+      await expect.element(screen.getByRole('button', { name: '2페이지' })).toBeInTheDocument();
+    });
+
     it('cuts the rows into pages and steps through them', async () => {
       const screen = await render(
         <DataTable

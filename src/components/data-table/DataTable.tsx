@@ -3459,6 +3459,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
               <Pagination
                 size={size}
                 color={color}
+                locale={locale}
                 count={bounds.pages}
                 page={bounds.page}
                 siblingCount={0}
