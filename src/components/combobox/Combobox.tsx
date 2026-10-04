@@ -457,17 +457,40 @@ export function Combobox<Multiple extends boolean | undefined = false>(
   // case in the keyboard handling, so Enter, a click and the arrow keys all
   // reach it the same way every other row is reached — and Base UI's own filter
   // keeps it visible, because its label *is* the query.
+  const offersCustom = allowCustom && !readOnly && !disabled;
+
+  /* Every label and value an option already answers to, folded once per list
+     rather than once per render. Asking the list itself meant lowering the case
+     of every option on every render — every keystroke, every highlighted row —
+     and doing it for a field that would never offer the row at all. */
+  const known = React.useMemo(() => {
+    if (!offersCustom) {
+      return null;
+    }
+
+    const names = new Set<string>();
+
+    for (const option of options) {
+      names.add(option.label.toLocaleLowerCase());
+      names.add(String(option.value).toLocaleLowerCase());
+    }
+
+    return names;
+  }, [offersCustom, options]);
+
   const trimmed = query.trim();
-  const folded = trimmed.toLocaleLowerCase();
-  const alreadyKnown =
-    trimmed === '' ||
-    options.some(
-      (option) =>
-        option.label.toLocaleLowerCase() === folded ||
-        String(option.value).toLocaleLowerCase() === folded
-    ) ||
-    selection.some((item) => String(item).toLocaleLowerCase() === folded);
-  const customValue = allowCustom && !readOnly && !disabled && !alreadyKnown ? trimmed : null;
+  let customValue: string | null = null;
+
+  if (known && trimmed !== '') {
+    const folded = trimmed.toLocaleLowerCase();
+
+    if (
+      !known.has(folded) &&
+      !selection.some((item) => String(item).toLocaleLowerCase() === folded)
+    ) {
+      customValue = trimmed;
+    }
+  }
 
   // Base UI's own matcher, for the one case this component filters itself.
   const matcher = BaseUICombobox.useFilter({ locale });

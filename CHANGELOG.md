@@ -56,6 +56,8 @@
 
 - **A `ScrollZone` with its buttons `inline` keeps both lanes open, with the buttons hidden, until it has measured itself.** The items of a strip that overflows no longer move inward after the first paint. On a server-rendered page, a strip that turns out to fit now loses the lanes at hydration instead.
 
+- **Formatting a number or a date costs less per call.** A formatter the library already built is found without writing its options out as JSON each time, which was about 7 ms of a dashboard's mount. A `Combobox` works out whether to offer what was typed once per `items`, and not at all when no custom row can be offered.
+
 ### Fixed
 
 - **A Tailwind utility in a `Typography`'s `className` wins over the level's own scale.** The size, leading, tracking, weight, margins and colour were written at two-class strength so that a host's `.prose h2` could not reach them, and that also beat the caller: `className="mb-8"` rendered with no margin and `text-[2.5rem] font-black` at 13px and 400, with no warning. For each property a class sets, with or without a variant, the level now steps down to zero specificity, so the class wins and `md:text-5xl` still has the level's size below `md`. With no class, a Typography inside `.prose` or `.vp-doc` keeps its scale as before, and a `!` class such as `mb-8!` renders as it did. A class that was being ignored now applies, so check a call site that carried one. A class from your own stylesheet is not read and still needs two classes or `!important`.

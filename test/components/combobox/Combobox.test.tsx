@@ -224,6 +224,60 @@ describe('Combobox', () => {
       expect(screen.getByRole('option', { name: 'Add “Vue”' }).query()).toBeNull();
     });
 
+    it('does not offer an option under another case, or spelled as its value', async () => {
+      const screen = await render(
+        <Combobox items={[{ value: 'ng', label: 'Angular' }]} label="Framework" />
+      );
+      const input = screen.getByRole('combobox');
+
+      await input.fill('aNGULAR');
+      await expect.element(screen.getByRole('option', { name: 'Angular' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Add “aNGULAR”' }).query()).toBeNull();
+
+      await input.fill('NG');
+      await expect.element(screen.getByRole('option', { name: 'Angular' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Add “NG”' }).query()).toBeNull();
+    });
+
+    it('does not offer a value that has already been chosen', async () => {
+      const screen = await render(
+        <Combobox multiple items={FRAMEWORKS} label="Framework" defaultValue={['qwik']} />
+      );
+
+      await screen.getByRole('combobox').fill('QWIK');
+
+      await expect.element(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Add “QWIK”' }).query()).toBeNull();
+    });
+
+    // What the list already has is worked out once per list, so a new list has
+    // to be read again rather than answered from the old one.
+    it('offers a value again once a new list no longer has it', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" />);
+
+      await screen.getByRole('combobox').fill('Vue');
+      expect(screen.getByRole('option', { name: 'Add “Vue”' }).query()).toBeNull();
+
+      await screen.rerender(
+        <Combobox items={FRAMEWORKS.filter((item) => item.value !== 'vue')} label="Framework" />
+      );
+
+      await expect.element(screen.getByRole('option', { name: 'Add “Vue”' })).toBeInTheDocument();
+    });
+
+    it('takes the row away when allowCustom is turned off', async () => {
+      const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" />);
+
+      await screen.getByRole('combobox').fill('qwik');
+      await expect.element(screen.getByRole('option', { name: 'Add “qwik”' })).toBeInTheDocument();
+
+      await screen.rerender(<Combobox items={FRAMEWORKS} label="Framework" allowCustom={false} />);
+
+      await expect
+        .element(screen.getByRole('option', { name: 'Add “qwik”' }))
+        .not.toBeInTheDocument();
+    });
+
     it('offers what was typed in the language it was given', async () => {
       const screen = await render(<Combobox items={FRAMEWORKS} label="Framework" locale="ko" />);
 
